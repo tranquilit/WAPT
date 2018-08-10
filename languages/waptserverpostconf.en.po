@@ -64,6 +64,16 @@ msgstr ""
 msgid "Open firewall ports 80 and 443 to allow access for packages and inventory"
 msgstr ""
 
+#: tviswaptserverpostconf.cb_create_new_key_show_password.caption
+msgctxt "tviswaptserverpostconf.cb_create_new_key_show_password.caption"
+msgid "Show password"
+msgstr ""
+
+#: tviswaptserverpostconf.cb_use_existing_key_show_password.caption
+msgctxt "tviswaptserverpostconf.cb_use_existing_key_show_password.caption"
+msgid "Show password"
+msgstr ""
+
 #: tviswaptserverpostconf.edpwd1.hint
 msgid ""
 "This is the password used to connect to the WAPT server via the WAPT console.\n"
@@ -87,6 +97,38 @@ msgstr ""
 msgid "srvwapt.mydomain.lan"
 msgstr ""
 
+#: tviswaptserverpostconf.ed_create_new_key_key_name.text
+msgid "ed_create_new_key_key_name"
+msgstr ""
+
+#: tviswaptserverpostconf.ed_create_new_key_password_1.text
+msgid "ed_create_new_key_password_1"
+msgstr ""
+
+#: tviswaptserverpostconf.ed_create_new_key_password_2.text
+msgid "ed_create_new_key_password_2"
+msgstr ""
+
+#: tviswaptserverpostconf.ed_create_new_key_private_directory.text
+msgid "ed_create_new_key_private_directory"
+msgstr ""
+
+#: tviswaptserverpostconf.ed_existing_key_certificat_filename.text
+msgid "ed_existing_key_certificat_filename"
+msgstr ""
+
+#: tviswaptserverpostconf.ed_existing_key_key_filename.text
+msgid "ed_existing_key_key_filename"
+msgstr ""
+
+#: tviswaptserverpostconf.ed_existing_key_password.text
+msgid "ed_existing_key_password"
+msgstr ""
+
+#: tviswaptserverpostconf.ed_package_prefix.text
+msgid "ed_package_prefix"
+msgstr ""
+
 #: tviswaptserverpostconf.label1.caption
 msgid "WAPT server password:"
 msgstr ""
@@ -95,8 +137,54 @@ msgstr ""
 msgid "Confirm password:"
 msgstr ""
 
+#: tviswaptserverpostconf.lbl_ed_create_new_key_directory.caption
+msgctxt "tviswaptserverpostconf.lbl_ed_create_new_key_directory.caption"
+msgid "Secret directory :"
+msgstr ""
+
+#: tviswaptserverpostconf.lbl_ed_create_new_key_key_name.caption
+msgctxt "tviswaptserverpostconf.lbl_ed_create_new_key_key_name.caption"
+msgid "Key name :"
+msgstr ""
+
+#: tviswaptserverpostconf.lbl_ed_create_new_key_password_1.caption
+msgctxt "tviswaptserverpostconf.lbl_ed_create_new_key_password_1.caption"
+msgid "Password :"
+msgstr ""
+
+#: tviswaptserverpostconf.lbl_ed_create_new_key_password_2.caption
+msgctxt "tviswaptserverpostconf.lbl_ed_create_new_key_password_2.caption"
+msgid "Password confirm :"
+msgstr ""
+
+#: tviswaptserverpostconf.lbl_ed_existing_key_cert_filename.caption
+msgid "Certificat filename :"
+msgstr ""
+
+#: tviswaptserverpostconf.lbl_ed_existing_key_key_filename.caption
+msgid "Key filename :"
+msgstr ""
+
+#: tviswaptserverpostconf.lbl_ed_existing_key_password.caption
+msgctxt "tviswaptserverpostconf.lbl_ed_existing_key_password.caption"
+msgid "Password :"
+msgstr ""
+
+#: tviswaptserverpostconf.lbl_ed_package_prefix.caption
+msgid "Package prefix :"
+msgstr ""
+
+#: tviswaptserverpostconf.pgbuildagent.caption
+msgid "Agent"
+msgstr ""
+
 #: tviswaptserverpostconf.pgfinish.caption
 msgid "Fin"
+msgstr ""
+
+#: tviswaptserverpostconf.pgpackageprivatekey.caption
+msgctxt "tviswaptserverpostconf.pgpackageprivatekey.caption"
+msgid "Package and private key"
 msgstr ""
 
 #: tviswaptserverpostconf.pgparameters.caption
@@ -109,6 +197,14 @@ msgstr ""
 
 #: tviswaptserverpostconf.pgstartservices.caption
 msgid "Start"
+msgstr ""
+
+#: tviswaptserverpostconf.rb_createkey.caption
+msgid "Create a new key"
+msgstr ""
+
+#: tviswaptserverpostconf.rb_usekey.caption
+msgid "Use existing key"
 msgstr ""
 
 #: uwaptres.rscanceled
@@ -367,5 +463,41 @@ msgstr ""
 #: uwaptserverres.rswaptuploaderror
 msgctxt "uwaptserverres.rswaptuploaderror"
 msgid "Error while uploading WAPT agent to the repository : %s"
+msgstr ""
+
+#: uwaptserverres.rs_create_key_a_certificat_this_key_name_exist
+msgid "A certificat with key name has beenfound, change key name and click next again"
+msgstr ""
+
+#: uwaptserverres.rs_create_key_a_key_with_this_name_exist
+msgid "A key with this name has been found, change key name and click next again"
+msgstr ""
+
+#: uwaptserverres.rs_create_key_dir_not_exist
+msgid "Create directory %s ?"
+msgstr ""
+
+#: uwaptserverres.rs_create_key_select_a_valide_private_key_directory
+msgid "A valid private key directory must be selected"
+msgstr ""
+
+#: uwaptserverres.rs_key_name_cannot_be_empty
+msgid "Key name cannot be empty"
+msgstr ""
+
+#: uwaptserverres.rs_package_prefix_cannot_be_empty
+msgid "Package prefix cannot be empty"
+msgstr ""
+
+#: uwaptserverres.rs_package_prefix_must_be_alphanum
+msgid "Pacakge prefix must be alphanum"
+msgstr ""
+
+#: uwaptserverres.rs_supplied_passwords_differs
+msgid "Supplied password differs"
+msgstr ""
+
+#: uwaptserverres.rs_supplied_passwords_must_be_at_least_six_chars_length
+msgid "Supplied passwords must be at least 6 characters length"
 msgstr ""
 

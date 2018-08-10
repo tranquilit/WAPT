@@ -18,10 +18,10 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
     Height = 369
     Top = 0
     Width = 680
-    ActivePage = pgPassword
+    ActivePage = pgPackagePrivateKey
     Align = alClient
     MultiLine = True
-    TabIndex = 1
+    TabIndex = 2
     TabOrder = 0
     OnChange = PagesControlChange
     Options = [nboMultiLine]
@@ -114,7 +114,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
     end
     object pgPassword: TTabSheet
       Caption = 'Password'
-      ClientHeight = 343
+      ClientHeight = 341
       ClientWidth = 672
       object Panel5: TPanel
         Left = 0
@@ -134,15 +134,15 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         TabOrder = 0
         object Label1: TLabel
           Left = 6
-          Height = 21
+          Height = 23
           Top = 3
-          Width = 116
+          Width = 123
           Caption = 'WAPT server password:'
           ParentColor = False
         end
         object EdPwd1: TEdit
-          Left = 128
-          Height = 21
+          Left = 135
+          Height = 23
           Hint = 'This is the password used to connect to the WAPT server via the WAPT console.'#13#10'For further information :'#13#10'http://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.html'
           Top = 3
           Width = 120
@@ -153,16 +153,16 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         end
         object Label2: TLabel
           Left = 6
-          Height = 21
-          Top = 30
-          Width = 116
+          Height = 23
+          Top = 32
+          Width = 123
           Caption = 'Confirm password:'
           ParentColor = False
         end
         object EdPwd2: TEdit
-          Left = 128
-          Height = 21
-          Top = 30
+          Left = 135
+          Height = 23
+          Top = 32
           Width = 120
           Constraints.MinWidth = 120
           EchoMode = emPassword
@@ -170,6 +170,195 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
           TabOrder = 1
         end
       end
+    end
+    object pgPackagePrivateKey: TTabSheet
+      Caption = 'Package and private key'
+      ClientHeight = 341
+      ClientWidth = 672
+      object rb_CreateKey: TRadioButton
+        Left = 24
+        Height = 19
+        Top = 40
+        Width = 109
+        Caption = 'Create a new key'
+        OnChange = on_private_key_radiobutton_change
+        TabOrder = 0
+      end
+      object rb_UseKey: TRadioButton
+        Left = 24
+        Height = 19
+        Top = 180
+        Width = 103
+        Caption = 'Use existing key'
+        OnChange = on_private_key_radiobutton_change
+        TabOrder = 1
+      end
+      object ed_create_new_key_private_directory: TDirectoryEdit
+        Left = 252
+        Height = 23
+        Top = 40
+        Width = 331
+        Directory = 'ed_create_new_key_private_directory'
+        ShowHidden = False
+        ButtonWidth = 23
+        NumGlyphs = 1
+        MaxLength = 0
+        TabOrder = 2
+        Text = 'ed_create_new_key_private_directory'
+      end
+      object ed_existing_key_key_filename: TFileNameEdit
+        Left = 252
+        Height = 23
+        Top = 176
+        Width = 331
+        FileName = 'ed_existing_key_key_filename'
+        FilterIndex = 0
+        HideDirectories = False
+        ButtonWidth = 23
+        NumGlyphs = 1
+        MaxLength = 0
+        TabOrder = 3
+        Text = 'ed_existing_key_key_filename'
+      end
+      object ed_create_new_key_password_1: TEdit
+        Left = 252
+        Height = 23
+        Top = 96
+        Width = 80
+        TabOrder = 4
+        Text = 'ed_create_new_key_password_1'
+      end
+      object ed_existing_key_password: TEdit
+        Left = 252
+        Height = 23
+        Top = 240
+        Width = 80
+        TabOrder = 5
+        Text = 'ed_existing_key_password'
+      end
+      object lbl_ed_create_new_key_directory: TLabel
+        Left = 153
+        Height = 15
+        Top = 44
+        Width = 88
+        Caption = 'Secret directory :'
+        ParentColor = False
+      end
+      object ed_create_new_key_password_2: TEdit
+        Left = 252
+        Height = 23
+        Top = 124
+        Width = 80
+        TabOrder = 6
+        Text = 'ed_create_new_key_password_2'
+      end
+      object ed_create_new_key_key_name: TEdit
+        Left = 252
+        Height = 23
+        Top = 70
+        Width = 80
+        TabOrder = 7
+        Text = 'ed_create_new_key_key_name'
+      end
+      object lbl_ed_create_new_key_key_name: TLabel
+        Left = 183
+        Height = 15
+        Top = 74
+        Width = 58
+        Caption = 'Key name :'
+        ParentColor = False
+      end
+      object lbl_ed_create_new_key_password_2: TLabel
+        Left = 140
+        Height = 15
+        Top = 128
+        Width = 101
+        Caption = 'Password confirm :'
+        ParentColor = False
+      end
+      object lbl_ed_create_new_key_password_1: TLabel
+        Left = 185
+        Height = 15
+        Top = 100
+        Width = 56
+        Caption = 'Password :'
+        ParentColor = False
+      end
+      object lbl_ed_existing_key_key_filename: TLabel
+        Left = 169
+        Height = 15
+        Top = 180
+        Width = 74
+        Caption = 'Key filename :'
+        ParentColor = False
+      end
+      object lbl_ed_existing_key_cert_filename: TLabel
+        Left = 140
+        Height = 15
+        Top = 212
+        Width = 103
+        Caption = 'Certificat filename :'
+        ParentColor = False
+      end
+      object ed_existing_key_certificat_filename: TFileNameEdit
+        Left = 252
+        Height = 23
+        Top = 208
+        Width = 331
+        FileName = 'ed_existing_key_certificat_filename'
+        FilterIndex = 0
+        HideDirectories = False
+        ButtonWidth = 23
+        NumGlyphs = 1
+        MaxLength = 0
+        TabOrder = 8
+        Text = 'ed_existing_key_certificat_filename'
+      end
+      object lbl_ed_existing_key_password: TLabel
+        Left = 183
+        Height = 15
+        Top = 244
+        Width = 56
+        Caption = 'Password :'
+        ParentColor = False
+      end
+      object lbl_ed_package_prefix: TLabel
+        Left = 159
+        Height = 15
+        Top = 10
+        Width = 82
+        Caption = 'Package prefix :'
+        ParentColor = False
+      end
+      object ed_package_prefix: TEdit
+        Left = 252
+        Height = 23
+        Top = 6
+        Width = 108
+        TabOrder = 9
+        Text = 'ed_package_prefix'
+      end
+      object cb_create_new_key_show_password: TCheckBox
+        Left = 360
+        Height = 19
+        Top = 98
+        Width = 102
+        Caption = 'Show password'
+        OnChange = on_show_password_change
+        TabOrder = 10
+      end
+      object cb_use_existing_key_show_password: TCheckBox
+        Left = 360
+        Height = 19
+        Top = 242
+        Width = 102
+        Caption = 'Show password'
+        OnChange = on_show_password_change
+        TabOrder = 11
+      end
+    end
+    object pgBuildAgent: TTabSheet
+      Caption = 'Agent'
     end
     object pgStartServices: TTabSheet
       Caption = 'Start'
@@ -233,12 +422,12 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
     end
     object pgFinish: TTabSheet
       Caption = 'Fin'
-      ClientHeight = 343
+      ClientHeight = 341
       ClientWidth = 672
       object Panel2: TPanel
         Left = 0
         Height = 23
-        Top = 320
+        Top = 318
         Width = 672
         Align = alBottom
         BevelOuter = bvNone
@@ -246,12 +435,12 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
       end
       object panFinish: TPanel
         Left = 0
-        Height = 320
+        Height = 318
         Top = 0
         Width = 672
         Align = alClient
         BevelOuter = bvNone
-        ClientHeight = 320
+        ClientHeight = 318
         ClientWidth = 672
         TabOrder = 1
         object Memo7: TMemo
@@ -286,9 +475,9 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         end
         object cbLaunchWaptConsoleOnExit: TCheckBox
           Left = 4
-          Height = 17
+          Height = 19
           Top = 0
-          Width = 167
+          Width = 180
           Caption = 'Run WAPT console after setup'
           Checked = True
           State = cbChecked
@@ -313,10 +502,10 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
     ClientWidth = 680
     TabOrder = 1
     object BitBtn3: TBitBtn
-      Left = 596
+      Left = 592
       Height = 24
       Top = 3
-      Width = 78
+      Width = 82
       Align = alRight
       AutoSize = True
       Caption = 'Cancel'
@@ -369,10 +558,10 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
       TabOrder = 1
     end
     object ButPrevious: TBitBtn
-      Left = 428
+      Left = 419
       Height = 24
       Top = 3
-      Width = 87
+      Width = 91
       Action = actPrevious
       Align = alRight
       AutoSize = True
@@ -415,10 +604,10 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
       TabOrder = 2
     end
     object ButNext: TBitBtn
-      Left = 521
+      Left = 516
       Height = 24
       Top = 3
-      Width = 69
+      Width = 70
       Action = ActNext
       Align = alRight
       AutoSize = True
@@ -462,8 +651,8 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
     end
   end
   object ActionList1: TActionList
-    left = 333
-    top = 248
+    left = 64
+    top = 288
     object actPrevious: TAction
       Caption = 'Previous'
       OnExecute = actPreviousExecute

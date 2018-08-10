@@ -45,6 +45,17 @@ resourcestring
 
   rsMigration15 = 'Migrate Mongodb to PostgreSQL database';
 
+  rs_package_prefix_cannot_be_empty =  'Package prefix cannot be empty';
+  rs_package_prefix_must_be_alphanum = 'Pacakge prefix must be alphanum';
+  rs_create_key_dir_not_exist = 'Create directory %s ?';
+  rs_create_key_select_a_valide_private_key_directory = 'A valid private key directory must be selected';
+  rs_create_key_a_key_with_this_name_exist = 'A key with this name has been found, change key name and click next again';
+  rs_create_key_a_certificat_this_key_name_exist = 'A certificat with key name has beenfound, change key name and click next again';
+  rs_supplied_passwords_differs = 'Supplied password differs';
+  rs_supplied_passwords_must_be_at_least_six_chars_length = 'Supplied passwords must be at least 6 characters length';
+  rs_key_name_cannot_be_empty = 'Key name cannot be empty';
+
+
 implementation
 
 end.

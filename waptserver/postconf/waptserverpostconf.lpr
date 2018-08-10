@@ -12,7 +12,7 @@ uses
   Forms, uVisServerPostconf, uwaptserverres,
   waptcommon, uvisloading, UScaleDPI,
   { you can add units after this }
-  DefaultTranslator, indylaz, FrameViewer09;
+  DefaultTranslator, indylaz, FrameViewer09, uvalidation;
 
 {$R *.res}
 {$R languages.rc}

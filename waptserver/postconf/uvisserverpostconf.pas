@@ -5,10 +5,10 @@ unit uVisServerPostconf;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, LazFileUtils, LazUTF8,
-  Forms, Controls, Graphics, Dialogs, ComCtrls, StdCtrls, ExtCtrls,
-  Buttons, ActnList, htmlview, Readhtml, IdHTTP,
-  IdComponent,uvisLoading, DefaultTranslator, LCLTranslator, LCLProc, uWaptServerRes;
+  Classes, SysUtils, FileUtil, LazFileUtils, LazUTF8, Forms, Controls, Graphics,
+  Dialogs, ComCtrls, StdCtrls, ExtCtrls, Buttons, ActnList, htmlview, Readhtml,
+  IdHTTP, IdComponent, uvisLoading, DefaultTranslator, LCLTranslator, LCLProc,
+  EditBtn, uWaptServerRes;
 
 type
 
@@ -31,12 +31,30 @@ type
     ButPrevious: TBitBtn;
     cbLaunchWaptConsoleOnExit: TCheckBox;
     CBOpenFirewall: TCheckBox;
+    cb_create_new_key_show_password: TCheckBox;
+    cb_use_existing_key_show_password: TCheckBox;
+    ed_package_prefix: TEdit;
+    ed_create_new_key_password_1: TEdit;
+    ed_existing_key_certificat_filename: TFileNameEdit;
+    ed_existing_key_password: TEdit;
+    ed_create_new_key_password_2: TEdit;
+    ed_create_new_key_key_name: TEdit;
+    ed_create_new_key_private_directory: TDirectoryEdit;
     EdPwd1: TEdit;
     EdPwd2: TEdit;
     EdWaptServerIP: TEdit;
     EdWAPTServerName: TEdit;
+    ed_existing_key_key_filename: TFileNameEdit;
     Label1: TLabel;
     Label2: TLabel;
+    lbl_ed_package_prefix: TLabel;
+    lbl_ed_existing_key_password: TLabel;
+    lbl_ed_existing_key_key_filename: TLabel;
+    lbl_ed_create_new_key_directory: TLabel;
+    lbl_ed_create_new_key_key_name: TLabel;
+    lbl_ed_create_new_key_password_1: TLabel;
+    lbl_ed_create_new_key_password_2: TLabel;
+    lbl_ed_existing_key_cert_filename: TLabel;
     Memo7: TMemo;
     PagesControl: TPageControl;
     Panel1: TPanel;
@@ -49,6 +67,10 @@ type
     ProgressBar1: TProgressBar;
     pgStartServices: TTabSheet;
     pgFinish: TTabSheet;
+    pgPackagePrivateKey: TTabSheet;
+    pgBuildAgent: TTabSheet;
+    rb_CreateKey: TRadioButton;
+    rb_UseKey: TRadioButton;
     procedure ActCheckDNSExecute(Sender: TObject);
     procedure ActManualExecute(Sender: TObject);
     procedure ActNextExecute(Sender: TObject);
@@ -59,26 +81,39 @@ type
     procedure BitBtn3Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
-    procedure HTMLViewer1HotSpotClick(Sender: TObject; const SRC: string;
-      var Handled: boolean);
-    procedure IdHTTPWork(ASender: TObject; AWorkMode: TWorkMode;
-      AWorkCount: Int64);
+    procedure HTMLViewer1HotSpotClick(Sender: TObject; const SRC: string; var Handled: boolean);
+    procedure IdHTTPWork(ASender: TObject; AWorkMode: TWorkMode; AWorkCount: Int64);
     procedure PagesControlChange(Sender: TObject);
+    procedure on_private_key_radiobutton_change( Sender : TObject );
+    procedure on_show_password_change( Sender : TObject );
   private
     CurrentVisLoading:TVisLoading;
     procedure OpenFirewall;
     { private declarations }
 
+    procedure clear();
+    procedure validate_page_package_and_private_key( var bContinue : boolean );
+  public
+    procedure show_validation_error( c : TControl; const msg : String );
   end;
 
 var
   VisWAPTServerPostConf: TVisWAPTServerPostConf;
 
 implementation
-uses LCLIntf, Windows, waptcommon, waptwinutils, UScaleDPI, tisinifiles,
+
+uses
+  uvalidation,
+  LCLIntf, Windows, waptcommon, waptwinutils, UScaleDPI, tisinifiles,
   superobject, tiscommon, tisstrings, IniFiles,DCPsha256,dcpcrypt2,DCPbase64,Math;
 
 {$R *.lfm}
+
+
+const
+  DEFAULT_PRIVATE_KEY_DIRECTORY : String = 'c:\private';
+  DEFAULT_PACKAGE_PREFIX        : String = 'test';
+  DEFAULT_PASSWORD_CHAR         : Char   = '*';
 
 { TVisWAPTServerPostConf }
 
@@ -89,6 +124,13 @@ begin
   ReadWaptConfig(WaptBaseDir+'wapt-get.ini');
   PagesControl.ShowTabs:=False;
   PagesControl.ActivePageIndex:=0;
+
+
+  self.clear();
+
+  // fmor
+//  self.PagesControl.PageIndex:= 2;
+
 end;
 
 procedure TVisWAPTServerPostConf.FormShow(Sender: TObject);
@@ -182,6 +224,55 @@ begin
   }
 end;
 
+procedure TVisWAPTServerPostConf.on_private_key_radiobutton_change( Sender: TObject);
+var
+  b : boolean;
+begin
+  b := self.rb_CreateKey.Checked;
+  self.lbl_ed_create_new_key_directory.Enabled      := b;
+  self.lbl_ed_create_new_key_key_name.Enabled       := b;
+  self.lbl_ed_create_new_key_password_1.Enabled     := b;
+  self.lbl_ed_create_new_key_password_2.Enabled     := b;
+  self.ed_create_new_key_private_directory.Enabled  := b;
+  self.ed_create_new_key_key_name.Enabled           := b;
+  self.ed_create_new_key_password_1.Enabled         := b;
+  self.ed_create_new_key_password_2.Enabled         := b;
+  self.cb_create_new_key_show_password.Enabled      := b;
+
+  b := not b;
+  self.lbl_ed_existing_key_key_filename.Enabled     := b;
+  self.lbl_ed_existing_key_cert_filename.Enabled    := b;
+  self.lbl_ed_existing_key_password.Enabled         := b;
+  self.ed_existing_key_key_filename.Enabled         := b;
+  self.ed_existing_key_certificat_filename.Enabled  := b;
+  self.ed_existing_key_password.Enabled             := b;
+  self.cb_use_existing_key_show_password.Enabled    := b;
+
+end;
+
+procedure TVisWAPTServerPostConf.on_show_password_change( Sender: TObject);
+var
+  c : Char;
+begin
+  if self.rb_CreateKey.Enabled then
+  begin
+    if self.cb_create_new_key_show_password.Checked then
+      c := #0
+    else
+      c := DEFAULT_PASSWORD_CHAR;
+    self.ed_create_new_key_password_1.PasswordChar := c;
+    self.ed_create_new_key_password_2.PasswordChar := c;
+  end;
+
+  if self.cb_use_existing_key_show_password.Checked then
+    c := #0
+  else
+    c := DEFAULT_PASSWORD_CHAR;
+  self.ed_existing_key_password.PasswordChar := c;
+
+end;
+
+
 procedure TVisWAPTServerPostConf.OpenFirewall;
 var
    output : String;
@@ -212,21 +303,126 @@ begin
   end;
 end;
 
+procedure TVisWAPTServerPostConf.clear();
+begin
+
+  // Private key and certificate
+  self.ed_package_prefix.Clear;
+  self.ed_create_new_key_private_directory.Clear;
+  self.ed_create_new_key_key_name.Clear;
+  self.ed_create_new_key_password_1.Clear;
+  self.ed_create_new_key_password_2.Clear;
+  self.ed_existing_key_key_filename.Clear;
+  self.ed_existing_key_certificat_filename.Clear;
+  self.ed_existing_key_password.Clear;
+
+  self.ed_create_new_key_password_1.PasswordChar  := DEFAULT_PASSWORD_CHAR;
+  self.ed_create_new_key_password_2.PasswordChar  := DEFAULT_PASSWORD_CHAR;
+  self.ed_existing_key_password.PasswordChar      := DEFAULT_PASSWORD_CHAR;
+  self.cb_create_new_key_show_password.Checked    := false;
+  self.cb_use_existing_key_show_password.Checked  := false;
+
+
+  self.rb_CreateKey.Checked := true;
+  self.on_private_key_radiobutton_change( nil );
+  self.on_show_password_change( nil );
+
+  self.ed_package_prefix.Text:= DEFAULT_PACKAGE_PREFIX;
+  self.ed_create_new_key_private_directory.Text := DEFAULT_PRIVATE_KEY_DIRECTORY;
+
+//  self.rb_UseKey.Checked :=;
+
+end;
+
+procedure TVisWAPTServerPostConf.validate_page_package_and_private_key( var bContinue: boolean);
+var
+   r    : integer;
+   msg  : String;
+   s    : String;
+begin
+
+  bContinue := false;
+
+  // Validate package name
+  if not wizard_validate_package_prefix( self, self.ed_package_prefix, self.ed_package_prefix.Text ) then
+    exit;
+
+  // Validate create key
+  if self.rb_CreateKey.Checked then
+  begin
+    if not DirectoryExists(self.ed_create_new_key_private_directory.Text) then
+    begin
+      msg := Format( rs_create_key_dir_not_exist, [self.ed_create_new_key_private_directory.Text] );
+      r := MessageDlg( self.Name, msg,  mtConfirmation, mbYesNo, 0 );
+      if mrNo = r then
+      begin
+        self.show_validation_error( self.ed_create_new_key_private_directory, rs_create_key_select_a_valide_private_key_directory );
+        exit;
+      end;
+    end;
+
+    if not wizard_validate_key_name( self, self.ed_create_new_key_key_name, self.ed_create_new_key_key_name.Text ) then
+      exit;
+
+    s := IncludeTrailingBackslash(self.ed_create_new_key_private_directory.Text) + self.ed_create_new_key_key_name.Text + '.pem';
+    if FileExists(s) then
+    begin
+      self.show_validation_error( self.ed_create_new_key_key_name, rs_create_key_a_key_with_this_name_exist );
+      exit;
+    end;
+
+    s :=  IncludeTrailingBackslash(self.ed_create_new_key_private_directory.Text) + self.ed_create_new_key_key_name.Text + '.crt';
+    if FileExists(s) then
+    begin
+      self.show_validation_error( self.ed_create_new_key_key_name, rs_create_key_a_certificat_this_key_name_exist );
+      exit;
+    end;
+
+    if not wizard_validate_str_password_are_not_empty_and_equals( self, self.ed_create_new_key_password_2, self.ed_create_new_key_password_1.Text, self.ed_create_new_key_password_2.Text ) then
+      exit;
+
+  end
+  // Validate existing key
+  else
+  begin
+
+  end;
+
+    bContinue := true;
+end;
+
+procedure TVisWAPTServerPostConf.show_validation_error(c: TControl; const msg: String);
+begin
+  MessageDlg( self.Caption, msg,  mtError, [mbOK], 0 );
+  if c is TWinControl then
+    TWinControl(c).SetFocus;
+end;
+
 procedure TVisWAPTServerPostConf.ActNextExecute(Sender: TObject);
 var
   cmd,param:WideString;
+  bContinue : Boolean;
 begin
-  if PagesControl.ActivePage<>pgFinish then
-    PagesControl.ActivePageIndex := PagesControl.ActivePageIndex + 1
-  else
+
+  if PagesControl.ActivePage = pgPackagePrivateKey then
   begin
-    cmd := WaptBaseDir+'waptconsole.exe';
+    self.validate_page_package_and_private_key(bContinue);
+    if not bContinue then
+      exit;
+    PagesControl.ActivePageIndex := PagesControl.ActivePageIndex + 1
+  end
+  else if PagesControl.ActivePage = pgFinish then
+  begin
+    cmd := WideString(WaptBaseDir)+ WideString('waptconsole.exe');
     param := '';
     //param := '-c';
     if cbLaunchWaptConsoleOnExit.Checked then
       ShellExecuteW(0,'open',PWidechar(cmd),PWidechar(param),Nil,SW_SHOW);
     ExitProcess(0);
-  end;
+  end
+  else
+    PagesControl.ActivePageIndex := PagesControl.ActivePageIndex + 1
+
 end;
 
 procedure TVisWAPTServerPostConf.ActNextUpdate(Sender: TObject);
@@ -235,6 +431,8 @@ begin
     ActNext.Enabled := EdWaptServerIP.Text<>''
   else if PagesControl.ActivePage = pgPassword then
     ActNext.Enabled := (EdPwd1.Text='') or (EdPwd1.Text = EdPwd2.Text)
+  else if PagesControl.ActivePage = pgPackagePrivateKey then
+    ActNext.Enabled := true
   else if PagesControl.ActivePage = pgStartServices then
     ActNext.Enabled := GetServiceStatusByName('','waptserver') = ssRunning
   else
@@ -296,17 +494,17 @@ begin
   end;
 end;
 
-function CalcHMAC(message, key: string; hash: TDCP_hashclass): string;
+function CalcHMAC(message, pgPackagePrivateKey: string; hash: TDCP_hashclass): string;
 const
   blocksize = 64;
 begin
   // Definition RFC 2104
-  if Length(key) > blocksize then
-    key := CalcDigest(key, hash);
-  key := RPad(key, #0, blocksize);
+  if Length(pgPackagePrivateKey) > blocksize then
+    pgPackagePrivateKey := CalcDigest(pgPackagePrivateKey, hash);
+  pgPackagePrivateKey := RPad(pgPackagePrivateKey, #0, blocksize);
 
-  Result := CalcDigest(XorBlock(key, RPad('', #$36, blocksize)) + message, hash);
-  Result := CalcDigest(XorBlock(key, RPad('', #$5c, blocksize)) + result, hash);
+  Result := CalcDigest(XorBlock(pgPackagePrivateKey, RPad('', #$36, blocksize)) + message, hash);
+  Result := CalcDigest(XorBlock(pgPackagePrivateKey, RPad('', #$5c, blocksize)) + result, hash);
 end;
 
 function PBKDF1(pass, salt: ansistring; count: Integer; hash: TDCP_hashclass): ansistring;

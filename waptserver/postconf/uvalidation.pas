@@ -1,0 +1,101 @@
+unit uvalidation;
+
+{$mode objfpc}{$H+}
+
+interface
+
+uses
+
+  Controls,
+  uVisServerPostconf,
+  Classes, SysUtils;
+
+
+
+function wizard_validate_package_prefix( w : TVisWAPTServerPostConf; c: TControl; const prefix: String): boolean;
+function wizard_validate_key_name( w : TVisWAPTServerPostConf; c : TControl; const key_name : String ) :boolean;
+function wizard_validate_str_password_are_not_empty_and_equals( w: TVisWAPTServerPostConf; c: TControl; const s1: String; const s2: String ): Boolean;
+
+implementation
+
+uses
+  character,
+  uWaptServerRes;
+
+const
+  DEFAULT_MINIMUN_PASSWORD_LENGTH  : integer = 6;
+
+
+function str_is_alphanum( const str : String ) : boolean;
+var
+  i : integer;
+begin
+  for i := 1 to Length(str) do
+  begin
+    if not IsLetterOrDigit( str[i] ) then
+      exit(false);
+  end;
+  exit(true);
+end;
+
+function str_is_empty_when_trimmed( const str : String ) : boolean;
+var
+  s : String;
+  r : integer;
+begin
+  s := trim(str);
+  r := Length(s);
+  exit( 0 = r );
+end;
+
+function wizard_validate_package_prefix(w: TVisWAPTServerPostConf; c: TControl; const prefix: String): boolean;
+begin
+
+  if str_is_empty_when_trimmed(prefix) then
+  begin
+    w.show_validation_error( c, rs_package_prefix_cannot_be_empty );
+    exit(false);
+  end;
+
+  if not str_is_alphanum(prefix) then
+  begin
+    w.show_validation_error( c, rs_package_prefix_must_be_alphanum );
+    exit( false );
+  end;
+
+  exit(true);
+end;
+
+function wizard_validate_key_name(w: TVisWAPTServerPostConf; c: TControl; const key_name: String): boolean;
+begin
+
+  if str_is_empty_when_trimmed(key_name) then
+  begin
+    w.show_validation_error( c, rs_key_name_cannot_be_empty  );
+    exit(false);
+  end;
+
+  exit( true );
+end;
+
+function wizard_validate_str_password_are_not_empty_and_equals(w: TVisWAPTServerPostConf; c: TControl; const s1: String; const s2: String ): Boolean;
+begin
+
+  if s1 <> s2 then
+  begin
+    w.show_validation_error( c, rs_supplied_passwords_differs );
+    exit(false);
+  end;
+
+  if Length(Trim(s1)) < DEFAULT_MINIMUN_PASSWORD_LENGTH then
+  begin
+    w.show_validation_error( c, rs_supplied_passwords_must_be_at_least_six_chars_length );
+    exit(false);
+  end;
+
+
+  exit( true) ;
+end;
+
+end.
+
