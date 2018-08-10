@@ -61,7 +61,6 @@ object Wizard: TWizard
     BevelOuter = bvNone
     ClientHeight = 58
     ClientWidth = 640
-    Color = clWhite
     ParentColor = False
     TabOrder = 1
     object TitleLabel: TLabel
