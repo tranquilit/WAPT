@@ -18,10 +18,7 @@ inherited WizardConfigServer: TWizardConfigServer
   inherited TopPanel: TPanel
     Width = 480
     ClientWidth = 480
-    inherited img_logo: TImage
-      Left = 422
-    end
-  end
+ end
   inherited lbl_current_task: TLabel
     Top = 255
     Width = 480

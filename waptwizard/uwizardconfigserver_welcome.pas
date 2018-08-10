@@ -15,9 +15,8 @@ type
   { TTWizardConfigServer_Welcome }
 
   TTWizardConfigServer_Welcome = class(TWizardStepFrame)
-    img_logo: TImage;
+    image: TImage;
     m_label: TLabel;
-    panel: TPanel;
   private
 
   public
@@ -49,7 +48,7 @@ procedure TTWizardConfigServer_Welcome.wizard_load(w: TWizard);
 begin
   inherited wizard_load(w);
 
-  img_logo.Picture.LoadFromLazarusResource(RES_IMG_WAPT);
+  self.image.Picture.LoadFromLazarusResource(RES_IMG_WAPT);
 end;
 
 

@@ -20,8 +20,6 @@ type
   { TWizard }
   TWizard = class(TForm )
     DescriptionLabel: TLabel;
-    img_logo: TImage;
-    ImageList: TImageList;
     lbl_current_task: TLabel;
     panel_center: TPanel;
     PopupNotifier: TPopupNotifier;
@@ -355,6 +353,7 @@ begin
   step.Align      := alCustom;
   step.Parent     := self.panel_center;
   step.BorderStyle:= bsNone;
+  step.panel_frame.AutoSize:= true;
 
   self.resize_step();
 

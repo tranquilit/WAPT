@@ -16,7 +16,6 @@ type
   TWizardStepFrameConsoleWelcome = class(TWizardStepFrame)
     image: TImage;
     lbl: TLabel;
-    panel: TPanel;
   private
 
   public
@@ -41,6 +40,7 @@ begin
   inherited wizard_load(w);
 
   self.image.Picture.LoadFromLazarusResource(RES_IMG_WAPT);
+
 end;
 
 initialization

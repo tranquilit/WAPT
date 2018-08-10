@@ -16,7 +16,6 @@ type
   TWizardResetServerPasswordWelcome = class(TWizardStepFrame)
     image: TImage;
     lbl: TLabel;
-    panel: TPanel;
   private
 
   public
@@ -39,9 +38,7 @@ uses
 procedure TWizardResetServerPasswordWelcome.wizard_load(w: TWizard);
 begin
   inherited wizard_load(w);
-
   self.image.Picture.LoadFromLazarusResource(RES_IMG_WAPT);
-
 end;
 
 procedure TWizardResetServerPasswordWelcome.wizard_show();
