@@ -9,16 +9,25 @@ uses
 
 
 function PBKDF1(pass, salt: ansistring; count: Integer; hash: TDCP_hashclass): ansistring;
-function PBKDF2(pass, salt: ansistring; count, kLen: Integer; hash: TDCP_hashclass): ansistring;
+function PBKDF2( pass : AnsiString ) : AnsiString;
+function PBKDF2( pass, salt: AnsiString; count : integer; kLen: Integer; hash : TDCP_hashclass ): ansistring;
 
 implementation
 
 uses
-  tisstrings,
-  Windows,
   DCPsha256,
   DCPbase64,
+  uwizardutil,
+  tisstrings,
+  Windows,
   Math;
+
+const
+  DEFAULT_SALT_LEN  : integer = 5;
+  DEFAULT_COUNT     : integer = 29000;
+  DEFAULT_KLEN      : integer = 32;
+  DEFAULT_HASH_CLASS: TDCP_hashclass =TDCP_sha256;
+
 
 
 function GetString(const Index: integer) : string;
@@ -95,6 +104,12 @@ begin
     Result := CalcDigest(Result, hash);
 end;
 
+function PBKDF2( pass : AnsiString ): AnsiString;
+begin
+  result := PBKDF2( pass, random_alphanum(DEFAULT_SALT_LEN), DEFAULT_COUNT, DEFAULT_KLEN, DEFAULT_HASH_CLASS );
+end;
+
+
 function PBKDF2(pass, salt: ansistring; count, kLen: Integer; hash: TDCP_hashclass): ansistring;
 
   function IntX(i: Integer): ansistring; inline;
@@ -123,8 +138,7 @@ begin
 end;
 
 
-function MakeRandomString(const ALength: Integer;
-                          const ACharSequence: String = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'): String;
+function MakeRandomString(const ALength: Integer; const ACharSequence: String = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'): String;
 var
   C1, sequence_length: Integer;
 begin

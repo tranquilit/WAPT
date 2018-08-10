@@ -114,7 +114,7 @@ LBL_LOOP:
       wapt_ini_waptserver( s, s );
       try
         ini := TIniFile.Create(s);
-        s := PBKDF2(s, random_alphanum(5), 29000, 32, TDCP_sha256);
+        s := PBKDF2( s );
         ini.WriteString( INI_OPTIONS, INI_WAPT_PASSWORD, s );
         FreeAndNil(ini);
         r := 0;
