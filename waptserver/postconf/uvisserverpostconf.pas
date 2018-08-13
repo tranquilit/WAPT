@@ -88,6 +88,7 @@ type
     procedure on_private_key_radiobutton_change( Sender : TObject );
     procedure on_show_password_change( Sender : TObject );
     procedure on_create_setup_waptagent_tick( Sender : TObject );
+    procedure on_upload( ASender: TObject; AWorkMode: TWorkMode; AWorkCount: Int64 );
   private
     CurrentVisLoading:TVisLoading;
     procedure OpenFirewall;
@@ -148,8 +149,7 @@ begin
   Handled:=True;
 end;
 
-procedure TVisWAPTServerPostConf.IdHTTPWork(ASender: TObject;
-  AWorkMode: TWorkMode; AWorkCount: Int64);
+procedure TVisWAPTServerPostConf.IdHTTPWork(ASender: TObject; AWorkMode: TWorkMode; AWorkCount: Int64);
 begin
   if CurrentVisLoading<>Nil then
     CurrentVisLoading.DoProgress(ASender)
@@ -361,6 +361,20 @@ begin
   Application.ProcessMessages;
 end;
 
+procedure TVisWAPTServerPostConf.on_upload(ASender: TObject; AWorkMode: TWorkMode; AWorkCount: Int64);
+var
+  r : Real;
+begin
+  r := 100.0 * Real(AWorkCount) / Real(SETUP_AGENT_SIZE);
+
+  if AWorkCount = 62 then
+    r := 100;
+
+  self.ProgressBar1.Position := Round(r);
+  self.pg_agent_memo.Append( IntToStr(AWorkCount) + ' ' + IntToStr(self.ProgressBar1.Position) );
+  Application.ProcessMessages;
+end;
+
 
 procedure TVisWAPTServerPostConf.OpenFirewall;
 var
@@ -442,9 +456,9 @@ procedure TVisWAPTServerPostConf.validate_page_package_and_private_key( var bCon
     iniWriteString(WaptBaseDir + '\wapt-get.ini'   , INI_GLOBAL, INI_PERSONAL_CERTIFICATE_PATH, certificate );
 
     if not str_is_empty_when_trimmed( self.EdWaptServerIP.Text ) then
-      wapt_server := self.EdWaptServerIP.Text
+      wapt_server := 'https://' + self.EdWaptServerIP.Text
     else
-      wapt_server := self.EdWAPTServerName.Text;
+      wapt_server := 'https://' + self.EdWAPTServerName.Text;
 
     repo_url := wapt_server + '/wapt';
 
@@ -568,17 +582,33 @@ begin
 end;
 
 procedure TVisWAPTServerPostConf.validate_page_agent(var bContinue: boolean);
+  procedure  ui_init;
+  begin
+    self.ProgressBar1.Visible := true;
+    self.pg_agent_memo.Clear;
+    self.ProgressBar1.Position := 0;
+    self.ProgressBar1.Max := 100;
+    Application.ProcessMessages;
+  end;
+  procedure ui_deinit;
+  begin
+    self.ProgressBar1.Visible := false;
+  end;
+
+label
+  LBL_FAIL;
 var
    cf     : String;
    params : Tcreate_setup_waptagent_params;
    r      : integer;
+   so     : ISuperObject;
+   s      : String;
 begin
   bContinue := false;
 
-  self.ProgressBar1.Visible := true;
-  self.ProgressBar1.Position := 0;
-  self.ProgressBar1.Max := 100;
 
+  // Build agent
+  ui_init();
   cf := WaptBaseDir + '\waptconsole.ini';
 
   create_setup_waptagent_params_init( @params );
@@ -590,14 +620,50 @@ begin
   params.OnProgress                := @on_create_setup_waptagent_tick;
 
   r := create_setup_waptagent_params( @params );
-  self.ProgressBar1.Visible := false;
   if r <> 0 then
   begin
     self.show_validation_error( self.pg_agent_memo,  rs_compilation_failed );
+    ui_deinit;
     exit;
   end;
 
-  bContinue := true;
+  // Upload agent
+  ui_init();
+  try
+    so := WAPTServerJsonMultipartFilePost(
+      params.default_wapt_server,
+      'upload_waptsetup',
+      [],
+      'file',
+      params._agent_filename,
+      'admin',
+      self.EdPwd1.Text,
+      @on_upload,
+      ''
+      );
+
+    s := UTF8Encode( so.S['status'] );
+    if s <> 'OK' then
+    begin
+      s := UTF8Encode( so.S['message'] );
+      if Length(s) = 0 then
+        s := UTF8Encode(so.AsJSon(false));
+      Raise Exception.Create(s);
+    end;
+  except on Ex : Exception do
+    begin
+      self.show_validation_error( nil, Ex.Message );
+      ui_deinit;
+      exit;
+    end;
+  end;
+
+
+  // Build upload apt-upgrade
+
+
+  ui_deinit();
+  bContinue := false;
 end;
 
 
