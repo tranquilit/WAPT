@@ -27,6 +27,31 @@ interface
 uses
   Classes,windows,SysUtils,superobject, ShellApi;
 
+
+type
+  TRunReadPipeThread = class(TThread)
+  protected
+    FPipe: THandle;
+    FContent: TStringStream;
+    function Get_Content: RawByteString;
+    procedure Execute; override;
+  public
+    constructor Create(const Pipe: THandle);
+    destructor Destroy; override;
+    property Content: RawByteString read Get_Content;
+  end;
+
+  TRunWritePipeThread = class(TThread)
+  protected
+    FPipe: THandle;
+    FContent: TStringStream;
+    procedure Execute; override;
+  public
+    constructor Create(const Pipe: THandle; const Content: RawByteString);
+    destructor Destroy; override;
+  end;
+
+
 function DNSAQuery(name:AnsiString):ISuperObject;
 function DNSSRVQuery(name:AnsiString):ISuperObject;
 function DNSCNAMEQuery(name:AnsiString):ISuperObject;
@@ -722,28 +747,7 @@ end;
 
 // Run
 
-type
-  TRunReadPipeThread = class(TThread)
-  protected
-    FPipe: THandle;
-    FContent: TStringStream;
-    function Get_Content: RawByteString;
-    procedure Execute; override;
-  public
-    constructor Create(const Pipe: THandle);
-    destructor Destroy; override;
-    property Content: RawByteString read Get_Content;
-  end;
 
-  TRunWritePipeThread = class(TThread)
-  protected
-    FPipe: THandle;
-    FContent: TStringStream;
-    procedure Execute; override;
-  public
-    constructor Create(const Pipe: THandle; const Content: RawByteString);
-    destructor Destroy; override;
-  end;
 
 { TStoReadPipeThread }
 
