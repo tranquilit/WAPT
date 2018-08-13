@@ -63,7 +63,7 @@
         <PackageName Value="LCL"/>
       </Item9>
     </RequiredPackages>
-    <Units Count="10">
+    <Units Count="11">
       <Unit0>
         <Filename Value="waptserverpostconf.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -114,13 +114,17 @@
         <Filename Value="..\..\wapt-get\waptcommon.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit9>
+      <Unit10>
+        <Filename Value="..\..\wapt-get\waptwinutils.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit10>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="11"/>
     <PathDelim Value="\"/>
     <Target>
-      <Filename Value="c:\wapt\waptserverpostconf"/>
+      <Filename Value="..\..\waptserverpostconf"/>
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
