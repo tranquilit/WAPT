@@ -50,6 +50,18 @@ Tcreate_setup_waptagent_params = record
 end;
 Pcreate_setup_waptagent_params = ^Tcreate_setup_waptagent_params;
 
+Tcreate_package_waptupgrade_params = record
+  config_filename      : String;
+  server_username      : String;
+  server_password      : String;
+  dualsign             : boolean;
+  private_key_password : String;
+
+  _filename             : String;
+  _err_message          : String;
+  _result               : integer;
+end;
+Pcreate_package_waptupgrade_params = ^Tcreate_package_waptupgrade_params;
 
 
 function str_is_alphanum( const str : String ) : boolean;
@@ -61,6 +73,10 @@ function  create_signed_cert_params( params: PCreate_signed_cert_params ): integ
 
 procedure create_setup_waptagent_params_init( params : Pcreate_setup_waptagent_params );
 function  create_setup_waptagent_params( params : Pcreate_setup_waptagent_params ) : integer;
+
+procedure create_package_waptupgrade_params_init( params : Pcreate_package_waptupgrade_params );
+function  create_package_waptupgrade_params( params : Pcreate_package_waptupgrade_params ) : integer;
+
 
 function crypto_check_key_password(var success: boolean; const key_filename: String; const password: String): integer;
 
@@ -222,6 +238,52 @@ begin
   params^._result := -1;
   exit(-1);
 end;
+
+procedure create_package_waptupgrade_params_init( params: Pcreate_package_waptupgrade_params);
+begin
+  FillChar( params^, sizeof(Tcreate_package_waptupgrade_params) , 0 );
+end;
+
+function create_package_waptupgrade_params( params: Pcreate_package_waptupgrade_params): integer;
+var
+  SignDigests : String;
+  v: Variant;
+  s : String;
+begin
+  v := nil;
+
+  SignDigests := 'sha256';
+  if params^.dualsign then
+    SignDigests := SignDigests + ',sha1';
+
+  try
+    //BuildResult is a PackageEntry instance
+    v := DMPython.waptdevutils.build_waptupgrade_package(
+      waptconfigfile    := params^.config_filename,
+      wapt_server_user  := params^.server_username,
+      wapt_server_passwd:= params^.server_password,
+      key_password      := params^.private_key_password,
+      sign_digests      := SignDigests
+      );
+
+
+    if not VarPyth.VarIsNone(v) and FileExists( UTF8Encode(VarPythonAsString(v.get('localpath')))) then
+    begin
+      params^._filename := v.get('filename');
+      s := VarPythonAsString( v.get('localpath') );
+      SysUtils.DeleteFile(s);
+      params^._result := 0;
+    end
+  except on ex : Exception do
+    begin
+      params^._err_message := ex.Message;
+      params^._result := -1;
+    end;
+  end;
+
+  exit( 0 );
+end;
+
 
 function crypto_check_key_password(var success: boolean; const key_filename: String; const password: String): integer;
 const

@@ -54,7 +54,7 @@ const
   INI_USE_KERBEROS                        : String = 'use_kerberos';
 
 
-  SETUP_AGENT_SIZE : Real = 1024 * 1024 * 21;
+  SETUP_AGENT_SIZE : integer = 1024 * 1024 * 21;
 
   ISCC_EXE : String = 'ISCC.exe';
 

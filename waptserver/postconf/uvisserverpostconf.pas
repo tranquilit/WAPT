@@ -5,6 +5,7 @@ unit uVisServerPostconf;
 interface
 
 uses
+  PythonEngine,
   Classes, SysUtils, FileUtil, LazFileUtils, LazUTF8, Forms, Controls, Graphics,
   Dialogs, ComCtrls, StdCtrls, ExtCtrls, Buttons, ActnList, htmlview, Readhtml,
   IdHTTP, IdComponent, uvisLoading, DefaultTranslator, LCLTranslator, LCLProc,
@@ -89,6 +90,8 @@ type
     procedure on_show_password_change( Sender : TObject );
     procedure on_create_setup_waptagent_tick( Sender : TObject );
     procedure on_upload( ASender: TObject; AWorkMode: TWorkMode; AWorkCount: Int64 );
+    procedure on_python_update(Sender: TObject; PSelf, Args: PPyObject; var Result: PPyObject);
+
   private
     CurrentVisLoading:TVisLoading;
     procedure OpenFirewall;
@@ -108,6 +111,7 @@ var
 implementation
 
 uses
+  dmwaptpython,
   uutil,
   uvalidation,
   udefault,
@@ -350,29 +354,23 @@ begin
   f := IncludeTrailingPathDelimiter( GetTempDir(true) )+ 'waptagent.exe';
   if FileExists(f) then
   begin
-    max := self.ProgressBar1.Max;
-    sz := FileSize(f);
-    sz := max * sz / SETUP_AGENT_SIZE;
-    if sz > 100 then
-      sz := 100;
-    self.ProgressBar1.Position := Round(sz);
+    self.ProgressBar1.Position := FileSize(f);
   end;
 
   Application.ProcessMessages;
 end;
 
 procedure TVisWAPTServerPostConf.on_upload(ASender: TObject; AWorkMode: TWorkMode; AWorkCount: Int64);
-var
-  r : Real;
 begin
-  r := 100.0 * Real(AWorkCount) / Real(SETUP_AGENT_SIZE);
-
-  if AWorkCount = 62 then
-    r := 100;
-
-  self.ProgressBar1.Position := Round(r);
+  if AWorkCount <> 62 then
+    self.ProgressBar1.Position := SETUP_AGENT_SIZE + AWorkCount;
   self.pg_agent_memo.Append( IntToStr(AWorkCount) + ' ' + IntToStr(self.ProgressBar1.Position) );
   Application.ProcessMessages;
+end;
+
+procedure TVisWAPTServerPostConf.on_python_update(Sender: TObject; PSelf, Args: PPyObject; var Result: PPyObject);
+begin
+  Result:= DMPython.PythonEng.ReturnNone;
 end;
 
 
@@ -452,9 +450,6 @@ procedure TVisWAPTServerPostConf.validate_page_package_and_private_key( var bCon
      wapt_server : String;
      repo_url    : String;
   begin
-    IniWriteString(WaptBaseDir + '\waptconsole.ini', INI_GLOBAL, INI_PERSONAL_CERTIFICATE_PATH, certificate );
-    iniWriteString(WaptBaseDir + '\wapt-get.ini'   , INI_GLOBAL, INI_PERSONAL_CERTIFICATE_PATH, certificate );
-
     if not str_is_empty_when_trimmed( self.EdWaptServerIP.Text ) then
       wapt_server := 'https://' + self.EdWaptServerIP.Text
     else
@@ -462,10 +457,17 @@ procedure TVisWAPTServerPostConf.validate_page_package_and_private_key( var bCon
 
     repo_url := wapt_server + '/wapt';
 
-    IniWriteString(WaptBaseDir + '\waptconsole.ini', INI_GLOBAL, INI_WAPT_SERVER, wapt_server );
-    IniWriteString(WaptBaseDir + '\wapt-get.ini',    INI_GLOBAL, INI_WAPT_SERVER, wapt_server );
-    iniWriteString(WaptBaseDir + '\waptconsole.ini', INI_GLOBAL, INI_REPO_URL, repo_url );
-    iniWriteString(WaptBaseDir + '\wapt-get.ini'   , INI_GLOBAL, INI_REPO_URL, repo_url );
+    IniWriteString(WaptBaseDir + '\waptconsole.ini',  INI_GLOBAL, INI_PERSONAL_CERTIFICATE_PATH, certificate );
+    IniWriteString(WaptBaseDir + '\waptconsole.ini',  INI_GLOBAL, INI_WAPT_SERVER, wapt_server );
+    iniWriteString(WaptBaseDir + '\waptconsole.ini',  INI_GLOBAL, INI_REPO_URL, repo_url );
+    iniWriteString(WaptBaseDir + '\waptconsole.ini',  INI_GLOBAL, INI_CHECK_CERTIFICATES_VALIDITY, '0' );
+    iniWriteString(WaptBaseDir + '\waptconsole.ini',  INI_GLOBAL, INI_VERIFIY_CERT, '0' );
+
+    IniWriteString(WaptBaseDir + '\wapt-get.ini',     INI_GLOBAL, INI_PERSONAL_CERTIFICATE_PATH, certificate );
+    IniWriteString(WaptBaseDir + '\wapt-get.ini',     INI_GLOBAL, INI_WAPT_SERVER, wapt_server );
+    IniWriteString(WaptBaseDir + '\wapt-get.ini',     INI_GLOBAL, INI_REPO_URL, repo_url );
+    iniWriteString(WaptBaseDir + '\wapt-get.ini',     INI_GLOBAL, INI_CHECK_CERTIFICATES_VALIDITY, '0' );
+    iniWriteString(WaptBaseDir + '\wapt-get.ini',     INI_GLOBAL, INI_VERIFIY_CERT, '0' );
 
   end;
 
@@ -582,60 +584,53 @@ begin
 end;
 
 procedure TVisWAPTServerPostConf.validate_page_agent(var bContinue: boolean);
-  procedure  ui_init;
-  begin
-    self.ProgressBar1.Visible := true;
-    self.pg_agent_memo.Clear;
-    self.ProgressBar1.Position := 0;
-    self.ProgressBar1.Max := 100;
-    Application.ProcessMessages;
-  end;
-  procedure ui_deinit;
-  begin
-    self.ProgressBar1.Visible := false;
-  end;
-
 label
   LBL_FAIL;
 var
-   cf     : String;
-   params : Tcreate_setup_waptagent_params;
-   r      : integer;
-   so     : ISuperObject;
-   s      : String;
+  cf            : String;
+  params_agent  : Tcreate_setup_waptagent_params;
+  r             : integer;
+  so            : ISuperObject;
+  s             : String;
+  pe            : TPythonEvent;
+  params_package: Tcreate_package_waptupgrade_params;
 begin
   bContinue := false;
 
 
+  self.ProgressBar1.Style := pbstNormal;
+  self.ProgressBar1.Visible := true;
+  self.pg_agent_memo.Clear;
+  self.ProgressBar1.Position := 0;
+  self.ProgressBar1.Max := SETUP_AGENT_SIZE * 3;
+  Application.ProcessMessages;
+
   // Build agent
-  ui_init();
   cf := WaptBaseDir + '\waptconsole.ini';
 
-  create_setup_waptagent_params_init( @params );
+  create_setup_waptagent_params_init( @params_agent );
 
-  params.default_public_cert       := IniReadString( cf, INI_GLOBAL, INI_PERSONAL_CERTIFICATE_PATH );
-  params.default_repo_url          := IniReadString( cf, INI_GLOBAL, INI_REPO_URL );
-  params.default_wapt_server       := IniReadString( cf, INI_GLOBAL, INI_WAPT_SERVER );
-  params.destination               := GetTempDir(true);
-  params.OnProgress                := @on_create_setup_waptagent_tick;
+  params_agent.default_public_cert       := IniReadString( cf, INI_GLOBAL, INI_PERSONAL_CERTIFICATE_PATH );
+  params_agent.default_repo_url          := IniReadString( cf, INI_GLOBAL, INI_REPO_URL );
+  params_agent.default_wapt_server       := IniReadString( cf, INI_GLOBAL, INI_WAPT_SERVER );
+  params_agent.destination               := GetTempDir(true);
+  params_agent.OnProgress                := @on_create_setup_waptagent_tick;
 
-  r := create_setup_waptagent_params( @params );
+  r := create_setup_waptagent_params( @params_agent );
   if r <> 0 then
   begin
     self.show_validation_error( self.pg_agent_memo,  rs_compilation_failed );
-    ui_deinit;
-    exit;
+    goto LBL_FAIL;
   end;
 
   // Upload agent
-  ui_init();
   try
     so := WAPTServerJsonMultipartFilePost(
-      params.default_wapt_server,
+      params_agent.default_wapt_server,
       'upload_waptsetup',
       [],
       'file',
-      params._agent_filename,
+      params_agent._agent_filename,
       'admin',
       self.EdPwd1.Text,
       @on_upload,
@@ -653,17 +648,48 @@ begin
   except on Ex : Exception do
     begin
       self.show_validation_error( nil, Ex.Message );
-      ui_deinit;
+      self.ProgressBar1.Visible := false;
       exit;
     end;
   end;
 
-
   // Build upload apt-upgrade
+  if not wizard_validate_no_innosetup_process_running( self, nil ) then
+    goto LBL_FAIL;
+
+  pe :=  DMPython.PythonModuleDMWaptPython.Events.Items[1].OnExecute;
+  DMPython.PythonModuleDMWaptPython.Events.Items[1].OnExecute := @on_python_update;
 
 
-  ui_deinit();
-  bContinue := false;
+  params_package.server_username := 'admin';
+  params_package.server_password := self.EdPwd1.Text;
+  params_package.config_filename := cf;
+  params_package.dualsign        := false;
+  if self.rb_CreateKey.Checked then
+    params_package.private_key_password := self.ed_create_new_key_password_1.Text
+  else
+    params_package.private_key_password := self.ed_existing_key_password.Text;
+
+  r := create_package_waptupgrade_params( @params_package );
+
+  DMPython.PythonModuleDMWaptPython.Events.Items[1].OnExecute := pe;
+
+  if r <> 0 then
+  begin
+    self.show_validation_error( nil, params_package._err_message );
+    goto LBL_FAIL;
+  end;
+  self.ProgressBar1.Position := self.ProgressBar1.Max;
+  Application.ProcessMessages;
+  Sleep( 1 * 1000 );
+
+
+  self.ProgressBar1.Visible := false;
+  bContinue := true;
+  exit;
+
+LBL_FAIL:
+  self.ProgressBar1.Visible := false;
 end;
 
 
