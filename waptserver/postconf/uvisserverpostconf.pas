@@ -103,17 +103,15 @@ var
 implementation
 
 uses
+  uutil,
   uvalidation,
+  udefault,
   LCLIntf, Windows, waptcommon, waptwinutils, UScaleDPI, tisinifiles,
   superobject, tiscommon, tisstrings, IniFiles,DCPsha256,dcpcrypt2,DCPbase64,Math;
 
 {$R *.lfm}
 
 
-const
-  DEFAULT_PRIVATE_KEY_DIRECTORY : String = 'c:\private';
-  DEFAULT_PACKAGE_PREFIX        : String = 'test';
-  DEFAULT_PASSWORD_CHAR         : Char   = '*';
 
 { TVisWAPTServerPostConf }
 
@@ -129,7 +127,7 @@ begin
   self.clear();
 
   // fmor
-//  self.PagesControl.PageIndex:= 2;
+  self.PagesControl.PageIndex:= 2;
 
 end;
 
@@ -228,6 +226,7 @@ procedure TVisWAPTServerPostConf.on_private_key_radiobutton_change( Sender: TObj
 var
   b : boolean;
 begin
+  // Enable
   b := self.rb_CreateKey.Checked;
   self.lbl_ed_create_new_key_directory.Enabled      := b;
   self.lbl_ed_create_new_key_key_name.Enabled       := b;
@@ -247,6 +246,56 @@ begin
   self.ed_existing_key_certificat_filename.Enabled  := b;
   self.ed_existing_key_password.Enabled             := b;
   self.cb_use_existing_key_show_password.Enabled    := b;
+
+  // Taborder
+  if self.rb_CreateKey.Checked then
+  begin
+    self.ed_package_prefix.TabOrder                   := 0;
+    self.rb_CreateKey.TabOrder                        := 1;
+    self.ed_create_new_key_private_directory.TabOrder := 2;
+    self.ed_create_new_key_key_name.TabOrder          := 3;
+    self.ed_create_new_key_password_1.TabOrder        := 4;
+    self.ed_create_new_key_password_2.TabOrder        := 5;
+  end
+  else
+  begin
+    self.ed_package_prefix.TabOrder                   := 0;
+    self.rb_UseKey.TabOrder                           := 1;
+    self.ed_existing_key_key_filename.TabOrder        := 2;
+    self.ed_existing_key_certificat_filename.TabOrder := 3;
+    self.ed_existing_key_password.TabOrder            := 4;
+  end;
+
+  // Focus
+  if self.Visible then
+  begin
+    if self.rb_CreateKey.Checked then
+    begin
+      if str_is_empty_when_trimmed(self.ed_create_new_key_password_2.Text) then
+        self.ed_create_new_key_password_2.SetFocus;
+
+      if str_is_empty_when_trimmed(self.ed_create_new_key_password_1.Text) then
+        self.ed_create_new_key_password_1.SetFocus;
+
+      if str_is_empty_when_trimmed(self.ed_create_new_key_key_name.Text) then
+        self.ed_create_new_key_key_name.SetFocus;
+
+      if str_is_empty_when_trimmed(self.ed_create_new_key_private_directory.Text) then
+        self.ed_create_new_key_private_directory.SetFocus;
+    end
+    else
+    begin
+      if str_is_empty_when_trimmed(self.ed_existing_key_password.Text) then
+        self.ed_existing_key_password.SetFocus;
+
+      if str_is_empty_when_trimmed(self.ed_existing_key_certificat_filename.Text) then
+        self.ed_existing_key_certificat_filename.SetFocus;
+
+      if str_is_empty_when_trimmed(self.ed_existing_key_key_filename.Text) then
+        self.ed_existing_key_key_filename.SetFocus;
+
+    end;
+  end;
 
 end;
 
@@ -339,6 +388,7 @@ var
    r    : integer;
    msg  : String;
    s    : String;
+   params : TCreate_signed_cert_params;
 begin
 
   bContinue := false;
@@ -357,6 +407,13 @@ begin
       if mrNo = r then
       begin
         self.show_validation_error( self.ed_create_new_key_private_directory, rs_create_key_select_a_valide_private_key_directory );
+        exit;
+      end;
+
+      if not CreateDir(self.ed_create_new_key_private_directory.Text ) then
+      begin
+        msg := Format( rs_create_key_dir_cannot_be_created, [self.ed_create_new_key_private_directory.Text] );
+        self.show_validation_error( self.ed_create_new_key_private_directory, msg );
         exit;
       end;
     end;
@@ -381,15 +438,59 @@ begin
     if not wizard_validate_str_password_are_not_empty_and_equals( self, self.ed_create_new_key_password_2, self.ed_create_new_key_password_1.Text, self.ed_create_new_key_password_2.Text ) then
       exit;
 
+    create_signed_cert_params_init( @params );
+    params.destdir      := ExcludeTrailingPathDelimiter(self.ed_create_new_key_private_directory.Text);
+    params.keypassword  := self.ed_create_new_key_password_1.Text;
+    params.keyfilename  := IncludeTrailingPathDelimiter(self.ed_create_new_key_private_directory.Text) + self.ed_create_new_key_key_name.Text + '.' + EXTENSION_PRIVATE_KEY;
+
+    r := create_signed_cert_params( @params );
+    if r <> 0 then
+    begin
+      self.show_validation_error( nil, params._error_message );
+      exit;
+    end;
+
+
   end
   // Validate existing key
   else
   begin
 
+    if str_is_empty_when_trimmed(self.ed_existing_key_key_filename.Text) then
+    begin
+      self.show_validation_error( self.ed_existing_key_key_filename, rs_key_filename_cannot_be_empty );
+      exit;
+    end;
+    if str_is_empty_when_trimmed(self.ed_existing_key_certificat_filename.Text) then
+    begin
+      self.show_validation_error( self.ed_existing_key_certificat_filename, rs_certificate_filename_cannot_be_empty );
+      exit;
+    end;
+
+    if not FileExists(self.ed_existing_key_key_filename.Text) then
+    begin
+      msg := Format( rs_key_filename_is_invalid, [self.ed_existing_key_certificat_filename.Text] );
+      self.show_validation_error( self.ed_existing_key_key_filename, msg );
+      exit;
+    end;
+
+    if not FileExists(self.ed_existing_key_certificat_filename.Text) then
+    begin
+      msg := Format( rs_certificate_filename_is_invalid, [self.ed_existing_key_certificat_filename] );
+      self.show_validation_error( self.ed_existing_key_certificat_filename, msg );
+      exit;
+    end;
+
+    if not wizard_validate_key_password( self, self.ed_existing_key_password, self.ed_existing_key_key_filename.Text, self.ed_existing_key_password.Text ) then
+      exit;
+
+
   end;
 
     bContinue := true;
 end;
+
+
 
 procedure TVisWAPTServerPostConf.show_validation_error(c: TControl; const msg: String);
 begin

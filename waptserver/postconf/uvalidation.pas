@@ -15,38 +15,18 @@ uses
 function wizard_validate_package_prefix( w : TVisWAPTServerPostConf; c: TControl; const prefix: String): boolean;
 function wizard_validate_key_name( w : TVisWAPTServerPostConf; c : TControl; const key_name : String ) :boolean;
 function wizard_validate_str_password_are_not_empty_and_equals( w: TVisWAPTServerPostConf; c: TControl; const s1: String; const s2: String ): Boolean;
+function wizard_validate_key_password( w : TVisWAPTServerPostConf; c : TControl; const key_filename : String; const key_password : String ) : boolean;
 
 implementation
 
 uses
-  character,
+  uutil,
+  udefault,
   uWaptServerRes;
 
-const
-  DEFAULT_MINIMUN_PASSWORD_LENGTH  : integer = 6;
 
 
-function str_is_alphanum( const str : String ) : boolean;
-var
-  i : integer;
-begin
-  for i := 1 to Length(str) do
-  begin
-    if not IsLetterOrDigit( str[i] ) then
-      exit(false);
-  end;
-  exit(true);
-end;
 
-function str_is_empty_when_trimmed( const str : String ) : boolean;
-var
-  s : String;
-  r : integer;
-begin
-  s := trim(str);
-  r := Length(s);
-  exit( 0 = r );
-end;
 
 function wizard_validate_package_prefix(w: TVisWAPTServerPostConf; c: TControl; const prefix: String): boolean;
 begin
@@ -95,6 +75,35 @@ begin
 
 
   exit( true) ;
+end;
+
+function wizard_validate_key_password( w : TVisWAPTServerPostConf; c : TControl; const key_filename : String; const key_password : String ) : boolean;
+var
+  r : integer;
+begin
+
+  try
+  r := crypto_check_key_password( result, key_filename, key_password );
+  except on E : Exception do
+    begin
+      w.show_validation_error( c, E.Message );
+      exit(false);
+    end;
+  end;
+
+  if r <> 0 then
+  begin
+    w.show_validation_error( c, rs_an_error_has_occured_while_to_validate_key_password );
+    exit(false);
+  end;
+
+  if not result then
+  begin
+    w.show_validation_error( c, rs_wrong_key_password );
+    exit(false);
+  end;
+
+
 end;
 
 end.

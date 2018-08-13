@@ -449,6 +449,18 @@ msgstr ""
 msgid "Error while uploading WAPT agent to the repository : %s"
 msgstr ""
 
+#: uwaptserverres.rs_an_error_has_occured_while_to_validate_key_password
+msgid "An unexpected error has occured while validating key password"
+msgstr ""
+
+#: uwaptserverres.rs_certificate_filename_cannot_be_empty
+msgid "Certificate filename cannot be empty"
+msgstr ""
+
+#: uwaptserverres.rs_certificate_filename_is_invalid
+msgid "Certificate filename '%s' is invalid"
+msgstr ""
+
 #: uwaptserverres.rs_create_key_a_certificat_this_key_name_exist
 msgid "A certificat with key name has beenfound, change key name and click next again"
 msgstr ""
@@ -457,12 +469,24 @@ msgstr ""
 msgid "A key with this name has been found, change key name and click next again"
 msgstr ""
 
+#: uwaptserverres.rs_create_key_dir_cannot_be_created
+msgid "Cannot create directory %s"
+msgstr ""
+
 #: uwaptserverres.rs_create_key_dir_not_exist
 msgid "Create directory %s ?"
 msgstr ""
 
 #: uwaptserverres.rs_create_key_select_a_valide_private_key_directory
 msgid "A valid private key directory must be selected"
+msgstr ""
+
+#: uwaptserverres.rs_key_filename_cannot_be_empty
+msgid "Key filename cannot be empty"
+msgstr ""
+
+#: uwaptserverres.rs_key_filename_is_invalid
+msgid "Key filename '%s' is invalid"
 msgstr ""
 
 #: uwaptserverres.rs_key_name_cannot_be_empty
@@ -483,5 +507,9 @@ msgstr ""
 
 #: uwaptserverres.rs_supplied_passwords_must_be_at_least_six_chars_length
 msgid "Supplied passwords must be at least 6 characters length"
+msgstr ""
+
+#: uwaptserverres.rs_wrong_key_password
+msgid "Wrong key password"
 msgstr ""
 

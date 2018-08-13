@@ -48,12 +48,20 @@ resourcestring
   rs_package_prefix_cannot_be_empty =  'Package prefix cannot be empty';
   rs_package_prefix_must_be_alphanum = 'Pacakge prefix must be alphanum';
   rs_create_key_dir_not_exist = 'Create directory %s ?';
+  rs_create_key_dir_cannot_be_created = 'Cannot create directory %s';
   rs_create_key_select_a_valide_private_key_directory = 'A valid private key directory must be selected';
   rs_create_key_a_key_with_this_name_exist = 'A key with this name has been found, change key name and click next again';
   rs_create_key_a_certificat_this_key_name_exist = 'A certificat with key name has beenfound, change key name and click next again';
   rs_supplied_passwords_differs = 'Supplied password differs';
   rs_supplied_passwords_must_be_at_least_six_chars_length = 'Supplied passwords must be at least 6 characters length';
   rs_key_name_cannot_be_empty = 'Key name cannot be empty';
+  rs_key_filename_cannot_be_empty = 'Key filename cannot be empty';
+  rs_certificate_filename_cannot_be_empty = 'Certificate filename cannot be empty';
+  rs_key_filename_is_invalid = 'Key filename ''%s'' is invalid';
+  rs_certificate_filename_is_invalid = 'Certificate filename ''%s'' is invalid';
+  rs_an_error_has_occured_while_to_validate_key_password = 'An unexpected error has occured while validating key password';
+  rs_wrong_key_password = 'Wrong key password';
+
 
 
 implementation

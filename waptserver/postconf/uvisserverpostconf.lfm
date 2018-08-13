@@ -346,6 +346,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         Caption = 'Show password'
         OnChange = on_show_password_change
         TabOrder = 10
+        TabStop = False
       end
       object cb_use_existing_key_show_password: TCheckBox
         Left = 360
@@ -355,6 +356,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         Caption = 'Show password'
         OnChange = on_show_password_change
         TabOrder = 11
+        TabStop = False
       end
     end
     object pgBuildAgent: TTabSheet

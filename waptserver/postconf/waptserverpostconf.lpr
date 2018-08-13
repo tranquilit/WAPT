@@ -12,7 +12,8 @@ uses
   Forms, uVisServerPostconf, uwaptserverres,
   waptcommon, uvisloading, UScaleDPI,
   { you can add units after this }
-  DefaultTranslator, indylaz, FrameViewer09, uvalidation;
+  DefaultTranslator, indylaz, FrameViewer09, uvalidation, dmwaptpython, uutil,
+  udefault;
 
 {$R *.res}
 {$R languages.rc}
@@ -21,6 +22,7 @@ begin
   // we use wapt-get.ini global config
   RequireDerivedFormResource := True;
   Application.Initialize;
+  Application.CreateForm(TDMPython, DMPython);
   Application.CreateForm(TVisWAPTServerPostConf, VisWAPTServerPostConf);
   Application.Run;
 end.
