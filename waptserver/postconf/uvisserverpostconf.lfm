@@ -18,17 +18,17 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
     Height = 369
     Top = 0
     Width = 680
-    ActivePage = pgPackagePrivateKey
+    ActivePage = pgBuildAgent
     Align = alClient
     MultiLine = True
-    TabIndex = 2
+    TabIndex = 3
     TabOrder = 0
     OnChange = PagesControlChange
     Options = [nboMultiLine]
     object pgParameters: TTabSheet
       Caption = 'Parameters'
       ChildSizing.Layout = cclLeftToRightThenTopToBottom
-      ClientHeight = 343
+      ClientHeight = 341
       ClientWidth = 672
       object Panel3: TPanel
         Left = 0
@@ -61,7 +61,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
           Left = 212
           Height = 26
           Top = 3
-          Width = 127
+          Width = 138
           Action = ActCheckDNS
           AutoSize = True
           Glyph.Data = {
@@ -103,7 +103,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
           TabOrder = 1
         end
         object EdWaptServerIP: TEdit
-          Left = 345
+          Left = 356
           Height = 26
           Top = 3
           Width = 120
@@ -361,6 +361,21 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
     end
     object pgBuildAgent: TTabSheet
       Caption = 'Agent'
+      ClientHeight = 341
+      ClientWidth = 672
+      object pg_agent_memo: TMemo
+        Left = 0
+        Height = 341
+        Top = 0
+        Width = 672
+        Align = alClient
+        Lines.Strings = (
+          'pg_agent_memo'
+        )
+        ReadOnly = True
+        ScrollBars = ssVertical
+        TabOrder = 0
+      end
     end
     object pgStartServices: TTabSheet
       Caption = 'Start'
@@ -503,7 +518,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
     ClientHeight = 30
     ClientWidth = 680
     TabOrder = 1
-    object BitBtn3: TBitBtn
+    object ButCancel: TBitBtn
       Left = 592
       Height = 24
       Top = 3
@@ -548,7 +563,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00
       }
       ModalResult = 3
-      OnClick = BitBtn3Click
+      OnClick = ButCancelClick
       TabOrder = 0
     end
     object ProgressBar1: TProgressBar
@@ -558,6 +573,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
       Width = 293
       Align = alLeft
       TabOrder = 1
+      Visible = False
     end
     object ButPrevious: TBitBtn
       Left = 419

@@ -45,7 +45,7 @@ resourcestring
 
   rsMigration15 = 'Migrate Mongodb to PostgreSQL database';
 
-  rs_package_prefix_cannot_be_empty =  'Package prefix cannot be empty';
+  rs_package_prefix_cannot_be_empty = 'Package prefix cannot be empty';
   rs_package_prefix_must_be_alphanum = 'Pacakge prefix must be alphanum';
   rs_create_key_dir_not_exist = 'Create directory %s ?';
   rs_create_key_dir_cannot_be_created = 'Cannot create directory %s';
@@ -61,9 +61,9 @@ resourcestring
   rs_certificate_filename_is_invalid = 'Certificate filename ''%s'' is invalid';
   rs_an_error_has_occured_while_to_validate_key_password = 'An unexpected error has occured while validating key password';
   rs_wrong_key_password = 'Wrong key password';
-
-
-
+  rs_other_process_has_been_found = 'An instance of %s has been found.' + #13#10 + 'The program cannot continue unitl this process has terminated.' + #13#10 + #13#10  + 'Click on Yes to kill all the process named %s' + #13#10 + 'Click on Retry to recheck processes satus' + #13#10 +  'Click on Cancel to abort';
+  rs_iscc_instance_found = 'A instance of ISCC as been found, cannot continue.';
+  rs_compilation_failed = 'Compilation Failed';
 implementation
 
 end.

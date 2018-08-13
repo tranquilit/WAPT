@@ -49,8 +49,9 @@ msgstr "Précédent"
 msgid "Start WaptServer and WAPTService with this configuration"
 msgstr "Démarrer le serveur WAPT et WaptService avec ces paramètres"
 
-#: tviswaptserverpostconf.bitbtn3.caption
-msgctxt "tviswaptserverpostconf.bitbtn3.caption"
+#: tviswaptserverpostconf.butcancel.caption
+#, fuzzy
+msgctxt "tviswaptserverpostconf.butcancel.caption"
 msgid "Cancel"
 msgstr "Annuler"
 
@@ -490,6 +491,10 @@ msgstr ""
 msgid "Certificate filename '%s' is invalid"
 msgstr ""
 
+#: uwaptserverres.rs_compilation_failed
+msgid "Compilation Failed"
+msgstr ""
+
 #: uwaptserverres.rs_create_key_a_certificat_this_key_name_exist
 msgid "A certificat with key name has beenfound, change key name and click next again"
 msgstr ""
@@ -510,6 +515,10 @@ msgstr ""
 msgid "A valid private key directory must be selected"
 msgstr ""
 
+#: uwaptserverres.rs_iscc_instance_found
+msgid "A instance of ISCC as been found, cannot continue."
+msgstr ""
+
 #: uwaptserverres.rs_key_filename_cannot_be_empty
 msgid "Key filename cannot be empty"
 msgstr ""
@@ -520,6 +529,16 @@ msgstr ""
 
 #: uwaptserverres.rs_key_name_cannot_be_empty
 msgid "Key name cannot be empty"
+msgstr ""
+
+#: uwaptserverres.rs_other_process_has_been_found
+msgid ""
+"An instance of %s has been found.\n"
+"The program cannot continue unitl this process has terminated.\n"
+"\n"
+"Click on Yes to kill all the process named %s\n"
+"Click on Retry to recheck processes satus\n"
+"Click on Cancel to abort\n"
 msgstr ""
 
 #: uwaptserverres.rs_package_prefix_cannot_be_empty

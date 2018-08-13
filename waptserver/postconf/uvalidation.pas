@@ -16,6 +16,7 @@ function wizard_validate_package_prefix( w : TVisWAPTServerPostConf; c: TControl
 function wizard_validate_key_name( w : TVisWAPTServerPostConf; c : TControl; const key_name : String ) :boolean;
 function wizard_validate_str_password_are_not_empty_and_equals( w: TVisWAPTServerPostConf; c: TControl; const s1: String; const s2: String ): Boolean;
 function wizard_validate_key_password( w : TVisWAPTServerPostConf; c : TControl; const key_filename : String; const key_password : String ) : boolean;
+function wizard_validate_no_innosetup_process_running(w: TVisWAPTServerPostConf; c : TControl ): Boolean;
 
 implementation
 
@@ -102,9 +103,19 @@ begin
     w.show_validation_error( c, rs_wrong_key_password );
     exit(false);
   end;
-
-
 end;
+
+
+function wizard_validate_no_innosetup_process_running(w: TVisWAPTServerPostConf; c : TControl ): Boolean;
+begin
+  if not ensure_process_not_running(ISCC_EXE) then
+  begin
+    w.show_validation_error( c, rs_iscc_instance_found );
+    exit( false);
+  end;
+  exit(true);
+end;
+
 
 end.
 

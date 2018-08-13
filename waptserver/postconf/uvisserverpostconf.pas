@@ -25,7 +25,7 @@ type
     actPrevious: TAction;
     ActionList1: TActionList;
     BitBtn4: TBitBtn;
-    BitBtn3: TBitBtn;
+    ButCancel: TBitBtn;
     BitBtn6: TBitBtn;
     ButNext: TBitBtn;
     ButPrevious: TBitBtn;
@@ -55,6 +55,7 @@ type
     lbl_ed_create_new_key_password_1: TLabel;
     lbl_ed_create_new_key_password_2: TLabel;
     lbl_ed_existing_key_cert_filename: TLabel;
+    pg_agent_memo: TMemo;
     Memo7: TMemo;
     PagesControl: TPageControl;
     Panel1: TPanel;
@@ -78,7 +79,7 @@ type
     procedure actPreviousExecute(Sender: TObject);
     procedure actPreviousUpdate(Sender: TObject);
     procedure actWriteConfStartServeExecute(Sender: TObject);
-    procedure BitBtn3Click(Sender: TObject);
+    procedure ButCancelClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure HTMLViewer1HotSpotClick(Sender: TObject; const SRC: string; var Handled: boolean);
@@ -86,13 +87,16 @@ type
     procedure PagesControlChange(Sender: TObject);
     procedure on_private_key_radiobutton_change( Sender : TObject );
     procedure on_show_password_change( Sender : TObject );
+    procedure on_create_setup_waptagent_tick( Sender : TObject );
   private
     CurrentVisLoading:TVisLoading;
     procedure OpenFirewall;
     { private declarations }
 
+    procedure set_buttons_enable( enable : Boolean );
     procedure clear();
     procedure validate_page_package_and_private_key( var bContinue : boolean );
+    procedure validate_page_agent( var bContinue : boolean );
   public
     procedure show_validation_error( c : TControl; const msg : String );
   end;
@@ -127,7 +131,7 @@ begin
   self.clear();
 
   // fmor
-  self.PagesControl.PageIndex:= 2;
+//  self.PagesControl.PageIndex:= 2;
 
 end;
 
@@ -220,6 +224,10 @@ begin
     HTMLViewer1.Align:=alClient;
   end
   }
+
+  if self.PagesControl.ActivePage = pgBuildAgent then
+    self.ButNext.Click;
+
 end;
 
 procedure TVisWAPTServerPostConf.on_private_key_radiobutton_change( Sender: TObject);
@@ -321,6 +329,38 @@ begin
 
 end;
 
+procedure TVisWAPTServerPostConf.on_create_setup_waptagent_tick(Sender: TObject );
+var
+  t : TRunReadPipeThread;
+  sz : Real;
+  max : Real;
+  f : String;
+begin
+  if not Assigned(Sender) then
+  begin
+    Application.ProcessMessages;
+    exit;
+  end;
+
+  t := TRunReadPipeThread(Sender);
+
+  self.pg_agent_memo.Text:= t.Content;
+  SendMessage(self.pg_agent_memo.Handle, EM_LINESCROLL, 0,self.pg_agent_memo.Lines.Count);
+
+  f := IncludeTrailingPathDelimiter( GetTempDir(true) )+ 'waptagent.exe';
+  if FileExists(f) then
+  begin
+    max := self.ProgressBar1.Max;
+    sz := FileSize(f);
+    sz := max * sz / SETUP_AGENT_SIZE;
+    if sz > 100 then
+      sz := 100;
+    self.ProgressBar1.Position := Round(sz);
+  end;
+
+  Application.ProcessMessages;
+end;
+
 
 procedure TVisWAPTServerPostConf.OpenFirewall;
 var
@@ -352,8 +392,17 @@ begin
   end;
 end;
 
+procedure TVisWAPTServerPostConf.set_buttons_enable(enable: Boolean);
+begin
+  self.ButPrevious.Enabled := enable;
+  self.ButNext.Enabled     := enable;
+  self.ButCancel.Enabled   := enable;
+end;
+
 procedure TVisWAPTServerPostConf.clear();
 begin
+
+  set_buttons_enable( true );
 
   // Private key and certificate
   self.ed_package_prefix.Clear;
@@ -384,6 +433,28 @@ begin
 end;
 
 procedure TVisWAPTServerPostConf.validate_page_package_and_private_key( var bContinue: boolean);
+  procedure write_config( const certificate : String );
+  var
+     wapt_server : String;
+     repo_url    : String;
+  begin
+    IniWriteString(WaptBaseDir + '\waptconsole.ini', INI_GLOBAL, INI_PERSONAL_CERTIFICATE_PATH, certificate );
+    iniWriteString(WaptBaseDir + '\wapt-get.ini'   , INI_GLOBAL, INI_PERSONAL_CERTIFICATE_PATH, certificate );
+
+    if not str_is_empty_when_trimmed( self.EdWaptServerIP.Text ) then
+      wapt_server := self.EdWaptServerIP.Text
+    else
+      wapt_server := self.EdWAPTServerName.Text;
+
+    repo_url := wapt_server + '/wapt';
+
+    IniWriteString(WaptBaseDir + '\waptconsole.ini', INI_GLOBAL, INI_WAPT_SERVER, wapt_server );
+    IniWriteString(WaptBaseDir + '\wapt-get.ini',    INI_GLOBAL, INI_WAPT_SERVER, wapt_server );
+    iniWriteString(WaptBaseDir + '\waptconsole.ini', INI_GLOBAL, INI_REPO_URL, repo_url );
+    iniWriteString(WaptBaseDir + '\wapt-get.ini'   , INI_GLOBAL, INI_REPO_URL, repo_url );
+
+  end;
+
 var
    r    : integer;
    msg  : String;
@@ -450,6 +521,7 @@ begin
       exit;
     end;
 
+    write_config( params._certificate );
 
   end
   // Validate existing key
@@ -469,7 +541,7 @@ begin
 
     if not FileExists(self.ed_existing_key_key_filename.Text) then
     begin
-      msg := Format( rs_key_filename_is_invalid, [self.ed_existing_key_certificat_filename.Text] );
+      msg := Format( rs_key_filename_is_invalid, [self.ed_existing_key_key_filename.Text] );
       self.show_validation_error( self.ed_existing_key_key_filename, msg );
       exit;
     end;
@@ -484,10 +556,48 @@ begin
     if not wizard_validate_key_password( self, self.ed_existing_key_password, self.ed_existing_key_key_filename.Text, self.ed_existing_key_password.Text ) then
       exit;
 
-
+    write_config( self.ed_existing_key_certificat_filename.Text );
   end;
 
-    bContinue := true;
+
+  if not wizard_validate_no_innosetup_process_running( self, self.ButNext ) then
+    exit;
+
+
+  bContinue := true;
+end;
+
+procedure TVisWAPTServerPostConf.validate_page_agent(var bContinue: boolean);
+var
+   cf     : String;
+   params : Tcreate_setup_waptagent_params;
+   r      : integer;
+begin
+  bContinue := false;
+
+  self.ProgressBar1.Visible := true;
+  self.ProgressBar1.Position := 0;
+  self.ProgressBar1.Max := 100;
+
+  cf := WaptBaseDir + '\waptconsole.ini';
+
+  create_setup_waptagent_params_init( @params );
+
+  params.default_public_cert       := IniReadString( cf, INI_GLOBAL, INI_PERSONAL_CERTIFICATE_PATH );
+  params.default_repo_url          := IniReadString( cf, INI_GLOBAL, INI_REPO_URL );
+  params.default_wapt_server       := IniReadString( cf, INI_GLOBAL, INI_WAPT_SERVER );
+  params.destination               := GetTempDir(true);
+  params.OnProgress                := @on_create_setup_waptagent_tick;
+
+  r := create_setup_waptagent_params( @params );
+  self.ProgressBar1.Visible := false;
+  if r <> 0 then
+  begin
+    self.show_validation_error( self.pg_agent_memo,  rs_compilation_failed );
+    exit;
+  end;
+
+  bContinue := true;
 end;
 
 
@@ -495,24 +605,36 @@ end;
 procedure TVisWAPTServerPostConf.show_validation_error(c: TControl; const msg: String);
 begin
   MessageDlg( self.Caption, msg,  mtError, [mbOK], 0 );
-  if c is TWinControl then
+  if c is TWinControl and  TWinControl(c).Enabled then
     TWinControl(c).SetFocus;
 end;
 
 procedure TVisWAPTServerPostConf.ActNextExecute(Sender: TObject);
+label
+  LBL_FAIL;
 var
-  cmd,param:WideString;
+  cmd,param : WideString;
   bContinue : Boolean;
 begin
+  bContinue := false;
 
-  if PagesControl.ActivePage = pgPackagePrivateKey then
+  set_buttons_enable( false );
+
+  if pgPackagePrivateKey = PagesControl.ActivePage then
   begin
     self.validate_page_package_and_private_key(bContinue);
     if not bContinue then
-      exit;
-    PagesControl.ActivePageIndex := PagesControl.ActivePageIndex + 1
+      goto LBL_FAIL;
   end
-  else if PagesControl.ActivePage = pgFinish then
+
+  else if pgBuildAgent = PagesControl.ActivePage then
+  begin
+    self.validate_page_agent(bContinue);
+    if not bContinue then
+      goto LBL_FAIL;
+  end
+
+  else if pgFinish = PagesControl.ActivePage then
   begin
     cmd := WideString(WaptBaseDir)+ WideString('waptconsole.exe');
     param := '';
@@ -520,10 +642,16 @@ begin
     if cbLaunchWaptConsoleOnExit.Checked then
       ShellExecuteW(0,'open',PWidechar(cmd),PWidechar(param),Nil,SW_SHOW);
     ExitProcess(0);
-  end
-  else
-    PagesControl.ActivePageIndex := PagesControl.ActivePageIndex + 1
+  end;
 
+
+  self.PagesControl.ActivePageIndex := self.PagesControl.ActivePageIndex + 1;
+  self.PagesControlChange(nil);
+  set_buttons_enable( true );
+  exit;
+
+LBL_FAIL:
+  set_buttons_enable( true );
 end;
 
 procedure TVisWAPTServerPostConf.ActNextUpdate(Sender: TObject);
@@ -547,6 +675,7 @@ end;
 procedure TVisWAPTServerPostConf.actPreviousExecute(Sender: TObject);
 begin
   PagesControl.ActivePageIndex := PagesControl.ActivePageIndex - 1;
+  self.PagesControlChange( nil );
 end;
 
 procedure TVisWAPTServerPostConf.actPreviousUpdate(Sender: TObject);
@@ -810,7 +939,7 @@ begin
   end;
 end;
 
-procedure TVisWAPTServerPostConf.BitBtn3Click(Sender: TObject);
+procedure TVisWAPTServerPostConf.ButCancelClick(Sender: TObject);
 begin
   if MessageDlg(rsConfirm,rsConfirmCancelPostConfig,mtConfirmation,mbYesNoCancel,0) = mrYes then
     Close;
