@@ -25,11 +25,6 @@ Source: "..\waptconsole.exe.manifest"; DestDir: "{app}";
 Source: "..\waptconsole.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\waptdevutils.py"; DestDir: "{app}";
 
-; tools
-Source: "..\waptwizard.exe"; DestDir: "{app}";
-Source: "..\waptwizard.exe.manifest"; DestDir: "{app}";
-
-
 ; authorized public keys
 #if set_install_certs == ""
 Source: "..\ssl\*"; DestDir: "{app}\ssl"; Tasks: installCertificates; Flags: createallsubdirs recursesubdirs
