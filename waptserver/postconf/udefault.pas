@@ -58,7 +58,37 @@ const
 
   ISCC_EXE : String = 'ISCC.exe';
 
+  INI_FILE_WAPTCONSOLE : String = '';
+  INI_FILE_WAPTGET     : String = '';
+
 implementation
 
+uses
+  uutil,
+  waptcommon;
+
+procedure init();
+var
+  s : String;
+  r : integer;
+begin
+
+  // waptconsole.ini
+  INI_FILE_WAPTCONSOLE := AppIniFilename();
+  r := extract_filename_without_extension( s, INI_FILE_WAPTCONSOLE );
+  if r = 0 then
+    INI_FILE_WAPTCONSOLE := StringReplace( INI_FILE_WAPTCONSOLE, s, 'waptconsole', [rfReplaceAll] )
+  else
+    INI_FILE_WAPTCONSOLE := '';
+
+  // wapt-get.ini
+  INI_FILE_WAPTGET := IncludeTrailingPathDelimiter(WaptBaseDir) + 'wapt-get.ini';
+
+  r := -1;
+
+end;
+
+initialization
+init();
 end.
 
