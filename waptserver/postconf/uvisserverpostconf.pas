@@ -106,7 +106,8 @@ type
     procedure clear();
     procedure validate_page_package_and_private_key( var bContinue : boolean );
     procedure validate_page_agent( var bContinue : boolean );
-    function write_configs( const package_certificate : String ) : integer;
+    function  write_configs( const package_certificate : String ) : integer;
+    function  restart_waptservice_and_register() : integer;
   public
     procedure show_validation_error( c : TControl; const msg : String );
   end;
@@ -479,6 +480,7 @@ var
    msg  : String;
    s    : String;
    params : TCreate_signed_cert_params;
+   package_certificate : String;
 begin
 
   bContinue := false;
@@ -532,6 +534,7 @@ begin
     params.destdir      := ExcludeTrailingPathDelimiter(self.ed_create_new_key_private_directory.Text);
     params.keypassword  := self.ed_create_new_key_password_1.Text;
     params.keyfilename  := IncludeTrailingPathDelimiter(self.ed_create_new_key_private_directory.Text) + self.ed_create_new_key_key_name.Text + '.' + EXTENSION_PRIVATE_KEY;
+    params.commonname   := self.EdWAPTServerName.Text;
 
     r := create_signed_cert_params( @params );
     if r <> 0 then
@@ -540,8 +543,7 @@ begin
       exit;
     end;
 
-    write_configs( params._certificate );
-
+    package_certificate := params._certificate;
   end
   // Validate existing key
   else
@@ -575,9 +577,11 @@ begin
     if not wizard_validate_key_password( self, self.ed_existing_key_password, self.ed_existing_key_key_filename.Text, self.ed_existing_key_password.Text ) then
       exit;
 
-    write_configs( self.ed_existing_key_certificat_filename.Text );
+    package_certificate := self.ed_existing_key_certificat_filename.Text;
   end;
 
+  write_configs( package_certificate );
+  self.restart_waptservice_and_register();
 
   if not wizard_validate_no_innosetup_process_running( self, self.ButNext ) then
     exit;
@@ -608,7 +612,6 @@ begin
   Application.ProcessMessages;
 
   // Build agent
-
   create_setup_waptagent_params_init( @params_agent );
 
   params_agent.default_public_cert       := IniReadString( INI_FILE_WAPTCONSOLE, INI_GLOBAL, INI_PERSONAL_CERTIFICATE_PATH );
@@ -700,6 +703,7 @@ var
    ini         : TIniFile;
    confs       : array of String;
    i           : integer;
+   s           : String;
 begin
   if 0 = Length(INI_FILE_WAPTCONSOLE) then
     exit(-1);
@@ -708,7 +712,6 @@ begin
 
   wapt_server := 'https://' + self.EdWAPTServerName.Text;
   repo_url    := wapt_server + '/wapt';
-
 
   SetLength( confs, 2 );
   confs[0] := INI_FILE_WAPTCONSOLE;
@@ -732,6 +735,49 @@ begin
       ini.Free;
     end;
   end;
+
+  // Copy certificate to
+  s := IncludeTrailingPathDelimiter( WaptBaseDir ) + 'ssl' + PathDelim + ExtractFileName(package_certificate);
+  if not FileUtil.CopyFile( package_certificate, s, false , false  ) then
+    result := -1;
+
+end;
+
+function TVisWAPTServerPostConf.restart_waptservice_and_register(): integer;
+var
+   waptget : String;
+   sl : TStringList;
+   i : integer;
+begin
+  waptget := IncludeTrailingPathDelimiter(WaptBaseDir) + 'wapt-get.exe';
+  waptget := Format( '%s --wapt-server-user=admin --wapt-server-passwd=%s', [waptget, self.EdPwd1.Text] );
+
+
+  sl := TStringList.Create;
+  sl.Append( 'net stop  waptservice' );
+  sl.Append( waptget + ' --direct register' );
+  sl.Append( 'net start waptservice' );
+  sl.Append( waptget + ' update' );
+
+
+  self.ProgressBar1.Visible := true;
+  self.ProgressBar1.Position:= 0;
+  self.ProgressBar1.Max := sl.Count;
+  Application.ProcessMessages;
+
+
+  for i := 0 to sl.Count -1 do
+  begin
+    self.ProgressBar1.Position := i + 1 ;
+    Application.ProcessMessages;
+    Run( UTF8Decode(sl.Strings[i]) );
+  end;
+
+
+  self.ProgressBar1.Visible := false;
+  Application.ProcessMessages;
+
+  exit(0);
 end;
 
 
