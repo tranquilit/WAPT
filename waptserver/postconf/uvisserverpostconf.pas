@@ -101,6 +101,7 @@ type
     procedure clear();
     procedure validate_page_package_and_private_key( var bContinue : boolean );
     procedure validate_page_agent( var bContinue : boolean );
+    function write_configs( const package_certificate : String ) : integer;
   public
     procedure show_validation_error( c : TControl; const msg : String );
   end;
@@ -445,32 +446,6 @@ begin
 end;
 
 procedure TVisWAPTServerPostConf.validate_page_package_and_private_key( var bContinue: boolean);
-  procedure write_config( const certificate : String );
-  var
-     wapt_server : String;
-     repo_url    : String;
-  begin
-    if not str_is_empty_when_trimmed( self.EdWaptServerIP.Text ) then
-      wapt_server := 'https://' + self.EdWaptServerIP.Text
-    else
-      wapt_server := 'https://' + self.EdWAPTServerName.Text;
-
-    repo_url := wapt_server + '/wapt';
-
-    IniWriteString(WaptBaseDir + '\waptconsole.ini',  INI_GLOBAL, INI_PERSONAL_CERTIFICATE_PATH, certificate );
-    IniWriteString(WaptBaseDir + '\waptconsole.ini',  INI_GLOBAL, INI_WAPT_SERVER, wapt_server );
-    iniWriteString(WaptBaseDir + '\waptconsole.ini',  INI_GLOBAL, INI_REPO_URL, repo_url );
-    iniWriteString(WaptBaseDir + '\waptconsole.ini',  INI_GLOBAL, INI_CHECK_CERTIFICATES_VALIDITY, '0' );
-    iniWriteString(WaptBaseDir + '\waptconsole.ini',  INI_GLOBAL, INI_VERIFIY_CERT, '0' );
-
-    IniWriteString(WaptBaseDir + '\wapt-get.ini',     INI_GLOBAL, INI_PERSONAL_CERTIFICATE_PATH, certificate );
-    IniWriteString(WaptBaseDir + '\wapt-get.ini',     INI_GLOBAL, INI_WAPT_SERVER, wapt_server );
-    IniWriteString(WaptBaseDir + '\wapt-get.ini',     INI_GLOBAL, INI_REPO_URL, repo_url );
-    iniWriteString(WaptBaseDir + '\wapt-get.ini',     INI_GLOBAL, INI_CHECK_CERTIFICATES_VALIDITY, '0' );
-    iniWriteString(WaptBaseDir + '\wapt-get.ini',     INI_GLOBAL, INI_VERIFIY_CERT, '0' );
-
-  end;
-
 var
    r    : integer;
    msg  : String;
@@ -537,7 +512,7 @@ begin
       exit;
     end;
 
-    write_config( params._certificate );
+    write_configs( params._certificate );
 
   end
   // Validate existing key
@@ -572,7 +547,7 @@ begin
     if not wizard_validate_key_password( self, self.ed_existing_key_password, self.ed_existing_key_key_filename.Text, self.ed_existing_key_password.Text ) then
       exit;
 
-    write_config( self.ed_existing_key_certificat_filename.Text );
+    write_configs( self.ed_existing_key_certificat_filename.Text );
   end;
 
 
@@ -587,7 +562,6 @@ procedure TVisWAPTServerPostConf.validate_page_agent(var bContinue: boolean);
 label
   LBL_FAIL;
 var
-  cf            : String;
   params_agent  : Tcreate_setup_waptagent_params;
   r             : integer;
   so            : ISuperObject;
@@ -606,13 +580,12 @@ begin
   Application.ProcessMessages;
 
   // Build agent
-  cf := WaptBaseDir + '\waptconsole.ini';
 
   create_setup_waptagent_params_init( @params_agent );
 
-  params_agent.default_public_cert       := IniReadString( cf, INI_GLOBAL, INI_PERSONAL_CERTIFICATE_PATH );
-  params_agent.default_repo_url          := IniReadString( cf, INI_GLOBAL, INI_REPO_URL );
-  params_agent.default_wapt_server       := IniReadString( cf, INI_GLOBAL, INI_WAPT_SERVER );
+  params_agent.default_public_cert       := IniReadString( INI_FILE_WAPTCONSOLE, INI_GLOBAL, INI_PERSONAL_CERTIFICATE_PATH );
+  params_agent.default_repo_url          := IniReadString( INI_FILE_WAPTCONSOLE, INI_GLOBAL, INI_REPO_URL );
+  params_agent.default_wapt_server       := IniReadString( INI_FILE_WAPTCONSOLE, INI_GLOBAL, INI_WAPT_SERVER );
   params_agent.destination               := GetTempDir(true);
   params_agent.OnProgress                := @on_create_setup_waptagent_tick;
 
@@ -663,7 +636,7 @@ begin
 
   params_package.server_username := 'admin';
   params_package.server_password := self.EdPwd1.Text;
-  params_package.config_filename := cf;
+  params_package.config_filename := INI_FILE_WAPTCONSOLE;
   params_package.dualsign        := false;
   if self.rb_CreateKey.Checked then
     params_package.private_key_password := self.ed_create_new_key_password_1.Text
@@ -690,6 +663,34 @@ begin
 
 LBL_FAIL:
   self.ProgressBar1.Visible := false;
+end;
+
+function TVisWAPTServerPostConf.write_configs(const package_certificate: String
+  ): integer;
+var
+   wapt_server : String;
+   repo_url    : String;
+begin
+  if 0 = Length(INI_FILE_WAPTCONSOLE) then
+    exit(-1);
+  if 0 = Length(INI_FILE_WAPTGET) then
+    exit(-1);
+
+  wapt_server := 'https://' + self.EdWAPTServerName.Text;
+  repo_url    := wapt_server + '/wapt';
+
+  IniWriteString( INI_FILE_WAPTCONSOLE, INI_GLOBAL, INI_PERSONAL_CERTIFICATE_PATH, package_certificate );
+  IniWriteString( INI_FILE_WAPTCONSOLE, INI_GLOBAL, INI_WAPT_SERVER, wapt_server );
+  iniWriteString( INI_FILE_WAPTCONSOLE, INI_GLOBAL, INI_REPO_URL, repo_url );
+  iniWriteString( INI_FILE_WAPTCONSOLE, INI_GLOBAL, INI_CHECK_CERTIFICATES_VALIDITY, '0' );
+  iniWriteString( INI_FILE_WAPTCONSOLE, INI_GLOBAL, INI_VERIFIY_CERT, '0' );
+
+  IniWriteString( INI_FILE_WAPTGET,     INI_GLOBAL, INI_PERSONAL_CERTIFICATE_PATH, package_certificate );
+  IniWriteString( INI_FILE_WAPTGET,     INI_GLOBAL, INI_WAPT_SERVER, wapt_server );
+  IniWriteString( INI_FILE_WAPTGET,     INI_GLOBAL, INI_REPO_URL, repo_url );
+  iniWriteString( INI_FILE_WAPTGET,     INI_GLOBAL, INI_CHECK_CERTIFICATES_VALIDITY, '0' );
+  iniWriteString( INI_FILE_WAPTGET,     INI_GLOBAL, INI_VERIFIY_CERT, '0' );
+
 end;
 
 
