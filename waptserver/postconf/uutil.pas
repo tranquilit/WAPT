@@ -83,6 +83,8 @@ function crypto_check_key_password(var success: boolean; const key_filename: Str
 function ensure_process_not_running( const process_name : String ) : boolean;
 function killall( const ExeFileName: string ) : integer;
 
+function extract_filename_without_extension( var f : String; filename : String ) :integer;
+
 implementation
 
 uses
@@ -396,6 +398,41 @@ LBL_FAILED:
   if h_process_list <> 0 then
     CloseHandle( h_process_list );
   exit(-1);
+end;
+
+
+
+function extract_filename_without_extension(var f: String; filename: String ): integer;
+var
+  s : String;
+  i : integer;
+  l : integer;
+  p : integer;
+begin
+  s := ExtractFileName( filename );
+  l := Length(s);
+
+  if l = 0 then
+    exit(-1);
+
+  p := 0;
+  for i := l downto 1 do
+  begin
+    if '.' = s[i] then
+    begin
+      p := i;
+      break;
+    end;
+  end;
+
+  case p of
+    0,1 : f := s;
+    else
+      f := Copy( s, 1, i -1 );
+  end;
+
+  exit(0);
+
 end;
 
 end.
