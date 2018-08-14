@@ -85,6 +85,9 @@ function killall( const ExeFileName: string ) : integer;
 
 function extract_filename_without_extension( var f : String; filename : String ) :integer;
 
+function launch_console( const params : String = '') : integer;
+function launch_process( const binary : String; const params: String = ''): integer;
+
 implementation
 
 uses
@@ -433,6 +436,52 @@ begin
 
   exit(0);
 
+end;
+
+function launch_console(const params: String): integer;
+var
+  cmd : String;
+begin
+  cmd := IncludeTrailingPathDelimiter(WaptBaseDir)+ 'waptconsole.exe';
+  result := launch_process( cmd, params );
+end;
+
+function launch_process( const binary : String; const params: String): integer;
+var
+  wcmd    : WideString;
+  wparams : WideString;
+  r       : HINST;
+  msg     : String;
+begin
+  wcmd := WideString(binary);
+  if not FileExists(wcmd) then
+    exit(-1);
+
+  r := ShellExecuteW(0,'open', @wcmd[1], @wparams[1], Nil, SW_SHOW);
+  if r < 32 then
+  begin
+    case r of
+      0                     : msg := 'The operating system is out of memory or resources.';
+      ERROR_FILE_NOT_FOUND  : msg := 'The specified file was not found.';
+      ERROR_PATH_NOT_FOUND  : msg := 'The specified path was not found..';
+      ERROR_BAD_FORMAT      : msg := 'The .exe file is invalid (non-Win32 .exe or error in .exe image)..';
+      5                     : msg := 'The operating system denied access to the specified file..'; {SE_ERR_ACCESSDENIED}
+      SE_ERR_ASSOCINCOMPLETE: msg := 'The file name association is incomplete or invalid..';
+      SE_ERR_DDEBUSY        : msg := 'The DDE transaction could not be completed because other DDE transactions were being processed..';
+      SE_ERR_DDEFAIL        : msg := 'The DDE transaction failed..';
+      SE_ERR_DDETIMEOUT     : msg := 'The DDE transaction could not be completed because the request timed out..';
+      32                    : msg := 'The specified DLL was not found..'; {SE_ERR_DLLNOTFOUND}
+      SE_ERR_NOASSOC        : msg := 'There is no application associated with the given file name extension. This error will also be returned if you attempt to print a file that is not printable..';
+      8                     : msg := 'There was not enough memory to complete the operation..'; {SE_ERR_OOM}
+      SE_ERR_SHARE          : msg := 'A sharing violation occured.';
+      else
+        msg := Format('Unknow error %d', [r] );
+    end;
+    MessageDlg( Application.Name, msg, mtError, [mbOK], 0 );
+    exit( -1 );
+  end;
+
+  exit(0);
 end;
 
 end.
