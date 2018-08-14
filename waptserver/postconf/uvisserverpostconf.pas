@@ -719,6 +719,7 @@ begin
     result := -1;
     ini := TIniFile.Create( confs[i] );
     try
+      ini.WriteString( INI_GLOBAL,        INI_DEFAULT_PACKAGE_PREFIX, self.ed_package_prefix.Text );
       ini.WriteString( INI_GLOBAL,        INI_PERSONAL_CERTIFICATE_PATH, package_certificate );
       ini.WriteString( INI_GLOBAL,        INI_WAPT_SERVER, wapt_server );
       ini.WriteString( INI_GLOBAL,        INI_REPO_URL, repo_url );
