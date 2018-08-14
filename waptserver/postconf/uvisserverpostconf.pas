@@ -665,11 +665,13 @@ LBL_FAIL:
   self.ProgressBar1.Visible := false;
 end;
 
-function TVisWAPTServerPostConf.write_configs(const package_certificate: String
-  ): integer;
+function TVisWAPTServerPostConf.write_configs(const package_certificate: String ): integer;
 var
    wapt_server : String;
    repo_url    : String;
+   ini         : TIniFile;
+   confs       : array of String;
+   i           : integer;
 begin
   if 0 = Length(INI_FILE_WAPTCONSOLE) then
     exit(-1);
@@ -679,18 +681,28 @@ begin
   wapt_server := 'https://' + self.EdWAPTServerName.Text;
   repo_url    := wapt_server + '/wapt';
 
-  IniWriteString( INI_FILE_WAPTCONSOLE, INI_GLOBAL, INI_PERSONAL_CERTIFICATE_PATH, package_certificate );
-  IniWriteString( INI_FILE_WAPTCONSOLE, INI_GLOBAL, INI_WAPT_SERVER, wapt_server );
-  iniWriteString( INI_FILE_WAPTCONSOLE, INI_GLOBAL, INI_REPO_URL, repo_url );
-  iniWriteString( INI_FILE_WAPTCONSOLE, INI_GLOBAL, INI_CHECK_CERTIFICATES_VALIDITY, '0' );
-  iniWriteString( INI_FILE_WAPTCONSOLE, INI_GLOBAL, INI_VERIFIY_CERT, '0' );
 
-  IniWriteString( INI_FILE_WAPTGET,     INI_GLOBAL, INI_PERSONAL_CERTIFICATE_PATH, package_certificate );
-  IniWriteString( INI_FILE_WAPTGET,     INI_GLOBAL, INI_WAPT_SERVER, wapt_server );
-  IniWriteString( INI_FILE_WAPTGET,     INI_GLOBAL, INI_REPO_URL, repo_url );
-  iniWriteString( INI_FILE_WAPTGET,     INI_GLOBAL, INI_CHECK_CERTIFICATES_VALIDITY, '0' );
-  iniWriteString( INI_FILE_WAPTGET,     INI_GLOBAL, INI_VERIFIY_CERT, '0' );
+  SetLength( confs, 2 );
+  confs[0] := INI_FILE_WAPTCONSOLE;
+  confs[1] := INI_FILE_WAPTGET;
 
+  for i:= 0 to 1 do
+  begin
+    result := -1;
+    ini := TIniFile.Create( confs[i] );
+    try
+      ini.WriteString( INI_GLOBAL,        INI_PERSONAL_CERTIFICATE_PATH, package_certificate );
+      ini.WriteString( INI_GLOBAL,        INI_WAPT_SERVER, wapt_server );
+      ini.WriteString( INI_GLOBAL,        INI_REPO_URL, repo_url );
+      ini.WriteString( INI_GLOBAL,        INI_CHECK_CERTIFICATES_VALIDITY, '0' );
+      ini.WriteString( INI_GLOBAL,        INI_VERIFIY_CERT, '0' );
+      ini.WriteString( INI_WAPTTEMPLATES, INI_REPO_URL, INI_WAPT_STORE_URL );
+      ini.WriteString( INI_WAPTTEMPLATES, INI_VERIFIY_CERT, '1' );
+      result := 0;
+    finally
+      ini.Free;
+    end;
+  end;
 end;
 
 

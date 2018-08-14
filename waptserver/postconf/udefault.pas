@@ -52,6 +52,8 @@ const
   INI_SEND_USAGE_REPORT                   : String = 'send_usage_report';
   INI_USE_HOSTPACKAGE                     : String = 'use_hostpackages';
   INI_USE_KERBEROS                        : String = 'use_kerberos';
+  INI_WAPTTEMPLATES                       : String = 'wapt-templates';
+  INI_WAPT_STORE_URL                      : String = 'https://store.wapt.fr/wapt';
 
 
   SETUP_AGENT_SIZE : integer = 1024 * 1024 * 21;
