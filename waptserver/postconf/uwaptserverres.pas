@@ -64,6 +64,9 @@ resourcestring
   rs_other_process_has_been_found = 'An instance of %s has been found.' + #13#10 + 'The program cannot continue unitl this process has terminated.' + #13#10 + #13#10  + 'Click on Yes to kill all the process named %s' + #13#10 + 'Click on Retry to recheck processes satus' + #13#10 +  'Click on Cancel to abort';
   rs_iscc_instance_found = 'A instance of ISCC as been found, cannot continue.';
   rs_compilation_failed = 'Compilation Failed';
+  rs_finish = 'Finish';
+  rs_next = 'Next';
+
 implementation
 
 end.

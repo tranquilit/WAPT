@@ -31,6 +31,7 @@ type
     ButNext: TBitBtn;
     ButPrevious: TBitBtn;
     cbLaunchWaptConsoleOnExit: TCheckBox;
+    cb_configure_console_launch_console_on_exit: TCheckBox;
     CBOpenFirewall: TCheckBox;
     cb_create_new_key_show_password: TCheckBox;
     cb_use_existing_key_show_password: TCheckBox;
@@ -71,8 +72,11 @@ type
     pgFinish: TTabSheet;
     pgPackagePrivateKey: TTabSheet;
     pgBuildAgent: TTabSheet;
+    rb_configure_console_continue: TRadioButton;
+    rb_configure_console_finish: TRadioButton;
     rb_CreateKey: TRadioButton;
     rb_UseKey: TRadioButton;
+    pgConfigureConsoleOrFinish: TTabSheet;
     procedure ActCheckDNSExecute(Sender: TObject);
     procedure ActManualExecute(Sender: TObject);
     procedure ActNextExecute(Sender: TObject);
@@ -91,6 +95,7 @@ type
     procedure on_create_setup_waptagent_tick( Sender : TObject );
     procedure on_upload( ASender: TObject; AWorkMode: TWorkMode; AWorkCount: Int64 );
     procedure on_python_update(Sender: TObject; PSelf, Args: PPyObject; var Result: PPyObject);
+    procedure on_configure_console_radiobutton_change(Sender : TObject );
 
   private
     CurrentVisLoading:TVisLoading;
@@ -137,7 +142,7 @@ begin
   self.clear();
 
   // fmor
-//  self.PagesControl.PageIndex:= 2;
+//  self.PagesControl.PageIndex:= 3;
 
 end;
 
@@ -374,6 +379,25 @@ begin
   Result:= DMPython.PythonEng.ReturnNone;
 end;
 
+procedure TVisWAPTServerPostConf.on_configure_console_radiobutton_change( Sender: TObject);
+var
+  b : boolean;
+begin
+  b := self.rb_configure_console_continue.Checked;
+
+
+  b := not b;
+
+  self.cb_configure_console_launch_console_on_exit.Enabled := b;
+
+  if b then
+    self.ButNext.Caption := rs_finish
+  else
+    self.ButNext.Caption := rs_next;
+
+
+end;
+
 
 procedure TVisWAPTServerPostConf.OpenFirewall;
 var
@@ -432,6 +456,10 @@ begin
   self.ed_existing_key_password.PasswordChar      := DEFAULT_PASSWORD_CHAR;
   self.cb_create_new_key_show_password.Checked    := false;
   self.cb_use_existing_key_show_password.Checked  := false;
+
+
+  self.rb_configure_console_continue.Checked := true;
+  self.on_configure_console_radiobutton_change( nil );
 
 
   self.rb_CreateKey.Checked := true;
@@ -718,14 +746,24 @@ procedure TVisWAPTServerPostConf.ActNextExecute(Sender: TObject);
 label
   LBL_FAIL;
 var
-  cmd,param : WideString;
   bContinue : Boolean;
 begin
   bContinue := false;
 
   set_buttons_enable( false );
 
-  if pgPackagePrivateKey = PagesControl.ActivePage then
+  if pgConfigureConsoleOrFinish = PagesControl.ActivePage then
+  begin
+    if self.rb_configure_console_finish.Checked then
+    begin
+      if self.cb_configure_console_launch_console_on_exit.Checked then
+        launch_console();
+      ExitProcess(0);
+    end;
+  end
+
+
+  else if pgPackagePrivateKey = PagesControl.ActivePage then
   begin
     self.validate_page_package_and_private_key(bContinue);
     if not bContinue then
@@ -741,11 +779,8 @@ begin
 
   else if pgFinish = PagesControl.ActivePage then
   begin
-    cmd := WideString(WaptBaseDir)+ WideString('waptconsole.exe');
-    param := '';
-    //param := '-c';
     if cbLaunchWaptConsoleOnExit.Checked then
-      ShellExecuteW(0,'open',PWidechar(cmd),PWidechar(param),Nil,SW_SHOW);
+      launch_console();
     ExitProcess(0);
   end;
 

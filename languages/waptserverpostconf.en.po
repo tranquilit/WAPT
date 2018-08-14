@@ -57,11 +57,17 @@ msgid "Configuration of WAPT server for Windows"
 msgstr ""
 
 #: tviswaptserverpostconf.cblaunchwaptconsoleonexit.caption
+msgctxt "tviswaptserverpostconf.cblaunchwaptconsoleonexit.caption"
 msgid "Run WAPT console after setup"
 msgstr ""
 
 #: tviswaptserverpostconf.cbopenfirewall.caption
 msgid "Open firewall ports 80 and 443 to allow access for packages and inventory"
+msgstr ""
+
+#: tviswaptserverpostconf.cb_configure_console_launch_console_on_exit.caption
+msgctxt "tviswaptserverpostconf.cb_configure_console_launch_console_on_exit.caption"
+msgid "Run WAPT console after setup"
 msgstr ""
 
 #: tviswaptserverpostconf.cb_create_new_key_show_password.caption
@@ -178,6 +184,11 @@ msgstr ""
 msgid "Agent"
 msgstr ""
 
+#: tviswaptserverpostconf.pgconfigureconsoleorfinish.caption
+msgctxt "tviswaptserverpostconf.pgconfigureconsoleorfinish.caption"
+msgid "Configure console or finish"
+msgstr ""
+
 #: tviswaptserverpostconf.pgfinish.caption
 msgid "Fin"
 msgstr ""
@@ -197,6 +208,15 @@ msgstr ""
 
 #: tviswaptserverpostconf.pgstartservices.caption
 msgid "Start"
+msgstr ""
+
+#: tviswaptserverpostconf.rb_configure_console_continue.caption
+msgid "Continue configuration by configuring console"
+msgstr ""
+
+#: tviswaptserverpostconf.rb_configure_console_finish.caption
+msgctxt "tviswaptserverpostconf.rb_configure_console_finish.caption"
+msgid "Finish"
 msgstr ""
 
 #: tviswaptserverpostconf.rb_createkey.caption
@@ -501,6 +521,11 @@ msgstr ""
 msgid "A valid private key directory must be selected"
 msgstr ""
 
+#: uwaptserverres.rs_finish
+msgctxt "uwaptserverres.rs_finish"
+msgid "Finish"
+msgstr ""
+
 #: uwaptserverres.rs_iscc_instance_found
 msgid "A instance of ISCC as been found, cannot continue."
 msgstr ""
@@ -515,6 +540,11 @@ msgstr ""
 
 #: uwaptserverres.rs_key_name_cannot_be_empty
 msgid "Key name cannot be empty"
+msgstr ""
+
+#: uwaptserverres.rs_next
+msgctxt "uwaptserverres.rs_next"
+msgid "Next"
 msgstr ""
 
 #: uwaptserverres.rs_other_process_has_been_found
