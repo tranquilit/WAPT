@@ -63,6 +63,16 @@ Tcreate_package_waptupgrade_params = record
 end;
 Pcreate_package_waptupgrade_params = ^Tcreate_package_waptupgrade_params;
 
+TRunSyncParameters = record
+  cmd_line         : String;
+  timout_ms        : integer;
+  on_run_sync_out  : procedure ( const str_out : PChar ) of object;
+  on_run_sync_err  : procedure ( const str_err : PChar ) of object;
+end;
+PRunSyncParameters = ^TRunSyncParameters;
+
+
+
 
 function str_is_alphanum( const str : String ) : boolean;
 function str_is_empty_when_trimmed( const str : String ) : boolean;
@@ -87,6 +97,9 @@ function extract_filename_without_extension( var f : String; filename : String )
 
 function launch_console( const params : String = '') : integer;
 function launch_process( const binary : String; const params: String = ''): integer;
+
+function readfile_available( h : THandle; buffer : PDWORD; buffer_size : integer ) : integer;
+function run_sync( params : PRunSyncParameters ) : integer;
 
 implementation
 
@@ -482,6 +495,158 @@ begin
   end;
 
   exit(0);
+end;
+
+function readfile_available( h : THandle; buffer : PDWORD; buffer_size : integer ) : integer;
+var
+  bytes_available: DWORD;
+  bytes_readed   : DWORD;
+  b : BOOL;
+begin
+  b := PeekNamedPipe( h, nil, 0, nil, @bytes_available, nil );
+  if not b then
+    exit(-1);
+
+  if bytes_available = 0 then
+    exit(0);
+
+  b := ReadFile( h, buffer, bytes_available, @bytes_readed, nil );
+  if not b then
+    exit(-1);
+
+  exit( bytes_readed )
+end;
+
+
+function run_sync(params: PRunSyncParameters): integer;
+label
+  LBL_FAIL;
+const
+  I  : integer = 0;
+  O  : integer = 1;
+  E  : integer = 2;
+  R  : integer = 0;
+  W  : integer = 1;
+  WAIT_DURATION : integer = 15;
+  BUFFER_SIZE  = 4096 - 1;
+var
+  sa : SECURITY_ATTRIBUTES;
+  si : STARTUPINFO;
+  pi : PROCESS_INFORMATION;
+  b  : BOOL;
+  dw : DWORD;
+  buffer : array[0..BUFFER_SIZE-1] of DWORD;
+  handles : array[0..2, 0..1] of THandle;
+  rr : integer;
+
+  procedure __process_pipes();
+  begin
+    // Read output
+    if Assigned(params^.on_run_sync_out) then
+    begin
+      rr := readfile_available( handles[O,R], buffer, BUFFER_SIZE );
+      if rr > 0 then
+      begin
+        buffer[rr] := 0;
+        params^.on_run_sync_out( @buffer[0] );
+      end;
+    end;
+
+    // Read eror
+    if Assigned(params^.on_run_sync_err) then
+    begin
+      rr := readfile_available( handles[E,R], buffer, BUFFER_SIZE );
+      if rr > 0 then
+      begin
+        buffer[rr] := 0;
+        params^.on_run_sync_err( @buffer[0] );
+      end;
+    end;
+
+  end;
+
+begin
+
+
+  //
+  FillChar( handles, sizeof(THandle) * 6, 0 );
+  FillChar( pi, sizeof(PROCESS_INFORMATION), 0 );
+
+  //
+  FillChar( sa, sizeof(SECURITY_ATTRIBUTES), 0 );
+  sa.nLength := sizeof(SECURITY_ATTRIBUTES);
+  sa.bInheritHandle := TRUE;
+
+  CreatePipe( handles[I,R], handles[I,W], @sa, 0 );
+  CreatePipe( handles[O,R], handles[O,W], @sa, 0 );
+  CreatePipe( handles[E,R], handles[E,W], @sa, 0 );
+
+  //
+  FillChar( si, sizeof(STARTUPINFO), 0 );
+  si.cb           := sizeof(STARTUPINFO);
+  si.dwFlags      := STARTF_USESHOWWINDOW or STARTF_USESTDHANDLES;
+  si.wShowWindow  := SW_HIDE;
+  si.hStdInput    := handles[I,R];
+  si.hStdOutput   := handles[O,W];
+  si.hStdError    := handles[E,W];
+
+  UniqueString( params^.cmd_line );
+  b := CreateProcess( nil, @params^.cmd_line[1], nil, nil, True, CREATE_NEW_CONSOLE, nil, nil, si, pi );
+  if not b then
+    goto LBL_FAIL;
+
+  CloseHandle( handles[I,R] );
+  CloseHandle( handles[O,W] );
+  CloseHandle( handles[E,W] );
+
+  while (params^.timout_ms > 0) do
+  begin
+    __process_pipes();
+    Application.ProcessMessages;
+    dw := WaitForSingleObject( pi.hProcess, WAIT_DURATION );
+    if WAIT_TIMEOUT = dw then
+      dec( params^.timout_ms, WAIT_DURATION )
+    else if WAIT_OBJECT_0 = dw then
+      break
+    else
+      goto LBL_FAIL;
+  end;
+
+  // Terminate process
+  if params^.timout_ms < 1 then
+    TerminateProcess( pi.hProcess, UINT(ERROR_CANCELLED) );
+
+
+  __process_pipes();
+  Application.ProcessMessages;
+
+  b := GetExitCodeProcess(pi.hProcess, &dw);
+
+
+
+  CloseHandle( handles[I,W] );
+  CloseHandle( handles[O,R] );
+  CloseHandle( handles[E,R] );
+
+
+  if b then
+    exit(dw);
+
+  exit(0);
+
+LBL_FAIL:
+
+  if pi.hProcess <> 0 then
+    TerminateProcess( pi.hProcess, UINT(ERROR_CANCELLED) );
+
+  CloseHandle( handles[I,R] );
+  CloseHandle( handles[I,W] );
+  CloseHandle( handles[O,R] );
+  CloseHandle( handles[O,W] );
+  CloseHandle( handles[E,R] );
+  CloseHandle( handles[E,W] );
+
+  exit( -1 );
 end;
 
 end.
