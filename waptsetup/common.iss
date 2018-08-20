@@ -21,8 +21,11 @@ Source: "..\waptupgrade\setup.py"; DestDir: "{app}\waptupgrade"; Flags: ignoreve
 Source: "..\waptupgrade\WAPT\*"; DestDir: "{app}\waptupgrade\WAPT"; Flags: createallsubdirs recursesubdirs ignoreversion;
 
 ; global management console
-Source: "..\waptconsole.exe.manifest"; DestDir: "{app}";
 Source: "..\waptconsole.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\waptconsole.exe.manifest"; DestDir: "{app}";
+Source: "..\waptconsolepostconf.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\waptconsolepostconf.exe.manifest"; DestDir: "{app}";
+
 Source: "..\waptdevutils.py"; DestDir: "{app}";
 
 ; authorized public keys

@@ -47,3 +47,11 @@
 #include "common.iss"
 
 [RUN]
+Filename: "{app}\waptconsolepostconf.exe"; Flags: postinstall runascurrentuser skipifsilent shellexec; StatusMsg: {cm:RunConfigTool}; Description: "{cm:LaunchingPostConf}"
+
+[CustomMessage]
+fr.LaunchingPostConf=Lancement de la post-configuration de la console
+
+en.LaunchingPostConf=Launch console post-configuration
+
+de.LaunchingPostconf=Konsole Post-Konfiguration starten

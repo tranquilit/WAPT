@@ -105,3 +105,4 @@ openssl.exe
 *.lrj
 waptwizard.exe
 waptwizard/lib
+waptconsolepostconf/lib
