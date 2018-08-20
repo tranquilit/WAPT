@@ -9,7 +9,7 @@ uses
   Classes, SysUtils, FileUtil, LazFileUtils, LazUTF8, Forms, Controls, Graphics,
   Dialogs, ComCtrls, StdCtrls, ExtCtrls, Buttons, ActnList, htmlview, Readhtml,
   IdHTTP, IdComponent, uvisLoading, DefaultTranslator, LCLTranslator, LCLProc,
-  EditBtn, uWaptServerRes;
+  EditBtn, waptconsolepostconfres;
 
 type
 
@@ -25,13 +25,15 @@ type
     ActNext: TAction;
     actPrevious: TAction;
     ActionList1: TActionList;
-    BitBtn4: TBitBtn;
     ButCancel: TBitBtn;
     ButNext: TBitBtn;
     ButPrevious: TBitBtn;
     cbLaunchWaptConsoleOnExit: TCheckBox;
     cb_create_new_key_show_password: TCheckBox;
     cb_use_existing_key_show_password: TCheckBox;
+    cb_wapt_server_password: TCheckBox;
+    ed_wapt_server_password: TEdit;
+    EdWAPTServerName: TEdit;
     ed_package_prefix: TEdit;
     ed_create_new_key_password_1: TEdit;
     ed_existing_key_certificat_filename: TFileNameEdit;
@@ -39,13 +41,9 @@ type
     ed_create_new_key_password_2: TEdit;
     ed_create_new_key_key_name: TEdit;
     ed_create_new_key_private_directory: TDirectoryEdit;
-    EdPwd1: TEdit;
-    EdPwd2: TEdit;
-    EdWaptServerIP: TEdit;
-    EdWAPTServerName: TEdit;
     ed_existing_key_key_filename: TFileNameEdit;
-    Label1: TLabel;
-    Label2: TLabel;
+    llb_wapt_server: TLabel;
+    lbl_wapt_server_password: TLabel;
     lbl_ed_package_prefix: TLabel;
     lbl_ed_existing_key_password: TLabel;
     lbl_ed_existing_key_key_filename: TLabel;
@@ -59,18 +57,14 @@ type
     PagesControl: TPageControl;
     Panel1: TPanel;
     Panel2: TPanel;
-    Panel3: TPanel;
-    Panel5: TPanel;
     panFinish: TPanel;
     pgParameters: TTabSheet;
-    pgPassword: TTabSheet;
     ProgressBar1: TProgressBar;
     pgFinish: TTabSheet;
     pgPackagePrivateKey: TTabSheet;
     pgBuildAgent: TTabSheet;
     rb_CreateKey: TRadioButton;
     rb_UseKey: TRadioButton;
-    procedure ActCheckDNSExecute(Sender: TObject);
     procedure ActManualExecute(Sender: TObject);
     procedure ActNextExecute(Sender: TObject);
     procedure ActNextUpdate(Sender: TObject);
@@ -634,7 +628,7 @@ begin
       'file',
       params_agent._agent_filename,
       'admin',
-      self.EdPwd1.Text,
+      self.ed_wapt_server_password.Text,
       @on_upload,
       ''
       );
@@ -665,7 +659,7 @@ begin
 
 
   params_package.server_username := 'admin';
-  params_package.server_password := self.EdPwd1.Text;
+  params_package.server_password := self.ed_wapt_server_password.Text;
   params_package.config_filename := INI_FILE_WAPTCONSOLE;
   params_package.dualsign        := false;
   if self.rb_CreateKey.Checked then
@@ -749,7 +743,7 @@ var
    r : integer;
 begin
   waptget := IncludeTrailingPathDelimiter(WaptBaseDir) + 'wapt-get.exe';
-  waptget := Format( '%s --wapt-server-user=admin --wapt-server-passwd=%s', [waptget, self.EdPwd1.Text] );
+  waptget := Format( '%s --wapt-server-user=admin --wapt-server-passwd=%s', [waptget, self.ed_wapt_server_password.Text] );
 
 
   sl := TStringList.Create;
@@ -850,19 +844,19 @@ LBL_FAIL:
 end;
 
 procedure TVisWAPTConsolePostConf.ActNextUpdate(Sender: TObject);
+var
+  ts : TTabSheet;
 begin
-  if PagesControl.ActivePage = pgParameters then
-    ActNext.Enabled := EdWaptServerIP.Text<>''
-  else if PagesControl.ActivePage = pgPassword then
-    ActNext.Enabled := (EdPwd1.Text='') or (EdPwd1.Text = EdPwd2.Text)
-  else if PagesControl.ActivePage = pgPackagePrivateKey then
-    ActNext.Enabled := true
-  else
-    ActNext.Enabled := PagesControl.ActivePageIndex<=PagesControl.PageCount-1;
-  if PagesControl.ActivePageIndex=PagesControl.PageCount-1 then
-    ActNext.Caption:= rsWaptSetupDone
-  else
-    ActNext.Caption:=rsWaptSetupnext;
+  ts := self.PagesControl.Pages[ self.PagesControl.PageIndex ];
+
+  if pgFinish = ts then
+  begin
+    actPrevious.Enabled := false;
+    ActNext.Caption:= rsWaptSetupDone;
+    exit;
+  end;
+
+  ActNext.Caption := rsWaptSetupnext;
 end;
 
 procedure TVisWAPTConsolePostConf.actPreviousExecute(Sender: TObject);
@@ -1011,35 +1005,6 @@ end;
 procedure TVisWAPTConsolePostConf.ActManualExecute(Sender: TObject);
 begin
   ActManual.Checked := not ActManual.Checked;
-end;
-
-
-procedure TVisWAPTConsolePostConf.ActCheckDNSExecute(Sender: TObject);
-var
-  cnames,ips : ISuperObject;
-begin
-  ips := Nil;
-  cnames := DNSCNAMEQuery(EdWAPTServerName.Text);
-  if (cnames<>Nil) and (cnames.AsArray.Length>0) then
-    ips := DNSAQuery(cnames.AsArray[0].AsString)
-  else
-    ips := DNSAQuery(EdWAPTServerName.Text);
-
-  if (ips<>Nil) and (ips.AsArray.Length>0) then
-  begin
-    EdWaptServerIP.text := ips.AsArray[0].AsString
-  end
-  else
-  begin
-    if Dialogs.MessageDlg(rsInvalidDNS,rsInvalidDNSfallback,
-        mtConfirmation,mbYesNoCancel,0) = mrYes then
-    begin
-      EdWAPTServerName.Text := GetLocalIP;
-      EdWaptServerIP.Text:= GetLocalIP;
-    end
-    else
-      EdWaptServerIP.text := '';
-  end;
 end;
 
 function MakeIdent(st:String):String;

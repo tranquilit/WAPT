@@ -23,7 +23,7 @@ implementation
 uses
   uutil,
   udefault,
-  uWaptServerRes;
+  waptconsolepostconfres;
 
 
 

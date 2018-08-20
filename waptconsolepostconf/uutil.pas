@@ -110,7 +110,7 @@ uses
   Controls,
   Forms,
   Dialogs,
-  uWaptServerRes,
+  waptconsolepostconfres,
   waptcommon,
   PythonEngine,
   VarPyth,

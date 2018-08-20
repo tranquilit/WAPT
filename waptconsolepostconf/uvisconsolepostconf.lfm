@@ -1,8 +1,9 @@
 object VisWAPTConsolePostConf: TVisWAPTConsolePostConf
-  Left = 643
+  Left = 1995
   Height = 399
-  Top = 295
+  Top = 53
   Width = 680
+  BorderIcons = [biSystemMenu]
   Caption = 'Configuration of WAPT console for Windows'
   ClientHeight = 399
   ClientWidth = 680
@@ -30,145 +31,52 @@ object VisWAPTConsolePostConf: TVisWAPTConsolePostConf
       ChildSizing.Layout = cclLeftToRightThenTopToBottom
       ClientHeight = 341
       ClientWidth = 672
-      object Panel3: TPanel
-        Left = 0
-        Height = 32
-        Top = 0
-        Width = 672
-        Align = alTop
-        AutoSize = True
-        BevelOuter = bvNone
-        ChildSizing.LeftRightSpacing = 6
-        ChildSizing.TopBottomSpacing = 3
-        ChildSizing.HorizontalSpacing = 6
-        ChildSizing.VerticalSpacing = 3
-        ChildSizing.Layout = cclLeftToRightThenTopToBottom
-        ChildSizing.ControlsPerLine = 3
-        ClientHeight = 32
-        ClientWidth = 672
+      object EdWAPTServerName: TEdit
+        Left = 296
+        Height = 23
+        Hint = 'WAPT clients make requests to the server. In order to connect to the WAPT server,'#13#10'it is advisable that a DNS name be used, as long as it has been correctly'#13#10'configured in your network''s DNS environment. We suggest naming your WAPT server'#13#10'''srvwapt.mydomain.local'' (A record type), then binding an alias'#13#10'(CNAME record type, e.g. ''wapt.mondomain.local'') to srvwapt.'#13#10'In case you don''t trust your DNS, or you are just setting up a testing environment,'#13#10'you can fall back to the server IP address. For further information :'#13#10'''http://dev.tranquil.it/scenari/guide_admin/co/wapt_server_configuration_champDNS.html'''
+        Top = 120
+        Width = 200
+        Align = alCustom
+        Constraints.MinWidth = 200
         TabOrder = 0
-        object EdWAPTServerName: TEdit
-          Left = 6
-          Height = 26
-          Hint = 'WAPT clients make requests to the server. In order to connect to the WAPT server,'#13#10'it is advisable that a DNS name be used, as long as it has been correctly'#13#10'configured in your network''s DNS environment. We suggest naming your WAPT server'#13#10'''srvwapt.mydomain.local'' (A record type), then binding an alias'#13#10'(CNAME record type, e.g. ''wapt.mondomain.local'') to srvwapt.'#13#10'In case you don''t trust your DNS, or you are just setting up a testing environment,'#13#10'you can fall back to the server IP address. For further information :'#13#10'''http://dev.tranquil.it/scenari/guide_admin/co/wapt_server_configuration_champDNS.html'''
-          Top = 3
-          Width = 200
-          Constraints.MinWidth = 200
-          TabOrder = 0
-          Text = 'srvwapt.mydomain.lan'
-        end
-        object BitBtn4: TBitBtn
-          Left = 212
-          Height = 26
-          Top = 3
-          Width = 138
-          Action = ActCheckDNS
-          AutoSize = True
-          Glyph.Data = {
-            36040000424D3604000000000000360000002800000010000000100000000100
-            2000000000000004000064000000640000000000000000000000FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00348DC985459FD5E93A8DCBE02567
-            A556FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF007E7E7E46797979D251A2CBFF86E9F9FF4DD9F5FF3C90
-            C7FF4C6278FF606060D7FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF008F8F8F4B8A8A8ACCA3A3A3FFC6C5C4FF63B3DEFFA1E6F8FF38D2F2FF47D6
-            F6FF4297CEFF4B6178FF1A53B80D1D5EC00DFFFFFF00FFFFFF00FFFFFF009B9B
-            9BC9B3B3B3FFD4D4D4FFE1DFDFFFC5BFBDFF8AABC1FF52A2D4FF99E2F6FF53DC
-            F5FF46D9F6FF398EC8FF3583CFE83684D2E8205EA753FFFFFF00FFFFFF00A2A2
-            A2FFF0F0F0FFE0E0E0FFD4D2D2FFBEB6B5FFBCB5B4FF9EAEBAFF5EACD7FF5EB7
-            DEFF5ED9F2FF4EDBF6FF5BDDF7FF55D8F5FF2E80CDF72058A259FFFFFF00A8A8
-            A8FFEAEAEAFFDDDDDDFFD5D4D3FFC0B9B7FFBEB7B6FFBDB6B4FFBBB4B3FF74A5
-            C7FF89DDF4FF6AE0F6FF73E2F7FF5FDFF6FF55DAF6FF387FCDF3FFFFFF00AFAF
-            AFFFEBEBEBFFDDDDDDFFD7D5D5FFC1BBB9FFC0B9B8FFBEB8B6FF3BA142FF3A9D
-            A9FFA9EEF9FF7EE6F8FF9AE8F8FF7ED1F0FF80E2F6FF3F98D9F0FFFFFF00B5B5
-            B5FFECECECFFDEDEDEFFD9D8D8FFC3BDBBFFC2BBBAFFC1BAB9FFA0C8A4FF42A1
-            8AFF5EC1EAFFA3F0FBFF80D4F0FF7EC7ECFF50A3DDF5216EB659FFFFFF00BBBB
-            BBFFECECECFFDFDFDFFFDAD9D9FFC6BFBEFFC4BEBCFFC3BCBBFFC1BBB9FFC0B9
-            B8FF8BB6D5FF6FC9ECFFC9F3FBFF57BAE7ED2585CD48FFFFFF00FFFFFF00C0C0
-            C0FFECECECFFE0E0E0FFDDDCDCFFC7C1C0FF929191FF8F8F8FFF8D8D8DFF8A8A
-            8AFFD8D5D4FF5B93B5FF46ABE1CB2B96DA63FFFFFF00FFFFFF00FFFFFF00C6C6
-            C6FFEFEFEFFFE1E1E1FFDDDDDDFFC8C3C2FFC8C2C1FFC6C1BFFFC5BFBEFFC3BD
-            BBFFDAD6D5FF919191FFFFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00CBCB
-            CBFFE9E9E9FFE9E9E9FFE2E1E1FFCBC6C4FF989797FF969595FF949393FF9291
-            91FFDBD7D6FF989898FFFFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00CFCF
-            CF48CBCBCBE4DFDFDFFFEAEAEAFFCFCAC9FFCBC6C5FFCAC4C3FFC8C3C1FFC7C1
-            C1FFDCD9D8FF9E9E9EFFFFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00D0D0D00FCCCCCCABDCDCDCFFE6E3E3FFE1DEDCFFDFDCDCFFDFDCDBFFDEDB
-            DBFFEEECECFFA5A5A5FFFFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00CDCDCD9FC9C9C9FBC4C4C4FFC0C0C0FFBBBBBBFFB6B6
-            B6FFB0B0B0FFABABABA7FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00
-          }
-          TabOrder = 1
-        end
-        object EdWaptServerIP: TEdit
-          Left = 356
-          Height = 26
-          Top = 3
-          Width = 120
-          Constraints.MinWidth = 120
-          TabOrder = 2
-        end
+        Text = 'srvwapt.mydomain.lan'
       end
-    end
-    object pgPassword: TTabSheet
-      Caption = 'Password'
-      ClientHeight = 341
-      ClientWidth = 672
-      object Panel5: TPanel
-        Left = 0
-        Height = 98
-        Top = 0
-        Width = 672
-        Align = alTop
-        BevelOuter = bvNone
-        ChildSizing.LeftRightSpacing = 6
-        ChildSizing.TopBottomSpacing = 3
-        ChildSizing.HorizontalSpacing = 6
-        ChildSizing.VerticalSpacing = 6
-        ChildSizing.Layout = cclLeftToRightThenTopToBottom
-        ChildSizing.ControlsPerLine = 2
-        ClientHeight = 98
-        ClientWidth = 672
-        TabOrder = 0
-        object Label1: TLabel
-          Left = 6
-          Height = 23
-          Top = 3
-          Width = 123
-          Caption = 'WAPT server password:'
-          ParentColor = False
-        end
-        object EdPwd1: TEdit
-          Left = 135
-          Height = 23
-          Hint = 'This is the password used to connect to the WAPT server via the WAPT console.'#13#10'For further information :'#13#10'http://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.html'
-          Top = 3
-          Width = 120
-          Constraints.MinWidth = 120
-          EchoMode = emPassword
-          PasswordChar = '*'
-          TabOrder = 0
-        end
-        object Label2: TLabel
-          Left = 6
-          Height = 23
-          Top = 32
-          Width = 123
-          Caption = 'Confirm password:'
-          ParentColor = False
-        end
-        object EdPwd2: TEdit
-          Left = 135
-          Height = 23
-          Top = 32
-          Width = 120
-          Constraints.MinWidth = 120
-          EchoMode = emPassword
-          PasswordChar = '*'
-          TabOrder = 1
-        end
+      object llb_wapt_server: TLabel
+        Left = 196
+        Height = 15
+        Top = 124
+        Width = 85
+        Align = alCustom
+        Caption = 'Wapt server url :'
+        ParentColor = False
+      end
+      object lbl_wapt_server_password: TLabel
+        Left = 160
+        Height = 15
+        Top = 172
+        Width = 121
+        Align = alCustom
+        Caption = 'Wapt server password :'
+        ParentColor = False
+      end
+      object ed_wapt_server_password: TEdit
+        Left = 296
+        Height = 23
+        Top = 168
+        Width = 80
+        Align = alCustom
+        TabOrder = 1
+        Text = 'ed_wapt_server_password'
+      end
+      object cb_wapt_server_password: TCheckBox
+        Left = 400
+        Height = 19
+        Top = 170
+        Width = 155
+        Align = alCustom
+        Caption = 'cb_wapt_server_password'
+        TabOrder = 2
       end
     end
     object pgPackagePrivateKey: TTabSheet
@@ -624,7 +532,6 @@ object VisWAPTConsolePostConf: TVisWAPTConsolePostConf
     end
     object ActCheckDNS: TAction
       Caption = 'Check DNS name'
-      OnExecute = ActCheckDNSExecute
     end
     object ActManual: TAction
       Caption = 'Input URL manually'
