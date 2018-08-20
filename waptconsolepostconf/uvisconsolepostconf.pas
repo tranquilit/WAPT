@@ -31,7 +31,7 @@ type
     cbLaunchWaptConsoleOnExit: TCheckBox;
     cb_create_new_key_show_password: TCheckBox;
     cb_use_existing_key_show_password: TCheckBox;
-    cb_wapt_server_password: TCheckBox;
+    cb_wapt_server_show_password: TCheckBox;
     ed_wapt_server_password: TEdit;
     EdWAPTServerName: TEdit;
     ed_package_prefix: TEdit;
@@ -89,9 +89,10 @@ type
 
     procedure set_buttons_enable( enable : Boolean );
     procedure clear();
+    procedure validate_page_parameters( var bContinue : boolean );
     procedure validate_page_package_and_private_key( var bContinue : boolean );
     procedure validate_page_agent( var bContinue : boolean );
-    function  write_configs( const package_certificate : String ) : integer;
+    function  write_config( const package_certificate : String ) : integer;
     function  restart_waptservice_and_register() : integer;
     function  run_commands( const sl : TStrings ) : integer;
   public
@@ -300,7 +301,20 @@ procedure TVisWAPTConsolePostConf.on_show_password_change( Sender: TObject);
 var
   c : Char;
 begin
-  if self.rb_CreateKey.Enabled then
+
+  // Parameters
+  if self.cb_wapt_server_show_password = Sender then
+  begin
+    if self.cb_wapt_server_show_password.Checked then
+      c := #0
+    else
+      c := DEFAULT_PASSWORD_CHAR;
+    self.ed_wapt_server_password.PasswordChar := c;
+    exit;
+  end;
+
+  // Package create key
+  if self.cb_create_new_key_show_password = Sender then
   begin
     if self.cb_create_new_key_show_password.Checked then
       c := #0
@@ -308,13 +322,19 @@ begin
       c := DEFAULT_PASSWORD_CHAR;
     self.ed_create_new_key_password_1.PasswordChar := c;
     self.ed_create_new_key_password_2.PasswordChar := c;
+    exit;
   end;
 
-  if self.cb_use_existing_key_show_password.Checked then
-    c := #0
-  else
-    c := DEFAULT_PASSWORD_CHAR;
-  self.ed_existing_key_password.PasswordChar := c;
+  // Pacakge existing key
+  if self.cb_use_existing_key_show_password = Sender then
+  begin
+    if self.cb_use_existing_key_show_password.Checked then
+      c := #0
+    else
+      c := DEFAULT_PASSWORD_CHAR;
+    self.ed_existing_key_password.PasswordChar := c;
+    exit;
+  end;
 
 end;
 
@@ -427,6 +447,13 @@ begin
 
   set_buttons_enable( true );
 
+  // parameters
+  self.EdWAPTServerName.Clear;
+  self.ed_wapt_server_password.Clear;
+  self.cb_wapt_server_show_password.Checked := false;
+  self.on_show_password_change( self.cb_wapt_server_show_password );
+
+
   // Private key and certificate
   self.ed_package_prefix.Clear;
   self.ed_create_new_key_private_directory.Clear;
@@ -446,7 +473,8 @@ begin
 
   self.rb_CreateKey.Checked := true;
   self.on_private_key_radiobutton_change( nil );
-  self.on_show_password_change( nil );
+  self.on_show_password_change( self.cb_create_new_key_show_password  );
+  self.on_show_password_change( self.cb_use_existing_key_show_password  );
 
   self.ed_package_prefix.Text:= DEFAULT_PACKAGE_PREFIX;
   self.ed_create_new_key_private_directory.Text := DEFAULT_PRIVATE_KEY_DIRECTORY;
@@ -455,16 +483,47 @@ begin
 
 end;
 
+procedure TVisWAPTConsolePostConf.validate_page_parameters( var bContinue: boolean);
+var
+   url : String;
+begin
+  bContinue := false;
+
+  if 0 = Length(Trim(self.EdWAPTServerName.Text)) then
+  begin
+    self.show_validation_error( self.EdWAPTServerName, rs_wapt_sever_url_is_invalid );
+    exit;
+  end;
+
+  url := self.EdWAPTServerName.Text;
+
+  if (Pos('http', url) = 0) and (Pos('https', url) = 0) then
+    url := 'https://' + url;
+
+
+
+  if not wizard_validate_waptserver_login( self, self.ed_wapt_server_password, url, 'admin', self.ed_wapt_server_password.Text ) then
+    exit;
+
+  self.EdWAPTServerName.Text := url;
+  Application.ProcessMessages;
+
+
+  bContinue := true;
+end;
+
 procedure TVisWAPTConsolePostConf.validate_page_package_and_private_key( var bContinue: boolean);
 var
-   r    : integer;
-   msg  : String;
-   s    : String;
-   params : TCreate_signed_cert_params;
-   package_certificate : String;
+   r                      : integer;
+   msg                    : String;
+   s                      : String;
+   params                 : TCreate_signed_cert_params;
+   package_certificate    : String;
+   b_skip_page_build_agent: boolean;
 begin
 
   bContinue := false;
+  b_skip_page_build_agent := false;
 
   // Validate package name
   if not wizard_validate_package_prefix( self, self.ed_package_prefix, self.ed_package_prefix.Text ) then
@@ -473,6 +532,17 @@ begin
   // Validate create key
   if self.rb_CreateKey.Checked then
   begin
+
+    if not wizard_validate_waptserver_waptagent_is_not_present( self, nil, self.EdWAPTServerName.Text, r  ) then
+    begin
+      if HTTP_RESPONSE_CODE_OK <> r then
+        exit;
+      r := MessageDlg( Application.Name, rs_wapt_agent_has_been_found_on_server_confirm_create_package_key, mtConfirmation, mbYesNo, 0 );
+      if mrNo = r then
+        exit;
+    end;
+
+
     if not DirectoryExists(self.ed_create_new_key_private_directory.Text) then
     begin
       msg := Format( rs_create_key_dir_not_exist, [self.ed_create_new_key_private_directory.Text] );
@@ -529,7 +599,6 @@ begin
   // Validate existing key
   else
   begin
-
     if str_is_empty_when_trimmed(self.ed_existing_key_key_filename.Text) then
     begin
       self.show_validation_error( self.ed_existing_key_key_filename, rs_key_filename_cannot_be_empty );
@@ -561,12 +630,22 @@ begin
     package_certificate := self.ed_existing_key_certificat_filename.Text;
   end;
 
-  write_configs( package_certificate );
-  self.restart_waptservice_and_register();
 
-  if not wizard_validate_no_innosetup_process_running( self, self.ButNext ) then
+  if not wizard_validate_waptserver_waptagent_is_not_present( self, nil, self.EdWAPTServerName.Text, r ) then
+  begin
+    if HTTP_RESPONSE_CODE_OK <> r then
+      exit;
+    r := MessageDlg( Application.Name, rs_wapt_agent_has_been_found_on_server_confirm_skip_build_agent, mtConfirmation, mbYesNo, 0 );
+    b_skip_page_build_agent := mrNo = r;
+  end;
+
+  write_config( package_certificate );
+
+  if b_skip_page_build_agent then
+    self.PagesControl.ActivePage := self.pgFinish
+
+  else if not wizard_validate_no_innosetup_process_running( self, self.ButNext ) then
     exit;
-
 
   bContinue := true;
 end;
@@ -681,7 +760,7 @@ LBL_FAIL:
   self.ProgressBar1.Visible := false;
 end;
 
-function TVisWAPTConsolePostConf.write_configs(const package_certificate: String ): integer;
+function TVisWAPTConsolePostConf.write_config(const package_certificate: String ): integer;
 var
    wapt_server : String;
    repo_url    : String;
@@ -695,14 +774,14 @@ begin
   if 0 = Length(INI_FILE_WAPTGET) then
     exit(-1);
 
-  wapt_server := 'https://' + self.EdWAPTServerName.Text;
+  wapt_server := self.EdWAPTServerName.Text;
   repo_url    := wapt_server + '/wapt';
 
-  SetLength( confs, 2 );
+  SetLength( confs, 1 );
   confs[0] := INI_FILE_WAPTCONSOLE;
-  confs[1] := INI_FILE_WAPTGET;
+//  confs[1] := INI_FILE_WAPTGET;
 
-  for i:= 0 to 1 do
+  for i:= 0 to Length(confs) -1  do
   begin
     result := -1;
     ini := TIniFile.Create( confs[i] );
@@ -803,6 +882,14 @@ begin
   bContinue := false;
 
   set_buttons_enable( false );
+
+  if pgParameters = self.PagesControl.ActivePage then
+  begin
+    self.validate_page_parameters( bContinue );
+    if not bContinue then
+      goto LBL_FAIL;
+  end;
+
 
   if pgPackagePrivateKey = PagesControl.ActivePage then
   begin

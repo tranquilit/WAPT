@@ -17,10 +17,12 @@ function wizard_validate_key_name( w : TVisWAPTConsolePostConf; c : TControl; co
 function wizard_validate_str_password_are_not_empty_and_equals( w: TVisWAPTConsolePostConf; c: TControl; const s1: String; const s2: String ): Boolean;
 function wizard_validate_key_password( w : TVisWAPTConsolePostConf; c : TControl; const key_filename : String; const key_password : String ) : boolean;
 function wizard_validate_no_innosetup_process_running(w: TVisWAPTConsolePostConf; c : TControl ): Boolean;
-
+function wizard_validate_waptserver_login(w: TVisWAPTConsolePostConf; c : TControl; const server_url: String; const login: String; const password: String ): boolean;
+function wizard_validate_waptserver_waptagent_is_not_present( w : TVisWAPTConsolePostConf; c : TControl; const server_url: String; var rc : integer ): Boolean;
 implementation
 
 uses
+  superobject,
   uutil,
   udefault,
   waptconsolepostconfres;
@@ -116,6 +118,73 @@ begin
   exit(true);
 end;
 
+
+
+function wizard_validate_waptserver_login(w: TVisWAPTConsolePostConf; c : TControl; const server_url: String; const login: String; const password: String ): boolean;
+var
+  so  : ISuperObject;
+  r   : integer;
+  s   : String;
+  b   : boolean;
+  url : String;
+begin
+
+  so := TSuperObject.ParseString( '{}', false );
+  so.S['user'] := UTF8decode(login);
+  so.S['password'] := UTF8Decode(password);
+
+
+
+  url := url_concat( server_url , '/api/v3/login' );
+  r := http_post( s, url, MIME_APPLICATION_JSON, UTF8Encode(so.AsJSon(false)) );
+  if r <> 0 then
+  begin
+    w.show_validation_error( c,  rs_a_problem_has_occured_while_trying_to_login_server );
+    exit( false  );
+  end;
+
+  r := wapt_json_response_is_success( b, s );
+  if r <> 0 then
+  begin
+    w.show_validation_error( nil,   rs_a_problem_has_occured_while_trying_to_login_server );
+    exit( false  );
+  end;
+
+  if not b then
+  begin
+    w.show_validation_error( c, rs_bad_login_password);
+    exit(false);
+  end;
+
+  exit( true );
+end;
+
+
+function wizard_validate_waptserver_waptagent_is_not_present( w : TVisWAPTConsolePostConf; c : TControl; const server_url: String; var rc : integer ): Boolean;
+var
+  r  : integer;
+  url : String;
+begin
+  url := url_concat( server_url, '/wapt/waptagent.exe' );
+  r := http_reponse_code( rc, url );
+  if r <> 0 then
+  begin
+    w.show_validation_error( c, 'An problem has occured while try to download wapt agent' );
+    exit( false );
+  end;
+
+  if 200 = rc then
+    exit( false );
+
+  if 404 <> rc then
+  begin
+    w.show_validation_error( c, 'An problem has occured while try to download wapt agent' );
+    exit( false  );
+  end;
+
+
+  exit( true );
+end;
 
 end.
 

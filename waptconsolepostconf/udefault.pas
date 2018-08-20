@@ -63,6 +63,10 @@ const
   INI_FILE_WAPTCONSOLE : String = '';
   INI_FILE_WAPTGET     : String = '';
 
+  MIME_APPLICATION_JSON : String = 'application/json';
+
+  HTTP_TIMEOUT          : integer = 4 * 1000;
+  HTTP_RESPONSE_CODE_OK : integer = 200;
 implementation
 
 uses

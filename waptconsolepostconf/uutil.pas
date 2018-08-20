@@ -5,7 +5,9 @@ unit uutil;
 interface
 
 uses
-  Classes, SysUtils;
+  IdHTTP,
+  Classes,
+  SysUtils;
 
 type
 Tcreate_signed_cert_params = record
@@ -100,10 +102,23 @@ function launch_process( const binary : String; const params: String = ''): inte
 
 function readfile_available( h : THandle; buffer : PDWORD; buffer_size : integer ) : integer;
 function run_sync( params : PRunSyncParameters ) : integer;
+function wapt_json_response_is_success(var success: boolean; const json: String  ): integer;
+
+function url_concat(const left: String; const right: String): String;
+function url_protocol(var protocol: String; const url: String): integer;
+
+function  http_create( https : boolean ) : TIdHTTP;
+procedure http_free( var http  : TIdHTTP );
+function  http_is_valid_url(const url: String): boolean;
+function  http_post(var output: String; const url: String; const content_type: String; const post_data: String): integer;
+function  http_reponse_code(var response_code: integer; const url: String ): integer;
 
 implementation
 
 uses
+  IdSSLOpenSSL,
+  IdCookieManager,
+  superobject,
   windows,
   JwaWindows,
   tiscommon,
@@ -648,6 +663,183 @@ LBL_FAIL:
 
   exit( -1 );
 end;
+
+function wapt_json_response_is_success(var success: boolean; const json: String  ): integer;
+var
+  so : ISuperObject;
+begin
+  so := TSuperObject.ParseString( @WideString(json)[1], true );
+
+  if not assigned( so ) then
+    exit( -1 );
+
+  so := so.O[ 'success' ];
+  if not assigned( so ) then
+      exit( -1 );
+
+  if not (so.GetDataType = stBoolean) then
+    exit( -1 );
+
+  success := so.AsBoolean;
+  exit( 0 );
+end;
+
+
+function url_concat(const left: String; const right: String): String;
+var
+  r : integer;
+begin
+  result := left;
+
+  if result[ Length(result) ] <> '/' then
+    result := result + '/';
+
+  r := length(right);
+  if right[1] = '/' then
+    result := result + Copy(right, 2, r - 1 )
+  else
+    result := result + right;
+end;
+
+
+
+function url_protocol(var protocol: String; const url: String): integer;
+var
+  i : integer;
+begin
+  i := Pos('://', url);
+  if i = 0 then
+    exit(-1);
+  dec(i);
+  protocol := Copy( url, 1, i );
+  exit(0);
+end;
+
+
+function http_create( https : boolean ) : TIdHTTP;
+var
+  http : TIdHTTP;
+  ssl  : TIdSSLIOHandlerSocketOpenSSL;
+begin
+  ssl := nil;
+
+  http := TIdHTTP.Create;
+  http.HandleRedirects  := True;
+  http.ConnectTimeout   := HTTP_TIMEOUT;
+  http.ReadTimeout      := HTTP_TIMEOUT;
+  http.IOHandler        := nil;
+
+  if https then
+  begin
+    ssl := TIdSSLIOHandlerSocketOpenSSL.Create;
+    ssl.SSLOptions.Method := sslvSSLv23;
+    http.IOHandler := ssl;
+  end;
+
+
+  result := http;
+end;
+
+procedure http_free( var http  : TIdHTTP );
+begin
+  if nil <> http.IOHandler then
+  begin
+    http.IOHandler.Free;
+    http.IOHandler := nil;
+  end;
+  http.Free;
+  http := nil;
+end;
+
+function http_is_valid_url(const url: String): boolean;
+var
+  proto : String;
+  b_http : boolean;
+  b_https : boolean;
+begin
+  if 0 <> url_protocol( proto, url) then
+    exit( false );
+
+  b_http := proto = 'http';
+  b_https:= proto = 'https';
+
+  result := b_http or b_https;
+end;
+
+
+function http_post(var output: String; const url: String; const content_type: String; const post_data: String): integer;
+const
+  proxy         : String    ='';
+  user          : AnsiString='';
+  password      : AnsiString='';
+  userAgent     : String    ='';
+  AcceptType    : String    ='';
+  CookieManager : TIdCookieManager = Nil;
+  VerifyCertificateFilename : String = '0';
+begin
+
+  if not http_is_valid_url(url) then
+  begin
+    output := 'Invalid url';
+    exit( -1 );
+  end;
+
+  try
+    output := IdHttpPostData( url,
+                              post_data,
+                              proxy,
+                              HTTP_TIMEOUT,
+                              HTTP_TIMEOUT,
+                              HTTP_TIMEOUT,
+                              user,
+                              password,
+                              userAgent,
+                              content_type,
+                              VerifyCertificateFilename,
+                              AcceptType,
+                              CookieManager );
+    exit( 0 );
+  except on e : Exception do
+    begin
+      output := e.Message;
+      exit( -1 );
+    end;
+  end;
+end;
+
+function http_reponse_code(var response_code: integer; const url: String ): integer;
+var
+  http : TIdHTTP;
+  proto : String;
+  b_https : Boolean;
+begin
+
+  if not http_is_valid_url(url) then
+    exit(-1);
+
+  url_protocol( proto, url );
+  b_https := proto = 'https';
+
+  http := http_create( b_https );
+
+  try
+    http.Get(url);
+  except
+  end;
+
+  if http.ResponseCode = -1 then
+  begin
+    http.Free;
+    exit( -1 );
+  end;
+
+
+  response_code := http.ResponseCode;
+  http.Free;
+  exit(0);
+
+end;
+
 
 end.
 
