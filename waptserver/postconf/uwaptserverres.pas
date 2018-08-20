@@ -66,6 +66,7 @@ resourcestring
   rs_compilation_failed = 'Compilation Failed';
   rs_finish = 'Finish';
   rs_next = 'Next';
+  rs_upload_to_server = 'Upload to server %d%%';
 
 implementation
 

@@ -589,6 +589,10 @@ msgstr ""
 msgid "Supplied passwords must be at least 6 characters length"
 msgstr ""
 
+#: uwaptserverres.rs_upload_to_server
+msgid "Upload to server %d%%"
+msgstr ""
+
 #: uwaptserverres.rs_wrong_key_password
 msgid "Wrong key password"
 msgstr ""

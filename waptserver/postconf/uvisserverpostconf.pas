@@ -108,6 +108,7 @@ type
     procedure validate_page_agent( var bContinue : boolean );
     function  write_configs( const package_certificate : String ) : integer;
     function  restart_waptservice_and_register() : integer;
+    function  run_commands( const sl : TStrings ) : integer;
   public
     procedure show_validation_error( c : TControl; const msg : String );
   end;
@@ -368,11 +369,38 @@ begin
 end;
 
 procedure TVisWAPTServerPostConf.on_upload(ASender: TObject; AWorkMode: TWorkMode; AWorkCount: Int64);
+const
+  WORK_FINISHED : integer = 62;
+var
+  l : integer;
+  p : integer;
 begin
-  if AWorkCount <> 62 then
+  if self.pgBuildAgent = self.PagesControl.ActivePage then
+  begin
+
+    if WORK_FINISHED = AWorkCount then
+    begin
+      l := self.pg_agent_memo.Tag;
+      self.pg_agent_memo.Lines[ l ] := Format( rs_upload_to_server, [100] );
+      self.pg_agent_memo.Tag := 0;
+      Application.ProcessMessages;
+      exit;
+    end;
+
+    if self.pg_agent_memo.Tag = 0 then
+    begin
+      self.pg_agent_memo.Tag := self.pg_agent_memo.Lines.Count;
+      self.pg_agent_memo.Append('');
+      self.pg_agent_memo.Append('');
+    end;
+    l := self.pg_agent_memo.Tag;
+    p := round(100 * AWorkCount / SETUP_AGENT_SIZE);
+    self.pg_agent_memo.Lines[ l ] := Format( rs_upload_to_server, [p] );
+    self.pg_agent_memo.Repaint;
+
     self.ProgressBar1.Position := SETUP_AGENT_SIZE + AWorkCount;
-  self.pg_agent_memo.Append( IntToStr(AWorkCount) + ' ' + IntToStr(self.ProgressBar1.Position) );
-  Application.ProcessMessages;
+    Application.ProcessMessages;
+  end;
 end;
 
 procedure TVisWAPTServerPostConf.on_python_update(Sender: TObject; PSelf, Args: PPyObject; var Result: PPyObject);
@@ -626,6 +654,9 @@ begin
     self.show_validation_error( self.pg_agent_memo,  rs_compilation_failed );
     goto LBL_FAIL;
   end;
+  self.ProgressBar1.Position := SETUP_AGENT_SIZE;
+  Application.ProcessMessages;
+
 
   // Upload agent
   try
@@ -656,6 +687,7 @@ begin
       exit;
     end;
   end;
+  self.ProgressBar1.Position := SETUP_AGENT_SIZE * 2;
 
   // Build upload apt-upgrade
   if not wizard_validate_no_innosetup_process_running( self, nil ) then
@@ -683,9 +715,9 @@ begin
     self.show_validation_error( nil, params_package._err_message );
     goto LBL_FAIL;
   end;
-  self.ProgressBar1.Position := self.ProgressBar1.Max;
+  self.ProgressBar1.Position :=  SETUP_AGENT_SIZE * 3;
   Application.ProcessMessages;
-  Sleep( 1 * 1000 );
+  Sleep( 2 * 1000 );
 
 
   self.ProgressBar1.Visible := false;
@@ -747,7 +779,7 @@ function TVisWAPTServerPostConf.restart_waptservice_and_register(): integer;
 var
    waptget : String;
    sl : TStringList;
-   i : integer;
+   r : integer;
 begin
   waptget := IncludeTrailingPathDelimiter(WaptBaseDir) + 'wapt-get.exe';
   waptget := Format( '%s --wapt-server-user=admin --wapt-server-passwd=%s', [waptget, self.EdPwd1.Text] );
@@ -760,24 +792,44 @@ begin
   sl.Append( waptget + ' update' );
 
 
+  r := run_commands( sl );
+  sl.Free;
+
+  exit(r);
+end;
+
+function TVisWAPTServerPostConf.run_commands(const sl: TStrings): integer;
+var
+  i : integer;
+  m : integer;
+begin
+  m := sl.Count;
+
   self.ProgressBar1.Visible := true;
   self.ProgressBar1.Position:= 0;
-  self.ProgressBar1.Max := sl.Count;
+  self.ProgressBar1.Max := m;
   Application.ProcessMessages;
 
+  dec(m);
 
-  for i := 0 to sl.Count -1 do
+  for i := 0 to m do
   begin
-    self.ProgressBar1.Position := i + 1 ;
+    self.ProgressBar1.Position := i + 1;
     Application.ProcessMessages;
-    Run( UTF8Decode(sl.Strings[i]) );
+    try
+      Run( UTF8Decode(sl.Strings[i]) );
+      result := 0;
+    except on E : Exception do
+      begin
+        self.show_validation_error( nil, e.Message );
+        result := -1;
+        break;
+      end;
+    end;
   end;
-
 
   self.ProgressBar1.Visible := false;
   Application.ProcessMessages;
-
-  exit(0);
 end;
 
 
