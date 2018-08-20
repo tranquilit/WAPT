@@ -49,7 +49,7 @@
 [RUN]
 Filename: "{app}\waptconsolepostconf.exe"; Flags: postinstall runascurrentuser skipifsilent shellexec; StatusMsg: {cm:RunConfigTool}; Description: "{cm:LaunchingPostConf}"
 
-[CustomMessage]
+[CustomMessages]
 fr.LaunchingPostConf=Lancement de la post-configuration de la console
 
 en.LaunchingPostConf=Launch console post-configuration
