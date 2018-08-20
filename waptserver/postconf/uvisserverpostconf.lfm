@@ -603,8 +603,9 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
       Left = 6
       Height = 24
       Top = 3
-      Width = 293
+      Width = 402
       Align = alLeft
+      Anchors = [akTop, akLeft, akRight, akBottom]
       TabOrder = 1
       Visible = False
     end
