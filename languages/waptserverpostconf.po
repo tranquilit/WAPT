@@ -210,6 +210,10 @@ msgstr ""
 msgid "Start"
 msgstr ""
 
+#: tviswaptserverpostconf.p_right.caption
+msgid "p_right"
+msgstr ""
+
 #: tviswaptserverpostconf.rb_configure_console_continue.caption
 msgid "Continue configuration by configuring console"
 msgstr ""

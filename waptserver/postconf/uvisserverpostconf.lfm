@@ -1,11 +1,11 @@
 object VisWAPTServerPostConf: TVisWAPTServerPostConf
-  Left = 643
-  Height = 399
-  Top = 295
-  Width = 680
+  Left = 2162
+  Height = 385
+  Top = 334
+  Width = 939
   Caption = 'Configuration of WAPT server for Windows'
-  ClientHeight = 399
-  ClientWidth = 680
+  ClientHeight = 385
+  ClientWidth = 939
   Constraints.MinHeight = 345
   Constraints.MinWidth = 680
   OnCreate = FormCreate
@@ -15,9 +15,9 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
   LCLVersion = '1.8.4.0'
   object PagesControl: TPageControl
     Left = 0
-    Height = 369
+    Height = 355
     Top = 0
-    Width = 680
+    Width = 616
     ActivePage = pgParameters
     Align = alClient
     MultiLine = True
@@ -28,13 +28,13 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
     object pgParameters: TTabSheet
       Caption = 'Parameters'
       ChildSizing.Layout = cclLeftToRightThenTopToBottom
-      ClientHeight = 341
-      ClientWidth = 672
+      ClientHeight = 327
+      ClientWidth = 608
       object Panel3: TPanel
         Left = 0
         Height = 32
         Top = 0
-        Width = 672
+        Width = 608
         Align = alTop
         AutoSize = True
         BevelOuter = bvNone
@@ -45,7 +45,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         ChildSizing.Layout = cclLeftToRightThenTopToBottom
         ChildSizing.ControlsPerLine = 3
         ClientHeight = 32
-        ClientWidth = 672
+        ClientWidth = 608
         TabOrder = 0
         object EdWAPTServerName: TEdit
           Left = 6
@@ -536,11 +536,11 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
       end
     end
   end
-  object Panel1: TPanel
+  object p_bottom: TPanel
     Left = 0
     Height = 30
-    Top = 369
-    Width = 680
+    Top = 355
+    Width = 939
     Align = alBottom
     BevelOuter = bvNone
     ChildSizing.LeftRightSpacing = 6
@@ -549,10 +549,10 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
     ChildSizing.VerticalSpacing = 3
     ChildSizing.Layout = cclLeftToRightThenTopToBottom
     ClientHeight = 30
-    ClientWidth = 680
+    ClientWidth = 939
     TabOrder = 1
     object ButCancel: TBitBtn
-      Left = 592
+      Left = 851
       Height = 24
       Top = 3
       Width = 82
@@ -603,14 +603,14 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
       Left = 6
       Height = 24
       Top = 3
-      Width = 402
+      Width = 661
       Align = alLeft
       Anchors = [akTop, akLeft, akRight, akBottom]
       TabOrder = 1
       Visible = False
     end
     object ButPrevious: TBitBtn
-      Left = 419
+      Left = 678
       Height = 24
       Top = 3
       Width = 91
@@ -656,7 +656,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
       TabOrder = 2
     end
     object ButNext: TBitBtn
-      Left = 516
+      Left = 775
       Height = 24
       Top = 3
       Width = 70
@@ -701,6 +701,45 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
       }
       TabOrder = 3
     end
+  end
+  object p_right: TPanel
+    Left = 621
+    Height = 355
+    Top = 0
+    Width = 318
+    Align = alRight
+    Caption = 'p_right'
+    ClientHeight = 355
+    ClientWidth = 318
+    TabOrder = 2
+    object html_panel: TIpHtmlPanel
+      Left = 1
+      Height = 353
+      Top = 1
+      Width = 316
+      Align = alClient
+      FixedTypeface = 'Courier New'
+      DefaultTypeFace = 'default'
+      DefaultFontSize = 12
+      FlagErrors = False
+      PrintSettings.MarginLeft = 0.5
+      PrintSettings.MarginTop = 0.5
+      PrintSettings.MarginRight = 0.5
+      PrintSettings.MarginBottom = 0.5
+      PrintSettings.Preview.Left = 480
+      PrintSettings.Preview.Top = 270
+      PrintSettings.Preview.Width = 1440
+      PrintSettings.Preview.Height = 810
+      TabOrder = 0
+    end
+  end
+  object Splitter1: TSplitter
+    Left = 616
+    Height = 355
+    Top = 0
+    Width = 5
+    Align = alRight
+    ResizeAnchor = akRight
   end
   object ActionList1: TActionList
     left = 64

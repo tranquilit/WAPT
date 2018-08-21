@@ -5,11 +5,10 @@ unit uVisServerPostconf;
 interface
 
 uses
-  PythonEngine,
-  Classes, SysUtils, FileUtil, LazFileUtils, LazUTF8, Forms, Controls, Graphics,
-  Dialogs, ComCtrls, StdCtrls, ExtCtrls, Buttons, ActnList, htmlview, Readhtml,
-  IdHTTP, IdComponent, uvisLoading, DefaultTranslator, LCLTranslator, LCLProc,
-  EditBtn, uWaptServerRes;
+  PythonEngine, Classes, SysUtils, FileUtil, LazFileUtils, LazUTF8, IpHtml,
+  Forms, Controls, Graphics, Dialogs, ComCtrls, StdCtrls, ExtCtrls, Buttons,
+  ActnList, htmlview, Readhtml, IdHTTP, IdComponent, uvisLoading,
+  DefaultTranslator, LCLTranslator, LCLProc, EditBtn, uWaptServerRes;
 
 type
 
@@ -47,6 +46,7 @@ type
     EdWaptServerIP: TEdit;
     EdWAPTServerName: TEdit;
     ed_existing_key_key_filename: TFileNameEdit;
+    html_panel: TIpHtmlPanel;
     Label1: TLabel;
     Label2: TLabel;
     lbl_ed_package_prefix: TLabel;
@@ -57,10 +57,11 @@ type
     lbl_ed_create_new_key_password_1: TLabel;
     lbl_ed_create_new_key_password_2: TLabel;
     lbl_ed_existing_key_cert_filename: TLabel;
+    p_right: TPanel;
     pg_agent_memo: TMemo;
     Memo7: TMemo;
     PagesControl: TPageControl;
-    Panel1: TPanel;
+    p_bottom: TPanel;
     Panel2: TPanel;
     Panel3: TPanel;
     Panel5: TPanel;
@@ -77,6 +78,7 @@ type
     rb_CreateKey: TRadioButton;
     rb_UseKey: TRadioButton;
     pgConfigureConsoleOrFinish: TTabSheet;
+    Splitter1: TSplitter;
     procedure ActCheckDNSExecute(Sender: TObject);
     procedure ActManualExecute(Sender: TObject);
     procedure ActNextExecute(Sender: TObject);
@@ -135,17 +137,16 @@ uses
 procedure TVisWAPTServerPostConf.FormCreate(Sender: TObject);
 begin
   ScaleDPI(Self,96);
-  //HTMLViewer1.DefFontSize := ScaleY(HTMLViewer1.DefFontSize,96);
+//  HtmlViewer.DefFontSize := ScaleY(HtmlViewer.DefFontSize,96);
   ReadWaptConfig(WaptBaseDir+'wapt-get.ini');
   PagesControl.ShowTabs:=False;
   PagesControl.ActivePageIndex:=0;
 
-
   self.clear();
 
   // fmor
-//  self.PagesControl.PageIndex:= 3;
-
+  //  self.PagesControl.PageIndex:= 3;
+  self.html_panel.DefaultFontSize:=  ScaleY( self.html_panel.DefaultFontSize,96);    ;
 end;
 
 procedure TVisWAPTServerPostConf.FormShow(Sender: TObject);
@@ -224,19 +225,21 @@ begin
         LangOffset := PAGES_EN_OFFSET;
     end;
 
-  {PageContent := GetString(langOffset + PagesControl.ActivePageIndex * PAGES_INDEX_STEP);
+  PageContent := GetString(langOffset + PagesControl.ActivePageIndex * PAGES_INDEX_STEP);
+  html_panel.SetHtmlFromStr( PageContent );
+{
+  ShowMessage( PageContent );
   Page := TMemoryStream.Create;
   Page.WriteAnsiString(PageContent);
-  HTMLViewer1.LoadFromStream(Page);
+  HtmlViewer.LoadFromStream(Page);
   Page.Free;
 
   if PagesControl.ActivePage = pgFinish then
   begin
-    HTMLViewer1.Parent := panFinish;
-    HTMLViewer1.Align:=alClient;
-  end
-  }
-
+    HtmlViewer.Parent := panFinish;
+    HtmlViewer.Align:=alClient;
+  end;
+}
   if self.PagesControl.ActivePage = pgBuildAgent then
     self.ButNext.Click;
 
@@ -499,6 +502,10 @@ begin
   self.ed_create_new_key_private_directory.Text := DEFAULT_PRIVATE_KEY_DIRECTORY;
 
 //  self.rb_UseKey.Checked :=;
+
+
+  // html
+//  self.HtmlViewer.LoadFromString( );
 
 end;
 
