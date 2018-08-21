@@ -683,7 +683,7 @@ begin
 
   DMPython.PythonModuleDMWaptPython.Events.Items[1].OnExecute := pe;
 
-  if r <> 0 then
+  if (r <> 0) or (params_package._result <> 0) then
   begin
     self.show_validation_error( nil, params_package._err_message );
     goto LBL_FAIL;
