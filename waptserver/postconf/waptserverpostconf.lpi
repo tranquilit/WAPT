@@ -20,7 +20,7 @@
       <MajorVersionNr Value="1"/>
       <MinorVersionNr Value="5"/>
       <RevisionNr Value="1"/>
-      <BuildNr Value="23"/>
+      <BuildNr Value="24"/>
       <StringTable FileDescription="Wapt server Postconfiguration helper" ProductName="WAPT" ProductVersion="1.5.1.21"/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -34,36 +34,39 @@
         <FormatVersion Value="1"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="9">
+    <RequiredPackages Count="10">
       <Item1>
-        <PackageName Value="FrameViewer09"/>
+        <PackageName Value="TurboPowerIPro"/>
       </Item1>
       <Item2>
-        <PackageName Value="pltis_sogrid"/>
+        <PackageName Value="FrameViewer09"/>
       </Item2>
       <Item3>
-        <PackageName Value="pltis_virtualtreesextra"/>
+        <PackageName Value="pltis_sogrid"/>
       </Item3>
       <Item4>
-        <PackageName Value="dcpcrypt_laz"/>
+        <PackageName Value="pltis_virtualtreesextra"/>
       </Item4>
       <Item5>
-        <PackageName Value="indylaz"/>
+        <PackageName Value="dcpcrypt_laz"/>
       </Item5>
       <Item6>
-        <PackageName Value="pltis_wapt"/>
+        <PackageName Value="indylaz"/>
       </Item6>
       <Item7>
-        <PackageName Value="pltis_utils"/>
+        <PackageName Value="pltis_wapt"/>
       </Item7>
       <Item8>
-        <PackageName Value="pltis_superobject"/>
+        <PackageName Value="pltis_utils"/>
       </Item8>
       <Item9>
-        <PackageName Value="LCL"/>
+        <PackageName Value="pltis_superobject"/>
       </Item9>
+      <Item10>
+        <PackageName Value="LCL"/>
+      </Item10>
     </RequiredPackages>
-    <Units Count="11">
+    <Units Count="12">
       <Unit0>
         <Filename Value="waptserverpostconf.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -118,6 +121,10 @@
         <Filename Value="..\..\wapt-get\waptwinutils.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit10>
+      <Unit11>
+        <Filename Value="languages.rc"/>
+        <IsPartOfProject Value="True"/>
+      </Unit11>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

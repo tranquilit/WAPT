@@ -8,7 +8,7 @@ uses
   PythonEngine, Classes, SysUtils, FileUtil, LazFileUtils, LazUTF8, IpHtml,
   Forms, Controls, Graphics, Dialogs, ComCtrls, StdCtrls, ExtCtrls, Buttons,
   ActnList, htmlview, Readhtml, IdHTTP, IdComponent, uvisLoading,
-  DefaultTranslator, LCLTranslator, LCLProc, EditBtn, uWaptServerRes;
+  DefaultTranslator, LCLTranslator, LCLProc, EditBtn, Menus, uWaptServerRes;
 
 type
 
@@ -57,6 +57,7 @@ type
     lbl_ed_create_new_key_password_1: TLabel;
     lbl_ed_create_new_key_password_2: TLabel;
     lbl_ed_existing_key_cert_filename: TLabel;
+    MainMenu1: TMainMenu;
     p_right: TPanel;
     pg_agent_memo: TMemo;
     Memo7: TMemo;
@@ -111,6 +112,8 @@ type
     function  write_configs( const package_certificate : String ) : integer;
     function  restart_waptservice_and_register() : integer;
     function  run_commands( const sl : TStrings ) : integer;
+    procedure update_doc_html();
+    function  offset_language() : integer;
   public
     procedure show_validation_error( c : TControl; const msg : String );
   end;
@@ -129,7 +132,6 @@ uses
   superobject, tiscommon, tisstrings, IniFiles,DCPsha256,dcpcrypt2,DCPbase64,Math;
 
 {$R *.lfm}
-
 
 
 { TVisWAPTServerPostConf }
@@ -192,57 +194,21 @@ end;
 
 
 procedure TVisWAPTServerPostConf.PagesControlChange(Sender: TObject);
-const
-  PAGES_INDEX_STEP =  100; // cf. languages.rc
-  PAGES_EN_OFFSET =		0;
-  PAGES_FR_OFFSET =		1;
-  PAGES_DE_OFFSET =		2;
 var
-  ini:TIniFile;
-  Page: TMemoryStream;
-  PageContent: AnsiString;
-  Lang, FallbackLang: String;
-  i, LangOffset: Integer;
+  p : TTabSheet;
 begin
-  { XXX This is not what I'd call clean language detection... }
+  p := nil;
 
-  LazGetLanguageIDs(Lang, FallbackLang);
-  LangOffset := PAGES_EN_OFFSET;
-  if FallbackLang = 'fr' then
-    LangOffset := PAGES_FR_OFFSET
-  else if FallbackLang = 'de' then
-    LangOffset := PAGES_DE_OFFSET;
+  // Update doc html
+  self.update_doc_html();
 
-  for i := 1 to ParamCount-1 do
-    if ((ParamStr(i) = '-l') or (ParamStr(i) = '--lang')) and (i+1 <> ParamCount-1) then
-    begin
-      if ParamStr(i+1) = 'de' then
-         LangOffset := PAGES_DE_OFFSET
-      else
-      if ParamStr(i+1) = 'fr' then
-         LangOffset := PAGES_FR_OFFSET
-      else
-        LangOffset := PAGES_EN_OFFSET;
-    end;
+  p := self.PagesControl.ActivePage;
 
-  PageContent := GetString(langOffset + PagesControl.ActivePageIndex * PAGES_INDEX_STEP);
-  html_panel.SetHtmlFromStr( PageContent );
-{
-  ShowMessage( PageContent );
-  Page := TMemoryStream.Create;
-  Page.WriteAnsiString(PageContent);
-  HtmlViewer.LoadFromStream(Page);
-  Page.Free;
-
-  if PagesControl.ActivePage = pgFinish then
+  // Page specilic actions
+  if pgBuildAgent = p then
   begin
-    HtmlViewer.Parent := panFinish;
-    HtmlViewer.Align:=alClient;
-  end;
-}
-  if self.PagesControl.ActivePage = pgBuildAgent then
     self.ButNext.Click;
-
+  end;
 end;
 
 procedure TVisWAPTServerPostConf.on_private_key_radiobutton_change( Sender: TObject);
@@ -837,6 +803,80 @@ begin
 
   self.ProgressBar1.Visible := false;
   Application.ProcessMessages;
+end;
+
+procedure TVisWAPTServerPostConf.update_doc_html();
+label
+  LBL_NO_DOC;
+var
+  p           : TTabSheet;
+  str_index   : integer;
+  buffer      : LPWSTR;
+  r           : integer;
+begin
+
+  p := self.PagesControl.ActivePage;
+
+  if pgParameters = p then
+    str_index := 0
+  else if pgPassword = p then
+    str_index := 100
+  else if pgPackagePrivateKey = p then
+    str_index := 200 // 300
+  else if pgStartServices = p then
+    str_index := 400
+  else if pgBuildAgent = p then
+    str_index := 500
+  else if pgFinish = p then
+    str_index := 600
+  else
+    goto LBL_NO_DOC;
+
+
+  buffer := nil;
+  inc( str_index, offset_language() );
+  r := Windows.LoadStringW( HINSTANCE(), str_index, @buffer, 0 );
+
+  if r < 1 then
+    goto LBL_NO_DOC;
+
+  html_panel.SetHtmlFromStr( buffer );
+  exit;
+
+LBL_NO_DOC:
+  html_panel.SetHtmlFromStr( HTML_NO_DOC );
+end;
+
+
+function TVisWAPTServerPostConf.offset_language(): integer;
+const
+  PAGES_EN_OFFSET : integer =	0;
+  PAGES_FR_OFFSET : integer =	1;
+  PAGES_DE_OFFSET : integer =	2;
+var
+  Lang, FallbackLang: String;
+  i : Integer;
+begin
+  { XXX This is not what I'd call clean language detection... }
+  result := PAGES_EN_OFFSET;
+
+  LazGetLanguageIDs(Lang, FallbackLang);
+  if FallbackLang = 'fr' then
+    result := PAGES_FR_OFFSET
+  else if FallbackLang = 'de' then
+    result := PAGES_DE_OFFSET;
+
+  for i := 1 to ParamCount-1 do
+  if ((ParamStr(i) = '-l') or (ParamStr(i) = '--lang')) and (i+1 <> ParamCount-1) then
+  begin
+    if ParamStr(i+1) = 'de' then
+       result := PAGES_DE_OFFSET
+    else
+    if ParamStr(i+1) = 'fr' then
+       result := PAGES_FR_OFFSET
+    else
+      result := PAGES_EN_OFFSET;
+  end;
 end;
 
 

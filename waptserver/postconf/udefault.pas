@@ -63,6 +63,7 @@ const
   INI_FILE_WAPTCONSOLE : String = '';
   INI_FILE_WAPTGET     : String = '';
 
+  HTML_NO_DOC : String = '<HTML><HEAD><HEAD><BODY><BODY></HTML>';
 implementation
 
 uses

@@ -1,13 +1,14 @@
 object VisWAPTServerPostConf: TVisWAPTServerPostConf
-  Left = 2162
+  Left = 514
   Height = 385
-  Top = 334
-  Width = 939
+  Top = 378
+  Width = 1055
   Caption = 'Configuration of WAPT server for Windows'
   ClientHeight = 385
-  ClientWidth = 939
+  ClientWidth = 1055
   Constraints.MinHeight = 345
   Constraints.MinWidth = 680
+  Menu = MainMenu1
   OnCreate = FormCreate
   OnShow = FormShow
   Position = poDefaultPosOnly
@@ -17,18 +18,18 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
     Left = 0
     Height = 355
     Top = 0
-    Width = 616
-    ActivePage = pgParameters
+    Width = 732
+    ActivePage = pgFinish
     Align = alClient
     MultiLine = True
-    TabIndex = 0
+    TabIndex = 6
     TabOrder = 0
     OnChange = PagesControlChange
     Options = [nboMultiLine]
     object pgParameters: TTabSheet
       Caption = 'Parameters'
       ChildSizing.Layout = cclLeftToRightThenTopToBottom
-      ClientHeight = 327
+      ClientHeight = 307
       ClientWidth = 608
       object Panel3: TPanel
         Left = 0
@@ -114,8 +115,8 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
     end
     object pgPassword: TTabSheet
       Caption = 'Password'
-      ClientHeight = 341
-      ClientWidth = 672
+      ClientHeight = 307
+      ClientWidth = 608
       object Panel5: TPanel
         Left = 0
         Height = 98
@@ -173,8 +174,8 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
     end
     object pgStartServices: TTabSheet
       Caption = 'Start'
-      ClientHeight = 341
-      ClientWidth = 672
+      ClientHeight = 307
+      ClientWidth = 608
       object BitBtn6: TBitBtn
         Left = 8
         Height = 26
@@ -233,8 +234,8 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
     end
     object pgConfigureConsoleOrFinish: TTabSheet
       Caption = 'Configure console or finish'
-      ClientHeight = 341
-      ClientWidth = 672
+      ClientHeight = 307
+      ClientWidth = 608
       object cb_configure_console_launch_console_on_exit: TCheckBox
         Left = 88
         Height = 19
@@ -266,8 +267,8 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
     end
     object pgPackagePrivateKey: TTabSheet
       Caption = 'Package and private key'
-      ClientHeight = 341
-      ClientWidth = 672
+      ClientHeight = 307
+      ClientWidth = 608
       object rb_CreateKey: TRadioButton
         Left = 24
         Height = 19
@@ -454,8 +455,8 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
     end
     object pgBuildAgent: TTabSheet
       Caption = 'Agent'
-      ClientHeight = 341
-      ClientWidth = 672
+      ClientHeight = 307
+      ClientWidth = 608
       object pg_agent_memo: TMemo
         Left = 0
         Height = 341
@@ -472,26 +473,26 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
     end
     object pgFinish: TTabSheet
       Caption = 'Fin'
-      ClientHeight = 341
-      ClientWidth = 672
+      ClientHeight = 327
+      ClientWidth = 724
       object Panel2: TPanel
         Left = 0
         Height = 23
-        Top = 318
-        Width = 672
+        Top = 304
+        Width = 724
         Align = alBottom
         BevelOuter = bvNone
         TabOrder = 0
       end
       object panFinish: TPanel
         Left = 0
-        Height = 318
+        Height = 304
         Top = 0
-        Width = 672
+        Width = 724
         Align = alClient
         BevelOuter = bvNone
-        ClientHeight = 318
-        ClientWidth = 672
+        ClientHeight = 304
+        ClientWidth = 724
         TabOrder = 1
         object Memo7: TMemo
           Left = 16
@@ -540,7 +541,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
     Left = 0
     Height = 30
     Top = 355
-    Width = 939
+    Width = 1055
     Align = alBottom
     BevelOuter = bvNone
     ChildSizing.LeftRightSpacing = 6
@@ -549,10 +550,10 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
     ChildSizing.VerticalSpacing = 3
     ChildSizing.Layout = cclLeftToRightThenTopToBottom
     ClientHeight = 30
-    ClientWidth = 939
+    ClientWidth = 1055
     TabOrder = 1
     object ButCancel: TBitBtn
-      Left = 851
+      Left = 967
       Height = 24
       Top = 3
       Width = 82
@@ -603,14 +604,14 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
       Left = 6
       Height = 24
       Top = 3
-      Width = 661
+      Width = 777
       Align = alLeft
       Anchors = [akTop, akLeft, akRight, akBottom]
       TabOrder = 1
       Visible = False
     end
     object ButPrevious: TBitBtn
-      Left = 678
+      Left = 794
       Height = 24
       Top = 3
       Width = 91
@@ -656,7 +657,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
       TabOrder = 2
     end
     object ButNext: TBitBtn
-      Left = 775
+      Left = 891
       Height = 24
       Top = 3
       Width = 70
@@ -703,7 +704,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
     end
   end
   object p_right: TPanel
-    Left = 621
+    Left = 737
     Height = 355
     Top = 0
     Width = 318
@@ -734,7 +735,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
     end
   end
   object Splitter1: TSplitter
-    Left = 616
+    Left = 732
     Height = 355
     Top = 0
     Width = 5
@@ -775,5 +776,9 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
     object ActBuildWaptsetup: TAction
       Caption = 'Create custom installer'
     end
+  end
+  object MainMenu1: TMainMenu
+    left = 156
+    top = 7
   end
 end
