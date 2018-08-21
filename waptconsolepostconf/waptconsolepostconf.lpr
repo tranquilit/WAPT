@@ -12,7 +12,7 @@ uses
   Forms, uvisconsolepostconf, waptconsolepostconfres,
   waptcommon, waptwinutils, uvisloading, UScaleDPI,
   { you can add units after this }
-  DefaultTranslator, indylaz, FrameViewer09, uvalidation, dmwaptpython, uutil,
+  DefaultTranslator, indylaz, uvalidation, dmwaptpython, uutil,
   udefault;
 
 {$R *.res}

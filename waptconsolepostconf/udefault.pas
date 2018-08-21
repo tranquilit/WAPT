@@ -67,6 +67,9 @@ const
 
   HTTP_TIMEOUT          : integer = 4 * 1000;
   HTTP_RESPONSE_CODE_OK : integer = 200;
+
+  HTML_NO_DOC : String = '<HTML><HEAD><HEAD><BODY><BODY></HTML>';
+
 implementation
 
 uses

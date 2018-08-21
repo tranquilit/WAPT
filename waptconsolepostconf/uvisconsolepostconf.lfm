@@ -1,12 +1,12 @@
 object VisWAPTConsolePostConf: TVisWAPTConsolePostConf
-  Left = 941
-  Height = 399
+  Left = 714
+  Height = 431
   Top = 104
-  Width = 680
+  Width = 907
   BorderIcons = [biSystemMenu]
   Caption = 'Configuration of WAPT console for Windows'
-  ClientHeight = 399
-  ClientWidth = 680
+  ClientHeight = 431
+  ClientWidth = 907
   Constraints.MinHeight = 345
   Constraints.MinWidth = 680
   OnCreate = FormCreate
@@ -16,9 +16,9 @@ object VisWAPTConsolePostConf: TVisWAPTConsolePostConf
   LCLVersion = '1.8.4.0'
   object PagesControl: TPageControl
     Left = 0
-    Height = 369
+    Height = 401
     Top = 0
-    Width = 680
+    Width = 624
     ActivePage = pgPackagePrivateKey
     Align = alClient
     MultiLine = True
@@ -82,8 +82,8 @@ object VisWAPTConsolePostConf: TVisWAPTConsolePostConf
     end
     object pgPackagePrivateKey: TTabSheet
       Caption = 'Package and private key'
-      ClientHeight = 341
-      ClientWidth = 672
+      ClientHeight = 373
+      ClientWidth = 616
       object rb_CreateKey: TRadioButton
         Left = 24
         Height = 19
@@ -352,11 +352,11 @@ object VisWAPTConsolePostConf: TVisWAPTConsolePostConf
       end
     end
   end
-  object Panel1: TPanel
+  object p_bottom: TPanel
     Left = 0
     Height = 30
-    Top = 369
-    Width = 680
+    Top = 401
+    Width = 907
     Align = alBottom
     BevelOuter = bvNone
     ChildSizing.LeftRightSpacing = 6
@@ -365,10 +365,10 @@ object VisWAPTConsolePostConf: TVisWAPTConsolePostConf
     ChildSizing.VerticalSpacing = 3
     ChildSizing.Layout = cclLeftToRightThenTopToBottom
     ClientHeight = 30
-    ClientWidth = 680
+    ClientWidth = 907
     TabOrder = 1
     object ButCancel: TBitBtn
-      Left = 592
+      Left = 819
       Height = 24
       Top = 3
       Width = 82
@@ -419,14 +419,14 @@ object VisWAPTConsolePostConf: TVisWAPTConsolePostConf
       Left = 6
       Height = 24
       Top = 3
-      Width = 402
+      Width = 629
       Align = alLeft
       Anchors = [akTop, akLeft, akRight, akBottom]
       TabOrder = 1
       Visible = False
     end
     object ButPrevious: TBitBtn
-      Left = 419
+      Left = 646
       Height = 24
       Top = 3
       Width = 91
@@ -472,7 +472,7 @@ object VisWAPTConsolePostConf: TVisWAPTConsolePostConf
       TabOrder = 2
     end
     object ButNext: TBitBtn
-      Left = 516
+      Left = 743
       Height = 24
       Top = 3
       Width = 70
@@ -518,6 +518,46 @@ object VisWAPTConsolePostConf: TVisWAPTConsolePostConf
       TabOrder = 3
     end
   end
+  object p_right: TPanel
+    Left = 629
+    Height = 401
+    Top = 0
+    Width = 278
+    Align = alRight
+    Caption = 'p_right'
+    ClientHeight = 401
+    ClientWidth = 278
+    TabOrder = 2
+    OnClick = p_rightClick
+    object html_panel: TIpHtmlPanel
+      Left = 1
+      Height = 399
+      Top = 1
+      Width = 276
+      Align = alClient
+      FixedTypeface = 'Courier New'
+      DefaultTypeFace = 'default'
+      DefaultFontSize = 12
+      FlagErrors = False
+      PrintSettings.MarginLeft = 0.5
+      PrintSettings.MarginTop = 0.5
+      PrintSettings.MarginRight = 0.5
+      PrintSettings.MarginBottom = 0.5
+      PrintSettings.Preview.Left = 480
+      PrintSettings.Preview.Top = 270
+      PrintSettings.Preview.Width = 1440
+      PrintSettings.Preview.Height = 810
+      TabOrder = 0
+    end
+  end
+  object Splitter1: TSplitter
+    Left = 624
+    Height = 401
+    Top = 0
+    Width = 5
+    Align = alRight
+    ResizeAnchor = akRight
+  end
   object ActionList1: TActionList
     left = 64
     top = 288
@@ -550,5 +590,25 @@ object VisWAPTConsolePostConf: TVisWAPTConsolePostConf
     object ActBuildWaptsetup: TAction
       Caption = 'Create custom installer'
     end
+  end
+  object IdHTTP1: TIdHTTP
+    AllowCookies = True
+    ProxyParams.BasicAuthentication = False
+    ProxyParams.ProxyPort = 0
+    Request.ContentLength = -1
+    Request.ContentRangeEnd = -1
+    Request.ContentRangeStart = -1
+    Request.ContentRangeInstanceLength = -1
+    Request.Date = 0
+    Request.Expires = 0
+    Request.LastModified = 0
+    Request.Accept = 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
+    Request.BasicAuthentication = False
+    Request.UserAgent = 'Mozilla/3.0 (compatible; Indy Library)'
+    Request.Ranges.Units = 'bytes'
+    Request.Ranges = <>
+    HTTPOptions = [hoForceEncodeParams]
+    left = 8
+    top = 8
   end
 end
