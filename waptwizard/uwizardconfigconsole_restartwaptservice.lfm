@@ -1,9 +1,0 @@
-object WizardConfigConsole_RestartWaptService: TWizardConfigConsole_RestartWaptService
-  Left = 0
-  Height = 240
-  Top = 0
-  Width = 320
-  TabOrder = 0
-  DesignLeft = 491
-  DesignTop = 27
-end
