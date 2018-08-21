@@ -34,7 +34,6 @@ type
     CBOpenFirewall: TCheckBox;
     cb_create_new_key_show_password: TCheckBox;
     cb_use_existing_key_show_password: TCheckBox;
-    ed_package_prefix: TEdit;
     ed_create_new_key_password_1: TEdit;
     ed_existing_key_certificat_filename: TFileNameEdit;
     ed_existing_key_password: TEdit;
@@ -46,10 +45,10 @@ type
     EdWaptServerIP: TEdit;
     EdWAPTServerName: TEdit;
     ed_existing_key_key_filename: TFileNameEdit;
+    ed_package_prefix: TEdit;
     html_panel: TIpHtmlPanel;
     Label1: TLabel;
     Label2: TLabel;
-    lbl_ed_package_prefix: TLabel;
     lbl_ed_existing_key_password: TLabel;
     lbl_ed_existing_key_key_filename: TLabel;
     lbl_ed_create_new_key_directory: TLabel;
@@ -57,6 +56,7 @@ type
     lbl_ed_create_new_key_password_1: TLabel;
     lbl_ed_create_new_key_password_2: TLabel;
     lbl_ed_existing_key_cert_filename: TLabel;
+    lbl_ed_package_prefix: TLabel;
     MainMenu1: TMainMenu;
     p_right: TPanel;
     pg_agent_memo: TMemo;
@@ -72,7 +72,7 @@ type
     ProgressBar1: TProgressBar;
     pgStartServices: TTabSheet;
     pgFinish: TTabSheet;
-    pgPackagePrivateKey: TTabSheet;
+    pgPackageKey: TTabSheet;
     pgBuildAgent: TTabSheet;
     rb_configure_console_continue: TRadioButton;
     rb_configure_console_finish: TRadioButton;
@@ -80,6 +80,7 @@ type
     rb_UseKey: TRadioButton;
     pgConfigureConsoleOrFinish: TTabSheet;
     Splitter1: TSplitter;
+    pgPackageName: TTabSheet;
     procedure ActCheckDNSExecute(Sender: TObject);
     procedure ActManualExecute(Sender: TObject);
     procedure ActNextExecute(Sender: TObject);
@@ -107,7 +108,8 @@ type
 
     procedure set_buttons_enable( enable : Boolean );
     procedure clear();
-    procedure validate_page_package_and_private_key( var bContinue : boolean );
+    procedure validate_page_packge_name( var bContinue : boolean );
+    procedure validate_page_package_key( var bContinue : boolean );
     procedure validate_page_agent( var bContinue : boolean );
     function  write_configs( const package_certificate : String ) : integer;
     function  restart_waptservice_and_register() : integer;
@@ -475,7 +477,20 @@ begin
 
 end;
 
-procedure TVisWAPTServerPostConf.validate_page_package_and_private_key( var bContinue: boolean);
+procedure TVisWAPTServerPostConf.validate_page_packge_name( var bContinue: boolean);
+begin
+  bContinue := false;
+
+  // Validate package name
+  if not wizard_validate_package_prefix( self, self.ed_package_prefix, self.ed_package_prefix.Text ) then
+    exit;
+
+  bContinue := true;
+
+end;
+
+procedure TVisWAPTServerPostConf.validate_page_package_key(
+  var bContinue: boolean);
 var
    r    : integer;
    msg  : String;
@@ -486,9 +501,6 @@ begin
 
   bContinue := false;
 
-  // Validate package name
-  if not wizard_validate_package_prefix( self, self.ed_package_prefix, self.ed_package_prefix.Text ) then
-    exit;
 
   // Validate create key
   if self.rb_CreateKey.Checked then
@@ -821,8 +833,10 @@ begin
     str_index := 0
   else if pgPassword = p then
     str_index := 100
-  else if pgPackagePrivateKey = p then
-    str_index := 200 // 300
+  else if pgPackageName = p then
+    str_index := 300
+  else if pgPackageKey = p then
+    str_index := 200
   else if pgStartServices = p then
     str_index := 400
   else if pgBuildAgent = p then
@@ -893,12 +907,14 @@ label
   LBL_FAIL;
 var
   bContinue : Boolean;
+  p         : TTabSheet;
 begin
   bContinue := false;
+  p := self.PagesControl.ActivePage;
 
   set_buttons_enable( false );
 
-  if pgConfigureConsoleOrFinish = PagesControl.ActivePage then
+  if pgConfigureConsoleOrFinish = p then
   begin
     if self.rb_configure_console_finish.Checked then
     begin
@@ -908,22 +924,28 @@ begin
     end;
   end
 
-
-  else if pgPackagePrivateKey = PagesControl.ActivePage then
+  else if pgPackageName = p then
   begin
-    self.validate_page_package_and_private_key(bContinue);
+    self.validate_page_packge_name( bContinue );
     if not bContinue then
       goto LBL_FAIL;
   end
 
-  else if pgBuildAgent = PagesControl.ActivePage then
+  else if pgPackageKey = p then
+  begin
+    self.validate_page_package_key(bContinue);
+    if not bContinue then
+      goto LBL_FAIL;
+  end
+
+  else if pgBuildAgent = p then
   begin
     self.validate_page_agent(bContinue);
     if not bContinue then
       goto LBL_FAIL;
   end
 
-  else if pgFinish = PagesControl.ActivePage then
+  else if pgFinish = p then
   begin
     if cbLaunchWaptConsoleOnExit.Checked then
       launch_console();
@@ -946,7 +968,7 @@ begin
     ActNext.Enabled := EdWaptServerIP.Text<>''
   else if PagesControl.ActivePage = pgPassword then
     ActNext.Enabled := (EdPwd1.Text='') or (EdPwd1.Text = EdPwd2.Text)
-  else if PagesControl.ActivePage = pgPackagePrivateKey then
+  else if PagesControl.ActivePage = pgPackageKey then
     ActNext.Enabled := true
   else if PagesControl.ActivePage = pgStartServices then
     ActNext.Enabled := GetServiceStatusByName('','waptserver') = ssRunning
@@ -1010,17 +1032,17 @@ begin
   end;
 end;
 
-function CalcHMAC(message, pgPackagePrivateKey: string; hash: TDCP_hashclass): string;
+function CalcHMAC(message, pgPackageKey: string; hash: TDCP_hashclass): string;
 const
   blocksize = 64;
 begin
   // Definition RFC 2104
-  if Length(pgPackagePrivateKey) > blocksize then
-    pgPackagePrivateKey := CalcDigest(pgPackagePrivateKey, hash);
-  pgPackagePrivateKey := RPad(pgPackagePrivateKey, #0, blocksize);
+  if Length(pgPackageKey) > blocksize then
+    pgPackageKey := CalcDigest(pgPackageKey, hash);
+  pgPackageKey := RPad(pgPackageKey, #0, blocksize);
 
-  Result := CalcDigest(XorBlock(pgPackagePrivateKey, RPad('', #$36, blocksize)) + message, hash);
-  Result := CalcDigest(XorBlock(pgPackagePrivateKey, RPad('', #$5c, blocksize)) + result, hash);
+  Result := CalcDigest(XorBlock(pgPackageKey, RPad('', #$36, blocksize)) + message, hash);
+  Result := CalcDigest(XorBlock(pgPackageKey, RPad('', #$5c, blocksize)) + result, hash);
 end;
 
 function PBKDF1(pass, salt: ansistring; count: Integer; hash: TDCP_hashclass): ansistring;

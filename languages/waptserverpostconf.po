@@ -193,9 +193,12 @@ msgstr ""
 msgid "Fin"
 msgstr ""
 
-#: tviswaptserverpostconf.pgpackageprivatekey.caption
-msgctxt "tviswaptserverpostconf.pgpackageprivatekey.caption"
-msgid "Package and private key"
+#: tviswaptserverpostconf.pgpackagekey.caption
+msgid "Package key"
+msgstr ""
+
+#: tviswaptserverpostconf.pgpackagename.caption
+msgid "Package name"
 msgstr ""
 
 #: tviswaptserverpostconf.pgparameters.caption

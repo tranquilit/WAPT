@@ -19,10 +19,10 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
     Height = 355
     Top = 0
     Width = 732
-    ActivePage = pgFinish
+    ActivePage = pgPackageName
     Align = alClient
     MultiLine = True
-    TabIndex = 6
+    TabIndex = 4
     TabOrder = 0
     OnChange = PagesControlChange
     Options = [nboMultiLine]
@@ -265,10 +265,31 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         TabOrder = 2
       end
     end
-    object pgPackagePrivateKey: TTabSheet
-      Caption = 'Package and private key'
-      ClientHeight = 307
-      ClientWidth = 608
+    object pgPackageName: TTabSheet
+      Caption = 'Package name'
+      ClientHeight = 327
+      ClientWidth = 724
+      object lbl_ed_package_prefix: TLabel
+        Left = 8
+        Height = 15
+        Top = 10
+        Width = 82
+        Caption = 'Package prefix :'
+        ParentColor = False
+      end
+      object ed_package_prefix: TEdit
+        Left = 101
+        Height = 23
+        Top = 6
+        Width = 108
+        TabOrder = 0
+        Text = 'ed_package_prefix'
+      end
+    end
+    object pgPackageKey: TTabSheet
+      Caption = 'Package key'
+      ClientHeight = 327
+      ClientWidth = 724
       object rb_CreateKey: TRadioButton
         Left = 24
         Height = 19
@@ -416,22 +437,6 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         Caption = 'Password :'
         ParentColor = False
       end
-      object lbl_ed_package_prefix: TLabel
-        Left = 159
-        Height = 15
-        Top = 10
-        Width = 82
-        Caption = 'Package prefix :'
-        ParentColor = False
-      end
-      object ed_package_prefix: TEdit
-        Left = 252
-        Height = 23
-        Top = 6
-        Width = 108
-        TabOrder = 9
-        Text = 'ed_package_prefix'
-      end
       object cb_create_new_key_show_password: TCheckBox
         Left = 360
         Height = 19
@@ -439,7 +444,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         Width = 102
         Caption = 'Show password'
         OnChange = on_show_password_change
-        TabOrder = 10
+        TabOrder = 9
         TabStop = False
       end
       object cb_use_existing_key_show_password: TCheckBox
@@ -449,7 +454,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         Width = 102
         Caption = 'Show password'
         OnChange = on_show_password_change
-        TabOrder = 11
+        TabOrder = 10
         TabStop = False
       end
     end

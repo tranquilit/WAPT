@@ -31,9 +31,9 @@ type
     cb_create_new_key_show_password: TCheckBox;
     cb_use_existing_key_show_password: TCheckBox;
     cb_wapt_server_show_password: TCheckBox;
+    ed_package_prefix: TEdit;
     ed_wapt_server_password: TEdit;
     EdWAPTServerName: TEdit;
-    ed_package_prefix: TEdit;
     ed_create_new_key_password_1: TEdit;
     ed_existing_key_certificat_filename: TFileNameEdit;
     ed_existing_key_password: TEdit;
@@ -43,9 +43,9 @@ type
     ed_existing_key_key_filename: TFileNameEdit;
     html_panel: TIpHtmlPanel;
     IdHTTP1: TIdHTTP;
+    lbl_ed_package_prefix: TLabel;
     llb_wapt_server: TLabel;
     lbl_wapt_server_password: TLabel;
-    lbl_ed_package_prefix: TLabel;
     lbl_ed_existing_key_password: TLabel;
     lbl_ed_existing_key_key_filename: TLabel;
     lbl_ed_create_new_key_directory: TLabel;
@@ -63,11 +63,12 @@ type
     p_right: TPanel;
     ProgressBar1: TProgressBar;
     pgFinish: TTabSheet;
-    pgPackagePrivateKey: TTabSheet;
+    pgKey: TTabSheet;
     pgBuildAgent: TTabSheet;
     rb_CreateKey: TRadioButton;
     rb_UseKey: TRadioButton;
     Splitter1: TSplitter;
+    pgPackage: TTabSheet;
     procedure ActManualExecute(Sender: TObject);
     procedure ActNextExecute(Sender: TObject);
     procedure ActNextUpdate(Sender: TObject);
@@ -94,7 +95,8 @@ type
     procedure set_buttons_enable( enable : Boolean );
     procedure clear();
     procedure validate_page_parameters( var bContinue : boolean );
-    procedure validate_page_package_and_private_key( var bContinue : boolean );
+    procedure validate_page_package_name( var bContinue : boolean );
+    procedure validate_page_package_key( var bContinue : boolean );
     procedure validate_page_agent( var bContinue : boolean );
     function  write_config( const package_certificate : String ) : integer;
     function  restart_waptservice_and_register() : integer;
@@ -490,7 +492,18 @@ begin
   bContinue := true;
 end;
 
-procedure TVisWAPTConsolePostConf.validate_page_package_and_private_key( var bContinue: boolean);
+procedure TVisWAPTConsolePostConf.validate_page_package_name( var bContinue: boolean);
+begin
+  bContinue := false;
+
+  if not wizard_validate_package_prefix( self, self.ed_package_prefix, self.ed_package_prefix.Text ) then
+    exit;
+
+  bContinue := true;
+end;
+
+procedure TVisWAPTConsolePostConf.validate_page_package_key(
+  var bContinue: boolean);
 var
    r                      : integer;
    msg                    : String;
@@ -502,10 +515,6 @@ begin
 
   bContinue := false;
   b_skip_page_build_agent := false;
-
-  // Validate package name
-  if not wizard_validate_package_prefix( self, self.ed_package_prefix, self.ed_package_prefix.Text ) then
-    exit;
 
   // Validate create key
   if self.rb_CreateKey.Checked then
@@ -856,8 +865,10 @@ begin
 
   if pgParameters = p then
     str_index := 0
-  else if pgPackagePrivateKey = p then
-    str_index := 200 // 300
+  else if pgPackage = p then
+    str_index := 300
+  else if pgKey = p then
+    str_index := 200
   else if pgBuildAgent = p then
     str_index := 500
   else if pgFinish = p then
@@ -897,34 +908,43 @@ label
   LBL_FAIL;
 var
   bContinue : Boolean;
+  p         : TTabSheet;
 begin
   bContinue := false;
 
   set_buttons_enable( false );
 
-  if pgParameters = self.PagesControl.ActivePage then
+  p := self.PagesControl.ActivePage;
+
+  if pgParameters = p then
   begin
     self.validate_page_parameters( bContinue );
     if not bContinue then
       goto LBL_FAIL;
-  end;
+  end
 
-
-  if pgPackagePrivateKey = PagesControl.ActivePage then
+  else if pgPackage = p then
   begin
-    self.validate_page_package_and_private_key(bContinue);
+    self.validate_page_package_name( bContinue );
     if not bContinue then
       goto LBL_FAIL;
   end
 
-  else if pgBuildAgent = PagesControl.ActivePage then
+  else if pgKey = p then
+  begin
+    self.validate_page_package_name( bContinue );
+    if not bContinue then
+      goto LBL_FAIL;
+  end
+
+  else if pgBuildAgent = p then
   begin
     self.validate_page_agent(bContinue);
     if not bContinue then
       goto LBL_FAIL;
   end
 
-  else if pgFinish = PagesControl.ActivePage then
+  else if pgFinish = p then
   begin
     if cbLaunchWaptConsoleOnExit.Checked then
       launch_console();
