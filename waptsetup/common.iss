@@ -22,9 +22,9 @@ Source: "..\waptupgrade\WAPT\*"; DestDir: "{app}\waptupgrade\WAPT"; Flags: creat
 
 ; global management console
 Source: "..\waptconsole.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\waptconsole.exe..manifest"; DestDir: "{app}";
+Source: "..\waptconsole.exe.manifest"; DestDir: "{app}";
 Source: "..\waptconsolepostconf.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\waptconsolepostconf.exe..manifest"; DestDir: "{app}";
+Source: "..\waptconsolepostconf.exe.manifest"; DestDir: "{app}";
 
 Source: "..\waptdevutils.py"; DestDir: "{app}";
 
