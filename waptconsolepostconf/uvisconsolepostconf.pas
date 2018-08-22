@@ -91,7 +91,6 @@ type
     m_skip_build_agent: boolean;
 
     CurrentVisLoading:TVisLoading;
-    procedure OpenFirewall;
     { private declarations }
 
     procedure set_buttons_enable( enable : Boolean );
@@ -389,36 +388,6 @@ end;
 procedure TVisWAPTConsolePostConf.p_rightClick(Sender: TObject);
 begin
 
-end;
-
-procedure TVisWAPTConsolePostConf.OpenFirewall;
-var
-   output : String;
-begin
-  if GetServiceStatusByName('','SharedAccess') = ssRunning then
-  begin
-    output := Run('netsh firewall show portopening');
-    if pos('waptserver 80',output)<=0 then
-      Run(format('netsh.exe firewall add portopening name="waptserver %d" port=%d protocol=TCP',[waptserver_port,waptserver_port]));
-    if pos('waptserver 443',output)<=0 then
-      Run(format('netsh.exe firewall add portopening name="waptserver %d" port=%d protocol=TCP',[waptserver_sslport,waptserver_sslport]));
-  end
-  else if GetServiceStatusByName('','MpsSvc') = ssRunning then
-  begin
-    output:='';
-    try
-      output := Run(format('netsh advfirewall firewall show rule name="waptserver %d"',[waptserver_port]));
-    except
-    end;
-    if pos('waptserver 80',output)<=0 then
-      output := Run(format('netsh advfirewall firewall add rule name="waptserver %d" dir=in localport=%d protocol=TCP action=allow',[waptserver_port,waptserver_port]));
-    try
-      output := Run(format('netsh advfirewall firewall show rule name="waptserver %d"',[waptserver_sslport]));
-    except
-    end;
-    if pos('waptserver 443',output)<=0 then
-      output := Run(format('netsh advfirewall firewall add rule name="waptserver %d" dir=in localport=%d protocol=TCP action=allow',[waptserver_sslport,waptserver_sslport]));
-  end;
 end;
 
 procedure TVisWAPTConsolePostConf.set_buttons_enable(enable: Boolean);
