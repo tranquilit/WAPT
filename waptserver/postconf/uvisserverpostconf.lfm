@@ -737,6 +737,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
       PrintSettings.Preview.Width = 1440
       PrintSettings.Preview.Height = 810
       TabOrder = 0
+      OnHotClick = html_panelHotClick
     end
   end
   object Splitter1: TSplitter

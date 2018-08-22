@@ -91,7 +91,7 @@ type
     procedure ButCancelClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
-    procedure HTMLViewer1HotSpotClick(Sender: TObject; const SRC: string; var Handled: boolean);
+    procedure html_panelHotClick(Sender: TObject);
     procedure IdHTTPWork(ASender: TObject; AWorkMode: TWorkMode; AWorkCount: Int64);
     procedure PagesControlChange(Sender: TObject);
     procedure on_private_key_radiobutton_change( Sender : TObject );
@@ -159,12 +159,16 @@ begin
   PagesControlChange(Self);
 end;
 
-procedure TVisWAPTServerPostConf.HTMLViewer1HotSpotClick(Sender: TObject;
-  const SRC: string; var Handled: boolean);
+procedure TVisWAPTServerPostConf.html_panelHotClick(Sender: TObject);
+var
+  url : String;
 begin
-  OpenURL(SRC);
-  Handled:=True;
+  url := self.html_panel.HotURL;
+  if 0 = Length(url) then
+    exit;
+  OpenURL( url );
 end;
+
 
 procedure TVisWAPTServerPostConf.IdHTTPWork(ASender: TObject; AWorkMode: TWorkMode; AWorkCount: Int64);
 begin
