@@ -72,7 +72,7 @@ resourcestring
   rs_wapt_server_installation_may_be_broken = 'Wapt server installation may be broken';
   rs_bad_login_password = 'Bad login password';
   rs_wapt_agent_has_been_found_on_server_confirm_create_package_key = 'Wapt agent has been found on the server' + #13#10 + 'Are you sure you want to recreate a new package key ?';
-  rs_wapt_agent_has_been_found_on_server_confirm_skip_build_agent =  'Wapt agent has been found on the server' + #13#10 + 'Skip building a new agent ?';
+  rs_wapt_agent_has_been_found_on_server_skip_build_agent =  'Wapt agent has been found on the server' + #13#10 + 'Skip building a new agent ?';
 implementation
 
 end.

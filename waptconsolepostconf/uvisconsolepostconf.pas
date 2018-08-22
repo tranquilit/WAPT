@@ -88,6 +88,8 @@ type
     procedure p_rightClick(Sender: TObject);
 
   private
+    m_skip_build_agent: boolean;
+
     CurrentVisLoading:TVisLoading;
     procedure OpenFirewall;
     { private declarations }
@@ -144,6 +146,7 @@ begin
 
 
   self.clear();
+
 
   // fmor
 //  self.PagesControl.PageIndex:= 3;
@@ -427,6 +430,8 @@ begin
 
   set_buttons_enable( true );
 
+  self.m_skip_build_agent := false;
+
   // parameters
   self.EdWAPTServerName.Clear;
   self.ed_wapt_server_password.Clear;
@@ -502,19 +507,16 @@ begin
   bContinue := true;
 end;
 
-procedure TVisWAPTConsolePostConf.validate_page_package_key(
-  var bContinue: boolean);
+procedure TVisWAPTConsolePostConf.validate_page_package_key( var bContinue: boolean);
 var
    r                      : integer;
    msg                    : String;
    s                      : String;
    params                 : TCreate_signed_cert_params;
    package_certificate    : String;
-   b_skip_page_build_agent: boolean;
 begin
 
   bContinue := false;
-  b_skip_page_build_agent := false;
 
   // Validate create key
   if self.rb_CreateKey.Checked then
@@ -614,21 +616,21 @@ begin
     if not wizard_validate_key_password( self, self.ed_existing_key_password, self.ed_existing_key_key_filename.Text, self.ed_existing_key_password.Text ) then
       exit;
 
+    if not wizard_validate_waptserver_waptagent_is_not_present( self, nil, self.EdWAPTServerName.Text, r ) then
+    begin
+      if HTTP_RESPONSE_CODE_OK <> r then
+        exit;
+      r := MessageDlg( Application.Name, rs_wapt_agent_has_been_found_on_server_skip_build_agent, mtConfirmation, mbYesNo, 0 );
+      self.m_skip_build_agent := mrYes = r;
+    end;
+
     package_certificate := self.ed_existing_key_certificat_filename.Text;
   end;
 
 
-  if not wizard_validate_waptserver_waptagent_is_not_present( self, nil, self.EdWAPTServerName.Text, r ) then
-  begin
-    if HTTP_RESPONSE_CODE_OK <> r then
-      exit;
-    r := MessageDlg( Application.Name, rs_wapt_agent_has_been_found_on_server_confirm_skip_build_agent, mtConfirmation, mbYesNo, 0 );
-    b_skip_page_build_agent := mrNo = r;
-  end;
-
   write_config( package_certificate );
 
-  if b_skip_page_build_agent then
+  if self.m_skip_build_agent then
     self.PagesControl.ActivePage := self.pgFinish
 
   else if not wizard_validate_no_innosetup_process_running( self, self.ButNext ) then
@@ -932,7 +934,7 @@ begin
 
   else if pgKey = p then
   begin
-    self.validate_page_package_name( bContinue );
+    self.validate_page_package_key( bContinue );
     if not bContinue then
       goto LBL_FAIL;
   end
