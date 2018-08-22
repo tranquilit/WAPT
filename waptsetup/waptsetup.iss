@@ -51,7 +51,6 @@ Filename: "{app}\waptconsolepostconf.exe"; Flags: postinstall runascurrentuser s
 
 [CustomMessages]
 fr.LaunchingPostConf=Lancement de la post-configuration de la console
-
 en.LaunchingPostConf=Launch console post-configuration
-
 de.LaunchingPostconf=Konsole Post-Konfiguration starten
+

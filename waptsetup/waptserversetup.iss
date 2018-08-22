@@ -221,9 +221,3 @@ begin
   Result := Reply = IDIGNORE;
 
 end;
-
-procedure InitializeWizard;
-begin
-end;
-
-

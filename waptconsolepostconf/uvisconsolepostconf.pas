@@ -600,7 +600,8 @@ begin
   end;
 
 
-  write_config( package_certificate );
+  self.write_config( package_certificate );
+  self.restart_waptservice_and_register();
 
   if self.m_skip_build_agent then
     self.PagesControl.ActivePage := self.pgFinish
