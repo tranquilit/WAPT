@@ -766,9 +766,9 @@ begin
   wapt_server := self.EdWAPTServerName.Text;
   repo_url    := wapt_server + '/wapt';
 
-  SetLength( confs, 1 );
+  SetLength( confs, 2 );
   confs[0] := INI_FILE_WAPTCONSOLE;
-//  confs[1] := INI_FILE_WAPTGET;
+  confs[1] := INI_FILE_WAPTGET;
 
   for i:= 0 to Length(confs) -1  do
   begin

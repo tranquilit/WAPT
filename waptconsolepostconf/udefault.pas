@@ -93,8 +93,6 @@ begin
   // wapt-get.ini
   INI_FILE_WAPTGET := IncludeTrailingPathDelimiter(WaptBaseDir) + 'wapt-get.ini';
 
-  r := -1;
-
 end;
 
 initialization
