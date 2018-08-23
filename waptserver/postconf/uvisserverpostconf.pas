@@ -105,6 +105,7 @@ type
     procedure on_accept_filename( Sender : TObject; var Value: String);
   private
     m_need_restart_waptserver : boolean;
+    m_has_waptservice_installed : boolean;
     CurrentVisLoading:TVisLoading;
     procedure OpenFirewall;
     { private declarations }
@@ -472,9 +473,16 @@ begin
 end;
 
 procedure TVisWAPTServerPostConf.clear();
+var
+   r : integer;
 begin
 
   set_buttons_enable( true );
+
+
+  r := srv_exist( m_has_waptservice_installed, WAPT_SERVICE_WAPTSERVICE );
+  if r <> 0 then
+    m_has_waptservice_installed := false;
 
   // Start
   m_need_restart_waptserver := true;
@@ -559,6 +567,7 @@ var
    s    : String;
    params : TCreate_signed_cert_params;
    package_certificate : String;
+   b    : boolean;
 begin
 
   bContinue := false;
@@ -662,7 +671,9 @@ begin
   end;
 
   write_configs( package_certificate );
-  self.restart_waptservice_and_register();
+
+  if m_has_waptservice_installed then
+    self.restart_waptservice_and_register();
 
   if not wizard_validate_no_innosetup_process_running( self, self.ButNext ) then
     exit;
@@ -1009,11 +1020,7 @@ begin
     end;
 
     if not (ssRunning =  GetServiceStatusByName('','waptserver')) then
-    begin
-      m_need_restart_waptserver := true;
-      self.show_validation_error( self.btn_start_waptserver, rs_error_while_restarting_waptserver );
       goto LBL_FAIL;
-    end;
 
   end
 
@@ -1219,7 +1226,6 @@ var
   sha: TDCP_sha256;
   dig:AnsiString;
 begin
-  m_need_restart_waptserver := false;
 
   CurrentVisLoading := TVisLoading.Create(Self);
   with CurrentVisLoading do
@@ -1331,11 +1337,14 @@ begin
         dec(Retry);
       until (retry<=0) or ((sores<>Nil) and sores.B['success']);
       Sleep(2000);
+      m_need_restart_waptserver := false;
       ActNext.Execute;
-
     except
       on E:Exception do
+      begin
         Dialogs.MessageDlg('Error','Error during post-config:'#13#10+E.Message,mtError,mbOKCancel,'');
+        m_need_restart_waptserver := true;
+      end;
     end;
   finally
     FreeAndNil(CurrentVisLoading);

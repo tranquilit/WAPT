@@ -20,7 +20,7 @@
       <MajorVersionNr Value="1"/>
       <MinorVersionNr Value="5"/>
       <RevisionNr Value="1"/>
-      <BuildNr Value="33"/>
+      <BuildNr Value="35"/>
       <StringTable FileDescription="Wapt server Postconfiguration helper" ProductName="WAPT" ProductVersion="1.5.1.21"/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -98,19 +98,19 @@
         <HasResources Value="True"/>
       </Unit6>
       <Unit7>
-        <Filename Value="uutil.pas"/>
+        <Filename Value="udefault.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit7>
       <Unit8>
-        <Filename Value="udefault.pas"/>
+        <Filename Value="..\wapt-get\waptcommon.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit8>
       <Unit9>
-        <Filename Value="..\wapt-get\waptcommon.pas"/>
+        <Filename Value="..\wapt-get\waptwinutils.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit9>
       <Unit10>
-        <Filename Value="..\wapt-get\waptwinutils.pas"/>
+        <Filename Value="..\waptserver\postconf\uutil.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit10>
     </Units>
@@ -123,7 +123,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="..\waptconsole;..\..\cryptobboxvcl\sources;..\wapt-get"/>
+      <OtherUnitFiles Value="..\waptconsole;..\..\cryptobboxvcl\sources;..\wapt-get;..\waptserver\postconf"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <CodeGeneration>

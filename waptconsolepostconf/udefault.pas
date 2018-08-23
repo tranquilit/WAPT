@@ -73,6 +73,13 @@ const
   FILE_FILTER_PRIVATE_KEY : String = 'Private key file (*.pem)|*.PEM';
   FILE_FILTER_CERTIFICATE : String = 'Certificate file (*.crt)|*.CRT';
 
+
+  WAPT_SERVICE_WAPTPOSTGRESQL : String = 'WAPTPostgresql';
+  WAPT_SERVICE_WAPTTASKS      : String = 'WAPTtasks';
+  WAPT_SERVICE_WAPTSERVER     : String = 'WAPTServer';
+  WAPT_SERVICE_WAPTNGINX      : String = 'WAPTNginx';
+  WAPT_SERVICE_WAPTSERVICE    : String = 'WAPTService';
+
 implementation
 
 uses

@@ -90,6 +90,7 @@ type
 
   private
     m_skip_build_agent: boolean;
+    m_has_waptservice_installed : boolean;
 
     CurrentVisLoading:TVisLoading;
     { private declarations }
@@ -422,11 +423,17 @@ begin
 end;
 
 procedure TVisWAPTConsolePostConf.clear();
+var
+  r : integer;
 begin
 
   set_buttons_enable( true );
 
   self.m_skip_build_agent := false;
+
+  r := srv_exist( m_has_waptservice_installed, WAPT_SERVICE_WAPTSERVICE );
+  if r <> 0 then
+    m_has_waptservice_installed := false;
 
   // parameters
   self.EdWAPTServerName.Clear;
@@ -630,7 +637,8 @@ begin
 
 
   self.write_config( package_certificate );
-  self.restart_waptservice_and_register();
+  if self.m_has_waptservice_installed then
+    self.restart_waptservice_and_register();
 
   if self.m_skip_build_agent then
     self.PagesControl.ActivePage := self.pgFinish

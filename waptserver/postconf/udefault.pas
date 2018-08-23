@@ -63,10 +63,21 @@ const
   INI_FILE_WAPTCONSOLE : String = '';
   INI_FILE_WAPTGET     : String = '';
 
-  HTML_NO_DOC : String = '<HTML><HEAD><HEAD><BODY><BODY></HTML>';
+
+  MIME_APPLICATION_JSON : String = 'application/json';
+  HTTP_TIMEOUT          : integer = 4 * 1000;
+  HTTP_RESPONSE_CODE_OK : integer = 200;
+  HTML_NO_DOC           : String = '<HTML><HEAD><HEAD><BODY><BODY></HTML>';
 
   FILE_FILTER_PRIVATE_KEY : String = 'Private key file (*.pem)|*.PEM';
   FILE_FILTER_CERTIFICATE : String = 'Certificate file (*.crt)|*.CRT';
+
+
+  WAPT_SERVICE_WAPTPOSTGRESQL : String = 'WAPTPostgresql';
+  WAPT_SERVICE_WAPTTASKS      : String = 'WAPTtasks';
+  WAPT_SERVICE_WAPTSERVER     : String = 'WAPTServer';
+  WAPT_SERVICE_WAPTNGINX      : String = 'WAPTNginx';
+  WAPT_SERVICE_WAPTSERVICE    : String = 'WAPTService';
 
 implementation
 
