@@ -223,6 +223,10 @@ msgstr "Mot de passe"
 msgid "Start"
 msgstr "Démarrer"
 
+#: tviswaptserverpostconf.p_center.caption
+msgid "p_center"
+msgstr ""
+
 #: tviswaptserverpostconf.p_right.caption
 msgid "p_right"
 msgstr ""

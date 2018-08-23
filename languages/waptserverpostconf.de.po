@@ -248,6 +248,10 @@ msgstr "Passwort"
 msgid "Start"
 msgstr "Start"
 
+#: tviswaptserverpostconf.p_center.caption
+msgid "p_center"
+msgstr ""
+
 #: tviswaptserverpostconf.p_right.caption
 msgid "p_right"
 msgstr ""

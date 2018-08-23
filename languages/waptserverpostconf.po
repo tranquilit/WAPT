@@ -213,6 +213,10 @@ msgstr ""
 msgid "Start"
 msgstr ""
 
+#: tviswaptserverpostconf.p_center.caption
+msgid "p_center"
+msgstr ""
+
 #: tviswaptserverpostconf.p_right.caption
 msgid "p_right"
 msgstr ""
