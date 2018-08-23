@@ -19,10 +19,10 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
     Height = 355
     Top = 0
     Width = 732
-    ActivePage = pgPackageName
+    ActivePage = pgPackageKey
     Align = alClient
     MultiLine = True
-    TabIndex = 4
+    TabIndex = 5
     TabOrder = 0
     OnChange = PagesControlChange
     Options = [nboMultiLine]
@@ -327,6 +327,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         Top = 176
         Width = 331
         FileName = 'ed_existing_key_key_filename'
+        OnAcceptFileName = on_accept_filename
         FilterIndex = 0
         HideDirectories = False
         ButtonWidth = 23
@@ -421,6 +422,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         Top = 208
         Width = 331
         FileName = 'ed_existing_key_certificat_filename'
+        OnAcceptFileName = on_accept_filename
         FilterIndex = 0
         HideDirectories = False
         ButtonWidth = 23

@@ -129,6 +129,7 @@ object VisWAPTConsolePostConf: TVisWAPTConsolePostConf
         Top = 40
         Width = 331
         Directory = 'ed_create_new_key_private_directory'
+        OnAcceptDirectory = on_accept_filename
         ShowHidden = False
         ButtonWidth = 23
         NumGlyphs = 1
@@ -142,6 +143,7 @@ object VisWAPTConsolePostConf: TVisWAPTConsolePostConf
         Top = 176
         Width = 331
         FileName = 'ed_existing_key_key_filename'
+        OnAcceptFileName = on_accept_filename
         FilterIndex = 0
         HideDirectories = False
         ButtonWidth = 23
@@ -236,6 +238,7 @@ object VisWAPTConsolePostConf: TVisWAPTConsolePostConf
         Top = 208
         Width = 331
         FileName = 'ed_existing_key_certificat_filename'
+        OnAcceptFileName = on_accept_filename
         FilterIndex = 0
         HideDirectories = False
         ButtonWidth = 23
@@ -533,7 +536,6 @@ object VisWAPTConsolePostConf: TVisWAPTConsolePostConf
     ClientHeight = 401
     ClientWidth = 278
     TabOrder = 2
-    OnClick = p_rightClick
     object html_panel: TIpHtmlPanel
       Left = 1
       Height = 399

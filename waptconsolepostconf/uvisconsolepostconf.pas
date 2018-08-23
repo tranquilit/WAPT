@@ -85,7 +85,7 @@ type
     procedure on_create_setup_waptagent_tick( Sender : TObject );
     procedure on_upload( ASender: TObject; AWorkMode: TWorkMode; AWorkCount: Int64 );
     procedure on_python_update(Sender: TObject; PSelf, Args: PPyObject; var Result: PPyObject);
-    procedure p_rightClick(Sender: TObject);
+    procedure on_accept_filename( Sender : TObject; var Value: String);
 
   private
     m_skip_build_agent: boolean;
@@ -385,8 +385,31 @@ begin
   Result:= DMPython.PythonEng.ReturnNone;
 end;
 
-procedure TVisWAPTConsolePostConf.p_rightClick(Sender: TObject);
+procedure TVisWAPTConsolePostConf.on_accept_filename(Sender: TObject; var Value: String);
+var
+  e1 : TFileNameEdit;
+  e2 : TFileNameEdit;
+  p : String;
 begin
+  if self.ed_existing_key_key_filename = Sender then
+  begin
+      e1 := self.ed_existing_key_key_filename;
+      e2 := self.ed_existing_key_certificat_filename;
+  end
+  else
+  begin
+    e1 := self.ed_existing_key_certificat_filename;
+    e2 := self.ed_existing_key_key_filename;
+  end;
+
+
+  p := ExtractFilePath(Value);
+  e1.InitialDir := p;
+
+  if FileExists(e2.Text) then
+    e2.InitialDir := ExtractFilePath(e2.Text)
+  else
+    e2.InitialDir := e1.InitialDir;
 
 end;
 
@@ -427,6 +450,11 @@ begin
   self.cb_create_new_key_show_password.Checked    := false;
   self.cb_use_existing_key_show_password.Checked  := false;
 
+  self.ed_existing_key_key_filename.Filter := FILE_FILTER_PRIVATE_KEY;
+  self.ed_existing_key_certificat_filename.Filter := FILE_FILTER_CERTIFICATE;
+
+  self.ed_existing_key_key_filename.DialogOptions := self.ed_existing_key_key_filename.DialogOptions + [ofFileMustExist];
+  self.ed_existing_key_certificat_filename.DialogOptions :=  self.ed_existing_key_certificat_filename.DialogOptions + [ofFileMustExist];
 
   self.rb_CreateKey.Checked := true;
   self.on_private_key_radiobutton_change( nil );
@@ -436,7 +464,7 @@ begin
   self.ed_package_prefix.Text:= DEFAULT_PACKAGE_PREFIX;
   self.ed_create_new_key_private_directory.Text := DEFAULT_PRIVATE_KEY_DIRECTORY;
 
-//  self.rb_UseKey.Checked :=;
+  //  self.rb_UseKey.Checked :=;
 
 end;
 

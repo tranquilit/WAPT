@@ -64,6 +64,10 @@ const
   INI_FILE_WAPTGET     : String = '';
 
   HTML_NO_DOC : String = '<HTML><HEAD><HEAD><BODY><BODY></HTML>';
+
+  FILE_FILTER_PRIVATE_KEY : String = 'Private key file (*.pem)|*.PEM';
+  FILE_FILTER_CERTIFICATE : String = 'Certificate file (*.crt)|*.CRT';
+
 implementation
 
 uses

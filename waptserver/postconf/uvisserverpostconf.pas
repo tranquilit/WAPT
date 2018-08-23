@@ -100,7 +100,7 @@ type
     procedure on_upload( ASender: TObject; AWorkMode: TWorkMode; AWorkCount: Int64 );
     procedure on_python_update(Sender: TObject; PSelf, Args: PPyObject; var Result: PPyObject);
     procedure on_configure_console_radiobutton_change(Sender : TObject );
-
+    procedure on_accept_filename( Sender : TObject; var Value: String);
   private
     CurrentVisLoading:TVisLoading;
     procedure OpenFirewall;
@@ -402,6 +402,33 @@ begin
 
 end;
 
+procedure TVisWAPTServerPostConf.on_accept_filename(Sender: TObject; var Value: String);
+var
+  e1 : TFileNameEdit;
+  e2 : TFileNameEdit;
+  p : String;
+begin
+  if self.ed_existing_key_key_filename = Sender then
+  begin
+    e1 := self.ed_existing_key_key_filename;
+    e2 := self.ed_existing_key_certificat_filename;
+  end
+  else
+  begin
+    e1 := self.ed_existing_key_certificat_filename;
+    e2 := self.ed_existing_key_key_filename;
+  end;
+
+  p := ExtractFilePath(Value);
+  e1.InitialDir := p;
+
+  if FileExists(e2.Text) then
+    e2.InitialDir := ExtractFilePath(e2.Text)
+  else
+    e2.InitialDir := e1.InitialDir;
+end;
+
+
 
 procedure TVisWAPTServerPostConf.OpenFirewall;
 var
@@ -472,6 +499,14 @@ begin
 
   self.ed_package_prefix.Text:= DEFAULT_PACKAGE_PREFIX;
   self.ed_create_new_key_private_directory.Text := DEFAULT_PRIVATE_KEY_DIRECTORY;
+
+
+  self.ed_existing_key_key_filename.Filter := FILE_FILTER_PRIVATE_KEY;
+  self.ed_existing_key_certificat_filename.Filter := FILE_FILTER_CERTIFICATE;
+
+  self.ed_existing_key_key_filename.DialogOptions := self.ed_existing_key_key_filename.DialogOptions + [ofFileMustExist];
+  self.ed_existing_key_certificat_filename.DialogOptions :=  self.ed_existing_key_certificat_filename.DialogOptions + [ofFileMustExist];
+
 
 //  self.rb_UseKey.Checked :=;
 
