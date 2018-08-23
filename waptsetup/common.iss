@@ -357,13 +357,14 @@ end;
 procedure DeinitializeUninstall();
 var
     installdir: String;
+    msg       : String;
 begin
     installdir := ExpandConstant('{app}');
     if DirExists(installdir) then
     begin
-      if (not runningSilently() and  (MsgBox(ExpandConstant('{cm:RemoveAllFiles}'),
-               mbConfirmation, MB_YESNO) = IDYES))
-               
+      msg := ExpandConstant('{cm:RemoveAllFiles}'); 
+      msg := ExpandConstant( msg ); 
+      if (not runningSilently() and  (MsgBox(msg, mbConfirmation, MB_YESNO) = IDYES)) 
          or (ExpandConstant('{param:purge_wapt_dir|0}')='1') then
         Deltree(installdir, True, True, True);
     End;
