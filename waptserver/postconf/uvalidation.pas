@@ -14,7 +14,7 @@ uses
 
 function wizard_validate_package_prefix( w : TVisWAPTServerPostConf; c: TControl; const prefix: String): boolean;
 function wizard_validate_key_name( w : TVisWAPTServerPostConf; c : TControl; const key_name : String ) :boolean;
-function wizard_validate_str_password_are_not_empty_and_equals( w: TVisWAPTServerPostConf; c: TControl; const s1: String; const s2: String ): Boolean;
+function wizard_validate_password( w: TVisWAPTServerPostConf; c: TControl; const s: String ): Boolean;
 function wizard_validate_key_password( w : TVisWAPTServerPostConf; c : TControl; const key_filename : String; const key_password : String ) : boolean;
 function wizard_validate_no_innosetup_process_running(w: TVisWAPTServerPostConf; c : TControl ): Boolean;
 
@@ -59,21 +59,17 @@ begin
   exit( true );
 end;
 
-function wizard_validate_str_password_are_not_empty_and_equals(w: TVisWAPTServerPostConf; c: TControl; const s1: String; const s2: String ): Boolean;
+function wizard_validate_password(w: TVisWAPTServerPostConf; c: TControl; const s : String ): Boolean;
+var
+  msg : String;
 begin
 
-  if s1 <> s2 then
+  if Length(s) < DEFAULT_MINIMUN_PASSWORD_LENGTH then
   begin
-    w.show_validation_error( c, rs_supplied_passwords_differs );
-    exit(false);
+    msg := Format( rs_supplied_passwords_must_be_at_least_x_chars_length, [DEFAULT_MINIMUN_PASSWORD_LENGTH] );
+    w.show_validation_error( c, msg );
+    exit( false );
   end;
-
-  if Length(Trim(s1)) < DEFAULT_MINIMUN_PASSWORD_LENGTH then
-  begin
-    w.show_validation_error( c, rs_supplied_passwords_must_be_at_least_six_chars_length );
-    exit(false);
-  end;
-
 
   exit( true) ;
 end;

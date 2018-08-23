@@ -580,8 +580,8 @@ msgstr ""
 msgid "Supplied password differs"
 msgstr ""
 
-#: uwaptserverres.rs_supplied_passwords_must_be_at_least_six_chars_length
-msgid "Supplied passwords must be at least 6 characters length"
+#: uwaptserverres.rs_supplied_passwords_must_be_at_least_x_chars_length
+msgid "Supplied passwords must be at least %d characters length"
 msgstr ""
 
 #: uwaptserverres.rs_upload_to_server

@@ -110,6 +110,7 @@ type
 
     procedure set_buttons_enable( enable : Boolean );
     procedure clear();
+    procedure validate_page_password( var bContinue : boolean );
     procedure validate_page_packge_name( var bContinue : boolean );
     procedure validate_page_package_key( var bContinue : boolean );
     procedure validate_page_agent( var bContinue : boolean );
@@ -518,6 +519,22 @@ begin
 
 end;
 
+procedure TVisWAPTServerPostConf.validate_page_password(var bContinue: boolean);
+begin
+  bContinue := false;
+
+  if not wizard_validate_password( self, self.EdPwd1, self.EdPwd1.Text ) then
+    exit;
+
+  if not (self.EdPwd1.Text = self.EdPwd2.Text) then
+  begin
+    self.show_validation_error( self.EdPwd2, rs_supplied_passwords_differs );
+    exit;
+  end;
+
+  bContinue := true;
+end;
+
 procedure TVisWAPTServerPostConf.validate_page_packge_name( var bContinue: boolean);
 begin
   bContinue := false;
@@ -581,8 +598,14 @@ begin
       exit;
     end;
 
-    if not wizard_validate_str_password_are_not_empty_and_equals( self, self.ed_create_new_key_password_2, self.ed_create_new_key_password_1.Text, self.ed_create_new_key_password_2.Text ) then
+    if not wizard_validate_password( self, self.ed_create_new_key_password_1, self.ed_create_new_key_password_1.Text ) then
       exit;
+
+    if not (self.ed_create_new_key_password_1.Text = self.ed_create_new_key_password_2.Text) then
+    begin
+      self.show_validation_error( self.ed_create_new_key_password_2, rs_supplied_passwords_differs );
+      exit;
+    end;
 
     create_signed_cert_params_init( @params );
     params.destdir      := ExcludeTrailingPathDelimiter(self.ed_create_new_key_private_directory.Text);
@@ -965,6 +988,13 @@ begin
     end;
   end
 
+  else if pgPassword = p then
+  begin
+    self.validate_page_password( bContinue );
+    if not bContinue then
+      goto LBL_FAIL;
+  end
+
   else if pgPackageName = p then
   begin
     self.validate_page_packge_name( bContinue );
@@ -1008,7 +1038,7 @@ begin
   if PagesControl.ActivePage = pgParameters then
     ActNext.Enabled := EdWaptServerIP.Text<>''
   else if PagesControl.ActivePage = pgPassword then
-    ActNext.Enabled := (EdPwd1.Text='') or (EdPwd1.Text = EdPwd2.Text)
+    ActNext.Enabled := true
   else if PagesControl.ActivePage = pgPackageKey then
     ActNext.Enabled := true
   else if PagesControl.ActivePage = pgStartServices then

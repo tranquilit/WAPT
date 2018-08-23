@@ -53,7 +53,7 @@ resourcestring
   rs_create_key_a_key_with_this_name_exist = 'A key with this name has been found, change key name and click next again';
   rs_create_key_a_certificat_this_key_name_exist = 'A certificat with key name has beenfound, change key name and click next again';
   rs_supplied_passwords_differs = 'Supplied password differs';
-  rs_supplied_passwords_must_be_at_least_six_chars_length = 'Supplied passwords must be at least 6 characters length';
+  rs_supplied_passwords_must_be_at_least_x_chars_length = 'Supplied passwords must be at least %d characters length';
   rs_key_name_cannot_be_empty = 'Key name cannot be empty';
   rs_key_filename_cannot_be_empty = 'Key filename cannot be empty';
   rs_certificate_filename_cannot_be_empty = 'Certificate filename cannot be empty';
