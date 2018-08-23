@@ -527,6 +527,10 @@ msgstr ""
 msgid "Certificate filename '%s' is invalid"
 msgstr ""
 
+#: uwaptserverres.rs_click_restart_waptserver
+msgid "Click to restart wapt server"
+msgstr ""
+
 #: uwaptserverres.rs_compilation_failed
 msgid "Compilation Failed"
 msgstr ""
@@ -549,6 +553,10 @@ msgstr ""
 
 #: uwaptserverres.rs_create_key_select_a_valide_private_key_directory
 msgid "A valid private key directory must be selected"
+msgstr ""
+
+#: uwaptserverres.rs_error_while_restarting_waptserver
+msgid "An error has occured while restarting waptserver"
 msgstr ""
 
 #: uwaptserverres.rs_finish

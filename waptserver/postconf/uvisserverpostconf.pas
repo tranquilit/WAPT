@@ -25,7 +25,7 @@ type
     actPrevious: TAction;
     ActionList1: TActionList;
     BitBtn4: TBitBtn;
-    BitBtn6: TBitBtn;
+    btn_start_waptserver: TBitBtn;
     ButCancel: TBitBtn;
     ButNext: TBitBtn;
     ButPrevious: TBitBtn;
@@ -104,6 +104,7 @@ type
     procedure on_configure_console_radiobutton_change(Sender : TObject );
     procedure on_accept_filename( Sender : TObject; var Value: String);
   private
+    m_need_restart_waptserver : boolean;
     CurrentVisLoading:TVisLoading;
     procedure OpenFirewall;
     { private declarations }
@@ -474,6 +475,9 @@ procedure TVisWAPTServerPostConf.clear();
 begin
 
   set_buttons_enable( true );
+
+  // Start
+  m_need_restart_waptserver := true;
 
   // Private key and certificate
   self.ed_package_prefix.Clear;
@@ -993,6 +997,24 @@ begin
     self.validate_page_password( bContinue );
     if not bContinue then
       goto LBL_FAIL;
+    m_need_restart_waptserver := true;
+  end
+
+  else if pgStartServices = p then
+  begin
+    if m_need_restart_waptserver then
+    begin
+      self.show_validation_error( self.btn_start_waptserver, rs_click_restart_waptserver );
+      goto LBL_FAIL;
+    end;
+
+    if not (ssRunning =  GetServiceStatusByName('','waptserver')) then
+    begin
+      m_need_restart_waptserver := true;
+      self.show_validation_error( self.btn_start_waptserver, rs_error_while_restarting_waptserver );
+      goto LBL_FAIL;
+    end;
+
   end
 
   else if pgPackageName = p then
@@ -1042,7 +1064,7 @@ begin
   else if PagesControl.ActivePage = pgPackageKey then
     ActNext.Enabled := true
   else if PagesControl.ActivePage = pgStartServices then
-    ActNext.Enabled := GetServiceStatusByName('','waptserver') = ssRunning
+    ActNext.Enabled := true
   else
     ActNext.Enabled := PagesControl.ActivePageIndex<=PagesControl.PageCount-1;
   if PagesControl.ActivePageIndex=PagesControl.PageCount-1 then
@@ -1197,6 +1219,8 @@ var
   sha: TDCP_sha256;
   dig:AnsiString;
 begin
+  m_need_restart_waptserver := false;
+
   CurrentVisLoading := TVisLoading.Create(Self);
   with CurrentVisLoading do
   try

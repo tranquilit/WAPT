@@ -67,6 +67,8 @@ resourcestring
   rs_finish = 'Finish';
   rs_next = 'Next';
   rs_upload_to_server = 'Upload to server %d%%';
+  rs_click_restart_waptserver = 'Click to restart wapt server';
+  rs_error_while_restarting_waptserver = 'An error has occured while restarting waptserver';
 
 implementation
 
