@@ -75,6 +75,9 @@ logger = logging.getLogger()
 if platform.system() == 'Windows':
     try:
         import ctypes
+        import win32api
+        import pythoncom
+
         class _disable_file_system_redirection:
             r"""Context manager to disable temporarily the wow3264 file redirector
 
@@ -381,6 +384,12 @@ def ensure_unicode(data):
                             return data.decode(sys.getdefaultencoding(),'ignore')
                 else:
                     return data.decode(sys.getfilesystemencoding(),'replace')
+        if platform.system() == 'Windows' and isinstance(data,pythoncom.com_error):
+            try:
+                error_msg = ensure_unicode(win32api.FormatMessage(data.args[2][5]))
+                return u"%s (%s): %s (%s)" % (data.args[0], data.args[1].decode('cp850'),data.args[2][5],error_msg)
+            except UnicodeError:
+                return u"%s : %s" % (data.args[0], data.args[1].decode(sys.getfilesystemencoding(),'ignore'))
         if platform.system() == 'Windows' and isinstance(data,WindowsError):
             try:
                 return u"%s : %s" % (data.args[0], data.args[1].decode('cp850'))
