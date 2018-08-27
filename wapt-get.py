@@ -72,6 +72,8 @@ action is either :
   download <package>: force download one or several packages
   show <package>    : show attributes of one or more packages
 
+  forget <package>  : removes the installation status of <package> from local Wapt database.
+
   list [keywords]   : list installed packages containing keywords
   list-upgrade      : list upgradable packages
   check-upgrades    : show last update/upgrade status
