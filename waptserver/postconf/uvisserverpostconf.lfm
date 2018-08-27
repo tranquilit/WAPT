@@ -236,8 +236,8 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
       Height = 355
       Top = 0
       Width = 732
-      HorzScrollBar.Page = 423
-      VertScrollBar.Page = 99
+      HorzScrollBar.Page = 384
+      VertScrollBar.Page = 299
       Align = alClient
       BorderStyle = bsNone
       ClientHeight = 355
@@ -248,10 +248,10 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         Height = 355
         Top = 0
         Width = 732
-        ActivePage = pgStartServices
+        ActivePage = pgFinish
         Align = alClient
         MultiLine = True
-        TabIndex = 2
+        TabIndex = 7
         TabOrder = 0
         OnChange = PagesControlChange
         Options = [nboMultiLine]
@@ -781,7 +781,6 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
     object actPrevious: TAction
       Caption = 'Previous'
       OnExecute = actPreviousExecute
-      OnUpdate = actPreviousUpdate
     end
     object ActNext: TAction
       Caption = 'Next'

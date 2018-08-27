@@ -88,7 +88,6 @@ type
     procedure ActNextExecute(Sender: TObject);
     procedure ActNextUpdate(Sender: TObject);
     procedure actPreviousExecute(Sender: TObject);
-    procedure actPreviousUpdate(Sender: TObject);
     procedure actWriteConfStartServeExecute(Sender: TObject);
     procedure ButCancelClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -208,18 +207,31 @@ procedure TVisWAPTServerPostConf.PagesControlChange(Sender: TObject);
 var
   p : TTabSheet;
 begin
-  p := nil;
+  p := self.PagesControl.ActivePage;
+  self.ButPrevious.Enabled := self.actPrevious.Enabled;
 
   // Update doc html
   self.update_doc_html();
 
-  p := self.PagesControl.ActivePage;
-
   // Page specilic actions
-  if pgBuildAgent = p then
+  if pgParameters = p then
+  begin
+    self.ButPrevious.Enabled := false;
+  end
+
+  else if pgBuildAgent = p then
   begin
     self.ButNext.Click;
+  end
+
+  else if pgFinish = p then
+  begin
+    self.ButPrevious.Enabled  := false;
+    self.ButCancel.Enabled    := false;
   end;
+
+
+
 end;
 
 procedure TVisWAPTServerPostConf.on_private_key_radiobutton_change( Sender: TObject);
@@ -1054,8 +1066,8 @@ begin
 
 
   self.PagesControl.ActivePageIndex := self.PagesControl.ActivePageIndex + 1;
-  self.PagesControlChange(nil);
   set_buttons_enable( true );
+  self.PagesControlChange(nil);
   exit;
 
 LBL_FAIL:
@@ -1084,11 +1096,6 @@ procedure TVisWAPTServerPostConf.actPreviousExecute(Sender: TObject);
 begin
   PagesControl.ActivePageIndex := PagesControl.ActivePageIndex - 1;
   self.PagesControlChange( nil );
-end;
-
-procedure TVisWAPTServerPostConf.actPreviousUpdate(Sender: TObject);
-begin
-  actPrevious.Enabled:=(PagesControl.ActivePageIndex>0) and (PagesControl.ActivePageIndex<=PagesControl.PageCount-1);
 end;
 
 function runwapt(cmd:String):String;

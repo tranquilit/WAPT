@@ -584,7 +584,6 @@ object VisWAPTConsolePostConf: TVisWAPTConsolePostConf
     object actPrevious: TAction
       Caption = 'Previous'
       OnExecute = actPreviousExecute
-      OnUpdate = actPreviousUpdate
     end
     object ActNext: TAction
       Caption = 'Next'

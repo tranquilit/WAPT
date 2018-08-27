@@ -74,7 +74,6 @@ type
     procedure ActNextExecute(Sender: TObject);
     procedure ActNextUpdate(Sender: TObject);
     procedure actPreviousExecute(Sender: TObject);
-    procedure actPreviousUpdate(Sender: TObject);
     procedure ButCancelClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -194,12 +193,25 @@ begin
   self.update_doc_html();
 
   p := self.PagesControl.ActivePage;
+  self.ButPrevious.Enabled := self.actPrevious.Enabled;
 
   // Page specilic actions
-  if pgBuildAgent = p then
+  if pgParameters = p then
+  begin
+    self.ButPrevious.Enabled := false;
+  end
+
+  else if pgBuildAgent = p then
   begin
     self.ButNext.Click;
+  end
+
+  else if pgFinish = p then
+  begin
+    self.ButPrevious.Enabled := false;
+    self.ButCancel.Enabled := false;
   end;
+
 end;
 
 procedure TVisWAPTConsolePostConf.on_private_key_radiobutton_change( Sender: TObject);
@@ -924,6 +936,7 @@ var
 begin
   bContinue := false;
 
+
   set_buttons_enable( false );
 
   p := self.PagesControl.ActivePage;
@@ -965,8 +978,8 @@ begin
 
 
   self.PagesControl.ActivePageIndex := self.PagesControl.ActivePageIndex + 1;
-  self.PagesControlChange(nil);
   set_buttons_enable( true );
+  self.PagesControlChange(nil);
   exit;
 
 LBL_FAIL:
@@ -990,17 +1003,19 @@ begin
 end;
 
 procedure TVisWAPTConsolePostConf.actPreviousExecute(Sender: TObject);
+var
+  p : TTabSheet;
 begin
-  PagesControl.ActivePageIndex := PagesControl.ActivePageIndex - 1;
+  p := self.PagesControl.ActivePage;
+  if pgFinish = p then
+  begin
+    self.PagesControl.ActivePageIndex := pgKey.TabIndex;
+  end
+  else
+    PagesControl.ActivePageIndex := PagesControl.ActivePageIndex - 1;
+
   self.PagesControlChange( nil );
 end;
-
-procedure TVisWAPTConsolePostConf.actPreviousUpdate(Sender: TObject);
-begin
-  actPrevious.Enabled:=(PagesControl.ActivePageIndex>0) and (PagesControl.ActivePageIndex<=PagesControl.PageCount-1);
-end;
-
-
 
 procedure TVisWAPTConsolePostConf.ButCancelClick(Sender: TObject);
 begin
