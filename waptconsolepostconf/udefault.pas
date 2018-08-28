@@ -80,6 +80,8 @@ const
   WAPT_SERVICE_WAPTNGINX      : String = 'WAPTNginx';
   WAPT_SERVICE_WAPTSERVICE    : String = 'WAPTService';
 
+  RUN_TIMEOUT_MS = 10 *1000;
+
 implementation
 
 uses

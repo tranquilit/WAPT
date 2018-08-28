@@ -890,7 +890,7 @@ begin
     self.ProgressBar1.Position := i + 1;
     Application.ProcessMessages;
     try
-      Run( UTF8Decode(sl.Strings[i]) );
+      Run( UTF8Decode(sl.Strings[i]), '', RUN_TIMEOUT_MS );
       result := 0;
     except on E : Exception do
       begin
