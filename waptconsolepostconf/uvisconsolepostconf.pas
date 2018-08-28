@@ -825,8 +825,6 @@ var
    r : integer;
 begin
   waptget := IncludeTrailingPathDelimiter(WaptBaseDir) + 'wapt-get.exe';
-  waptget := Format( '%s --wapt-server-user=admin --wapt-server-passwd=%s', [waptget, self.ed_wapt_server_password.Text] );
-
 
   sl := TStringList.Create;
   sl.Append( 'net stop  waptservice' );
