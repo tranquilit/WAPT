@@ -5002,6 +5002,11 @@ procedure TVisWaptGUI.FilterGridWindowsUpdates(Sender: TObject);
 begin
 end;
 
+procedure TVisWaptGUI.ActWUADownloadsRefreshExecute(Sender: TObject);
+begin
+end;
+
+
 {$endif}
 
 
