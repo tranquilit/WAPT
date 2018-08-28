@@ -155,7 +155,6 @@ end;
 
 procedure TVisWAPTConsolePostConf.FormShow(Sender: TObject);
 begin
-  EdWAPTServerName.Text:=LowerCase(GetComputerName)+'.'+GetDNSDomain;
   PagesControlChange(Self);
 end;
 
