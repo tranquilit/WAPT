@@ -13,7 +13,7 @@ try:
     ISCCBUILD = r'waptpython.exe waptsetup\create_setup_simple.py -k C:\Users\buildbot\Documents\tranquilit2.p12 -w C:\Users\buildbot\Documents\tmpkeypwd'
 
     def compile_exes(edition='enterprise',force=False):
-        for lpi in ["wapt-get\\waptget.lpi","wapt-get\\waptguihelper.lpi","waptdeploy\\waptdeploy.lpi","wapttray\\wapttray.lpi","waptconsole\\waptconsole.lpi","waptexit\\waptexit.lpi","waptwizard\\waptwizard.lpi","waptserver\\postconf\\waptserverpostconf.lpi"]:
+        for lpi in ["wapt-get\\waptget.lpi","wapt-get\\waptguihelper.lpi","waptdeploy\\waptdeploy.lpi","wapttray\\wapttray.lpi","waptconsole\\waptconsole.lpi","waptexit\\waptexit.lpi","waptserver\\postconf\\waptserverpostconf.lpi"]:
             lpi_content = open(lpi,'r').read()
             targets = re.findall(r'<Target>\n.*<Filename Value="(.*?)"/>',lpi_content)
             if targets:

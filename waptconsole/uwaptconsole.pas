@@ -29,6 +29,7 @@ type
     ActAddNewNetwork: TAction;
     ActDeleteNetwork: TAction;
     ActInstallLicence: TAction;
+    ActWUADownloadsRefresh: TAction;
     ActResetWebsocketConnections: TAction;
     ActRunCleanMgr: TAction;
     ActWUAShowMSUpdatesHelp: TAction;
@@ -74,6 +75,7 @@ type
     ApplicationProperties1: TApplicationProperties;
     BitBtn1: TBitBtn;
     BitBtn10: TBitBtn;
+    BitBtn11: TBitBtn;
     BitBtn2: TBitBtn;
     BitBtn9: TBitBtn;
     btAddGroup: TBitBtn;
@@ -130,6 +132,7 @@ type
     GridHostsForPackage: TSOGrid;
     GridPackages: TSOGrid;
     GridWUUpdates: TSOGrid;
+    GridWUDownloads: TSOGrid;
     Label10: TLabel;
     Label17: TLabel;
     Label18: TLabel;
@@ -162,6 +165,7 @@ type
     MenuItem98: TMenuItem;
     MenuItem99: TMenuItem;
     Panel10: TPanel;
+    Panel13: TPanel;
     Panel17: TPanel;
     Panel9: TPanel;
     PanHostsForPackage: TPanel;
@@ -268,6 +272,7 @@ type
     Splitter6: TSplitter;
     Splitter7: TSplitter;
     PgReports: TTabSheet;
+    pgWAPTWUADownloads: TTabSheet;
     TimerWUALoadWinUpdates: TTimer;
     ToolBar1: TToolBar;
     ToolButtonUpgrade: TToolButton;
@@ -539,6 +544,7 @@ type
     procedure ActHostsActionsUpdate(Sender: TObject);
     procedure ActImportFromFileExecute(Sender: TObject);
     procedure ActImportFromRepoExecute(Sender: TObject);
+    procedure ActWUADownloadsRefreshExecute(Sender: TObject);
     procedure ActWUALoadUpdatesExecute(Sender: TObject);
     procedure ActWUALoadUpdatesUpdate(Sender: TObject);
     procedure ActPackagesInstallExecute(Sender: TObject);
@@ -3957,11 +3963,14 @@ begin
         DeleteFileUTF8(Appuserinipath);
 
     {$ifdef ENTERPRISE}
+    pgWAPTWUADownloads.TabVisible:=IsEnterpriseEdition;
     pgWindowsUpdates.TabVisible:=IsEnterpriseEdition;
-    {$else}
-    pgWindowsUpdates.TabVisible:=False;
-    {$endif}
     pgHostWUA.TabVisible:=IsEnterpriseEdition;
+    {$else}
+    pgWAPTWUADownloads.TabVisible:=False;
+    pgWindowsUpdates.TabVisible:=False;
+    pgHostWUA.TabVisible:=False;
+    {$endif}
 
     for i:=0 to WSUSActions.ActionCount-1 do
     begin
@@ -4558,14 +4567,17 @@ end;
 procedure TVisWaptGUI.GridHostWinUpdatesGetText(Sender: TBaseVirtualTree;
   Node: PVirtualNode; RowData, CellData: ISuperObject; Column: TColumnIndex;
   TextType: TVSTTextType; var CellText: string);
+var
+  propname:String;
 begin
   if Node = nil then
     CellText := ''
   else
   begin
-    if (TSOGridColumn(TSOGrid(Sender).Header.Columns[Column]).PropertyName='changetime') then
+    propname:=TSOGridColumn(TSOGrid(Sender).Header.Columns[Column]).PropertyName;
+    if StrIsOneOf(propname,['changetime','started_on','finished_on','crested_on','updated_on']) then
         CellText := Copy(StrReplaceChar(CellText,'T',' '),1,19)
-    else if (TSOGridColumn(TSOGrid(Sender).Header.Columns[Column]).PropertyName='kbids') then
+    else if (propname = 'kbids') then
       CellText := 'KB'+soutils.Join(',KB', CellData)
     else if (CellData <> nil) and (CellData.DataType = stArray) then
       CellText := soutils.Join(',', CellData);
@@ -4718,7 +4730,9 @@ begin
       SrcNetworks.open;
   end
   else if MainPages.ActivePage = pgWindowsUpdates then
-    ActWSUSRefresh.Execute;
+    ActWSUSRefresh.Execute
+  else if MainPages.ActivePage = pgWAPTWUADownloads then
+    ActWUADownloadsRefresh.Execute;
 end;
 
 function TVisWaptGUI.updateprogress(receiver: TObject;

@@ -1602,6 +1602,12 @@ msgctxt "tviswaptgui.actwuadownloadselectedupdate.caption"
 msgid "Download selected"
 msgstr "Télécharger les mises à jour sélectionnées"
 
+#: tviswaptgui.actwuadownloadsrefresh.caption
+#, fuzzy
+msgctxt "tviswaptgui.actwuadownloadsrefresh.caption"
+msgid "Refresh"
+msgstr "Actualiser"
+
 #: tviswaptgui.actwuaeditgroup.caption
 msgctxt "tviswaptgui.actwuaeditgroup.caption"
 msgid "Edit group"
@@ -2148,6 +2154,10 @@ msgstr "Sources"
 #: tviswaptgui.pgtasks.caption
 msgid "Tasks"
 msgstr "Tâches"
+
+#: tviswaptgui.pgwaptwuadownloads.caption
+msgid "Windows Updates downloads"
+msgstr "Téléchargements Windows Updates"
 
 #: tviswaptgui.pgwindowsupdates.caption
 msgctxt "tviswaptgui.pgwindowsupdates.caption"
