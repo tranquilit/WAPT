@@ -139,7 +139,7 @@ begin
   r := http_post( s, url, MIME_APPLICATION_JSON, UTF8Encode(so.AsJSon(false)) );
   if r <> 0 then
   begin
-    w.show_validation_error( c,  rs_a_problem_has_occured_while_trying_to_login_server );
+    w.show_validation_error( c,  rs_waptserver_not_found_or_down );
     exit( false  );
   end;
 

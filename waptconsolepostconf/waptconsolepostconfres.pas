@@ -68,6 +68,7 @@ resourcestring
   rs_next = 'Next';
   rs_upload_to_server = 'Upload to server %d%%';
   rs_wapt_sever_url_is_invalid = 'Wapt server url is invalid';
+  rs_waptserver_not_found_or_down = 'Wapt server not found or down';
   rs_a_problem_has_occured_while_trying_to_login_server =  'A problem has occured when trying to login to server';
   rs_wapt_server_installation_may_be_broken = 'Wapt server installation may be broken';
   rs_bad_login_password = 'Bad login password';

@@ -413,6 +413,10 @@ msgstr ""
 msgid "Upload to server %d%%"
 msgstr ""
 
+#: waptconsolepostconfres.rs_waptserver_not_found_or_down
+msgid "Wapt server not found or down"
+msgstr ""
+
 #: waptconsolepostconfres.rs_wapt_agent_has_been_found_on_server_confirm_create_package_key
 msgid ""
 "Wapt agent has been found on the server\n"
