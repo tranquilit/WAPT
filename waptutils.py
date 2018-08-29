@@ -388,8 +388,12 @@ def ensure_unicode(data):
             try:
                 error_msg = ensure_unicode(win32api.FormatMessage(data.args[2][5]))
                 return u"%s (%s): %s (%s)" % (data.args[0], data.args[1].decode('cp850'),data.args[2][5],error_msg)
-            except UnicodeError:
-                return u"%s : %s" % (data.args[0], data.args[1].decode(sys.getfilesystemencoding(),'ignore'))
+            except:
+                try:
+                    return u"%s : %s" % (data.args[0], data.args[1].decode('cp850'))
+                except UnicodeError:
+                    return u"%s : %s" % (data.args[0], data.args[1].decode(sys.getfilesystemencoding(),'ignore'))
+
         if platform.system() == 'Windows' and isinstance(data,WindowsError):
             try:
                 return u"%s : %s" % (data.args[0], data.args[1].decode('cp850'))
