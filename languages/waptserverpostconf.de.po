@@ -70,12 +70,6 @@ msgstr "Vorherig"
 msgid "Start WaptServer and WAPTService with this configuration"
 msgstr "WAPT Server mit diesen Konfigurationen starten"
 
-#: tviswaptserverpostconf.butcancel.caption
-#, fuzzy
-msgctxt "tviswaptserverpostconf.butcancel.caption"
-msgid "Cancel"
-msgstr "Abbrechen"
-
 #: tviswaptserverpostconf.caption
 msgid "Configuration of WAPT server for Windows"
 msgstr "Konfiguration des WAPT Servers für Windows"
@@ -559,11 +553,6 @@ msgstr ""
 msgid "An error has occured while restarting waptserver"
 msgstr ""
 
-#: uwaptserverres.rs_finish
-msgctxt "uwaptserverres.rs_finish"
-msgid "Finish"
-msgstr ""
-
 #: uwaptserverres.rs_iscc_instance_found
 msgid "A instance of ISCC as been found, cannot continue."
 msgstr ""
@@ -579,12 +568,6 @@ msgstr ""
 #: uwaptserverres.rs_key_name_cannot_be_empty
 msgid "Key name cannot be empty"
 msgstr ""
-
-#: uwaptserverres.rs_next
-#, fuzzy
-msgctxt "uwaptserverres.rs_next"
-msgid "Next"
-msgstr "Nächste"
 
 #: uwaptserverres.rs_other_process_has_been_found
 msgid ""

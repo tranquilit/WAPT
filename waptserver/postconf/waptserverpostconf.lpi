@@ -20,7 +20,7 @@
       <MajorVersionNr Value="1"/>
       <MinorVersionNr Value="5"/>
       <RevisionNr Value="1"/>
-      <BuildNr Value="26"/>
+      <BuildNr Value="29"/>
       <StringTable FileDescription="Wapt server Postconfiguration helper" ProductName="WAPT" ProductVersion="1.5.1.21"/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -66,7 +66,7 @@
         <PackageName Value="LCL"/>
       </Item10>
     </RequiredPackages>
-    <Units Count="12">
+    <Units Count="16">
       <Unit0>
         <Filename Value="waptserverpostconf.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -125,6 +125,22 @@
         <Filename Value="languages.rc"/>
         <IsPartOfProject Value="True"/>
       </Unit11>
+      <Unit12>
+        <Filename Value="..\..\languages\waptserverpostconf.de.po"/>
+        <IsPartOfProject Value="True"/>
+      </Unit12>
+      <Unit13>
+        <Filename Value="..\..\languages\waptserverpostconf.en.po"/>
+        <IsPartOfProject Value="True"/>
+      </Unit13>
+      <Unit14>
+        <Filename Value="..\..\languages\waptserverpostconf.fr.po"/>
+        <IsPartOfProject Value="True"/>
+      </Unit14>
+      <Unit15>
+        <Filename Value="..\..\languages\waptserverpostconf.po"/>
+        <IsPartOfProject Value="True"/>
+      </Unit15>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

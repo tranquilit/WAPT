@@ -113,10 +113,13 @@ function http_reponse_code(var response_code: integer; const url: String ): inte
 
 function wapt_json_response_is_success(var success: boolean; const json: String  ): integer;
 
+function offset_language(): integer;
+
 implementation
 
 uses
-
+  LCLTranslator,
+  LazUTF8,
   IdSSLOpenSSL,
   IdCookieManager,
   superobject,
@@ -873,6 +876,51 @@ begin
 
 end;
 
+function offset_language(): integer;
+const
+  PAGES_EN_OFFSET : integer =	0;
+  PAGES_FR_OFFSET : integer =	1;
+  PAGES_DE_OFFSET : integer =	2;
+var
+  Lang, FallbackLang: String;
+  i : Integer;
+begin
+  { XXX This is not what I'd call clean language detection... }
+  for i := 1 to ParamCount-1 do
+  if ((ParamStr(i) = '-l') or (ParamStr(i) = '--lang')) and (i+1 <> ParamCount-1) then
+  begin
+
+    if 'de' = ParamStr(i+1)then
+    begin
+       result := PAGES_DE_OFFSET;
+       exit;
+    end;
+
+    if 'fr' = ParamStr(i+1) then
+    begin
+       result := PAGES_FR_OFFSET;
+       exit;
+    end;
+
+    if 'en' = ParamStr(i+1) then
+    begin
+      result := PAGES_EN_OFFSET;
+      exit;
+    end;
+
+  end;
+
+  LazGetLanguageIDs(Lang, FallbackLang);
+  if FallbackLang = 'fr' then
+    result := PAGES_FR_OFFSET
+  else if FallbackLang = 'de' then
+    result := PAGES_DE_OFFSET
+  else
+    result := PAGES_EN_OFFSET;
+
+  SetDefaultLang( FallbackLang );
+
+end;
 
 end.
 

@@ -85,6 +85,7 @@ type
   private
     m_skip_build_agent: boolean;
     m_has_waptservice_installed : boolean;
+    m_language_offset : integer;
 
     CurrentVisLoading:TVisLoading;
     { private declarations }
@@ -100,7 +101,6 @@ type
     function  run_commands( const sl : TStrings ) : integer;
 
     procedure update_doc_html();
-    function offset_language(): integer;
   public
     procedure show_validation_error( c : TControl; const msg : String );
   end;
@@ -478,7 +478,7 @@ begin
   self.ed_package_prefix.Text:= DEFAULT_PACKAGE_PREFIX;
   self.ed_create_new_key_private_directory.Text := DEFAULT_PRIVATE_KEY_DIRECTORY;
 
-  //  self.rb_UseKey.Checked :=;
+  self.m_language_offset := offset_language();
 
 end;
 
@@ -894,7 +894,7 @@ begin
 
 
   buffer := nil;
-  inc( str_index, offset_language() );
+  inc( str_index, self.m_language_offset );
   r := Windows.LoadStringW( HINSTANCE(), str_index, @buffer, 0 );
 
   if r < 1 then
@@ -1015,36 +1015,6 @@ begin
 end;
 
 
-function TVisWAPTConsolePostConf.offset_language(): integer;
-const
-  PAGES_EN_OFFSET : integer =	0;
-  PAGES_FR_OFFSET : integer =	1;
-  PAGES_DE_OFFSET : integer =	2;
-var
-  Lang, FallbackLang: String;
-  i : Integer;
-begin
-  { XXX This is not what I'd call clean language detection... }
-  result := PAGES_EN_OFFSET;
-
-  LazGetLanguageIDs(Lang, FallbackLang);
-  if FallbackLang = 'fr' then
-    result := PAGES_FR_OFFSET
-  else if FallbackLang = 'de' then
-    result := PAGES_DE_OFFSET;
-
-  for i := 1 to ParamCount-1 do
-  if ((ParamStr(i) = '-l') or (ParamStr(i) = '--lang')) and (i+1 <> ParamCount-1) then
-  begin
-    if ParamStr(i+1) = 'de' then
-       result := PAGES_DE_OFFSET
-    else
-    if ParamStr(i+1) = 'fr' then
-       result := PAGES_FR_OFFSET
-    else
-      result := PAGES_EN_OFFSET;
-  end;
-end;
 
 end.
 

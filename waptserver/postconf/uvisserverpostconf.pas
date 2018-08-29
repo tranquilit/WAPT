@@ -105,6 +105,7 @@ type
   private
     m_need_restart_waptserver : boolean;
     m_has_waptservice_installed : boolean;
+    m_language_offset : integer;
     CurrentVisLoading:TVisLoading;
     procedure OpenFirewall;
     { private declarations }
@@ -119,7 +120,6 @@ type
     function  restart_waptservice_and_register() : integer;
     function  run_commands( const sl : TStrings ) : integer;
     procedure update_doc_html();
-    function  offset_language() : integer;
   public
     procedure show_validation_error( c : TControl; const msg : String );
   end;
@@ -412,9 +412,9 @@ begin
   self.cb_configure_console_launch_console_on_exit.Enabled := b;
 
   if b then
-    self.ButNext.Caption := rs_finish
+    self.ButNext.Caption := rsWaptSetupDone
   else
-    self.ButNext.Caption := rs_next;
+    self.ButNext.Caption := rsWaptSetupNext;
 
 
 end;
@@ -535,11 +535,7 @@ begin
   self.ed_existing_key_certificat_filename.DialogOptions :=  self.ed_existing_key_certificat_filename.DialogOptions + [ofFileMustExist];
 
 
-//  self.rb_UseKey.Checked :=;
-
-
-  // html
-//  self.HtmlViewer.LoadFromString( );
+  self.m_language_offset := offset_language();
 
 end;
 
@@ -936,7 +932,7 @@ begin
 
 
   buffer := nil;
-  inc( str_index, offset_language() );
+  inc( str_index, self.m_language_offset );
   r := Windows.LoadStringW( HINSTANCE(), str_index, @buffer, 0 );
 
   if r < 1 then
@@ -948,40 +944,6 @@ begin
 LBL_NO_DOC:
   html_panel.SetHtmlFromStr( HTML_NO_DOC );
 end;
-
-
-function TVisWAPTServerPostConf.offset_language(): integer;
-const
-  PAGES_EN_OFFSET : integer =	0;
-  PAGES_FR_OFFSET : integer =	1;
-  PAGES_DE_OFFSET : integer =	2;
-var
-  Lang, FallbackLang: String;
-  i : Integer;
-begin
-  { XXX This is not what I'd call clean language detection... }
-  result := PAGES_EN_OFFSET;
-
-  LazGetLanguageIDs(Lang, FallbackLang);
-  if FallbackLang = 'fr' then
-    result := PAGES_FR_OFFSET
-  else if FallbackLang = 'de' then
-    result := PAGES_DE_OFFSET;
-
-  for i := 1 to ParamCount-1 do
-  if ((ParamStr(i) = '-l') or (ParamStr(i) = '--lang')) and (i+1 <> ParamCount-1) then
-  begin
-    if ParamStr(i+1) = 'de' then
-       result := PAGES_DE_OFFSET
-    else
-    if ParamStr(i+1) = 'fr' then
-       result := PAGES_FR_OFFSET
-    else
-      result := PAGES_EN_OFFSET;
-  end;
-end;
-
-
 
 procedure TVisWAPTServerPostConf.show_validation_error(c: TControl; const msg: String);
 begin
