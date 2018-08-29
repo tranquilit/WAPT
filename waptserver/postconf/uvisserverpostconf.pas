@@ -24,7 +24,7 @@ type
     ActNext: TAction;
     actPrevious: TAction;
     ActionList1: TActionList;
-    BitBtn4: TBitBtn;
+    btn_check_dns_name: TBitBtn;
     btn_start_waptserver: TBitBtn;
     ButCancel: TBitBtn;
     ButNext: TBitBtn;
@@ -222,6 +222,7 @@ begin
   else if pgBuildAgent = p then
   begin
     self.ButNext.Click;
+    exit;
   end
 
   else if pgFinish = p then
@@ -231,6 +232,33 @@ begin
   end;
 
 
+  // SetFocus
+  if not self.Visible then
+    exit;
+
+  if pgParameters = p then
+    self.btn_check_dns_name.SetFocus
+
+  else if pgPassword = p then
+    self.EdPwd1.SetFocus
+
+  else if pgStartServices = p then
+    self.btn_start_waptserver.SetFocus
+
+  else if pgConfigureConsoleOrFinish = p then
+    self.rb_configure_console_continue.SetFocus
+
+  else if pgPackageName = p then
+    self.ed_package_prefix.SetFocus
+
+  else if pgPackageKey = p then
+    self.rb_CreateKey.SetFocus
+
+  else if pgBuildAgent = p then
+    self.pg_agent_memo.SetFocus
+
+  else if pgFinish = p then
+    self.cbLaunchWaptConsoleOnExit.SetFocus;
 
 end;
 

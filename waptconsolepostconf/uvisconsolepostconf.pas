@@ -206,6 +206,28 @@ begin
     self.ButCancel.Enabled := false;
   end;
 
+
+  // SetFocus
+  if not self.Visible then
+    exit;
+
+  if pgParameters = p then
+    self.EdWAPTServerName.SetFocus
+
+  else if pgPackage = p then
+    self.ed_package_prefix.SetFocus
+
+  else if pgKey = p then
+    self.rb_CreateKey.SetFocus
+
+  else if pgBuildAgent = p then
+    self.pg_agent_memo.SetFocus
+
+  else if pgFinish = p then
+    self.cbLaunchWaptConsoleOnExit.SetFocus;
+
+
+
 end;
 
 procedure TVisWAPTConsolePostConf.on_private_key_radiobutton_change( Sender: TObject);
