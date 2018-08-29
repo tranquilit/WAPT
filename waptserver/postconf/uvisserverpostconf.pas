@@ -250,6 +250,12 @@ begin
   self.ed_create_new_key_password_2.Enabled         := b;
   self.cb_create_new_key_show_password.Enabled      := b;
 
+  self.ed_create_new_key_private_directory.TabStop  := b;
+  self.ed_create_new_key_key_name.TabStop           := b;
+  self.ed_create_new_key_password_1.TabStop         := b;
+  self.ed_create_new_key_password_2.TabStop         := b;
+
+
   b := not b;
   self.lbl_ed_existing_key_key_filename.Enabled     := b;
   self.lbl_ed_existing_key_cert_filename.Enabled    := b;
@@ -259,54 +265,40 @@ begin
   self.ed_existing_key_password.Enabled             := b;
   self.cb_use_existing_key_show_password.Enabled    := b;
 
-  // Taborder
+  self.ed_existing_key_key_filename.TabStop         := b;
+  self.ed_existing_key_certificat_filename.TabStop  := b;
+  self.ed_existing_key_password.TabStop             := b;
+
+
+  // Focus
+  if not self.Visible then
+    exit;
+
   if self.rb_CreateKey.Checked then
   begin
-    self.ed_package_prefix.TabOrder                   := 0;
-    self.rb_CreateKey.TabOrder                        := 1;
-    self.ed_create_new_key_private_directory.TabOrder := 2;
-    self.ed_create_new_key_key_name.TabOrder          := 3;
-    self.ed_create_new_key_password_1.TabOrder        := 4;
-    self.ed_create_new_key_password_2.TabOrder        := 5;
+    if str_is_empty_when_trimmed(self.ed_create_new_key_password_2.Text) then
+      self.ed_create_new_key_password_2.SetFocus;
+
+    if str_is_empty_when_trimmed(self.ed_create_new_key_password_1.Text) then
+      self.ed_create_new_key_password_1.SetFocus;
+
+    if str_is_empty_when_trimmed(self.ed_create_new_key_key_name.Text) then
+      self.ed_create_new_key_key_name.SetFocus;
+
+    if str_is_empty_when_trimmed(self.ed_create_new_key_private_directory.Text) then
+      self.ed_create_new_key_private_directory.SetFocus;
   end
   else
   begin
-    self.ed_package_prefix.TabOrder                   := 0;
-    self.rb_UseKey.TabOrder                           := 1;
-    self.ed_existing_key_key_filename.TabOrder        := 2;
-    self.ed_existing_key_certificat_filename.TabOrder := 3;
-    self.ed_existing_key_password.TabOrder            := 4;
-  end;
+    if str_is_empty_when_trimmed(self.ed_existing_key_password.Text) then
+      self.ed_existing_key_password.SetFocus;
 
-  // Focus
-  if self.Visible then
-  begin
-    if self.rb_CreateKey.Checked then
-    begin
-      if str_is_empty_when_trimmed(self.ed_create_new_key_password_2.Text) then
-        self.ed_create_new_key_password_2.SetFocus;
+    if str_is_empty_when_trimmed(self.ed_existing_key_certificat_filename.Text) then
+      self.ed_existing_key_certificat_filename.SetFocus;
 
-      if str_is_empty_when_trimmed(self.ed_create_new_key_password_1.Text) then
-        self.ed_create_new_key_password_1.SetFocus;
+    if str_is_empty_when_trimmed(self.ed_existing_key_key_filename.Text) then
+      self.ed_existing_key_key_filename.SetFocus;
 
-      if str_is_empty_when_trimmed(self.ed_create_new_key_key_name.Text) then
-        self.ed_create_new_key_key_name.SetFocus;
-
-      if str_is_empty_when_trimmed(self.ed_create_new_key_private_directory.Text) then
-        self.ed_create_new_key_private_directory.SetFocus;
-    end
-    else
-    begin
-      if str_is_empty_when_trimmed(self.ed_existing_key_password.Text) then
-        self.ed_existing_key_password.SetFocus;
-
-      if str_is_empty_when_trimmed(self.ed_existing_key_certificat_filename.Text) then
-        self.ed_existing_key_certificat_filename.SetFocus;
-
-      if str_is_empty_when_trimmed(self.ed_existing_key_key_filename.Text) then
-        self.ed_existing_key_key_filename.SetFocus;
-
-    end;
   end;
 
 end;
@@ -410,6 +402,7 @@ begin
   b := not b;
 
   self.cb_configure_console_launch_console_on_exit.Enabled := b;
+  self.cb_configure_console_launch_console_on_exit.TabStop := b;
 
   if b then
     self.ButNext.Caption := rsWaptSetupDone

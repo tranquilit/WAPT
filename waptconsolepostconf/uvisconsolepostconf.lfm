@@ -75,7 +75,7 @@ object VisWAPTConsolePostConf: TVisWAPTConsolePostConf
       }
       ModalResult = 3
       OnClick = ButCancelClick
-      TabOrder = 0
+      TabOrder = 2
     end
     object ProgressBar1: TProgressBar
       Left = 6
@@ -84,7 +84,7 @@ object VisWAPTConsolePostConf: TVisWAPTConsolePostConf
       Width = 619
       Align = alLeft
       Anchors = [akTop, akLeft, akRight, akBottom]
-      TabOrder = 1
+      TabOrder = 3
       Visible = False
     end
     object ButPrevious: TBitBtn
@@ -131,7 +131,7 @@ object VisWAPTConsolePostConf: TVisWAPTConsolePostConf
         FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
         FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00
       }
-      TabOrder = 2
+      TabOrder = 1
     end
     object ButNext: TBitBtn
       Left = 733
@@ -177,7 +177,7 @@ object VisWAPTConsolePostConf: TVisWAPTConsolePostConf
         FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
         FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00
       }
-      TabOrder = 3
+      TabOrder = 0
     end
   end
   object p_right: TPanel
@@ -225,8 +225,8 @@ object VisWAPTConsolePostConf: TVisWAPTConsolePostConf
     Height = 528
     Top = 0
     Width = 614
-    HorzScrollBar.Page = 208
-    VertScrollBar.Page = 51
+    HorzScrollBar.Page = 384
+    VertScrollBar.Page = 299
     Align = alClient
     ClientHeight = 524
     ClientWidth = 610
@@ -236,10 +236,10 @@ object VisWAPTConsolePostConf: TVisWAPTConsolePostConf
       Height = 524
       Top = 0
       Width = 610
-      ActivePage = pgParameters
+      ActivePage = pgFinish
       Align = alClient
       MultiLine = True
-      TabIndex = 0
+      TabIndex = 4
       TabOrder = 0
       OnChange = PagesControlChange
       Options = [nboMultiLine]
@@ -295,12 +295,13 @@ object VisWAPTConsolePostConf: TVisWAPTConsolePostConf
           Caption = 'Show password'
           OnChange = on_show_password_change
           TabOrder = 2
+          TabStop = False
         end
       end
       object pgPackage: TTabSheet
         Caption = 'Package prefix'
-        ClientHeight = 491
-        ClientWidth = 630
+        ClientHeight = 496
+        ClientWidth = 602
         object lbl_ed_package_prefix: TLabel
           Left = 8
           Height = 15
@@ -320,8 +321,8 @@ object VisWAPTConsolePostConf: TVisWAPTConsolePostConf
       end
       object pgKey: TTabSheet
         Caption = 'Package key'
-        ClientHeight = 444
-        ClientWidth = 601
+        ClientHeight = 496
+        ClientWidth = 602
         object rb_CreateKey: TRadioButton
           Left = 24
           Height = 19
@@ -351,7 +352,7 @@ object VisWAPTConsolePostConf: TVisWAPTConsolePostConf
           ButtonWidth = 23
           NumGlyphs = 1
           MaxLength = 0
-          TabOrder = 2
+          TabOrder = 5
           Text = 'ed_create_new_key_private_directory'
         end
         object ed_existing_key_key_filename: TFileNameEdit
@@ -366,7 +367,7 @@ object VisWAPTConsolePostConf: TVisWAPTConsolePostConf
           ButtonWidth = 23
           NumGlyphs = 1
           MaxLength = 0
-          TabOrder = 3
+          TabOrder = 2
           Text = 'ed_existing_key_key_filename'
         end
         object ed_create_new_key_password_1: TEdit
@@ -374,7 +375,7 @@ object VisWAPTConsolePostConf: TVisWAPTConsolePostConf
           Height = 23
           Top = 96
           Width = 80
-          TabOrder = 4
+          TabOrder = 7
           Text = 'ed_create_new_key_password_1'
         end
         object ed_existing_key_password: TEdit
@@ -382,7 +383,7 @@ object VisWAPTConsolePostConf: TVisWAPTConsolePostConf
           Height = 23
           Top = 240
           Width = 80
-          TabOrder = 5
+          TabOrder = 4
           Text = 'ed_existing_key_password'
         end
         object lbl_ed_create_new_key_directory: TLabel
@@ -398,7 +399,7 @@ object VisWAPTConsolePostConf: TVisWAPTConsolePostConf
           Height = 23
           Top = 124
           Width = 80
-          TabOrder = 6
+          TabOrder = 8
           Text = 'ed_create_new_key_password_2'
         end
         object ed_create_new_key_key_name: TEdit
@@ -406,7 +407,7 @@ object VisWAPTConsolePostConf: TVisWAPTConsolePostConf
           Height = 23
           Top = 70
           Width = 80
-          TabOrder = 7
+          TabOrder = 6
           Text = 'ed_create_new_key_key_name'
         end
         object lbl_ed_create_new_key_key_name: TLabel
@@ -461,7 +462,7 @@ object VisWAPTConsolePostConf: TVisWAPTConsolePostConf
           ButtonWidth = 23
           NumGlyphs = 1
           MaxLength = 0
-          TabOrder = 8
+          TabOrder = 3
           Text = 'ed_existing_key_certificat_filename'
         end
         object lbl_ed_existing_key_password: TLabel
@@ -495,13 +496,13 @@ object VisWAPTConsolePostConf: TVisWAPTConsolePostConf
       end
       object pgBuildAgent: TTabSheet
         Caption = 'Agent'
-        ClientHeight = 488
-        ClientWidth = 578
+        ClientHeight = 496
+        ClientWidth = 602
         object pg_agent_memo: TMemo
           Left = 0
-          Height = 488
+          Height = 496
           Top = 0
-          Width = 578
+          Width = 602
           Align = alClient
           Lines.Strings = (
             'pg_agent_memo'
@@ -513,26 +514,26 @@ object VisWAPTConsolePostConf: TVisWAPTConsolePostConf
       end
       object pgFinish: TTabSheet
         Caption = 'Fin'
-        ClientHeight = 488
-        ClientWidth = 615
+        ClientHeight = 496
+        ClientWidth = 602
         object Panel2: TPanel
           Left = 0
           Height = 23
-          Top = 465
-          Width = 615
+          Top = 473
+          Width = 602
           Align = alBottom
           BevelOuter = bvNone
           TabOrder = 0
         end
         object panFinish: TPanel
           Left = 0
-          Height = 465
+          Height = 473
           Top = 0
-          Width = 615
+          Width = 602
           Align = alClient
           BevelOuter = bvNone
-          ClientHeight = 465
-          ClientWidth = 615
+          ClientHeight = 473
+          ClientWidth = 602
           TabOrder = 1
           object Memo7: TMemo
             Left = 16
@@ -560,7 +561,7 @@ object VisWAPTConsolePostConf: TVisWAPTConsolePostConf
               '</body>'
               '</html>'
             )
-            TabOrder = 0
+            TabOrder = 1
             Visible = False
             WordWrap = False
           end
@@ -572,7 +573,7 @@ object VisWAPTConsolePostConf: TVisWAPTConsolePostConf
             Caption = 'Run WAPT console after setup'
             Checked = True
             State = cbChecked
-            TabOrder = 1
+            TabOrder = 0
           end
         end
       end

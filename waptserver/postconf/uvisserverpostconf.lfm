@@ -1,7 +1,7 @@
 object VisWAPTServerPostConf: TVisWAPTServerPostConf
-  Left = 514
+  Left = 2458
   Height = 385
-  Top = 378
+  Top = 366
   Width = 1055
   Caption = 'Configuration of WAPT server for Windows'
   ClientHeight = 385
@@ -75,7 +75,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
       }
       ModalResult = 3
       OnClick = ButCancelClick
-      TabOrder = 0
+      TabOrder = 2
     end
     object ProgressBar1: TProgressBar
       Left = 6
@@ -84,7 +84,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
       Width = 777
       Align = alLeft
       Anchors = [akTop, akLeft, akRight, akBottom]
-      TabOrder = 1
+      TabOrder = 3
       Visible = False
     end
     object ButPrevious: TBitBtn
@@ -131,7 +131,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
         FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00
       }
-      TabOrder = 2
+      TabOrder = 1
     end
     object ButNext: TBitBtn
       Left = 891
@@ -177,7 +177,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
         FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00
       }
-      TabOrder = 3
+      TabOrder = 0
     end
   end
   object p_right: TPanel
@@ -236,8 +236,8 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
       Height = 355
       Top = 0
       Width = 732
-      HorzScrollBar.Page = 384
-      VertScrollBar.Page = 299
+      HorzScrollBar.Page = 591
+      VertScrollBar.Page = 291
       Align = alClient
       BorderStyle = bsNone
       ClientHeight = 355
@@ -248,23 +248,23 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         Height = 355
         Top = 0
         Width = 732
-        ActivePage = pgFinish
+        ActivePage = pgPackageKey
         Align = alClient
         MultiLine = True
-        TabIndex = 7
+        TabIndex = 5
         TabOrder = 0
         OnChange = PagesControlChange
         Options = [nboMultiLine]
         object pgParameters: TTabSheet
           Caption = 'Parameters'
           ChildSizing.Layout = cclLeftToRightThenTopToBottom
-          ClientHeight = 307
-          ClientWidth = 608
+          ClientHeight = 327
+          ClientWidth = 724
           object Panel3: TPanel
             Left = 0
             Height = 32
             Top = 0
-            Width = 608
+            Width = 724
             Align = alTop
             AutoSize = True
             BevelOuter = bvNone
@@ -275,7 +275,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
             ChildSizing.Layout = cclLeftToRightThenTopToBottom
             ChildSizing.ControlsPerLine = 3
             ClientHeight = 32
-            ClientWidth = 608
+            ClientWidth = 724
             TabOrder = 0
             object EdWAPTServerName: TEdit
               Left = 6
@@ -448,7 +448,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
               FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
               FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00
             }
-            TabOrder = 0
+            TabOrder = 1
           end
           object CBOpenFirewall: TCheckBox
             Left = 8
@@ -458,13 +458,13 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
             Caption = 'Open firewall ports 80 and 443 to allow access for packages and inventory'
             Checked = True
             State = cbChecked
-            TabOrder = 1
+            TabOrder = 0
           end
         end
         object pgConfigureConsoleOrFinish: TTabSheet
           Caption = 'Configure console or finish'
-          ClientHeight = 307
-          ClientWidth = 608
+          ClientHeight = 327
+          ClientWidth = 724
           object cb_configure_console_launch_console_on_exit: TCheckBox
             Left = 88
             Height = 19
@@ -473,7 +473,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
             Caption = 'Run WAPT console after setup'
             Checked = True
             State = cbChecked
-            TabOrder = 0
+            TabOrder = 2
           end
           object rb_configure_console_continue: TRadioButton
             Left = 8
@@ -482,7 +482,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
             Width = 269
             Caption = 'Continue configuration by configuring console'
             OnChange = on_configure_console_radiobutton_change
-            TabOrder = 1
+            TabOrder = 0
           end
           object rb_configure_console_finish: TRadioButton
             Left = 8
@@ -491,7 +491,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
             Width = 51
             Caption = 'Finish'
             OnChange = on_configure_console_radiobutton_change
-            TabOrder = 2
+            TabOrder = 1
           end
         end
         object pgPackageName: TTabSheet
@@ -526,7 +526,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
             Width = 109
             Caption = 'Create a new key'
             OnChange = on_private_key_radiobutton_change
-            TabOrder = 0
+            TabOrder = 1
           end
           object rb_UseKey: TRadioButton
             Left = 24
@@ -535,7 +535,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
             Width = 103
             Caption = 'Use existing key'
             OnChange = on_private_key_radiobutton_change
-            TabOrder = 1
+            TabOrder = 0
           end
           object ed_create_new_key_private_directory: TDirectoryEdit
             Left = 252
@@ -547,7 +547,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
             ButtonWidth = 23
             NumGlyphs = 1
             MaxLength = 0
-            TabOrder = 2
+            TabOrder = 4
             Text = 'ed_create_new_key_private_directory'
           end
           object ed_existing_key_key_filename: TFileNameEdit
@@ -562,7 +562,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
             ButtonWidth = 23
             NumGlyphs = 1
             MaxLength = 0
-            TabOrder = 3
+            TabOrder = 8
             Text = 'ed_existing_key_key_filename'
           end
           object ed_create_new_key_password_1: TEdit
@@ -570,7 +570,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
             Height = 23
             Top = 96
             Width = 80
-            TabOrder = 4
+            TabOrder = 6
             Text = 'ed_create_new_key_password_1'
           end
           object ed_existing_key_password: TEdit
@@ -578,7 +578,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
             Height = 23
             Top = 240
             Width = 80
-            TabOrder = 5
+            TabOrder = 10
             Text = 'ed_existing_key_password'
           end
           object lbl_ed_create_new_key_directory: TLabel
@@ -594,7 +594,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
             Height = 23
             Top = 124
             Width = 80
-            TabOrder = 6
+            TabOrder = 7
             Text = 'ed_create_new_key_password_2'
           end
           object ed_create_new_key_key_name: TEdit
@@ -602,7 +602,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
             Height = 23
             Top = 70
             Width = 80
-            TabOrder = 7
+            TabOrder = 5
             Text = 'ed_create_new_key_key_name'
           end
           object lbl_ed_create_new_key_key_name: TLabel
@@ -657,7 +657,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
             ButtonWidth = 23
             NumGlyphs = 1
             MaxLength = 0
-            TabOrder = 8
+            TabOrder = 9
             Text = 'ed_existing_key_certificat_filename'
           end
           object lbl_ed_existing_key_password: TLabel
@@ -675,7 +675,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
             Width = 102
             Caption = 'Show password'
             OnChange = on_show_password_change
-            TabOrder = 9
+            TabOrder = 3
             TabStop = False
           end
           object cb_use_existing_key_show_password: TCheckBox
@@ -685,19 +685,19 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
             Width = 102
             Caption = 'Show password'
             OnChange = on_show_password_change
-            TabOrder = 10
+            TabOrder = 2
             TabStop = False
           end
         end
         object pgBuildAgent: TTabSheet
           Caption = 'Agent'
-          ClientHeight = 307
-          ClientWidth = 608
+          ClientHeight = 327
+          ClientWidth = 724
           object pg_agent_memo: TMemo
             Left = 0
-            Height = 341
+            Height = 327
             Top = 0
-            Width = 672
+            Width = 724
             Align = alClient
             Lines.Strings = (
               'pg_agent_memo'
@@ -756,7 +756,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
                 '</body>'
                 '</html>'
               )
-              TabOrder = 0
+              TabOrder = 1
               Visible = False
               WordWrap = False
             end
@@ -768,7 +768,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
               Caption = 'Run WAPT console after setup'
               Checked = True
               State = cbChecked
-              TabOrder = 1
+              TabOrder = 0
             end
           end
         end
