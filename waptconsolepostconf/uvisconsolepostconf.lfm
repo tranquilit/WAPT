@@ -34,9 +34,9 @@ object VisWAPTConsolePostConf: TVisWAPTConsolePostConf
       Height = 24
       Top = 3
       Width = 82
+      Action = ActCancel
       Align = alRight
       AutoSize = True
-      Caption = 'Cancel'
       Glyph.Data = {
         36040000424D3604000000000000360000002800000010000000100000000100
         2000000000000004000064000000640000000000000000000000FFFFFF00FFFF
@@ -590,24 +590,8 @@ object VisWAPTConsolePostConf: TVisWAPTConsolePostConf
       OnExecute = ActNextExecute
       OnUpdate = ActNextUpdate
     end
-    object ActCheckDNS: TAction
-      Caption = 'Check DNS name'
-    end
-    object ActManual: TAction
-      Caption = 'Input URL manually'
-      OnExecute = ActManualExecute
-    end
-    object ActCreateKey: TAction
-      Caption = 'Generate keypair'
-    end
     object ActCancel: TAction
       Caption = 'Cancel'
-    end
-    object actWriteConfStartServe: TAction
-      Caption = 'Start WaptServer and WAPTService with this configuration'
-    end
-    object ActBuildWaptsetup: TAction
-      Caption = 'Create custom installer'
     end
   end
   object IdHTTP1: TIdHTTP

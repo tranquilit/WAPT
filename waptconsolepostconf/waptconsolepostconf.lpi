@@ -20,7 +20,7 @@
       <MajorVersionNr Value="1"/>
       <MinorVersionNr Value="5"/>
       <RevisionNr Value="1"/>
-      <BuildNr Value="36"/>
+      <BuildNr Value="55"/>
       <StringTable FileDescription="Wapt server Postconfiguration helper" ProductName="WAPT" ProductVersion="1.5.1.21"/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -32,6 +32,8 @@
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
+        <CommandLineParams Value="--lang fr"/>
+        <LaunchingApplication PathPlusParams="--lang fr"/>
       </local>
     </RunParams>
     <RequiredPackages Count="8">
@@ -60,7 +62,7 @@
         <PackageName Value="LCL"/>
       </Item8>
     </RequiredPackages>
-    <Units Count="11">
+    <Units Count="13">
       <Unit0>
         <Filename Value="waptconsolepostconf.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -82,37 +84,42 @@
         <UnitName Value="UScaleDPI"/>
       </Unit3>
       <Unit4>
-        <Filename Value="..\waptconsole\uvisloading.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="VisLoading"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-      </Unit4>
-      <Unit5>
         <Filename Value="uvalidation.pas"/>
         <IsPartOfProject Value="True"/>
-      </Unit5>
-      <Unit6>
+      </Unit4>
+      <Unit5>
         <Filename Value="..\waptconsole\dmwaptpython.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="udefault.pas"/>
+        <IsPartOfProject Value="True"/>
       </Unit6>
       <Unit7>
-        <Filename Value="udefault.pas"/>
+        <Filename Value="..\wapt-get\waptcommon.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit7>
       <Unit8>
-        <Filename Value="..\wapt-get\waptcommon.pas"/>
+        <Filename Value="..\wapt-get\waptwinutils.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit8>
       <Unit9>
-        <Filename Value="..\wapt-get\waptwinutils.pas"/>
+        <Filename Value="..\waptserver\postconf\uutil.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit9>
       <Unit10>
-        <Filename Value="..\waptserver\postconf\uutil.pas"/>
+        <Filename Value="languages.rc"/>
         <IsPartOfProject Value="True"/>
       </Unit10>
+      <Unit11>
+        <Filename Value="..\languages\waptconsolepostconf.en.po"/>
+        <IsPartOfProject Value="True"/>
+      </Unit11>
+      <Unit12>
+        <Filename Value="..\languages\waptconsolepostconf.fr.po"/>
+        <IsPartOfProject Value="True"/>
+      </Unit12>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -147,20 +154,4 @@
       <CustomOptions Value="-dUseCThreads"/>
     </Other>
   </CompilerOptions>
-  <Debugging>
-    <Exceptions Count="4">
-      <Item1>
-        <Name Value="EAbort"/>
-      </Item1>
-      <Item2>
-        <Name Value="ECodetoolError"/>
-      </Item2>
-      <Item3>
-        <Name Value="EFOpenError"/>
-      </Item3>
-      <Item4>
-        <Name Value="EIdConnectTimeout"/>
-      </Item4>
-    </Exceptions>
-  </Debugging>
 </CONFIG>

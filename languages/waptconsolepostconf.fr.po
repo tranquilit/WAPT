@@ -2,40 +2,41 @@ msgid ""
 msgstr "Content-Type: text/plain; charset=UTF-8"
 
 #: tviswaptconsolepostconf.actcancel.caption
+msgctxt "tviswaptconsolepostconf.actcancel.caption"
 msgid "Cancel"
-msgstr ""
+msgstr "Annuler"
 
 #: tviswaptconsolepostconf.actnext.caption
 msgctxt "tviswaptconsolepostconf.actnext.caption"
 msgid "Next"
-msgstr ""
+msgstr "Suivant"
 
 #: tviswaptconsolepostconf.actprevious.caption
 msgid "Previous"
-msgstr ""
+msgstr "Précédent"
 
 #: tviswaptconsolepostconf.caption
 msgid "Configuration of WAPT console for Windows"
-msgstr ""
+msgstr "Configuration de la console WAPT pour Windows"
 
 #: tviswaptconsolepostconf.cblaunchwaptconsoleonexit.caption
 msgid "Run WAPT console after setup"
-msgstr ""
+msgstr "Lançer la console après la configuration"
 
 #: tviswaptconsolepostconf.cb_create_new_key_show_password.caption
 msgctxt "tviswaptconsolepostconf.cb_create_new_key_show_password.caption"
 msgid "Show password"
-msgstr ""
+msgstr "Afficher le mot de passe"
 
 #: tviswaptconsolepostconf.cb_use_existing_key_show_password.caption
 msgctxt "tviswaptconsolepostconf.cb_use_existing_key_show_password.caption"
 msgid "Show password"
-msgstr ""
+msgstr "Afficher le mot de passe"
 
 #: tviswaptconsolepostconf.cb_wapt_server_show_password.caption
 msgctxt "tviswaptconsolepostconf.cb_wapt_server_show_password.caption"
 msgid "Show password"
-msgstr ""
+msgstr "Afficher le mot de passe"
 
 #: tviswaptconsolepostconf.edwaptservername.hint
 msgid ""
@@ -48,6 +49,15 @@ msgid ""
 "you can fall back to the server IP address. For further information :\n"
 "'http://dev.tranquil.it/scenari/guide_admin/co/wapt_server_configuration_champDNS.html'\n"
 msgstr ""
+"Les clients WAPT font des requêtes au serveur. Afin de se connecter au\n"
+"serveur WAPT, il est conseillé d'utiliser un nom DNS, tant qu'il a été correctement\n"
+"configuré dans votre réseau. Nous vous suggéront de le nommer votre serveur WAPT\n"
+"srvwapt.mydomain.local' ( Enregistrement de type A) ainsi que de créer un alias\n"
+"( Enregistement de type CNAME) pointant vers srvwapt.\n"
+"Au cas où votre serveur DNS ne serait pas un tiers de confiances, ou si vous configurer\n"
+"un environnement de test, vous pouvez utiliser l'adresse IP du serveur. Plus\n"
+"d'informations ici : \n"
+"'http://dev.tranquil.it/scenari/guide_admin/co/wapt_server_configuration_champDNS.html'\n"
 
 #: tviswaptconsolepostconf.edwaptservername.text
 msgid "srvwapt.mydomain.lan"
@@ -91,45 +101,45 @@ msgstr ""
 
 #: tviswaptconsolepostconf.lbl_ed_create_new_key_directory.caption
 msgid "Secret directory :"
-msgstr ""
+msgstr "Répertoire privé :"
 
 #: tviswaptconsolepostconf.lbl_ed_create_new_key_key_name.caption
 msgid "Key name :"
-msgstr ""
+msgstr "Nom de la clef :"
 
 #: tviswaptconsolepostconf.lbl_ed_create_new_key_password_1.caption
 msgctxt "tviswaptconsolepostconf.lbl_ed_create_new_key_password_1.caption"
 msgid "Password :"
-msgstr ""
+msgstr "Mot de passe :"
 
 #: tviswaptconsolepostconf.lbl_ed_create_new_key_password_2.caption
 msgid "Password confirm :"
-msgstr ""
+msgstr "Confirmer le mot de passe"
 
 #: tviswaptconsolepostconf.lbl_ed_existing_key_cert_filename.caption
 msgid "Certificat filename :"
-msgstr ""
+msgstr "Certificat :"
 
 #: tviswaptconsolepostconf.lbl_ed_existing_key_key_filename.caption
 msgid "Key filename :"
-msgstr ""
+msgstr "Clef :"
 
 #: tviswaptconsolepostconf.lbl_ed_existing_key_password.caption
 msgctxt "tviswaptconsolepostconf.lbl_ed_existing_key_password.caption"
 msgid "Password :"
-msgstr ""
+msgstr "Mot de passe :"
 
 #: tviswaptconsolepostconf.lbl_ed_package_prefix.caption
 msgid "Package prefix :"
-msgstr ""
+msgstr "Prefix de package :"
 
 #: tviswaptconsolepostconf.lbl_wapt_server_password.caption
 msgid "Wapt server password :"
-msgstr ""
+msgstr "Mot de passe du server Wapt :"
 
 #: tviswaptconsolepostconf.llb_wapt_server.caption
 msgid "Wapt server url :"
-msgstr ""
+msgstr "Url du server Wapt :"
 
 #: tviswaptconsolepostconf.pgbuildagent.caption
 msgid "Agent"
@@ -141,15 +151,15 @@ msgstr ""
 
 #: tviswaptconsolepostconf.pgkey.caption
 msgid "Package key"
-msgstr ""
+msgstr "Clef de package"
 
 #: tviswaptconsolepostconf.pgpackage.caption
 msgid "Package prefix"
-msgstr ""
+msgstr "Prefix de package"
 
 #: tviswaptconsolepostconf.pgparameters.caption
 msgid "Parameters"
-msgstr ""
+msgstr "Paramètres"
 
 #: tviswaptconsolepostconf.p_right.caption
 msgid "p_right"
@@ -157,40 +167,41 @@ msgstr ""
 
 #: tviswaptconsolepostconf.rb_createkey.caption
 msgid "Create a new key"
-msgstr ""
+msgstr "Utiliser une nouvelle clef"
 
 #: tviswaptconsolepostconf.rb_usekey.caption
 msgid "Use existing key"
-msgstr ""
+msgstr "Utiliser une clef existante"
 
 #: waptconsolepostconfres.rs_an_error_has_occured_while_to_validate_key_password
 msgid "An unexpected error has occured while validating key password"
-msgstr ""
+msgstr "Une erreur inattendue est survenue lors de la validation du mot de passe de la clef"
 
 #: waptconsolepostconfres.rs_a_problem_has_occured_while_trying_to_login_server
 msgid "A problem has occured when trying to login to server"
-msgstr ""
+msgstr "Un problème est survenu lors de la connexion au serveur"
 
 #: waptconsolepostconfres.rs_bad_login_password
 msgid "Bad login password"
-msgstr ""
+msgstr "Mauvais mot de passe"
 
 #: waptconsolepostconfres.rs_certificate_filename_cannot_be_empty
 msgid "Certificate filename cannot be empty"
-msgstr ""
+msgstr "Le nom du certificat ne peut pas être vide"
 
 #: waptconsolepostconfres.rs_certificate_filename_is_invalid
 msgid "Certificate filename '%s' is invalid"
-msgstr ""
+msgstr "Le certificat est invalide"
 
 #: waptconsolepostconfres.rs_compilation_failed
 msgid "Compilation Failed"
-msgstr ""
+msgstr "La compilation a échouée"
 
 #: waptconsolepostconfres.rs_confirm
+#, fuzzy
 msgctxt "waptconsolepostconfres.rs_confirm"
 msgid "Confirm"
-msgstr ""
+msgstr "Confirmer"
 
 #: waptconsolepostconfres.rs_confirm_cancel_post_config
 msgid "Are you sure you want to abort wapt console post configuration ?"
@@ -198,44 +209,45 @@ msgstr ""
 
 #: waptconsolepostconfres.rs_create_key_a_certificat_this_key_name_exist
 msgid "A certificat with key name has beenfound, change key name and click next again"
-msgstr ""
+msgstr "Un certificat avec ce nom de clef a été trouvé, modifier le nom de la clef et cliquer sur suivant à nouveau"
 
 #: waptconsolepostconfres.rs_create_key_a_key_with_this_name_exist
 msgid "A key with this name has been found, change key name and click next again"
-msgstr ""
+msgstr "Une clef de même nom a été trouvée, modifier le bom de la clef"
 
 #: waptconsolepostconfres.rs_create_key_dir_cannot_be_created
 msgid "Cannot create directory %s"
-msgstr ""
+msgstr "Impossible de créer le répertoire %s"
 
 #: waptconsolepostconfres.rs_create_key_dir_not_exist
 msgid "Create directory %s ?"
-msgstr ""
+msgstr "Créer le répertoire %s ?"
 
 #: waptconsolepostconfres.rs_create_key_select_a_valide_private_key_directory
 msgid "A valid private key directory must be selected"
-msgstr ""
+msgstr "Un répertoire de clef privée valide doit être selectionné"
 
 #: waptconsolepostconfres.rs_done
+#, fuzzy
 msgctxt "waptconsolepostconfres.rs_done"
 msgid "Done"
-msgstr ""
+msgstr "Fin"
 
 #: waptconsolepostconfres.rs_iscc_instance_found
 msgid "A instance of ISCC as been found, cannot continue."
-msgstr ""
+msgstr "Une instance d'ISCC a été trouvée, la configuration ne peut pas continuer."
 
 #: waptconsolepostconfres.rs_key_filename_cannot_be_empty
 msgid "Key filename cannot be empty"
-msgstr ""
+msgstr "Le nom de la clef ne peut pas être vide"
 
 #: waptconsolepostconfres.rs_key_filename_is_invalid
 msgid "Key filename '%s' is invalid"
-msgstr ""
+msgstr "La clef '%s' est invalide"
 
 #: waptconsolepostconfres.rs_key_name_cannot_be_empty
 msgid "Key name cannot be empty"
-msgstr ""
+msgstr "Le nom de la clef ne peut pas être vide"
 
 #: waptconsolepostconfres.rs_other_process_has_been_found
 msgid ""
@@ -246,52 +258,62 @@ msgid ""
 "Click on Retry to recheck processes satus\n"
 "Click on Cancel to abort\n"
 msgstr ""
+"Une instance de %s a été trouvée\n"
+"Le programme ne peut pas continuer tant que ce processus n'a pas été clos.\n"
+"\n"
+"Cliquer sur Oui pour tous les processus de nom %s\n"
+"Cliquer sur Réessayer pour tester de nouveau\n"
+"Cliquer sur Annuler pour abandonner\n"
 
 #: waptconsolepostconfres.rs_package_prefix_cannot_be_empty
 msgid "Package prefix cannot be empty"
-msgstr ""
+msgstr "Le prefix de package ne peut pas être vide"
 
 #: waptconsolepostconfres.rs_package_prefix_must_be_alphanum
 msgid "Pacakge prefix must be alphanum"
-msgstr ""
+msgstr "Le prefix de package doit être alphanumérique"
 
 #: waptconsolepostconfres.rs_supplied_passwords_differs
 msgid "Supplied password differs"
-msgstr ""
+msgstr "Les mots de passe ne sont pas identiques"
 
 #: waptconsolepostconfres.rs_supplied_passwords_must_be_at_least_six_chars_length
 msgid "Supplied passwords must be at least 6 characters length"
-msgstr ""
+msgstr "La longueur du mot de passe doit être au minimum de 6 caractères"
 
 #: waptconsolepostconfres.rs_upload_to_server
 msgid "Upload to server %d%%"
-msgstr ""
+msgstr "Téléchargement sur le serveur %d%%"
 
 #: waptconsolepostconfres.rs_waptserver_not_found_or_down
 msgid "Wapt server not found or down"
-msgstr ""
+msgstr "Le serveur Wapt n'a pas été trouvé"
 
 #: waptconsolepostconfres.rs_wapt_agent_has_been_found_on_server_confirm_create_package_key
 msgid ""
 "Wapt agent has been found on the server\n"
 "Are you sure you want to recreate a new package key ?\n"
 msgstr ""
+"L'agent Wapt a été trouvé sur le server\n"
+"Êtes vous sûr de vouloir recréer une nouvelle clef de package ?\n"
 
 #: waptconsolepostconfres.rs_wapt_agent_has_been_found_on_server_skip_build_agent
 msgid ""
 "Wapt agent has been found on the server\n"
 "Skip building a new agent ?\n"
 msgstr ""
+"L'agent Wapt a été trouvé sur le server\n"
+"Passer la construction d'un nouvel agent ?\n"
 
 #: waptconsolepostconfres.rs_wapt_server_installation_may_be_broken
 msgid "Wapt server installation may be broken"
-msgstr ""
+msgstr "L'installation du serveur Wapt semble déffectueuse"
 
 #: waptconsolepostconfres.rs_wapt_sever_url_is_invalid
 msgid "Wapt server url is invalid"
-msgstr ""
+msgstr "L'url du serveur Wapt est invalide"
 
 #: waptconsolepostconfres.rs_wrong_key_password
 msgid "Wrong key password"
-msgstr ""
+msgstr "Le mot de passe de la clef est invalide"
 

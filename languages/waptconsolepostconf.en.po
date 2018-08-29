@@ -2,6 +2,7 @@ msgid ""
 msgstr "Content-Type: text/plain; charset=UTF-8"
 
 #: tviswaptconsolepostconf.actcancel.caption
+msgctxt "tviswaptconsolepostconf.actcancel.caption"
 msgid "Cancel"
 msgstr ""
 
@@ -198,7 +199,7 @@ msgstr ""
 
 #: waptconsolepostconfres.rs_create_key_a_certificat_this_key_name_exist
 msgid "A certificat with key name has beenfound, change key name and click next again"
-msgstr ""
+msgstr "A certificat with key name has been found, change key name and click next again"
 
 #: waptconsolepostconfres.rs_create_key_a_key_with_this_name_exist
 msgid "A key with this name has been found, change key name and click next again"
@@ -223,7 +224,7 @@ msgstr ""
 
 #: waptconsolepostconfres.rs_iscc_instance_found
 msgid "A instance of ISCC as been found, cannot continue."
-msgstr ""
+msgstr "A instance of ISCC has been found, cannot continue."
 
 #: waptconsolepostconfres.rs_key_filename_cannot_be_empty
 msgid "Key filename cannot be empty"

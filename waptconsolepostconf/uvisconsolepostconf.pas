@@ -7,7 +7,7 @@ interface
 uses
   PythonEngine, Classes, SysUtils, FileUtil, LazFileUtils, LazUTF8, IpHtml,
   Forms, Controls, Graphics, Dialogs, ComCtrls, StdCtrls, ExtCtrls, Buttons,
-  ActnList, IdHTTP, IdComponent, uvisLoading, DefaultTranslator, LCLTranslator,
+  ActnList, IdHTTP, IdComponent, uvisLoading, LCLTranslator,
   LCLProc, EditBtn, waptconsolepostconfres;
 
 type
@@ -15,12 +15,8 @@ type
   { TVisWAPTConsolePostConf }
 
   TVisWAPTConsolePostConf = class(TForm)
-    ActCheckDNS: TAction;
     ActCreateKey: TAction;
     ActCancel: TAction;
-    ActBuildWaptsetup: TAction;
-    actWriteConfStartServe: TAction;
-    ActManual: TAction;
     ActNext: TAction;
     actPrevious: TAction;
     ActionList1: TActionList;
@@ -70,7 +66,6 @@ type
     rb_UseKey: TRadioButton;
     ScrollBox1: TScrollBox;
     Splitter1: TSplitter;
-    procedure ActManualExecute(Sender: TObject);
     procedure ActNextExecute(Sender: TObject);
     procedure ActNextUpdate(Sender: TObject);
     procedure actPreviousExecute(Sender: TObject);
@@ -992,11 +987,9 @@ begin
   if pgFinish = ts then
   begin
     actPrevious.Enabled := false;
-    ActNext.Caption:= rsWaptSetupDone;
+    ActNext.Caption:= rs_done;
     exit;
   end;
-
-  ActNext.Caption := rsWaptSetupnext;
 end;
 
 procedure TVisWAPTConsolePostConf.actPreviousExecute(Sender: TObject);
@@ -1016,13 +1009,9 @@ end;
 
 procedure TVisWAPTConsolePostConf.ButCancelClick(Sender: TObject);
 begin
-  if MessageDlg(rsConfirm,rsConfirmCancelPostConfig,mtConfirmation,mbYesNoCancel,0) = mrYes then
-    Close;
-end;
-
-procedure TVisWAPTConsolePostConf.ActManualExecute(Sender: TObject);
-begin
-  ActManual.Checked := not ActManual.Checked;
+  if mrNo = MessageDlg( rs_confirm, rs_confirm_cancel_post_config, mtConfirmation, mbYesNo, 0) then
+    exit;
+  Close;
 end;
 
 
