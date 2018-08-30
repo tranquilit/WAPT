@@ -50,7 +50,12 @@ from waptcrypto import *
 from waptpackage import *
 from common import *
 from waptdevutils import *
+
+from waptserver.model import *
+from waptenterprise.waptserver.wsus_tasks import *
+
 from waptenterprise import licencing
+from waptenterprise.waptwua.client import WaptWUA,EnsureWUAServRunning,WaptWUARules
 
 import urllib3
 
@@ -1124,7 +1129,7 @@ def test_wua():
     w = Wapt()
     with client.WaptWUA(w) as c:
         print(c.stored_waptwua_status())
-        print(c.scan_updates_status(force=True))
+        print(c.download_updates())
         #print(c.download_updates())
 
 def test_update_status():
@@ -1156,7 +1161,6 @@ def build_error():
 
 def test_wua_single_install():
     w = Wapt()
-    from waptenterprise.waptwua.client import WaptWUA,EnsureWUAServRunning
     with EnsureWUAServRunning():
         c = WaptWUA(w,{
                 'forbidden_updates':None,
@@ -1173,8 +1177,6 @@ def test_make_package_template():
 
 
 def test_download_wsusscan():
-    from waptserver.model import *
-    from waptenterprise.waptserver.wsus_tasks import *
     load_db_config()
     init_db()
     huey.always_eager = True
@@ -1212,14 +1214,23 @@ def test_provider():
                 )
     print(prov.get_data())
 
+
+def test_wuarules():
+    c = WaptWUARules()
+    c.load_from_ini(config_filename='c:/tranquilit/wapt/wapt-get.ini')
+    print(c)
+    c.allowed_products = ['Windows 7']
+    print(c.save_to_ini('c:/wapt/wapt-get.ini'))
+
 if __name__ == '__main__':
     #gen_perso('htouvet',email='htouvet@tranquil.it')
     #test_discarded()
-    #test_wua()
+    #test_wuarules()
+    test_wua()
     #test_update_status()
     #test_download_wsusscan()
     #test_sync_packages_table()
-    test_provider()
+    #test_provider()
     #install_host()
     #build_error()
     #test_packagenewestversion()
