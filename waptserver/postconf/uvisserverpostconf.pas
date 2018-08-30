@@ -22,7 +22,7 @@ type
     actWriteConfStartServe: TAction;
     ActManual: TAction;
     ActNext: TAction;
-    actPrevious: TAction;
+    ActPrevious: TAction;
     ActionList1: TActionList;
     btn_check_dns_name: TBitBtn;
     btn_start_waptserver: TBitBtn;
@@ -83,13 +83,13 @@ type
     rb_UseKey: TRadioButton;
     sb_center: TScrollBox;
     Splitter1: TSplitter;
+    procedure ActCancelExecute(Sender: TObject);
     procedure ActCheckDNSExecute(Sender: TObject);
     procedure ActManualExecute(Sender: TObject);
     procedure ActNextExecute(Sender: TObject);
     procedure ActNextUpdate(Sender: TObject);
-    procedure actPreviousExecute(Sender: TObject);
+    procedure ActPreviousExecute(Sender: TObject);
     procedure actWriteConfStartServeExecute(Sender: TObject);
-    procedure ButCancelClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure html_panelHotClick(Sender: TObject);
@@ -216,7 +216,8 @@ begin
   // Page specilic actions
   if pgParameters = p then
   begin
-    self.ButPrevious.Enabled := false;
+    self.ActPrevious.Enabled := False;
+    self.ActCancel.Enabled := True;;
   end
 
   else if pgBuildAgent = p then
@@ -227,8 +228,8 @@ begin
 
   else if pgFinish = p then
   begin
-    self.ButPrevious.Enabled  := false;
-    self.ButCancel.Enabled    := false;
+    self.ActPrevious.Enabled := False;
+    self.ActCancel.Enabled := False;
   end;
 
 
@@ -557,6 +558,11 @@ begin
 
 
   self.m_language_offset := offset_language();
+
+
+  self.ActPrevious.Enabled := false;
+  self.ActCancel.Enabled   := true;
+  self.ActNext.Enabled     := true;
 
 end;
 
@@ -1072,7 +1078,7 @@ begin
     ActNext.Caption:=rsWaptSetupnext;
 end;
 
-procedure TVisWAPTServerPostConf.actPreviousExecute(Sender: TObject);
+procedure TVisWAPTServerPostConf.ActPreviousExecute(Sender: TObject);
 begin
   PagesControl.ActivePageIndex := PagesControl.ActivePageIndex - 1;
   self.PagesControlChange( nil );
@@ -1338,11 +1344,7 @@ begin
   end;
 end;
 
-procedure TVisWAPTServerPostConf.ButCancelClick(Sender: TObject);
-begin
-  if MessageDlg(rsConfirm,rsConfirmCancelPostConfig,mtConfirmation,mbYesNoCancel,0) = mrYes then
-    Close;
-end;
+
 
 procedure TVisWAPTServerPostConf.ActManualExecute(Sender: TObject);
 begin
@@ -1376,6 +1378,16 @@ begin
     else
       EdWaptServerIP.text := '';
   end;
+end;
+
+procedure TVisWAPTServerPostConf.ActCancelExecute(Sender: TObject);
+var
+  r : integer;
+begin
+  r := MessageDlg(rsConfirm, rsConfirmCancelPostConfig, mtConfirmation, mbYesNo, 0);
+  if mrNo = r then
+    exit;
+  Close;
 end;
 
 function MakeIdent(st:String):String;

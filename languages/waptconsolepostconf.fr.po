@@ -227,10 +227,8 @@ msgstr "Créer le répertoire %s ?"
 msgid "A valid private key directory must be selected"
 msgstr "Un répertoire de clef privée valide doit être selectionné"
 
-#: waptconsolepostconfres.rs_done
-#, fuzzy
-msgctxt "waptconsolepostconfres.rs_done"
-msgid "Done"
+#: waptconsolepostconfres.rs_finished
+msgid "Finished"
 msgstr "Fin"
 
 #: waptconsolepostconfres.rs_iscc_instance_found

@@ -8,7 +8,7 @@ uses
   Classes, SysUtils, DefaultTranslator;
 
 resourcestring
-  rs_done = 'Done';
+  rs_finished = 'Finished';
   rs_package_prefix_cannot_be_empty = 'Package prefix cannot be empty';
   rs_package_prefix_must_be_alphanum = 'Pacakge prefix must be alphanum';
   rs_create_key_dir_not_exist = 'Create directory %s ?';

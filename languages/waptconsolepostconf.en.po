@@ -217,9 +217,8 @@ msgstr ""
 msgid "A valid private key directory must be selected"
 msgstr ""
 
-#: waptconsolepostconfres.rs_done
-msgctxt "waptconsolepostconfres.rs_done"
-msgid "Done"
+#: waptconsolepostconfres.rs_finished
+msgid "Finished"
 msgstr ""
 
 #: waptconsolepostconfres.rs_iscc_instance_found

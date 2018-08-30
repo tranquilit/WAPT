@@ -2,11 +2,11 @@ object VisWAPTConsolePostConf: TVisWAPTConsolePostConf
   Left = 2044
   Height = 558
   Top = 123
-  Width = 897
+  Width = 973
   BorderIcons = [biSystemMenu]
   Caption = 'Configuration of WAPT console for Windows'
   ClientHeight = 558
-  ClientWidth = 897
+  ClientWidth = 973
   Constraints.MinHeight = 345
   Constraints.MinWidth = 680
   OnCreate = FormCreate
@@ -18,7 +18,7 @@ object VisWAPTConsolePostConf: TVisWAPTConsolePostConf
     Left = 0
     Height = 30
     Top = 528
-    Width = 897
+    Width = 973
     Align = alBottom
     BevelOuter = bvNone
     ChildSizing.LeftRightSpacing = 6
@@ -27,10 +27,10 @@ object VisWAPTConsolePostConf: TVisWAPTConsolePostConf
     ChildSizing.VerticalSpacing = 3
     ChildSizing.Layout = cclLeftToRightThenTopToBottom
     ClientHeight = 30
-    ClientWidth = 897
+    ClientWidth = 973
     TabOrder = 0
     object ButCancel: TBitBtn
-      Left = 809
+      Left = 885
       Height = 24
       Top = 3
       Width = 82
@@ -74,25 +74,24 @@ object VisWAPTConsolePostConf: TVisWAPTConsolePostConf
         FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00
       }
       ModalResult = 3
-      OnClick = ButCancelClick
       TabOrder = 2
     end
     object ProgressBar1: TProgressBar
       Left = 6
       Height = 24
       Top = 3
-      Width = 619
+      Width = 695
       Align = alLeft
       Anchors = [akTop, akLeft, akRight, akBottom]
       TabOrder = 3
       Visible = False
     end
     object ButPrevious: TBitBtn
-      Left = 636
+      Left = 712
       Height = 24
       Top = 3
       Width = 91
-      Action = actPrevious
+      Action = ActPrevious
       Align = alRight
       AutoSize = True
       Glyph.Data = {
@@ -134,7 +133,7 @@ object VisWAPTConsolePostConf: TVisWAPTConsolePostConf
       TabOrder = 1
     end
     object ButNext: TBitBtn
-      Left = 733
+      Left = 809
       Height = 24
       Top = 3
       Width = 70
@@ -181,7 +180,7 @@ object VisWAPTConsolePostConf: TVisWAPTConsolePostConf
     end
   end
   object p_right: TPanel
-    Left = 619
+    Left = 695
     Height = 528
     Top = 0
     Width = 278
@@ -213,7 +212,7 @@ object VisWAPTConsolePostConf: TVisWAPTConsolePostConf
     end
   end
   object Splitter1: TSplitter
-    Left = 614
+    Left = 690
     Height = 528
     Top = 0
     Width = 5
@@ -224,18 +223,18 @@ object VisWAPTConsolePostConf: TVisWAPTConsolePostConf
     Left = 0
     Height = 528
     Top = 0
-    Width = 614
+    Width = 690
     HorzScrollBar.Page = 384
     VertScrollBar.Page = 299
     Align = alClient
     ClientHeight = 524
-    ClientWidth = 610
+    ClientWidth = 686
     TabOrder = 3
     object PagesControl: TPageControl
       Left = 0
       Height = 524
       Top = 0
-      Width = 610
+      Width = 686
       ActivePage = pgFinish
       Align = alClient
       MultiLine = True
@@ -515,12 +514,12 @@ object VisWAPTConsolePostConf: TVisWAPTConsolePostConf
       object pgFinish: TTabSheet
         Caption = 'Fin'
         ClientHeight = 496
-        ClientWidth = 602
+        ClientWidth = 678
         object Panel2: TPanel
           Left = 0
           Height = 23
           Top = 473
-          Width = 602
+          Width = 678
           Align = alBottom
           BevelOuter = bvNone
           TabOrder = 0
@@ -529,11 +528,11 @@ object VisWAPTConsolePostConf: TVisWAPTConsolePostConf
           Left = 0
           Height = 473
           Top = 0
-          Width = 602
+          Width = 678
           Align = alClient
           BevelOuter = bvNone
           ClientHeight = 473
-          ClientWidth = 602
+          ClientWidth = 678
           TabOrder = 1
           object Memo7: TMemo
             Left = 16
@@ -582,9 +581,9 @@ object VisWAPTConsolePostConf: TVisWAPTConsolePostConf
   object ActionList1: TActionList
     left = 64
     top = 288
-    object actPrevious: TAction
+    object ActPrevious: TAction
       Caption = 'Previous'
-      OnExecute = actPreviousExecute
+      OnExecute = ActPreviousExecute
     end
     object ActNext: TAction
       Caption = 'Next'
@@ -593,6 +592,7 @@ object VisWAPTConsolePostConf: TVisWAPTConsolePostConf
     end
     object ActCancel: TAction
       Caption = 'Cancel'
+      OnExecute = ActCancelExecute
     end
   end
   object IdHTTP1: TIdHTTP

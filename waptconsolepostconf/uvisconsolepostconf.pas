@@ -18,7 +18,7 @@ type
     ActCreateKey: TAction;
     ActCancel: TAction;
     ActNext: TAction;
-    actPrevious: TAction;
+    ActPrevious: TAction;
     ActionList1: TActionList;
     ButCancel: TBitBtn;
     ButNext: TBitBtn;
@@ -66,10 +66,10 @@ type
     rb_UseKey: TRadioButton;
     ScrollBox1: TScrollBox;
     Splitter1: TSplitter;
+    procedure ActCancelExecute(Sender: TObject);
     procedure ActNextExecute(Sender: TObject);
     procedure ActNextUpdate(Sender: TObject);
-    procedure actPreviousExecute(Sender: TObject);
-    procedure ButCancelClick(Sender: TObject);
+    procedure ActPreviousExecute(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure html_panelHotClick(Sender: TObject);
@@ -192,7 +192,8 @@ begin
   // Page specilic actions
   if pgParameters = p then
   begin
-    self.ButPrevious.Enabled := false;
+    self.ActPrevious.Enabled := false;
+    self.ActCancel.Enabled   := true;
   end
 
   else if pgBuildAgent = p then
@@ -202,8 +203,8 @@ begin
 
   else if pgFinish = p then
   begin
-    self.ButPrevious.Enabled := false;
-    self.ButCancel.Enabled := false;
+    self.ActPrevious.Enabled := false;
+    self.ActCancel.Enabled   := false;
   end;
 
 
@@ -492,6 +493,10 @@ begin
   self.ed_create_new_key_private_directory.Text := DEFAULT_PRIVATE_KEY_DIRECTORY;
 
   self.m_language_offset := offset_language();
+
+  self.ActPrevious.Enabled := false;
+  self.ActNext.Enabled     := true;
+  self.ActCancel.Enabled   := true;
 
 end;
 
@@ -991,6 +996,16 @@ LBL_FAIL:
   set_buttons_enable( true );
 end;
 
+procedure TVisWAPTConsolePostConf.ActCancelExecute(Sender: TObject);
+var
+  r : integer;
+begin
+  r := MessageDlg( rs_confirm, rs_confirm_cancel_post_config, mtConfirmation, mbYesNo, 0);
+  if mrNo = r then
+    exit;
+  Close;
+end;
+
 procedure TVisWAPTConsolePostConf.ActNextUpdate(Sender: TObject);
 var
   ts : TTabSheet;
@@ -999,13 +1014,13 @@ begin
 
   if pgFinish = ts then
   begin
-    actPrevious.Enabled := false;
-    ActNext.Caption:= rs_done;
+    ActPrevious.Enabled := false;
+    ActNext.Caption:= rs_finished;
     exit;
   end;
 end;
 
-procedure TVisWAPTConsolePostConf.actPreviousExecute(Sender: TObject);
+procedure TVisWAPTConsolePostConf.ActPreviousExecute(Sender: TObject);
 var
   p : TTabSheet;
 begin
@@ -1020,12 +1035,6 @@ begin
   self.PagesControlChange( nil );
 end;
 
-procedure TVisWAPTConsolePostConf.ButCancelClick(Sender: TObject);
-begin
-  if mrNo = MessageDlg( rs_confirm, rs_confirm_cancel_post_config, mtConfirmation, mbYesNo, 0) then
-    exit;
-  Close;
-end;
 
 
 

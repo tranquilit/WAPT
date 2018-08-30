@@ -1,7 +1,7 @@
 object VisWAPTServerPostConf: TVisWAPTServerPostConf
-  Left = 2458
+  Left = 789
   Height = 385
-  Top = 366
+  Top = 380
   Width = 1055
   Caption = 'Configuration of WAPT server for Windows'
   ClientHeight = 385
@@ -74,7 +74,6 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00
       }
       ModalResult = 3
-      OnClick = ButCancelClick
       TabOrder = 2
     end
     object ProgressBar1: TProgressBar
@@ -92,7 +91,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
       Height = 24
       Top = 3
       Width = 91
-      Action = actPrevious
+      Action = ActPrevious
       Align = alRight
       AutoSize = True
       Glyph.Data = {
@@ -236,8 +235,8 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
       Height = 355
       Top = 0
       Width = 732
-      HorzScrollBar.Page = 591
-      VertScrollBar.Page = 291
+      HorzScrollBar.Page = 490
+      VertScrollBar.Page = 60
       Align = alClient
       BorderStyle = bsNone
       ClientHeight = 355
@@ -248,10 +247,10 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         Height = 355
         Top = 0
         Width = 732
-        ActivePage = pgPackageKey
+        ActivePage = pgParameters
         Align = alClient
         MultiLine = True
-        TabIndex = 5
+        TabIndex = 0
         TabOrder = 0
         OnChange = PagesControlChange
         Options = [nboMultiLine]
@@ -287,7 +286,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
               TabOrder = 0
               Text = 'srvwapt.mydomain.lan'
             end
-            object BitBtn4: TBitBtn
+            object btn_check_dns_name: TBitBtn
               Left = 212
               Height = 26
               Top = 3
@@ -778,9 +777,9 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
   object ActionList1: TActionList
     left = 64
     top = 288
-    object actPrevious: TAction
+    object ActPrevious: TAction
       Caption = 'Previous'
-      OnExecute = actPreviousExecute
+      OnExecute = ActPreviousExecute
     end
     object ActNext: TAction
       Caption = 'Next'
@@ -800,6 +799,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
     end
     object ActCancel: TAction
       Caption = 'Cancel'
+      OnExecute = ActCancelExecute
     end
     object actWriteConfStartServe: TAction
       Caption = 'Start WaptServer and WAPTService with this configuration'

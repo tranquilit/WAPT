@@ -185,7 +185,7 @@ fr.DontChangeServerSetup=Ne pas modifier la configuration actuelle
 fr.DNSDetect=Détecter les URLS WAPT avec des requêtes DNS
 fr.DNSDomainLookup=Domaine DNS à  interroger
 fr.StaticURLS=URLS WAPT statiques
-fr.RunConfigTool=Executer l'assistant de configuration
+fr.RunConfigTool=Exécuter l'assistant de configuration
 
 ;German translation here
 de.StartAfterSetup=WAPT Setup-Sitzung bei Sitzungseröffnung starten
