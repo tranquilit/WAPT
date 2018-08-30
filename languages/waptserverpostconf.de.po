@@ -128,34 +128,6 @@ msgstr "WAPT Kunden machen Anfragen an den Server. um sich mit dem WAPT Server z
 msgid "srvwapt.mydomain.lan"
 msgstr "srvwapt.mondomaine.local"
 
-#: tviswaptserverpostconf.ed_create_new_key_key_name.text
-msgid "ed_create_new_key_key_name"
-msgstr ""
-
-#: tviswaptserverpostconf.ed_create_new_key_password_1.text
-msgid "ed_create_new_key_password_1"
-msgstr ""
-
-#: tviswaptserverpostconf.ed_create_new_key_password_2.text
-msgid "ed_create_new_key_password_2"
-msgstr ""
-
-#: tviswaptserverpostconf.ed_create_new_key_private_directory.text
-msgid "ed_create_new_key_private_directory"
-msgstr ""
-
-#: tviswaptserverpostconf.ed_existing_key_certificat_filename.text
-msgid "ed_existing_key_certificat_filename"
-msgstr ""
-
-#: tviswaptserverpostconf.ed_existing_key_key_filename.text
-msgid "ed_existing_key_key_filename"
-msgstr ""
-
-#: tviswaptserverpostconf.ed_existing_key_password.text
-msgid "ed_existing_key_password"
-msgstr ""
-
 #: tviswaptserverpostconf.ed_package_prefix.text
 msgid "ed_package_prefix"
 msgstr ""

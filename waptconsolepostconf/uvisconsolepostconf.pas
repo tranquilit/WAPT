@@ -49,9 +49,23 @@ type
     lbl_ed_package_prefix: TLabel;
     lbl_wapt_server_password: TLabel;
     llb_wapt_server: TLabel;
-    Memo7: TMemo;
     PagesControl: TPageControl;
+    Panel1: TPanel;
+    Panel10: TPanel;
+    Panel11: TPanel;
+    Panel12: TPanel;
+    Panel13: TPanel;
+    Panel14: TPanel;
+    Panel15: TPanel;
+    Panel16: TPanel;
     Panel2: TPanel;
+    Panel3: TPanel;
+    Panel4: TPanel;
+    Panel5: TPanel;
+    Panel6: TPanel;
+    Panel7: TPanel;
+    Panel8: TPanel;
+    Panel9: TPanel;
     panFinish: TPanel;
     pgBuildAgent: TTabSheet;
     pgFinish: TTabSheet;
@@ -59,13 +73,11 @@ type
     pgPackage: TTabSheet;
     pgParameters: TTabSheet;
     pg_agent_memo: TMemo;
-    p_bottom: TPanel;
-    p_right: TPanel;
     ProgressBar1: TProgressBar;
+    p_buttons: TPanel;
+    p_right: TPanel;
     rb_CreateKey: TRadioButton;
     rb_UseKey: TRadioButton;
-    ScrollBox1: TScrollBox;
-    Splitter1: TSplitter;
     procedure ActCancelExecute(Sender: TObject);
     procedure ActNextExecute(Sender: TObject);
     procedure ActNextUpdate(Sender: TObject);
@@ -187,13 +199,16 @@ begin
   self.update_doc_html();
 
   p := self.PagesControl.ActivePage;
-  self.ButPrevious.Enabled := self.actPrevious.Enabled;
+
+  self.ActNext.Enabled      := true;
+  self.ActPrevious.Enabled  := true;
+  self.ActCancel.Enabled    := true;
+
 
   // Page specilic actions
   if pgParameters = p then
   begin
     self.ActPrevious.Enabled := false;
-    self.ActCancel.Enabled   := true;
   end
 
   else if pgBuildAgent = p then
@@ -221,13 +236,8 @@ begin
   else if pgKey = p then
     self.rb_CreateKey.SetFocus
 
-  else if pgBuildAgent = p then
-    self.pg_agent_memo.SetFocus
-
   else if pgFinish = p then
     self.cbLaunchWaptConsoleOnExit.SetFocus;
-
-
 
 end;
 
@@ -437,9 +447,9 @@ end;
 
 procedure TVisWAPTConsolePostConf.set_buttons_enable(enable: Boolean);
 begin
-  self.ButPrevious.Enabled := enable;
-  self.ButNext.Enabled     := enable;
-  self.ButCancel.Enabled   := enable;
+  self.ActPrevious.Enabled := enable;
+  self.ActNext.Enabled     := enable;
+  self.ActCancel.Enabled   := enable;
 end;
 
 procedure TVisWAPTConsolePostConf.clear();
@@ -554,16 +564,6 @@ begin
   if self.rb_CreateKey.Checked then
   begin
 
-    if not wizard_validate_waptserver_waptagent_is_not_present( self, nil, self.EdWAPTServerName.Text, r  ) then
-    begin
-      if HTTP_RESPONSE_CODE_OK <> r then
-        exit;
-      r := MessageDlg( Application.Name, rs_wapt_agent_has_been_found_on_server_confirm_create_package_key, mtConfirmation, mbYesNo, 0 );
-      if mrNo = r then
-        exit;
-    end;
-
-
     if not DirectoryExists(self.ed_create_new_key_private_directory.Text) then
     begin
       msg := Format( rs_create_key_dir_not_exist, [self.ed_create_new_key_private_directory.Text] );
@@ -601,6 +601,15 @@ begin
 
     if not wizard_validate_str_password_are_not_empty_and_equals( self, self.ed_create_new_key_password_2, self.ed_create_new_key_password_1.Text, self.ed_create_new_key_password_2.Text ) then
       exit;
+
+    if not wizard_validate_waptserver_waptagent_is_not_present( self, nil, self.EdWAPTServerName.Text, r  ) then
+    begin
+      if HTTP_RESPONSE_CODE_OK <> r then
+        exit;
+      r := MessageDlg( Application.Name, rs_wapt_agent_has_been_found_on_server_confirm_create_package_key, mtConfirmation, mbYesNo, 0 );
+      if mrNo = r then
+        exit;
+    end;
 
     create_signed_cert_params_init( @params );
     params.destdir      := ExcludeTrailingPathDelimiter(self.ed_create_new_key_private_directory.Text);
@@ -940,13 +949,35 @@ end;
 procedure TVisWAPTConsolePostConf.ActNextExecute(Sender: TObject);
 label
   LBL_FAIL;
+const
+  ACT_PREV    : integer = 0;
+  ACT_NEXT    : integer = 1;
+  ACT_CANCEL  : integer = 2;
 var
+  act_states : array[0..2] of boolean;
+
   bContinue : Boolean;
   p         : TTabSheet;
+
+  procedure push_states();
+  begin
+    act_states[ACT_PREV]  := self.ActPrevious.Enabled;
+    act_states[ACT_NEXT]  := self.ActNext.Enabled;
+    act_states[ACT_CANCEL]:= self.ActCancel.Enabled;
+  end;
+
+  procedure pop_states();
+  begin
+    self.ActPrevious.Enabled  := act_states[ACT_PREV];
+    self.ActNext.Enabled      := act_states[ACT_NEXT];
+    self.ActCancel.Enabled    := act_states[ACT_CANCEL];
+  end;
+
 begin
   bContinue := false;
 
 
+  push_states();
   set_buttons_enable( false );
 
   p := self.PagesControl.ActivePage;
@@ -988,12 +1019,12 @@ begin
 
 
   self.PagesControl.ActivePageIndex := self.PagesControl.ActivePageIndex + 1;
-  set_buttons_enable( true );
+  pop_states();
   self.PagesControlChange(nil);
   exit;
 
 LBL_FAIL:
-  set_buttons_enable( true );
+  pop_states();
 end;
 
 procedure TVisWAPTConsolePostConf.ActCancelExecute(Sender: TObject);

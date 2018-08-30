@@ -112,34 +112,6 @@ msgstr ""
 msgid "srvwapt.mydomain.lan"
 msgstr ""
 
-#: tviswaptserverpostconf.ed_create_new_key_key_name.text
-msgid "ed_create_new_key_key_name"
-msgstr ""
-
-#: tviswaptserverpostconf.ed_create_new_key_password_1.text
-msgid "ed_create_new_key_password_1"
-msgstr ""
-
-#: tviswaptserverpostconf.ed_create_new_key_password_2.text
-msgid "ed_create_new_key_password_2"
-msgstr ""
-
-#: tviswaptserverpostconf.ed_create_new_key_private_directory.text
-msgid "ed_create_new_key_private_directory"
-msgstr ""
-
-#: tviswaptserverpostconf.ed_existing_key_certificat_filename.text
-msgid "ed_existing_key_certificat_filename"
-msgstr ""
-
-#: tviswaptserverpostconf.ed_existing_key_key_filename.text
-msgid "ed_existing_key_key_filename"
-msgstr ""
-
-#: tviswaptserverpostconf.ed_existing_key_password.text
-msgid "ed_existing_key_password"
-msgstr ""
-
 #: tviswaptserverpostconf.ed_package_prefix.text
 msgid "ed_package_prefix"
 msgstr ""
@@ -148,33 +120,33 @@ msgstr ""
 #, fuzzy
 #| msgid "WAPT server password"
 msgid "WAPT server password:"
-msgstr "Mot de passe serveur WAPT"
+msgstr "Mot de passe serveur WAPT :"
 
 #: tviswaptserverpostconf.label2.caption
 #, fuzzy
 #| msgid "Confirm password"
 msgid "Confirm password:"
-msgstr "Confirmer le mot de passe"
+msgstr "Confirmer le mot de passe :"
 
 #: tviswaptserverpostconf.lbl_ed_create_new_key_directory.caption
 msgctxt "tviswaptserverpostconf.lbl_ed_create_new_key_directory.caption"
 msgid "Secret directory :"
-msgstr "Répertoire privé"
+msgstr "Répertoire privé :"
 
 #: tviswaptserverpostconf.lbl_ed_create_new_key_key_name.caption
 msgctxt "tviswaptserverpostconf.lbl_ed_create_new_key_key_name.caption"
 msgid "Key name :"
-msgstr "Nom de la clef"
+msgstr "Nom de la clef :"
 
 #: tviswaptserverpostconf.lbl_ed_create_new_key_password_1.caption
 msgctxt "tviswaptserverpostconf.lbl_ed_create_new_key_password_1.caption"
 msgid "Password :"
-msgstr "Mot de passe"
+msgstr "Mot de passe :"
 
 #: tviswaptserverpostconf.lbl_ed_create_new_key_password_2.caption
 msgctxt "tviswaptserverpostconf.lbl_ed_create_new_key_password_2.caption"
 msgid "Password confirm :"
-msgstr "Confirmation du mot de passe"
+msgstr "Confirmation du mot de passe :"
 
 #: tviswaptserverpostconf.lbl_ed_existing_key_cert_filename.caption
 msgid "Certificat filename :"
@@ -182,16 +154,16 @@ msgstr "Certificat"
 
 #: tviswaptserverpostconf.lbl_ed_existing_key_key_filename.caption
 msgid "Key filename :"
-msgstr "Clef"
+msgstr "Clef :"
 
 #: tviswaptserverpostconf.lbl_ed_existing_key_password.caption
 msgctxt "tviswaptserverpostconf.lbl_ed_existing_key_password.caption"
 msgid "Password :"
-msgstr "Mot de passe"
+msgstr "Mot de passe :"
 
 #: tviswaptserverpostconf.lbl_ed_package_prefix.caption
 msgid "Package prefix :"
-msgstr "Prefix de package"
+msgstr "Prefix de package :"
 
 #: tviswaptserverpostconf.pgbuildagent.caption
 msgid "Agent"

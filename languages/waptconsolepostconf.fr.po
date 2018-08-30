@@ -63,34 +63,6 @@ msgstr ""
 msgid "srvwapt.mydomain.lan"
 msgstr ""
 
-#: tviswaptconsolepostconf.ed_create_new_key_key_name.text
-msgid "ed_create_new_key_key_name"
-msgstr ""
-
-#: tviswaptconsolepostconf.ed_create_new_key_password_1.text
-msgid "ed_create_new_key_password_1"
-msgstr ""
-
-#: tviswaptconsolepostconf.ed_create_new_key_password_2.text
-msgid "ed_create_new_key_password_2"
-msgstr ""
-
-#: tviswaptconsolepostconf.ed_create_new_key_private_directory.text
-msgid "ed_create_new_key_private_directory"
-msgstr ""
-
-#: tviswaptconsolepostconf.ed_existing_key_certificat_filename.text
-msgid "ed_existing_key_certificat_filename"
-msgstr ""
-
-#: tviswaptconsolepostconf.ed_existing_key_key_filename.text
-msgid "ed_existing_key_key_filename"
-msgstr ""
-
-#: tviswaptconsolepostconf.ed_existing_key_password.text
-msgid "ed_existing_key_password"
-msgstr ""
-
 #: tviswaptconsolepostconf.ed_package_prefix.text
 msgid "ed_package_prefix"
 msgstr ""
@@ -114,7 +86,7 @@ msgstr "Mot de passe :"
 
 #: tviswaptconsolepostconf.lbl_ed_create_new_key_password_2.caption
 msgid "Password confirm :"
-msgstr "Confirmer le mot de passe"
+msgstr "Confirmer le mot de passe :"
 
 #: tviswaptconsolepostconf.lbl_ed_existing_key_cert_filename.caption
 msgid "Certificat filename :"
@@ -140,6 +112,10 @@ msgstr "Mot de passe du server Wapt :"
 #: tviswaptconsolepostconf.llb_wapt_server.caption
 msgid "Wapt server url :"
 msgstr "Url du server Wapt :"
+
+#: tviswaptconsolepostconf.panel15.caption
+msgid "Panel15"
+msgstr ""
 
 #: tviswaptconsolepostconf.pgbuildagent.caption
 msgid "Agent"
@@ -213,7 +189,7 @@ msgstr "Un certificat avec ce nom de clef a été trouvé, modifier le nom de la
 
 #: waptconsolepostconfres.rs_create_key_a_key_with_this_name_exist
 msgid "A key with this name has been found, change key name and click next again"
-msgstr "Une clef de même nom a été trouvée, modifier le bom de la clef"
+msgstr "Une clef de même nom a été trouvée, modifier le nom de la clef"
 
 #: waptconsolepostconfres.rs_create_key_dir_cannot_be_created
 msgid "Cannot create directory %s"
@@ -288,11 +264,17 @@ msgid "Wapt server not found or down"
 msgstr "Le serveur Wapt n'a pas été trouvé"
 
 #: waptconsolepostconfres.rs_wapt_agent_has_been_found_on_server_confirm_create_package_key
+#, fuzzy
+#| msgid ""
+#| "Wapt agent has been found on the server\n"
+#| "\n"
+#| "Are you sure you want to recreate a new package key ?\n"
 msgid ""
 "Wapt agent has been found on the server\n"
 "Are you sure you want to recreate a new package key ?\n"
 msgstr ""
-"L'agent Wapt a été trouvé sur le server\n"
+"L'agent Wapt a été trouvé sur le serveur\n"
+"\n"
 "Êtes vous sûr de vouloir recréer une nouvelle clef de package ?\n"
 
 #: waptconsolepostconfres.rs_wapt_agent_has_been_found_on_server_skip_build_agent
