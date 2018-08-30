@@ -58,7 +58,7 @@ six==1.11.0
 socketIO-client-2==0.7.5
 urllib3==1.22
 wakeonlan==0.2.2
-websocket-client==0.47.0
+websocket-client==0.50.0
 Werkzeug==0.14.1
 wrapt==1.10.11
 WTForms==2.1
