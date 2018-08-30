@@ -80,7 +80,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
       Left = 6
       Height = 24
       Top = 3
-      Width = 798
+      Width = 803
       Align = alClient
       TabOrder = 3
       Visible = False
@@ -235,7 +235,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
       Top = 0
       Width = 753
       HorzScrollBar.Page = 83
-      VertScrollBar.Page = 315
+      VertScrollBar.Page = 221
       Align = alClient
       BorderStyle = bsNone
       ClientHeight = 362
@@ -246,10 +246,10 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         Height = 362
         Top = 0
         Width = 753
-        ActivePage = pgPackageKey
+        ActivePage = pgPassword
         Align = alClient
         MultiLine = True
-        TabIndex = 5
+        TabIndex = 1
         TabOrder = 0
         OnChange = PagesControlChange
         Options = [nboMultiLine]
@@ -350,10 +350,10 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
             AnchorSideLeft.Side = asrCenter
             AnchorSideTop.Control = pgPassword
             AnchorSideTop.Side = asrCenter
-            Left = 248
+            Left = 247
             Height = 51
             Top = 142
-            Width = 248
+            Width = 251
             AutoSize = True
             BevelOuter = bvNone
             ChildSizing.HorizontalSpacing = 5
@@ -361,20 +361,20 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
             ChildSizing.Layout = cclLeftToRightThenTopToBottom
             ChildSizing.ControlsPerLine = 2
             ClientHeight = 51
-            ClientWidth = 248
+            ClientWidth = 251
             TabOrder = 0
             object Label1: TLabel
               Left = 0
               Height = 23
               Top = 0
-              Width = 123
+              Width = 126
               Alignment = taRightJustify
-              Caption = 'WAPT server password:'
+              Caption = 'WAPT server password :'
               Layout = tlCenter
               ParentColor = False
             end
             object EdPwd1: TEdit
-              Left = 128
+              Left = 131
               Height = 23
               Hint = 'This is the password used to connect to the WAPT server via the WAPT console.'#13#10'For further information :'#13#10'http://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.html'
               Top = 0
@@ -388,14 +388,14 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
               Left = 0
               Height = 23
               Top = 28
-              Width = 123
+              Width = 126
               Alignment = taRightJustify
-              Caption = 'Confirm password:'
+              Caption = 'Confirm password :'
               Layout = tlCenter
               ParentColor = False
             end
             object EdPwd2: TEdit
-              Left = 128
+              Left = 131
               Height = 23
               Top = 28
               Width = 120

@@ -134,14 +134,14 @@ msgstr ""
 
 #: tviswaptserverpostconf.label1.caption
 #, fuzzy
-#| msgid "WAPT server password"
-msgid "WAPT server password:"
+#| msgid "WAPT server password:"
+msgid "WAPT server password :"
 msgstr "WAPT Server Passwort"
 
 #: tviswaptserverpostconf.label2.caption
 #, fuzzy
-#| msgid "Confirm password"
-msgid "Confirm password:"
+#| msgid "Confirm password:"
+msgid "Confirm password :"
 msgstr "Passwort bestätigen"
 
 #: tviswaptserverpostconf.lbl_ed_create_new_key_directory.caption

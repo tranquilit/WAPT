@@ -103,11 +103,11 @@ msgid "ed_package_prefix"
 msgstr ""
 
 #: tviswaptserverpostconf.label1.caption
-msgid "WAPT server password:"
+msgid "WAPT server password :"
 msgstr ""
 
 #: tviswaptserverpostconf.label2.caption
-msgid "Confirm password:"
+msgid "Confirm password :"
 msgstr ""
 
 #: tviswaptserverpostconf.lbl_ed_create_new_key_directory.caption

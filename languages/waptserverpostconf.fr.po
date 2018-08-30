@@ -44,10 +44,8 @@ msgid "Previous"
 msgstr "Précédent"
 
 #: tviswaptserverpostconf.actwriteconfstartserve.caption
-#, fuzzy
-#| msgid "Start WAPT server with this configuration"
 msgid "Start WaptServer and WAPTService with this configuration"
-msgstr "Démarrer le serveur WAPT et WaptService avec ces paramètres"
+msgstr "Démarrer le server et l'agent WAPT avec cette configuration"
 
 #: tviswaptserverpostconf.caption
 msgid "Configuration of WAPT server for Windows"
@@ -80,7 +78,10 @@ msgstr "Afficher le mot de passe"
 
 #: tviswaptserverpostconf.edpwd1.hint
 #, fuzzy
-#| msgid "This is the password used to connect to the WAPT server via the WAPT console."
+#| msgid ""
+#| "This is the password used to connect to the WAPT server via the WAPT console.This is the password used to connect to the WAPT server via the WAPT console.\n"
+#| "For further information :\n"
+#| "http://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.html\n"
 msgid ""
 "This is the password used to connect to the WAPT server via the WAPT console.\n"
 "For further information :\n"
@@ -117,15 +118,11 @@ msgid "ed_package_prefix"
 msgstr ""
 
 #: tviswaptserverpostconf.label1.caption
-#, fuzzy
-#| msgid "WAPT server password"
-msgid "WAPT server password:"
-msgstr "Mot de passe serveur WAPT :"
+msgid "WAPT server password :"
+msgstr "Mot de passe du server WAPT :"
 
 #: tviswaptserverpostconf.label2.caption
-#, fuzzy
-#| msgid "Confirm password"
-msgid "Confirm password:"
+msgid "Confirm password :"
 msgstr "Confirmer le mot de passe :"
 
 #: tviswaptserverpostconf.lbl_ed_create_new_key_directory.caption
