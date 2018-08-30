@@ -847,7 +847,7 @@ var
   start_ms:DWORD;
 
 const
-  pollwait:DWORD = 500;
+  pollwait:DWORD = 30; // minimal framerate
 
 begin
   try
