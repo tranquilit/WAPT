@@ -27,7 +27,7 @@ Flask-SocketIO==3.0.1
 future==0.16.0
 gitpython
 greenlet==0.4.13
-huey==1.10.0
+huey==1.10.2
 idna==2.6
 iniparse==0.4
 ipaddress==1.0.19
@@ -40,7 +40,7 @@ mccabe==0.6.1
 netifaces==0.10.6
 packaging==16.8
 passlib==1.7.1
-peewee==3.5.0
+peewee==3.6.4
 pefile==2016.3.28
 psutil==3.4.2
 psycopg2==2.7.3.1
