@@ -57,7 +57,8 @@ type
     Panel13: TPanel;
     Panel14: TPanel;
     Panel15: TPanel;
-    Panel16: TPanel;
+    ProgressBar1: TProgressBar;
+    p_bottom: TPanel;
     Panel2: TPanel;
     Panel3: TPanel;
     Panel4: TPanel;
@@ -73,7 +74,6 @@ type
     pgPackage: TTabSheet;
     pgParameters: TTabSheet;
     pg_agent_memo: TMemo;
-    ProgressBar1: TProgressBar;
     p_buttons: TPanel;
     p_right: TPanel;
     rb_CreateKey: TRadioButton;
