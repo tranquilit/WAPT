@@ -1185,6 +1185,7 @@ begin
   GridGroups.SaveSettingsToIni(Appuserinipath);
   GridHostPackages.SaveSettingsToIni(Appuserinipath);
   GridHostSoftwares.SaveSettingsToIni(Appuserinipath);
+  GridHostsForPackage.SaveSettingsToIni(Appuserinipath);
 
   // %APPDATA%\waptconsole\waptconsole.ini
   ini := TIniFile.Create(Appuserinipath);
@@ -1370,7 +1371,7 @@ procedure TVisWaptGUI.UpdateHostPages(Sender: TObject);
 var
   currhost,packagename : ansistring;
   RowSO, package,packagereq, packages, softwares: ISuperObject;
-  waptwua_status,wuauserv_status,wsusupdates,tasksresult, running: ISuperObject;
+  waptwua_status,wuauserv_status,wsusupdates: ISuperObject;
   sores,all_missing,pending_install,additional,upgrades,errors: ISuperObject;
 begin
   RowSO := Gridhosts.FocusedRow;
@@ -1572,6 +1573,7 @@ begin
     HostRunningTask.Text := '';
     HostTaskRunningProgress.Position := 0;
     GridHostPackages.Clear;
+    GridHostsForPackage.Clear;
     GridHostSoftwares.Clear;
     HostRunningTaskLog.Clear;
     GridHostTasksPending.Data := nil;
@@ -3482,11 +3484,26 @@ begin
   GridHostPackages.ShowAdvancedColumnsCustomize:=AdvancedMode;
   GridHostsForPackage.ShowAdvancedColumnsCustomize:=AdvancedMode;
 
+  if IsEnterpriseEdition then
+  begin
+    GridHostWinUpdates.ShowAdvancedColumnsCustomize:=AdvancedMode;
+    GridWUUpdates.ShowAdvancedColumnsCustomize:=AdvancedMode;
+    GridWUDownloads.ShowAdvancedColumnsCustomize:=AdvancedMode;
+  end;
+
   //ActPackagesUpdate.Execute;
   GridPackages.Data := Nil;
   GridGroups.Data := Nil;
   GridHosts.Data := Nil;
   GridHostsForPackage.Data := Nil;
+
+  if IsEnterpriseEdition then
+  begin
+    GridHostWinUpdates.Data := Nil;
+    GridWUUpdates.Data := Nil;
+    GridWUDownloads.Data := Nil;
+  end;
+
 end;
 
 procedure TVisWaptGUI.ActVNCExecute(Sender: TObject);
@@ -3894,7 +3911,6 @@ var
   sores: ISuperObject;
   CB:TComponent;
   ini:TIniFile;
-  ACol: TSOGridColumn;
 begin
   {$ifdef ENTERPRISE }
   IsEnterpriseEdition:=True;
@@ -3921,6 +3937,13 @@ begin
     GridHostPackages.SaveSettingsToIni(Appuserinipath+'.default');
     GridHostsForPackage.SaveSettingsToIni(Appuserinipath+'.default');
     GridHostSoftwares.SaveSettingsToIni(Appuserinipath+'.default');
+
+    if IsEnterpriseEdition then
+    begin
+      GridWUDownloads.SaveSettingsToIni(Appuserinipath+'.default');
+      GridWUUpdates.SaveSettingsToIni(Appuserinipath+'.default');
+      GridHostWinUpdates.SaveSettingsToIni(Appuserinipath+'.default');
+    end;
 
     // don't load grid settings if old ini version
     if IniReadString(Appuserinipath,self.name,'waptconsole.version','') <> '' then
@@ -4604,8 +4627,6 @@ begin
 end;
 
 procedure TVisWaptGUI.SetIsEnterpriseEdition(AValue: Boolean);
-var
-  ACol: TSOGridColumn;
 begin
   {$ifdef ENTERPRISE}
   {$include ..\waptenterprise\includes\uwaptconsole.setenterprise.inc}

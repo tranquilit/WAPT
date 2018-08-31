@@ -4530,6 +4530,7 @@ object VisWaptGUI: TVisWaptGUI
         Header.DefaultHeight = 17
         Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
         Header.SortColumn = 13
+        Header.SortDirection = sdDescending
         Header.Style = hsFlatButtons
         Images = ImageList1
         TabOrder = 1
@@ -5108,7 +5109,7 @@ object VisWaptGUI: TVisWaptGUI
     end
     object PgNetworksConfig: TTabSheet
       Caption = 'Sites / networks configuration'
-      ClientHeight = 411
+      ClientHeight = 454
       ClientWidth = 1151
       TabVisible = False
       object Panel8: TPanel
@@ -5247,7 +5248,7 @@ object VisWaptGUI: TVisWaptGUI
       end
       object GridNetworks: TSOGrid
         Left = 0
-        Height = 371
+        Height = 414
         Top = 40
         Width = 1151
         Datasource = SrcNetworks
