@@ -1,5 +1,5 @@
 ﻿[PyScripter]
-Version=2.5.3.0
+Version=3.3.2.0
 
 [Project]
 ClassName=TProjectRootNode
@@ -15,39 +15,38 @@ Name=wapt
 
 [Project\ChildNodes\Node0\ChildNodes\Node0\ChildNodes\Node0]
 ClassName=TProjectFileNode
-FileName=%(wapt_base_dir)s\common.py
+FileName=C:\tranquilit\wapt\common.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node0\ChildNodes\Node1]
 ClassName=TProjectFileNode
-FileName=%(wapt_base_dir)s\setuphelpers.py
+FileName=C:\tranquilit\wapt\setuphelpers.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node0\ChildNodes\Node2]
 ClassName=TProjectFileNode
-FileName=%(wapt_base_dir)s\wapt-get.py
+FileName=C:\tranquilit\wapt\wapt-get.ini
 
 [Project\ChildNodes\Node0\ChildNodes\Node0\ChildNodes\Node3]
 ClassName=TProjectFileNode
-FileName=%(wapt_base_dir)s\wapt-get.ini
+FileName=C:\tranquilit\wapt\wapt-get.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node0\ChildNodes\Node4]
 ClassName=TProjectFileNode
-FileName=%(wapt_base_dir)s\waptpackage.py
+FileName=C:\tranquilit\wapt\waptpackage.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node0\ChildNodes]
 Count=5
 
 [Project\ChildNodes\Node0\ChildNodes\Node1]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]control
+FileName=$[Project-Path]changelog.txt
 
 [Project\ChildNodes\Node0\ChildNodes\Node2]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]..\setup.py
-
+FileName=$[Project-Path]control
 
 [Project\ChildNodes\Node0\ChildNodes\Node3]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]changelog.txt
+FileName=$[Project-Path]..\setup.py
 
 [Project\ChildNodes\Node0\ChildNodes]
 Count=4
@@ -60,7 +59,7 @@ ClassName=TProjectRunConfiguationNode
 Name=install
 
 [Project\ChildNodes\Node1\ChildNodes\Node0\RunConfig]
-ScriptName=%(wapt_base_dir)s\wapt-get.py
+ScriptName=C:\tranquilit\wapt\wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
 Parameters=install "$[Project-Path].."
@@ -83,7 +82,7 @@ ClassName=TProjectRunConfiguationNode
 Name=remove
 
 [Project\ChildNodes\Node1\ChildNodes\Node1\RunConfig]
-ScriptName=%(wapt_base_dir)s\wapt-get.py
+ScriptName=C:\tranquilit\wapt\wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
 Parameters=remove "$[Project-Path].."
@@ -106,7 +105,7 @@ ClassName=TProjectRunConfiguationNode
 Name=session-setup
 
 [Project\ChildNodes\Node1\ChildNodes\Node2\RunConfig]
-ScriptName=%(wapt_base_dir)s\wapt-get.py
+ScriptName=C:\tranquilit\wapt\wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
 Parameters=session-setup "$[Project-Path].."
@@ -129,7 +128,7 @@ ClassName=TProjectRunConfiguationNode
 Name=update
 
 [Project\ChildNodes\Node1\ChildNodes\Node3\RunConfig]
-ScriptName=%(wapt_base_dir)s\wapt-get.py
+ScriptName=C:\tranquilit\wapt\wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
 Parameters=update
@@ -152,7 +151,7 @@ ClassName=TProjectRunConfiguationNode
 Name=upgrade
 
 [Project\ChildNodes\Node1\ChildNodes\Node4\RunConfig]
-ScriptName=%(wapt_base_dir)s\wapt-get.py
+ScriptName=C:\tranquilit\wapt\wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
 Parameters=-f upgrade
@@ -175,7 +174,7 @@ ClassName=TProjectRunConfiguationNode
 Name=-i build-upload
 
 [Project\ChildNodes\Node1\ChildNodes\Node5\RunConfig]
-ScriptName=%(wapt_base_dir)s\wapt-get.py
+ScriptName=C:\tranquilit\wapt\wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
 Parameters=-i build-upload "$[Project-Path].."
@@ -198,7 +197,7 @@ ClassName=TProjectRunConfiguationNode
 Name=svn update
 
 [Project\ChildNodes\Node1\ChildNodes\Node6\RunConfig]
-ScriptName=%(wapt_base_dir)s\wapt-get.py
+ScriptName=C:\tranquilit\wapt\wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
 Parameters=sources "$[Project-Path].."
@@ -221,7 +220,7 @@ ClassName=TProjectRunConfiguationNode
 Name=uninstall
 
 [Project\ChildNodes\Node1\ChildNodes\Node7\RunConfig]
-ScriptName=%(wapt_base_dir)s\wapt-get.py
+ScriptName=C:\tranquilit\wapt\wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
 Parameters=uninstall "$[Project-Path].."
@@ -239,16 +238,15 @@ WorkingDirectory=$[Project-Path]..
 ShortCut=0
 MessagesFormat=$[FileName] $[LineNumber]
 
-
 [Project\ChildNodes\Node1\ChildNodes\Node8]
 ClassName=TProjectRunConfiguationNode
 Name=update-package-sources
 
 [Project\ChildNodes\Node1\ChildNodes\Node8\RunConfig]
-ScriptName=%(wapt_base_dir)s\wapt-get.py
+ScriptName=C:\tranquilit\wapt\wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
-Parameters=update-package-sources -j "$[Project-Path].."
+Parameters=update-package-sources "$[Project-Path].."
 WorkingDir=$[Project-Path]..
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log
@@ -263,9 +261,31 @@ WorkingDirectory=$[ActiveScript-Dir]
 ShortCut=0
 MessagesFormat=$[FileName] $[LineNumber]
 
+[Project\ChildNodes\Node1\ChildNodes\Node9]
+ClassName=TProjectRunConfiguationNode
+Name=audit
+
+[Project\ChildNodes\Node1\ChildNodes\Node9\RunConfig]
+ScriptName=C:\tranquilit\wapt\wapt-get.py
+EngineType=peRemote
+ReinitializeBeforeRun=TRUE
+Parameters=audit "$[Project-Path].."
+WorkingDir=$[Project-Path]..
+WriteOutputToFile=FALSE
+OutputFileName=$[ActiveScript-NoExt].log
+AppendToFile=FALSE
+
+[Project\ChildNodes\Node1\ChildNodes\Node9\RunConfig\ExternalRun]
+Caption=External Run
+Description=Run script using an external Python Interpreter
+ApplicationName=$[PythonExe-Short]
+Parameters=$[ActiveScript-Short]
+WorkingDirectory=$[ActiveScript-Dir]
+ShortCut=0
+MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes]
-Count=9
+Count=10
 
 [Project\ChildNodes]
 Count=2

@@ -3,18 +3,15 @@ from setuphelpers import *
 import os
 import _winreg
 import tempfile
-import shutil
 import hashlib
 import time
-import pythoncom
-from win32com.taskscheduler import taskscheduler
 import platform
 import codecs
+import types
+import re
 
 # registry key(s) where WAPT will find how to remove the application(s)
 uninstallkey = []
-
-import types,re
 
 class Version(object):
     """Version object of form 0.0.0
@@ -84,13 +81,6 @@ class Version(object):
     def __repr__(self):
         return "Version('{}')".format('.'.join(self.members))
 
-def update_control(entry):
-    """Update package control file before build-upload"""
-    waptget = get_file_properties(makepath('patchs','wapt-get.exe'))
-    rev = open(makepath('patchs','version')).read().strip()
-    entry.package = '%s-waptupgrade' % WAPT.config.get('global','default_package_prefix')
-    entry.version = '%s-%s' % (waptget['FileVersion'],rev)
-
 def update_registry_version(version):
     # updatethe registry
     with _winreg.CreateKeyEx(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\WAPT_is1',\
@@ -98,17 +88,6 @@ def update_registry_version(version):
         reg_setvalue(waptis,"DisplayName","WAPT %s" % version)
         reg_setvalue(waptis,"DisplayVersion","%s" % version)
         reg_setvalue(waptis,"InstallDate",currentdate())
-
-
-def sha1_for_file(fname, block_size=2**20):
-    f = open(fname,'rb')
-    sha1 = hashlib.sha1()
-    while True:
-        data = f.read(block_size)
-        if not data:
-            break
-        sha1.update(data)
-    return sha1.hexdigest()
 
 
 def sha256_for_file(fname, block_size=2**20):
@@ -278,7 +257,6 @@ def full_waptagent_install(min_version,at_startup=False):
 
 def install():
     # if you want to modify the keys depending on environment (win32/win64... params..)
-    import common
     if installed_softwares('WAPT Server_is1'):
         error('Wapt server installed on this host. Aborting')
 
@@ -289,11 +267,12 @@ def install():
     (package_wapt_version,package_packaging) = control.version.split('-')
     package_packaging = int(package_packaging)
 
-    if Version(installed_wapt_version,4) >= Version(package_wapt_version,4):
-        print('Your current wapt (%s) is more recent than the upgrade package (%s). Skipping...'%(installed_wapt_version,control.version))
+    if not WAPT.options.force and Version(installed_wapt_version,4) >= Version(package_wapt_version,4):
+        print('Your current wapt (%s) is same or more recent than the upgrade package (%s). Skipping...'%(installed_wapt_version,control.version))
     else:
         print('Setting up upgrade from wapt version %s to %s. waptagent install planned for %s'%(installed_wapt_version,package_wapt_version,time.ctime(time.time() + 1*60)))
         full_waptagent_install(str(Version(package_wapt_version,4)))
+        update_registry_version(package_wapt_version)
 
 if __name__ == '__main__':
     pass
