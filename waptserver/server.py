@@ -1624,7 +1624,6 @@ def host_data():
                 WsusUpdates.max_download_size,
                 WsusUpdates.superseded_update_ids,
                 WsusUpdates.security_bulletin_ids,
-                WsusUpdates.cve_ids,
                 WsusUpdates.is_mandatory,
                 WsusUpdates.reboot_behaviour,
                 WsusUpdates.can_request_user_input,
