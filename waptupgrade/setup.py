@@ -254,6 +254,7 @@ def full_waptagent_install(min_version,at_startup=False):
         # use embedded waptagent.exe, wait 15 minutes for other tasks to complete.
         print create_onetime_task('fullwaptupgrade',waptdeploy_path,'--hash=%s --waptsetupurl=%s --wait=15 --temporary --force --minversion=%s'%(expected_sha256,waptagent_path,min_version),delay_minutes=1)
 
+force = False
 
 def install():
     # if you want to modify the keys depending on environment (win32/win64... params..)
@@ -267,7 +268,7 @@ def install():
     (package_wapt_version,package_packaging) = control.version.split('-')
     package_packaging = int(package_packaging)
 
-    if not WAPT.options.force and Version(installed_wapt_version,4) >= Version(package_wapt_version,4):
+    if not force and Version(installed_wapt_version,4) >= Version(package_wapt_version,4):
         print('Your current wapt (%s) is same or more recent than the upgrade package (%s). Skipping...'%(installed_wapt_version,control.version))
     else:
         print('Setting up upgrade from wapt version %s to %s. waptagent install planned for %s'%(installed_wapt_version,package_wapt_version,time.ctime(time.time() + 1*60)))
