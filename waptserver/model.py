@@ -420,7 +420,6 @@ class WsusUpdates(WaptBaseModel):
     max_download_size = IntegerField(null=True)
     superseded_update_ids = ArrayField(CharField)
     security_bulletin_ids = ArrayField(CharField)
-    cve_ids = ArrayField(CharField)
     is_mandatory = BooleanField(null=True)
     reboot_behaviour = CharField(null=True)
     can_request_user_input = CharField(null=True)
@@ -1290,6 +1289,20 @@ def upgrade_db_structure():
             v.value = next_version
             v.save()
 
+    next_version = '1.6.2.3'
+    if get_db_version() <= next_version:
+        with wapt_db.atomic():
+            logger.info('Migrating from %s to %s' % (get_db_version(), next_version))
+
+            opes = []
+            columns = [c.name for c in wapt_db.get_columns('wsusupdates')]
+            if 'cve_ids' in columns:
+                opes.append(migrator.drop_column(WsusUpdates._meta.name, 'cve_ids'))
+            migrate(*opes)
+
+            (v, created) = ServerAttribs.get_or_create(key='db_version')
+            v.value = next_version
+            v.save()
 
 if __name__ == '__main__':
     if platform.system() != 'Windows' and getpass.getuser() != 'wapt':
