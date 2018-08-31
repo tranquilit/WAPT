@@ -1241,6 +1241,8 @@ def test_wuaprogress():
     #fixwua.cleanwua()
     w = Wapt()
     rules = WaptWUARules()
+    rules.allowed_classifications = []
+    rules.allowed_severities = []
     rules.allowed_updates = ['ed46d995-c9fb-41e2-94df-146d97d47d07']
     with client.WaptWUA(w,windows_updates_rules = rules) as c:
         #rint(c.stored_waptwua_status())
