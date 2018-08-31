@@ -181,7 +181,7 @@ msgstr "Confirmer"
 
 #: waptconsolepostconfres.rs_confirm_cancel_post_config
 msgid "Are you sure you want to abort wapt console post configuration ?"
-msgstr ""
+msgstr "Êtes-vous certain de vouloir abandonner la configuration de la console wapt ?"
 
 #: waptconsolepostconfres.rs_create_key_a_certificat_this_key_name_exist
 msgid "A certificat with key name has beenfound, change key name and click next again"

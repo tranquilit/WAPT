@@ -358,7 +358,7 @@ msgstr "Confirmer"
 #: uwaptserverres.rsconfirmcancelpostconfig
 msgctxt "uwaptserverres.rsconfirmcancelpostconfig"
 msgid "Are you sure you want to cancel configuring WAPT server ?"
-msgstr "Etes-vous sûr(e) de vouloir annuler la configuration du serveur WAPT ?"
+msgstr "Êtes-vous certain de vouloir abandonner la configuration du serveur WAPT ?"
 
 #: uwaptserverres.rscreationinprogress
 msgctxt "uwaptserverres.rscreationinprogress"
