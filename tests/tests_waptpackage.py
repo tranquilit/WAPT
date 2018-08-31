@@ -1129,6 +1129,7 @@ def test_wua():
     w = Wapt()
     with client.WaptWUA(w) as c:
         print(c.stored_waptwua_status())
+        print(c.installed_updates())
         print(c.download_updates())
         #print(c.download_updates())
 
@@ -1222,10 +1223,24 @@ def test_wuarules():
     c.allowed_products = ['Windows 7']
     print(c.save_to_ini('c:/wapt/wapt-get.ini'))
 
+def test_fixwua():
+    from waptenterprise.waptwua import client,fixwua
+    fixwua.cleanwua()
+
+    w = Wapt()
+    with client.WaptWUA(w) as c:
+        print(c.stored_waptwua_status())
+        print(c.installed_updates())
+        #print(c.download_updates())
+        #print(c.download_updates())
+
+
+
 if __name__ == '__main__':
     #gen_perso('htouvet',email='htouvet@tranquil.it')
     #test_discarded()
     #test_wuarules()
+    test_fixwua()
     test_wua()
     #test_update_status()
     #test_download_wsusscan()
