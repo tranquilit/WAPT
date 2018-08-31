@@ -124,6 +124,7 @@ type
 
     procedure set_buttons_enable( enable : Boolean );
     procedure clear();
+    procedure load_config_if_exist();
     procedure validate_page_password( var bContinue : boolean );
     procedure validate_page_packge_name( var bContinue : boolean );
     procedure validate_page_package_key( var bContinue : boolean );
@@ -163,10 +164,9 @@ begin
   PagesControl.ActivePageIndex:=0;
 
   self.clear();
+  self.load_config_if_exist();
 
-  // fmor
-  //  self.PagesControl.PageIndex:= 3;
-  self.html_panel.DefaultFontSize:=  ScaleY( self.html_panel.DefaultFontSize,96);    ;
+  self.html_panel.DefaultFontSize:=  ScaleY( self.html_panel.DefaultFontSize,96);
 end;
 
 procedure TVisWAPTServerPostConf.FormShow(Sender: TObject);
@@ -577,6 +577,53 @@ begin
   self.ActNext.Enabled     := true;
 
 end;
+
+procedure TVisWAPTServerPostConf.load_config_if_exist();
+var
+  s       : String;
+  i       : integer;
+  configs : array of String;
+  ini     : TIniFile;
+begin
+  ini := nil;
+
+  SetLength( configs, 2 );
+  configs[0] := INI_FILE_WAPTCONSOLE;
+  configs[1] := INI_FILE_WAPTGET;
+
+  for i := 0 to Length(configs) - 1 do
+  begin
+    if not FileExists( configs[i] ) then
+      continue;
+    ini := TIniFile.Create( configs[i] );
+
+    self.EdWAPTServerName.Text := ini.ReadString( INI_GLOBAL, INI_WAPT_SERVER, self.EdWAPTServerName.Text );
+    self.ed_package_prefix.Text:= ini.ReadString( INI_GLOBAL, INI_DEFAULT_PACKAGE_PREFIX, self.ed_package_prefix.Text );
+
+    self.ed_existing_key_certificat_filename.Text := ini.ReadString( INI_GLOBAL, INI_PERSONAL_CERTIFICATE_PATH, self.ed_existing_key_certificat_filename.Text );
+    if Length( Trim(self.ed_existing_key_certificat_filename.Text) ) = 0 then
+    begin
+      self.rb_CreateKey.Checked := true;
+      self.on_private_key_radiobutton_change( self.rb_CreateKey );
+    end
+    else
+    begin
+      self.ed_create_new_key_private_directory.Text := ExtractFilePath(self.ed_existing_key_certificat_filename.Text);
+      self.ed_existing_key_key_filename.Text := ExtractFileNameWithoutExt(self.ed_existing_key_certificat_filename.Text) + '.' + EXTENSION_PRIVATE_KEY;
+      self.rb_UseKey.Checked := true;
+      self.on_private_key_radiobutton_change( self.rb_UseKey );
+    end;
+
+    ini.Free;
+    ini := nil;
+  end;
+
+  if Assigned(ini) then
+    ini.Free;
+
+end;
+
+
 
 procedure TVisWAPTServerPostConf.validate_page_password(var bContinue: boolean);
 begin
