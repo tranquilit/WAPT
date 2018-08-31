@@ -56,6 +56,7 @@ from waptenterprise.waptserver.wsus_tasks import *
 
 from waptenterprise import licencing
 from waptenterprise.waptwua.client import WaptWUA,EnsureWUAServRunning,WaptWUARules
+from waptenterprise.waptwua import client,fixwua
 
 import urllib3
 
@@ -1225,7 +1226,7 @@ def test_wuarules():
 
 def test_fixwua():
     from waptenterprise.waptwua import client,fixwua
-    fixwua.cleanwua()
+    #fixwua.cleanwua()
 
     w = Wapt()
     with client.WaptWUA(w) as c:
@@ -1235,13 +1236,25 @@ def test_fixwua():
         #print(c.download_updates())
 
 
+def test_wuaprogress():
+    # ed46d995-c9fb-41e2-94df-146d97d47d07
+    #fixwua.cleanwua()
+    w = Wapt()
+    rules = WaptWUARules()
+    rules.allowed_updates = ['ed46d995-c9fb-41e2-94df-146d97d47d07']
+    with client.WaptWUA(w,windows_updates_rules = rules) as c:
+        #rint(c.stored_waptwua_status())
+        #print(c.installed_updates())
+        c.install_updates()
+        #print(c.installed_updates())
 
 if __name__ == '__main__':
     #gen_perso('htouvet',email='htouvet@tranquil.it')
     #test_discarded()
     #test_wuarules()
-    test_fixwua()
-    test_wua()
+    #test_fixwua()
+    #test_wua()
+    test_wuaprogress()
     #test_update_status()
     #test_download_wsusscan()
     #test_sync_packages_table()
