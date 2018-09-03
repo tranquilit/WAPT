@@ -379,7 +379,7 @@ var
 begin
   if curPageId=customPage.Id then
   begin
-    #if edition = "waptsetup"
+    #if edition == "waptsetup"
     PostMessage(WizardForm.NextButton.Handle, $BD11 , 0, 0);
     exit;
     #endif
