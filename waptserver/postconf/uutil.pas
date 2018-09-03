@@ -110,8 +110,12 @@ procedure http_free( var http  : TIdHTTP );
 function http_is_valid_url(const url: String): boolean;
 function http_post(var output: String; const url: String; const content_type: String; const post_data: String): integer;
 function http_reponse_code(var response_code: integer; const url: String ): integer;
+function http_get(var output: String; const url: String ): integer;
+
+
 
 function wapt_json_response_is_success(var success: boolean; const json: String  ): integer;
+function wapt_server_ping( const server_url : String ) : boolean;
 
 function offset_language(): integer;
 
@@ -716,6 +720,39 @@ begin
   exit( 0 );
 end;
 
+function wapt_server_ping( const server_url: String ): Boolean;
+label
+  LBL_FAILED;
+var
+  s : String;
+  r : integer;
+  so: ISuperObject;
+  url : String;
+begin
+  url := url_concat(server_url, '/ping');
+  r := http_get( s, url );
+  if r <> 0 then
+    exit( false );
+
+  so := TSuperObject.ParseString(  @WideString(s)[1], false );
+  if not Assigned(so) then
+    goto LBL_FAILED;
+
+  so := so.O['result'];
+  if not Assigned(so) then
+    goto LBL_FAILED;
+
+  so := so.O['version'];
+  if not Assigned(so) then
+    goto LBL_FAILED;
+
+  exit( true );
+
+LBL_FAILED:
+  exit(false);
+end;
+
+
 
 
 
@@ -873,6 +910,40 @@ begin
   response_code := http.ResponseCode;
   http.Free;
   exit(0);
+
+end;
+
+function http_get(var output: String; const url: String ): integer;
+var
+  http : TIdHTTP;
+  proto : String;
+  b_http : boolean;
+  b_https : boolean;
+begin
+
+  if not http_is_valid_url(url) then
+  begin
+    output := 'Invalid url';
+    exit( -1 );
+  end;
+
+  url_protocol( proto, url );
+  b_https:= proto = 'https';
+
+  http := http_create( b_https );
+
+
+  try
+    output := http.Get( url );
+    result := 0;
+  except on E : Exception do
+    begin
+      result := -1;
+      output := e.Message;
+    end;
+  end;
+
+  http_free( http );
 
 end;
 

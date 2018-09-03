@@ -555,29 +555,46 @@ end;
 procedure TVisWAPTConsolePostConf.validate_page_parameters( var bContinue: boolean);
 var
    url : String;
+   urls : array[0..2] of String;
+   i : integer;
 begin
   bContinue := false;
 
-  if 0 = Length(Trim(self.EdWAPTServerName.Text)) then
+  self.EdWAPTServerName.Text := Trim(self.EdWAPTServerName.Text);
+
+  //
+  if 0 = Length(self.EdWAPTServerName.Text) then
   begin
     self.show_validation_error( self.EdWAPTServerName, rs_wapt_sever_url_is_invalid );
     exit;
   end;
 
-  url := self.EdWAPTServerName.Text;
 
-  if (Pos('http', url) = 0) and (Pos('https', url) = 0) then
-    url := 'https://' + url;
+  urls[0] := self.EdWAPTServerName.Text;
+  urls[1] := 'http://' + self.EdWAPTServerName.Text;
+  urls[2] := 'https://' + self.EdWAPTServerName.Text;
 
+  url := '';
+  for i := 0 to 2 do
+  begin
+    if wapt_server_ping( urls[i] ) then
+    begin
+      url := urls[i];
+      break;
+    end;
+  end;
 
+  if length(url) = 0 then
+  begin
+    self.show_validation_error( self.EdWAPTServerName, rs_waptserver_not_found_or_down );
+    exit;
+  end;
 
   if not wizard_validate_waptserver_login( self, self.ed_wapt_server_password, url, 'admin', self.ed_wapt_server_password.Text ) then
     exit;
 
   self.EdWAPTServerName.Text := url;
   Application.ProcessMessages;
-
-
   bContinue := true;
 end;
 

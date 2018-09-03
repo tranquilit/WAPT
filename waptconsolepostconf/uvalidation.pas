@@ -19,6 +19,7 @@ function wizard_validate_key_password( w : TVisWAPTConsolePostConf; c : TControl
 function wizard_validate_no_innosetup_process_running(w: TVisWAPTConsolePostConf; c : TControl ): Boolean;
 function wizard_validate_waptserver_login(w: TVisWAPTConsolePostConf; c : TControl; const server_url: String; const login: String; const password: String ): boolean;
 function wizard_validate_waptserver_waptagent_is_not_present( w : TVisWAPTConsolePostConf; c : TControl; const server_url: String; var rc : integer ): Boolean;
+
 implementation
 
 uses
