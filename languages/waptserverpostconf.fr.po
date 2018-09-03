@@ -30,6 +30,10 @@ msgstr "Tester le nom DNS"
 msgid "Generate keypair"
 msgstr "Créer la paire de clés"
 
+#: tviswaptserverpostconf.actionfindprivatekey.caption
+msgid "Find private key"
+msgstr ""
+
 #: tviswaptserverpostconf.actmanual.caption
 msgid "Input URL manually"
 msgstr "Spécifier manuellement les URL"
@@ -117,14 +121,6 @@ msgstr ""
 msgid "ed_package_prefix"
 msgstr ""
 
-#: tviswaptserverpostconf.label1.caption
-msgid "WAPT server password :"
-msgstr "Mot de passe du serveur WAPT :"
-
-#: tviswaptserverpostconf.label2.caption
-msgid "Confirm password :"
-msgstr "Confirmer le mot de passe :"
-
 #: tviswaptserverpostconf.lbl_ed_create_new_key_directory.caption
 msgctxt "tviswaptserverpostconf.lbl_ed_create_new_key_directory.caption"
 msgid "Secret directory :"
@@ -147,7 +143,7 @@ msgstr "Confirmation du mot de passe :"
 
 #: tviswaptserverpostconf.lbl_ed_existing_key_cert_filename.caption
 msgid "Certificat filename :"
-msgstr "Certificat"
+msgstr "Certificat :"
 
 #: tviswaptserverpostconf.lbl_ed_existing_key_key_filename.caption
 msgid "Key filename :"
@@ -161,6 +157,18 @@ msgstr "Mot de passe :"
 #: tviswaptserverpostconf.lbl_ed_package_prefix.caption
 msgid "Package prefix :"
 msgstr "Prefix de package :"
+
+#: tviswaptserverpostconf.lbl_wapt_server_password_1.caption
+#, fuzzy
+msgctxt "tviswaptserverpostconf.lbl_wapt_server_password_1.caption"
+msgid "WAPT server password :"
+msgstr "Mot de passe du serveur WAPT :"
+
+#: tviswaptserverpostconf.lbl_wapt_server_password_2.caption
+#, fuzzy
+msgctxt "tviswaptserverpostconf.lbl_wapt_server_password_2.caption"
+msgid "Confirm password :"
+msgstr "Confirmer le mot de passe :"
 
 #: tviswaptserverpostconf.pgbuildagent.caption
 msgid "Agent"
@@ -194,6 +202,14 @@ msgstr "Mot de passe"
 #: tviswaptserverpostconf.pgstartservices.caption
 msgid "Start"
 msgstr "Démarrer"
+
+#: tviswaptserverpostconf.pg_package_key_page_existing_key.caption
+msgid "pg_package_key_page_existing_key"
+msgstr ""
+
+#: tviswaptserverpostconf.pg_package_key_page_new_key.caption
+msgid "pg_package_key_page_new_key"
+msgstr ""
 
 #: tviswaptserverpostconf.p_center.caption
 msgid "p_center"

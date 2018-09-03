@@ -6,6 +6,11 @@ msgctxt "tviswaptconsolepostconf.actcancel.caption"
 msgid "Cancel"
 msgstr "Annuler"
 
+#: tviswaptconsolepostconf.actcheckwapthostname.caption
+msgctxt "tviswaptconsolepostconf.actcheckwapthostname.caption"
+msgid "Check"
+msgstr ""
+
 #: tviswaptconsolepostconf.actnext.caption
 msgctxt "tviswaptconsolepostconf.actnext.caption"
 msgid "Next"
@@ -14,6 +19,10 @@ msgstr "Suivant"
 #: tviswaptconsolepostconf.actprevious.caption
 msgid "Previous"
 msgstr "Précédent"
+
+#: tviswaptconsolepostconf.btn_find_private_key.caption
+msgid "Find private key"
+msgstr "Trouver le clef privée"
 
 #: tviswaptconsolepostconf.caption
 msgid "Configuration of WAPT console for Windows"
@@ -28,6 +37,11 @@ msgctxt "tviswaptconsolepostconf.cb_create_new_key_show_password.caption"
 msgid "Show password"
 msgstr "Afficher le mot de passe"
 
+#: tviswaptconsolepostconf.cb_manual_wapt_server.caption
+msgctxt "tviswaptconsolepostconf.cb_manual_wapt_server.caption"
+msgid "Manual overrride"
+msgstr "Spécifié manuellement"
+
 #: tviswaptconsolepostconf.cb_use_existing_key_show_password.caption
 msgctxt "tviswaptconsolepostconf.cb_use_existing_key_show_password.caption"
 msgid "Show password"
@@ -38,7 +52,12 @@ msgctxt "tviswaptconsolepostconf.cb_wapt_server_show_password.caption"
 msgid "Show password"
 msgstr "Afficher le mot de passe"
 
-#: tviswaptconsolepostconf.edwaptservername.hint
+#: tviswaptconsolepostconf.ed_package_prefix.text
+msgid "ed_package_prefix"
+msgstr ""
+
+#: tviswaptconsolepostconf.ed_wapt_server_hostname.hint
+msgctxt "tviswaptconsolepostconf.ed_wapt_server_hostname.hint"
 msgid ""
 "WAPT clients make requests to the server. In order to connect to the WAPT server,\n"
 "it is advisable that a DNS name be used, as long as it has been correctly\n"
@@ -56,18 +75,6 @@ msgstr ""
 "( Enregistement de type CNAME) pointant vers srvwapt.\n"
 "Au cas où votre serveur DNS ne serait pas un tiers de confiances, ou si vous configurer\n"
 "un environnement de test, vous pouvez utiliser l'adresse IP du serveur.\n"
-
-#: tviswaptconsolepostconf.edwaptservername.text
-msgid "srvwapt.mydomain.lan"
-msgstr ""
-
-#: tviswaptconsolepostconf.ed_package_prefix.text
-msgid "ed_package_prefix"
-msgstr ""
-
-#: tviswaptconsolepostconf.ed_wapt_server_password.text
-msgid "ed_wapt_server_password"
-msgstr ""
 
 #: tviswaptconsolepostconf.lbl_ed_create_new_key_directory.caption
 msgid "Secret directory :"
@@ -103,13 +110,22 @@ msgstr "Mot de passe :"
 msgid "Package prefix :"
 msgstr "Prefix de package :"
 
-#: tviswaptconsolepostconf.lbl_wapt_server_password.caption
-msgid "Wapt server password :"
-msgstr "Mot de passe du serveur Wapt :"
+#: tviswaptconsolepostconf.lbl_manual_repo_url.caption
+msgid "Repository URL :"
+msgstr "Url du dépôt :"
 
-#: tviswaptconsolepostconf.llb_wapt_server.caption
-msgid "Wapt server url :"
-msgstr "Url du serveur Wapt :"
+#: tviswaptconsolepostconf.lbl_manual_wapt_server_url.caption
+msgid "Server URL :"
+msgstr "Url du serveur :"
+
+#: tviswaptconsolepostconf.lbl_wapt_server_hostname.caption
+msgctxt "tviswaptconsolepostconf.lbl_wapt_server_hostname.caption"
+msgid "WAPT server hostname :"
+msgstr "Nom d'hôte du server WAPT :"
+
+#: tviswaptconsolepostconf.lbl_wapt_server_password.caption
+msgid "WAPT server password :"
+msgstr "Mot de passe du serveur WAPT :"
 
 #: tviswaptconsolepostconf.panel15.caption
 msgid "Panel15"
@@ -127,6 +143,14 @@ msgstr ""
 msgid "Package key"
 msgstr "Clef de package"
 
+#: tviswaptconsolepostconf.pgkey_ts_create_new_key.caption
+msgid "pgkey_ts_create_new_key"
+msgstr ""
+
+#: tviswaptconsolepostconf.pgkey_ts_use_existing_key.caption
+msgid "pgkey_ts_use_existing_key"
+msgstr ""
+
 #: tviswaptconsolepostconf.pgpackage.caption
 msgid "Package prefix"
 msgstr "Prefix de package"
@@ -141,7 +165,7 @@ msgstr ""
 
 #: tviswaptconsolepostconf.rb_createkey.caption
 msgid "Create a new key"
-msgstr "Utiliser une nouvelle clef"
+msgstr "Créer une nouvelle clef"
 
 #: tviswaptconsolepostconf.rb_usekey.caption
 msgid "Use existing key"
@@ -172,10 +196,8 @@ msgid "Compilation Failed"
 msgstr "La compilation a échouée"
 
 #: waptconsolepostconfres.rs_confirm
-#, fuzzy
-msgctxt "waptconsolepostconfres.rs_confirm"
 msgid "Confirm"
-msgstr "Confirmer"
+msgstr ""
 
 #: waptconsolepostconfres.rs_confirm_cancel_post_config
 msgid "Are you sure you want to abort wapt console post configuration ?"
@@ -262,18 +284,12 @@ msgid "Wapt server not found or down"
 msgstr "Le serveur Wapt n'a pas été trouvé"
 
 #: waptconsolepostconfres.rs_wapt_agent_has_been_found_on_server_confirm_create_package_key
-#, fuzzy
-#| msgid ""
-#| "Wapt agent has been found on the server\n"
-#| "\n"
-#| "Are you sure you want to recreate a new package key ?\n"
 msgid ""
 "Wapt agent has been found on the server\n"
 "Are you sure you want to recreate a new package key ?\n"
 msgstr ""
 "L'agent Wapt a été trouvé sur le serveur\n"
-"\n"
-"Êtes vous sûr de vouloir recréer une nouvelle clef de package ?\n"
+"Êtes-vous certain de vouloir recréer une nouvelle clef de package ?"
 
 #: waptconsolepostconfres.rs_wapt_agent_has_been_found_on_server_skip_build_agent
 msgid ""

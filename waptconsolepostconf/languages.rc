@@ -314,7 +314,7 @@ STRINGTABLE
             <meta http-equiv=""Content-Type"" content=""text/html; charset=ISO-8859-1"">\
             </head>\
             <body>\
-            Well done, your WAPT server is now operational..<br>\
+            Well done, your WAPT console is now operational..<br>\
             </body>\
             </html>"
             
@@ -325,7 +325,7 @@ STRINGTABLE
             <meta http-equiv=""Content-Type"" content=""text/html; charset=ISO-8859-1"">\
             </head>\
             <body>\
-            Félicitations, votre serveur WAPT est désormais opérationnel.<br>\
+            Félicitations, votre console WAPT est désormais opérationnelle.<br>\
            </body>\
             </html>"	
 
@@ -334,7 +334,7 @@ STRINGTABLE
             <meta http-equiv=""Content-Type"" content=""text/html; charset=ISO-8859-1"">\
             </head>\
             <body>\
-            Fertig, Ihr WAPT Server ist jetzt betriebsbereit.<br>\
+            Fertig, Ihr WAPT konsole ist jetzt betriebsbereit.<br>\
            </body>\
             </html>"
 

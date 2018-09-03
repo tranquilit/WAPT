@@ -88,7 +88,9 @@
       <Unit5>
         <Filename Value="..\waptconsole\dmwaptpython.pas"/>
         <IsPartOfProject Value="True"/>
+        <ComponentName Value="DMPython"/>
         <HasResources Value="True"/>
+        <ResourceBaseClass Value="DataModule"/>
       </Unit5>
       <Unit6>
         <Filename Value="udefault.pas"/>
@@ -152,4 +154,20 @@
       <CustomOptions Value="-dUseCThreads -dENTERPRISE"/>
     </Other>
   </CompilerOptions>
+  <Debugging>
+    <Exceptions Count="4">
+      <Item1>
+        <Name Value="EIdHTTPProtocolException"/>
+      </Item1>
+      <Item2>
+        <Name Value="EIdSocketError"/>
+      </Item2>
+      <Item3>
+        <Name Value="EIdNotASocket"/>
+      </Item3>
+      <Item4>
+        <Name Value="EIdConnectTimeout"/>
+      </Item4>
+    </Exceptions>
+  </Debugging>
 </CONFIG>

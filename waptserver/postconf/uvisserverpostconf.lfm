@@ -1,24 +1,23 @@
 object VisWAPTServerPostConf: TVisWAPTServerPostConf
-  Left = 2014
-  Height = 392
-  Top = 353
-  Width = 1076
+  Left = 2103
+  Height = 345
+  Top = 157
+  Width = 937
   Caption = 'Configuration of WAPT server for Windows'
-  ClientHeight = 392
-  ClientWidth = 1076
+  ClientHeight = 345
+  ClientWidth = 937
   Constraints.MinHeight = 345
   Constraints.MinWidth = 680
   Menu = MainMenu1
   OnCreate = FormCreate
-  OnShow = FormShow
   Position = poDefaultPosOnly
   ShowHint = True
   LCLVersion = '1.8.4.0'
   object p_bottom: TPanel
     Left = 0
     Height = 30
-    Top = 362
-    Width = 1076
+    Top = 315
+    Width = 937
     Align = alBottom
     BevelOuter = bvNone
     ChildSizing.LeftRightSpacing = 6
@@ -27,10 +26,10 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
     ChildSizing.VerticalSpacing = 3
     ChildSizing.Layout = cclLeftToRightThenTopToBottom
     ClientHeight = 30
-    ClientWidth = 1076
+    ClientWidth = 937
     TabOrder = 0
     object ButCancel: TBitBtn
-      Left = 988
+      Left = 849
       Height = 24
       Top = 3
       Width = 82
@@ -80,13 +79,13 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
       Left = 6
       Height = 24
       Top = 3
-      Width = 803
+      Width = 664
       Align = alClient
       TabOrder = 3
       Visible = False
     end
     object ButPrevious: TBitBtn
-      Left = 815
+      Left = 676
       Height = 24
       Top = 3
       Width = 91
@@ -132,7 +131,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
       TabOrder = 1
     end
     object ButNext: TBitBtn
-      Left = 912
+      Left = 773
       Height = 24
       Top = 3
       Width = 70
@@ -179,20 +178,21 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
     end
   end
   object p_right: TPanel
-    Left = 758
-    Height = 362
+    Left = 619
+    Height = 315
     Top = 0
     Width = 318
     Align = alRight
+    BevelOuter = bvNone
     Caption = 'p_right'
-    ClientHeight = 362
+    ClientHeight = 315
     ClientWidth = 318
     TabOrder = 1
     object html_panel: TIpHtmlPanel
-      Left = 1
-      Height = 360
-      Top = 1
-      Width = 316
+      Left = 0
+      Height = 315
+      Top = 0
+      Width = 318
       Align = alClient
       FixedTypeface = 'Courier New'
       DefaultTypeFace = 'default'
@@ -211,8 +211,8 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
     end
   end
   object Splitter1: TSplitter
-    Left = 753
-    Height = 362
+    Left = 614
+    Height = 315
     Top = 0
     Width = 5
     Align = alRight
@@ -220,187 +220,205 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
   end
   object p_center: TPanel
     Left = 0
-    Height = 362
+    Height = 315
     Top = 0
-    Width = 753
+    Width = 614
     Align = alClient
     BevelOuter = bvNone
     Caption = 'p_center'
-    ClientHeight = 362
-    ClientWidth = 753
+    ClientHeight = 315
+    ClientWidth = 614
     TabOrder = 3
     object sb_center: TScrollBox
       Left = 0
-      Height = 362
+      Height = 315
       Top = 0
-      Width = 753
-      HorzScrollBar.Page = 83
-      VertScrollBar.Page = 221
+      Width = 614
+      HorzScrollBar.Page = 482
+      VertScrollBar.Page = 253
       Align = alClient
       BorderStyle = bsNone
-      ClientHeight = 362
-      ClientWidth = 753
+      ClientHeight = 315
+      ClientWidth = 614
       TabOrder = 0
       object PagesControl: TPageControl
         Left = 0
-        Height = 362
+        Height = 315
         Top = 0
-        Width = 753
-        ActivePage = pgPassword
+        Width = 614
+        ActivePage = pgPackageKey
         Align = alClient
         MultiLine = True
-        TabIndex = 1
+        TabIndex = 5
         TabOrder = 0
-        OnChange = PagesControlChange
         Options = [nboMultiLine]
         object pgParameters: TTabSheet
           Caption = 'Parameters'
           ChildSizing.Layout = cclLeftToRightThenTopToBottom
-          ClientHeight = 334
-          ClientWidth = 745
-          object Panel1: TPanel
+          ClientHeight = 287
+          ClientWidth = 606
+          OnShow = on_page_show
+          object EdWAPTServerName: TEdit
+            AnchorSideTop.Control = btn_check_dns_name
+            AnchorSideTop.Side = asrCenter
+            AnchorSideRight.Control = btn_check_dns_name
+            Left = 29
+            Height = 23
+            Hint = 'WAPT clients make requests to the server. In order to connect to the WAPT server,'#13#10'it is advisable that a DNS name be used, as long as it has been correctly'#13#10'configured in your network''s DNS environment. We suggest naming your WAPT server'#13#10'''srvwapt.mydomain.local'' (A record type), then binding an alias'#13#10'(CNAME record type, e.g. ''wapt.mondomain.local'') to srvwapt.'#13#10'In case you don''t trust your DNS, or you are just setting up a testing environment,'#13#10'you can fall back to the server IP address. For further information :'#13#10'''http://dev.tranquil.it/scenari/guide_admin/co/wapt_server_configuration_champDNS.html'''
+            Top = 132
+            Width = 200
+            Anchors = [akTop, akRight]
+            BorderSpacing.Right = 5
+            Constraints.MinWidth = 200
+            OnKeyPress = on_key_press
+            TabOrder = 0
+            Text = 'srvwapt.mydomain.lan'
+          end
+          object btn_check_dns_name: TBitBtn
             AnchorSideLeft.Control = pgParameters
             AnchorSideLeft.Side = asrCenter
             AnchorSideTop.Control = pgParameters
             AnchorSideTop.Side = asrCenter
-            Left = 138
+            Left = 234
             Height = 26
-            Top = 154
-            Width = 468
+            Top = 130
+            Width = 138
+            Action = ActCheckDNS
             AutoSize = True
-            BevelOuter = bvNone
-            ChildSizing.HorizontalSpacing = 5
-            ChildSizing.VerticalSpacing = 5
-            ChildSizing.Layout = cclLeftToRightThenTopToBottom
-            ChildSizing.ControlsPerLine = 3
-            ClientHeight = 26
-            ClientWidth = 468
-            TabOrder = 0
-            object EdWAPTServerName: TEdit
-              Left = 0
-              Height = 26
-              Hint = 'WAPT clients make requests to the server. In order to connect to the WAPT server,'#13#10'it is advisable that a DNS name be used, as long as it has been correctly'#13#10'configured in your network''s DNS environment. We suggest naming your WAPT server'#13#10'''srvwapt.mydomain.local'' (A record type), then binding an alias'#13#10'(CNAME record type, e.g. ''wapt.mondomain.local'') to srvwapt.'#13#10'In case you don''t trust your DNS, or you are just setting up a testing environment,'#13#10'you can fall back to the server IP address. For further information :'#13#10'''http://dev.tranquil.it/scenari/guide_admin/co/wapt_server_configuration_champDNS.html'''
-              Top = 0
-              Width = 200
-              Constraints.MinWidth = 200
-              TabOrder = 0
-              Text = 'srvwapt.mydomain.lan'
-            end
-            object btn_check_dns_name: TBitBtn
-              Left = 205
-              Height = 26
-              Top = 0
-              Width = 138
-              Action = ActCheckDNS
-              AutoSize = True
-              Glyph.Data = {
-                36040000424D3604000000000000360000002800000010000000100000000100
-                2000000000000004000064000000640000000000000000000000FFFFFF00FFFF
-                FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00348DC985459FD5E93A8DCBE02567
-                A556FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-                FF00FFFFFF00FFFFFF007E7E7E46797979D251A2CBFF86E9F9FF4DD9F5FF3C90
-                C7FF4C6278FF606060D7FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-                FF008F8F8F4B8A8A8ACCA3A3A3FFC6C5C4FF63B3DEFFA1E6F8FF38D2F2FF47D6
-                F6FF4297CEFF4B6178FF1A53B80D1D5EC00DFFFFFF00FFFFFF00FFFFFF009B9B
-                9BC9B3B3B3FFD4D4D4FFE1DFDFFFC5BFBDFF8AABC1FF52A2D4FF99E2F6FF53DC
-                F5FF46D9F6FF398EC8FF3583CFE83684D2E8205EA753FFFFFF00FFFFFF00A2A2
-                A2FFF0F0F0FFE0E0E0FFD4D2D2FFBEB6B5FFBCB5B4FF9EAEBAFF5EACD7FF5EB7
-                DEFF5ED9F2FF4EDBF6FF5BDDF7FF55D8F5FF2E80CDF72058A259FFFFFF00A8A8
-                A8FFEAEAEAFFDDDDDDFFD5D4D3FFC0B9B7FFBEB7B6FFBDB6B4FFBBB4B3FF74A5
-                C7FF89DDF4FF6AE0F6FF73E2F7FF5FDFF6FF55DAF6FF387FCDF3FFFFFF00AFAF
-                AFFFEBEBEBFFDDDDDDFFD7D5D5FFC1BBB9FFC0B9B8FFBEB8B6FF3BA142FF3A9D
-                A9FFA9EEF9FF7EE6F8FF9AE8F8FF7ED1F0FF80E2F6FF3F98D9F0FFFFFF00B5B5
-                B5FFECECECFFDEDEDEFFD9D8D8FFC3BDBBFFC2BBBAFFC1BAB9FFA0C8A4FF42A1
-                8AFF5EC1EAFFA3F0FBFF80D4F0FF7EC7ECFF50A3DDF5216EB659FFFFFF00BBBB
-                BBFFECECECFFDFDFDFFFDAD9D9FFC6BFBEFFC4BEBCFFC3BCBBFFC1BBB9FFC0B9
-                B8FF8BB6D5FF6FC9ECFFC9F3FBFF57BAE7ED2585CD48FFFFFF00FFFFFF00C0C0
-                C0FFECECECFFE0E0E0FFDDDCDCFFC7C1C0FF929191FF8F8F8FFF8D8D8DFF8A8A
-                8AFFD8D5D4FF5B93B5FF46ABE1CB2B96DA63FFFFFF00FFFFFF00FFFFFF00C6C6
-                C6FFEFEFEFFFE1E1E1FFDDDDDDFFC8C3C2FFC8C2C1FFC6C1BFFFC5BFBEFFC3BD
-                BBFFDAD6D5FF919191FFFFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00CBCB
-                CBFFE9E9E9FFE9E9E9FFE2E1E1FFCBC6C4FF989797FF969595FF949393FF9291
-                91FFDBD7D6FF989898FFFFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00CFCF
-                CF48CBCBCBE4DFDFDFFFEAEAEAFFCFCAC9FFCBC6C5FFCAC4C3FFC8C3C1FFC7C1
-                C1FFDCD9D8FF9E9E9EFFFFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-                FF00D0D0D00FCCCCCCABDCDCDCFFE6E3E3FFE1DEDCFFDFDCDCFFDFDCDBFFDEDB
-                DBFFEEECECFFA5A5A5FFFFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-                FF00FFFFFF00FFFFFF00CDCDCD9FC9C9C9FBC4C4C4FFC0C0C0FFBBBBBBFFB6B6
-                B6FFB0B0B0FFABABABA7FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-                FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-                FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00
-              }
-              TabOrder = 1
-            end
-            object EdWaptServerIP: TEdit
-              Left = 348
-              Height = 26
-              Top = 0
-              Width = 120
-              Constraints.MinWidth = 120
-              TabOrder = 2
-            end
+            Glyph.Data = {
+              36040000424D3604000000000000360000002800000010000000100000000100
+              2000000000000004000064000000640000000000000000000000FFFFFF00FFFF
+              FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00348DC985459FD5E93A8DCBE02567
+              A556FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+              FF00FFFFFF00FFFFFF007E7E7E46797979D251A2CBFF86E9F9FF4DD9F5FF3C90
+              C7FF4C6278FF606060D7FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+              FF008F8F8F4B8A8A8ACCA3A3A3FFC6C5C4FF63B3DEFFA1E6F8FF38D2F2FF47D6
+              F6FF4297CEFF4B6178FF1A53B80D1D5EC00DFFFFFF00FFFFFF00FFFFFF009B9B
+              9BC9B3B3B3FFD4D4D4FFE1DFDFFFC5BFBDFF8AABC1FF52A2D4FF99E2F6FF53DC
+              F5FF46D9F6FF398EC8FF3583CFE83684D2E8205EA753FFFFFF00FFFFFF00A2A2
+              A2FFF0F0F0FFE0E0E0FFD4D2D2FFBEB6B5FFBCB5B4FF9EAEBAFF5EACD7FF5EB7
+              DEFF5ED9F2FF4EDBF6FF5BDDF7FF55D8F5FF2E80CDF72058A259FFFFFF00A8A8
+              A8FFEAEAEAFFDDDDDDFFD5D4D3FFC0B9B7FFBEB7B6FFBDB6B4FFBBB4B3FF74A5
+              C7FF89DDF4FF6AE0F6FF73E2F7FF5FDFF6FF55DAF6FF387FCDF3FFFFFF00AFAF
+              AFFFEBEBEBFFDDDDDDFFD7D5D5FFC1BBB9FFC0B9B8FFBEB8B6FF3BA142FF3A9D
+              A9FFA9EEF9FF7EE6F8FF9AE8F8FF7ED1F0FF80E2F6FF3F98D9F0FFFFFF00B5B5
+              B5FFECECECFFDEDEDEFFD9D8D8FFC3BDBBFFC2BBBAFFC1BAB9FFA0C8A4FF42A1
+              8AFF5EC1EAFFA3F0FBFF80D4F0FF7EC7ECFF50A3DDF5216EB659FFFFFF00BBBB
+              BBFFECECECFFDFDFDFFFDAD9D9FFC6BFBEFFC4BEBCFFC3BCBBFFC1BBB9FFC0B9
+              B8FF8BB6D5FF6FC9ECFFC9F3FBFF57BAE7ED2585CD48FFFFFF00FFFFFF00C0C0
+              C0FFECECECFFE0E0E0FFDDDCDCFFC7C1C0FF929191FF8F8F8FFF8D8D8DFF8A8A
+              8AFFD8D5D4FF5B93B5FF46ABE1CB2B96DA63FFFFFF00FFFFFF00FFFFFF00C6C6
+              C6FFEFEFEFFFE1E1E1FFDDDDDDFFC8C3C2FFC8C2C1FFC6C1BFFFC5BFBEFFC3BD
+              BBFFDAD6D5FF919191FFFFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00CBCB
+              CBFFE9E9E9FFE9E9E9FFE2E1E1FFCBC6C4FF989797FF969595FF949393FF9291
+              91FFDBD7D6FF989898FFFFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00CFCF
+              CF48CBCBCBE4DFDFDFFFEAEAEAFFCFCAC9FFCBC6C5FFCAC4C3FFC8C3C1FFC7C1
+              C1FFDCD9D8FF9E9E9EFFFFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+              FF00D0D0D00FCCCCCCABDCDCDCFFE6E3E3FFE1DEDCFFDFDCDCFFDFDCDBFFDEDB
+              DBFFEEECECFFA5A5A5FFFFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+              FF00FFFFFF00FFFFFF00CDCDCD9FC9C9C9FBC4C4C4FFC0C0C0FFBBBBBBFFB6B6
+              B6FFB0B0B0FFABABABA7FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+              FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+              FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00
+            }
+            TabOrder = 1
+          end
+          object EdWaptServerIP: TEdit
+            AnchorSideLeft.Control = btn_check_dns_name
+            AnchorSideLeft.Side = asrBottom
+            AnchorSideTop.Control = btn_check_dns_name
+            AnchorSideTop.Side = asrCenter
+            Left = 377
+            Height = 23
+            Top = 132
+            Width = 200
+            BorderSpacing.Left = 5
+            Constraints.MinWidth = 200
+            OnKeyPress = on_key_press
+            TabOrder = 2
           end
         end
         object pgPassword: TTabSheet
           Caption = 'Password'
-          ClientHeight = 334
-          ClientWidth = 745
-          object Panel4: TPanel
+          ClientHeight = 287
+          ClientWidth = 606
+          OnShow = on_page_show
+          object Panel1: TPanel
             AnchorSideLeft.Control = pgPassword
             AnchorSideLeft.Side = asrCenter
             AnchorSideTop.Control = pgPassword
             AnchorSideTop.Side = asrCenter
-            Left = 247
+            Left = 163
             Height = 51
-            Top = 142
-            Width = 251
+            Top = 118
+            Width = 281
             AutoSize = True
             BevelOuter = bvNone
-            ChildSizing.HorizontalSpacing = 5
-            ChildSizing.VerticalSpacing = 5
-            ChildSizing.Layout = cclLeftToRightThenTopToBottom
-            ChildSizing.ControlsPerLine = 2
             ClientHeight = 51
-            ClientWidth = 251
+            ClientWidth = 281
             TabOrder = 0
-            object Label1: TLabel
+            object lbl_wapt_server_password_1: TLabel
+              AnchorSideTop.Control = EdPwd1
+              AnchorSideTop.Side = asrCenter
+              AnchorSideRight.Control = EdPwd1
               Left = 0
-              Height = 23
-              Top = 0
+              Height = 15
+              Top = 4
               Width = 126
               Alignment = taRightJustify
+              Anchors = [akTop, akRight]
+              BorderSpacing.Right = 5
               Caption = 'WAPT server password :'
               Layout = tlCenter
               ParentColor = False
             end
             object EdPwd1: TEdit
+              AnchorSideLeft.Control = Panel1
+              AnchorSideLeft.Side = asrBottom
+              AnchorSideTop.Side = asrCenter
+              AnchorSideRight.Control = Panel1
+              AnchorSideRight.Side = asrBottom
               Left = 131
               Height = 23
               Hint = 'This is the password used to connect to the WAPT server via the WAPT console.'#13#10'For further information :'#13#10'http://dev.tranquil.it/scenari/guide_admin/co/generation_certificat_wapt.html'
               Top = 0
-              Width = 120
-              Constraints.MinWidth = 120
+              Width = 150
+              Anchors = [akTop, akRight]
+              Constraints.MinWidth = 150
               EchoMode = emPassword
+              OnKeyPress = on_key_press
               PasswordChar = '*'
               TabOrder = 0
             end
-            object Label2: TLabel
-              Left = 0
-              Height = 23
-              Top = 28
-              Width = 126
+            object lbl_wapt_server_password_2: TLabel
+              AnchorSideTop.Control = EdPwd2
+              AnchorSideTop.Side = asrCenter
+              AnchorSideRight.Control = EdPwd2
+              Left = 23
+              Height = 15
+              Top = 32
+              Width = 103
               Alignment = taRightJustify
+              Anchors = [akTop, akRight]
+              BorderSpacing.Right = 5
               Caption = 'Confirm password :'
               Layout = tlCenter
               ParentColor = False
             end
             object EdPwd2: TEdit
+              AnchorSideLeft.Control = EdPwd1
+              AnchorSideTop.Control = EdPwd1
+              AnchorSideTop.Side = asrBottom
+              AnchorSideRight.Control = EdPwd1
+              AnchorSideRight.Side = asrBottom
               Left = 131
               Height = 23
               Top = 28
-              Width = 120
-              Constraints.MinWidth = 120
+              Width = 150
+              Anchors = [akTop, akLeft, akRight]
+              BorderSpacing.Top = 5
               EchoMode = emPassword
+              OnKeyPress = on_key_press
               PasswordChar = '*'
               TabOrder = 1
             end
@@ -408,120 +426,132 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         end
         object pgStartServices: TTabSheet
           Caption = 'Start'
-          ClientHeight = 334
-          ClientWidth = 745
-          object Panel3: TPanel
+          ClientHeight = 287
+          ClientWidth = 606
+          OnShow = on_page_show
+          object btn_start_waptserver: TBitBtn
             AnchorSideLeft.Control = pgStartServices
             AnchorSideLeft.Side = asrCenter
             AnchorSideTop.Control = pgStartServices
             AnchorSideTop.Side = asrCenter
-            Left = 169
-            Height = 55
-            Top = 140
-            Width = 407
+            Left = 127
+            Height = 26
+            Top = 130
+            Width = 352
+            Action = actWriteConfStartServe
             AutoSize = True
-            BevelOuter = bvNone
-            ClientHeight = 55
-            ClientWidth = 407
+            Glyph.Data = {
+              36040000424D3604000000000000360000002800000010000000100000000100
+              2000000000000004000064000000640000000000000000000000FFFFFF00FFFF
+              FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+              FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF000000
+              00010694039300820015FFFFFF0000000001068E039300820015FFFFFF00FFFF
+              FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF000050
+              00092B9428FF1C9618F20486003D005000092BA428FF1E9C1AF20480003AFFFF
+              FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF000050
+              0009188B16FF068206FE029200FA0285007718AA16FF07B807FE1FA31EFB0480
+              026FFFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF000050
+              0009158D13FF008700FF009E00FF02A500FC19B617FF00D000FF01BA01FF1BA2
+              19FC0C8209A700800001FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF000050
+              0009118B0FFF008900FF00A000FF00B600FF07CA07FF00CC00FF00BB00FF00A5
+              00FF119410FB0F7F0DD400710014FFFFFF00FFFFFF00FFFFFF00FFFFFF000050
+              00090D870CFF008500FF009900FF00AB00FF00B700FF00B800FF00AE00FF009D
+              00FF008A00FF097B09FB10760EED05610036FFFFFF00FFFFFF00FFFFFF000050
+              00090A8009FF007B00FF008C00FF009A00FF00A300FF00A300FF009D00FF0090
+              00FF018001FF016F01FF035C03FE0E650DF8035E0055FFFFFF00FFFFFF000050
+              0009137D13FF117911FF158915FF189618FF1B9D1BFF1FA11FFF25A125FF2B9C
+              2BFF309530FF348B34FF3A833AFE1F6E1FF900590052FFFFFF00FFFFFF000050
+              00091B7B1BFF277F27FF2B8D2BFF309730FF349E34FF3AA23AFF3EA33EFF43A0
+              43FF479C47FF469246FC176916EB00520032FFFFFF00FFFFFF00FFFFFF000050
+              0009237723FF408840FF449444FF499C49FF4EA34EFF52A752FF57A957FF5BA9
+              5BFF509950FC0F5F0FCB00440012FFFFFF00FFFFFF00FFFFFF00FFFFFF000050
+              00092D752DFF589658FF5D9F5DFF499049FC398539FF6BB26BFF70B570FF5294
+              52FC0854089A00800001FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF000050
+              0009397539FF70A670FE3D7C3DF9004F0068408240FF83C183FE458345F9004E
+              0060FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF000050
+              00093C733CFF2C682CEE004C003400500009458145FF337133ED00480032FFFF
+              FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF000000
+              0001004E008700440012FFFFFF0000000001004E008700420012FFFFFF00FFFF
+              FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+              FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+              FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00
+            }
             TabOrder = 0
-            object btn_start_waptserver: TBitBtn
-              Left = 1
-              Height = 26
-              Top = 0
-              Width = 352
-              Action = actWriteConfStartServe
-              AutoSize = True
-              Glyph.Data = {
-                36040000424D3604000000000000360000002800000010000000100000000100
-                2000000000000004000064000000640000000000000000000000FFFFFF00FFFF
-                FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-                FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF000000
-                00010694039300820015FFFFFF0000000001068E039300820015FFFFFF00FFFF
-                FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF000050
-                00092B9428FF1C9618F20486003D005000092BA428FF1E9C1AF20480003AFFFF
-                FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF000050
-                0009188B16FF068206FE029200FA0285007718AA16FF07B807FE1FA31EFB0480
-                026FFFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF000050
-                0009158D13FF008700FF009E00FF02A500FC19B617FF00D000FF01BA01FF1BA2
-                19FC0C8209A700800001FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF000050
-                0009118B0FFF008900FF00A000FF00B600FF07CA07FF00CC00FF00BB00FF00A5
-                00FF119410FB0F7F0DD400710014FFFFFF00FFFFFF00FFFFFF00FFFFFF000050
-                00090D870CFF008500FF009900FF00AB00FF00B700FF00B800FF00AE00FF009D
-                00FF008A00FF097B09FB10760EED05610036FFFFFF00FFFFFF00FFFFFF000050
-                00090A8009FF007B00FF008C00FF009A00FF00A300FF00A300FF009D00FF0090
-                00FF018001FF016F01FF035C03FE0E650DF8035E0055FFFFFF00FFFFFF000050
-                0009137D13FF117911FF158915FF189618FF1B9D1BFF1FA11FFF25A125FF2B9C
-                2BFF309530FF348B34FF3A833AFE1F6E1FF900590052FFFFFF00FFFFFF000050
-                00091B7B1BFF277F27FF2B8D2BFF309730FF349E34FF3AA23AFF3EA33EFF43A0
-                43FF479C47FF469246FC176916EB00520032FFFFFF00FFFFFF00FFFFFF000050
-                0009237723FF408840FF449444FF499C49FF4EA34EFF52A752FF57A957FF5BA9
-                5BFF509950FC0F5F0FCB00440012FFFFFF00FFFFFF00FFFFFF00FFFFFF000050
-                00092D752DFF589658FF5D9F5DFF499049FC398539FF6BB26BFF70B570FF5294
-                52FC0854089A00800001FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF000050
-                0009397539FF70A670FE3D7C3DF9004F0068408240FF83C183FE458345F9004E
-                0060FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF000050
-                00093C733CFF2C682CEE004C003400500009458145FF337133ED00480032FFFF
-                FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF000000
-                0001004E008700440012FFFFFF0000000001004E008700420012FFFFFF00FFFF
-                FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-                FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-                FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00
-              }
-              TabOrder = 0
-            end
-            object CBOpenFirewall: TCheckBox
-              Left = 0
-              Height = 19
-              Top = 36
-              Width = 407
-              Caption = 'Open firewall ports 80 and 443 to allow access for packages and inventory'
-              Checked = True
-              State = cbChecked
-              TabOrder = 1
-            end
+          end
+          object CBOpenFirewall: TCheckBox
+            AnchorSideLeft.Control = btn_start_waptserver
+            AnchorSideTop.Control = btn_start_waptserver
+            AnchorSideTop.Side = asrBottom
+            Left = 127
+            Height = 19
+            Top = 161
+            Width = 407
+            BorderSpacing.Top = 5
+            Caption = 'Open firewall ports 80 and 443 to allow access for packages and inventory'
+            Checked = True
+            State = cbChecked
+            TabOrder = 1
           end
         end
         object pgConfigureConsoleOrFinish: TTabSheet
           Caption = 'Configure console or finish'
-          ClientHeight = 334
-          ClientWidth = 745
-          object Panel5: TPanel
+          ClientHeight = 287
+          ClientWidth = 606
+          OnShow = on_page_show
+          object Panel3: TPanel
             AnchorSideLeft.Control = pgConfigureConsoleOrFinish
-            AnchorSideLeft.Side = asrCenter
             AnchorSideTop.Control = pgConfigureConsoleOrFinish
             AnchorSideTop.Side = asrCenter
-            Left = 238
-            Height = 91
-            Top = 122
-            Width = 269
+            AnchorSideRight.Control = pgConfigureConsoleOrFinish
+            AnchorSideRight.Side = asrBottom
+            Left = 0
+            Height = 82
+            Top = 102
+            Width = 606
+            Anchors = [akTop, akLeft, akRight]
             AutoSize = True
             BevelOuter = bvNone
-            ClientHeight = 91
-            ClientWidth = 269
+            ClientHeight = 82
+            ClientWidth = 606
             TabOrder = 0
             object rb_configure_console_continue: TRadioButton
-              Left = 0
+              AnchorSideLeft.Control = Panel3
+              AnchorSideLeft.Side = asrCenter
+              AnchorSideTop.Control = Panel3
+              Left = 169
               Height = 19
-              Top = 0
+              Top = 5
               Width = 269
+              BorderSpacing.Top = 5
               Caption = 'Continue configuration by configuring console'
               OnChange = on_configure_console_radiobutton_change
+              OnKeyPress = on_key_press
               TabOrder = 0
             end
             object rb_configure_console_finish: TRadioButton
-              Left = 0
+              AnchorSideLeft.Control = rb_configure_console_continue
+              AnchorSideTop.Control = rb_configure_console_continue
+              AnchorSideTop.Side = asrBottom
+              Left = 169
               Height = 19
-              Top = 40
+              Top = 39
               Width = 51
+              BorderSpacing.Top = 15
               Caption = 'Finish'
               OnChange = on_configure_console_radiobutton_change
+              OnKeyPress = on_key_press
               TabOrder = 1
             end
             object cb_configure_console_launch_console_on_exit: TCheckBox
-              Left = 80
+              AnchorSideLeft.Control = rb_configure_console_finish
+              AnchorSideLeft.Side = asrBottom
+              AnchorSideTop.Control = rb_configure_console_finish
+              AnchorSideTop.Side = asrBottom
+              Left = 220
               Height = 19
-              Top = 72
+              Top = 63
               Width = 180
+              BorderSpacing.Top = 5
               Caption = 'Run WAPT console after setup'
               Checked = True
               State = cbChecked
@@ -531,327 +561,373 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         end
         object pgPackageName: TTabSheet
           Caption = 'Package name'
-          ClientHeight = 334
-          ClientWidth = 745
-          object Panel6: TPanel
+          ClientHeight = 287
+          ClientWidth = 606
+          OnShow = on_page_show
+          object lbl_ed_package_prefix: TLabel
+            AnchorSideLeft.Control = ed_package_prefix
+            AnchorSideTop.Control = ed_package_prefix
+            AnchorSideTop.Side = asrCenter
+            AnchorSideRight.Control = ed_package_prefix
+            Left = 176
+            Height = 15
+            Top = 136
+            Width = 82
+            Anchors = [akTop, akRight]
+            BorderSpacing.Right = 5
+            Caption = 'Package prefix :'
+            Layout = tlCenter
+            ParentColor = False
+          end
+          object ed_package_prefix: TEdit
             AnchorSideLeft.Control = pgPackageName
             AnchorSideLeft.Side = asrCenter
             AnchorSideTop.Control = pgPackageName
             AnchorSideTop.Side = asrCenter
-            Left = 291
+            Left = 263
             Height = 23
-            Top = 156
-            Width = 162
-            AutoSize = True
-            BevelOuter = bvNone
-            ChildSizing.Layout = cclLeftToRightThenTopToBottom
-            ChildSizing.ControlsPerLine = 2
-            ClientHeight = 23
-            ClientWidth = 162
+            Top = 132
+            Width = 80
+            OnKeyPress = on_key_press
             TabOrder = 0
-            object lbl_ed_package_prefix: TLabel
-              Left = 0
-              Height = 23
-              Top = 0
-              Width = 82
-              Caption = 'Package prefix :'
-              Layout = tlCenter
-              ParentColor = False
-            end
-            object ed_package_prefix: TEdit
-              Left = 82
-              Height = 23
-              Top = 0
-              Width = 80
-              TabOrder = 0
-              Text = 'ed_package_prefix'
-            end
+            Text = 'ed_package_prefix'
           end
         end
         object pgPackageKey: TTabSheet
           Caption = 'Package key'
-          ClientHeight = 334
-          ClientWidth = 745
-          object Panel7: TPanel
+          ClientHeight = 287
+          ClientWidth = 606
+          OnShow = on_page_show
+          object pg_package_key_page: TPageControl
             AnchorSideLeft.Control = pgPackageKey
-            AnchorSideLeft.Side = asrCenter
             AnchorSideTop.Control = pgPackageKey
             AnchorSideTop.Side = asrCenter
-            Left = 86
-            Height = 239
-            Top = 48
-            Width = 572
-            AutoSize = True
-            BevelOuter = bvNone
-            ChildSizing.HorizontalSpacing = 5
-            ChildSizing.VerticalSpacing = 5
-            ChildSizing.Layout = cclLeftToRightThenTopToBottom
-            ChildSizing.ControlsPerLine = 3
-            ClientHeight = 239
-            ClientWidth = 572
+            AnchorSideRight.Control = pgPackageKey
+            AnchorSideRight.Side = asrBottom
+            Left = 0
+            Height = 163
+            Top = 62
+            Width = 606
+            ActivePage = pg_package_key_page_existing_key
+            Anchors = [akTop, akLeft, akRight]
+            TabIndex = 1
             TabOrder = 0
-            object rb_CreateKey: TRadioButton
-              Left = 0
-              Height = 23
-              Top = 0
-              Width = 109
-              Caption = 'Create a new key'
-              OnChange = on_private_key_radiobutton_change
-              TabOrder = 1
+            object pg_package_key_page_new_key: TTabSheet
+              Caption = 'pg_package_key_page_new_key'
+              ClientHeight = 135
+              ClientWidth = 598
+              object lbl_ed_create_new_key_directory: TLabel
+                AnchorSideTop.Control = ed_create_new_key_private_directory
+                AnchorSideTop.Side = asrCenter
+                AnchorSideRight.Control = ed_create_new_key_private_directory
+                Left = 147
+                Height = 15
+                Top = 9
+                Width = 88
+                Alignment = taRightJustify
+                Anchors = [akTop, akRight]
+                BorderSpacing.Right = 5
+                Caption = 'Secret directory :'
+                Layout = tlCenter
+                ParentColor = False
+              end
+              object ed_create_new_key_private_directory: TDirectoryEdit
+                AnchorSideTop.Control = pg_package_key_page_new_key
+                AnchorSideRight.Control = pg_package_key_page_new_key
+                AnchorSideRight.Side = asrBottom
+                Left = 240
+                Height = 23
+                Top = 5
+                Width = 358
+                OnAcceptDirectory = on_accept_filename
+                ShowHidden = False
+                ButtonWidth = 23
+                NumGlyphs = 1
+                Anchors = [akTop, akRight]
+                BorderSpacing.Top = 5
+                MaxLength = 0
+                TabOrder = 0
+              end
+              object lbl_ed_create_new_key_key_name: TLabel
+                AnchorSideTop.Control = ed_create_new_key_key_name
+                AnchorSideTop.Side = asrCenter
+                AnchorSideRight.Control = ed_create_new_key_key_name
+                Left = 177
+                Height = 15
+                Top = 37
+                Width = 58
+                Alignment = taRightJustify
+                Anchors = [akTop, akRight]
+                BorderSpacing.Right = 5
+                Caption = 'Key name :'
+                Layout = tlCenter
+                ParentColor = False
+              end
+              object ed_create_new_key_key_name: TEdit
+                AnchorSideLeft.Control = ed_create_new_key_private_directory
+                AnchorSideTop.Control = ed_create_new_key_private_directory
+                AnchorSideTop.Side = asrBottom
+                Left = 240
+                Height = 23
+                Top = 33
+                Width = 100
+                BorderSpacing.Top = 5
+                Constraints.MaxWidth = 100
+                OnKeyPress = on_key_press
+                TabOrder = 1
+              end
+              object lbl_ed_create_new_key_password_1: TLabel
+                AnchorSideTop.Control = ed_create_new_key_password_1
+                AnchorSideTop.Side = asrCenter
+                AnchorSideRight.Control = ed_create_new_key_password_1
+                Left = 179
+                Height = 15
+                Top = 65
+                Width = 56
+                Alignment = taRightJustify
+                Anchors = [akTop, akRight]
+                BorderSpacing.Right = 5
+                Caption = 'Password :'
+                Layout = tlCenter
+                ParentColor = False
+              end
+              object ed_create_new_key_password_1: TEdit
+                AnchorSideLeft.Control = ed_create_new_key_private_directory
+                AnchorSideTop.Control = ed_create_new_key_key_name
+                AnchorSideTop.Side = asrBottom
+                Left = 240
+                Height = 23
+                Top = 61
+                Width = 100
+                BorderSpacing.Top = 5
+                Constraints.MaxWidth = 100
+                OnKeyPress = on_key_press
+                TabOrder = 2
+              end
+              object lbl_ed_create_new_key_password_2: TLabel
+                AnchorSideTop.Control = ed_create_new_key_password_2
+                AnchorSideTop.Side = asrCenter
+                AnchorSideRight.Control = ed_create_new_key_password_2
+                Left = 134
+                Height = 15
+                Top = 93
+                Width = 101
+                Alignment = taRightJustify
+                Anchors = [akTop, akRight]
+                BorderSpacing.Right = 5
+                Caption = 'Password confirm :'
+                Layout = tlCenter
+                ParentColor = False
+              end
+              object ed_create_new_key_password_2: TEdit
+                AnchorSideLeft.Control = ed_create_new_key_private_directory
+                AnchorSideTop.Control = ed_create_new_key_password_1
+                AnchorSideTop.Side = asrBottom
+                Left = 240
+                Height = 23
+                Top = 89
+                Width = 100
+                BorderSpacing.Top = 5
+                Constraints.MaxWidth = 100
+                OnKeyPress = on_key_press
+                TabOrder = 3
+              end
+              object cb_create_new_key_show_password: TCheckBox
+                AnchorSideLeft.Control = ed_create_new_key_private_directory
+                AnchorSideTop.Control = ed_create_new_key_password_2
+                AnchorSideTop.Side = asrBottom
+                Left = 240
+                Height = 19
+                Top = 117
+                Width = 102
+                BorderSpacing.Top = 5
+                Caption = 'Show password'
+                OnChange = on_show_password_change
+                TabOrder = 4
+                TabStop = False
+              end
             end
-            object lbl_ed_create_new_key_directory: TLabel
-              Left = 114
-              Height = 23
-              Top = 0
-              Width = 103
-              Alignment = taRightJustify
-              Caption = 'Secret directory :'
-              Layout = tlCenter
-              ParentColor = False
+            object pg_package_key_page_existing_key: TTabSheet
+              Caption = 'pg_package_key_page_existing_key'
+              ClientHeight = 135
+              ClientWidth = 598
+              object lbl_ed_existing_key_key_filename: TLabel
+                AnchorSideTop.Control = ed_existing_key_key_filename
+                AnchorSideTop.Side = asrCenter
+                AnchorSideRight.Control = ed_existing_key_key_filename
+                Left = 161
+                Height = 15
+                Top = 37
+                Width = 74
+                Alignment = taRightJustify
+                Anchors = [akTop, akRight]
+                BorderSpacing.Right = 5
+                Caption = 'Key filename :'
+                Layout = tlCenter
+                ParentColor = False
+              end
+              object ed_existing_key_key_filename: TFileNameEdit
+                AnchorSideLeft.Control = ed_existing_key_certificat_filename
+                AnchorSideTop.Control = ed_existing_key_certificat_filename
+                AnchorSideTop.Side = asrBottom
+                AnchorSideRight.Control = btn_find_private_key
+                Left = 240
+                Height = 23
+                Top = 33
+                Width = 239
+                OnAcceptFileName = on_accept_filename
+                FilterIndex = 0
+                HideDirectories = False
+                ButtonWidth = 23
+                NumGlyphs = 1
+                Anchors = [akTop, akLeft, akRight]
+                BorderSpacing.Top = 5
+                BorderSpacing.Right = 5
+                MaxLength = 0
+                TabOrder = 2
+              end
+              object lbl_ed_existing_key_cert_filename: TLabel
+                AnchorSideTop.Control = ed_existing_key_certificat_filename
+                AnchorSideTop.Side = asrCenter
+                AnchorSideRight.Control = ed_existing_key_certificat_filename
+                Left = 132
+                Height = 15
+                Top = 9
+                Width = 103
+                Alignment = taRightJustify
+                Anchors = [akTop, akRight]
+                BorderSpacing.Right = 5
+                Caption = 'Certificat filename :'
+                Layout = tlCenter
+                ParentColor = False
+              end
+              object ed_existing_key_certificat_filename: TFileNameEdit
+                AnchorSideLeft.Control = pg_package_key_page_existing_key
+                AnchorSideLeft.Side = asrCenter
+                AnchorSideTop.Control = pg_package_key_page_existing_key
+                AnchorSideRight.Control = pg_package_key_page_existing_key
+                AnchorSideRight.Side = asrBottom
+                Left = 240
+                Height = 23
+                Top = 5
+                Width = 353
+                OnAcceptFileName = on_accept_filename
+                FilterIndex = 0
+                HideDirectories = False
+                ButtonWidth = 23
+                NumGlyphs = 1
+                Anchors = [akTop, akRight]
+                BorderSpacing.Top = 5
+                BorderSpacing.Right = 5
+                MaxLength = 0
+                TabOrder = 0
+              end
+              object lbl_ed_existing_key_password: TLabel
+                AnchorSideTop.Control = ed_existing_key_password
+                AnchorSideTop.Side = asrCenter
+                AnchorSideRight.Control = ed_existing_key_password
+                Left = 179
+                Height = 15
+                Top = 65
+                Width = 56
+                Alignment = taRightJustify
+                Anchors = [akTop, akRight]
+                BorderSpacing.Right = 5
+                Caption = 'Password :'
+                Layout = tlCenter
+                ParentColor = False
+              end
+              object ed_existing_key_password: TEdit
+                AnchorSideLeft.Control = ed_existing_key_key_filename
+                AnchorSideTop.Control = ed_existing_key_key_filename
+                AnchorSideTop.Side = asrBottom
+                Left = 240
+                Height = 23
+                Top = 61
+                Width = 100
+                BorderSpacing.Top = 5
+                Constraints.MaxWidth = 100
+                OnKeyPress = on_key_press
+                TabOrder = 3
+              end
+              object cb_use_existing_key_show_password: TCheckBox
+                AnchorSideLeft.Control = ed_existing_key_key_filename
+                AnchorSideTop.Control = ed_existing_key_password
+                AnchorSideTop.Side = asrBottom
+                Left = 240
+                Height = 19
+                Top = 89
+                Width = 102
+                BorderSpacing.Top = 5
+                Caption = 'Show password'
+                OnChange = on_show_password_change
+                TabOrder = 4
+                TabStop = False
+              end
+              object btn_find_private_key: TButton
+                AnchorSideLeft.Control = ed_existing_key_key_filename
+                AnchorSideLeft.Side = asrBottom
+                AnchorSideTop.Control = ed_existing_key_key_filename
+                AnchorSideTop.Side = asrCenter
+                AnchorSideRight.Control = pg_package_key_page_existing_key
+                AnchorSideRight.Side = asrBottom
+                Left = 484
+                Height = 25
+                Top = 32
+                Width = 109
+                Action = ActionFindPrivateKey
+                Anchors = [akTop, akRight]
+                AutoSize = True
+                BorderSpacing.Left = 5
+                BorderSpacing.Right = 5
+                TabOrder = 1
+              end
             end
-            object ed_create_new_key_private_directory: TDirectoryEdit
-              Left = 222
-              Height = 23
-              Top = 0
-              Width = 350
-              OnAcceptDirectory = on_accept_filename
-              ShowHidden = False
-              ButtonWidth = 23
-              Constraints.MinWidth = 350
-              NumGlyphs = 1
-              MaxLength = 0
-              TabOrder = 2
-            end
-            object Panel8: TPanel
-              Left = 0
-              Height = 23
-              Top = 28
-              Width = 109
-              BevelOuter = bvNone
-              TabOrder = 3
-            end
-            object lbl_ed_create_new_key_key_name: TLabel
-              Left = 114
-              Height = 23
-              Top = 28
-              Width = 103
-              Alignment = taRightJustify
-              Caption = 'Key name :'
-              Layout = tlCenter
-              ParentColor = False
-            end
-            object ed_create_new_key_key_name: TEdit
-              Left = 222
-              Height = 23
-              Top = 28
-              Width = 100
-              Constraints.MaxWidth = 100
-              TabOrder = 4
-            end
-            object Panel9: TPanel
-              Left = 0
-              Height = 23
-              Top = 56
-              Width = 109
-              BevelOuter = bvNone
-              TabOrder = 6
-            end
-            object lbl_ed_create_new_key_password_1: TLabel
-              Left = 114
-              Height = 23
-              Top = 56
-              Width = 103
-              Alignment = taRightJustify
-              Caption = 'Password :'
-              Layout = tlCenter
-              ParentColor = False
-            end
-            object ed_create_new_key_password_1: TEdit
-              Left = 222
-              Height = 23
-              Top = 56
-              Width = 100
-              Constraints.MaxWidth = 100
-              TabOrder = 7
-            end
-            object Panel10: TPanel
-              Left = 0
-              Height = 23
-              Top = 84
-              Width = 109
-              BevelOuter = bvNone
-              TabOrder = 8
-            end
-            object lbl_ed_create_new_key_password_2: TLabel
-              Left = 114
-              Height = 23
-              Top = 84
-              Width = 103
-              Alignment = taRightJustify
-              Caption = 'Password confirm :'
-              Layout = tlCenter
-              ParentColor = False
-            end
-            object ed_create_new_key_password_2: TEdit
-              Left = 222
-              Height = 23
-              Top = 84
-              Width = 100
-              Constraints.MaxWidth = 100
-              TabOrder = 9
-            end
-            object Panel11: TPanel
-              Left = 0
-              Height = 19
-              Top = 112
-              Width = 109
-              BevelOuter = bvNone
-              TabOrder = 10
-            end
-            object Panel12: TPanel
-              Left = 114
-              Height = 19
-              Top = 112
-              Width = 103
-              BevelOuter = bvNone
-              TabOrder = 11
-            end
-            object cb_create_new_key_show_password: TCheckBox
-              Left = 222
-              Height = 19
-              Top = 112
-              Width = 350
-              Caption = 'Show password'
-              OnChange = on_show_password_change
-              TabOrder = 5
-              TabStop = False
-            end
-            object rb_UseKey: TRadioButton
-              Left = 0
-              Height = 23
-              Top = 136
-              Width = 109
-              Caption = 'Use existing key'
-              OnChange = on_private_key_radiobutton_change
-              TabOrder = 12
-            end
-            object lbl_ed_existing_key_key_filename: TLabel
-              Left = 114
-              Height = 23
-              Top = 136
-              Width = 103
-              Alignment = taRightJustify
-              Caption = 'Key filename :'
-              Layout = tlCenter
-              ParentColor = False
-            end
-            object ed_existing_key_key_filename: TFileNameEdit
-              Left = 222
-              Height = 23
-              Top = 136
-              Width = 350
-              OnAcceptFileName = on_accept_filename
-              FilterIndex = 0
-              HideDirectories = False
-              ButtonWidth = 23
-              NumGlyphs = 1
-              MaxLength = 0
-              TabOrder = 13
-            end
-            object Panel13: TPanel
-              Left = 0
-              Height = 23
-              Top = 164
-              Width = 109
-              BevelOuter = bvNone
-              TabOrder = 14
-            end
-            object lbl_ed_existing_key_cert_filename: TLabel
-              Left = 114
-              Height = 23
-              Top = 164
-              Width = 103
-              Alignment = taRightJustify
-              Caption = 'Certificat filename :'
-              Layout = tlCenter
-              ParentColor = False
-            end
-            object ed_existing_key_certificat_filename: TFileNameEdit
-              Left = 222
-              Height = 23
-              Top = 164
-              Width = 350
-              OnAcceptFileName = on_accept_filename
-              FilterIndex = 0
-              HideDirectories = False
-              ButtonWidth = 23
-              NumGlyphs = 1
-              MaxLength = 0
-              TabOrder = 15
-            end
-            object Panel14: TPanel
-              Left = 0
-              Height = 23
-              Top = 192
-              Width = 109
-              BevelOuter = bvNone
-              TabOrder = 16
-            end
-            object lbl_ed_existing_key_password: TLabel
-              Left = 114
-              Height = 23
-              Top = 192
-              Width = 103
-              Alignment = taRightJustify
-              Caption = 'Password :'
-              Layout = tlCenter
-              ParentColor = False
-            end
-            object ed_existing_key_password: TEdit
-              Left = 222
-              Height = 23
-              Top = 192
-              Width = 100
-              Constraints.MaxWidth = 100
-              TabOrder = 17
-            end
-            object Panel15: TPanel
-              Left = 0
-              Height = 19
-              Top = 220
-              Width = 109
-              BevelOuter = bvNone
-              TabOrder = 18
-            end
-            object Panel16: TPanel
-              Left = 114
-              Height = 19
-              Top = 220
-              Width = 103
-              BevelOuter = bvNone
-              TabOrder = 19
-            end
-            object cb_use_existing_key_show_password: TCheckBox
-              Left = 222
-              Height = 19
-              Top = 220
-              Width = 350
-              Caption = 'Show password'
-              OnChange = on_show_password_change
-              TabOrder = 0
-              TabStop = False
-            end
+          end
+          object rb_UseKey: TRadioButton
+            AnchorSideLeft.Control = pg_package_key_page
+            AnchorSideTop.Control = pg_package_key_page
+            AnchorSideBottom.Control = pg_package_key_page
+            Left = 50
+            Height = 19
+            Top = 43
+            Width = 103
+            Anchors = [akLeft, akBottom]
+            BorderSpacing.Left = 50
+            Caption = 'Use existing key'
+            OnChange = on_private_key_radiobutton_change
+            OnKeyPress = on_key_press
+            TabOrder = 1
+          end
+          object rb_CreateKey: TRadioButton
+            AnchorSideLeft.Control = rb_UseKey
+            AnchorSideLeft.Side = asrBottom
+            AnchorSideRight.Control = pg_package_key_page
+            AnchorSideRight.Side = asrBottom
+            AnchorSideBottom.Control = pg_package_key_page
+            Left = 427
+            Height = 19
+            Top = 43
+            Width = 109
+            Anchors = [akRight, akBottom]
+            BorderSpacing.Left = 10
+            BorderSpacing.Right = 70
+            Caption = 'Create a new key'
+            OnChange = on_private_key_radiobutton_change
+            OnKeyPress = on_key_press
+            TabOrder = 2
           end
         end
         object pgBuildAgent: TTabSheet
           Caption = 'Agent'
-          ClientHeight = 334
-          ClientWidth = 745
+          ClientHeight = 287
+          ClientWidth = 608
+          OnShow = on_page_show
           object pg_agent_memo: TMemo
             Left = 0
-            Height = 334
+            Height = 287
             Top = 0
-            Width = 745
+            Width = 608
             Align = alClient
             Lines.Strings = (
               'pg_agent_memo'
@@ -863,38 +939,40 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         end
         object pgFinish: TTabSheet
           Caption = 'Fin'
-          ClientHeight = 334
-          ClientWidth = 745
+          ClientHeight = 287
+          ClientWidth = 608
+          OnShow = on_page_show
           object Panel2: TPanel
             Left = 0
             Height = 23
-            Top = 311
-            Width = 745
+            Top = 264
+            Width = 608
             Align = alBottom
             BevelOuter = bvNone
             TabOrder = 0
           end
           object panFinish: TPanel
             Left = 0
-            Height = 311
+            Height = 264
             Top = 0
-            Width = 745
+            Width = 608
             Align = alClient
             BevelOuter = bvNone
-            ClientHeight = 311
-            ClientWidth = 745
+            ClientHeight = 264
+            ClientWidth = 608
             TabOrder = 1
             object cbLaunchWaptConsoleOnExit: TCheckBox
               AnchorSideLeft.Control = panFinish
               AnchorSideLeft.Side = asrCenter
               AnchorSideTop.Control = panFinish
               AnchorSideTop.Side = asrCenter
-              Left = 282
+              Left = 214
               Height = 19
-              Top = 146
+              Top = 123
               Width = 180
               Caption = 'Run WAPT console after setup'
               Checked = True
+              OnKeyPress = on_key_press
               State = cbChecked
               TabOrder = 0
             end
@@ -936,6 +1014,10 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
     end
     object ActBuildWaptsetup: TAction
       Caption = 'Create custom installer'
+    end
+    object ActionFindPrivateKey: TAction
+      Caption = 'Find private key'
+      OnExecute = ActionFindPrivateKeyExecute
     end
   end
   object MainMenu1: TMainMenu

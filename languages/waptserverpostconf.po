@@ -30,6 +30,10 @@ msgstr ""
 msgid "Generate keypair"
 msgstr ""
 
+#: tviswaptserverpostconf.actionfindprivatekey.caption
+msgid "Find private key"
+msgstr ""
+
 #: tviswaptserverpostconf.actmanual.caption
 msgid "Input URL manually"
 msgstr ""
@@ -102,14 +106,6 @@ msgstr ""
 msgid "ed_package_prefix"
 msgstr ""
 
-#: tviswaptserverpostconf.label1.caption
-msgid "WAPT server password :"
-msgstr ""
-
-#: tviswaptserverpostconf.label2.caption
-msgid "Confirm password :"
-msgstr ""
-
 #: tviswaptserverpostconf.lbl_ed_create_new_key_directory.caption
 msgctxt "tviswaptserverpostconf.lbl_ed_create_new_key_directory.caption"
 msgid "Secret directory :"
@@ -147,6 +143,16 @@ msgstr ""
 msgid "Package prefix :"
 msgstr ""
 
+#: tviswaptserverpostconf.lbl_wapt_server_password_1.caption
+msgctxt "tviswaptserverpostconf.lbl_wapt_server_password_1.caption"
+msgid "WAPT server password :"
+msgstr ""
+
+#: tviswaptserverpostconf.lbl_wapt_server_password_2.caption
+msgctxt "tviswaptserverpostconf.lbl_wapt_server_password_2.caption"
+msgid "Confirm password :"
+msgstr ""
+
 #: tviswaptserverpostconf.pgbuildagent.caption
 msgid "Agent"
 msgstr ""
@@ -178,6 +184,14 @@ msgstr ""
 
 #: tviswaptserverpostconf.pgstartservices.caption
 msgid "Start"
+msgstr ""
+
+#: tviswaptserverpostconf.pg_package_key_page_existing_key.caption
+msgid "pg_package_key_page_existing_key"
+msgstr ""
+
+#: tviswaptserverpostconf.pg_package_key_page_new_key.caption
+msgid "pg_package_key_page_new_key"
 msgstr ""
 
 #: tviswaptserverpostconf.p_center.caption

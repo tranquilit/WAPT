@@ -81,6 +81,7 @@ const
 
   RUN_TIMEOUT_MS = 10 *1000;
 
+   WAPT_PROTOCOLS              : array[0..1] of String = ('https', 'http');
 implementation
 
 uses

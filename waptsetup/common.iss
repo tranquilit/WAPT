@@ -132,7 +132,7 @@ Filename: {app}\wapt-get.ini; Section: global; Key: hiberboot_enabled; String: {
 Filename: "{app}\wapt-get.exe"; Parameters: "add-upgrade-shutdown"; Flags: runhidden; StatusMsg: {cm:UpdatePkgUponShutdown}; Description: "{cm:UpdatePkgUponShutdown}"
 
 #if edition != "waptstarter"
-Filename: "{app}\wapt-get.exe"; Parameters: "--direct register"; StatusMsg: StatusMsg: {cm:RegisterHostOnServer}; Description: "{cm:RegisterHostOnServer}"
+Filename: "{app}\wapt-get.exe"; Parameters: "--direct register"; Flags: runhidden; StatusMsg: {cm:RegisterHostOnServer}; Description: "{cm:RegisterHostOnServer}"
 #endif
 
 #if set_start_packages != "" 
@@ -180,7 +180,7 @@ fr.InstallStartPackages=Installer maintenant les paquets {#set_start_packages}
 fr.UseKerberosForRegister=Utiliser le compte Kerberos de la machine pour l'enregistrement sur le WaptServer
 fr.VerifyServerCertificates=Vérifier les certificats https
 fr.DisableHiberBoot=Désactiver l'hiberboot, et augmenter le temps pour les GPO (recommandé)
-fr.RemoveAllFiles=Des fichiers restent présents dans votre répertoire {app}, souhaitez-vous le supprimer ainsi que tous les fichiers qu''il contient ?'
+fr.RemoveAllFiles=Des fichiers restent présents dans votre répertoire {app} Souhaitez-vous le supprimer ainsi que tous les fichiers qu'il contient ?
 fr.DontChangeServerSetup=Ne pas modifier la configuration actuelle
 fr.DNSDetect=Détecter les URLS WAPT avec des requêtes DNS
 fr.DNSDomainLookup=Domaine DNS à  interroger
@@ -271,6 +271,26 @@ begin
   DeleteIniEntry('Global','wapt_server',ExpandConstant('{app}\wapt-get.ini'));
 end;
 
+procedure RemoveInstallDir();
+var
+  installdir: String;
+  msg       : String;
+  b         : boolean;
+begin
+  installdir := ExpandConstant('{app}');
+  if not DirExists(installdir) then
+    exit;
+
+  msg := ExpandConstant('{cm:RemoveAllFiles}');
+  msg := ExpandConstant( msg );
+  b := ExpandConstant('{param:purge_wapt_dir|0}') = '1';
+  b := b or (not runningSilently() and  (MsgBox(msg, mbConfirmation, MB_YESNO) = IDYES) );  // No need to ask if purge_wapt_dir is setted
+  if b then
+    Deltree(installdir, True, True, True);
+end;
+
+
+
 #if edition != "waptserversetup"
 procedure InitializeWizard;
 begin
@@ -354,50 +374,23 @@ end;
 
 
 
+procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);
+begin
+  case CurUninstallStep of
+
+    usPostUninstall:
+      RemoveInstallDir();
+
+  end;
+
+
+end;
+
+
 procedure DeinitializeUninstall();
-var
-    installdir: String;
-    msg       : String;
 begin
-    installdir := ExpandConstant('{app}');
-    if DirExists(installdir) then
-    begin
-      msg := ExpandConstant('{cm:RemoveAllFiles}'); 
-      msg := ExpandConstant( msg ); 
-      if (not runningSilently() and  (MsgBox(msg, mbConfirmation, MB_YESNO) = IDYES)) 
-         or (ExpandConstant('{param:purge_wapt_dir|0}')='1') then
-        Deltree(installdir, True, True, True);
-    End;
 end;
 
-
-#if edition != "waptserversetup"
-procedure CurPageChanged(CurPageID: Integer);
-var
-  WaptRepo: String;
-  WaptServer: String;
-begin
-  if curPageId=customPage.Id then
-  begin
-    #if edition == "waptsetup"
-    PostMessage(WizardForm.NextButton.Handle, $BD11 , 0, 0);
-    exit;
-    #endif
-
-    edWaptRepoUrl.Text := GetRepoURL('');
-    #if edition != "waptstarter"
-    edWaptServerUrl.Text := GetWaptServerURL('');  
-    #endif
-    cbDontChangeServer.Checked := (GetRepoURL('') <> '') or (GetIniString('Global', 'dnsdomain','', ExpandConstant('{app}\wapt-get.ini'))<>'');
-    cbDnsServer.Checked := not cbDontChangeServer.Checked and (edWaptRepoUrl.Text='');
-    cbStaticUrl.Checked := (edWaptRepoUrl.Text<>'') and (edWaptRepoUrl.Text<>'unknown');
-    edDNSDomain.Text := GetDNSDomain('');  
-
-	  //edWaptServerUrl.Visible := IsTaskSelected('use_waptserver');
-    //labServer.Visible := edWaptServerUrl.Visible;
-  end
-end;
-#endif
 
 function InstallCertCheck:Boolean;
 var
@@ -495,5 +488,95 @@ begin
   value := ExpandConstant('{param:CopyServersTrustedCA}')
   Result := (value <> '') and (value<>'0');     
 end;
+
+
+function LocalWaptServiceIsConfigured() : Boolean;
+var
+  s : String;
+  v : String;
+begin
+  result := false;
+  s:= ExpandConstant('{#emit SetupSetting("AppId")}_is1');
+  if not RegQueryStringValue( HKLM, 'Software\Microsoft\Windows\CurrentVersion\Uninstall\' + s, 'InstallLocation', s ) then
+    exit;
+
+  s := s + '\wapt-get.ini';   
+  if not FileExists( s ) then
+    exit;
+
+  v := GetIniString( 'global', 'wapt_server', '', s );
+  if v = '' then
+    exit;
+  
+  v := GetIniString( 'global', 'repo_url', '', s );
+  if v = '' then
+    exit;
+
+  result := true;
+end;
+
+
+procedure PostClickNext();
+begin
+  PostMessage(WizardForm.NextButton.Handle, $BD11 , 0, 0);
+end;  
+
+
+
+#if edition != "waptserversetup"
+procedure CurPageChanged(CurPageID: Integer);
+var
+  WaptRepo: String;
+  WaptServer: String;
+  i : integer;
+begin
+  
+
+  case CurPageID of
+
+
+    wpWelcome:
+    begin
+    end;
+
+    
+
+    customPage.Id:
+    begin
+      #if edition == "waptsetup"
+      PostMessage(WizardForm.NextButton.Handle, $BD11 , 0, 0);
+      exit;
+      #endif
+
+      edWaptRepoUrl.Text := GetRepoURL('');
+      #if edition != "waptstarter"
+      edWaptServerUrl.Text := GetWaptServerURL('');  
+      #endif
+      cbDontChangeServer.Checked := (GetRepoURL('') <> '') or (GetIniString('Global', 'dnsdomain','', ExpandConstant('{app}\wapt-get.ini'))<>'');
+      cbDnsServer.Checked := not cbDontChangeServer.Checked and (edWaptRepoUrl.Text='');
+      cbStaticUrl.Checked := (edWaptRepoUrl.Text<>'') and (edWaptRepoUrl.Text<>'unknown');
+      edDNSDomain.Text := GetDNSDomain('');  
+
+      //edWaptServerUrl.Visible := IsTaskSelected('use_waptserver');
+      //labServer.Visible := edWaptServerUrl.Visible;
+    end;
+
+    wpFinished:
+    begin
+      #if edition == "waptsetup"
+      i := WizardForm.RunList.Items.Count 
+      if i = 0 then
+        exit;
+      i := i - 1;        
+      WizardForm.RunList.Checked[i] := not LocalWaptServiceIsConfigured(); 
+      exit;
+      #endif
+    end;
+
+  end;
+
+
+end;
+#endif
 
 

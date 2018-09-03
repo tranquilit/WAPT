@@ -6,6 +6,11 @@ msgctxt "tviswaptconsolepostconf.actcancel.caption"
 msgid "Cancel"
 msgstr ""
 
+#: tviswaptconsolepostconf.actcheckwapthostname.caption
+msgctxt "tviswaptconsolepostconf.actcheckwapthostname.caption"
+msgid "Check"
+msgstr ""
+
 #: tviswaptconsolepostconf.actnext.caption
 msgctxt "tviswaptconsolepostconf.actnext.caption"
 msgid "Next"
@@ -13,6 +18,10 @@ msgstr ""
 
 #: tviswaptconsolepostconf.actprevious.caption
 msgid "Previous"
+msgstr ""
+
+#: tviswaptconsolepostconf.btn_find_private_key.caption
+msgid "Find private key"
 msgstr ""
 
 #: tviswaptconsolepostconf.caption
@@ -28,6 +37,11 @@ msgctxt "tviswaptconsolepostconf.cb_create_new_key_show_password.caption"
 msgid "Show password"
 msgstr ""
 
+#: tviswaptconsolepostconf.cb_manual_wapt_server.caption
+msgctxt "tviswaptconsolepostconf.cb_manual_wapt_server.caption"
+msgid "Manual overrride"
+msgstr ""
+
 #: tviswaptconsolepostconf.cb_use_existing_key_show_password.caption
 msgctxt "tviswaptconsolepostconf.cb_use_existing_key_show_password.caption"
 msgid "Show password"
@@ -38,7 +52,12 @@ msgctxt "tviswaptconsolepostconf.cb_wapt_server_show_password.caption"
 msgid "Show password"
 msgstr ""
 
-#: tviswaptconsolepostconf.edwaptservername.hint
+#: tviswaptconsolepostconf.ed_package_prefix.text
+msgid "ed_package_prefix"
+msgstr ""
+
+#: tviswaptconsolepostconf.ed_wapt_server_hostname.hint
+msgctxt "tviswaptconsolepostconf.ed_wapt_server_hostname.hint"
 msgid ""
 "WAPT clients make requests to the server. In order to connect to the WAPT server,\n"
 "it is advisable that a DNS name be used, as long as it has been correctly\n"
@@ -46,19 +65,8 @@ msgid ""
 "'srvwapt.mydomain.local' (A record type), then binding an alias\n"
 "(CNAME record type, e.g. 'wapt.mondomain.local') to srvwapt.\n"
 "In case you don't trust your DNS, or you are just setting up a testing environment,\n"
-"you can fall back to the server IP address.\n"
-msgstr ""
-
-#: tviswaptconsolepostconf.edwaptservername.text
-msgid "srvwapt.mydomain.lan"
-msgstr ""
-
-#: tviswaptconsolepostconf.ed_package_prefix.text
-msgid "ed_package_prefix"
-msgstr ""
-
-#: tviswaptconsolepostconf.ed_wapt_server_password.text
-msgid "ed_wapt_server_password"
+"you can fall back to the server IP address. For further information :\n"
+"'http://dev.tranquil.it/scenari/guide_admin/co/wapt_server_configuration_champDNS.html'\n"
 msgstr ""
 
 #: tviswaptconsolepostconf.lbl_ed_create_new_key_directory.caption
@@ -95,12 +103,21 @@ msgstr ""
 msgid "Package prefix :"
 msgstr ""
 
-#: tviswaptconsolepostconf.lbl_wapt_server_password.caption
-msgid "Wapt server password :"
+#: tviswaptconsolepostconf.lbl_manual_repo_url.caption
+msgid "Repository URL :"
 msgstr ""
 
-#: tviswaptconsolepostconf.llb_wapt_server.caption
-msgid "Wapt server url :"
+#: tviswaptconsolepostconf.lbl_manual_wapt_server_url.caption
+msgid "Server URL :"
+msgstr ""
+
+#: tviswaptconsolepostconf.lbl_wapt_server_hostname.caption
+msgctxt "tviswaptconsolepostconf.lbl_wapt_server_hostname.caption"
+msgid "WAPT server hostname :"
+msgstr ""
+
+#: tviswaptconsolepostconf.lbl_wapt_server_password.caption
+msgid "WAPT server password :"
 msgstr ""
 
 #: tviswaptconsolepostconf.panel15.caption
@@ -117,6 +134,14 @@ msgstr ""
 
 #: tviswaptconsolepostconf.pgkey.caption
 msgid "Package key"
+msgstr ""
+
+#: tviswaptconsolepostconf.pgkey_ts_create_new_key.caption
+msgid "pgkey_ts_create_new_key"
+msgstr ""
+
+#: tviswaptconsolepostconf.pgkey_ts_use_existing_key.caption
+msgid "pgkey_ts_use_existing_key"
 msgstr ""
 
 #: tviswaptconsolepostconf.pgpackage.caption

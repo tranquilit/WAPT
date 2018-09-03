@@ -5,8 +5,11 @@ unit uutil;
 interface
 
 uses
+  windows,
+  Controls,
   IdHTTP,
-  Classes, SysUtils;
+  Classes,
+  SysUtils;
 
 type
 Tcreate_signed_cert_params = record
@@ -105,6 +108,8 @@ function srv_exist( var exist : boolean; const name: String): integer;
 
 function url_concat(const left: String; const right: String): String;
 function url_protocol(var protocol: String; const url: String): integer;
+function url_hostname( var hostname : String; const url : String) : integer;
+
 function http_create( https : boolean ) : TIdHTTP;
 procedure http_free( var http  : TIdHTTP );
 function http_is_valid_url(const url: String): boolean;
@@ -116,21 +121,33 @@ function http_get(var output: String; const url: String ): integer;
 
 function wapt_json_response_is_success(var success: boolean; const json: String  ): integer;
 function wapt_server_ping( const server_url : String ) : boolean;
+function wapt_server_ping( var ping_result : boolean; const server_url: String): integer;
+function wapt_server_is_repo_url( const repo_url : String ) : Boolean;
 
 function offset_language(): integer;
+
+function find_private_key(var key_filename: String; const certificate_filename: String; const key_password : String ): integer;
+
+
+procedure push_cursor( cr : TCursor );
+function  pop_cursor() : TCursor;
+
+procedure set_focus_if_visible( c : TWinControl );
+procedure remove_page_control_border( h : HWND );
+
+procedure preload_python( data : Pointer );
 
 implementation
 
 uses
+  IdURI,
   LCLTranslator,
   LazUTF8,
   IdSSLOpenSSL,
   IdCookieManager,
   superobject,
-  windows,
   JwaWindows,
   tiscommon,
-  Controls,
   Forms,
   Dialogs,
   uWaptServerRes,
@@ -677,7 +694,7 @@ var
   params : TRunSyncParameters;
   r : integer;
 begin
-  FillChar( params, sizeof(PRunSyncParameters), 0 );
+  FillChar( params, sizeof(TRunSyncParameters), 0 );
 
   params.cmd_line := 'sc query ' + name;
   params.timout_ms := 2 * 1000;
@@ -720,7 +737,7 @@ begin
   exit( 0 );
 end;
 
-function wapt_server_ping( const server_url: String ): Boolean;
+function wapt_server_ping(const server_url: String): boolean;
 label
   LBL_FAILED;
 var
@@ -752,6 +769,61 @@ LBL_FAILED:
   exit(false);
 end;
 
+function wapt_server_ping( var ping_result : boolean; const server_url: String): integer;
+label
+  LBL_FAILED;
+var
+  s : String;
+  r : integer;
+  so: ISuperObject;
+  url : String;
+begin
+
+  url := url_concat(server_url, '/ping');
+  r := http_get( s, url );
+  if r <> 0 then
+    goto LBL_FAILED;
+
+  so := TSuperObject.ParseString(  @WideString(s)[1], false );
+  if not Assigned(so) then
+    goto LBL_FAILED;
+
+  so := so.O['result'];
+  if not Assigned(so) then
+    goto LBL_FAILED;
+
+  so := so.O['version'];
+  if not Assigned(so) then
+    goto LBL_FAILED;
+
+  ping_result := true;
+  exit( 0 );
+
+LBL_FAILED:
+  ping_result := false;
+  exit( -1 );
+end;
+
+
+function wapt_server_is_repo_url(const repo_url: String): Boolean;
+const
+  WAPT_REPO_PACKAGES_NAME : String = 'Packages';
+var
+  url : String;
+  r   : integer;
+  rc  : integer;
+begin
+
+  url := url_concat( repo_url, WAPT_REPO_PACKAGES_NAME );
+
+  // For now just check that repo_url/packages = 200
+  r := http_reponse_code( rc, url );
+  if r <> 0 then
+    exit( false );
+
+  exit( HTTP_RESPONSE_CODE_OK = rc );
+end;
+
 
 
 
@@ -763,6 +835,10 @@ var
   r : integer;
 begin
   result := left;
+  if Length(left) = 0 then
+    exit( right );
+  if Length(right) = 0 then
+    exit(left);
 
   if result[ Length(result) ] <> '/' then
     result := result + '/';
@@ -786,6 +862,30 @@ begin
   dec(i);
   protocol := Copy( url, 1, i );
   exit(0);
+end;
+
+function url_hostname(var hostname: String; const url: String): integer;
+var
+  uri : TIdURI;
+  s : String;
+begin
+  // ugly
+  s := trim(url);
+  if Length(s) = 0 then
+    exit(-1);
+
+  if 0 = Pos( '://', s ) then
+    s := 'http://' + s;
+
+  uri := TIdURI.Create();
+  uri.URI := s;
+
+  hostname := uri.Host;
+
+  uri.Free;
+
+  result := 0;
+
 end;
 
 
@@ -992,6 +1092,102 @@ begin
   SetDefaultLang( FallbackLang );
 
 end;
+
+function find_private_key(var key_filename: String; const certificate_filename: String; const key_password : String ): integer;
+label
+  LBL_NOT_FOUND;
+var
+  p  : Variant;
+  c  : Variant;
+  v  : Variant;
+  s  : String;
+begin
+  if not FileExists( certificate_filename ) then
+    goto LBL_NOT_FOUND;
+
+  p := PyUTF8Decode( key_password );
+  c := PyUTF8Decode( certificate_filename );
+  v := DMPython.waptdevutils.get_private_key_encrypted( certificate_path := c, password := p );
+  s := VarPythonAsString(v);
+  if Length(s) = 0 then
+    goto LBL_NOT_FOUND;
+
+  key_filename := s;
+  exit(0);
+
+LBL_NOT_FOUND:
+  exit(-1);
+end;
+
+var
+cursors_stack  : array of TCursor;
+
+procedure push_cursor(cr: TCursor);
+var
+  r : integer;
+begin
+  r := Length(cursors_stack);
+  SetLength( cursors_stack, r + 1 );
+  cursors_stack[r] := cr;
+  Screen.Cursor := cr;
+  Application.ProcessMessages;
+end;
+
+function pop_cursor(): TCursor;
+var
+  r : integer;
+begin
+  r := Length(cursors_stack) -1 ;
+  if r = -1 then
+    exit;
+
+  SetLength( cursors_stack, r );
+  if r = 0 then
+    result := crDefault
+  else
+    result := cursors_stack[r-1];
+
+  Screen.Cursor := Result;
+  Application.ProcessMessages;
+end;
+
+procedure set_focus_if_visible(c: TWinControl);
+begin
+  if c.IsVisible then
+    c.SetFocus;
+end;
+
+procedure remove_page_control_border( h : HWND );
+var
+  d : DWORD;
+begin
+  d := GetWindowLong( h, GWL_STYLE );
+  if 0 = d then
+    exit;
+  d := d or TCS_BUTTONS;
+  SetWindowLong( h, GWL_STYLE, d );
+end;
+
+procedure preload_python( data : Pointer );
+var
+  p : Variant;
+  c : Variant;
+begin
+  if nil = data then
+  begin
+    TThread.ExecuteInThread( TThreadExecuteCallback(@preload_python), Pointer(1), nil );
+    exit;
+  end;
+
+  p := PyUTF8Decode( '' );
+  c := PyUTF8Decode( '' );
+  try
+    DMPython.waptdevutils.get_private_key_encrypted( certificate_path := c, password := p );
+  except
+  end;
+end;
+
+
 
 end.
 

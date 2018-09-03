@@ -181,43 +181,67 @@ en.InstallWaptServer=Wapt server installieren
 [InstallDelete]
 Type: files; Name: "{app}\waptserver\waptserver.py*"
 
+[Files]
+Source: "..\waptsetuputil.dll"; Flags: dontcopy
+
 [Code]
+function validate_wapt_server_install_port( port : integer ) : boolean; external 'validate_wapt_server_install_port@files:waptsetuputil.dll stdcall';
+
+  
+
+
+
 function NextButtonClick(CurPageID: Integer):Boolean;
 var
-  Reply: Integer;
-  NetstatOutput, ConflictingService: AnsiString;
+  r : Integer;
+  b : boolean; 
+  i : integer;
+  PORTS : array[0..2] of integer;
 begin
 
+  result := false;
 
-  if CurPageID <> wpSelectTasks then
+
+  if CurPageID = wpSelectTasks then
   begin
-    Result := True;
-    Exit;
+    PORTS[0] := 80;
+    PORTS[1] := 443;
+    PORTS[2] := 8080;
+
+    for i:= 0 to 2 do
+    begin
+        r := PORTS[i];
+        b := validate_wapt_server_install_port( r );
+        if b then
+          continue;
+
+        r := MsgBox('There already is a Web server listening on port '+ IntToStr(r) +'. ' +
+                       'You have several choices: abort the installation, ignore this warning (NOT RECOMMENDED), ' +
+                       'deactivate the conflicting service and replace it with our bundled Apache server, or choose ' +
+                       'not to install Apache.  In the latter case it is advised to set up your Web server as a reverse ' +
+                       'proxy to http://localhost:8080/.' , mbError, MB_ABORTRETRYIGNORE);
+
+
+       
+        if IDABORT = r then
+        begin
+          Abort;
+          exit;
+        end;
+
+        if IDRETRY = r then
+        begin
+          PostClickNext();
+          exit;
+        end;
+    end;
+    
+    result := true;
+    exit;
+
+
   end;
 
-  ConflictingService := '';
-
-  NetstatOutput := RunCmd('netstat -a -n -p tcp', True);
-  if Pos('0.0.0.0:443 ', NetstatOutput) > 0 then
-    ConflictingService := '443'
-  else if Pos('0.0.0.0:80 ', NetstatOutput) > 0 then
-    ConflictingService := '80'
-  ;
-
-  if ConflictingService = '' then
-  begin
-    Result := True;
-    Exit;
-  end;
-
-  Reply := MsgBox('There already is a Web server listening on port '+ ConflictingService +'. ' +
-   'You have several choices: abort the installation, ignore this warning (NOT RECOMMENDED), ' +
-   'deactivate the conflicting service and replace it with our bundled Apache server, or choose ' +
-   'not to install Apache.  In the latter case it is advised to set up your Web server as a reverse ' +
-   'proxy to http://localhost:8080/.' , mbError, MB_ABORTRETRYIGNORE);
-  if Reply = IDABORT then
-    Abort;
-
-  Result := Reply = IDIGNORE;
+  result := true;
 
 end;

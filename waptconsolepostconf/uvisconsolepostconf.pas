@@ -5,10 +5,11 @@ unit uvisconsolepostconf;
 interface
 
 uses
+  CommCtrl,
   PythonEngine, Classes, SysUtils, FileUtil, LazFileUtils, LazUTF8, IpHtml,
   Forms, Controls, Graphics, Dialogs, ComCtrls, StdCtrls, ExtCtrls, Buttons,
   ActnList, IdHTTP, IdComponent, uvisLoading, LCLTranslator,
-  LCLProc, EditBtn, waptconsolepostconfres;
+  LCLProc, EditBtn, Menus, waptconsolepostconfres;
 
 type
 
@@ -17,17 +18,20 @@ type
   TVisWAPTConsolePostConf = class(TForm)
     ActCreateKey: TAction;
     ActCancel: TAction;
+    ActCheckWaptHostname: TAction;
     ActNext: TAction;
     ActPrevious: TAction;
     ActionList1: TActionList;
+    btn_find_private_key: TButton;
     ButCancel: TBitBtn;
     ButNext: TBitBtn;
     ButPrevious: TBitBtn;
+    btn_check_wapt_server_hostname: TButton;
     cbLaunchWaptConsoleOnExit: TCheckBox;
     cb_create_new_key_show_password: TCheckBox;
+    cb_manual_wapt_server: TCheckBox;
     cb_use_existing_key_show_password: TCheckBox;
     cb_wapt_server_show_password: TCheckBox;
-    EdWAPTServerName: TEdit;
     ed_create_new_key_key_name: TEdit;
     ed_create_new_key_password_1: TEdit;
     ed_create_new_key_password_2: TEdit;
@@ -35,10 +39,16 @@ type
     ed_existing_key_certificat_filename: TFileNameEdit;
     ed_existing_key_key_filename: TFileNameEdit;
     ed_existing_key_password: TEdit;
+    ed_manual_repo_url: TEdit;
+    ed_wapt_server_hostname: TEdit;
+    ed_manual_wapt_server_url: TEdit;
     ed_package_prefix: TEdit;
     ed_wapt_server_password: TEdit;
     html_panel: TIpHtmlPanel;
     IdHTTP1: TIdHTTP;
+    imagelist_check_status: TImageList;
+    img_manual_repo_url: TImage;
+    img_manual_wapt_server_url_status: TImage;
     lbl_ed_create_new_key_directory: TLabel;
     lbl_ed_create_new_key_key_name: TLabel;
     lbl_ed_create_new_key_password_1: TLabel;
@@ -47,26 +57,20 @@ type
     lbl_ed_existing_key_key_filename: TLabel;
     lbl_ed_existing_key_password: TLabel;
     lbl_ed_package_prefix: TLabel;
+    lbl_manual_repo_url: TLabel;
+    lbl_manual_wapt_server_url: TLabel;
     lbl_wapt_server_password: TLabel;
-    llb_wapt_server: TLabel;
+    lbl_wapt_server_hostname: TLabel;
+    Panel3: TPanel;
+    pgkey_page_control: TPageControl;
     PagesControl: TPageControl;
     Panel1: TPanel;
-    Panel10: TPanel;
-    Panel11: TPanel;
-    Panel12: TPanel;
-    Panel13: TPanel;
-    Panel14: TPanel;
     Panel15: TPanel;
+    Panel_0_2: TPanel;
     ProgressBar1: TProgressBar;
     p_bottom: TPanel;
     Panel2: TPanel;
-    Panel3: TPanel;
     Panel4: TPanel;
-    Panel5: TPanel;
-    Panel6: TPanel;
-    Panel7: TPanel;
-    Panel8: TPanel;
-    Panel9: TPanel;
     panFinish: TPanel;
     pgBuildAgent: TTabSheet;
     pgFinish: TTabSheet;
@@ -76,23 +80,35 @@ type
     pg_agent_memo: TMemo;
     p_buttons: TPanel;
     p_right: TPanel;
+    pgkey_ts_create_new_key: TTabSheet;
+    pgkey_ts_use_existing_key: TTabSheet;
     rb_CreateKey: TRadioButton;
     rb_UseKey: TRadioButton;
     procedure ActCancelExecute(Sender: TObject);
+    procedure ActCheckWaptHostnameExecute(Sender: TObject);
+    procedure ActCheckWaptHostnameUpdate(Sender: TObject);
     procedure ActNextExecute(Sender: TObject);
     procedure ActNextUpdate(Sender: TObject);
     procedure ActPreviousExecute(Sender: TObject);
+    procedure btn_find_private_keyClick(Sender: TObject);
+    procedure cb_manual_wapt_serverChange(Sender: TObject);
+    procedure ed_manual_repo_urlKeyPress(Sender: TObject; var Key: char);
+    procedure ed_manual_wapt_server_urlKeyPress(Sender: TObject; var Key: char);
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure html_panelHotClick(Sender: TObject);
     procedure IdHTTPWork(ASender: TObject; AWorkMode: TWorkMode; AWorkCount: Int64);
-    procedure PagesControlChange(Sender: TObject);
     procedure on_private_key_radiobutton_change( Sender : TObject );
     procedure on_show_password_change( Sender : TObject );
     procedure on_create_setup_waptagent_tick( Sender : TObject );
     procedure on_upload( ASender: TObject; AWorkMode: TWorkMode; AWorkCount: Int64 );
     procedure on_python_update(Sender: TObject; PSelf, Args: PPyObject; var Result: PPyObject);
     procedure on_accept_filename( Sender : TObject; var Value: String);
+    procedure on_file_edit_button_click( Sender : TObject );
+    procedure on_editing_done(Sender: TObject);
+    procedure on_key_press(Sender: TObject; var Key: char);
+    procedure on_page_show( Sender : TObject );
+    procedure async( data : PtrInt );
 
   private
     m_skip_build_agent: boolean;
@@ -105,6 +121,7 @@ type
     procedure set_buttons_enable( enable : Boolean );
     procedure clear();
     procedure load_config_if_exist();
+    procedure validate_wapt_server( var bContinue : boolean );
     procedure validate_page_parameters( var bContinue : boolean );
     procedure validate_page_package_name( var bContinue : boolean );
     procedure validate_page_package_key( var bContinue : boolean );
@@ -123,6 +140,8 @@ var
 implementation
 
 uses
+  contnrs,
+  VarPyth,
   dmwaptpython,
   uutil,
   uvalidation,
@@ -139,27 +158,37 @@ uses
 
 {$R *.lfm}
 
-
+const
+  ASYNC_ACTN_NEXT_EXECUTE : integer = 0;
 
 { TVisWAPTConsolePostConf }
 
+
 procedure TVisWAPTConsolePostConf.FormCreate(Sender: TObject);
 begin
-  ScaleDPI(Self,96);
-  //HTMLViewer1.DefFontSize := ScaleY(HTMLViewer1.DefFontSize,96);
-  ReadWaptConfig(WaptBaseDir+'wapt-get.ini');
-  PagesControl.ShowTabs:=False;
-  PagesControl.ActivePageIndex:=0;
+  preload_python(nil);
 
+  ScaleDPI(Self,96);
+  ReadWaptConfig(WaptBaseDir+'wapt-get.ini');
+
+  remove_page_control_border( self.PagesControl.Handle );
+  remove_page_control_border( self.pgkey_page_control.Handle );
+
+  self.PagesControl.ShowTabs := False;
+  self.pgkey_page_control.ShowTabs := False;
+
+  self.PagesControl.ActivePageIndex := 0;
 
   self.clear();
   self.load_config_if_exist();
+
+  // fmor
+//  self.PagesControl.ActivePageIndex := self.pgKey.TabIndex;
 
 end;
 
 procedure TVisWAPTConsolePostConf.FormShow(Sender: TObject);
 begin
-  PagesControlChange(Self);
 end;
 
 procedure TVisWAPTConsolePostConf.html_panelHotClick(Sender: TObject);
@@ -184,58 +213,6 @@ begin
       ProgressBar1.Position := ProgressBar1.Position+1;
     Application.ProcessMessages;
   end;
-end;
-
-procedure TVisWAPTConsolePostConf.PagesControlChange(Sender: TObject);
-var
-  p : TTabSheet;
-begin
-  p := nil;
-
-  // Update doc html
-  self.update_doc_html();
-
-  p := self.PagesControl.ActivePage;
-
-  self.ActNext.Enabled      := true;
-  self.ActPrevious.Enabled  := true;
-  self.ActCancel.Enabled    := true;
-
-
-  // Page specilic actions
-  if pgParameters = p then
-  begin
-    self.ActPrevious.Enabled := false;
-  end
-
-  else if pgBuildAgent = p then
-  begin
-    self.ButNext.Click;
-  end
-
-  else if pgFinish = p then
-  begin
-    self.ActPrevious.Enabled := false;
-    self.ActCancel.Enabled   := false;
-  end;
-
-
-  // SetFocus
-  if not self.Visible then
-    exit;
-
-  if pgParameters = p then
-    self.EdWAPTServerName.SetFocus
-
-  else if pgPackage = p then
-    self.ed_package_prefix.SetFocus
-
-  else if pgKey = p then
-    self.rb_CreateKey.SetFocus
-
-  else if pgFinish = p then
-    self.cbLaunchWaptConsoleOnExit.SetFocus;
-
 end;
 
 procedure TVisWAPTConsolePostConf.on_private_key_radiobutton_change( Sender: TObject);
@@ -275,33 +252,34 @@ begin
 
 
   // Focus
-  if not self.Visible then
-    exit;
-
   if self.rb_CreateKey.Checked then
   begin
+    self.pgkey_page_control.TabIndex := self.pgkey_ts_create_new_key.TabIndex ;
+
     if str_is_empty_when_trimmed(self.ed_create_new_key_password_2.Text) then
-      self.ed_create_new_key_password_2.SetFocus;
+      set_focus_if_visible( self.ed_create_new_key_password_2 );
 
     if str_is_empty_when_trimmed(self.ed_create_new_key_password_1.Text) then
-      self.ed_create_new_key_password_1.SetFocus;
+      set_focus_if_visible( self.ed_create_new_key_password_1 );
 
     if str_is_empty_when_trimmed(self.ed_create_new_key_key_name.Text) then
-      self.ed_create_new_key_key_name.SetFocus;
+      set_focus_if_visible( self.ed_create_new_key_key_name );
 
     if str_is_empty_when_trimmed(self.ed_create_new_key_private_directory.Text) then
-      self.ed_create_new_key_private_directory.SetFocus;
+      set_focus_if_visible( self.ed_create_new_key_private_directory );
   end
   else
   begin
+    self.pgkey_page_control.TabIndex := self.pgkey_ts_use_existing_key.TabIndex;
+
     if str_is_empty_when_trimmed(self.ed_existing_key_password.Text) then
-      self.ed_existing_key_password.SetFocus;
+      set_focus_if_visible( self.ed_existing_key_password );
 
     if str_is_empty_when_trimmed(self.ed_existing_key_certificat_filename.Text) then
-      self.ed_existing_key_certificat_filename.SetFocus;
+      set_focus_if_visible( self.ed_existing_key_certificat_filename );
 
     if str_is_empty_when_trimmed(self.ed_existing_key_key_filename.Text) then
-      self.ed_existing_key_key_filename.SetFocus;
+      set_focus_if_visible( self.ed_existing_key_key_filename );
   end;
 
 end;
@@ -416,31 +394,145 @@ end;
 
 procedure TVisWAPTConsolePostConf.on_accept_filename(Sender: TObject; var Value: String);
 var
-  e1 : TFileNameEdit;
-  e2 : TFileNameEdit;
-  p : String;
+  r : integer;
+  s : String;
 begin
+
+  if self.ed_existing_key_certificat_filename = Sender then
+  begin
+    r := find_private_key( s, self.ed_existing_key_certificat_filename.Text, self.ed_existing_key_password.Text );
+    if r <> 0 then
+      exit;
+  end;
+
+end;
+
+procedure TVisWAPTConsolePostConf.on_file_edit_button_click(Sender: TObject);
+var
+  s : String;
+  paths : array[0..2] of String;
+  i : integer;
+begin
+
+  //
   if self.ed_existing_key_key_filename = Sender then
   begin
-      e1 := self.ed_existing_key_key_filename;
-      e2 := self.ed_existing_key_certificat_filename;
-  end
-  else
+    paths[0] := ExtractFileDir(self.ed_existing_key_certificat_filename.Text);
+    paths[1] := ExtractFileDir(self.ed_existing_key_key_filename.Text);
+    for i := 0 to Length(paths) - 1 do
+    begin
+      if DirectoryExists(paths[i]) then
+      begin
+        self.ed_existing_key_key_filename.InitialDir := paths[i];
+        exit;
+      end;
+    end;
+    exit;
+  end;
+
+  //
+  if self.ed_existing_key_certificat_filename = Sender then
   begin
-    e1 := self.ed_existing_key_certificat_filename;
-    e2 := self.ed_existing_key_key_filename;
+    paths[0] := ExtractFileDir(self.ed_existing_key_certificat_filename.Text);
+    paths[1] := ExtractFileDir(self.ed_existing_key_key_filename.Text);
+    for i := 0 to Length(paths) - 1 do
+    begin
+      if DirectoryExists( paths[i] ) then
+      begin
+        self.ed_existing_key_certificat_filename.InitialDir := paths[i];
+        exit;
+      end;
+    end;
+    exit;
   end;
 
 
-  p := ExtractFilePath(Value);
-  e1.InitialDir := p;
-
-  if FileExists(e2.Text) then
-    e2.InitialDir := ExtractFilePath(e2.Text)
-  else
-    e2.InitialDir := e1.InitialDir;
 
 end;
+
+procedure TVisWAPTConsolePostConf.on_editing_done(Sender: TObject);
+begin
+
+  if (Sender = self.ed_manual_wapt_server_url) or (Sender = self.ed_manual_repo_url) then
+  begin
+    self.ActCheckWaptHostname.Execute;
+    exit;
+  end;
+
+  self.ActNext.Execute;
+end;
+
+procedure TVisWAPTConsolePostConf.on_key_press(Sender: TObject; var Key: char);
+begin
+  if Integer(Key) = VK_RETURN then
+    self.on_editing_done( Sender );
+end;
+
+
+
+procedure TVisWAPTConsolePostConf.on_page_show(Sender: TObject);
+var
+  p : TTabSheet;
+begin
+  p := TTabSheet(Sender);;
+
+  // Update doc html
+  self.update_doc_html();
+
+
+  self.ActPrevious.Enabled  := true;
+  self.ActNext.Enabled      := true;
+  self.ActCancel.Enabled    := true;
+
+  self.ActPrevious.Visible  := true;
+  self.ActNext.Visible      := true;
+  self.ActCancel.Visible    := true;
+
+
+  if pgParameters = p then
+  begin
+    self.ActPrevious.Enabled := false;
+    self.ActPrevious.Visible := false;
+    set_focus_if_visible( self.ed_wapt_server_hostname );
+  end
+
+  else if pgPackage = p then
+  begin
+    set_focus_if_visible( self.ed_package_prefix );
+  end
+
+  else if pgKey = p then
+  begin
+    set_focus_if_visible( self.rb_CreateKey );
+  end
+
+  else if pgBuildAgent = p then
+  begin
+    Application.QueueAsyncCall( @async, PtrInt(ASYNC_ACTN_NEXT_EXECUTE) );
+  end
+
+  else if pgFinish = p then
+  begin
+    self.ActPrevious.Enabled := false;
+    self.ActCancel.Enabled   := false;
+    self.ActPrevious.Visible := false;
+    self.ActCancel.Visible   := false;
+    set_focus_if_visible( cbLaunchWaptConsoleOnExit );
+  end;
+
+
+end;
+
+procedure TVisWAPTConsolePostConf.async( data: PtrInt );
+var
+  d : integer;
+begin
+  d := integer(data);
+  if ASYNC_ACTN_NEXT_EXECUTE = d then
+    ActNext.Execute;
+end;
+
+
 
 procedure TVisWAPTConsolePostConf.set_buttons_enable(enable: Boolean);
 begin
@@ -462,11 +554,17 @@ begin
   if r <> 0 then
     m_has_waptservice_installed := false;
 
-  // parameters
-  self.EdWAPTServerName.Clear;
+  // pgParameters
+  self.ed_wapt_server_hostname.Clear;
+  self.cb_manual_wapt_server.Checked := false;
+  self.ed_manual_repo_url.Clear;
+  self.ed_manual_wapt_server_url.Clear;
+  self.img_manual_repo_url.Picture.Clear;
+  self.img_manual_wapt_server_url_status.Picture.Clear;
   self.ed_wapt_server_password.Clear;
   self.cb_wapt_server_show_password.Checked := false;
   self.on_show_password_change( self.cb_wapt_server_show_password );
+  self.cb_manual_wapt_serverChange( self.cb_manual_wapt_server );
 
 
   // Private key and certificate
@@ -501,7 +599,7 @@ begin
 
   self.m_language_offset := offset_language();
 
-  self.ActPrevious.Enabled := false;
+  self.ActPrevious.Enabled := true;
   self.ActNext.Enabled     := true;
   self.ActCancel.Enabled   := true;
 
@@ -511,6 +609,7 @@ procedure TVisWAPTConsolePostConf.load_config_if_exist();
 var
   s       : String;
   i       : integer;
+  r       : integer;
   configs : array of String;
   ini     : TIniFile;
 begin
@@ -526,8 +625,13 @@ begin
       continue;
     ini := TIniFile.Create( configs[i] );
 
-    self.EdWAPTServerName.Text := ini.ReadString( INI_GLOBAL, INI_WAPT_SERVER, self.EdWAPTServerName.Text );
-    self.ed_package_prefix.Text:= ini.ReadString( INI_GLOBAL, INI_DEFAULT_PACKAGE_PREFIX, self.ed_package_prefix.Text );
+    self.ed_manual_wapt_server_url.Text := ini.ReadString( INI_GLOBAL, INI_WAPT_SERVER, self.ed_manual_wapt_server_url.Text );
+    self.ed_manual_repo_url.Text        := ini.ReadString( INI_GLOBAL, INI_REPO_URL, self.ed_manual_repo_url.Text );
+    self.ed_package_prefix.Text         := ini.ReadString( INI_GLOBAL, INI_DEFAULT_PACKAGE_PREFIX, self.ed_package_prefix.Text );
+    self.ed_wapt_server_hostname.Text   := ini.ReadString( INI_GLOBAL, INI_WAPT_SERVER, self.ed_wapt_server_hostname.Text );
+    r := url_hostname( s, self.ed_manual_wapt_server_url.Text );
+    if r = 0 then
+      self.ed_wapt_server_hostname.Text := s;
 
     self.ed_existing_key_certificat_filename.Text := ini.ReadString( INI_GLOBAL, INI_PERSONAL_CERTIFICATE_PATH, self.ed_existing_key_certificat_filename.Text );
     if Length( Trim(self.ed_existing_key_certificat_filename.Text) ) = 0 then
@@ -538,7 +642,6 @@ begin
     else
     begin
       self.ed_create_new_key_private_directory.Text := ExtractFilePath(self.ed_existing_key_certificat_filename.Text);
-      self.ed_existing_key_key_filename.Text := ExtractFileNameWithoutExt(self.ed_existing_key_certificat_filename.Text) + '.' + EXTENSION_PRIVATE_KEY;
       self.rb_UseKey.Checked := true;
       self.on_private_key_radiobutton_change( self.rb_UseKey );
     end;
@@ -552,48 +655,99 @@ begin
 
 end;
 
-procedure TVisWAPTConsolePostConf.validate_page_parameters( var bContinue: boolean);
+procedure TVisWAPTConsolePostConf.validate_wapt_server(var bContinue: boolean);
 var
-   url : String;
-   urls : array[0..2] of String;
-   i : integer;
+  i : integer;
+  s : String;
+  b : boolean;
+  r : integer;
 begin
   bContinue := false;
 
-  self.EdWAPTServerName.Text := Trim(self.EdWAPTServerName.Text);
+  self.imagelist_check_status.GetBitmap( CHECK_STATUS_PENDING, self.img_manual_wapt_server_url_status.Picture.Bitmap );
+  self.imagelist_check_status.GetBitmap( CHECK_STATUS_PENDING, self.img_manual_repo_url.Picture.Bitmap );
+  Application.ProcessMessages;
 
-  //
-  if 0 = Length(self.EdWAPTServerName.Text) then
+  if self.cb_manual_wapt_server.Checked then
   begin
-    self.show_validation_error( self.EdWAPTServerName, rs_wapt_sever_url_is_invalid );
+    b := wapt_server_ping( self.ed_manual_wapt_server_url.Text );
+    self.imagelist_check_status.GetBitmap( integer(not b), self.img_manual_wapt_server_url_status.Picture.Bitmap );
+    Application.ProcessMessages;
+    bContinue := b;
+
+    b := wapt_server_is_repo_url(self.ed_manual_repo_url.Text );
+    self.imagelist_check_status.GetBitmap( integer(not b), self.img_manual_repo_url.Picture.Bitmap );
+    Application.ProcessMessages;
+    bContinue := bContinue and b;
+
     exit;
   end;
 
+  self.imagelist_check_status.GetBitmap( CHECK_STATUS_FAILED, self.img_manual_wapt_server_url_status.Picture.Bitmap );
+  self.imagelist_check_status.GetBitmap( CHECK_STATUS_FAILED, self.img_manual_repo_url.Picture.Bitmap );
+  r := url_hostname( s, self.ed_wapt_server_hostname.Text );
+  if r <> 0 then
+    exit;
 
-  urls[0] := self.EdWAPTServerName.Text;
-  urls[1] := 'http://' + self.EdWAPTServerName.Text;
-  urls[2] := 'https://' + self.EdWAPTServerName.Text;
+  self.ed_wapt_server_hostname.Text := s;
 
-  url := '';
-  for i := 0 to 2 do
+  //
+  self.ed_manual_wapt_server_url.Clear;
+  for i := 0 to Length(WAPT_PROTOCOLS) - 1 do
   begin
-    if wapt_server_ping( urls[i] ) then
+    s := Format('%s://%s',  [WAPT_PROTOCOLS[i], self.ed_wapt_server_hostname.Text] );
+    b := wapt_server_ping(s);
+    if b then
     begin
-      url := urls[i];
+      self.imagelist_check_status.GetBitmap( CHECK_STATUS_SUCCESS, self.img_manual_wapt_server_url_status.Picture.Bitmap );
+      self.ed_manual_wapt_server_url.Text := s;
       break;
     end;
   end;
+  bContinue := b;
 
-  if length(url) = 0 then
+  //
+  self.ed_manual_repo_url.Clear;
+  for i := 0 to Length(WAPT_PROTOCOLS) - 1 do
   begin
-    self.show_validation_error( self.EdWAPTServerName, rs_waptserver_not_found_or_down );
-    exit;
+    s := Format( '%s://%s/wapt', [WAPT_PROTOCOLS[i], self.ed_wapt_server_hostname.Text] );
+    b := wapt_server_is_repo_url( s );
+    if b then
+    begin
+      self.imagelist_check_status.GetBitmap( CHECK_STATUS_SUCCESS, self.img_manual_repo_url.Picture.Bitmap );
+      self.ed_manual_repo_url.Text := s;
+      break;
+    end;
   end;
+  bContinue := bContinue and b;
 
-  if not wizard_validate_waptserver_login( self, self.ed_wapt_server_password, url, 'admin', self.ed_wapt_server_password.Text ) then
+end;
+
+procedure TVisWAPTConsolePostConf.ActCheckWaptHostnameExecute(Sender: TObject);
+var
+  b : Boolean;
+begin
+  push_cursor( crHourGlass );
+  try
+    self.validate_wapt_server( b );
+  finally
+    pop_cursor();
+  end;
+end;
+
+procedure TVisWAPTConsolePostConf.validate_page_parameters( var bContinue: boolean);
+begin
+  bContinue := false;
+
+  self.validate_wapt_server( bContinue );
+  if not bContinue then
     exit;
 
-  self.EdWAPTServerName.Text := url;
+  bContinue := false;
+
+  if not wizard_validate_waptserver_login( self, self.ed_wapt_server_password, self.ed_manual_wapt_server_url.Text, 'admin', self.ed_wapt_server_password.Text ) then
+    exit;
+
   Application.ProcessMessages;
   bContinue := true;
 end;
@@ -626,7 +780,9 @@ begin
     if not DirectoryExists(self.ed_create_new_key_private_directory.Text) then
     begin
       msg := Format( rs_create_key_dir_not_exist, [self.ed_create_new_key_private_directory.Text] );
-      r := MessageDlg( self.Name, msg,  mtConfirmation, mbYesNo, 0 );
+      r := MessageDlg( self.Name, msg,  mtConfirmation, mbYesNoCancel, 0 );
+      if mrCancel = r then
+        exit;
       if mrNo = r then
       begin
         self.show_validation_error( self.ed_create_new_key_private_directory, rs_create_key_select_a_valide_private_key_directory );
@@ -661,20 +817,21 @@ begin
     if not wizard_validate_str_password_are_not_empty_and_equals( self, self.ed_create_new_key_password_2, self.ed_create_new_key_password_1.Text, self.ed_create_new_key_password_2.Text ) then
       exit;
 
-    if not wizard_validate_waptserver_waptagent_is_not_present( self, nil, self.EdWAPTServerName.Text, r  ) then
+    if not wizard_validate_waptserver_waptagent_is_not_present( self, nil, self.ed_manual_wapt_server_url.Text, r  ) then
     begin
       if HTTP_RESPONSE_CODE_OK <> r then
         exit;
-      r := MessageDlg( Application.Name, rs_wapt_agent_has_been_found_on_server_confirm_create_package_key, mtConfirmation, mbYesNo, 0 );
-      if mrNo = r then
+      r := MessageDlg( Application.Name, rs_wapt_agent_has_been_found_on_server_confirm_create_package_key, mtConfirmation, mbYesNoCancel, 0 );
+      if r in [mrCancel,mrNo] then
         exit;
+
     end;
 
     create_signed_cert_params_init( @params );
     params.destdir      := ExcludeTrailingPathDelimiter(self.ed_create_new_key_private_directory.Text);
     params.keypassword  := self.ed_create_new_key_password_1.Text;
     params.keyfilename  := IncludeTrailingPathDelimiter(self.ed_create_new_key_private_directory.Text) + self.ed_create_new_key_key_name.Text + '.' + EXTENSION_PRIVATE_KEY;
-    params.commonname   := self.EdWAPTServerName.Text;
+    params.commonname   := self.ed_manual_wapt_server_url.Text;
 
     r := create_signed_cert_params( @params );
     if r <> 0 then
@@ -716,11 +873,13 @@ begin
     if not wizard_validate_key_password( self, self.ed_existing_key_password, self.ed_existing_key_key_filename.Text, self.ed_existing_key_password.Text ) then
       exit;
 
-    if not wizard_validate_waptserver_waptagent_is_not_present( self, nil, self.EdWAPTServerName.Text, r ) then
+    if not wizard_validate_waptserver_waptagent_is_not_present( self, nil, self.ed_manual_wapt_server_url.Text, r ) then
     begin
       if HTTP_RESPONSE_CODE_OK <> r then
         exit;
-      r := MessageDlg( Application.Name, rs_wapt_agent_has_been_found_on_server_skip_build_agent, mtConfirmation, mbYesNo, 0 );
+      r := MessageDlg( Application.Name, rs_wapt_agent_has_been_found_on_server_skip_build_agent, mtConfirmation, mbYesNoCancel, 0 );
+      if mrCancel = r then
+        exit;
       self.m_skip_build_agent := mrYes = r;
     end;
 
@@ -730,7 +889,11 @@ begin
 
   self.write_config( package_certificate );
   if self.m_has_waptservice_installed then
-    self.restart_waptservice_and_register();
+  begin
+    r := self.restart_waptservice_and_register();
+    if r <> 0 then
+      exit;
+  end;
 
   if self.m_skip_build_agent then
     self.PagesControl.ActivePage := self.pgFinish
@@ -865,7 +1028,7 @@ begin
   if 0 = Length(INI_FILE_WAPTGET) then
     exit(-1);
 
-  wapt_server := self.EdWAPTServerName.Text;
+  wapt_server := self.ed_manual_wapt_server_url.Text;
   repo_url    := wapt_server + '/wapt';
 
   SetLength( confs, 2 );
@@ -907,7 +1070,7 @@ begin
   waptget := IncludeTrailingPathDelimiter(WaptBaseDir) + 'wapt-get.exe';
 
   sl := TStringList.Create;
-  sl.Append( 'net stop  waptservice' );
+  sl.AddObject('net stop  waptservice', TObject(1) );  // Continue on error ( Service not runing )
   sl.Append( waptget + ' --direct register' );
   sl.Append( 'net start waptservice' );
   sl.Append( waptget + ' update' );
@@ -923,6 +1086,7 @@ function TVisWAPTConsolePostConf.run_commands(const sl: TStrings): integer;
 var
   i : integer;
   m : integer;
+  b : boolean;
 begin
   m := sl.Count;
 
@@ -942,6 +1106,9 @@ begin
       result := 0;
     except on E : Exception do
       begin
+        b := 1 = Integer(sl.Objects[i]);
+        if b then
+          continue;
         self.show_validation_error( nil, e.Message );
         result := -1;
         break;
@@ -998,6 +1165,9 @@ end;
 
 
 
+
+
+
 procedure TVisWAPTConsolePostConf.show_validation_error(c: TControl; const msg: String);
 begin
   MessageDlg( self.Caption, msg,  mtError, [mbOK], 0 );
@@ -1020,13 +1190,18 @@ var
 
   procedure push_states();
   begin
-    act_states[ACT_PREV]  := self.ActPrevious.Enabled;
-    act_states[ACT_NEXT]  := self.ActNext.Enabled;
-    act_states[ACT_CANCEL]:= self.ActCancel.Enabled;
+    push_cursor( crHourGlass );
+    act_states[ACT_PREV]      := self.ActPrevious.Enabled;
+    act_states[ACT_NEXT]      := self.ActNext.Enabled;
+    act_states[ACT_CANCEL]    := self.ActCancel.Enabled;
+    self.ActPrevious.Enabled  := false;
+    self.ActNext.Enabled      := false;
+    self.ActCancel.Enabled    := false;
   end;
 
   procedure pop_states();
   begin
+    pop_cursor();
     self.ActPrevious.Enabled  := act_states[ACT_PREV];
     self.ActNext.Enabled      := act_states[ACT_NEXT];
     self.ActCancel.Enabled    := act_states[ACT_CANCEL];
@@ -1037,7 +1212,6 @@ begin
 
 
   push_states();
-  set_buttons_enable( false );
 
   p := self.PagesControl.ActivePage;
 
@@ -1076,10 +1250,8 @@ begin
     ExitProcess(0);
   end;
 
-
-  self.PagesControl.ActivePageIndex := self.PagesControl.ActivePageIndex + 1;
   pop_states();
-  self.PagesControlChange(nil);
+  self.PagesControl.ActivePageIndex := self.PagesControl.ActivePageIndex + 1;
   exit;
 
 LBL_FAIL:
@@ -1090,10 +1262,26 @@ procedure TVisWAPTConsolePostConf.ActCancelExecute(Sender: TObject);
 var
   r : integer;
 begin
-  r := MessageDlg( rs_confirm, rs_confirm_cancel_post_config, mtConfirmation, mbYesNo, 0);
-  if mrNo = r then
-    exit;
-  Close;
+  r := MessageDlg( rs_confirm, rs_confirm_cancel_post_config, mtConfirmation, mbYesNoCancel, 0);
+  if mrYes = r then
+    Close;
+end;
+
+
+
+procedure TVisWAPTConsolePostConf.ActCheckWaptHostnameUpdate(Sender: TObject);
+var
+  b : boolean;
+begin
+  if self.cb_manual_wapt_server.Checked then
+  begin
+    b := 0 <> Length(Trim(self.ed_manual_wapt_server_url.Text));
+    b := b or ( 0 <> Length(Trim(self.ed_manual_repo_url.Text)) );
+  end
+  else
+    b := 0 <> Length(Trim(self.ed_wapt_server_hostname.Text));
+
+  self.ActCheckWaptHostname.Enabled := b;
 end;
 
 procedure TVisWAPTConsolePostConf.ActNextUpdate(Sender: TObject);
@@ -1101,6 +1289,12 @@ var
   ts : TTabSheet;
 begin
   ts := self.PagesControl.Pages[ self.PagesControl.PageIndex ];
+
+  if pgParameters = ts then
+  begin
+    ActPrevious.Enabled := false;
+    exit;
+  end;
 
   if pgFinish = ts then
   begin
@@ -1121,9 +1315,75 @@ begin
   end
   else
     PagesControl.ActivePageIndex := PagesControl.ActivePageIndex - 1;
-
-  self.PagesControlChange( nil );
 end;
+
+
+
+procedure TVisWAPTConsolePostConf.btn_find_private_keyClick(Sender: TObject);
+label
+  LBL_EXIT;
+var
+  s : String;
+  r : integer;
+begin
+  push_cursor( crHourGlass );
+
+  r := find_private_key( s, self.ed_existing_key_certificat_filename.Text, self.ed_existing_key_password.Text );
+  if r <> 0 then
+  begin
+    MessageDlg( Application.Name, 'No private key has been found in certificate directory with this this password', mtInformation, [mbOK], 0 );
+    goto LBL_EXIT;
+  end;
+
+  self.ed_existing_key_key_filename.Text := s;
+
+LBL_EXIT:
+  pop_cursor();
+end;
+
+procedure TVisWAPTConsolePostConf.cb_manual_wapt_serverChange(Sender: TObject);
+var
+  b :boolean;
+begin
+  b := self.cb_manual_wapt_server.Checked;
+
+  self.lbl_manual_repo_url.Enabled        := b;
+  self.lbl_manual_wapt_server_url.Enabled := b;
+  self.ed_manual_wapt_server_url.Enabled  := b;
+  self.ed_manual_repo_url.Enabled         := b;
+
+  self.ed_manual_wapt_server_url.TabStop  := b;
+  self.ed_manual_repo_url.TabStop         := b;
+
+  if b then
+    set_focus_if_visible( self.ed_manual_wapt_server_url );
+
+  b := not b;
+  self.lbl_wapt_server_hostname.Enabled   := b;
+  self.ed_wapt_server_hostname.Enabled    := b;
+  self.ed_wapt_server_hostname.TabStop    := b;
+
+  if b then
+    set_focus_if_visible( self.ed_wapt_server_hostname );
+
+  self.img_manual_repo_url.Picture.Clear;
+  self.img_manual_wapt_server_url_status.Picture.Clear;
+
+end;
+
+procedure TVisWAPTConsolePostConf.ed_manual_repo_urlKeyPress(Sender: TObject; var Key: char);
+begin
+  self.img_manual_repo_url.Picture.Clear;
+  self.on_key_press( Sender, Key );
+end;
+
+procedure TVisWAPTConsolePostConf.ed_manual_wapt_server_urlKeyPress( Sender: TObject; var Key: char);
+begin
+  self.img_manual_wapt_server_url_status.Picture.Clear;
+  self.on_key_press( Sender, Key );
+end;
+
+
 
 
 

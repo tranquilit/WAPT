@@ -73,7 +73,7 @@ const
   FILE_FILTER_PRIVATE_KEY : String = 'Private key file (*.pem)|*.PEM';
   FILE_FILTER_CERTIFICATE : String = 'Certificate file (*.crt)|*.CRT';
 
-
+  WAPT_PROTOCOLS              : array[0..1] of String = ('https', 'http');
   WAPT_SERVICE_WAPTPOSTGRESQL : String = 'WAPTPostgresql';
   WAPT_SERVICE_WAPTTASKS      : String = 'WAPTtasks';
   WAPT_SERVICE_WAPTSERVER     : String = 'WAPTServer';
@@ -81,6 +81,10 @@ const
   WAPT_SERVICE_WAPTSERVICE    : String = 'WAPTService';
 
   RUN_TIMEOUT_MS = 10 *1000;
+
+  CHECK_STATUS_SUCCESS = 0;
+  CHECK_STATUS_FAILED  = 1;
+  CHECK_STATUS_PENDING = 2;
 
 implementation
 
