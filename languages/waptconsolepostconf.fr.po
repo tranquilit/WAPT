@@ -55,9 +55,7 @@ msgstr ""
 "srvwapt.mydomain.local' ( Enregistrement de type A) ainsi que de créer un alias\n"
 "( Enregistement de type CNAME) pointant vers srvwapt.\n"
 "Au cas où votre serveur DNS ne serait pas un tiers de confiances, ou si vous configurer\n"
-"un environnement de test, vous pouvez utiliser l'adresse IP du serveur. Plus\n"
-"d'informations ici : \n"
-"'http://dev.tranquil.it/scenari/guide_admin/co/wapt_server_configuration_champDNS.html'\n"
+"un environnement de test, vous pouvez utiliser l'adresse IP du serveur.\n"
 
 #: tviswaptconsolepostconf.edwaptservername.text
 msgid "srvwapt.mydomain.lan"
