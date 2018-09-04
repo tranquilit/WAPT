@@ -1378,7 +1378,7 @@ class PackageEntry(BaseObjectClass):
 
         """
         if not self.localpath or (not os.path.isfile(self.localpath) and not os.path.isdir(self.localpath)):
-            raise Exception(u"%s is not a Wapt package" % self.localpath)
+            raise Exception(u"Path %s is not a Wapt package" % self.localpath)
 
         if isinstance(certificate,list):
             signer_cert = certificate[0]

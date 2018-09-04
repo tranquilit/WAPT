@@ -1833,11 +1833,23 @@ def trigger_host_action():
         notified_uuids = []
 
         for action in action_data:
-            uuid = action['uuid']
-            if last_uuid != uuid:
-                host = Hosts.select(Hosts.computer_fqdn, Hosts.listening_address, Hosts.server_uuid).where(
-                    (Hosts.uuid == uuid) & (Hosts.listening_protocol == 'websockets')).dicts().first()
-            if host:
+            if 'uuid' in action:
+                where = Hosts.uuid == action['uuid']
+            elif 'uuids' in action:
+                where = Hosts.uuid.in_(action['uuids'])
+            elif 'organizational_units' in action:
+                ou_list = action['organizational_units']
+                if action.get('include_childs_ou','1') == '1':
+                    or_list = Hosts.computer_ad_ou.endswith(ou_list[0])
+                    for ou in ou_list[1:]:
+                       or_list = or_list | Hosts.computer_ad_ou.endswith(ou)
+                    where = (or_list)
+                else:
+                    where = (Hosts.computer_ad_ou.in_(ou_list))
+
+            for host in Hosts.select(Hosts.uuid,Hosts.computer_fqdn, Hosts.listening_address, Hosts.server_uuid).where(
+                    (where) & (Hosts.listening_protocol == 'websockets')).dicts():
+                uuid = host['uuid']
                 if host['server_uuid'] != app.conf['server_uuid']:
                     other_server.append(uuid)
                 else:
@@ -1856,9 +1868,7 @@ def trigger_host_action():
                             Hosts.update(host_status='RUNNING').where(Hosts.uuid == uuid).execute()
                     except Exception as e:
                         server_errors.append('Error for %s: %s' % (uuid,e))
-            else:
-                server_errors.append('Host %s not connected, Websocket sid not in database' % uuid)
-            last_uuid = uuid
+                last_uuid= uuid
 
         wait_until = time.time() + timeout + expected_result_count * timeout / 100
         while len(ok) + len(client_errors) + len(server_errors) < expected_result_count:
@@ -1873,6 +1883,7 @@ def trigger_host_action():
                              success=len(client_errors) == 0 and len(server_errors) == 0)
     except Exception as e:
         return make_response_from_exception(e)
+
 
 
 # SocketIO Callbacks / handlers

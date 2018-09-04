@@ -5911,11 +5911,14 @@ object VisWaptGUI: TVisWaptGUI
       Category = 'OrgUnits'
       Caption = 'Check updates on all hosts of this OU'
       ImageIndex = 0
+      OnExecute = ActTriggerUpdateOrgUnitExecute
+      OnUpdate = ActTriggerUpgradesOrgUnitUpdate
     end
     object ActTriggerUpgradesOrgUnit: TAction
       Category = 'OrgUnits'
       Caption = 'Apply upgrades on all hosts of this OU'
       ImageIndex = 26
+      OnExecute = ActTriggerUpgradesOrgUnitExecute
       OnUpdate = ActTriggerUpgradesOrgUnitUpdate
     end
     object ActTriggerHostAudit: TAction

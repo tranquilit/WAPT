@@ -517,6 +517,8 @@ type
     procedure ActTriggerBurstUpdatesExecute(Sender: TObject);
     procedure ActTriggerBurstUpgradesExecute(Sender: TObject);
     procedure ActTriggerHostAuditExecute(Sender: TObject);
+    procedure ActTriggerUpdateOrgUnitExecute(Sender: TObject);
+    procedure ActTriggerUpgradesOrgUnitExecute(Sender: TObject);
     procedure ActTriggerUpgradesOrgUnitUpdate(Sender: TObject);
     procedure ActTriggerWakeOnLanExecute(Sender: TObject);
     procedure ActTriggerWaptServiceRestartExecute(Sender: TObject);
@@ -2570,7 +2572,7 @@ end;
 
 procedure TVisWaptGUI.ActTriggerUpgradesOrgUnitUpdate(Sender: TObject);
 begin
-  ActTriggerUpgradesOrgUnit.Enabled := length(GetSelectedOrgUnits)>0;
+  (Sender as TAction).Enabled := GridHosts.Data.AsArray.Length>0 ;
 end;
 
 procedure TVisWaptGUI.ActTriggerWakeOnLanExecute(Sender: TObject);
@@ -2730,6 +2732,15 @@ begin
   finally
     Screen.Cursor:=crDefault;
   end;
+end;
+
+function StringArray2SO(A:TDynStringArray):ISuperObject;
+var
+  s:String;
+begin
+  Result := TSuperObject.Create(stArray);
+  for s in A do
+    Result.AsArray.Add(s);
 end;
 
 
@@ -5024,6 +5035,14 @@ begin
 end;
 
 procedure TVisWaptGUI.ActWUADownloadsRefreshExecute(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.ActTriggerUpgradesOrgUnitExecute(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.ActTriggerUpdateOrgUnitExecute(Sender: TObject);
 begin
 end;
 
