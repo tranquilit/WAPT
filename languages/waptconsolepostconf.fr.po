@@ -107,11 +107,11 @@ msgstr "Prefix de package :"
 
 #: tviswaptconsolepostconf.lbl_wapt_server_password.caption
 msgid "Wapt server password :"
-msgstr "Mot de passe du server Wapt :"
+msgstr "Mot de passe du serveur Wapt :"
 
 #: tviswaptconsolepostconf.llb_wapt_server.caption
 msgid "Wapt server url :"
-msgstr "Url du server Wapt :"
+msgstr "Url du serveur Wapt :"
 
 #: tviswaptconsolepostconf.panel15.caption
 msgid "Panel15"
@@ -282,7 +282,7 @@ msgid ""
 "Wapt agent has been found on the server\n"
 "Skip building a new agent ?\n"
 msgstr ""
-"L'agent Wapt a été trouvé sur le server\n"
+"L'agent Wapt a été trouvé sur le serveur\n"
 "Passer la construction d'un nouvel agent ?\n"
 
 #: waptconsolepostconfres.rs_wapt_server_installation_may_be_broken

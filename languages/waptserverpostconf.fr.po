@@ -45,7 +45,7 @@ msgstr "Précédent"
 
 #: tviswaptserverpostconf.actwriteconfstartserve.caption
 msgid "Start WaptServer and WAPTService with this configuration"
-msgstr "Démarrer le server et l'agent WAPT avec cette configuration"
+msgstr "Démarrer le serveur et l'agent WAPT avec cette configuration"
 
 #: tviswaptserverpostconf.caption
 msgid "Configuration of WAPT server for Windows"
@@ -119,7 +119,7 @@ msgstr ""
 
 #: tviswaptserverpostconf.label1.caption
 msgid "WAPT server password :"
-msgstr "Mot de passe du server WAPT :"
+msgstr "Mot de passe du serveur WAPT :"
 
 #: tviswaptserverpostconf.label2.caption
 msgid "Confirm password :"
@@ -430,7 +430,7 @@ msgstr "Démarrer PostgreSQL"
 
 #: uwaptserverres.rsstartingwaptserver
 msgid "Starting WaptServer"
-msgstr "Démarrage WaptServer"
+msgstr "Démarrage du serveur Wapt"
 
 #: uwaptserverres.rsstoppingnginx
 msgid "Stopping NGINX"
@@ -442,7 +442,7 @@ msgstr "Arrêt de PostgreSQL"
 
 #: uwaptserverres.rsstoppingwaptserver
 msgid "Stopping WaptServer"
-msgstr "Arrêt de WaptServer"
+msgstr "Arrêt du serveur Wapt"
 
 #: uwaptserverres.rsupdatinglocalpackages
 msgctxt "uwaptserverres.rsupdatinglocalpackages"
@@ -497,7 +497,7 @@ msgstr "Le certificat '%s' est invalide"
 
 #: uwaptserverres.rs_click_restart_waptserver
 msgid "Click to restart wapt server"
-msgstr "Clicquer pour redémarrer wapt server"
+msgstr "Cliquer pour redémarrer le serveur wapt"
 
 #: uwaptserverres.rs_compilation_failed
 msgid "Compilation Failed"
@@ -525,7 +525,7 @@ msgstr "Un répertoire de clef valide doit être sélectionné"
 
 #: uwaptserverres.rs_error_while_restarting_waptserver
 msgid "An error has occured while restarting waptserver"
-msgstr "Une erreur est survenue pendant le redémarrage de waptserver"
+msgstr "Une erreur est survenue pendant le redémarrage du serveur wapt"
 
 #: uwaptserverres.rs_iscc_instance_found
 msgid "A instance of ISCC as been found, cannot continue."
