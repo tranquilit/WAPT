@@ -4227,7 +4227,10 @@ class Wapt(BaseObjectClass):
             download_only=False,
             usecache=True,
             printhook=None,
-            installed_by=None):
+            installed_by=None,
+            only_priorities=None,
+            only_if_not_process_running=False):
+
         """Install a list of packages and its dependencies
         removes first packages which are in conflicts package attribute
 
@@ -4289,10 +4292,24 @@ class Wapt(BaseObjectClass):
             except Exception as e:
                 logger.critical(u'Error removing %s:%s'%(request,ensure_unicode(e)))
 
+
         to_install = []
-        to_install.extend(additional_install)
-        to_install.extend(to_upgrade)
-        to_install.extend(packages)
+
+        def is_process_running(processes):
+            processes = ensure_list(processes)
+            for p in processes:
+                if setuphelpers.isrunning(p):
+                    return True
+            return False
+
+        def is_allowed(package):
+            return ((only_priorities is None or package.priority in only_priorities) and
+                   (not only_if_not_process_running or not package.impacted_process or not is_process_running(package.impacted_process))
+                   )
+
+        to_install.extend([p for p in additional_install if is_allowed(p[1])])
+        to_install.extend([p for p in to_upgrade if is_allowed(p[1])])
+        to_install.extend([p for p in packages if is_allowed(p[1])] )
 
         # get package entries to install to_install is a list of (request,package)
         packages = [ p[1] for p in to_install ]
@@ -4628,10 +4645,13 @@ class Wapt(BaseObjectClass):
         expected_host_packages = self.get_host_packages_names()
         return [pn for pn in installed_host_packages if pn not in expected_host_packages]
 
-    def upgrade(self):
+    def upgrade(self,only_priorities=None,only_if_not_process_running=False):
         """Install "well known" host package from main repository if not already installed
         then query localstatus database for packages with a version older than repository
         and install all newest packages
+
+        Args:
+            priorities (list of str): If not None, upgrade only packages with these priorities.
 
         Returns:
             dict: {'upgrade': [], 'additional': [], 'downloads':
@@ -4662,7 +4682,7 @@ class Wapt(BaseObjectClass):
 
             upgrades = self.waptdb.upgradeable()
             logger.debug(u'upgrades : %s' % upgrades.keys())
-            result = merge_dict(result,self.install(upgrades.keys(),force=True))
+            result = merge_dict(result,self.install(upgrades.keys(),force=True,only_priorities=only_priorities,only_if_not_process_running=only_if_not_process_running))
             self.store_upgrade_status()
 
             # merge results

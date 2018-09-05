@@ -677,11 +677,14 @@ class WaptUpdate(WaptTask):
 
 
 class WaptUpgrade(WaptTask):
-    def __init__(self,**args):
+    def __init__(self,only_priorities=None,only_if_not_process_running=False,**args):
         super(WaptUpgrade,self).__init__()
         #self.priority = 10
         self.notify_server_on_start = False
         self.notify_server_on_finish = True
+        self.only_priorities = only_priorities
+        self.only_if_not_process_running = only_if_not_process_running
+
         for k in args:
             setattr(self,k,args[k])
 
@@ -900,11 +903,13 @@ class WaptDownloadPackage(WaptTask):
 
 
 class WaptPackageInstall(WaptTask):
-    def __init__(self,packagename,force=False,**args):
+    def __init__(self,packagename,force=False,only_priorities=None,only_if_not_process_running=False,**args):
         super(WaptPackageInstall,self).__init__()
         self.packagename = packagename
         self.force = force
-        self.package = None
+        self.only_priorities = only_priorities
+        self.only_if_not_process_running = only_if_not_process_running
+
         for k in args:
             setattr(self,k,args[k])
 
@@ -912,7 +917,11 @@ class WaptPackageInstall(WaptTask):
         self.update_status(_(u'Installing %s') % (','.join(self.packagename)))
         def cjoin(l):
             return u','.join([u"%s" % (p[1].asrequirement() if p[1] else p[0],) for p in l])
-        self.result = self.wapt.install(self.packagename,force = self.force)
+        self.result = self.wapt.install(self.packagename,
+            force = self.force,
+            only_priorities=self.only_priorities,
+            only_if_not_process_running=self.only_if_not_process_running)
+
         all_install = self.result.get('install',[])
         if self.result.get('additional',[]):
             all_install.extend(self.result['additional'])

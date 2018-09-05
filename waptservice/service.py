@@ -563,7 +563,7 @@ def package_icon():
         icon = get_icon(package)
         return send_file(icon,'image/png',as_attachment=True,attachment_filename=u'{}.png'.format(package).encode('utf8'),cache_timeout=43200)
     except requests.RequestException as e:
-        return send_from_directory(app.static_folder+'/images','unknown.png',mimetype='image/png',as_attachment=True,attachment_filename=u'{}.png'.format(package).encode('utf8'),cache_timeout=43200)
+        return send_from_directory(app.static_folder+'/images','unknown.png',mimetype='image/png',as_attachment=True,attachment_filename=u'{}.png'.format(package),cache_timeout=43200)
 
 @app.route('/package_details')
 @app.route('/package_details.json')
@@ -669,13 +669,21 @@ def reload_config():
 def upgrade():
     force = int(request.args.get('force','0')) != 0
     notify_user = int(request.args.get('notify_user','1')) != 0
+    only_priorities = None
+    if 'only_priorities' in request.args:
+        only_priorities = ensure_list(request.args.get('only_priorities',None),allow_none=True)
+    only_if_not_process_running = int(request.args.get('only_if_not_process_running','1')) != 0
+
     all_tasks = []
     wapt().update()
     actions = wapt().list_upgrade()
     to_install = actions['upgrade']+actions['additional']+actions['install']
     for req in to_install:
-        all_tasks.append(task_manager.add_task(WaptPackageInstall(req,force=force,notify_user=notify_user)).as_dict())
-    all_tasks.append(task_manager.add_task(WaptUpgrade(notify_user=notify_user)).as_dict())
+        all_tasks.append(task_manager.add_task(WaptPackageInstall(req,force=force,notify_user=notify_user,
+            only_priorities=only_priorities,
+            only_if_not_process_running=only_if_not_process_running)).as_dict())
+    all_tasks.append(task_manager.add_task(WaptUpgrade(notify_user=notify_user,only_priorities=only_priorities,
+            only_if_not_process_running=only_if_not_process_running)).as_dict())
     all_tasks.append(task_manager.add_task(WaptCleanup(notify_user=False)))
     data = {'result':'OK','content':all_tasks}
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
@@ -853,6 +861,10 @@ def install():
     package_requests = ensure_list(request.args.get('package'))
     force = int(request.args.get('force','0')) == 1
     notify_user = int(request.args.get('notify_user','0')) == 1
+    only_priorities = None
+    if 'only_priorities' in request.args:
+        only_priorities = ensure_list(request.args.get('only_priorities',None),allow_none=True)
+    only_if_not_process_running = int(request.args.get('only_if_not_process_running','1')) != 0
 
     username = None
 
@@ -882,7 +894,8 @@ def install():
             return authenticate()
 
     if package_requests:
-        data = task_manager.add_task(WaptPackageInstall(package_requests,force=force,installed_by=username),notify_user=notify_user).as_dict()
+        data = task_manager.add_task(WaptPackageInstall(package_requests,force=force,installed_by=username,
+            only_priorities = only_priorities,only_if_not_process_running=only_if_not_process_running,notify_user=notify_user)).as_dict()
         for apackage in package_requests:
             task_manager.add_task(WaptAuditPackage(packagename=apackage,force=force,notify_user=notify_user,priority=100)).as_dict()
 
