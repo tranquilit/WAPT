@@ -846,18 +846,45 @@ def inventory():
     else:
         return render_template('default.html',data=data,title=_('Inventory of the host'))
 
-
 @app.route('/install', methods=['GET'])
 @app.route('/install.json', methods=['GET'])
 @app.route('/install.html', methods=['GET'])
-@allow_local_auth
 def install():
-    package = request.args.get('package')
+    package_requests = ensure_list(request.args.get('package'))
     force = int(request.args.get('force','0')) == 1
     notify_user = int(request.args.get('notify_user','0')) == 1
-    data = task_manager.add_task(WaptPackageInstall(package,force=force),notify_user=notify_user).as_dict()
-    for apackage in ensure_list(package):
-        task_manager.add_task(WaptAuditPackage(packagename=apackage,force=force,notify_user=notify_user,priority=100)).as_dict()
+
+    username = None
+
+    for apackage in package_requests:
+        if request.remote_addr in ['127.0.0.1']:
+            auth = request.authorization
+            valid_auth = auth is not None and check_auth(auth.username, auth.password)
+
+            # check with current credentials
+            if valid_auth:
+                username = auth.username
+
+            is_authorized = wapt().is_authorized_package(apackage,username)
+
+            if not is_authorized:
+                if not auth:
+                    logging.info('no credential given')
+                    return authenticate()
+
+                if not username:
+                    return authenticate()
+
+                is_authorized = wapt().is_authorized_package(apackage,username)
+                logging.info("user %s authenticated" % username)
+                logging.info("package %s authorization : %s" % (apackage,is_authorized))
+        else:
+            return authenticate()
+
+    if package_requests:
+        data = task_manager.add_task(WaptPackageInstall(package_requests,force=force,installed_by=username),notify_user=notify_user).as_dict()
+        for apackage in package_requests:
+            task_manager.add_task(WaptAuditPackage(packagename=apackage,force=force,notify_user=notify_user,priority=100)).as_dict()
 
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')

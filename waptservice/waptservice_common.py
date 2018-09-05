@@ -909,7 +909,7 @@ class WaptPackageInstall(WaptTask):
             setattr(self,k,args[k])
 
     def _run(self):
-        self.update_status(_(u'Installing %s') % self.packagename)
+        self.update_status(_(u'Installing %s') % (','.join(self.packagename)))
         def cjoin(l):
             return u','.join([u"%s" % (p[1].asrequirement() if p[1] else p[0],) for p in l])
         self.result = self.wapt.install(self.packagename,force = self.force)
@@ -946,7 +946,7 @@ class WaptPackageInstall(WaptTask):
         return d
 
     def __unicode__(self):
-        return _(u"Installation of {packagename} (task #{id})").format(classname=self.__class__.__name__,id=self.id,packagename=self.packagename)
+        return _(u"Installation of {packagename} (task #{id})").format(classname=self.__class__.__name__,id=self.id,packagename=','.join(self.packagename))
 
     def same_action(self,other):
         return (self.__class__ == other.__class__) and (self.packagename == other.packagename)

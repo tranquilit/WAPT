@@ -6617,6 +6617,20 @@ class Wapt(BaseObjectClass):
         else:
             logger.debug('%s : %s / %s' % (msg,progress,progress_max))
 
+    def is_authorized_package(self,package,username=None):
+        package_request = PackageRequest(package=package)
+        if package_request.package in self.waptdb.installed_package_names():
+            return True
+
+        upgrades_and_pending = [PackageRequest(package=pr).package for pr in self.get_last_update_status().get('upgrades',[])]
+        if package_request.package in upgrades_and_pending:
+            return True
+
+        if not username:
+            return False
+
+        return True
+
 def wapt_sources_edit(wapt_sources_dir):
     """Utility to open Pyscripter with package source if it is installed
         else open the development directory in Shell Explorer.
