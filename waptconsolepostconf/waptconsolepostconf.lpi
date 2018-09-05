@@ -149,7 +149,7 @@
       </Options>
     </Linking>
     <Other>
-      <CustomOptions Value="-dUseCThreads"/>
+      <CustomOptions Value="-dUseCThreads -dENTERPRISE"/>
     </Other>
   </CompilerOptions>
 </CONFIG>
