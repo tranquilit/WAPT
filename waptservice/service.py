@@ -1253,6 +1253,28 @@ class WaptTaskManager(threading.Thread):
         self.add_task(WaptUpdateServerStatus(priority=100,created_by='SCHEDULER'))
 
 
+    @property
+    def last_waptwua_download(self):
+        return self.wapt.read_param('last_waptwua_download',ptype='datetime')
+
+    @last_waptwua_download.setter
+    def last_waptwua_download(self,value):
+        if value is None:
+            self.wapt.delete_param('last_waptwua_download')
+        else:
+            self.wapt.write_param('last_waptwua_download',value)
+
+    @property
+    def last_waptwua_install(self):
+        return self.wapt.read_param('last_waptwua_install',ptype='datetime')
+
+    @last_waptwua_install.setter
+    def last_waptwua_install(self,value):
+        if value is None:
+            self.wapt.delete_param('last_waptwua_install')
+        else:
+            self.wapt.write_param('last_waptwua_install',value)
+
     def check_scheduled_tasks(self):
         """Add update/upgrade tasks if elapsed time since last update/upgrade is over"""
         logger.debug(u'Check scheduled tasks')
@@ -1267,8 +1289,8 @@ class WaptTaskManager(threading.Thread):
                     actions = self.wapt.list_upgrade()
                     to_install = actions['upgrade']+actions['additional']+actions['install']
                     for req in to_install:
-                        self.add_task(WaptPackageInstall(req,notify_user=True,created_by='SCHEDULER'))
-                    self.add_task(WaptUpgrade(notifyuser=False,created_by='SCHEDULER'))
+                        self.add_task(WaptPackageInstall(req,notify_user=True,created_by='SCHEDULER',only_if_no_process_running=True))
+                    self.add_task(WaptUpgrade(notifyuser=False,created_by='SCHEDULER',only_if_no_process_running=True))
                 except Exception as e:
                     logger.debug(u'Error for upgrade in check_scheduled_tasks: %s'%e)
                 self.add_task(WaptCleanup(notifyuser=False,created_by='SCHEDULER'))
@@ -1291,6 +1313,16 @@ class WaptTaskManager(threading.Thread):
                 except Exception as e:
                     logger.debug(u'Error checking audit: %s' % e)
 
+        if WaptWUA is not None:
+            if waptconfig.waptwua_download_scheduling:
+                if self.last_waptwua_download is None or (datetime.datetime.now() - self.last_waptwua_download > get_time_delta(waptconfig.waptwua_download_scheduling)):
+                    self.add_task(WaptWUADowloadTask(notify_user=False,notify_server_on_finish=True,created_by='SCHEDULER'))
+                    self.last_waptwua_download = datetime.datetime.now()
+
+                if waptconfig.waptwua_install_scheduling:
+                    if self.last_waptwua_install is None or (datetime.datetime.now() - self.last_waptwua_install > get_time_delta(waptconfig.waptwua_install_scheduling)):
+                        self.add_task(WaptWUAInstallTask(notify_user=False,notify_server_on_finish=True,created_by='SCHEDULER'))
+                        self.last_waptwua_install = datetime.datetime.now()
 
     def run(self):
         """Queue management, event processing"""

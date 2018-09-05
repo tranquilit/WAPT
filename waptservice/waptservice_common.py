@@ -399,6 +399,7 @@ class WaptServiceConfig(object):
                 else:
                     setattr(self,param,None)
 
+            # waptwua settings (Enterprise)
             if config.has_option('global','waptwua_enabled'):
                 setattr(self,'waptwua_enabled',config.getboolean('global','waptwua_enabled'))
             else:
@@ -407,6 +408,12 @@ class WaptServiceConfig(object):
             for param in ['waptwua_allowed_updates','waptwua_forbidden_updates','waptwua_allowed_severities','waptwua_allowed_classifications']:
                 if config.has_option('global',param):
                     setattr(self,param,ensure_list(config.get('global',param)))
+                else:
+                    setattr(self,param,None)
+
+            for param in ['waptwua_download_scheduling','waptwua_install_scheduling']:
+                if config.has_option('global',param):
+                    setattr(self,param,config.get('global',param))
                 else:
                     setattr(self,param,None)
 
