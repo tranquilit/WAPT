@@ -107,3 +107,4 @@ waptwizard.exe
 waptwizard/lib
 waptconsolepostconf/lib
 waptconsolepostconf.exe
+Makefile
