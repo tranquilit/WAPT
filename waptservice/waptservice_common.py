@@ -860,9 +860,9 @@ class WaptLongTask(WaptTask):
 
 
 class WaptDownloadPackage(WaptTask):
-    def __init__(self,packagename,usecache=True,**args):
+    def __init__(self,packagenames,usecache=True,**args):
         super(WaptDownloadPackage,self).__init__()
-        self.packagename = packagename
+        self.packagenames = ensure_list(packagenames)
         self.usecache = usecache
         self.size = 0
         for k in args:
@@ -880,39 +880,39 @@ class WaptDownloadPackage(WaptTask):
         self.update_status(_(u'Downloading %s : %s' % (url,stat)))
 
     def _run(self):
-        self.update_status(_(u'Downloading %s') % self.packagename)
+        self.update_status(_(u'Downloading %s') % (','.join(self.packagenames)))
         start = time.time()
-        self.result = self.wapt.download_packages(self.packagename,usecache=self.usecache,printhook=self.printhook)
+        self.result = self.wapt.download_packages(self.packagenames,usecache=self.usecache,printhook=self.printhook)
         end = time.time()
         if self.result['errors']:
-            self.summary = _(u"Error while downloading {packagename}: {error}").format(packagename=self.packagename,error=self.result['errors'][0][1])
+            self.summary = _(u"Error while downloading {packagenames}: {error}").format(packagenames=','.join(self.packagenames),error=self.result['errors'][0][1])
         else:
             if end-start> 0.01:
-                self.summary = _(u"Done downloading {packagename}. {speed} kB/s").format(packagename=self.packagename,speed=self.size/1024/(end-start))
+                self.summary = _(u"Done downloading {packagenames}. {speed} kB/s").format(packagenames=','.join(self.packagenames),speed=self.size/1024/(end-start))
             else:
-                self.summary = _(u"Done downloading {packagename}.").format(packagename=self.packagename)
+                self.summary = _(u"Done downloading {packagenames}.").format(packagenames=','.join(self.packagenames))
 
     def as_dict(self):
         d = WaptTask.as_dict(self)
         d.update(
             dict(
-                packagename = self.packagename,
+                packagenames = self.packagenames,
                 usecache = self.usecache,
                 )
             )
         return d
 
     def __unicode__(self):
-        return _(u"Download of {packagename} (tâche #{id})").format(classname=self.__class__.__name__,id=self.id,packagename=self.packagename)
+        return _(u"Download of {packagenames} (tâche #{id})").format(classname=self.__class__.__name__,id=self.id,packagenames=self.packagenames)
 
     def same_action(self,other):
-        return (self.__class__ == other.__class__) and (self.packagename == other.packagename)
+        return (self.__class__ == other.__class__) and (self.packagenames == other.packagenames)
 
 
 class WaptPackageInstall(WaptTask):
-    def __init__(self,packagename,force=False,only_priorities=None,only_if_not_process_running=False,**args):
+    def __init__(self,packagenames,force=False,only_priorities=None,only_if_not_process_running=False,**args):
         super(WaptPackageInstall,self).__init__()
-        self.packagename = packagename
+        self.packagenames = ensure_list(packagenames)
         self.force = force
         self.only_priorities = only_priorities
         self.only_if_not_process_running = only_if_not_process_running
@@ -921,10 +921,10 @@ class WaptPackageInstall(WaptTask):
             setattr(self,k,args[k])
 
     def _run(self):
-        self.update_status(_(u'Installing %s') % (','.join(self.packagename)))
+        self.update_status(_(u'Installing %s') % (','.join(self.packagenames)))
         def cjoin(l):
             return u','.join([u"%s" % (p[1].asrequirement() if p[1] else p[0],) for p in l])
-        self.result = self.wapt.install(self.packagename,
+        self.result = self.wapt.install(self.packagenames,
             force = self.force,
             only_priorities=self.only_priorities,
             only_if_not_process_running=self.only_if_not_process_running)
@@ -949,28 +949,28 @@ class WaptPackageInstall(WaptTask):
         self.summary = u"\n".join(s)
         if self.result.get('errors',[]):
             raise Exception(_('Error during install of {}: errors in packages {}').format(
-                    self.packagename,
+                    self.packagenames,
                     self.result.get('errors',[])))
 
     def as_dict(self):
         d = WaptTask.as_dict(self)
         d.update(
             dict(
-                packagename = self.packagename,
+                packagenames = self.packagenames,
                 force = self.force)
             )
         return d
 
     def __unicode__(self):
-        return _(u"Installation of {packagename} (task #{id})").format(classname=self.__class__.__name__,id=self.id,packagename=','.join(self.packagename))
+        return _(u"Installation of {packagenames} (task #{id})").format(classname=self.__class__.__name__,id=self.id,packagenames=','.join(self.packagenames))
 
     def same_action(self,other):
-        return (self.__class__ == other.__class__) and (self.packagename == other.packagename)
+        return (self.__class__ == other.__class__) and (self.packagenames == other.packagenames)
 
 
 class WaptPackageRemove(WaptPackageInstall):
-    def __init__(self,packagename,force=False,**args):
-        super(WaptPackageRemove,self).__init__(packagename=packagename,force=force)
+    def __init__(self,packagenames,force=False,**args):
+        super(WaptPackageRemove,self).__init__(packagenames=packagenames,force=force)
         for k in args:
             setattr(self,k,args[k])
 
@@ -978,7 +978,7 @@ class WaptPackageRemove(WaptPackageInstall):
         def cjoin(l):
             return u','.join([u'%s'%p for p in l])
 
-        self.result = self.wapt.remove(self.packagename,force=self.force)
+        self.result = self.wapt.remove(self.packagenames,force=self.force)
         s = []
         if self.result['removed']:
             s.append(_(u'Removed : {}').format(cjoin(self.result['removed'])))
@@ -987,7 +987,7 @@ class WaptPackageRemove(WaptPackageInstall):
         self.summary = u"\n".join(s)
 
     def __unicode__(self):
-        return _(u"Uninstall of {packagename} (task #{id})").format(classname=self.__class__.__name__,id=self.id,packagename=self.packagename)
+        return _(u"Uninstall of {packagenames} (task #{id})").format(classname=self.__class__.__name__,id=self.id,packagenames=','.join(self.packagenames))
 
 
 class WaptPackageForget(WaptTask):
@@ -1006,7 +1006,7 @@ class WaptPackageForget(WaptTask):
             self.summary = _(u"No package removed from database.")
 
     def __unicode__(self):
-        return _(u"Forget {packagenames} (task #{id})").format(classname=self.__class__.__name__,id=self.id,packagenames=self.packagenames)
+        return _(u"Forget {packagenames} (task #{id})").format(classname=self.__class__.__name__,id=self.id,packagenames=','.join(self.packagenames))
 
 
     def same_action(self,other):

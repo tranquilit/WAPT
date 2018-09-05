@@ -2476,7 +2476,7 @@ class Wapt(BaseObjectClass):
         if not self.config_filename:
             self.config_filename = os.path.join(self.wapt_base_dir,'wapt-get.ini')
 
-        self.package_cache_dir = os.path.join(os.path.dirname(self.config_filename),'cache')
+        self.package_cache_dir = os.path.join(os.path.dirname(self.config_filename),u'cache')
         if not os.path.exists(self.package_cache_dir):
             os.makedirs(self.package_cache_dir)
 
@@ -3722,7 +3722,7 @@ class Wapt(BaseObjectClass):
                     return True
             return False
 
-        for f in glob.glob(os.path.join(cachepath,'*.wapt')):
+        for f in glob.glob(os.path.join(cachepath,u'*.wapt')):
             if os.path.isfile(f):
                 can_remove = True
                 if obsolete_only:

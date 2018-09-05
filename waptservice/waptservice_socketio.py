@@ -247,36 +247,56 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
                     notify_user = action.get('notify_user',False)
                     notify_server_on_finish = action.get('notify_server',False)
                     force = action.get('force',False)
+                    only_priorities = action.get('only_priorities',None)
+                    only_if_not_process_running = action.get('only_if_not_process_running',False)
+
                     self.wapt.update(force=False)
                     upgrades = self.wapt.list_upgrade()
                     to_install = upgrades['upgrade']+upgrades['additional']+upgrades['install']
                     for req in to_install:
-                        result.append(self.task_manager.add_task(WaptPackageInstall(req,force=force,notify_user=notify_user,created_by=verified_by)).as_dict())
+                        result.append(self.task_manager.add_task(WaptPackageInstall(packagenames=req,force=force,
+                            notify_user=notify_user,
+                            created_by=verified_by,
+                            only_priorities=only_priorities,
+                            only_if_not_process_running=only_if_not_process_running,
+                            )).as_dict())
                         self.task_manager.add_task(WaptAuditPackage(packagename=req,force=False,
                             notify_user=notify_user,
                             notify_server_on_finish=False,
                             priority=200,
                             created_by=verified_by)).as_dict()
-                    result.append(self.task_manager.add_task(WaptUpgrade(notify_user=notify_user,created_by=verified_by,priority=200)).as_dict())
+                    result.append(self.task_manager.add_task(WaptUpgrade(notify_user=notify_user,
+                            created_by=verified_by,
+                            priority=200,
+                            only_priorities=only_priorities,
+                            only_if_not_process_running=only_if_not_process_running,
+                            )).as_dict())
                     result.append(self.task_manager.add_task(WaptCleanup(notify_user=False,created_by=verified_by,priority=200)).as_dict())
 
                 elif name in  ['trigger_install_packages','trigger_remove_packages','trigger_forget_packages']:
                     packagenames = ensure_list(action['packages'])
+                    only_priorities = action.get('only_priorities',None)
+                    only_if_not_process_running = action.get('only_if_not_process_running',False)
+
                     for packagename in packagenames:
                         if name == 'trigger_install_packages':
-                            task = WaptPackageInstall(packagename=packagename)
+                            task = WaptPackageInstall(packagenames=packagename)
                         elif name == 'trigger_remove_packages':
-                            task = WaptPackageRemove(packagename=packagename)
+                            task = WaptPackageRemove(packagenames=packagename)
                         elif name == 'trigger_forget_packages':
                             task = WaptPackageForget(packagenames=packagename)
                         task.force = action.get('force',False)
                         task.notify_user = action.get('notify_user',False)
                         task.notify_server_on_finish = action.get('notify_server',False)
                         task.created_by=verified_by
+                        task.only_priorities=only_priorities
+                        task.only_if_not_process_running=only_if_not_process_running
+
 
                         result.append(self.task_manager.add_task(task).as_dict())
                         if name == 'trigger_install_packages':
-                            self.task_manager.add_task(WaptAuditPackage(packagename=packagename,force=task.force,
+                            self.task_manager.add_task(WaptAuditPackage(packagename=packagename,
+                                    force=task.force,
                                     notify_user=task.notify_user,
                                     notify_server_on_finish=task.notify_server_on_finish,
                                     priority=200)).as_dict()

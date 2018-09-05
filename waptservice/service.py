@@ -672,7 +672,7 @@ def upgrade():
     only_priorities = None
     if 'only_priorities' in request.args:
         only_priorities = ensure_list(request.args.get('only_priorities',None),allow_none=True)
-    only_if_not_process_running = int(request.args.get('only_if_not_process_running','1')) != 0
+    only_if_not_process_running = int(request.args.get('only_if_not_process_running','0')) != 0
 
     all_tasks = []
     wapt().update()
@@ -864,7 +864,7 @@ def install():
     only_priorities = None
     if 'only_priorities' in request.args:
         only_priorities = ensure_list(request.args.get('only_priorities',None),allow_none=True)
-    only_if_not_process_running = int(request.args.get('only_if_not_process_running','1')) != 0
+    only_if_not_process_running = int(request.args.get('only_if_not_process_running','0')) != 0
 
     username = None
 
