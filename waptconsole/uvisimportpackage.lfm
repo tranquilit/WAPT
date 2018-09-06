@@ -119,18 +119,25 @@ object VisImportPackage: TVisImportPackage
         PropertyName = '_localized_description'
       end    
       item
-        MaxWidth = 400
-        Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
         Position = 6
         Tag = 6
+        Text = 'Licence'
+        Width = 51
+        PropertyName = 'licence'
+      end    
+      item
+        MaxWidth = 400
+        Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
+        Position = 7
+        Tag = 7
         Text = 'Dependencies'
         Width = 197
         PropertyName = 'depends'
       end    
       item
         Alignment = taRightJustify
-        Position = 7
-        Tag = 7
+        Position = 8
+        Tag = 8
         Text = 'Size'
         Width = 88
         PropertyName = 'size'
@@ -138,64 +145,72 @@ object VisImportPackage: TVisImportPackage
       item
         Alignment = taRightJustify
         Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-        Position = 8
-        Tag = 8
+        Position = 9
+        Tag = 9
         Text = 'Installed Size'
         Width = 127
         PropertyName = 'installed_size'
       end    
       item
-        Position = 9
-        Tag = 9
+        Position = 10
+        Tag = 10
         Text = 'Maturity'
         Width = 59
         PropertyName = 'maturity'
       end    
       item
-        Position = 10
-        Tag = 10
+        Position = 11
+        Tag = 11
         Text = 'Signer'
         Width = 106
         PropertyName = 'signer'
       end    
       item
-        Position = 11
-        Tag = 11
+        Position = 12
+        Tag = 12
         Text = 'Sign on'
         Width = 109
         PropertyName = 'signature_date'
       end    
       item
-        Position = 12
-        Tag = 12
+        Position = 13
+        Tag = 13
+        Text = 'Editor'
+        Width = 90
+        PropertyName = 'editor'
+      end    
+      item
+        Position = 14
+        Tag = 14
         Text = 'Min OS version'
         Width = 60
         PropertyName = 'min_os_version'
       end    
       item
-        Position = 13
-        Tag = 13
+        Position = 15
+        Tag = 15
         Text = 'Max OS version'
         Width = 63
         PropertyName = 'max_os_version'
       end    
       item
-        Position = 14
-        Tag = 14
+        Position = 16
+        Tag = 16
         Text = 'Min Wapt version'
         Width = 69
         PropertyName = 'min_wapt_version'
       end    
       item
-        Position = 15
-        Tag = 15
+        Position = 17
+        Tag = 17
         Text = 'Filename'
+        Width = 179
         PropertyName = 'filename'
       end    
       item
         Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-        Position = 16
-        Tag = 16
+        Position = 18
+        Tag = 18
         Text = 'md5sum'
         PropertyName = 'md5sum'
       end>
@@ -212,6 +227,8 @@ object VisImportPackage: TVisImportPackage
     TreeOptions.SelectionOptions = [toExtendedFocus, toMultiSelect, toRightClickSelect]
     WantTabs = True
     OnDblClick = ActPackageDuplicateExecute
+    OnInitNode = GridExternalPackagesInitNode
+    OnMeasureItem = GridExternalPackagesMeasureItem
     ZebraPaint = True
   end
   object Panel8: TPanel

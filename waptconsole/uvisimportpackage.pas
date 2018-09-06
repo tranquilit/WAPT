@@ -62,6 +62,11 @@ type
     procedure GridExternalPackagesGetText(Sender: TBaseVirtualTree;
       Node: PVirtualNode; RowData, CellData: ISuperObject;
       Column: TColumnIndex; TextType: TVSTTextType; var CellText: string);
+    procedure GridExternalPackagesInitNode(Sender: TBaseVirtualTree;
+      ParentNode, Node: PVirtualNode; var InitialStates: TVirtualNodeInitStates
+      );
+    procedure GridExternalPackagesMeasureItem(Sender: TBaseVirtualTree;
+      TargetCanvas: TCanvas; Node: PVirtualNode; var NodeHeight: Integer);
     procedure LabRepoURLClick(Sender: TObject);
   private
     FRepoName: String;
@@ -87,7 +92,7 @@ implementation
 
 uses Variants, VarPyth, PythonEngine, uwaptconsole, tiscommon, soutils,
   dmwaptpython, uvisloading, uvisprivatekeyauth, uWaptRes, md5, uScaleDPI,
-  uWaptConsoleRes, uvisrepositories, inifiles, tisinifiles,LCLIntf,LazFileUtils,FileUtil;
+  uWaptConsoleRes, uvisrepositories, inifiles, tisstrings, tisinifiles,LCLIntf,LazFileUtils,FileUtil;
 
 {$R *.lfm}
 
@@ -141,14 +146,16 @@ end;
 procedure TVisImportPackage.FillReposList;
 var
   inifile: TIniFile;
+  section: String;
+const
+  RepoExceptions : Array[0..4] of String = ('global','options','wapt','waptwua','wapt-host');
 begin
   inifile := TIniFile.Create(AppIniFilename);
   try
     inifile.ReadSections(EdRepoName.Items);
-    if EdRepoName.Items.IndexOf('global') >= 0 then
-      EdRepoName.Items.Delete(EdRepoName.Items.IndexOf('global'));
-    if EdRepoName.Items.IndexOf('options') >= 0 then
-      EdRepoName.Items.Delete(EdRepoName.Items.IndexOf('options'));
+    for section in RepoExceptions do
+      if EdRepoName.Items.IndexOf(section) >= 0 then
+        EdRepoName.Items.Delete(EdRepoName.Items.IndexOf(section));
   finally
     inifile.Free;
   end;
@@ -223,11 +230,60 @@ procedure TVisImportPackage.GridExternalPackagesGetText(
   Sender: TBaseVirtualTree; Node: PVirtualNode; RowData,
   CellData: ISuperObject; Column: TColumnIndex; TextType: TVSTTextType;
   var CellText: string);
+var
+  colname:String;
 begin
-  if (CellText<>'') and  ( ((Sender as TSOGrid).Header.Columns[Column] as TSOGridColumn).PropertyName = 'size') then
+  if celltext<>'' then
   begin
-    CellText := FormatFloat('# ##0 kB',StrToInt64(CellText) div 1024);
+    colname := ((Sender as TSOGrid).Header.Columns[Column] as TSOGridColumn).PropertyName;
+    if  (colname = 'depends') or (colname = 'conflicts') then
+      StrReplace(CellText, ',', #13#10, [rfReplaceAll]);
+    if (colname = 'size') or (colname ='installed_size') then
+      CellText := FormatFloat('# ##0 kB',StrToInt64(CellText) div 1024);
+
+    // awfull hack to workaround the bad wordwrap break of last line for multilines cells...
+    // the problem is probably in the LCL... ?
+    //if  (colname = 'description') or (colname = 'depends') or (colname = 'conflicts') then
+    //  CellText := CellText + #13#10;
+
+    if (colname = 'description') then
+      CellText := UTF8Encode(Celltext);
+
+    if (colname = 'signature_date') then
+      CellText := copy(Celltext,1,16);
+
   end;
+end;
+
+procedure TVisImportPackage.GridExternalPackagesInitNode(
+  Sender: TBaseVirtualTree; ParentNode, Node: PVirtualNode;
+  var InitialStates: TVirtualNodeInitStates);
+begin
+  InitialStates := InitialStates + [ivsMultiline];
+
+end;
+
+procedure TVisImportPackage.GridExternalPackagesMeasureItem(
+  Sender: TBaseVirtualTree; TargetCanvas: TCanvas; Node: PVirtualNode;
+  var NodeHeight: Integer);
+var
+  i, maxheight, cellheight: integer;
+begin
+  maxheight := (Sender as TSOGrid).DefaultNodeHeight;
+  if Sender.MultiLine[Node] then
+  begin
+    for i := 0 to (Sender as TSOGrid).Header.Columns.Count - 1 do
+    begin
+      if (coVisible in (Sender as TSOGrid).Header.Columns[i].Options) then
+      begin
+        CellHeight := (Sender as TSOGrid).ComputeNodeHeight(TargetCanvas, Node, i);
+        if cellheight > maxheight then
+          maxheight := cellheight;
+      end;
+    end;
+  end;
+  NodeHeight := maxheight + 4;
+
 end;
 
 procedure TVisImportPackage.LabRepoURLClick(Sender: TObject);
