@@ -5242,14 +5242,21 @@ class Wapt(BaseObjectClass):
 
         trusted_certs_sha256 = []
         trusted_certs_cn = []
+        invalid_certs_sha256 = []
+
         for c in self.authorized_certificates():
-            for c2 in self.cabundle.check_certificates_chain(c):
-                if not c2.fingerprint in trusted_certs_sha256:
-                    trusted_certs_sha256.append(c2.fingerprint)
-                    trusted_certs_cn.append(c2.cn)
+            try:
+                for c2 in self.cabundle.check_certificates_chain(c):
+                    if not c2.fingerprint in trusted_certs_sha256:
+                        trusted_certs_sha256.append(c2.fingerprint)
+                        trusted_certs_cn.append(c2.cn)
+            except Exception as e:
+                logger.warning('Certificate %s invalid (fingerprint %s expiration %s): %s' % (c.cn,c.fingerprint,c.not_after,e))
+                invalid_certs_sha256.append(c.fingerprint)
 
         result['authorized_certificates'] = [c.as_pem() for c in self.authorized_certificates()]
         result['authorized_certificates_sha256'] = trusted_certs_sha256
+        result['invalid_certificates_sha256'] = invalid_certs_sha256
         result['authorized_certificates_cn'] = trusted_certs_cn
         result['maturities'] = self.maturities
         result['locales'] = self.locales
