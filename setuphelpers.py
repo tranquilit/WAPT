@@ -2107,6 +2107,9 @@ def uninstall_cmd(guid):
         with reg_openkey_noredir(HKEY_LOCAL_MACHINE,"%s\\%s" % (uninstall,guid)) as key:
             try:
                 cmd = _winreg.QueryValueEx(key,'QuietUninstallString')[0]
+                # fix silent arg for innosetup
+                if 'unins000' in cmd.lower():
+                    cmd = cmd.replace(' /SILENT',' /VERYSILENT')
                 return cmd
             except WindowsError:
                 try:
@@ -2145,8 +2148,8 @@ def uninstall_cmd(guid):
                             if not ' /s' in cmd.lower():
                                 args.append('/S')
                         elif ('unins000' in cmd.lower()):
-                            if not ' /silent' in cmd.lower():
-                                args.append('/silent')
+                            if not ' /verysilent' in cmd.lower():
+                                args.append('/verysilent')
                     return args
                 except WindowsError:
                     is_msi = _winreg.QueryValueEx(key,'WindowsInstaller')[0]
