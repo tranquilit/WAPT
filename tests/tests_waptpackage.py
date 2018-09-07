@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.6.2.2"
+__version__ = "1.6.2.3"
 import logging
 import sys
 import tempfile
@@ -1186,8 +1186,6 @@ def test_download_wsusscan():
     print(list(WsusDownloadTasks.select().order_by(WsusDownloadTasks.started_on).dicts()))
 
 def test_sync_packages_table():
-    from waptpackage import *
-    from waptserver.model import *
     load_db_config(waptserver.config.load_config('c:/wapt/conf/waptserver.ini'))
     init_db()
     r = WaptRemoteRepo('http://srvwapt.ad.tranquil.it/wapt')
@@ -1195,8 +1193,6 @@ def test_sync_packages_table():
     return
 
 def test_provider():
-    from waptpackage import *
-    from waptserver.model import *
     #logging.basicConfig()
     #logger = logging.getLogger()
     #logger.setLevel(logging.DEBUG)
@@ -1243,12 +1239,45 @@ def test_wuaprogress():
     rules = WaptWUARules()
     rules.allowed_classifications = []
     rules.allowed_severities = []
-    rules.allowed_updates = ['ed46d995-c9fb-41e2-94df-146d97d47d07']
+    rules.allowed_updates = ['7a599998-ca41-4840-90ea-8143724e5c6a']
     with client.WaptWUA(w,windows_updates_rules = rules) as c:
-        #rint(c.stored_waptwua_status())
+        print(c.installed_updates())
+        print(c.download_updates())
+        #print(c.stored_waptwua_status())
         #print(c.installed_updates())
-        c.install_updates()
-        #print(c.installed_updates())
+        #c.install_updates()
+        print(c.installed_updates())
+
+
+def test_certificate_expire():
+    w = Wapt()
+    pe = w.waptdb.packages_matching('tis-firefox(=60.0.2)')[-1]
+    pwd = open('c:/tmp/tmpkeypassword','rb').read()
+    k = SSLPrivateKey('c:/private/tranquilit2.pem',password=pwd)
+
+    print(k.matching_certs('c:/tranquilit/wapt/ssl'))
+
+    print(pe.check_control_signature(w.cabundle))
+
+    w.get_repo(pe.repo).download_packages(pe)
+    #print(pe.check_control_signature(w.cabundle))
+    fn = pe.localpath
+    pe2 = PackageEntry(waptfile=fn)
+    print(pe2.check_control_signature(w.cabundle))
+    #print(pe.check_package_signature(w.cabundle))
+
+
+def test_install_only_not_running():
+    w = Wapt()
+    #(makepath(setuphelpers.programfiles,'7-Zip','7zFM.exe'))
+    w.install('tis-7zip',only_if_not_process_running=False,only_priorities=['critical'],force=True)
+
+
+def test_uninstall_innosetup():
+    w = Wapt()
+    w.install('tis-audacity',force=True)
+    print(setuphelpers.uninstall_cmd('Audacity_is1'))
+
 
 if __name__ == '__main__':
     #gen_perso('htouvet',email='htouvet@tranquil.it')
@@ -1257,6 +1286,9 @@ if __name__ == '__main__':
     #test_fixwua()
     #test_wua()
     test_wuaprogress()
+    #test_certificate_expire()
+    #test_install_only_not_running()
+    #test_uninstall_innosetup()
     #test_update_status()
     #test_download_wsusscan()
     #test_sync_packages_table()
