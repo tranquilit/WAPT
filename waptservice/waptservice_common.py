@@ -993,7 +993,7 @@ class WaptPackageRemove(WaptPackageInstall):
 class WaptPackageForget(WaptTask):
     def __init__(self,packagenames,**args):
         super(WaptPackageForget,self).__init__()
-        self.packagenames = packagenames
+        self.packagenames = ensure_list(packagenames)
         for k in args:
             setattr(self,k,args[k])
 
