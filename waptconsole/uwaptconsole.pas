@@ -1219,6 +1219,16 @@ begin
     ini.Free;
   end;
 
+  {$ifdef ENTERPRISE}
+  if IsEnterpriseEdition then
+  begin
+    GridWUDownloads.SaveSettingsToIni(Appuserinipath);
+    GridWUUpdates.SaveSettingsToIni(Appuserinipath);
+    GridHostWinUpdates.SaveSettingsToIni(Appuserinipath);
+  end;
+  {$endif}
+
+
   // %LOCALAPPDATA%\waptconsole\waptconsole.ini
   // global settings, not per cert
   ini := TIniFile.Create(AppIniFilename);
