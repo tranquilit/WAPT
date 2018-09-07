@@ -273,6 +273,7 @@ class Packages(WaptBaseModel):
     """Stores the content of packages of repositories
     """
     id = PrimaryKeyField(primary_key=True)
+    package_uuid = CharField(null=True)
     package = CharField(null=False, index=True)
     version = CharField(null=False)
     description = CharField(max_length=1200,null=True)
@@ -290,6 +291,7 @@ class Packages(WaptBaseModel):
     keywords = ArrayField(CharField,null=True)
     licence = CharField(null=True)
     editor = CharField(null=True)
+    homepage = CharField(null=True)
 
     @classmethod
     def _as_attribute(cls,k,v):
@@ -439,6 +441,7 @@ class HostWsus(WaptBaseModel):
     present = BooleanField(null=True)
     hidden = BooleanField(null=True)
     downloaded = BooleanField(null=True)
+    install_date = CharField(null=True)
 
 
 class SignedModel(WaptBaseModel):
@@ -1298,6 +1301,28 @@ def upgrade_db_structure():
             columns = [c.name for c in wapt_db.get_columns('wsusupdates')]
             if 'cve_ids' in columns:
                 opes.append(migrator.drop_column(WsusUpdates._meta.name, 'cve_ids'))
+            migrate(*opes)
+
+            (v, created) = ServerAttribs.get_or_create(key='db_version')
+            v.value = next_version
+            v.save()
+
+    next_version = '1.6.2.4'
+    if get_db_version() <= next_version:
+        with wapt_db.atomic():
+            logger.info('Migrating from %s to %s' % (get_db_version(), next_version))
+
+            opes = []
+            columns = [c.name for c in wapt_db.get_columns('packages')]
+            for c in ['impacted_process','editor','keywords','licence','homepage']:
+                if not c in columns:
+                    opes.append(migrator.add_column(Packages._meta.name, c, getattr(Packages,c)))
+
+            columns = [c.name for c in wapt_db.get_columns('hostwsus')]
+            for c in ['install_date']:
+                if not c in columns:
+                    opes.append(migrator.add_column(HostWsus._meta.name, c, getattr(HostWsus,c)))
+
             migrate(*opes)
 
             (v, created) = ServerAttribs.get_or_create(key='db_version')
