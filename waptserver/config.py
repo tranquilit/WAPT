@@ -79,7 +79,7 @@ _defaults = {
     'allow_unsigned_status_data':False,
     'min_password_length':10,
     'allow_unauthenticated_registration':False,
-    'allow_unauthenticated_connect':False,
+    'allow_unauthenticated_connect':None,
     'clients_signing_key':None,
     'clients_signing_certificate':None,
     'signature_clockskew':5*60,
@@ -185,6 +185,8 @@ def load_config(cfgfile=DEFAULT_CONFIG_FILE):
 
     if _config.has_option('options', 'allow_unauthenticated_connect'):
         conf['allow_unauthenticated_connect'] = _config.getboolean('options', 'allow_unauthenticated_connect')
+    else:
+        conf['allow_unauthenticated_connect'] = conf['allow_unauthenticated_registration']
 
     if _config.has_option('options', 'clients_signing_certificate'):
         conf['clients_signing_certificate'] = _config.get('options', 'clients_signing_certificate')

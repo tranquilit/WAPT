@@ -1923,7 +1923,6 @@ def on_waptclient_connect():
             uuid = request.args.get('uuid', None)
             if not uuid:
                 raise EWaptForbiddden('Missing source host uuid')
-
             allow_unauthenticated_connect = app.conf.get('allow_unauthenticated_connect',False)
             if not allow_unauthenticated_connect:
                 try:
@@ -1935,12 +1934,11 @@ def on_waptclient_connect():
                     if token_data['server_uuid'] != get_server_uuid():
                         raise EWaptAuthenticationFailure('Bad server UUID')
                 except Exception as e:
-
                     raise EWaptAuthenticationFailure(u'SocketIO connection not authorized, invalid token: %s' % e)
+                logger.info(u'Socket.IO connection from wapt client sid %s (uuid: %s fqdn:%s)' % (request.sid,uuid,token_data.get('computer_fqdn')))
             else:
-                token_data = {}
+                logger.info(u'Unauthenticated Socket.IO connection from wapt client sid %s (uuid: %s)' % (request.sid,uuid))
 
-            logger.info(u'Socket.IO connection from wapt client sid %s (uuid: %s fqdn:%s)' % (request.sid,uuid,token_data.get('computer_fqdn')))
 
             # stores sid in database
             hostcount = Hosts.update(
