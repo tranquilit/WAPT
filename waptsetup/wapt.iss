@@ -93,7 +93,7 @@ Source: "..\devwapt.bat"; DestDir: "{app}";
 Source: "..\waptpyscripter.bat"; DestDir: "{app}"; 
 
 ; deployment/upgrade tool
-Source: "..\waptdeploy.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\waptdeploy.exe"; DestDir: "{app}"; Flags: ignoreversion restartreplace; 
 
 ; translations
 Source: "..\languages\*"; DestDir: "{app}\languages\"; Flags: createallsubdirs recursesubdirs;
