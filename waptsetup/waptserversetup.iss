@@ -109,6 +109,9 @@ Name: "{app}\waptserver\repository\wapt-group"
 Name: "{app}\waptserver\repository\waptwua"
 Name: "{app}\waptserver\nginx\ssl"
 
+[InstallDelete]
+Type: files; Name: "{app}\waptserver\*.pyc"
+
 [INI]
 Filename: {app}\conf\waptserver.ini; Section: options; Key: allow_unauthenticated_registration; String: True;
 

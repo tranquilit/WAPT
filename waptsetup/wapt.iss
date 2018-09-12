@@ -218,6 +218,7 @@ Name: installredist2008unchecked; Description: "{cm:ForceVCppReinstall}"; Check:
 [InstallDelete]
 Type: filesandordirs; Name: "{app}\lib\site-packages"
 Type: files; Name: "{app}\*.pyc"
+Type: files; Name: "{app}\waptservice\*.pyc"
 Type: files; Name: "{app}\waptservice\waptservice.py*"
 
 [UninstallRun]
