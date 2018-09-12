@@ -1918,28 +1918,27 @@ def on_trigger_remove_packages_result(result):
 @socketio.on('reconnect')
 @socketio.on('connect')
 def on_waptclient_connect():
-    with wapt_db.atomic() as trans:
-        try:
-            uuid = request.args.get('uuid', None)
-            if not uuid:
-                raise EWaptForbiddden('Missing source host uuid')
-            allow_unauthenticated_connect = app.conf.get('allow_unauthenticated_connect',False)
-            if not allow_unauthenticated_connect:
-                try:
-                    token_gen = get_secured_token_generator()
-                    token_data = token_gen.loads(request.args['token'])
-                    uuid = token_data.get('uuid', None)
-                    if not uuid:
-                        raise EWaptAuthenticationFailure('Bad host UUID')
-                    if token_data['server_uuid'] != get_server_uuid():
-                        raise EWaptAuthenticationFailure('Bad server UUID')
-                except Exception as e:
-                    raise EWaptAuthenticationFailure(u'SocketIO connection not authorized, invalid token: %s' % e)
-                logger.info(u'Socket.IO connection from wapt client sid %s (uuid: %s fqdn:%s)' % (request.sid,uuid,token_data.get('computer_fqdn')))
-            else:
-                logger.info(u'Unauthenticated Socket.IO connection from wapt client sid %s (uuid: %s)' % (request.sid,uuid))
+    try:
+        uuid = request.args.get('uuid', None)
+        if not uuid:
+            raise EWaptForbiddden('Missing source host uuid')
+        allow_unauthenticated_connect = app.conf.get('allow_unauthenticated_connect',False)
+        if not allow_unauthenticated_connect:
+            try:
+                token_gen = get_secured_token_generator()
+                token_data = token_gen.loads(request.args['token'])
+                uuid = token_data.get('uuid', None)
+                if not uuid:
+                    raise EWaptAuthenticationFailure('Bad host UUID')
+                if token_data['server_uuid'] != get_server_uuid():
+                    raise EWaptAuthenticationFailure('Bad server UUID')
+            except Exception as e:
+                raise EWaptAuthenticationFailure(u'SocketIO connection not authorized, invalid token: %s' % e)
+            logger.info(u'Socket.IO connection from wapt client sid %s (uuid: %s fqdn:%s)' % (request.sid,uuid,token_data.get('computer_fqdn')))
+        else:
+            logger.info(u'Unauthenticated Socket.IO connection from wapt client sid %s (uuid: %s)' % (request.sid,uuid))
 
-
+        with wapt_db.atomic() as trans:
             # stores sid in database
             hostcount = Hosts.update(
                 server_uuid=get_server_uuid(),
@@ -1957,29 +1956,27 @@ def on_waptclient_connect():
 
             return True
 
-        except Exception as e:
-            try:
-                if 'uuid' in session:
-                    session.pop('uuid')
-                logger.warning(u'SocketIO connection refused for uuid %s, sid %s: %s' % (uuid,request.sid,e))
-                trans.rollback()
-            finally:
-                disconnect()
-            return False
+    except Exception as e:
+        if 'uuid' in session:
+            session.pop('uuid')
+        logger.warning(u'SocketIO connection refused for uuid %s, sid %s: %s' % (uuid,request.sid,e))
+        disconnect()
+        return False
+
 
 @socketio.on('wapt_pong')
 def on_wapt_pong():
     uuid = None
-    with wapt_db.atomic() as trans:
-        try:
-            uuid = session.get('uuid')
-            if not uuid:
-                logger.critical(u'SocketIO %s connected but no host uuid in session: asking connected host to reconnect' % (request.sid))
-                emit('wapt_force_reconnect')
-                return False
-            else:
-                logger.debug(u'Socket.IO pong from wapt client sid %s (uuid: %s)' % (request.sid, session.get('uuid',None)))
-                # stores sid in database
+    try:
+        uuid = session.get('uuid')
+        if not uuid:
+            logger.critical(u'SocketIO %s connected but no host uuid in session: asking connected host to reconnect' % (request.sid))
+            emit('wapt_force_reconnect')
+            return False
+        else:
+            logger.debug(u'Socket.IO pong from wapt client sid %s (uuid: %s)' % (request.sid, session.get('uuid',None)))
+            # stores sid in database
+            with wapt_db.atomic() as trans:
                 hostcount = Hosts.update(
                     server_uuid=get_server_uuid(),
                     listening_timestamp=datetime2isodate(),
@@ -1993,29 +1990,24 @@ def on_wapt_pong():
                     emit('wapt_force_reconnect')
                     return False
             return True
-        except Exception as e:
-            trans.rollback()
-            logger.critical(u'SocketIO pong error for uuid %s and sid %s : %s' % (uuid,request.sid,traceback.format_exc()))
-            return False
+    except Exception as e:
+        logger.critical(u'SocketIO pong error for uuid %s and sid %s : %s' % (uuid,request.sid,traceback.format_exc()))
+        return False
 
 @socketio.on('disconnect')
 def on_waptclient_disconnect():
+    uuid = session.get('uuid', None)
+    logger.info(u'Socket.IO disconnection from wapt client sid %s (uuid: %s)' % (request.sid, uuid))
+    # clear sid in database
     with wapt_db.atomic() as trans:
-        try:
-            uuid = session.get('uuid', None)
-            logger.info(u'Socket.IO disconnection from wapt client sid %s (uuid: %s)' % (request.sid, uuid))
-            # clear sid in database
-            Hosts.update(
-                server_uuid=None,
-                listening_timestamp=datetime2isodate(),
-                listening_protocol=None,
-                listening_address=None,
-                reachable='DISCONNECTED',
-            ).where((Hosts.uuid == uuid) & (Hosts.listening_address == request.sid)).execute()
-            return True
-        except:
-            trans.rollback()
-            return False
+        Hosts.update(
+            server_uuid=None,
+            listening_timestamp=datetime2isodate(),
+            listening_protocol=None,
+            listening_address=None,
+            reachable='DISCONNECTED',
+        ).where((Hosts.uuid == uuid) & (Hosts.listening_address == request.sid)).execute()
+    return True
 
 @socketio.on_error()
 def on_wapt_socketio_error(e):
