@@ -749,6 +749,7 @@ class WaptUpdateServerStatus(WaptTask):
         self.priority = 10
         self.notify_server_on_start = False
         self.notify_server_on_finish = False
+        self.force = False
         for k in args:
             setattr(self,k,args[k])
 
@@ -756,7 +757,7 @@ class WaptUpdateServerStatus(WaptTask):
         if self.wapt.waptserver_available():
             print('Sending host status to server')
             try:
-                self.result = self.wapt.update_server_status()
+                self.result = self.wapt.update_server_status(force=self.force)
                 self.summary = _(u'WAPT Server has been notified')
                 print('Done.')
             except Exception as e:
