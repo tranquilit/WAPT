@@ -44,7 +44,7 @@ from playhouse.shortcuts import dict_to_model, model_to_dict
 from playhouse.signals import Model as SignaledModel, pre_save, post_save
 
 from waptutils import Version
-from waptutils import ensure_unicode,ensure_list
+from waptutils import ensure_unicode,ensure_list,datetime2isodate
 
 from waptserver.utils import setloglevel
 
@@ -623,6 +623,8 @@ def update_waptwua(uuid,data):
         host_wsus = []
         for h in data['waptwua_updates_localstatus']:
             h['host'] = uuid
+            # default if not supplied
+            h['install_date'] = None
             host_wsus.append(dict([(k,encode_value(v)) for k, v in h.iteritems() if k in HostWsus._meta.fields]))
         if host_wsus:
             HostWsus.insert_many(host_wsus).execute() # pylint: disable=no-value-for-parameter
