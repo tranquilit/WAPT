@@ -5327,7 +5327,9 @@ class Wapt(BaseObjectClass):
         Returns:
             dict: {'host_info','wapt_status','dmi','installed_softwares','installed_packages'}
 
-        ...changed: 1.4.1: renamed keys
+        ...changed:
+            1.4.1: renamed keys
+            1.6.2.4: removed setup.py from packages inventory.
         """
         inv = {}
         inv['host_info'] = setuphelpers.host_info()
@@ -5348,7 +5350,7 @@ class Wapt(BaseObjectClass):
 
         inv['wapt_status'] = self.wapt_status()
         inv['installed_softwares'] = setuphelpers.installed_softwares('')
-        inv['installed_packages'] = [p.as_dict() for p in self.waptdb.installed(include_errors=True)]
+        inv['installed_packages'] = [p.as_dict() for p in self.waptdb.installed(include_errors=True,include_setup=False)]
         return inv
 
     def personal_certificate(self):
