@@ -82,8 +82,14 @@ begin
   http := nil;
 
   url := Trim(url);
-  if 0 = Length(url) then
+  r := Length(url);
+
+  if 0 = r then
     goto LBL_ERROR;
+
+  if '/' <> url[r] then
+    url := url + '/';
+  url := url + 'ping';
 
   bIsHTTP  := Pos( 'http://' , url ) = 1;
   bIsHTTPS := Pos( 'https://', url ) = 1;
@@ -122,19 +128,16 @@ begin
   if not Assigned(so) then
     goto LBL_FAILED;
 
-//  ShowMessage( 'Success ' + url );
   success := true;
   exit( 0 );
 
 LBL_FAILED:
-//  ShowMessage( 'LBL_FAILED ' + url );
   if Assigned(http) then
     http_free( http );
   success := false;
   exit( 0 );
 
 LBL_ERROR:
-//  ShowMessage( 'LBL_ERROR ' + url );
   if Assigned(http) then
     http_free( http );
   success := false;
@@ -153,14 +156,11 @@ Var
     s                   : String;
 Begin
   FillChar( aWSADataRecord, sizeof(WSAData), 0 );
-
   WSAStartup(MAKEWORD(2, 0), aWSADataRecord);
-
   aSocket := Socket (AF_INET, SOCK_STREAM, 0);
 
   If (aSocket = INVALID_SOCKET) then
     exit(-1);
-
 
   Try
     If WSAIoctl (aSocket, SIO_GET_INTERFACE_LIST, NIL, 0, @Buffer, 1024, NoOfBytesReturned, NIL, NIL) = SOCKET_ERROR then

@@ -186,9 +186,8 @@ Source: "..\waptsetuputil.dll"; Flags: dontcopy
 
 [Code]
 function validate_wapt_server_install_port( port : integer ) : boolean; external 'validate_wapt_server_install_port@files:waptsetuputil.dll stdcall';
-
-  
-
+function SSLLeay_version( _type  : integer ) : PChar; external 'SSLeay_version@files:libeay32.dll cdecl';
+function SSL_library_init() : integer; external 'SSL_library_init@files:ssleay32.dll cdecl'; 
 
 
 function NextButtonClick(CurPageID: Integer):Boolean;
