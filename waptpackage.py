@@ -121,10 +121,11 @@ REGEX_PACKAGE_VERSION = re.compile(r'^(?P<major>[0-9]+)'
                     '(\.(?P<subpatch>[0-9]+))?'
                     '(\-(?P<packaging>[0-9A-Za-z]+(\.[0-9A-Za-z]+)*))?$')
 
-# tis-exodus (>2.3.4-10)
-REGEX_PACKAGE_CONDITION = re.compile(r'(?P<package>[^\s()]+)\s*(\(\s*(?P<operator>[<=>]?)\s*(?P<version>\S+)\s*\))?')
+# tis-exodus(>2.3.4-10)
+# changed in 1.6.2.4
+REGEX_PACKAGE_CONDITION = re.compile(r'(?P<package>[^()]+)\s*(\(\s*(?P<operator>[<=>]*)\s*(?P<version>\S+)\s*\))?')
 
-REGEX_VERSION_CONDITION = re.compile(r'(?P<operator>[<=>]?=?)\s*(?P<version>\S+)')
+REGEX_VERSION_CONDITION = re.compile(r'(?P<operator>[<=>]*)\s*(?P<version>\S+)')
 
 
 def parse_major_minor_patch_build(version):

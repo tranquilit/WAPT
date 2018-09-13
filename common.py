@@ -4624,9 +4624,9 @@ class Wapt(BaseObjectClass):
     def get_outdated_host_packages(self):
         """Check and return the available host packages available and not installed"""
 
-        logger.debug(u'Check if host package "%s" is available' % (self.host_packagename(), ))
         result = []
         host_packages = self.get_host_packages()
+        logger.debug(u'Checking availability of host packages "%s"' % (host_packages, ))
         for package in host_packages:
             if self.is_locally_allowed_package(package):
                 logger.debug('Checking if %s is installed/outdated' % package.asrequirement())
