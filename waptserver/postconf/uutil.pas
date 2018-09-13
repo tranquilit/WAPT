@@ -510,7 +510,7 @@ begin
   if not FileExists(wcmd) then
     exit(-1);
 
-  r := ShellExecuteW(0,'open', @wcmd[1], @wparams[1], Nil, SW_SHOW);
+  r := ShellExecuteW(0,'open', @wcmd[1], @wparams[1], Nil, SW_SHOWNORMAL );
   if r < 32 then
   begin
     case r of
