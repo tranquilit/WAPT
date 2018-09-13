@@ -613,7 +613,9 @@ def update_waptwua(uuid,data):
     if 'waptwua_updates' in data:
         windows_updates = []
         for w in data['waptwua_updates']:
-            windows_updates.append(dict([(k,encode_value(v)) for k, v in w.iteritems() if k in WsusUpdates._meta.fields]))
+            u = dict([(k,encode_value(v)) for k, v in w.iteritems() if k in WsusUpdates._meta.fields])
+            u['created_on'] = datetime.datetime.now()
+            windows_updates.append(u)
         if windows_updates:
             # if win update has already been registered, we don't update it, but simply ignore th einsert
             WsusUpdates.insert_many(windows_updates).on_conflict('IGNORE').execute()
@@ -625,6 +627,7 @@ def update_waptwua(uuid,data):
             h['host'] = uuid
             # default if not supplied
             h['install_date'] = None
+            h['created_on'] = datetime.datetime.now()
             host_wsus.append(dict([(k,encode_value(v)) for k, v in h.iteritems() if k in HostWsus._meta.fields]))
         if host_wsus:
             HostWsus.insert_many(host_wsus).execute() # pylint: disable=no-value-for-parameter
