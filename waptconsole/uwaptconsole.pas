@@ -4431,7 +4431,6 @@ begin
       status := RowSO['host_status'];
       if (status <> nil) then
       begin
-        ImageList := ImageList1;
         if status.AsString = 'RUNNING' then
           ImageIndex := 6
         else if status.AsString = 'ERROR' then
@@ -4453,15 +4452,17 @@ begin
         ImageIndex := 4
       else if (reachable.AsString = 'UNREACHABLE') or (reachable.AsString = 'UNKNOWN') or (reachable.AsString = 'DISCONNECTED') then
         ImageIndex := 5
+      else if reachable.AsString = 'RUNNING' then
+          ImageIndex := 6
       else
-        ImageIndex := 6;
+        ImageIndex := -1;
     end
     else
-      ImageIndex := 6
+      ImageIndex := -1;
   end
   else if TSOGridColumn(GridHosts.Header.Columns[Column]).PropertyName = 'registration_auth_user' then
   begin
-    ImageIndex:=-1;
+    ImageIndex:=10;
     registration_auth_user := GridHostPackages.GetCellData(Node, 'registration_auth_user', Nil);
 
     if (registration_auth_user = Nil) or (registration_auth_user.AsString='') or (copy(registration_auth_user.AsString,1,5) = 'None:') then

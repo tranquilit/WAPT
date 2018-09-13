@@ -1,7 +1,7 @@
 object VisLogin: TVisLogin
-  Left = 632
+  Left = 724
   Height = 151
-  Top = 361
+  Top = 373
   Width = 469
   AutoSize = True
   BorderStyle = bsDialog

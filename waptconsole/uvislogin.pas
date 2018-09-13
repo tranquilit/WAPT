@@ -57,10 +57,10 @@ uses LCLIntf,  uwaptconsole,waptcommon, DefaultTranslator,UScaleDPI,tiscommon,ti
 procedure TVisLogin.edPasswordKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
-    if Key = VK_RETURN then
-  begin
-    edPassword.SelectAll;
-  end;
+  if Key = VK_RETURN then
+    edPassword.SelectAll
+  else if (Key = VK_ESCAPE) and CBConfiguration.Visible then
+    CBConfiguration.SetFocus;
 end;
 
 procedure TVisLogin.FormCloseQuery(Sender: TObject; var CanClose: boolean);
