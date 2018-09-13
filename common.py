@@ -4342,7 +4342,7 @@ class Wapt(BaseObjectClass):
                 try:
                     if not os.path.isfile(full_fname(p.filename)):
                         raise EWaptDownloadError('Package file %s not downloaded properly.' % p.filename)
-                    print(u"Installing %s" % (p.package,))
+                    print(u"Installing %s" % (p.asrequirement(),))
                     result = self.install_wapt(full_fname(p.filename),
                         params_dict = params_dict,
                         explicit_by=(installed_by or self.user) if request in apackages else None,
@@ -4869,7 +4869,14 @@ class Wapt(BaseObjectClass):
         # force regenerating uuid
         self.delete_param('uuid')
 
-        inv = self.inventory()
+
+        new_hashes = {}
+        old_hashes = {}
+
+        inv = self._get_host_status_data(old_hashes, new_hashes, force=True)
+        inv['status_hashes'] = new_hashes
+
+        #inv = self.inventory()
         inv['uuid'] = self.host_uuid
         inv['host_certificate'] = self.create_or_update_host_certificate()
 
@@ -4884,6 +4891,17 @@ class Wapt(BaseObjectClass):
                 signature = self.sign_host_content(data),
                 signer = self.get_host_certificate().cn
                 )
+
+            if result and result['success']:
+                # stores for next round.
+                old_hashes.update(new_hashes)
+                self.write_param('last_update_server_status_timestamp',datetime.datetime.utcnow())
+                if 'status_hashes' in result.get('result',{}):
+                    # invalidate unmatching hashes for next round.
+                    self.write_param('last_update_server_hashes',result['result']['status_hashes'])
+                else:
+                    self.write_param('last_update_server_hashes',old_hashes)
+
             return result
 
         else:

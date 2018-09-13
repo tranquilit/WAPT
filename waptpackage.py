@@ -1026,7 +1026,7 @@ class PackageEntry(BaseObjectClass):
         Returns:
             str: "packagename (=version)"
         """
-        return u"%s (=%s)" % (self.package,self.version)
+        return u"%s(=%s)" % (self.package,self.version)
 
     @property
     def download_url(self):
