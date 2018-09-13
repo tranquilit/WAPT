@@ -1236,17 +1236,18 @@ def test_wuaprogress():
     # ed46d995-c9fb-41e2-94df-146d97d47d07
     #fixwua.cleanwua()
     w = Wapt()
-    rules = WaptWUARules()
-    rules.allowed_classifications = []
-    rules.allowed_severities = []
-    rules.allowed_updates = ['7a599998-ca41-4840-90ea-8143724e5c6a']
-    with client.WaptWUA(w,windows_updates_rules = rules) as c:
+    #rules = WaptWUARules()
+    #rules.allowed_classifications = []
+    #rules.allowed_severities = []
+    #rules.allowed_updates = ['7a599998-ca41-4840-90ea-8143724e5c6a']
+    with client.WaptWUA(w) as c:
         print(c.installed_updates())
         print(c.download_updates())
         #print(c.stored_waptwua_status())
         #print(c.installed_updates())
         #c.install_updates()
-        print(c.installed_updates())
+        #print(c.installed_updates())
+    w.update_server_status(force=True)
 
 
 def test_certificate_expire():
