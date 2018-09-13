@@ -21,7 +21,7 @@
       <MajorVersionNr Value="1"/>
       <MinorVersionNr Value="6"/>
       <RevisionNr Value="2"/>
-      <BuildNr Value="2"/>
+      <BuildNr Value="12"/>
       <StringTable LegalCopyright="Tranquil IT Systems 2012-2018" ProductName="WAPT Enterprise Edition" ProductVersion="1.6.2"/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -33,6 +33,7 @@
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
+        <HostApplicationFilename Value="C:\cygwin64\tmp\is-8ILM0.tmp\waptserversetup.tmp"/>
       </local>
     </RunParams>
     <RequiredPackages Count="3">
@@ -46,7 +47,7 @@
         <PackageName Value="LazControls"/>
       </Item3>
     </RequiredPackages>
-    <Units Count="3">
+    <Units Count="4">
       <Unit0>
         <Filename Value="waptsetuputil.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -59,6 +60,10 @@
         <Filename Value="constants.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit2>
+      <Unit3>
+        <Filename Value="setupvalidation.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit3>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -85,7 +90,7 @@
     </Linking>
   </CompilerOptions>
   <Debugging>
-    <Exceptions Count="3">
+    <Exceptions Count="8">
       <Item1>
         <Name Value="EAbort"/>
       </Item1>
@@ -95,6 +100,21 @@
       <Item3>
         <Name Value="EFOpenError"/>
       </Item3>
+      <Item4>
+        <Name Value="EIdConnClosedGracefully"/>
+      </Item4>
+      <Item5>
+        <Name Value="EIdHTTPProtocolException"/>
+      </Item5>
+      <Item6>
+        <Name Value="EIdOSSLUnderlyingCryptoError"/>
+      </Item6>
+      <Item7>
+        <Name Value="EIdNotASocket"/>
+      </Item7>
+      <Item8>
+        <Name Value="EIdConnectTimeout"/>
+      </Item8>
     </Exceptions>
   </Debugging>
 </CONFIG>

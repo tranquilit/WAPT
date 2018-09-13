@@ -188,62 +188,40 @@ Type: files; Name: "{app}\waptserver\waptserver.py*"
 Source: "..\waptsetuputil.dll"; Flags: dontcopy
 
 [Code]
-function validate_wapt_server_install_port( port : integer ) : boolean; external 'validate_wapt_server_install_port@files:waptsetuputil.dll stdcall';
-function SSLLeay_version( _type  : integer ) : AnsiString; external 'SSLeay_version@files:libeay32.dll cdecl';
-function SSL_library_init() : integer; external 'SSL_library_init@files:ssleay32.dll cdecl'; 
+
+procedure waptsetuputil_init( language : integer );                     external 'waptsetuputil_init@files:waptsetuputil.dll stdcall';
+function  waptsetuputil_validate_wapt_server_install_ports() : boolean; external 'waptsetuputil_validate_wapt_server_install_ports@files:waptsetuputil.dll stdcall';
+function  SSLLeay_version( _type  : integer ) : Cardinal;               external 'SSLeay_version@files:libeay32.dll cdecl';
+function  SSL_library_init() : integer;                                 external 'SSL_library_init@files:ssleay32.dll cdecl'; 
 
 
 function NextButtonClick(CurPageID: Integer):Boolean;
 var
-  r : Integer;
   b : boolean; 
-  i : integer;
-  PORTS : array[0..2] of integer;
+  s : String;
+  r : integer;
 begin
+  result := true;
 
-  result := false;
+  if wpWelcome = CurPageID then
+  begin
+    s := ExpandConstant('{language}');
+    if 'fr' = s then
+      r := 2
+    else if 'de' = s then
+      r := 3
+    else
+      r := 1;  
+    waptsetuputil_init( r );
+    exit;
+  end;
 
 
   if CurPageID = wpSelectTasks then
   begin
-    PORTS[0] := 80;
-    PORTS[1] := 443;
-    PORTS[2] := 8080;
-
-    for i:= 0 to 2 do
-    begin
-        r := PORTS[i];
-        b := validate_wapt_server_install_port( r );
-        if b then
-          continue;
-
-        r := MsgBox('There already is a Web server listening on port '+ IntToStr(r) +'. ' +
-                       'You have several choices: abort the installation, ignore this warning (NOT RECOMMENDED), ' +
-                       'deactivate the conflicting service and replace it with our bundled Apache server, or choose ' +
-                       'not to install Apache.  In the latter case it is advised to set up your Web server as a reverse ' +
-                       'proxy to http://localhost:8080/.' , mbError, MB_ABORTRETRYIGNORE);
-
-
-       
-        if IDABORT = r then
-        begin
-          Abort;
-          exit;
-        end;
-
-        if IDRETRY = r then
-        begin
-          PostClickNext();
-          exit;
-        end;
-    end;
-    
-    result := true;
+    result := waptsetuputil_validate_wapt_server_install_ports();
     exit;
-
-
   end;
 
-  result := true;
 
 end;

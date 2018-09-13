@@ -21,6 +21,10 @@ implementation
 
 
 uses
+  IdStack,
+  Forms,
+  Controls,
+  IdExceptionCore,
   Dialogs,
   superobject,
   constants,
@@ -69,8 +73,8 @@ end;
 
 function wapt_ping( var success : boolean; url : String ): integer;
 label
-  LBL_ERROR,
-  LBL_FAILED;
+  LBL_CONNECT_FAILED,
+  LBL_NOT_A_WAPT_SERVER;
 var
   bIsHTTP  : boolean;
   bIsHTTPS : boolean;
@@ -78,6 +82,7 @@ var
   so       : ISuperObject;
   s        : String;
   r        : integer;
+  b        : boolean;
 begin
   http := nil;
 
@@ -85,7 +90,7 @@ begin
   r := Length(url);
 
   if 0 = r then
-    goto LBL_ERROR;
+    goto LBL_CONNECT_FAILED;
 
   if '/' <> url[r] then
     url := url + '/';
@@ -94,50 +99,60 @@ begin
   bIsHTTP  := Pos( 'http://' , url ) = 1;
   bIsHTTPS := Pos( 'https://', url ) = 1;
 
-  if not (bIsHTTP or bIsHTTPS) then
-    goto LBL_ERROR;
+  b := bIsHTTP or bIsHTTPS;
+  if not b then
+    goto LBL_CONNECT_FAILED;
 
   http := http_create( bIsHTTPS );
   try
-    s := http.Get( url );
-    r := 0;
-  except
-    r := -1;
+      s := http.Get( url );
+      r := 0;
+  except on e : Exception do
+    begin
+      b := e is EIdConnectTimeout;
+      if b then
+        r := -1
+      else
+        r := -2;
+    end;
   end;
 
-  if 0 <> r then
-    goto LBL_ERROR;
+  if -1 = r then
+    goto LBL_CONNECT_FAILED;
+
+  if -2 = r then
+    goto LBL_NOT_A_WAPT_SERVER;
 
   if 0 = Length(s) then
-    goto LBL_FAILED;
+    goto LBL_NOT_A_WAPT_SERVER;
 
   if not (HTTP_RESPONSE_CODE_OK = http.ResponseCode) then
-    goto LBL_FAILED;
+    goto LBL_NOT_A_WAPT_SERVER;
 
   http_free( http );
 
   so := TSuperObject.ParseString( @WideString(s)[1], False );
   if not Assigned(so) then
-    goto LBL_FAILED;
+    goto LBL_NOT_A_WAPT_SERVER;
 
   so := so.O['result'];
   if not Assigned(so) then
-    goto LBL_FAILED;
+    goto LBL_NOT_A_WAPT_SERVER;
 
   so := so.O['version'];
   if not Assigned(so) then
-    goto LBL_FAILED;
+    goto LBL_NOT_A_WAPT_SERVER;
 
   success := true;
   exit( 0 );
 
-LBL_FAILED:
+LBL_NOT_A_WAPT_SERVER:
   if Assigned(http) then
     http_free( http );
   success := false;
   exit( 0 );
 
-LBL_ERROR:
+LBL_CONNECT_FAILED:
   if Assigned(http) then
     http_free( http );
   success := false;
@@ -190,6 +205,8 @@ Begin
   CloseSocket (aSocket);
   WSACleanUp;
 end;
+
+
 
 
 end.
