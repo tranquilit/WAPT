@@ -31,8 +31,8 @@ for cleanup_dir in ('rpm','mongodb','spool','uninstall_service.bat'):
     if os.path.exists(mypath):
         shutil.rmtree(mypath)
 
-run('rm /opt/wapt/*.pyc')
-run('rm /opt/wapt/waptserver/*.pyc')
+run('rm -f /opt/wapt/*.pyc')
+run('rm -f /opt/wapt/waptserver/*.pyc')
 
 # relocating waptserver.ini config file to the new location
 OLD_CFG_PATH = '/opt/wapt/waptserver/waptserver.ini'
