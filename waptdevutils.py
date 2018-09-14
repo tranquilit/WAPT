@@ -582,7 +582,7 @@ def add_ads_groups(waptconfigfile,
     if sign_key is None:
         sign_key = sign_certs[0].matching_key_in_dirs(private_key_password=key_password)
 
-    main_repo = WaptHostRepo(name='wapt',cabundle = cabundle)
+    main_repo = WaptRemoteRepo(name='wapt',cabundle = cabundle)
     main_repo.load_config_from_file(waptconfigfile)
 
     host_repo = WaptHostRepo(name='wapt-host',host_id=[h['uuid'] for h in hostdicts_list],cabundle = cabundle)
@@ -614,19 +614,22 @@ def add_ads_groups(waptconfigfile,
         i = 0
         for h in hostdicts_list:
             try:
+                host_package = None
                 host_id = h['uuid']
-                hostname = h['computer_fqdn']
-                groups = get_computer_groups(h['computer_name'])
+                hostname = h['computer_name']
+                groups = get_computer_groups(hostname)
                 host_package = host_repo.get(host_id,PackageEntry(package=host_id,section='host'))
                 if progress_hook(True,i,len(hostdicts_list),'Checking %s' % host_package.package):
                     break
 
                 wapt_groups = ensure_list(host_package['depends'])
-                additional = [group for group in groups if not group in wapt_groups and main_repo.get(group)]
+                additional = [group for group in groups if not group in wapt_groups and (main_repo.get(group,None) is not None)]
                 if additional:
+                    logger.info(u'Adding %s to %s' % (','.join(additional),host_package.package))
                     if progress_hook(True,i,len(hostdicts_list),'Editing %s' % host_package.package):
                         break
-                    host_package.depends = ','.join(wapt_groups.extend(additional))
+                    wapt_groups.extend(additional)
+                    host_package.depends = ','.join(wapt_groups)
                     host_package.build_management_package()
                     host_package.inc_build()
                     host_file = host_package.build_management_package()
@@ -634,8 +637,10 @@ def add_ads_groups(waptconfigfile,
                     packages.append(host_package)
                 else:
                     unchanged.append(host_package.package)
-            except:
-                discarded.append(host_package.package)
+            except Exception as e:
+                if host_package:
+                    discarded.append(host_package.package)
+                logger.critical(u'Discarding because %s' % ensure_unicode(e))
 
         # upload all in one step...
         progress_hook(True,3,3,'Upload %s host packages' % len(packages))
