@@ -243,11 +243,8 @@ def guess_package_root_dir(fn):
 
 def ask_user_password(title=''):
     global options
-    print(options)
     user = options.wapt_server_user
     password = options.wapt_server_passwd
-    print(waptguihelper)
-    print(sys.stdin is not sys.__stdin__)
     if (options.use_gui_helper or sys.stdin is not sys.__stdin__) and waptguihelper:
         if isinstance(title,unicode):
             title = title.encode('utf8')
