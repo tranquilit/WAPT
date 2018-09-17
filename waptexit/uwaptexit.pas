@@ -48,21 +48,27 @@ type
     procedure Timer1Timer(Sender: TObject);
     procedure OnRunNotify(Sender: TObject);
   private
+    { private declarations }
+    FAllowCancelUpgrade: Boolean;
     FCountDown: Integer;
     FInitialCountDown: Integer;
+    FPriorities: String;
+    FOnlyIfNotProcessRunning: Boolean;
     procedure SetCountDown(AValue: Integer);
-    { private declarations }
-    function  allow_cancel_upgrade:Boolean;
+    function  CheckAllowCancelUpgrade:Boolean;
     procedure SetInitialCountDown(AValue: Integer);
   public
     { public declarations }
     upgrades,tasks,running,pending : ISuperObject;
     // wait for waptservice answer in seconds
-    waptservice_timeout: Integer;
+    WaptserviceTimeout: Integer;
     WAPTServiceRunning:Boolean;
 
+    property AllowCancelUpgrade:Boolean read FAllowCancelUpgrade write FAllowCancelUpgrade;
     property InitialCountDown:Integer read FInitialCountDown write SetInitialCountDown;
     property CountDown:Integer read FCountDown write SetCountDown;
+    property Priorities: String read FPriorities write FPriorities;
+    property OnlyIfNotProcessRunning: Boolean read FOnlyIfNotProcessRunning write FOnlyIfNotProcessRunning;
   end;
 
 var
@@ -70,7 +76,7 @@ var
 
 implementation
 
-uses soutils,IniFiles,waptcommon,uScaleDPI,waptwinutils,tiscommon,typinfo;
+uses soutils,IniFiles,waptcommon,tisstrings, uScaleDPI,waptwinutils,tiscommon,typinfo;
 {$R *.lfm}
 {$ifdef ENTERPRISE }
 {$R res_enterprise.rc}
@@ -80,11 +86,10 @@ uses soutils,IniFiles,waptcommon,uScaleDPI,waptwinutils,tiscommon,typinfo;
 
 { TVisWaptExit }
 
-const FAllow_cancel_upgrade:Boolean = True;
 
-function  TVisWaptExit.allow_cancel_upgrade:Boolean;
+function  TVisWaptExit.CheckAllowCancelUpgrade:Boolean;
 begin
-  Result := FAllow_cancel_upgrade and ((running=Nil) or (Running.datatype=stNull));
+  Result := AllowCancelUpgrade and ((running=Nil) or (Running.datatype=stNull));
 end;
 
 procedure TVisWaptExit.SetInitialCountDown(AValue: Integer);
@@ -105,13 +110,19 @@ end;
 
 procedure TVisWaptExit.ActUpgradeExecute(Sender: TObject);
 var
-  aso: ISuperObject;
+  aso,args: ISuperObject;
 begin
   Timer1.Enabled := False;
   try
     if WAPTServiceRunning then
     try
-      aso := WAPTLocalJsonGet('upgrade.json','','',waptservice_timeout*1000);
+      args := TSuperObject.Create(stArray);
+      if OnlyIfNotProcessRunning then
+        args.AsArray.Add('only_if_not_process_running=1');
+      if Priorities <> '' then
+        args.AsArray.Add(Format('only_priorities=%s',[Priorities]));
+
+      aso := WAPTLocalJsonGet('upgrade.json?'+Join('&',args),'','',WaptserviceTimeout*1000);
       if aso <> Nil then
       begin
         MemoLog.Items.Text:=aso.AsJSon();
@@ -161,7 +172,7 @@ end;
 
 procedure TVisWaptExit.FormCloseQuery(Sender: TObject; var CanClose: boolean);
 begin
-  if  Not allow_cancel_upgrade and
+  if  Not CheckAllowCancelUpgrade and
        ( ((upgrades<>Nil) and (upgrades.AsArray.Length>0)) or
          ((running<>Nil) and (running.dataType<>stNull)) or
          ((pending<>Nil) and (pending.AsArray.Length>0))
@@ -174,8 +185,8 @@ begin
   if ((running<>Nil) and (running.dataType<>stNull)) or
       ((pending<>Nil) and (pending.dataType=stArray) and (pending.AsArray.Length>0))  then
 
-    if allow_cancel_upgrade then
-      WAPTLocalJsonGet('cancel_all_tasks.json','','',waptservice_timeout*1000)
+    if CheckAllowCancelUpgrade then
+      WAPTLocalJsonGet('cancel_all_tasks.json','','',WaptserviceTimeout*1000)
     else
       Canclose := False
 end;
@@ -191,14 +202,16 @@ begin
 
   ScaleDPI(Self,96); // 96 is the DPI you designed
   ScaleImageList(ImageList1,96);
-  waptservice_timeout := 2;
+  WaptserviceTimeout := 2;
 
   //Load config
   ini := TIniFile.Create(WaptIniFilename);
   try
-    Fallow_cancel_upgrade := FindCmdLineSwitch('allow_cancel_upgrade') or ini.ReadBool('global','allow_cancel_upgrade',True);
-    waptservice_timeout := ini.ReadInteger('global','waptservice_timeout',2);
+    AllowCancelUpgrade := FindCmdLineSwitch('allow_cancel_upgrade') or ini.ReadBool('global','allow_cancel_upgrade',True);
+    WaptserviceTimeout := ini.ReadInteger('global','waptservice_timeout',2);
     InitialCountDown := StrToInt(GetCmdParams('waptexit_countdown',ini.ReadString('global','waptexit_countdown','10')));
+    Priorities := GetCmdParams('priorities',ini.ReadString('global','upgrade_priorities',''));
+    OnlyIfNotProcessRunning := FindCmdLineSwitch('only_if_not_process_running') or ini.ReadBool('global','upgrade_only_if_not_process_running',True);
   finally
     ini.Free;
   end;
@@ -211,7 +224,7 @@ end;
 
 procedure TVisWaptExit.actSkipUpdate(Sender: TObject);
 begin
-  actSkip.Enabled:=allow_cancel_upgrade;
+  actSkip.Enabled:=CheckAllowCancelUpgrade;
 end;
 
 procedure TVisWaptExit.ActShowDetailsExecute(Sender: TObject);
@@ -239,13 +252,13 @@ begin
   try
     if not (GetServiceStatusByName('','WAPTService') in [ssRunning])  then
       Raise Exception.Create('WAPTService is not running: '+GetEnumName(TypeInfo(TServiceState),ord(GetServiceStatusByName('','WAPTService'))));
-    aso := WAPTLocalJsonGet('checkupgrades.json','','',waptservice_timeout*1000);
+    aso := WAPTLocalJsonGet('checkupgrades.json','','',WaptserviceTimeout*1000);
     if aso<>Nil then
     begin
       WAPTServiceRunning:=True;
       upgrades := aso['upgrades'];
       //check if running or pending tasks.
-      aso := WAPTLocalJsonGet('tasks.json','','',waptservice_timeout*1000);
+      aso := WAPTLocalJsonGet('tasks.json','','',WaptserviceTimeout*1000);
       if aso<>Nil then
       begin
         running := aso['running'];;
@@ -279,7 +292,7 @@ begin
     LabIntro.Caption:=Format(rsUpdatesAvailable,[upgrades.AsArray.Length]);
   end;
 
-  if allow_cancel_upgrade then
+  if CheckAllowCancelUpgrade then
     CountDown:=InitialCountDown
   else
     CountDown:=0;
@@ -295,7 +308,7 @@ begin
     If WAPTServiceRunning then
     begin
       // get current tasks manager status
-      aso := WAPTLocalJsonGet('tasks.json','','',waptservice_timeout*1000);
+      aso := WAPTLocalJsonGet('tasks.json','','',WaptserviceTimeout*1000);
       if aso <> Nil then
       begin
         running := aso['running'];

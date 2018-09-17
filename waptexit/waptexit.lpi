@@ -20,7 +20,8 @@
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="1"/>
       <MinorVersionNr Value="5"/>
-      <RevisionNr Value="1"/>
+      <RevisionNr Value="2"/>
+      <BuildNr Value="5"/>
       <Language Value="040C"/>
       <StringTable CompanyName="Tranquil IT Systems" FileDescription="check and launch packages upgrades at Windows Shutdown" InternalName="waptexit" LegalCopyright="Tranquil IT Systems" OriginalFilename="waptexit.exe" ProductName="WAPT" ProductVersion="1.5.1.23"/>
     </VersionInfo>
@@ -35,6 +36,7 @@
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
+        <CommandLineParams Value="/allow_cancel_upgrade /waptexit_countdown=300 /only_if_not_process_running"/>
       </local>
     </RunParams>
     <RequiredPackages Count="6">
