@@ -863,7 +863,10 @@ class WaptLongTask(WaptTask):
 class WaptDownloadPackage(WaptTask):
     def __init__(self,packagenames,usecache=True,**args):
         super(WaptDownloadPackage,self).__init__()
-        self.packagenames = ensure_list(packagenames)
+        if not isinstance(packagenames,list):
+            self.packagenames = [packagenames]
+        else:
+            self.packagenames = packagenames
         self.usecache = usecache
         self.size = 0
         for k in args:
@@ -913,7 +916,10 @@ class WaptDownloadPackage(WaptTask):
 class WaptPackageInstall(WaptTask):
     def __init__(self,packagenames,force=False,only_priorities=None,only_if_not_process_running=False,**args):
         super(WaptPackageInstall,self).__init__()
-        self.packagenames = ensure_list(packagenames)
+        if not isinstance(packagenames,list):
+            self.packagenames = [packagenames]
+        else:
+            self.packagenames = packagenames
         self.force = force
         self.only_priorities = only_priorities
         self.only_if_not_process_running = only_if_not_process_running
@@ -994,7 +1000,10 @@ class WaptPackageRemove(WaptPackageInstall):
 class WaptPackageForget(WaptTask):
     def __init__(self,packagenames,**args):
         super(WaptPackageForget,self).__init__()
-        self.packagenames = ensure_list(packagenames)
+        if not isinstance(packagenames,list):
+            self.packagenames = [packagenames]
+        else:
+            self.packagenames = packagenames
         for k in args:
             setattr(self,k,args[k])
 

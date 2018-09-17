@@ -858,7 +858,9 @@ def inventory():
 @app.route('/install.json', methods=['GET'])
 @app.route('/install.html', methods=['GET'])
 def install():
-    package_requests = ensure_list(request.args.get('package'))
+    package_requests = request.args.get('package')
+    if not isinstance(package_requests,list):
+        package_requests = [package_requests]
     force = int(request.args.get('force','0')) == 1
     notify_user = int(request.args.get('notify_user','0')) == 1
     only_priorities = None
@@ -925,8 +927,9 @@ def package_download():
 @app.route('/remove.json', methods=['GET'])
 @allow_local_auth
 def remove():
-    package = request.args.get('package')
-    packages = package.split(',')
+    packages = request.args.get('package')
+    if not isinstance(packages,list):
+        packages = [packages]
     logger.info(u"Remove package(s) %s" % packages)
     force=int(request.args.get('force','0')) == 1
     notify_user = int(request.args.get('notify_user','0')) == 1
@@ -943,8 +946,9 @@ def remove():
 @app.route('/forget.json', methods=['GET'])
 @allow_local_auth
 def forget():
-    package = request.args.get('package')
-    packages = package.split(',')
+    packages = request.args.get('package')
+    if not isinstance(packages,list):
+        packages = [packages]
     logger.info(u"Forget package(s) %s" % packages)
     notify_user = int(request.args.get('notify_user','0')) == 1
     data = task_manager.add_task(WaptPackageForget(packages),notify_user=notify_user).as_dict()

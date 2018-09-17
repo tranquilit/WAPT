@@ -274,7 +274,7 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
                     result.append(self.task_manager.add_task(WaptCleanup(notify_user=False,created_by=verified_by,priority=200)).as_dict())
 
                 elif name in  ['trigger_install_packages','trigger_remove_packages','trigger_forget_packages']:
-                    packagenames = ensure_list(action['packages'])
+                    packagenames = action['packages']
                     only_priorities = action.get('only_priorities',None)
                     only_if_not_process_running = action.get('only_if_not_process_running',False)
 
