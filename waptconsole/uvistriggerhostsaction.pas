@@ -1,4 +1,4 @@
-unit uvishostsupgrade;
+unit uvistriggerhostsaction;
 
 {$mode objfpc}{$H+}
 
@@ -11,9 +11,9 @@ uses
 
 type
 
-  { TVisHostsUpgrade }
+  { TVisTriggerHostsAction }
 
-  TVisHostsUpgrade = class(TForm)
+  TVisTriggerHostsAction = class(TForm)
     ActStop: TAction;
     ActUpgrade: TAction;
     ActionList1: TActionList;
@@ -56,16 +56,16 @@ type
   end;
 
 var
-  VisHostsUpgrade: TVisHostsUpgrade;
+  VisTriggerHostsAction: TVisTriggerHostsAction;
 
 implementation
 
 {$R *.lfm}
 uses tiscommon,waptcommon,IdHTTP,UScaleDPI,dmwaptpython,VarPyth;
 
-{ TVisHostsUpgrade }
+{ TVisTriggerHostsAction }
 
-procedure TVisHostsUpgrade.ActUpgradeExecute(Sender: TObject);
+procedure TVisTriggerHostsAction.ActUpgradeExecute(Sender: TObject);
 var
   SOAction, SOActions,res,host:ISuperObject;
   actions_json:Variant;
@@ -154,7 +154,7 @@ begin
   end;
 end;
 
-procedure TVisHostsUpgrade.FormCreate(Sender: TObject);
+procedure TVisTriggerHostsAction.FormCreate(Sender: TObject);
 begin
   ScaleDPI(Self,96); // 96 is the DPI you designed
   ScaleImageList(ImageList1,96);
@@ -162,13 +162,13 @@ begin
   notifyServer:=True;
 end;
 
-procedure TVisHostsUpgrade.ProgressGridDragAllowed(Sender: TBaseVirtualTree;
+procedure TVisTriggerHostsAction.ProgressGridDragAllowed(Sender: TBaseVirtualTree;
   Node: PVirtualNode; Column: TColumnIndex; var Allowed: Boolean);
 begin
   If Column=0 then Allowed:=False;
 end;
 
-procedure TVisHostsUpgrade.ProgressGridGetImageIndexEx(
+procedure TVisTriggerHostsAction.ProgressGridGetImageIndexEx(
   Sender: TBaseVirtualTree; Node: PVirtualNode; Kind: TVTImageKind;
   Column: TColumnIndex; var Ghosted: Boolean; var ImageIndex: Integer;
   var ImageList: TCustomImageList);
@@ -196,7 +196,7 @@ begin
   end
 end;
 
-procedure TVisHostsUpgrade.ProgressGridGetText(Sender: TBaseVirtualTree;
+procedure TVisTriggerHostsAction.ProgressGridGetText(Sender: TBaseVirtualTree;
   Node: PVirtualNode; RowData, CellData: ISuperObject; Column: TColumnIndex;
   TextType: TVSTTextType; var CellText: string);
 begin
@@ -204,13 +204,13 @@ begin
     CellText:='';
 end;
 
-procedure TVisHostsUpgrade.ProgressGridInitNode(Sender: TBaseVirtualTree;
+procedure TVisTriggerHostsAction.ProgressGridInitNode(Sender: TBaseVirtualTree;
   ParentNode, Node: PVirtualNode; var InitialStates: TVirtualNodeInitStates);
 begin
   InitialStates := InitialStates + [ivsMultiline];
 end;
 
-procedure TVisHostsUpgrade.ProgressGridMeasureItem(Sender: TBaseVirtualTree;
+procedure TVisTriggerHostsAction.ProgressGridMeasureItem(Sender: TBaseVirtualTree;
   TargetCanvas: TCanvas; Node: PVirtualNode; var NodeHeight: Integer);
 begin
 {  if Sender.MultiLine[Node] then
@@ -219,12 +219,12 @@ begin
     NodeHeight:=ProgressGrid.DefaultNodeHeight;}
 end;
 
-procedure TVisHostsUpgrade.ActStopExecute(Sender: TObject);
+procedure TVisTriggerHostsAction.ActStopExecute(Sender: TObject);
 begin
   Stopped := True;
 end;
 
-procedure TVisHostsUpgrade.Sethosts(AValue: ISuperObject);
+procedure TVisTriggerHostsAction.Sethosts(AValue: ISuperObject);
 var
   data : ISuperObject;
 begin
@@ -237,7 +237,7 @@ begin
   ProgressGrid.Data := data;
 end;
 
-procedure TVisHostsUpgrade.Setaction(AValue: String);
+procedure TVisTriggerHostsAction.Setaction(AValue: String);
 begin
   if Faction=AValue then Exit;
   Faction:=AValue;

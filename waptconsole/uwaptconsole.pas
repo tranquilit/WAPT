@@ -563,7 +563,6 @@ type
     procedure ActRestoreDefaultLayoutExecute(Sender: TObject);
     procedure ActSearchGroupsExecute(Sender: TObject);
     procedure ActTriggerHostUpdateExecute(Sender: TObject);
-    procedure ActTriggerHostUpgradeExecute(Sender: TObject);
     procedure ActEditPackageExecute(Sender: TObject);
     procedure ActEditpackageUpdate(Sender: TObject);
     procedure ActEvaluateExecute(Sender: TObject);
@@ -816,7 +815,7 @@ implementation
 uses LCLIntf, LCLType, IniFiles, variants, LazFileUtils,FileUtil, uvisprivatekeyauth, soutils,
   waptcommon, waptwinutils, tiscommon, uVisCreateKey, uVisCreateWaptSetup,
   dmwaptpython, uviseditpackage, uvislogin, uviswaptconfig, uvischangepassword,
-  uvisgroupchoice, uvishostsupgrade, uVisAPropos,
+  uvisgroupchoice, uvistriggerhostsaction, uVisAPropos,
   uVisImportPackage, PythonEngine, Clipbrd, RegExpr, tisinifiles, IdURI,
   uScaleDPI, uVisPackageWizard, uVisChangeKeyPassword, uVisDisplayPreferences,
   uvisrepositories, uVisHostDelete, windirs,winutils
@@ -3058,7 +3057,7 @@ end;
 
 procedure TVisWaptGUI.ActRefreshHostInventoryExecute(Sender: TObject);
 begin
-  with TVisHostsUpgrade.Create(Self) do
+  with TVisTriggerHostsAction.Create(Self) do
   try
     Caption:= rsTriggerHostsUpdate;
     action := 'trigger_host_register';
@@ -3238,7 +3237,7 @@ begin
   if (GridHosts.SelectedCount>=1) and (GridHosts.SelectedCount<=5) then
     TriggerActionOnHosts(ExtractField(GridHosts.SelectedRows,'uuid'),'trigger_host_update',Nil,rsTriggerHostsUpdate,'Error checking for updates',True)
   else
-    with TVisHostsUpgrade.Create(Self) do
+    with TVisTriggerHostsAction.Create(Self) do
       try
         Caption:= rsTriggerHostsUpdate;
         action := 'trigger_host_update';
@@ -3259,21 +3258,6 @@ begin
   result := TSuperObject.Create(stArray);
   for host in GridHosts.SelectedRows do
     result.AsArray.Add(host.S['uuid']);
-end;
-
-procedure TVisWaptGUI.ActTriggerHostUpgradeExecute(Sender: TObject);
-begin
-  with TVisHostsUpgrade.Create(Self) do
-    try
-      Caption:= rsTriggerHostsUpgrade;
-      action := 'trigger_host_upgrade';
-      hosts := Gridhosts.SelectedRows;
-
-      if ShowModal = mrOk then
-        actRefresh.Execute;
-    finally
-      Free;
-    end;
 end;
 
 procedure TVisWaptGUI.ActEvaluateExecute(Sender: TObject);

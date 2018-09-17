@@ -15,7 +15,7 @@ uses
   Forms, luicontrols, runtimetypeinfocontrols, memdslaz,
   uwaptconsole, uVisCreateKey, dmwaptpython, uVisEditPackage,
   uviscreatewaptsetup, uvislogin, uvisprivatekeyauth, uvisloading,
-  uviswaptconfig, uvischangepassword, uvishostsupgrade, uVisAPropos,
+  uviswaptconfig, uvischangepassword, uvistriggerhostsaction, uVisAPropos,
   uVisImportPackage, uwaptconsoleres, uVisPackageWizard, uscaledpi,
   uVisChangeKeyPassword, uvisrepositories, uvisdisplaypreferences,
   uVisHostDelete,waptcommon,Dialogs,Controls,windows,tiscommon;
