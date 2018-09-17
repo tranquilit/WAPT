@@ -277,10 +277,10 @@ msgid ""
 "Are you sure you want to recreate a new package key ?\n"
 msgstr ""
 
-#: waptconsolepostconfres.rs_wapt_agent_has_been_found_on_server_skip_build_agent
+#: waptconsolepostconfres.rs_wapt_agent_has_been_found_on_server_overwrite_agent
 msgid ""
 "Wapt agent has been found on the server\n"
-"Skip building a new agent ?\n"
+"Build and overwrite agent ?\n"
 msgstr ""
 
 #: waptconsolepostconfres.rs_wapt_server_installation_may_be_broken

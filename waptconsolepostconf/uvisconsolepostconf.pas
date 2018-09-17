@@ -459,6 +459,16 @@ begin
     exit;
   end;
 
+  if self.ed_existing_key_password = Sender then
+  begin
+    if 0 = Length(Trim(self.ed_existing_key_key_filename.Text)) then
+    begin
+      self.btn_find_private_key.Click;
+      exit;
+    end;
+  end;
+
+
   self.ActNext.Execute;
 end;
 
@@ -877,10 +887,10 @@ begin
     begin
       if HTTP_RESPONSE_CODE_OK <> r then
         exit;
-      r := MessageDlg( Application.Name, rs_wapt_agent_has_been_found_on_server_skip_build_agent, mtConfirmation, mbYesNoCancel, 0 );
-      if mrCancel = r then
+      r := MessageBox( 0, PChar(rs_wapt_agent_has_been_found_on_server_overwrite_agent), PChar(Application.Name), MB_ICONQUESTION or MB_YESNOCANCEL or MB_DEFBUTTON3 );
+      if IDCANCEL = r then
         exit;
-      self.m_skip_build_agent := mrYes = r;
+      self.m_skip_build_agent := IDNO = r;
     end;
 
     package_certificate := self.ed_existing_key_certificat_filename.Text;
@@ -1071,7 +1081,7 @@ begin
 
   sl := TStringList.Create;
   sl.AddObject('net stop  waptservice', TObject(1) );  // Continue on error ( Service not runing )
-  sl.Append( waptget + ' --direct register' );
+  sl.Append( waptget + ' --direct register --wapt-server-user admin --wapt-server-passwd "' + self.ed_wapt_server_password.Text + '"' );
   sl.Append( 'net start waptservice' );
   sl.Append( waptget + ' update' );
 
@@ -1336,6 +1346,7 @@ begin
   end;
 
   self.ed_existing_key_key_filename.Text := s;
+  self.ButNext.SetFocus;
 
 LBL_EXIT:
   pop_cursor();
@@ -1370,6 +1381,8 @@ begin
   self.img_manual_wapt_server_url_status.Picture.Clear;
 
 end;
+
+
 
 procedure TVisWAPTConsolePostConf.ed_manual_repo_urlKeyPress(Sender: TObject; var Key: char);
 begin

@@ -289,15 +289,13 @@ msgid ""
 "Are you sure you want to recreate a new package key ?\n"
 msgstr ""
 "L'agent Wapt a été trouvé sur le serveur\n"
-"Êtes-vous certain de vouloir recréer une nouvelle clef de package ?"
+"Êtes-vous certain de vouloir recréer une nouvelle clef de package ?\n"
 
-#: waptconsolepostconfres.rs_wapt_agent_has_been_found_on_server_skip_build_agent
+#: waptconsolepostconfres.rs_wapt_agent_has_been_found_on_server_overwrite_agent
 msgid ""
 "Wapt agent has been found on the server\n"
-"Skip building a new agent ?\n"
+"Build and overwrite agent ?\n"
 msgstr ""
-"L'agent Wapt a été trouvé sur le serveur\n"
-"Passer la construction d'un nouvel agent ?\n"
 
 #: waptconsolepostconfres.rs_wapt_server_installation_may_be_broken
 msgid "Wapt server installation may be broken"
