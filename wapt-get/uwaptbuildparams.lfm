@@ -14,7 +14,7 @@ object VisWaptBuildParams: TVisWaptBuildParams
   Position = poScreenCenter
   ShowHint = True
   ShowInTaskBar = stAlways
-  LCLVersion = '1.3'
+  LCLVersion = '1.8.4.0'
   object PanBottom: TPanel
     Left = 0
     Height = 30

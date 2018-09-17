@@ -90,6 +90,8 @@ begin
   Application.BringToFront;
   BringToFront;
   SetFocus;
+  ShowWindow(Handle,1);
+  ShowWindow(Handle,1);
 end;
 
 end.
