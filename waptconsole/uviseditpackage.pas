@@ -451,8 +451,8 @@ procedure TVisEditPackage.EditPackage;
 var
   setuppypath:String;
 begin
-  EdPackage.Text := UTF8Encode(VarPythonAsString(PackageEdited.package));
-  EdVersion.Text := UTF8Encode(VarPythonAsString(PackageEdited.version));
+  EdPackage.Text := UTF8Encode(StrReplaceChar(VarPythonAsString(PackageEdited.package),',','_'));
+  EdVersion.Text := UTF8Encode(StrReplaceChar(VarPythonAsString(PackageEdited.version),',','_'));
   EdDescription.Text := UTF8Encode(VarPythonAsString(PackageEdited.description));
   EdSection.Text := UTF8Encode(VarPythonAsString(PackageEdited.section));
   IsUpdated := False;

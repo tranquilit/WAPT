@@ -1747,7 +1747,9 @@ class WaptServer(BaseObjectClass):
         Returns:
             dict: {'ok','errors'} list of http post upload results
         """
-        packages = ensure_list(packages)
+        if not isinstance(packages,list):
+            packages = [packages]
+
         files = {}
 
         ok = []
@@ -3053,7 +3055,8 @@ class Wapt(BaseObjectClass):
         {'target': u'c:\\users\\htouvet\\appdata\\local\\temp\\toto.wapt', 'package': PackageEntry('toto','119')}
         >>> wapt.http_upload_package(d['package'],wapt_server_user='admin',wapt_server_passwd='password')
         """
-        packages = ensure_list(packages)
+        if not isinstance(packages,list):
+            packages = [packages]
 
         # force auth before trying to upload to avoid uncessary upload buffering server side before it send a 401.
         auth = None
@@ -4074,7 +4077,8 @@ class Wapt(BaseObjectClass):
         if apackages is None:
             apackages = []
         # for csv string list of dependencies
-        apackages = ensure_list(apackages)
+        if not isinstance(apackages,list):
+            apackages = [apackages]
 
         # check if all members are strings packages requirements "package_name(=version)"
         apackages = [isinstance(p,PackageEntry) and p.asrequirement() or p for p in apackages]
@@ -4223,7 +4227,7 @@ class Wapt(BaseObjectClass):
             actions = self.list_upgrade()
             apackages = actions['install']+actions['additional']+actions['upgrade']
         elif isinstance(apackages,(str,unicode)):
-            apackages = ensure_list(apackages)
+            apackages = [apackages]
         elif isinstance(apackages,list):
             # ensure that apackages is a list of package requirements (strings)
             new_apackages = []
@@ -4490,7 +4494,9 @@ class Wapt(BaseObjectClass):
 
         """
         result = {'removed':[],'errors':[]}
-        packages_list = ensure_list(packages_list)
+        if not isinstance(packages_list,list):
+            packages_list = [packages_list]
+
         for package in packages_list:
             try:
                 self.check_cancelled()
@@ -4618,7 +4624,7 @@ class Wapt(BaseObjectClass):
                 if dn_part_type.lower() == 'dc' and  dn_part_type == previous_dn_part_type:
                     break
                 level_dn = ','.join(dn_parts[i:])
-                result.append(level_dn)
+                result.append(level_dn.replace(',','_'))
                 previous_dn_part_type = dn_part_type
         return result
 
