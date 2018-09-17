@@ -3501,13 +3501,16 @@ def create_daily_task(name,cmd,parameters, max_runtime=10, repeat_minutes=None, 
     #exit_code, startup_error_code = task.GetExitCode()
     return task
 
-def windows_version():
+def windows_version(members_count=3):
     """see https://msdn.microsoft.com/en-us/library/windows/desktop/ms724832(v=vs.85).aspx
 
     .. versionadded:: 1.3.5
+
+    .. versionchanged:: 1.6.2.5
+          members_count (int) : default to 3.
     """
     try:
-        return Version(platform.win32_ver()[1],3)
+        return Version(platform.win32_ver()[1],members_count)
     except:
         return Version(platform.win32_ver()[1])
 

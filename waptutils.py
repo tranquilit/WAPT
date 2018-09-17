@@ -966,6 +966,12 @@ class Version(object):
     """Version object of form 0.0.0
     can compare with respect to natural numbering and not alphabetical
 
+    Args:
+        version (str) : version string
+        member_count (int) : number of version memebers to take in account.
+                             If actual members in version is less, add missing memeber with 0 value
+                             If actual members count is higher, removes last ones.
+
     >>> Version('0.10.2') > Version('0.2.5')
     True
     >>> Version('0.1.2') < Version('0.2.5')
@@ -974,6 +980,9 @@ class Version(object):
     True
     >>> Version('7') < Version('7.1')
     True
+
+    .. versionchanged:: 1.6.2.5
+        truncate version members list to members_count if provided.
     """
 
     def __init__(self,version,members_count=None):
@@ -991,6 +1000,8 @@ class Version(object):
         if members_count is not None:
             if len(self.members)<members_count:
                 self.members.extend(['0'] * (members_count-len(self.members)))
+            else:
+                self.members = self.members[0:members_count]
 
     def __cmp__(self,aversion):
         def nat_cmp(a, b):

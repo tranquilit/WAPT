@@ -13,6 +13,26 @@ import re
 # registry key(s) where WAPT will find how to remove the application(s)
 uninstallkey = []
 
+
+def update_registry_version(version):
+    # updatethe registry
+    with _winreg.CreateKeyEx(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\WAPT_is1',\
+            0, _winreg.KEY_READ| _winreg.KEY_WRITE ) as waptis:
+        reg_setvalue(waptis,"DisplayName","WAPT %s" % version)
+        reg_setvalue(waptis,"DisplayVersion","%s" % version)
+        reg_setvalue(waptis,"InstallDate",currentdate())
+
+
+def sha256_for_file(fname, block_size=2**20):
+    f = open(fname,'rb')
+    sha256 = hashlib.sha256()
+    while True:
+        data = f.read(block_size)
+        if not data:
+            break
+        sha256.update(data)
+    return sha256.hexdigest()
+
 class Version(object):
     """Version object of form 0.0.0
     can compare with respect to natural numbering and not alphabetical
@@ -42,6 +62,8 @@ class Version(object):
         if members_count is not None:
             if len(self.members)<members_count:
                 self.members.extend(['0'] * (members_count-len(self.members)))
+            else:
+                self.members = self.members[0:members_count]
 
     def __cmp__(self,aversion):
         def nat_cmp(a, b):
@@ -81,24 +103,6 @@ class Version(object):
     def __repr__(self):
         return "Version('{}')".format('.'.join(self.members))
 
-def update_registry_version(version):
-    # updatethe registry
-    with _winreg.CreateKeyEx(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\WAPT_is1',\
-            0, _winreg.KEY_READ| _winreg.KEY_WRITE ) as waptis:
-        reg_setvalue(waptis,"DisplayName","WAPT %s" % version)
-        reg_setvalue(waptis,"DisplayVersion","%s" % version)
-        reg_setvalue(waptis,"InstallDate",currentdate())
-
-
-def sha256_for_file(fname, block_size=2**20):
-    f = open(fname,'rb')
-    sha256 = hashlib.sha256()
-    while True:
-        data = f.read(block_size)
-        if not data:
-            break
-        sha256.update(data)
-    return sha256.hexdigest()
 
 
 def download_waptagent(waptagent_path,expected_sha256):
@@ -120,10 +124,10 @@ def download_waptagent(waptagent_path,expected_sha256):
     error('No repository found for the download of waptagent.exe')
 
 
-def windows_version():
+def windows_version(members_count=None):
     """see https://msdn.microsoft.com/en-us/library/windows/desktop/ms724832(v=vs.85).aspx"""
     try:
-        return Version(platform.win32_ver()[1],3)
+        return Version(platform.win32_ver()[1],members_count)
     except:
         return Version(platform.win32_ver()[1])
 
@@ -201,7 +205,7 @@ def create_onetime_task(name,cmd,parameters=None, delay_minutes=2,max_runtime=10
     run_time = time.localtime(time.time() + delay_minutes*60)
     # task
 
-    if windows_version() <= Version('5.2',2):
+    if windows_version(2) <= Version('5.2',2):
         # for win XP
         system_account = r'"NT AUTHORITY\SYSTEM"'
         # windows xp doesn't support one time startup task /Z nor /F
