@@ -132,7 +132,7 @@ Filename: {app}\wapt-get.ini; Section: global; Key: hiberboot_enabled; String: {
 Filename: "{app}\wapt-get.exe"; Parameters: "add-upgrade-shutdown"; Flags: runhidden; StatusMsg: {cm:UpdatePkgUponShutdown}; Description: "{cm:UpdatePkgUponShutdown}"
 
 #if edition != "waptstarter"
-Filename: "{app}\wapt-get.exe"; Parameters: "--direct register"; Flags: runhidden; StatusMsg: {cm:RegisterHostOnServer}; Description: "{cm:RegisterHostOnServer}"
+Filename: "{app}\wapt-get.exe"; Parameters: "--use-gui --direct register"; Flags: runhidden; StatusMsg: {cm:RegisterHostOnServer}; Description: "{cm:RegisterHostOnServer}"
 #endif
 
 #if set_start_packages != "" 
