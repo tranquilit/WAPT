@@ -625,10 +625,12 @@ msgid "Confirm deletion of hosts"
 msgstr "Confirmer la suppression"
 
 #: tvishostsupgrade.actstop.caption
+msgctxt "tvishostsupgrade.actstop.caption"
 msgid "Terminate"
 msgstr "Arrêter"
 
 #: tvishostsupgrade.actupgrade.caption
+msgctxt "tvishostsupgrade.actupgrade.caption"
 msgid "Launch update"
 msgstr "Lancer les mises à jour en attente"
 
@@ -929,6 +931,22 @@ msgstr "Dépôt externe de paquets "
 #: tvisrepositories.panadvanced.caption
 msgid "PanAdvanced"
 msgstr ""
+
+#: tvistriggerhostsaction.actstop.caption
+#, fuzzy
+msgctxt "tvistriggerhostsaction.actstop.caption"
+msgid "Terminate"
+msgstr "Arrêter"
+
+#: tvistriggerhostsaction.actupgrade.caption
+#, fuzzy
+msgctxt "tvistriggerhostsaction.actupgrade.caption"
+msgid "Launch update"
+msgstr "Lancer les mises à jour en attente"
+
+#: tvistriggerhostsaction.caption
+msgid "Launch actions on hosts"
+msgstr "Lancer les actions sur les macgines"
 
 #: tviswaptconfig.actcheckandsetwaptserver.caption
 msgctxt "tviswaptconfig.actcheckandsetwaptserver.caption"

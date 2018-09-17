@@ -163,6 +163,7 @@ parser.add_option("--maturity", dest="maturity", default=None, help="Set/change 
 parser.add_option("--wapt-server-user", dest="wapt_server_user", default=None, help="User to upload packages to waptserver. (default: %default)")
 parser.add_option("--wapt-server-passwd", dest="wapt_server_passwd", default=None, help="Password to upload packages to waptserver. (default: %default)")
 parser.add_option("--log-to-windows-events",dest="log_to_windows_events",    default=False, action='store_true', help="Log steps to the Windows event log (default: %default)")
+parser.add_option("--use-gui", dest="use_gui_helper", default=False, action='store_true', help="Force use of GUI Helper even if not in dev mode. (default: %default)")
 
 (options,args) = parser.parse_args()
 
@@ -241,9 +242,13 @@ def guess_package_root_dir(fn):
         return fn
 
 def ask_user_password(title=''):
+    global options
+    print(options)
     user = options.wapt_server_user
     password = options.wapt_server_passwd
-    if sys.stdin is not sys.__stdin__ and waptguihelper:
+    print(waptguihelper)
+    print(sys.stdin is not sys.__stdin__)
+    if (options.use_gui_helper or sys.stdin is not sys.__stdin__) and waptguihelper:
         if isinstance(title,unicode):
             title = title.encode('utf8')
         res = waptguihelper.login_password_dialog('Credentials for wapt server',title.encode('utf8') or '',user or 'admin',password or '')
@@ -262,13 +267,12 @@ def ask_user_password(title=''):
             password = getpass.getpass('Password:')
     return (user,password)
 
-# import after parsing line command, as import when debugging seems to break command line
+# import after parsing command line, as import when debugging seems to break command line
 # because if rpyc
-if sys.stdin is not sys.__stdin__:
-    try:
-        import waptguihelper
-    except ImportError:
-        waptguihelper = None
+try:
+    import waptguihelper
+except ImportError:
+    waptguihelper = None
 
 def main():
     jsonresult = {'output':[]}

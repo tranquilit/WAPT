@@ -651,10 +651,12 @@ msgid "Confirm deletion of hosts"
 msgstr ""
 
 #: tvishostsupgrade.actstop.caption
+msgctxt "tvishostsupgrade.actstop.caption"
 msgid "Terminate"
 msgstr "Beenden"
 
 #: tvishostsupgrade.actupgrade.caption
+msgctxt "tvishostsupgrade.actupgrade.caption"
 msgid "Launch update"
 msgstr "Starte Update"
 
@@ -968,6 +970,22 @@ msgstr "URL auf das Packet-Repository-Modell"
 
 #: tvisrepositories.panadvanced.caption
 msgid "PanAdvanced"
+msgstr ""
+
+#: tvistriggerhostsaction.actstop.caption
+#, fuzzy
+msgctxt "tvistriggerhostsaction.actstop.caption"
+msgid "Terminate"
+msgstr "Beenden"
+
+#: tvistriggerhostsaction.actupgrade.caption
+#, fuzzy
+msgctxt "tvistriggerhostsaction.actupgrade.caption"
+msgid "Launch update"
+msgstr "Starte Update"
+
+#: tvistriggerhostsaction.caption
+msgid "Launch actions on hosts"
 msgstr ""
 
 #: tviswaptconfig.actcheckandsetwaptserver.caption
