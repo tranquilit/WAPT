@@ -1915,8 +1915,10 @@ class SSLCertificate(BaseObjectClass):
         return u'SSLCertificate cn=%s'%self.cn
 
     def __repr__(self):
-        return '<SSLCertificate cn=%s issuer=%s validity=%s - %s Code-Signing=%s CA=%s>'%\
-            (repr(self.cn),repr(self.issuer.get('commonName','?')),
+        return '<SSLCertificate cn=%s fingerprint=%s  issuer=%s validity=%s - %s Code-Signing=%s CA=%s>'%\
+            (repr(self.cn),
+            self.fingerprint[0:6],
+            repr(self.issuer.get('commonName','?')),
             self.not_before.strftime('%Y-%m-%d'),
             self.not_after.strftime('%Y-%m-%d'),
             self.is_code_signing,self.is_ca)

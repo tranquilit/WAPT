@@ -576,7 +576,7 @@ PackageKey = namedtuple('package',('packagename','version'))
 class WaptDB(WaptBaseDB):
     """Class to manage SQLite database with local installation status"""
 
-    curr_db_version = '20180716'
+    curr_db_version = '20180917'
 
     def initdb(self):
         """Initialize current sqlite db with empty table and return structure version"""
@@ -613,7 +613,12 @@ class WaptDB(WaptBaseDB):
           max_os_version varchar(255),
           min_os_version varchar(255),
           impacted_process varchar(255),
-          audit_schedule varchar(255)
+          audit_schedule varchar(255),
+          editor varchar(255),
+          keywords varchar(255),
+          licence varchar(255),
+          homepage varchar(255),
+          package_uuid varchar(255)
         )"""
                         )
         self.db.execute("""
@@ -787,8 +792,13 @@ class WaptDB(WaptBaseDB):
                     min_os_version,
                     target_os,
                     impacted_process,
-                    audit_schedule
-                    ) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+                    audit_schedule,
+                    editor,
+                    keywords,
+                    licence,
+                    homepage,
+                    package_uuid
+                    ) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
                 """,(
                     package_entry.package,
                     package_entry.version,
@@ -819,6 +829,11 @@ class WaptDB(WaptBaseDB):
                     package_entry.target_os,
                     package_entry.impacted_process,
                     package_entry.audit_schedule,
+                    package_entry.editor,
+                    package_entry.keywords,
+                    package_entry.licence,
+                    package_entry.homepage,
+                    package_entry.package_uuid,
                     )
                 )
             return cur.lastrowid

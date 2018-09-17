@@ -349,12 +349,13 @@ def main():
         # key password management
         def get_private_key_passwd(*args):
             """Password callback for opening private key in supplied password file"""
+            global options
             global private_key_password_cache
             if options.private_key_passwd and os.path.isfile(options.private_key_passwd):
                 return open(options.private_key_passwd,'r').read().splitlines()[0].strip()
             else:
                 if private_key_password_cache is None:
-                    if sys.stdin is not sys.__stdin__ and waptguihelper:
+                    if (options.use_gui_helper or sys.stdin is not sys.__stdin__) and waptguihelper:
                         res = waptguihelper.key_password_dialog('Password for orivate key',mywapt.personal_certificate_path.encode('utf8'),private_key_password_cache or '')
                         if res:
                             private_key_password_cache = res['keypassword']
@@ -962,7 +963,7 @@ def main():
                 # continue with upload
                 if action == 'build-upload':
                     waptfiles = packages
-                    print('Buildind and uploading packages to %s' % mywapt.waptserver.server_url)
+                    print('Building and uploading packages to %s' % mywapt.waptserver.server_url)
                     res = mywapt.upload_package(waptfiles)
                     if not res['success']:
                         print(u'Error when uploading package : %s' % res['msg'])
