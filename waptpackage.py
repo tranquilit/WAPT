@@ -82,6 +82,7 @@ import shutil
 import base64
 import copy
 import gc
+import uuid
 
 from iniparse import RawConfigParser
 import traceback
@@ -544,6 +545,9 @@ class PackageEntry(BaseObjectClass):
         self.editor=''
         self.licence=''
 
+        self.homepage = ''
+        self.package_uuid = ''
+
         self.md5sum=''
         self.repo_url=''
         self.repo=repo
@@ -580,6 +584,10 @@ class PackageEntry(BaseObjectClass):
             locale=self.locale if (self.locale is not None and self.locale != '' and self.locale != 'all') else '',
             maturity=self.maturity if (self.maturity is not None and self.maturity != '' and self.maturity != 'all') else '',
             )
+
+    def make_uuid(self):
+        self.package_uuid = str(uuid.uuid4())
+        return self.package_uuid
 
     def as_package_request(self):
         return PackageRequest(
@@ -1203,6 +1211,7 @@ class PackageEntry(BaseObjectClass):
         Returns:
             list: signed attributes
         """
+        self.make_uuid()
         self.signed_attributes = ','.join(self.get_default_signed_attributes())
         self.signature_date = time.strftime('%Y%m%d-%H%M%S')
         self.signer = certificate.cn
