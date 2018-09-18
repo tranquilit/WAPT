@@ -437,16 +437,13 @@ begin
   p := self.PagesControl.ActivePage;
 
   set_buttons_enable( true );
-  self.ActPrevious.Visible := True;
-  self.ActNext.Visible := True;
-  self.ActCancel.Visible := True;
 
   self.update_doc_html();
 
   if pgParameters = p then
   begin
     Application.QueueAsyncCall( @async, ASYNC_FOCUS_BTN_CHECKDNS  );
-    self.ActPrevious.Visible := false;
+    self.ActPrevious.Enabled := false;
   end
 
   else if pgPassword = p then
@@ -488,8 +485,8 @@ begin
   end
   else if pgFinish = p then
   begin
-    self.ActPrevious.Visible  := False;
-    self.ActCancel.Visible    := False;
+    self.ActPrevious.Enabled  := False;
+    self.ActCancel.Enabled    := False;
     set_focus_if_visible( self.cb_configure_console_launch_console_on_exit );
   end;
 
