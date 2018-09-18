@@ -38,6 +38,8 @@ resourcestring
   rs_wapt_agent_has_been_found_on_server_overwrite_agent =  'Wapt agent has been found on the server' + #13#10 + 'Build and overwrite agent ?';
   rs_confirm_cancel_post_config = 'Are you sure you want to abort wapt console post configuration ?';
   rs_confirm = 'Confirm';
+  rs_you_wapt_agent_version_mismatch = 'Wapt agent version exception (%s) Post configuration tool cannot continue, please follow tutorial at : http://wapt.fr';
+  rs_post_conf_will_now_exit = 'Post configuration tool will now exit';
 implementation
 
 end.

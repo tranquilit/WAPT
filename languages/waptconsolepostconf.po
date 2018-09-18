@@ -254,6 +254,10 @@ msgstr ""
 msgid "Pacakge prefix must be alphanum"
 msgstr ""
 
+#: waptconsolepostconfres.rs_post_conf_will_now_exit
+msgid "Post configuration tool will now exit"
+msgstr ""
+
 #: waptconsolepostconfres.rs_supplied_passwords_differs
 msgid "Supplied password differs"
 msgstr ""
@@ -292,5 +296,9 @@ msgstr ""
 
 #: waptconsolepostconfres.rs_wrong_key_password
 msgid "Wrong key password"
+msgstr ""
+
+#: waptconsolepostconfres.rs_you_wapt_agent_version_mismatch
+msgid "Wapt agent version exception (%s) Post configuration tool cannot continue, please follow tutorial at : http://wapt.fr"
 msgstr ""
 

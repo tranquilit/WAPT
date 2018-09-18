@@ -94,6 +94,7 @@ type
     procedure ActNextExecute(Sender: TObject);
     procedure ActNextUpdate(Sender: TObject);
     procedure ActPreviousExecute(Sender: TObject);
+    procedure ActPreviousUpdate(Sender: TObject);
     procedure actWriteConfStartServeExecute(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure html_panelHotClick(Sender: TObject);
@@ -736,7 +737,7 @@ begin
   begin
     if CompareVersion( VERSION_MINIMAL, v ) > 0 then
     begin
-      msg := Format( 'You must upgrade your server first before running console post configuration tool . (%s)', [v] );
+      msg := Format( rs_you_wapt_agent_version_mismatch, [v] );
       self.show_validation_error( self.EdWaptServerIP, msg );
       exit;
     end;
@@ -1256,6 +1257,23 @@ end;
 procedure TVisWAPTServerPostConf.ActPreviousExecute(Sender: TObject);
 begin
   PagesControl.ActivePageIndex := PagesControl.ActivePageIndex - 1;
+end;
+
+procedure TVisWAPTServerPostConf.ActPreviousUpdate(Sender: TObject);
+begin
+  if PagesControl.ActivePage = pgParameters then
+  begin
+    ActPrevious.Enabled := False;
+    exit;
+  end;
+
+  if PagesControl.ActivePage = pgFinish then
+  begin
+    ActPrevious.Enabled := False;
+    exit;
+  end;
+
+  ActPrevious.Enabled := true;
 end;
 
 function runwapt(cmd:String):String;

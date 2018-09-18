@@ -234,8 +234,8 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
       Height = 315
       Top = 0
       Width = 614
-      HorzScrollBar.Page = 482
-      VertScrollBar.Page = 253
+      HorzScrollBar.Page = 83
+      VertScrollBar.Page = 78
       Align = alClient
       BorderStyle = bsNone
       ClientHeight = 315
@@ -246,10 +246,10 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         Height = 315
         Top = 0
         Width = 614
-        ActivePage = pgPackageKey
+        ActivePage = pgParameters
         Align = alClient
         MultiLine = True
-        TabIndex = 5
+        TabIndex = 0
         TabOrder = 0
         Options = [nboMultiLine]
         object pgParameters: TTabSheet
@@ -987,6 +987,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
     object ActPrevious: TAction
       Caption = 'Previous'
       OnExecute = ActPreviousExecute
+      OnUpdate = ActPreviousUpdate
     end
     object ActNext: TAction
       Caption = 'Next'
