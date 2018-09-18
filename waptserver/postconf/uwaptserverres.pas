@@ -67,6 +67,7 @@ resourcestring
   rs_upload_to_server = 'Upload to server %d%%';
   rs_click_restart_waptserver = 'Click to restart wapt server';
   rs_error_while_restarting_waptserver = 'An error has occured while restarting waptserver';
+  rs_you_wapt_agent_version_mismatch =  'Wapt agent version exception (%s) Post configuration tool cannot continue, please follow tutorial at : http://wapt.fr';
 
 implementation
 

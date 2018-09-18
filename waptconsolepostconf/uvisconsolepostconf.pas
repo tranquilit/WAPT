@@ -766,14 +766,18 @@ begin
   begin
     if CompareVersion( VERSION_MINIMAL, v ) > 0 then
     begin
-      msg := Format( 'You must upgrade your server first before running console post configuration tool . (%s)', [v] );
+      msg := Format( rs_you_wapt_agent_version_mismatch, [v] );
       self.show_validation_error( self.ed_manual_wapt_server_url, msg );
+      ShowMessage( rs_post_conf_will_now_exit );
+      Close;
       exit;
     end;
   end;
 
   if not wizard_validate_waptserver_login( self, self.ed_wapt_server_password, self.ed_manual_wapt_server_url.Text, 'admin', self.ed_wapt_server_password.Text ) then
+  begin
     exit;
+  end;
 
 
   Application.ProcessMessages;

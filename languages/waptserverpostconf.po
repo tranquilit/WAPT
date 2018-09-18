@@ -555,3 +555,7 @@ msgstr ""
 msgid "Wrong key password"
 msgstr ""
 
+#: uwaptserverres.rs_you_wapt_agent_version_mismatch
+msgid "Wapt agent version exception (%s) Post configuration tool cannot continue, please follow tutorial at : http://wapt.fr"
+msgstr ""
+
