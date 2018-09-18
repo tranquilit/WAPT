@@ -119,6 +119,7 @@ type
     procedure set_buttons_enable( enable : Boolean );
     procedure clear();
     procedure load_config_if_exist();
+    procedure validate_page_parameters( var bContinue : boolean );
     procedure validate_page_password( var bContinue : boolean );
     procedure validate_page_packge_name( var bContinue : boolean );
     procedure validate_page_package_key( var bContinue : boolean );
@@ -703,9 +704,21 @@ begin
 
 end;
 
+procedure TVisWAPTServerPostConf.validate_page_parameters(var bContinue: boolean );
+begin
+  bContinue := false;
+
+end;
+
 
 
 procedure TVisWAPTServerPostConf.validate_page_password(var bContinue: boolean);
+const
+  VERSION_MINIMAL : String =   '1.4.0.0';
+var
+  r   : integer;
+  v   : String;
+  msg : String;
 begin
   bContinue := false;
 
@@ -716,6 +729,17 @@ begin
   begin
     self.show_validation_error( self.EdPwd2, rs_supplied_passwords_differs );
     exit;
+  end;
+
+  r := wapt_server_agent_version( v, self.EdWaptServerIP.Text , 'admin', self.EdPwd1.Text );
+  if r = 0 then
+  begin
+    if CompareVersion( VERSION_MINIMAL, v ) > 0 then
+    begin
+      msg := Format( 'You must upgrade your server first before running console post configuration tool . (%s)', [v] );
+      self.show_validation_error( self.EdWaptServerIP, msg );
+      exit;
+    end;
   end;
 
   bContinue := true;
@@ -1135,7 +1159,13 @@ begin
 
   set_buttons_enable( false );
 
-  if pgConfigureConsoleOrFinish = p then
+  if pgParameters = p then
+  begin
+    self.validate_page_parameters( bContinue );
+    if not bContinue then
+      exit;
+  end
+  else if pgConfigureConsoleOrFinish = p then
   begin
     if self.rb_configure_console_finish.Checked then
     begin
