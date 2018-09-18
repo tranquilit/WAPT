@@ -1,4 +1,4 @@
 [submodule "waptenterprise"]
 	path = waptenterprise
 	url = git://git.ad.tranquil.it/wapt/waptenterprise.git
-	branch = master
+	branch = branch-1.6.2
