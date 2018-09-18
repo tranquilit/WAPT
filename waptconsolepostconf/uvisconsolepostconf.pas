@@ -746,6 +746,12 @@ begin
 end;
 
 procedure TVisWAPTConsolePostConf.validate_page_parameters( var bContinue: boolean);
+const
+  VERSION_MINIMAL : String =   '1.4.0.0';
+var
+  v: String;
+  r : integer;
+  msg : String;
 begin
   bContinue := false;
 
@@ -755,8 +761,20 @@ begin
 
   bContinue := false;
 
+  r := wapt_server_agent_version( v, self.ed_manual_wapt_server_url.Text , 'admin', self.ed_wapt_server_password.Text );
+  if r = 0 then
+  begin
+    if CompareVersion( VERSION_MINIMAL, v ) > 0 then
+    begin
+      msg := Format( 'You must upgrade your server first before running console post configuration tool . (%s)', [v] );
+      self.show_validation_error( self.ed_manual_wapt_server_url, msg );
+      exit;
+    end;
+  end;
+
   if not wizard_validate_waptserver_login( self, self.ed_wapt_server_password, self.ed_manual_wapt_server_url.Text, 'admin', self.ed_wapt_server_password.Text ) then
     exit;
+
 
   Application.ProcessMessages;
   bContinue := true;

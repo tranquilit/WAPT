@@ -75,8 +75,7 @@ TRunSyncParameters = record
 end;
 PRunSyncParameters = ^TRunSyncParameters;
 
-
-
+THttpProtocol = ( hpNone, hpHttp, hpHttps );
 
 function str_is_alphanum( const str : String ) : boolean;
 function str_is_empty_when_trimmed( const str : String ) : boolean;
@@ -110,12 +109,15 @@ function url_concat(const left: String; const right: String): String;
 function url_protocol(var protocol: String; const url: String): integer;
 function url_hostname( var hostname : String; const url : String) : integer;
 
+
+function http_protocol( const url : String ) : THttpProtocol;
 function http_create( https : boolean ) : TIdHTTP;
 procedure http_free( var http  : TIdHTTP );
 function http_is_valid_url(const url: String): boolean;
 function http_post(var output: String; const url: String; const content_type: String; const post_data: String): integer;
 function http_reponse_code(var response_code: integer; const url: String ): integer;
 function http_get(var output: String; const url: String ): integer;
+procedure http_set_basic_auth( http : TIdHTTP; const username : String; const password : String );
 
 
 
@@ -123,6 +125,7 @@ function wapt_json_response_is_success(var success: boolean; const json: String 
 function wapt_server_ping( const server_url : String ) : boolean;
 function wapt_server_ping( var ping_result : boolean; const server_url: String): integer;
 function wapt_server_is_repo_url( const repo_url : String ) : Boolean;
+function wapt_server_agent_version( var version : String; const server_url : String; const user : String; const password : String ) : integer;
 
 function offset_language(): integer;
 
@@ -824,6 +827,56 @@ begin
   exit( HTTP_RESPONSE_CODE_OK = rc );
 end;
 
+function wapt_server_agent_version(var version: String; const server_url: String; const user: String; const password : String ): integer;
+var
+  http        : TIdHTTP;
+  r           : integer;
+  http_proto  : THttpProtocol;
+  so          : ISuperObject;
+  s           : String;
+begin
+  result := -1;
+
+  http_proto := http_protocol( server_url );
+  if hpNone = http_proto then
+    exit();
+
+  http := http_create( hpHttps = http_proto );
+  http_set_basic_auth( http, user, password );
+
+  s := url_concat(server_url, '/api/v2/waptagent_version' );
+  r := -1;
+  try
+    s := http.Get(s);
+    r := http.ResponseCode;
+  finally
+    http_free( http );
+  end;
+
+  if not ( HTTP_RESPONSE_CODE_OK = r) then
+    exit( -1 );
+
+  so := TSuperObject.ParseString( @WideString(s)[1], False );
+  if not Assigned(so) then
+    exit;
+
+  if not Assigned( so.O['success'] ) then
+    exit;
+
+  if not  so.B['success'] then
+    exit;
+
+  if not Assigned( so.O['result'] ) then
+    exit;
+
+
+  if not assigned(  so.O['result'].O['waptagent_version'] ) then
+    exit;
+
+  version := UTF8Encode( so.O['result'].S['waptagent_version'] );
+  exit( 0 );
+end;
+
 
 
 
@@ -888,6 +941,15 @@ begin
 
 end;
 
+function http_protocol( const url : String ) : THttpProtocol;
+ begin
+   if 1 = Pos( 'http://' , url ) then
+    exit( hpHttp );
+   if 1 = Pos( 'https://', url ) then
+     exit( hpHttps );
+  exit( hpNone );
+end;
+
 
 function http_create( https : boolean ) : TIdHTTP;
 var
@@ -913,16 +975,6 @@ begin
   result := http;
 end;
 
-procedure http_free( var http  : TIdHTTP );
-begin
-  if nil <> http.IOHandler then
-  begin
-    http.IOHandler.Free;
-    http.IOHandler := nil;
-  end;
-  http.Free;
-  http := nil;
-end;
 
 function http_is_valid_url(const url: String): boolean;
 var
@@ -1045,6 +1097,25 @@ begin
 
   http_free( http );
 
+end;
+
+procedure http_set_basic_auth( http : TIdHTTP; const username : String; const password : String );
+begin
+  http.Request.Clear;
+  http.Request.BasicAuthentication := true;
+  http.Request.Username := username;
+  http.Request.Password := password;
+end;
+
+procedure http_free( var http  : TIdHTTP );
+begin
+  if nil <> http.IOHandler then
+  begin
+    http.IOHandler.Free;
+    http.IOHandler := nil;
+  end;
+  http.Free;
+  http := nil;
 end;
 
 function offset_language(): integer;

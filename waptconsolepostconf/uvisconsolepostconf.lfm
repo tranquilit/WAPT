@@ -66,10 +66,10 @@ object VisWAPTConsolePostConf: TVisWAPTConsolePostConf
       Height = 310
       Top = 0
       Width = 696
-      ActivePage = pgKey
+      ActivePage = pgParameters
       Align = alClient
       MultiLine = True
-      TabIndex = 2
+      TabIndex = 0
       TabOrder = 0
       Options = [nboMultiLine]
       object pgParameters: TTabSheet
