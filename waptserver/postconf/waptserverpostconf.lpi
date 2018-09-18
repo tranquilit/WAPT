@@ -34,37 +34,34 @@
         <FormatVersion Value="1"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="10">
+    <RequiredPackages Count="9">
       <Item1>
         <PackageName Value="TurboPowerIPro"/>
       </Item1>
       <Item2>
-        <PackageName Value="FrameViewer09"/>
+        <PackageName Value="pltis_sogrid"/>
       </Item2>
       <Item3>
-        <PackageName Value="pltis_sogrid"/>
+        <PackageName Value="pltis_virtualtreesextra"/>
       </Item3>
       <Item4>
-        <PackageName Value="pltis_virtualtreesextra"/>
+        <PackageName Value="dcpcrypt_laz"/>
       </Item4>
       <Item5>
-        <PackageName Value="dcpcrypt_laz"/>
+        <PackageName Value="indylaz"/>
       </Item5>
       <Item6>
-        <PackageName Value="indylaz"/>
+        <PackageName Value="pltis_wapt"/>
       </Item6>
       <Item7>
-        <PackageName Value="pltis_wapt"/>
+        <PackageName Value="pltis_utils"/>
       </Item7>
       <Item8>
-        <PackageName Value="pltis_utils"/>
+        <PackageName Value="pltis_superobject"/>
       </Item8>
       <Item9>
-        <PackageName Value="pltis_superobject"/>
-      </Item9>
-      <Item10>
         <PackageName Value="LCL"/>
-      </Item10>
+      </Item9>
     </RequiredPackages>
     <Units Count="16">
       <Unit0>

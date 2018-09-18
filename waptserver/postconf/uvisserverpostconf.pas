@@ -7,7 +7,7 @@ interface
 uses
   PythonEngine, Classes, SysUtils, FileUtil, LazFileUtils, LazUTF8, IpHtml,
   Forms, Controls, Graphics, Dialogs, ComCtrls, StdCtrls, ExtCtrls, Buttons,
-  ActnList, htmlview,  IdHTTP, IdComponent, uvisLoading,
+  ActnList, IdHTTP, IdComponent, uvisLoading,
   DefaultTranslator, LCLTranslator, LCLProc, EditBtn, Menus, uWaptServerRes;
 
 type
