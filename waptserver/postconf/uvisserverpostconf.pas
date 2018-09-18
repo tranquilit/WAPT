@@ -7,7 +7,7 @@ interface
 uses
   PythonEngine, Classes, SysUtils, FileUtil, LazFileUtils, LazUTF8, IpHtml,
   Forms, Controls, Graphics, Dialogs, ComCtrls, StdCtrls, ExtCtrls, Buttons,
-  ActnList, htmlview, Readhtml, IdHTTP, IdComponent, uvisLoading,
+  ActnList, htmlview,  IdHTTP, IdComponent, uvisLoading,
   DefaultTranslator, LCLTranslator, LCLProc, EditBtn, Menus, uWaptServerRes;
 
 type
@@ -707,8 +707,7 @@ end;
 
 procedure TVisWAPTServerPostConf.validate_page_parameters(var bContinue: boolean );
 begin
-  bContinue := false;
-
+  bContinue := true;
 end;
 
 
