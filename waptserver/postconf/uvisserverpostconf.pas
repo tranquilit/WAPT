@@ -7,7 +7,7 @@ interface
 uses
   PythonEngine, Classes, SysUtils, FileUtil, LazFileUtils, LazUTF8, IpHtml,
   Forms, Controls, Graphics, Dialogs, ComCtrls, StdCtrls, ExtCtrls, Buttons,
-  ActnList, htmlview, Readhtml, IdHTTP, IdComponent, uvisLoading,
+  ActnList, IdHTTP, IdComponent, uvisLoading,
   DefaultTranslator, LCLTranslator, LCLProc, EditBtn, Menus, uWaptServerRes;
 
 type
@@ -94,6 +94,7 @@ type
     procedure ActNextExecute(Sender: TObject);
     procedure ActNextUpdate(Sender: TObject);
     procedure ActPreviousExecute(Sender: TObject);
+    procedure ActPreviousUpdate(Sender: TObject);
     procedure actWriteConfStartServeExecute(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure html_panelHotClick(Sender: TObject);
@@ -119,6 +120,7 @@ type
     procedure set_buttons_enable( enable : Boolean );
     procedure clear();
     procedure load_config_if_exist();
+    procedure validate_page_parameters( var bContinue : boolean );
     procedure validate_page_password( var bContinue : boolean );
     procedure validate_page_packge_name( var bContinue : boolean );
     procedure validate_page_package_key( var bContinue : boolean );
@@ -437,16 +439,13 @@ begin
   p := self.PagesControl.ActivePage;
 
   set_buttons_enable( true );
-  self.ActPrevious.Visible := True;
-  self.ActNext.Visible := True;
-  self.ActCancel.Visible := True;
 
   self.update_doc_html();
 
   if pgParameters = p then
   begin
     Application.QueueAsyncCall( @async, ASYNC_FOCUS_BTN_CHECKDNS  );
-    self.ActPrevious.Visible := false;
+    self.ActPrevious.Enabled := false;
   end
 
   else if pgPassword = p then
@@ -488,8 +487,8 @@ begin
   end
   else if pgFinish = p then
   begin
-    self.ActPrevious.Visible  := False;
-    self.ActCancel.Visible    := False;
+    self.ActPrevious.Enabled  := False;
+    self.ActCancel.Enabled    := False;
     set_focus_if_visible( self.cb_configure_console_launch_console_on_exit );
   end;
 
@@ -706,9 +705,20 @@ begin
 
 end;
 
+procedure TVisWAPTServerPostConf.validate_page_parameters(var bContinue: boolean );
+begin
+  bContinue := true;
+end;
+
 
 
 procedure TVisWAPTServerPostConf.validate_page_password(var bContinue: boolean);
+const
+  VERSION_MINIMAL : String =   '1.4.0.0';
+var
+  r   : integer;
+  v   : String;
+  msg : String;
 begin
   bContinue := false;
 
@@ -719,6 +729,17 @@ begin
   begin
     self.show_validation_error( self.EdPwd2, rs_supplied_passwords_differs );
     exit;
+  end;
+
+  r := wapt_server_agent_version( v, self.EdWaptServerIP.Text , 'admin', self.EdPwd1.Text );
+  if r = 0 then
+  begin
+    if CompareVersion( VERSION_MINIMAL, v ) > 0 then
+    begin
+      msg := Format( rs_you_wapt_agent_version_mismatch, [v] );
+      self.show_validation_error( self.EdWaptServerIP, msg );
+      exit;
+    end;
   end;
 
   bContinue := true;
@@ -1138,7 +1159,13 @@ begin
 
   set_buttons_enable( false );
 
-  if pgConfigureConsoleOrFinish = p then
+  if pgParameters = p then
+  begin
+    self.validate_page_parameters( bContinue );
+    if not bContinue then
+      exit;
+  end
+  else if pgConfigureConsoleOrFinish = p then
   begin
     if self.rb_configure_console_finish.Checked then
     begin
@@ -1229,6 +1256,23 @@ end;
 procedure TVisWAPTServerPostConf.ActPreviousExecute(Sender: TObject);
 begin
   PagesControl.ActivePageIndex := PagesControl.ActivePageIndex - 1;
+end;
+
+procedure TVisWAPTServerPostConf.ActPreviousUpdate(Sender: TObject);
+begin
+  if PagesControl.ActivePage = pgParameters then
+  begin
+    ActPrevious.Enabled := False;
+    exit;
+  end;
+
+  if PagesControl.ActivePage = pgFinish then
+  begin
+    ActPrevious.Enabled := False;
+    exit;
+  end;
+
+  ActPrevious.Enabled := true;
 end;
 
 function runwapt(cmd:String):String;

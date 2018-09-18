@@ -267,6 +267,10 @@ msgstr "Le prefix de package ne peut pas être vide"
 msgid "Pacakge prefix must be alphanum"
 msgstr "Le prefix de package doit être alphanumérique"
 
+#: waptconsolepostconfres.rs_post_conf_will_now_exit
+msgid "Post configuration tool will now exit"
+msgstr "L'outil de post configuration va maintenant sortir"
+
 #: waptconsolepostconfres.rs_supplied_passwords_differs
 msgid "Supplied password differs"
 msgstr "Les mots de passe ne sont pas identiques"
@@ -308,4 +312,8 @@ msgstr "L'url du serveur Wapt est invalide"
 #: waptconsolepostconfres.rs_wrong_key_password
 msgid "Wrong key password"
 msgstr "Le mot de passe de la clef est invalide"
+
+#: waptconsolepostconfres.rs_you_wapt_agent_version_mismatch
+msgid "Wapt agent version exception (%s) Post configuration tool cannot continue, please follow tutorial at : http://wapt.fr"
+msgstr "Exception de version de l'agent wapt (%s). L''outil de post configuration ne peut pas continuer. Veuillez suivre le tutorial à http://wapt.fr'"
 

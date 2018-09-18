@@ -599,3 +599,7 @@ msgstr "Téléchargement sur le serveur %d%%"
 msgid "Wrong key password"
 msgstr "Le mot de passe de la clef est invalide"
 
+#: uwaptserverres.rs_you_wapt_agent_version_mismatch
+msgid "Wapt agent version exception (%s) Post configuration tool cannot continue, please follow tutorial at : http://wapt.fr"
+msgstr "Exception de version de l'agent wapt (%s). L''outil de post configuration ne peut pas continuer. Veuillez suivre le tutorial à http://wapt.fr';
+
