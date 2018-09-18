@@ -164,7 +164,6 @@ type
     MenuItem97: TMenuItem;
     MenuItem98: TMenuItem;
     MenuItem99: TMenuItem;
-    Panel10: TPanel;
     Panel13: TPanel;
     Panel17: TPanel;
     Panel9: TPanel;
@@ -595,6 +594,7 @@ type
     procedure cbMaskSystemComponentsClick(Sender: TObject);
     procedure cbNewestOnlyClick(Sender: TObject);
     procedure cbSearchAllClick(Sender: TObject);
+    procedure CBShowHostsForGroupsClick(Sender: TObject);
     procedure CBShowHostsForSoftsClick(Sender: TObject);
     procedure cbShowLogClick(Sender: TObject);
     procedure cbADSiteDropDown(Sender: TObject);
@@ -626,6 +626,7 @@ type
       State: TDragState; var Accept: Boolean);
     procedure FormDropFiles(Sender: TObject; const FileNames: array of String);
     procedure FormShow(Sender: TObject);
+    procedure GridGroupsChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
     procedure GridGroupsColumnDblClick(Sender: TBaseVirtualTree;
       Column: TColumnIndex; Shift: TShiftState);
     procedure GridGroupsGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
@@ -3749,8 +3750,19 @@ begin
   end;
 end;
 
+procedure TVisWaptGUI.CBShowHostsForGroupsClick(Sender: TObject);
+begin
+  PanHostsForPackage.Parent := pgGroups;
+  SplitHostsForPackage.Visible := CBShowHostsForGroups.Checked;
+  PanHostsForPackage.Visible := CBShowHostsForGroups.Checked;
+  SplitHostsForPackage.Top := GridGroups.Top+GridGroups.Height;
+  if not CBShowHostsForGroups.Checked then
+    GridHostsForPackage.Data := Nil;;
+end;
+
 procedure TVisWaptGUI.CBShowHostsForSoftsClick(Sender: TObject);
 begin
+  PanHostsForPackage.Parent := pgPrivateRepo;
   SplitHostsForPackage.Visible := CBShowHostsForSofts.Checked;
   PanHostsForPackage.Visible := CBShowHostsForSofts.Checked;
   SplitHostsForPackage.Top := GridPackages.Top+GridPackages.Height;
@@ -4049,6 +4061,28 @@ begin
     AppLoading:=False;
     Free;
   end;
+end;
+
+procedure TVisWaptGUI.GridGroupsChange(Sender: TBaseVirtualTree;
+  Node: PVirtualNode);
+var
+  PackageName: String;
+  HostPackagesStatus: ISuperObject;
+begin
+  if GridGroups.FocusedRow <> Nil then
+  begin
+    PackageName := GridGroups.FocusedRow.S['package'];
+    if CBShowHostsForGroups.Checked then
+    begin
+      HostPackagesStatus := WAPTServerJsonGet('api/v3/hosts_for_package?package=%s&limit=%d',[EncodeURIComponent(PackageName),HostsLimit]);
+      if HostPackagesStatus.B['success'] then
+        GridHostsForPackage.Data := HostPackagesStatus['result']
+      else
+        GridHostsForPackage.Data := Nil;
+    end;
+  end
+  else
+    GridHostsForPackage.Data := Nil;
 end;
 
 procedure TVisWaptGUI.GridGroupsColumnDblClick(Sender: TBaseVirtualTree;
@@ -4786,7 +4820,7 @@ begin
     PackageName := GridPackages.FocusedRow.S['package'];
     if CBShowHostsForSofts.Checked then
     begin
-      HostPackagesStatus := WAPTServerJsonGet('api/v3/hosts_for_package?package=%s&limit=%d',[PackageName,HostsLimit]);
+      HostPackagesStatus := WAPTServerJsonGet('api/v3/hosts_for_package?package=%s&limit=%d',[EncodeURIComponent(PackageName),HostsLimit]);
       if HostPackagesStatus.B['success'] then
         GridHostsForPackage.Data := HostPackagesStatus['result']
       else
