@@ -740,6 +740,8 @@ begin
   push_cursor( crHourGlass );
   try
     self.validate_wapt_server( b );
+    if b then
+      self.ButNext.SetFocus;
   finally
     pop_cursor();
   end;
@@ -761,6 +763,12 @@ begin
 
   bContinue := false;
 
+  if not wizard_validate_waptserver_login( self, self.ed_wapt_server_password, self.ed_manual_wapt_server_url.Text, 'admin', self.ed_wapt_server_password.Text ) then
+  begin
+    exit;
+  end;
+
+
   r := wapt_server_agent_version( v, self.ed_manual_wapt_server_url.Text , 'admin', self.ed_wapt_server_password.Text );
   if r = 0 then
   begin
@@ -774,10 +782,6 @@ begin
     end;
   end;
 
-  if not wizard_validate_waptserver_login( self, self.ed_wapt_server_password, self.ed_manual_wapt_server_url.Text, 'admin', self.ed_wapt_server_password.Text ) then
-  begin
-    exit;
-  end;
 
 
   Application.ProcessMessages;
