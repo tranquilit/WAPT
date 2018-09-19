@@ -161,7 +161,6 @@ begin
         Close;
       end;
   finally
-    Timer1.Enabled := True;
   end;
 end;
 
@@ -360,7 +359,7 @@ begin
         CountDown:=CountDown-1;
     end;
   finally
-    Timer1.Enabled:=True;
+    Timer1.Enabled:=CountDown>=0;
     Application.ProcessMessages;
   end;
 end;
