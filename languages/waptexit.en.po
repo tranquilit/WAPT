@@ -57,6 +57,10 @@ msgstr ""
 msgid "Updating software"
 msgstr ""
 
+#: uwaptexitres.rsupgraderunning
+msgid "Upgrade running..."
+msgstr ""
+
 #: uwaptres.rsbundleconfigeditcaption
 msgid "Edit package bundle configuration"
 msgstr ""
