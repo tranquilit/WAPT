@@ -719,6 +719,7 @@ var
   r   : integer;
   v   : String;
   msg : String;
+  ini : TIniFile;
 begin
   bContinue := false;
 
@@ -742,6 +743,16 @@ begin
     end;
   end;
 
+
+
+  ini := TIniFile.Create( INI_FILE_WAPTGET ); 
+  try
+      ini.WriteString( INI_GLOBAL,        INI_WAPT_SERVER, 'https://' + self.EdWaptServerIP.Text );
+      ini.WriteString( INI_GLOBAL,        INI_REPO_URL,    'https://' + self.EdWaptServerIP.Text + '/wapt' );
+  finally
+    ini.Free;
+  end;      
+ 
   bContinue := true;
 end;
 
