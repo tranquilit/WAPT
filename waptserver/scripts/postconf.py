@@ -25,7 +25,7 @@ from waptserver.config import __version__
 
 
 usage = """\
-%prog [--use-kerberos] [--force-https]"""
+%prog [--force-https]"""
 
 import os,sys
 try:
@@ -280,13 +280,6 @@ def main():
         default=waptserver.config.DEFAULT_CONFIG_FILE,
         help='Config file full path (default: %default)')
     parser.add_option(
-        "-k",
-        "--use-kerberos",
-        dest="use_kerberos",
-        default=False,
-        action='store_true',
-        help="Use kerberos for host registration (default: False)")
-    parser.add_option(
         "-s",
         "--force-https",
         dest="force_https",
@@ -361,15 +354,11 @@ def main():
     if not server_config['server_uuid']:
         server_config['server_uuid'] = str(uuid.uuid1())
 
-    if options.use_kerberos:
-        server_config['use_kerberos'] = True
-    else:
-        server_config['use_kerberos'] = False
 
     # waptagent authentication method
     choices = [
             ("1","Allow unauthenticated registration, same behavior as wapt 1.3", True),
-            ("2","Enable kerberos authentication required for machines registration. Registration will ask for password if kerberos not working", False),
+            ("2","Enable kerberos authentication required for machines registration", False),
             ("3","Disable Kerberos but registration require strong authentication", False),
             ]
 
@@ -379,12 +368,13 @@ def main():
         sys.exit(1)
     if t=="1":
         server_config['allow_unauthenticated_registration'] = True
-    if t=="3":
-        server_config['allow_unauthenticated_registration'] = False
         server_config['use_kerberos'] = False
     if t=="2":
         server_config['allow_unauthenticated_registration'] = False
         server_config['use_kerberos'] = True
+    if t=="3":
+        server_config['allow_unauthenticated_registration'] = False
+        server_config['use_kerberos'] = False
 
 
     waptserver.config.write_config_file(cfgfile=options.configfile,server_config=server_config,non_default_values_only=True)
@@ -441,13 +431,13 @@ def main():
             with open("/etc/nginx/nginx.conf", "w") as nginx_conf_file:
                 nginx_conf_file.write(nginxparser.dumps(nginx_conf))
 
-            if options.use_kerberos:
+            if server_config['use_kerberos']:
                 if type_debian():
                     if not check_if_deb_installed('libnginx-mod-http-auth-spnego'):
                         print('missing dependency libnginx-mod-http-auth-spnego, please install first before configuring kerberos')
                         sys.exit(1)
 
-            make_httpd_config(wapt_folder, '/opt/wapt/waptserver', fqdn, options.use_kerberos, options.force_https,server_config['waptserver_port'])
+            make_httpd_config(wapt_folder, '/opt/wapt/waptserver', fqdn, server_config['use_kerberos'], options.force_https,server_config['waptserver_port'])
 
             final_msg.append('Please connect to https://' + fqdn + '/ to access the server.')
 
