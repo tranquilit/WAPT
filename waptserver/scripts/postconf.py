@@ -358,7 +358,7 @@ def main():
     # waptagent authentication method
     choices = [
             ("1","Allow unauthenticated registration, same behavior as wapt 1.3", True),
-            ("2","Enable kerberos authentication required for machines registration. Registration will ask for password if kerberos not working", False),
+            ("2","Enable kerberos authentication required for machines registration", False),
             ("3","Disable Kerberos but registration require strong authentication", False),
             ]
 
@@ -368,12 +368,13 @@ def main():
         sys.exit(1)
     if t=="1":
         server_config['allow_unauthenticated_registration'] = True
-    if t=="3":
-        server_config['allow_unauthenticated_registration'] = False
         server_config['use_kerberos'] = False
     if t=="2":
         server_config['allow_unauthenticated_registration'] = False
         server_config['use_kerberos'] = True
+    if t=="3":
+        server_config['allow_unauthenticated_registration'] = False
+        server_config['use_kerberos'] = False
 
 
     waptserver.config.write_config_file(cfgfile=options.configfile,server_config=server_config,non_default_values_only=True)
