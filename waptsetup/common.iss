@@ -309,7 +309,7 @@ begin
   cbUseWizard.Width := CustomPage.SurfaceWidth;
   cbUseWizard.Caption := ExpandConstant('{cm:UseWizard}');
   cbUseWizard.Onclick := @OnServerClicked;
-  #if (edition == "waptstarter") or (edition == "waptagent")
+  #if edition == "waptstarter" || edition == "waptagent"
   cbUseWizard.Visible := False;
   #endif
   
