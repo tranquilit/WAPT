@@ -329,6 +329,14 @@ my_documents= winshell.my_documents
 recent = winshell.recent
 sendto = winshell.sendto
 
+
+_dns_cache_ttl = 10*60 # ttl in secs for caching hostname
+
+_computername_expire = None
+_computername = None
+
+_hostname_expire = None
+_hostname = None
 _fake_hostname = None
 
 def ensure_dir(filename):
@@ -1209,15 +1217,33 @@ def iswin64():
 
 def get_computername():
     """Return host name (without domain part)"""
+    global _fake_hostname
+    global _computername
+    global _computername_expire
+
     if _fake_hostname is not None:
         return _fake_hostname.split('.',1)[0]
-    return socket.gethostname()
+    if _computername is None or time.time()>= _computername_expire:
+        _computername = socket.gethostname()
+        _computername_expire = time.time()+ _dns_cache_ttl
+    return _computername
+
 
 def get_hostname():
-    """Return host fully qualified domain name in lower case"""
+    """Return host fully qualified domain name in lower case
+
+    Result is cached because Windows 10 is sometimes slow to return when there are multiple network interfaces.
+    """
+    global _fake_hostname
+    global _hostname
+    global _hostname_expire
+
     if _fake_hostname is not None:
         return _fake_hostname
-    return socket.getfqdn().lower()
+    if _hostname is None or time.time()>= _hostname_expire:
+        _hostname = socket.getfqdn().lower()
+        _hostname_expire = time.time()+ _dns_cache_ttl
+    return _hostname
 
 
 def get_domain_fromregistry():
