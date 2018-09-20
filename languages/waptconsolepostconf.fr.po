@@ -22,7 +22,7 @@ msgstr "Précédent"
 
 #: tviswaptconsolepostconf.btn_find_private_key.caption
 msgid "Find private key"
-msgstr "Trouver le clef privée"
+msgstr "Trouver la clé privée"
 
 #: tviswaptconsolepostconf.caption
 msgid "Configuration of WAPT console for Windows"
@@ -102,8 +102,10 @@ msgid "Key filename :"
 msgstr "Clef :"
 
 #: tviswaptconsolepostconf.lbl_ed_existing_key_password.caption
+#, fuzzy
+#| msgid "Password :"
 msgctxt "tviswaptconsolepostconf.lbl_ed_existing_key_password.caption"
-msgid "Password :"
+msgid "Private key password :"
 msgstr "Mot de passe :"
 
 #: tviswaptconsolepostconf.lbl_ed_package_prefix.caption
@@ -242,6 +244,14 @@ msgstr "La clef '%s' est invalide"
 #: waptconsolepostconfres.rs_key_name_cannot_be_empty
 msgid "Key name cannot be empty"
 msgstr "Le nom de la clef ne peut pas être vide"
+
+#: waptconsolepostconfres.rs_no_key_password
+msgid "Please provide the private key password first"
+msgstr "Merci de préciser le mot de passe de la clé privée"
+
+#: waptconsolepostconfres.rs_no_matching_key
+msgid "No private key has been found in certificate directory with this password"
+msgstr "Il n'a pas été possible de trouver une clé privée adéquate dans le répertoire du certificat avec le mot de passe précisé"
 
 #: waptconsolepostconfres.rs_other_process_has_been_found
 msgid ""
