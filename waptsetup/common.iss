@@ -22,8 +22,10 @@ Source: "..\wapt.ico"; DestDir: "{app}";
 Source: "..\waptupgrade\setup.py"; DestDir: "{app}\waptupgrade"; Flags: ignoreversion;
 Source: "..\waptupgrade\WAPT\*"; DestDir: "{app}\waptupgrade\WAPT"; Flags: createallsubdirs recursesubdirs ignoreversion;
 
+#if edition != "waptagent"
 Source: "..\waptconsolepostconf.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\waptconsolepostconf.exe.manifest"; DestDir: "{app}";
+#endif
 
 ; global management console
 Source: "..\waptconsole.exe"; DestDir: "{app}"; Flags: ignoreversion
@@ -307,7 +309,7 @@ begin
   cbUseWizard.Width := CustomPage.SurfaceWidth;
   cbUseWizard.Caption := ExpandConstant('{cm:UseWizard}');
   cbUseWizard.Onclick := @OnServerClicked;
-  #if edition == "waptstarter"
+  #if (edition == "waptstarter") or (edition == "waptagent")
   cbUseWizard.Visible := False;
   #endif
   
