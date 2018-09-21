@@ -61,7 +61,6 @@ type
     { public declarations }
     upgrades,tasks,running,pending : ISuperObject;
     // wait for waptservice answer in seconds
-    WaptserviceTimeout: Integer;
     WAPTServiceRunning:Boolean;
 
     Function ShouldBeUpgraded:Boolean;
@@ -129,7 +128,7 @@ begin
       if Priorities <> '' then
         args.AsArray.Add(Format('only_priorities=%s',[Priorities]));
 
-      aso := WAPTLocalJsonGet('upgrade.json?'+Join('&',args),'','',WaptserviceTimeout*1000);
+      aso := WAPTLocalJsonGet('upgrade.json?'+Join('&',args),'','');
       if aso <> Nil then
       begin
         upgrades := Nil;
@@ -187,7 +186,7 @@ begin
 
   if WorkInProgress then
     if CheckAllowCancelUpgrade then
-      WAPTLocalJsonGet('cancel_all_tasks.json','','',WaptserviceTimeout*1000)
+      WAPTLocalJsonGet('cancel_all_tasks.json')
     else
       Canclose := False
 end;
@@ -203,13 +202,13 @@ begin
 
   ScaleDPI(Self,96); // 96 is the DPI you designed
   ScaleImageList(ImageList1,96);
-  WaptserviceTimeout := 2;
+
+  ReadWaptConfig(WaptIniFilename);
 
   //Load config
   ini := TIniFile.Create(WaptIniFilename);
   try
     AllowCancelUpgrade := FindCmdLineSwitch('allow_cancel_upgrade') or ini.ReadBool('global','allow_cancel_upgrade',True);
-    WaptserviceTimeout := ini.ReadInteger('global','waptservice_timeout',2);
     InitialCountDown := StrToInt(GetCmdParams('waptexit_countdown',ini.ReadString('global','waptexit_countdown','10')));
     Priorities := GetCmdParams('priorities',ini.ReadString('global','upgrade_priorities',''));
     OnlyIfNotProcessRunning := FindCmdLineSwitch('only_if_not_process_running') or ini.ReadBool('global','upgrade_only_if_not_process_running',True);
@@ -257,7 +256,7 @@ begin
   try
     if not (GetServiceStatusByName('','WAPTService') in [ssRunning])  then
       Raise Exception.Create('WAPTService is not running: '+GetEnumName(TypeInfo(TServiceState),ord(GetServiceStatusByName('','WAPTService'))));
-    aso := WAPTLocalJsonGet('checkupgrades.json','','',WaptserviceTimeout*1000);
+    aso := WAPTLocalJsonGet('checkupgrades.json');
     if aso<>Nil then
     begin
       WAPTServiceRunning:=True;
@@ -317,7 +316,7 @@ begin
   If WAPTServiceRunning then
   begin
     // get current tasks manager status
-    aso := WAPTLocalJsonGet('tasks.json','','',WaptserviceTimeout*1000);
+    aso := WAPTLocalJsonGet('tasks.json');
     if aso <> Nil then
     begin
       running := aso['running'];
