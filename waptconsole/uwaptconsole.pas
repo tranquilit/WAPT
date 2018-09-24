@@ -5077,7 +5077,7 @@ procedure TVisWaptGUI.GridPackagesChange(Sender: TBaseVirtualTree;
 begin
 end;
 
-procedure TVisWaptGUI.LoadHostsForPackage(PackageName: String; Grid: TSOGrid);
+procedure TVisWaptGUI.LoadHostsForPackage(Grid: TSOGrid;PackageName: String);
 begin
   Grid.Data := Nil;
 end;
