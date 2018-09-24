@@ -5068,12 +5068,7 @@ procedure TVisWaptGUI.CBShowHostsForGroupsClick(Sender: TObject);
 begin
 end;
 
-procedure TVisWaptGUI.CBShowHostsForSoftsClick(Sender: TObject);
-begin
-end;
-
-procedure TVisWaptGUI.GridPackagesChange(Sender: TBaseVirtualTree;
-  Node: PVirtualNode);
+procedure TVisWaptGUI.CBShowHostsForPackagesClick(Sender: TObject);
 begin
 end;
 
