@@ -25,9 +25,9 @@ object VisWaptGUI: TVisWaptGUI
     Height = 480
     Top = 0
     Width = 1159
-    ActivePage = pgGroups
+    ActivePage = pgPrivateRepo
     Align = alClient
-    TabIndex = 1
+    TabIndex = 2
     TabOrder = 0
     OnChange = MainPagesChange
     object pgInventory: TTabSheet
@@ -3189,13 +3189,13 @@ object VisWaptGUI: TVisWaptGUI
           AutoSize = True
           TabOrder = 5
         end
-        object CBShowHostsForSofts: TCheckBox
+        object CBShowHostsForPackages: TCheckBox
           Left = 816
           Height = 34
           Top = 3
           Width = 76
           Caption = 'Show Hosts'
-          OnClick = CBShowHostsForSoftsClick
+          OnClick = CBShowHostsForPackagesClick
           TabOrder = 6
         end
       end

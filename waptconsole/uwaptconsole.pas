@@ -106,7 +106,7 @@ type
     cbSearchSoftwares: TCheckBox;
     cbADSite: TComboBox;
     cbNewestOnly: TCheckBox;
-    CBShowHostsForSofts: TCheckBox;
+    CBShowHostsForPackages: TCheckBox;
     cbWUACriticalOnly: TCheckBox;
     cbWUADiscarded: TCheckBox;
     cbWUAInstalled: TCheckBox;
@@ -595,7 +595,7 @@ type
     procedure cbNewestOnlyClick(Sender: TObject);
     procedure cbSearchAllClick(Sender: TObject);
     procedure CBShowHostsForGroupsClick(Sender: TObject);
-    procedure CBShowHostsForSoftsClick(Sender: TObject);
+    procedure CBShowHostsForPackagesClick(Sender: TObject);
     procedure cbShowLogClick(Sender: TObject);
     procedure cbADSiteDropDown(Sender: TObject);
     procedure cbWUAPendingChange(Sender: TObject);
@@ -780,6 +780,7 @@ type
     function EditIniFile: boolean;
     function updateprogress(receiver: TObject; current, total: integer): boolean;
     function TriggerActionOnHosts(uuids: ISuperObject;AAction:String;Args:ISuperObject;title,errortitle:String;Force:Boolean=False;NotifyServer:Boolean=True):ISuperObject;
+    procedure LoadHostsForPackage(Grid:TSOGrid;PackageName:String);
     procedure TriggerActionOnHostPackages(APackagesStatusGrid:TSOGrid;HostUUIDs:ISuperObject;AAction, title, errortitle: String;Force:Boolean=False);
 
     property IsEnterpriseEdition:Boolean read GetIsEnterpriseEdition write SetIsEnterpriseEdition;
@@ -3495,6 +3496,7 @@ begin
     GridHostWinUpdates.ShowAdvancedColumnsCustomize:=AdvancedMode;
     GridWUUpdates.ShowAdvancedColumnsCustomize:=AdvancedMode;
     GridWUDownloads.ShowAdvancedColumnsCustomize:=AdvancedMode;
+    GridHostsForPackage.ShowAdvancedColumnsCustomize:=AdvancedMode;
   end;
 
   //ActPackagesUpdate.Execute;
@@ -3748,26 +3750,6 @@ begin
     cbSearchPackages.Checked := False;
     cbSearchHost.Checked := False;
   end;
-end;
-
-procedure TVisWaptGUI.CBShowHostsForGroupsClick(Sender: TObject);
-begin
-  PanHostsForPackage.Parent := pgGroups;
-  SplitHostsForPackage.Visible := CBShowHostsForGroups.Checked;
-  PanHostsForPackage.Visible := CBShowHostsForGroups.Checked;
-  SplitHostsForPackage.Top := GridGroups.Top+GridGroups.Height;
-  if not CBShowHostsForGroups.Checked then
-    GridHostsForPackage.Data := Nil;;
-end;
-
-procedure TVisWaptGUI.CBShowHostsForSoftsClick(Sender: TObject);
-begin
-  PanHostsForPackage.Parent := pgPrivateRepo;
-  SplitHostsForPackage.Visible := CBShowHostsForSofts.Checked;
-  PanHostsForPackage.Visible := CBShowHostsForSofts.Checked;
-  SplitHostsForPackage.Top := GridPackages.Top+GridPackages.Height;
-  if not CBShowHostsForSofts.Checked then
-    GridHostsForPackage.Data := Nil;;
 end;
 
 function checkReadWriteAccess(dir: String): boolean;
@@ -4061,28 +4043,6 @@ begin
     AppLoading:=False;
     Free;
   end;
-end;
-
-procedure TVisWaptGUI.GridGroupsChange(Sender: TBaseVirtualTree;
-  Node: PVirtualNode);
-var
-  PackageName: String;
-  HostPackagesStatus: ISuperObject;
-begin
-  if GridGroups.FocusedRow <> Nil then
-  begin
-    PackageName := GridGroups.FocusedRow.S['package'];
-    if CBShowHostsForGroups.Checked then
-    begin
-      HostPackagesStatus := WAPTServerJsonGet('api/v3/hosts_for_package?package=%s&limit=%d',[EncodeURIComponent(PackageName),HostsLimit]);
-      if HostPackagesStatus.B['success'] then
-        GridHostsForPackage.Data := HostPackagesStatus['result']
-      else
-        GridHostsForPackage.Data := Nil;
-    end;
-  end
-  else
-    GridHostsForPackage.Data := Nil;
 end;
 
 procedure TVisWaptGUI.GridGroupsColumnDblClick(Sender: TBaseVirtualTree;
@@ -4689,10 +4649,23 @@ begin
   SetSOGridVisible(GridHosts,'audit_status',False);
   SetSOGridVisible(GridHosts,'waptwua.status',False);
 
+  SetSOGridVisible(GridHostsForPackage,'last_audit_status',False);
+  SetSOGridVisible(GridHostsForPackage,'last_audit_status',False);
+  SetSOGridVisible(GridHostsForPackage,'last_audit_on',False);
+  SetSOGridVisible(GridHostsForPackage,'next_audit_on',False);
+
   SetSOGridVisible(GridHostPackages,'last_audit_status',False);
   SetSOGridVisible(GridHostPackages,'last_audit_on',False);
   SetSOGridVisible(GridHostPackages,'next_audit_on',False);
+
   cbAuthorizedHosts.Checked := False;
+
+  CBShowHostsForGroups.Visible := False;
+  CBShowHostsForPackages.Visible := False;
+  CBShowHostsForGroups.Checked := False;
+  CBShowHostsForPackages.Checked := False;
+
+  PanHostsForPackage.Visible:=False;
   {$endif}
 end;
 
@@ -4813,19 +4786,35 @@ procedure TVisWaptGUI.GridPackagesChange(Sender: TBaseVirtualTree;
   Node: PVirtualNode);
 var
   PackageName: String;
-  HostPackagesStatus: ISuperObject;
 begin
   if GridPackages.FocusedRow <> Nil then
   begin
     PackageName := GridPackages.FocusedRow.S['package'];
-    if CBShowHostsForSofts.Checked then
+    if CBShowHostsForPackages.Checked then
     begin
-      HostPackagesStatus := WAPTServerJsonGet('api/v3/hosts_for_package?package=%s&limit=%d',[EncodeURIComponent(PackageName),HostsLimit]);
-      if HostPackagesStatus.B['success'] then
-        GridHostsForPackage.Data := HostPackagesStatus['result']
+      if CBShowHostsForPackages.Checked then
+        LoadHostsForPackage(GridHostsForPackage,PackageName)
       else
         GridHostsForPackage.Data := Nil;
     end;
+  end
+  else
+    GridHostsForPackage.Data := Nil;
+end;
+
+procedure TVisWaptGUI.GridGroupsChange(Sender: TBaseVirtualTree;
+  Node: PVirtualNode);
+var
+  PackageName: String;
+  HostPackagesStatus: ISuperObject;
+begin
+  if GridGroups.FocusedRow <> Nil then
+  begin
+    PackageName := GridGroups.FocusedRow.S['package'];
+    if CBShowHostsForGroups.Checked then
+      LoadHostsForPackage(GridHostsForPackage,PackageName)
+    else
+      GridHostsForPackage.Data := Nil;
   end
   else
     GridHostsForPackage.Data := Nil;
@@ -5075,6 +5064,23 @@ procedure TVisWaptGUI.ActTriggerUpdateOrgUnitExecute(Sender: TObject);
 begin
 end;
 
+procedure TVisWaptGUI.CBShowHostsForGroupsClick(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.CBShowHostsForSoftsClick(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.GridPackagesChange(Sender: TBaseVirtualTree;
+  Node: PVirtualNode);
+begin
+end;
+
+procedure TVisWaptGUI.LoadHostsForPackage(PackageName: String; Grid: TSOGrid);
+begin
+  Grid.Data := Nil;
+end;
 
 {$endif}
 

@@ -442,7 +442,7 @@ msgstr "Description"
 #: tviseditgroup.eddescription.text
 msgctxt "tviseditgroup.eddescription.text"
 msgid " "
-msgstr ""
+msgstr " "
 
 #: tviseditgroup.edgroup.editlabel.caption
 msgid "Group"
@@ -541,9 +541,10 @@ msgid "Version"
 msgstr "Version"
 
 #: tviseditpackage.edversion.text
+#, fuzzy
 msgctxt "TVISEDITPACKAGE.EDVERSION.TEXT"
 msgid " "
-msgstr ""
+msgstr " "
 
 #: tviseditpackage.labdescription.caption
 msgctxt "tviseditpackage.labdescription.caption"
@@ -1825,8 +1826,9 @@ msgctxt "tviswaptgui.cbshowhostsforgroups.caption"
 msgid "Show Hosts"
 msgstr "Afficher les clients"
 
-#: tviswaptgui.cbshowhostsforsofts.caption
-msgctxt "tviswaptgui.cbshowhostsforsofts.caption"
+#: tviswaptgui.cbshowhostsforpackages.caption
+#, fuzzy
+msgctxt "tviswaptgui.cbshowhostsforpackages.caption"
 msgid "Show Hosts"
 msgstr "Afficher les clients"
 

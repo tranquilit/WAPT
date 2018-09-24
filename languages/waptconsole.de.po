@@ -1896,8 +1896,8 @@ msgctxt "tviswaptgui.cbshowhostsforgroups.caption"
 msgid "Show Hosts"
 msgstr ""
 
-#: tviswaptgui.cbshowhostsforsofts.caption
-msgctxt "tviswaptgui.cbshowhostsforsofts.caption"
+#: tviswaptgui.cbshowhostsforpackages.caption
+msgctxt "tviswaptgui.cbshowhostsforpackages.caption"
 msgid "Show Hosts"
 msgstr ""
 
