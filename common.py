@@ -2707,7 +2707,7 @@ class Wapt(BaseObjectClass):
 
         # for testing
         if self.config.has_option('global','fake_hostname'):
-            self._set_fake_hostname(self.config.get('global','host_organizational_unit_dn'))
+            self._set_fake_hostname(self.config.get('global','fake_hostname'))
 
         # allow to fake a host Oragnaizational Unit when the computer is not part of an AD, but we want to put host in a OU.
         if self.config.has_option('global','host_organizational_unit_dn'):
