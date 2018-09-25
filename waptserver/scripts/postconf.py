@@ -237,7 +237,7 @@ def check_mongo2pgsql_upgrade_needed(waptserver_ini):
 
 def upgrade2postgres(configfilename):
     print ("mongodb process running, need to migrate")
-    run_verbose('sudo -u wapt PYTHONPATH=/opt/wapt PYTHONHOME=/opt/wapt /opt/wapt/bin/python /opt/wapt/waptserver/waptserver_upgrade.py upgrade2postgres -c "%s"' % configfilename)
+    run_verbose('sudo -u wapt PYTHONPATH=/opt/wapt PYTHONHOME=/opt/wapt /opt/wapt/bin/python /opt/wapt/waptserver/upgrade.py upgrade2postgres -c "%s"' % configfilename)
     run_verbose("systemctl stop mongodb")
     run_verbose("systemctl disable mongodb")
 
