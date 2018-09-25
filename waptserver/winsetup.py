@@ -271,23 +271,29 @@ def install_nginx_service(options,conf=None):
 def migrate_pg_db(old_pgsql_root_dir,old_pgsql_data_dir,pgsql_root_dir,pgsql_data_dir):
     #
     try:
+        cwd = os.getcwd()
+        tmpdir = os.path.join(cwd,'temp')
+        mkdir_p(tmpdir)
+        os.chdir(tmpdir)
+        setuphelpers.run(r'icacls "%s" /t /grant  "*S-1-1-0":(OI)(CI)(M)' % tmpdir)
+
         old_pgsql_root_dir = old_pgsql_root_dir.replace('\\','/')
         old_pgsql_data_dir = old_pgsql_data_dir.replace('\\','/')
         pgsql_root_dir = pgsql_root_dir.replace('\\','/')
         pgsql_data_dir = pgsql_data_dir.replace('\\','/')
 
-        cmd = r'"{pgsql_root_dir}/bin/pg_upgrade.exe" --old-datadir "{old_pgsql_data_dir}" \
-               --new-datadir "{old_pgsql_data_dir}" --old-bindir "{old_pgsql_root_dir}/bin" \
-               --new-bindir "{pgsql_root_dir}/bin"'.format(**locals())
+        cmd = r'"{pgsql_root_dir}/bin/pg_upgrade.exe" -U postgres --old-datadir "{old_pgsql_data_dir}" --new-datadir "{pgsql_data_dir}" --old-bindir "{old_pgsql_root_dir}/bin" --new-bindir "{pgsql_root_dir}/bin"'.format(**locals())
 
         print('Running %s' % cmd)
-        print(run(cmd))
+        print(run(cmd,cwd=tmpdir))
         os.rename(old_pgsql_root_dir,old_pgsql_root_dir+'.old')
         os.rename(old_pgsql_data_dir,old_pgsql_data_dir+'.old')
         return True
     except Exception as e:
         print('Unable to migrate database : %s' % ensure_unicode(e))
         return False
+    finally:
+        os.chdir(cwd)
 
 def install_postgresql_service(options,conf=None):
     if conf is None:
@@ -305,8 +311,8 @@ def install_postgresql_service(options,conf=None):
 
         # need to have specific write acls for current user otherwise initdb fails...
         setuphelpers.run(r'icacls "%s" /t /grant  "%s":(OI)(CI)(M)' % (pgsql_data_dir,GetUserName()))
-        setuphelpers.run(r'"%s\waptserver\pgsql\bin\initdb" -U postgres -E=UTF8 -D "%s"' % (wapt_root_dir,pgsql_data_dir))
 
+        setuphelpers.run(r'"%s\bin\initdb" -U postgres -E=UTF8 -D "%s"' % (pgsql_root_dir,pgsql_data_dir))
         setuphelpers.run(r'icacls "%s" /t /grant  "*S-1-5-20":(OI)(CI)(M)' % pgsql_data_dir)
 
         print("start postgresql database")
@@ -327,7 +333,7 @@ def install_postgresql_service(options,conf=None):
     # try to migrate from old version (pg 9.4, wapt 1.5)
     old_pgsql_root_dir = r'%s\waptserver\pgsql' % wapt_root_dir
     old_pgsql_data_dir = r'%s\waptserver\pgsql_data' % wapt_root_dir
-    old_pgsql_data_dir = pgsql_data_dir.replace('\\','/')
+    old_pgsql_data_dir = old_pgsql_data_dir.replace('\\','/')
 
     if os.path.isdir(old_pgsql_data_dir) and os.path.isdir(old_pgsql_root_dir):
         print('migrating database from previous postgresql DB')
