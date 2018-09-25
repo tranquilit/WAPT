@@ -82,10 +82,12 @@ print nssm_files
 print('Get Postgresql zip')
 pgsql_zip = wget('https://get.enterprisedb.com/postgresql/postgresql-9.6.10-2-windows-x64-binaries.zip',resume=True,md5='8ed95ad645eb852ec7709bf6665e3cfb',cache_dir=binaries_cache,proxies=proxies)
 
+if os.path.isdir(makepath(wapt_base_dir,'waptserver','pgsql-9.6')):
+    shutil.rmtree(makepath(wapt_base_dir,'waptserver','pgsql-9.6'))
 if os.path.isdir(makepath(wapt_base_dir,'waptserver','pgsql')):
     shutil.rmtree(makepath(wapt_base_dir,'waptserver','pgsql'))
 pg_files = unzip(pgsql_zip,target=makepath(wapt_base_dir,'waptserver'),filenames=['pgsql/bin/*','pgsql/lib/*','pgsql/share/*'])
-
+os.rename(makepath(wapt_base_dir,'waptserver','pgsql'),makepath(wapt_base_dir,'waptserver','pgsql-9.6'))
 
 # msvc++2013 is required for postgres.exe. It cannot be unzipped easily like msvc2008, so for now we install it
 print('Get MS VC++ 2013 redist')
