@@ -211,7 +211,7 @@ begin
     WaptserviceTimeout := ini.ReadInteger('global','waptservice_timeout',2);
     InitialCountDown := StrToInt(GetCmdParams('waptexit_countdown',ini.ReadString('global','waptexit_countdown','10')));
     Priorities := GetCmdParams('priorities',ini.ReadString('global','upgrade_priorities',''));
-    OnlyIfNotProcessRunning := FindCmdLineSwitch('only_if_not_process_running') or ini.ReadBool('global','upgrade_only_if_not_process_running',True);
+    OnlyIfNotProcessRunning := FindCmdLineSwitch('only_if_not_process_running') or ini.ReadBool('global','upgrade_only_if_not_process_running',False);
   finally
     ini.Free;
   end;
