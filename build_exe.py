@@ -33,11 +33,17 @@ try:
             if force or not isfile(exe):
                 print('Compiling %s...' % lpi)
                 print(run(LAZBUILD+ r' -e {edition} {lpi}'.format(**locals())))
+            else:
+                print('Skipped %s ' % lpi)
 
     def compile_setups(edition='enterprise'):
         for iscc in ('waptstarter','waptsetup','waptserversetup'):
-            print('Compiling setup %s for edition %s...' % (iscc,edition))
-            run(ISCCBUILD + r" -e {edition} --sign-exe-filenames=waptservice\win32\nssm.exe,waptservice\win64\nssm.exe waptsetup\{iscc}".format(**locals()))
+            setup_exe = 'waptsetup\{iscc}.exe'.format(**locals())
+            if not os.path.isfile(setup_exe):
+                print('Compiling setup %s for edition %s...' % (iscc,edition))
+                run(ISCCBUILD + r" -e {edition} --sign-exe-filenames=waptservice\win32\nssm.exe,waptservice\win64\nssm.exe waptsetup\{iscc}".format(**locals()))
+            else:
+                print('Skipped %s ' % setup_exe)
 
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
     if len(sys.argv) == 1:
