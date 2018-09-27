@@ -45,6 +45,7 @@ import jinja2
 import time
 import random
 import string
+import base64
 
 from setuphelpers import run
 from waptutils import setloglevel,ensure_unicode
@@ -394,7 +395,7 @@ def install_waptserver_service(options,conf=None):
         waptserver.config.write_config_file(options.configfile,conf)
 
     if options.setpassword:
-        conf['wapt_password'] = pbkdf2_sha256.hash(options.setpassword.encode('utf8'))
+        conf['wapt_password'] = pbkdf2_sha256.hash(base64.b64decode(options.setpassword).encode('utf8'))
         waptserver.config.write_config_file(options.configfile,conf)
 
 def install_wapttasks_service(options,conf=None):

@@ -176,26 +176,26 @@ Root: HKLM; Subkey: "SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\wapt-ge
 
 [Run]
 #ifdef vcredist
-Filename: "{app}\vc_redist\vcredist_x86.exe"; Parameters: "/q"; WorkingDir: "{tmp}"; StatusMsg: "Mise à jour des librairies MS VC++ pour openssl"; Description: "Mise à jour des librairies MS VC++"; Tasks: installredist2008
+Filename: "{app}\vc_redist\vcredist_x86.exe"; Parameters: "/q"; WorkingDir: "{tmp}"; StatusMsg: "{cm:InstallingVCpp}"; Description: "{cm:InstallingVCpp}"; Tasks: installredist2008
 ; Duplication necessaire, cf. [Tasks]
-Filename: "{app}\vc_redist\vcredist_x86.exe"; Parameters: "/q"; WorkingDir: "{tmp}"; StatusMsg: "Mise à jour des librairies MS VC++ pour openssl"; Description: "Mise à jour des librairies MS VC++"; Tasks: installredist2008unchecked
+Filename: "{app}\vc_redist\vcredist_x86.exe"; Parameters: "/q"; WorkingDir: "{tmp}"; StatusMsg: "{cm:InstallingVCpp}"; Description: "{cm:InstallingVCpp}"; Tasks: installredist2008unchecked
 #endif
 
 ; rights rw for Admins and System, ro for users and authenticated users on wapt directory
-Filename: "cmd"; Parameters: "/C echo O| cacls ""{app}"" /S:""D:PAI(A;OICI;FA;;;BA)(A;OICI;FA;;;SY)(A;OICI;0x1200a9;;;BU)(A;OICI;0x1201a9;;;AU)"""; Flags: runhidden; WorkingDir: "{tmp}"; StatusMsg: "Mise en place des droits sur le répertoire wapt..."; Description: "Mise en place des droits sur le répertoire wapt"
-Filename: "cmd"; Parameters: "/C icacls.exe ""{app}"" /inheritance:r"; MinVersion: 6.1; Flags: runhidden; WorkingDir: "{tmp}"; StatusMsg: "Suppression héritage des droits sur wapt..."; Description: "Suppression héritage des droits sur wapt"
-Filename: "cmd"; Parameters: "/C {app}\vc_redist\icacls.exe ""{app}"" /inheritance:r"; OnlyBelowVersion: 6.1; Flags: runhidden; WorkingDir: "{tmp}"; StatusMsg: "Suppression héritage des droits sur wapt..."; Description: "Suppression héritage des droits sur wapt"
+Filename: "cmd"; Parameters: "/C echo O| cacls ""{app}"" /S:""D:PAI(A;OICI;FA;;;BA)(A;OICI;FA;;;SY)(A;OICI;0x1200a9;;;BU)(A;OICI;0x1201a9;;;AU)"""; Flags: runhidden; WorkingDir: "{tmp}"; StatusMsg: "{cm:SetupACL}"; Description: "{cm:SetupACL}";
+Filename: "cmd"; Parameters: "/C icacls.exe ""{app}"" /inheritance:r"; MinVersion: 6.1; Flags: runhidden; WorkingDir: "{tmp}"; StatusMsg: "{cm:SetupACL}"; Description: "{cm:SetupACL}";
+Filename: "cmd"; Parameters: "/C {app}\vc_redist\icacls.exe ""{app}"" /inheritance:r"; OnlyBelowVersion: 6.1; Flags: runhidden; WorkingDir: "{tmp}"; StatusMsg: "{cm:SetupACL}"; Description: "{cm:SetupACL}";
 
 ; protect waptagent private directory
 
-Filename: "cmd"; Parameters: "/C icacls.exe ""{app}\private"" /inheritance:r  /grant *S-1-5-32-544:(OI)(CI)F  /grant *S-1-5-18:(OI)(CI)F"; MinVersion: 6.1; Flags: runhidden; WorkingDir: "{tmp}"; StatusMsg: "Mise en place des droits sur le répertoire wapt private..."; Description: "Mise en place des droits sur le répertoire wapt private..."
+Filename: "cmd"; Parameters: "/C icacls.exe ""{app}\private"" /inheritance:r  /grant *S-1-5-32-544:(OI)(CI)F  /grant *S-1-5-18:(OI)(CI)F"; MinVersion: 6.1; Flags: runhidden; WorkingDir: "{tmp}"; StatusMsg: "{cm:SetupACL}"; Description: "{cm:SetupACL}";
 
-Filename: "cmd"; Parameters: "/C {app}\vc_redist\icacls.exe ""{app}\private"" /inheritance:r /grant *S-1-5-32-544:(OI)(CI)F  /grant *S-1-5-18:(OI)(CI)F"; OnlyBelowVersion: 6.1; Flags: runhidden; WorkingDir: "{tmp}"; StatusMsg: "Mise en place des droits sur le répertoire wapt private..."; Description: "Mise en place des droits sur le répertoire wapt private..."
+Filename: "cmd"; Parameters: "/C {app}\vc_redist\icacls.exe ""{app}\private"" /inheritance:r /grant *S-1-5-32-544:(OI)(CI)F  /grant *S-1-5-18:(OI)(CI)F"; OnlyBelowVersion: 6.1; Flags: runhidden; WorkingDir: "{tmp}"; StatusMsg: "{cm:SetupACL}"; Description: "{cm:SetupACL}";
 
 ; if waptservice
-Filename: "{app}\waptpythonw.exe"; Parameters: """{app}\waptservice\service.py"" install"; Tasks:installService ; Flags: runhidden; StatusMsg: "Installation du service WAPT"; Description: "Installation du service WAPT"
-Filename: "sc"; Parameters: "delete waptservice"; Flags: runhidden; Tasks: not installService; WorkingDir: "{tmp}"; StatusMsg: "Suppression du service wapt..."; Description: "Suppression du service wapt..."
-Filename: "{app}\wapttray.exe"; Tasks: autorunTray; Flags: runminimized nowait runasoriginaluser skipifsilent postinstall; StatusMsg: "Lancement de l'icône de notification"; Description: "Lancement de l'icône de notification"
+Filename: "{app}\waptpython.exe"; Parameters: """{app}\waptservice\service.py"" install"; Tasks:installService ; Flags: runhidden; StatusMsg: "{cm:InstallingWAPTservice}"; Description: "{cm:InstallingWAPTservice}";
+Filename: "sc"; Parameters: "delete waptservice"; Flags: runhidden; Tasks: not installService; WorkingDir: "{tmp}"; StatusMsg: "{cm:UnregisterWaptService}"; Description: "Suppression du service wapt..."
+Filename: "{app}\wapttray.exe"; Tasks: autorunTray; Flags: runminimized nowait runasoriginaluser skipifsilent postinstall; StatusMsg: "{cm:RunWaptTray}"; Description: "{cm:RunWaptTray}"; 
 
 
 
@@ -231,19 +231,29 @@ Filename: "taskkill"; Parameters: "/t /im ""waptpython.exe"" /f"; Flags: runhidd
 [CustomMessages]
 ;French translations here
 fr.InstallWAPTservice=Installer le service WAPT
+fr.InstallingWAPTservice=Installation du service WAPT...
 fr.LaunchIcon=Lancer l'icône de notification lors de l'ouverture de session
 fr.InstallVCpp=Installer les redistribuables VC++ 2008 (pour openssl)
 fr.ForceVCppReinstall=Forcer la réinstallation des redistribuables VC++ 2008 (pour openssl)
 fr.UpdatePkgUponShutdown=Proposer la mise à  jour des paquets à  l'extinction du poste
 fr.LaunchSession=Lancer WAPT session setup à  l'ouverture de session
+fr.InstallingVCpp=Installation des librairies MS VC++
+fr.SetupACL=Mise en place des droits sur le répertoire wapt
+fr.RunWaptTray=Lancement de l'icône de notification
+fr.UnregisterWaptService=Suppression du service waptservice
 
 ;English translations here
 en.InstallWAPTservice=Install WAPT service
+en.InstallingWAPTservice=Installing WAPT service...
 en.LaunchIcon=Launch notification icon upon session opening
 en.InstallVCpp=Install VC++ 2008 redistributables (for openssl)
 en.ForceVCppReinstall=Force-reinstall VC++ 2008 redistributables (for openssl)
 en.UpdatePkgUponShutdown=Ask to update packages upon shutdown
 en.LaunchSession=Launch WAPT setup session upon session opening
+en.InstallingVCpp=Installing librairies MS VC++
+en.SetupACL=Setup ACL rights on wapt directory
+en.RunWaptTray=Launching notification tray icon
+fr.UnregisterWaptService=Suppression du service waptservice
 
 ;German translations here
 de.InstallWAPTservice=WAPT service installieren
