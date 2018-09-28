@@ -3226,6 +3226,13 @@ begin
   GridHostPackages.LoadSettingsFromIni(Appuserinipath+'.default');
   GridHostSoftwares.LoadSettingsFromIni(Appuserinipath+'.default');
   GridHostsForPackage.LoadSettingsFromIni(Appuserinipath+'.default');
+
+  {$ifdef enterprise}
+  GridWUDownloads.LoadSettingsFromIni(Appuserinipath+'.default');
+  GridWUUpdates.LoadSettingsFromIni(Appuserinipath+'.default');
+  GridHostWinUpdates.LoadSettingsFromIni(Appuserinipath+'.default');
+  {$endif}
+
 end;
 
 procedure TVisWaptGUI.ActSearchGroupsExecute(Sender: TObject);
@@ -3911,7 +3918,7 @@ var
   CB:TComponent;
   ini:TIniFile;
 begin
-  {$ifdef ENTERPRISE }
+  {$ifdef ENTERPRISE}
   IsEnterpriseEdition:=True;
   ActProprietary.Enabled := True;
   ActProprietary.Checked := True;
@@ -3937,12 +3944,14 @@ begin
     GridHostsForPackage.SaveSettingsToIni(Appuserinipath+'.default');
     GridHostSoftwares.SaveSettingsToIni(Appuserinipath+'.default');
 
+    {$ifdef ENTERPRISE}
     if IsEnterpriseEdition then
     begin
       GridWUDownloads.SaveSettingsToIni(Appuserinipath+'.default');
       GridWUUpdates.SaveSettingsToIni(Appuserinipath+'.default');
       GridHostWinUpdates.SaveSettingsToIni(Appuserinipath+'.default');
     end;
+    {$endif}
 
     // don't load grid settings if old ini version
     if IniReadString(Appuserinipath,self.name,'waptconsole.version','') <> '' then

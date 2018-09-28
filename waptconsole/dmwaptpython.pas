@@ -143,7 +143,7 @@ var
   DMPython: TDMPython;
 
 implementation
-uses variants, waptcommon, waptcrypto, uvisprivatekeyauth,inifiles,forms,Dialogs,uvisloading,dateutils,tisstrings,gettext;
+uses variants, waptcommon, uWaptRes, waptcrypto, uvisprivatekeyauth,inifiles,forms,Dialogs,uvisloading,dateutils,tisstrings,gettext;
 {$R *.lfm}
 {$ifdef ENTERPRISE }
 {$R res_enterprise.rc}

@@ -47,6 +47,14 @@ resourcestring
   rsDlStoppedByUser = 'Download stopped by the user';
   rsCertificateCopyFailure = 'Couldn''t copy certificate %s to %s.';
 
+  { licence management }
+  rsWAPTLicenceExpirationWarning = 'Licence will expire in %d days, keep in mind to renew them.';
+  rsWAPTLicenceExpired = 'Licence nr %s has expired.';
+  rsWAPTLicenceDuplicated = 'Duplicated Licence nr %s';
+  rsWAPTNoValidLicenceFound = 'No valid licence found, switching to Community features only';
+
+
+
 implementation
 
 end.
