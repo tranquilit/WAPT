@@ -94,7 +94,7 @@ type
   begin
     while not Terminated do
     try
-      Events := WAPTLocalJsonGet(Format('events?last_read=%d',[LastReadEventId]),'','',1000,Nil,0);
+      Events := WAPTLocalJsonGet(Format('events?last_read=%d',[LastReadEventId]),'','',-1,Nil,0);
       if Events <> Nil then
       begin
         If Events.AsArray.Length>0 then
@@ -300,7 +300,7 @@ begin
         if action='longtask' then
         begin
           Logger('Call longtask URL...',DEBUG);
-          res := WAPTLocalJsonGet('longtask.json?notify_user=1','admin','',1000,@HTTPLogin);
+          res := WAPTLocalJsonGet('longtask.json?notify_user=1','admin','',-1,@HTTPLogin);
           if res = Nil then
             WriteLn(utf8decode((format(rsLongtaskError, [res.S['message']]))))
           else
@@ -385,7 +385,7 @@ begin
         if action='register' then
         begin
           Logger('Call register URL...',DEBUG);
-          res := WAPTLocalJsonGet('register.json?notify_user=0&notify_server=1','admin','',1000,@HTTPLogin);
+          res := WAPTLocalJsonGet('register.json?notify_user=0&notify_server=1','admin','',-1,@HTTPLogin);
           if (res = Nil) or (res.AsObject=Nil) or not res.AsObject.Exists('id') then
             WriteLn(utf8decode(format(rsErrorLaunchingRegister, [res.AsString])))
           else
@@ -399,9 +399,9 @@ begin
           begin
             Logger('Call '+action+'?package='+package.AsString,DEBUG);
             if HasOption('f','force') then
-              res := WAPTLocalJsonGet(Action+'.json?package='+package.AsString+'&force=1&notify_user=0','admin','',1000,@HTTPLogin)
+              res := WAPTLocalJsonGet(Action+'.json?package='+package.AsString+'&force=1&notify_user=0','admin','',-1,@HTTPLogin)
             else
-              res := WAPTLocalJsonGet(Action+'.json?package='+package.AsString+'&notify_user=0','admin','',1000,@HTTPLogin);
+              res := WAPTLocalJsonGet(Action+'.json?package='+package.AsString+'&notify_user=0','admin','',-1,@HTTPLogin);
             if (action='install') or (action='forget')  then
             begin
               // single action

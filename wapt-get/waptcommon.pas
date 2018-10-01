@@ -64,7 +64,7 @@ interface
   //call url action on waptserver. action can contains formatting chars like %s which will be replaced by args with the Format function.
   function WAPTServerJsonGet(action: String;args:Array of const;method:AnsiString='GET';ConnectTimeout:integer=4000;SendTimeout:integer=60000;ReceiveTimeout:integer=60000): ISuperObject; //use global credentials and proxy settings
   function WAPTServerJsonPost(action: String;args:Array of const;data: ISuperObject;ConnectTimeout:integer=4000;SendTimeout:integer=60000;ReceiveTimeout:integer=60000): ISuperObject; //use global credentials and proxy settings
-  function WAPTLocalJsonGet(action:String;user:AnsiString='';password:AnsiString='';timeout:integer=1000;OnAuthorization:TIdOnAuthorization=Nil;RetryCount:Integer=3):ISuperObject;
+  function WAPTLocalJsonGet(action:String;user:AnsiString='';password:AnsiString='';timeout:integer=-1;OnAuthorization:TIdOnAuthorization=Nil;RetryCount:Integer=3):ISuperObject;
 
   Function IdWget(const fileURL, DestFileName: Utf8String; CBReceiver:TObject=Nil;progressCallback:TProgressCallback=Nil;HttpProxy: String='';userAgent:String='';VerifyCertificateFilename:String='';CookieManage:TIdCookieManager=Nil): boolean;
   Function IdWget_Try(const fileURL: Utf8String;HttpProxy: String='';userAgent:String='';VerifyCertificateFilename:String='';CookieManage:TIdCookieManager=Nil): boolean;
@@ -97,7 +97,8 @@ interface
   function CreateWaptSetup(default_public_cert:Utf8String='';default_repo_url:Utf8String='';
             default_wapt_server:Utf8String='';destination:Utf8String='';company:Utf8String='';OnProgress:TNotifyEvent = Nil;WaptEdition:Utf8String='waptagent';
             VerifyCert:Utf8String='0'; UseKerberos:Boolean=False; CheckCertificatesValidity:Boolean=True;
-            EnterpriseEdition:Boolean=False; OverwriteRepoURL:Boolean=True;OverwriteWaptServerURL:Boolean=True):Utf8String;
+            EnterpriseEdition:Boolean=False; OverwriteRepoURL:Boolean=True;OverwriteWaptServerURL:Boolean=True;
+            UseFQDNAsUUID:Boolean=False):Utf8String;
 
   function pyformat(template:String;params:ISuperobject):String;
   function pyformat(template:Utf8String;params:ISuperobject):Utf8String; overload;
@@ -182,8 +183,7 @@ const
   waptservice_port:integer = 8088;
   waptserver_port:integer = 80;
   waptserver_sslport:integer = 443;
-  zmq_port:integer = 5000;
-  waptservice_timeout:integer = 2;
+  waptservice_timeout:integer = 4;
 
   WaptServerUser: AnsiString ='admin';
   WaptServerPassword: Ansistring ='';
@@ -215,7 +215,7 @@ const
   WaptPersonalCertificatePath: String ='';
 
 
-  WAPTServerMinVersion='1.6.2.4';
+  WAPTServerMinVersion='1.7.0.0';
 
   FAppIniFilename:Utf8String = '';
 
@@ -1023,6 +1023,10 @@ begin
     try
       http.Request.AcceptLanguage := Language;
       http.Request.UserAgent := DefaultUserAgent;
+
+      if timeout<0 then
+        timeout := waptservice_timeout * 1000;
+
       http.ConnectTimeout := timeout;
       http.ReadTimeout:=timeout;
 
@@ -1435,7 +1439,6 @@ begin
 
     waptserver_port := ReadInteger('global','waptserver_port',80);
     waptserver_sslport := ReadInteger('global','waptserver_sslport',443);
-    zmq_port := ReadInteger('global','zmq_port',5000);
 
     HttpProxy := ReadString('global','http_proxy','');
     UseProxyForRepo := ReadBool('global','use_http_proxy_for_repo',False);
@@ -1793,7 +1796,8 @@ function CreateWaptSetup(default_public_cert: Utf8String;
   destination: Utf8String; company: Utf8String; OnProgress: TNotifyEvent;
   WaptEdition: Utf8String; VerifyCert: Utf8String; UseKerberos: Boolean;
   CheckCertificatesValidity: Boolean; EnterpriseEdition: Boolean;
-  OverwriteRepoURL: Boolean; OverwriteWaptServerURL: Boolean): Utf8String;
+  OverwriteRepoURL: Boolean; OverwriteWaptServerURL: Boolean;
+  UseFQDNAsUUID:Boolean=False): Utf8String;
 var
   iss_template,custom_iss : utf8String;
   iss,new_iss,line : ISuperObject;
@@ -1833,6 +1837,13 @@ begin
           new_iss.AsArray.Add(format('#define Company "%s"' ,[company]))
       else if startswith(line,'#define set_install_certs') then
           new_iss.AsArray.Add(format('#define set_install_certs "1"' ,[]))
+      else if startswith(line,'#define use_fqdn_as_uuid') then
+      begin
+          if UseFQDNAsUUID then
+            new_iss.AsArray.Add(format('#define use_fqdn_as_uuid "1"' ,[]))
+          else
+            new_iss.AsArray.Add(format('#define use_fqdn_as_uuid ""' ,[]))
+      end
       else if startswith(line,'#define set_use_kerberos') then
       begin
           if UseKerberos then

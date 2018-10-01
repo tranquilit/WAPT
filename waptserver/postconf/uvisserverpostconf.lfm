@@ -29,10 +29,10 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
     ClientWidth = 937
     TabOrder = 0
     object ButCancel: TBitBtn
-      Left = 849
+      Left = 853
       Height = 24
       Top = 3
-      Width = 82
+      Width = 78
       Action = ActCancel
       Align = alRight
       AutoSize = True
@@ -79,16 +79,16 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
       Left = 6
       Height = 24
       Top = 3
-      Width = 664
+      Width = 673
       Align = alClient
       TabOrder = 3
       Visible = False
     end
     object ButPrevious: TBitBtn
-      Left = 676
+      Left = 685
       Height = 24
       Top = 3
-      Width = 91
+      Width = 87
       Action = ActPrevious
       Align = alRight
       AutoSize = True
@@ -131,10 +131,10 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
       TabOrder = 1
     end
     object ButNext: TBitBtn
-      Left = 773
+      Left = 778
       Height = 24
       Top = 3
-      Width = 70
+      Width = 69
       Action = ActNext
       Align = alRight
       AutoSize = True
@@ -196,7 +196,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
       Align = alClient
       FixedTypeface = 'Courier New'
       DefaultTypeFace = 'default'
-      DefaultFontSize = 12
+      DefaultFontSize = 0
       FlagErrors = False
       PrintSettings.MarginLeft = 0.5
       PrintSettings.MarginTop = 0.5
@@ -235,7 +235,7 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
       Top = 0
       Width = 614
       HorzScrollBar.Page = 83
-      VertScrollBar.Page = 78
+      VertScrollBar.Page = 76
       Align = alClient
       BorderStyle = bsNone
       ClientHeight = 315
@@ -255,17 +255,17 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
         object pgParameters: TTabSheet
           Caption = 'Parameters'
           ChildSizing.Layout = cclLeftToRightThenTopToBottom
-          ClientHeight = 287
+          ClientHeight = 289
           ClientWidth = 606
           OnShow = on_page_show
           object EdWAPTServerName: TEdit
             AnchorSideTop.Control = btn_check_dns_name
             AnchorSideTop.Side = asrCenter
             AnchorSideRight.Control = btn_check_dns_name
-            Left = 29
-            Height = 23
+            Left = 35
+            Height = 21
             Hint = 'WAPT clients make requests to the server. In order to connect to the WAPT server,'#13#10'it is advisable that a DNS name be used, as long as it has been correctly'#13#10'configured in your network''s DNS environment. We suggest naming your WAPT server'#13#10'''srvwapt.mydomain.local'' (A record type), then binding an alias'#13#10'(CNAME record type, e.g. ''wapt.mondomain.local'') to srvwapt.'#13#10'In case you don''t trust your DNS, or you are just setting up a testing environment,'#13#10'you can fall back to the server IP address. For further information :'#13#10'''http://dev.tranquil.it/scenari/guide_admin/co/wapt_server_configuration_champDNS.html'''
-            Top = 132
+            Top = 134
             Width = 200
             Anchors = [akTop, akRight]
             BorderSpacing.Right = 5
@@ -279,10 +279,10 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
             AnchorSideLeft.Side = asrCenter
             AnchorSideTop.Control = pgParameters
             AnchorSideTop.Side = asrCenter
-            Left = 234
+            Left = 240
             Height = 26
-            Top = 130
-            Width = 138
+            Top = 131
+            Width = 127
             Action = ActCheckDNS
             AutoSize = True
             Glyph.Data = {
@@ -328,9 +328,9 @@ object VisWAPTServerPostConf: TVisWAPTServerPostConf
             AnchorSideLeft.Side = asrBottom
             AnchorSideTop.Control = btn_check_dns_name
             AnchorSideTop.Side = asrCenter
-            Left = 377
-            Height = 23
-            Top = 132
+            Left = 372
+            Height = 21
+            Top = 134
             Width = 200
             BorderSpacing.Left = 5
             Constraints.MinWidth = 200

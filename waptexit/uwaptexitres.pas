@@ -16,6 +16,7 @@ resourcestring
   rsLaunchSoftwareUpdate = 'Launch software update';
   rsErrorWininetFlags = 'Internal error in SetToIgnoreCerticateErrors when trying to get wininet flags. %s';
   rsUpdatesAvailable = 'There are %d installs or updates pending.'#13#10'Do you wish to apply them now ?';
+  rsUpgradeRunning = 'Upgrade running...';
 
 implementation
 

@@ -28,6 +28,8 @@
 ; if not empty, a task will propose to install this package or list of packages (comma separated)
 #define set_start_packages ""
 
+#define use_fqdn_as_uuid ""
+
 ;#define signtool "kSign /d $qWAPT Client$q /du $qhttp://www.tranquil-it-systems.fr$q $f"
 
 #ifndef set_disable_hiberboot

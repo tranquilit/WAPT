@@ -1334,18 +1334,6 @@ def upgrade_db_structure():
             v.value = next_version
             v.save()
 
-    next_version = '1.6.2.5'
-    if get_db_version() <= next_version:
-        with wapt_db.atomic():
-            logger.info('Migrating from %s to %s' % (get_db_version(), next_version))
-
-            opes = []
-            migrate(*opes)
-
-            (v, created) = ServerAttribs.get_or_create(key='db_version')
-            v.value = next_version
-            v.save()
-
 if __name__ == '__main__':
     if platform.system() != 'Windows' and getpass.getuser() != 'wapt':
         print """you should run this program as wapt:

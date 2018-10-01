@@ -22,6 +22,8 @@ resourcestring
   rs_key_filename_cannot_be_empty = 'Key filename cannot be empty';
   rs_certificate_filename_cannot_be_empty = 'Certificate filename cannot be empty';
   rs_key_filename_is_invalid = 'Key filename ''%s'' is invalid';
+  rs_no_key_password = 'Please provide the private key password first';
+  rs_no_matching_key = 'No private key has been found in certificate directory with this password';
   rs_certificate_filename_is_invalid = 'Certificate filename ''%s'' is invalid';
   rs_an_error_has_occured_while_to_validate_key_password = 'An unexpected error has occured while validating key password';
   rs_wrong_key_password = 'Wrong key password';

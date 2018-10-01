@@ -67,6 +67,10 @@ msgstr ""
 msgid "Updating software"
 msgstr "Mise à jour des logiciels"
 
+#: uwaptexitres.rsupgraderunning
+msgid "Upgrade running..."
+msgstr "Mises à jour en cours..."
+
 #: uwaptres.rsbundleconfigeditcaption
 msgid "Edit package bundle configuration"
 msgstr "Editer la configuration d'un groupe de paquets"
@@ -552,6 +556,10 @@ msgstr "Mise à jour de l'index des paquets"
 msgid "Updating package list"
 msgstr "Mise à jour de la liste des paquets"
 
+#: uwaptres.rsupdatingsoftware
+msgid "Mise Ã  jour des logiciels en cours"
+msgstr ""
+
 #: uwaptres.rsupgradehosterror
 msgid "Failed to trigger upgrade : %s"
 msgstr "Echec du lancement de la mise à jour : %s"
@@ -637,6 +645,8 @@ msgid "Win32 Exe wrapper: %s %s"
 msgstr "wrapper Win32 Exe : %s %s"
 
 #: uwaptres.rswinterruptreceived
-msgid "W: interrupt received, killing serverâ?¦"
+#, fuzzy
+#| msgid "W: interrupt received, killing serverâ?¦"
+msgid "W: interrupt received, killing serverâ¦"
 msgstr "W: interruption reçue, arrêt du serveur"
 

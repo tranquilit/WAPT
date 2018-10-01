@@ -3,7 +3,7 @@
 #define AppName "WAPT Server"
 #define default_repo_url "http://127.0.0.1/wapt/"
 #define default_wapt_server "http://127.0.0.1"
-#define default_wapt_password "mywapt"
+
 #define repo_url ""
 #define wapt_server ""
 
@@ -63,14 +63,14 @@ Source: "..\runwaptservice.bat"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\runwaptserver.bat"; DestDir: "{app}"; Flags: ignoreversion
 
 #ifdef choose_components
-Source: "..\waptserver\waptserver.ini.template"; DestDir: "{app}\conf"; DestName: "waptserver.ini"; Tasks: InstallWaptserver
+Source: "..\waptserver\waptserver.ini.template"; DestDir: "{app}\conf"; DestName: "waptserver.ini.template"; Tasks: InstallWaptserver
 Source: "..\waptserver\*.py"; DestDir: "{app}\waptserver"; Tasks: InstallWaptserver       
 Source: "..\waptserver\*.bat"; DestDir: "{app}\waptserver"; Tasks: InstallWaptserver       
 Source: "..\waptserver\*.template"; DestDir: "{app}\waptserver"; Tasks: InstallWaptserver
 Source: "..\waptserver\templates\*"; DestDir: "{app}\waptserver\templates"; Flags: createallsubdirs recursesubdirs; Tasks: InstallWaptserver
 Source: "..\waptserver\translations\*"; DestDir: "{app}\waptserver\translations"; Flags: createallsubdirs recursesubdirs; Tasks: InstallWaptserver
 Source: "..\waptserver\scripts\*"; DestDir: "{app}\waptserver\scripts"; Flags: createallsubdirs recursesubdirs; Tasks: InstallWaptserver
-Source: "..\waptserver\pgsql\*"; DestDir: "{app}\waptserver\pgsql"; Flags: createallsubdirs recursesubdirs; Tasks: InstallPostgreSQL
+Source: "..\waptserver\pgsql-9.6\*"; DestDir: "{app}\waptserver\pgsql-9.6"; Flags: createallsubdirs recursesubdirs; Tasks: InstallPostgreSQL
 Source: "..\waptserver\nginx\*"; DestDir: "{app}\waptserver\nginx"; Flags: createallsubdirs recursesubdirs; Tasks: InstallNGINX
 Source: "..\waptserver\mongodb\mongoexport.exe"; DestDir: "{app}\waptserver\mongodb"; Check: DirExists(ExpandConstant('{app}\waptserver\mongodb'));  Tasks: InstallWaptserver
 
@@ -80,14 +80,14 @@ Source: "..\waptenterprise\waptserver\*"; DestDir: "{app}\waptenterprise\waptser
 #endif
 
 #else
-Source: "..\waptserver\waptserver.ini.template"; DestDir: "{app}\conf"; DestName: "waptserver.ini"; 
+Source: "..\waptserver\waptserver.ini.template"; DestDir: "{app}\conf"; DestName: "waptserver.ini.template";
 Source: "..\waptserver\*.py"; DestDir: "{app}\waptserver";   
 Source: "..\waptserver\*.bat"; DestDir: "{app}\waptserver";   
 Source: "..\waptserver\*.template"; DestDir: "{app}\waptserver"; 
 Source: "..\waptserver\templates\*"; DestDir: "{app}\waptserver\templates"; Flags: createallsubdirs recursesubdirs;
 Source: "..\waptserver\translations\*"; DestDir: "{app}\waptserver\translations"; Flags: createallsubdirs recursesubdirs; 
 Source: "..\waptserver\scripts\*"; DestDir: "{app}\waptserver\scripts"; Flags: createallsubdirs recursesubdirs;
-Source: "..\waptserver\pgsql\*"; DestDir: "{app}\waptserver\pgsql"; Flags: createallsubdirs recursesubdirs;
+Source: "..\waptserver\pgsql-9.6\*"; DestDir: "{app}\waptserver\pgsql-9.6"; Flags: createallsubdirs recursesubdirs;
 Source: "..\waptserver\nginx\*"; DestDir: "{app}\waptserver\nginx"; Flags: createallsubdirs recursesubdirs;
 Source: "..\waptserver\mongodb\mongoexport.exe"; DestDir: "{app}\waptserver\mongodb"; Check: DirExists(ExpandConstant('{app}\waptserver\mongodb'))
 
@@ -117,9 +117,9 @@ Filename: {app}\conf\waptserver.ini; Section: options; Key: allow_unauthenticate
 
 
 [RUN]
-Filename: "{app}\waptserver\pgsql\vcredist_x64.exe"; Parameters: "/passive /quiet"; StatusMsg: {cm:InstallMSVC2013}; Description: "{cm:InstallMSVC2013}";  
+Filename: "{app}\waptserver\pgsql-9.6\vcredist_x64.exe"; Parameters: "/passive /quiet"; StatusMsg: {cm:InstallMSVC2013}; Description: "{cm:InstallMSVC2013}";  
 Filename: "{app}\wapt-get.exe"; Parameters: " update-packages {app}\waptserver\repository\wapt"; Flags: runhidden; StatusMsg: {cm:ScanPackages}; Description: "{cm:ScanPackages}"
-Filename: "{app}\waptpython.exe"; Parameters: "{app}\waptserver\winsetup.py all -c {app}\conf\waptserver.ini -f"; Flags: runhidden; StatusMsg: {cm:ScanPackages}; Description: "{cm:InstallingServerServices}"
+Filename: "{app}\waptpython.exe"; Parameters: "{app}\waptserver\winsetup.py all -c {app}\conf\waptserver.ini -f --setpassword={code:GetServerPassword}"; Flags: runhidden; StatusMsg: {cm:ScanPackages}; Description: "{cm:InstallingServerServices}"
 Filename: "net"; Parameters: "start waptpostgresql"; Flags: runhidden; StatusMsg: "Starting service waptpostgresql"
 Filename: "net"; Parameters: "start waptnginx"; Flags: runhidden; StatusMsg: "Starting service waptnginx"
 Filename: "net"; Parameters: "start waptserver"; Flags: runhidden; StatusMsg: "Starting service waptserver"
@@ -188,12 +188,84 @@ Type: files; Name: "{app}\waptserver\waptserver.py*"
 Source: "..\waptsetuputil.dll"; Flags: dontcopy
 
 [Code]
+var
+    labServerPassword,labServerPassword2: TLabel;
+    edServerPassword,edServerPassword2: TEdit;
+    
 
 procedure waptsetuputil_init( language : integer );                     external 'waptsetuputil_init@files:waptsetuputil.dll stdcall';
 function  waptsetuputil_validate_wapt_server_install_ports() : boolean; external 'waptsetuputil_validate_wapt_server_install_ports@files:waptsetuputil.dll stdcall';
 function  SSLLeay_version( _type  : integer ) : Cardinal;               external 'SSLeay_version@files:libeay32.dll cdecl';
 function  SSL_library_init() : integer;                                 external 'SSL_library_init@files:ssleay32.dll cdecl'; 
 
+const Codes64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+
+function Encode64(S: AnsiString): AnsiString;
+var
+	i: Integer;
+	a: Integer;
+	x: Integer;
+	b: Integer;
+begin
+	Result := '';
+	a := 0;
+	b := 0;
+	for i := 1 to Length(s) do
+	begin
+		x := Ord(s[i]);
+		b := b * 256 + x;
+		a := a + 8;
+		while (a >= 6) do
+		begin
+			a := a - 6;
+			x := b div (1 shl a);
+			b := b mod (1 shl a);
+			Result := Result + copy(Codes64,x + 1,1);
+		end;
+	end;
+	if a > 0 then
+	begin
+		x := b shl (6 - a);
+		Result := Result + copy(Codes64,x + 1,1);
+	end;
+	a := Length(Result) mod 4;
+	if a = 2 then
+		Result := Result + '=='
+	else if a = 3 then
+		Result := Result + '=';
+
+end;
+
+function Decode64(S: AnsiString): AnsiString;
+var
+	i: Integer;
+	a: Integer;
+	x: Integer;
+	b: Integer;
+begin
+	Result := '';
+	a := 0;
+	b := 0;
+	for i := 1 to Length(s) do
+	begin
+		x := Pos(s[i], codes64) - 1;
+		if x >= 0 then
+		begin
+			b := b * 64 + x;
+			a := a + 6;
+			if a >= 8 then
+			begin
+				a := a - 8;
+				x := b shr a;
+				b := b mod (1 shl a);
+				x := x mod 256;
+				Result := Result + chr(x);
+			end;
+		end
+	else
+		Exit; // finish at unknown
+	end;
+end;
 
 function NextButtonClick(CurPageID: Integer):Boolean;
 var
@@ -216,6 +288,21 @@ begin
     exit;
   end;
 
+  if CurPageID = CustomPage.Id then
+  begin
+    if edServerPassword.text = edServerPassword2.text then
+    begin
+      Result := True;
+      Exit;
+    end
+    else
+    begin
+      MsgBox('Check both password', mbError, MB_ABORTRETRYIGNORE);
+      Result := False;
+      Exit;
+    end;
+  end;
+
 
   if CurPageID = wpSelectTasks then
   begin
@@ -223,5 +310,44 @@ begin
     exit;
   end;
 
-
 end;
+
+function GetServerPassword(Param: String):String;
+begin
+  if (edServerPassword.Text<>'') and (edServerPassword.Text = edServerPassword2.Text) then
+    Result := Encode64(edServerPassword.Text)
+  else
+    Result := Encode64('')
+end;
+
+procedure InitializeWizard;
+begin
+  CustomPage := CreateCustomPage(wpSelectTasks, 'Server options', '');
+  
+  labServerPassword := TLabel.Create(WizardForm);
+  labServerPassword.Parent := CustomPage.Surface; 
+  labServerPassword.Caption := 'WAPT Server Admin password (leave blank to not change password):';
+
+  edServerPassword := TEdit.Create(WizardForm);
+  edServerPassword.PasswordChar := '*';
+  edServerPassword.Parent := CustomPage.Surface; 
+  edServerPassword.Left := labServerPassword.Left + labServerPassword.Width + 5;
+  edServerPassword.Width := CustomPage.SurfaceWidth - labServerPassword.Width;
+  edServerPassword.Top := labServerPassword.Top;
+  edServerPassword.text := '';
+  
+  labServerPassword2 := TLabel.Create(WizardForm);
+  labServerPassword2.Parent := CustomPage.Surface; 
+  labServerPassword2.Caption := 'Confirm password:';
+  labServerPassword2.Top := edServerPassword.Top + edServerPassword.Height + 5;
+
+  edServerPassword2 := TEdit.Create(WizardForm);
+  edServerPassword2.PasswordChar := '*';
+  edServerPassword2.Parent := CustomPage.Surface; 
+  edServerPassword2.Left := edServerPassword.Left;
+  edServerPassword2.Width := edServerPassword.Width;
+  edServerPassword2.Top := labServerPassword2.Top;
+  edServerPassword2.text := '';
+end;
+
+

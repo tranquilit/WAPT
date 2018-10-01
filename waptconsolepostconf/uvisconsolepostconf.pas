@@ -189,6 +189,7 @@ end;
 
 procedure TVisWAPTConsolePostConf.FormShow(Sender: TObject);
 begin
+  ed_wapt_server_hostname.SetFocus;
 end;
 
 procedure TVisWAPTConsolePostConf.html_panelHotClick(Sender: TObject);
@@ -740,6 +741,11 @@ begin
   push_cursor( crHourGlass );
   try
     self.validate_wapt_server( b );
+    if b then
+      if ed_wapt_server_password.text = '' then
+        ed_wapt_server_password.SetFocus
+      else
+        self.ButNext.SetFocus;
   finally
     pop_cursor();
   end;
@@ -761,6 +767,12 @@ begin
 
   bContinue := false;
 
+  if not wizard_validate_waptserver_login( self, self.ed_wapt_server_password, self.ed_manual_wapt_server_url.Text, 'admin', self.ed_wapt_server_password.Text ) then
+  begin
+    exit;
+  end;
+
+
   r := wapt_server_agent_version( v, self.ed_manual_wapt_server_url.Text , 'admin', self.ed_wapt_server_password.Text );
   if r = 0 then
   begin
@@ -774,10 +786,6 @@ begin
     end;
   end;
 
-  if not wizard_validate_waptserver_login( self, self.ed_wapt_server_password, self.ed_manual_wapt_server_url.Text, 'admin', self.ed_wapt_server_password.Text ) then
-  begin
-    exit;
-  end;
 
 
   Application.ProcessMessages;
@@ -1358,12 +1366,19 @@ var
   s : String;
   r : integer;
 begin
+  if ed_existing_key_password.Text = '' then
+  begin
+    MessageDlg( Application.Name, rs_no_key_password, mtError, [mbOK], 0 );
+    ed_existing_key_password.SetFocus;
+    goto LBL_EXIT;
+  end;
+
   push_cursor( crHourGlass );
 
   r := find_private_key( s, self.ed_existing_key_certificat_filename.Text, self.ed_existing_key_password.Text );
   if r <> 0 then
   begin
-    MessageDlg( Application.Name, 'No private key has been found in certificate directory with this this password', mtInformation, [mbOK], 0 );
+    MessageDlg( Application.Name, rs_no_matching_key, mtInformation, [mbOK], 0 );
     goto LBL_EXIT;
   end;
 

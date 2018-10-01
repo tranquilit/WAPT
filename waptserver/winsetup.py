@@ -45,9 +45,10 @@ import jinja2
 import time
 import random
 import string
+import base64
 
 from setuphelpers import run
-from waptutils import setloglevel
+from waptutils import setloglevel,ensure_unicode
 from waptcrypto import SSLPrivateKey,SSLCertificate
 from passlib.hash import pbkdf2_sha256
 
@@ -268,28 +269,52 @@ def install_nginx_service(options,conf=None):
     install_windows_nssm_service(service_name,service_binary,service_parameters,service_logfile)
     time.sleep(5)
 
+def migrate_pg_db(old_pgsql_root_dir,old_pgsql_data_dir,pgsql_root_dir,pgsql_data_dir):
+    #
+    try:
+        cwd = os.getcwd()
+        tmpdir = os.path.join(cwd,'temp')
+        mkdir_p(tmpdir)
+        os.chdir(tmpdir)
+        setuphelpers.run(r'icacls "%s" /t /grant  "*S-1-1-0":(OI)(CI)(M)' % tmpdir)
+
+        old_pgsql_root_dir = old_pgsql_root_dir.replace('\\','/')
+        old_pgsql_data_dir = old_pgsql_data_dir.replace('\\','/')
+        pgsql_root_dir = pgsql_root_dir.replace('\\','/')
+        pgsql_data_dir = pgsql_data_dir.replace('\\','/')
+
+        cmd = r'"{pgsql_root_dir}/bin/pg_upgrade.exe" -U postgres --old-datadir "{old_pgsql_data_dir}" --new-datadir "{pgsql_data_dir}" --old-bindir "{old_pgsql_root_dir}/bin" --new-bindir "{pgsql_root_dir}/bin"'.format(**locals())
+
+        print('Running %s' % cmd)
+        print(run(cmd,cwd=tmpdir))
+        os.rename(old_pgsql_root_dir,old_pgsql_root_dir+'.old')
+        os.rename(old_pgsql_data_dir,old_pgsql_data_dir+'.old')
+        return True
+    except Exception as e:
+        print('Unable to migrate database : %s' % ensure_unicode(e))
+        return False
+    finally:
+        os.chdir(cwd)
+
 def install_postgresql_service(options,conf=None):
     if conf is None:
         conf = waptserver.config.load_config(options.configfile)
     print ("install postgres database")
 
-    pgsql_root_dir = r'%s\waptserver\pgsql' % wapt_root_dir
-    pgsql_data_dir = r'%s\waptserver\pgsql_data' % wapt_root_dir
+    pgsql_root_dir = r'%s\waptserver\pgsql-9.6' % wapt_root_dir
+    pgsql_data_dir = r'%s\waptserver\pgsql_data-9.6' % wapt_root_dir
     pgsql_data_dir = pgsql_data_dir.replace('\\','/')
 
 
     print ("build database directory")
     if not os.path.exists(os.path.join(pgsql_data_dir,'postgresql.conf')):
-        print ("init pgsql data directory")
-        pg_data_dir = os.path.join(wapt_root_dir,'waptserver','pgsql_data')
-
-        setuphelpers.mkdirs(pg_data_dir)
+        setuphelpers.mkdirs(pgsql_data_dir)
 
         # need to have specific write acls for current user otherwise initdb fails...
-        setuphelpers.run(r'icacls "%s" /t /grant  "%s":(OI)(CI)(M)' % (pg_data_dir,GetUserName()))
-        setuphelpers.run(r'"%s\waptserver\pgsql\bin\initdb" -U postgres -E=UTF8 -D "%s\waptserver\pgsql_data"' % (wapt_root_dir,wapt_root_dir))
+        setuphelpers.run(r'icacls "%s" /t /grant  "%s":(OI)(CI)(M)' % (pgsql_data_dir,GetUserName()))
 
-        setuphelpers.run(r'icacls "%s" /t /grant  "*S-1-5-20":(OI)(CI)(M)' % pg_data_dir)
+        setuphelpers.run(r'"%s\bin\initdb" -U postgres -E=UTF8 -D "%s"' % (pgsql_root_dir,pgsql_data_dir))
+        setuphelpers.run(r'icacls "%s" /t /grant  "*S-1-5-20":(OI)(CI)(M)' % pgsql_data_dir)
 
         print("start postgresql database")
 
@@ -298,15 +323,22 @@ def install_postgresql_service(options,conf=None):
                 setuphelpers.service_stop('waptPostgresql')
             setuphelpers.service_delete('waptPostgresql')
 
-        cmd = r'"%s\bin\pg_ctl" register -N WAPTPostgresql -U "nt authority\networkservice" -S auto -D "%s"  ' % (pgsql_root_dir ,os.path.join(wapt_root_dir,'waptserver','pgsql_data'))
+        cmd = r'"%s\bin\pg_ctl" register -N WAPTPostgresql -U "nt authority\networkservice" -S auto -D "%s"  ' % (pgsql_root_dir ,pgsql_data_dir)
         print cmd
         run(cmd)
         setuphelpers.run(r'icacls "%s" /grant  "*S-1-5-20":(OI)(CI)(M)' % log_directory)
         setuphelpers.run(r'icacls "%s" /grant  "*S-1-5-20":(OI)(CI)(M)' % pgsql_data_dir)
-
-
     else:
         print("database already instanciated, doing nothing")
+
+    # try to migrate from old version (pg 9.4, wapt 1.5)
+    old_pgsql_root_dir = r'%s\waptserver\pgsql' % wapt_root_dir
+    old_pgsql_data_dir = r'%s\waptserver\pgsql_data' % wapt_root_dir
+    old_pgsql_data_dir = old_pgsql_data_dir.replace('\\','/')
+
+    if os.path.isdir(old_pgsql_data_dir) and os.path.isdir(old_pgsql_root_dir):
+        print('migrating database from previous postgresql DB')
+        migrate_pg_db(old_pgsql_root_dir,old_pgsql_data_dir,pgsql_root_dir,pgsql_data_dir)
 
     print('starting postgresql')
     if not setuphelpers.service_is_running('waptpostgresql'):
@@ -363,7 +395,7 @@ def install_waptserver_service(options,conf=None):
         waptserver.config.write_config_file(options.configfile,conf)
 
     if options.setpassword:
-        conf['wapt_password'] = pbkdf2_sha256.hash(options.setpassword.encode('utf8'))
+        conf['wapt_password'] = pbkdf2_sha256.hash(base64.b64decode(options.setpassword).encode('utf8'))
         waptserver.config.write_config_file(options.configfile,conf)
 
 def install_wapttasks_service(options,conf=None):

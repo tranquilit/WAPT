@@ -20,6 +20,7 @@ type
     BitBtn2: TBitBtn;
     CBCheckCertificatesValidity: TCheckBox;
     CBDualSign: TCheckBox;
+    CBUseFQDNAsUUID: TCheckBox;
     CBForceWaptServerURL: TCheckBox;
     CBVerifyCert: TCheckBox;
     CBUseKerberos: TCheckBox;
@@ -249,6 +250,7 @@ begin
     CBUseKerberos.Checked:=ini.ReadBool('global', 'use_kerberos', False );
     CBCheckCertificatesValidity.Checked:=ini.ReadBool('global', 'check_certificates_validity',True );
     CBDualSign.Checked:= (ini.ReadString('global', 'sign_digests','') = 'sha256,sha1');
+    CBUseFQDNAsUUID.Checked:= ini.ReadBool('global', 'use_fqdn_as_uuid',False);
     fnWaptDirectory.Directory := WaptBaseDir()+'\waptupgrade';
 
     fnPublicCert.FileName := UTF8Encode(ActiveCertBundle);
@@ -293,7 +295,8 @@ begin
       CBCheckCertificatesValidity.Checked,
       DMPython.IsEnterpriseEdition,
       CBForceRepoURL.Checked,
-      CBForceWaptServerURL.Checked
+      CBForceWaptServerURL.Checked,
+      CBUseFQDNAsUUID.Checked
       );
     Result := WAPTSetupPath;
   finally

@@ -9,6 +9,8 @@
 #ifndef FastDebug
 Source: "innosetup\*"; DestDir: "{app}\waptsetup\innosetup"; Flags: createallsubdirs recursesubdirs ignoreversion;
 #endif
+
+#if edition != "waptstarter"
 Source: "common.iss"; DestDir: "{app}\waptsetup";
 Source: "wapt.iss"; DestDir: "{app}\waptsetup";
 Source: "waptsetup.iss"; DestDir: "{app}\waptsetup";
@@ -20,13 +22,17 @@ Source: "..\wapt.ico"; DestDir: "{app}";
 Source: "..\waptupgrade\setup.py"; DestDir: "{app}\waptupgrade"; Flags: ignoreversion;
 Source: "..\waptupgrade\WAPT\*"; DestDir: "{app}\waptupgrade\WAPT"; Flags: createallsubdirs recursesubdirs ignoreversion;
 
+#if edition != "waptagent"
+Source: "..\waptconsolepostconf.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\waptconsolepostconf.exe.manifest"; DestDir: "{app}";
+#endif
+
 ; global management console
 Source: "..\waptconsole.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\waptconsole.exe.manifest"; DestDir: "{app}";
-Source: "..\waptconsolepostconf.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\waptconsolepostconf.exe.manifest"; DestDir: "{app}";
 
 Source: "..\waptdevutils.py"; DestDir: "{app}";
+#endif
 
 ; authorized public keys
 #if set_install_certs == ""
@@ -117,6 +123,9 @@ Filename: {app}\wapt-get.ini; Section: global; Key: verify_cert; String: {code:R
 Filename: {app}\wapt-get.ini; Section: global; Key: verify_cert; String: {code:VerifyCertCheck}; 
 #endif
 
+#if use_fqdn_as_uuid != ""
+Filename: {app}\wapt-get.ini; Section: global; Key: use_fqdn_as_uuid; String: {#use_fqdn_as_uuid}; 
+#endif
 
 #if edition != "waptserversetup"
 Filename: {app}\wapt-get.ini; Section: global; Key: dnsdomain; String: {code:GetDNSDomain}; Check: MustChangeServerConfig;
@@ -162,10 +171,11 @@ en.UseKerberosForRegister=Use machine kerberos account for registration on WaptS
 en.VerifyServerCertificates=Verify https server certificates
 en.DisableHiberBoot=Disable hiberboot, and increase shudown GPO timeout (recommended)
 en.RemoveAllFiles=Do you want to delete all remaining files in WAPT directory {app} ?
-en.DontChangeServerSetup=Don''t change current setup
+en.UseWizard=Use Wizard to complete initial configuration steps
+en.DontChangeServerSetup=Don't change current setup
 en.DNSDetect=Detect WAPT Info with DNS records
 en.DNSDomainLookup=DNS Domain to lookup
-en.StaticURLS=Static WAPT Info
+en.StaticURLS=Static WAPT Informations
 en.RunConfigTool=Run congifuration tool
 
 ;French translations here
@@ -181,6 +191,7 @@ fr.UseKerberosForRegister=Utiliser le compte Kerberos de la machine pour l'enreg
 fr.VerifyServerCertificates=Vérifier les certificats https
 fr.DisableHiberBoot=Désactiver l'hiberboot, et augmenter le temps pour les GPO (recommandé)
 fr.RemoveAllFiles=Des fichiers restent présents dans votre répertoire {app} Souhaitez-vous le supprimer ainsi que tous les fichiers qu'il contient ?
+fr.UseWizard=Utiliser l'assistant pour achever la phase de configuration initiale.
 fr.DontChangeServerSetup=Ne pas modifier la configuration actuelle
 fr.DNSDetect=Détecter les URLS WAPT avec des requêtes DNS
 fr.DNSDomainLookup=Domaine DNS à  interroger
@@ -196,7 +207,7 @@ de.RunConfigTool=Führen Sie das Konfigurationstool aus
 
 [Code]
 var
-  cbDontChangeServer, cbStaticUrl,cbDnsServer: TNewRadioButton;
+  cbUseWizard, cbDontChangeServer, cbStaticUrl,cbDnsServer: TNewRadioButton;
   CustomPage: TWizardPage;
   edWaptServerUrl,edDNSDomain:TEdit;
   labRepo,labServer,labDNSDomain: TLabel;
@@ -296,12 +307,22 @@ procedure InitializeWizard;
 begin
   CustomPage := CreateCustomPage(wpSelectTasks, 'Installation options', '');
   
+  cbUseWizard := TNewRadioButton.Create(WizardForm);
+  cbUseWizard.Parent := CustomPage.Surface;
+  cbUseWizard.Width := CustomPage.SurfaceWidth;
+  cbUseWizard.Caption := ExpandConstant('{cm:UseWizard}');
+  cbUseWizard.Onclick := @OnServerClicked;
+  #if edition == "waptstarter" || edition == "waptagent"
+  cbUseWizard.Visible := False;
+  #endif
+  
   cbDontChangeServer := TNewRadioButton.Create(WizardForm);
   cbDontChangeServer.Parent := CustomPage.Surface;
   cbDontChangeServer.Width := CustomPage.SurfaceWidth;
   cbDontChangeServer.Caption := ExpandConstant('{cm:DontChangeServerSetup}');
   cbDontChangeServer.Onclick := @OnServerClicked;
-
+  cbDontChangeServer.Top := cbUseWizard.Top + cbUseWizard.Height + 5;
+ 
   cbDnsServer := TNewRadioButton.Create(WizardForm);
   cbDnsServer.Parent := CustomPage.Surface;
   cbDnsServer.Width := CustomPage.SurfaceWidth;
@@ -325,28 +346,28 @@ begin
   cbStaticUrl := TNewRadioButton.Create(WizardForm);
   cbStaticUrl.Parent := CustomPage.Surface; 
   cbStaticUrl.Caption := ExpandConstant('{cm:StaticURLS}');
-  cbStaticUrl.Top := cbStaticUrl.Top + cbDnsServer.Height + 3 * ScaleY(15);
+  cbStaticUrl.Top := cbStaticUrl.Top + cbDnsServer.Height + 5 * ScaleY(15);
   cbStaticUrl.Onclick := @OnServerClicked;
 
   labRepo := TLabel.Create(WizardForm);
   labRepo.Parent := CustomPage.Surface; 
   labRepo.Left := cbStaticUrl.Left + 14;
   labRepo.Caption := 'Repos URL:';
-  labRepo.Top := labRepo.Top + cbDnsServer.Height + 5 * ScaleY(15);
+  labRepo.Top := labRepo.Top + cbDnsServer.Height + 7 * ScaleY(15);
   
   #if edition != "waptstarter"
   labServer := TLabel.Create(WizardForm);
   labServer.Parent := CustomPage.Surface; 
   labServer.Left := cbStaticUrl.Left + 14; 
   labServer.Caption := 'Server URL:';
-  labServer.Top := labServer.Top + cbDnsServer.Height + 9 * ScaleY(15);
+  labServer.Top := labServer.Top + cbDnsServer.Height + 10 * ScaleY(15);
   #endif
 
   edWaptRepoUrl := TEdit.Create(WizardForm);
   edWaptRepoUrl.Parent := CustomPage.Surface; 
   edWaptRepoUrl.Left :=labRepo.Left + labRepo.Width + 5;
   edWaptRepoUrl.Width :=CustomPage.SurfaceWidth - cbStaticUrl.Width;
-  edWaptRepoUrl.Top := edWaptRepoUrl.Top + cbDnsServer.Height + 5 * ScaleY(15);
+  edWaptRepoUrl.Top := edWaptRepoUrl.Top + cbDnsServer.Height + 7 * ScaleY(15);
   edWaptRepoUrl.text := 'unknown';
 
   labRepo := TLabel.Create(WizardForm);
@@ -360,7 +381,7 @@ begin
   edWaptServerUrl.Parent := CustomPage.Surface; 
   edWaptServerUrl.Left :=labServer.Left + labServer.Width+5;
   edWaptServerUrl.Width :=CustomPage.SurfaceWidth - cbStaticUrl.Width;
-  edWaptServerUrl.Top := edWaptServerUrl.Top + edWaptRepoUrl.Height + 9 * ScaleY(15); 
+  edWaptServerUrl.Top := edWaptServerUrl.Top + edWaptRepoUrl.Height + 10 * ScaleY(15); 
   edWaptServerUrl.Text := 'unknown';  
 
   labServer := TLabel.Create(WizardForm);
@@ -402,7 +423,7 @@ end;
 
 function MustChangeServerConfig:Boolean;
 begin
-  Result := runningSilently() or not cbDontChangeServer.Checked;     
+  Result := runningSilently() or (not cbDontChangeServer.Checked and not cbUseWizard.Checked);     
 end;
 
 function UseKerberosCheck(param:String):String;
@@ -543,17 +564,18 @@ begin
 
     customPage.Id:
     begin
-      #if edition == "waptsetup"
-      PostMessage(WizardForm.NextButton.Handle, $BD11 , 0, 0);
-      exit;
-      #endif
+      //#if edition == "waptsetup"
+      //PostMessage(WizardForm.NextButton.Handle, $BD11 , 0, 0);
+      //exit;
+      //#endif
 
       edWaptRepoUrl.Text := GetRepoURL('');
       #if edition != "waptstarter"
       edWaptServerUrl.Text := GetWaptServerURL('');  
       #endif
-      cbDontChangeServer.Checked := (GetRepoURL('') <> '') or (GetIniString('Global', 'dnsdomain','', ExpandConstant('{app}\wapt-get.ini'))<>'');
-      cbDnsServer.Checked := not cbDontChangeServer.Checked and (edWaptRepoUrl.Text='');
+      cbUseWizard.Checked := cbUseWizard.Visible and (GetRepoURL('') = '') and (GetIniString('Global', 'dnsdomain','', ExpandConstant('{app}\wapt-get.ini')) = '');
+      cbDontChangeServer.Checked := not cbUseWizard.Checked and not (GetRepoURL('') = '') and (GetIniString('Global', 'dnsdomain','', ExpandConstant('{app}\wapt-get.ini')) = '');
+      cbDnsServer.Checked := not cbDontChangeServer.Checked and not cbUseWizard.Checked and (edWaptRepoUrl.Text='');
       cbStaticUrl.Checked := (edWaptRepoUrl.Text<>'') and (edWaptRepoUrl.Text<>'unknown');
       edDNSDomain.Text := GetDNSDomain('');  
 
@@ -563,14 +585,15 @@ begin
 
     wpFinished:
     begin
-      #if edition == "waptsetup"
-      i := WizardForm.RunList.Items.Count 
-      if i = 0 then
-        exit;
-      i := i - 1;        
-      WizardForm.RunList.Checked[i] := not LocalWaptServiceIsConfigured(); 
-      exit;
-      #endif
+      //#if edition == "waptsetup"
+      //i := WizardForm.RunList.Items.Count 
+      //if i = 0 then
+      //  exit;
+      //i := i - 1;        
+      //WizardForm.RunList.Checked[i] := not LocalWaptServiceIsConfigured(); 
+      //exit;
+      //#endif
+      
     end;
 
   end;

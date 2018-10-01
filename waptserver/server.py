@@ -2090,6 +2090,12 @@ if __name__ == '__main__':
         import doctest
         sys.exit(doctest.testmod())
 
+    if args and args[0] == 'install':
+        # pass optional parameters along with the command
+        raise Exception('Wapt 1.5 serie does not currently support install on Windows')
+        # install_windows_service()
+        # sys.exit(0)
+
     logger.info(u'Waptserver starting...')
     port = app.conf['waptserver_port']
     with wapt_db.atomic() as trans:

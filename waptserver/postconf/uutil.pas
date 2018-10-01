@@ -834,17 +834,20 @@ var
   http_proto  : THttpProtocol;
   so          : ISuperObject;
   s           : String;
+  url         : String;
 begin
   result := -1;
 
-  http_proto := http_protocol( server_url );
+  url := server_url;
+  http_proto := http_protocol( url );
   if hpNone = http_proto then
-    exit();
+    url := 'http://' + url;
+
 
   http := http_create( hpHttps = http_proto );
   http_set_basic_auth( http, user, password );
 
-  s := url_concat(server_url, '/api/v2/waptagent_version' );
+  s := url_concat(url, '/api/v2/waptagent_version' );
   r := -1;
   try
     s := http.Get(s);
@@ -871,6 +874,9 @@ begin
 
 
   if not assigned(  so.O['result'].O['waptagent_version'] ) then
+    exit;
+
+  if not so.O['result'].O['waptagent_version'].IsType(stString) then
     exit;
 
   version := UTF8Encode( so.O['result'].S['waptagent_version'] );

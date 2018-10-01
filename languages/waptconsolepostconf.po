@@ -95,7 +95,7 @@ msgstr ""
 
 #: tviswaptconsolepostconf.lbl_ed_existing_key_password.caption
 msgctxt "tviswaptconsolepostconf.lbl_ed_existing_key_password.caption"
-msgid "Password :"
+msgid "Private key password :"
 msgstr ""
 
 #: tviswaptconsolepostconf.lbl_ed_package_prefix.caption
@@ -234,6 +234,14 @@ msgstr ""
 
 #: waptconsolepostconfres.rs_key_name_cannot_be_empty
 msgid "Key name cannot be empty"
+msgstr ""
+
+#: waptconsolepostconfres.rs_no_key_password
+msgid "Please provide the private key password first"
+msgstr ""
+
+#: waptconsolepostconfres.rs_no_matching_key
+msgid "No private key has been found in certificate directory with this password"
 msgstr ""
 
 #: waptconsolepostconfres.rs_other_process_has_been_found

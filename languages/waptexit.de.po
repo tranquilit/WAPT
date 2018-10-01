@@ -95,6 +95,10 @@ msgstr "Es gibt ausstehende Installationen oder Updates"
 msgid "Updating software"
 msgstr "Software aktualisieren"
 
+#: uwaptexitres.rsupgraderunning
+msgid "Upgrade running..."
+msgstr ""
+
 #: uwaptres.rsbundleconfigeditcaption
 msgid "Edit package bundle configuration"
 msgstr "Paketbündel-Konfiguration bearbeiten"

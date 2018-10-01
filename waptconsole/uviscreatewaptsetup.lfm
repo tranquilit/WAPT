@@ -1,10 +1,10 @@
 object VisCreateWaptSetup: TVisCreateWaptSetup
   Left = 409
-  Height = 494
+  Height = 508
   Top = 218
   Width = 560
   Caption = 'Create WAPT agent'
-  ClientHeight = 494
+  ClientHeight = 508
   ClientWidth = 560
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
@@ -85,7 +85,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
   object Panel1: TPanel
     Left = 0
     Height = 27
-    Top = 467
+    Top = 481
     Width = 560
     Align = alBottom
     BevelOuter = bvNone
@@ -224,7 +224,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
     Left = 262
     Height = 17
     Hint = 'Check that certificate dates are valid and  issuer is a know one.'
-    Top = 429
+    Top = 424
     Width = 240
     Caption = 'Sign waptupgrade with both sha256 and sha1'
     TabOrder = 10
@@ -351,6 +351,15 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
     Checked = True
     State = cbChecked
     TabOrder = 13
+  end
+  object CBUseFQDNAsUUID: TCheckBox
+    Left = 262
+    Height = 17
+    Hint = 'Ask Wapt agent to use the computer Fully Qualified Domain Name (name.domaine.lan) instead of BIOD unique ID.'#13#10'This can be useful if Wapt is not used as asset management, but only as a deployment solutioN.'
+    Top = 448
+    Width = 164
+    Caption = 'Use Computer FQDN for UUID'
+    TabOrder = 14
   end
   object ActionList1: TActionList
     left = 16

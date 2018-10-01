@@ -280,6 +280,16 @@ msgctxt "tviscreatewaptsetup.cbforcewaptserverurl.hint"
 msgid "Overwrite the URL when installing on the client even if there is a diffrent current setting in wapt-get.ini"
 msgstr "Force la valeur de l'URL lors de l'installation même si il y a déjà une valeur différente dans wapt-get.ini"
 
+#: tviscreatewaptsetup.cbusefqdnasuuid.caption
+msgid "Use Computer FQDN for UUID"
+msgstr "Utiliser le nom FQDN comme UUID pour les clients"
+
+#: tviscreatewaptsetup.cbusefqdnasuuid.hint
+msgid ""
+"Ask Wapt agent to use the computer Fully Qualified Domain Name (name.domaine.lan) instead of BIOD unique ID.\n"
+"This can be useful if Wapt is not used as asset management, but only as a deployment solutioN.\n"
+msgstr ""
+
 #: tviscreatewaptsetup.cbusekerberos.caption
 msgid "Use Kerberos for initial registration"
 msgstr "Utiliser Kerberos pour l'enregistrement initial"
@@ -442,7 +452,7 @@ msgstr "Description"
 #: tviseditgroup.eddescription.text
 msgctxt "tviseditgroup.eddescription.text"
 msgid " "
-msgstr ""
+msgstr " "
 
 #: tviseditgroup.edgroup.editlabel.caption
 msgid "Group"
@@ -541,9 +551,10 @@ msgid "Version"
 msgstr "Version"
 
 #: tviseditpackage.edversion.text
+#, fuzzy
 msgctxt "TVISEDITPACKAGE.EDVERSION.TEXT"
 msgid " "
-msgstr ""
+msgstr " "
 
 #: tviseditpackage.labdescription.caption
 msgctxt "tviseditpackage.labdescription.caption"
@@ -1825,8 +1836,9 @@ msgctxt "tviswaptgui.cbshowhostsforgroups.caption"
 msgid "Show Hosts"
 msgstr "Afficher les clients"
 
-#: tviswaptgui.cbshowhostsforsofts.caption
-msgctxt "tviswaptgui.cbshowhostsforsofts.caption"
+#: tviswaptgui.cbshowhostsforpackages.caption
+#, fuzzy
+msgctxt "tviswaptgui.cbshowhostsforpackages.caption"
 msgid "Show Hosts"
 msgstr "Afficher les clients"
 

@@ -278,6 +278,16 @@ msgctxt "tviscreatewaptsetup.cbforcewaptserverurl.hint"
 msgid "Overwrite the URL when installing on the client even if there is a diffrent current setting in wapt-get.ini"
 msgstr ""
 
+#: tviscreatewaptsetup.cbusefqdnasuuid.caption
+msgid "Use Computer FQDN for UUID"
+msgstr ""
+
+#: tviscreatewaptsetup.cbusefqdnasuuid.hint
+msgid ""
+"Ask Wapt agent to use the computer Fully Qualified Domain Name (name.domaine.lan) instead of BIOD unique ID.\n"
+"This can be useful if Wapt is not used as asset management, but only as a deployment solutioN.\n"
+msgstr ""
+
 #: tviscreatewaptsetup.cbusekerberos.caption
 msgid "Use Kerberos for initial registration"
 msgstr ""
@@ -1789,8 +1799,8 @@ msgctxt "tviswaptgui.cbshowhostsforgroups.caption"
 msgid "Show Hosts"
 msgstr ""
 
-#: tviswaptgui.cbshowhostsforsofts.caption
-msgctxt "tviswaptgui.cbshowhostsforsofts.caption"
+#: tviswaptgui.cbshowhostsforpackages.caption
+msgctxt "tviswaptgui.cbshowhostsforpackages.caption"
 msgid "Show Hosts"
 msgstr ""
 

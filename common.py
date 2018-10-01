@@ -2705,6 +2705,10 @@ class Wapt(BaseObjectClass):
         if self.config.has_option('global','sign_digests'):
             self.sign_digests = ensure_list(self.config.get('global','sign_digests'))
 
+        # for testing
+        if self.config.has_option('global','fake_hostname'):
+            self._set_fake_hostname(self.config.get('global','fake_hostname'))
+
         # allow to fake a host Oragnaizational Unit when the computer is not part of an AD, but we want to put host in a OU.
         if self.config.has_option('global','host_organizational_unit_dn'):
             forced_host_organizational_unit_dn = self.config.get('global','host_organizational_unit_dn')
@@ -4894,7 +4898,7 @@ class Wapt(BaseObjectClass):
         new_hashes = {}
         old_hashes = {}
 
-        inv = self._get_host_status_data(old_hashes, new_hashes, force=True)
+        inv = self._get_host_status_data(old_hashes, new_hashes, force=True, include_dmi=True, include_wmi=True)
         inv['status_hashes'] = new_hashes
 
         #inv = self.inventory()
@@ -5066,7 +5070,7 @@ class Wapt(BaseObjectClass):
         return self.waptdb.update_install_status(**kwargs)
 
 
-    def _get_host_status_data(self,old_hashes,new_hashes,force=False):
+    def _get_host_status_data(self,old_hashes,new_hashes,force=False,include_wmi=False,include_dmi=False):
         """Build the data to send to server where update_server_status required
 
         Returns:
@@ -5094,6 +5098,19 @@ class Wapt(BaseObjectClass):
         _add_data_if_updated(inv,'installed_softwares',setuphelpers.installed_softwares(''),old_hashes,new_hashes)
         _add_data_if_updated(inv,'installed_packages',[p.as_dict() for p in self.waptdb.installed(include_errors=True,include_setup=False)],old_hashes,new_hashes)
         _add_data_if_updated(inv,'last_update_status', self.get_last_update_status(),old_hashes,new_hashes)
+
+        if include_wmi:
+            try:
+                _add_data_if_updated(inv,'wmi',setuphelpers.wmi_info(),old_hashes,new_hashes)
+            except:
+                logger.warning('WMI not working')
+
+        if include_dmi:
+            try:
+                _add_data_if_updated(inv,'dmi',setuphelpers.dmi_info(),old_hashes,new_hashes)
+            except:
+                logger.warning('WMI not working')
+
         if self.get_wapt_edition() == 'enterprise':
             try:
                 import waptenterprise.waptwua.client
