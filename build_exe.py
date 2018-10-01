@@ -5,6 +5,8 @@ import os
 import re
 
 import getpass
+
+force = False
 pwd = getpass.getpass('Key password ?')
 open(r'C:\Users\buildbot\Documents\tmpkeypwd','wb').write(pwd.encode('utf8'))
 try:
@@ -36,10 +38,10 @@ try:
             else:
                 print('Skipped %s ' % lpi)
 
-    def compile_setups(edition='enterprise'):
+    def compile_setups(edition='enterprise',force=False):
         for iscc in ('waptstarter','waptsetup','waptserversetup'):
             setup_exe = 'waptsetup\{iscc}.exe'.format(**locals())
-            if not os.path.isfile(setup_exe):
+            if force or not os.path.isfile(setup_exe):
                 print('Compiling setup %s for edition %s...' % (iscc,edition))
                 run(ISCCBUILD + r" -e {edition} --sign-exe-filenames=waptservice\win32\nssm.exe,waptservice\win64\nssm.exe waptsetup\{iscc}".format(**locals()))
             else:
@@ -53,8 +55,8 @@ try:
 
     for edition in sys.argv[1:]:
         print('Edition: %s' % edition)
-        compile_exes(edition)
-        compile_setups(edition)
+        compile_exes(edition,force)
+        compile_setups(edition,force)
 
 finally:
     if isfile(r'C:\Users\buildbot\Documents\tmpkeypwd'):

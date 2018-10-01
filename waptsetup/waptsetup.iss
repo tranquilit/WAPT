@@ -32,6 +32,7 @@
 #define set_start_packages ""
 #endif
 
+#define use_fqdn_as_uuid ""
 
 ;#define waptenterprise
 

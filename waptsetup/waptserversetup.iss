@@ -39,6 +39,8 @@
 #define set_disable_hiberboot ""
 #endif
 
+#define use_fqdn_as_uuid ""
+
 ; for fast compile in developent mode
 ;#define FastDebug
 
