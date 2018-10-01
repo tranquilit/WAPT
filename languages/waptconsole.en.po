@@ -1370,6 +1370,19 @@ msgstr ""
 msgid "Make package template from setup file"
 msgstr ""
 
+#: tviswaptgui.actnormalizationimportsoftwares.caption
+msgid "Import softwares"
+msgstr ""
+
+#: tviswaptgui.actnormalizationrefresh.caption
+msgctxt "tviswaptgui.actnormalizationrefresh.caption"
+msgid "Refresh"
+msgstr ""
+
+#: tviswaptgui.actnormalizationwritetable.caption
+msgid "Write"
+msgstr ""
+
 #: tviswaptgui.actpackagesaudit.caption
 msgid "Audit package"
 msgstr ""
@@ -1449,6 +1462,40 @@ msgstr ""
 #: tviswaptgui.actremovedepends.caption
 msgctxt "tviswaptgui.actremovedepends.caption"
 msgid "Remove packages from host dependencies"
+msgstr ""
+
+#: tviswaptgui.actreportingeditsqlnew.caption
+msgctxt "tviswaptgui.actreportingeditsqlnew.caption"
+msgid "New"
+msgstr ""
+
+#: tviswaptgui.actreportingeditsqlrun.caption
+msgid "Run"
+msgstr ""
+
+#: tviswaptgui.actreportingeditsqlsave.caption
+msgctxt "tviswaptgui.actreportingeditsqlsave.caption"
+msgid "Save"
+msgstr ""
+
+#: tviswaptgui.actreportingquerycreatesamplesqueries.caption
+msgid "Create samples"
+msgstr ""
+
+#: tviswaptgui.actreportingquerydelete.caption
+msgid "Delete"
+msgstr ""
+
+#: tviswaptgui.actreportingqueryexecutesql.caption
+msgid "Execute SQL"
+msgstr ""
+
+#: tviswaptgui.actreportingqueryexporttoexcel.caption
+msgid "Export to Excel"
+msgstr ""
+
+#: tviswaptgui.actreportingqueryloadqueries.caption
+msgid "Load queries"
 msgstr ""
 
 #: tviswaptgui.actresetwebsocketconnections.caption
@@ -1835,6 +1882,10 @@ msgctxt "tviswaptgui.cbwucritical.caption"
 msgid "Critical only"
 msgstr ""
 
+#: tviswaptgui.combobox2.text
+msgid "No auto execute"
+msgstr ""
+
 #: tviswaptgui.edrun.text
 msgid "mywapt.update()"
 msgstr ""
@@ -2038,6 +2089,7 @@ msgid "Trigger Burst Updates"
 msgstr ""
 
 #: tviswaptgui.menuitem6.caption
+msgctxt "tviswaptgui.menuitem6.caption"
 msgid "New"
 msgstr ""
 
@@ -2073,6 +2125,10 @@ msgstr ""
 
 #: tviswaptgui.opendialogwapt.title
 msgid "Select WAPT file"
+msgstr ""
+
+#: tviswaptgui.panel18.caption
+msgid "Panel18"
 msgstr ""
 
 #: tviswaptgui.panel6.caption
@@ -2112,6 +2168,10 @@ msgstr ""
 
 #: tviswaptgui.pgnetworksconfig.caption
 msgid "Sites / networks configuration"
+msgstr ""
+
+#: tviswaptgui.pgnormalization.caption
+msgid "Normalization"
 msgstr ""
 
 #: tviswaptgui.pgpackages.caption
@@ -2162,6 +2222,26 @@ msgstr ""
 
 #: tviswaptgui.toolbar1.caption
 msgid "ToolBar1"
+msgstr ""
+
+#: tviswaptgui.toolbar2.caption
+msgid "ToolBar2"
+msgstr ""
+
+#: tviswaptgui.toolbar3.caption
+msgid "ToolBar3"
+msgstr ""
+
+#: tviswaptgui.toolbar4.caption
+msgid "ToolBar4"
+msgstr ""
+
+#: tviswaptgui.toolbutton11.caption
+msgid "ToolButton11"
+msgstr ""
+
+#: tviswaptgui.toolbutton3.caption
+msgid "ToolButton3"
 msgstr ""
 
 #: tviswaptgui.toolbutton6.caption
@@ -2799,6 +2879,14 @@ msgstr ""
 
 #: uwaptconsoleres.rsconfirmcleanmgr
 msgid "Are you sure you want to run CleanMgr on %d hosts ?"
+msgstr ""
+
+#: uwaptconsoleres.rsconfirmdeletequeries
+msgid "Delete %d queries ?"
+msgstr ""
+
+#: uwaptconsoleres.rsconfirmdeletequery
+msgid "Delete query %s ?"
 msgstr ""
 
 #: uwaptconsoleres.rsconfirmdeletion

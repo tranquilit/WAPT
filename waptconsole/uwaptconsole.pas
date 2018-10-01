@@ -6,11 +6,11 @@ interface
 
 uses
   Classes, SysUtils, Windows, ActiveX, Types, Forms, Controls, Graphics,
-  Dialogs, Buttons, LazUTF8, SynEdit, SynHighlighterPython, vte_json,
-  vte_dbtreeex, ExtCtrls, StdCtrls, ComCtrls, ActnList, Menus, jsonparser,
-  superobject, VirtualTrees, VarPyth, ImgList, SOGrid, uvisloading, IdComponent,
-  DefaultTranslator, IniPropStorage, DBGrids, ShellCtrls, CheckLst, GetText,
-  uWaptConsoleRes, db, BufDataset, SearchEdit, MenuButton, tisstrings;
+  Dialogs, Buttons, LazUTF8, SynEdit, SynHighlighterPython, SynHighlighterSQL,
+  vte_json, vte_dbtreeex, ExtCtrls, StdCtrls, ComCtrls, ActnList, Menus,
+  jsonparser, superobject, VirtualTrees, VarPyth, ImgList, SOGrid, uvisloading,
+  IdComponent, DefaultTranslator, IniPropStorage, DBGrids, ShellCtrls, CheckLst,
+  GetText, uWaptConsoleRes, db, BufDataset, SearchEdit, MenuButton, tisstrings;
 
 type
 
@@ -29,6 +29,26 @@ type
     ActAddNewNetwork: TAction;
     ActDeleteNetwork: TAction;
     ActInstallLicence: TAction;
+    ActReportingEditSQLNew: TAction;
+    ActReportingQueryDelete: TAction;
+    ActReportingEditSQLRun: TAction;
+    ActReportingEditSQLSave: TAction;
+    ActNormalizationImportSoftwares: TAction;
+    ActNormalizationWriteTable: TAction;
+    ActNormalizationRefresh: TAction;
+    ButNormalizationInit: TButton;
+    ButNormalizationWrite: TButton;
+    ButNormalizationLoad: TButton;
+    ComboBox2: TComboBox;
+    ImageListReports: TImageList;
+    NormalizationActions: TActionList;
+    ActReportingQueryCreateSamplesQueries: TAction;
+    ActReportingQueryLoadQueries: TAction;
+    ActReportingQueryExportToExcel: TAction;
+    ActReportingQueryExecuteSQL: TAction;
+    Panel18: TPanel;
+    
+    ReportingActions: TActionList;
     ActWUADownloadsRefresh: TAction;
     ActResetWebsocketConnections: TAction;
     ActRunCleanMgr: TAction;
@@ -177,6 +197,9 @@ type
     PopupWUAClassifications: TPopupMenu;
     PopupMenuOrgUnits: TPopupMenu;
     PopupHostWUAUpdates: TPopupMenu;
+    GridReporting: TSOGrid;
+    GridNormalization: TSOGrid;
+    Splitter11: TSplitter;
     SOWaptServer: TSOConnection;
     SplitHostsForPackage: TSplitter;
     Splitter10: TSplitter;
@@ -272,8 +295,23 @@ type
     Splitter7: TSplitter;
     PgReports: TTabSheet;
     pgWAPTWUADownloads: TTabSheet;
+    pgNormalization: TTabSheet;
+    SynEditReportsSQL: TSynEdit;
+    SynSQLSyn: TSynSQLSyn;
     TimerWUALoadWinUpdates: TTimer;
     ToolBar1: TToolBar;
+    ToolBar2: TToolBar;
+    ToolBar3: TToolBar;
+    ToolBar4: TToolBar;
+    ToolButton1: TToolButton;
+    ToolButton10: TToolButton;
+    ToolButton11: TToolButton;
+    ToolButton3: TToolButton;
+    ToolButton4: TToolButton;
+    ToolButton5: TToolButton;
+    ToolButton7: TToolButton;
+    ToolButton8: TToolButton;
+    ToolButton9: TToolButton;
     ToolButtonUpgrade: TToolButton;
     ToolButton2: TToolButton;
     ToolButtonRefresh: TToolButton;
@@ -281,6 +319,7 @@ type
     ToolButton6: TToolButton;
     ToolButtonSep1: TToolButton;
     GridOrgUnits: TVirtualDBTreeEx;
+    tvReportingQueries: TTreeView;
     WSUSActions: TActionList;
     ActWUANewGroup: TAction;
     ActWUAProductsSelection: TAction;
@@ -502,6 +541,10 @@ type
     procedure ActLaunchGPUpdateExecute(Sender: TObject);
     procedure ActLaunchWaptExitExecute(Sender: TObject);
     procedure ActmakePackageTemplateExecute(Sender: TObject);
+    procedure ActNormalizationImportSoftwaresExecute(Sender: TObject);
+    procedure ActNormalizationRefreshExecute(Sender: TObject);
+    procedure ActNormalizationWriteTableExecute(Sender: TObject);
+    procedure ActNormalizationWriteTableUpdate(Sender: TObject);
     procedure ActPackagesAuditExecute(Sender: TObject);
     procedure ActPackagesForceInstallExecute(Sender: TObject);
     procedure ActPackagesRemoveUpdate(Sender: TObject);
@@ -509,6 +552,16 @@ type
     procedure ActRemoteAssistExecute(Sender: TObject);
     procedure ActRemoteAssistUpdate(Sender: TObject);
     procedure ActExternalRepositoriesSettingsExecute(Sender: TObject);
+    procedure ActReportingQueryCreateSamplesQueriesExecute(Sender: TObject);
+    procedure ActReportingQueryDeleteExecute(Sender: TObject);
+    procedure ActReportingEditSQLNewExecute(Sender: TObject);
+    procedure ActReportingEditSQLRunExecute(Sender: TObject);
+    procedure ActReportingEditSQLSaveExecute(Sender: TObject);
+    procedure ActReportingQueryDeleteUpdate(Sender: TObject);
+    procedure ActReportingQueryExecuteSQLExecute(Sender: TObject);
+    procedure ActReportingQueryExportToExcelExecute(Sender: TObject);
+    procedure ActReportingQueryExportToExcelUpdate(Sender: TObject);
+    procedure ActReportingQueryLoadQueriesExecute(Sender: TObject);
     procedure ActResetWebsocketConnectionsExecute(Sender: TObject);
     procedure ActRunCleanMgrExecute(Sender: TObject);
     procedure ActTISHelpExecute(Sender: TObject);
@@ -687,6 +740,10 @@ type
       Column: TColumnIndex; TextType: TVSTTextType; var CellText: string);
     procedure GridNetworksEditing(Sender: TBaseVirtualTree; Node: PVirtualNode;
       Column: TColumnIndex; var Allowed: Boolean);
+    procedure GridNormalizationEdited(Sender: TBaseVirtualTree;
+      Node: PVirtualNode; Column: TColumnIndex);
+    procedure GridNormalizationEditing(Sender: TBaseVirtualTree;
+      Node: PVirtualNode; Column: TColumnIndex; var Allowed: Boolean);
     procedure GridOrgUnitsChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
     procedure GridOrgUnitsGetHint(Sender: TBaseVirtualTree; Node: PVirtualNode;
       Column: TColumnIndex; var LineBreakStyle: TVTTooltipLineBreakStyle;
@@ -713,6 +770,8 @@ type
     procedure MenuItem74Click(Sender: TObject);
     procedure MenuItemProductsCheckAllClick(Sender: TObject);
     procedure TimerWUALoadWinUpdatesTimer(Sender: TObject);
+    procedure tvReportingQueriesChange(Sender: TObject; Node: TTreeNode);
+    procedure tvReportingQueriesEdited(Sender: TObject; Node: TTreeNode; var S: string);
   private
     { private declarations }
     CurrentVisLoading: TVisLoading;
@@ -720,6 +779,7 @@ type
     FWUAProducts: ISuperObject;
     FWUAWinUpdates: ISuperObject;
     FWUAWinUpdatesLookup: ISuperObject;
+    FReportingQueries: ISuperObject; // Pointers place holder for preventing auto __RemoveRef
     procedure DoProgress(ASender: TObject);
     procedure FillcbADSiteDropDown;
     procedure FillcbGroups;
@@ -752,6 +812,7 @@ type
 
     procedure LoadOrgUnitsTree(Sender: TObject);
     procedure UpdateTasksReport(tasksresult: ISuperObject);
+    procedure SetGridReportingData( data : ISuperObject );
 
   public
     { public declarations }
@@ -3781,7 +3842,7 @@ begin
   WaptServerUser := IniReadString(Appuserinipath,self.name,'lastwaptserveruser','admin');
   HostsLimit := 2000;
   DMPython.PythonOutput.OnSendData := @PythonOutputSendData;
-
+  FReportingQueries := TSuperObject.ParseString('[]', False );
 end;
 
 procedure TVisWaptGUI.FormDestroy(Sender: TObject);
@@ -4623,6 +4684,34 @@ begin
   Allowed := True;
 end;
 
+procedure TVisWaptGUI.GridNormalizationEdited(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex);
+const
+  COL_NORMALIZED      = 1;
+  COL_WINDOWS_UPDATE  = 3;
+  COL_BANNED          = 4;
+var
+  so : ISuperObject;
+begin
+  // FMOR
+  if not (column in [COL_NORMALIZED, COL_BANNED, COL_WINDOWS_UPDATE]) then
+    exit;
+
+  so := self.GridNormalization.GetNodeSOData(Node);
+  so.B['edited'] := True;
+
+end;
+
+procedure TVisWaptGUI.GridNormalizationEditing(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex; var Allowed: Boolean);
+const
+  COL_NORMALIZED      = 1;
+  COL_WINDOWS_UPDATE  = 3;
+  COL_BANNED          = 4;
+begin
+  Allowed := COL_NORMALIZED in [ COL_NORMALIZED, COL_BANNED, COL_WINDOWS_UPDATE ];
+end;
+
+
+
 procedure TVisWaptGUI.GridPackagesColumnDblClick(Sender: TBaseVirtualTree;
   Column: TColumnIndex; Shift: TShiftState);
 begin
@@ -4669,7 +4758,9 @@ begin
 
   cbAuthorizedHosts.Checked := False;
 
-  CBShowHostsForGroups.Visible := False;
+  PgReports.TabVisible := False;
+  pgNormalization.TabVisible := False;
+
   CBShowHostsForPackages.Visible := False;
   CBShowHostsForGroups.Checked := False;
   CBShowHostsForPackages.Checked := False;
@@ -4775,7 +4866,17 @@ begin
   else if MainPages.ActivePage = pgWindowsUpdates then
     ActWSUSRefresh.Execute
   else if MainPages.ActivePage = pgWAPTWUADownloads then
-    ActWUADownloadsRefresh.Execute;
+    ActWUADownloadsRefresh.Execute
+  else if MainPages.ActivePage = PgReports then
+  begin
+    if 0 = FReportingQueries.AsArray.Length then
+      ActReportingQueryLoadQueries.Execute;
+  end
+  else if MainPages.ActivePage = pgNormalization then
+  begin
+    ActNormalizationRefresh.Execute;
+  end
+
 end;
 
 function TVisWaptGUI.updateprogress(receiver: TObject;
@@ -5033,6 +5134,18 @@ procedure TVisWaptGUI.TimerWUALoadWinUpdatesTimer(Sender: TObject);
 begin
 end;
 
+procedure TVisWaptGUI.tvReportingQueriesChange(Sender: TObject; Node: TTreeNode
+  );
+begin
+
+end;
+
+procedure TVisWaptGUI.tvReportingQueriesEdited(Sender: TObject;
+  Node: TTreeNode; var S: string);
+begin
+
+end;
+
 procedure TVisWaptGUI.ActWSUSRefreshExecute(Sender: TObject);
 begin
 end;
@@ -5073,6 +5186,22 @@ procedure TVisWaptGUI.ActTriggerUpdateOrgUnitExecute(Sender: TObject);
 begin
 end;
 
+procedure TVisWaptGUI.ActNormalizationImportSoftwaresExecute(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.ActNormalizationRefreshExecute(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.ActNormalizationWriteTableExecute(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.ActNormalizationWriteTableUpdate(Sender: TObject);
+begin
+end;
+
 procedure TVisWaptGUI.CBShowHostsForGroupsClick(Sender: TObject);
 begin
 end;
@@ -5084,6 +5213,49 @@ end;
 procedure TVisWaptGUI.LoadHostsForPackage(Grid: TSOGrid;PackageName: String);
 begin
   Grid.Data := Nil;
+end;
+procedure TVisWaptGUI.ActReportingQueryCreateSamplesQueriesExecute( Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.ActReportingQueryDeleteExecute(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.ActReportingEditSQLNewExecute(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.ActReportingEditSQLRunExecute(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.ActReportingEditSQLSaveExecute(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.ActReportingQueryDeleteUpdate(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.ActReportingQueryExecuteSQLExecute(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.ActReportingQueryExportToExcelExecute(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.ActReportingQueryExportToExcelUpdate(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.ActReportingQueryLoadQueriesExecute(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.SetGridReportingData(data: ISuperObject);
+begin
 end;
 
 {$endif}

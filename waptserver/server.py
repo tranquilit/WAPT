@@ -139,10 +139,10 @@ babel = Babel(app)
 logger = logging.getLogger()
 
 try:
-    from waptenterprise.waptserver import wsus
+    from waptenterprise.waptserver import wsus,enterprise
     app.register_blueprint(wsus.wsus)
+    app.register_blueprint(enterprise.enterprise)
 except Exception as e:
-    logger.info(str(e))
     wsus = False
 
 @app.teardown_request

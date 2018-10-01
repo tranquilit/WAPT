@@ -1,0 +1,41 @@
+# Host count by OS
+select os_name, count(os_name) from hosts group by os_name
+
+# Host count by site,Description Host count by site
+select coalesce(computer_ad_site,''), count(computer_fqdn) from hosts group by 1
+
+# Host count by status,Description Host count by status
+select host_status, count(wapt_status) from hosts group by host_status
+
+# Hosts count by waptwua status,Description Hosts count by waptwua status
+select waptwua_status->'status', count(wapt_status) from hosts group by 1
+
+# Non updated computer,Computer that are not uptodate and that have been seen by the server in the last week
+select 
+  computer_fqdn, host_status, last_seen_on::date
+from hosts 
+where (last_seen_on::date > (current_timestamp - interval '1 week')::date and host_status!='OK')"
+
+
+# Groups
+SELECT DISTINCT(group_name) FROM hostgroups ORDER BY  group_name ASC
+
+# Hosts sofwares count per version
+select name, version, count(version) from  hostsoftwares group by name, version order by name ASC
+
+# Software publishers
+select publisher, count(publisher) as count from  hostsoftwares group by publisher order by count DESC
+
+
+# Host count by DNS domain
+select count(*), dnsdomain from hosts group by dnsdomain order by dnsdomain asc
+
+# Software version spread,software version spread (with non homogeneized software names 
+select name, count(key), version from hostsoftwares group by name, version order by name
+
+
+# Package installation count
+select package, count(package) as count from hostpackagesstatus group by package order by count desc
+
+# Zero installation packages
+select  P.Package from hostpackagesstatus HP right join packages P on P.package = HP.package WHERE HP.PACKAGE IS NULL ORDER BY P.PACKAGE ASC;

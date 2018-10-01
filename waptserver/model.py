@@ -407,6 +407,29 @@ class HostGroups(WaptBaseModel):
                 trans.rollback()
                 return (0,0)
 
+class ReportingQueries(WaptBaseModel):
+    """Reporting queries"""
+    id = PrimaryKeyField(primary_key=True);
+    name = CharField(null=False, index=True, unique=True);
+    sql_query = CharField( null=True, max_length=2000 );
+    def __repr__(self):
+        return '<ReportingQueries uuid=%s name=%s>' % (self.uuid, self.name);
+
+
+class Normalization(WaptBaseModel):
+    """Normalization table"""
+    original_name = CharField(   max_length=500 );
+    key = CharField(             max_length=500 );
+    normalized_name = CharField( max_length=500, null=True,  index=True );
+    banned = BooleanField( null=True );
+    windows_update = BooleanField( null=True  );
+    class Meta:
+        primary_key = CompositeKey('original_name', 'key' );
+    def __repr__(self):
+        return '<Normalization uuid=%s name=%s>' % (self.uuid, self.name);
+
+
+
 
 class WsusUpdates(WaptBaseModel):
     update_id = CharField(primary_key=True, index=True)
@@ -1026,9 +1049,9 @@ def init_db(drop=False):
     except:
         wapt_db.rollback()
     if drop:
-        for table in reversed([ServerAttribs, Hosts, HostPackagesStatus, HostSoftwares, HostGroups,WsusUpdates,HostWsus,WsusDownloadTasks,Packages]):
+        for table in reversed([ServerAttribs, Hosts, HostPackagesStatus, HostSoftwares, HostGroups,WsusUpdates,HostWsus,WsusDownloadTasks,Packages, ReportingQueries, Normalization]):
             table.drop_table(fail_silently=True)
-    wapt_db.create_tables([ServerAttribs, Hosts, HostPackagesStatus, HostSoftwares, HostGroups,WsusUpdates,HostWsus,WsusDownloadTasks,Packages], safe=True)
+    wapt_db.create_tables([ServerAttribs, Hosts, HostPackagesStatus, HostSoftwares, HostGroups,WsusUpdates,HostWsus,WsusDownloadTasks,Packages, ReportingQueries, Normalization], safe=True)
 
     if get_db_version() == None:
         # new database install, we setup the db_version key
@@ -1334,6 +1357,18 @@ def upgrade_db_structure():
             v.value = next_version
             v.save()
 
+    next_version = '1.7.0.0'
+    if get_db_version() <= next_version:
+        with wapt_db.atomic():
+            logger.info("Migrating from %s to %s" % (get_db_version(), next_version))
+            ReportingQueries.create_table(fail_silently=True);
+            Normalization.create_table(fail_silently=True);
+            opes = []
+            migrate(*opes)
+            (v, created) = ServerAttribs.get_or_create(key='db_version')
+            v.value = next_version
+            v.save()
+ 
 if __name__ == '__main__':
     if platform.system() != 'Windows' and getpass.getuser() != 'wapt':
         print """you should run this program as wapt:
