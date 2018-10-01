@@ -36,5 +36,6 @@
 #define set_disable_hiberboot ""
 #endif
 
+#define use_fqdn_as_uuid ""
 
 #include "common.iss"
