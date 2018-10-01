@@ -123,6 +123,9 @@ Filename: {app}\wapt-get.ini; Section: global; Key: verify_cert; String: {code:R
 Filename: {app}\wapt-get.ini; Section: global; Key: verify_cert; String: {code:VerifyCertCheck}; 
 #endif
 
+#if use_fqdn_as_uuid != ""
+Filename: {app}\wapt-get.ini; Section: global; Key: use_fqdn_as_uuid; String: {#use_fqdn_as_uuid}; 
+#endif
 
 #if edition != "waptserversetup"
 Filename: {app}\wapt-get.ini; Section: global; Key: dnsdomain; String: {code:GetDNSDomain}; Check: MustChangeServerConfig;

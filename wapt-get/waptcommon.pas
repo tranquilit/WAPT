@@ -97,7 +97,8 @@ interface
   function CreateWaptSetup(default_public_cert:Utf8String='';default_repo_url:Utf8String='';
             default_wapt_server:Utf8String='';destination:Utf8String='';company:Utf8String='';OnProgress:TNotifyEvent = Nil;WaptEdition:Utf8String='waptagent';
             VerifyCert:Utf8String='0'; UseKerberos:Boolean=False; CheckCertificatesValidity:Boolean=True;
-            EnterpriseEdition:Boolean=False; OverwriteRepoURL:Boolean=True;OverwriteWaptServerURL:Boolean=True):Utf8String;
+            EnterpriseEdition:Boolean=False; OverwriteRepoURL:Boolean=True;OverwriteWaptServerURL:Boolean=True;
+            UseFQDNAsUUID:Boolean=False):Utf8String;
 
   function pyformat(template:String;params:ISuperobject):String;
   function pyformat(template:Utf8String;params:ISuperobject):Utf8String; overload;
@@ -1795,7 +1796,8 @@ function CreateWaptSetup(default_public_cert: Utf8String;
   destination: Utf8String; company: Utf8String; OnProgress: TNotifyEvent;
   WaptEdition: Utf8String; VerifyCert: Utf8String; UseKerberos: Boolean;
   CheckCertificatesValidity: Boolean; EnterpriseEdition: Boolean;
-  OverwriteRepoURL: Boolean; OverwriteWaptServerURL: Boolean): Utf8String;
+  OverwriteRepoURL: Boolean; OverwriteWaptServerURL: Boolean;
+  UseFQDNAsUUID:Boolean=False): Utf8String;
 var
   iss_template,custom_iss : utf8String;
   iss,new_iss,line : ISuperObject;
@@ -1835,6 +1837,13 @@ begin
           new_iss.AsArray.Add(format('#define Company "%s"' ,[company]))
       else if startswith(line,'#define set_install_certs') then
           new_iss.AsArray.Add(format('#define set_install_certs "1"' ,[]))
+      else if startswith(line,'#define use_fqdn_as_uuid') then
+      begin
+          if UseFQDNAsUUID then
+            new_iss.AsArray.Add(format('#define use_fqdn_as_uuid "1"' ,[]))
+          else
+            new_iss.AsArray.Add(format('#define use_fqdn_as_uuid ""' ,[]))
+      end
       else if startswith(line,'#define set_use_kerberos') then
       begin
           if UseKerberos then
