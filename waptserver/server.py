@@ -1608,6 +1608,7 @@ def host_data():
                 local_status.status.alias('local_status_status'),
                 local_status.allowed.alias('local_status_allowed'),
                 local_status.installed.alias('local_status_installed'),
+                local_status.install_date.alias('local_status_install_date'),
                 local_status.present.alias('local_status_present'),
                 local_status.hidden.alias('local_status_hidden'),
                 local_status.downloaded.alias('local_status_downloaded'),

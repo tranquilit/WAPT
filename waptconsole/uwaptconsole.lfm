@@ -843,7 +843,7 @@ object VisWaptGUI: TVisWaptGUI
                 Tag = 6
                 Text = 'Installed on'
                 Width = 74
-                PropertyName = 'install_date'
+                PropertyName = 'local_status_install_date'
               end            
               item
                 Position = 7

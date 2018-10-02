@@ -655,7 +655,6 @@ def update_host_data(data):
         'update_status': 'last_update_status',
         'host': 'host_info',
         'wapt': 'wapt_status',
-        'update_status': 'last_update_status',
     }
 
     uuid = data['uuid']
