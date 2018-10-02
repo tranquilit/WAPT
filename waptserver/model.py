@@ -624,11 +624,13 @@ def update_waptwua(uuid,data):
         HostWsus.delete().where(HostWsus.host == uuid).execute()
         host_wsus = []
         for h in data['waptwua_updates_localstatus']:
-            h['host'] = uuid
             # default if not supplied
-            h['install_date'] = None
-            h['created_on'] = datetime.datetime.now()
-            host_wsus.append(dict([(k,encode_value(v)) for k, v in h.iteritems() if k in HostWsus._meta.fields]))
+            new_rec = dict([(k,encode_value(v)) for k, v in h.iteritems() if k in HostWsus._meta.fields])
+            new_rec['host'] = uuid
+            new_rec['created_on'] = datetime.datetime.now()
+            if not 'install_date' in new_rec:
+                new_rec['install_date'] = None
+            host_wsus.append(new_rec)
         if host_wsus:
             HostWsus.insert_many(host_wsus).execute() # pylint: disable=no-value-for-parameter
 
