@@ -923,6 +923,10 @@ def main():
                 key = mywapt.private_key(passwd_callback=get_private_key_passwd)
                 print('Private key is %s' % key)
 
+                certificate = mywapt.personal_certificate()
+                print('Personal certificate is %s' % certificate[0])
+                key = mywapt.private_key(passwd_callback=get_private_key_passwd)
+                print('Private key is %s' % key)
 
                 for source_dir in all_args:
                     try:
@@ -939,7 +943,7 @@ def main():
                             if package_fn:
                                 print('...done building. Package filename %s' % (package_fn,))
                                 print('Signing %s with key %s and certificate %s (%s)' % (package_fn,key,certificates[0].cn,certificates[0].public_cert_filename))
-                                signature = mywapt.sign_package(package_fn,certificate=certificates,callback=get_private_key_passwd)
+                                signature = mywapt.sign_package(package_fn,certificate=certificates,private_key=key)
                                 print(u"Package %s signed : signature : %s...%s" % (package_fn, signature[0:10],signature[-10:-1]))
                                 packages.append(package_fn)
                             else:
@@ -1005,7 +1009,12 @@ def main():
                         waptfile = guess_package_root_dir(waptfile)
                         if os.path.isdir(waptfile) or os.path.isfile(waptfile):
                             print('Signing %s' % (waptfile,))
-                            signature = mywapt.sign_package(waptfile)
+                            if options.maturity is not None:
+                                print('Change maturity to %s' % (options.maturity,))
+                            if options.increlease is not None:
+                                print('Incrementing package revision')
+
+                            signature = mywapt.sign_package(waptfile,certificate=certificate,private_key=key,set_maturity=options.maturity,inc_package_release=options.increlease)
                             print(u"   OK: Package %s signed : signature : %s...%s" % (waptfile, signature[0:10],signature[-10:-1]))
                         else:
                             logger.critical(u'Package %s not found' % waptfile)

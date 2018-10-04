@@ -885,7 +885,7 @@ class WaptDB(WaptBaseDB):
                     conflicts,
                     impacted_process,
                     audit_schedule
-                    ) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+                    ) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
                 """,(
                     package_entry.package_uuid,
                     package_entry.package,
@@ -5416,6 +5416,11 @@ class Wapt(BaseObjectClass):
         return inv
 
     def personal_certificate(self):
+        """Returns the personal certificates chain
+
+        Returns:
+            list (of SSLCertificate). The first one is the personal certificate. The other are useful if intermediate CA are used.
+        """
         cert_chain = SSLCABundle()
         cert_chain.add_pem(pem_filename = self.personal_certificate_path)
         return cert_chain.certificates()
@@ -5445,7 +5450,7 @@ class Wapt(BaseObjectClass):
             raise EWaptMissingPrivateKey(u'The key matching the certificate %s can not be found or decrypted' % (cert.public_cert_filename or cert.subject))
         return self._private_key_cache
 
-    def sign_package(self,zip_or_directoryname,certificate=None,callback=None,private_key_password=None):
+    def sign_package(self,zip_or_directoryname,certificate=None,callback=None,private_key_password=None,private_key = None,set_maturity=None,inc_package_release=False):
         """Calc the signature of the WAPT/manifest.sha256 file and put/replace it in ZIP or directory.
             if directory, creates WAPT/manifest.sha256 and add it to the content of package
             create a WAPT/signature file and it to directory or zip file.
@@ -5455,14 +5460,16 @@ class Wapt(BaseObjectClass):
 
         Args:
             zip_or_directoryname: filename or path for the wapt package's content
-            certificate: path to the certificate of signer.
+            certificate (list): certificates chain of signer.
             callback: ref to the function to call if a password is required for opening the private key.
+            private_key (SSLPrivateKey): the private key to use
 
         Returns:
             str: base64 encoded signature of manifest.sha256 file (content
         """
         if not isinstance(zip_or_directoryname,unicode):
             zip_or_directoryname = unicode(zip_or_directoryname)
+
         if certificate is None:
             certificate = self.personal_certificate()
 
@@ -5470,11 +5477,18 @@ class Wapt(BaseObjectClass):
             signer_cert = certificate[0]
         else:
             signer_cert = certificate
-        key = signer_cert.matching_key_in_dirs(password_callback=callback,private_key_password=private_key_password)
+
+        if private_key is None:
+            private_key = signer_cert.matching_key_in_dirs(password_callback=callback,private_key_password=private_key_password)
 
         logger.info(u'Using identity : %s' % signer_cert.cn)
         pe =  PackageEntry().load_control_from_wapt(zip_or_directoryname)
-        return pe.sign_package(private_key=key,certificate = certificate,password_callback=callback,private_key_password=private_key_password,mds = self.sign_digests)
+        if set_maturity is not None and pe.maturity != set_maturity:
+            pe.maturity = set_maturity
+        if inc_package_release:
+            pe.inc_build()
+        pe.save_control_to_wapt()
+        return pe.sign_package(private_key=private_key,certificate = certificate,password_callback=callback,private_key_password=private_key_password,mds = self.sign_digests)
 
     def build_package(self,directoryname,inc_package_release=False,excludes=['.svn','.git','.gitignore','setup.pyc'],
                 target_directory=None,set_maturity=None):

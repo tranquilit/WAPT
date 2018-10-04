@@ -12,7 +12,7 @@
       </SearchPaths>
     </CompilerOptions>
     <Description Value="Common files for wapt fpc"/>
-    <Version Major="1" Minor="6" Build="2"/>
+    <Version Major="1" Minor="6" Release="2" Build="7"/>
     <Files Count="6">
       <Item1>
         <Filename Value="waptwinutils.pas"/>
