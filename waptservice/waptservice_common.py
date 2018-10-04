@@ -646,6 +646,7 @@ class WaptUpdate(WaptTask):
 
     def _run(self):
         self.wapt.check_install_running()
+        self.progress = 50
         print(_(u'Get packages index'))
         self.result = self.wapt.update(force=self.force,register=self.notify_server_on_finish)
         """result: {
@@ -702,6 +703,7 @@ class WaptUpgrade(WaptTask):
         # TODO : create parent/child tasks
         # currently, only a place holder for report
         self.result = self.wapt.check_install(force=True,forceupgrade=True)
+        self.progress = 50
         #self.result = self.wapt.upgrade()
         """result: {
             unavailable: [ ],
@@ -788,6 +790,7 @@ class WaptRegisterComputer(WaptTask):
             self.update_status(_(u'Sending computer status to waptserver'))
             try:
                 self.result = self.wapt.register_computer(description = self.computer_description)
+                self.progress = 50
                 self.summary = _(u"Inventory has been sent to the WAPT server")
             except Exception as e:
                 self.result = {}

@@ -130,6 +130,7 @@ type
     EdLastScanDate: TEdit;
     EdLastScanDuration: TEdit;
     GridHostsForPackage: TSOGrid;
+    GridHostWinUpdatesHistory: TSOGrid;
     GridPackages: TSOGrid;
     GridWUUpdates: TSOGrid;
     GridWUDownloads: TSOGrid;
@@ -181,6 +182,7 @@ type
     SplitHostsForPackage: TSplitter;
     Splitter10: TSplitter;
     Splitter8: TSplitter;
+    Splitter9: TSplitter;
     SrcNetworks: TSODataSource;
     SrcOrgUnits: TDataSource;
     EdDescription: TEdit;
@@ -678,6 +680,8 @@ type
       Column: TColumnIndex; const NewText: String);
     procedure GridHostTasksPendingChange(Sender: TBaseVirtualTree;
       Node: PVirtualNode);
+    procedure GridHostWinUpdatesChange(Sender: TBaseVirtualTree;
+      Node: PVirtualNode);
     procedure GridHostWinUpdatesGetImageIndexEx(Sender: TBaseVirtualTree;
       Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
       var Ghosted: Boolean; var ImageIndex: Integer;
@@ -764,6 +768,8 @@ type
     OrgUnitsHash:Integer;
     OrgUnitsSelectionHash:Integer;
     FilteredOrgUnits:TDynStringArray;
+
+    CurrentPackageForGridHostsForPackage: String;
 
     WUAPreferredProducts,
     WUAPreferredClassifications : TDynStringArray;
@@ -3239,6 +3245,8 @@ procedure TVisWaptGUI.ActSearchGroupsExecute(Sender: TObject);
 begin
   EdSearchGroups.Modified := False;
   GridGroups.Data := PyVarToSuperObject(DMPython.MainWaptRepo.search(searchwords := EdSearchGroups.Text, sections := 'group,unit', description_locale := Language));
+  GridGroups.CreateColumnsFromData(False,True);
+  GridGroupsChange(GridGroups,GridGroups.FocusedNode);
 end;
 
 procedure TVisWaptGUI.ActTriggerHostUpdateExecute(Sender: TObject);
@@ -3328,8 +3336,8 @@ end;
 
 procedure TVisWaptGUI.ActSearchHostExecute(Sender: TObject);
 var
-  soresult,columns,urlParams, Node, Hosts,fields: ISuperObject;
-  previous_uuid,prop: string;
+  soresult,columns,urlParams, Hosts,fields: ISuperObject;
+  prop: string;
   HostsCount,i: integer;
 const
   DefaultColumns:Array[0..13] of String = ('uuid','os_name','connected_ips','computer_fqdn',
@@ -3417,11 +3425,6 @@ begin
     urlParams.AsArray.Add(UTF8Decode('columns='+join(',',columns)));
     urlParams.AsArray.Add(UTF8Decode(Format('limit=%d',[HostsLimit])));
 
-    if GridHosts.FocusedRow <> nil then
-      previous_uuid := UTF8Encode(GridHosts.FocusedRow.S['uuid'])
-    else
-      previous_uuid := '';
-
     soresult := WAPTServerJsonGet('api/v1/hosts?%s',[soutils.Join('&', urlParams)]);
     if (soresult<>Nil) and (soresult.B['success']) then
     begin
@@ -3438,15 +3441,6 @@ begin
         begin
           PollTasksThread.Terminate;
           PollTasksThread := Nil;
-        end;
-
-        for node in GridHosts.Data do
-        begin
-          if node.S['uuid'] = previous_uuid then
-          begin
-            GridHosts.FocusedRow := node;
-            Break;
-          end;
         end;
       end;
     end
@@ -3469,6 +3463,7 @@ procedure TVisWaptGUI.ActSearchPackageExecute(Sender: TObject);
 begin
   EdSearchPackage.Modified:=False;
   GridPackages.Data := PyVarToSuperObject(DMPython.MainWaptRepo.search(searchwords := EdSearchPackage.Text, exclude_sections := 'host,group,unit', newest_only := cbNewestOnly.Checked, description_locale := Language));
+  GridPackagesChange(GridPackages,GridPackages.FocusedNode);
 end;
 
 procedure TVisWaptGUI.ActPackagesUpdateExecute(Sender: TObject);
@@ -4576,6 +4571,15 @@ begin
     MemoTaskLog.Clear;
 end;
 
+procedure TVisWaptGUI.GridHostWinUpdatesChange(Sender: TBaseVirtualTree;
+  Node: PVirtualNode);
+begin
+  if GridHostWinUpdates.FocusedRow <> Nil then
+    GridHostWinUpdatesHistory.Data := GridHostWinUpdates.FocusedRow['local_status_history']
+  else
+    GridHostWinUpdatesHistory.Data := Nil;
+end;
+
 procedure TVisWaptGUI.GridHostWinUpdatesGetImageIndexEx(
   Sender: TBaseVirtualTree; Node: PVirtualNode; Kind: TVTImageKind;
   Column: TColumnIndex; var Ghosted: Boolean; var ImageIndex: Integer;
@@ -4815,7 +4819,6 @@ procedure TVisWaptGUI.GridGroupsChange(Sender: TBaseVirtualTree;
   Node: PVirtualNode);
 var
   PackageName: String;
-  HostPackagesStatus: ISuperObject;
 begin
   if GridGroups.FocusedRow <> Nil then
   begin

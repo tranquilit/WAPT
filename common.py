@@ -6696,7 +6696,15 @@ class Wapt(BaseObjectClass):
 
 
     def show_progress(self,show_box=False,msg='Loading...',progress = None,progress_max = None):
-        """Global hook to report progress feedback to the user"""
+        """Global hook to report progress feedback to the user
+
+        Args:
+            show_box (bool): indicate to display or hide the notification
+            msg (str): A status message to display. If None, nothing is changed.
+            progress (float): Completion
+            progress_max (float): Target of completion.
+
+        """
         if self.progress_hook:
             self.progress_hook(show_box,msg,progress,progress_max)  # pylint: disable=not-callable
         else:

@@ -210,18 +210,18 @@ class Hosts(WaptBaseModel):
     # raw json data
     wapt_status = BinaryJSONField(null=True)
     # running, pending, errors, finished , upgradable, errors,
-    last_update_status = BinaryJSONField(null=True)
+    last_update_status = BinaryJSONField(null=True,index=False)
     host_info = BinaryJSONField(null=True)
 
     # variable structures... so keep them as json
-    dmi = BinaryJSONField(null=True)
+    dmi = BinaryJSONField(null=True,index=False)
     wmi = BinaryJSONField(null=True)
 
-    wuauserv_status = BinaryJSONField(null=True)
-    waptwua_status = BinaryJSONField(null=True)
+    wuauserv_status = BinaryJSONField(null=True,index=False)
+    waptwua_status = BinaryJSONField(null=True,index=False)
 
     #
-    status_hashes = BinaryJSONField(null=True)
+    status_hashes = BinaryJSONField(null=True,index=False)
 
     """
     def save(self,*args,**argvs):
@@ -295,7 +295,7 @@ class Packages(WaptBaseModel):
 
     @classmethod
     def _as_attribute(cls,k,v):
-        if k in ['depends','conflicts']:
+        if k in ['depends','conflicts','impacted_process','keywords']:
             return ensure_list(v or None)
         else:
             return v or None
@@ -442,6 +442,7 @@ class HostWsus(WaptBaseModel):
     hidden = BooleanField(null=True)
     downloaded = BooleanField(null=True)
     install_date = CharField(null=True)
+    history = BinaryJSONField(null=True,index=False)
 
 
 class SignedModel(WaptBaseModel):
@@ -1314,7 +1315,7 @@ def upgrade_db_structure():
             v.save()
 
     next_version = '1.6.2.4'
-    if get_db_version() <= next_version:
+    if get_db_version() < next_version:
         with wapt_db.atomic():
             logger.info('Migrating from %s to %s' % (get_db_version(), next_version))
 
@@ -1329,6 +1330,28 @@ def upgrade_db_structure():
                 if not c in columns:
                     opes.append(migrator.add_column(HostWsus._meta.name, c, getattr(HostWsus,c)))
 
+            migrate(*opes)
+
+            (v, created) = ServerAttribs.get_or_create(key='db_version')
+            v.value = next_version
+            v.save()
+
+    next_version = '1.6.2.8'
+    if get_db_version() < next_version:
+        with wapt_db.atomic():
+            logger.info('Migrating from %s to %s' % (get_db_version(), next_version))
+
+            opes = []
+
+            columns = [c.name for c in wapt_db.get_columns('packages')]
+            for c in ['package_uuid']:
+                if not c in columns:
+                    opes.append(migrator.add_column(Packages._meta.name, c, getattr(Packages,c)))
+
+            columns = [c.name for c in wapt_db.get_columns('hostwsus')]
+            for c in ['history']:
+                if not c in columns:
+                    opes.append(migrator.add_column(HostWsus._meta.name, c, getattr(HostWsus,c)))
             migrate(*opes)
 
             (v, created) = ServerAttribs.get_or_create(key='db_version')

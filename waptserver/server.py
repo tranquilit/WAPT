@@ -632,6 +632,15 @@ def upload_packages():
                     chunk = self.stream.read(self.chunk_size)
 
     def read_package(packagefile):
+        """Reads the stream of a zipped package file and return the entry
+
+        Args:
+            packagefile (file): opened file like object seeked to the start of a wapt package (Zip file stream)
+
+        Returns:
+            PackageEntry
+
+        """
         target = None
         try:
             wapt_folder = app.conf['wapt_folder']
@@ -664,12 +673,18 @@ def upload_packages():
             except OSError:
                 shutil.move(tmp_target, target)
 
+            # for caller to get completed PackageEntry.
+            entry.localpath = target
+
             # fix context on target file (otherwith tmp context is carried over)
             #logger.debug(subprocess.check_output('chcon -R -t httpd_sys_content_t %s' % target,shell=True))
             if entry.section == 'host':
                 (added,removed) = HostGroups.sync_from_host_package(entry)
                 if added or removed:
+                    # immediate feedback in waptconsole
                     Hosts.update(host_status='TO-UPGRADE').where(Hosts.uuid == entry.package).execute()
+            else:
+                Packages.update_from_control(entry)
 
             return entry
 
@@ -1612,6 +1627,7 @@ def host_data():
                 local_status.present.alias('local_status_present'),
                 local_status.hidden.alias('local_status_hidden'),
                 local_status.downloaded.alias('local_status_downloaded'),
+                local_status.history.alias('local_status_history'),
                 WsusUpdates.update_id,
                 WsusUpdates.title,
                 WsusUpdates.update_type,
