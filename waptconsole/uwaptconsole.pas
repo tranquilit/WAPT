@@ -1386,12 +1386,23 @@ begin
   end;
 end;
 
+function PackageNameFromreq(req:String):String;
+var
+  PosVersion:Integer;
+begin
+  PosVersion:=pos('(',req);
+  if PosVersion > 0 then
+    Result := Trim(copy(UTF8Encode(req),1,PosVersion-1))
+  else
+    Result := Trim(UTF8Encode(req));
+end;
+
 procedure TVisWaptGUI.UpdateHostPages(Sender: TObject);
 var
   currhost,packagename : ansistring;
   RowSO, package,packagereq, packages, softwares: ISuperObject;
   waptwua_status,wuauserv_status,wsusupdates: ISuperObject;
-  sores,all_missing,pending_install,additional,upgrades,errors: ISuperObject;
+  sores,all_missing,pending_install,additional,upgrades,errors,remove: ISuperObject;
 begin
   RowSO := Gridhosts.FocusedRow;
 
@@ -1439,9 +1450,23 @@ begin
             begin
               for packagereq in upgrades do
               begin
-                packagename:= Trim(copy(UTF8Encode(packagereq.AsString),1,pos('(',packagereq.AsString)-1));
+                packagename:= PackageNameFromreq(packagereq.AsString);
                 if package.S['package'] = packagename then
                   package.S['install_status'] := 'NEED-UPGRADE';
+              end;
+            end;
+          end;
+
+          remove :=   RowSO['last_update_status.pending.remove'];
+          if (remove<>Nil) and (remove.AsArray.Length>0) then
+          begin
+            for package in RowSO['installed_packages'] do
+            begin
+              for packagereq in remove do
+              begin
+                packagename:= PackageNameFromreq(packagereq.AsString);
+                if package.S['package'] = packagename then
+                  package.S['install_status'] := 'NEED-REMOVE';
               end;
             end;
           end;
@@ -1453,7 +1478,7 @@ begin
             begin
               for packagereq in errors do
               begin
-                packagename:= Trim(copy(UTF8Encode(packagereq.AsString),1,pos('(',packagereq.AsString)-1));
+                packagename:= PackageNameFromreq(packagereq.AsString);
                 if package.S['package'] = packagename then
                   package.S['install_status'] := 'ERROR-UPGRADE';
               end;
@@ -4171,6 +4196,7 @@ begin
         'OK': ImageIndex := 0;
         'ERROR-UPGRADE','ERROR': ImageIndex := 2;
         'NEED-UPGRADE': ImageIndex := 1;
+        'NEED-REMOVE': ImageIndex := 8;
         'RUNNING': ImageIndex := 6;
         'MISSING': ImageIndex := 7;
       end;
