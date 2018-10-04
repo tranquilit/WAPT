@@ -1397,6 +1397,17 @@ begin
     Result := Trim(UTF8Encode(req));
 end;
 
+function PackageVersionFromReq(req:String):String;
+var
+  PosVersion:Integer;
+begin
+  PosVersion:=pos('(=',req);
+  if PosVersion > 0 then
+    Result := Trim(copy(UTF8Encode(req),PosVersion+2,Length(req)-(PosVersion+2)))
+  else
+    Result := '';
+end;
+
 procedure TVisWaptGUI.UpdateHostPages(Sender: TObject);
 var
   currhost,packagename : ansistring;
@@ -1438,7 +1449,8 @@ begin
           for packagereq in all_missing do
           begin
             package := TSuperObject.Create();
-            package['package'] := packagereq;
+            package.S['package'] := PackageNameFromreq(packagereq.AsString);
+            package.S['version'] := PackageVersionFromReq(packagereq.AsString);
             package.S['install_status'] := 'MISSING';
             RowSO.A['installed_packages'].Add(package);
           end;
