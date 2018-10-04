@@ -3557,8 +3557,8 @@ class Wapt(BaseObjectClass):
 
                     # rowid,set_status,append_output=None,uninstall_key=None,uninstall_string=None
                     self.waptdb.update_install_status(install_id,
-                        uninstall_key=str(new_uninstall_key) if new_uninstall_key else '',
-                        uninstall_string=str(uninstallstring) if uninstallstring else '')
+                        uninstall_key = jsondump(new_uninstall_key),
+                        uninstall_string=ensure_unicode(uninstallstring) if uninstallstring else '')
 
                 finally:
                     if istemporary:
@@ -4466,16 +4466,26 @@ class Wapt(BaseObjectClass):
     def _get_uninstallkeylist(self,uninstall_key_str):
         """Decode uninstallkey list from db field
         For historical reasons, this field is encoded as str(pythonlist)
+        or sometimes simple repr of a str
+
+        ..Changed 1.6.2.8:: uninstallkeylist is a json representation of list.
 
         Returns:
             list
         """
         if uninstall_key_str:
-            if uninstall_key_str[0] not in ['[','"',"'"]:
-                guids = uninstall_key_str
-            else:
+            if uninstall_key_str.startswith("['") or uninstall_key_str.startswith("[u'"):
+                # python encoded repr of a list
                 try:
                     guids = eval(uninstall_key_str)
+                except:
+                    guids = uninstall_key_str
+            elif uninstall_key_str[0] == "'":
+                # simple python string
+                guids = uninstall_key_str[1:-1]
+            else:
+                try:
+                    guids = json.loads(uninstall_key_str)
                 except:
                     guids = uninstall_key_str
 

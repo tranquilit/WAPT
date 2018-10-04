@@ -256,7 +256,7 @@ class HostPackagesStatus(WaptBaseModel):
     install_date = CharField(null=True)
     install_output = TextField(null=True)
     install_params = CharField(null=True)
-    uninstall_key = CharField(null=True)
+    uninstall_key = ArrayField(CharField,null=True)
     explicit_by = CharField(null=True)
     repo_url = CharField(max_length=600, null=True)
     depends = ArrayField(CharField,null=True)
@@ -553,6 +553,37 @@ def update_installed_packages(uuid, installed_packages):
             value = value.replace(u'\x00', ' ')
         return value
 
+    def _get_uninstallkeylist(uninstall_key_str):
+        """Decode uninstallkey list from db field
+        For historical reasons, this field is encoded as str(pythonlist)
+        or sometimes simple repr of a str
+
+        Returns:
+            list
+        """
+        if uninstall_key_str:
+            if uninstall_key_str.startswith("['") or uninstall_key_str.startswith("[u'"):
+                # python encoded repr of a list
+                try:
+                    # dangerous...
+                    guids = eval(uninstall_key_str)
+                except:
+                    guids = uninstall_key_str
+            elif uninstall_key_str[0] == "'":
+                # simple python string
+                guids = uninstall_key_str[1:-1]
+            else:
+                try:
+                    guids = json.loads(uninstall_key_str)
+                except:
+                    guids = uninstall_key_str
+
+            if isinstance(guids,(unicode,str)):
+                guids = [guids]
+            return guids
+        else:
+            return []
+
     HostPackagesStatus.delete().where(HostPackagesStatus.host == uuid).execute()
     packages = []
     for package in installed_packages:
@@ -560,6 +591,7 @@ def update_installed_packages(uuid, installed_packages):
         # csv str on the client, Array on the server
         package['depends'] = ensure_list(package['depends'])
         package['conflicts'] = ensure_list(package['conflicts'])
+        package['uninstall_key'] = _get_uninstallkeylist(package['uninstall_key'])
 
         # filter out all unknown fields from json data for the SQL insert
         packages.append(dict([(k, encode_value(v)) for k, v in package.iteritems() if k in HostPackagesStatus._meta.fields]))
@@ -1352,6 +1384,11 @@ def upgrade_db_structure():
             for c in ['history']:
                 if not c in columns:
                     opes.append(migrator.add_column(HostWsus._meta.name, c, getattr(HostWsus,c)))
+
+            # change type to Array
+            opes.append(migrator.drop_column(HostPackagesStatus._meta.name, 'uninstall_key'))
+            opes.append(migrator.add_column(HostPackagesStatus._meta.name, 'uninstall_key', HostPackagesStatus.uninstall_key))
+
             migrate(*opes)
 
             (v, created) = ServerAttribs.get_or_create(key='db_version')
