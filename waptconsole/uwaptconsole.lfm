@@ -266,6 +266,77 @@ object VisWaptGUI: TVisWaptGUI
                 Tag = 26
                 Text = 'Next audit'
                 PropertyName = 'next_audit_on'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                Position = 27
+                Text = 'uninstall_key'
+                Width = 100
+                PropertyName = 'uninstall_key'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                Position = 28
+                Text = 'updated_on'
+                Width = 100
+                PropertyName = 'updated_on'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                Position = 29
+                Text = 'updated_by'
+                Width = 100
+                PropertyName = 'updated_by'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                Position = 30
+                Text = 'created_on'
+                Width = 100
+                PropertyName = 'created_on'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                Position = 31
+                Text = 'created_by'
+                Width = 100
+                PropertyName = 'created_by'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                Position = 32
+                Text = 'last_audit_output'
+                Width = 100
+                PropertyName = 'last_audit_output'
+              end            
+              item
+                Alignment = taRightJustify
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                Position = 33
+                Text = 'id'
+                Width = 100
+                PropertyName = 'id'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                Position = 34
+                Text = 'signer_fingerprint'
+                Width = 100
+                PropertyName = 'signer_fingerprint'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                Position = 35
+                Text = 'host'
+                Width = 100
+                PropertyName = 'host'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                Position = 36
+                Text = 'signer'
+                Width = 13
+                PropertyName = 'signer'
               end>
             Header.DefaultHeight = 18
             Header.Height = 18
@@ -891,6 +962,7 @@ object VisWaptGUI: TVisWaptGUI
                 PropertyName = 'security_bulletin_ids'
               end            
               item
+                Alignment = taRightJustify
                 Position = 13
                 Tag = 13
                 Text = 'Download size'
@@ -922,6 +994,7 @@ object VisWaptGUI: TVisWaptGUI
                 PropertyName = 'requires_network_connectivity'
               end            
               item
+                Alignment = taRightJustify
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
                 Position = 17
                 Tag = 17
@@ -3099,6 +3172,182 @@ object VisWaptGUI: TVisWaptGUI
             Position = 15
             Text = 'Filename'
             PropertyName = 'filename'
+          end        
+          item
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+            Position = 16
+            Text = 'priority'
+            Width = 100
+            PropertyName = 'priority'
+          end        
+          item
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+            Position = 17
+            Text = 'signature'
+            Width = 100
+            PropertyName = 'signature'
+          end        
+          item
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+            Position = 18
+            Text = 'sources'
+            Width = 100
+            PropertyName = 'sources'
+          end        
+          item
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+            Position = 19
+            Text = 'audit_schedule'
+            Width = 100
+            PropertyName = 'audit_schedule'
+          end        
+          item
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+            Position = 20
+            Text = 'signed_attributes'
+            Width = 100
+            PropertyName = 'signed_attributes'
+          end        
+          item
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+            Position = 21
+            Text = 'md5sum'
+            Width = 100
+            PropertyName = 'md5sum'
+          end        
+          item
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+            Position = 22
+            Text = 'description_pl'
+            Width = 100
+            PropertyName = 'description_pl'
+          end        
+          item
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+            Position = 23
+            Text = 'description_fr'
+            Width = 100
+            PropertyName = 'description_fr'
+          end        
+          item
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+            Position = 24
+            Text = 'description_es'
+            Width = 100
+            PropertyName = 'description_es'
+          end        
+          item
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+            Position = 25
+            Text = 'description_de'
+            Width = 100
+            PropertyName = 'description_de'
+          end        
+          item
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+            Position = 26
+            Text = 'maintainer'
+            Width = 100
+            PropertyName = 'maintainer'
+          end        
+          item
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+            Position = 27
+            Text = 'package_uuid'
+            Width = 100
+            PropertyName = 'package_uuid'
+          end        
+          item
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+            Position = 28
+            Text = 'description'
+            Width = 100
+            PropertyName = 'description'
+          end        
+          item
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+            Position = 29
+            Text = 'impacted_process'
+            Width = 100
+            PropertyName = 'impacted_process'
+          end        
+          item
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+            Position = 30
+            Text = 'installed_size'
+            Width = 100
+            PropertyName = 'installed_size'
+          end        
+          item
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+            Position = 31
+            Text = 'signer_fingerprint'
+            Width = 100
+            PropertyName = 'signer_fingerprint'
+          end        
+          item
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+            Position = 32
+            Text = 'editor'
+            Width = 100
+            PropertyName = 'editor'
+          end        
+          item
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+            Position = 33
+            Text = 'licence'
+            Width = 100
+            PropertyName = 'licence'
+          end        
+          item
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+            Position = 34
+            Text = 'keywords'
+            Width = 100
+            PropertyName = 'keywords'
+          end        
+          item
+            Alignment = taRightJustify
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+            Position = 35
+            Text = 'size'
+            Width = 100
+            PropertyName = 'size'
+          end        
+          item
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+            Position = 36
+            Text = 'repo'
+            Width = 100
+            PropertyName = 'repo'
+          end        
+          item
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+            Position = 37
+            Text = 'target_os'
+            Width = 100
+            PropertyName = 'target_os'
+          end        
+          item
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+            Position = 38
+            Text = 'localpath'
+            Width = 100
+            PropertyName = 'localpath'
+          end        
+          item
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+            Position = 39
+            Text = 'homepage'
+            Width = 100
+            PropertyName = 'homepage'
+          end        
+          item
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+            Position = 40
+            Text = 'sourcespath'
+            Width = 13
+            PropertyName = 'sourcespath'
           end>
         Header.DefaultHeight = 18
         Header.Height = 18
@@ -3457,6 +3706,7 @@ object VisWaptGUI: TVisWaptGUI
             PropertyName = 'min_wapt_version'
           end        
           item
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
             Position = 18
             Tag = 18
             Text = 'Filename'
@@ -3471,10 +3721,158 @@ object VisWaptGUI: TVisWaptGUI
             PropertyName = 'md5sum'
           end        
           item
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
             Position = 20
             Tag = 20
             Text = 'Repository'
             PropertyName = 'repo_url'
+          end        
+          item
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+            Position = 21
+            Text = 'priority'
+            Width = 100
+            PropertyName = 'priority'
+          end        
+          item
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+            Position = 22
+            Text = 'signature'
+            Width = 100
+            PropertyName = 'signature'
+          end        
+          item
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+            Position = 23
+            Text = 'sources'
+            Width = 100
+            PropertyName = 'sources'
+          end        
+          item
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+            Position = 24
+            Text = 'audit_schedule'
+            Width = 100
+            PropertyName = 'audit_schedule'
+          end        
+          item
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+            Position = 25
+            Text = 'signed_attributes'
+            Width = 100
+            PropertyName = 'signed_attributes'
+          end        
+          item
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+            Position = 26
+            Text = 'description_pl'
+            Width = 100
+            PropertyName = 'description_pl'
+          end        
+          item
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+            Position = 27
+            Text = 'description_fr'
+            Width = 100
+            PropertyName = 'description_fr'
+          end        
+          item
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+            Position = 28
+            Text = 'description_es'
+            Width = 100
+            PropertyName = 'description_es'
+          end        
+          item
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+            Position = 29
+            Text = 'description_de'
+            Width = 100
+            PropertyName = 'description_de'
+          end        
+          item
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+            Position = 30
+            Text = 'maintainer'
+            Width = 100
+            PropertyName = 'maintainer'
+          end        
+          item
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+            Position = 31
+            Text = 'package_uuid'
+            Width = 100
+            PropertyName = 'package_uuid'
+          end        
+          item
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+            Position = 32
+            Text = 'description'
+            Width = 100
+            PropertyName = 'description'
+          end        
+          item
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+            Position = 33
+            Text = 'impacted_process'
+            Width = 100
+            PropertyName = 'impacted_process'
+          end        
+          item
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+            Position = 34
+            Text = 'signer_fingerprint'
+            Width = 100
+            PropertyName = 'signer_fingerprint'
+          end        
+          item
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+            Position = 35
+            Text = 'editor'
+            Width = 100
+            PropertyName = 'editor'
+          end        
+          item
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+            Position = 36
+            Text = 'keywords'
+            Width = 100
+            PropertyName = 'keywords'
+          end        
+          item
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+            Position = 37
+            Text = 'repo'
+            Width = 100
+            PropertyName = 'repo'
+          end        
+          item
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+            Position = 38
+            Text = 'target_os'
+            Width = 100
+            PropertyName = 'target_os'
+          end        
+          item
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+            Position = 39
+            Text = 'localpath'
+            Width = 100
+            PropertyName = 'localpath'
+          end        
+          item
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+            Position = 40
+            Text = 'homepage'
+            Width = 100
+            PropertyName = 'homepage'
+          end        
+          item
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+            Position = 41
+            Text = 'sourcespath'
+            Width = 13
+            PropertyName = 'sourcespath'
           end>
         Header.DefaultHeight = 18
         Header.Height = 18

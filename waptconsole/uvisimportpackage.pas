@@ -238,20 +238,20 @@ begin
     colname := ((Sender as TSOGrid).Header.Columns[Column] as TSOGridColumn).PropertyName;
     if  (colname = 'depends') or (colname = 'conflicts') then
       StrReplace(CellText, ',', #13#10, [rfReplaceAll]);
-    if (colname = 'size') or (colname ='installed_size') then
-      CellText := FormatFloat('# ##0 kB',StrToInt64(CellText) div 1024);
 
-    // awfull hack to workaround the bad wordwrap break of last line for multilines cells...
-    // the problem is probably in the LCL... ?
-    //if  (colname = 'description') or (colname = 'depends') or (colname = 'conflicts') then
-    //  CellText := CellText + #13#10;
+    if (CellData <> nil) and (CellData.DataType = stArray) then
+      CellText := soutils.Join(#13#10, CellData)
+    else
+    begin
+      if StrIsOneOf(colname,['size','installed_size']) then
+        CellText := FormatFloat('# ##0 kB',StrToInt64(CellText) div 1024);
 
-    if (colname = 'description') then
-      CellText := UTF8Encode(Celltext);
+      if StrIsOneOf(colname,['description','description_fr','description_en','description_en']) then
+        CellText := UTF8Encode(Celltext);
 
-    if (colname = 'signature_date') then
-      CellText := copy(Celltext,1,16);
-
+      if StrIsOneOf(colname,['install_date','last_audit_on','signature_date','next_audit_on','created_on','updated_on']) then
+          CellText := Copy(StrReplaceChar(CellText,'T',' '),1,16);
+    end;
   end;
 end;
 

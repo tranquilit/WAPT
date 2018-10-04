@@ -108,6 +108,9 @@ type
     procedure GridDependsDragOver(Sender: TBaseVirtualTree; Source: TObject;
       Shift: TShiftState; State: TDragState; const Pt: TPoint;
       Mode: TDropMode; var Effect: DWORD; var Accept: boolean);
+    procedure GridPackagesGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
+      RowData, CellData: ISuperObject; Column: TColumnIndex;
+      TextType: TVSTTextType; var CellText: string);
     procedure PageControl1Change(Sender: TObject);
   private
     FisAdvancedMode: boolean;
@@ -538,6 +541,34 @@ procedure TVisEditPackage.GridDependsDragOver(Sender: TBaseVirtualTree;
   Mode: TDropMode; var Effect: DWORD; var Accept: boolean);
 begin
   Accept := Source = GridPackages;
+end;
+
+procedure TVisEditPackage.GridPackagesGetText(Sender: TBaseVirtualTree;
+  Node: PVirtualNode; RowData, CellData: ISuperObject; Column: TColumnIndex;
+  TextType: TVSTTextType; var CellText: string);
+var
+  colname: String;
+begin
+  if celltext<>'' then
+  begin
+    colname := ((Sender as TSOGrid).Header.Columns[Column] as TSOGridColumn).PropertyName;
+    if  (colname = 'depends') or (colname = 'conflicts') then
+      StrReplace(CellText, ',', #13#10, [rfReplaceAll]);
+
+    if (CellData <> nil) and (CellData.DataType = stArray) then
+      CellText := soutils.Join(#13#10, CellData)
+    else
+    begin
+      if StrIsOneOf(colname,['size','installed_size']) then
+        CellText := FormatFloat('# ##0 kB',StrToInt64(CellText) div 1024);
+
+      if StrIsOneOf(colname,['description','description_fr','description_en','description_en']) then
+        CellText := UTF8Encode(Celltext);
+
+      if StrIsOneOf(colname,['install_date','last_audit_on','signature_date','next_audit_on','created_on','updated_on']) then
+          CellText := Copy(StrReplaceChar(CellText,'T',' '),1,16);
+    end;
+  end;
 end;
 
 procedure TVisEditPackage.PageControl1Change(Sender: TObject);

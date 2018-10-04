@@ -4066,20 +4066,20 @@ begin
     colname := ((Sender as TSOGrid).Header.Columns[Column] as TSOGridColumn).PropertyName;
     if  (colname = 'depends') or (colname = 'conflicts') then
       StrReplace(CellText, ',', #13#10, [rfReplaceAll]);
-    if (colname = 'size') or (colname ='installed_size') then
-      CellText := FormatFloat('# ##0 kB',StrToInt64(CellText) div 1024);
 
-    // awfull hack to workaround the bad wordwrap break of last line for multilines cells...
-    // the problem is probably in the LCL... ?
-    //if  (colname = 'description') or (colname = 'depends') or (colname = 'conflicts') then
-    //  CellText := CellText + #13#10;
+    if (CellData <> nil) and (CellData.DataType = stArray) then
+      CellText := soutils.Join(#13#10, CellData)
+    else
+    begin
+      if StrIsOneOf(colname,['size','installed_size']) then
+        CellText := FormatFloat('# ##0 kB',StrToInt64(CellText) div 1024);
 
-    if (colname = 'description') then
-      CellText := UTF8Encode(Celltext);
+      if StrIsOneOf(colname,['description','description_fr','description_en','description_en']) then
+        CellText := UTF8Encode(Celltext);
 
-    if (colname = 'signature_date') then
-      CellText := copy(Celltext,1,16);
-
+      if StrIsOneOf(colname,['install_date','last_audit_on','signature_date','next_audit_on','created_on','updated_on']) then
+          CellText := Copy(StrReplaceChar(CellText,'T',' '),1,16);
+    end;
   end;
 end;
 
@@ -4211,7 +4211,7 @@ begin
     if (CellData <> nil) and (CellData.DataType = stArray) then
       CellText := soutils.Join(',', CellData);
 
-    if (propName='install_date') or (propName='last_audit_on') or (propName='next_audit_on') then
+    if StrIsOneOf(propName,['install_date','last_audit_on','next_audit_on','created_on','updated_on']) then
         CellText := Copy(StrReplaceChar(CellText,'T',' '),1,16);
   end;
 end;
@@ -4513,7 +4513,8 @@ begin
     if (CellData <> nil) and (CellData.DataType = stArray) then
       CellText := soutils.Join(',', CellData);
 
-    if (propName='last_seen_on') or (propName='listening_timestamp') or (propName='last_audit_on') then
+    if StrIsOneOf(propname,['file_date','changetime','started_on','finished_on','created_on','last_audit_on',
+        'updated_on','last_seen_on','listening_timestamp']) then
         CellText := Copy(StrReplaceChar(CellText,'T',' '),1,16);
   end;
 end;
@@ -4608,18 +4609,29 @@ var
 begin
   if Node = nil then
     CellText := ''
-  else
+  else if Celltext <>'' then
   begin
     propname:=TSOGridColumn(TSOGrid(Sender).Header.Columns[Column]).PropertyName;
-    if StrIsOneOf(propname,['changetime','started_on','finished_on','crested_on','updated_on']) then
+    if StrIsOneOf(propname,['local_status_install_date','downloaded_on','file_date','changetime','started_on','finished_on','created_on','updated_on']) then
         CellText := Copy(StrReplaceChar(CellText,'T',' '),1,19)
     else if (propname = 'kbids') then
       CellText := 'KB'+soutils.Join(',KB', CellData)
     else if (CellData <> nil) and (CellData.DataType = stArray) then
-      CellText := soutils.Join(',', CellData);
-  end;
+      CellText := soutils.Join(',', CellData)
+    else if StrIsOneOf(propname,['file_size','download_size','max_download_size','min_download_size','target_size','size','installed_size']) then
+    begin
+      if CellData.DataType = stInt then
+        CellText := FormatFloat('# ### ##0 kB',CellData.AsInteger div 1024)
+      else
+        CellText := FormatFloat('# ### ##0 kB',StrToInt64(CellText) div 1024);
+    end;
 
+  end;
 end;
+
+
+
+
 
 procedure TVisWaptGUI.GridNetworksEditing(Sender: TBaseVirtualTree;
   Node: PVirtualNode; Column: TColumnIndex; var Allowed: Boolean);
