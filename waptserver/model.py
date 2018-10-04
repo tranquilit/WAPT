@@ -565,15 +565,17 @@ def update_installed_packages(uuid, installed_packages):
             if uninstall_key_str.startswith("['") or uninstall_key_str.startswith("[u'"):
                 # python encoded repr of a list
                 try:
-                    # dangerous...
-                    guids = eval(uninstall_key_str)
+                    # transform to a json like array.
+                    guids = json.loads(uninstall_key_str.replace("[u'","['").replace(", u'",',"').replace("'",'"'))
                 except:
+                    logger.warning(u'Bad uninstallkey list format : %s' % uninstall_key_str)
                     guids = uninstall_key_str
-            elif uninstall_key_str[0] == "'":
-                # simple python string
+            elif uninstall_key_str[0] in ["'",'"']:
+                # simple python string, removes quotes
                 guids = uninstall_key_str[1:-1]
             else:
                 try:
+                    # normal json encoded list
                     guids = json.loads(uninstall_key_str)
                 except:
                     guids = uninstall_key_str
