@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.6.2.7"
+__version__ = "1.6.2.8"
 import logging
 import sys
 import tempfile
@@ -55,7 +55,7 @@ from waptserver.model import *
 from waptenterprise.waptserver.wsus_tasks import *
 
 from waptenterprise import licencing
-from waptenterprise.waptwua.client import WaptWUA,EnsureWUAServRunning,WaptWUARules
+from waptenterprise.waptwua.client import WaptWUA,EnsureWUAUServRunning,WaptWUARules
 from waptenterprise.waptwua import client,fixwua
 
 import urllib3
@@ -1163,7 +1163,7 @@ def build_error():
 
 def test_wua_single_install():
     w = Wapt()
-    with EnsureWUAServRunning():
+    with EnsureWUAUServRunning():
         c = WaptWUA(w,{
                 'forbidden_updates':None,
                 'allowed_updates':['8bdc279b-231a-48de-92f1-6027f441d92b','719584bc-2208-4bc9-a650-d3d6347eb32e'],
@@ -1236,7 +1236,7 @@ def test_wuaprogress():
     # ed46d995-c9fb-41e2-94df-146d97d47d07
     #fixwua.cleanwua()
     w = Wapt()
-    w.waptserver.server_url='http://127.0.0.1:8080'
+    #w.waptserver.server_url='http://127.0.0.1:8080'
     #rules = WaptWUARules()
     #rules.allowed_classifications = []
     #rules.allowed_severities = []
