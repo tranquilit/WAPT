@@ -1086,7 +1086,7 @@ class WaptDB(WaptBaseDB):
                 coalesce(l.depends,r.depends) as depends,coalesce(l.conflicts,r.conflicts) as conflicts,coalesce(l.section,r.section) as section,coalesce(l.priority,r.priority) as priority,
                 r.maintainer,r.description,r.sources,r.filename,r.size,
                 r.repo_url,r.md5sum,r.repo,l.maturity,l.locale,
-                l.last_audit_status,l.last_audit_on,l.last_audit_output,l.next_audit_on
+                l.last_audit_status,l.last_audit_on,l.last_audit_output,l.next_audit_on,l.package_uuid
                 from wapt_localstatus l
                 left join wapt_package r on r.package=l.package and l.version=r.version and
                     (l.architecture is null or l.architecture=r.architecture) and
@@ -1115,7 +1115,7 @@ class WaptDB(WaptBaseDB):
         sql = ["""\
               select l.package,l.version,l.architecture,l.install_date,l.install_status,l.install_output,l.install_params,l.explicit_by,
                     l.depends,l.conflicts,l.uninstall_key,
-                    l.last_audit_status,l.last_audit_on,l.last_audit_output,l.next_audit_on,l.audit_schedule,
+                    l.last_audit_status,l.last_audit_on,l.last_audit_output,l.next_audit_on,l.audit_schedule,l.package_uuid,
                     r.section,r.priority,r.maintainer,r.description,r.sources,r.filename,r.size,
                     r.repo_url,r.md5sum,r.repo,l.maturity,l.locale
                 from wapt_localstatus l
@@ -1155,7 +1155,7 @@ class WaptDB(WaptBaseDB):
               select l.package,l.version,l.architecture,l.install_date,l.install_status,l.install_output,l.install_params,
                 l.uninstall_key,l.explicit_by,
                 coalesce(l.depends,r.depends) as depends,coalesce(l.conflicts,r.conflicts) as conflicts,coalesce(l.section,r.section) as section,coalesce(l.priority,r.priority) as priority,
-                l.last_audit_status,l.last_audit_on,l.last_audit_output,l.next_audit_on,l.audit_schedule,
+                l.last_audit_status,l.last_audit_on,l.last_audit_output,l.next_audit_on,l.audit_schedule,l.package_uuid,
                 r.maintainer,r.description,r.sources,r.filename,r.size,
                 r.repo_url,r.md5sum,r.repo
               from wapt_localstatus l
@@ -1184,7 +1184,7 @@ class WaptDB(WaptBaseDB):
         q = self.query_package_entry(u"""\
               select l.rowid,l.package,l.version,l.architecture,l.install_date,l.install_status,l.install_output,l.install_params,l.setuppy,
                 l.uninstall_key,l.explicit_by,
-                l.last_audit_status,l.last_audit_on,l.last_audit_output,l.next_audit_on,
+                l.last_audit_status,l.last_audit_on,l.last_audit_output,l.next_audit_on,l.package_uuid,
                 coalesce(l.depends,r.depends) as depends,coalesce(l.conflicts,r.conflicts) as conflicts,coalesce(l.section,r.section) as section,coalesce(l.priority,r.priority) as priority,
                 r.maintainer,r.description,r.sources,r.filename,r.size,
                 r.repo_url,r.md5sum,r.repo
@@ -3374,6 +3374,9 @@ class Wapt(BaseObjectClass):
                 raise EWaptMissingCertificate(u'install_wapt %s: No public Key provided for package signature checking.'%(fname,))
 
             entry = PackageEntry(waptfile=fname)
+            if not entry.package_uuid:
+                entry.make_uuid()
+                logger.info('No uuid, generating package uuid on the fly: %s' % entry.package_uuid)
             self.runstatus=u"Installing package %s version %s ..." % (entry.package,entry.version)
 
             params = self.get_previous_package_params(entry)
@@ -3718,7 +3721,7 @@ class Wapt(BaseObjectClass):
         q = self.waptdb.query("""\
            select   rowid,package,version,architecture,maturity,locale,install_status,
                     install_output,install_params,explicit_by,uninstall_key,install_date,
-                    last_audit_status,last_audit_on,last_audit_output,next_audit_on
+                    last_audit_status,last_audit_on,last_audit_output,next_audit_on,package_uuid
            from wapt_localstatus
            where package=? order by install_date desc limit 1
            """ , (packagename,) )
