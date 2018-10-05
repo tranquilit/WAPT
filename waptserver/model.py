@@ -242,6 +242,7 @@ class HostPackagesStatus(WaptBaseModel):
     """
     id = PrimaryKeyField(primary_key=True)
     host = ForeignKeyField(Hosts, on_delete='CASCADE', on_update='CASCADE')
+    package_uuid = CharField(null=True)
     package = CharField(null=True, index=True)
     version = CharField(null=True)
     architecture = CharField(null=True)
@@ -594,6 +595,7 @@ def update_installed_packages(uuid, installed_packages):
         package['depends'] = ensure_list(package['depends'])
         package['conflicts'] = ensure_list(package['conflicts'])
         package['uninstall_key'] = _get_uninstallkeylist(package['uninstall_key'])
+        package['created_on'] = datetime.datetime.now()
 
         # filter out all unknown fields from json data for the SQL insert
         packages.append(dict([(k, encode_value(v)) for k, v in package.iteritems() if k in HostPackagesStatus._meta.fields]))
@@ -623,6 +625,7 @@ def update_installed_softwares(uuid, installed_softwares):
 
     for software in installed_softwares:
         software['host'] = uuid
+        software['created_on'] = datetime.datetime.now()
         # filter out all unknown fields from json data for the SQL insert
         softwares.append(dict([(k,encode_value(v)) for k, v in software.iteritems() if k in HostSoftwares._meta.fields]))
 
@@ -1371,7 +1374,7 @@ def upgrade_db_structure():
             v.save()
 
     next_version = '1.6.2.8'
-    if get_db_version() < next_version:
+    if get_db_version() <= next_version:
         with wapt_db.atomic():
             logger.info('Migrating from %s to %s' % (get_db_version(), next_version))
 
@@ -1381,6 +1384,11 @@ def upgrade_db_structure():
             for c in ['package_uuid']:
                 if not c in columns:
                     opes.append(migrator.add_column(Packages._meta.name, c, getattr(Packages,c)))
+
+            columns = [c.name for c in wapt_db.get_columns('hostpackagesstatus')]
+            for c in ['package_uuid']:
+                if not c in columns:
+                    opes.append(migrator.add_column(HostPackagesStatus._meta.name, c, getattr(HostPackagesStatus,c)))
 
             columns = [c.name for c in wapt_db.get_columns('hostwsus')]
             for c in ['history']:

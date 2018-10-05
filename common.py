@@ -5322,6 +5322,7 @@ class Wapt(BaseObjectClass):
         result['authorized_certificates_cn'] = trusted_certs_cn
         result['maturities'] = self.maturities
         result['locales'] = self.locales
+        result['pending_reboot_reasons']= setuphelpers.pending_reboot_reasons()
 
         # read from config
         if self.config.has_option('global','waptservice_sslport'):

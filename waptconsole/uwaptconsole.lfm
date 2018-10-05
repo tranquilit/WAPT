@@ -337,6 +337,13 @@ object VisWaptGUI: TVisWaptGUI
                 Text = 'signer'
                 Width = 13
                 PropertyName = 'signer'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                Position = 37
+                Text = 'Package UUID'
+                Width = 148
+                PropertyName = 'package_uuid'
               end>
             Header.DefaultHeight = 18
             Header.Height = 18
@@ -1068,8 +1075,7 @@ object VisWaptGUI: TVisWaptGUI
             Header.Height = 19
             Header.MinHeight = 19
             Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
-            Header.SortColumn = 3
-            Header.SortDirection = sdDescending
+            Header.SortColumn = 6
             Header.Style = hsFlatButtons
             Images = ImageList1
             PopupMenu = PopupHostWUAUpdates
