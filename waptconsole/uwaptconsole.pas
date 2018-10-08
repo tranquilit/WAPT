@@ -10,10 +10,10 @@ uses
   vte_json, vte_dbtreeex, ExtCtrls, StdCtrls, ComCtrls, ActnList, Menus,
   jsonparser, superobject, VirtualTrees, VarPyth, ImgList, SOGrid, uvisloading,
   IdComponent, DefaultTranslator, IniPropStorage, DBGrids, ShellCtrls, CheckLst,
-  GetText, uWaptConsoleRes, db, BufDataset, SearchEdit, MenuButton, tisstrings;
+  GetText, uWaptConsoleRes, db, BufDataset, SearchEdit, MenuButton, ToggleLabel,
+  tisstrings;
 
 type
-
 
   TPollTasksThread = Class;
 
@@ -29,25 +29,26 @@ type
     ActAddNewNetwork: TAction;
     ActDeleteNetwork: TAction;
     ActInstallLicence: TAction;
-    ActReportingEditSQLNew: TAction;
+    ActReportingQuerySaveAll: TAction;
+    ActReportingQueryDesign: TAction;
+    ActNormalizationFilter: TAction;
+    ActReportingQueryNew: TAction;
     ActReportingQueryDelete: TAction;
-    ActReportingEditSQLRun: TAction;
-    ActReportingEditSQLSave: TAction;
+    ActReportingQuerySave: TAction;
     ActNormalizationImportSoftwares: TAction;
     ActNormalizationWriteTable: TAction;
-    ActNormalizationRefresh: TAction;
-    ButNormalizationInit: TButton;
-    ButNormalizationWrite: TButton;
-    ButNormalizationLoad: TButton;
-    ComboBox2: TComboBox;
+    ButNormalizationImport: TBitBtn;
+    ButNormalizationSave: TBitBtn;
+    ButNormalizationFilter: TBitBtn;
+    EdNormalizationFilter: TEdit;
     ImageListReports: TImageList;
     NormalizationActions: TActionList;
-    ActReportingQueryCreateSamplesQueries: TAction;
-    ActReportingQueryLoadQueries: TAction;
+    ActReportingQueryReload: TAction;
     ActReportingQueryExportToExcel: TAction;
-    ActReportingQueryExecuteSQL: TAction;
+    ActReportingQueryExecute: TAction;
     Panel18: TPanel;
-    
+    PanelReportingGrid: TPanel;
+    PanelReportingEditSQL: TPanel;
     ReportingActions: TActionList;
     ActWUADownloadsRefresh: TAction;
     ActResetWebsocketConnections: TAction;
@@ -184,6 +185,7 @@ type
     MenuItem97: TMenuItem;
     MenuItem98: TMenuItem;
     MenuItem99: TMenuItem;
+    Panel10: TPanel;
     Panel13: TPanel;
     Panel17: TPanel;
     Panel9: TPanel;
@@ -199,11 +201,12 @@ type
     PopupHostWUAUpdates: TPopupMenu;
     GridReporting: TSOGrid;
     GridNormalization: TSOGrid;
-    Splitter11: TSplitter;
     SOWaptServer: TSOConnection;
     SplitHostsForPackage: TSplitter;
     Splitter10: TSplitter;
+    SplitterReportingHorizontal: TSplitter;
     Splitter8: TSplitter;
+    Splitter9: TSplitter;
     SrcNetworks: TSODataSource;
     SrcOrgUnits: TDataSource;
     EdDescription: TEdit;
@@ -300,12 +303,10 @@ type
     SynSQLSyn: TSynSQLSyn;
     TimerWUALoadWinUpdates: TTimer;
     ToolBar1: TToolBar;
-    ToolBar2: TToolBar;
-    ToolBar3: TToolBar;
-    ToolBar4: TToolBar;
+    TbReport: TToolBar;
+    TbReportResult: TToolBar;
     ToolButton1: TToolButton;
     ToolButton10: TToolButton;
-    ToolButton11: TToolButton;
     ToolButton3: TToolButton;
     ToolButton4: TToolButton;
     ToolButton5: TToolButton;
@@ -541,8 +542,8 @@ type
     procedure ActLaunchGPUpdateExecute(Sender: TObject);
     procedure ActLaunchWaptExitExecute(Sender: TObject);
     procedure ActmakePackageTemplateExecute(Sender: TObject);
+    procedure ActNormalizationFilterExecute(Sender: TObject);
     procedure ActNormalizationImportSoftwaresExecute(Sender: TObject);
-    procedure ActNormalizationRefreshExecute(Sender: TObject);
     procedure ActNormalizationWriteTableExecute(Sender: TObject);
     procedure ActNormalizationWriteTableUpdate(Sender: TObject);
     procedure ActPackagesAuditExecute(Sender: TObject);
@@ -552,16 +553,20 @@ type
     procedure ActRemoteAssistExecute(Sender: TObject);
     procedure ActRemoteAssistUpdate(Sender: TObject);
     procedure ActExternalRepositoriesSettingsExecute(Sender: TObject);
-    procedure ActReportingQueryCreateSamplesQueriesExecute(Sender: TObject);
+    procedure ActReportingQueryDesignExecute(Sender: TObject);
+    procedure ActReportingQueryDesignUpdate(Sender: TObject);
+    procedure ActReportingQuerySaveAllExecute(Sender: TObject);
+    procedure ActReportingQuerySaveAllUpdate(Sender: TObject);
+    procedure ActReportingQuerySaveUpdate(Sender: TObject);
     procedure ActReportingQueryDeleteExecute(Sender: TObject);
-    procedure ActReportingEditSQLNewExecute(Sender: TObject);
-    procedure ActReportingEditSQLRunExecute(Sender: TObject);
-    procedure ActReportingEditSQLSaveExecute(Sender: TObject);
+    procedure ActReportingQueryNewExecute(Sender: TObject);
+    procedure ActReportingQuerySaveExecute(Sender: TObject);
     procedure ActReportingQueryDeleteUpdate(Sender: TObject);
-    procedure ActReportingQueryExecuteSQLExecute(Sender: TObject);
+    procedure ActReportingQueryExecuteExecute(Sender: TObject);
+    procedure ActReportingQueryExecuteUpdate(Sender: TObject);
     procedure ActReportingQueryExportToExcelExecute(Sender: TObject);
     procedure ActReportingQueryExportToExcelUpdate(Sender: TObject);
-    procedure ActReportingQueryLoadQueriesExecute(Sender: TObject);
+    procedure ActReportingQueryReloadExecute(Sender: TObject);
     procedure ActResetWebsocketConnectionsExecute(Sender: TObject);
     procedure ActRunCleanMgrExecute(Sender: TObject);
     procedure ActTISHelpExecute(Sender: TObject);
@@ -663,6 +668,7 @@ type
     procedure EdDescriptionExit(Sender: TObject);
     procedure EdDescriptionKeyPress(Sender: TObject; var Key: char);
     procedure EdHardwareFilterChange(Sender: TObject);
+    procedure EdNormalizationFilterKeyPress(Sender: TObject; var Key: char);
     procedure EdRunKeyPress(Sender: TObject; var Key: char);
     procedure EdSearchOrgUnitsChange(Sender: TObject);
     procedure EdSearchOrgUnitsKeyPress(Sender: TObject; var Key: char);
@@ -740,10 +746,11 @@ type
       Column: TColumnIndex; TextType: TVSTTextType; var CellText: string);
     procedure GridNetworksEditing(Sender: TBaseVirtualTree; Node: PVirtualNode;
       Column: TColumnIndex; var Allowed: Boolean);
-    procedure GridNormalizationEdited(Sender: TBaseVirtualTree;
-      Node: PVirtualNode; Column: TColumnIndex);
-    procedure GridNormalizationEditing(Sender: TBaseVirtualTree;
-      Node: PVirtualNode; Column: TColumnIndex; var Allowed: Boolean);
+    procedure GridNormalizationClick(Sender: TObject);
+    procedure GridNormalizationDrawText(Sender: TBaseVirtualTree;TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex; const aText: String; const CellRect: TRect; var DefaultDraw: Boolean);
+    procedure GridNormalizationEdited(Sender: TBaseVirtualTree;Node: PVirtualNode; Column: TColumnIndex);
+    procedure GridNormalizationEditing(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex; var Allowed: Boolean);
+    procedure GridNormalizationKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure GridOrgUnitsChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
     procedure GridOrgUnitsGetHint(Sender: TBaseVirtualTree; Node: PVirtualNode;
       Column: TColumnIndex; var LineBreakStyle: TVTTooltipLineBreakStyle;
@@ -754,8 +761,8 @@ type
     procedure GridPackagesPaintText(Sender: TBaseVirtualTree;
       const TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex;
       TextType: TVSTTextType);
-    procedure GridWinproductsChange(Sender: TBaseVirtualTree; Node: PVirtualNode
-      );
+    procedure GridReportingColumnResize(Sender: TVTHeader; Column: TColumnIndex );
+    procedure GridWinproductsChange(Sender: TBaseVirtualTree; Node: PVirtualNode );
     procedure GridWinUpdatesGetImageIndexEx(Sender: TBaseVirtualTree;
       Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
       var Ghosted: Boolean; var ImageIndex: Integer;
@@ -769,8 +776,10 @@ type
     procedure MenuItem27Click(Sender: TObject);
     procedure MenuItem74Click(Sender: TObject);
     procedure MenuItemProductsCheckAllClick(Sender: TObject);
+    procedure SynEditReportsSQLChange(Sender: TObject);
     procedure TimerWUALoadWinUpdatesTimer(Sender: TObject);
     procedure tvReportingQueriesChange(Sender: TObject; Node: TTreeNode);
+    procedure tvReportingQueriesChanging(Sender: TObject; Node: TTreeNode;var AllowChange: Boolean);
     procedure tvReportingQueriesEdited(Sender: TObject; Node: TTreeNode; var S: string);
   private
     { private declarations }
@@ -780,6 +789,9 @@ type
     FWUAWinUpdates: ISuperObject;
     FWUAWinUpdatesLookup: ISuperObject;
     FReportingQueries: ISuperObject; // Pointers place holder for preventing auto __RemoveRef
+    FReportingEditModeEnable : boolean;
+    FReportingLoadingQuery : boolean;
+    FNormalization : ISuperObject;
     procedure DoProgress(ASender: TObject);
     procedure FillcbADSiteDropDown;
     procedure FillcbGroups;
@@ -813,6 +825,7 @@ type
     procedure LoadOrgUnitsTree(Sender: TObject);
     procedure UpdateTasksReport(tasksresult: ISuperObject);
     procedure SetGridReportingData( data : ISuperObject );
+    procedure SetReportingEditModeEnable( EditEnable : Boolean );
 
   public
     { public declarations }
@@ -888,6 +901,19 @@ uses LCLIntf, LCLType, IniFiles, variants, LazFileUtils,FileUtil, uvisprivatekey
   {$endif};
 
 {$R *.lfm}
+
+const
+  GRID_NORMALIZATION_COL_NAME           = 0;
+  GRID_NORMALIZATION_COL_NORMALIZED     = 1;
+  GRID_NORMALIZATION_COL_KEY            = 2;
+  GRID_NORMALIZATION_COL_WINDOWS_UPDATE = 3;
+  GRID_NORMALIZATION_COL_BANNED         = 4;
+
+  IMG_CHECKBOX_ENABLE_CHECKED   = 15;
+  IMG_CHECKBOX_ENABLE_UNCHECKED = 16;
+  IMG_CHECKBOX_DISABLE_CHECKED  = 17;
+  IMG_CHECKBOX_DISABLE_UNCHECKED= 18;
+
 
 { TVisWaptGUI }
 
@@ -1164,6 +1190,53 @@ begin
     TreeLoadData(GridhostInventory, FilterHardware(data));
     GridhostInventory.FullExpand;
   end;
+end;
+
+procedure TVisWaptGUI.EdNormalizationFilterKeyPress(Sender: TObject; var Key: char);
+const
+  cols_search : array[0..2] of UnicodeString = ( 'normalized_name', 'key', 'original_name' );
+var
+  sa : ISuperObject;
+  so : ISuperObject;
+  i  : integer;
+  s  : String;
+  e  : String;
+  j  : integer;
+begin
+{
+  e := LowerCase( Trim(self.EdNormalizationFilter.Text) );
+  if Length(e) = 0 then
+  begin
+    self.GridNormalization.Data := self.FNormalization;
+    self.GridNormalization.Invalidate;
+    Application.ProcessMessages;
+  end;
+
+
+
+
+  sa := TSuperObject.ParseString( '[]', True );
+  for i := 0 to self.FNormalization.AsArray.Length -1 do
+  begin
+    so := self.FNormalization.AsArray.O[i];
+    for j := 0 to Length(cols_search) -1 do
+    begin
+      s := LowerCase( UTF8Encode(so.S[cols_search[j]]) );
+      if Pos( s, e ) = 0 then
+        continue;
+      sa.AsArray.Add( so );
+      break;
+    end;
+  end;
+
+  self.GridNormalization.Data := sa;
+  self.GridNormalization.Invalidate;
+  Application.ProcessMessages;
+}
+
+  if VK_RETURN = Integer(Key) then
+    self.ActNormalizationFilter.Execute;
+
 end;
 
 procedure TVisWaptGUI.EdRunKeyPress(Sender: TObject; var Key: char);
@@ -1802,7 +1875,15 @@ begin
       ActPackagesUpdate.Execute
     else
     if MainPages.ActivePage = pgGroups then
-      ActPackagesUpdate.Execute;
+      ActPackagesUpdate.Execute
+    else
+    if MainPages.ActivePage = PgReports then
+      ActReportingQueryReload.Execute
+    else
+    if MainPages.ActivePage = pgNormalization then
+      ActNormalizationFilter.Execute;
+
+
   finally
     Screen.Cursor := crDefault;
   end;
@@ -3843,6 +3924,8 @@ begin
   HostsLimit := 2000;
   DMPython.PythonOutput.OnSendData := @PythonOutputSendData;
   FReportingQueries := TSuperObject.ParseString('[]', False );
+  FReportingEditModeEnable := True;
+  SetReportingEditModeEnable( false );
 end;
 
 procedure TVisWaptGUI.FormDestroy(Sender: TObject);
@@ -4684,32 +4767,6 @@ begin
   Allowed := True;
 end;
 
-procedure TVisWaptGUI.GridNormalizationEdited(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex);
-const
-  COL_NORMALIZED      = 1;
-  COL_WINDOWS_UPDATE  = 3;
-  COL_BANNED          = 4;
-var
-  so : ISuperObject;
-begin
-  // FMOR
-  if not (column in [COL_NORMALIZED, COL_BANNED, COL_WINDOWS_UPDATE]) then
-    exit;
-
-  so := self.GridNormalization.GetNodeSOData(Node);
-  so.B['edited'] := True;
-
-end;
-
-procedure TVisWaptGUI.GridNormalizationEditing(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex; var Allowed: Boolean);
-const
-  COL_NORMALIZED      = 1;
-  COL_WINDOWS_UPDATE  = 3;
-  COL_BANNED          = 4;
-begin
-  Allowed := COL_NORMALIZED in [ COL_NORMALIZED, COL_BANNED, COL_WINDOWS_UPDATE ];
-end;
-
 
 
 procedure TVisWaptGUI.GridPackagesColumnDblClick(Sender: TBaseVirtualTree;
@@ -4870,11 +4927,11 @@ begin
   else if MainPages.ActivePage = PgReports then
   begin
     if 0 = FReportingQueries.AsArray.Length then
-      ActReportingQueryLoadQueries.Execute;
+      ActReportingQueryReload.Execute;
   end
   else if MainPages.ActivePage = pgNormalization then
   begin
-    ActNormalizationRefresh.Execute;
+    ActNormalizationFilter.Execute;
   end
 
 end;
@@ -5130,12 +5187,23 @@ procedure TVisWaptGUI.MenuItemProductsCheckAllClick(Sender: TObject);
 begin
 end;
 
+procedure TVisWaptGUI.SynEditReportsSQLChange(Sender: TObject);
+begin
+
+end;
+
 procedure TVisWaptGUI.TimerWUALoadWinUpdatesTimer(Sender: TObject);
 begin
 end;
 
 procedure TVisWaptGUI.tvReportingQueriesChange(Sender: TObject; Node: TTreeNode
   );
+begin
+
+end;
+
+procedure TVisWaptGUI.tvReportingQueriesChanging(Sender: TObject;
+  Node: TTreeNode; var AllowChange: Boolean);
 begin
 
 end;
@@ -5189,19 +5257,6 @@ end;
 procedure TVisWaptGUI.ActNormalizationImportSoftwaresExecute(Sender: TObject);
 begin
 end;
-
-procedure TVisWaptGUI.ActNormalizationRefreshExecute(Sender: TObject);
-begin
-end;
-
-procedure TVisWaptGUI.ActNormalizationWriteTableExecute(Sender: TObject);
-begin
-end;
-
-procedure TVisWaptGUI.ActNormalizationWriteTableUpdate(Sender: TObject);
-begin
-end;
-
 procedure TVisWaptGUI.CBShowHostsForGroupsClick(Sender: TObject);
 begin
 end;
@@ -5214,7 +5269,15 @@ procedure TVisWaptGUI.LoadHostsForPackage(Grid: TSOGrid;PackageName: String);
 begin
   Grid.Data := Nil;
 end;
-procedure TVisWaptGUI.ActReportingQueryCreateSamplesQueriesExecute( Sender: TObject);
+
+procedure TVisWaptGUI.ActNormalizationWriteTableExecute(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.ActNormalizationWriteTableUpdate(Sender: TObject);
+begin
+end;
+procedure TVisWaptGUI.ActNormalizationFilterExecute(Sender: TObject);
 begin
 end;
 
@@ -5222,24 +5285,28 @@ procedure TVisWaptGUI.ActReportingQueryDeleteExecute(Sender: TObject);
 begin
 end;
 
-procedure TVisWaptGUI.ActReportingEditSQLNewExecute(Sender: TObject);
+procedure TVisWaptGUI.ActReportingQueryNewExecute(Sender: TObject);
 begin
+
 end;
 
-procedure TVisWaptGUI.ActReportingEditSQLRunExecute(Sender: TObject);
+procedure TVisWaptGUI.ActReportingQuerySaveExecute(Sender: TObject);
 begin
-end;
 
-procedure TVisWaptGUI.ActReportingEditSQLSaveExecute(Sender: TObject);
-begin
 end;
 
 procedure TVisWaptGUI.ActReportingQueryDeleteUpdate(Sender: TObject);
 begin
 end;
 
-procedure TVisWaptGUI.ActReportingQueryExecuteSQLExecute(Sender: TObject);
+procedure TVisWaptGUI.ActReportingQueryExecuteExecute(Sender: TObject);
 begin
+
+end;
+
+procedure TVisWaptGUI.ActReportingQueryExecuteUpdate(Sender: TObject);
+begin
+
 end;
 
 procedure TVisWaptGUI.ActReportingQueryExportToExcelExecute(Sender: TObject);
@@ -5250,11 +5317,66 @@ procedure TVisWaptGUI.ActReportingQueryExportToExcelUpdate(Sender: TObject);
 begin
 end;
 
-procedure TVisWaptGUI.ActReportingQueryLoadQueriesExecute(Sender: TObject);
+procedure TVisWaptGUI.ActReportingQueryReloadExecute(Sender: TObject);
 begin
+
 end;
 
 procedure TVisWaptGUI.SetGridReportingData(data: ISuperObject);
+begin
+end;
+
+procedure TVisWaptGUI.SetReportingEditModeEnable(EditEnable: Boolean);
+begin
+
+end;
+
+procedure TVisWaptGUI.GridNormalizationClick(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.GridNormalizationDrawText(Sender: TBaseVirtualTree;
+  TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex;
+  const aText: String; const CellRect: TRect; var DefaultDraw: Boolean);
+begin
+end;
+
+procedure TVisWaptGUI.GridNormalizationEdited(Sender: TBaseVirtualTree;
+  Node: PVirtualNode; Column: TColumnIndex);
+begin
+end;
+
+procedure TVisWaptGUI.GridNormalizationEditing(Sender: TBaseVirtualTree;
+  Node: PVirtualNode; Column: TColumnIndex; var Allowed: Boolean);
+begin
+end;
+
+procedure TVisWaptGUI.GridNormalizationKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+end;
+procedure TVisWaptGUI.ActReportingQueryDesignExecute(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.ActReportingQueryDesignUpdate(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.ActReportingQuerySaveAllExecute(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.ActReportingQuerySaveAllUpdate(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.ActReportingQuerySaveUpdate(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.GridReportingColumnResize(Sender: TVTHeader;
+  Column: TColumnIndex);
 begin
 end;
 
