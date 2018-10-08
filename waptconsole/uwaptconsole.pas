@@ -4144,6 +4144,8 @@ begin
       end;
     end;
   end;
+  if maxheight > 6 *(Sender as TSOGrid).DefaultNodeHeight then
+    maxheight := 6 *(Sender as TSOGrid).DefaultNodeHeight;
   NodeHeight := maxheight + 4;
 end;
 
