@@ -352,7 +352,7 @@ begin
         timeout := Waptrepo.timeout);
 
       GridExternalPackages.Data := PyVarToSuperObject(packages_python);
-      GridExternalPackages.CreateColumnsFromData(False);
+      GridExternalPackages.CreateColumnsFromData(False,False);
     finally
       Screen.Cursor:=crDefault;
     end;

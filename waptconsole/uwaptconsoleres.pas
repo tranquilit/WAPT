@@ -267,6 +267,9 @@ resourcestring
   rsConfirmDeleteQuery = 'Delete query %s ?';
   rsConfirmDeleteQueries = 'Delete %d queries ?';
 
+  { Messages Normalizarion }
+  rsConfirmAbortUnsavedChandes = 'Abort unsaved changes ?';
+
 implementation
 
 end.
