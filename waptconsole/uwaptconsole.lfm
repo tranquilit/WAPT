@@ -6020,6 +6020,7 @@ object VisWaptGUI: TVisWaptGUI
         TabOrder = 0
         OnChange = tvReportingQueriesChange
         OnChanging = tvReportingQueriesChanging
+        OnCustomDrawItem = tvReportingQueriesCustomDrawItem
         OnEdited = tvReportingQueriesEdited
         Options = [tvoAutoItemHeight, tvoHideSelection, tvoKeepCollapsedNodes, tvoShowButtons, tvoShowLines, tvoToolTips, tvoThemedDraw]
       end

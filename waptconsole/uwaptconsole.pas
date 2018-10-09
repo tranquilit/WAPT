@@ -780,6 +780,8 @@ type
     procedure TimerWUALoadWinUpdatesTimer(Sender: TObject);
     procedure tvReportingQueriesChange(Sender: TObject; Node: TTreeNode);
     procedure tvReportingQueriesChanging(Sender: TObject; Node: TTreeNode;var AllowChange: Boolean);
+    procedure tvReportingQueriesCustomDrawItem(Sender: TCustomTreeView;
+      Node: TTreeNode; State: TCustomDrawState; var DefaultDraw: Boolean);
     procedure tvReportingQueriesEdited(Sender: TObject; Node: TTreeNode; var S: string);
   private
     { private declarations }
@@ -5204,6 +5206,12 @@ end;
 
 procedure TVisWaptGUI.tvReportingQueriesChanging(Sender: TObject;
   Node: TTreeNode; var AllowChange: Boolean);
+begin
+
+end;
+
+procedure TVisWaptGUI.tvReportingQueriesCustomDrawItem(Sender: TCustomTreeView;
+  Node: TTreeNode; State: TCustomDrawState; var DefaultDraw: Boolean);
 begin
 
 end;
