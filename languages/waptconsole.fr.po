@@ -1396,15 +1396,13 @@ msgstr "Proposer la mise à jour aux utilisateurs"
 msgid "Make package template from setup file"
 msgstr "Générer un modèle de paquet"
 
-#: tviswaptgui.actnormalizationimportsoftwares.caption
-msgid "Import softwares"
-msgstr ""
+#: tviswaptgui.actnormalizationfilter.caption
+msgid "Filter"
+msgstr "Filtrer"
 
-#: tviswaptgui.actnormalizationrefresh.caption
-#, fuzzy
-msgctxt "tviswaptgui.actnormalizationrefresh.caption"
-msgid "Refresh"
-msgstr "Actualiser"
+#: tviswaptgui.actnormalizationimportsoftwares.caption
+msgid "Import"
+msgstr "Importer"
 
 #: tviswaptgui.actnormalizationwritetable.caption
 msgid "Write"
@@ -1493,41 +1491,41 @@ msgctxt "tviswaptgui.actremovedepends.caption"
 msgid "Remove packages from host dependencies"
 msgstr "Supprimer des dépendances de paquets ou groupes de paquets"
 
-#: tviswaptgui.actreportingeditsqlnew.caption
-#, fuzzy
-msgctxt "tviswaptgui.actreportingeditsqlnew.caption"
-msgid "New"
-msgstr "Nouveau"
-
-#: tviswaptgui.actreportingeditsqlrun.caption
-msgid "Run"
-msgstr ""
-
-#: tviswaptgui.actreportingeditsqlsave.caption
-#, fuzzy
-msgctxt "tviswaptgui.actreportingeditsqlsave.caption"
-msgid "Save"
-msgstr "Enregistrer"
-
-#: tviswaptgui.actreportingquerycreatesamplesqueries.caption
-msgid "Create samples"
-msgstr ""
-
 #: tviswaptgui.actreportingquerydelete.caption
 msgid "Delete"
-msgstr ""
+msgstr "Supprimer"
 
-#: tviswaptgui.actreportingqueryexecutesql.caption
-msgid "Execute SQL"
-msgstr ""
+#: tviswaptgui.actreportingquerydesign.caption
+msgid "Design query"
+msgstr "Designer la requête"
+
+#: tviswaptgui.actreportingqueryexecute.caption
+msgid "Execute"
+msgstr "Exécuter"
 
 #: tviswaptgui.actreportingqueryexporttoexcel.caption
 msgid "Export to Excel"
-msgstr ""
+msgstr "Exporter vers excel"
 
-#: tviswaptgui.actreportingqueryloadqueries.caption
-msgid "Load queries"
-msgstr ""
+#: tviswaptgui.actreportingquerynew.caption
+#, fuzzy
+msgctxt "tviswaptgui.actreportingquerynew.caption"
+msgid "New"
+msgstr "Nouveau"
+
+#: tviswaptgui.actreportingqueryreload.caption
+msgid "Reload queries"
+msgstr "Recharger les requêtes"
+
+#: tviswaptgui.actreportingquerysave.caption
+#, fuzzy
+msgctxt "tviswaptgui.actreportingquerysave.caption"
+msgid "Save"
+msgstr "Enregistrer"
+
+#: tviswaptgui.actreportingquerysaveall.caption
+msgid "Save all"
+msgstr "Enregistrer tout"
 
 #: tviswaptgui.actresetwebsocketconnections.caption
 msgid "Reset Websocket connections"
@@ -1921,10 +1919,6 @@ msgctxt "tviswaptgui.cbwucritical.caption"
 msgid "Critical only"
 msgstr "Critiques seulement"
 
-#: tviswaptgui.combobox2.text
-msgid "No auto execute"
-msgstr ""
-
 #: tviswaptgui.edrun.text
 msgid "mywapt.update()"
 msgstr ""
@@ -2190,6 +2184,14 @@ msgctxt "tviswaptgui.panel7.caption"
 msgid "Panel7"
 msgstr ""
 
+#: tviswaptgui.panelreportingeditsql.caption
+msgid "PanelReportingEditSQL"
+msgstr ""
+
+#: tviswaptgui.panelreportinggrid.caption
+msgid "PanelReportingGrid"
+msgstr ""
+
 #: tviswaptgui.panhostsforpackage.caption
 msgctxt "tviswaptgui.panhostsforpackage.caption"
 msgid "PanHostsForPackage"
@@ -2270,28 +2272,16 @@ msgstr "Terminées"
 msgid "Errors"
 msgstr "Erreurs"
 
+#: tviswaptgui.tbreport.caption
+msgid "TbReport"
+msgstr ""
+
+#: tviswaptgui.tbreportresult.caption
+msgid "TbReportResult"
+msgstr ""
+
 #: tviswaptgui.toolbar1.caption
 msgid "ToolBar1"
-msgstr ""
-
-#: tviswaptgui.toolbar2.caption
-msgid "ToolBar2"
-msgstr ""
-
-#: tviswaptgui.toolbar3.caption
-msgid "ToolBar3"
-msgstr ""
-
-#: tviswaptgui.toolbar4.caption
-msgid "ToolBar4"
-msgstr ""
-
-#: tviswaptgui.toolbutton11.caption
-msgid "ToolButton11"
-msgstr ""
-
-#: tviswaptgui.toolbutton3.caption
-msgid "ToolButton3"
 msgstr ""
 
 #: tviswaptgui.toolbutton6.caption
@@ -2915,6 +2905,10 @@ msgstr "CNAME : %s"
 msgctxt "uwaptconsoleres.rscompletionprogress"
 msgid "%s : %.0f%% completed"
 msgstr "%s : %.0f%% terminé"
+
+#: uwaptconsoleres.rsconfirmabortunsavedchandes
+msgid "Abort unsaved changes ?"
+msgstr ""
 
 #: uwaptconsoleres.rsconfirmburstupdate
 msgid "Are you sure you want to trigger Status Update on %d hosts ?"

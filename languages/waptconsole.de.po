@@ -1446,15 +1446,13 @@ msgstr ""
 msgid "Make package template from setup file"
 msgstr ""
 
-#: tviswaptgui.actnormalizationimportsoftwares.caption
-msgid "Import softwares"
+#: tviswaptgui.actnormalizationfilter.caption
+msgid "Filter"
 msgstr ""
 
-#: tviswaptgui.actnormalizationrefresh.caption
-#, fuzzy
-msgctxt "tviswaptgui.actnormalizationrefresh.caption"
-msgid "Refresh"
-msgstr "Aktualisiere"
+#: tviswaptgui.actnormalizationimportsoftwares.caption
+msgid "Import"
+msgstr ""
 
 #: tviswaptgui.actnormalizationwritetable.caption
 msgid "Write"
@@ -1549,40 +1547,40 @@ msgctxt "tviswaptgui.actremovedepends.caption"
 msgid "Remove packages from host dependencies"
 msgstr "Abhänigkeit von den Packeten/Bündeln entfernen"
 
-#: tviswaptgui.actreportingeditsqlnew.caption
-#, fuzzy
-msgctxt "tviswaptgui.actreportingeditsqlnew.caption"
-msgid "New"
-msgstr "Neu"
-
-#: tviswaptgui.actreportingeditsqlrun.caption
-msgid "Run"
-msgstr ""
-
-#: tviswaptgui.actreportingeditsqlsave.caption
-#, fuzzy
-msgctxt "tviswaptgui.actreportingeditsqlsave.caption"
-msgid "Save"
-msgstr "Speichern"
-
-#: tviswaptgui.actreportingquerycreatesamplesqueries.caption
-msgid "Create samples"
-msgstr ""
-
 #: tviswaptgui.actreportingquerydelete.caption
 msgid "Delete"
 msgstr ""
 
-#: tviswaptgui.actreportingqueryexecutesql.caption
-msgid "Execute SQL"
+#: tviswaptgui.actreportingquerydesign.caption
+msgid "Design query"
+msgstr ""
+
+#: tviswaptgui.actreportingqueryexecute.caption
+msgid "Execute"
 msgstr ""
 
 #: tviswaptgui.actreportingqueryexporttoexcel.caption
 msgid "Export to Excel"
 msgstr ""
 
-#: tviswaptgui.actreportingqueryloadqueries.caption
-msgid "Load queries"
+#: tviswaptgui.actreportingquerynew.caption
+#, fuzzy
+msgctxt "tviswaptgui.actreportingquerynew.caption"
+msgid "New"
+msgstr "Neu"
+
+#: tviswaptgui.actreportingqueryreload.caption
+msgid "Reload queries"
+msgstr ""
+
+#: tviswaptgui.actreportingquerysave.caption
+#, fuzzy
+msgctxt "tviswaptgui.actreportingquerysave.caption"
+msgid "Save"
+msgstr "Speichern"
+
+#: tviswaptgui.actreportingquerysaveall.caption
+msgid "Save all"
 msgstr ""
 
 #: tviswaptgui.actresetwebsocketconnections.caption
@@ -1990,10 +1988,6 @@ msgctxt "tviswaptgui.cbwucritical.caption"
 msgid "Critical only"
 msgstr "Nur kritisch"
 
-#: tviswaptgui.combobox2.text
-msgid "No auto execute"
-msgstr ""
-
 #: tviswaptgui.edrun.text
 msgid "mywapt.update()"
 msgstr "mywapt.update()"
@@ -2265,6 +2259,14 @@ msgctxt "tviswaptgui.panel7.caption"
 msgid "Panel7"
 msgstr "Forum7"
 
+#: tviswaptgui.panelreportingeditsql.caption
+msgid "PanelReportingEditSQL"
+msgstr ""
+
+#: tviswaptgui.panelreportinggrid.caption
+msgid "PanelReportingGrid"
+msgstr ""
+
 #: tviswaptgui.panhostsforpackage.caption
 msgctxt "tviswaptgui.panhostsforpackage.caption"
 msgid "PanHostsForPackage"
@@ -2347,29 +2349,17 @@ msgstr "Fertig"
 msgid "Errors"
 msgstr "Fehler"
 
+#: tviswaptgui.tbreport.caption
+msgid "TbReport"
+msgstr ""
+
+#: tviswaptgui.tbreportresult.caption
+msgid "TbReportResult"
+msgstr ""
+
 #: tviswaptgui.toolbar1.caption
 msgid "ToolBar1"
 msgstr "Symobolleiste"
-
-#: tviswaptgui.toolbar2.caption
-msgid "ToolBar2"
-msgstr ""
-
-#: tviswaptgui.toolbar3.caption
-msgid "ToolBar3"
-msgstr ""
-
-#: tviswaptgui.toolbar4.caption
-msgid "ToolBar4"
-msgstr ""
-
-#: tviswaptgui.toolbutton11.caption
-msgid "ToolButton11"
-msgstr ""
-
-#: tviswaptgui.toolbutton3.caption
-msgid "ToolButton3"
-msgstr ""
 
 #: tviswaptgui.toolbutton6.caption
 msgid "ToolButton6"
@@ -4194,6 +4184,10 @@ msgstr "CNAME: %s"
 msgctxt "uwaptconsoleres.rscompletionprogress"
 msgid "%s : %.0f%% completed"
 msgstr "%s : %.0f%% beendet"
+
+#: uwaptconsoleres.rsconfirmabortunsavedchandes
+msgid "Abort unsaved changes ?"
+msgstr ""
 
 #: uwaptconsoleres.rsconfirmburstupdate
 msgid "Are you sure you want to trigger Status Update on %d hosts ?"
