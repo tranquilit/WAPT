@@ -311,7 +311,7 @@ type
     ToolButton4: TToolButton;
     ToolButton5: TToolButton;
     ToolButton7: TToolButton;
-    ToolButton8: TToolButton;
+    ToolButtonDesignQuery: TToolButton;
     ToolButton9: TToolButton;
     ToolButtonUpgrade: TToolButton;
     ToolButton2: TToolButton;
