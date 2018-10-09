@@ -64,7 +64,7 @@ FileName=$[Project-Path]..\waptenterprise\waptserver\auth_module_ad.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node2\ChildNodes\Node1\ChildNodes\Node1]
 ClassName=TProjectFileNode
-FileName=C:\tranquilit\wapt\waptenterprise\waptservice\enterprise.py
+FileName=C:\tranquilit\wapt\waptenterprise\waptserver\enterprise.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node2\ChildNodes\Node1\ChildNodes\Node2]
 ClassName=TProjectFileNode
