@@ -1,12 +1,28 @@
 # -*- coding: UTF-8 -*-
+from __future__ import absolute_import
 from setuphelpers import *
 import sys
 import os
 import re
 
 import getpass
+from optparse import OptionParser
 
-force = False
+try:
+    wapt_root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__),'..'))
+except NameError:
+    wapt_root_dir = 'c:/tranquilit/wapt'
+
+from waptutils import __version__
+
+parser=OptionParser()
+parser.add_option("-c","--config", dest="config", default=os.path.join(wapt_root_dir,'wapt-get.ini') , help="Config file full path (default: %default)")
+parser.add_option("-l","--loglevel", dest="loglevel", default=None, type='choice',  choices=['debug','warning','info','error','critical'], metavar='LOGLEVEL',help="Loglevel (default: warning)")
+parser.add_option("-f","--force", dest="force", default=False,action='store_true', help="Force build all exe)")
+(options,args)=parser.parse_args()
+
+force = options.force
+
 pwd = getpass.getpass('Key password ?')
 open(r'C:\Users\buildbot\Documents\tmpkeypwd','wb').write(pwd.encode('utf8'))
 try:
@@ -48,12 +64,12 @@ try:
                 print('Skipped %s ' % setup_exe)
 
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
-    if len(sys.argv) == 1:
+    if len(args) == 1:
         editions = ['enterprise','community']
     else:
-        editions = sys.argv[1:]
+        editions = args[0:]
 
-    for edition in sys.argv[1:]:
+    for edition in args[0:]:
         print('Edition: %s' % edition)
         compile_exes(edition,force)
         compile_setups(edition,force)

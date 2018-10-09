@@ -1397,6 +1397,7 @@ msgid "Make package template from setup file"
 msgstr "Générer un modèle de paquet"
 
 #: tviswaptgui.actnormalizationfilter.caption
+msgctxt "tviswaptgui.actnormalizationfilter.caption"
 msgid "Filter"
 msgstr "Filtrer"
 
@@ -1406,7 +1407,7 @@ msgstr "Importer"
 
 #: tviswaptgui.actnormalizationwritetable.caption
 msgid "Write"
-msgstr ""
+msgstr "Enregistrer"
 
 #: tviswaptgui.actpackagesaudit.caption
 msgid "Audit package"
@@ -2360,6 +2361,7 @@ msgid "Classifications  and products"
 msgstr "Classisications et produits"
 
 #: tviswuapackageselect.label2.caption
+msgctxt "tviswuapackageselect.label2.caption"
 msgid "Filter"
 msgstr "Filtre"
 

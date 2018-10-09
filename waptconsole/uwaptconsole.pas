@@ -204,6 +204,7 @@ type
     GridNormalization: TSOGrid;
     SOWaptServer: TSOConnection;
     SplitHostsForPackage: TSplitter;
+    Splitter11: TSplitter;
     Splitter10: TSplitter;
     SplitterReportingHorizontal: TSplitter;
     Splitter8: TSplitter;
@@ -736,6 +737,8 @@ type
     procedure GridHostsHeaderDblClick(Sender: TVTHeader; HitInfo: TVTHeaderHitInfo);
     procedure GridHostsNewText(Sender: TBaseVirtualTree; Node: PVirtualNode;
       Column: TColumnIndex; const NewText: String);
+    procedure GridHostWinUpdatesChange(Sender: TBaseVirtualTree;
+      Node: PVirtualNode);
     procedure GridHostTasksPendingChange(Sender: TBaseVirtualTree;
       Node: PVirtualNode);
     procedure GridHostWinUpdatesGetImageIndexEx(Sender: TBaseVirtualTree;

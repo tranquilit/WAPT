@@ -6425,7 +6425,7 @@ object VisWaptGUI: TVisWaptGUI
         OnEdited = tvReportingQueriesEdited
         Options = [tvoAutoItemHeight, tvoHideSelection, tvoKeepCollapsedNodes, tvoShowButtons, tvoShowLines, tvoToolTips, tvoThemedDraw]
       end
-      object Splitter9: TSplitter
+      object Splitter11: TSplitter
         Left = 203
         Height = 398
         Top = 50

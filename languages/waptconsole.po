@@ -1370,6 +1370,7 @@ msgid "Make package template from setup file"
 msgstr ""
 
 #: tviswaptgui.actnormalizationfilter.caption
+msgctxt "tviswaptgui.actnormalizationfilter.caption"
 msgid "Filter"
 msgstr ""
 
@@ -2308,6 +2309,7 @@ msgid "Classifications  and products"
 msgstr ""
 
 #: tviswuapackageselect.label2.caption
+msgctxt "tviswuapackageselect.label2.caption"
 msgid "Filter"
 msgstr ""
 
