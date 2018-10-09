@@ -10392,6 +10392,7 @@ object VisWaptGUI: TVisWaptGUI
     end
     object ActReportingQuerySaveAll: TAction
       Caption = 'Save all'
+      Enabled = False
       ImageIndex = 31
       OnExecute = ActReportingQuerySaveAllExecute
       OnUpdate = ActReportingQuerySaveAllUpdate
