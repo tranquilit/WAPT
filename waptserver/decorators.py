@@ -32,7 +32,7 @@ import gzip
 
 from waptserver.app import app
 from waptserver.auth import check_auth
-
+from waptserver.model import wapt_db
 # i18n
 from flask_babel import Babel
 try:
@@ -124,4 +124,17 @@ def gzipped(f):
 
     return view_func
 
-
+def wapt_db_readonly(f):
+    @functools.wraps(f)
+    def decorated(*args, **kwargs):
+        cnx = wapt_db.connection();
+        b = cnx.readonly;
+        if not b:
+            cnx.set_session( readonly=True );
+        try:            
+            r = f(*args,**kwargs);
+            return r;
+        finally:            
+            if not b:
+                cnx.set_session( readonly=False );
+    return decorated;
