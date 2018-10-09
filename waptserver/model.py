@@ -210,18 +210,18 @@ class Hosts(WaptBaseModel):
     # raw json data
     wapt_status = BinaryJSONField(null=True)
     # running, pending, errors, finished , upgradable, errors,
-    last_update_status = BinaryJSONField(null=True)
+    last_update_status = BinaryJSONField(null=True,index=False)
     host_info = BinaryJSONField(null=True)
 
     # variable structures... so keep them as json
-    dmi = BinaryJSONField(null=True)
+    dmi = BinaryJSONField(null=True,index=False)
     wmi = BinaryJSONField(null=True)
 
-    wuauserv_status = BinaryJSONField(null=True)
-    waptwua_status = BinaryJSONField(null=True)
+    wuauserv_status = BinaryJSONField(null=True,index=False)
+    waptwua_status = BinaryJSONField(null=True,index=False)
 
     #
-    status_hashes = BinaryJSONField(null=True)
+    status_hashes = BinaryJSONField(null=True,index=False)
 
     """
     def save(self,*args,**argvs):
@@ -242,6 +242,7 @@ class HostPackagesStatus(WaptBaseModel):
     """
     id = PrimaryKeyField(primary_key=True)
     host = ForeignKeyField(Hosts, on_delete='CASCADE', on_update='CASCADE')
+    package_uuid = CharField(null=True)
     package = CharField(null=True, index=True)
     version = CharField(null=True)
     architecture = CharField(null=True)
@@ -256,7 +257,7 @@ class HostPackagesStatus(WaptBaseModel):
     install_date = CharField(null=True)
     install_output = TextField(null=True)
     install_params = CharField(null=True)
-    uninstall_key = CharField(null=True)
+    uninstall_key = ArrayField(CharField,null=True)
     explicit_by = CharField(null=True)
     repo_url = CharField(max_length=600, null=True)
     depends = ArrayField(CharField,null=True)
@@ -295,7 +296,7 @@ class Packages(WaptBaseModel):
 
     @classmethod
     def _as_attribute(cls,k,v):
-        if k in ['depends','conflicts']:
+        if k in ['depends','conflicts','impacted_process','keywords']:
             return ensure_list(v or None)
         else:
             return v or None
@@ -466,6 +467,7 @@ class HostWsus(WaptBaseModel):
     hidden = BooleanField(null=True)
     downloaded = BooleanField(null=True)
     install_date = CharField(null=True)
+    history = BinaryJSONField(null=True,index=False)
 
 
 class SignedModel(WaptBaseModel):
@@ -576,6 +578,39 @@ def update_installed_packages(uuid, installed_packages):
             value = value.replace(u'\x00', ' ')
         return value
 
+    def _get_uninstallkeylist(uninstall_key_str):
+        """Decode uninstallkey list from db field
+        For historical reasons, this field is encoded as str(pythonlist)
+        or sometimes simple repr of a str
+
+        Returns:
+            list
+        """
+        if uninstall_key_str:
+            if uninstall_key_str.startswith("['") or uninstall_key_str.startswith("[u'"):
+                # python encoded repr of a list
+                try:
+                    # transform to a json like array.
+                    guids = json.loads(uninstall_key_str.replace("[u'","['").replace(", u'",',"').replace("'",'"'))
+                except:
+                    logger.warning(u'Bad uninstallkey list format : %s' % uninstall_key_str)
+                    guids = uninstall_key_str
+            elif uninstall_key_str[0] in ["'",'"']:
+                # simple python string, removes quotes
+                guids = uninstall_key_str[1:-1]
+            else:
+                try:
+                    # normal json encoded list
+                    guids = json.loads(uninstall_key_str)
+                except:
+                    guids = uninstall_key_str
+
+            if isinstance(guids,(unicode,str)):
+                guids = [guids]
+            return guids
+        else:
+            return []
+
     HostPackagesStatus.delete().where(HostPackagesStatus.host == uuid).execute()
     packages = []
     for package in installed_packages:
@@ -583,6 +618,8 @@ def update_installed_packages(uuid, installed_packages):
         # csv str on the client, Array on the server
         package['depends'] = ensure_list(package['depends'])
         package['conflicts'] = ensure_list(package['conflicts'])
+        package['uninstall_key'] = _get_uninstallkeylist(package['uninstall_key'])
+        package['created_on'] = datetime.datetime.now()
 
         # filter out all unknown fields from json data for the SQL insert
         packages.append(dict([(k, encode_value(v)) for k, v in package.iteritems() if k in HostPackagesStatus._meta.fields]))
@@ -612,6 +649,7 @@ def update_installed_softwares(uuid, installed_softwares):
 
     for software in installed_softwares:
         software['host'] = uuid
+        software['created_on'] = datetime.datetime.now()
         # filter out all unknown fields from json data for the SQL insert
         softwares.append(dict([(k,encode_value(v)) for k, v in software.iteritems() if k in HostSoftwares._meta.fields]))
 
@@ -648,11 +686,13 @@ def update_waptwua(uuid,data):
         HostWsus.delete().where(HostWsus.host == uuid).execute()
         host_wsus = []
         for h in data['waptwua_updates_localstatus']:
-            h['host'] = uuid
             # default if not supplied
-            h['install_date'] = None
-            h['created_on'] = datetime.datetime.now()
-            host_wsus.append(dict([(k,encode_value(v)) for k, v in h.iteritems() if k in HostWsus._meta.fields]))
+            new_rec = dict([(k,encode_value(v)) for k, v in h.iteritems() if k in HostWsus._meta.fields])
+            new_rec['host'] = uuid
+            new_rec['created_on'] = datetime.datetime.now()
+            if not 'install_date' in new_rec:
+                new_rec['install_date'] = None
+            host_wsus.append(new_rec)
         if host_wsus:
             HostWsus.insert_many(host_wsus).execute() # pylint: disable=no-value-for-parameter
 
@@ -679,7 +719,6 @@ def update_host_data(data):
         'update_status': 'last_update_status',
         'host': 'host_info',
         'wapt': 'wapt_status',
-        'update_status': 'last_update_status',
     }
 
     uuid = data['uuid']
@@ -1337,7 +1376,7 @@ def upgrade_db_structure():
             v.save()
 
     next_version = '1.6.2.4'
-    if get_db_version() <= next_version:
+    if get_db_version() < next_version:
         with wapt_db.atomic():
             logger.info('Migrating from %s to %s' % (get_db_version(), next_version))
 
@@ -1358,18 +1397,37 @@ def upgrade_db_structure():
             v.value = next_version
             v.save()
 
-    next_version = '1.6.2.5'
+    next_version = '1.6.2.8'
     if get_db_version() <= next_version:
         with wapt_db.atomic():
             logger.info('Migrating from %s to %s' % (get_db_version(), next_version))
 
             opes = []
+
+            columns = [c.name for c in wapt_db.get_columns('packages')]
+            for c in ['package_uuid']:
+                if not c in columns:
+                    opes.append(migrator.add_column(Packages._meta.name, c, getattr(Packages,c)))
+
+            columns = [c.name for c in wapt_db.get_columns('hostpackagesstatus')]
+            for c in ['package_uuid']:
+                if not c in columns:
+                    opes.append(migrator.add_column(HostPackagesStatus._meta.name, c, getattr(HostPackagesStatus,c)))
+
+            columns = [c.name for c in wapt_db.get_columns('hostwsus')]
+            for c in ['history']:
+                if not c in columns:
+                    opes.append(migrator.add_column(HostWsus._meta.name, c, getattr(HostWsus,c)))
+
+            # change type to Array
+            opes.append(migrator.drop_column(HostPackagesStatus._meta.name, 'uninstall_key'))
+            opes.append(migrator.add_column(HostPackagesStatus._meta.name, 'uninstall_key', HostPackagesStatus.uninstall_key))
+
             migrate(*opes)
 
             (v, created) = ServerAttribs.get_or_create(key='db_version')
             v.value = next_version
             v.save()
-
     next_version = '1.7.0.0'
     if get_db_version() <= next_version:
         with wapt_db.atomic():

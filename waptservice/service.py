@@ -197,19 +197,12 @@ def apply_waptwua_settings(waptconfig):
     wapt = Wapt(config_filename = waptconfig.config_filename)
     try:
         # check waptwua
-        if waptconfig.waptwua_enabled is not None:
-            wapt.waptwua_enabled = waptconfig.waptwua_enabled
         if WaptWUA is not None:
             c = WaptWUA(wapt)
-            if waptconfig.waptwua_enabled:
-                logger.info('Disabling Windows auto update service, using WaptWUA instead')
-                c.disable_ms_windows_update_service()
-            elif not waptconfig.waptwua_enabled:
-                logger.info('Enabling Windows update service')
-                c.enable_ms_windows_update_service()
+            c.apply_waptwua_settings_to_host()
+
     except Exception as e:
         logger.critical('Unable to set waptwua policies : %s' % e)
-
 
 def wapt():
     """Flask request contextual cached Wapt instance access"""

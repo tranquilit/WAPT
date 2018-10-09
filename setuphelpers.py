@@ -244,6 +244,7 @@ __all__ = \
  'get_computer_description',
  'uac_enabled',
  'unzip',
+ 'EnsureWUAUServRunning',
  ]
 
 import os
@@ -295,6 +296,9 @@ import winshell
 import pythoncom
 from win32com.shell import shellcon
 from win32com.taskscheduler import taskscheduler
+
+import win32com.client
+
 import locale
 import re
 import threading
@@ -2633,18 +2637,60 @@ def get_computer_description():
     else:
         return registry_readstring(HKEY_LOCAL_MACHINE,r'SYSTEM\CurrentControlSet\services\LanmanServer\Parameters','srvcomment','')
 
-def critical_system_pending_updates():
+
+class EnsureWUAUServRunning(object):
+    """Contextual object to ensure that wauserv service is running (in manual mode)
+    Restores previous state at context exit.
+    """
+    # https://msdn.microsoft.com/en-us/library/aa394418(v=vs.85).aspx#properties
+
+    def __enter__(self):
+        print ("Ensure wuauserv Auto Update option is disabled")
+        self.old_au_options = registry_readstring(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update','AUOptions',0)
+        c = wmi.WMI()
+        for service in c.Win32_Service (Name='wuauserv'):
+            self.wuaserv_start_mode = service.StartMode
+            self.wuaserv_started = service.Started
+            service.ChangeStartMode(StartMode="manual")
+            service.StartService()
+
+        start = time.time()
+        for service in c.Win32_Service (Name='wuauserv'):
+            while not service.Started and time.time() - start < 10:
+                time.sleep(1)
+            if not service.Started:
+                raise Exception('Unable to start wuauserv')
+
+        return self
+
+    def __exit__(self,type, value, tb):
+        print ("re-enabling wuauserv previous state: %s" % self.old_au_options)
+        registry_set(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update','AUOptions',self.old_au_options)
+        self.old_au_options = None
+        c = wmi.WMI()
+        for service in c.Win32_Service (Name='wuauserv'):
+            if not self.wuaserv_started:
+                service.StopService()
+            service.ChangeStartMode(StartMode=self.wuaserv_start_mode)
+
+        start = time.time()
+        for service in c.Win32_Service (Name='wuauserv'):
+            while service.Started and time.time() - start < 10:
+                time.sleep(1)
+
+
+def critical_system_pending_updates(severities = ['Critical']):
     """Return list of not installed critical updates
 
     Returns:
         list: list of title of WSUS crititcal updates not applied
 
     """
-    import win32com.client
-    updateSession = win32com.client.Dispatch("Microsoft.Update.Session")
-    updateSearcher = updateSession.CreateupdateSearcher()
-    searchResult = updateSearcher.Search("IsInstalled=0 and Type='Software'")
-    return [ update.Title for update in searchResult.Updates if update.MsrcSeverity == 'Critical']
+    with EnsureWUAUServRunning():
+        updateSession = win32com.client.Dispatch("Microsoft.Update.Session")
+        updateSearcher = updateSession.CreateUpdateSearcher()
+        searchResult = updateSearcher.Search("IsInstalled=0 and Type='Software'")
+        return [ update.Title for update in searchResult.Updates if update.MsrcSeverity in severities]
 
 def pending_reboot_reasons():
     """Return the list of reasons requiring a pending reboot the computer
@@ -2660,6 +2706,9 @@ def pending_reboot_reasons():
     reboot_pending = registry_readstring(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows\CurrentVersion\Component Based Servicing','RebootPending',0)
     if reboot_pending:
         result.append('CBS Updates: %s' % reboot_pending)
+    update_exe_volatile = reg_key_exists(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Updates\UpdateExeVolatile')
+    if update_exe_volatile:
+        result.append('Update Exe Volatile: %s' % update_exe_volatile)
     renames_pending = registry_readstring(HKEY_LOCAL_MACHINE,r'SYSTEM\CurrentControlSet\Control\Session Manager','PendingFileRenameOperations',None)
     if renames_pending:
         result.append('File renames: %s' % renames_pending)

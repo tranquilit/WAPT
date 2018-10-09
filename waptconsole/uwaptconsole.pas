@@ -151,6 +151,7 @@ type
     EdLastScanDate: TEdit;
     EdLastScanDuration: TEdit;
     GridHostsForPackage: TSOGrid;
+    GridHostWinUpdatesHistory: TSOGrid;
     GridPackages: TSOGrid;
     GridWUUpdates: TSOGrid;
     GridWUDownloads: TSOGrid;
@@ -841,6 +842,8 @@ type
     OrgUnitsSelectionHash:Integer;
     FilteredOrgUnits:TDynStringArray;
 
+    CurrentPackageForGridHostsForPackage: String;
+
     WUAPreferredProducts,
     WUAPreferredClassifications : TDynStringArray;
 
@@ -1516,12 +1519,34 @@ begin
   end;
 end;
 
+function PackageNameFromreq(req:String):String;
+var
+  PosVersion:Integer;
+begin
+  PosVersion:=pos('(',req);
+  if PosVersion > 0 then
+    Result := Trim(copy(UTF8Encode(req),1,PosVersion-1))
+  else
+    Result := Trim(UTF8Encode(req));
+end;
+
+function PackageVersionFromReq(req:String):String;
+var
+  PosVersion:Integer;
+begin
+  PosVersion:=pos('(=',req);
+  if PosVersion > 0 then
+    Result := Trim(copy(UTF8Encode(req),PosVersion+2,Length(req)-(PosVersion+2)))
+  else
+    Result := '';
+end;
+
 procedure TVisWaptGUI.UpdateHostPages(Sender: TObject);
 var
   currhost,packagename : ansistring;
   RowSO, package,packagereq, packages, softwares: ISuperObject;
   waptwua_status,wuauserv_status,wsusupdates: ISuperObject;
-  sores,all_missing,pending_install,additional,upgrades,errors: ISuperObject;
+  sores,all_missing,pending_install,additional,upgrades,errors,remove: ISuperObject;
 begin
   RowSO := Gridhosts.FocusedRow;
 
@@ -1557,7 +1582,8 @@ begin
           for packagereq in all_missing do
           begin
             package := TSuperObject.Create();
-            package['package'] := packagereq;
+            package.S['package'] := PackageNameFromreq(packagereq.AsString);
+            package.S['version'] := PackageVersionFromReq(packagereq.AsString);
             package.S['install_status'] := 'MISSING';
             RowSO.A['installed_packages'].Add(package);
           end;
@@ -1569,9 +1595,23 @@ begin
             begin
               for packagereq in upgrades do
               begin
-                packagename:= Trim(copy(UTF8Encode(packagereq.AsString),1,pos('(',packagereq.AsString)-1));
+                packagename:= PackageNameFromreq(packagereq.AsString);
                 if package.S['package'] = packagename then
                   package.S['install_status'] := 'NEED-UPGRADE';
+              end;
+            end;
+          end;
+
+          remove :=   RowSO['last_update_status.pending.remove'];
+          if (remove<>Nil) and (remove.AsArray.Length>0) then
+          begin
+            for package in RowSO['installed_packages'] do
+            begin
+              for packagereq in remove do
+              begin
+                packagename:= PackageNameFromreq(packagereq.AsString);
+                if package.S['package'] = packagename then
+                  package.S['install_status'] := 'NEED-REMOVE';
               end;
             end;
           end;
@@ -1583,7 +1623,7 @@ begin
             begin
               for packagereq in errors do
               begin
-                packagename:= Trim(copy(UTF8Encode(packagereq.AsString),1,pos('(',packagereq.AsString)-1));
+                packagename:= PackageNameFromreq(packagereq.AsString);
                 if package.S['package'] = packagename then
                   package.S['install_status'] := 'ERROR-UPGRADE';
               end;
@@ -3383,6 +3423,8 @@ procedure TVisWaptGUI.ActSearchGroupsExecute(Sender: TObject);
 begin
   EdSearchGroups.Modified := False;
   GridGroups.Data := PyVarToSuperObject(DMPython.MainWaptRepo.search(searchwords := EdSearchGroups.Text, sections := 'group,unit', description_locale := Language));
+  //GridGroups.CreateColumnsFromData(False,True);
+  GridGroupsChange(GridGroups,GridGroups.FocusedNode);
 end;
 
 procedure TVisWaptGUI.ActTriggerHostUpdateExecute(Sender: TObject);
@@ -3472,8 +3514,8 @@ end;
 
 procedure TVisWaptGUI.ActSearchHostExecute(Sender: TObject);
 var
-  soresult,columns,urlParams, Node, Hosts,fields: ISuperObject;
-  previous_uuid,prop: string;
+  soresult,columns,urlParams, Hosts,fields: ISuperObject;
+  prop: string;
   HostsCount,i: integer;
 const
   DefaultColumns:Array[0..13] of String = ('uuid','os_name','connected_ips','computer_fqdn',
@@ -3561,11 +3603,6 @@ begin
     urlParams.AsArray.Add(UTF8Decode('columns='+join(',',columns)));
     urlParams.AsArray.Add(UTF8Decode(Format('limit=%d',[HostsLimit])));
 
-    if GridHosts.FocusedRow <> nil then
-      previous_uuid := UTF8Encode(GridHosts.FocusedRow.S['uuid'])
-    else
-      previous_uuid := '';
-
     soresult := WAPTServerJsonGet('api/v1/hosts?%s',[soutils.Join('&', urlParams)]);
     if (soresult<>Nil) and (soresult.B['success']) then
     begin
@@ -3582,15 +3619,6 @@ begin
         begin
           PollTasksThread.Terminate;
           PollTasksThread := Nil;
-        end;
-
-        for node in GridHosts.Data do
-        begin
-          if node.S['uuid'] = previous_uuid then
-          begin
-            GridHosts.FocusedRow := node;
-            Break;
-          end;
         end;
       end;
     end
@@ -3613,6 +3641,7 @@ procedure TVisWaptGUI.ActSearchPackageExecute(Sender: TObject);
 begin
   EdSearchPackage.Modified:=False;
   GridPackages.Data := PyVarToSuperObject(DMPython.MainWaptRepo.search(searchwords := EdSearchPackage.Text, exclude_sections := 'host,group,unit', newest_only := cbNewestOnly.Checked, description_locale := Language));
+  GridPackagesChange(GridPackages,GridPackages.FocusedNode);
 end;
 
 procedure TVisWaptGUI.ActPackagesUpdateExecute(Sender: TObject);
@@ -4217,20 +4246,20 @@ begin
     colname := ((Sender as TSOGrid).Header.Columns[Column] as TSOGridColumn).PropertyName;
     if  (colname = 'depends') or (colname = 'conflicts') then
       StrReplace(CellText, ',', #13#10, [rfReplaceAll]);
-    if (colname = 'size') or (colname ='installed_size') then
-      CellText := FormatFloat('# ##0 kB',StrToInt64(CellText) div 1024);
 
-    // awfull hack to workaround the bad wordwrap break of last line for multilines cells...
-    // the problem is probably in the LCL... ?
-    //if  (colname = 'description') or (colname = 'depends') or (colname = 'conflicts') then
-    //  CellText := CellText + #13#10;
+    if (CellData <> nil) and (CellData.DataType = stArray) then
+      CellText := soutils.Join(#13#10, CellData)
+    else
+    begin
+      if StrIsOneOf(colname,['size','installed_size']) then
+        CellText := FormatFloat('# ##0 kB',StrToInt64(CellText) div 1024);
 
-    if (colname = 'description') then
-      CellText := UTF8Encode(Celltext);
+      if StrIsOneOf(colname,['description','description_fr','description_en','description_en']) then
+        CellText := UTF8Encode(Celltext);
 
-    if (colname = 'signature_date') then
-      CellText := copy(Celltext,1,16);
-
+      if StrIsOneOf(colname,['install_date','last_audit_on','signature_date','next_audit_on','created_on','updated_on']) then
+          CellText := Copy(StrReplaceChar(CellText,'T',' '),1,16);
+    end;
   end;
 end;
 
@@ -4258,6 +4287,8 @@ begin
       end;
     end;
   end;
+  if maxheight > 6 *(Sender as TSOGrid).DefaultNodeHeight then
+    maxheight := 6 *(Sender as TSOGrid).DefaultNodeHeight;
   NodeHeight := maxheight + 4;
 end;
 
@@ -4322,6 +4353,7 @@ begin
         'OK': ImageIndex := 0;
         'ERROR-UPGRADE','ERROR': ImageIndex := 2;
         'NEED-UPGRADE': ImageIndex := 1;
+        'NEED-REMOVE': ImageIndex := 8;
         'RUNNING': ImageIndex := 6;
         'MISSING': ImageIndex := 7;
       end;
@@ -4362,7 +4394,7 @@ begin
     if (CellData <> nil) and (CellData.DataType = stArray) then
       CellText := soutils.Join(',', CellData);
 
-    if (propName='install_date') or (propName='last_audit_on') or (propName='next_audit_on') then
+    if StrIsOneOf(propName,['install_date','last_audit_on','next_audit_on','created_on','updated_on']) then
         CellText := Copy(StrReplaceChar(CellText,'T',' '),1,16);
   end;
 end;
@@ -4664,7 +4696,8 @@ begin
     if (CellData <> nil) and (CellData.DataType = stArray) then
       CellText := soutils.Join(',', CellData);
 
-    if (propName='last_seen_on') or (propName='listening_timestamp') or (propName='last_audit_on') then
+    if StrIsOneOf(propname,['file_date','changetime','started_on','finished_on','created_on','last_audit_on',
+        'updated_on','last_seen_on','listening_timestamp']) then
         CellText := Copy(StrReplaceChar(CellText,'T',' '),1,16);
   end;
 end;
@@ -4722,6 +4755,15 @@ begin
     MemoTaskLog.Clear;
 end;
 
+procedure TVisWaptGUI.GridHostWinUpdatesChange(Sender: TBaseVirtualTree;
+  Node: PVirtualNode);
+begin
+  if GridHostWinUpdates.FocusedRow <> Nil then
+    GridHostWinUpdatesHistory.Data := GridHostWinUpdates.FocusedRow['local_status_history']
+  else
+    GridHostWinUpdatesHistory.Data := Nil;
+end;
+
 procedure TVisWaptGUI.GridHostWinUpdatesGetImageIndexEx(
   Sender: TBaseVirtualTree; Node: PVirtualNode; Kind: TVTImageKind;
   Column: TColumnIndex; var Ghosted: Boolean; var ImageIndex: Integer;
@@ -4750,26 +4792,35 @@ var
 begin
   if Node = nil then
     CellText := ''
-  else
+  else if Celltext <>'' then
   begin
     propname:=TSOGridColumn(TSOGrid(Sender).Header.Columns[Column]).PropertyName;
-    if StrIsOneOf(propname,['changetime','started_on','finished_on','crested_on','updated_on']) then
+    if StrIsOneOf(propname,['local_status_install_date','downloaded_on','file_date','changetime','started_on','finished_on','created_on','updated_on']) then
         CellText := Copy(StrReplaceChar(CellText,'T',' '),1,19)
     else if (propname = 'kbids') then
       CellText := 'KB'+soutils.Join(',KB', CellData)
     else if (CellData <> nil) and (CellData.DataType = stArray) then
-      CellText := soutils.Join(',', CellData);
-  end;
+      CellText := soutils.Join(',', CellData)
+    else if StrIsOneOf(propname,['file_size','download_size','max_download_size','min_download_size','target_size','size','installed_size']) then
+    begin
+      if CellData.DataType = stInt then
+        CellText := FormatFloat('# ### ##0 kB',CellData.AsInteger div 1024)
+      else
+        CellText := FormatFloat('# ### ##0 kB',StrToInt64(CellText) div 1024);
+    end;
 
+  end;
 end;
+
+
+
+
 
 procedure TVisWaptGUI.GridNetworksEditing(Sender: TBaseVirtualTree;
   Node: PVirtualNode; Column: TColumnIndex; var Allowed: Boolean);
 begin
   Allowed := True;
 end;
-
-
 
 procedure TVisWaptGUI.GridPackagesColumnDblClick(Sender: TBaseVirtualTree;
   Column: TColumnIndex; Shift: TShiftState);
@@ -4816,6 +4867,8 @@ begin
   SetSOGridVisible(GridHostPackages,'next_audit_on',False);
 
   cbAuthorizedHosts.Checked := False;
+
+  CBShowHostsForGroups.Visible := False;
 
   PgReports.TabVisible := False;
   pgNormalization.TabVisible := False;
@@ -4975,7 +5028,6 @@ procedure TVisWaptGUI.GridGroupsChange(Sender: TBaseVirtualTree;
   Node: PVirtualNode);
 var
   PackageName: String;
-  HostPackagesStatus: ISuperObject;
 begin
   if GridGroups.FocusedRow <> Nil then
   begin

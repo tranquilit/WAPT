@@ -438,7 +438,7 @@ class WaptBaseDB(BaseObjectClass):
                 raise
 
 class WaptSessionDB(WaptBaseDB):
-    curr_db_version = '20180709'
+    curr_db_version = '20181004'
 
     def __init__(self,username=''):
         super(WaptSessionDB,self).__init__(None)
@@ -456,6 +456,7 @@ class WaptSessionDB(WaptBaseDB):
         create table if not exists wapt_sessionsetup (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           username varchar(255),
+          package_uuid varchar(255),
           package varchar(255),
           version varchar(255),
           architecture varchar(255),
@@ -467,6 +468,12 @@ class WaptSessionDB(WaptBaseDB):
                         )
         self.db.execute("""
             create index if not exists idx_sessionsetup_username on wapt_sessionsetup(username,package);""")
+
+        self.db.execute("""
+            create index if not exists idx_sessionsetup_package on wapt_sessionsetup(package);""")
+
+        self.db.execute("""
+            create index if not exists idx_sessionsetup_package_uuid on wapt_sessionsetup(package_uuid);""")
 
         self.db.execute("""
         create table if not exists wapt_params (
@@ -492,6 +499,7 @@ class WaptSessionDB(WaptBaseDB):
             cur = self.db.execute("""\
                   insert into wapt_sessionsetup (
                     username,
+                    package_uuid,
                     package,
                     version,
                     architecture,
@@ -499,9 +507,10 @@ class WaptSessionDB(WaptBaseDB):
                     install_status,
                     install_output,
                     process_id
-                    ) values (?,?,?,?,?,?,?,?)
+                    ) values (?,?,?,?,?,?,?,?,?)
                 """,(
                      self.username,
+                     package_entry.package_uuid,
                      package_entry.package,
                      package_entry.version,
                      package_entry.architecture,
@@ -576,7 +585,7 @@ PackageKey = namedtuple('package',('packagename','version'))
 class WaptDB(WaptBaseDB):
     """Class to manage SQLite database with local installation status"""
 
-    curr_db_version = '20180917'
+    curr_db_version = '20181004'
 
     def initdb(self):
         """Initialize current sqlite db with empty table and return structure version"""
@@ -585,6 +594,7 @@ class WaptDB(WaptBaseDB):
         self.db.execute("""
         create table if not exists wapt_package (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
+          package_uuid varchar(255),
           package varchar(255),
           version varchar(255),
           architecture varchar(255),
@@ -617,16 +627,18 @@ class WaptDB(WaptBaseDB):
           editor varchar(255),
           keywords varchar(255),
           licence varchar(255),
-          homepage varchar(255),
-          package_uuid varchar(255)
+          homepage varchar(255)
         )"""
                         )
         self.db.execute("""
         create index if not exists idx_package_name on wapt_package(package);""")
+        self.db.execute("""
+        create index if not exists idx_package_uuid on wapt_package(package_uuid);""")
 
         self.db.execute("""
         create table if not exists wapt_localstatus (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
+          package_uuid varchar(255),
           package varchar(255),
           version varchar(255),
           version_pinning varchar(255),
@@ -640,7 +652,6 @@ class WaptDB(WaptBaseDB):
           install_status varchar(255),
           install_output TEXT,
           install_params VARCHAR(800),
-          uninstall_string varchar(255),
           uninstall_key varchar(255),
           setuppy TEXT,
           process_id integer,
@@ -662,6 +673,9 @@ class WaptDB(WaptBaseDB):
         """)
         self.db.execute("""
         create index if not exists idx_localstatus_next_audit_on on wapt_localstatus(next_audit_on);
+        """)
+        self.db.execute("""
+        create index if not exists idx_localstatus_package_uuid on wapt_localstatus(package_uuid);
         """)
 
         self.db.execute("""
@@ -764,6 +778,7 @@ class WaptDB(WaptBaseDB):
                 (package_entry.package,package_entry.version,package_entry.architecture,package_entry.maturity,package_entry.locale))
             cur = self.db.execute("""\
                   insert into wapt_package (
+                    package_uuid,
                     package,
                     version,
                     section,
@@ -796,10 +811,10 @@ class WaptDB(WaptBaseDB):
                     editor,
                     keywords,
                     licence,
-                    homepage,
-                    package_uuid
+                    homepage
                     ) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
                 """,(
+                    package_entry.package_uuid,
                     package_entry.package,
                     package_entry.version,
                     package_entry.section,
@@ -833,7 +848,6 @@ class WaptDB(WaptBaseDB):
                     package_entry.keywords,
                     package_entry.licence,
                     package_entry.homepage,
-                    package_entry.package_uuid,
                     )
                 )
             return cur.lastrowid
@@ -853,6 +867,7 @@ class WaptDB(WaptBaseDB):
             cur = self.db.execute("""delete from wapt_localstatus where package=?""" ,(package_entry.package,))
             cur = self.db.execute("""\
                   insert into wapt_localstatus (
+                    package_uuid,
                     package,
                     version,
                     section,
@@ -870,29 +885,30 @@ class WaptDB(WaptBaseDB):
                     conflicts,
                     impacted_process,
                     audit_schedule
-                    ) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+                    ) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
                 """,(
-                     package_entry.package,
-                     package_entry.version,
-                     package_entry.section,
-                     package_entry.priority,
-                     package_entry.architecture,
-                     datetime2isodate(),
-                     'INIT',
-                     '',
-                     jsondump(params_dict),
-                     explicit_by,
-                     os.getpid(),
-                     package_entry.maturity,
-                     package_entry.locale,
-                     package_entry.depends,
-                     package_entry.conflicts,
-                     package_entry.impacted_process,
-                     package_entry.audit_schedule,
+                    package_entry.package_uuid,
+                    package_entry.package,
+                    package_entry.version,
+                    package_entry.section,
+                    package_entry.priority,
+                    package_entry.architecture,
+                    datetime2isodate(),
+                    'INIT',
+                    '',
+                    jsondump(params_dict),
+                    explicit_by,
+                    os.getpid(),
+                    package_entry.maturity,
+                    package_entry.locale,
+                    package_entry.depends,
+                    package_entry.conflicts,
+                    package_entry.impacted_process,
+                    package_entry.audit_schedule,
                    ))
             return cur.lastrowid
 
-    def update_install_status(self,rowid,set_status=None,append_output=None,uninstall_key=None,uninstall_string=None):
+    def update_install_status(self,rowid,set_status=None,append_output=None,uninstall_key=None):
         """Update status of package installation on localdb"""
         with self:
             if set_status in ('OK','WARNING','ERROR'):
@@ -901,13 +917,12 @@ class WaptDB(WaptBaseDB):
                 pid = os.getpid()
             cur = self.db.execute("""\
                   update wapt_localstatus
-                    set install_status=coalesce(?,install_status),install_output = coalesce(install_output,'') || ?,uninstall_key=coalesce(?,uninstall_key),uninstall_string=coalesce(?,uninstall_string),process_id=?
+                    set install_status=coalesce(?,install_status),install_output = coalesce(install_output,'') || ?,uninstall_key=coalesce(?,uninstall_key),process_id=?
                     where rowid = ?
                 """,(
                      set_status,
                      ensure_unicode(append_output) if append_output is not None else u'',
                      uninstall_key,
-                     uninstall_string,
                      pid,
                      rowid,
                      )
@@ -1071,13 +1086,13 @@ class WaptDB(WaptBaseDB):
                 coalesce(l.depends,r.depends) as depends,coalesce(l.conflicts,r.conflicts) as conflicts,coalesce(l.section,r.section) as section,coalesce(l.priority,r.priority) as priority,
                 r.maintainer,r.description,r.sources,r.filename,r.size,
                 r.repo_url,r.md5sum,r.repo,l.maturity,l.locale,
-                l.last_audit_status,l.last_audit_on,l.last_audit_output,l.next_audit_on
+                l.last_audit_status,l.last_audit_on,l.last_audit_output,l.next_audit_on,l.package_uuid
                 from wapt_localstatus l
                 left join wapt_package r on r.package=l.package and l.version=r.version and
                     (l.architecture is null or l.architecture=r.architecture) and
                     (l.maturity is null or l.maturity=r.maturity) and
                     (l.locale is null or l.locale=r.locale)
-           """ % ( ('l.setuppy,' if include_setup else ''),) ]
+            """ % ( ('l.setuppy,' if include_setup else ''),) ]
         if not include_errors:
             sql.append('where l.install_status in ("OK","UNKNOWN")')
 
@@ -1100,7 +1115,7 @@ class WaptDB(WaptBaseDB):
         sql = ["""\
               select l.package,l.version,l.architecture,l.install_date,l.install_status,l.install_output,l.install_params,l.explicit_by,
                     l.depends,l.conflicts,l.uninstall_key,
-                    l.last_audit_status,l.last_audit_on,l.last_audit_output,l.next_audit_on,l.audit_schedule,
+                    l.last_audit_status,l.last_audit_on,l.last_audit_output,l.next_audit_on,l.audit_schedule,l.package_uuid,
                     r.section,r.priority,r.maintainer,r.description,r.sources,r.filename,r.size,
                     r.repo_url,r.md5sum,r.repo,l.maturity,l.locale
                 from wapt_localstatus l
@@ -1140,7 +1155,7 @@ class WaptDB(WaptBaseDB):
               select l.package,l.version,l.architecture,l.install_date,l.install_status,l.install_output,l.install_params,
                 l.uninstall_key,l.explicit_by,
                 coalesce(l.depends,r.depends) as depends,coalesce(l.conflicts,r.conflicts) as conflicts,coalesce(l.section,r.section) as section,coalesce(l.priority,r.priority) as priority,
-                l.last_audit_status,l.last_audit_on,l.last_audit_output,l.next_audit_on,l.audit_schedule,
+                l.last_audit_status,l.last_audit_on,l.last_audit_output,l.next_audit_on,l.audit_schedule,l.package_uuid,
                 r.maintainer,r.description,r.sources,r.filename,r.size,
                 r.repo_url,r.md5sum,r.repo
               from wapt_localstatus l
@@ -1169,7 +1184,7 @@ class WaptDB(WaptBaseDB):
         q = self.query_package_entry(u"""\
               select l.rowid,l.package,l.version,l.architecture,l.install_date,l.install_status,l.install_output,l.install_params,l.setuppy,
                 l.uninstall_key,l.explicit_by,
-                l.last_audit_status,l.last_audit_on,l.last_audit_output,l.next_audit_on,
+                l.last_audit_status,l.last_audit_on,l.last_audit_output,l.next_audit_on,l.package_uuid,
                 coalesce(l.depends,r.depends) as depends,coalesce(l.conflicts,r.conflicts) as conflicts,coalesce(l.section,r.section) as section,coalesce(l.priority,r.priority) as priority,
                 r.maintainer,r.description,r.sources,r.filename,r.size,
                 r.repo_url,r.md5sum,r.repo
@@ -2363,7 +2378,6 @@ class WaptPackageInstallLogger(LogOutput):
             self.user = setuphelpers.get_current_user()
 
         def update_install_status(append_output=None,set_status=None,context=None):
-            # waptdb.update_package_install_status(rowid,set_status,append_output=None,uninstall_key=None,uninstall_string=None
             if self.wapt_context:
                 self.wapt_context.update_package_install_status(
                     rowid=context.install_id,
@@ -2393,7 +2407,6 @@ class WaptPackageSessionSetupLogger(LogOutput):
         self.install_id = install_id
 
         def update_install_status(append_output=None,set_status=None,context=None):
-            # waptdb.update_package_install_status(rowid,set_status,append_output=None,uninstall_key=None,uninstall_string=None
             self.waptsessiondb.update_install_status(
                 rowid=context.install_id,
                 set_status=set_status,
@@ -2424,7 +2437,6 @@ class WaptPackageAuditLogger(LogOutput):
             self.user = setuphelpers.get_current_user()
 
         def update_audit_status(append_output=None,set_status=None,context=None):
-            # waptdb.update_package_install_status(rowid,set_status,append_output=None,uninstall_key=None,uninstall_string=None
             self.wapt_context.waptdb.update_audit_status(
                 rowid=context.install_id,
                 set_status=set_status,
@@ -3362,6 +3374,9 @@ class Wapt(BaseObjectClass):
                 raise EWaptMissingCertificate(u'install_wapt %s: No public Key provided for package signature checking.'%(fname,))
 
             entry = PackageEntry(waptfile=fname)
+            if not entry.package_uuid:
+                entry.make_uuid()
+                logger.info('No uuid, generating package uuid on the fly: %s' % entry.package_uuid)
             self.runstatus=u"Installing package %s version %s ..." % (entry.package,entry.version)
 
             params = self.get_previous_package_params(entry)
@@ -3555,10 +3570,8 @@ class Wapt(BaseObjectClass):
                         logger.info(u'No setup.py')
                         dblogger.exit_status = 'OK'
 
-                    # rowid,set_status,append_output=None,uninstall_key=None,uninstall_string=None
                     self.waptdb.update_install_status(install_id,
-                        uninstall_key=str(new_uninstall_key) if new_uninstall_key else '',
-                        uninstall_string=str(uninstallstring) if uninstallstring else '')
+                        uninstall_key = jsondump(new_uninstall_key))
 
                 finally:
                     if istemporary:
@@ -3708,7 +3721,7 @@ class Wapt(BaseObjectClass):
         q = self.waptdb.query("""\
            select   rowid,package,version,architecture,maturity,locale,install_status,
                     install_output,install_params,explicit_by,uninstall_key,install_date,
-                    last_audit_status,last_audit_on,last_audit_output,next_audit_on
+                    last_audit_status,last_audit_on,last_audit_output,next_audit_on,package_uuid
            from wapt_localstatus
            where package=? order by install_date desc limit 1
            """ , (packagename,) )
@@ -4466,16 +4479,28 @@ class Wapt(BaseObjectClass):
     def _get_uninstallkeylist(self,uninstall_key_str):
         """Decode uninstallkey list from db field
         For historical reasons, this field is encoded as str(pythonlist)
+        or sometimes simple repr of a str
+
+        ..Changed 1.6.2.8:: uninstallkeylist is a json representation of list.
 
         Returns:
             list
         """
         if uninstall_key_str:
-            if uninstall_key_str[0] not in ['[','"',"'"]:
-                guids = uninstall_key_str
+            if uninstall_key_str.startswith("['") or uninstall_key_str.startswith("[u'"):
+                # python encoded repr of a list
+                try:
+                    # transform to a json like array.
+                    guids = json.loads(uninstall_key_str.replace("[u'","['").replace(", u'",',"').replace("'",'"'))
+                except:
+                    guids = uninstall_key_str
+            elif uninstall_key_str[0] in ["'",'"']:
+                # simple python string, removes quotes
+                guids = uninstall_key_str[1:-1]
             else:
                 try:
-                    guids = eval(uninstall_key_str)
+                    # normal json encoded list
+                    guids = json.loads(uninstall_key_str)
                 except:
                     guids = uninstall_key_str
 
@@ -4533,25 +4558,9 @@ class Wapt(BaseObjectClass):
                         setuphelpers.killalltasks(ensure_list(mydict['impacted_process']))
 
 
-                    if mydict['uninstall_string']:
-                        if mydict['uninstall_string'][0] not in ['[','"',"'"]:
-                            guids = mydict['uninstall_string']
-                        else:
-                            try:
-                                guids = eval(mydict['uninstall_string'])
-                            except:
-                                guids = mydict['uninstall_string']
-                        if isinstance(guids,(unicode,str)):
-                            guids = [guids]
-                        for guid in guids:
-                            if guid:
-                                try:
-                                    logger.info(u'Running %s' % guid)
-                                    logger.info(self.run(guid))
-                                except Exception as e:
-                                    logger.warning(u"Warning : %s" % ensure_unicode(e))
-
-                    elif mydict['uninstall_key']:
+                    if mydict['uninstall_key']:
+                        # cook the uninstall_key because could be either repr of python list or string
+                        # should be now json list in DB
                         guids = self._get_uninstallkeylist(mydict['uninstall_key'])
                         for guid in guids:
                             if guid:
@@ -5316,6 +5325,7 @@ class Wapt(BaseObjectClass):
         result['authorized_certificates_cn'] = trusted_certs_cn
         result['maturities'] = self.maturities
         result['locales'] = self.locales
+        result['pending_reboot_reasons']= setuphelpers.pending_reboot_reasons()
 
         # read from config
         if self.config.has_option('global','waptservice_sslport'):
@@ -5410,6 +5420,11 @@ class Wapt(BaseObjectClass):
         return inv
 
     def personal_certificate(self):
+        """Returns the personal certificates chain
+
+        Returns:
+            list (of SSLCertificate). The first one is the personal certificate. The other are useful if intermediate CA are used.
+        """
         cert_chain = SSLCABundle()
         cert_chain.add_pem(pem_filename = self.personal_certificate_path)
         return cert_chain.certificates()
@@ -5439,7 +5454,7 @@ class Wapt(BaseObjectClass):
             raise EWaptMissingPrivateKey(u'The key matching the certificate %s can not be found or decrypted' % (cert.public_cert_filename or cert.subject))
         return self._private_key_cache
 
-    def sign_package(self,zip_or_directoryname,certificate=None,callback=None,private_key_password=None):
+    def sign_package(self,zip_or_directoryname,certificate=None,callback=None,private_key_password=None,private_key = None,set_maturity=None,inc_package_release=False):
         """Calc the signature of the WAPT/manifest.sha256 file and put/replace it in ZIP or directory.
             if directory, creates WAPT/manifest.sha256 and add it to the content of package
             create a WAPT/signature file and it to directory or zip file.
@@ -5449,14 +5464,16 @@ class Wapt(BaseObjectClass):
 
         Args:
             zip_or_directoryname: filename or path for the wapt package's content
-            certificate: path to the certificate of signer.
+            certificate (list): certificates chain of signer.
             callback: ref to the function to call if a password is required for opening the private key.
+            private_key (SSLPrivateKey): the private key to use
 
         Returns:
             str: base64 encoded signature of manifest.sha256 file (content
         """
         if not isinstance(zip_or_directoryname,unicode):
             zip_or_directoryname = unicode(zip_or_directoryname)
+
         if certificate is None:
             certificate = self.personal_certificate()
 
@@ -5464,11 +5481,18 @@ class Wapt(BaseObjectClass):
             signer_cert = certificate[0]
         else:
             signer_cert = certificate
-        key = signer_cert.matching_key_in_dirs(password_callback=callback,private_key_password=private_key_password)
+
+        if private_key is None:
+            private_key = signer_cert.matching_key_in_dirs(password_callback=callback,private_key_password=private_key_password)
 
         logger.info(u'Using identity : %s' % signer_cert.cn)
         pe =  PackageEntry().load_control_from_wapt(zip_or_directoryname)
-        return pe.sign_package(private_key=key,certificate = certificate,password_callback=callback,private_key_password=private_key_password,mds = self.sign_digests)
+        if set_maturity is not None and pe.maturity != set_maturity:
+            pe.maturity = set_maturity
+        if inc_package_release:
+            pe.inc_build()
+        pe.save_control_to_wapt()
+        return pe.sign_package(private_key=private_key,certificate = certificate,password_callback=callback,private_key_password=private_key_password,mds = self.sign_digests)
 
     def build_package(self,directoryname,inc_package_release=False,excludes=['.svn','.git','.gitignore','setup.pyc'],
                 target_directory=None,set_maturity=None):
@@ -6696,7 +6720,15 @@ class Wapt(BaseObjectClass):
 
 
     def show_progress(self,show_box=False,msg='Loading...',progress = None,progress_max = None):
-        """Global hook to report progress feedback to the user"""
+        """Global hook to report progress feedback to the user
+
+        Args:
+            show_box (bool): indicate to display or hide the notification
+            msg (str): A status message to display. If None, nothing is changed.
+            progress (float): Completion
+            progress_max (float): Target of completion.
+
+        """
         if self.progress_hook:
             self.progress_hook(show_box,msg,progress,progress_max)  # pylint: disable=not-callable
         else:
