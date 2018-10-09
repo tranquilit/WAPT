@@ -1,5 +1,5 @@
 ﻿[PyScripter]
-Version=3.4.1.0
+Version=3.4.2.0
 
 [Project]
 ClassName=TProjectRootNode
@@ -64,18 +64,22 @@ FileName=$[Project-Path]..\waptenterprise\waptserver\auth_module_ad.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node2\ChildNodes\Node1\ChildNodes\Node1]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]..\waptenterprise\waptserver\wsus.py
+FileName=C:\tranquilit\wapt\waptenterprise\waptservice\enterprise.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node2\ChildNodes\Node1\ChildNodes\Node2]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]..\waptenterprise\waptserver\wsus_common.py
+FileName=$[Project-Path]..\waptenterprise\waptserver\wsus.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node2\ChildNodes\Node1\ChildNodes\Node3]
+ClassName=TProjectFileNode
+FileName=$[Project-Path]..\waptenterprise\waptserver\wsus_common.py
+
+[Project\ChildNodes\Node0\ChildNodes\Node2\ChildNodes\Node1\ChildNodes\Node4]
 ClassName=TProjectFileNode
 FileName=$[Project-Path]..\waptenterprise\waptserver\wsus_tasks.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node2\ChildNodes\Node1\ChildNodes]
-Count=4
+Count=5
 
 [Project\ChildNodes\Node0\ChildNodes\Node2\ChildNodes\Node2]
 ClassName=TProjectFolderNode
