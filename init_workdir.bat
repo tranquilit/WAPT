@@ -13,10 +13,10 @@ REM set https_proxy=http://proxy:3128
 git clean -xfd
 %PYTHON_PATH%\python.exe -m pip install -U pip distribute
 %PYTHON_PATH%\Scripts\pip.exe install virtualenv
-%PYTHON_PATH%\Scripts\virtualenv.exe .
-rem xcopy /I /E /F /Y c:\python27\libs libs
-rem xcopy /I /E /F /Y c:\python27\DLLs DLLs
-rem xcopy /I /E /F /Y /EXCLUDE:libexcludes.txt c:\python27\lib lib
+%PYTHON_PATH%\Scripts\virtualenv.exe  --no-site-packages --always-copy . 
+xcopy /I /E /F /Y c:\python27\libs libs
+xcopy /I /E /F /Y c:\python27\DLLs DLLs
+xcopy /I /E /F /Y /EXCLUDE:libexcludes.txt c:\python27\lib lib
 
 Scripts\python  -m pip install -U pip distribute wheel virtualenv six requests==2.19.1
 

@@ -2384,7 +2384,7 @@ class WaptPackageInstallLogger(LogOutput):
                     set_status=set_status,
                     append_output=append_output)
 
-                if self.wapt_context.events:
+                if hasattr(self.wapt_context,'events') and self.wapt_context.events:
                     self.wapt_context.events.post_event('PRINT',ensure_unicode(append_output))
 
         LogOutput.__init__(self,console=console,
