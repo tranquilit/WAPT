@@ -94,6 +94,7 @@ __all__ = \
  'get_default_gateways',
  'get_dns_servers',
  'get_domain_fromregistry',
+ 'get_computer_domain',
  'get_file_properties',
  'get_hostname',
  'get_language',
@@ -1276,6 +1277,16 @@ def get_domain_fromregistry():
             domain = None
     return domain
 
+def get_computer_domain():
+    """Get computer AD domain
+    """
+    try:
+        # only works if connected ?
+        info = win32security.DsGetDcName()
+        return info.get('DomainName',None)
+    except:
+        # try to get domain from last gpupdate...
+        return registry_readstring(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows\CurrentVersion\Group Policy\History','NetworkName',None)
 
 def get_loggedinusers():
     """Return the list of logged in users on this host
