@@ -5709,14 +5709,15 @@ class Wapt(BaseObjectClass):
                         uninstallkeys = self._get_uninstallkeylist(package_install['uninstall_key'])
                         dblog.exit_status = 'OK'
 
-                        for key in uninstallkeys:
-                            uninstallkey_exists = setuphelpers.installed_softwares(uninstallkey=key)
-                            if not uninstallkey_exists:
-                                print(u'ERROR: Uninstall Key %s is not in Windows Registry.' % key)
-                                dblog.exit_status = worst(dblog.exit_status,'ERROR')
-                            else:
-                                print(u'OK: Uninstall Key %s in Windows Registry.' % key)
-                                dblog.exit_status = worst(dblog.exit_status,'OK')
+                        if uninstallkeys is not None:
+                            for key in uninstallkeys:
+                                uninstallkey_exists = setuphelpers.installed_softwares(uninstallkey=key)
+                                if not uninstallkey_exists:
+                                    print(u'ERROR: Uninstall Key %s is not in Windows Registry.' % key)
+                                    dblog.exit_status = worst(dblog.exit_status,'ERROR')
+                                else:
+                                    print(u'OK: Uninstall Key %s in Windows Registry.' % key)
+                                    dblog.exit_status = worst(dblog.exit_status,'OK')
 
                         if package_entry.has_setup_py():
                             # get value of required parameters from system wide install
