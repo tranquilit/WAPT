@@ -910,7 +910,7 @@ class WaptDownloadPackage(WaptTask):
         return d
 
     def __unicode__(self):
-        return _(u"Download of {packagenames} (tâche #{id})").format(classname=self.__class__.__name__,id=self.id,packagenames=self.packagenames)
+        return _(u"Download of {packagenames} (tâche #{id})").format(classname=self.__class__.__name__,id=self.id,packagenames=','.join(self.packagenames))
 
     def same_action(self,other):
         return (self.__class__ == other.__class__) and (self.packagenames == other.packagenames)
