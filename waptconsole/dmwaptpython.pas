@@ -357,14 +357,22 @@ end;
 procedure TDMPython.DataModuleCreate(Sender: TObject);
 var
   st:TStringList;
+  RegWaptBaseDir:String;
 begin
   {$ifdef ENTERPRISE}
   CheckPySources;
   {$endif}
 
+  RegWaptBaseDir:=WaptBaseDir();
+  if not FileExists(AppendPathDelim(RegWaptBaseDir)+'python27.dll') then
+    RegWaptBaseDir:=RegisteredAppInstallLocation('wapt_is1');
+
+  if RegWaptBaseDir='' then
+    RegWaptBaseDir:=RegisteredExePath('wapt-get.exe');
+
   with PythonEng do
   begin
-    DllName := 'python27.dll';
+    DllName := RegWaptBaseDir+'python27.dll';
     RegVersion := '2.7';
     UseLastKnownVersion := False;
     LoadDLL;

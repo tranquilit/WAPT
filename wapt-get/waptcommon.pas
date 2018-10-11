@@ -136,6 +136,11 @@ Function ISO8601ToDateTime(Value: String):TDateTime;
 
 Function wapt_edition:String;
 
+Function RegisteredExePath(ExeName:String):String;
+
+// Get the registered install location for an application from registry given its executable name
+function RegisteredAppInstallLocation(UninstallKey:String): String;
+
 type
 
   { TWaptRepo }
@@ -225,7 +230,7 @@ implementation
 uses LazFileUtils, LazUTF8, soutils, Variants,uwaptres,waptwinutils,waptcrypto,tisinifiles,tislogging,
   NetworkAdapterInfo, JwaWinsock2,
   IdSSLOpenSSL,IdMultipartFormData,IdExceptionCore,IdException,IdURI,
-  gettext,IdStack,IdCompressorZLib,IdAuthentication,shfolder,IniFiles,tiscommon,strutils,tisstrings;
+  gettext,IdStack,IdCompressorZLib,IdAuthentication,shfolder,IniFiles,tiscommon,strutils,tisstrings,registry;
 
 const
   CacheWaptServerUrl: AnsiString = 'None';
@@ -2055,6 +2060,69 @@ begin
   else
     Result := 'community';
 end;
+
+// Get the registered application location from registry given its executable name
+function RegisteredExePath(ExeName:String): String;
+var
+  Reg: TRegistry;
+  KeyPath: String;
+begin
+  result := '';
+  Reg := TRegistry.Create(KEY_READ or KEY_WOW64_64KEY);
+  With Reg do
+  try
+    RootKey:=HKEY_LOCAL_MACHINE;
+    KeyPath := 'SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\'+ExeName;
+    if KeyExists(KeyPath) and OpenKey(KeyPath,False) then
+    begin
+      Result := ReadString('');
+      CloseKey;
+    end
+    else
+    begin
+      KeyPath := 'SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\App Paths\'+ExeName;
+      if KeyExists(KeyPath) and OpenKey(KeyPath,False) then
+      begin
+        Result := ReadString('');
+        CloseKey;
+      end;
+    end;
+  finally
+    Reg.Free;
+  end;
+end;
+
+// Get the registered install location for an application from registry given its executable name
+function RegisteredAppInstallLocation(UninstallKey:String): String;
+var
+  Reg: TRegistry;
+  KeyPath: String;
+begin
+  result := '';
+  Reg := TRegistry.Create(KEY_READ or KEY_WOW64_64KEY);
+  With Reg do
+  try
+    RootKey:=HKEY_LOCAL_MACHINE;
+    KeyPath := 'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\'+UninstallKey;
+    if KeyExists(KeyPath) and OpenKey(KeyPath,False) then
+    begin
+      Result := ReadString('InstallLocation');
+      CloseKey;
+    end
+    else
+    begin
+      KeyPath := 'SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\'+UninstallKey;
+      if KeyExists(KeyPath) and OpenKey(KeyPath,False) then
+      begin
+        Result := ReadString('InstallLocation');
+        CloseKey;
+      end;
+    end;
+  finally
+    Reg.Free;
+  end;
+end;
+
 
 initialization
 //  if not Succeeded(CoInitializeEx(nil, COINIT_MULTITHREADED)) then;
