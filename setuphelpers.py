@@ -88,7 +88,11 @@ __all__ = \
  'filecopyto',
  'find_processes',
  'file_is_locked',
+ 'fix_wmi',
+ 'find_all_files',
  'get_appath',
+ 'get_app_path',
+ 'get_app_install_location',
  'get_computername',
  'get_current_user',
  'get_default_gateways',
@@ -2562,30 +2566,35 @@ def wmi_info(keys=['Win32_ComputerSystem','Win32_ComputerSystemProduct','Win32_B
     """
     result = {}
     if wmi:
-        wm = wmi.WMI()
-        for key in keys:
-            wmiclass = getattr(wm,key)
-            if where:
-                cs = wmiclass.query(**where)
-            else:
-                cs = wmiclass()
-            if len(cs)>1:
-                na = result[key] = []
-                for cs2 in cs:
-                    na.append({})
-                    for k in cs2.properties.keys():
-                        if not k in exclude_subkeys:
-                            prop = cs2.wmi_property(k)
-                            if prop:
-                                na[-1][k] = prop.Value
-            elif len(cs)>0:
-                result[key] = {}
-                if cs:
-                    for k in cs[0].properties.keys():
-                        if not k in exclude_subkeys:
-                            prop = cs[0].wmi_property(k)
-                            if prop:
-                                result[key][k] = prop.Value
+        try:
+            wm = wmi.WMI()
+            for key in keys:
+                wmiclass = getattr(wm,key)
+                if where:
+                    cs = wmiclass.query(**where)
+                else:
+                    cs = wmiclass()
+                if len(cs)>1:
+                    na = result[key] = []
+                    for cs2 in cs:
+                        na.append({})
+                        for k in cs2.properties.keys():
+                            if not k in exclude_subkeys:
+                                prop = cs2.wmi_property(k)
+                                if prop:
+                                    na[-1][k] = prop.Value
+                elif len(cs)>0:
+                    result[key] = {}
+                    if cs:
+                        for k in cs[0].properties.keys():
+                            if not k in exclude_subkeys:
+                                prop = cs[0].wmi_property(k)
+                                if prop:
+                                    result[key][k] = prop.Value
+        except Exception as e:
+            # WMI is broken...
+            logger.critical(u'WMI is broken on this computer. See https://blogs.technet.microsoft.com/askperf/2009/04/13/wmi-rebuilding-the-wmi-repository : %s' % ensure_unicode(e))
+
     return result
 
 def wmi_as_struct(wmi_object,exclude_subkeys=['OEMLogoBitmap']):
@@ -2620,11 +2629,13 @@ def wmi_info_basic():
     >>> 'System_Information' in r
     True
     """
-    if wmi:
+    try:
         result = {u'System_Information':
                 wmi_as_struct(wmi.WMI().Win32_ComputerSystemProduct.query(fields=['UUID','IdentifyingNumber','Name','Vendor']))
                 }
-    else:
+    except Exception as e:
+        # WMI is broken...
+        logger.critical(u'WMI is broken on this computer. See https://blogs.technet.microsoft.com/askperf/2009/04/13/wmi-rebuilding-the-wmi-repository : %s' % ensure_unicode(e))
         result = {u'System_Information':
             {'UUID':'','IdentifyingNumber':'','Name':'','Vendor':''}}
     return result
@@ -2642,10 +2653,12 @@ def set_computer_description(description):
 
 def get_computer_description():
     """Get the computer descrption"""
-    if wmi:
+    try:
         for win32_os in wmi.WMI().Win32_OperatingSystem():
             return win32_os.Description
-    else:
+    except Exception as e:
+        # WMI is broken...
+        logger.critical(u'WMI is broken on this computer. See https://blogs.technet.microsoft.com/askperf/2009/04/13/wmi-rebuilding-the-wmi-repository : %s' % ensure_unicode(e))
         return registry_readstring(HKEY_LOCAL_MACHINE,r'SYSTEM\CurrentControlSet\services\LanmanServer\Parameters','srvcomment','')
 
 
@@ -2701,7 +2714,7 @@ def critical_system_pending_updates(severities = ['Critical']):
         updateSession = win32com.client.Dispatch("Microsoft.Update.Session")
         updateSearcher = updateSession.CreateUpdateSearcher()
         searchResult = updateSearcher.Search("IsInstalled=0 and Type='Software'")
-        return [ update.Title for update in searchResult.Updates if update.MsrcSeverity in severities]
+        return [ dict(update_id="%s_%s" % (update.Identity.UpdateID,update.Identity.RevisionNumber),title=update.Title) for update in searchResult.Updates if update.MsrcSeverity in severities]
 
 def pending_reboot_reasons():
     """Return the list of reasons requiring a pending reboot the computer
@@ -2886,7 +2899,7 @@ def get_last_logged_on_user():
 
 def local_drives():
     result = {}
-    if wmi:
+    try:
         w = wmi.WMI()
         keystr = ['Caption','DriveType','Description','FileSystem','Name','VolumeSerialNumber']
         keyint = ['FreeSpace','Size']
@@ -2904,8 +2917,41 @@ def local_drives():
                 details['FreePercent'] =int(details.get('FreeSpace',0) * 100 / details['Size'])
             letter = disk.Caption
             result[letter.replace(':','')] = details
-
+    except Exception as e:
+        # WMI is broken...
+        logger.critical(u'WMI is broken on this computer. See https://blogs.technet.microsoft.com/askperf/2009/04/13/wmi-rebuilding-the-wmi-repository : %s' % ensure_unicode(e))
     return result
+
+
+def fix_wmi():
+    """reregister all the WMI related DLLs in the wbem folder
+    """
+    run('sc config winmgmt start= disabled')
+    run('net stop winmgmt /y',accept_returncodes=[0,2])
+    for srv in glob.glob(makepath(system32(),'wbem','*.dll')):
+        try:
+            run(['regsvr32','/s', srv])
+        except CalledProcessErrorOutput as e:
+            print(u'Register of DLL server %s failed. Code: %s' % (srv,e.returncode))
+
+    run('wmiprvse /regserver')
+    with disable_file_system_redirection():
+        run('winmgmt /resyncperf')
+    run('sc config winmgmt start= auto')
+    run('net start winmgmt')
+    for mof in find_all_files(makepath(system32(),'wbem'),['*.mof','*.mfl']):
+        try:
+            run(['mofcomp',mof])
+        except CalledProcessErrorOutput as e:
+            print(u'mofcomp of %s failed. Code: %s' % (mof,e.returncode))
+
+    try:
+        with disable_file_system_redirection():
+            run('winmgmt /verifyrepository')
+        return True
+    except CalledProcessErrorOutput as e:
+        print(u'Verify wmi repository failed : %s' % (ensure_unicode(e)))
+        return False
 
 # from http://stackoverflow.com/questions/580924/python-windows-file-version-attribute
 def get_file_properties(fname):
@@ -3671,12 +3717,12 @@ def get_language():
     return locale.getdefaultlocale()[0].split('_')[0]
 
 
-def get_appath(exename):
+def get_app_path(exename):
     r"""Get the registered application location from registry given its executable name
 
-    >>> get_appath('firefox.exe')
+    >>> get_app_path('firefox.exe')
     u'C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe'
-    >>> get_appath('wapt-get.exe')
+    >>> get_app_path('wapt-get.exe')
     u'C:\\wapt\\wapt-get.exe'
     """
     result = None
@@ -3698,6 +3744,37 @@ def get_appath(exename):
             else:
                 raise
     return result
+
+# legacy
+get_appath = get_app_path
+
+def get_app_install_location(uninstallkey):
+    r"""Get the registered application install location from registry given its uninstallkey
+
+    >>> get_app_install_location('wapt_is1')
+    u'C:\\wapt\\'
+    """
+
+    result = None
+    try:
+        with reg_openkey_noredir(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\%s' % uninstallkey) as key:
+            result = reg_getvalue(key,'InstallLocation')
+    except WindowsError as e:
+        if e.winerror == 2:
+            result = None
+        else:
+            raise
+    if iswin64() and not result:
+        try:
+            with reg_openkey_noredir(HKEY_LOCAL_MACHINE,r'SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\%s' % uninstallkey) as key:
+                result = reg_getvalue(key,'InstallLocation')
+        except WindowsError as e:
+            if e.winerror == 2:
+                result = None
+            else:
+                raise
+    return result
+
 
 class InstallerTypes(object):
     MSI = 'MSI'
@@ -4078,9 +4155,11 @@ def installed_windows_updates(**queryfilter):
     .. versionadded:: 1.3.3
 
     """
-    if wmi:
+    try:
         return wmi_as_struct(wmi.WMI().Win32_QuickFixEngineering.query(**queryfilter))
-    else:
+    except Exception as e:
+        # WMI is broken...
+        logger.critical(u'WMI is broken on this computer. See https://blogs.technet.microsoft.com/askperf/2009/04/13/wmi-rebuilding-the-wmi-repository : %s' % ensure_unicode(e))
         return None
 
 def local_desktops():
