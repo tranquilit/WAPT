@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.6.2.8"
+__version__ = "1.7.0.0"
 import logging
 import sys
 import tempfile
@@ -57,6 +57,8 @@ from waptenterprise.waptserver.wsus_tasks import *
 from waptenterprise import licencing
 from waptenterprise.waptwua.client import WaptWUA,EnsureWUAUServRunning,WaptWUARules
 from waptenterprise.waptwua import client,fixwua
+
+from setuphelpers import *
 
 import urllib3
 
@@ -1280,6 +1282,9 @@ def test_uninstall_innosetup():
     w.install('tis-audacity',force=True)
     print(setuphelpers.uninstall_cmd('Audacity_is1'))
 
+def test_fix_wmi():
+    fix_wmi()
+
 
 if __name__ == '__main__':
     #gen_perso('htouvet',email='htouvet@tranquil.it')
@@ -1287,6 +1292,8 @@ if __name__ == '__main__':
     #test_wuarules()
     #test_fixwua()
     #test_wua()
+    test_fix_wmi()
+
     test_wuaprogress()
     #test_certificate_expire()
     #test_install_only_not_running()
