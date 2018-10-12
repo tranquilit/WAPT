@@ -303,11 +303,10 @@ type
     pgNormalization: TTabSheet;
     SynEditReportsSQL: TSynEdit;
     SynSQLSyn: TSynSQLSyn;
+    tbReportingExportExcel: TToolButton;
     TimerWUALoadWinUpdates: TTimer;
     ToolBar1: TToolBar;
     TbReport: TToolBar;
-    TbReportResult: TToolBar;
-    ToolButton1: TToolButton;
     ToolButton10: TToolButton;
     ToolButton3: TToolButton;
     ToolButton4: TToolButton;
@@ -556,7 +555,6 @@ type
     procedure ActRemoteAssistUpdate(Sender: TObject);
     procedure ActExternalRepositoriesSettingsExecute(Sender: TObject);
     procedure ActReportingQueryDesignExecute(Sender: TObject);
-    procedure ActReportingQueryDesignUpdate(Sender: TObject);
     procedure ActReportingQuerySaveAllExecute(Sender: TObject);
     procedure ActReportingQuerySaveAllUpdate(Sender: TObject);
     procedure ActReportingQuerySaveUpdate(Sender: TObject);
@@ -766,6 +764,10 @@ type
       const TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex;
       TextType: TVSTTextType);
     procedure GridReportingColumnResize(Sender: TVTHeader; Column: TColumnIndex );
+    procedure GridReportingHeaderClick(Sender: TVTHeader;
+      HitInfo: TVTHeaderHitInfo);
+    procedure GridReportingHeaderDragged(Sender: TVTHeader;
+      Column: TColumnIndex; OldPosition: Integer);
     procedure GridWinproductsChange(Sender: TBaseVirtualTree; Node: PVirtualNode );
     procedure GridWinUpdatesGetImageIndexEx(Sender: TBaseVirtualTree;
       Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
@@ -798,6 +800,8 @@ type
     FReportingEditModeEnable : boolean;
     FReportingLoadingQuery : boolean;
     FNormalization : ISuperObject;
+    function ReportingIsUpdated: Boolean;
+    function CheckreportingSaveUpdates: Boolean;
     procedure DoProgress(ASender: TObject);
     procedure FillcbADSiteDropDown;
     procedure FillcbGroups;
@@ -832,6 +836,8 @@ type
     procedure UpdateTasksReport(tasksresult: ISuperObject);
     procedure SetGridReportingData( data : ISuperObject );
     procedure SetReportingEditModeEnable( EditEnable : Boolean );
+
+    procedure SetReportingDirty;
 
   public
     { public declarations }
@@ -3959,7 +3965,7 @@ begin
   DMPython.PythonOutput.OnSendData := @PythonOutputSendData;
   FReportingQueries := TSuperObject.ParseString('[]', False );
   FReportingEditModeEnable := True;
-  SetReportingEditModeEnable( false );
+  SetReportingEditModeEnable(False);
 end;
 
 procedure TVisWaptGUI.FormDestroy(Sender: TObject);
@@ -5442,6 +5448,32 @@ procedure TVisWaptGUI.GridReportingColumnResize(Sender: TVTHeader;
   Column: TColumnIndex);
 begin
 end;
+
+procedure TVisWaptGUI.SetReportingDirty;
+begin
+end;
+
+
+procedure TVisWaptGUI.GridReportingHeaderDragged(Sender: TVTHeader;
+  Column: TColumnIndex; OldPosition: Integer);
+begin
+end;
+
+function TVisWaptGUI.CheckreportingSaveUpdates:Boolean;
+begin
+
+end;
+
+function TVisWaptGUI.CheckReportingIsUpdated:Boolean;
+begin
+end;
+
+procedure TVisWaptGUI.GridReportingHeaderClick(Sender: TVTHeader;
+  HitInfo: TVTHeaderHitInfo);
+begin
+end;
+
+
 
 {$endif}
 

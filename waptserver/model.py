@@ -413,7 +413,7 @@ class ReportingQueries(WaptBaseModel):
     id = PrimaryKeyField(primary_key=True);
     name = CharField(null=False, index=True );
     query = CharField( null=True, max_length=2000 );
-    settings = CharField( null=True, max_length=2000 );
+    settings = BinaryJSONField(null=True,index=False);
     def __repr__(self):
         return '<ReportingQueries uuid=%s name=%s>' % (self.uuid, self.name);
 
@@ -1439,7 +1439,7 @@ def upgrade_db_structure():
             (v, created) = ServerAttribs.get_or_create(key='db_version')
             v.value = next_version
             v.save()
- 
+
 
 if __name__ == '__main__':
     if platform.system() != 'Windows' and getpass.getuser() != 'wapt':

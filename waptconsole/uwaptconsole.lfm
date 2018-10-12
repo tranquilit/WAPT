@@ -25,9 +25,9 @@ object VisWaptGUI: TVisWaptGUI
     Height = 480
     Top = 0
     Width = 1159
-    ActivePage = pgInventory
+    ActivePage = PgReports
     Align = alClient
-    TabIndex = 0
+    TabIndex = 7
     TabOrder = 0
     OnChange = MainPagesChange
     object pgInventory: TTabSheet
@@ -5767,24 +5767,24 @@ object VisWaptGUI: TVisWaptGUI
     end
     object PgReports: TTabSheet
       Caption = 'Reports'
-      ClientHeight = 448
+      ClientHeight = 454
       ClientWidth = 1151
       TabVisible = False
       object Panel18: TPanel
         Left = 208
-        Height = 398
+        Height = 404
         Top = 50
         Width = 943
         Align = alClient
         BevelOuter = bvNone
         Caption = 'Panel18'
-        ClientHeight = 398
+        ClientHeight = 404
         ClientWidth = 943
         TabOrder = 2
         object PanelReportingGrid: TPanel
           Left = 0
           Height = 244
-          Top = 154
+          Top = 160
           Width = 943
           Align = alBottom
           BevelOuter = bvNone
@@ -5793,11 +5793,11 @@ object VisWaptGUI: TVisWaptGUI
           ClientWidth = 943
           TabOrder = 0
           object GridReporting: TSOGrid
-            Left = 35
+            Left = 5
             Height = 234
             Top = 5
-            Width = 903
-            ShowAdvancedColumnsCustomize = False
+            Width = 933
+            ShowAdvancedColumnsCustomize = True
             Align = alClient
             Anchors = [akLeft, akBottom]
             BorderSpacing.Left = 5
@@ -5806,7 +5806,7 @@ object VisWaptGUI: TVisWaptGUI
             BorderSpacing.Bottom = 5
             Color = clWhite
             Colors.UnfocusedColor = clMedGray
-            Header.AutoSizeIndex = 0
+            Header.AutoSizeIndex = -1
             Header.Columns = <>
             Header.DefaultHeight = 18
             Header.Height = 18
@@ -5820,38 +5820,24 @@ object VisWaptGUI: TVisWaptGUI
             TreeOptions.SelectionOptions = [toExtendedFocus, toSimpleDrawSelection]
             WantTabs = True
             OnColumnResize = GridReportingColumnResize
-          end
-          object TbReportResult: TToolBar
-            Left = 0
-            Height = 244
-            Top = 0
-            Width = 30
-            Align = alLeft
-            Caption = 'TbReportResult'
-            EdgeBorders = [ebLeft]
-            Images = ImageListReports
-            TabOrder = 1
-            object ToolButton1: TToolButton
-              Left = 3
-              Top = 0
-              Action = ActReportingQueryExportToExcel
-            end
+            OnHeaderClick = GridReportingHeaderClick
+            OnHeaderDragged = GridReportingHeaderDragged
           end
         end
         object PanelReportingEditSQL: TPanel
           Left = 0
-          Height = 149
+          Height = 155
           Top = 0
           Width = 943
           Align = alClient
           BevelOuter = bvNone
           Caption = 'PanelReportingEditSQL'
-          ClientHeight = 149
+          ClientHeight = 155
           ClientWidth = 943
           TabOrder = 1
           inline SynEditReportsSQL: TSynEdit
             Left = 5
-            Height = 139
+            Height = 145
             Top = 5
             Width = 933
             Align = alClient
@@ -6355,7 +6341,7 @@ object VisWaptGUI: TVisWaptGUI
           Cursor = crVSplit
           Left = 0
           Height = 5
-          Top = 149
+          Top = 155
           Width = 943
           Align = alBottom
           ResizeAnchor = akBottom
@@ -6374,67 +6360,74 @@ object VisWaptGUI: TVisWaptGUI
         ShowCaptions = True
         TabOrder = 1
         object ToolButton4: TToolButton
-          Left = 1
+          Left = 149
           Top = 2
           Action = ActReportingQueryNew
         end
         object ToolButton7: TToolButton
-          Left = 49
+          Left = 209
           Top = 2
           Action = ActReportingQueryDelete
         end
         object ToolButton10: TToolButton
-          Left = 241
+          Left = 70
           Top = 2
           Action = ActReportingQueryReload
         end
         object ToolButton3: TToolButton
-          Left = 97
+          Left = 397
           Top = 2
           Action = ActReportingQueryExecute
         end
         object ToolButton5: TToolButton
-          Left = 145
+          Left = 279
           Top = 2
           Action = ActReportingQuerySave
         end
         object ToolButtonDesignQuery: TToolButton
-          Left = 326
+          Left = 1
           Top = 2
           Action = ActReportingQueryDesign
           Style = tbsCheck
         end
         object ToolButton9: TToolButton
-          Left = 193
+          Left = 327
           Top = 2
           Action = ActReportingQuerySaveAll
+        end
+        object tbReportingExportExcel: TToolButton
+          Left = 445
+          Top = 2
+          Action = ActReportingQueryExportToExcel
+          AutoSize = True
         end
       end
       object tvReportingQueries: TTreeView
         Left = 5
-        Height = 388
+        Height = 394
         Top = 55
         Width = 193
         Align = alLeft
         BorderSpacing.Around = 5
+        RightClickSelect = True
         ShowRoot = False
         TabOrder = 0
         OnChange = tvReportingQueriesChange
         OnChanging = tvReportingQueriesChanging
         OnCustomDrawItem = tvReportingQueriesCustomDrawItem
         OnEdited = tvReportingQueriesEdited
-        Options = [tvoAutoItemHeight, tvoHideSelection, tvoKeepCollapsedNodes, tvoShowButtons, tvoShowLines, tvoToolTips, tvoThemedDraw]
+        Options = [tvoAutoItemHeight, tvoHideSelection, tvoKeepCollapsedNodes, tvoRightClickSelect, tvoShowButtons, tvoShowLines, tvoToolTips, tvoThemedDraw]
       end
       object Splitter11: TSplitter
         Left = 203
-        Height = 398
+        Height = 404
         Top = 50
         Width = 5
       end
     end
     object pgNormalization: TTabSheet
       Caption = 'Normalization'
-      ClientHeight = 448
+      ClientHeight = 454
       ClientWidth = 1151
       object GridNormalization: TSOGrid
         AnchorSideLeft.Control = pgNormalization
@@ -6444,7 +6437,7 @@ object VisWaptGUI: TVisWaptGUI
         AnchorSideBottom.Control = pgNormalization
         AnchorSideBottom.Side = asrBottom
         Left = 5
-        Height = 406
+        Height = 412
         Top = 37
         Width = 1141
         ShowAdvancedColumnsCustomize = False
@@ -6491,7 +6484,7 @@ object VisWaptGUI: TVisWaptGUI
           end>
         Header.DefaultHeight = 18
         Header.Height = 18
-        Header.Options = [hoAutoResize, hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoAutoSpring]
+        Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
         Header.SortColumn = 1
         Header.SortDirection = sdDescending
         Header.Style = hsFlatButtons
@@ -6514,8 +6507,8 @@ object VisWaptGUI: TVisWaptGUI
         AnchorSideTop.Side = asrCenter
         AnchorSideRight.Control = ButNormalizationFilter
         Left = 218
-        Height = 23
-        Top = 6
+        Height = 21
+        Top = 7
         Width = 820
         Anchors = [akTop, akLeft, akRight]
         BorderSpacing.Left = 5
@@ -10768,21 +10761,22 @@ object VisWaptGUI: TVisWaptGUI
     left = 872
     top = 248
     object ActReportingQueryNew: TAction
-      Caption = 'New'
+      Caption = 'New query'
       ImageIndex = 7
       OnExecute = ActReportingQueryNewExecute
+      Visible = False
     end
     object ActReportingQueryDelete: TAction
-      Caption = 'Delete'
+      Caption = 'Delete query'
       ImageIndex = 4
       OnExecute = ActReportingQueryDeleteExecute
       OnUpdate = ActReportingQueryDeleteUpdate
+      Visible = False
     end
     object ActReportingQueryDesign: TAction
-      Caption = 'Design query'
+      Caption = 'Design mode'
       ImageIndex = 9
       OnExecute = ActReportingQueryDesignExecute
-      OnUpdate = ActReportingQueryDesignUpdate
     end
     object ActReportingQuerySave: TAction
       Caption = 'Save'
@@ -10790,30 +10784,37 @@ object VisWaptGUI: TVisWaptGUI
       ImageIndex = 31
       OnExecute = ActReportingQuerySaveExecute
       OnUpdate = ActReportingQuerySaveUpdate
+      Visible = False
     end
     object ActReportingQuerySaveAll: TAction
-      Caption = 'Save all'
+      Caption = 'Save queries'
       Enabled = False
       ImageIndex = 31
       OnExecute = ActReportingQuerySaveAllExecute
       OnUpdate = ActReportingQuerySaveAllUpdate
+      ShortCut = 16467
+      Visible = False
     end
     object ActReportingQueryExecute: TAction
       Caption = 'Execute'
+      Hint = 'Execute the SQL query '
       ImageIndex = 2
       OnExecute = ActReportingQueryExecuteExecute
       OnUpdate = ActReportingQueryExecuteUpdate
+      ShortCut = 115
     end
     object ActReportingQueryExportToExcel: TAction
       Caption = 'Export to Excel'
       ImageIndex = 0
       OnExecute = ActReportingQueryExportToExcelExecute
       OnUpdate = ActReportingQueryExportToExcelUpdate
+      ShortCut = 24645
     end
     object ActReportingQueryReload: TAction
       Caption = 'Reload queries'
       ImageIndex = 6
       OnExecute = ActReportingQueryReloadExecute
+      ShortCut = 116
     end
   end
   object NormalizationActions: TActionList
@@ -10826,6 +10827,7 @@ object VisWaptGUI: TVisWaptGUI
       ImageIndex = 8
       OnExecute = ActNormalizationWriteTableExecute
       OnUpdate = ActNormalizationWriteTableUpdate
+      ShortCut = 16467
     end
     object ActNormalizationImportSoftwares: TAction
       Caption = 'Import'

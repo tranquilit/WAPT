@@ -1245,6 +1245,9 @@ def test_wuaprogress():
     #rules.allowed_updates = ['7a599998-ca41-4840-90ea-8143724e5c6a']
     with client.WaptWUA(w) as c:
         print(c.installed_updates())
+        print(c.get_wuauserv_status())
+        print(c.rescan_needed())
+        print(c.stored_updates_localstatus())
         print(c.scan_updates_status(force=True))
         #print(c.stored_waptwua_status())
         #print(c.installed_updates())
@@ -1292,8 +1295,7 @@ if __name__ == '__main__':
     #test_wuarules()
     #test_fixwua()
     #test_wua()
-    test_fix_wmi()
-
+    #test_fix_wmi()
     test_wuaprogress()
     #test_certificate_expire()
     #test_install_only_not_running()
