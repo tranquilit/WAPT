@@ -1409,15 +1409,19 @@ msgid "Remove packages from host dependencies"
 msgstr ""
 
 #: tviswaptgui.actreportingquerydelete.caption
-msgid "Delete"
+msgid "Delete query"
 msgstr ""
 
 #: tviswaptgui.actreportingquerydesign.caption
-msgid "Design query"
+msgid "Design mode"
 msgstr ""
 
 #: tviswaptgui.actreportingqueryexecute.caption
 msgid "Execute"
+msgstr ""
+
+#: tviswaptgui.actreportingqueryexecute.hint
+msgid "Execute the SQL query "
 msgstr ""
 
 #: tviswaptgui.actreportingqueryexporttoexcel.caption
@@ -1426,7 +1430,7 @@ msgstr ""
 
 #: tviswaptgui.actreportingquerynew.caption
 msgctxt "tviswaptgui.actreportingquerynew.caption"
-msgid "New"
+msgid "New query"
 msgstr ""
 
 #: tviswaptgui.actreportingqueryreload.caption
@@ -1439,7 +1443,7 @@ msgid "Save"
 msgstr ""
 
 #: tviswaptgui.actreportingquerysaveall.caption
-msgid "Save all"
+msgid "Save queries"
 msgstr ""
 
 #: tviswaptgui.actresetwebsocketconnections.caption
@@ -2145,10 +2149,6 @@ msgstr ""
 
 #: tviswaptgui.tbreport.caption
 msgid "TbReport"
-msgstr ""
-
-#: tviswaptgui.tbreportresult.caption
-msgid "TbReportResult"
 msgstr ""
 
 #: tviswaptgui.toolbar1.caption

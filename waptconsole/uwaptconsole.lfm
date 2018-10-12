@@ -1250,7 +1250,6 @@ object VisWaptGUI: TVisWaptGUI
               Top = 4
               Width = 75
               Caption = 'Critical only'
-              OnClick = cbWUAPendingChange
               TabOrder = 0
             end
             object cbWUAInstalled: TCheckBox
@@ -1259,7 +1258,6 @@ object VisWaptGUI: TVisWaptGUI
               Top = 4
               Width = 61
               Caption = 'Installed'
-              OnClick = cbWUAPendingChange
               TabOrder = 1
             end
             object cbWUAPending: TCheckBox
@@ -1269,7 +1267,6 @@ object VisWaptGUI: TVisWaptGUI
               Width = 58
               Caption = 'Pending'
               Checked = True
-              OnClick = cbWUAPendingChange
               State = cbChecked
               TabOrder = 2
             end
@@ -1279,7 +1276,6 @@ object VisWaptGUI: TVisWaptGUI
               Top = 4
               Width = 67
               Caption = 'Discarded'
-              OnClick = cbWUAPendingChange
               TabOrder = 3
             end
           end
@@ -2313,8 +2309,6 @@ object VisWaptGUI: TVisWaptGUI
             HintMode = hmHint
             Images = ImageList1
             KeyFieldName = 'ID'
-            OnChange = GridOrgUnitsChange
-            OnGetHint = GridOrgUnitsGetHint
             ParentFieldName = 'ParentID'
             PopupMenu = PopupMenuOrgUnits
             TabOrder = 1
@@ -2402,8 +2396,6 @@ object VisWaptGUI: TVisWaptGUI
             Width = 150
             Constraints.MinWidth = 150
             ItemHeight = 13
-            OnDropDown = cbADSiteDropDown
-            OnSelect = cbADSiteSelect
             Style = csDropDownList
             TabOrder = 1
             Visible = False
@@ -3015,7 +3007,7 @@ object VisWaptGUI: TVisWaptGUI
           end
           object ToolButtonSep1: TToolButton
             Left = 47
-            Height = 45
+            Height = 5
             Top = 0
             Caption = 'ToolButtonSep1'
             Style = tbsDivider
@@ -3037,7 +3029,7 @@ object VisWaptGUI: TVisWaptGUI
           end
           object ToolButton6: TToolButton
             Left = 181
-            Height = 45
+            Height = 5
             Top = 0
             Caption = 'ToolButton6'
             Style = tbsDivider
@@ -3439,7 +3431,6 @@ object VisWaptGUI: TVisWaptGUI
           Top = 3
           Width = 76
           Caption = 'Show Hosts'
-          OnClick = CBShowHostsForGroupsClick
           TabOrder = 4
         end
       end
@@ -3549,7 +3540,6 @@ object VisWaptGUI: TVisWaptGUI
           Top = 3
           Width = 76
           Caption = 'Show Hosts'
-          OnClick = CBShowHostsForPackagesClick
           TabOrder = 6
         end
       end
@@ -4542,7 +4532,6 @@ object VisWaptGUI: TVisWaptGUI
             Top = 7
             Width = 150
             Caption = 'Critical only'
-            OnClick = CBWUClassificationsClick
             TabOrder = 1
           end
           object cbAllClassifications: TCheckBox
@@ -4551,7 +4540,6 @@ object VisWaptGUI: TVisWaptGUI
             Top = 27
             Width = 150
             Caption = 'All classifications'
-            OnClick = cbAllClassificationsClick
             TabOrder = 2
           end
           object CBWUClassifications: TCheckListBox
@@ -4561,7 +4549,6 @@ object VisWaptGUI: TVisWaptGUI
             Width = 150
             Constraints.MinWidth = 150
             ItemHeight = 0
-            OnClick = CBWUClassificationsClick
             PopupMenu = PopupWUAClassifications
             TabOrder = 3
           end
@@ -4571,7 +4558,6 @@ object VisWaptGUI: TVisWaptGUI
             Top = 150
             Width = 150
             Caption = 'All products'
-            OnClick = cbAllproductsClick
             TabOrder = 4
           end
           object CBWUProducts: TCheckListBox
@@ -4582,7 +4568,6 @@ object VisWaptGUI: TVisWaptGUI
             Anchors = [akTop, akLeft, akBottom]
             Constraints.MinHeight = 150
             ItemHeight = 0
-            OnClick = CBWUProductsClick
             PopupMenu = PopupWUAProducts
             TabOrder = 5
           end
@@ -5819,9 +5804,6 @@ object VisWaptGUI: TVisWaptGUI
             TreeOptions.PaintOptions = [toHideFocusRect, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages, toAlwaysHideSelection]
             TreeOptions.SelectionOptions = [toExtendedFocus, toSimpleDrawSelection]
             WantTabs = True
-            OnColumnResize = GridReportingColumnResize
-            OnHeaderClick = GridReportingHeaderClick
-            OnHeaderDragged = GridReportingHeaderDragged
           end
         end
         object PanelReportingEditSQL: TPanel
@@ -6298,7 +6280,6 @@ object VisWaptGUI: TVisWaptGUI
             MouseLinkColor.Foreground = clBlue
             LineHighlightColor.Background = clNone
             LineHighlightColor.Foreground = clNone
-            OnChange = SynEditReportsSQLChange
             inline SynLeftGutterPartList1: TSynGutterPartList
               object SynGutterMarks1: TSynGutterMarks
                 Width = 24
@@ -6412,10 +6393,6 @@ object VisWaptGUI: TVisWaptGUI
         RightClickSelect = True
         ShowRoot = False
         TabOrder = 0
-        OnChange = tvReportingQueriesChange
-        OnChanging = tvReportingQueriesChanging
-        OnCustomDrawItem = tvReportingQueriesCustomDrawItem
-        OnEdited = tvReportingQueriesEdited
         Options = [tvoAutoItemHeight, tvoHideSelection, tvoKeepCollapsedNodes, tvoRightClickSelect, tvoShowButtons, tvoShowLines, tvoToolTips, tvoThemedDraw]
       end
       object Splitter11: TSplitter
@@ -6494,11 +6471,6 @@ object VisWaptGUI: TVisWaptGUI
         TreeOptions.PaintOptions = [toHideFocusRect, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowRoot, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages, toAlwaysHideSelection]
         TreeOptions.SelectionOptions = [toExtendedFocus, toMultiSelect, toSimpleDrawSelection]
         WantTabs = True
-        OnClick = GridNormalizationClick
-        OnDrawText = GridNormalizationDrawText
-        OnEdited = GridNormalizationEdited
-        OnEditing = GridNormalizationEditing
-        OnKeyDown = GridNormalizationKeyDown
       end
       object EdNormalizationFilter: TEdit
         AnchorSideLeft.Control = ButNormalizationSave
@@ -7029,7 +7001,6 @@ object VisWaptGUI: TVisWaptGUI
       Category = 'External Tools'
       Caption = 'Launch TISHelp'
       ImageIndex = 14
-      OnExecute = ActTISHelpExecute
       OnUpdate = ActTISHelpUpdate
     end
     object ActDisplayPreferences: TAction
@@ -7051,7 +7022,6 @@ object VisWaptGUI: TVisWaptGUI
     object ActProprietary: TAction
       Category = 'Enterprise'
       Caption = 'ActProprietary'
-      OnExecute = ActProprietaryExecute
       ShortCut = 24656
     end
     object ActPackagesForceInstall: TAction
@@ -7072,7 +7042,6 @@ object VisWaptGUI: TVisWaptGUI
       Category = 'Enterprise'
       Caption = 'Propose Upgrades to logged on users'
       ImageIndex = 24
-      OnExecute = ActLaunchWaptExitExecute
       OnUpdate = ActHostsActionsUpdate
       Visible = False
     end
@@ -7089,7 +7058,6 @@ object VisWaptGUI: TVisWaptGUI
       Category = 'Enterprise'
       Caption = 'Update AD Group Policies on hosts'
       ImageIndex = 25
-      OnExecute = ActLaunchGPUpdateExecute
       OnUpdate = ActHostsActionsUpdate
       Visible = False
     end
@@ -7097,7 +7065,6 @@ object VisWaptGUI: TVisWaptGUI
       Category = 'OrgUnits'
       Caption = 'Create or Edit Organizational Unit package'
       ImageIndex = 8
-      OnExecute = ActEditOrgUnitPackageExecute
       OnUpdate = ActEditOrgUnitPackageUpdate
     end
     object ActAddNewNetwork: TAction
@@ -7126,34 +7093,29 @@ object VisWaptGUI: TVisWaptGUI
       Category = 'OrgUnits'
       Caption = 'Check updates on all hosts of this OU'
       ImageIndex = 0
-      OnExecute = ActTriggerUpdateOrgUnitExecute
       OnUpdate = ActTriggerUpgradesOrgUnitUpdate
     end
     object ActTriggerUpgradesOrgUnit: TAction
       Category = 'OrgUnits'
       Caption = 'Apply upgrades on all hosts of this OU'
       ImageIndex = 26
-      OnExecute = ActTriggerUpgradesOrgUnitExecute
       OnUpdate = ActTriggerUpgradesOrgUnitUpdate
     end
     object ActTriggerHostAudit: TAction
       Category = 'hosts'
       Caption = 'Run packages audit '
       ImageIndex = 30
-      OnExecute = ActTriggerHostAuditExecute
       OnUpdate = ActHostsActionsUpdate
     end
     object ActPackagesAudit: TAction
       Category = 'Host'
       Caption = 'Audit package'
       ImageIndex = 30
-      OnExecute = ActPackagesAuditExecute
       OnUpdate = ActPackagesRemoveUpdate
     end
     object ActRunCleanMgr: TAction
       Category = 'Enterprise'
       Caption = 'Run CleanMgr on host'
-      OnExecute = ActRunCleanMgrExecute
       OnUpdate = ActHostsActionsUpdate
     end
     object ActResetWebsocketConnections: TAction
@@ -8192,11 +8154,9 @@ object VisWaptGUI: TVisWaptGUI
     end
     object MenuItemProductsCheckAll: TMenuItem
       Caption = 'Check all'
-      OnClick = MenuItemProductsCheckAllClick
     end
     object MenuItem104: TMenuItem
       Caption = 'Uncheck all'
-      OnClick = MenuItem104Click
     end
   end
   object WSUSActions: TActionList
@@ -8207,21 +8167,18 @@ object VisWaptGUI: TVisWaptGUI
       Category = 'hostswua'
       Caption = 'Trigger the scan of missing Windows Updates'
       ImageIndex = 0
-      OnExecute = ActTriggerWaptwua_scanExecute
       OnUpdate = ActHostsActionsUpdate
     end
     object ActTriggerWaptwua_download: TAction
       Category = 'hostswua'
       Caption = 'Trigger the download of pending Windows Updates'
       ImageIndex = 2
-      OnExecute = ActTriggerWaptwua_downloadExecute
       OnUpdate = ActHostsActionsUpdate
     end
     object ActTriggerWaptwua_install: TAction
       Category = 'hostswua'
       Caption = 'Trigger the install of pending Windows Updates'
       ImageIndex = 16
-      OnExecute = ActTriggerWaptwua_installExecute
       OnUpdate = ActHostsActionsUpdate
     end
     object ActWUALoadUpdates: TAction
@@ -8233,8 +8190,6 @@ object VisWaptGUI: TVisWaptGUI
     object ActWUADownloadSelectedUpdate: TAction
       Category = 'wua'
       Caption = 'Download selected'
-      OnExecute = ActWUADownloadSelectedUpdateExecute
-      OnUpdate = ActWUADownloadSelectedUpdateUpdate
     end
     object ActWUAAllowSelectedUpdates: TAction
       Category = 'wua'
@@ -8300,38 +8255,29 @@ object VisWaptGUI: TVisWaptGUI
     end
     object ActWSUSRefresh: TAction
       Caption = 'Refresh'
-      OnExecute = ActWSUSRefreshExecute
     end
     object ActWSUSDowloadWSUSScan: TAction
       Caption = 'Download WSUSScan cab from Microsoft Web site'
-      OnExecute = ActWSUSDowloadWSUSScanExecute
     end
     object ActWUAAddAllowedClassification: TAction
       Caption = 'Add Allowed classifications'
-      OnExecute = ActWUAAddAllowedClassificationExecute
     end
     object ActWUAAddAllowedUpdate: TAction
       Caption = 'Add Allowed Updates'
-      OnExecute = ActWUAAddAllowedUpdateExecute
     end
     object ActWUAAddForbiddenUpdate: TAction
       Caption = 'Add Forbidden Windows Updates'
-      OnExecute = ActWUAAddForbiddenUpdateExecute
     end
     object ActWSUSSaveBuildRules: TAction
       Caption = 'Save and build rules package'
       ImageIndex = 35
-      OnExecute = ActWSUSSaveBuildRulesExecute
-      OnUpdate = ActWSUSSaveBuildRulesUpdate
     end
     object ActWUAShowMSUpdatesHelp: TAction
       Caption = 'Show MS Update Help'
-      OnExecute = ActWUAShowMSUpdatesHelpExecute
     end
     object ActWUADownloadsRefresh: TAction
       Category = 'wuadownloads'
       Caption = 'Refresh'
-      OnExecute = ActWUADownloadsRefreshExecute
     end
   end
   object PopupGridWSUSScan: TPopupMenu
@@ -8359,7 +8305,6 @@ object VisWaptGUI: TVisWaptGUI
   object TimerWUALoadWinUpdates: TTimer
     Enabled = False
     Interval = 400
-    OnTimer = TimerWUALoadWinUpdatesTimer
     left = 352
     top = 200
   end
@@ -10750,11 +10695,9 @@ object VisWaptGUI: TVisWaptGUI
       Caption = 'Check all'
       Hint = 'Add the WAPT group packages matching the ADS groups of the machines'
       ImageIndex = 9
-      OnClick = MenuItem103CheckAllClick
     end
     object MenuItem105UncheclAll: TMenuItem
       Caption = 'Uncheck all'
-      OnClick = MenuItem105UncheclAllClick
     end
   end
   object ReportingActions: TActionList
@@ -10763,35 +10706,27 @@ object VisWaptGUI: TVisWaptGUI
     object ActReportingQueryNew: TAction
       Caption = 'New query'
       ImageIndex = 7
-      OnExecute = ActReportingQueryNewExecute
       Visible = False
     end
     object ActReportingQueryDelete: TAction
       Caption = 'Delete query'
       ImageIndex = 4
-      OnExecute = ActReportingQueryDeleteExecute
-      OnUpdate = ActReportingQueryDeleteUpdate
       Visible = False
     end
     object ActReportingQueryDesign: TAction
       Caption = 'Design mode'
       ImageIndex = 9
-      OnExecute = ActReportingQueryDesignExecute
     end
     object ActReportingQuerySave: TAction
       Caption = 'Save'
       Enabled = False
       ImageIndex = 31
-      OnExecute = ActReportingQuerySaveExecute
-      OnUpdate = ActReportingQuerySaveUpdate
       Visible = False
     end
     object ActReportingQuerySaveAll: TAction
       Caption = 'Save queries'
       Enabled = False
       ImageIndex = 31
-      OnExecute = ActReportingQuerySaveAllExecute
-      OnUpdate = ActReportingQuerySaveAllUpdate
       ShortCut = 16467
       Visible = False
     end
@@ -10799,21 +10734,16 @@ object VisWaptGUI: TVisWaptGUI
       Caption = 'Execute'
       Hint = 'Execute the SQL query '
       ImageIndex = 2
-      OnExecute = ActReportingQueryExecuteExecute
-      OnUpdate = ActReportingQueryExecuteUpdate
       ShortCut = 115
     end
     object ActReportingQueryExportToExcel: TAction
       Caption = 'Export to Excel'
       ImageIndex = 0
-      OnExecute = ActReportingQueryExportToExcelExecute
-      OnUpdate = ActReportingQueryExportToExcelUpdate
       ShortCut = 24645
     end
     object ActReportingQueryReload: TAction
       Caption = 'Reload queries'
       ImageIndex = 6
-      OnExecute = ActReportingQueryReloadExecute
       ShortCut = 116
     end
   end
@@ -10825,19 +10755,15 @@ object VisWaptGUI: TVisWaptGUI
       Caption = 'Write'
       Enabled = False
       ImageIndex = 8
-      OnExecute = ActNormalizationWriteTableExecute
-      OnUpdate = ActNormalizationWriteTableUpdate
       ShortCut = 16467
     end
     object ActNormalizationImportSoftwares: TAction
       Caption = 'Import'
       ImageIndex = 16
-      OnExecute = ActNormalizationImportSoftwaresExecute
     end
     object ActNormalizationFilter: TAction
       Caption = 'Filter'
       ImageIndex = 4
-      OnExecute = ActNormalizationFilterExecute
     end
   end
   object SynSQLSyn: TSynSQLSyn

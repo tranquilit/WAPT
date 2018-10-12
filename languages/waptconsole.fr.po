@@ -1493,16 +1493,24 @@ msgid "Remove packages from host dependencies"
 msgstr "Supprimer des dépendances de paquets ou groupes de paquets"
 
 #: tviswaptgui.actreportingquerydelete.caption
-msgid "Delete"
-msgstr "Supprimer"
+#, fuzzy
+#| msgid "Delete"
+msgid "Delete query"
+msgstr "Supprimer la requête"
 
 #: tviswaptgui.actreportingquerydesign.caption
-msgid "Design query"
-msgstr "Designer la requête"
+#, fuzzy
+#| msgid "Design query"
+msgid "Design mode"
+msgstr "Mode conception"
 
 #: tviswaptgui.actreportingqueryexecute.caption
 msgid "Execute"
 msgstr "Exécuter"
+
+#: tviswaptgui.actreportingqueryexecute.hint
+msgid "Execute the SQL query "
+msgstr "Exécuter la requête"
 
 #: tviswaptgui.actreportingqueryexporttoexcel.caption
 msgid "Export to Excel"
@@ -1510,9 +1518,10 @@ msgstr "Exporter vers excel"
 
 #: tviswaptgui.actreportingquerynew.caption
 #, fuzzy
+#| msgid "New"
 msgctxt "tviswaptgui.actreportingquerynew.caption"
-msgid "New"
-msgstr "Nouveau"
+msgid "New query"
+msgstr "Nouvelle requête"
 
 #: tviswaptgui.actreportingqueryreload.caption
 msgid "Reload queries"
@@ -1525,7 +1534,9 @@ msgid "Save"
 msgstr "Enregistrer"
 
 #: tviswaptgui.actreportingquerysaveall.caption
-msgid "Save all"
+#, fuzzy
+#| msgid "Save all"
+msgid "Save queries"
 msgstr "Enregistrer tout"
 
 #: tviswaptgui.actresetwebsocketconnections.caption
@@ -2275,10 +2286,6 @@ msgstr "Erreurs"
 
 #: tviswaptgui.tbreport.caption
 msgid "TbReport"
-msgstr ""
-
-#: tviswaptgui.tbreportresult.caption
-msgid "TbReportResult"
 msgstr ""
 
 #: tviswaptgui.toolbar1.caption

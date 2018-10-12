@@ -1418,24 +1418,34 @@ msgid "Remove packages from host dependencies"
 msgstr ""
 
 #: tviswaptgui.actreportingquerydelete.caption
-msgid "Delete"
+#, fuzzy
+#| msgid "Delete"
+msgid "Delete query"
 msgstr "Effacer"
 
 #: tviswaptgui.actreportingquerydesign.caption
-msgid "Design query"
+#, fuzzy
+#| msgid "Design query"
+msgid "Design mode"
 msgstr "Construire la requête"
 
 #: tviswaptgui.actreportingqueryexecute.caption
 msgid "Execute"
 msgstr "Exécuter"
 
+#: tviswaptgui.actreportingqueryexecute.hint
+msgid "Execute the SQL query "
+msgstr ""
+
 #: tviswaptgui.actreportingqueryexporttoexcel.caption
 msgid "Export to Excel"
 msgstr "Exporter vers Excel"
 
 #: tviswaptgui.actreportingquerynew.caption
+#, fuzzy
+#| msgid "New"
 msgctxt "tviswaptgui.actreportingquerynew.caption"
-msgid "New"
+msgid "New query"
 msgstr "Nouvelle"
 
 #: tviswaptgui.actreportingqueryreload.caption
@@ -1448,7 +1458,9 @@ msgid "Save"
 msgstr "Enregistrer"
 
 #: tviswaptgui.actreportingquerysaveall.caption
-msgid "Save all"
+#, fuzzy
+#| msgid "Save all"
+msgid "Save queries"
 msgstr "Tout enregistrer"
 
 #: tviswaptgui.actresetwebsocketconnections.caption
@@ -2016,9 +2028,10 @@ msgid "Trigger Burst Updates"
 msgstr ""
 
 #: tviswaptgui.menuitem6.caption
+#, fuzzy
 msgctxt "tviswaptgui.menuitem6.caption"
 msgid "New"
-msgstr ""
+msgstr "Nouvelle"
 
 #: tviswaptgui.menuitem74.caption
 msgid "Delete task"
@@ -2156,10 +2169,6 @@ msgstr ""
 msgid "TbReport"
 msgstr ""
 
-#: tviswaptgui.tbreportresult.caption
-msgid "TbReportResult"
-msgstr ""
-
 #: tviswaptgui.toolbar1.caption
 msgid "ToolBar1"
 msgstr ""
@@ -2240,9 +2249,10 @@ msgid "Classifications  and products"
 msgstr ""
 
 #: tviswuapackageselect.label2.caption
+#, fuzzy
 msgctxt "tviswuapackageselect.label2.caption"
 msgid "Filter"
-msgstr ""
+msgstr "Filtre"
 
 #: tviswuarules.actaddadsgroups.caption
 msgctxt "tviswuarules.actaddadsgroups.caption"
