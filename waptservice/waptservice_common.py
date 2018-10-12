@@ -472,10 +472,10 @@ class WaptTask(object):
         self.finish_date = None
         self.logs = []
         self.result = None
-        self.runstatus = ""
         self.summary = u""
         # from 0 to 100%
-        self.progress = 0
+        self._progress = 0.0
+        self._runstatus = ""
         self.notify_server_on_start = True
         self.notify_server_on_finish = True
         self.notify_user = True
@@ -484,13 +484,37 @@ class WaptTask(object):
             setattr(self,k,args[k])
         self.lang = None
 
-    def update_status(self,status):
-        """Update runstatus in database and send PROGRESS event"""
-        if self.wapt:
-            self.runstatus = status
-            self.wapt.runstatus = status
+        self._last_status_time = 0.0
+
+    @property
+    def progress(self):
+        return self._progress
+
+    @progress.setter
+    def progress(self,value):
+        self._progress = value
+        if time.time() - self._last_status_time >= 1:
             if self.wapt.events:
                 self.wapt.events.post_event('TASK_STATUS',self.as_dict())
+                self._last_status_time = time.time()
+
+    @property
+    def runstatus(self):
+        return self._runstatus
+
+    @runstatus.setter
+    def runstatus(self,value):
+        self._runstatus = value
+        if self.wapt:
+            self.wapt.runstatus = value
+            if time.time() - self._last_status_time >= 1.0:
+                if self.wapt.events:
+                    self.wapt.events.post_event('TASK_STATUS',self.as_dict())
+                    self._last_status_time = time.time()
+
+    def update_status(self,status):
+        """Update runstatus in database and send PROGRESS event"""
+        self.runstatus = status
 
     def can_run(self,explain=False):
         """Return True if all the requirements for the task are met
@@ -513,9 +537,11 @@ class WaptTask(object):
                 # to keep track of external processes launched by Wapt.run()
                 self.wapt.pidlist = self.external_pids
             self._run()
-            self.progress=100
+            self._progress=100.0
         finally:
             self.finish_date = datetime.datetime.now()
+            if self.wapt and self.wapt.events:
+                self.wapt.events.post_event('TASK_STATUS',self.as_dict())
 
     def kill(self):
         """if task has been started, kill the task (ex: kill the external processes"""
@@ -583,7 +609,7 @@ class WaptNetworkReconfig(WaptTask):
 
     def _run(self):
         logger.debug(u'Reloading config file')
-        self.update_status(_(u'Reloading config file'))
+        self.status = _(u'Reloading config file')
         self.wapt.load_config(waptconfig.config_filename)
         self.wapt.network_reconfigure()
         waptconfig.load()
@@ -844,7 +870,7 @@ class WaptLongTask(WaptTask):
 
 
     def _run(self):
-        self.progress = 0
+        self.progress = 0.0
         for i in range(self.duration):
             if self.wapt:
                 self.wapt.check_cancelled()
