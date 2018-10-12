@@ -533,25 +533,64 @@ type
     procedure ActDisplayUserMessageExecute(Sender: TObject);
     procedure ActEditGroupUpdate(Sender: TObject);
     procedure ActEditHostPackageUpdate(Sender: TObject);
+    procedure ActEditOrgUnitPackageExecute(Sender: TObject);
     procedure ActEditOrgUnitPackageUpdate(Sender: TObject);
     procedure ActForgetPackagesUpdate(Sender: TObject);
     procedure ActGermanExecute(Sender: TObject);
     procedure ActGermanUpdate(Sender: TObject);
     procedure ActHostsDeletePackageUpdate(Sender: TObject);
     procedure ActHostsDeleteUpdate(Sender: TObject);
+    procedure ActLaunchGPUpdateExecute(Sender: TObject);
+    procedure ActLaunchWaptExitExecute(Sender: TObject);
     procedure ActmakePackageTemplateExecute(Sender: TObject);
+    procedure ActNormalizationFilterExecute(Sender: TObject);
+    procedure ActNormalizationImportSoftwaresExecute(Sender: TObject);
+    procedure ActNormalizationWriteTableExecute(Sender: TObject);
+    procedure ActNormalizationWriteTableUpdate(Sender: TObject);
+    procedure ActPackagesAuditExecute(Sender: TObject);
     procedure ActPackagesForceInstallExecute(Sender: TObject);
     procedure ActPackagesRemoveUpdate(Sender: TObject);
+    procedure ActProprietaryExecute(Sender: TObject);
     procedure ActRemoteAssistExecute(Sender: TObject);
     procedure ActRemoteAssistUpdate(Sender: TObject);
     procedure ActExternalRepositoriesSettingsExecute(Sender: TObject);
+    procedure ActReportingQueryDesignExecute(Sender: TObject);
+    procedure ActReportingQuerySaveAllExecute(Sender: TObject);
+    procedure ActReportingQuerySaveAllUpdate(Sender: TObject);
+    procedure ActReportingQuerySaveUpdate(Sender: TObject);
+    procedure ActReportingQueryDeleteExecute(Sender: TObject);
+    procedure ActReportingQueryNewExecute(Sender: TObject);
+    procedure ActReportingQuerySaveExecute(Sender: TObject);
+    procedure ActReportingQueryDeleteUpdate(Sender: TObject);
+    procedure ActReportingQueryExecuteExecute(Sender: TObject);
+    procedure ActReportingQueryExecuteUpdate(Sender: TObject);
+    procedure ActReportingQueryExportToExcelExecute(Sender: TObject);
+    procedure ActReportingQueryExportToExcelUpdate(Sender: TObject);
+    procedure ActReportingQueryReloadExecute(Sender: TObject);
     procedure ActResetWebsocketConnectionsExecute(Sender: TObject);
+    procedure ActRunCleanMgrExecute(Sender: TObject);
+    procedure ActTISHelpExecute(Sender: TObject);
     procedure ActTISHelpUpdate(Sender: TObject);
     procedure ActTriggerBurstUpdatesExecute(Sender: TObject);
     procedure ActTriggerBurstUpgradesExecute(Sender: TObject);
+    procedure ActTriggerHostAuditExecute(Sender: TObject);
+    procedure ActTriggerUpdateOrgUnitExecute(Sender: TObject);
+    procedure ActTriggerUpgradesOrgUnitExecute(Sender: TObject);
     procedure ActTriggerUpgradesOrgUnitUpdate(Sender: TObject);
     procedure ActTriggerWakeOnLanExecute(Sender: TObject);
     procedure ActTriggerWaptServiceRestartExecute(Sender: TObject);
+    procedure ActTriggerWaptwua_downloadExecute(Sender: TObject);
+    procedure ActTriggerWaptwua_installExecute(Sender: TObject);
+    procedure ActTriggerWaptwua_scanExecute(Sender: TObject);
+    procedure ActWSUSDowloadWSUSScanExecute(Sender: TObject);
+    procedure ActWSUSRefreshExecute(Sender: TObject);
+    procedure ActWSUSSaveBuildRulesExecute(Sender: TObject);
+    procedure ActWSUSSaveBuildRulesUpdate(Sender: TObject);
+    procedure ActWUAAddAllowedClassificationExecute(Sender: TObject);
+    procedure ActWUAAddAllowedUpdateExecute(Sender: TObject);
+    procedure ActWUAAddForbiddenUpdateExecute(Sender: TObject);
+    procedure ActWUADownloadSelectedUpdateExecute(Sender: TObject);
+    procedure ActWUADownloadSelectedUpdateUpdate(Sender: TObject);
     procedure ActEditGroupExecute(Sender: TObject);
     procedure ActEditHostPackageExecute(Sender: TObject);
     procedure ActEnglishExecute(Sender: TObject);
@@ -564,6 +603,7 @@ type
     procedure ActHostsActionsUpdate(Sender: TObject);
     procedure ActImportFromFileExecute(Sender: TObject);
     procedure ActImportFromRepoExecute(Sender: TObject);
+    procedure ActWUADownloadsRefreshExecute(Sender: TObject);
     procedure ActWUALoadUpdatesExecute(Sender: TObject);
     procedure ActWUALoadUpdatesUpdate(Sender: TObject);
     procedure ActPackagesInstallExecute(Sender: TObject);
@@ -597,8 +637,13 @@ type
     procedure ActVNCExecute(Sender: TObject);
     procedure ActVNCUpdate(Sender: TObject);
     procedure ActWAPTConsoleConfigExecute(Sender: TObject);
+    procedure ActWUAShowMSUpdatesHelpExecute(Sender: TObject);
     procedure ApplicationProperties1Exception(Sender: TObject; E: Exception);
+    procedure cbADOUSelect(Sender: TObject);
+    procedure cbADSiteSelect(Sender: TObject);
     procedure cbAdvancedSearchClick(Sender: TObject);
+    procedure cbAllClassificationsClick(Sender: TObject);
+    procedure cbAllproductsClick(Sender: TObject);
     procedure cbGroupsDropDown(Sender: TObject);
     procedure cbGroupsKeyPress(Sender: TObject; var Key: char);
     procedure cbGroupsSelect(Sender: TObject);
@@ -607,7 +652,15 @@ type
     procedure cbMaskSystemComponentsClick(Sender: TObject);
     procedure cbNewestOnlyClick(Sender: TObject);
     procedure cbSearchAllClick(Sender: TObject);
+    procedure CBShowHostsForGroupsClick(Sender: TObject);
+    procedure CBShowHostsForPackagesClick(Sender: TObject);
     procedure cbShowLogClick(Sender: TObject);
+    procedure cbADSiteDropDown(Sender: TObject);
+    procedure cbWUAPendingChange(Sender: TObject);
+    procedure CBWUClassificationsClick(Sender: TObject);
+    procedure cbWUCriticalClick(Sender: TObject);
+    procedure CBWUProductsClick(Sender: TObject);
+    procedure CBWUProductsShowAllClick(Sender: TObject);
     procedure CheckBoxMajChange(Sender: TObject);
     procedure cbNeedUpgradeClick(Sender: TObject);
     procedure CheckBox_errorChange(Sender: TObject);
@@ -695,17 +748,47 @@ type
       Column: TColumnIndex; TextType: TVSTTextType; var CellText: string);
     procedure GridNetworksEditing(Sender: TBaseVirtualTree; Node: PVirtualNode;
       Column: TColumnIndex; var Allowed: Boolean);
+    procedure GridNormalizationClick(Sender: TObject);
+    procedure GridNormalizationDrawText(Sender: TBaseVirtualTree;TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex; const aText: String; const CellRect: TRect; var DefaultDraw: Boolean);
+    procedure GridNormalizationEdited(Sender: TBaseVirtualTree;Node: PVirtualNode; Column: TColumnIndex);
+    procedure GridNormalizationEditing(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex; var Allowed: Boolean);
+    procedure GridNormalizationKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure GridOrgUnitsChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
+    procedure GridOrgUnitsGetHint(Sender: TBaseVirtualTree; Node: PVirtualNode;
+      Column: TColumnIndex; var LineBreakStyle: TVTTooltipLineBreakStyle;
+      var HintText: String);
     procedure GridPackagesChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
     procedure GridPackagesColumnDblClick(Sender: TBaseVirtualTree;
       Column: TColumnIndex; Shift: TShiftState);
     procedure GridPackagesPaintText(Sender: TBaseVirtualTree;
       const TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex;
       TextType: TVSTTextType);
+    procedure GridReportingColumnResize(Sender: TVTHeader; Column: TColumnIndex );
+    procedure GridReportingHeaderClick(Sender: TVTHeader;
+      HitInfo: TVTHeaderHitInfo);
+    procedure GridReportingHeaderDragged(Sender: TVTHeader;
+      Column: TColumnIndex; OldPosition: Integer);
+    procedure GridWinproductsChange(Sender: TBaseVirtualTree; Node: PVirtualNode );
+    procedure GridWinUpdatesGetImageIndexEx(Sender: TBaseVirtualTree;
+      Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
+      var Ghosted: Boolean; var ImageIndex: Integer;
+      var ImageList: TCustomImageList);
     procedure HostPagesChange(Sender: TObject);
     procedure Image1Click(Sender: TObject);
     procedure MainPagesChange(Sender: TObject);
+    procedure MenuItem103CheckAllClick(Sender: TObject);
+    procedure MenuItem104Click(Sender: TObject);
+    procedure MenuItem105UncheclAllClick(Sender: TObject);
     procedure MenuItem27Click(Sender: TObject);
     procedure MenuItem74Click(Sender: TObject);
+    procedure MenuItemProductsCheckAllClick(Sender: TObject);
+    procedure SynEditReportsSQLChange(Sender: TObject);
+    procedure TimerWUALoadWinUpdatesTimer(Sender: TObject);
+    procedure tvReportingQueriesChange(Sender: TObject; Node: TTreeNode);
+    procedure tvReportingQueriesChanging(Sender: TObject; Node: TTreeNode;var AllowChange: Boolean);
+    procedure tvReportingQueriesCustomDrawItem(Sender: TCustomTreeView;
+      Node: TTreeNode; State: TCustomDrawState; var DefaultDraw: Boolean);
+    procedure tvReportingQueriesEdited(Sender: TObject; Node: TTreeNode; var S: string);
   private
     { private declarations }
     CurrentVisLoading: TVisLoading;
@@ -4971,12 +5054,36 @@ end;
 {$ifdef ENTERPRISE}
 {$include ..\waptenterprise\includes\uwaptconsole.inc}
 {$else}
+procedure TVisWaptGUI.GridOrgUnitsGetHint(Sender: TBaseVirtualTree;
+  Node: PVirtualNode; Column: TColumnIndex;
+  var LineBreakStyle: TVTTooltipLineBreakStyle; var HintText: String);
+begin
+end;
+
+
+procedure TVisWaptGUI.ActEditOrgUnitPackageExecute(Sender: TObject);
+begin
+end;
+
 procedure TVisWaptGUI.ActEditOrgUnitPackageUpdate(Sender: TObject);
 begin
   ActEditOrgUnitPackage.Enabled := False
 end;
 
+procedure TVisWaptGUI.ActProprietaryExecute(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.GridOrgUnitsChange(Sender: TBaseVirtualTree;
+  Node: PVirtualNode);
+begin
+end;
+
 function TVisWaptGUI.GetSelectedOrgUnits:TDynStringArray;
+begin
+end;
+
+procedure TVisWaptGUI.ActTISHelpExecute(Sender: TObject);
 begin
 end;
 
@@ -4990,7 +5097,35 @@ begin
   Result := Nil;
 end;
 
+procedure TVisWaptGUI.GridWinUpdatesGetImageIndexEx(Sender: TBaseVirtualTree;
+  Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
+  var Ghosted: Boolean; var ImageIndex: Integer; var ImageList: TCustomImageList
+  );
+begin
+end;
+
+procedure TVisWaptGUI.GridWinproductsChange(Sender: TBaseVirtualTree;
+  Node: PVirtualNode);
+begin
+end;
+
 procedure TVisWaptGUI.FillcbADSiteDropDown;
+begin
+end;
+
+procedure TVisWaptGUI.CBWUProductsShowAllClick(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.cbWUCriticalClick(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.cbWUAPendingChange(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.cbADSiteDropDown(Sender: TObject);
 begin
 end;
 
@@ -5004,6 +5139,84 @@ end;
 
 Procedure TVisWaptGUI.SelectOrgUnits(Search:String);
 begin
+end;
+
+procedure TVisWaptGUI.cbADOUSelect(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.cbADSiteSelect(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.ActPackagesAuditExecute(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.ActTriggerHostAuditExecute(Sender: TObject);
+begin
+end;
+
+// WSUS
+procedure TVisWaptGUI.ActTriggerWaptwua_downloadExecute(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.ActTriggerWaptwua_installExecute(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.ActTriggerWaptwua_scanExecute(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.ActWSUSDowloadWSUSScanExecute(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.ActWSUSSaveBuildRulesUpdate(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.ActWUAAddAllowedClassificationExecute(Sender: TObject);
+begin
+end;
+
+
+procedure TVisWaptGUI.ActWUAAddAllowedUpdateExecute(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.ActWUAAddForbiddenUpdateExecute(Sender: TObject);
+begin
+end;
+
+
+procedure TVisWaptGUI.ActWUADownloadSelectedUpdateUpdate(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.ActWUADownloadSelectedUpdateExecute(Sender: TObject);
+begin
+end;
+
+
+procedure TVisWaptGUI.ActWUAShowMSUpdatesHelpExecute(Sender: TObject);
+begin
+end;
+
+
+procedure TVisWaptGUI.ActLaunchGPUpdateExecute(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.ActLaunchWaptExitExecute(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.ActRunCleanMgrExecute(Sender: TObject);
+begin
+
 end;
 
 function TVisWaptGUI.GetWUAClassifications: ISuperObject;
@@ -5021,13 +5234,161 @@ begin
 
 end;
 
+procedure TVisWaptGUI.MenuItem103CheckAllClick(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.MenuItem104Click(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.MenuItem105UncheclAllClick(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.MenuItemProductsCheckAllClick(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.SynEditReportsSQLChange(Sender: TObject);
+begin
+
+end;
+
+procedure TVisWaptGUI.TimerWUALoadWinUpdatesTimer(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.tvReportingQueriesChange(Sender: TObject; Node: TTreeNode
+  );
+begin
+
+end;
+
+procedure TVisWaptGUI.tvReportingQueriesChanging(Sender: TObject;
+  Node: TTreeNode; var AllowChange: Boolean);
+begin
+
+end;
+
+procedure TVisWaptGUI.tvReportingQueriesCustomDrawItem(Sender: TCustomTreeView;
+  Node: TTreeNode; State: TCustomDrawState; var DefaultDraw: Boolean);
+begin
+
+end;
+
+procedure TVisWaptGUI.tvReportingQueriesEdited(Sender: TObject;
+  Node: TTreeNode; var S: string);
+begin
+
+end;
+
+procedure TVisWaptGUI.ActWSUSRefreshExecute(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.ActWSUSSaveBuildRulesExecute(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.CBWUClassificationsClick(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.CBWUProductsClick(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.cbAllClassificationsClick(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.cbAllproductsClick(Sender: TObject);
+begin
+end;
+
 procedure TVisWaptGUI.FilterGridWindowsUpdates(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.ActWUADownloadsRefreshExecute(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.ActTriggerUpgradesOrgUnitExecute(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.ActTriggerUpdateOrgUnitExecute(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.ActNormalizationImportSoftwaresExecute(Sender: TObject);
+begin
+end;
+procedure TVisWaptGUI.CBShowHostsForGroupsClick(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.CBShowHostsForPackagesClick(Sender: TObject);
 begin
 end;
 
 procedure TVisWaptGUI.LoadHostsForPackage(Grid: TSOGrid;PackageName: String);
 begin
   Grid.Data := Nil;
+end;
+
+procedure TVisWaptGUI.ActNormalizationWriteTableExecute(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.ActNormalizationWriteTableUpdate(Sender: TObject);
+begin
+end;
+procedure TVisWaptGUI.ActNormalizationFilterExecute(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.ActReportingQueryDeleteExecute(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.ActReportingQueryNewExecute(Sender: TObject);
+begin
+
+end;
+
+procedure TVisWaptGUI.ActReportingQuerySaveExecute(Sender: TObject);
+begin
+
+end;
+
+procedure TVisWaptGUI.ActReportingQueryDeleteUpdate(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.ActReportingQueryExecuteExecute(Sender: TObject);
+begin
+
+end;
+
+procedure TVisWaptGUI.ActReportingQueryExecuteUpdate(Sender: TObject);
+begin
+
+end;
+
+procedure TVisWaptGUI.ActReportingQueryExportToExcelExecute(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.ActReportingQueryExportToExcelUpdate(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.ActReportingQueryReloadExecute(Sender: TObject);
+begin
+
 end;
 
 procedure TVisWaptGUI.SetGridReportingData(data: ISuperObject);
@@ -5039,10 +5400,60 @@ begin
 
 end;
 
+procedure TVisWaptGUI.GridNormalizationClick(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.GridNormalizationDrawText(Sender: TBaseVirtualTree;
+  TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex;
+  const aText: String; const CellRect: TRect; var DefaultDraw: Boolean);
+begin
+end;
+
+procedure TVisWaptGUI.GridNormalizationEdited(Sender: TBaseVirtualTree;
+  Node: PVirtualNode; Column: TColumnIndex);
+begin
+end;
+
+procedure TVisWaptGUI.GridNormalizationEditing(Sender: TBaseVirtualTree;
+  Node: PVirtualNode; Column: TColumnIndex; var Allowed: Boolean);
+begin
+end;
+
+procedure TVisWaptGUI.GridNormalizationKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+end;
+procedure TVisWaptGUI.ActReportingQueryDesignExecute(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.ActReportingQuerySaveAllExecute(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.ActReportingQuerySaveAllUpdate(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.ActReportingQuerySaveUpdate(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.GridReportingColumnResize(Sender: TVTHeader;
+  Column: TColumnIndex);
+begin
+end;
+
 procedure TVisWaptGUI.SetReportingDirty;
 begin
 end;
 
+
+procedure TVisWaptGUI.GridReportingHeaderDragged(Sender: TVTHeader;
+  Column: TColumnIndex; OldPosition: Integer);
+begin
+end;
 
 function TVisWaptGUI.CheckreportingSaveUpdates:Boolean;
 begin
@@ -5052,6 +5463,13 @@ end;
 function TVisWaptGUI.ReportingIsUpdated:Boolean;
 begin
 end;
+
+procedure TVisWaptGUI.GridReportingHeaderClick(Sender: TVTHeader;
+  HitInfo: TVTHeaderHitInfo);
+begin
+end;
+
+
 
 {$endif}
 

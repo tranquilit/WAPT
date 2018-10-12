@@ -415,7 +415,7 @@ class ReportingQueries(WaptBaseModel):
     query = CharField( null=True, max_length=2000 );
     settings = BinaryJSONField(null=True,index=False);
     def __repr__(self):
-        return '<ReportingQueries uuid=%s name=%s>' % (self.uuid, self.name);
+        return '<ReportingQueries uuid=%s name=%s>' % (self.id, self.name);
 
 
 class Normalization(WaptBaseModel):
