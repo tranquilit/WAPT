@@ -679,6 +679,7 @@ type
     procedure EdSearchHostKeyPress(Sender: TObject; var Key: char);
     procedure EdSoftwaresFilterChange(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
+    procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormDragOver(Sender, Source: TObject; X, Y: Integer;
@@ -764,6 +765,9 @@ type
       const TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex;
       TextType: TVSTTextType);
     procedure GridReportingColumnResize(Sender: TVTHeader; Column: TColumnIndex );
+    procedure GridReportingGetText(Sender: TBaseVirtualTree;
+      Node: PVirtualNode; RowData, CellData: ISuperObject;
+      Column: TColumnIndex; TextType: TVSTTextType; var CellText: string);
     procedure GridReportingHeaderClick(Sender: TVTHeader;
       HitInfo: TVTHeaderHitInfo);
     procedure GridReportingHeaderDragged(Sender: TVTHeader;
@@ -799,7 +803,6 @@ type
     FReportingQueries: ISuperObject; // Pointers place holder for preventing auto __RemoveRef
     FReportingEditModeEnable : boolean;
     FReportingLoadingQuery : boolean;
-    FNormalization : ISuperObject;
     function ReportingIsUpdated: Boolean;
     function CheckreportingSaveUpdates: Boolean;
     procedure DoProgress(ASender: TObject);
@@ -1407,6 +1410,11 @@ begin
     ini.Free;
   end;
 
+end;
+
+procedure TVisWaptGUI.FormCloseQuery(Sender: TObject; var CanClose: boolean);
+begin
+  CanClose:=CheckreportingSaveUpdates;
 end;
 
 function TVisWaptGUI.FilterSoftwares(softs: ISuperObject): ISuperObject;
@@ -4908,6 +4916,7 @@ end;
 procedure TVisWaptGUI.Image1Click(Sender: TObject);
 begin
   OpenDocument('https://www.tranquil.it');
+
 end;
 
 procedure CopyMenu(menuItemSource: TPopupMenu; menuItemTarget: TMenuItem);
@@ -5457,7 +5466,7 @@ end;
 
 function TVisWaptGUI.CheckreportingSaveUpdates:Boolean;
 begin
-
+  Result := True;
 end;
 
 function TVisWaptGUI.ReportingIsUpdated:Boolean;
@@ -5469,7 +5478,11 @@ procedure TVisWaptGUI.GridReportingHeaderClick(Sender: TVTHeader;
 begin
 end;
 
-
+procedure TVisWaptGUI.GridReportingGetText(Sender: TBaseVirtualTree;
+  Node: PVirtualNode; RowData, CellData: ISuperObject; Column: TColumnIndex;
+  TextType: TVSTTextType; var CellText: string);
+begin
+end;
 
 {$endif}
 

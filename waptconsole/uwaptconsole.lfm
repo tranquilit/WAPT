@@ -11,6 +11,7 @@ object VisWaptGUI: TVisWaptGUI
   Constraints.MinWidth = 800
   Menu = MainMenu1
   OnClose = FormClose
+  OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnDragOver = FormDragOver
@@ -5797,6 +5798,7 @@ object VisWaptGUI: TVisWaptGUI
             Height = 234
             Top = 5
             Width = 933
+            OnGetText = GridReportingGetText
             ShowAdvancedColumnsCustomize = True
             Align = alClient
             Anchors = [akLeft, akBottom]

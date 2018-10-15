@@ -410,25 +410,25 @@ class HostGroups(WaptBaseModel):
 
 class ReportingQueries(WaptBaseModel):
     """Reporting queries"""
-    id = PrimaryKeyField(primary_key=True);
-    name = CharField(null=False, index=True );
-    query = CharField( null=True, max_length=2000 );
-    settings = BinaryJSONField(null=True,index=False);
+    id = PrimaryKeyField(primary_key=True)
+    name = CharField(null=False, index=True )
+    query = CharField( null=True, max_length=2000 )
+    settings = BinaryJSONField(null=True,index=False)
     def __repr__(self):
-        return '<ReportingQueries uuid=%s name=%s>' % (self.id, self.name);
+        return '<ReportingQueries uuid=%s name=%s>' % (self.id, self.name)
 
 
 class Normalization(WaptBaseModel):
     """Normalization table"""
-    original_name = CharField(   max_length=500 );
-    key = CharField(             max_length=500 );
-    normalized_name = CharField( max_length=500, null=True,  index=True );
-    banned = BooleanField( null=True );
-    windows_update = BooleanField( null=True  );
+    original_name = CharField(   max_length=500 )
+    key = CharField(             max_length=500 )
+    normalized_name = CharField( max_length=500, null=True,  index=True )
+    banned = BooleanField( null=True )
+    windows_update = BooleanField( null=True  )
     class Meta:
-        primary_key = CompositeKey('original_name', 'key' );
+        primary_key = CompositeKey('original_name', 'key' )
     def __repr__(self):
-        return '<Normalization uuid=%s name=%s>' % (self.uuid, self.name);
+        return '<Normalization uuid=%s name=%s>' % (self.uuid, self.name)
 
 
 
