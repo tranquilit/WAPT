@@ -26,9 +26,9 @@ object VisWaptGUI: TVisWaptGUI
     Height = 480
     Top = 0
     Width = 1159
-    ActivePage = PgReports
+    ActivePage = pgNormalization
     Align = alClient
-    TabIndex = 7
+    TabIndex = 8
     TabOrder = 0
     OnChange = MainPagesChange
     object pgInventory: TTabSheet
@@ -2234,7 +2234,6 @@ object VisWaptGUI: TVisWaptGUI
           WantTabs = True
           OnChange = GridHostsChange
           OnColumnDblClick = GridHostsColumnDblClick
-          OnCompareNodes = GridHostsCompareNodes
           OnDragOver = GridHostsDragOver
           OnDragDrop = GridHostsDragDrop
           OnEditing = GridHostsEditing
@@ -5800,6 +5799,7 @@ object VisWaptGUI: TVisWaptGUI
             Width = 933
             OnGetText = GridReportingGetText
             ShowAdvancedColumnsCustomize = True
+            OnSOCompareNodes = GridReportingSOCompareNodes
             Align = alClient
             Anchors = [akLeft, akBottom]
             BorderSpacing.Left = 5

@@ -709,8 +709,6 @@ type
     procedure GridHostsChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
     procedure GridHostsColumnDblClick(Sender: TBaseVirtualTree;
       Column: TColumnIndex; Shift: TShiftState);
-    procedure GridHostsCompareNodes(Sender: TBaseVirtualTree;
-      Node1, Node2: PVirtualNode; Column: TColumnIndex; var Result: integer);
     procedure GridHostsDragDrop(Sender: TBaseVirtualTree; Source: TObject;
       DataObject: IDataObject; Formats: TFormatArray; Shift: TShiftState;
       const Pt: TPoint; var Effect: DWORD; Mode: TDropMode);
@@ -772,6 +770,8 @@ type
       HitInfo: TVTHeaderHitInfo);
     procedure GridReportingHeaderDragged(Sender: TVTHeader;
       Column: TColumnIndex; OldPosition: Integer);
+    procedure GridReportingSOCompareNodes(Sender: TSOGrid; Node1,
+      Node2: ISuperObject; const Columns: array of String; var Result: Integer);
     procedure GridWinproductsChange(Sender: TBaseVirtualTree; Node: PVirtualNode );
     procedure GridWinUpdatesGetImageIndexEx(Sender: TBaseVirtualTree;
       Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
@@ -803,8 +803,6 @@ type
     FReportingQueries: ISuperObject; // Pointers place holder for preventing auto __RemoveRef
     FReportingEditModeEnable : boolean;
     FReportingLoadingQuery : boolean;
-    function ReportingIsUpdated: Boolean;
-    function CheckreportingSaveUpdates: Boolean;
     procedure DoProgress(ASender: TObject);
     procedure FillcbADSiteDropDown;
     procedure FillcbGroups;
@@ -836,11 +834,16 @@ type
     procedure TreeLoadData(tree: TVirtualJSONInspector; jsondata: ISuperObject);
 
     procedure LoadOrgUnitsTree(Sender: TObject);
+
+    function ApplyUpdates(const datasets: array of ISuperObject):Boolean;
+    function IsUpdated(const datasets: Array of ISuperObject):Boolean;
+    function CheckUpdates(const datasets: Array of ISuperObject):Boolean;
+
     procedure UpdateTasksReport(tasksresult: ISuperObject);
     procedure SetGridReportingData( data : ISuperObject );
     procedure SetReportingEditModeEnable( EditEnable : Boolean );
-
     procedure SetReportingDirty;
+
 
   public
     { public declarations }
@@ -1097,6 +1100,7 @@ begin
       on E:Exception do
       begin
         Tasks := Nil;
+
         ErrorMessage := rsFatalError+' '+E.Message;
         Synchronize(@HandleTasks);
         Sleep(ErrorSleepTime);
@@ -1414,7 +1418,7 @@ end;
 
 procedure TVisWaptGUI.FormCloseQuery(Sender: TObject; var CanClose: boolean);
 begin
-  CanClose:=CheckreportingSaveUpdates;
+  CanClose := CheckUpdates([FReportingQueries,GridNormalization.Data]);
 end;
 
 function TVisWaptGUI.FilterSoftwares(softs: ISuperObject): ISuperObject;
@@ -4432,7 +4436,7 @@ begin
   ActEditHostPackage.Execute;
 end;
 
-procedure TVisWaptGUI.GridHostsCompareNodes(Sender: TBaseVirtualTree;
+{procedure TVisWaptGUI.GridHostsCompareNodes(Sender: TBaseVirtualTree;
   Node1, Node2: PVirtualNode; Column: TColumnIndex; var Result: integer);
 var
   n1, n2, d1, d2: ISuperObject;
@@ -4479,6 +4483,7 @@ begin
   else
     Result := 0;
 end;
+}
 
 procedure TVisWaptGUI.GridHostsDragDrop(Sender: TBaseVirtualTree;
   Source: TObject; DataObject: IDataObject; Formats: TFormatArray;
@@ -5059,6 +5064,57 @@ begin
     GridHostsForPackage.Data := Nil;
 end;
 
+function TVisWaptGUI.IsUpdated(const datasets: array of ISuperObject): Boolean;
+var
+  ADataset,Rec: ISuperObject;
+begin
+  Result := False;
+  for ADataset in datasets do
+  begin
+    if ADataset <> Nil then
+      for Rec in ADataset do
+        if Rec.B['_edited'] then
+        begin
+          Result := True;
+          Exit;
+        end;
+  end;
+end;
+
+function TVisWaptGUI.CheckUpdates(const datasets: array of ISuperObject
+  ): Boolean;
+var
+  res: TModalResult;
+begin
+  Result := not IsUpdated(datasets);
+  if not Result then
+  begin
+    res := MessageDlg(Format(rsQueryApplyUpdates,[]),mtWarning,mbYesNoCancel, 0);
+    if res = mrYes then
+      result := ApplyUpdates(datasets)
+    else if res=mrCancel then
+      Result := False
+    else
+      Result := True;
+  end;
+end;
+
+
+function TVisWaptGUI.ApplyUpdates(const datasets: array of ISuperObject): Boolean;
+var
+  ADataset: ISuperObject;
+begin
+  for ADataset in datasets do
+    if IsUpdated([ADataset]) then
+    begin
+      if ADataset = FReportingQueries then
+        ActReportingQuerySaveAll.Execute
+      else if ADataset = GridNormalization.Data then
+        ActNormalizationWriteTable.Execute;
+    end;
+  result := not IsUpdated(datasets);
+end;
+
 
 {$ifdef ENTERPRISE}
 {$include ..\waptenterprise\includes\uwaptconsole.inc}
@@ -5464,15 +5520,6 @@ procedure TVisWaptGUI.GridReportingHeaderDragged(Sender: TVTHeader;
 begin
 end;
 
-function TVisWaptGUI.CheckreportingSaveUpdates:Boolean;
-begin
-  Result := True;
-end;
-
-function TVisWaptGUI.ReportingIsUpdated:Boolean;
-begin
-end;
-
 procedure TVisWaptGUI.GridReportingHeaderClick(Sender: TVTHeader;
   HitInfo: TVTHeaderHitInfo);
 begin
@@ -5484,7 +5531,7 @@ procedure TVisWaptGUI.GridReportingGetText(Sender: TBaseVirtualTree;
 begin
 end;
 
-{$endif}
 
+{$endif}
 
 end.

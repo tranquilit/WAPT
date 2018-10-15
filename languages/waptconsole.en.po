@@ -2857,10 +2857,6 @@ msgctxt "uwaptconsoleres.rscompletionprogress"
 msgid "%s : %.0f%% completed"
 msgstr ""
 
-#: uwaptconsoleres.rsconfirmabortunsavedchandes
-msgid "Abort unsaved changes ?"
-msgstr ""
-
 #: uwaptconsoleres.rsconfirmburstupdate
 msgid "Are you sure you want to trigger Status Update on %d hosts ?"
 msgstr ""
@@ -3405,6 +3401,10 @@ msgstr ""
 #: uwaptconsoleres.rspublickeygensuccess
 msgctxt "uwaptconsoleres.rspublickeygensuccess"
 msgid "Public certificate %s has been successfully created."
+msgstr ""
+
+#: uwaptconsoleres.rsqueryapplyupdates
+msgid "Some of your changes are not yet saved. Do you want to save your changes ?"
 msgstr ""
 
 #: uwaptconsoleres.rsreloadwaptconsoleconfig

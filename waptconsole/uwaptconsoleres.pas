@@ -268,8 +268,7 @@ resourcestring
   rsConfirmDeleteQueries = 'Delete %d queries ?';
 
   { Messages Normalizarion }
-  rsConfirmAbortUnsavedChandes = 'Abort unsaved changes ?';
-
+  rsQueryApplyUpdates = 'Some of your changes are not yet saved. Do you want to save your changes ?';
 implementation
 
 end.

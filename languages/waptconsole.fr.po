@@ -1642,7 +1642,7 @@ msgstr "Lancer l'installation des Mises à jour Windows en attente"
 #: tviswaptgui.acttriggerwaptwua_scan.caption
 msgctxt "tviswaptgui.acttriggerwaptwua_scan.caption"
 msgid "Trigger the scan of missing Windows Updates"
-msgstr "Lancer le recherche des Mises à jour Windows à appliquer"
+msgstr "Lancer la recherche des Mises à jour Windows à appliquer"
 
 #: tviswaptgui.actvnc.caption
 msgctxt "tviswaptgui.actvnc.caption"
@@ -2915,10 +2915,6 @@ msgctxt "uwaptconsoleres.rscompletionprogress"
 msgid "%s : %.0f%% completed"
 msgstr "%s : %.0f%% terminé"
 
-#: uwaptconsoleres.rsconfirmabortunsavedchandes
-msgid "Abort unsaved changes ?"
-msgstr ""
-
 #: uwaptconsoleres.rsconfirmburstupdate
 msgid "Are you sure you want to trigger Status Update on %d hosts ?"
 msgstr ""
@@ -3474,6 +3470,10 @@ msgstr "La création de la clé publique a échoué."
 msgctxt "uwaptconsoleres.rspublickeygensuccess"
 msgid "Public certificate %s has been successfully created."
 msgstr "La clé %s a bien été créée."
+
+#: uwaptconsoleres.rsqueryapplyupdates
+msgid "Some of your changes are not yet saved. Do you want to save your changes ?"
+msgstr "Vous avez effectué des changements qui ne sont pas encore enregistrés. Voulez-vous les sauvegarder ?"
 
 #: uwaptconsoleres.rsreloadwaptconsoleconfig
 msgid "Reloading WaptConsole configuration"

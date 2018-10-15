@@ -4188,10 +4188,6 @@ msgctxt "uwaptconsoleres.rscompletionprogress"
 msgid "%s : %.0f%% completed"
 msgstr "%s : %.0f%% beendet"
 
-#: uwaptconsoleres.rsconfirmabortunsavedchandes
-msgid "Abort unsaved changes ?"
-msgstr ""
-
 #: uwaptconsoleres.rsconfirmburstupdate
 msgid "Are you sure you want to trigger Status Update on %d hosts ?"
 msgstr ""
@@ -6191,6 +6187,10 @@ msgstr "Die Erzeugung des öffentlichen Key ist gescheitert."
 msgctxt "uwaptconsoleres.rspublickeygensuccess"
 msgid "Public certificate %s has been successfully created."
 msgstr "Schlüssel %s wurde erfolgreich erstellt."
+
+#: uwaptconsoleres.rsqueryapplyupdates
+msgid "Some of your changes are not yet saved. Do you want to save your changes ?"
+msgstr ""
 
 #: uwaptconsoleres.rsreloadwaptconsoleconfig
 msgid "Reloading WaptConsole configuration"
