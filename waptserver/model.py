@@ -288,6 +288,12 @@ class Packages(WaptBaseModel):
     description = TextField(null=True)
     depends = ArrayField(CharField,null=True)
     conflicts = ArrayField(CharField,null=True)
+    audit_schedule = CharField(null=True)
+    installed_size = BigIntegerField(null=True)
+    target_os = CharField(null=True)
+    min_os_version = CharField(null=True)
+    max_os_version = CharField(null=True)
+    min_wapt_version = CharField(null=True)
     impacted_process = ArrayField(CharField,null=True)
     keywords = ArrayField(CharField,null=True)
     licence = CharField(null=True)
@@ -1428,18 +1434,26 @@ def upgrade_db_structure():
             (v, created) = ServerAttribs.get_or_create(key='db_version')
             v.value = next_version
             v.save()
+
     next_version = '1.7.0.0'
     if get_db_version() <= next_version:
         with wapt_db.atomic():
             logger.info("Migrating from %s to %s" % (get_db_version(), next_version))
+
+            opes = []
+
             ReportingQueries.create_table(fail_silently=True);
             Normalization.create_table(fail_silently=True);
-            opes = []
+
+            columns = [c.name for c in wapt_db.get_columns('packages')]
+            for c in ['audit_schedule','installed_size','target_os','min_os_version','max_os_version','min_wapt_version']:
+                if not c in columns:
+                    opes.append(migrator.add_column(Packages._meta.name, c, getattr(Packages,c)))
+
             migrate(*opes)
             (v, created) = ServerAttribs.get_or_create(key='db_version')
             v.value = next_version
             v.save()
-
 
 if __name__ == '__main__':
     if platform.system() != 'Windows' and getpass.getuser() != 'wapt':
