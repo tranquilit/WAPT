@@ -147,6 +147,7 @@ __all__ = \
  'os',
  'params',
  'pending_reboot_reasons',
+ 'processes_for_file',
  'programfiles',
  'programfiles32',
  'programfiles64',
@@ -1128,6 +1129,37 @@ def killalltasks(exenames,include_children=True):
       run(u'taskkill /t /im "%s" /f' % c)
     """
 
+def processes_for_file(filepath,open_files=True,dll=True):
+    """Generator returning processes currently having a open file descriptor for filepath
+
+    If not running as System account, can not access system processes.
+
+    Args:
+        filepath (str): file path or pattern (glob *)
+
+    Returns:
+        iterator psutil.Process
+
+    """
+    for process in psutil.process_iter():
+        if dll:
+            try:
+                for dllproc in process.memory_maps():
+                    if glob.fnmatch.fnmatch(dllproc.path,filepath):
+                        yield process
+                        break
+            except Exception as e:
+                # often : psutil.AccessDenied
+                pass
+        if open_files:
+            try:
+                for open_file in process.open_files():
+                    if glob.fnmatch.fnmatch(open_file.path,filepath):
+                        yield process
+                        break
+            except Exception as e:
+                # often : psutil.AccessDenied
+                pass
 
 def killtree(pid, including_parent=True):
     try:
