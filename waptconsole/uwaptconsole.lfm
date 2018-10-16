@@ -349,7 +349,7 @@ object VisWaptGUI: TVisWaptGUI
             Header.DefaultHeight = 18
             Header.Height = 18
             Header.MinHeight = 18
-            Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
+            Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
             Header.SortColumn = 5
             Header.SortDirection = sdDescending
             Header.Style = hsFlatButtons
@@ -626,7 +626,7 @@ object VisWaptGUI: TVisWaptGUI
         end
         object pgHostInventory: TTabSheet
           Caption = 'Hardware inventory'
-          ClientHeight = 386
+          ClientHeight = 308
           ClientWidth = 564
           object Panel14: TPanel
             Left = 0
@@ -682,7 +682,7 @@ object VisWaptGUI: TVisWaptGUI
           end
           object GridhostInventory: TVirtualJSONInspector
             Left = 0
-            Height = 357
+            Height = 279
             Top = 29
             Width = 564
             PropertyDefs = <>
@@ -706,7 +706,7 @@ object VisWaptGUI: TVisWaptGUI
             Header.DefaultHeight = 17
             Header.Height = 19
             Header.MinHeight = 19
-            Header.Options = [hoAutoResize, hoColumnResize, hoDrag, hoShowSortGlyphs, hoVisible, hoAutoSpring]
+            Header.Options = [hoAutoResize, hoColumnResize, hoDrag, hoShowSortGlyphs, hoVisible, hoAutoSpring, hoHeaderClickAutoSort]
             Header.Style = hsFlatButtons
             TabOrder = 1
             TreeOptions.AutoOptions = [toAutoScrollOnExpand, toAutoSort, toAutoSpanColumns, toAutoTristateTracking, toAutoDeleteMovedNodes]
@@ -717,11 +717,11 @@ object VisWaptGUI: TVisWaptGUI
         end
         object pgSoftwares: TTabSheet
           Caption = 'Software inventory'
-          ClientHeight = 265
+          ClientHeight = 308
           ClientWidth = 564
           object GridHostSoftwares: TSOGrid
             Left = 0
-            Height = 238
+            Height = 281
             Top = 27
             Width = 564
             ShowAdvancedColumnsCustomize = False
@@ -799,7 +799,7 @@ object VisWaptGUI: TVisWaptGUI
                 PropertyName = 'system_component'
               end>
             Header.DefaultHeight = 17
-            Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
+            Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
             Header.SortColumn = 2
             Header.Style = hsFlatButtons
             TabOrder = 0
@@ -864,7 +864,7 @@ object VisWaptGUI: TVisWaptGUI
           ClientWidth = 564
           object GridHostWinUpdates: TSOGrid
             Left = 0
-            Height = 204
+            Height = 93
             Top = 104
             Width = 564
             OnGetText = GridHostWinUpdatesGetText
@@ -1075,7 +1075,7 @@ object VisWaptGUI: TVisWaptGUI
             Header.DefaultHeight = 17
             Header.Height = 19
             Header.MinHeight = 19
-            Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
+            Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
             Header.SortColumn = 6
             Header.Style = hsFlatButtons
             Images = ImageList1
@@ -1383,7 +1383,7 @@ object VisWaptGUI: TVisWaptGUI
         end
         object pgTasks: TTabSheet
           Caption = 'Tasks'
-          ClientHeight = 386
+          ClientHeight = 308
           ClientWidth = 564
           object HostTaskRunningProgress: TProgressBar
             Left = 4
@@ -1458,28 +1458,28 @@ object VisWaptGUI: TVisWaptGUI
             Cursor = crVSplit
             Left = 0
             Height = 5
-            Top = 331
+            Top = 253
             Width = 564
             Align = alBottom
             ResizeAnchor = akBottom
           end
           object PageControl1: TPageControl
             Left = 0
-            Height = 229
+            Height = 151
             Top = 102
             Width = 564
-            ActivePage = TabSheet1
+            ActivePage = TabSheet3
             Align = alBottom
             Anchors = [akTop, akLeft, akBottom]
-            TabIndex = 0
+            TabIndex = 2
             TabOrder = 3
             object TabSheet1: TTabSheet
               Caption = 'Pending'
-              ClientHeight = 203
+              ClientHeight = 125
               ClientWidth = 556
               object GridHostTasksPending: TSOGrid
                 Left = 0
-                Height = 201
+                Height = 123
                 Top = 2
                 Width = 556
                 ShowAdvancedColumnsCustomize = False
@@ -1602,7 +1602,7 @@ object VisWaptGUI: TVisWaptGUI
                 Header.DefaultHeight = 18
                 Header.Height = 19
                 Header.MinHeight = 19
-                Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
+                Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
                 Header.SortColumn = 0
                 Header.SortDirection = sdDescending
                 Header.Style = hsFlatButtons
@@ -1620,11 +1620,11 @@ object VisWaptGUI: TVisWaptGUI
             end
             object TabSheet2: TTabSheet
               Caption = 'Done'
-              ClientHeight = 203
+              ClientHeight = 125
               ClientWidth = 556
               object GridHostTasksDone: TSOGrid
                 Left = 0
-                Height = 201
+                Height = 123
                 Top = 2
                 Width = 556
                 ShowAdvancedColumnsCustomize = False
@@ -1746,7 +1746,7 @@ object VisWaptGUI: TVisWaptGUI
                 Header.DefaultHeight = 17
                 Header.Height = 19
                 Header.MinHeight = 19
-                Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
+                Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
                 Header.SortColumn = 0
                 Header.SortDirection = sdDescending
                 Header.Style = hsFlatButtons
@@ -1764,11 +1764,11 @@ object VisWaptGUI: TVisWaptGUI
             end
             object TabSheet3: TTabSheet
               Caption = 'Errors'
-              ClientHeight = 203
+              ClientHeight = 125
               ClientWidth = 556
               object GridHostTasksErrors: TSOGrid
                 Left = 0
-                Height = 201
+                Height = 123
                 Top = 2
                 Width = 556
                 ShowAdvancedColumnsCustomize = False
@@ -1889,7 +1889,7 @@ object VisWaptGUI: TVisWaptGUI
                 Header.DefaultHeight = 17
                 Header.Height = 19
                 Header.MinHeight = 19
-                Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
+                Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
                 Header.SortColumn = 0
                 Header.SortDirection = sdDescending
                 Header.Style = hsFlatButtons
@@ -1909,7 +1909,7 @@ object VisWaptGUI: TVisWaptGUI
           object Panel6: TPanel
             Left = 0
             Height = 50
-            Top = 336
+            Top = 258
             Width = 564
             Align = alBottom
             BevelOuter = bvNone
@@ -2220,8 +2220,7 @@ object VisWaptGUI: TVisWaptGUI
           Header.DefaultHeight = 18
           Header.Height = 18
           Header.MinHeight = 18
-          Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
-          Header.SortColumn = 4
+          Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
           Header.Style = hsFlatButtons
           HintMode = hmHintAndDefault
           Images = ImageList1
@@ -3015,7 +3014,7 @@ object VisWaptGUI: TVisWaptGUI
           end
           object ToolButtonSep1: TToolButton
             Left = 47
-            Height = 5
+            Height = 45
             Top = 0
             Caption = 'ToolButtonSep1'
             Style = tbsDivider
@@ -3037,7 +3036,7 @@ object VisWaptGUI: TVisWaptGUI
           end
           object ToolButton6: TToolButton
             Left = 181
-            Height = 5
+            Height = 45
             Top = 0
             Caption = 'ToolButton6'
             Style = tbsDivider
@@ -3357,8 +3356,7 @@ object VisWaptGUI: TVisWaptGUI
           end>
         Header.DefaultHeight = 18
         Header.Height = 18
-        Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
-        Header.SortColumn = 1
+        Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
         Header.Style = hsFlatButtons
         PopupMenu = PopupMenuGroups
         TabOrder = 1
@@ -3882,8 +3880,7 @@ object VisWaptGUI: TVisWaptGUI
           end>
         Header.DefaultHeight = 18
         Header.Height = 18
-        Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
-        Header.SortColumn = 1
+        Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
         Header.Style = hsFlatButtons
         PopupMenu = PopupMenuPackages
         TabOrder = 3
@@ -4238,7 +4235,7 @@ object VisWaptGUI: TVisWaptGUI
           Header.DefaultHeight = 18
           Header.Height = 18
           Header.MinHeight = 18
-          Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
+          Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
           Header.SortColumn = 1
           Header.Style = hsFlatButtons
           Images = ImageList1
@@ -4788,8 +4785,7 @@ object VisWaptGUI: TVisWaptGUI
               PropertyName = 'downloaded_on'
             end>
           Header.DefaultHeight = 17
-          Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
-          Header.SortColumn = 2
+          Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
           Header.SortDirection = sdDescending
           Header.Style = hsFlatButtons
           Images = ImageList1
@@ -4955,8 +4951,7 @@ object VisWaptGUI: TVisWaptGUI
             PropertyName = 'forced'
           end>
         Header.DefaultHeight = 17
-        Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
-        Header.SortColumn = 0
+        Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
         Header.SortDirection = sdDescending
         Header.Style = hsFlatButtons
         Images = ImageList1
@@ -5517,7 +5512,7 @@ object VisWaptGUI: TVisWaptGUI
         end
         object EdRun: TEdit
           Left = 292
-          Height = 23
+          Height = 21
           Top = 5
           Width = 168
           OnKeyPress = EdRunKeyPress
@@ -5752,7 +5747,7 @@ object VisWaptGUI: TVisWaptGUI
           end>
         Header.DefaultHeight = 18
         Header.Height = 18
-        Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
+        Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
         Header.SortColumn = 0
         Header.Style = hsFlatButtons
         TabOrder = 1
@@ -5813,7 +5808,7 @@ object VisWaptGUI: TVisWaptGUI
             Header.DefaultHeight = 18
             Header.Height = 18
             Header.MainColumn = -1
-            Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
+            Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
             Header.Style = hsFlatButtons
             TabOrder = 0
             TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
@@ -6486,8 +6481,7 @@ object VisWaptGUI: TVisWaptGUI
           end>
         Header.DefaultHeight = 18
         Header.Height = 18
-        Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
-        Header.SortColumn = 1
+        Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
         Header.SortDirection = sdDescending
         Header.Style = hsFlatButtons
         TabOrder = 0

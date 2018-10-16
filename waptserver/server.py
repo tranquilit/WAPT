@@ -1614,9 +1614,9 @@ def host_data():
             raise EWaptMissingParameter('Parameter field is missing')
 
         if field == 'installed_softwares':
-            result = list(HostSoftwares.select().where(HostSoftwares.host == uuid).dicts())
+            result = list(HostSoftwares.select().where(HostSoftwares.host == uuid).order_by(HostSoftwares.created_on.desc()).dicts())
         elif field == 'installed_packages':
-            result = list(HostPackagesStatus.select().where(HostPackagesStatus.host == uuid).dicts())
+            result = list(HostPackagesStatus.select().where(HostPackagesStatus.host == uuid).order_by(HostPackagesStatus.created_on.desc()).dicts())
         elif field == 'wsusupdates':
             local_status = HostWsus.alias('local_status')
             fields = [
