@@ -5531,7 +5531,10 @@ procedure TVisWaptGUI.GridReportingGetText(Sender: TBaseVirtualTree;
 begin
 end;
 
-
+procedure TVisWaptGUI.GridReportingSOCompareNodes(Sender: TSOGrid; Node1,
+  Node2: ISuperObject; const Columns: array of String; var Result: Integer);
+begin
+end;
 {$endif}
 
 end.
