@@ -1107,6 +1107,8 @@ def killalltasks(exenames,include_children=True):
     >>> killalltasks('firefox.exe')
     """
     logger.debug('Kill tasks %s' % (exenames,))
+    if not exenames:
+        return
     if not isinstance(exenames,list):
         exenames = [exenames]
     exenames = [exe.lower() for exe in exenames]+[exe.lower()+'.exe' for exe in exenames]
@@ -4034,7 +4036,8 @@ def install_msi_if_needed(msi,min_version=None,killbefore=None,accept_returncode
         min_version = getproductprops(msi)['version']
 
     if remove_old_version :
-        killalltasks(killbefore)
+        if killbefore:
+            killalltasks(killbefore)
         remove_previous_version(key,min_version)
 
     if need_install(key,min_version=min_version or None,force=force,get_version=get_version):
@@ -4110,7 +4113,8 @@ def install_exe_if_needed(exe,silentflags=None,key=None,min_version=None,killbef
         min_version = getproductprops(exe)['version']
 
     if remove_old_version :
-        killalltasks(killbefore)
+        if killbefore:
+            killalltasks(killbefore)
         remove_previous_version(key,min_version)
 
     if need_install(key,min_version=min_version or None,force=force,get_version=get_version):
