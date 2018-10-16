@@ -133,6 +133,7 @@ procedure WaptIniWriteInteger(const user,item: string; Value: Integer);
 procedure WaptIniWriteString(const user,item, Value: string);
 
 Function ISO8601ToDateTime(Value: String):TDateTime;
+Function DateTimeToISO8601(Value: TDateTime=0):String;
 
 Function wapt_edition:String;
 
@@ -2048,9 +2049,17 @@ var
     FormatSettings: TFormatSettings;
 begin
     GetLocaleFormatSettings(GetThreadLocale, FormatSettings);
+    FormatSettings.TimeSeparator := ':';
     FormatSettings.DateSeparator := '-';
     FormatSettings.ShortDateFormat := 'yyyy-MM-dd';
-    Result := StrToDate(copy(Value,1,10),FormatSettings)+StrToTime(copy(Value,12,8));
+    Result := StrToDate(copy(Value,1,10),FormatSettings)+StrToTime(copy(Value,12,8),FormatSettings);
+end;
+
+function DateTimeToISO8601(Value: TDateTime=0): String;
+begin
+  if Value = 0 then
+    Value := Now;
+  Result := FormatDateTime('yyyy"-"mm"-"dd"T"hh":"nn":"ss',Now);
 end;
 
 function wapt_edition: String;
