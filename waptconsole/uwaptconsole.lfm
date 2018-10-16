@@ -350,8 +350,6 @@ object VisWaptGUI: TVisWaptGUI
             Header.Height = 18
             Header.MinHeight = 18
             Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
-            Header.SortColumn = 5
-            Header.SortDirection = sdDescending
             Header.Style = hsFlatButtons
             Images = ImageList1
             PopupMenu = PopupHostPackages
@@ -800,7 +798,6 @@ object VisWaptGUI: TVisWaptGUI
               end>
             Header.DefaultHeight = 17
             Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
-            Header.SortColumn = 2
             Header.Style = hsFlatButtons
             TabOrder = 0
             TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
@@ -1076,7 +1073,6 @@ object VisWaptGUI: TVisWaptGUI
             Header.Height = 19
             Header.MinHeight = 19
             Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
-            Header.SortColumn = 6
             Header.Style = hsFlatButtons
             Images = ImageList1
             PopupMenu = PopupHostWUAUpdates
@@ -1358,8 +1354,7 @@ object VisWaptGUI: TVisWaptGUI
             Header.DefaultHeight = 17
             Header.Height = 19
             Header.MinHeight = 19
-            Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
-            Header.SortColumn = 0
+            Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
             Header.Style = hsFlatButtons
             Images = ImageList1
             TabOrder = 3
@@ -1603,7 +1598,6 @@ object VisWaptGUI: TVisWaptGUI
                 Header.Height = 19
                 Header.MinHeight = 19
                 Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
-                Header.SortColumn = 0
                 Header.SortDirection = sdDescending
                 Header.Style = hsFlatButtons
                 Images = ImageList1
@@ -1747,7 +1741,6 @@ object VisWaptGUI: TVisWaptGUI
                 Header.Height = 19
                 Header.MinHeight = 19
                 Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
-                Header.SortColumn = 0
                 Header.SortDirection = sdDescending
                 Header.Style = hsFlatButtons
                 Images = ImageList1
@@ -1890,8 +1883,6 @@ object VisWaptGUI: TVisWaptGUI
                 Header.Height = 19
                 Header.MinHeight = 19
                 Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
-                Header.SortColumn = 0
-                Header.SortDirection = sdDescending
                 Header.Style = hsFlatButtons
                 Images = ImageList1
                 TabOrder = 0
@@ -4236,7 +4227,6 @@ object VisWaptGUI: TVisWaptGUI
           Header.Height = 18
           Header.MinHeight = 18
           Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
-          Header.SortColumn = 1
           Header.Style = hsFlatButtons
           Images = ImageList1
           PopupMenu = PopupHostPackages
@@ -4430,8 +4420,6 @@ object VisWaptGUI: TVisWaptGUI
           end>
         Header.DefaultHeight = 17
         Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
-        Header.SortColumn = 1
-        Header.SortDirection = sdDescending
         Header.Style = hsFlatButtons
         Images = ImageList1
         PopupMenu = PopupGridWSUSScan
@@ -5748,7 +5736,6 @@ object VisWaptGUI: TVisWaptGUI
         Header.DefaultHeight = 18
         Header.Height = 18
         Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
-        Header.SortColumn = 0
         Header.Style = hsFlatButtons
         TabOrder = 1
         TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
