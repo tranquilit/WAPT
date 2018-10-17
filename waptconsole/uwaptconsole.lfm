@@ -26,9 +26,9 @@ object VisWaptGUI: TVisWaptGUI
     Height = 480
     Top = 0
     Width = 1159
-    ActivePage = PgReports
+    ActivePage = pgInventory
     Align = alClient
-    TabIndex = 7
+    TabIndex = 0
     TabOrder = 0
     OnChange = MainPagesChange
     object pgInventory: TTabSheet
@@ -10747,6 +10747,7 @@ object VisWaptGUI: TVisWaptGUI
       Caption = 'New query'
       ImageIndex = 7
       OnExecute = ActReportingQueryNewExecute
+      ShortCut = 16462
       Visible = False
     end
     object ActReportingQueryDelete: TAction
@@ -10760,6 +10761,7 @@ object VisWaptGUI: TVisWaptGUI
       Caption = 'Design mode'
       ImageIndex = 9
       OnExecute = ActReportingQueryDesignExecute
+      ShortCut = 24644
     end
     object ActReportingQuerySave: TAction
       Caption = 'Save'
@@ -10784,7 +10786,7 @@ object VisWaptGUI: TVisWaptGUI
       ImageIndex = 2
       OnExecute = ActReportingQueryExecuteExecute
       OnUpdate = ActReportingQueryExecuteUpdate
-      ShortCut = 115
+      ShortCut = 116
     end
     object ActReportingQueryExportToExcel: TAction
       Caption = 'Export to Excel'
@@ -10797,7 +10799,6 @@ object VisWaptGUI: TVisWaptGUI
       Caption = 'Reload queries'
       ImageIndex = 6
       OnExecute = ActReportingQueryReloadExecute
-      ShortCut = 116
     end
   end
   object NormalizationActions: TActionList
