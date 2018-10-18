@@ -1349,6 +1349,17 @@ class WaptTaskManager(threading.Thread):
                 # check wapt configuration, reload ini file if changed
                 # reload wapt config
                 self.check_configuration()
+                with self.wapt.waptdb:
+                    # force update if host capabilities have changed
+                    new_capa = self.wapt.host_capabilities_fingerprint()
+                    old_capa = self.wapt.read_param('host_capabilities_fingerprint')
+                    if old_capa != new_capa:
+                        logger.info('Host capabilities have changed since last update, forcing update')
+                        task = WaptUpdate()
+                        task.created_by = 'TASK MANAGER'
+                        task.force = True
+                        task.notify_server_on_finish = True
+                        self.add_task(task).as_dict()
 
                 # check tasks queue
                 self.running_task = self.tasks_queue.get(timeout=waptconfig.waptservice_poll_timeout)

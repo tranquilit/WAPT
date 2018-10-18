@@ -3914,6 +3914,8 @@ class Wapt(BaseObjectClass):
             packages_whitelist=self.packages_whitelist,
             packages_locales=self.locales,
             packages_maturities=self.maturities,
+            use_host_packages=self.use_hostpackages,
+            host_profiles=self.host_profiles,
             #authorized_maturities=self.get_host_maturities(),
         )
 
@@ -4669,13 +4671,21 @@ class Wapt(BaseObjectClass):
                     result.append(package)
         return result
 
+    def get_installed_host_packages(self):
+        """Get the implicit package names (host and unit packages) which are installed but no longer relevant
+
+        Returns:
+            list: of installed package names
+        """
+        return [p.package for p in self.installed(True) if p.section in ('host','unit','profile')]
+
     def get_unrelevant_host_packages(self):
         """Get the implicit package names (host and unit packages) which are installed but no longer relevant
 
         Returns:
             list: of installed package names
         """
-        installed_host_packages = [p.package for p in self.installed(True) if p.section in ('host','unit','profile')]
+        installed_host_packages = self.get_installed_host_packages()
         expected_host_packages = self.get_host_packages_names()
         return [pn for pn in installed_host_packages if pn not in expected_host_packages]
 
@@ -4702,8 +4712,12 @@ class Wapt(BaseObjectClass):
         try:
             if self.use_hostpackages:
                 unrelevant_host_packages = self.get_unrelevant_host_packages()
-                if unrelevant_host_packages:
-                    result = merge_dict(result,self.remove(unrelevant_host_packages,force=True))
+            else:
+                unrelevant_host_packages = self.get_installed_host_packages()
+
+            if unrelevant_host_packages:
+                result = merge_dict(result,self.remove(unrelevant_host_packages,force=True))
+            if self.use_hostpackages:
                 install_host_packages = self.get_outdated_host_packages()
                 if install_host_packages:
                     logger.info(u'Host packages %s are available and not installed, installing host packages...' % (' '.join(h.package for h in install_host_packages),))
@@ -4738,10 +4752,10 @@ class Wapt(BaseObjectClass):
         # only most up to date (first one in list)
         # put 'host' package at the end.
         result['upgrade'].extend([p[0].asrequirement() for p in self.waptdb.upgradeable().values() if p and not p[0].section in ('host','unit','profile')])
-        if self.use_hostpackages:
-            to_remove = self.get_unrelevant_host_packages()
-            result['remove'].extend(to_remove)
 
+        to_remove = self.get_unrelevant_host_packages()
+        result['remove'].extend(to_remove)
+        if self.use_hostpackages:
             host_packages = self.get_outdated_host_packages()
             if host_packages:
                 for p in host_packages:

@@ -706,6 +706,7 @@ type
     procedure GridHostPackagesGetText(Sender: TBaseVirtualTree;
       Node: PVirtualNode; RowData, CellData: ISuperObject;
       Column: TColumnIndex; TextType: TVSTTextType; var CellText: string);
+    procedure GridHostPackagesNodesDelete(Sender: TSOGrid; Nodes: ISuperObject);
     procedure GridHostsChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
     procedure GridHostsColumnDblClick(Sender: TBaseVirtualTree;
       Column: TColumnIndex; Shift: TShiftState);
@@ -4419,6 +4420,13 @@ begin
     if StrIsOneOf(propName,['install_date','last_audit_on','next_audit_on','created_on','updated_on']) then
         CellText := Copy(StrReplaceChar(CellText,'T',' '),1,16);
   end;
+end;
+
+procedure TVisWaptGUI.GridHostPackagesNodesDelete(Sender: TSOGrid;
+  Nodes: ISuperObject);
+begin
+  if ActPackagesRemove.Enabled then
+    ActPackagesRemove.Execute;
 end;
 
 procedure TVisWaptGUI.GridHostsChange(Sender: TBaseVirtualTree; Node: PVirtualNode);

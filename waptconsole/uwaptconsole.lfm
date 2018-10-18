@@ -56,6 +56,7 @@ object VisWaptGUI: TVisWaptGUI
             Top = 127
             Width = 564
             OnGetText = GridHostPackagesGetText
+            OnNodesDelete = GridHostPackagesNodesDelete
             ShowAdvancedColumnsCustomize = False
             Align = alClient
             BorderSpacing.Top = 2
