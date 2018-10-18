@@ -770,20 +770,20 @@ def update_host_data(data):
                     installed_softwares = data.get('installed_softwares', data.get('softwares', None))
                     update_installed_softwares(uuid, installed_softwares)
             except Exception as e:
-                logger.critical(u'Unable to update installed_softwares for %s: %s' % (uuid,ensure_unicode(e))
+                logger.critical(u'Unable to update installed_softwares for %s: %s' % (uuid,ensure_unicode(e)))
 
             try:
                 if ('installed_packages' in data) or ('packages' in data):
                     installed_packages = data.get('installed_packages', data.get('packages', None))
                     update_installed_packages(uuid, installed_packages)
             except Exception as e:
-                logger.critical(u'Unable to update installed_packages for %s: %s' % (uuid,ensure_unicode(e))
+                logger.critical(u'Unable to update installed_packages for %s: %s' % (uuid,ensure_unicode(e)))
 
             try:
                 # update waptwua state tables
                 update_waptwua(uuid,data)
             except Exception as e:
-                logger.critical(u'Unable to update wuauserv_status or waptwua_status for %s: %s' % (uuid,ensure_unicode(e))
+                logger.critical(u'Unable to update wuauserv_status or waptwua_status for %s: %s' % (uuid,ensure_unicode(e)))
 
             # returns actual registered fqdn and status hashes so that host can omit to send some data next time if they have not changed
             result_query = Hosts.select(Hosts.uuid, Hosts.computer_fqdn,Hosts.status_hashes)
