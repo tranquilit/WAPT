@@ -23,16 +23,12 @@ uses
 {$R *.res}
 
 begin
-
-
   RequireDerivedFormResource := True;
   Application.Initialize;
   Application.CreateForm(TDMPython, DMPython);
   DMPython.WaptConfigFileName := AppIniFilename;
   ReadWaptConfig(AppIniFilename);
   Application.CreateForm(TVisWaptGUI, VisWaptGUI);
-
-
 
   if not VisWaptGUI.Login then
      Halt;

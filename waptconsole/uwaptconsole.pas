@@ -7,11 +7,11 @@ interface
 uses
   Classes, SysUtils, Windows, ActiveX, Types, Forms, Controls, Graphics,
   Dialogs, Buttons, LazUTF8, SynEdit, SynHighlighterPython, SynHighlighterSQL,
-  vte_json, vte_dbtreeex, ExtCtrls, StdCtrls, ComCtrls, ActnList, Menus,
-  jsonparser, superobject, VirtualTrees, VarPyth, ImgList, SOGrid, uvisloading,
-  IdComponent, DefaultTranslator, IniPropStorage, DBGrids, ShellCtrls, CheckLst,
-  GetText, uWaptConsoleRes, db, BufDataset, SearchEdit, MenuButton, ToggleLabel,
-  tisstrings;
+  SynCompletion, vte_json, vte_dbtreeex, ExtCtrls, StdCtrls, ComCtrls, ActnList,
+  Menus, jsonparser, superobject, VirtualTrees, VarPyth, ImgList, SOGrid,
+  uvisloading, IdComponent, DefaultTranslator, IniPropStorage, DBGrids,
+  ShellCtrls, CheckLst, GetText, uWaptConsoleRes, db, BufDataset, SearchEdit,
+  MenuButton, ToggleLabel, tisstrings;
 
 type
 
@@ -34,7 +34,6 @@ type
     ActNormalizationFilter: TAction;
     ActReportingQueryNew: TAction;
     ActReportingQueryDelete: TAction;
-    ActReportingQuerySave: TAction;
     ActNormalizationImportSoftwares: TAction;
     ActNormalizationWriteTable: TAction;
     ButNormalizationImport: TBitBtn;
@@ -42,6 +41,8 @@ type
     ButNormalizationFilter: TBitBtn;
     EdNormalizationFilter: TEdit;
     ImageListReports: TImageList;
+    MenuItem105: TMenuItem;
+    MenuItem106: TMenuItem;
     NormalizationActions: TActionList;
     ActReportingQueryReload: TAction;
     ActReportingQueryExportToExcel: TAction;
@@ -49,6 +50,7 @@ type
     Panel18: TPanel;
     PanelReportingGrid: TPanel;
     PanelReportingEditSQL: TPanel;
+    PopupMenuSQL: TPopupMenu;
     ReportingActions: TActionList;
     ActWUADownloadsRefresh: TAction;
     ActResetWebsocketConnections: TAction;
@@ -301,6 +303,7 @@ type
     PgReports: TTabSheet;
     pgWAPTWUADownloads: TTabSheet;
     pgNormalization: TTabSheet;
+    SynCompletion1: TSynCompletion;
     SynEditReportsSQL: TSynEdit;
     SynSQLSyn: TSynSQLSyn;
     tbReportingExportExcel: TToolButton;
@@ -310,7 +313,6 @@ type
     ToolButton10: TToolButton;
     ToolButton3: TToolButton;
     ToolButton4: TToolButton;
-    ToolButton5: TToolButton;
     ToolButton7: TToolButton;
     ToolButtonDesignQuery: TToolButton;
     ToolButton9: TToolButton;
@@ -557,10 +559,8 @@ type
     procedure ActReportingQueryDesignExecute(Sender: TObject);
     procedure ActReportingQuerySaveAllExecute(Sender: TObject);
     procedure ActReportingQuerySaveAllUpdate(Sender: TObject);
-    procedure ActReportingQuerySaveUpdate(Sender: TObject);
     procedure ActReportingQueryDeleteExecute(Sender: TObject);
     procedure ActReportingQueryNewExecute(Sender: TObject);
-    procedure ActReportingQuerySaveExecute(Sender: TObject);
     procedure ActReportingQueryDeleteUpdate(Sender: TObject);
     procedure ActReportingQueryExecuteExecute(Sender: TObject);
     procedure ActReportingQueryExecuteUpdate(Sender: TObject);
@@ -1941,7 +1941,7 @@ begin
       ActPackagesUpdate.Execute
     else
     if MainPages.ActivePage = PgReports then
-      ActReportingQueryReload.Execute
+      ActReportingQueryExecute.Execute
     else
     if MainPages.ActivePage = pgNormalization then
       ActNormalizationFilter.Execute;
@@ -3079,6 +3079,7 @@ procedure TVisWaptGUI.ActHostsActionsUpdate(Sender: TObject);
 begin
   (Sender as TAction).Enabled:= (GridHosts.SelectedCount>0) and OneHostIsConnected(GridHosts) and FileExistsUTF8(WaptPersonalCertificatePath);
 end;
+
 
 procedure TVisWaptGUI.ActImportFromFileExecute(Sender: TObject);
 var
@@ -5424,11 +5425,6 @@ begin
 
 end;
 
-procedure TVisWaptGUI.ActReportingQuerySaveExecute(Sender: TObject);
-begin
-
-end;
-
 procedure TVisWaptGUI.ActReportingQueryDeleteUpdate(Sender: TObject);
 begin
 end;
@@ -5498,10 +5494,6 @@ begin
 end;
 
 procedure TVisWaptGUI.ActReportingQuerySaveAllUpdate(Sender: TObject);
-begin
-end;
-
-procedure TVisWaptGUI.ActReportingQuerySaveUpdate(Sender: TObject);
 begin
 end;
 

@@ -1527,12 +1527,6 @@ msgstr "Nouvelle requête"
 msgid "Reload queries"
 msgstr "Recharger les requêtes"
 
-#: tviswaptgui.actreportingquerysave.caption
-#, fuzzy
-msgctxt "tviswaptgui.actreportingquerysave.caption"
-msgid "Save"
-msgstr "Enregistrer"
-
 #: tviswaptgui.actreportingquerysaveall.caption
 #, fuzzy
 #| msgid "Save all"

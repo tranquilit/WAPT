@@ -26,9 +26,9 @@ object VisWaptGUI: TVisWaptGUI
     Height = 480
     Top = 0
     Width = 1159
-    ActivePage = pgInventory
+    ActivePage = PgReports
     Align = alClient
-    TabIndex = 0
+    TabIndex = 7
     TabOrder = 0
     OnChange = MainPagesChange
     object pgInventory: TTabSheet
@@ -6359,14 +6359,9 @@ object VisWaptGUI: TVisWaptGUI
           Action = ActReportingQueryReload
         end
         object ToolButton3: TToolButton
-          Left = 397
+          Left = 349
           Top = 2
           Action = ActReportingQueryExecute
-        end
-        object ToolButton5: TToolButton
-          Left = 279
-          Top = 2
-          Action = ActReportingQuerySave
         end
         object ToolButtonDesignQuery: TToolButton
           Left = 1
@@ -6375,12 +6370,12 @@ object VisWaptGUI: TVisWaptGUI
           Style = tbsCheck
         end
         object ToolButton9: TToolButton
-          Left = 327
+          Left = 279
           Top = 2
           Action = ActReportingQuerySaveAll
         end
         object tbReportingExportExcel: TToolButton
-          Left = 445
+          Left = 397
           Top = 2
           Action = ActReportingQueryExportToExcel
           AutoSize = True
@@ -6799,7 +6794,6 @@ object VisWaptGUI: TVisWaptGUI
       Caption = 'Refresh'
       ImageIndex = 5
       OnExecute = actRefreshExecute
-      ShortCut = 116
     end
     object ActReloadConfig: TAction
       Caption = 'Reload preferences'
@@ -10741,8 +10735,8 @@ object VisWaptGUI: TVisWaptGUI
     end
   end
   object ReportingActions: TActionList
-    left = 872
-    top = 248
+    left = 904
+    top = 352
     object ActReportingQueryNew: TAction
       Caption = 'New query'
       ImageIndex = 7
@@ -10762,14 +10756,6 @@ object VisWaptGUI: TVisWaptGUI
       ImageIndex = 9
       OnExecute = ActReportingQueryDesignExecute
       ShortCut = 24644
-    end
-    object ActReportingQuerySave: TAction
-      Caption = 'Save'
-      Enabled = False
-      ImageIndex = 31
-      OnExecute = ActReportingQuerySaveExecute
-      OnUpdate = ActReportingQuerySaveUpdate
-      Visible = False
     end
     object ActReportingQuerySaveAll: TAction
       Caption = 'Save queries'
@@ -10799,12 +10785,13 @@ object VisWaptGUI: TVisWaptGUI
       Caption = 'Reload queries'
       ImageIndex = 6
       OnExecute = ActReportingQueryReloadExecute
+      ShortCut = 16500
     end
   end
   object NormalizationActions: TActionList
     Images = ActionsImages24
-    left = 853
-    top = 160
+    left = 992
+    top = 352
     object ActNormalizationWriteTable: TAction
       Caption = 'Write'
       Enabled = False
@@ -10827,6 +10814,7 @@ object VisWaptGUI: TVisWaptGUI
   object SynSQLSyn: TSynSQLSyn
     DefaultFilter = 'SQL Files (*.sql)|*.sql'
     Enabled = False
+    TableNameAttri.Style = [fsBold]
     TableNames.Strings = (
       'hostgroups'
       'hostjsonraw'
@@ -10848,8 +10836,8 @@ object VisWaptGUI: TVisWaptGUI
       'wsusupdates'
     )
     SQLDialect = sqlPostgres
-    left = 712
-    top = 224
+    left = 872
+    top = 104
   end
   object ImageListReports: TImageList
     Height = 24
@@ -13163,5 +13151,46 @@ object VisWaptGUI: TVisWaptGUI
       F4FA2081F4E02081F4BB2081F48C2081F4462081F40000000000000000002081
       F400000000000000000000000000
     }
+  end
+  object PopupMenuSQL: TPopupMenu
+    left = 1039
+    top = 162
+    object MenuItem105: TMenuItem
+      Action = ActReportingQueryExecute
+    end
+    object MenuItem106: TMenuItem
+      Action = ActReportingQuerySaveAll
+    end
+  end
+  object SynCompletion1: TSynCompletion
+    ItemList.Strings = (
+      'select'
+      'count'
+      'from'
+      'where'
+      'group by'
+      'left outer join'
+      'having'
+      'in'
+      'hosts'
+      'hostpackagesstatus'
+      'hostsoftwares'
+      'packages'
+      'hostwsus'
+      'wsusupdates'
+    )
+    Position = 0
+    LinesInWindow = 6
+    SelectedColor = clHighlight
+    CaseSensitive = False
+    Width = 262
+    AutoUseSingleIdent = True
+    ShortCut = 16416
+    EndOfTokenChr = '()[].'
+    ExecCommandID = ecSynCompletionExecute
+    Editor = SynEditReportsSQL
+    ToggleReplaceWhole = False
+    left = 872
+    top = 168
   end
 end

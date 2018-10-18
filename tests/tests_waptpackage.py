@@ -1289,6 +1289,10 @@ def test_fix_wmi():
     fix_wmi()
 
 
+def test_processes_for_file():
+    for p in processes_for_file(r'C:\WAPT\python27.dll'):
+        print(p.exe())
+
 if __name__ == '__main__':
     #gen_perso('htouvet',email='htouvet@tranquil.it')
     #test_discarded()
@@ -1296,7 +1300,8 @@ if __name__ == '__main__':
     #test_fixwua()
     #test_wua()
     #test_fix_wmi()
-    test_wuaprogress()
+    test_processes_for_file()
+    #test_wuaprogress()
     #test_certificate_expire()
     #test_install_only_not_running()
     #test_uninstall_innosetup()
