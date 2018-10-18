@@ -253,6 +253,11 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
                     self.wapt.update(force=False)
                     upgrades = self.wapt.list_upgrade()
                     to_install = upgrades['upgrade']+upgrades['additional']+upgrades['install']
+                    to_remove = upgrades['remove']
+                    for req in to_remove:
+                        all_tasks.append(task_manager.add_task(WaptPackageRemove(req,force=force,notify_user=notify_user,
+                            only_priorities=only_priorities,
+                            only_if_not_process_running=only_if_not_process_running)).as_dict())
                     for req in to_install:
                         result.append(self.task_manager.add_task(WaptPackageInstall(packagenames=req,force=force,
                             notify_user=notify_user,

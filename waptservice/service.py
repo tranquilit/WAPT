@@ -671,6 +671,11 @@ def upgrade():
     wapt().update()
     actions = wapt().list_upgrade()
     to_install = actions['upgrade']+actions['additional']+actions['install']
+    to_remove = actions['remove']
+    for req in to_remove:
+        all_tasks.append(task_manager.add_task(WaptPackageRemove(req,force=force,notify_user=notify_user,
+            only_priorities=only_priorities,
+            only_if_not_process_running=only_if_not_process_running)).as_dict())
     for req in to_install:
         all_tasks.append(task_manager.add_task(WaptPackageInstall(req,force=force,notify_user=notify_user,
             only_priorities=only_priorities,

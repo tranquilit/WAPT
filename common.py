@@ -4561,21 +4561,21 @@ class Wapt(BaseObjectClass):
                     if mydict['uninstall_key']:
                         # cook the uninstall_key because could be either repr of python list or string
                         # should be now json list in DB
-                        guids = self._get_uninstallkeylist(mydict['uninstall_key'])
-                        for guid in guids:
-                            if guid:
-                                try:
-                                    uninstall_cmd =''
-                                    uninstall_cmd = self.uninstall_cmd(guid)
-                                    if uninstall_cmd:
-                                        logger.info(u'Launch uninstall cmd %s' % (uninstall_cmd,))
-                                        # if running porcesses, kill them before launching uninstaller
-                                        print(self.run(uninstall_cmd))
-                                except Exception as e:
-                                    logger.critical(u"Critical error during uninstall cmd %s: %s" % (uninstall_cmd,ensure_unicode(e)))
-                                    result['errors'].append(package)
-                                    if not force:
-                                        raise
+                        uninstall_keys = self._get_uninstallkeylist(mydict['uninstall_key'])
+                        if uninstall_keys:
+                            for uninstall_key in uninstall_keys:
+                                if uninstall_key:
+                                    try:
+                                        uninstall_cmd = self.uninstall_cmd(uninstall_key)
+                                        if uninstall_cmd:
+                                            logger.info(u'Launch uninstall cmd %s' % (uninstall_cmd,))
+                                            # if running porcesses, kill them before launching uninstaller
+                                            print(self.run(uninstall_cmd))
+                                    except Exception as e:
+                                        logger.critical(u"Critical error during uninstall cmd %s: %s" % (uninstall_cmd,ensure_unicode(e)))
+                                        result['errors'].append(package)
+                                        if not force:
+                                            raise
 
                     else:
                         logger.debug(u'uninstall key not registered in local DB status.')
