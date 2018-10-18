@@ -26,9 +26,9 @@ object VisWaptGUI: TVisWaptGUI
     Height = 480
     Top = 0
     Width = 1159
-    ActivePage = PgReports
+    ActivePage = pgInventory
     Align = alClient
-    TabIndex = 7
+    TabIndex = 0
     TabOrder = 0
     OnChange = MainPagesChange
     object pgInventory: TTabSheet
@@ -6794,6 +6794,7 @@ object VisWaptGUI: TVisWaptGUI
       Caption = 'Refresh'
       ImageIndex = 5
       OnExecute = actRefreshExecute
+      ShortCut = 116
     end
     object ActReloadConfig: TAction
       Caption = 'Reload preferences'
