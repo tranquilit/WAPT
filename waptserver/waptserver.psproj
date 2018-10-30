@@ -208,7 +208,7 @@ Name=debug
 ScriptName=$[Project-Path]server.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
-Parameters=-c c:\wapt\conf\waptserver.ini
+Parameters=-c $[Project-Path]..\conf\waptserver.ini
 WorkingDir=$[Project-Dir]\..
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log
@@ -292,7 +292,7 @@ Name=waptmodel
 ScriptName=$[Project-Path]model.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
-Parameters=-c c:\wapt\conf\waptserver.ini
+Parameters=-c $[Project-Path]waptserver.ini
 WorkingDir=$[ActiveScript-Dir]
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log
@@ -305,8 +305,29 @@ ApplicationName=$[PythonExe-Short]
 Parameters=$[ActiveScript-Short]
 WorkingDirectory=$[ActiveScript-Dir]
 
+[Project\ChildNodes\Node1\ChildNodes\Node5]
+ClassName=TProjectRunConfiguationNode
+Name=winsetup all
+
+[Project\ChildNodes\Node1\ChildNodes\Node5\RunConfig]
+ScriptName=C:\tranquilit\wapt\waptserver\winsetup.py
+EngineType=peRemote
+ReinitializeBeforeRun=TRUE
+Parameters=--setpassword=cGFzc3dvcmQ= -c $[Project-Path]..\conf\waptserver.ini all 
+WorkingDir=$[ActiveScript-Dir]
+WriteOutputToFile=FALSE
+OutputFileName=$[ActiveScript-NoExt].log
+AppendToFile=FALSE
+
+[Project\ChildNodes\Node1\ChildNodes\Node5\RunConfig\ExternalRun]
+Caption=External Run
+Description=Run script using an external Python Interpreter
+ApplicationName=$[PythonExe-Short]
+Parameters=$[ActiveScript-Short]
+WorkingDirectory=$[ActiveScript-Dir]
+
 [Project\ChildNodes\Node1\ChildNodes]
-Count=5
+Count=6
 
 [Project\ChildNodes]
 Count=2

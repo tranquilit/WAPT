@@ -55,6 +55,8 @@ from passlib.hash import pbkdf2_sha256
 import waptserver.config
 from waptserver.utils import logger,mkdir_p
 
+from waptpackage import WaptLocalRepo
+from waptserver.model import load_db_config,Packages
 
 def fqdn():
     result = None
@@ -268,6 +270,8 @@ def install_nginx_service(options,conf=None):
     #print('Register "%s" in registry' % service_name)
     install_windows_nssm_service(service_name,service_binary,service_parameters,service_logfile)
     time.sleep(5)
+    if setuphelpers.service_installed(service_name) and not setuphelpers.service_is_running(service_name):
+        setuphelpers.service_start(service_name)
 
 def migrate_pg_db(old_pgsql_root_dir,old_pgsql_data_dir,pgsql_root_dir,pgsql_data_dir):
     #
@@ -377,6 +381,15 @@ def install_postgresql_service(options,conf=None):
     run(r'"%s\waptpython.exe" "%s\waptserver\model.py" init_db -c "%s"' % (wapt_root_dir, wapt_root_dir, options.configfile ))
     print("Done")
 
+    print('Import lcoal Packages data into database')
+
+
+    repo = WaptLocalRepo(conf['wapt_folder'])
+    load_db_config(conf)
+    Packages.update_from_repo(repo)
+
+
+
 def install_waptserver_service(options,conf=None):
     if conf is None:
         conf = waptserver.config.load_config(options.configfile)
@@ -398,6 +411,10 @@ def install_waptserver_service(options,conf=None):
     if options.setpassword:
         conf['wapt_password'] = pbkdf2_sha256.hash(base64.b64decode(options.setpassword).encode('utf8'))
         waptserver.config.write_config_file(options.configfile,conf)
+
+    # ensure Packages index
+    repo = WaptLocalRepo(conf['wapt_folder'])
+    repo.update_packages_index()
 
 def install_wapttasks_service(options,conf=None):
     if conf is None:
@@ -439,7 +456,7 @@ if __name__ == '__main__':
     parser.add_option('-f','--force',dest='force',default=False,action='store_true',
             help='Force rewrite nginx config')
     parser.add_option('-p','--setpassword',dest='setpassword',default=None,
-           help='Set wapt server admin password (default: %default)')
+           help='Set wapt server admin password. Value must be encoded in base64 (default: %default)')
 
     (options, args) = parser.parse_args()
     logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s')

@@ -2501,7 +2501,7 @@ class WaptLocalRepo(WaptBaseRepo):
                         logger.debug(r"Unable to extract icon for %s:%s"%(fname,e))
 
             except Exception as e:
-                logger.critical("package %s: %s" % (fname,e))
+                logger.critical(u"package %s: %s" % (fname,ensure_unicode(e)))
                 errors.append(fname)
 
         try:
