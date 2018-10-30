@@ -109,3 +109,5 @@ waptconsolepostconf/lib
 waptconsolepostconf.exe
 Makefile
 waptsetup/waptsetuputil/lib
+/vc_redist
+/waptserver/pgsql*
