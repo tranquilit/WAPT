@@ -121,7 +121,7 @@ for f in mongoexport_files :
 print('Get innosetup compiler setup and extract files to waptsetup')
 innosetup_install = wget('http://www.jrsoftware.org/download.php/is-unicode.exe',resume=True,md5='96326551d3feca9bc14433c0ed4c5cdf',cache_dir=binaries_cache,proxies=proxies)
 
-innoextract_zip = wget('http://constexpr.org/innoextract/files/innoextract-1.6-windows.zip',resume=True,md5='e3abf26e436c8f1858e2e06a67a37b60',cache_dir=binaries_cache,proxies=proxies)
+innoextract_zip = wget('http://constexpr.org/innoextract/files/innoextract-1.7-windows.zip',resume=True,md5='b801b0740b4ab19d69a739ab4a9180ae',cache_dir=binaries_cache,proxies=proxies)
 innoextract_files = unzip(innoextract_zip,filenames=['innoextract.exe'])
 run([innoextract_files[0],'-e',innosetup_install,'-d',makepath(tempfile.gettempdir,'iscc')])
 
