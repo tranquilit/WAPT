@@ -151,7 +151,7 @@ if os.path.exists(makepath(wapt_base_dir,'dmidecode.exe')):
 os.renames(dmidecode,makepath(wapt_base_dir,'dmidecode.exe'))
 
 print('Get OpenSSL binaries from Fulgan')
-ssl_zip = wget('https://indy.fulgan.com/SSL/openssl-1.0.2l-i386-win32.zip',resume=True,md5='f1901d936f73d57a9efcef9b028e1621',cache_dir=binaries_cache,proxies=proxies)
+ssl_zip = wget('https://indy.fulgan.com/SSL/openssl-1.0.2p-i386-win32.zip',resume=True,md5='1b7d053b7501ac355f30068ad5ec2c98',cache_dir=binaries_cache,proxies=proxies)
 ssl_file = unzip(ssl_zip,target=makepath(wapt_base_dir),filenames=['ssleay32.dll','openssl.exe','libeay32.dll'])
 
 
@@ -161,14 +161,5 @@ print('Install ldap wheel')
 print(run([makepath(wapt_base_dir,'Scripts','pip.exe'),'install',python_ldap,'--target',site_packages,'--upgrade']))
 
 
-print('Rocket 1.2.8 workaround (until pip is fixed...)')
-fn = wget('https://github.com/explorigin/Rocket/archive/53313677768159d13e6c2b7c69ad69ca59bb8c79.zip',sha256='9d27faae175667b04788deec372e0c400cb1334ba240b1435de2af7e190ab56c',resume=True,cache_dir=binaries_cache,proxies=proxies)
-tmpdir = tempfile.mktemp('rockettmp')
-try:
-    unzip(fn,target=tmpdir)
-    copytree2(makepath(tmpdir,'Rocket-53313677768159d13e6c2b7c69ad69ca59bb8c79','rocket'),makepath(site_packages,'rocket'))
-finally:
-    if os.path.isdir(tmpdir):
-        shutil.rmtree(tmpdir)
 
 
