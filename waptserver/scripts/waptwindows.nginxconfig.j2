@@ -71,6 +71,11 @@ http {
             client_max_body_size 4096m;
             client_body_timeout 1800;
 
+            location /static {
+                alias "{{ wapt_root_dir}}/waptserver/static";
+            }
+
+
             location ~ ^/(wapt|wapt-host)/(.*)$ {
                 proxy_set_header Cache-Control "store, no-cache, must-revalidate, post-check=0, pre-check=0";
                 proxy_set_header Pragma "no-cache";

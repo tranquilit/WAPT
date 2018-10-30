@@ -54,6 +54,10 @@ server {
         client_max_body_size 4096m;
         client_body_timeout 1800;
 
+		location /static {
+			alias "{{ wapt_root_dir}}/waptserver/static";
+		}		
+		
 {% if use_kerberos  %}
         location /add_host_kerberos {
             auth_gss on;

@@ -42,6 +42,10 @@ server {
 
         include /opt/wapt/conf/wapt.d/*.conf;
 
+		location /static {
+			alias "{{ wapt_root_dir}}/waptserver/static";
+		}
+		
         location ~ ^/(wapt|wapt-host)/(.*)$ {
             proxy_set_header Cache-Control "store, no-cache, must-revalidate, post-check=0, pre-check=0";
             proxy_set_header Pragma "no-cache";
