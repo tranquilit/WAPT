@@ -1,1 +1,0 @@
-this folder is only here for ease of use of kompozer. The folder used in production is $WAPT_HOME\waptserver\static
