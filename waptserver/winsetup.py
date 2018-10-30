@@ -388,6 +388,7 @@ def install_waptserver_service(options,conf=None):
     install_windows_nssm_service('WAPTServer',service_binary,service_parameters,service_logfile,service_dependencies)
 
     tasks_db = os.path.join(wapt_root_dir,'db')
+    mkdir_p(tasks_db)
     setuphelpers.run(r'icacls "%s" /grant  "*S-1-5-20":(OI)(CI)(M)' % tasks_db)
 
     if not conf.get('secret_key'):

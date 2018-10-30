@@ -231,6 +231,9 @@ def write_config_file(cfgfile=DEFAULT_CONFIG_FILE,server_config=None,non_default
             else:
                 _config.set('options',key,server_config[key])
 
+    if not os.path.isdir(os.path.dirname(cfgfile)):
+        os.makedirs(os.path.dirname(cfgfile))
+
     with open(cfgfile,'w') as inifile:
        _config.write(inifile)
 
