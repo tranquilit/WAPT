@@ -1,5 +1,5 @@
 ﻿[PyScripter]
-Version=3.4.2.0
+Version=3.5.0.0
 
 [Project]
 ClassName=TProjectRootNode
@@ -36,8 +36,16 @@ FileName=$[Project-Path]templates\listing.html
 ClassName=TProjectFileNode
 FileName=$[Project-Path]templates\listingwua.html
 
+[Project\ChildNodes\Node0\ChildNodes\Node1\ChildNodes\Node3]
+ClassName=TProjectFileNode
+FileName=C:\tranquilit\wapt\waptenterprise\waptserver\templates\package_details.html
+
+[Project\ChildNodes\Node0\ChildNodes\Node1\ChildNodes\Node4]
+ClassName=TProjectFileNode
+FileName=C:\tranquilit\wapt\waptenterprise\waptserver\templates\packages.html
+
 [Project\ChildNodes\Node0\ChildNodes\Node1\ChildNodes]
-Count=3
+Count=5
 
 [Project\ChildNodes\Node0\ChildNodes\Node2]
 ClassName=TProjectFolderNode
@@ -68,18 +76,22 @@ FileName=C:\tranquilit\wapt\waptenterprise\waptserver\enterprise.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node2\ChildNodes\Node1\ChildNodes\Node2]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]..\waptenterprise\waptserver\wsus.py
+FileName=C:\tranquilit\wapt\waptenterprise\waptserver\store.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node2\ChildNodes\Node1\ChildNodes\Node3]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]..\waptenterprise\waptserver\wsus_common.py
+FileName=$[Project-Path]..\waptenterprise\waptserver\wsus.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node2\ChildNodes\Node1\ChildNodes\Node4]
+ClassName=TProjectFileNode
+FileName=$[Project-Path]..\waptenterprise\waptserver\wsus_common.py
+
+[Project\ChildNodes\Node0\ChildNodes\Node2\ChildNodes\Node1\ChildNodes\Node5]
 ClassName=TProjectFileNode
 FileName=$[Project-Path]..\waptenterprise\waptserver\wsus_tasks.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node2\ChildNodes\Node1\ChildNodes]
-Count=5
+Count=6
 
 [Project\ChildNodes\Node0\ChildNodes\Node2\ChildNodes\Node2]
 ClassName=TProjectFolderNode
@@ -313,7 +325,7 @@ Name=winsetup all
 ScriptName=C:\tranquilit\wapt\waptserver\winsetup.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
-Parameters=--setpassword=cGFzc3dvcmQ= -c $[Project-Path]..\conf\waptserver.ini all 
+Parameters=--setpassword=cGFzc3dvcmQ= -c $[Project-Path]..\conf\waptserver.ini all
 WorkingDir=$[ActiveScript-Dir]
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log
