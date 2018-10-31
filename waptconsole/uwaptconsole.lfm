@@ -7140,6 +7140,12 @@ object VisWaptGUI: TVisWaptGUI
       Caption = 'Reset Websocket connections'
       OnExecute = ActResetWebsocketConnectionsExecute
     end
+    object ActTriggerTestLongTask: TAction
+      Category = 'Host'
+      Caption = 'Trigger test long task'
+      OnExecute = ActTriggerTestLongTaskExecute
+      Visible = False
+    end
   end
   object PopupMenuPackages: TPopupMenu
     Images = ActionsImages24
@@ -7439,6 +7445,9 @@ object VisWaptGUI: TVisWaptGUI
     end
     object MenuItem77: TMenuItem
       Action = ActTriggerWakeOnLan
+    end
+    object MenuItem107: TMenuItem
+      Action = ActTriggerTestLongTask
     end
     object MenuItem55: TMenuItem
       Caption = '-'

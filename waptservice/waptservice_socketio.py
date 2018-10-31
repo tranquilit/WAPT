@@ -309,6 +309,13 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
                 elif name == 'trigger_waptservicerestart':
                     msg = setuphelpers.create_onetime_task('waptservicerestart','cmd.exe','/C net stop waptservice & net start waptservice')
                     result.append(dict(success=True,msg = msg,result = msg))
+                elif name == 'trigger_longtask':
+                    task = WaptLongTask()
+                    task.force = args.get('force',False)
+                    task.notify_user = args.get('notify_user',False)
+                    task.notify_server_on_finish = args.get('notify_server',False)
+                    task.created_by=verified_by
+                    result.append(self.task_manager.add_task(task).as_dict())
                 elif name in waptservice_remote_actions:
                     waptservice_remote_actions[name].trigger_action(self,action,verified_by)
                 else:
@@ -349,15 +356,6 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
             logger.info('Exception for actions %s: %s' % (repr(args),repr(e)))
             if result_callback:
                 result_callback(make_response_from_exception(e,uuid=self.wapt.host_uuid))
-
-    def on_trigger_longtask(self,args,result_callback=None):
-        task = WaptLongTask()
-        task.force = args.get('force',False)
-        task.notify_user = args.get('notify_user',False)
-        task.notify_server_on_finish = args.get('notify_server',False)
-        data = self.task_manager.add_task(task).as_dict()
-        if result_callback:
-            result_callback(make_response(data,uuid=self.wapt.host_uuid))
 
     def on_wapt_ping(self,args):
         logger.debug('wapt_ping... %s'% (args,))

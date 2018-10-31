@@ -387,6 +387,8 @@ def main():
             logger.info('Configuration file : %s' % config_file)
             logger.info('  waptserver     : %s' % mywapt.waptserver)
             logger.info('  repositories   : %s' % mywapt.repositories)
+            for r in mywapt.repositories:
+                r.ca_bundle = None
             update_result = mywapt.update(register=False,filter_on_host_cap=False)
             logger.info('  packages count : %s' % update_result['count'])
 

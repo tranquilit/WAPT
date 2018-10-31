@@ -29,6 +29,7 @@ type
     ActAddNewNetwork: TAction;
     ActDeleteNetwork: TAction;
     ActInstallLicence: TAction;
+    ActTriggerTestLongTask: TAction;
     ActReportingQuerySaveAll: TAction;
     ActReportingQueryDesign: TAction;
     ActNormalizationFilter: TAction;
@@ -43,6 +44,7 @@ type
     ImageListReports: TImageList;
     MenuItem105: TMenuItem;
     MenuItem106: TMenuItem;
+    MenuItem107: TMenuItem;
     NormalizationActions: TActionList;
     ActReportingQueryReload: TAction;
     ActReportingQueryExportToExcel: TAction;
@@ -574,6 +576,7 @@ type
     procedure ActTriggerBurstUpdatesExecute(Sender: TObject);
     procedure ActTriggerBurstUpgradesExecute(Sender: TObject);
     procedure ActTriggerHostAuditExecute(Sender: TObject);
+    procedure ActTriggerTestLongTaskExecute(Sender: TObject);
     procedure ActTriggerUpdateOrgUnitExecute(Sender: TObject);
     procedure ActTriggerUpgradesOrgUnitExecute(Sender: TObject);
     procedure ActTriggerUpgradesOrgUnitUpdate(Sender: TObject);
@@ -5124,6 +5127,11 @@ begin
   result := not IsUpdated(datasets);
 end;
 
+procedure TVisWaptGUI.ActTriggerTestLongTaskExecute(Sender: TObject);
+begin
+  if (GridHosts.SelectedCount>=1) then
+    TriggerActionOnHosts(ExtractField(GridHosts.SelectedRows,'uuid'),'trigger_longtask',Nil,'Trigger debug long task','Error triggering longtask %s',True)
+end;
 
 {$ifdef ENTERPRISE}
 {$include ..\waptenterprise\includes\uwaptconsole.inc}

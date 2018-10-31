@@ -504,6 +504,7 @@ class WaptTask(object):
 
     @runstatus.setter
     def runstatus(self,value):
+        print(u'%s Status: %s' % (self.id,value))
         self._runstatus = value
         if self.wapt:
             self.wapt.runstatus = value

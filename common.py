@@ -3970,12 +3970,13 @@ class Wapt(BaseObjectClass):
         """
         with self.waptdb:
             result = {}
-            # force update if host capabilities have changed and requires a new filering of packages
-            new_capa = self.host_capabilities_fingerprint()
-            old_capa = self.read_param('host_capabilities_fingerprint')
-            if not force and old_capa != new_capa:
-                logger.info('Host capabilities have changed since last update, forcing update')
-                force = True
+            if filter_on_host_cap:
+                # force update if host capabilities have changed and requires a new filering of packages
+                new_capa = self.host_capabilities_fingerprint()
+                old_capa = self.read_param('host_capabilities_fingerprint')
+                if not force and old_capa != new_capa:
+                    logger.info('Host capabilities have changed since last update, forcing update')
+                    force = True
             logger.debug(u'Remove unknown repositories from packages table and params (%s)' %(','.join('"%s"'% r.name for r in self.repositories),)  )
             self.waptdb.db.execute('delete from wapt_package where repo not in (%s)' % (','.join('"%s"'% r.name for r in self.repositories)))
             self.waptdb.db.execute('delete from wapt_params where name like "last-http%%" and name not in (%s)' % (','.join('"last-%s"'% r.repo_url for r in self.repositories)))
@@ -3991,7 +3992,8 @@ class Wapt(BaseObjectClass):
                         logger.critical(u'Error getting Packages index from %s : %s' % (repo.repo_url,ensure_unicode(e)))
                 else:
                     logger.info('No location found for repository %s, skipping' % (repo.name))
-            self.write_param('host_capabilities_fingerprint',new_capa)
+            if filter_on_host_cap:
+                self.write_param('host_capabilities_fingerprint',new_capa)
         return result
 
 
