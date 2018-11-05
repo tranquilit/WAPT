@@ -372,8 +372,8 @@ begin
 
   with PythonEng do
   begin
-    DllName := RegWaptBaseDir+'python27.dll';
-    RegVersion := '2.7';
+    DllPath := RegWaptBaseDir;
+    DllName := 'python27.dll';
     UseLastKnownVersion := False;
     LoadDLL;
     Py_SetProgramName(PAnsiChar(ParamStr(0)));

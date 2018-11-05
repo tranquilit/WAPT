@@ -1665,6 +1665,10 @@ msgctxt "TVISWAPTGUI.ACTTRIGGERHOSTUPGRADE.HINT"
 msgid "Launch pending packages upgrades"
 msgstr "Updates anwenden"
 
+#: tviswaptgui.acttriggertestlongtask.caption
+msgid "Trigger test long task"
+msgstr ""
+
 #: tviswaptgui.acttriggerupdateorgunit.caption
 msgid "Check updates on all hosts of this OU"
 msgstr ""

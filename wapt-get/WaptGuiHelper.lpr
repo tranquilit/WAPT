@@ -5,13 +5,14 @@ library waptguihelper;
 {$R *.res}
 
 uses
-  Classes,SysUtils,
+  Classes,SysUtils,waptcommon,LazFileUtils,
   PythonEngine, Forms,uWaptBuildParams, uscaledpi,Controls, Interfaces
   { you can add units after this };
 
 var
   PyE:TPythonEngine;
   Methods : packed array [0..2] of PyMethodDef;
+  RegWaptBaseDir: String;
 
 function BuildParamsDialog(Self : PPyObject;
                           Args : PPyObject):PPyObject;  cdecl;
@@ -151,11 +152,19 @@ exports
 
 initialization
   PyE := TPythonEngine.Create(Nil);
+
+  RegWaptBaseDir := WaptBaseDir();
+  if not FileExists(AppendPathDelim(RegWaptBaseDir)+'python27.dll') then
+    RegWaptBaseDir:=RegisteredAppInstallLocation('wapt_is1');
+
+  if RegWaptBaseDir='' then
+    RegWaptBaseDir:=RegisteredExePath('wapt-get.exe');
+
   With PyE do
   begin
+    DllPath := RegWaptBaseDir;
     DllName := 'python27.dll';
     UseLastKnownVersion := False;
-    RegVersion:='2.7';
     LoadDLL;
     Py_SetProgramName(PAnsiChar(ParamStr(0)));
   end;

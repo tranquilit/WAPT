@@ -184,8 +184,6 @@ type
 
 
 const
-  waptwua_enabled : boolean = False;
-
   waptservice_port:integer = 8088;
   waptserver_port:integer = 80;
   waptserver_sslport:integer = 443;
@@ -2137,7 +2135,6 @@ initialization
 //  if not Succeeded(CoInitializeEx(nil, COINIT_MULTITHREADED)) then;
     //Raise Exception.Create('Unable to initialize ActiveX layer');
    GetLanguageIDs(LanguageFull,Language);
-   waptwua_enabled := IniReadBool(AppIniFilename,'global','waptwua_enabled');
 
 finalization
 //  CoUninitialize();

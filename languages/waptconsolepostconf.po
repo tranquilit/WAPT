@@ -1511,6 +1511,10 @@ msgstr ""
 msgid "Launch pending packages upgrades"
 msgstr ""
 
+#: tviswaptgui.acttriggertestlongtask.caption
+msgid "Trigger test long task"
+msgstr ""
+
 #: tviswaptgui.acttriggerupdateorgunit.caption
 msgid "Check updates on all hosts of this OU"
 msgstr ""

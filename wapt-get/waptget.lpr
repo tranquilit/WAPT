@@ -30,7 +30,7 @@ uses
   Classes, SysUtils, CustApp,
   { you can add units after this }
   Interfaces,Windows, PythonEngine, superobject,soutils,
-  tislogging,uWaptRes,waptcommon,waptwinutils,tiscommon,tisstrings,IdAuthentication;
+  tislogging,uWaptRes,waptcommon,waptwinutils,tiscommon,tisstrings,LazFileUtils,IdAuthentication;
 type
   { PWaptGet }
 
@@ -46,6 +46,7 @@ type
     procedure DoRun; override;
   public
     Action : String;
+    RegWaptBaseDir:String;
     check_thread:TThread;
     lock:TRTLCriticalSection;
     tasks:ISuperObject;
@@ -505,11 +506,20 @@ begin
   begin
     // Running python stuff
     APythonEngine := TPythonEngine.Create(Self);
+
+    RegWaptBaseDir:=WaptBaseDir();
+    if not FileExists(AppendPathDelim(RegWaptBaseDir)+'python27.dll') then
+      RegWaptBaseDir:=RegisteredAppInstallLocation('wapt_is1');
+
+    if RegWaptBaseDir='' then
+      RegWaptBaseDir:=RegisteredExePath('wapt-get.exe');
+
     with ApythonEngine do
     begin
+      //AutoLoad:=False;
+      DllPath := RegWaptBaseDir;
       DllName := 'python27.dll';
       UseLastKnownVersion := False;
-      RegVersion:='2.7';
       LoadDLL;
       Py_SetProgramName(PAnsiChar(ParamStr(0)));
     end;
