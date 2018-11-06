@@ -160,12 +160,12 @@ initialization
   With PyE do
   begin
     //AutoLoad := True;
-    //DllPath := 'c:\tranquilit\wapt';
+    //DllPath := RegWaptBaseDir;
     DllName := 'python27.dll';
 
     UseLastKnownVersion := False;
     FatalAbort:=True;
-    FatalMsgDlg:=True;
+    FatalMsgDlg:=False;
 
     LoadDLL;
   end;
@@ -174,5 +174,5 @@ initialization
 finalization
   if Assigned(Pye) then
     FreeAndNil(PyE);
-end.
+  end.
 
