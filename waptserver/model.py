@@ -537,36 +537,23 @@ def dictgetpath(adict, pathstr):
 
 
 def set_host_field(host, fieldname, data):
-    # these attributes can be transfered as dict
-    if fieldname in ['installed_softwares', 'installed_packages']:
-        # in case data is transfered as list of tuples instead of list of dict (more compact)
-        if data and isinstance(data[0], list):
-            rec_data = []
-            fieldnames = data[0]
-            for rec in data[1:]:
-                r = zip(fieldnames, rec)
-                rec_data.append(r)
-            setattr(host, fieldname, rec_data)
-        else:
-            setattr(host, fieldname, data)
-    else:
-        # awfull hack for data containing null char, not accepted by postgresql.
-        if fieldname in ('host_info', 'wmi', 'dmi'):
-            jsonrepr = json.dumps(data)
-            if '\u0000' in jsonrepr:
-                logger.warning('Workaround \\u0000 not handled by postgresql json for host %s field %s' % (getattr(host, 'uuid', '???'), fieldname))
-                data = json.loads(jsonrepr.replace('\u0000', ' '))
+    # awfull hack for data containing null char, not accepted by postgresql.
+    if fieldname in ('host_info', 'wmi', 'dmi'):
+        jsonrepr = json.dumps(data)
+        if '\u0000' in jsonrepr:
+            logger.warning('Workaround \\u0000 not handled by postgresql json for host %s field %s' % (getattr(host, 'uuid', '???'), fieldname))
+            data = json.loads(jsonrepr.replace('\u0000', ' '))
 
-        setattr(host, fieldname, data)
+    setattr(host, fieldname, data)
     return host
 
 
-def update_installed_packages(uuid, installed_packages):
+def update_installed_packages(uuid, data, applied_status_hashes):
     """Stores packages json data into separate HostPackagesStatus
 
     Args:
         uuid (str) : unique ID of host
-        installed_packages (list): data from host
+        data (dict): data from host
 
     Returns:
         None
@@ -617,52 +604,60 @@ def update_installed_packages(uuid, installed_packages):
         else:
             return []
 
-    HostPackagesStatus.delete().where(HostPackagesStatus.host == uuid).execute()
-    packages = []
-    for package in installed_packages:
-        package['host'] = uuid
-        # csv str on the client, Array on the server
-        package['depends'] = ensure_list(package['depends'])
-        package['conflicts'] = ensure_list(package['conflicts'])
-        package['uninstall_key'] = _get_uninstallkeylist(package['uninstall_key'])
-        package['created_on'] = datetime.datetime.now()
+    installed_packages = data.get('installed_packages', data.get('packages', None))
+    if installed_packages is not None:
+        HostPackagesStatus.delete().where(HostPackagesStatus.host == uuid).execute()
+        packages = []
+        for package in installed_packages:
+            package['host'] = uuid
+            # csv str on the client, Array on the server
+            package['depends'] = ensure_list(package['depends'])
+            package['conflicts'] = ensure_list(package['conflicts'])
+            package['uninstall_key'] = _get_uninstallkeylist(package['uninstall_key'])
+            package['created_on'] = datetime.datetime.now()
 
-        # filter out all unknown fields from json data for the SQL insert
-        packages.append(dict([(k, encode_value(v)) for k, v in package.iteritems() if k in HostPackagesStatus._meta.fields]))
+            # filter out all unknown fields from json data for the SQL insert
+            packages.append(dict([(k, encode_value(v)) for k, v in package.iteritems() if k in HostPackagesStatus._meta.fields]))
 
-    if packages:
-        HostPackagesStatus.insert_many(packages).execute() # pylint: disable=no-value-for-parameter
+        if packages:
+            HostPackagesStatus.insert_many(packages).execute() # pylint: disable=no-value-for-parameter
+
+        applied_status_hashes['installed_packages'] = data.get('status_hashes',{}).get('installed_packages')
 
 
-def update_installed_softwares(uuid, installed_softwares):
+def update_installed_softwares(uuid, data,applied_status_hashes):
     """Stores softwares json data into separate HostSoftwares table
 
     Args:
         uuid (str) : unique ID of host
-        installed_packages (list): data from host
+        data (dict): data from host
 
     Returns:
         None
     """
-    # TODO : be smarter : insert / update / delete instead of delete all / insert all ?
-    HostSoftwares.delete().where(HostSoftwares.host == uuid).execute()
-    softwares = []
+    installed_softwares = data.get('installed_softwares', data.get('softwares', None))
+    if installed_softwares is not None:
+        # TODO : be smarter : insert / update / delete instead of delete all / insert all ?
+        HostSoftwares.delete().where(HostSoftwares.host == uuid).execute()
+        softwares = []
 
-    def encode_value(value):
-        if isinstance(value,unicode):
-            value = value.replace(u'\x00', ' ')
-        return value
+        def encode_value(value):
+            if isinstance(value,unicode):
+                value = value.replace(u'\x00', ' ')
+            return value
 
-    for software in installed_softwares:
-        software['host'] = uuid
-        software['created_on'] = datetime.datetime.now()
-        # filter out all unknown fields from json data for the SQL insert
-        softwares.append(dict([(k,encode_value(v)) for k, v in software.iteritems() if k in HostSoftwares._meta.fields]))
+        for software in installed_softwares:
+            software['host'] = uuid
+            software['created_on'] = datetime.datetime.now()
+            # filter out all unknown fields from json data for the SQL insert
+            softwares.append(dict([(k,encode_value(v)) for k, v in software.iteritems() if k in HostSoftwares._meta.fields]))
 
-    if softwares:
-        HostSoftwares.insert_many(softwares).execute() # pylint: disable=no-value-for-parameter
+        if softwares:
+            HostSoftwares.insert_many(softwares).execute() # pylint: disable=no-value-for-parameter
 
-def update_waptwua(uuid,data):
+        applied_status_hashes['installed_softwares'] = data.get('status_hashes',{}).get('installed_softwares')
+
+def update_waptwua(uuid,data,applied_status_hashes):
     """Stores discovered windows update into WindowsUpdates table and
     links between host and updates into HostWsus
 
@@ -687,6 +682,7 @@ def update_waptwua(uuid,data):
         if windows_updates:
             # if win update has already been registered, we don't update it, but simply ignore th einsert
             WsusUpdates.insert_many(windows_updates).on_conflict('IGNORE').execute()
+        applied_status_hashes['waptwua_updates'] = data.get('status_hashes',{}).get('waptwua_updates')
 
     if 'waptwua_updates_localstatus' in data:
         HostWsus.delete().where(HostWsus.host == uuid).execute()
@@ -701,6 +697,7 @@ def update_waptwua(uuid,data):
             host_wsus.append(new_rec)
         if host_wsus:
             HostWsus.insert_many(host_wsus).execute() # pylint: disable=no-value-for-parameter
+        applied_status_hashes['waptwua_updates_localstatus'] = data.get('status_hashes',{}).get('waptwua_updates_localstatus')
 
 
 def update_host_data(data):
@@ -730,19 +727,23 @@ def update_host_data(data):
     uuid = data['uuid']
     with wapt_db.atomic() as trans:
         try:
+            supplied_hashes = data.get('status_hashes',{})
+            applied_status_hashes = {}
             existing = Hosts.select(Hosts.uuid, Hosts.computer_fqdn,Hosts.status_hashes).where(Hosts.uuid == uuid).first()
             if not existing:
                 logger.debug('Inserting new host %s with fields %s' % (uuid, data.keys()))
                 # wapt update_status packages softwares host
-                newhost = Hosts()
+                updhost = Hosts()
+
                 for k in data.keys():
                     # manage field renaming between 1.3 and >= 1.4
                     target_key = migrate_map_13_14.get(k, k)
-                    if target_key and hasattr(newhost, target_key):
-                        set_host_field(newhost, target_key, data[k])
-
-                newhost.save(force_insert=True)
-                status_hashes = newhost.status_hashes
+                    if target_key and hasattr(updhost, target_key):
+                        set_host_field(updhost, target_key, data[k])
+                        if k in supplied_hashes:
+                            applied_status_hashes[k] = supplied_hashes[k]
+                updhost.status_hashes = applied_status_hashes
+                updhost.save(force_insert=True)
             else:
                 logger.debug('Updating %s for fields %s' % (uuid, data.keys()))
 
@@ -750,41 +751,51 @@ def update_host_data(data):
                 if not updhost.status_hashes:
                     updhost.status_hashes = {}
 
-                # merge already known data with new set
-                if 'status_hashes' in data:
-                    updhost.status_hashes.update(data['status_hashes'])
-                    data['status_hashes'] = updhost.status_hashes
-
                 for k in data.keys():
-                    # manage field renaming between 1.3 and >= 1.4
-                    target_key = migrate_map_13_14.get(k, k)
-                    if target_key and hasattr(updhost, target_key):
-                        set_host_field(updhost, target_key, data[k])
+                    # supplied status_hashes is a subset of known hashes
+                    if k != 'status_hashes':
+                        # manage field renaming between 1.3 and >= 1.4
+                        target_key = migrate_map_13_14.get(k, k)
+                        if target_key and hasattr(updhost, target_key):
+                            set_host_field(updhost, target_key, data[k])
+                            if k in supplied_hashes:
+                                applied_status_hashes[k] = supplied_hashes[k]
+                # merge already known data with new set
+                updhost.status_hashes.update(applied_status_hashes)
                 updhost.save()
 
             # separate tables
             # we are tolerant on errors here as we don't know exactly if client send good encoded data
             # but we still want to get host in table
-            try:
-                if ('installed_softwares' in data) or ('softwares' in data):
-                    installed_softwares = data.get('installed_softwares', data.get('softwares', None))
-                    update_installed_softwares(uuid, installed_softwares)
-            except Exception as e:
-                logger.critical(u'Unable to update installed_softwares for %s: %s' % (uuid,ensure_unicode(e)))
+            with wapt_db.atomic() as translocal:
+                try:
+                    update_installed_softwares(uuid, data,applied_status_hashes)
+                except Exception as e:
+                    # be tolerant
+                    translocal.rollback()
+                    logger.critical(u'Unable to update installed_softwares for %s: %s' % (uuid,ensure_unicode(e)))
 
-            try:
-                if ('installed_packages' in data) or ('packages' in data):
-                    installed_packages = data.get('installed_packages', data.get('packages', None))
-                    update_installed_packages(uuid, installed_packages)
-            except Exception as e:
-                logger.critical(u'Unable to update installed_packages for %s: %s' % (uuid,ensure_unicode(e)))
+            with wapt_db.atomic() as translocal:
+                try:
+                    update_installed_packages(uuid, data,applied_status_hashes)
+                except Exception as e:
+                    # be tolerant
+                    translocal.rollback()
+                    logger.critical(u'Unable to update installed_packages for %s: %s' % (uuid,ensure_unicode(e)))
 
-            try:
-                # update waptwua state tables
-                update_waptwua(uuid,data)
-            except Exception as e:
-                logger.critical(u'Unable to update wuauserv_status or waptwua_status for %s: %s' % (uuid,ensure_unicode(e)))
+            with wapt_db.atomic() as translocal:
+                try:
+                    # update waptwua state tables
+                    update_waptwua(uuid,data,applied_status_hashes)
+                except Exception as e:
+                    # be tolerant
+                    translocal.rollback()
+                    logger.critical(u'Unable to update wuauserv_status or waptwua_status for %s: %s' % (uuid,ensure_unicode(e)))
 
+            # merge new known hashes for properly applied data, for next round
+            updhost.status_hashes.update(applied_status_hashes)
+            updhost.save()
+            logger.info('Applied data for host %s: %s' % (uuid,applied_status_hashes.keys()))
             # returns actual registered fqdn and status hashes so that host can omit to send some data next time if they have not changed
             result_query = Hosts.select(Hosts.uuid, Hosts.computer_fqdn,Hosts.status_hashes)
             return result_query.where(Hosts.uuid == uuid).dicts().first()

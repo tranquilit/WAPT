@@ -1293,6 +1293,15 @@ def test_processes_for_file():
     for p in processes_for_file(r'C:\WAPT\python27.dll'):
         print(p.exe())
 
+def test_status_hashes():
+    w = Wapt(config_filename=r'c:\wapt\wapt-get.ini')
+    w.waptserver.server_url = 'http://127.0.0.1:8080'
+    res = w.update_server_status()
+    print res['result']['status_hashes'].keys()
+    w.update()
+    res = w.update_server_status()
+    print res['result']['status_hashes'].keys()
+
 if __name__ == '__main__':
     #gen_perso('htouvet',email='htouvet@tranquil.it')
     #test_discarded()
@@ -1300,7 +1309,8 @@ if __name__ == '__main__':
     #test_fixwua()
     #test_wua()
     #test_fix_wmi()
-    test_processes_for_file()
+    #test_processes_for_file()
+    test_status_hashes()
     #test_wuaprogress()
     #test_certificate_expire()
     #test_install_only_not_running()

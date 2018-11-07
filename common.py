@@ -4944,13 +4944,10 @@ class Wapt(BaseObjectClass):
 
             if result and result['success']:
                 # stores for next round.
-                old_hashes.update(new_hashes)
                 self.write_param('last_update_server_status_timestamp',datetime.datetime.utcnow())
                 if 'status_hashes' in result.get('result',{}):
                     # invalidate unmatching hashes for next round.
                     self.write_param('last_update_server_hashes',result['result']['status_hashes'])
-                else:
-                    self.write_param('last_update_server_hashes',old_hashes)
 
             return result
 
@@ -5202,6 +5199,8 @@ class Wapt(BaseObjectClass):
 
                 inv = self._get_host_status_data(old_hashes, new_hashes, force=force)
                 inv['status_hashes'] = new_hashes
+                logger.info('Updated data keys : %s' % [k for k in new_hashes if k != new_hashes.get(k)])
+                logger.info('Supplied data keys : %s' % inv.keys())
                 data = jsondump(inv)
                 signature = self.sign_host_content(data,)
 
@@ -5213,14 +5212,10 @@ class Wapt(BaseObjectClass):
 
                 if result and result['success']:
                     # stores for next round.
-                    old_hashes.update(new_hashes)
                     self.write_param('last_update_server_status_timestamp',datetime.datetime.utcnow())
                     if 'status_hashes' in result.get('result',{}):
-                        # invalidate unmatching hashes for next round.
+                        # known server hashes for next round.
                         self.write_param('last_update_server_hashes',result['result']['status_hashes'])
-                    else:
-                        self.write_param('last_update_server_hashes',old_hashes)
-
 
                     logger.info(u'Status on server %s updated properly' % self.waptserver.server_url)
                 else:
