@@ -116,7 +116,8 @@ def make_httpd_config(wapt_folder, waptserver_root_dir, fqdn, use_kerberos,force
         'wapt_ssl_cert_file': wapt_ssl_cert_file,
         'fqdn': fqdn,
         'use_kerberos': use_kerberos,
-        'KRB5_REALM': krb5_realm
+        'KRB5_REALM': krb5_realm,
+        'wapt_root_dir': wapt_root_dir,
         }
 
     config_string = template.render(template_vars)

@@ -38,6 +38,10 @@ server {
     index index.html;
 
 
+    location /static {
+        alias "{{ wapt_root_dir}}/waptserver/static";
+    }
+
     location ~ ^/wapt.* {
         proxy_set_header Cache-Control "store, no-cache, must-revalidate, post-check=0, pre-check=0";
         proxy_set_header Pragma "no-cache";
@@ -54,10 +58,6 @@ server {
         client_max_body_size 4096m;
         client_body_timeout 1800;
 
-		location /static {
-			alias "{{ wapt_root_dir}}/waptserver/static";
-		}		
-		
 {% if use_kerberos  %}
         location /add_host_kerberos {
             auth_gss on;
