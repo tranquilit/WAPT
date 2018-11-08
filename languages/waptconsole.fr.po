@@ -1582,6 +1582,11 @@ msgstr "Supprimer la requête"
 msgid "Design mode"
 msgstr "Mode conception"
 
+#: tviswaptgui.actreportingqueryduplicate.caption
+msgctxt "tviswaptgui.actreportingqueryduplicate.caption"
+msgid "Duplicate"
+msgstr "Dupliquer"
+
 #: tviswaptgui.actreportingqueryexecute.caption
 msgid "Execute"
 msgstr "Exécuter"

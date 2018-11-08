@@ -1523,6 +1523,11 @@ msgstr ""
 msgid "Design mode"
 msgstr ""
 
+#: tviswaptgui.actreportingqueryduplicate.caption
+msgctxt "tviswaptgui.actreportingqueryduplicate.caption"
+msgid "Duplicate"
+msgstr ""
+
 #: tviswaptgui.actreportingqueryexecute.caption
 msgid "Execute"
 msgstr ""

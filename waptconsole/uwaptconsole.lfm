@@ -3006,7 +3006,7 @@ object VisWaptGUI: TVisWaptGUI
           end
           object ToolButtonSep1: TToolButton
             Left = 47
-            Height = 45
+            Height = 5
             Top = 0
             Caption = 'ToolButtonSep1'
             Style = tbsDivider
@@ -3028,7 +3028,7 @@ object VisWaptGUI: TVisWaptGUI
           end
           object ToolButton6: TToolButton
             Left = 181
-            Height = 45
+            Height = 5
             Top = 0
             Caption = 'ToolButton6'
             Style = tbsDivider
@@ -6309,7 +6309,6 @@ object VisWaptGUI: TVisWaptGUI
             LineHighlightColor.Background = clNone
             LineHighlightColor.Foreground = clNone
             TabWidth = 4
-            OnChange = SynEditReportsSQLChange
             inline SynLeftGutterPartList1: TSynGutterPartList
               object SynGutterMarks1: TSynGutterMarks
                 Width = 24
@@ -6407,6 +6406,11 @@ object VisWaptGUI: TVisWaptGUI
           Action = ActReportingQueryExportToExcel
           AutoSize = True
         end
+        object ToolButtonReportingQueryDuplicate: TToolButton
+          Left = 478
+          Top = 2
+          Action = ActReportingQueryDuplicate
+        end
       end
       object Splitter11: TSplitter
         Left = 270
@@ -6419,6 +6423,7 @@ object VisWaptGUI: TVisWaptGUI
         Height = 404
         Top = 50
         Width = 270
+        OnBeforePaste = GridReportingQueriesBeforePaste
         ShowAdvancedColumnsCustomize = False
         KeyFieldsNames = 'id'
         Align = alLeft
@@ -10811,6 +10816,7 @@ object VisWaptGUI: TVisWaptGUI
     end
   end
   object ReportingActions: TActionList
+    Images = ImageListReports
     left = 904
     top = 352
     object ActReportingQueryNew: TAction
@@ -10845,7 +10851,7 @@ object VisWaptGUI: TVisWaptGUI
     object ActReportingQueryExecute: TAction
       Caption = 'Execute'
       Hint = 'Execute the SQL query '
-      ImageIndex = 2
+      ImageIndex = 17
       OnExecute = ActReportingQueryExecuteExecute
       OnUpdate = ActReportingQueryExecuteUpdate
       SecondaryShortCuts.Strings = (
@@ -10866,10 +10872,17 @@ object VisWaptGUI: TVisWaptGUI
       OnExecute = ActReportingQueryReloadExecute
       ShortCut = 16500
     end
+    object ActReportingQueryDuplicate: TAction
+      Caption = 'Duplicate'
+      ImageIndex = 7
+      OnExecute = ActReportingQueryDuplicateExecute
+      OnUpdate = ActReportingQueryDuplicateUpdate
+      ShortCut = 16452
+    end
   end
   object NormalizationActions: TActionList
     Images = ActionsImages24
-    left = 992
+    left = 1008
     top = 352
     object ActNormalizationWriteTable: TAction
       Caption = 'Write'

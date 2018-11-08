@@ -29,6 +29,7 @@ type
     ActAddNewNetwork: TAction;
     ActDeleteNetwork: TAction;
     ActInstallLicence: TAction;
+    ActReportingQueryDuplicate: TAction;
     ActTriggerTestLongTask: TAction;
     ActReportingQuerySaveAll: TAction;
     ActReportingQueryDesign: TAction;
@@ -318,6 +319,7 @@ type
     ToolButton10: TToolButton;
     ToolButton3: TToolButton;
     ToolButton4: TToolButton;
+    ToolButtonReportingQueryDuplicate: TToolButton;
     ToolButton7: TToolButton;
     ToolButtonDesignQuery: TToolButton;
     ToolButton9: TToolButton;
@@ -560,6 +562,8 @@ type
     procedure ActRemoteAssistExecute(Sender: TObject);
     procedure ActRemoteAssistUpdate(Sender: TObject);
     procedure ActExternalRepositoriesSettingsExecute(Sender: TObject);
+    procedure ActReportingQueryDuplicateExecute(Sender: TObject);
+    procedure ActReportingQueryDuplicateUpdate(Sender: TObject);
     procedure ActReportingQueryDesignExecute(Sender: TObject);
     procedure ActReportingQuerySaveAllExecute(Sender: TObject);
     procedure ActReportingQuerySaveAllUpdate(Sender: TObject);
@@ -777,6 +781,8 @@ type
       HitInfo: TVTHeaderHitInfo);
     procedure GridReportingHeaderDragged(Sender: TVTHeader;
       Column: TColumnIndex; OldPosition: Integer);
+    function GridReportingQueriesBeforePaste(Sender: TSOGrid; Row: ISuperObject
+      ): boolean;
     procedure GridReportingQueriesChange(Sender: TBaseVirtualTree;
       Node: PVirtualNode);
     procedure GridReportingQueriesDrawText(Sender: TBaseVirtualTree;
@@ -802,7 +808,6 @@ type
     procedure MenuItem27Click(Sender: TObject);
     procedure MenuItem74Click(Sender: TObject);
     procedure MenuItemProductsCheckAllClick(Sender: TObject);
-    procedure SynEditReportsSQLChange(Sender: TObject);
     procedure TimerWUALoadWinUpdatesTimer(Sender: TObject);
   private
     { private declarations }
@@ -813,6 +818,7 @@ type
     FWUAWinUpdates: ISuperObject;
     FWUAWinUpdatesLookup: ISuperObject;
     FReportingLoadingQuery : boolean;
+    FReportingQueryTmpId: Integer;
     procedure DoProgress(ASender: TObject);
     procedure FillcbADSiteDropDown;
     procedure FillcbGroups;
@@ -2753,6 +2759,7 @@ begin
   end;
 end;
 
+
 procedure TVisWaptGUI.ActResetWebsocketConnectionsExecute(Sender: TObject);
 var
   data: ISuperObject;
@@ -4036,8 +4043,10 @@ begin
   SplitterReportingHorizontal.Visible:= FReportingEditMode;
 
   ActReportingQueryNew.Visible:= FReportingEditMode;
+  ActReportingQueryDuplicate.Visible:= FReportingEditMode;
   ActReportingQueryDelete.Visible:= FReportingEditMode;
   ActReportingQuerySaveAll.Visible:= FReportingEditMode;
+
 
   if FReportingEditMode then
     SplitterReportingHorizontal.Top := PanelReportingEditSQL.Top+PanelReportingEditSQL.Height;
@@ -5578,6 +5587,14 @@ end;
 
 procedure TVisWaptGUI.GridReportingChange(Sender: TBaseVirtualTree;
   Node: PVirtualNode);
+begin
+end;
+
+procedure TVisWaptGUI.ActReportingDuplicateExecute(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.ActReportingDuplicateUpdate(Sender: TObject);
 begin
 end;
 
