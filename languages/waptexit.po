@@ -26,7 +26,7 @@ msgstr ""
 #: tviswaptexit.labintro.caption
 msgctxt "TVISWAPTEXIT.LABINTRO.CAPTION"
 msgid ""
-"There are %d installs or updates pending.\n"
+"Installs or updates pending.\n"
 "Do you wish to apply them now ?\n"
 msgstr ""
 

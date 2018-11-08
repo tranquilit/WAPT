@@ -59,10 +59,12 @@ msgstr ""
 
 #: tviswaptexit.labintro.caption
 #, fuzzy
-#| msgid "There are %d installs or updates pending."
+#| msgid ""
+#| "There are %d installs or updates pending.\n"
+#| "Do you wish to apply them now ?\n"
 msgctxt "tviswaptexit.labintro.caption"
 msgid ""
-"There are %d installs or updates pending.\n"
+"Installs or updates pending.\n"
 "Do you wish to apply them now ?\n"
 msgstr "Es gibt ausstehende Installationen oder Updates"
 

@@ -41,7 +41,9 @@ type
     ButNormalizationSave: TBitBtn;
     ButNormalizationFilter: TBitBtn;
     EdNormalizationFilter: TEdit;
+    GridReportingQueries: TSOGrid;
     ImageListReports: TImageList;
+    LabelReportingNumber: TLabel;
     MenuItem105: TMenuItem;
     MenuItem106: TMenuItem;
     MenuItem107: TMenuItem;
@@ -50,6 +52,7 @@ type
     ActReportingQueryExportToExcel: TAction;
     ActReportingQueryExecute: TAction;
     Panel18: TPanel;
+    PanReportingRight: TPanel;
     PanelReportingGrid: TPanel;
     PanelReportingEditSQL: TPanel;
     PopupMenuSQL: TPopupMenu;
@@ -325,7 +328,6 @@ type
     ToolButton6: TToolButton;
     ToolButtonSep1: TToolButton;
     GridOrgUnits: TVirtualDBTreeEx;
-    tvReportingQueries: TTreeView;
     WSUSActions: TActionList;
     ActWUANewGroup: TAction;
     ActWUAProductsSelection: TAction;
@@ -766,6 +768,7 @@ type
     procedure GridPackagesPaintText(Sender: TBaseVirtualTree;
       const TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex;
       TextType: TVSTTextType);
+    procedure GridReportingChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
     procedure GridReportingColumnResize(Sender: TVTHeader; Column: TColumnIndex );
     procedure GridReportingGetText(Sender: TBaseVirtualTree;
       Node: PVirtualNode; RowData, CellData: ISuperObject;
@@ -774,6 +777,15 @@ type
       HitInfo: TVTHeaderHitInfo);
     procedure GridReportingHeaderDragged(Sender: TVTHeader;
       Column: TColumnIndex; OldPosition: Integer);
+    procedure GridReportingQueriesChange(Sender: TBaseVirtualTree;
+      Node: PVirtualNode);
+    procedure GridReportingQueriesDrawText(Sender: TBaseVirtualTree;
+      TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex;
+      const AText: String; const CellRect: TRect; var DefaultDraw: Boolean);
+    procedure GridReportingQueriesEdited(Sender: TBaseVirtualTree;
+      Node: PVirtualNode; Column: TColumnIndex);
+    procedure GridReportingQueriesEditing(Sender: TBaseVirtualTree;
+      Node: PVirtualNode; Column: TColumnIndex; var Allowed: Boolean);
     procedure GridReportingSOCompareNodes(Sender: TSOGrid; Node1,
       Node2: ISuperObject; const Columns: array of String; var Result: Integer);
     procedure GridWinproductsChange(Sender: TBaseVirtualTree; Node: PVirtualNode );
@@ -792,20 +804,14 @@ type
     procedure MenuItemProductsCheckAllClick(Sender: TObject);
     procedure SynEditReportsSQLChange(Sender: TObject);
     procedure TimerWUALoadWinUpdatesTimer(Sender: TObject);
-    procedure tvReportingQueriesChange(Sender: TObject; Node: TTreeNode);
-    procedure tvReportingQueriesChanging(Sender: TObject; Node: TTreeNode;var AllowChange: Boolean);
-    procedure tvReportingQueriesCustomDrawItem(Sender: TCustomTreeView;
-      Node: TTreeNode; State: TCustomDrawState; var DefaultDraw: Boolean);
-    procedure tvReportingQueriesEdited(Sender: TObject; Node: TTreeNode; var S: string);
   private
     { private declarations }
     CurrentVisLoading: TVisLoading;
+    FReportingEditMode: Boolean;
     FWUAClassifications: ISuperObject;
     FWUAProducts: ISuperObject;
     FWUAWinUpdates: ISuperObject;
     FWUAWinUpdatesLookup: ISuperObject;
-    FReportingQueries: ISuperObject; // Pointers place holder for preventing auto __RemoveRef
-    FReportingEditModeEnable : boolean;
     FReportingLoadingQuery : boolean;
     procedure DoProgress(ASender: TObject);
     procedure FillcbADSiteDropDown;
@@ -819,6 +825,7 @@ type
     function GetWUAClassifications: ISuperObject;
     function GetWUAProducts: ISuperObject;
     function GetWUAWinUpdates: ISuperObject;
+    procedure GridReportingSaveSettings(Report: ISuperObject);
     function OneHostHasConnectedIP(GridHostsIPs:TSOGrid=Nil): Boolean;
     function OneHostIsConnected(GridHostsReachable:TSOGrid=Nil): Boolean;
     function GetSelectedOrgUnits: TDynStringArray;
@@ -831,6 +838,7 @@ type
     procedure IdHTTPWork(ASender: TObject; AWorkMode: TWorkMode; AWorkCount: int64);
     function InventoryData(uuid: String): ISuperObject;
     procedure MakePackageTemplate(AInstallerFileName: String);
+    procedure SetReportingEditMode(AValue: Boolean);
     function TriggerChangeHostDescription(uuid, description: String): Boolean;
     procedure UpdateHostPages(Sender: TObject);
     procedure UpdateSelectedHostsActions(Sender: TObject);
@@ -845,8 +853,7 @@ type
 
     procedure UpdateTasksReport(tasksresult: ISuperObject);
     procedure SetGridReportingData( data : ISuperObject );
-    procedure SetReportingEditModeEnable( EditEnable : Boolean );
-    procedure SetReportingDirty;
+    procedure SetReportingDirty(Report:ISuperObject);
 
 
   public
@@ -882,6 +889,7 @@ type
     procedure TriggerActionOnHostPackages(APackagesStatusGrid:TSOGrid;HostUUIDs:ISuperObject;AAction, title, errortitle: String;Force:Boolean=False);
 
     property IsEnterpriseEdition:Boolean read GetIsEnterpriseEdition write SetIsEnterpriseEdition;
+    property ReportingEditMode:Boolean read FReportingEditMode write SetReportingEditMode;
 
   end;
 
@@ -1385,6 +1393,7 @@ begin
     GridWUDownloads.SaveSettingsToIni(Appuserinipath);
     GridWUUpdates.SaveSettingsToIni(Appuserinipath);
     GridHostWinUpdates.SaveSettingsToIni(Appuserinipath);
+    GridReportingQueries.SaveSettingsToIni(Appuserinipath);
   end;
   {$endif}
 
@@ -1422,7 +1431,7 @@ end;
 
 procedure TVisWaptGUI.FormCloseQuery(Sender: TObject; var CanClose: boolean);
 begin
-  CanClose := CheckUpdates([FReportingQueries,GridNormalization.Data]);
+  CanClose := CheckUpdates([GridReportingQueries.Data,GridNormalization.Data]);
 end;
 
 function TVisWaptGUI.FilterSoftwares(softs: ISuperObject): ISuperObject;
@@ -3441,6 +3450,7 @@ begin
   GridWUDownloads.LoadSettingsFromIni(Appuserinipath+'.default');
   GridWUUpdates.LoadSettingsFromIni(Appuserinipath+'.default');
   GridHostWinUpdates.LoadSettingsFromIni(Appuserinipath+'.default');
+  GridReportingQueries.LoadSettingsFromIni(Appuserinipath+'.default');
   {$endif}
 
 end;
@@ -3980,9 +3990,6 @@ begin
   WaptServerUser := IniReadString(Appuserinipath,self.name,'lastwaptserveruser','admin');
   HostsLimit := 2000;
   DMPython.PythonOutput.OnSendData := @PythonOutputSendData;
-  FReportingQueries := TSuperObject.ParseString('[]', False );
-  FReportingEditModeEnable := True;
-  SetReportingEditModeEnable(False);
 end;
 
 procedure TVisWaptGUI.FormDestroy(Sender: TObject);
@@ -4017,6 +4024,23 @@ begin
   finally
     Free;
   end;
+end;
+
+procedure TVisWaptGUI.SetReportingEditMode(AValue: Boolean);
+begin
+  FReportingEditMode:=AValue;
+
+  ToolButtonDesignQuery.Down := FReportingEditMode;
+
+  PanelReportingEditSQL.Visible := FReportingEditMode;
+  SplitterReportingHorizontal.Visible:= FReportingEditMode;
+
+  ActReportingQueryNew.Visible:= FReportingEditMode;
+  ActReportingQueryDelete.Visible:= FReportingEditMode;
+  ActReportingQuerySaveAll.Visible:= FReportingEditMode;
+
+  if FReportingEditMode then
+    SplitterReportingHorizontal.Top := PanelReportingEditSQL.Top+PanelReportingEditSQL.Height;
 end;
 
 function TVisWaptGUI.Login: boolean;
@@ -4123,6 +4147,7 @@ begin
   IsEnterpriseEdition:=True;
   ActProprietary.Enabled := True;
   ActProprietary.Checked := True;
+  ReportingEditMode := False;
   {$else}
   IsEnterpriseEdition:=False;
   ActProprietary.Enabled := False;
@@ -5016,8 +5041,10 @@ begin
     ActWUADownloadsRefresh.Execute
   else if MainPages.ActivePage = PgReports then
   begin
-    if 0 = FReportingQueries.AsArray.Length then
-      ActReportingQueryReload.Execute;
+    if not Assigned(GridReportingQueries.Data) then
+      ActReportingQueryReload.Execute
+    else
+      ActReportingQueryExecute.Execute;
   end
   else if MainPages.ActivePage = pgNormalization then
   begin
@@ -5119,7 +5146,7 @@ begin
   for ADataset in datasets do
     if IsUpdated([ADataset]) then
     begin
-      if ADataset = FReportingQueries then
+      if ADataset = GridReportingQueries.Data then
         ActReportingQuerySaveAll.Execute
       else if ADataset = GridNormalization.Data then
         ActNormalizationWriteTable.Execute;
@@ -5543,6 +5570,18 @@ procedure TVisWaptGUI.GridReportingSOCompareNodes(Sender: TSOGrid; Node1,
   Node2: ISuperObject; const Columns: array of String; var Result: Integer);
 begin
 end;
+
+procedure TVisWaptGUI.GridReportingSaveSettings(Report:ISuperObject);
+begin
+end;
+
+
+procedure TVisWaptGUI.GridReportingChange(Sender: TBaseVirtualTree;
+  Node: PVirtualNode);
+begin
+end;
+
+
 {$endif}
 
 end.

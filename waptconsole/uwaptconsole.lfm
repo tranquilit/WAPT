@@ -26,9 +26,9 @@ object VisWaptGUI: TVisWaptGUI
     Height = 480
     Top = 0
     Width = 1159
-    ActivePage = pgInventory
+    ActivePage = PgReports
     Align = alClient
-    TabIndex = 0
+    TabIndex = 7
     TabOrder = 0
     OnChange = MainPagesChange
     object pgInventory: TTabSheet
@@ -5753,33 +5753,32 @@ object VisWaptGUI: TVisWaptGUI
       ClientHeight = 454
       ClientWidth = 1151
       TabVisible = False
-      object Panel18: TPanel
-        Left = 208
+      object PanReportingRight: TPanel
+        Left = 275
         Height = 404
         Top = 50
-        Width = 943
+        Width = 876
         Align = alClient
         BevelOuter = bvNone
-        Caption = 'Panel18'
         ClientHeight = 404
-        ClientWidth = 943
-        TabOrder = 2
+        ClientWidth = 876
+        TabOrder = 1
         object PanelReportingGrid: TPanel
           Left = 0
-          Height = 244
-          Top = 160
-          Width = 943
-          Align = alBottom
+          Height = 247
+          Top = 157
+          Width = 876
+          Align = alClient
           BevelOuter = bvNone
           Caption = 'PanelReportingGrid'
-          ClientHeight = 244
-          ClientWidth = 943
+          ClientHeight = 247
+          ClientWidth = 876
           TabOrder = 0
           object GridReporting: TSOGrid
             Left = 5
-            Height = 234
+            Height = 218
             Top = 5
-            Width = 933
+            Width = 866
             OnGetText = GridReportingGetText
             ShowAdvancedColumnsCustomize = True
             OnSOCompareNodes = GridReportingSOCompareNodes
@@ -5804,27 +5803,53 @@ object VisWaptGUI: TVisWaptGUI
             TreeOptions.PaintOptions = [toHideFocusRect, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages, toAlwaysHideSelection]
             TreeOptions.SelectionOptions = [toExtendedFocus, toMultiSelect, toRightClickSelect, toSimpleDrawSelection]
             WantTabs = True
+            OnChange = GridReportingChange
             OnColumnResize = GridReportingColumnResize
             OnHeaderClick = GridReportingHeaderClick
             OnHeaderDragged = GridReportingHeaderDragged
+          end
+          object Panel18: TPanel
+            Left = 0
+            Height = 19
+            Top = 228
+            Width = 876
+            Align = alBottom
+            AutoSize = True
+            BevelOuter = bvNone
+            ChildSizing.LeftRightSpacing = 6
+            ChildSizing.TopBottomSpacing = 3
+            ChildSizing.HorizontalSpacing = 6
+            ChildSizing.VerticalSpacing = 6
+            ClientHeight = 19
+            ClientWidth = 876
+            TabOrder = 1
+            object LabelReportingNumber: TLabel
+              Left = 741
+              Height = 13
+              Top = 3
+              Width = 129
+              Align = alRight
+              Caption = 'Selected / Total : %d / %d'
+              ParentColor = False
+            end
           end
         end
         object PanelReportingEditSQL: TPanel
           Left = 0
           Height = 152
           Top = 0
-          Width = 943
-          Align = alClient
+          Width = 876
+          Align = alTop
           BevelOuter = bvNone
           Caption = 'PanelReportingEditSQL'
           ClientHeight = 152
-          ClientWidth = 943
+          ClientWidth = 876
           TabOrder = 1
           inline SynEditReportsSQL: TSynEdit
             Left = 5
             Height = 142
             Top = 5
-            Width = 933
+            Width = 866
             Align = alClient
             BlockTabIndent = 2
             BorderSpacing.Around = 5
@@ -6283,6 +6308,7 @@ object VisWaptGUI: TVisWaptGUI
             MouseLinkColor.Foreground = clBlue
             LineHighlightColor.Background = clNone
             LineHighlightColor.Foreground = clNone
+            TabWidth = 4
             OnChange = SynEditReportsSQLChange
             inline SynLeftGutterPartList1: TSynGutterPartList
               object SynGutterMarks1: TSynGutterMarks
@@ -6325,11 +6351,11 @@ object VisWaptGUI: TVisWaptGUI
         object SplitterReportingHorizontal: TSplitter
           Cursor = crVSplit
           Left = 0
-          Height = 8
+          Height = 5
           Top = 152
-          Width = 943
-          Align = alBottom
-          ResizeAnchor = akBottom
+          Width = 876
+          Align = alTop
+          ResizeAnchor = akTop
         end
       end
       object TbReport: TToolBar
@@ -6343,7 +6369,7 @@ object VisWaptGUI: TVisWaptGUI
         Caption = 'TbReport'
         Images = ImageListReports
         ShowCaptions = True
-        TabOrder = 1
+        TabOrder = 0
         object ToolButton4: TToolButton
           Left = 149
           Top = 2
@@ -6382,27 +6408,66 @@ object VisWaptGUI: TVisWaptGUI
           AutoSize = True
         end
       end
-      object tvReportingQueries: TTreeView
-        Left = 5
-        Height = 394
-        Top = 55
-        Width = 193
-        Align = alLeft
-        BorderSpacing.Around = 5
-        RightClickSelect = True
-        ShowRoot = False
-        TabOrder = 0
-        OnChange = tvReportingQueriesChange
-        OnChanging = tvReportingQueriesChanging
-        OnCustomDrawItem = tvReportingQueriesCustomDrawItem
-        OnEdited = tvReportingQueriesEdited
-        Options = [tvoAutoItemHeight, tvoHideSelection, tvoKeepCollapsedNodes, tvoRightClickSelect, tvoShowButtons, tvoShowLines, tvoToolTips, tvoThemedDraw]
-      end
       object Splitter11: TSplitter
-        Left = 203
+        Left = 270
         Height = 404
         Top = 50
         Width = 5
+      end
+      object GridReportingQueries: TSOGrid
+        Left = 0
+        Height = 404
+        Top = 50
+        Width = 270
+        ShowAdvancedColumnsCustomize = False
+        KeyFieldsNames = 'id'
+        Align = alLeft
+        Color = clWhite
+        Colors.UnfocusedColor = clMedGray
+        Header.AutoSizeIndex = -1
+        Header.Columns = <        
+          item
+            Alignment = taRightJustify
+            Position = 0
+            Text = 'id'
+            Width = 42
+            PropertyName = 'id'
+          end        
+          item
+            Position = 1
+            Text = 'name'
+            Width = 161
+            PropertyName = 'name'
+          end        
+          item
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+            Position = 2
+            Text = 'query'
+            Width = 100
+            PropertyName = 'query'
+          end        
+          item
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+            Position = 3
+            Text = 'settings'
+            Width = 3403
+            PropertyName = 'settings'
+          end>
+        Header.DefaultHeight = 18
+        Header.Height = 18
+        Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
+        Header.Style = hsFlatButtons
+        TabOrder = 3
+        TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
+        TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize]
+        TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages, toAlwaysHideSelection]
+        TreeOptions.SelectionOptions = [toDisableDrawSelection, toExtendedFocus, toMultiSelect, toRightClickSelect]
+        WantTabs = True
+        OnChange = GridReportingQueriesChange
+        OnDrawText = GridReportingQueriesDrawText
+        OnEdited = GridReportingQueriesEdited
+        OnEditing = GridReportingQueriesEditing
+        ZebraPaint = True
       end
     end
     object pgNormalization: TTabSheet
@@ -10783,6 +10848,9 @@ object VisWaptGUI: TVisWaptGUI
       ImageIndex = 2
       OnExecute = ActReportingQueryExecuteExecute
       OnUpdate = ActReportingQueryExecuteUpdate
+      SecondaryShortCuts.Strings = (
+        'F4'
+      )
       ShortCut = 116
     end
     object ActReportingQueryExportToExcel: TAction

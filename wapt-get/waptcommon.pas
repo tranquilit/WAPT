@@ -1224,7 +1224,7 @@ begin
       except
         rec.B['outside'] := True;
       end;
-      // order is priority asc but wieght desc
+      // order is priority asc but weight desc
       rec.I['weight'] := - rec.I['weight'];
     end;
     SortByFields(recs,['outside','priority','weight']);
@@ -1233,7 +1233,7 @@ begin
     begin
       Result := rec.S['url'];
       Logger('trying '+Result,INFO);
-      if IdWget_try(Result,http_proxy,'','0') then
+      if IdWget_try(Result+'/Packages',http_proxy,'','0') then
         Exit;
     end;
 
@@ -1257,7 +1257,7 @@ end;
 
 function GetWaptRepoURLFromIni(RepoName:String='wapt'): String;
 var
-  section,key:String;
+  section:String;
   repositories:TDynStringArray;
 begin
   result := '';
@@ -1308,8 +1308,7 @@ end;
 
 function GetMainWaptRepoURL: String;
 var
-  rec,recs,ConnectedIps,ServerIp : ISuperObject;
-  url,dnsdomain,Proxy:AnsiString;
+  dnsdomain,Proxy:AnsiString;
 begin
   result := GetWaptRepoURLFromIni('wapt');
   if (Result <> '') then

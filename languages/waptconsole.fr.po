@@ -974,6 +974,24 @@ msgctxt "tviswaptconfig.actcheckpersonalkey.caption"
 msgid "Check matching private key"
 msgstr "Vérifier la clé associée"
 
+#: tviswaptconfig.actcheckpersonalkey.hint
+msgid "Check that we can find a matching private key in the same directory as the certificate file"
+msgstr "Vérifier qu'une clé privée qui correspind au certificat peut être trouvée dans le même répertoire"
+
+#: tviswaptconfig.actcreatekeycert.caption
+msgid "New  private key and certificate"
+msgstr "Nouvelle clé et certificat"
+
+#: tviswaptconfig.actcreatekeycert.hint
+msgid ""
+"Generate a new private key and personal certificate.\n"
+"This must be done only once per Wapt amdin user.\n"
+"When upgrading, you must not recreate a private key and certificate.\n"
+msgstr ""
+"Génère une nouvelle clé privée et un certificat personnel.\n"
+"Cela doit être effectué seulement une fois par administrateur Wapt.\n"
+"Lors d'un upgrade, vous ne devez pas recréer les clé privée et certificat\n"
+
 #: tviswaptconfig.actdownloadcertificate.caption
 msgctxt "tviswaptconfig.actdownloadcertificate.caption"
 msgid "Browse certificates"
@@ -981,10 +999,18 @@ msgstr "Parcourir les certificats"
 
 #: tviswaptconfig.actgetservercertificate.caption
 #, fuzzy
-#| msgid "Get Server https Certificate"
+#| msgid "Get Server https Certitificate"
 msgctxt "tviswaptconfig.actgetservercertificate.caption"
-msgid "Get Server https Certitificate"
-msgstr "Récupération certificat serveur"
+msgid "Get Server https Certificate"
+msgstr "Récupération certificat serveur https"
+
+#: tviswaptconfig.actgetservercertificate.hint
+msgid ""
+"Connect to the server and get the https certificate blundle from it.\n"
+"You must check that the certificate fingerprint is the expected one.\n"
+msgstr ""
+"Se connecte au serveur et récupère la chîne de certificats https.\n"
+"Vous devez vérifier que l'empreinte du certificat est celle souhaitée.\n"
 
 #: tviswaptconfig.actopencertdir.caption
 msgctxt "tviswaptconfig.actopencertdir.caption"
@@ -996,11 +1022,20 @@ msgid "Show statistics"
 msgstr "Afficher les statistiques"
 
 #: tviswaptconfig.button5.hint
-msgid "Click to retrieve the https certificate chain from server."
+#, fuzzy
+#| msgid "Click to retrieve the https certificate chain from server."
+msgid ""
+"Click to retrieve the https certificate chain from server.\n"
+"This works only if chain contain full certificate validation chain.\n"
+"If not, you must add the missing root and intermediate certificates.\n"
 msgstr "Cliquer pour récupérer la chaîne de certificats pour le serveur https "
 
 #: tviswaptconfig.button6.hint
-msgid "Try to find a private key (pem encoded RSA key) in same directory as certificate."
+#, fuzzy
+#| msgid "Try to find a private key (pem encoded RSA key) in same directory as certificate."
+msgid ""
+"Try to find a private key (pem encoded RSA key) in same directory as certificate.\n"
+"This will ask for the password for decrypting the key.\n"
 msgstr "Recherche une clé privée RSA encodée en PEM dans le même répertoire que le certificat."
 
 #: tviswaptconfig.buttonpanel1.helpbutton.caption
@@ -1032,7 +1067,11 @@ msgid "Verify https server certificate"
 msgstr "Vérifier le certificat https serveur"
 
 #: tviswaptconfig.cbverifycert.hint
-msgid "Check to enable the check of https server certificates"
+#, fuzzy
+#| msgid "Check to enable the check of https server certificates"
+msgid ""
+"Check to enable the check of https server certificates\n"
+"(Main repository access and wapt server)\n"
 msgstr "Cocher pour active rla vérification des certificats https"
 
 #: tviswaptconfig.eddefault_package_prefix.editlabel.caption
@@ -1041,11 +1080,19 @@ msgid "WAPT packages prefix"
 msgstr "Préfixe des paquets WAPT"
 
 #: tviswaptconfig.eddefault_package_prefix.hint
-msgid "E.g. : tis"
+#, fuzzy
+#| msgid "E.g. : tis"
+msgid ""
+"E.g. : tis\n"
+"Which prefix to use when naming created or duplicated packages\n"
 msgstr "Par exemple :tis"
 
 #: tviswaptconfig.eddefault_sources_root.hint
-msgid "E.g. : c:\\waptdev"
+#, fuzzy
+#| msgid "E.g. : c:\\waptdev"
+msgid ""
+"E.g. : c:\\waptdev\n"
+"Local directory for saving package development projects\n"
 msgstr "Par exemple : c:\\waptdev"
 
 #: tviswaptconfig.edhttp_proxy.editlabel.caption
@@ -1054,13 +1101,22 @@ msgid "http proxy to use (if needed)"
 msgstr "Proxy http à utiliser"
 
 #: tviswaptconfig.edhttp_proxy.hint
+#, fuzzy
+#| msgid "E.g. : http://proxy.tranquilit.local:3128"
 msgctxt "tviswaptconfig.edhttp_proxy.hint"
-msgid "E.g. : http://proxy.tranquilit.local:3128"
+msgid ""
+"E.g. : http://proxy.tranquilit.local:3128\n"
+"Only required if a proxy is needed for waptserver and main waptrepo\n"
 msgstr "Par exemple : http://proxy.tranquilit.local:3128"
 
 #: tviswaptconfig.edpersonalcertificatepath.hint
+#, fuzzy
+#| msgid "E.g. : c:\\private\\tranquilit.crt"
 msgctxt "tviswaptconfig.edpersonalcertificatepath.hint"
-msgid "E.g. : c:\\private\\tranquilit.crt"
+msgid ""
+"E.g. : c:\\private\\tranquilit.crt\n"
+"Path to certificate for signing new packages.\n"
+"Only suitable for development hosts.\n"
 msgstr "Par ex. c:\\private\\tranquilit.crt"
 
 #: tviswaptconfig.edrepo_url.editlabel.caption
@@ -1068,7 +1124,13 @@ msgid "URL to the main repository"
 msgstr "URL du dépôt principal"
 
 #: tviswaptconfig.edrepo_url.hint
-msgid "E.g. : https://wapt.tranquilit.local/wapt"
+#, fuzzy
+#| msgid "E.g. : https://wapt.tranquilit.local/wapt"
+msgid ""
+"E.g. : https://wapt.tranquilit.local/wapt\n"
+"Leave empty for auto DNS discovery\n"
+"\n"
+"Don't forget the path to packages (/wapt) in the URL !\n"
 msgstr "Par ex. https://wapt.tranquilit.local/wapt"
 
 #: tviswaptconfig.edserveraddress.editlabel.caption
@@ -1076,12 +1138,24 @@ msgid "WAPT Server address or name"
 msgstr "Adresse du serveur WAPT :"
 
 #: tviswaptconfig.edserveraddress.hint
-msgid "E.g. : wapt.tranquilit.local"
+#, fuzzy
+#| msgid "E.g. : wapt.tranquilit.local"
+msgid ""
+"E.g. : wapt.tranquilit.local\n"
+"Leave empty for auto discovery with DNS queries\n"
 msgstr "Exemple : srvwapt.tranquilit.local"
 
 #: tviswaptconfig.edservercertificate.hint
+#, fuzzy
+#| msgid "E.g. : c:\\wapt\\ssl\\server\\cacert.pem"
 msgctxt "tviswaptconfig.edservercertificate.hint"
-msgid "E.g. : c:\\wapt\\ssl\\server\\cacert.pem"
+msgid ""
+"E.g. : c:\\wapt\\ssl\\server\\cacert.pem\n"
+"Path to certificate bundle with https servers CA certificates\n"
+"The bundle must contain intermediate and root certificates\n"
+"\n"
+"If 0: no check on https server certificates issuers\n"
+"If 1 : use default wapt cacert.pem bundle\n"
 msgstr "Par ex. c:\\wapt\\ssl\\server\\cacert.pem"
 
 #: tviswaptconfig.edwapt_server.editlabel.caption
@@ -1089,7 +1163,11 @@ msgid "URL du serveur WAPT"
 msgstr "URL du serveur WAPT"
 
 #: tviswaptconfig.edwapt_server.hint
-msgid "E.g. : https://wapt.tranquilit.local"
+#, fuzzy
+#| msgid "E.g. : https://wapt.tranquilit.local"
+msgid ""
+"E.g. : https://wapt.tranquilit.local\n"
+"Leave empty if you don't want a central management server.\n"
 msgstr "Par exemple : https://wapt.tranquilit.local"
 
 #: tviswaptconfig.label1.caption
@@ -2053,6 +2131,12 @@ msgctxt "TVISWAPTGUI.LABELCOMPUTERSNUMBER.CAPTION"
 msgid "Selected / Total : %d / %d"
 msgstr "Sélectionnés / Total : %d / %d"
 
+#: tviswaptgui.labelreportingnumber.caption
+#, fuzzy
+msgctxt "tviswaptgui.labelreportingnumber.caption"
+msgid "Selected / Total : %d / %d"
+msgstr "Sélectionné / Total : %d / %d"
+
 #: tviswaptgui.labuser.caption
 msgctxt "tviswaptgui.labuser.caption"
 msgid "User"
@@ -2180,10 +2264,6 @@ msgstr "Sélectionner un fichier d'installation exe ou msi"
 #: tviswaptgui.opendialogwapt.title
 msgid "Select WAPT file"
 msgstr "Sélectionner un fichier WAPT"
-
-#: tviswaptgui.panel18.caption
-msgid "Panel18"
-msgstr ""
 
 #: tviswaptgui.panel6.caption
 msgid "Panel6"

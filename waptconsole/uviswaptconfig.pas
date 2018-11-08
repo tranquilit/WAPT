@@ -18,10 +18,12 @@ type
     ActDownloadCertificate: TAction;
     ActGetServerCertificate: TAction;
     ActCheckPersonalKey: TAction;
+    ActCreateKeyCert: TAction;
     ActOpenCertDir: TAction;
     ActionList1: TActionList;
     Button1: TButton;
     Button2: TButton;
+    Button3: TButton;
     Button5: TButton;
     Button6: TButton;
     ButtonPanel1: TButtonPanel;
@@ -83,7 +85,8 @@ var
 
 implementation
 uses tiscommon,waptcommon,LCLIntf,IDURI,superobject,uWaptConsoleRes,
-    uScaleDPI,tisstrings,dmwaptpython,variants,VarPyth,uvisprivatekeyauth,tisinifiles,LazFileUtils,FileUtil;
+    uScaleDPI,tisstrings,dmwaptpython,variants,VarPyth,uvisprivatekeyauth,tisinifiles,LazFileUtils,FileUtil,
+    Windows,ActiveX,ComObj;
 {$R *.lfm}
 
 { TVisWAPTConfig }
@@ -157,15 +160,17 @@ end;
 
 procedure TVisWAPTConfig.ActGetServerCertificateExecute(Sender: TObject);
 var
-  i:integer;
   certfn: String;
-  url,certchain,pem_data,certbundle,certs,cert:Variant;
+  url,certchain,pem_data,cert:Variant;
+  i: LongWord;
 begin
   url := edwapt_server.Text;
   With TIdURI.Create(url) do
   try
     try
       certchain := dmpython.waptcrypto.get_peer_cert_chain_from_server(url);
+      {for i := 0 to len(certchain)-1 do
+        ShowMessage(VarPythonAsString('cn:'+certchain.__getitem__(i).cn)+#13#10+'sha256:'+VarPythonAsString(certchain.__getitem__(i).fingerprint));}
       pem_data := dmpython.waptcrypto.get_cert_chain_as_pem(certificates_chain:=certchain);
       if not VarIsNull(pem_data) then
       begin

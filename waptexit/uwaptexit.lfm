@@ -83,7 +83,7 @@ object VisWaptExit: TVisWaptExit
           BorderSpacing.Top = 2
           BorderSpacing.Bottom = 2
           BorderSpacing.Around = 3
-          Caption = 'There are %d installs or updates pending.'#13#10'Do you wish to apply them now ?'
+          Caption = 'Installs or updates pending.'#13#10'Do you wish to apply them now ?'
           ParentColor = False
         end
       end

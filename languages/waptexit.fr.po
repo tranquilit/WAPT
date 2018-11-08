@@ -31,10 +31,12 @@ msgstr ""
 
 #: tviswaptexit.labintro.caption
 #, fuzzy
-#| msgid "There are %d installs or updates pending."
+#| msgid ""
+#| "There are %d installs or updates pending.\n"
+#| "Do you wish to apply them now ?\n"
 msgctxt "tviswaptexit.labintro.caption"
 msgid ""
-"There are %d installs or updates pending.\n"
+"Installs or updates pending.\n"
 "Do you wish to apply them now ?\n"
 msgstr "%d installations ou mises à jour sont en attente."
 
@@ -345,6 +347,10 @@ msgstr "Installation de %s..."
 msgid "  install on c:\\wapt : --setup -s"
 msgstr "  installation sur c:\\wapt : --setup -s"
 
+#: uwaptres.rsinterruptupdate
+msgid "Stopper la mise Ã  jour"
+msgstr ""
+
 #: uwaptres.rsinvaliddns
 msgid "Invalid DNS"
 msgstr "DNS invalide"
@@ -361,6 +367,9 @@ msgstr "Le répertoire de WAPTsetup n'est pas valide : %s"
 msgid "Key %s already exists, please pick another name."
 msgstr "La clé %s existe déjà, merci de choisir un nom différent."
 
+#: uwaptres.rslaunchsoftwareupdate
+msgid "Lancer la mise Ã  jour des logiciels"
+msgstr ""
 
 #: uwaptres.rslongtaskerror
 msgid "Error launching longtask: %s"
@@ -477,6 +486,14 @@ msgstr "Enregistrement de la machine sur le serveur"
 #: uwaptres.rsreplacingtiscertificate
 msgid "Deleting TIS certificate and copying new certificate"
 msgstr "Suppression du certificat TIS et copie du nouveau certificat"
+
+#: uwaptres.rsrestartingwaptserver
+msgid "RedÃ©marrage service waptserver"
+msgstr ""
+
+#: uwaptres.rsrestartingwaptservice
+msgid "RedÃ©marrage waptservice"
+msgstr ""
 
 #: uwaptres.rsrmbundlefromhosts
 msgid "Selection of package bundles for removing from the selected hosts"
