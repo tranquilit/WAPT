@@ -5598,6 +5598,9 @@ procedure TVisWaptGUI.ActReportingDuplicateUpdate(Sender: TObject);
 begin
 end;
 
+procedure TVisWaptGUI.SetReportingDirty(Report:ISuperObject);
+begin
+end;
 
 {$endif}
 
