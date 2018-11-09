@@ -1166,9 +1166,6 @@ end;
 
 procedure TVisWaptGUI.cbNeedUpgradeClick(Sender: TObject);
 begin
-  Gridhosts.Clear;
-  {if ((length(EdSearchHost.Text)>5) and (cbSearchDMI.Checked or cbSearchSoftwares.Checked or cbSearchPackages.Checked or cbSearchHost.Checked)) or
-    (cbHasErrors.Checked or cbNeedUpgrade.Checked or cbReachable.Checked or cbAuthorizedHosts.Checked) then}
   ActSearchHostExecute(Sender);
 end;
 
@@ -1599,7 +1596,6 @@ begin
 
     if HostPages.ActivePage = pgPackages then
     begin
-      GridHostPackages.Clear;
       packages := RowSO['installed_packages'];
       if (packages = nil) or (packages.AsArray = nil) then
       try
@@ -1675,6 +1671,7 @@ begin
       except
         RowSO['installed_packages'] := nil;
       end;
+
       EdUUID.Text := UTF8Encode(RowSO.S['uuid']);
       EdHostname.Text := UTF8Encode(RowSO.S['computer_name']);
       EdDescription.Text := UTF8Encode(RowSO.S['description']);
@@ -1704,7 +1701,6 @@ begin
     end
     else if HostPages.ActivePage = pgSoftwares then
     begin
-      GridHostSoftwares.Clear;
       //Cache collection in grid data
       softwares := RowSO['installed_softwares'];
       if (softwares = nil) or (softwares.AsArray = nil) then
@@ -3467,7 +3463,7 @@ begin
   EdSearchGroups.Modified := False;
   GridGroups.Data := PyVarToSuperObject(DMPython.MainWaptRepo.search(searchwords := EdSearchGroups.Text, sections := 'group,unit', description_locale := Language));
   //GridGroups.CreateColumnsFromData(False,True);
-  GridGroupsChange(GridGroups,GridGroups.FocusedNode);
+  //GridGroupsChange(GridGroups,GridGroups.FocusedNode);
 end;
 
 procedure TVisWaptGUI.ActTriggerHostUpdateExecute(Sender: TObject);
@@ -3684,7 +3680,6 @@ procedure TVisWaptGUI.ActSearchPackageExecute(Sender: TObject);
 begin
   EdSearchPackage.Modified:=False;
   GridPackages.Data := PyVarToSuperObject(DMPython.MainWaptRepo.search(searchwords := EdSearchPackage.Text, exclude_sections := 'host,group,unit', newest_only := cbNewestOnly.Checked, description_locale := Language));
-  GridPackagesChange(GridPackages,GridPackages.FocusedNode);
 end;
 
 procedure TVisWaptGUI.ActPackagesUpdateExecute(Sender: TObject);
@@ -4588,7 +4583,7 @@ end;
 procedure TVisWaptGUI.GridHostsForPackageChange(Sender: TBaseVirtualTree;
   Node: PVirtualNode);
 begin
-  if (GridHostsForPackage.FocusedRow <> nil) then
+  if (GridHostsForPackage.FocusedRow <> nil) and (GridHostsForPackage.FocusedColumnObject<>Nil) then
   begin
     if IsEnterpriseEdition and (GridHostsForPackage.FocusedColumnObject.PropertyName = 'last_audit_status') then
       MemoInstallOutput1.Text := UTF8Encode(GridHostsForPackage.FocusedRow.S['last_audit_output'])
@@ -4601,7 +4596,6 @@ begin
   end
   else
     MemoInstallOutput1.Clear;
-
 end;
 
 procedure TVisWaptGUI.GridHostsForPackageFocusChanged(Sender: TBaseVirtualTree;
@@ -5080,19 +5074,20 @@ procedure TVisWaptGUI.GridPackagesChange(Sender: TBaseVirtualTree;
 var
   PackageName: String;
 begin
-  if GridPackages.FocusedRow <> Nil then
-  begin
-    PackageName := GridPackages.FocusedRow.S['package'];
-    if CBShowHostsForPackages.Checked then
+  if MainPages.ActivePage = pgPrivateRepo then
+    if GridPackages.FocusedRow <> Nil then
     begin
+      PackageName := GridPackages.FocusedRow.S['package'];
       if CBShowHostsForPackages.Checked then
-        LoadHostsForPackage(GridHostsForPackage,PackageName)
-      else
-        GridHostsForPackage.Data := Nil;
-    end;
-  end
-  else
-    GridHostsForPackage.Data := Nil;
+      begin
+        if CBShowHostsForPackages.Checked then
+          LoadHostsForPackage(GridHostsForPackage,PackageName)
+        else
+          GridHostsForPackage.Data := Nil;
+      end;
+    end
+    else
+      GridHostsForPackage.Data := Nil;
 end;
 
 procedure TVisWaptGUI.GridGroupsChange(Sender: TBaseVirtualTree;
@@ -5100,16 +5095,17 @@ procedure TVisWaptGUI.GridGroupsChange(Sender: TBaseVirtualTree;
 var
   PackageName: String;
 begin
-  if GridGroups.FocusedRow <> Nil then
-  begin
-    PackageName := GridGroups.FocusedRow.S['package'];
-    if CBShowHostsForGroups.Checked then
-      LoadHostsForPackage(GridHostsForPackage,PackageName)
+  if MainPages.ActivePage = pgGroups then
+    if GridGroups.FocusedRow <> Nil then
+    begin
+      PackageName := GridGroups.FocusedRow.S['package'];
+      if CBShowHostsForGroups.Checked then
+        LoadHostsForPackage(GridHostsForPackage,PackageName)
+      else
+        GridHostsForPackage.Data := Nil;
+    end
     else
       GridHostsForPackage.Data := Nil;
-  end
-  else
-    GridHostsForPackage.Data := Nil;
 end;
 
 function TVisWaptGUI.IsUpdated(const datasets: array of ISuperObject): Boolean;
@@ -5554,7 +5550,7 @@ procedure TVisWaptGUI.GridReportingColumnResize(Sender: TVTHeader;
 begin
 end;
 
-procedure TVisWaptGUI.SetReportingDirty;
+procedure TVisWaptGUI.SetReportingDirty(Report:ISuperObject);
 begin
 end;
 

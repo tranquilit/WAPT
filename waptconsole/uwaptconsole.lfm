@@ -26,9 +26,9 @@ object VisWaptGUI: TVisWaptGUI
     Height = 480
     Top = 0
     Width = 1159
-    ActivePage = PgReports
+    ActivePage = pgInventory
     Align = alClient
-    TabIndex = 7
+    TabIndex = 0
     TabOrder = 0
     OnChange = MainPagesChange
     object pgInventory: TTabSheet
@@ -58,6 +58,7 @@ object VisWaptGUI: TVisWaptGUI
             OnGetText = GridHostPackagesGetText
             OnNodesDelete = GridHostPackagesNodesDelete
             ShowAdvancedColumnsCustomize = False
+            KeyFieldsNames = 'package;version;architecture;maturity;locale'
             Align = alClient
             BorderSpacing.Top = 2
             Color = clWhite
@@ -724,6 +725,7 @@ object VisWaptGUI: TVisWaptGUI
             Top = 27
             Width = 564
             ShowAdvancedColumnsCustomize = False
+            KeyFieldsNames = 'name;version;key'
             Align = alClient
             Color = clWhite
             Colors.UnfocusedColor = clMedGray
@@ -867,6 +869,7 @@ object VisWaptGUI: TVisWaptGUI
             Width = 564
             OnGetText = GridHostWinUpdatesGetText
             ShowAdvancedColumnsCustomize = False
+            KeyFieldsNames = 'update_id'
             Align = alClient
             BorderSpacing.Top = 2
             Color = clWhite
@@ -1464,10 +1467,10 @@ object VisWaptGUI: TVisWaptGUI
             Height = 151
             Top = 102
             Width = 564
-            ActivePage = TabSheet3
+            ActivePage = TabSheet1
             Align = alBottom
             Anchors = [akTop, akLeft, akBottom]
-            TabIndex = 2
+            TabIndex = 0
             TabOrder = 3
             object TabSheet1: TTabSheet
               Caption = 'Pending'
@@ -1479,6 +1482,7 @@ object VisWaptGUI: TVisWaptGUI
                 Top = 2
                 Width = 556
                 ShowAdvancedColumnsCustomize = False
+                KeyFieldsNames = 'id'
                 Align = alClient
                 BorderSpacing.Top = 2
                 Color = clWhite
@@ -1623,6 +1627,7 @@ object VisWaptGUI: TVisWaptGUI
                 Top = 2
                 Width = 556
                 ShowAdvancedColumnsCustomize = False
+                KeyFieldsNames = 'id'
                 Align = alClient
                 BorderSpacing.Top = 2
                 Color = clWhite
@@ -1766,6 +1771,7 @@ object VisWaptGUI: TVisWaptGUI
                 Top = 2
                 Width = 556
                 ShowAdvancedColumnsCustomize = False
+                KeyFieldsNames = 'id'
                 Align = alClient
                 BorderSpacing.Top = 2
                 Color = clWhite
@@ -3006,7 +3012,7 @@ object VisWaptGUI: TVisWaptGUI
           end
           object ToolButtonSep1: TToolButton
             Left = 47
-            Height = 5
+            Height = 45
             Top = 0
             Caption = 'ToolButtonSep1'
             Style = tbsDivider
@@ -3028,7 +3034,7 @@ object VisWaptGUI: TVisWaptGUI
           end
           object ToolButton6: TToolButton
             Left = 181
-            Height = 5
+            Height = 45
             Top = 0
             Caption = 'ToolButton6'
             Style = tbsDivider
@@ -3355,7 +3361,7 @@ object VisWaptGUI: TVisWaptGUI
         TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
         TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize]
         TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages, toAlwaysHideSelection]
-        TreeOptions.SelectionOptions = [toDisableDrawSelection, toMultiSelect, toRightClickSelect, toSimpleDrawSelection]
+        TreeOptions.SelectionOptions = [toDisableDrawSelection, toExtendedFocus, toMultiSelect, toRightClickSelect]
         WantTabs = True
         OnChange = GridGroupsChange
         OnColumnDblClick = GridGroupsColumnDblClick

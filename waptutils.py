@@ -21,7 +21,7 @@
 #
 # -----------------------------------------------------------------------
 from __future__ import absolute_import
-__version__ = "1.7.0.0"
+__version__ = "1.7.1.0"
 
 import os
 import sys
@@ -1313,13 +1313,8 @@ class LogOutput(BaseObjectClass):
     def _send_tail_to_updatehook(self):
         """send pending output to hook"""
         append_txt = u'\n'.join(self.output[self.last_update_idx:])
-
-        if append_txt and append_txt[-1] != u'\n':
-            txtdb = append_txt+u'\n'
-        else:
-            txtdb = append_txt
         try:
-            self.update_status_hook(append_output=txtdb,set_status=self.running_status,**self.hook_args)
+            self.update_status_hook(append_output=append_txt,set_status=self.running_status,**self.hook_args)
             self.last_update_idx = len(self.output)
             self.last_update_time = time.time()
         except Exception as e:

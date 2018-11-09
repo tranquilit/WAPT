@@ -174,5 +174,5 @@ initialization
 finalization
   if Assigned(Pye) then
     FreeAndNil(PyE);
-  end.
+end.
 
