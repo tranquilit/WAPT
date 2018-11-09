@@ -5596,10 +5596,6 @@ procedure TVisWaptGUI.ActReportingDuplicateUpdate(Sender: TObject);
 begin
 end;
 
-procedure TVisWaptGUI.SetReportingDirty(Report:ISuperObject);
-begin
-end;
-
 
 procedure TVisWaptGUI.SynEditReportsSQLChange(Sender: TObject);
 begin
