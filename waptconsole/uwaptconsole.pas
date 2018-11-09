@@ -792,6 +792,7 @@ type
       Node: PVirtualNode; Column: TColumnIndex);
     procedure GridReportingQueriesEditing(Sender: TBaseVirtualTree;
       Node: PVirtualNode; Column: TColumnIndex; var Allowed: Boolean);
+    procedure GridReportingQueriesKeyPress(Sender: TObject; var Key: char);
     procedure GridReportingSOCompareNodes(Sender: TSOGrid; Node1,
       Node2: ISuperObject; const Columns: array of String; var Result: Integer);
     procedure GridWinproductsChange(Sender: TBaseVirtualTree; Node: PVirtualNode );
@@ -808,6 +809,7 @@ type
     procedure MenuItem27Click(Sender: TObject);
     procedure MenuItem74Click(Sender: TObject);
     procedure MenuItemProductsCheckAllClick(Sender: TObject);
+    procedure SynEditReportsSQLChange(Sender: TObject);
     procedure TimerWUALoadWinUpdatesTimer(Sender: TObject);
   private
     { private declarations }
@@ -5595,6 +5597,18 @@ begin
 end;
 
 procedure TVisWaptGUI.SetReportingDirty(Report:ISuperObject);
+begin
+end;
+
+
+procedure TVisWaptGUI.SynEditReportsSQLChange(Sender: TObject);
+begin
+end;
+
+
+
+procedure TVisWaptGUI.GridReportingQueriesKeyPress(Sender: TObject;
+  var Key: char);
 begin
 end;
 

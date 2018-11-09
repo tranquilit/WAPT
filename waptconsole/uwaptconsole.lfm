@@ -26,9 +26,9 @@ object VisWaptGUI: TVisWaptGUI
     Height = 480
     Top = 0
     Width = 1159
-    ActivePage = pgInventory
+    ActivePage = PgReports
     Align = alClient
-    TabIndex = 0
+    TabIndex = 7
     TabOrder = 0
     OnChange = MainPagesChange
     object pgInventory: TTabSheet
@@ -6315,6 +6315,7 @@ object VisWaptGUI: TVisWaptGUI
             LineHighlightColor.Background = clNone
             LineHighlightColor.Foreground = clNone
             TabWidth = 4
+            OnChange = SynEditReportsSQLChange
             inline SynLeftGutterPartList1: TSynGutterPartList
               object SynGutterMarks1: TSynGutterMarks
                 Width = 24
@@ -6478,6 +6479,7 @@ object VisWaptGUI: TVisWaptGUI
         OnDrawText = GridReportingQueriesDrawText
         OnEdited = GridReportingQueriesEdited
         OnEditing = GridReportingQueriesEditing
+        OnKeyPress = GridReportingQueriesKeyPress
         ZebraPaint = True
       end
     end
