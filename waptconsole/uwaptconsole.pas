@@ -5375,30 +5375,6 @@ procedure TVisWaptGUI.TimerWUALoadWinUpdatesTimer(Sender: TObject);
 begin
 end;
 
-procedure TVisWaptGUI.tvReportingQueriesChange(Sender: TObject; Node: TTreeNode
-  );
-begin
-
-end;
-
-procedure TVisWaptGUI.tvReportingQueriesChanging(Sender: TObject;
-  Node: TTreeNode; var AllowChange: Boolean);
-begin
-
-end;
-
-procedure TVisWaptGUI.tvReportingQueriesCustomDrawItem(Sender: TCustomTreeView;
-  Node: TTreeNode; State: TCustomDrawState; var DefaultDraw: Boolean);
-begin
-
-end;
-
-procedure TVisWaptGUI.tvReportingQueriesEdited(Sender: TObject;
-  Node: TTreeNode; var S: string);
-begin
-
-end;
-
 procedure TVisWaptGUI.ActWSUSRefreshExecute(Sender: TObject);
 begin
 end;
@@ -5506,11 +5482,6 @@ procedure TVisWaptGUI.SetGridReportingData(data: ISuperObject);
 begin
 end;
 
-procedure TVisWaptGUI.SetReportingEditModeEnable(EditEnable: Boolean);
-begin
-
-end;
-
 procedure TVisWaptGUI.GridNormalizationClick(Sender: TObject);
 begin
 end;
@@ -5588,25 +5559,48 @@ procedure TVisWaptGUI.GridReportingChange(Sender: TBaseVirtualTree;
 begin
 end;
 
-procedure TVisWaptGUI.ActReportingDuplicateExecute(Sender: TObject);
+procedure TVisWaptGUI.ActReportingQueryDuplicateExecute(Sender: TObject);
 begin
 end;
 
-procedure TVisWaptGUI.ActReportingDuplicateUpdate(Sender: TObject);
+procedure TVisWaptGUI.ActReportingQueryDuplicateUpdate(Sender: TObject);
 begin
+
 end;
-
-
-procedure TVisWaptGUI.SynEditReportsSQLChange(Sender: TObject);
-begin
-end;
-
 
 
 procedure TVisWaptGUI.GridReportingQueriesKeyPress(Sender: TObject;
   var Key: char);
 begin
 end;
+
+function TVisWaptGUI.GridReportingQueriesBeforePaste(Sender: TSOGrid;
+  Row: ISuperObject): boolean;
+begin
+end;
+
+procedure TVisWaptGUI.GridReportingQueriesChange(Sender: TBaseVirtualTree;
+  Node: PVirtualNode);
+begin
+end;
+
+procedure TVisWaptGUI.GridReportingQueriesDrawText(Sender: TBaseVirtualTree;
+  TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex;
+  const AText: String; const CellRect: TRect; var DefaultDraw: Boolean);
+begin
+end;
+
+procedure TVisWaptGUI.GridReportingQueriesEdited(Sender: TBaseVirtualTree;
+  Node: PVirtualNode; Column: TColumnIndex);
+begin
+end;
+
+procedure TVisWaptGUI.GridReportingQueriesEditing(Sender: TBaseVirtualTree;
+  Node: PVirtualNode; Column: TColumnIndex; var Allowed: Boolean);
+begin
+end;
+
+
 
 {$endif}
 
