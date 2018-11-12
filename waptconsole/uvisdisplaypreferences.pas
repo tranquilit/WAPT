@@ -19,12 +19,14 @@ type
     cbEnableExternalTools: TCheckBox;
     cbEnableManagementFeatures: TCheckBox;
     cbHideUnavailableActions: TCheckBox;
+    cbEnableWAPTWUAFeatures: TCheckBox;
     cbLanguage: TComboBox;
     EdHostsLimit: TEdit;
     Label1: TLabel;
     Label10: TLabel;
     Label11: TLabel;
     Label12: TLabel;
+    Label13: TLabel;
     Label3: TLabel;
     Label7: TLabel;
     Panel1: TPanel;

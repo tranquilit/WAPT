@@ -19,9 +19,10 @@
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="1"/>
-      <MinorVersionNr Value="6"/>
+      <MinorVersionNr Value="7"/>
       <RevisionNr Value="1"/>
-      <StringTable CompanyName="Tranquil IT Systems" FileDescription="WAPT Tray Icon" ProductName="WAPT" ProductVersion="1.5.1.23"/>
+      <BuildNr Value="1"/>
+      <StringTable CompanyName="Tranquil IT Systems" FileDescription="WAPT Tray Icon" LegalCopyright="Tranquil IT Systems 2012-2018" ProductName="WAPT Enterprise Edition" ProductVersion="1.7.1"/>
     </VersionInfo>
     <BuildModes Count="1">
       <Item1 Name="Default" Default="True"/>
@@ -124,32 +125,4 @@
       <CustomOptions Value="-dUseCThreads -dENTERPRISE"/>
     </Other>
   </CompilerOptions>
-  <Debugging>
-    <Exceptions Count="8">
-      <Item1>
-        <Name Value="EAbort"/>
-      </Item1>
-      <Item2>
-        <Name Value="ECodetoolError"/>
-      </Item2>
-      <Item3>
-        <Name Value="EFOpenError"/>
-      </Item3>
-      <Item4>
-        <Name Value="HTTPException"/>
-      </Item4>
-      <Item5>
-        <Name Value="EIdConnectTimeout"/>
-      </Item5>
-      <Item6>
-        <Name Value="EIdSocketError"/>
-      </Item6>
-      <Item7>
-        <Name Value="EIdNotASocket"/>
-      </Item7>
-      <Item8>
-        <Name Value="EIdReadTimeout"/>
-      </Item8>
-    </Exceptions>
-  </Debugging>
 </CONFIG>

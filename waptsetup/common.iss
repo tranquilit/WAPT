@@ -133,6 +133,11 @@ Filename: {app}\wapt-get.ini; Section: global; Key: dnsdomain; String: {code:Get
 Filename: {app}\wapt-get.ini; Section: global; Key: max_gpo_script_wait; String: 180; Tasks: DisableHiberboot;
 Filename: {app}\wapt-get.ini; Section: global; Key: pre_shutdown_timeout; String: 180; Tasks: DisableHiberboot; 
 Filename: {app}\wapt-get.ini; Section: global; Key: hiberboot_enabled; String: {code:Gethiberboot_enabled};
+
+#if append_host_profiles != ""
+Filename: {app}\wapt-get.ini; Section: global; Key: host_profiles; String: {code:GetHostProfiles};
+#endif
+
 #endif
 
 
@@ -145,7 +150,7 @@ Filename: "{app}\wapt-get.exe"; Parameters: "--use-gui --direct register"; Flags
 #endif
 
 #if set_start_packages != "" 
-Filename: "{app}\wapt-get.exe"; Parameters: "--direct --update install {code:GetStartPackages}"; Tasks: installStartPackages; StatusMsg: {cm:InstallStartPackages}; Description: "{cm:InstallStartPackages}"
+Filename: "{app}\wapt-get.exe"; Parameters: "--direct --update-packages install {code:GetStartPackages}"; Tasks: installStartPackages; StatusMsg: {cm:InstallStartPackages}; Description: "{cm:InstallStartPackages}"
 #else
 Filename: "{app}\wapt-get.exe"; Parameters: "--direct update"; Flags: runhidden; StatusMsg: {cm:UpdateAvailablePkg}; Description: "{cm:UpdateAvailablePkg}"
 #endif
@@ -233,10 +238,10 @@ begin
   begin
     result := ExpandConstant('{param:repo_url|unknown}');
     if result='unknown' then
-	begin
-	  result := '{#repo_url}';
-	  if result = '' then
-		result := GetIniString('Global', 'repo_url','{#default_repo_url}', ExpandConstant('{app}\wapt-get.ini'))
+    begin
+        result := '{#repo_url}';
+        if result = '' then
+            result := GetIniString('Global', 'repo_url','{#default_repo_url}', ExpandConstant('{app}\wapt-get.ini'))
     end;
   end;
 end;
@@ -252,11 +257,11 @@ begin
   begin
     result := ExpandConstant('{param:wapt_server|unknown}');
     if result='unknown' then
-	begin
-	  result := '{#wapt_server}';
-	  if result = '' then
-          result := GetIniString('Global', 'wapt_server','{#default_wapt_server}', ExpandConstant('{app}\wapt-get.ini'));
-	end;
+    begin
+      result := '{#wapt_server}';
+      if result = '' then
+        result := GetIniString('Global', 'wapt_server','{#default_wapt_server}', ExpandConstant('{app}\wapt-get.ini'));
+    end;
   end;
 end;
 
@@ -268,10 +273,10 @@ begin
   begin
     result := ExpandConstant('{param:dnsdomain|unknown}');
     if result='unknown' then
-	begin
-	  result := '{#default_dnsdomain}';
-	  if result = '' then
-		result := GetIniString('Global', 'dnsdomain','{#default_dnsdomain}', ExpandConstant('{app}\wapt-get.ini'))
+    begin
+      result := '{#default_dnsdomain}';
+      if result = '' then
+        result := GetIniString('Global', 'dnsdomain','{#default_dnsdomain}', ExpandConstant('{app}\wapt-get.ini'))
     end;
   end;
 end;
@@ -536,12 +541,50 @@ begin
   result := true;
 end;
 
+function StrToken(var S: String; Separator: String): String;
+var
+  I: Integer;
+begin
+  I := Pos(Separator, S);
+  if I <> 0 then
+  begin
+    Result := Copy(S, 1, I - 1);
+    Delete(S, 1,I+Length(Separator)-1);
+  end
+  else
+  begin
+    Result := S;
+    S := '';
+  end;
+end;
+
+function GetHostProfiles(param:String):String;
+var
+  AppendProfiles,NewProfiles,profile: String;
+begin
+  Result := GetIniString('global', 'host_profiles', '','');
+  AppendProfiles := ExpandConstant('{param:append_host_profiles|{#append_host_profiles}}');
+  if Result = '' then begin
+    if AppendProfiles='*' then
+      Result := ''
+    else
+      Result := AppendProfiles
+  end
+  else begin
+    if AppendProfiles<>'*' then begin
+      profile := StrToken(AppendProfiles,',');
+      while profile<>'' do begin
+         if pos(profile+',',Result+',')<=0 then 
+           Result := Result+','+profile;
+      end;
+    end
+  end;
+end;
 
 procedure PostClickNext();
 begin
   PostMessage(WizardForm.NextButton.Handle, $BD11 , 0, 0);
 end;  
-
 
 
 #if edition != "waptserversetup"
@@ -551,51 +594,44 @@ var
   WaptServer: String;
   i : integer;
 begin
-  
-
   case CurPageID of
-
-
     wpWelcome:
-    begin
-    end;
-
-    
-
+      begin
+      end;
+ 
     customPage.Id:
-    begin
-      //#if edition == "waptsetup"
-      //PostMessage(WizardForm.NextButton.Handle, $BD11 , 0, 0);
-      //exit;
-      //#endif
+      begin
+        //#if edition == "waptsetup"
+        //PostMessage(WizardForm.NextButton.Handle, $BD11 , 0, 0);
+        //exit;
+        //#endif
 
-      edWaptRepoUrl.Text := GetRepoURL('');
-      #if edition != "waptstarter"
-      edWaptServerUrl.Text := GetWaptServerURL('');  
-      #endif
-      cbUseWizard.Checked := cbUseWizard.Visible and (GetRepoURL('') = '') and (GetIniString('Global', 'dnsdomain','', ExpandConstant('{app}\wapt-get.ini')) = '');
-      cbDontChangeServer.Checked := not cbUseWizard.Checked and not (GetRepoURL('') = '') and (GetIniString('Global', 'dnsdomain','', ExpandConstant('{app}\wapt-get.ini')) = '');
-      cbDnsServer.Checked := not cbDontChangeServer.Checked and not cbUseWizard.Checked and (edWaptRepoUrl.Text='');
-      cbStaticUrl.Checked := (edWaptRepoUrl.Text<>'') and (edWaptRepoUrl.Text<>'unknown');
-      edDNSDomain.Text := GetDNSDomain('');  
+        edWaptRepoUrl.Text := GetRepoURL('');
+        #if edition != "waptstarter"
+        edWaptServerUrl.Text := GetWaptServerURL('');  
+        #endif
+        cbUseWizard.Checked := cbUseWizard.Visible and (GetRepoURL('') = '') and (GetIniString('Global', 'dnsdomain','', ExpandConstant('{app}\wapt-get.ini')) = '');
+        cbDontChangeServer.Checked := not cbUseWizard.Checked and not (GetRepoURL('') = '') and (GetIniString('Global', 'dnsdomain','', ExpandConstant('{app}\wapt-get.ini')) = '');
+        cbDnsServer.Checked := not cbDontChangeServer.Checked and not cbUseWizard.Checked and (edWaptRepoUrl.Text='');
+        cbStaticUrl.Checked := (edWaptRepoUrl.Text<>'') and (edWaptRepoUrl.Text<>'unknown');
+        edDNSDomain.Text := GetDNSDomain('');  
 
-      //edWaptServerUrl.Visible := IsTaskSelected('use_waptserver');
-      //labServer.Visible := edWaptServerUrl.Visible;
-    end;
+        //edWaptServerUrl.Visible := IsTaskSelected('use_waptserver');
+        //labServer.Visible := edWaptServerUrl.Visible;
+      end;
 
     wpFinished:
-    begin
-      //#if edition == "waptsetup"
-      //i := WizardForm.RunList.Items.Count 
-      //if i = 0 then
-      //  exit;
-      //i := i - 1;        
-      //WizardForm.RunList.Checked[i] := not LocalWaptServiceIsConfigured(); 
-      //exit;
-      //#endif
-      
-    end;
-
+      begin
+        //#if edition == "waptsetup"
+        //i := WizardForm.RunList.Items.Count 
+        //if i = 0 then
+        //  exit;
+        //i := i - 1;        
+        //WizardForm.RunList.Checked[i] := not LocalWaptServiceIsConfigured(); 
+        //exit;
+        //#endif
+        
+      end;
   end;
 
 

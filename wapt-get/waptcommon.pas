@@ -63,7 +63,7 @@ interface
 
   //call url action on waptserver. action can contains formatting chars like %s which will be replaced by args with the Format function.
   function WAPTServerJsonGet(action: String;args:Array of const;method:AnsiString='GET';ConnectTimeout:integer=4000;SendTimeout:integer=60000;ReceiveTimeout:integer=60000): ISuperObject; //use global credentials and proxy settings
-  function WAPTServerJsonPost(action: String;args:Array of const;data: ISuperObject;ConnectTimeout:integer=4000;SendTimeout:integer=60000;ReceiveTimeout:integer=60000): ISuperObject; //use global credentials and proxy settings
+  function WAPTServerJsonPost(action: String;args:Array of const;data: ISuperObject;method:AnsiString='POST';ConnectTimeout:integer=4000;SendTimeout:integer=60000;ReceiveTimeout:integer=60000): ISuperObject; //use global credentials and proxy settings
   function WAPTLocalJsonGet(action:String;user:AnsiString='';password:AnsiString='';timeout:integer=-1;OnAuthorization:TIdOnAuthorization=Nil;RetryCount:Integer=3):ISuperObject;
 
   Function IdWget(const fileURL, DestFileName: Utf8String; CBReceiver:TObject=Nil;progressCallback:TProgressCallback=Nil;HttpProxy: String='';userAgent:String='';VerifyCertificateFilename:String='';CookieManage:TIdCookieManager=Nil): boolean;
@@ -77,7 +77,7 @@ interface
       VerifyCertificateFilename:String='';AcceptType:String='application/json';
       CookieManager:TIdCookieManager=Nil):RawByteString;
 
-  function IdHttpPostData(const url: Ansistring; const Data: RawByteString; HttpProxy: String='';
+  function IdHttpPostData(const url: Ansistring; const Data: RawByteString; const Method: String='POST'; const HttpProxy: String='';
       ConnectTimeout:integer=4000;SendTimeOut:integer=60000;
       ReceiveTimeOut:integer=60000;
       user:AnsiString='';password:AnsiString='';userAgent:String='';
@@ -98,7 +98,7 @@ interface
             default_wapt_server:Utf8String='';destination:Utf8String='';company:Utf8String='';OnProgress:TNotifyEvent = Nil;WaptEdition:Utf8String='waptagent';
             VerifyCert:Utf8String='0'; UseKerberos:Boolean=False; CheckCertificatesValidity:Boolean=True;
             EnterpriseEdition:Boolean=False; OverwriteRepoURL:Boolean=True;OverwriteWaptServerURL:Boolean=True;
-            UseFQDNAsUUID:Boolean=False):Utf8String;
+            UseFQDNAsUUID:Boolean=False;AppendHostProfiles:String=''):Utf8String;
 
   function pyformat(template:String;params:ISuperobject):String;
   function pyformat(template:Utf8String;params:ISuperobject):Utf8String; overload;
@@ -213,6 +213,7 @@ const
 
   EnableExternalTools:Boolean = True;
   EnableManagementFeatures:Boolean = True;
+  EnableWaptWUAFeatures:Boolean = True;
 
   HideUnavailableActions:Boolean = False;
 
@@ -848,7 +849,7 @@ begin
   end;
 end;
 
-function IdHttpPostData(const url: Ansistring; const Data: RawByteString; HttpProxy: String='';
+function IdHttpPostData(const url: Ansistring; const Data: RawByteString; const Method: String='POST'; const HttpProxy: String='';
    ConnectTimeout:integer=4000;SendTimeOut:integer=60000;ReceiveTimeOut:integer=60000;user:AnsiString='';password:AnsiString='';userAgent:String='';ContentType:String='application/json';VerifyCertificateFilename:String='';
    AcceptType:String='application/json';CookieManager:TIdCookieManager=Nil):RawByteString;
 var
@@ -927,8 +928,13 @@ begin
         http.OnWorkBegin:=@progress.OnWorkBegin;
         http.OnWork:=@progress.OnWork;
       end;}
+      if Method = 'POST' then
+        Result := http.Post(url,DataStream)
+      else if Method = 'PUT' then
+        Result := http.Put(url,DataStream)
+      else if Method = 'DELETE' then
+        http.Delete(url);
 
-      Result := http.Post(url,DataStream)
     except
       on E:EIdReadTimeout do
         Result := '';
@@ -994,7 +1000,7 @@ begin
 end;
 
 function WAPTServerJsonPost(action: String; args: array of const;
-  data: ISuperObject;ConnectTimeout:integer=4000;SendTimeout:integer=60000;ReceiveTimeout:integer=60000): ISuperObject;
+  data: ISuperObject;method:AnsiString='POST';ConnectTimeout:integer=4000;SendTimeout:integer=60000;ReceiveTimeout:integer=60000): ISuperObject;
 var
   res,proxy:String;
 begin
@@ -1009,7 +1015,7 @@ begin
   else
     Proxy:='';
 
-  res := IdhttpPostData(GetWaptServerURL+action, data.AsJson, proxy,ConnectTimeout,SendTimeout,ReceiveTimeout,
+  res := IdhttpPostData(GetWaptServerURL+action, data.AsJson, method, proxy, ConnectTimeout,SendTimeout,ReceiveTimeout,
     WaptServerUser,WaptServerPassword,'','application/json',GetWaptServerCertificateFilename,'application/json',GetWaptServerSession());
   result := SO(res);
 end;
@@ -1450,6 +1456,7 @@ begin
     AdvancedMode := ReadBool('global','advanced_mode',AdvancedMode);
     EnableExternalTools := ReadBool('global','enable_external_tools',EnableExternalTools);
     EnableManagementFeatures := ReadBool('global','enable_management_features',EnableManagementFeatures);
+    EnableWaptWUAFeatures := ReadBool('global','waptwua_enabled',EnableWaptWUAFeatures);
 
     DefaultPackagePrefix := ReadString('global','default_package_prefix','');
     DefaultSourcesRoot := ReadString('global','default_sources_root','');
@@ -1800,7 +1807,7 @@ function CreateWaptSetup(default_public_cert: Utf8String;
   WaptEdition: Utf8String; VerifyCert: Utf8String; UseKerberos: Boolean;
   CheckCertificatesValidity: Boolean; EnterpriseEdition: Boolean;
   OverwriteRepoURL: Boolean; OverwriteWaptServerURL: Boolean;
-  UseFQDNAsUUID:Boolean=False): Utf8String;
+  UseFQDNAsUUID:Boolean=False; AppendHostProfiles:String=''): Utf8String;
 var
   iss_template,custom_iss : utf8String;
   iss,new_iss,line : ISuperObject;
@@ -1840,6 +1847,8 @@ begin
           new_iss.AsArray.Add(format('#define Company "%s"' ,[company]))
       else if startswith(line,'#define set_install_certs') then
           new_iss.AsArray.Add(format('#define set_install_certs "1"' ,[]))
+      else if startswith(line,'#define append_host_profiles') and (AppendHostProfiles<>'') then
+          new_iss.AsArray.Add(format('#define append_host_profiles "%s"' ,[AppendHostProfiles]))
       else if startswith(line,'#define use_fqdn_as_uuid') then
       begin
           if UseFQDNAsUUID then

@@ -1018,6 +1018,7 @@ begin
   try
     output := IdHttpPostData( url,
                               post_data,
+                              'POST',
                               proxy,
                               HTTP_TIMEOUT,
                               HTTP_TIMEOUT,
@@ -1028,7 +1029,7 @@ begin
                               content_type,
                               VerifyCertificateFilename,
                               AcceptType,
-                              CookieManager );
+                              CookieManager);
     exit( 0 );
   except on e : Exception do
     begin

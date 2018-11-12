@@ -40,6 +40,10 @@
 #define set_disable_hiberboot ""
 #endif
 
+; if not empty, the host will inherit these (comma separated) list of profile packages.
+; if *, append the profiles from command line
+#define append_host_profiles "*"
+
 ;#define signtool "kSign /d $qWAPT Client$q /du $qhttp://www.tranquil-it-systems.fr$q $f"
 
 ; for fast compile in developent mode

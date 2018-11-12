@@ -27,6 +27,9 @@
 ; if not empty, a task will propose to install this package or list of packages (comma separated)
 #define set_start_packages "waptstarter,socle"
 
+; if not empty, the host will inherit these (comma separated) list of profile packages.
+#define append_host_profiles ""
+
 ;#define signtool "kSign /d $qWAPT Client$q /du $qhttp://www.tranquil-it-systems.fr$q $f"
 
 ; for fast compile in developent mode
@@ -37,5 +40,6 @@
 #endif
 
 #define use_fqdn_as_uuid ""
+
 
 #include "common.iss"

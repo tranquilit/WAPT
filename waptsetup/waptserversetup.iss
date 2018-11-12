@@ -31,6 +31,9 @@
 ; if not empty, a task will propose to install this package or list of packages (comma separated)
 #define set_start_packages ""
 
+; if not empty, the host will inherit these (comma separated) list of profile packages.
+#define append_host_profiles ""
+
 #define vcredist
 
 ;#define signtool "kSign /d $qWAPT Client$q /du $qhttp://www.tranquil-it-systems.fr$q $f"

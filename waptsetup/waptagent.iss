@@ -30,6 +30,9 @@
 
 #define use_fqdn_as_uuid ""
 
+; if not empty, the host will inherit these (comma separated) list of profile packages.
+#define append_host_profiles ""
+
 ;#define signtool "kSign /d $qWAPT Client$q /du $qhttp://www.tranquil-it-systems.fr$q $f"
 
 #ifndef set_disable_hiberboot

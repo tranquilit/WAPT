@@ -25,6 +25,7 @@ type
     CBVerifyCert: TCheckBox;
     CBUseKerberos: TCheckBox;
     CBForceRepoURL: TCheckBox;
+    edAppendHostProfiles: TEdit;
     EdServerCertificate: TFileNameEdit;
     edWaptServerUrl: TEdit;
     fnWaptDirectory: TDirectoryEdit;
@@ -39,6 +40,7 @@ type
     Label5: TLabel;
     Label6: TLabel;
     Label7: TLabel;
+    Label8: TLabel;
     MenuItem1: TMenuItem;
     Panel1: TPanel;
     PopupMenu1: TPopupMenu;
@@ -296,7 +298,8 @@ begin
       DMPython.IsEnterpriseEdition,
       CBForceRepoURL.Checked,
       CBForceWaptServerURL.Checked,
-      CBUseFQDNAsUUID.Checked
+      CBUseFQDNAsUUID.Checked,
+      edAppendHostProfiles.Text
       );
     Result := WAPTSetupPath;
   finally

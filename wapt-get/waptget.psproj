@@ -1,5 +1,5 @@
 ﻿[PyScripter]
-Version=3.4.1.0
+Version=3.5.0.0
 
 [Project]
 ClassName=TProjectRootNode
@@ -83,7 +83,7 @@ ScriptName=C:\tranquilit\wapt\wapt-get.py
 Description=install 7zip
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
-Parameters=-ldebug install -f tis-7zip
+Parameters=-ldebug install -f tis-7zip -p "{'test':'toto'}"
 WorkingDir=$[ActiveScript-Dir]
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log

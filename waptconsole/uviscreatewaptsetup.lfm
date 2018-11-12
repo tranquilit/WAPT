@@ -1,10 +1,10 @@
 object VisCreateWaptSetup: TVisCreateWaptSetup
   Left = 409
-  Height = 508
+  Height = 537
   Top = 218
   Width = 560
   Caption = 'Create WAPT agent'
-  ClientHeight = 508
+  ClientHeight = 537
   ClientWidth = 560
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
@@ -85,7 +85,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
   object Panel1: TPanel
     Left = 0
     Height = 27
-    Top = 481
+    Top = 510
     Width = 560
     Align = alBottom
     BevelOuter = bvNone
@@ -360,6 +360,25 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
     Width = 164
     Caption = 'Use Computer FQDN for UUID'
     TabOrder = 14
+  end
+  object Label8: TLabel
+    Left = 8
+    Height = 13
+    Hint = 'Comma separated list of profile packages to add for hosts. Host will belongs to these additional profiles'
+    Top = 475
+    Width = 250
+    Alignment = taRightJustify
+    AutoSize = False
+    Caption = 'Append host''s profiles'
+    ParentColor = False
+  end
+  object edAppendHostProfiles: TEdit
+    Left = 262
+    Height = 21
+    Hint = 'E.g. : socle,accounting'
+    Top = 472
+    Width = 216
+    TabOrder = 15
   end
   object ActionList1: TActionList
     left = 16

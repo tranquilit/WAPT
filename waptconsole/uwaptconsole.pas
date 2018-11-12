@@ -562,9 +562,11 @@ type
     procedure ActRemoteAssistExecute(Sender: TObject);
     procedure ActRemoteAssistUpdate(Sender: TObject);
     procedure ActExternalRepositoriesSettingsExecute(Sender: TObject);
+    procedure ActReportingQueryDesignUpdate(Sender: TObject);
     procedure ActReportingQueryDuplicateExecute(Sender: TObject);
     procedure ActReportingQueryDuplicateUpdate(Sender: TObject);
     procedure ActReportingQueryDesignExecute(Sender: TObject);
+    procedure ActReportingQueryNewUpdate(Sender: TObject);
     procedure ActReportingQuerySaveAllExecute(Sender: TObject);
     procedure ActReportingQuerySaveAllUpdate(Sender: TObject);
     procedure ActReportingQueryDeleteExecute(Sender: TObject);
@@ -591,6 +593,7 @@ type
     procedure ActTriggerWaptwua_downloadExecute(Sender: TObject);
     procedure ActTriggerWaptwua_installExecute(Sender: TObject);
     procedure ActTriggerWaptwua_scanExecute(Sender: TObject);
+    procedure ActTriggerWaptwua_scanUpdate(Sender: TObject);
     procedure ActWSUSDowloadWSUSScanExecute(Sender: TObject);
     procedure ActWSUSRefreshExecute(Sender: TObject);
     procedure ActWSUSSaveBuildRulesExecute(Sender: TObject);
@@ -800,6 +803,7 @@ type
       Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
       var Ghosted: Boolean; var ImageIndex: Integer;
       var ImageList: TCustomImageList);
+    procedure GridWUUpdatesNodesDelete(Sender: TSOGrid; Nodes: ISuperObject);
     procedure HostPagesChange(Sender: TObject);
     procedure Image1Click(Sender: TObject);
     procedure MainPagesChange(Sender: TObject);
@@ -1422,7 +1426,7 @@ begin
         {$else}
         stats.S['edition'] := 'community';
         {$endif}
-        IdHttpPostData(stats_report_url,stats.AsJSon,Proxy,4000,60000,60000,'','','Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko');
+        IdHttpPostData(stats_report_url,stats.AsJSon,'POST',Proxy,4000,60000,60000,'','','Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko');
         ini.WriteDateTime('global','last_usage_report',Now);
       except
         ini.WriteDateTime('global','last_usage_report',Now);
@@ -2572,6 +2576,9 @@ begin
       cbHideUnavailableActions.Checked :=
         inifile.ReadBool('global', 'hide_unavailable_actions', HideUnavailableActions);
 
+      cbEnableWAPTWUAFeatures.Checked :=
+        inifile.ReadBool('global', 'waptwua_enabled', EnableWaptWUAFeatures);
+
       cbDebugWindow.Checked:= inifile.ReadBool('global','advanced_mode',AdvancedMode);
 
       lang := inifile.ReadString('global','language',DMPython.Language);
@@ -2597,6 +2604,9 @@ begin
 
         inifile.WriteBool('global', 'hide_unavailable_actions',
           cbHideUnavailableActions.Checked);
+
+        inifile.WriteBool('global', 'waptwua_enabled',
+          cbEnableWAPTWUAFeatures.Checked);
 
         if cbLanguage.ItemIndex=0 then
           DMPython.Language := 'en'
@@ -2626,6 +2636,8 @@ begin
         EnableExternalTools := cbEnableExternalTools.Checked;
         EnableManagementFeatures := cbEnableManagementFeatures.Checked;
         HideUnavailableActions := cbHideUnavailableActions.Checked;
+        EnableWaptWUAFeatures := cbEnableWAPTWUAFeatures.Checked;
+        SetIsEnterpriseEdition(GetIsEnterpriseEdition);
 
         if HostsLimit>oldlimit then
           ActSearchHost.Execute;
@@ -2756,7 +2768,6 @@ begin
     Free;
   end;
 end;
-
 
 procedure TVisWaptGUI.ActResetWebsocketConnectionsExecute(Sender: TObject);
 var
@@ -4225,21 +4236,6 @@ begin
       if FileExistsUTF8(Appuserinipath) then
         DeleteFileUTF8(Appuserinipath);
 
-    {$ifdef ENTERPRISE}
-    pgWAPTWUADownloads.TabVisible:=IsEnterpriseEdition;
-    pgWindowsUpdates.TabVisible:=IsEnterpriseEdition;
-    pgHostWUA.TabVisible:=IsEnterpriseEdition;
-    {$else}
-    pgWAPTWUADownloads.TabVisible:=False;
-    pgWindowsUpdates.TabVisible:=False;
-    pgHostWUA.TabVisible:=False;
-    {$endif}
-
-    for i:=0 to WSUSActions.ActionCount-1 do
-    begin
-      (WSUSActions.Actions[i] as TAction).Visible:=IsEnterpriseEdition;
-    end;
-
     plStatusBar1.Caption := WaptServerUser+' on '+ApplicationName+' '+
       GetApplicationVersion+' WAPT '+wapt_edition+' Edition, (c) 2012-2017 Tranquil IT. (Conf:'+
       AppIniFilename+')';
@@ -4876,10 +4872,6 @@ begin
   end;
 end;
 
-
-
-
-
 procedure TVisWaptGUI.GridNetworksEditing(Sender: TBaseVirtualTree;
   Node: PVirtualNode; Column: TColumnIndex; var Allowed: Boolean);
 begin
@@ -4899,6 +4891,8 @@ begin
 end;
 
 procedure TVisWaptGUI.SetIsEnterpriseEdition(AValue: Boolean);
+var
+  i: Integer;
 begin
   {$ifdef ENTERPRISE}
   {$include ..\waptenterprise\includes\uwaptconsole.setenterprise.inc}
@@ -5600,7 +5594,13 @@ procedure TVisWaptGUI.GridReportingQueriesEditing(Sender: TBaseVirtualTree;
 begin
 end;
 
+procedure TVisWaptGUI.ActReportingQueryNewUpdate(Sender: TObject);
+begin
+end;
 
+procedure TVisWaptGUI.ActReportingQueryDesignUpdate(Sender: TObject);
+begin
+end;
 
 {$endif}
 

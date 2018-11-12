@@ -267,6 +267,10 @@ resourcestring
   rsConfirmDeleteQuery = 'Delete query %s ?';
   rsConfirmDeleteQueries = 'Delete %d queries ?';
 
+  { Messages WUUpdates }
+  rsConfirmDeleteWUUpdate = 'Delete windows update %s record and cached file ?';
+  rsConfirmDeleteWUUpdates = 'Delete %d windows updates records and cached files ?';
+
   { Messages Normalizarion }
   rsQueryApplyUpdates = 'Some of your changes are not yet saved. Do you want to save your changes ?';
 implementation

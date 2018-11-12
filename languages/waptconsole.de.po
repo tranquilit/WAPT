@@ -318,6 +318,10 @@ msgctxt "tviscreatewaptsetup.cbverifycert.caption"
 msgid "Verify https server certificate"
 msgstr ""
 
+#: tviscreatewaptsetup.edappendhostprofiles.hint
+msgid "E.g. : socle,accounting"
+msgstr ""
+
 #: tviscreatewaptsetup.edorgname.hint
 msgid "E.g. : Tranquil IT Systems."
 msgstr "z. B. : Tranquil IT Systems"
@@ -392,6 +396,14 @@ msgstr ""
 msgid "Authorized packages Certificates which will be bundled with the Wapt Agent  installer"
 msgstr ""
 
+#: tviscreatewaptsetup.label8.caption
+msgid "Append host's profiles"
+msgstr ""
+
+#: tviscreatewaptsetup.label8.hint
+msgid "Comma separated list of profile packages to add for hosts. Host will belongs to these additional profiles"
+msgstr ""
+
 #: tvisdisplaypreferences.caption
 msgctxt "tvisdisplaypreferences.caption"
 msgid "Display preferences"
@@ -411,11 +423,16 @@ msgstr "Aktviert Proxy beim Zugriff auf das Haupt-Repository"
 
 #: tvisdisplaypreferences.cbenablemanagementfeatures.hint
 msgctxt "tvisdisplaypreferences.cbenablemanagementfeatures.hint"
-msgid "Make change server password, create certificate, create waptagent features visible"
+msgid ""
+"Enable the following actions: \n"
+"- Create new key / certificate\n"
+"- Create custom waptagent.exe\n"
+"- Modify key password\n"
+"- Create / Modify / delete reporting queries\n"
 msgstr ""
 
-#: tvisdisplaypreferences.cbhideunavailableactions.hint
-msgctxt "tvisdisplaypreferences.cbhideunavailableactions.hint"
+#: tvisdisplaypreferences.cbenablewaptwuafeatures.hint
+msgctxt "tvisdisplaypreferences.cbenablewaptwuafeatures.hint"
 msgid "Make change server password, create certificate, create waptagent features visible"
 msgstr ""
 
@@ -442,8 +459,22 @@ msgctxt "tvisdisplaypreferences.label11.caption"
 msgid "Enable management features"
 msgstr ""
 
+#: tvisdisplaypreferences.label11.hint
+msgctxt "tvisdisplaypreferences.label11.hint"
+msgid ""
+"Enable the following actions: \n"
+"- Create new key / certificate\n"
+"- Create custom waptagent.exe\n"
+"- Modify key password\n"
+"- Create / Modify / delete reporting queries\n"
+msgstr ""
+
 #: tvisdisplaypreferences.label12.caption
 msgid "Hide unavailable actions"
+msgstr ""
+
+#: tvisdisplaypreferences.label13.caption
+msgid "Enable WAPTWUA features"
 msgstr ""
 
 #: tvisdisplaypreferences.label3.caption
@@ -4276,6 +4307,14 @@ msgstr ""
 
 #: uwaptconsoleres.rsconfirmdeletequery
 msgid "Delete query %s ?"
+msgstr ""
+
+#: uwaptconsoleres.rsconfirmdeletewuupdate
+msgid "Delete windows update %s record and cached file ?"
+msgstr ""
+
+#: uwaptconsoleres.rsconfirmdeletewuupdates
+msgid "Delete %d windows updates records and cached files ?"
 msgstr ""
 
 #: uwaptconsoleres.rsconfirmdeletion

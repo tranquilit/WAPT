@@ -303,6 +303,10 @@ msgctxt "tviscreatewaptsetup.cbverifycert.caption"
 msgid "Verify https server certificate"
 msgstr "Vérifier le certificat https serveur"
 
+#: tviscreatewaptsetup.edappendhostprofiles.hint
+msgid "E.g. : socle,accounting"
+msgstr "Par exemple : socle,compta"
+
 #: tviscreatewaptsetup.edorgname.hint
 msgid "E.g. : Tranquil IT Systems."
 msgstr "Par exemple : Tranquil IT Systems"
@@ -373,6 +377,14 @@ msgstr "Chemin vers le bundle de CA serveurs https"
 msgid "Authorized packages Certificates which will be bundled with the Wapt Agent  installer"
 msgstr "Certificats de paquets qui vont être déployés avec l'agent Wapt"
 
+#: tviscreatewaptsetup.label8.caption
+msgid "Append host's profiles"
+msgstr "Ajouter les profils de poste"
+
+#: tviscreatewaptsetup.label8.hint
+msgid "Comma separated list of profile packages to add for hosts. Host will belongs to these additional profiles"
+msgstr "Liste (séparée par des virgules) de paquets profils à ajouter aux machines."
+
 #: tvisdisplaypreferences.caption
 msgctxt "tvisdisplaypreferences.caption"
 msgid "Display preferences"
@@ -389,12 +401,20 @@ msgid "Make rdp, vnc, remoteassist... features visible"
 msgstr "Faire apparaître les fonctions RDP, VNC et Remote Assist"
 
 #: tvisdisplaypreferences.cbenablemanagementfeatures.hint
+#, fuzzy
+#| msgid "Make change server password, create certificate, create waptagent features visible"
 msgctxt "tvisdisplaypreferences.cbenablemanagementfeatures.hint"
-msgid "Make change server password, create certificate, create waptagent features visible"
-msgstr "Faire apparaître les fonctions de changement de mot de passe, création de certificats et de waptagent."
+msgid ""
+"Enable the following actions: \n"
+"- Create new key / certificate\n"
+"- Create custom waptagent.exe\n"
+"- Modify key password\n"
+"- Create / Modify / delete reporting queries\n"
+msgstr "Faire apparaître les fonctions de changement de mot de passe, création de certificats et de waptagent, modification des requêtes de reporting."
 
-#: tvisdisplaypreferences.cbhideunavailableactions.hint
-msgctxt "tvisdisplaypreferences.cbhideunavailableactions.hint"
+#: tvisdisplaypreferences.cbenablewaptwuafeatures.hint
+#, fuzzy
+msgctxt "tvisdisplaypreferences.cbenablewaptwuafeatures.hint"
 msgid "Make change server password, create certificate, create waptagent features visible"
 msgstr "Faire apparaître les fonctions de changement de mot de passe, création de certificats et de waptagent."
 
@@ -421,9 +441,25 @@ msgctxt "tvisdisplaypreferences.label11.caption"
 msgid "Enable management features"
 msgstr "Activer les fonctionalités d'administration"
 
+#: tvisdisplaypreferences.label11.hint
+#, fuzzy
+#| msgid "Make change server password, create certificate, create waptagent features visible"
+msgctxt "tvisdisplaypreferences.label11.hint"
+msgid ""
+"Enable the following actions: \n"
+"- Create new key / certificate\n"
+"- Create custom waptagent.exe\n"
+"- Modify key password\n"
+"- Create / Modify / delete reporting queries\n"
+msgstr "Faire apparaître les fonctions de changement de mot de passe, création de certificats et de waptagent."
+
 #: tvisdisplaypreferences.label12.caption
 msgid "Hide unavailable actions"
 msgstr "Cacher les actions non disponibles"
+
+#: tvisdisplaypreferences.label13.caption
+msgid "Enable WAPTWUA features"
+msgstr "Activer les fonctionnalités WAPTWUA"
 
 #: tvisdisplaypreferences.label3.caption
 msgctxt "tvisdisplaypreferences.label3.caption"
@@ -3022,6 +3058,14 @@ msgstr ""
 #: uwaptconsoleres.rsconfirmdeletequery
 msgid "Delete query %s ?"
 msgstr ""
+
+#: uwaptconsoleres.rsconfirmdeletewuupdate
+msgid "Delete windows update %s record and cached file ?"
+msgstr "Supprimer %s enregistrements de Windows Updates ainsi que les fichiers ?"
+
+#: uwaptconsoleres.rsconfirmdeletewuupdates
+msgid "Delete %d windows updates records and cached files ?"
+msgstr "Supprimer la mise à jour Windows %s et les fichiers en cache associés"
 
 #: uwaptconsoleres.rsconfirmdeletion
 msgctxt "uwaptconsoleres.rsconfirmdeletion"
