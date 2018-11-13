@@ -108,6 +108,7 @@ type
     function CheckLicence(domain: String; var LicencesLog: String): Integer;
     procedure CheckPySources;
 
+
   end;
 
   function CreateSignedCert(keyfilename,
@@ -372,11 +373,11 @@ begin
 
   with PythonEng do
   begin
+    AutoLoad := False;
     DllPath := RegWaptBaseDir;
     DllName := 'python27.dll';
     UseLastKnownVersion := False;
     LoadDLL;
-    Py_SetProgramName(PAnsiChar(ParamStr(0)));
   end;
 
   PyWaptWrapper := TPyDelphiWrapper.Create(Self);  // no need to destroy

@@ -1,5 +1,5 @@
 package           : tis-waptupgrade
-version           : 1.6.2.3-7
+version           : 1.7.1.1-15
 architecture      : all
 section           : base
 priority          : optional
@@ -20,6 +20,12 @@ description_fr    :
 description_pl    : 
 description_de    : 
 description_es    : 
+audit_schedule    : 
+editor            : 
+keywords          : 
+licence           : 
+homepage          : 
+package_uuid      : 
 signer            : 
 signer_fingerprint: 
 signature_date    : 

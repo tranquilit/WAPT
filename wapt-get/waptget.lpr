@@ -29,8 +29,9 @@ uses
   {$ENDIF}{$ENDIF}
   Classes, SysUtils, CustApp,
   { you can add units after this }
-  Interfaces,Windows, PythonEngine, superobject,soutils,
-  tislogging,uWaptRes,waptcommon,waptwinutils,tiscommon,tisstrings,LazFileUtils,IdAuthentication;
+  Interfaces, Windows, PythonEngine, VarPyth, superobject, soutils, tislogging, uWaptRes,
+  waptcommon, waptwinutils, tiscommon, tisstrings, LazFileUtils,
+  IdAuthentication, Variants, IniFiles;
 type
   { PWaptGet }
 
@@ -38,11 +39,19 @@ type
   private
     localuser,localpassword:AnsiString;
     FRepoURL: String;
+    function GetIsEnterpriseEdition: Boolean;
+    function GetPythonEngine: TPythonEngine;
     function GetRepoURL: String;
+    function Getwaptcrypto: Variant;
+    function Getwaptpackage: Variant;
+    function Getwaptdevutils: Variant;
     procedure HTTPLogin(Sender: TObject; Authentication: TIdAuthentication; var Handled: Boolean);
     procedure SetRepoURL(AValue: String);
   protected
-    APythonEngine: TPythonEngine;
+    FPythonEngine: TPythonEngine;
+    Fwaptcrypto,
+    fwaptpackage,
+    Fwaptdevutils: Variant;
     procedure DoRun; override;
   public
     Action : String;
@@ -51,12 +60,28 @@ type
     lock:TRTLCriticalSection;
     tasks:ISuperObject;
     lastMessageTime : TDateTime;
+
     constructor Create(TheOwner: TComponent); override;
     destructor Destroy; override;
     procedure WriteHelp; virtual;
     property RepoURL:String read GetRepoURL write SetRepoURL;
     procedure pollerEvent(Events:ISuperObject);
     function remainingtasks:ISuperObject;
+
+    function BuildWaptUpgrade(SetupFilename: String): String;
+    function CreateWaptAgent(TargetDir: String; Edition: String='waptagent'
+      ): String;
+
+    function GetPrivateKeyPassword: String;
+    function GetWaptServerPassword: String;
+    function GetWaptServerUser: String;
+
+    property PythonEngine:TPythonEngine read GetPythonEngine;
+    property waptdevutils:Variant read Getwaptdevutils;
+    property waptcrypto:Variant read Getwaptcrypto;
+    property waptpackage:Variant read Getwaptpackage;
+
+    property IsEnterpriseEdition:Boolean read GetIsEnterpriseEdition;
   end;
 
   { TPollThread }
@@ -178,11 +203,100 @@ begin
   end;
 end;
 
+function PWaptGet.GetWaptServerUser: String;
+begin
+  Result := '';
+  while Result='' do
+  begin
+    Write('Waptserver '+GetWaptServerURL+' Admin User ('+WaptServerUser+') :');
+    readln(Result);
+    if result = '' then
+      Result := WaptServerUser;
+    WaptServerUser := Result;
+  end;
+end;
+
+function PWaptGet.GetWaptServerPassword: String;
+begin
+  while WaptServerPassword='' do
+  begin
+    Write('Waptserver Password: ');
+    WaptServerPassword := GetPassword;
+    WriteLn;
+  end;
+  Result := WaptServerPassword;
+end;
+
+function PWaptGet.GetPrivateKeyPassword: String;
+begin
+  result := '';
+  while Result='' do
+  begin
+    Write('Private key Password for '+WaptPersonalCertificatePath+' : ');
+    Result := GetPassword;
+    WriteLn;
+  end;
+end;
+
 function PWaptGet.GetRepoURL: String;
 begin
   if FRepoURL='' then
     FRepoURL:=GetMainWaptRepoURL;
   result := FRepoURL;
+end;
+
+function PWaptGet.Getwaptcrypto: Variant;
+begin
+  if not Assigned(PythonEngine) then
+    Raise Exception.Create('No python engine available');
+  if VarIsEmpty(Fwaptcrypto) or VarIsNull(Fwaptcrypto) then
+    Fwaptcrypto:= VarPyth.Import('waptcrypto');
+  Result := Fwaptcrypto;
+end;
+
+
+function PWaptGet.getwaptpackage: Variant;
+begin
+  if not Assigned(PythonEngine) then
+    Raise Exception.Create('No python engine available');
+  if VarIsEmpty(Fwaptpackage) or VarIsNull(Fwaptpackage) then
+    Fwaptpackage:= VarPyth.Import('waptpackage');
+  Result := Fwaptpackage;
+end;
+
+function PWaptGet.GetIsEnterpriseEdition: Boolean;
+begin
+  {$ifdef ENTERPRISE}
+  Result := True;
+  {$else}
+  Result := False;
+  {$endif}
+end;
+
+function PWaptGet.GetPythonEngine: TPythonEngine;
+begin
+  if not Assigned(FPythonEngine) then
+  begin
+    // Running python stuff
+    FPythonEngine := TPythonEngine.Create(Nil);
+
+    RegWaptBaseDir:=WaptBaseDir();
+    if not FileExists(AppendPathDelim(RegWaptBaseDir)+'python27.dll') then
+      RegWaptBaseDir:=RegisteredAppInstallLocation('wapt_is1');
+
+    if RegWaptBaseDir='' then
+      RegWaptBaseDir:=RegisteredExePath('wapt-get.exe');
+
+    with FPythonEngine do
+    begin
+      AutoLoad:=False;
+      DllPath := RegWaptBaseDir;
+      DllName := 'python27.dll';
+      UseLastKnownVersion := False;
+      LoadDll;
+    end;
+  end;
+  result := FPythonEngine;
 end;
 
 procedure PWaptGet.SetRepoURL(AValue: String);
@@ -194,7 +308,7 @@ end;
 procedure PWaptGet.DoRun;
 var
   MainModule : TStringList;
-  logleveloption : String;
+  WaptAgentTargetDir, WaptAgentFilename, logleveloption : String;
   Res,task:ISuperobject;
   package,sopackages:ISuperObject;
 
@@ -263,6 +377,30 @@ begin
   if HasOption('v','version') then
     writeln(format(rsWin32exeWrapper, [ApplicationName, GetApplicationVersion]));
 
+  if (action = 'build-waptagent') then
+  begin
+    ReadWaptConfig(AppIniFilename('waptconsole'));
+    Writeln(rsBuildWaptAgent);
+    WaptAgentTargetDir := WaptBaseDir+'\waptupgrade';
+    WaptAgentFilename := CreateWaptagent(WaptAgentTargetDir);
+    //else
+    //  Writeln('Using already built waptagent in '+WAPTSetupPath);
+    Writeln(rsBuildWaptUpgradePackage);
+    GetWaptServerUser;
+    GetWaptServerPassword;
+    BuildWaptUpgrade(WaptAgentFilename);
+    Writeln(rsUploadWaptAgent);
+    Res := WAPTServerJsonMultipartFilePost(
+      GetWaptServerURL, 'upload_waptsetup', [], 'file', WaptAgentFilename,
+      GetWaptServerUser, GetWaptServerPassword, Nil,GetWaptServerCertificateFilename);
+    if Res.S['status'] = 'OK' then
+      Writeln('OK')
+    else
+      Writeln('ERROR: '+Res.S['message']);
+    Terminate;
+    Exit;
+  end
+  else
   if (action = 'waptupgrade') then
   begin
     Writeln(format(rsWaptGetUpgrade, [RepoURL]));
@@ -504,36 +642,15 @@ begin
   end
   else
   begin
-    // Running python stuff
-    APythonEngine := TPythonEngine.Create(Self);
-
-    RegWaptBaseDir:=WaptBaseDir();
-    if not FileExists(AppendPathDelim(RegWaptBaseDir)+'python27.dll') then
-      RegWaptBaseDir:=RegisteredAppInstallLocation('wapt_is1');
-
-    if RegWaptBaseDir='' then
-      RegWaptBaseDir:=RegisteredExePath('wapt-get.exe');
-
-    with ApythonEngine do
-    begin
-      //AutoLoad:=False;
-      DllPath := RegWaptBaseDir;
-      DllName := 'python27.dll';
-      UseLastKnownVersion := False;
-      LoadDLL;
-      Py_SetProgramName(PAnsiChar(ParamStr(0)));
-    end;
-
     // Load main python application
     try
       MainModule:=TStringList.Create;
       MainModule.LoadFromFile(ExtractFilePath(ParamStr(0))+'wapt-get.py');
-      APythonEngine.ExecStrings(MainModule);
+      PythonEngine.ExecStrings(MainModule);
     finally
       MainModule.Free;
     end;
   end;
-
   // stop program loop
   Terminate;
 end;
@@ -548,10 +665,11 @@ end;
 
 destructor PWaptGet.Destroy;
 begin
+  Fwaptdevutils := Nil;
   if Assigned(check_thread) then
     check_thread.Free;
-  if Assigned(APythonEngine) then
-    APythonEngine.Free;
+  if Assigned(FPythonEngine) then
+    FPythonEngine.Free;
   DeleteCriticalSection(lock);
   inherited Destroy;
 end;
@@ -566,8 +684,7 @@ end;
 procedure PWaptGet.pollerEvent(Events:ISuperObject);
 var
   Step,EventType:String;
-  runstatus:String;
-  running,upgrades,errors,taskresult : ISuperObject;
+  taskresult : ISuperObject;
   Event,EventData:ISuperObject;
 
   //check if task with id id is in tasks list
@@ -655,6 +772,74 @@ begin
     for task in Self.tasks do
       if SOArrayFindFirst(task,pending,['id']) <> Nil then
         Result.AsArray.Add(task);
+end;
+
+function PWaptGet.CreateWaptAgent(TargetDir:String;Edition:String='waptagent'): String;
+var
+  Ini:TInifile;
+begin
+  try
+    ini := TIniFile.Create(AppIniFilename('waptconsole'));
+    Result := CreateWaptSetup(UTF8Encode(AuthorizedCertsDir),
+      ini.ReadString('global', 'repo_url', ''),
+      ini.ReadString('global', 'wapt_server', ''),
+      TargetDir,
+      'Wapt', Nil, Edition,
+      ini.ReadString('global', 'verify_cert', '0'),
+      ini.ReadBool('global', 'use_kerberos', False ),
+      ini.ReadBool('global', 'check_certificates_validity',True ),
+      IsEnterpriseEdition,
+      True,
+      True,
+      ini.ReadBool('global', 'use_fqdn_as_uuid',False),
+      ''
+      );
+
+  finally
+    Free;
+  end;
+end;
+
+function PWaptGet.BuildWaptUpgrade(SetupFilename: String): String;
+var
+  BuildDir: String;
+  BuildResult: Variant;
+  KeyPassword:String;
+begin
+  // create waptupgrade package (after waptagent as we need the updated waptagent.sha1 file)
+  BuildResult := Nil;
+  BuildDir := GetTempDir(False);
+
+  if RightStr(buildDir,1) = '\' then
+    buildDir := copy(buildDir,1,length(buildDir)-1);
+  KeyPassword := GetPrivateKeyPassword;
+
+  //BuildResult is a PackageEntry instance
+  BuildResult := waptdevutils.build_waptupgrade_package(
+      waptconfigfile := AppIniFilename('waptconsole'),
+      wapt_server_user := WaptServerUser,
+      wapt_server_passwd := WaptServerPassword,
+      key_password := KeyPassword,
+      sign_digests := 'sha256'
+      );
+
+  if not VarPyth.VarIsNone(BuildResult) and FileExistsUTF8(VarPythonAsString(BuildResult.get('localpath'))) then
+  begin
+    Result := BuildResult.get('filename');
+    DeleteFileUTF8(VarPythonAsString(BuildResult.get('localpath')));
+  end
+  else
+    Result := '';
+end;
+
+
+function PWaptGet.Getwaptdevutils: Variant;
+begin
+  if not Assigned(PythonEngine) then
+    Raise Exception.Create('No python engine available');
+  if VarIsEmpty(Fwaptdevutils) or VarIsNull(Fwaptdevutils) then
+    Fwaptdevutils:= VarPyth.Import('waptdevutils');
+  Result := Fwaptdevutils;
 end;
 
 {$R *.res}

@@ -18,6 +18,9 @@ resourcestring
                   ' dnsdebug : display some informations about DNS configuration.'#13#10
                  ;
   rsWin32exeWrapper = 'Win32 Exe wrapper: %s %s';
+  rsBuildWaptAgent = 'Building customized waptagent.exe installer';
+  rsBuildWaptUpgradePackage = 'Building waptupgrade package';
+  rsUploadWaptAgent = 'Uploading customized waptagent.exe installer';
   rsWaptGetUpgrade = 'WAPT-GET Upgrade using repository at %s';
   rsDNSserver = 'DNS Server : %s';
   rsDNSdomain = 'DNS Domain : %s';

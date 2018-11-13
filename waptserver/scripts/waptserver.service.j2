@@ -1,21 +1,18 @@
-[options]
-wapt_folder=/var/www/{{application_root}}/wapt
+[Unit]
+Description=WAPT Server startup script {{application_root}}
+After=syslog.target
+After=postgresql.service
 
-wapt_user=admin
-wapt_password={{wapt_password}}
-server_uuid = {{server_uuid}}
-secret_key = {{secret_key}}
+[Service]
+Type=simple
+User=wapt
+WorkingDirectory=/opt/wapt
+ExecStart=/opt/wapt/bin/python /opt/wapt/waptserver/server.py -c /opt/wapt/conf/{{ application_root }}.ini
+Restart=on-failure
+Environment=PYTHONHOME=/opt/wapt
+Environment=PYTHONPATH=/opt/wapt
+Environment=VIRTUAL_ENV=/opt/wapt
+LimitNOFILE=32768
 
-#client_tasks_timeout=3
-
-use_kerberos = {{use_kerberos}}
-allow_unauthenticated_registration = False
-
-application_root={{application_root}}
-
-db_user={{application_root}}
-db_password={{application_root}}
-db_name={{application_root}}
-db_host=127.0.0.1
-
-waptserver_port={{waptserver_port}}
+[Install]
+WantedBy=multi-user.target

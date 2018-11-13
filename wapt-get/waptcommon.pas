@@ -41,7 +41,7 @@ interface
   Function GetWaptLocalURL:String;
 
   function AppLocalDir: String; // returns Users/<user>/local/appdata/<application_name>
-  function AppIniFilename: String; // returns Users/<user>/local/appdata/<application_name>/<application_name>.ini
+  function AppIniFilename(AApplicationName:String=''): String; // returns ConfigFilename parameter or Users/<user>/local/appdata/<application_name>/<application_name>.ini
   function WaptIniFilename: String; // for local wapt install directory
 
   function WaptBaseDir: String; // c:\wapt
@@ -125,17 +125,17 @@ function GetWaptServerSession(server_url:String = ''; user:String = '';password:
 function DefaultUserAgent:String;
 
 // Read/Write ini parameters from
-function WaptIniReadBool(const user,item: string;Default:Boolean=False): Boolean;
+{function WaptIniReadBool(const user,item: string;Default:Boolean=False): Boolean;
 function WaptIniReadInteger(const user,item: string;Default:Integer=0): Integer;
 function WaptIniReadString(const user,item: string;Default:String=''): string;
 procedure WaptIniWriteBool(const user,item: string; Value: Boolean);
 procedure WaptIniWriteInteger(const user,item: string; Value: Integer);
 procedure WaptIniWriteString(const user,item, Value: string);
-
+}
 Function ISO8601ToDateTime(Value: String):TDateTime;
 Function DateTimeToISO8601(Value: TDateTime=0):String;
 
-Function wapt_edition:String;
+Function WaptEdition:String;
 
 Function RegisteredExePath(ExeName:String):String;
 
@@ -220,7 +220,7 @@ const
   WaptPersonalCertificatePath: String ='';
 
 
-  WAPTServerMinVersion='1.7.1.0';
+  WAPTServerMinVersion='1.7.1.1';
 
   FAppIniFilename:Utf8String = '';
 
@@ -228,7 +228,7 @@ const
 implementation
 
 uses LazFileUtils, LazUTF8, soutils, Variants,uwaptres,waptwinutils,waptcrypto,tisinifiles,tislogging,
-  NetworkAdapterInfo, JwaWinsock2,
+  NetworkAdapterInfo, JwaWinsock2, windirs,
   IdSSLOpenSSL,IdMultipartFormData,IdExceptionCore,IdException,IdURI,
   gettext,IdStack,IdCompressorZLib,IdAuthentication,shfolder,IniFiles,tiscommon,strutils,tisstrings,registry;
 
@@ -1372,13 +1372,15 @@ begin
   result := AnsiToUtf8(GetAppConfigDir(False));
 end;
 
-function AppIniFilename: String;
+function AppIniFilename(AApplicationName:String=''): String;
 begin
   if FAppIniFilename = '' then
   begin
-    FAppIniFilename := GetCmdParams('ConfigFilename',ApplicationName+'.ini');
+    if AApplicationName='' then
+      AApplicationName:=ApplicationName;
+    FAppIniFilename := GetCmdParams('ConfigFilename',AApplicationName+'.ini');
     if ExtractFileDir(FAppIniFilename)='' then
-      FAppIniFilename := IncludeTrailingPathDelimiter(GetAppConfigDir(False))+FAppIniFilename;
+      FAppIniFilename := IncludeTrailingPathDelimiter(IncludeTrailingPathDelimiter(GetWindowsSpecialDir(CSIDL_LOCAL_APPDATA))+AApplicationName)+FAppIniFilename;
     if ExtractFileExt(FAppIniFilename)='' then
       FAppIniFilename := FAppIniFilename+'.ini';
 
@@ -1888,10 +1890,13 @@ begin
   end;
 
   source := UTF8Decode(default_public_cert);
-  target := UTF8Decode(ExpandFileName(AppendPathDelim(ExtractFileDir(iss_template))+ '..\ssl\' + ExtractFileName(default_public_cert)));
-  if not FileExists(target) then
-    if not CopyFileW(PWideChar(source),PWideChar(target),True) then
-      raise Exception.CreateFmt(rsCertificateCopyFailure,[source,target]);
+  if (Source<>'') and FileExistsUTF8(Source) then
+  begin
+    target := UTF8Decode(ExpandFileName(AppendPathDelim(ExtractFileDir(iss_template))+ '..\ssl\' + ExtractFileName(default_public_cert)));
+    if not FileExists(target) then
+      if not CopyFileW(PWideChar(source),PWideChar(target),True) then
+        raise Exception.CreateFmt(rsCertificateCopyFailure,[source,target]);
+  end;
   StringToFile(custom_iss,SOUtils.Join(#13#10,new_iss));
 
   inno_fn :=  AppendPathDelim(wapt_base_dir) + 'waptsetup\innosetup\ISCC.exe';
@@ -2068,7 +2073,7 @@ begin
   Result := FormatDateTime('yyyy"-"mm"-"dd"T"hh":"nn":"ss',Now);
 end;
 
-function wapt_edition: String;
+function WaptEdition: String;
 begin
   if FileExists(MakePath([WaptBaseDir,'waptenterprise','licencing.py'])) then
     Result := 'enterprise'
