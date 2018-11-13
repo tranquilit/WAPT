@@ -5602,6 +5602,15 @@ procedure TVisWaptGUI.ActReportingQueryDesignUpdate(Sender: TObject);
 begin
 end;
 
+procedure TVisWaptGUI.ActTriggerWaptwua_scanUpdate(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.GridWUUpdatesNodesDelete(Sender: TSOGrid;
+  Nodes: ISuperObject);
+begin
+end;
+
 {$endif}
 
 end.
