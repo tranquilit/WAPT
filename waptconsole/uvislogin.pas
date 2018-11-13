@@ -83,7 +83,7 @@ end;
 procedure TVisLogin.FormCreate(Sender: TObject);
 begin
   ScaleDPI(Self,96); // 96 is the DPI you designed;
-  LabVersion.Caption := ApplicationName+' '+wapt_edition+' Edition '+GetApplicationVersion;
+  LabVersion.Caption := ApplicationName+' '+WaptEdition+' Edition '+GetApplicationVersion;
 
 end;
 
