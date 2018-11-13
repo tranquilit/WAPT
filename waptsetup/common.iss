@@ -76,9 +76,7 @@ Name: DisableHiberboot; Description: "{cm:DisableHiberBoot}"; GroupDescription: 
 Name: InstallCertificates; Description: "{cm:InstallSSLCertificates}";  GroupDescription: "Advanced"; Flags: unchecked;
 #endif
 
-#if set_start_packages != ""
-Name: InstallStartPackages; Description: "{cm:InstallStartPackages}";  GroupDescription: "Advanced";
-#endif
+Name: InstallStartPackages; Description: "{cm:InstallStartPackages}";  GroupDescription: "Advanced";  Check: StartPackagesCheck();
 
 #if set_verify_cert == ""
 Name: VerifyServerCertificates; Description: "{cm:VerifyServerCertificates}";  GroupDescription: "Advanced";
@@ -150,7 +148,7 @@ Filename: "{app}\wapt-get.exe"; Parameters: "--use-gui --direct register"; Flags
 #endif
 
 #if set_start_packages != "" 
-Filename: "{app}\wapt-get.exe"; Parameters: "--direct --update-packages install {code:GetStartPackages}"; Tasks: installStartPackages; StatusMsg: {cm:InstallStartPackages}; Description: "{cm:InstallStartPackages}"
+Filename: "{app}\wapt-get.exe"; Parameters: "--direct --update-packages install {code:GetStartPackages}"; Tasks: installStartPackages; StatusMsg: {cm:InstallStartPackages}; Description: "{cm:InstallStartPackages} {code:GetStartPackages}"
 #else
 Filename: "{app}\wapt-get.exe"; Parameters: "--direct update"; Flags: runhidden; StatusMsg: {cm:UpdateAvailablePkg}; Description: "{cm:UpdateAvailablePkg}"
 #endif
@@ -458,10 +456,18 @@ begin
        Result := '1'
 end;
 
+
 function GetStartPackages(Param: String):String;
 begin
-    // get suuplied StartPackages from commandline, else take hardcoded in setup 
+    // get supplied StartPackages from commandline, else take hardcoded in setup 
     result := ExpandConstant('{param:StartPackages|{#set_start_packages}}');
+    if result = '*' then  
+      result := '';
+end;
+
+function StartPackagesCheck:Boolean;
+begin
+  Result := GetStartPackages('') <> '';
 end;
 
 

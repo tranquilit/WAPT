@@ -380,7 +380,7 @@ class HostGroups(WaptBaseModel):
     group_name = CharField(null=False, index=True)
 
     def __repr__(self):
-        return '<HostGroups uuid=%s group_name=%s>' % (self.uuid, self.group_name)
+        return '<HostGroups id=%s group_name=%s>' % (self.id, self.group_name)
 
     @classmethod
     def sync_from_host_package(cls,entry):

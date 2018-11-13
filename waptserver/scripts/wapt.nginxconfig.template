@@ -37,7 +37,6 @@ server {
 
     index index.html;
 
-
     location /static {
         alias "{{ wapt_root_dir}}/waptserver/static";
     }
