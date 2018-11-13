@@ -392,7 +392,7 @@ begin
     Writeln(rsUploadWaptAgent);
     Res := WAPTServerJsonMultipartFilePost(
       GetWaptServerURL, 'upload_waptsetup', [], 'file', WaptAgentFilename,
-      GetWaptServerUser, GetWaptServerPassword, Nil,GetWaptServerCertificateFilename);
+      WaptServerUser, WaptServerPassword, Nil,GetWaptServerCertificateFilename);
     if Res.S['status'] = 'OK' then
       Writeln('OK')
     else
