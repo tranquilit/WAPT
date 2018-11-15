@@ -611,9 +611,9 @@ def update_installed_packages(uuid, data, applied_status_hashes):
         for package in installed_packages:
             package['host'] = uuid
             # csv str on the client, Array on the server
-            package['depends'] = ensure_list(package['depends'])
-            package['conflicts'] = ensure_list(package['conflicts'])
-            package['uninstall_key'] = _get_uninstallkeylist(package['uninstall_key'])
+            package['depends'] = ensure_list(package.get('depends'))
+            package['conflicts'] = ensure_list(package.get('conflicts'))
+            package['uninstall_key'] = _get_uninstallkeylist(package.get('uninstall_key'))
             package['created_on'] = datetime.datetime.now()
 
             # filter out all unknown fields from json data for the SQL insert
@@ -1464,6 +1464,7 @@ def upgrade_db_structure():
             (v, created) = ServerAttribs.get_or_create(key='db_version')
             v.value = next_version
             v.save()
+
 
 if __name__ == '__main__':
     if platform.system() != 'Windows' and getpass.getuser() != 'wapt':
