@@ -803,6 +803,7 @@ type
       Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
       var Ghosted: Boolean; var ImageIndex: Integer;
       var ImageList: TCustomImageList);
+    procedure GridWUDownloadsNodesDelete(Sender: TSOGrid; Nodes: ISuperObject);
     procedure GridWUUpdatesNodesDelete(Sender: TSOGrid; Nodes: ISuperObject);
     procedure HostPagesChange(Sender: TObject);
     procedure Image1Click(Sender: TObject);
@@ -5611,6 +5612,10 @@ procedure TVisWaptGUI.GridWUUpdatesNodesDelete(Sender: TSOGrid;
 begin
 end;
 
+procedure TVisWaptGUI.GridWUDownloadsNodesDelete(Sender: TSOGrid;
+  Nodes: ISuperObject);
+begin
+end;
 {$endif}
 
 end.

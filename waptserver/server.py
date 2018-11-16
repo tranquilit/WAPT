@@ -1100,10 +1100,13 @@ def reset_hosts_sid():
             logger.debug(u'Reset wsocket.io SID and timestamps of hosts')
             if uuids:
                 where_clause = Hosts.uuid.in_(uuids)
+                sids = [ s[0] for s in Hosts.select(Hosts.listening_address).where(where_clause).tuples()]
+                Hosts.update(reachable=None,listening_timestamp=None, listening_protocol=None).where(where_clause).execute()
+                for sid in sids:
+                    socketio.emit('wapt_ping',room=sid)
             else:
-                where_clause = None
-            Hosts.update(listening_timestamp=None, listening_protocol=None).where(where_clause).execute()
-            socketio.emit('wapt_ping')
+                Hosts.update(reachable=None,listening_timestamp=None, listening_protocol=None).where(Hosts.server_uuid == get_server_uuid()).execute()
+                socketio.emit('wapt_ping')
 
         socketio.start_background_task(target=target, uuids=uuids)
 
@@ -1979,7 +1982,7 @@ def on_waptclient_connect():
     except Exception as e:
         if 'uuid' in session:
             session.pop('uuid')
-        logger.warning(u'SocketIO connection refused for uuid %s, sid %s: %s' % (uuid,request.sid,e))
+        logger.warning(u'SocketIO connection refused for uuid %s, sid %s: %s, instance %s' % (uuid,request.sid,e,app.conf.get('application_root')))
         disconnect()
         return False
 
@@ -2011,7 +2014,7 @@ def on_wapt_pong():
                     return False
             return True
     except Exception as e:
-        logger.critical(u'SocketIO pong error for uuid %s and sid %s : %s' % (uuid,request.sid,traceback.format_exc()))
+        logger.critical(u'SocketIO pong error for uuid %s and sid %s : %s, instance: %s' % (uuid,request.sid,traceback.format_exc(),app.conf.get('application_root')))
         return False
 
 @socketio.on('disconnect')

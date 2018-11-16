@@ -26,9 +26,9 @@ object VisWaptGUI: TVisWaptGUI
     Height = 480
     Top = 0
     Width = 1159
-    ActivePage = pgInventory
+    ActivePage = pgWAPTWUADownloads
     Align = alClient
-    TabIndex = 0
+    TabIndex = 4
     TabOrder = 0
     OnChange = MainPagesChange
     object pgInventory: TTabSheet
@@ -4831,6 +4831,7 @@ object VisWaptGUI: TVisWaptGUI
         Top = 33
         Width = 1151
         OnGetText = GridHostWinUpdatesGetText
+        OnNodesDelete = GridWUDownloadsNodesDelete
         ShowAdvancedColumnsCustomize = False
         KeyFieldsNames = 'task_id'
         Align = alClient
