@@ -5693,6 +5693,8 @@ class Wapt(BaseObjectClass):
                 package_install = package_entry
             else:
                 install_id =  self._get_package_status_rowid(package_entry)
+                if install_id is None:
+                    raise Exception('Package %s is not installed' % package)
                 package_install = self.waptdb.install_status(install_id)
 
             if force or not package_install.next_audit_on or now >= package_install.next_audit_on:
