@@ -2484,6 +2484,8 @@ class Wapt(BaseObjectClass):
         self.language = setuphelpers.get_language()
         self.locales = [setuphelpers.get_language()]
         self.maturities = ['PROD']
+        # default maturity when importing or creating new package
+        self.default_maturity = ''
 
         self.use_http_proxy_for_repo = False
         self.use_http_proxy_for_server = False
@@ -2617,6 +2619,7 @@ class Wapt(BaseObjectClass):
             'timeout':10.0,
             'wapt_server_timeout':30.0,
             'maturities':'PROD',
+            'default_maturity':'',
             'waptwua_enabled':'0',
             'http_proxy':'',
             'public_certs_dir':os.path.join(self.wapt_base_dir,'ssl'),
@@ -2751,6 +2754,9 @@ class Wapt(BaseObjectClass):
             self.maturities = ensure_list(self.config.get('global','maturities'),allow_none=True)
             if not self.maturities:
                 self.maturities=['PROD']
+
+        if self.config.has_option('global','default_maturity'):
+            self.default_maturity = self.config.get('global','default_maturity'))
 
         # Get the configuration of all repositories (url, ...)
         self.repositories = []
@@ -5917,6 +5923,7 @@ class Wapt(BaseObjectClass):
             entry = PackageEntry()
             entry.package = packagename
             entry.architecture='all'
+            entry.maturity=self.default_maturity
             entry.description = description
             try:
                 entry.maintainer = ensure_unicode(win32api.GetUserNameEx(3))
@@ -5945,7 +5952,7 @@ class Wapt(BaseObjectClass):
             packagename = self.host_packagename()
         return self.make_group_template(packagename=packagename,depends=depends,conflicts=conflicts,directoryname=directoryname,section='host',description=description)
 
-    def make_group_template(self,packagename='',depends=None,conflicts=None,directoryname=None,section='group',description=None):
+    def make_group_template(self,packagename='',maturity=None,depends=None,conflicts=None,directoryname=None,section='group',description=None):
         r"""Creates or updates on disk a skeleton of a WAPT group package.
         If the a package skeleton already exists in directoryname, it is updated.
 
@@ -6009,6 +6016,10 @@ class Wapt(BaseObjectClass):
             entry.section = section
             entry.version = '0'
             entry.architecture='all'
+            if maturity is None:
+                entry.maturity = maturity
+            else:
+                entry.maturity = self.default_maturity
             entry.description = description or u'%s package for %s ' % (section,packagename)
             try:
                 entry.maintainer = ensure_unicode(win32api.GetUserNameEx(3))
@@ -6410,6 +6421,7 @@ class Wapt(BaseObjectClass):
             packagename,
             newname=None,
             newversion=None,
+            newmaturity=None,
             target_directory=None,
             append_depends=None,
             remove_depends=None,
@@ -6546,6 +6558,11 @@ class Wapt(BaseObjectClass):
         dest_control = PackageEntry()
         for a in source_control.required_attributes + source_control.optional_attributes:
             dest_control[a] = source_control[a]
+
+        if newmaturity is not None:
+            dest_control.maturity = newmaturity
+        else:
+            dest_control.maturity = self.default_maturity
 
         # add / remove dependencies from copy
         prev_depends = ensure_list(dest_control.depends)
