@@ -1054,10 +1054,12 @@ class WaptPackageForget(WaptTask):
 
 
 class WaptAuditPackage(WaptTask):
-    def __init__(self,packagename,**args):
+    def __init__(self,packagenames,**args):
         super(WaptAuditPackage,self).__init__()
-        self.packagename = packagename
-
+        if not isinstance(packagenames,list):
+            self.packagenames = [packagenames]
+        else:
+            self.packagenames = packagenames
         self.notify_server_on_start = False
         self.notify_server_on_finish = False
         self.notify_user = False
@@ -1067,18 +1069,20 @@ class WaptAuditPackage(WaptTask):
             setattr(self,k,args[k])
 
     def _run(self):
-        self.update_status(_(u'Auditing %s') % self.packagename)
-        self.result = self.wapt.audit(self.packagename,force = self.force)
+        self.result = []
+        for package in self.packagenames:
+            self.update_status(_(u'Auditing %s') % package)
+            self.result.append(u'%s: %s' % (package,self.wapt.audit(package,force = self.force)))
         if self.result:
-            self.summary = _(u"Audit result for %s : %s") % (self.packagename,self.result)
+            self.summary = _(u"Audit result : %s") % ('\n'.join(self.result))
         else:
-            self.summary = _(u"No audit result for %s") % (self.packagename,)
+            self.summary = _(u"No audit result for %s") % (self.packagenames,)
 
     def __unicode__(self):
-        return _(u"Audit of {packagename} (task #{id})").format(classname=self.__class__.__name__,id=self.id,packagename=self.packagename)
+        return _(u"Audit of {packagenames} (task #{id})").format(classname=self.__class__.__name__,id=self.id,packagenames=','.join(self.packagenames))
 
     def same_action(self,other):
-        return (self.__class__ == other.__class__) and (self.packagename == other.packagename)
+        return (self.__class__ == other.__class__) and (self.packagenames == other.packagenames)
 
 
 def babel_translations(lang = ''):

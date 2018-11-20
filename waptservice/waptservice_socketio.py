@@ -265,11 +265,11 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
                             only_priorities=only_priorities,
                             only_if_not_process_running=only_if_not_process_running,
                             )).as_dict())
-                        self.task_manager.add_task(WaptAuditPackage(packagename=req,force=False,
-                            notify_user=notify_user,
-                            notify_server_on_finish=False,
-                            priority=200,
-                            created_by=verified_by)).as_dict()
+                    self.task_manager.add_task(WaptAuditPackage(packagename=to_install,force=False,
+                        notify_user=notify_user,
+                        notify_server_on_finish=False,
+                        priority=200,
+                        created_by=verified_by)).as_dict()
                     result.append(self.task_manager.add_task(WaptUpgrade(notify_user=notify_user,
                             created_by=verified_by,
                             priority=200,
@@ -299,12 +299,13 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
 
 
                         result.append(self.task_manager.add_task(task).as_dict())
-                        if name == 'trigger_install_packages':
-                            self.task_manager.add_task(WaptAuditPackage(packagename=packagename,
-                                    force=task.force,
-                                    notify_user=task.notify_user,
-                                    notify_server_on_finish=task.notify_server_on_finish,
-                                    priority=200)).as_dict()
+
+                    if name == 'trigger_install_packages':
+                        self.task_manager.add_task(WaptAuditPackage(packagenames=packagenames,
+                                force=task.force,
+                                notify_user=task.notify_user,
+                                notify_server_on_finish=task.notify_server_on_finish,
+                                priority=200)).as_dict()
 
                 elif name == 'trigger_waptservicerestart':
                     msg = setuphelpers.create_onetime_task('waptservicerestart','cmd.exe','/C net stop waptservice & net start waptservice')
