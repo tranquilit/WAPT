@@ -261,7 +261,8 @@ def sign_host_csr(host_certificate_csr):
 
     """
     host_cert = None
-    if os.path.isfile(app.conf['clients_signing_key']) and os.path.isfile(app.conf['clients_signing_certificate']):
+    if (app.conf['clients_signing_key'] and app.conf['clients_signing_certificate'] and
+            os.path.isfile(app.conf['clients_signing_key']) and os.path.isfile(app.conf['clients_signing_certificate'])):
         signing_key = SSLPrivateKey(app.conf['clients_signing_key'])
         signing_cert = SSLCertificate(app.conf['clients_signing_certificate'])
         host_cert_lifetime = app.conf['client_certificate_lifetime']
