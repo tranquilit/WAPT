@@ -185,7 +185,12 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
             for action in actions:
                 name = action['action']
                 verified_by = None
-                signer_cert_chain = SSLCABundle().add_pem(action['signer_certificate']).certificates()
+                # full cert chain provided with the signed action
+                if 'signer_certificate' in action:
+                    signer_cert_chain = SSLCABundle().add_pem(action['signer_certificate']).certificates()
+                else:
+                    # only sha256 fingerprint provided. (lighter). issuer must be in the authorized cabundle
+                    signer_cert_chain = [self.wapt.cabundle.certificate(action['signer'])]
                 chain = self.wapt.cabundle.check_certificates_chain(signer_cert_chain)
                 if chain:
                     required_attributes = ['uuid','action']
