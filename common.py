@@ -37,6 +37,7 @@ import base64
 import zlib
 import sqlite3
 import json
+import ujson
 import StringIO
 import requests
 import cPickle
@@ -344,7 +345,7 @@ class WaptBaseDB(BaseObjectClass):
                 elif ptype == 'float':
                     value = float(value)
                 elif ptype in ('json','bool'):
-                    value = json.loads(value)
+                    value = ujson.loads(value)
                 elif ptype == 'datetime':
                     value = isodate2datetime(value)
             return value
@@ -1359,7 +1360,7 @@ class WaptDB(WaptBaseDB):
             cur = self.db.execute("""select install_params from wapt_localstatus where package=?""" ,(packagename,))
             rows = cur.fetchall()
             if rows:
-                return json.loads(rows[0][0])
+                return ujson.loads(rows[0][0])
 
 class WaptServer(BaseObjectClass):
     """Manage connection to waptserver"""
@@ -1619,7 +1620,7 @@ class WaptServer(BaseObjectClass):
                     allow_redirects=True)
 
             req.raise_for_status()
-            return json.loads(req.content)
+            return ujson.loads(req.content)
         else:
             raise Exception(u'Wapt server url not defined or not found in DNS')
 
@@ -1710,7 +1711,7 @@ class WaptServer(BaseObjectClass):
                 else:
                     break
             req.raise_for_status()
-            return json.loads(req.content)
+            return ujson.loads(req.content)
         else:
             raise Exception(u'Wapt server url not defined or not found in DNS')
 
@@ -2520,6 +2521,9 @@ class Wapt(BaseObjectClass):
         # host key cache
         self._host_key = None
 
+        self._host_certificate = None
+        self._host_certificate_timestamp = None
+
         #self.key_passwd_callback = None
 
         # keep private key in cache
@@ -2756,7 +2760,7 @@ class Wapt(BaseObjectClass):
                 self.maturities=['PROD']
 
         if self.config.has_option('global','default_maturity'):
-            self.default_maturity = self.config.get('global','default_maturity'))
+            self.default_maturity = self.config.get('global','default_maturity')
 
         # Get the configuration of all repositories (url, ...)
         self.repositories = []
@@ -3922,6 +3926,7 @@ class Wapt(BaseObjectClass):
             packages_maturities=self.maturities,
             use_host_packages=self.use_hostpackages,
             host_profiles=self.host_profiles,
+            host_certificate=self.get_host_certificate().fingerprint
             #authorized_maturities=self.get_host_maturities(),
         )
 
@@ -4510,7 +4515,7 @@ class Wapt(BaseObjectClass):
             else:
                 try:
                     # normal json encoded list
-                    guids = json.loads(uninstall_key_str)
+                    guids = ujson.loads(uninstall_key_str)
                 except:
                     guids = uninstall_key_str
 
@@ -4935,6 +4940,7 @@ class Wapt(BaseObjectClass):
         #inv = self.inventory()
         inv['uuid'] = self.host_uuid
         inv['host_certificate'] = self.create_or_update_host_certificate()
+        inv['host_certificate_signing_request'] = self.get_host_certificate_signing_request()
 
         data = jsondump(inv)
         if self.waptserver:
@@ -4954,6 +4960,13 @@ class Wapt(BaseObjectClass):
                 if 'status_hashes' in result.get('result',{}):
                     # invalidate unmatching hashes for next round.
                     self.write_param('last_update_server_hashes',result['result']['status_hashes'])
+                if 'signed_host_certificate' in result:
+                    # server has signed the certificate, we repkace our self signed one.
+                    new_host_cert = SSLCertificate(crt_string=result['signed_host_certificate'])
+                    if new_host_cert.cn == self.host_uuid and new_host_cert.match_key(self.get_host_key()):
+                        new_host_cert.save_as_pem(self.get_host_certificate_filename())
+                        self._host_certificate = None
+                        self._host_certificate_timestamp = None
 
             return result
 
@@ -4987,10 +5000,29 @@ class Wapt(BaseObjectClass):
         Returns:
             SSLCertificate: host public certificate.
         """
-        if not os.path.isfile(self.get_host_certificate_filename()):
-            self.create_or_update_host_certificate()
-        return SSLCertificate(self.get_host_certificate_filename())
+        cert_fn = self.get_host_certificate_filename()
+        if not self._host_certificate or self._host_certificate_timestamp != os.stat(cert_fn).st_mtime:
+            if not os.path.isfile(cert_fn):
+                self.create_or_update_host_certificate()
+            self._host_certificate = SSLCertificate(cert_fn)
+            self._host_certificate_timestamp = os.stat(cert_fn).st_mtime
+        return self._host_certificate
 
+    def get_host_certificate_signing_request(self):
+        """Return a CSR for the host.
+
+        Returns:
+            SSLCertificateSigningRequest: host public certificate sigbinbg request.
+        """
+        host_key = self.get_host_key()
+        csr = host_key.build_csr(
+                cn = self.host_uuid,
+                dnsname = setuphelpers.get_hostname(),
+                organization = setuphelpers.registered_organization() or None,
+                is_ca=False,
+                is_code_signing=False,
+                key_usages=['digital_signature','content_commitment','key_cert_sign','data_encipherment'])
+        return csr
 
     def create_or_update_host_certificate(self,force_recreate=False):
         """Create a rsa key pair for the host and a x509 certiticate.
@@ -5017,7 +5049,9 @@ class Wapt(BaseObjectClass):
             logger.info('Creates host keys pair and x509 certificate %s' % crt_filename)
             self._host_key = self.get_host_key()
 
-            crt = self._host_key.build_sign_certificate(None,None,
+            crt = self._host_key.build_sign_certificate(
+                ca_signing_key=None,
+                ca_signing_cert=None,
                 cn = self.host_uuid,
                 dnsname = setuphelpers.get_hostname(),
                 organization = setuphelpers.registered_organization() or None,
@@ -5121,6 +5155,7 @@ class Wapt(BaseObjectClass):
         # optionally forced dn
         host_info['computer_ad_dn'] = self.host_dn
 
+        _add_data_if_updated(inv,'host_capabilities',self.host_capabilities(),old_hashes,new_hashes)
         _add_data_if_updated(inv,'host_info',host_info,old_hashes,new_hashes)
         _add_data_if_updated(inv,'audit_status',self.get_audit_status(),old_hashes,new_hashes)
         _add_data_if_updated(inv,'installed_softwares',setuphelpers.installed_softwares(''),old_hashes,new_hashes)
@@ -5174,7 +5209,7 @@ class Wapt(BaseObjectClass):
         result = self.waptserver.post('get_websocket_auth_token',
             data = data,
             signature = signature,
-            signer = self.get_host_certificate().cn
+            signer = self.get_host_certificate().fingerprint
             )
 
         if result and result['success']:
@@ -5779,7 +5814,7 @@ class Wapt(BaseObjectClass):
         # get old install params if the package has been already installed
         old_install = self.is_installed(package_entry.package)
         if old_install:
-            return json.loads(old_install['install_params'])
+            return ujson.loads(old_install['install_params'])
         else:
             return {}
 
