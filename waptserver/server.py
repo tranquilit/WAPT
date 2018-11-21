@@ -252,12 +252,20 @@ def index():
     return render_template('index.html', data=data)
 
 def sign_host_csr(host_certificate_csr):
-    """Sign the CSR with server key and retirn a certificate for further host auth on nginx server"""
+    """Sign the CSR with server key and retirn a certificate for further host auth on nginx server
+
+    Args:
+        host_certificate_csr ()
+
+    Returns:
+
+    """
     host_cert = None
     if os.path.isfile(app.conf['clients_signing_key']) and os.path.isfile(app.conf['clients_signing_certificate']):
         signing_key = SSLPrivateKey(app.conf['clients_signing_key'])
         signing_cert = SSLCertificate(app.conf['clients_signing_certificate'])
-        host_cert = signing_cert.build_certificate_from_csr(host_certificate_csr,signing_key,3650)
+        host_cert_lifetime = app.conf['client_certificate_lifetime']
+        host_cert = signing_cert.build_certificate_from_csr(host_certificate_csr,signing_key,host_cert_lifetime)
     return host_cert
 
 
@@ -372,13 +380,12 @@ def register_host():
                 raise EWaptAuthenticationFailure('register_host : Missing authentication header')
 
             # sign the CSR if present
-            if 'host_certificate_csr' in data:
-                host_certificate_csr = SSLCertificateSigningRequest(csr_pem_string=data['host_certificate_csr'])
+            if 'host_certificate_signing_request' in data:
+                host_certificate_csr = SSLCertificateSigningRequest(csr_pem_string=data['host_certificate_signing_request'])
                 if host_certificate_csr.cn.lower() == computer_fqdn.lower() or host_certificate_csr.cn.lower() == uuid.lower():
                     host_cert = sign_host_csr(host_certificate_csr)
                 else:
                     host_cert = None
-                data['host_certificate'] = host_cert
 
             if not app.conf['allow_unauthenticated_registration']:
                 logger.debug(u'Authenticated computer %s with user %s ' % (computer_fqdn,authenticated_user,))
@@ -393,7 +400,7 @@ def register_host():
             data['registration_auth_user'] = registration_auth_user
             db_data = update_host_data(data)
 
-            if 'host_certificate_csr' in data and host_cert:
+            if 'host_certificate_signing_request' in data and host_cert:
                 # return back signed host certificate
                 db_data['host_certificate'] = host_cert.as_pem()
 

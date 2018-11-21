@@ -4940,7 +4940,7 @@ class Wapt(BaseObjectClass):
         #inv = self.inventory()
         inv['uuid'] = self.host_uuid
         inv['host_certificate'] = self.create_or_update_host_certificate()
-        inv['host_certificate_signing_request'] = self.get_host_certificate_signing_request()
+        inv['host_certificate_signing_request'] = self.get_host_certificate_signing_request().as_pem()
 
         data = jsondump(inv)
         if self.waptserver:
@@ -4957,12 +4957,13 @@ class Wapt(BaseObjectClass):
             if result and result['success']:
                 # stores for next round.
                 self.write_param('last_update_server_status_timestamp',datetime.datetime.utcnow())
-                if 'status_hashes' in result.get('result',{}):
+                result_data = result.get('result',{})
+                if 'status_hashes' in result_data:
                     # invalidate unmatching hashes for next round.
-                    self.write_param('last_update_server_hashes',result['result']['status_hashes'])
-                if 'signed_host_certificate' in result:
+                    self.write_param('last_update_server_hashes',result_data['status_hashes'])
+                if 'host_certificate' in result_data:
                     # server has signed the certificate, we repkace our self signed one.
-                    new_host_cert = SSLCertificate(crt_string=result['signed_host_certificate'])
+                    new_host_cert = SSLCertificate(crt_string=result_data['host_certificate'])
                     if new_host_cert.cn == self.host_uuid and new_host_cert.match_key(self.get_host_key()):
                         new_host_cert.save_as_pem(self.get_host_certificate_filename())
                         self._host_certificate = None

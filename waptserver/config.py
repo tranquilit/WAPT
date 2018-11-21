@@ -82,6 +82,7 @@ _defaults = {
     'allow_unauthenticated_connect':None,
     'clients_signing_key':None,
     'clients_signing_certificate':None,
+    'client_certificate_lifetime':3650,
     'signature_clockskew':5*60,
     'application_root':'',
     'wapt_admin_group_dn':None,
@@ -193,6 +194,9 @@ def load_config(cfgfile=DEFAULT_CONFIG_FILE):
 
     if _config.has_option('options', 'clients_signing_key'):
         conf['clients_signing_key'] = _config.get('options', 'clients_signing_key')
+
+    if _config.has_option('options', 'client_certificate_lifetime'):
+        conf['client_certificate_lifetime'] = _config.getint('options', 'client_certificate_lifetime')
 
     if _config.has_option('options', 'signature_clockskew'):
         conf['signature_clockskew'] = _config.getint('options', 'signature_clockskew')

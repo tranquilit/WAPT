@@ -1,5 +1,5 @@
 ﻿[PyScripter]
-Version=3.5.0.0
+Version=3.5.1.0
 
 [Project]
 ClassName=TProjectRootNode
@@ -220,7 +220,7 @@ Name=debug
 ScriptName=$[Project-Path]server.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
-Parameters=-c $[Project-Path]..\conf\waptserver.ini
+Parameters=-c c:\wapt\conf\waptserver.ini
 WorkingDir=$[Project-Dir]\..
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log
