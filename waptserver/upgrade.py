@@ -34,6 +34,8 @@ Action:
 import os
 import sys
 import glob
+import json
+import ujson
 
 try:
     wapt_root_dir = os.path.abspath(
@@ -72,14 +74,14 @@ def create_import_data():
         else:
             data = subprocess.check_output('mongoexport -c hosts --jsonArray --db wapt',shell=True)
         data = data.replace('\u0000', ' ')
-        jsondata = json.loads(data)
+        jsondata = ujson.loads(data)
     elif platform.system()=='Windows':
         win_mongo_dir = os.path.join(wapt_root_dir,"waptserver", "mongodb")
         cmd  = '%s -d wapt -c hosts --jsonArray --dbpath=%s' % (os.path.join(win_mongo_dir,'mongoexport.exe'),os.path.join(win_mongo_dir,'data'))
         print ('executing mongodb dump using command line : %s' % cmd)
         data = subprocess.check_output(cmd,shell=True)
         data = data.replace('\u0000', ' ')
-        jsondata = json.loads(data)
+        jsondata = ujson.loads(data)
     else:
         print "unsupported platform"
         sys.exit(1)

@@ -49,6 +49,7 @@ from waptutils import ensure_unicode,ensure_list,datetime2isodate
 from waptserver.utils import setloglevel
 
 import json
+import ujson
 import codecs
 import datetime
 import os
@@ -539,10 +540,10 @@ def dictgetpath(adict, pathstr):
 def set_host_field(host, fieldname, data):
     # awfull hack for data containing null char, not accepted by postgresql.
     if fieldname in ('host_info', 'wmi', 'dmi'):
-        jsonrepr = json.dumps(data)
+        jsonrepr = ujson.dumps(data)
         if '\u0000' in jsonrepr:
             logger.warning('Workaround \\u0000 not handled by postgresql json for host %s field %s' % (getattr(host, 'uuid', '???'), fieldname))
-            data = json.loads(jsonrepr.replace('\u0000', ' '))
+            data = ujson.loads(jsonrepr.replace('\u0000', ' '))
 
     setattr(host, fieldname, data)
     return host
@@ -594,7 +595,7 @@ def update_installed_packages(uuid, data, applied_status_hashes):
             else:
                 try:
                     # normal json encoded list
-                    guids = json.loads(uninstall_key_str)
+                    guids = ujson.loads(uninstall_key_str)
                 except:
                     guids = uninstall_key_str
 

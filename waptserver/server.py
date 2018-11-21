@@ -42,6 +42,7 @@ else:
 
 import time
 import json
+import ujson
 
 import logging
 import logging.handlers
@@ -299,7 +300,7 @@ def register_host():
             else:
                 raw_data = request.data
 
-            data = json.loads(raw_data)
+            data = ujson.loads(raw_data)
             if not data:
                 raise Exception('register_host: No data supplied')
 
@@ -427,7 +428,7 @@ def update_host():
         else:
             raw_data = request.data
 
-        data = json.loads(raw_data)
+        data = ujson.loads(raw_data)
         if not data:
             raise Exception('register_host: No data supplied')
 
@@ -526,7 +527,7 @@ def get_websocket_auth_token():
         else:
             raw_data = request.data
 
-        data = json.loads(raw_data)
+        data = ujson.loads(raw_data)
         if not data:
             raise EWaptAuthenticationFailure('No data supplied')
 
@@ -870,7 +871,7 @@ def upload_waptsetup():
         if tmp_target and os.path.isfile(tmp_target):
             os.unlink(tmp_target)
         result = dict(status='ERROR', message=_('unexpected: {}').format((e,)))
-    return Response(response=json.dumps(result),
+    return Response(response=ujson.dumps(result),
                     status=200,
                     mimetype='application/json')
 

@@ -35,6 +35,7 @@ from waptutils import __version__
 
 import requests
 import json
+import ujson
 import shutil
 
 from waptpackage import *
@@ -77,7 +78,7 @@ if __name__ == '__main__':
 
     server_pwd = getpass.getpass('Admin wapt server password:')
 
-    hosts = json.loads(requests.get('http://127.0.0.1:%s/api/v1/hosts?columns=uuid,computer_fqdn' % conf['waptserver_port'],
+    hosts = ujson.loads(requests.get('http://127.0.0.1:%s/api/v1/hosts?columns=uuid,computer_fqdn' % conf['waptserver_port'],
         auth=('admin',server_pwd),
         proxies={'http':None,'https':None}).content)
 

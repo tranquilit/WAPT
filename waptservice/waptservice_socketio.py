@@ -190,7 +190,11 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
                     signer_cert_chain = SSLCABundle().add_pem(action['signer_certificate']).certificates()
                 else:
                     # only sha256 fingerprint provided. (lighter). issuer must be in the authorized cabundle
-                    signer_cert_chain = [self.wapt.cabundle.certificate(action['signer'])]
+                    signer_cert = self.wapt.cabundle.certificate(action['signer'])
+                    if signer_cert:
+                        signer_cert_chain = [signer_cert]
+                    else:
+                        signer_cert_chain = []
                 chain = self.wapt.cabundle.check_certificates_chain(signer_cert_chain)
                 if chain:
                     required_attributes = ['uuid','action']
@@ -203,6 +207,9 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
 
                     verified_by = chain[0].verify_claim(action,max_age_secs=waptconfig.signature_clockskew,
                         required_attributes=required_attributes)
+                else:
+                    raise SSLVerifyException('Untrusted certificate %s for signed action %s, aborting' % (signer_cert_chain,action))
+
                 if not verified_by:
                     raise SSLVerifyException('Bad signature for action %s, aborting' % action)
 
@@ -270,11 +277,12 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
                             only_priorities=only_priorities,
                             only_if_not_process_running=only_if_not_process_running,
                             )).as_dict())
-                    self.task_manager.add_task(WaptAuditPackage(packagename=to_install,force=False,
-                        notify_user=notify_user,
-                        notify_server_on_finish=False,
-                        priority=200,
-                        created_by=verified_by)).as_dict()
+                    if to_install:
+                        self.task_manager.add_task(WaptAuditPackage(packagenames=to_install,force=False,
+                            notify_user=notify_user,
+                            notify_server_on_finish=False,
+                            priority=200,
+                            created_by=verified_by)).as_dict()
                     result.append(self.task_manager.add_task(WaptUpgrade(notify_user=notify_user,
                             created_by=verified_by,
                             priority=200,

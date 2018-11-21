@@ -71,6 +71,7 @@ import codecs
 import re
 import time
 import json
+import ujson
 import sys
 import types
 import requests
@@ -1553,7 +1554,7 @@ class PackageEntry(BaseObjectClass):
             raise EWaptBadSignature(u'no manifest file in %s directory.'%self.sourcespath)
 
         with open(manifest_filename,'r') as manifest_file:
-            manifest = json.loads(manifest_file.read())
+            manifest = ujson.loads(manifest_file.read())
             if not isinstance(manifest,list):
                 raise EWaptBadSignature(u'manifest file in %s is invalid.'%self.sourcespath)
 
@@ -1626,7 +1627,7 @@ class PackageEntry(BaseObjectClass):
         self._md =  self._default_md
 
         manifest_data = open(manifest_filename,'r').read()
-        manifest_filelist = json.loads(manifest_data)
+        manifest_filelist = ujson.loads(manifest_data)
 
         if self.has_setup_py():
             logger.info(u'Package has a setup.py, code signing certificate is required.')
