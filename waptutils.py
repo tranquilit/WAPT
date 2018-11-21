@@ -21,7 +21,7 @@
 #
 # -----------------------------------------------------------------------
 from __future__ import absolute_import
-__version__ = "1.7.1.1"
+__version__ = "1.7.2.0"
 
 import os
 import sys
@@ -339,6 +339,7 @@ def jsondump(o,**kwargs):
     '{"adate": "2014-03-14", "an_object": {"test": "a", "adate2": "2014-03-15"}}'
     """
     return json.dumps(o,default=default_json,**kwargs)
+
 
 # from opsi
 def ensure_unicode(data):
