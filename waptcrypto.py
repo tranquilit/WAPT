@@ -156,6 +156,18 @@ def sha256_for_data(data):
 def sha1_for_data(data):
     return hexdigest_for_data(data,md='sha1')
 
+def serialize_content_for_signature(content,pre_py3=False):
+    result = content
+    if isinstance(result,unicode):
+        result = result.encode('utf8')
+    elif isinstance(result,(list,dict)):
+        if pre_py3:
+            result = jsondump(result)
+        else:
+            result = jsondump(result,sort_keys=True,separators=(',', ':'))
+    return result
+
+
 def default_pwd_callback(*args):
     """Default password callback for opening private keys.
     """
@@ -954,7 +966,7 @@ class SSLPrivateKey(BaseObjectClass):
             raise EWaptEmptyPassword(u'Unable to load key %s'%self.private_key_filename)
         return self._rsa
 
-    def sign_content(self,content,md='sha256',block_size=2**20):
+    def sign_content(self,content,md='sha256',block_size=2**20,pre_py3=True):
         """ Sign content with the private_key, return the signature
 
         If content is not a raw string, it is first encoded in json or utf8
@@ -963,6 +975,7 @@ class SSLPrivateKey(BaseObjectClass):
             content (str, list or dict): content to sign
             md (str): lessage digest type to use
             clock_size (int) : unused
+            pre_py3 (bool) : if True serialization is not compatible with python3
 
         Returns:
             bytes: signature
@@ -972,11 +985,7 @@ class SSLPrivateKey(BaseObjectClass):
         #                salt_length=padding.PSS.MAX_LENGTH)
         apadding = padding.PKCS1v15()
         algo = get_hash_algo(md)
-
-        if isinstance(content,unicode):
-            content = content.encode('utf8')
-        elif isinstance(content,(list,dict)):
-            content = jsondump(content)
+        content = serialize_content_for_signature(content,pre_py3=pre_py3)
         if not isinstance(content,str):
             raise Exception(u'Bad content type for sign_content, should be str')
         signature = self.rsa.sign(content,apadding,algo)
@@ -1090,9 +1099,9 @@ class SSLPrivateKey(BaseObjectClass):
 
         reclaim = {att:claim.get(att,None) for att in attributes if att not in signature_attributes and att != 'signature'}
         reclaim['signed_attributes'] = attributes+signature_attributes
-        reclaim['signer'] = signer_certificate_chain[0].cn
+        reclaim['signer'] = signer_certificate_chain[0].fingerprint
         reclaim['signature_date'] = datetime.datetime.utcnow().isoformat()
-        reclaim['signer_certificate'] = '\n'.join(cert.as_pem() for cert in signer_certificate_chain)
+        #reclaim['signer_certificate'] = '\n'.join(cert.as_pem() for cert in signer_certificate_chain)
         signature = base64.b64encode(self.sign_content(reclaim))
         reclaim['signature'] = signature
         return reclaim
@@ -1476,27 +1485,28 @@ class SSLCertificateSigningRequest(BaseObjectClass):
 
         Raises SSLVerifyException
         """
-        if isinstance(content,unicode):
-            content = content.encode('utf8')
-        elif isinstance(content,(list,dict)):
-            content = jsondump(content)
+        for pre_py3 in (True,False):
+            serialized_content = serialize_content_for_signature(content,pre_py3=pre_py3)
 
-        if not isinstance(content,str):
-            raise InvalidSignature('Bad content type for verify_content, should be either str or file like')
+            if not isinstance(content,str):
+                raise InvalidSignature('Bad content type for verify_content, should be either str or file like')
 
-        # todo : recommended for new projects...
-        #apadding = padding.PSS(
-        #    mgf=padding.MGF1(get_hash_algo(md)),
-        #    salt_length=padding.PSS.MAX_LENGTH)
+            # todo : recommended for new projects...
+            #apadding = padding.PSS(
+            #    mgf=padding.MGF1(get_hash_algo(md)),
+            #    salt_length=padding.PSS.MAX_LENGTH)
 
-        # compatible with openssl sign
-        apadding = padding.PKCS1v15()
+            # compatible with openssl sign
+            apadding = padding.PKCS1v15()
 
-        try:
-            self.rsa.verify(signature,content,apadding,get_hash_algo(md))
-            return self.cn
-        except InvalidSignature as e:
-            raise SSLVerifyException(u'SSL signature verification failed for CSR %s ' % (self.subject))
+            try:
+                self.rsa.verify(signature,serialized_content,apadding,get_hash_algo(md))
+                return self.cn
+            except InvalidSignature as e:
+                if pre_py3:
+                    continue
+                raise SSLVerifyException(u'SSL signature verification failed for CSR %s ' % (self.subject))
+        raise SSLVerifyException(u'SSL signature verification failed for CSR %s ' % (self.subject))
 
     @property
     def extensions(self):
@@ -1810,6 +1820,7 @@ class SSLCertificate(BaseObjectClass):
         """Serial number of the certificate, which is used by revocation process"""
         return self.crt.serial_number
 
+
     def verify_content(self,content,signature,md='sha256',block_size=2**20):
         """Check that the signature matches the content
 
@@ -1822,27 +1833,26 @@ class SSLCertificate(BaseObjectClass):
 
         Raises SSLVerifyException
         """
-        if isinstance(content,unicode):
-            content = content.encode('utf8')
-        elif isinstance(content,(list,dict)):
-            content = jsondump(content)
+        for pre_py3 in (True,False):
+            serialized_content = serialize_content_for_signature(content,pre_py3=pre_py3)
 
-        if not isinstance(content,str):
-            raise InvalidSignature('Bad content type for verify_content, should be either str or file like')
+            # todo : recommended for new projects...
+            #apadding = padding.PSS(
+            #    mgf=padding.MGF1(get_hash_algo(md)),
+            #    salt_length=padding.PSS.MAX_LENGTH)
 
-        # todo : recommended for new projects...
-        #apadding = padding.PSS(
-        #    mgf=padding.MGF1(get_hash_algo(md)),
-        #    salt_length=padding.PSS.MAX_LENGTH)
+            # compatible with openssl sign
+            apadding = padding.PKCS1v15()
 
-        # compatible with openssl sign
-        apadding = padding.PKCS1v15()
-
-        try:
-            self.rsa.verify(signature,content,apadding,get_hash_algo(md))
-            return self.cn
-        except InvalidSignature as e:
-            raise SSLVerifyException(u'SSL signature verification failed for certificate %s issued by %s' % (self.subject,self.issuer_cn))
+            try:
+                self.rsa.verify(signature,serialized_content,apadding,get_hash_algo(md))
+                return self.cn
+            except InvalidSignature as e:
+                # backward compatibility with pre17 json serialization
+                if pre_py3:
+                    continue
+                raise SSLVerifyException(u'SSL signature verification failed for certificate %s issued by %s' % (self.subject,self.issuer_cn))
+        raise SSLVerifyException(u'SSL signature verification failed for certificate %s issued by %s' % (self.subject,self.issuer_cn))
 
     def match_key(self,key):
         """Check if certificate matches the given private key"""
@@ -2127,8 +2137,10 @@ class SSLCertificate(BaseObjectClass):
             )
 
     def build_certificate_from_csr(self,csr,ca_signing_key,validity_duration=365):
-        """
+        """Build a certificate by signing a CSR with CA certificate (self) and provided key
+
         Args:
+            self : CA certificate for issuer.
             csr (SSLCertificateSigningRequest): The certificate signing request to be signed.
             ca_signing_key (SSLPrivateKey): CA Key to sign the resulting certificate.
 
