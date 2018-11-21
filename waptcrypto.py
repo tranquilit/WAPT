@@ -1833,9 +1833,12 @@ class SSLCertificate(BaseObjectClass):
 
         Raises SSLVerifyException
         """
+        prev_serialized_content = None
         for pre_py3 in (True,False):
             serialized_content = serialize_content_for_signature(content,pre_py3=pre_py3)
-
+            # don't recheck. If we are here, signature has not been verified properly on previous round
+            if prev_serialized_content is not None and prev_serialized_content == serialized_content:
+                break
             # todo : recommended for new projects...
             #apadding = padding.PSS(
             #    mgf=padding.MGF1(get_hash_algo(md)),
@@ -1850,8 +1853,10 @@ class SSLCertificate(BaseObjectClass):
             except InvalidSignature as e:
                 # backward compatibility with pre17 json serialization
                 if pre_py3:
+                    prev_serialized_content = serialized_content
                     continue
                 raise SSLVerifyException(u'SSL signature verification failed for certificate %s issued by %s' % (self.subject,self.issuer_cn))
+
         raise SSLVerifyException(u'SSL signature verification failed for certificate %s issued by %s' % (self.subject,self.issuer_cn))
 
     def match_key(self,key):
