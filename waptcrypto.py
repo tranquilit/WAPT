@@ -1101,7 +1101,8 @@ class SSLPrivateKey(BaseObjectClass):
         reclaim['signed_attributes'] = attributes+signature_attributes
         reclaim['signer'] = signer_certificate_chain[0].fingerprint
         reclaim['signature_date'] = datetime.datetime.utcnow().isoformat()
-        #reclaim['signer_certificate'] = '\n'.join(cert.as_pem() for cert in signer_certificate_chain)
+        if signer_certificate_chain[0].issuer != signer_certificate_chain[0]:
+            reclaim['signer_certificate'] = '\n'.join(cert.as_pem() for cert in signer_certificate_chain)
         signature = base64.b64encode(self.sign_content(reclaim))
         reclaim['signature'] = signature
         return reclaim
