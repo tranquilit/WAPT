@@ -120,7 +120,7 @@ from waptpackage import EWaptBadTargetOS,EWaptNeedsNewerAgent,EWaptDiskSpace
 from waptpackage import EWaptUnavailablePackage,EWaptConflictingPackage
 from waptpackage import EWaptDownloadError,EWaptMissingPackageHook
 
-from waptpackage import REGEX_PACKAGE_CONDITION,WaptRemoteRepo,PackageEntry,PackageRequest
+from waptpackage import REGEX_PACKAGE_CONDITION,WaptRemoteRepo,PackageEntry,PackageRequest,HostCapabilities
 
 import setuphelpers
 import netifaces
@@ -3908,12 +3908,12 @@ class Wapt(BaseObjectClass):
             dict
         """
 
-        host_capa = dict(
+        host_capa = HostCapabilities(
             uuid=self.host_uuid,
             language=self.language,
             os='windows',
             os_version=setuphelpers.windows_version(),
-            arch=self.get_host_architecture(),
+            architecture=self.get_host_architecture(),
             dn=self.host_dn,
             fqdn=setuphelpers.get_hostname(),
             site=self.get_host_site(),
@@ -3943,7 +3943,7 @@ class Wapt(BaseObjectClass):
             str
 
         """
-        return hashlib.sha256(jsondump(self.host_capabilities())).hexdigest()
+        return self.host_capabilities().fingerprint()
 
     def is_locally_allowed_package(self,package):
         """Return True if package is not in blacklist and is in whitelist if whitelist is not None

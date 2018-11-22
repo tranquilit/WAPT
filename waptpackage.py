@@ -31,6 +31,7 @@ __all__ = [
     'PackageVersion',
     'PackageRequest',
     'PackageEntry',
+    'HostCapabilities',
     'WaptBaseRepo',
     'WaptLocalRepo',
     'WaptRemoteRepo',
@@ -96,7 +97,7 @@ from waptutils import _disable_file_system_redirection
 
 from waptcrypto import EWaptMissingCertificate,EWaptBadCertificate
 from waptcrypto import SSLCABundle,SSLCertificate,SSLPrivateKey,SSLCRL
-from waptcrypto import SSLVerifyException,hexdigest_for_data,hexdigest_for_file
+from waptcrypto import SSLVerifyException,hexdigest_for_data,hexdigest_for_file,serialize_content_for_signature
 
 logger = logging.getLogger()
 
@@ -235,6 +236,57 @@ class EWaptConfigurationError(EWaptException):
 
 class EWaptMissingLocalWaptFile(EWaptException):
     pass
+
+
+
+class HostCapabilities(BaseObjectClass):
+    __all_attributes = ['uuid', 'language', 'os', 'os_version', 'architecture', 'dn', 'fqdn',
+            'site', 'wapt_version', 'wapt_edition', 'packages_trusted_ca',
+            'packages_blacklist', 'packages_whitelist', 'packages_locales',
+            'packages_maturities', 'use_host_packages',
+            'host_profiles', 'host_certificate']
+    def __init__(self,**kwargs):
+        self.uuid = None
+        self.language = None
+        self.os = None
+        self.os_version = None
+        self.architecture = None
+        self.dn = None
+        self.fqdn = None
+        self.site = None
+        self.wapt_version = None
+        self.wapt_edition = None
+        self.packages_trusted_ca = None
+        self.packages_blacklist = None
+        self.packages_whitelist = None
+        self.packages_locales = None
+        self.packages_maturities = None
+        self.use_host_packages = None
+        self.host_profiles = None
+        self.host_certificate = None
+        for (k,v) in kwargs.iteritems():
+            if hasattr(self,k):
+                setattr(self,k,v)
+            else:
+                raise Exception('HostCapabilities has no attribute %s' % k)
+
+    def __getitem__(self,name):
+        if name is str or name is unicode:
+            name = name.lower()
+        if hasattr(self,name):
+            return getattr(self,name)
+        else:
+            raise Exception(u'%s : No such attribute : %s' % (self.__class__.__name__,name))
+
+    def __iter__(self):
+        for key in self.__all_attributes:
+            yield (key, getattr(self,key))
+
+    def as_dict(self):
+        return dict(self)
+
+    def fingerprint(self):
+        return hashlib.sha256(serialize_content_for_signature(self)).hexdigest()
 
 
 def PackageVersion(package_or_versionstr):
@@ -1859,6 +1911,37 @@ class PackageEntry(BaseObjectClass):
             sys.path = oldpath
 
 
+    def match_capabilities(self,capabilities):
+        if capabilities.packages_blacklist is not None:
+            for bl in capabilities.packages_blacklist:
+                if glob.fnmatch.fnmatch(self.package,bl):
+                    return False
+
+        if capabilities.packages_whitelist is not None:
+            allowed = False
+            for wl in capabilities.packages_whitelist:
+                if glob.fnmatch.fnmatch(self.package,wl):
+                    allowed = True
+                    break
+            if not allowed:
+                return False
+
+        if self.min_wapt_version and Version(self.min_wapt_version) > Version(capabilities.wapt_version):
+            return False
+        if (self.locale and self.locale != 'all') and capabilities.packages_locales is not None and not list_intersection(ensure_list(self.locale),ensure_list(capabilities.packages_locales)):
+            return False
+        if self.maturity and capabilities.packages_maturities is not None and not self.maturity in ensure_list(capabilities.packages_maturities):
+            return False
+        if self.target_os and self.target_os != capabilities.os:
+            return False
+        if self.min_os_version and capabilities.os_version is not None and Version(capabilities.os_version) < Version(self.min_os_version):
+            return False
+        if self.max_os_version and capabilities.os_version is not None and Version(capabilities.os_version) > Version(self.max_os_version):
+            return False
+        if (self.architecture and self.architecture != 'all') and capabilities.architecture is not None and not self.architecture in ensure_list(capabilities.architecture):
+            return False
+        return True
+
 class WaptPackageDev(PackageEntry):
     """Source package directory"""
 
@@ -2143,7 +2226,7 @@ class WaptBaseRepo(BaseObjectClass):
             else:
                 return True
 
-    def search(self,searchwords = [],sections=[],newest_only=False,exclude_sections=[],description_locale=None):
+    def search(self,searchwords = [],sections=[],newest_only=False,exclude_sections=[],description_locale=None,host_capabilities=None):
         """Return list of package entries
             with description or name matching all the searchwords and section in
             provided sections list
@@ -2154,6 +2237,7 @@ class WaptBaseRepo(BaseObjectClass):
             newest_only (bool) : returns only highest version of package
             exclude_sections (list or csv): list of package sections to exclude when searching
             description_locale (str): if not None, search in description using this locale
+            host_capabilities (HostCapabilities or dict): restrict output to these capabilities (os version locales, arch etc..)
 
         Returns:
             list of PackageEntry with additional _localized_description added if description_locale is provided
@@ -2164,11 +2248,16 @@ class WaptBaseRepo(BaseObjectClass):
         searchwords = ensure_list(searchwords)
         sections = ensure_list(sections)
         exclude_sections = ensure_list(exclude_sections)
+        if not isinstance(host_capabilities,HostCapabilities):
+            # if dict
+            host_capabilities = HostCapabilities(**host_capabilities)
 
         words = [ w.lower() for w in searchwords ]
 
         result = []
         for package in self.packages():
+            if host_capabilities is not None and not package.match_capabilities(host_capabilities):
+                continue
             selected = True
             if description_locale is not None:
                 _description = package.get_localized_description(description_locale)
@@ -2799,10 +2888,10 @@ class WaptRemoteRepo(WaptBaseRepo):
             filenames = waptzip.namelist()
             packages_lines = codecs.decode(waptzip.read(name='Packages'),'UTF-8').splitlines()
 
-            # load certificates and CRLs
-            signer_certificates = self.get_certificates(packages_zipfile = waptzip)
-
-        logger.debug(u'Packages index from repo %s has %s embedded certificates' % (self.name,len(signer_certificates._certificates)))
+            if self.cabundle is not None:
+                # load certificates and CRLs
+                signer_certificates = self.get_certificates(packages_zipfile = waptzip)
+                logger.debug(u'Packages index from repo %s has %s embedded certificates' % (self.name,len(signer_certificates._certificates)))
 
         startline = 0
         endline = 0
@@ -2811,7 +2900,7 @@ class WaptRemoteRepo(WaptBaseRepo):
             if start != end:
                 package = PackageEntry()
                 package.load_control_from_wapt(packages_lines[start:end])
-                logger.debug(u"%s (%s)" % (package.package,package.version))
+                #logger.debug(u"%s (%s)" % (package.package,package.version))
                 package.repo_url = self.repo_url
                 package.repo = self.name
 

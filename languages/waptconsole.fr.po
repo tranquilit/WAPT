@@ -837,6 +837,7 @@ msgid "Installer / Setup"
 msgstr "Installeur"
 
 #: tvispackagewizard.label2.caption
+msgctxt "tvispackagewizard.label2.caption"
 msgid "Architecture"
 msgstr "Architecture"
 
@@ -1922,6 +1923,16 @@ msgstr "Seulement les machines autorisées"
 msgid "Returns only computers accepting current personal certificate"
 msgstr "Ne liste que les machines qui acceptent le certificat personnel actif"
 
+#: tviswaptgui.cbfilterpackagesarch.caption
+#, fuzzy
+msgctxt "tviswaptgui.cbfilterpackagesarch.caption"
+msgid "Architecture"
+msgstr "Architecture"
+
+#: tviswaptgui.cbfilterpackageslocales.caption
+msgid "Locale"
+msgstr "Langue"
+
 #: tviswaptgui.cbforcedwsusscandownload.caption
 msgid "Force download even if already up to date"
 msgstr "Forcer le téléchargement même si déjà à jour"
@@ -1935,6 +1946,25 @@ msgstr "Sélectionne les machines qui ont cette dépendance directe"
 msgctxt "TVISWAPTGUI.CBHASERRORS.CAPTION"
 msgid "Has errors"
 msgstr "En erreurs"
+
+#: tviswaptgui.cbhostshaserrors.caption
+#, fuzzy
+msgctxt "tviswaptgui.cbhostshaserrors.caption"
+msgid "Has errors"
+msgstr "En erreurs"
+
+#: tviswaptgui.cbhostsneedupgrade.caption
+#, fuzzy
+msgctxt "tviswaptgui.cbhostsneedupgrade.caption"
+msgid "Needs updating"
+msgstr "A mettre à jour"
+
+#: tviswaptgui.cbhostsreachable.caption
+#, fuzzy
+#| msgid "Reachables only"
+msgctxt "tviswaptgui.cbhostsreachable.caption"
+msgid "Connected only"
+msgstr "Connectés"
 
 #: tviswaptgui.cbincludesubou.caption
 msgid "Include computers from  subfolders"
@@ -1967,6 +1997,7 @@ msgstr "Dernière version seulement"
 #: tviswaptgui.cbreachable.caption
 #, fuzzy
 #| msgid "Reachables only"
+msgctxt "tviswaptgui.cbreachable.caption"
 msgid "Connected only"
 msgstr "Connectés"
 
@@ -2054,6 +2085,12 @@ msgstr ""
 
 #: tviswaptgui.edsearchhost.hint
 msgctxt "tviswaptgui.edsearchhost.hint"
+msgid "Regular expressions allowed"
+msgstr "Expressions régulières autorisées"
+
+#: tviswaptgui.edsearchhosts.hint
+#, fuzzy
+msgctxt "tviswaptgui.edsearchhosts.hint"
 msgid "Regular expressions allowed"
 msgstr "Expressions régulières autorisées"
 
@@ -2426,6 +2463,145 @@ msgstr "Sélection des classifications de Mise à jour Windows"
 #: tviswuaclassificationsselect.label1.caption
 msgid "Classifications"
 msgstr "Classisications"
+
+#: tviswuagroup.actwuaallowselectedupdates.caption
+#, fuzzy
+msgctxt "tviswuagroup.actwuaallowselectedupdates.caption"
+msgid "Allow Selected Updates"
+msgstr "Autoriser les mises à jour sélectionnées"
+
+#: tviswuagroup.actwuadownloadselectedupdate.caption
+#, fuzzy
+msgctxt "tviswuagroup.actwuadownloadselectedupdate.caption"
+msgid "Download selected"
+msgstr "Télécharger les mises à jour sélectionnées"
+
+#: tviswuagroup.actwuaforbidselectedupdates.caption
+#, fuzzy
+msgctxt "tviswuagroup.actwuaforbidselectedupdates.caption"
+msgid "Forbid Selected Updates"
+msgstr "Interdire les mises à jour sélectionnées"
+
+#: tviswuagroup.actwualoadgroup.caption
+#, fuzzy
+msgctxt "tviswuagroup.actwualoadgroup.caption"
+msgid "Refresh"
+msgstr "Actualiser"
+
+#: tviswuagroup.actwualoadupdates.caption
+msgid "Load updates"
+msgstr "Charger les mises à jour Windows"
+
+#: tviswuagroup.actwuaproductallow.caption
+#, fuzzy
+msgctxt "tviswuagroup.actwuaproductallow.caption"
+msgid "Allow all updates for selected products"
+msgstr "Autoriser les mises à jour pour les produits sélectionnés"
+
+#: tviswuagroup.actwuaproductallowseverity.caption
+#, fuzzy
+msgctxt "tviswuagroup.actwuaproductallowseverity.caption"
+msgid "Allow updates for selected products and severities"
+msgstr "Autoriser les mises à jour pour les produits et criticités sélectionnés"
+
+#: tviswuagroup.actwuaproductforbid.caption
+#, fuzzy
+msgctxt "tviswuagroup.actwuaproductforbid.caption"
+msgid "Forbid updates for selected products"
+msgstr "Interdire les mises à jour pour les produits sélectionnés"
+
+#: tviswuagroup.actwuaproductforbidseverity.caption
+#, fuzzy
+msgctxt "tviswuagroup.actwuaproductforbidseverity.caption"
+msgid "Forbid updates for selected products and severities"
+msgstr "Interdire les mises à jour pour les produits et criticités sélectionnés"
+
+#: tviswuagroup.actwuaproducthide.caption
+#, fuzzy
+msgctxt "tviswuagroup.actwuaproducthide.caption"
+msgid "Hide product"
+msgstr "Cacher les produits"
+
+#: tviswuagroup.actwuaproductshow.caption
+#, fuzzy
+msgctxt "tviswuagroup.actwuaproductshow.caption"
+msgid "Show product"
+msgstr "Montrer les produits"
+
+#: tviswuagroup.actwuaresetselectedupdates.caption
+#, fuzzy
+msgctxt "tviswuagroup.actwuaresetselectedupdates.caption"
+msgid "Reset Selected"
+msgstr "Réinitialiser la sélection"
+
+#: tviswuagroup.actwuasaveupdatesgroup.caption
+#, fuzzy
+msgctxt "tviswuagroup.actwuasaveupdatesgroup.caption"
+msgid "Save"
+msgstr "Enregistrer"
+
+#: tviswuagroup.caption
+msgid "Edit Windows updates Group"
+msgstr ""
+
+#: tviswuagroup.cbwucritical.caption
+#, fuzzy
+msgctxt "tviswuagroup.cbwucritical.caption"
+msgid "Critical"
+msgstr "Critique"
+
+#: tviswuagroup.cbwuimportant.caption
+#, fuzzy
+msgctxt "tviswuagroup.cbwuimportant.caption"
+msgid "Important"
+msgstr "Important"
+
+#: tviswuagroup.cbwulow.caption
+#, fuzzy
+msgctxt "tviswuagroup.cbwulow.caption"
+msgid "Low"
+msgstr "Basse"
+
+#: tviswuagroup.cbwumoderate.caption
+#, fuzzy
+msgctxt "tviswuagroup.cbwumoderate.caption"
+msgid "Moderate"
+msgstr "Modérée"
+
+#: tviswuagroup.cbwuother.caption
+#, fuzzy
+msgctxt "tviswuagroup.cbwuother.caption"
+msgid "Other"
+msgstr "Autre"
+
+#: tviswuagroup.label1.caption
+msgid "Windows Updates Group name"
+msgstr ""
+
+#: tviswuagroup.label16.caption
+msgid "Windows Updates group content"
+msgstr ""
+
+#: tviswuagroup.label2.caption
+#, fuzzy
+msgctxt "tviswuagroup.label2.caption"
+msgid "Version"
+msgstr "Version"
+
+#: tviswuagroup.label3.caption
+#, fuzzy
+msgctxt "tviswuagroup.label3.caption"
+msgid "Description"
+msgstr "Description"
+
+#: tviswuagroup.wupanleft.caption
+msgid "wupanleft"
+msgstr ""
+
+#: tviswuagroup.wupanright.caption
+msgctxt "tviswuagroup.wupanright.caption"
+msgid "wupanright"
+msgstr ""
 
 #: tviswuapackageselect.actdefaultfilter.caption
 msgid "Default filter"
@@ -2960,12 +3136,6 @@ msgctxt "tviswuarules.label17.caption"
 msgid "Windows updates restrictions"
 msgstr "Restrictions de mises à jour Windows"
 
-#: tviswuarules.menuitem67.caption
-#, fuzzy
-msgctxt "tviswuarules.menuitem67.caption"
-msgid "-"
-msgstr "-"
-
 #: tviswuarules.panel1.caption
 msgid "Panel1"
 msgstr ""
@@ -3058,6 +3228,14 @@ msgstr ""
 #: uwaptconsoleres.rsconfirmdeletequery
 msgid "Delete query %s ?"
 msgstr ""
+
+#: uwaptconsoleres.rsconfirmdeletewudownload
+msgid "Delete download log record ?"
+msgstr "Effacer l'enregistrement de log de téléchargement ?"
+
+#: uwaptconsoleres.rsconfirmdeletewudownloads
+msgid "Delete %d download log records ?"
+msgstr "Effacer %s enregistrements de log de téléchargement ?"
 
 #: uwaptconsoleres.rsconfirmdeletewuupdate
 msgid "Delete windows update %s record and cached file ?"

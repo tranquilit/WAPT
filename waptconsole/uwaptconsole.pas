@@ -41,8 +41,17 @@ type
     ButNormalizationImport: TBitBtn;
     ButNormalizationSave: TBitBtn;
     ButNormalizationFilter: TBitBtn;
+    cbFilterPackagesArch: TCheckGroup;
+    cbFilterPackagesLocales: TCheckGroup;
+    cbHostsHasErrors: TCheckBox;
+    cbHostsNeedUpgrade: TCheckBox;
+    cbHostsReachable: TCheckBox;
     EdNormalizationFilter: TEdit;
+    EdSearchHosts: TSearchEdit;
     GridReportingQueries: TSOGrid;
+    ImgHostsHasErrors: TImage;
+    ImgHostsNeedUpgrade: TImage;
+    ImgHostsConnected: TImage;
     ImageListReports: TImageList;
     LabelReportingNumber: TLabel;
     MenuItem105: TMenuItem;
@@ -52,6 +61,7 @@ type
     ActReportingQueryReload: TAction;
     ActReportingQueryExportToExcel: TAction;
     ActReportingQueryExecute: TAction;
+    PanFilterHosts: TPanel;
     Panel18: TPanel;
     PanReportingRight: TPanel;
     PanelReportingGrid: TPanel;
@@ -102,10 +112,10 @@ type
     ActTriggerWaptwua_scan: TAction;
     ActWSUSRefresh: TAction;
     ApplicationProperties1: TApplicationProperties;
-    BitBtn1: TBitBtn;
+    ButImportFromRepo: TBitBtn;
     BitBtn10: TBitBtn;
     BitBtn11: TBitBtn;
-    BitBtn2: TBitBtn;
+    ButImportFromFile: TBitBtn;
     BitBtn9: TBitBtn;
     btAddGroup: TBitBtn;
     ButHostSearch: TBitBtn;
@@ -194,7 +204,6 @@ type
     MenuItem97: TMenuItem;
     MenuItem98: TMenuItem;
     MenuItem99: TMenuItem;
-    Panel10: TPanel;
     Panel13: TPanel;
     Panel17: TPanel;
     Panel9: TPanel;
@@ -313,6 +322,7 @@ type
     SynEditReportsSQL: TSynEdit;
     SynSQLSyn: TSynSQLSyn;
     tbReportingExportExcel: TToolButton;
+    TimerSearchPackages: TTimer;
     TimerWUALoadWinUpdates: TTimer;
     ToolBar1: TToolBar;
     TbReport: TToolBar;
@@ -656,6 +666,8 @@ type
     procedure cbAdvancedSearchClick(Sender: TObject);
     procedure cbAllClassificationsClick(Sender: TObject);
     procedure cbAllproductsClick(Sender: TObject);
+    procedure cbFilterPackagesArchItemClick(Sender: TObject; Index: integer);
+    procedure cbFilterPackagesLocalesItemClick(Sender: TObject; Index: integer);
     procedure cbGroupsDropDown(Sender: TObject);
     procedure cbGroupsKeyPress(Sender: TObject; var Key: char);
     procedure cbGroupsSelect(Sender: TObject);
@@ -747,6 +759,8 @@ type
     procedure GridHostsHeaderDblClick(Sender: TVTHeader; HitInfo: TVTHeaderHitInfo);
     procedure GridHostsNewText(Sender: TBaseVirtualTree; Node: PVirtualNode;
       Column: TColumnIndex; const NewText: String);
+    procedure GridHostsSOCompareNodes(Sender: TSOGrid; Node1,
+      Node2: ISuperObject; const Columns: array of String; var Result: Integer);
     procedure GridHostWinUpdatesChange(Sender: TBaseVirtualTree;
       Node: PVirtualNode);
     procedure GridHostTasksPendingChange(Sender: TBaseVirtualTree;
@@ -815,6 +829,7 @@ type
     procedure MenuItem74Click(Sender: TObject);
     procedure MenuItemProductsCheckAllClick(Sender: TObject);
     procedure SynEditReportsSQLChange(Sender: TObject);
+    procedure TimerSearchPackagesTimer(Sender: TObject);
     procedure TimerWUALoadWinUpdatesTimer(Sender: TObject);
   private
     { private declarations }
@@ -867,7 +882,6 @@ type
     procedure UpdateTasksReport(tasksresult: ISuperObject);
     procedure SetGridReportingData( data : ISuperObject );
     procedure SetReportingDirty(Report:ISuperObject);
-
 
   public
     { public declarations }
@@ -3691,9 +3705,58 @@ begin
 end;
 
 procedure TVisWaptGUI.ActSearchPackageExecute(Sender: TObject);
+var
+  ASA, Capabilities: ISuperObject;
+  vCapabilities: Variant;
+
+  function AtLeastOne(cg:TCheckGroup):Boolean;
+  var
+    i: Integer;
+  begin
+    for i:=0 to cg.Items.Count-1 do
+      if cg.Checked[i] then
+      begin
+        Result := True;
+        Exit;
+      end;
+    Result := False;
+  end;
+
 begin
-  EdSearchPackage.Modified:=False;
-  GridPackages.Data := PyVarToSuperObject(DMPython.MainWaptRepo.search(searchwords := EdSearchPackage.Text, exclude_sections := 'host,group,unit', newest_only := cbNewestOnly.Checked, description_locale := Language));
+  try
+    Screen.Cursor:=crHourGlass;
+
+    Capabilities := SO();
+
+    if AtLeastOne(cbFilterPackagesArch) then begin
+      ASA := TSuperObject.Create(stArray);
+      if cbFilterPackagesArch.Checked[0] then ASA.AsArray.Add('x86');
+      if cbFilterPackagesArch.Checked[1] then ASA.AsArray.Add('x64');
+      Capabilities['architecture'] := ASA;
+    end;
+
+    if AtLeastOne(cbFilterPackagesLocales) then begin
+      ASA := TSuperObject.Create(stArray);
+      if cbFilterPackagesLocales.Checked[0] then ASA.AsArray.Add('en');
+      if cbFilterPackagesLocales.Checked[1] then ASA.AsArray.Add('fr');
+      if cbFilterPackagesLocales.Checked[2] then ASA.AsArray.Add('de');
+      if cbFilterPackagesLocales.Checked[3] then ASA.AsArray.Add('it');
+      if cbFilterPackagesLocales.Checked[4] then ASA.AsArray.Add('es');
+      Capabilities['packages_locales'] := ASA;
+    end;
+
+    vCapabilities:=SuperObjectToPyVar(Capabilities);
+    EdSearchPackage.Modified:=False;
+
+    GridPackages.Data :=
+      PyVarToSuperObject(DMPython.MainWaptRepo.search(searchwords := EdSearchPackage.Text,
+         exclude_sections := 'host,group,unit',
+         newest_only := cbNewestOnly.Checked,
+         description_locale := Language,
+         host_capabilities := vCapabilities));
+  finally
+    Screen.Cursor:=crDefault;
+  end;
 end;
 
 procedure TVisWaptGUI.ActPackagesUpdateExecute(Sender: TObject);
@@ -3961,7 +4024,8 @@ end;
 
 procedure TVisWaptGUI.cbNewestOnlyClick(Sender: TObject);
 begin
-  ActSearchPackage.Execute;
+  TimerSearchPackages.Enabled:=False;
+  TimerSearchPackages.Enabled:=True;
 end;
 
 procedure TVisWaptGUI.cbSearchAllClick(Sender: TObject);
@@ -4044,6 +4108,9 @@ end;
 
 procedure TVisWaptGUI.SetReportingEditMode(AValue: Boolean);
 begin
+  if not AValue and (GridReporting.FocusedRow<>Nil) then
+    SynEditReportsSQLChange(SynEditReportsSQL);
+
   FReportingEditMode:=AValue;
 
   ToolButtonDesignQuery.Down := FReportingEditMode;
@@ -4476,54 +4543,6 @@ begin
   ActEditHostPackage.Execute;
 end;
 
-{procedure TVisWaptGUI.GridHostsCompareNodes(Sender: TBaseVirtualTree;
-  Node1, Node2: PVirtualNode; Column: TColumnIndex; var Result: integer);
-var
-  n1, n2, d1, d2: ISuperObject;
-  propname: String;
-  compresult: TSuperCompareResult;
-begin
-  Result := 0;
-  n1 := GridHosts.GetNodeSOData(Node1);
-  n2 := GridHosts.GetNodeSOData(Node2);
-
-  if (Column >= 0) and (n1 <> nil) and (n2 <> nil) then
-  begin
-    propname := TSOGridColumn(GridHosts.Header.Columns[column]).PropertyName;
-    d1 := n1[propname];
-    d2 := n2[propname];
-    if d1 = nil then
-      d1 := SO('""');
-    if d2 = nil then
-      d2 := SO('""');
-    if (d1 <> nil) and (d2 <> nil) then
-    begin
-      if (pos('version', propname) > 0) then
-        Result := CompareVersion(d1.AsString, d2.AsString)
-      {else if (pos('connected_ips', propname) > 0) then
-          Result := CompareVersion(Join('-',d1),Join('-',d2))
-      else
-      if (pos('mac_addresses', propname) > 0) then
-        Result := UTF8CompareText(d1.AsString, d2.AsString)
-      }
-      else
-      begin
-        CompResult := d1.Compare(d2);
-        case compresult of
-          cpLess: Result := -1;
-          cpEqu: Result := 0;
-          cpGreat: Result := 1;
-          cpError: Result := UTF8CompareText(UTF8Encode(n1.S[propname]), UTF8Encode(n2.S[propname]));
-        end;
-      end;
-    end
-    else
-      Result := -1;
-  end
-  else
-    Result := 0;
-end;
-}
 
 procedure TVisWaptGUI.GridHostsDragDrop(Sender: TBaseVirtualTree;
   Source: TObject; DataObject: IDataObject; Formats: TFormatArray;
@@ -4803,6 +4822,52 @@ begin
   end;
 end;
 
+procedure TVisWaptGUI.GridHostsSOCompareNodes(Sender: TSOGrid; Node1,
+  Node2: ISuperObject; const Columns: array of String; var Result: Integer);
+var
+  d1, d2: ISuperObject;
+  propname: String;
+  compresult: TSuperCompareResult;
+begin
+  Result := 0;
+
+  if (length(Columns) > 0) and (Node1 <> nil) and (Node2 <> nil) then
+  begin
+    propname := Columns[0];
+    d1 := Node1[propname];
+    d2 := Node2[propname];
+    if d1 = nil then
+      d1 := SO('""');
+    if d2 = nil then
+      d2 := SO('""');
+    if (d1 <> nil) and (d2 <> nil) then
+    begin
+      if (pos('version', propname) > 0) then
+        Result := CompareVersion(d1.AsString, d2.AsString)
+      else if (pos('connected_ips', propname) > 0) then
+          Result := CompareVersion(d1.AsArray.S[0],d2.AsArray.S[0])
+      else
+      if (pos('mac_addresses', propname) > 0) then
+        Result := UTF8CompareText(d1.AsArray.S[0], d2.AsArray.S[0])
+      else
+      begin
+        CompResult := d1.Compare(d2);
+        case compresult of
+          cpLess: Result := -1;
+          cpEqu: Result := 0;
+          cpGreat: Result := 1;
+          cpError: Result := UTF8CompareText(UTF8Encode(Node1.S[propname]), UTF8Encode(Node2.S[propname]));
+        end;
+      end;
+    end
+    else
+      Result := -1;
+  end
+  else
+    Result := 0;
+end;
+
+
 procedure TVisWaptGUI.GridHostTasksPendingChange(Sender: TBaseVirtualTree;
   Node: PVirtualNode);
 begin
@@ -5036,15 +5101,24 @@ begin
       SrcNetworks.open;
   end
   else if MainPages.ActivePage = pgWindowsUpdates then
-    ActWSUSRefresh.Execute
+  begin
+    if GridWUUpdates.Data = Nil then
+      ActWSUSRefresh.Execute
+  end
   else if MainPages.ActivePage = pgWAPTWUADownloads then
-    ActWUADownloadsRefresh.Execute
+  begin
+    if GridWUDownloads.Data = Nil then
+      ActWUADownloadsRefresh.Execute
+  end
   else if MainPages.ActivePage = PgReports then
   begin
-    if not Assigned(GridReportingQueries.Data) then
-      ActReportingQueryReload.Execute
-    else
-      ActReportingQueryExecute.Execute;
+    if not ReportingEditMode then
+    begin
+      if not Assigned(GridReportingQueries.Data) then
+        ActReportingQueryReload.Execute
+      else
+        ActReportingQueryExecute.Execute;
+    end;
   end
   else if MainPages.ActivePage = pgNormalization then
   begin
@@ -5160,6 +5234,26 @@ procedure TVisWaptGUI.ActTriggerTestLongTaskExecute(Sender: TObject);
 begin
   if (GridHosts.SelectedCount>=1) then
     TriggerActionOnHosts(ExtractField(GridHosts.SelectedRows,'uuid'),'trigger_longtask',Nil,'Trigger debug long task','Error triggering longtask %s',True)
+end;
+
+procedure TVisWaptGUI.cbFilterPackagesArchItemClick(Sender: TObject;
+  Index: integer);
+begin
+  TimerSearchPackages.Enabled:=False;
+  TimerSearchPackages.Enabled:=True;
+end;
+
+procedure TVisWaptGUI.cbFilterPackagesLocalesItemClick(Sender: TObject;
+  Index: integer);
+begin
+  TimerSearchPackages.Enabled:=False;
+  TimerSearchPackages.Enabled:=True;
+end;
+
+procedure TVisWaptGUI.TimerSearchPackagesTimer(Sender: TObject);
+begin
+  TimerSearchPackages.Enabled:=False;
+  ActSearchPackage.Execute;
 end;
 
 {$ifdef ENTERPRISE}
