@@ -43,6 +43,7 @@ type
     Label8: TLabel;
     MenuItem1: TMenuItem;
     Panel1: TPanel;
+    Panel2: TPanel;
     PopupMenu1: TPopupMenu;
     procedure ActGetServerCertificateExecute(Sender: TObject);
     procedure CBVerifyCertClick(Sender: TObject);

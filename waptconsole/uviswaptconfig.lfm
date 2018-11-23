@@ -1,24 +1,27 @@
 object VisWAPTConfig: TVisWAPTConfig
-  Left = 307
-  Height = 313
-  Top = 239
+  Left = 414
+  Height = 327
+  Top = 198
   Width = 621
+  AutoSize = True
   BorderStyle = bsDialog
   Caption = 'WAPTConsole configuration'
-  ClientHeight = 313
+  ClientHeight = 327
   ClientWidth = 621
-  OnCreate = FormCreate
+  OnDestroy = FormDestroy
   OnShow = FormShow
+  ParentFont = True
   Position = poScreenCenter
   ShowHint = True
   LCLVersion = '1.8.4.0'
   object ButtonPanel1: TButtonPanel
     Left = 6
     Height = 34
-    Top = 273
+    Top = 287
     Width = 609
     OKButton.Name = 'OKButton'
     OKButton.DefaultCaption = True
+    OKButton.OnClick = OKButtonClick
     HelpButton.Name = 'HelpButton'
     HelpButton.Caption = '&Show config file'
     HelpButton.DefaultCaption = False
@@ -33,7 +36,7 @@ object VisWAPTConfig: TVisWAPTConfig
   end
   object PageControl1: TPageControl
     Left = 0
-    Height = 267
+    Height = 281
     Top = 0
     Width = 621
     ActivePage = pgBase
@@ -43,7 +46,7 @@ object VisWAPTConfig: TVisWAPTConfig
     object pgBase: TTabSheet
       Caption = 'Base'
       ChildSizing.TopBottomSpacing = 15
-      ClientHeight = 241
+      ClientHeight = 255
       ClientWidth = 613
       object eddefault_package_prefix: TLabeledEdit
         Left = 167
@@ -82,13 +85,18 @@ object VisWAPTConfig: TVisWAPTConfig
         TabOrder = 9
       end
       object Label2: TLabel
-        Left = -109
+        AnchorSideTop.Control = edPersonalCertificatePath
+        AnchorSideRight.Control = edPersonalCertificatePath
+        Left = 0
         Height = 13
-        Top = 189
-        Width = 273
+        Top = 190
+        Width = 164
         Alignment = taRightJustify
-        AutoSize = False
+        Anchors = [akTop, akRight]
+        BorderSpacing.Top = 2
+        BorderSpacing.Right = 3
         Caption = 'Path to personal certificate'
+        Constraints.MinWidth = 164
         ParentColor = False
       end
       object edServerAddress: TLabeledEdit
@@ -205,13 +213,18 @@ object VisWAPTConfig: TVisWAPTConfig
         Width = 20
       end
       object Label6: TLabel
-        Left = 2
+        AnchorSideTop.Control = EdServerCertificate
+        AnchorSideRight.Control = EdServerCertificate
+        Left = 0
         Height = 13
         Top = 130
-        Width = 162
+        Width = 164
         Alignment = taRightJustify
-        AutoSize = False
+        Anchors = [akTop, akRight]
+        BorderSpacing.Top = 2
+        BorderSpacing.Right = 3
         Caption = 'Path to CA certificates bundle'
+        Constraints.MinWidth = 164
         ParentColor = False
       end
       object EdServerCertificate: TFileNameEdit
@@ -274,7 +287,7 @@ object VisWAPTConfig: TVisWAPTConfig
         Left = 315
         Height = 21
         Hint = 'E.g. : c:\waptdev'#13#10'Local directory for saving package development projects'
-        Top = 10
+        Top = 8
         Width = 172
         ShowHidden = False
         ButtonWidth = 23
@@ -283,54 +296,65 @@ object VisWAPTConfig: TVisWAPTConfig
         TabOrder = 0
       end
       object Label1: TLabel
-        Left = 36
+        AnchorSideTop.Control = eddefault_sources_root
+        AnchorSideRight.Control = eddefault_sources_root
+        Left = 112
         Height = 13
-        Top = 12
-        Width = 266
+        Top = 11
+        Width = 200
         Alignment = taRightJustify
-        AutoSize = False
+        Anchors = [akTop, akLeft, akRight]
+        BorderSpacing.Top = 3
+        BorderSpacing.Right = 3
         Caption = 'Base directory for package development'
         ParentColor = False
       end
       object Label4: TLabel
+        AnchorSideTop.Control = cbUseProxyForRepo
+        AnchorSideRight.Control = eddefault_sources_root
         Left = -12
         Height = 13
-        Top = 66
-        Width = 317
+        Top = 72
+        Width = 324
         Alignment = taRightJustify
-        AutoSize = False
+        Anchors = [akTop, akLeft, akRight]
         BorderSpacing.Right = 3
         Caption = 'Activates proxy when accessing the main repository'
         ParentColor = False
       end
       object Label5: TLabel
+        AnchorSideTop.Control = cbUseProxyForServer
+        AnchorSideRight.Control = eddefault_sources_root
         Left = -12
         Height = 13
-        Top = 88
-        Width = 317
+        Top = 97
+        Width = 324
         Alignment = taRightJustify
-        AutoSize = False
+        Anchors = [akTop, akLeft, akRight]
         BorderSpacing.Right = 3
         Caption = 'Activate proxy when accessing the WAPT server'
         ParentColor = False
       end
       object cbUseProxyForRepo: TCheckBox
+        AnchorSideLeft.Control = eddefault_sources_root
         Left = 315
         Height = 17
         Hint = 'Activates proxy when accessing the main repository'
-        Top = 66
+        Top = 72
         Width = 20
         TabOrder = 2
       end
       object cbUseProxyForServer: TCheckBox
+        AnchorSideLeft.Control = eddefault_sources_root
         Left = 315
         Height = 17
         Hint = 'Activate proxy when accessing the WAPT server'
-        Top = 88
+        Top = 97
         Width = 20
         TabOrder = 3
       end
       object edhttp_proxy: TLabeledEdit
+        AnchorSideLeft.Control = eddefault_sources_root
         Left = 315
         Height = 21
         Hint = 'E.g. : http://proxy.tranquilit.local:3128'#13#10'Only required if a proxy is needed for waptserver and main waptrepo'
@@ -352,8 +376,8 @@ object VisWAPTConfig: TVisWAPTConfig
       end
       object Button1: TButton
         Left = 344
-        Height = 25
-        Top = 106
+        Height = 28
+        Top = 117
         Width = 143
         Caption = 'Show statistics'
         OnClick = Button1Click
@@ -361,9 +385,10 @@ object VisWAPTConfig: TVisWAPTConfig
         Visible = False
       end
       object cbSendStats: TCheckBox
+        AnchorSideLeft.Control = eddefault_sources_root
         Left = 315
         Height = 17
-        Top = 110
+        Top = 121
         Width = 20
         Checked = True
         State = cbChecked
@@ -371,12 +396,15 @@ object VisWAPTConfig: TVisWAPTConfig
         Visible = False
       end
       object Label8: TLabel
-        Left = 11
+        AnchorSideTop.Control = cbSendStats
+        AnchorSideRight.Control = eddefault_sources_root
+        Left = 0
         Height = 13
-        Top = 110
-        Width = 294
+        Top = 121
+        Width = 312
         Alignment = taRightJustify
-        AutoSize = False
+        Anchors = [akTop, akLeft, akRight]
+        BorderSpacing.Right = 3
         Caption = 'Send anonymous usage statistics to Tranquil IT'
         ParentColor = False
         Visible = False
@@ -521,6 +549,11 @@ object VisWAPTConfig: TVisWAPTConfig
     object ActCreateKeyCert: TAction
       Caption = 'New  private key and certificate'
       Hint = 'Generate a new private key and personal certificate.'#13#10'This must be done only once per Wapt amdin user.'#13#10'When upgrading, you must not recreate a private key and certificate.'
+    end
+    object ActSaveConfig: TAction
+      Caption = 'OK'
+      OnExecute = ActSaveConfigExecute
+      OnUpdate = ActSaveConfigUpdate
     end
   end
 end

@@ -7,7 +7,8 @@ interface
 uses
   Classes, SysUtils, Forms,
   Controls, Graphics, Dialogs, ButtonPanel,
-  StdCtrls, ExtCtrls,EditBtn, DefaultTranslator, ComCtrls, ActnList, types;
+  StdCtrls, ExtCtrls,EditBtn, DefaultTranslator, ComCtrls,
+  ActnList, types,inifiles;
 
 type
 
@@ -19,6 +20,7 @@ type
     ActGetServerCertificate: TAction;
     ActCheckPersonalKey: TAction;
     ActCreateKeyCert: TAction;
+    ActSaveConfig: TAction;
     ActOpenCertDir: TAction;
     ActionList1: TActionList;
     Button1: TButton;
@@ -60,6 +62,8 @@ type
     procedure ActCheckPersonalKeyUpdate(Sender: TObject);
     procedure ActGetServerCertificateExecute(Sender: TObject);
     procedure ActGetServerCertificateUpdate(Sender: TObject);
+    procedure ActSaveConfigExecute(Sender: TObject);
+    procedure ActSaveConfigUpdate(Sender: TObject);
     procedure Button1Click(Sender: TObject);
     procedure cbManualClick(Sender: TObject);
     procedure CBVerifyCertClick(Sender: TObject);
@@ -69,15 +73,22 @@ type
     procedure edServerAddressEnter(Sender: TObject);
     procedure edServerAddressExit(Sender: TObject);
     procedure edServerAddressKeyPress(Sender: TObject; var Key: char);
-    procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure HelpButtonClick(Sender: TObject);
+    procedure OKButtonClick(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
   private
+    FIniFilename: String;
+    Finifile: TIniFile;
     function CheckServer(Address: String): Boolean;
+    function GetInifile: TIniFile;
+    procedure SetIniFilename(AValue: String);
     { private declarations }
   public
     { public declarations }
+    property IniFile: TIniFile read GetInifile;
+    property IniFileName:String read FIniFilename write SetIniFilename;
   end;
 
 var
@@ -85,8 +96,8 @@ var
 
 implementation
 uses tiscommon,waptcommon,LCLIntf,IDURI,superobject,uWaptConsoleRes,
-    tisstrings,dmwaptpython,variants,VarPyth,uvisprivatekeyauth,tisinifiles,LazFileUtils,FileUtil,
-    Windows,ActiveX,ComObj;
+    tisstrings,dmwaptpython,variants,VarPyth,uvisprivatekeyauth,tisinifiles,
+    LazFileUtils,FileUtil,strutils,Windows;
 {$R *.lfm}
 
 { TVisWAPTConfig }
@@ -114,7 +125,6 @@ begin
     edServerAddress.Text:=Host;
     if Port<>'' then
       edServerAddress.Text:=edServerAddress.Text + ':' + Port;
-
     if Document<>'' then
       edServerAddress.Text:=edServerAddress.Text+'/'+Document;
   finally
@@ -197,6 +207,33 @@ begin
   ActGetServerCertificate.Enabled := CBVerifyCert.Checked and (edwapt_server.Text <> '');
 end;
 
+procedure TVisWAPTConfig.ActSaveConfigExecute(Sender: TObject);
+begin
+  inifile.WriteString('global', 'repo_url', edrepo_url.Text);
+  inifile.WriteString('global','verify_cert',EdServerCertificate.Text);
+
+  inifile.WriteString('global', 'http_proxy', edhttp_proxy.Text);
+  inifile.WriteString('global', 'default_package_prefix',
+    LowerCase(eddefault_package_prefix.Text));
+  inifile.WriteString('global', 'wapt_server', edwapt_server.Text);
+  inifile.WriteString('global', 'default_sources_root',
+    eddefault_sources_root.Text);
+  inifile.WriteString('global', 'personal_certificate_path', edPersonalCertificatePath.Text);
+  inifile.WriteBool('global', 'use_http_proxy_for_server',
+    cbUseProxyForServer.Checked);
+  inifile.WriteBool('global', 'use_http_proxy_for_repo',
+    cbUseProxyForRepo.Checked);
+  inifile.WriteBool('global', 'send_usage_report',
+    cbSendStats.Checked);
+  //inifile.WriteString('global','default_sources_url',eddefault_sources_url.text);
+  ModalResult:=mrOk;
+end;
+
+procedure TVisWAPTConfig.ActSaveConfigUpdate(Sender: TObject);
+begin
+  ActSaveConfig.Enabled := FIniFilename <> '';
+end;
+
 procedure TVisWAPTConfig.cbManualClick(Sender: TObject);
 begin
   edrepo_url.Enabled:=cbManual.Checked;
@@ -224,7 +261,7 @@ begin
   else
     if (EdServerCertificate.Text='') or (EdServerCertificate.Text='0') then
     begin
-      EdServerCertificate.Text := IniReadString(WaptIniFilename,'global','verify_cert','0');
+      EdServerCertificate.Text := IniReadString(IniFileName,'global','verify_cert','0');
       if (LowerCase(EdServerCertificate.Text) = '0') or (LowerCase(EdServerCertificate.Text) = 'false') then
         EdServerCertificate.Text:=CARoot();
     end;
@@ -256,19 +293,24 @@ begin
   with TIdURI.Create(edrepo_url.Text) do
   try
     servername1:=Host;
+    if (Document<>'wapt') and (RightStr(Document,length('/wapt'))='/wapt') then
+      servername1:=servername1+'/'+LeftStr(Document,Length(Document)-length('/wapt'));
   finally
     Free;
   end;
   with TIdURI.Create(edwapt_server.Text) do
   try
     servername2:=Host;
+    if Document<>'' then
+      servername2:=servername2+'/'+Document;
   finally
     Free;
   end;
 
   if servername1=servername2 then
   begin
-    edServerAddress.Text:=servername1
+    edServerAddress.Text:=servername1;
+    edServerAddress.Font.Color := clDefault;
   end
   else
   begin
@@ -352,6 +394,47 @@ begin
   end;
 end;
 
+function TVisWAPTConfig.GetInifile: TIniFile;
+begin
+  if Finifile = Nil then
+    Finifile:=TIniFile.Create(FIniFilename);
+  Result := Finifile;
+end;
+
+procedure TVisWAPTConfig.SetIniFilename(AValue: String);
+begin
+  if FIniFilename=AValue then Exit;
+  FIniFilename:=AValue;
+  if Assigned(FIniFile) then
+    FreeAndNil(Finifile);
+
+  edrepo_url.Text := inifile.ReadString('global', 'repo_url', '');
+
+  EdServerCertificate.FileName:=inifile.ReadString('global','verify_cert','');
+
+  edhttp_proxy.Text := inifile.ReadString('global', 'http_proxy', '');
+  cbUseProxyForServer.Checked :=
+    inifile.ReadBool('global', 'use_http_proxy_for_server', edhttp_proxy.Text <> '');
+  cbUseProxyForRepo.Checked :=
+    inifile.ReadBool('global', 'use_http_proxy_for_repo', edhttp_proxy.Text <> '');
+
+  eddefault_package_prefix.Text :=
+    inifile.ReadString('global', 'default_package_prefix', '');
+  edwapt_server.Text := inifile.ReadString('global', 'wapt_server', '');
+
+  eddefault_sources_root.Text :=
+    inifile.ReadString('global', 'default_sources_root', 'c:\waptdev');
+
+  edPersonalCertificatePath.Text := inifile.ReadString('global', 'personal_certificate_path', '');
+  if edPersonalCertificatePath.text = '' then
+    edPersonalCertificatePath.InitialDir:=GetUserDir
+  else
+    edPersonalCertificatePath.InitialDir:=ExtractFileDir(edPersonalCertificatePath.text);
+
+  cbSendStats.Checked :=
+    inifile.ReadBool('global', 'send_usage_report', True);
+end;
+
 procedure TVisWAPTConfig.edServerAddressChange(Sender: TObject);
 begin
   //cbManual.Checked:=False;
@@ -369,8 +452,7 @@ end;
 
 procedure TVisWAPTConfig.edServerAddressExit(Sender: TObject);
 begin
-    ButtonPanel1.OKButton.Default:=True;
-
+  ButtonPanel1.OKButton.Default:=True;
 end;
 
 procedure TVisWAPTConfig.edServerAddressKeyPress(Sender: TObject; var Key: char
@@ -380,8 +462,10 @@ begin
     ActCheckAndSetwaptserver.Execute;
 end;
 
-procedure TVisWAPTConfig.FormCreate(Sender: TObject);
+procedure TVisWAPTConfig.FormDestroy(Sender: TObject);
 begin
+  If Assigned(FIniFile) then
+    FreeAndNil(Finifile);
 end;
 
 procedure TVisWAPTConfig.FormShow(Sender: TObject);
@@ -394,7 +478,12 @@ end;
 
 procedure TVisWAPTConfig.HelpButtonClick(Sender: TObject);
 begin
-  OpenDocument(AppIniFilename);
+  OpenDocument(FIniFilename);
+end;
+
+procedure TVisWAPTConfig.OKButtonClick(Sender: TObject);
+begin
+  ActSaveConfig.Execute;
 end;
 
 procedure TVisWAPTConfig.Timer1Timer(Sender: TObject);
@@ -402,9 +491,7 @@ begin
   timer1.Enabled:= False;
   ActCheckAndSetwaptserver.Enabled:=True;
   if CheckServer(edServerAddress.Text) then
-  begin
     edServerAddress.Font.Color :=clText ;
-  end;
 end;
 
 end.

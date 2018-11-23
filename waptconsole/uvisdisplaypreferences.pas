@@ -31,7 +31,6 @@ type
     Label7: TLabel;
     Panel1: TPanel;
     Panel2: TPanel;
-    procedure FormCreate(Sender: TObject);
   private
     { private declarations }
   public
@@ -43,12 +42,6 @@ var
 
 implementation
 {$R *.lfm}
-
-{ TVisDisplayPreferences }
-
-procedure TVisDisplayPreferences.FormCreate(Sender: TObject);
-begin
-end;
 
 end.
 

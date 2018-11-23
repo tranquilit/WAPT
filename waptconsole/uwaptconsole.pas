@@ -3945,74 +3945,18 @@ begin
 end;
 
 function TVisWaptGUI.EditIniFile: boolean;
-var
-  inifile: TIniFile;
 begin
   Result := False;
-  inifile := TIniFile.Create(AppIniFilename);
+  with TVisWAPTConfig.Create(self) do
   try
-    with TVisWAPTConfig.Create(self) do
-      try
-        edrepo_url.Text := inifile.ReadString('global', 'repo_url', '');
-
-        EdServerCertificate.FileName:=inifile.ReadString('global','verify_cert','');
-
-        edhttp_proxy.Text := inifile.ReadString('global', 'http_proxy', '');
-        cbUseProxyForServer.Checked :=
-          inifile.ReadBool('global', 'use_http_proxy_for_server', edhttp_proxy.Text <> '');
-        cbUseProxyForRepo.Checked :=
-          inifile.ReadBool('global', 'use_http_proxy_for_repo', edhttp_proxy.Text <> '');
-
-        //edrepo_url.text := VarPythonAsString(conf.get('global','repo_url'));
-        eddefault_package_prefix.Text :=
-          inifile.ReadString('global', 'default_package_prefix', '');
-        edwapt_server.Text := inifile.ReadString('global', 'wapt_server', '');
-
-        eddefault_sources_root.Text :=
-          inifile.ReadString('global', 'default_sources_root', 'c:\waptdev');
-
-        edPersonalCertificatePath.Text := inifile.ReadString('global', 'personal_certificate_path', '');
-        if edPersonalCertificatePath.text = '' then
-          edPersonalCertificatePath.InitialDir:=GetUserDir
-        else
-          edPersonalCertificatePath.InitialDir:=ExtractFileDir(edPersonalCertificatePath.text);
-
-        cbSendStats.Checked :=
-          inifile.ReadBool('global', 'send_usage_report', True);
-        //eddefault_sources_root.Directory := inifile.ReadString('global','default_sources_root','');
-        //eddefault_sources_url.text = inifile.ReadString('global','default_sources_url','https://srvdev/sources/%(packagename)s-wapt/trunk');
-
-        if ShowModal = mrOk then
-        begin
-          inifile.WriteString('global', 'repo_url', edrepo_url.Text);
-          inifile.WriteString('global','verify_cert',EdServerCertificate.Text);
-
-          inifile.WriteString('global', 'http_proxy', edhttp_proxy.Text);
-          inifile.WriteString('global', 'default_package_prefix',
-            LowerCase(eddefault_package_prefix.Text));
-          inifile.WriteString('global', 'wapt_server', edwapt_server.Text);
-          inifile.WriteString('global', 'default_sources_root',
-            eddefault_sources_root.Text);
-          inifile.WriteString('global', 'personal_certificate_path', edPersonalCertificatePath.Text);
-          inifile.WriteBool('global', 'use_http_proxy_for_server',
-            cbUseProxyForServer.Checked);
-          inifile.WriteBool('global', 'use_http_proxy_for_repo',
-            cbUseProxyForRepo.Checked);
-          inifile.WriteBool('global', 'send_usage_report',
-            cbSendStats.Checked);
-          //inifile.WriteString('global','default_sources_url',eddefault_sources_url.text);
-
-          DMPython.privateKeyPassword:='';
-
-          Result := True;
-        end;
-      finally
-        Free;
-      end;
-
+    IniFileName:=AppIniFilename;
+    if ShowModal = mrOk then
+    begin
+      DMPython.privateKeyPassword:='';
+      Result := True;
+    end;
   finally
-    inifile.Free;
-
+    Free;
   end;
 end;
 

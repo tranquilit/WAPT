@@ -1082,6 +1082,12 @@ msgctxt "tviswaptconfig.actopencertdir.caption"
 msgid "Explore dir"
 msgstr ""
 
+#: tviswaptconfig.actsaveconfig.caption
+#, fuzzy
+msgctxt "tviswaptconfig.actsaveconfig.caption"
+msgid "OK"
+msgstr "OK"
+
 #: tviswaptconfig.button1.caption
 msgid "Show statistics"
 msgstr "Zeige Statistiken"
