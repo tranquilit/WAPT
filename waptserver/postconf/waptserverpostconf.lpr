@@ -10,7 +10,7 @@ uses
 
   Interfaces, // this includes the LCL widgetset
   Forms, uVisServerPostconf, uwaptserverres,
-  waptcommon, waptwinutils, uvisloading, UScaleDPI,
+  waptcommon, waptwinutils, uvisloading,
   { you can add units after this }
   DefaultTranslator, indylaz, uvalidation, dmwaptpython, uutil,
   udefault;

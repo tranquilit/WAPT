@@ -6,7 +6,7 @@ library waptguihelper;
 
 uses
   Classes,SysUtils,Windows,
-  PythonEngine, Forms,uWaptBuildParams, uscaledpi,Controls, Interfaces
+  PythonEngine, Forms,uWaptBuildParams, Controls, Interfaces
   { you can add units after this };
 
 var

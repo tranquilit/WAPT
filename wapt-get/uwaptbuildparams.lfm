@@ -9,7 +9,6 @@ object VisWaptBuildParams: TVisWaptBuildParams
   ClientHeight = 241
   ClientWidth = 384
   FormStyle = fsSystemStayOnTop
-  OnCreate = FormCreate
   OnShow = FormShow
   Position = poScreenCenter
   ShowHint = True

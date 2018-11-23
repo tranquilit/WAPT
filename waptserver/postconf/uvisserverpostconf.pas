@@ -143,7 +143,7 @@ uses
   uutil,
   uvalidation,
   udefault,
-  LCLIntf, Windows, waptcommon, waptwinutils, UScaleDPI, tisinifiles,
+  LCLIntf, Windows, waptcommon, waptwinutils, tisinifiles,
   superobject, tiscommon, tisstrings, IniFiles,DCPsha256,dcpcrypt2,DCPbase64,Math;
 
 {$R *.lfm}
@@ -156,10 +156,6 @@ const
 procedure TVisWAPTServerPostConf.FormCreate(Sender: TObject);
 begin
   preload_python(nil);
-
-  // Font
-  ScaleDPI(Self,96);
-  self.html_panel.DefaultFontSize:=  ScaleY( self.html_panel.DefaultFontSize,96);
 
   // Page control
   self.PagesControl.ShowTabs:=False;

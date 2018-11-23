@@ -219,6 +219,10 @@ msgstr ""
 msgid "Use existing key"
 msgstr ""
 
+#: uvisloading.rscanceledbyuser
+msgid "Task %s has been canceled by the user"
+msgstr ""
+
 #: uwaptres.rscanceled
 msgid "canceled"
 msgstr ""

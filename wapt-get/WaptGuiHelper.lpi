@@ -58,7 +58,7 @@
         <PackageName Value="LCL" />
       </Item5>
     </RequiredPackages>
-    <Units Count="3">
+    <Units Count="2">
       <Unit0>
         <Filename Value="waptguihelper.lpr" />
         <IsPartOfProject Value="True" />
@@ -71,11 +71,6 @@
         <ResourceBaseClass Value="Form" />
         <UnitName Value="uWaptBuildParams" />
       </Unit1>
-      <Unit2>
-        <Filename Value="uscaledpi.pas" />
-        <IsPartOfProject Value="True" />
-        <UnitName Value="UScaleDPI" />
-      </Unit2>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

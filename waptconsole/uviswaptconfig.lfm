@@ -281,7 +281,7 @@ object VisWAPTConfig: TVisWAPTConfig
     end
     object pgAdvanced: TTabSheet
       Caption = 'Advanced'
-      ClientHeight = 241
+      ClientHeight = 255
       ClientWidth = 613
       object eddefault_sources_root: TDirectoryEdit
         Left = 315

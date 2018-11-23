@@ -37,7 +37,6 @@ type
     Panel3: TPanel;
     procedure ActOKExecute(Sender: TObject);
     procedure ActSelectConfExecute(Sender: TObject);
-    procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
   private
     { private declarations }
@@ -50,16 +49,11 @@ var
 
 implementation
 
-uses uSCaleDPI,LCLIntf,tisinifiles;
+uses LCLIntf,tisinifiles;
 
 {$R *.lfm}
 
 { TVisWaptBuildParams }
-
-procedure TVisWaptBuildParams.FormCreate(Sender: TObject);
-begin
-  ScaleDPI(Self,96); // 96 is the DPI you designed
-end;
 
 procedure TVisWaptBuildParams.ActOKExecute(Sender: TObject);
 begin

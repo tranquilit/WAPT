@@ -63,7 +63,7 @@
         <PackageName Value="LCL"/>
       </Item9>
     </RequiredPackages>
-    <Units Count="16">
+    <Units Count="15">
       <Unit0>
         <Filename Value="waptserverpostconf.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -82,62 +82,57 @@
         <UnitName Value="uWaptServerRes"/>
       </Unit2>
       <Unit3>
-        <Filename Value="..\..\waptconsole\uscaledpi.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="UScaleDPI"/>
-      </Unit3>
-      <Unit4>
         <Filename Value="..\..\waptconsole\uvisloading.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="VisLoading"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-      </Unit4>
-      <Unit5>
+      </Unit3>
+      <Unit4>
         <Filename Value="uvalidation.pas"/>
         <IsPartOfProject Value="True"/>
-      </Unit5>
-      <Unit6>
+      </Unit4>
+      <Unit5>
         <Filename Value="..\..\waptconsole\dmwaptpython.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="uutil.pas"/>
+        <IsPartOfProject Value="True"/>
       </Unit6>
       <Unit7>
-        <Filename Value="uutil.pas"/>
+        <Filename Value="udefault.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit7>
       <Unit8>
-        <Filename Value="udefault.pas"/>
+        <Filename Value="..\..\wapt-get\waptcommon.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit8>
       <Unit9>
-        <Filename Value="..\..\wapt-get\waptcommon.pas"/>
+        <Filename Value="..\..\wapt-get\waptwinutils.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit9>
       <Unit10>
-        <Filename Value="..\..\wapt-get\waptwinutils.pas"/>
+        <Filename Value="languages.rc"/>
         <IsPartOfProject Value="True"/>
       </Unit10>
       <Unit11>
-        <Filename Value="languages.rc"/>
+        <Filename Value="..\..\languages\waptserverpostconf.de.po"/>
         <IsPartOfProject Value="True"/>
       </Unit11>
       <Unit12>
-        <Filename Value="..\..\languages\waptserverpostconf.de.po"/>
+        <Filename Value="..\..\languages\waptserverpostconf.en.po"/>
         <IsPartOfProject Value="True"/>
       </Unit12>
       <Unit13>
-        <Filename Value="..\..\languages\waptserverpostconf.en.po"/>
+        <Filename Value="..\..\languages\waptserverpostconf.fr.po"/>
         <IsPartOfProject Value="True"/>
       </Unit13>
       <Unit14>
-        <Filename Value="..\..\languages\waptserverpostconf.fr.po"/>
-        <IsPartOfProject Value="True"/>
-      </Unit14>
-      <Unit15>
         <Filename Value="..\..\languages\waptserverpostconf.po"/>
         <IsPartOfProject Value="True"/>
-      </Unit15>
+      </Unit14>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
