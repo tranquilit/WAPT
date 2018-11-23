@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.7.0.0"
+__version__ = "1.7.2.0"
 import logging
 import sys
 import tempfile
@@ -1302,6 +1302,23 @@ def test_status_hashes():
     res = w.update_server_status()
     print res['result']['status_hashes'].keys()
 
+
+def test_capabilities():
+    from collections import defaultdict
+    import timeit
+    w = Wapt()
+    r = WaptRemoteRepo('http://srvwapt.ad.tranquil.it/wapt')
+    cap = w.host_capabilities()
+    print(cap)
+    print('read packages')
+    print(len(r.packages()))
+
+    res = defaultdict(list)
+    for p in r.packages():
+        res[p.match_capabilities(cap)].append(p)
+    print('not matching: %s' % len(res[False]))
+    print('matching: %s' % len(res[True]))
+
 if __name__ == '__main__':
     #gen_perso('htouvet',email='htouvet@tranquil.it')
     #test_discarded()
@@ -1310,7 +1327,8 @@ if __name__ == '__main__':
     #test_wua()
     #test_fix_wmi()
     #test_processes_for_file()
-    test_status_hashes()
+    #test_status_hashes()
+    test_capabilities()
     #test_wuaprogress()
     #test_certificate_expire()
     #test_install_only_not_running()

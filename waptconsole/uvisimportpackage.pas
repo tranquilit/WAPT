@@ -91,7 +91,7 @@ var
 implementation
 
 uses Variants, VarPyth, PythonEngine, uwaptconsole, tiscommon, soutils,
-  dmwaptpython, uvisloading, uvisprivatekeyauth, uWaptRes, md5, uScaleDPI,
+  dmwaptpython, uvisloading, uvisprivatekeyauth, uWaptRes, md5,
   uWaptConsoleRes, uvisrepositories, inifiles, tisstrings, tisinifiles,LCLIntf,LazFileUtils,FileUtil;
 
 {$R *.lfm}
@@ -139,8 +139,6 @@ end;
 
 procedure TVisImportPackage.FormCreate(Sender: TObject);
 begin
-  ScaleDPI(Self,96); // 96 is the DPI you designed
-  ScaleImageList(ActionsImages24,96);
 end;
 
 procedure TVisImportPackage.FillReposList;

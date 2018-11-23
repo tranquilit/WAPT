@@ -49,7 +49,7 @@ var
 
 implementation
 
-uses uSCaleDPI,dmwaptpython,tisinifiles,tiscommon,VirtualTrees,waptcommon;
+uses dmwaptpython,tisinifiles,tiscommon,VirtualTrees,waptcommon;
 
 {$R *.lfm}
 
@@ -116,8 +116,6 @@ end;
 
 procedure TvisGroupChoice.FormCreate(Sender: TObject);
 begin
-  ScaleDPI(Self,96); // 96 is the DPI you designed
-
 end;
 
 procedure TvisGroupChoice.FormShow(Sender: TObject);

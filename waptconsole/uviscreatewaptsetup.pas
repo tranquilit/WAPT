@@ -50,7 +50,6 @@ type
     procedure fnPublicCertEditingDone(Sender: TObject);
     procedure fnPublicCertExit(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
-    procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
   private
@@ -77,7 +76,7 @@ implementation
 {$R *.lfm}
 
 uses
-  Variants,dmwaptpython,IdUri,IdSSLOpenSSLHeaders,uWaptConsoleRes,uWaptRes,UScaleDPI, tiscommon,
+  Variants,dmwaptpython,IdUri,IdSSLOpenSSLHeaders,uWaptConsoleRes,uWaptRes,tiscommon,
   tisstrings,waptcommon,VarPyth,superobject,PythonEngine,inifiles,tisinifiles;
 
 { TVisCreateWaptSetup }
@@ -222,11 +221,6 @@ begin
   finally
     Free;
   end;
-end;
-
-procedure TVisCreateWaptSetup.FormCreate(Sender: TObject);
-begin
-  ScaleDPI(Self,96); // 96 is the DPI you designed
 end;
 
 procedure TVisCreateWaptSetup.FormDestroy(Sender: TObject);

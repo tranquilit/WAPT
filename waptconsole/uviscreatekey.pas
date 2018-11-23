@@ -113,7 +113,7 @@ implementation
 {$R *.lfm}
 
 uses
-  inifiles,uWaptConsoleRes,uWaptRes,uSCaleDPI, dmwaptpython,lazFileUtils,waptcommon,VarPyth;
+  inifiles,uWaptConsoleRes,uWaptRes,dmwaptpython,lazFileUtils,waptcommon,VarPyth;
 
 { TVisCreateKey }
 
@@ -365,7 +365,6 @@ procedure TVisCreateKey.FormCreate(Sender: TObject);
 var
   pkey:Utf8String;
 begin
-  ScaleDPI(Self,96); // 96 is the DPI you designed
   pkey := WaptPersonalCertificatePath;
   if pkey<>'' then
     DirectoryCert.Text:=ExtractFileDir(pkey)

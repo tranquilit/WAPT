@@ -164,7 +164,7 @@ var
 implementation
 
 uses uWaptConsoleRes,soutils, LCLType, Variants, waptcommon, dmwaptpython, jwawinuser, uvisloading,
-  uvisprivatekeyauth, uwaptconsole, tiscommon, uWaptRes,UScaleDPI,tisinifiles,tisstrings,LazFileUtils, FileUtil;
+  uvisprivatekeyauth, uwaptconsole, tiscommon, uWaptRes,tisinifiles,tisstrings,LazFileUtils, FileUtil;
 
 {$R *.lfm}
 
@@ -762,9 +762,6 @@ end;
 
 procedure TVisEditPackage.FormCreate(Sender: TObject);
 begin
-  ScaleDPI(Self,96); // 96 is the DPI you designed
-  ScaleImageList(ActionsImages,96);
-
   GridPackages.Clear;
   MemoLog.Clear;
 

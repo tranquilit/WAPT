@@ -80,7 +80,7 @@
         <PackageName Value="LCL"/>
       </Item12>
     </RequiredPackages>
-    <Units Count="27">
+    <Units Count="26">
       <Unit0>
         <Filename Value="waptconsole.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -239,41 +239,36 @@
         <UnitName Value="uVisPackageWizard"/>
       </Unit21>
       <Unit22>
-        <Filename Value="uscaledpi.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="UScaleDPI"/>
-      </Unit22>
-      <Unit23>
         <Filename Value="uvischangekeypassword.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="VisChangeKeyPassword"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uVisChangeKeyPassword"/>
-      </Unit23>
-      <Unit24>
+      </Unit22>
+      <Unit23>
         <Filename Value="uvisrepositories.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="VisRepositories"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-      </Unit24>
-      <Unit25>
+      </Unit23>
+      <Unit24>
         <Filename Value="uvisdisplaypreferences.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="VisDisplayPreferences"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uVisDisplayPreferences"/>
-      </Unit25>
-      <Unit26>
+      </Unit24>
+      <Unit25>
         <Filename Value="uvishostdelete.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="VisHostDelete"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uVisHostDelete"/>
-      </Unit26>
+      </Unit25>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

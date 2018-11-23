@@ -38,7 +38,7 @@ var
 
 implementation
 
-uses uSCaleDPI,dmwaptpython,VarPyth,waptcommon,variants;
+uses dmwaptpython,VarPyth,waptcommon,variants;
 
 {$R *.lfm}
 
@@ -46,7 +46,6 @@ uses uSCaleDPI,dmwaptpython,VarPyth,waptcommon,variants;
 
 procedure TVisChangeKeyPassword.FormCreate(Sender: TObject);
 begin
-  ScaleDPI(Self,96); // 96 is the DPI you designed
   EdKeyFilename.text := VarPythonAsString(DMPython.waptdevutils.get_private_key_encrypted(certificate_path:=FileExists(WaptPersonalCertificatePath),password:=DMPython.privateKeyPassword));
   if EdKeyFilename.Text <>'' then
     edOldKeyPassword.Text:= DMPython.privateKeyPassword;

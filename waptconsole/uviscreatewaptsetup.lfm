@@ -1,13 +1,13 @@
 object VisCreateWaptSetup: TVisCreateWaptSetup
   Left = 409
-  Height = 537
-  Top = 218
+  Height = 546
+  Top = 209
   Width = 560
+  AutoSize = True
   Caption = 'Create WAPT agent'
-  ClientHeight = 537
+  ClientHeight = 546
   ClientWidth = 560
   OnCloseQuery = FormCloseQuery
-  OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
   Position = poMainFormCenter
@@ -35,12 +35,10 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
     Left = 12
     Height = 13
     Top = 13
-    Width = 228
+    Width = 193
     Alignment = taRightJustify
     Caption = 'Authorized Packages Certificates Bundle'
-    Font.Style = [fsBold]
     ParentColor = False
-    ParentFont = False
   end
   object edRepoUrl: TEdit
     Left = 262
@@ -59,9 +57,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
     Alignment = taRightJustify
     AutoSize = False
     Caption = 'Main WAPT repository address :'
-    Font.Style = [fsBold]
     ParentColor = False
-    ParentFont = False
   end
   object edOrgName: TEdit
     Left = 262
@@ -84,18 +80,19 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
   end
   object Panel1: TPanel
     Left = 0
-    Height = 27
-    Top = 510
+    Height = 24
+    Top = 522
     Width = 560
     Align = alBottom
+    AutoSize = True
     BevelOuter = bvNone
-    ClientHeight = 27
+    ClientHeight = 24
     ClientWidth = 560
     TabOrder = 11
     object BitBtn1: TBitBtn
       Left = 399
       Height = 24
-      Top = 2
+      Top = 0
       Width = 75
       Anchors = [akTop, akRight]
       Default = True
@@ -107,7 +104,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
     object BitBtn2: TBitBtn
       Left = 479
       Height = 24
-      Top = 2
+      Top = 0
       Width = 75
       Anchors = [akTop, akRight]
       Cancel = True
@@ -126,9 +123,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
     Alignment = taRightJustify
     AutoSize = False
     Caption = 'Save waptagent.exe as...  '
-    Font.Style = [fsBold]
     ParentColor = False
-    ParentFont = False
     Visible = False
   end
   object fnWaptDirectory: TDirectoryEdit
@@ -161,9 +156,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
     Alignment = taRightJustify
     AutoSize = False
     Caption = 'WAPT server address :'
-    Font.Style = [fsBold]
     ParentColor = False
-    ParentFont = False
   end
   object Label6: TLabel
     Left = 8
@@ -312,6 +305,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
     Header.Height = 18
     Header.MinHeight = 18
     Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
+    Header.ParentFont = True
     Header.SortColumn = 0
     Header.Style = hsFlatButtons
     TabOrder = 1
@@ -325,7 +319,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
   object Label7: TLabel
     Left = 12
     Height = 13
-    Top = 40
+    Top = 37
     Width = 407
     Caption = 'Authorized packages Certificates which will be bundled with the Wapt Agent  installer'
     ParentColor = False

@@ -952,7 +952,7 @@ uses LCLIntf, LCLType, IniFiles, variants, LazFileUtils,FileUtil, uvisprivatekey
   dmwaptpython, uviseditpackage, uvislogin, uviswaptconfig, uvischangepassword,
   uvisgroupchoice, uvistriggerhostsaction, uVisAPropos,
   uVisImportPackage, PythonEngine, Clipbrd, RegExpr, tisinifiles, IdURI,
-  uScaleDPI, uVisPackageWizard, uVisChangeKeyPassword, uVisDisplayPreferences,
+  uVisPackageWizard, uVisChangeKeyPassword, uVisDisplayPreferences,
   uvisrepositories, uVisHostDelete, windirs,winutils
   {$ifdef wsus}
   ,uVisWUAGroup, uVisWAPTWUAProducts, uviswuapackageselect,
@@ -4064,9 +4064,6 @@ end;
 
 procedure TVisWaptGUI.FormCreate(Sender: TObject);
 begin
-  ScaleDPI(Self,96); // 96 is the DPI you designed
-  ScaleImageList(ImageList1,96);
-  ScaleImageList(ActionsImages24,96);
   WaptServerUser := IniReadString(Appuserinipath,self.name,'lastwaptserveruser','admin');
   HostsLimit := 2000;
   DMPython.PythonOutput.OnSendData := @PythonOutputSendData;

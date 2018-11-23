@@ -29,7 +29,7 @@ var
   VisChangePassword: TVisChangePassword;
 
 implementation
-uses uWaptConsoleRes,waptcommon,UScaleDPI;
+uses uWaptConsoleRes,waptcommon;
 
 {$R *.lfm}
 
@@ -66,8 +66,6 @@ end;
 
 procedure TVisChangePassword.FormCreate(Sender: TObject);
 begin
-    ScaleDPI(Self,96); // 96 is the DPI you designed
-
 end;
 
 end.

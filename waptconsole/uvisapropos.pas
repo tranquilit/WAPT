@@ -34,7 +34,7 @@ var
   VisApropos: TVisApropos;
 
 implementation
-uses uWaptConsoleRes,tiscommon,waptcommon,LCLIntf,UScaleDPI,tisstrings, uwaptconsole,dmwaptpython;
+uses uWaptConsoleRes,tiscommon,waptcommon,LCLIntf,tisstrings, uwaptconsole,dmwaptpython;
 {$R *.lfm}
 
 { TVisApropos }
@@ -46,7 +46,6 @@ var
   Licence: Variant;
   TotalCount:Integer;
 begin
-  ScaleDPI(Self,96); // 96 is the DPI you designed
   Image1.Picture.LoadFromResourceName(HINSTANCE,'WAPT_PNG',TPortableNetworkGraphic);
 
   LabInfos.Caption := ApplicationName+' '+GetApplicationVersion+' (c) 2012-2018 Tranquil IT Systems.';

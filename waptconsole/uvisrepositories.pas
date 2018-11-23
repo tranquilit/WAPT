@@ -99,7 +99,7 @@ var
   VisRepositories: TVisRepositories;
 
 implementation
-uses uSCaleDPI,LCLIntf,tisinifiles,IniFiles,tiscommon,URIParser,dmwaptpython,variants,VarPyth,tisstrings,uWaptConsoleRes,LazFileUtils;
+uses LCLIntf,tisinifiles,IniFiles,tiscommon,URIParser,dmwaptpython,variants,VarPyth,tisstrings,uWaptConsoleRes,LazFileUtils;
 {$R *.lfm}
 
 { TVisRepositories }
@@ -123,9 +123,6 @@ end;
 
 procedure TVisRepositories.FormCreate(Sender: TObject);
 begin
-  ScaleDPI(Self,96); // 96 is the DPI you designed
-  ScaleImageList(ImageList1,96);
-
   FWaptRepo := TWaptRepo.Create(FRepoName);
 
   FillReposList;

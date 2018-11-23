@@ -16,7 +16,7 @@ uses
   uwaptconsole, uVisCreateKey, dmwaptpython, uVisEditPackage,
   uviscreatewaptsetup, uvislogin, uvisprivatekeyauth, uvisloading,
   uviswaptconfig, uvischangepassword, uvistriggerhostsaction, uVisAPropos,
-  uVisImportPackage, uwaptconsoleres, uVisPackageWizard, uscaledpi,
+  uVisImportPackage, uwaptconsoleres, uVisPackageWizard,
   uVisChangeKeyPassword, uvisrepositories, uvisdisplaypreferences,
   uVisHostDelete,waptcommon,Dialogs,Controls,windows,tiscommon;
 

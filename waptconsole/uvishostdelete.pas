@@ -31,15 +31,12 @@ var
   VisHostDelete: TVisHostDelete;
 
 implementation
-uses UScaleDPI;
 {$R *.lfm}
 
 { TVisHostDelete }
 
 procedure TVisHostDelete.FormCreate(Sender: TObject);
 begin
-  ScaleDPI(Self,96); // 96 is the DPI you designed
-
 end;
 
 end.

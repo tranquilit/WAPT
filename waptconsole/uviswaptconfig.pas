@@ -85,7 +85,7 @@ var
 
 implementation
 uses tiscommon,waptcommon,LCLIntf,IDURI,superobject,uWaptConsoleRes,
-    uScaleDPI,tisstrings,dmwaptpython,variants,VarPyth,uvisprivatekeyauth,tisinifiles,LazFileUtils,FileUtil,
+    tisstrings,dmwaptpython,variants,VarPyth,uvisprivatekeyauth,tisinifiles,LazFileUtils,FileUtil,
     Windows,ActiveX,ComObj;
 {$R *.lfm}
 
@@ -382,8 +382,6 @@ end;
 
 procedure TVisWAPTConfig.FormCreate(Sender: TObject);
 begin
-  ScaleDPI(Self,96); // 96 is the DPI you designed
-  ScaleImageList(ImageList1,96);
 end;
 
 procedure TVisWAPTConfig.FormShow(Sender: TObject);

@@ -42,15 +42,12 @@ var
   VisDisplayPreferences: TVisDisplayPreferences;
 
 implementation
-uses uSCaleDPI;
 {$R *.lfm}
 
 { TVisDisplayPreferences }
 
 procedure TVisDisplayPreferences.FormCreate(Sender: TObject);
 begin
-  ScaleDPI(Self,96); // 96 is the DPI you designed
-
 end;
 
 end.

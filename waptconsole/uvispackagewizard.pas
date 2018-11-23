@@ -54,7 +54,7 @@ var
 
 implementation
 
-uses Dialogs,dmwaptpython,superobject,uWaptRes,uWaptConsoleRes,waptcommon,UScaleDPI,VarPyth;
+uses Dialogs,dmwaptpython,superobject,uWaptRes,uWaptConsoleRes,waptcommon,VarPyth;
 
 {$R *.lfm}
 
@@ -140,10 +140,6 @@ end;
 
 procedure TVisPackageWizard.FormCreate(Sender: TObject);
 begin
-  ScaleDPI(Self,96); // 96 is the DPI you designed
-  //ScaleImageList(ImageList1,96);
-  //ScaleImageList(ActionsImages,96);
-
 end;
 
 procedure TVisPackageWizard.SetInstallerFilename(AValue: String);
