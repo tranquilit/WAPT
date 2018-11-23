@@ -17,6 +17,7 @@ object VisWaptGUI: TVisWaptGUI
   OnDragOver = FormDragOver
   OnDropFiles = FormDropFiles
   OnShow = FormShow
+  ParentFont = True
   Position = poScreenCenter
   SessionProperties = 'PanOrgUnits.Width'
   ShowHint = True
@@ -2220,6 +2221,7 @@ object VisWaptGUI: TVisWaptGUI
           Header.Height = 18
           Header.MinHeight = 18
           Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
+          Header.ParentFont = True
           Header.Style = hsFlatButtons
           HintMode = hmHintAndDefault
           Images = ImageList1

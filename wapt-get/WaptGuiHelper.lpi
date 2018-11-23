@@ -1,132 +1,137 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
   <ProjectOptions>
-    <Version Value="10"/>
-    <PathDelim Value="\"/>
+    <Version Value="10" />
+    <PathDelim Value="\" />
     <General>
       <Flags>
-        <MainUnitHasCreateFormStatements Value="False"/>
-        <MainUnitHasTitleStatement Value="False"/>
+        <MainUnitHasCreateFormStatements Value="False" />
+        <MainUnitHasTitleStatement Value="False" />
       </Flags>
-      <SessionStorage Value="InProjectDir"/>
-      <MainUnit Value="0"/>
-      <Title Value="waptguihelper"/>
-      <UseAppBundle Value="False"/>
-      <ResourceType Value="res"/>
-      <Icon Value="0"/>
+      <SessionStorage Value="InProjectDir" />
+      <MainUnit Value="0" />
+      <Title Value="waptguihelper" />
+      <UseAppBundle Value="False" />
+      <ResourceType Value="res" />
+      <UseXPManifest Value="True" />
+      <XPManifest>
+        <DpiAware Value="True" />
+        <TextName Value="Tranquil IT Systems WAPT" />
+        <TextDesc Value="Helper for GUI dialogs in Wapt" />
+      </XPManifest>
+      <Icon Value="0" />
     </General>
     <i18n>
-      <EnableI18N LFM="False"/>
+      <EnableI18N LFM="False" />
     </i18n>
     <VersionInfo>
-      <UseVersionInfo Value="True"/>
-      <MajorVersionNr Value="1"/>
-      <MinorVersionNr Value="6"/>
-      <BuildNr Value="1"/>
-      <StringTable FileDescription="WAPT GUI Helper for python dialogs" ProductName="WAPT" ProductVersion="1.6.0.0"/>
-    </VersionInfo>
+      <UseVersionInfo Value="True" />
+      <MajorVersionNr Value="1" />
+      <MinorVersionNr Value="7" />
+      <RevisionNr Value="2" />
+      <StringTable FileDescription="WAPT GUI Helper for python dialogs" LegalCopyright="Tranquil IT Systems 2012-2018" ProductName="WAPT Enterprise Edition" ProductVersion="1.7.2" />
+    <BuildNr Value="0" /></VersionInfo>
     <BuildModes Count="1">
-      <Item1 Name="Default" Default="True"/>
+      <Item1 Default="True" Name="Default" />
     </BuildModes>
     <PublishOptions>
-      <Version Value="2"/>
+      <Version Value="2" />
     </PublishOptions>
     <RunParams>
       <local>
-        <FormatVersion Value="1"/>
+        <FormatVersion Value="1" />
       </local>
     </RunParams>
     <RequiredPackages Count="5">
       <Item1>
-        <PackageName Value="python4lazarus_package"/>
+        <PackageName Value="python4lazarus_package" />
       </Item1>
       <Item2>
-        <PackageName Value="pltis_utils"/>
+        <PackageName Value="pltis_utils" />
       </Item2>
       <Item3>
-        <PackageName Value="pltis_wapt"/>
+        <PackageName Value="pltis_wapt" />
       </Item3>
       <Item4>
-        <PackageName Value="FCL"/>
+        <PackageName Value="FCL" />
       </Item4>
       <Item5>
-        <PackageName Value="LCL"/>
+        <PackageName Value="LCL" />
       </Item5>
     </RequiredPackages>
     <Units Count="3">
       <Unit0>
-        <Filename Value="waptguihelper.lpr"/>
-        <IsPartOfProject Value="True"/>
+        <Filename Value="waptguihelper.lpr" />
+        <IsPartOfProject Value="True" />
       </Unit0>
       <Unit1>
-        <Filename Value="uwaptbuildparams.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="VisWaptBuildParams"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="uWaptBuildParams"/>
+        <Filename Value="uwaptbuildparams.pas" />
+        <IsPartOfProject Value="True" />
+        <ComponentName Value="VisWaptBuildParams" />
+        <HasResources Value="True" />
+        <ResourceBaseClass Value="Form" />
+        <UnitName Value="uWaptBuildParams" />
       </Unit1>
       <Unit2>
-        <Filename Value="uscaledpi.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="UScaleDPI"/>
+        <Filename Value="uscaledpi.pas" />
+        <IsPartOfProject Value="True" />
+        <UnitName Value="UScaleDPI" />
       </Unit2>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
-    <Version Value="11"/>
-    <PathDelim Value="\"/>
+    <Version Value="11" />
+    <PathDelim Value="\" />
     <Target>
-      <Filename Value="..\waptguihelper.pyd" ApplyConventions="False"/>
+      <Filename ApplyConventions="False" Value="..\waptguihelper.pyd" />
     </Target>
     <SearchPaths>
-      <IncludeFiles Value="$(ProjOutDir)"/>
-      <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
+      <IncludeFiles Value="$(ProjOutDir)" />
+      <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)" />
     </SearchPaths>
     <CodeGeneration>
-      <SmartLinkUnit Value="True"/>
-      <RelocatableUnit Value="True"/>
+      <SmartLinkUnit Value="True" />
+      <RelocatableUnit Value="True" />
       <Checks>
-        <IOChecks Value="True"/>
-        <RangeChecks Value="True"/>
-        <OverflowChecks Value="True"/>
-        <StackChecks Value="True"/>
+        <IOChecks Value="True" />
+        <RangeChecks Value="True" />
+        <OverflowChecks Value="True" />
+        <StackChecks Value="True" />
       </Checks>
-      <SmallerCode Value="True"/>
+      <SmallerCode Value="True" />
     </CodeGeneration>
     <Linking>
       <Debugging>
-        <StripSymbols Value="True"/>
-        <UseExternalDbgSyms Value="True"/>
+        <StripSymbols Value="True" />
+        <UseExternalDbgSyms Value="True" />
       </Debugging>
-      <LinkSmart Value="True"/>
+      <LinkSmart Value="True" />
       <Options>
-        <PassLinkerOptions Value="True"/>
-        <LinkerOptions Value="-framework Python"/>
+        <PassLinkerOptions Value="True" />
+        <LinkerOptions Value="-framework Python" />
         <Win32>
-          <GraphicApplication Value="True"/>
+          <GraphicApplication Value="True" />
         </Win32>
-        <ExecutableType Value="Library"/>
+        <ExecutableType Value="Library" />
       </Options>
     </Linking>
     <Other>
-      <WriteFPCLogo Value="False"/>
-      <CustomOptions Value="-dUseCThreads"/>
+      <WriteFPCLogo Value="False" />
+      <CustomOptions Value="-dUseCThreads -dENTERPRISE" />
       <ExecuteAfter>
-        <CompileReasons Run="False"/>
+        <CompileReasons Run="False" />
       </ExecuteAfter>
     </Other>
   </CompilerOptions>
   <Debugging>
     <Exceptions Count="3">
       <Item1>
-        <Name Value="EAbort"/>
+        <Name Value="EAbort" />
       </Item1>
       <Item2>
-        <Name Value="ECodetoolError"/>
+        <Name Value="ECodetoolError" />
       </Item2>
       <Item3>
-        <Name Value="EFOpenError"/>
+        <Name Value="EFOpenError" />
       </Item3>
     </Exceptions>
   </Debugging>

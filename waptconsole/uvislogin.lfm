@@ -12,6 +12,7 @@ object VisLogin: TVisLogin
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnShow = FormShow
+  ParentFont = True
   Position = poScreenCenter
   ShowHint = True
   ShowInTaskBar = stAlways
@@ -87,6 +88,7 @@ object VisLogin: TVisLogin
       Caption = 'Server'
       Layout = tlCenter
       ParentColor = False
+      ParentFont = False
     end
     object Panel3: TPanel
       Left = 93

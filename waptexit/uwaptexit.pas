@@ -79,7 +79,7 @@ var
 
 implementation
 
-uses soutils,IniFiles,waptcommon,tisstrings, uScaleDPI,waptwinutils,tiscommon,typinfo;
+uses soutils,IniFiles,waptcommon,tisstrings, waptwinutils,tiscommon,typinfo;
 {$R *.lfm}
 {$ifdef ENTERPRISE }
 {$R res_enterprise.rc}
@@ -200,8 +200,8 @@ begin
   else
     CustomLogo.Picture.LoadFromResourceName(HINSTANCE,'WAPT_PNG',TPortableNetworkGraphic);
 
-  ScaleDPI(Self,96); // 96 is the DPI you designed
-  ScaleImageList(ImageList1,96);
+  //ScaleDPI(Self,96); // 96 is the DPI you designed
+  //ScaleImageList(ImageList1,96);
 
   ReadWaptConfig(WaptIniFilename);
 
@@ -241,7 +241,6 @@ procedure TVisWaptExit.FormShow(Sender: TObject);
 var
   aso: ISuperObject;
 begin
-
   ActShowDetails.Checked:=False;
 
   aso := Nil;
@@ -281,7 +280,10 @@ begin
 
   //check if upgrades
   if not ShouldBeUpgraded and not WorkInProgress then
-    Application.terminate
+  begin
+    Application.terminate;
+    Abort;
+  end
   else
   begin
     ActUpgrade.Enabled := ShouldBeUpgraded;

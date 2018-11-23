@@ -22,7 +22,6 @@ type
     Panel1: TPanel;
     Panel2: TPanel;
     procedure edPasswordKeyKeyPress(Sender: TObject; var Key: char);
-    procedure FormCreate(Sender: TObject);
   private
     { private declarations }
   public
@@ -33,8 +32,6 @@ var
   VisPrivateKeyAuth: TVisPrivateKeyAuth;
 
 implementation
-
-uses uSCaleDPI;
 
 {$R *.lfm}
 
@@ -47,11 +44,6 @@ begin
   begin
      BitBtn1.Click;
   end;
-end;
-
-procedure TVisPrivateKeyAuth.FormCreate(Sender: TObject);
-begin
-  ScaleDPI(Self,96); // 96 is the DPI you designed
 end;
 
 end.

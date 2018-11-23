@@ -1,23 +1,23 @@
 object VisWUAGroup: TVisWUAGroup
-  Left = 829
-  Height = 592
-  Top = 362
-  Width = 840
+  Left = 684
+  Height = 626
+  Top = 207
+  Width = 878
   Caption = 'Edit Windows updates Group'
-  ClientHeight = 592
-  ClientWidth = 840
+  ClientHeight = 626
+  ClientWidth = 878
   OnCreate = FormCreate
   OnShow = FormShow
-  LCLVersion = '1.3'
+  LCLVersion = '1.8.4.0'
   object panhautwinupdates: TPanel
     Left = 0
     Height = 48
     Top = 0
-    Width = 840
+    Width = 878
     Align = alTop
     BevelOuter = bvNone
     ClientHeight = 48
-    ClientWidth = 840
+    ClientWidth = 878
     TabOrder = 0
     object EdWUAGroupName: TEdit
       Left = 8
@@ -62,19 +62,19 @@ object VisWUAGroup: TVisWUAGroup
   end
   object Splitter6: TSplitter
     Left = 447
-    Height = 494
+    Height = 528
     Top = 48
     Width = 5
   end
   object panbaswinupdates: TPanel
     Left = 0
     Height = 50
-    Top = 542
-    Width = 840
+    Top = 576
+    Width = 878
     Align = alBottom
     BevelOuter = bvNone
     ClientHeight = 50
-    ClientWidth = 840
+    ClientWidth = 878
     TabOrder = 2
     object BitBtn3: TBitBtn
       Left = 8
@@ -111,23 +111,25 @@ object VisWUAGroup: TVisWUAGroup
   end
   object wupanright: TPanel
     Left = 452
-    Height = 494
+    Height = 528
     Top = 48
-    Width = 388
+    Width = 426
     Align = alClient
     BevelOuter = bvNone
     Caption = 'wupanright'
-    ClientHeight = 494
-    ClientWidth = 388
+    ClientHeight = 528
+    ClientWidth = 426
     TabOrder = 3
     object GridWinUpdates: TSOGrid
       Left = 0
-      Height = 271
+      Height = 305
       Top = 223
-      Width = 388
+      Width = 426
+      ShowAdvancedColumnsCustomize = False
       Align = alClient
       BorderSpacing.Top = 2
       Color = clWhite
+      Colors.UnfocusedColor = clMedGray
       Header.AutoSizeIndex = -1
       Header.Columns = <      
         item
@@ -233,7 +235,7 @@ object VisWUAGroup: TVisWUAGroup
       Left = 0
       Height = 25
       Top = 0
-      Width = 388
+      Width = 426
       Align = alTop
       BevelOuter = bvNone
       TabOrder = 1
@@ -242,10 +244,12 @@ object VisWUAGroup: TVisWUAGroup
       Left = 0
       Height = 169
       Top = 27
-      Width = 388
+      Width = 426
+      ShowAdvancedColumnsCustomize = False
       Align = alTop
       BorderSpacing.Top = 2
       Color = clWhite
+      Colors.UnfocusedColor = clMedGray
       Header.AutoSizeIndex = -1
       Header.Columns = <      
         item
@@ -288,11 +292,11 @@ object VisWUAGroup: TVisWUAGroup
       Left = 0
       Height = 25
       Top = 196
-      Width = 388
+      Width = 426
       Align = alTop
       BevelOuter = bvNone
       ClientHeight = 25
-      ClientWidth = 388
+      ClientWidth = 426
       TabOrder = 3
       object cbWUCritical: TCheckBox
         Left = 0
@@ -345,13 +349,13 @@ object VisWUAGroup: TVisWUAGroup
   end
   object wupanleft: TPanel
     Left = 0
-    Height = 494
+    Height = 528
     Top = 48
     Width = 447
     Align = alLeft
     BevelOuter = bvNone
     Caption = 'wupanleft'
-    ClientHeight = 494
+    ClientHeight = 528
     ClientWidth = 447
     TabOrder = 4
     object Panel14: TPanel
@@ -375,12 +379,14 @@ object VisWUAGroup: TVisWUAGroup
     end
     object GridWUARules: TSOGrid
       Left = 0
-      Height = 473
+      Height = 507
       Top = 21
       Width = 447
+      ShowAdvancedColumnsCustomize = False
       Align = alClient
       BorderSpacing.Top = 2
       Color = clWhite
+      Colors.UnfocusedColor = clMedGray
       Header.AutoSizeIndex = -1
       Header.Columns = <      
         item

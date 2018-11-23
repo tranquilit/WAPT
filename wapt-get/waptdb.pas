@@ -24,8 +24,8 @@ unit waptdb;
 {$mode objfpc}{$H+}
 interface
   uses
-     Classes, SysUtils, Windows,
-     DB,sqldb,sqlite3conn,SuperObject,syncobjs,IdComponent,tiscommon,tisstrings, DefaultTranslator;
+     Classes, SysUtils,
+     DB,sqldb,sqlite3conn,SuperObject,syncobjs,IdComponent,DefaultTranslator;
 
 type
   TFormatHook = Function(Dataset:TDataset;Data,FN:Utf8String):UTF8String of object;
@@ -56,7 +56,7 @@ type
 
 implementation
 
-uses LazFileUtils, soutils,sodbutils, Variants;
+uses LazFileUtils, sodbutils, Variants;
 
 constructor TWAPTDB.create(dbpath:String);
 begin

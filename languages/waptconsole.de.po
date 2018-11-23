@@ -3195,6 +3195,12 @@ msgctxt "TVISWUARULES.WUPANRIGHT.CAPTION"
 msgid "wupanright"
 msgstr "wupanright"
 
+#: uvisloading.rscanceledbyuser
+#, fuzzy
+msgctxt "uvisloading.rscanceledbyuser"
+msgid "Task %s has been canceled by the user"
+msgstr "Der Task %s wurde vom Benutzer abgebrochen"
+
 #: uwaptconsoleres.rsaddadsgroups
 #, fuzzy
 #| msgid ""
@@ -4422,11 +4428,6 @@ msgstr "Bearbeiten Sie die Paketbündel-Konfiguration"
 msgctxt "uwaptconsoleres.rscanceled"
 msgid "canceled"
 msgstr "Abgebrochen"
-
-#: uwaptconsoleres.rscanceledbyuser
-msgctxt "uwaptconsoleres.rscanceledbyuser"
-msgid "Task %s has been canceled by the user"
-msgstr "Der Task %s wurde vom Benutzer abgebrochen"
 
 #: uwaptconsoleres.rscanceledtask
 msgctxt "uwaptconsoleres.rscanceledtask"

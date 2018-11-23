@@ -45,8 +45,12 @@ type
 var
   VisLoading: TVisLoading;
 
+resourcestring
+    rsCanceledByUser = 'Task %s has been canceled by the user';
+
+
 implementation
-uses uWaptConsoleRes,uScaleDPI;
+uses uWaptConsoleRes;
 
 procedure ShowLoadWait(Msg: String; Progress: Integer; MaxProgress: Integer);
 begin
@@ -95,7 +99,6 @@ end;
 
 procedure TVisLoading.FormCreate(Sender: TObject);
 begin
-  ScaleDPI(Self,96); // 96 is the DPI you designed
   AProgressBar.Min:=0;
 end;
 

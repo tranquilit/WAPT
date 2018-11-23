@@ -3150,6 +3150,12 @@ msgctxt "tviswuarules.wupanright.caption"
 msgid "wupanright"
 msgstr ""
 
+#: uvisloading.rscanceledbyuser
+#, fuzzy
+msgctxt "uvisloading.rscanceledbyuser"
+msgid "Task %s has been canceled by the user"
+msgstr "La tâche %s a été interrompue par l'utilisateur"
+
 #: uwaptconsoleres.rsaddadsgroups
 msgid ""
 "This will get the Active Directory groups of each selected host and \n"
@@ -3174,11 +3180,6 @@ msgstr "Editer la configuration d'un groupe de paquets"
 msgctxt "uwaptconsoleres.rscanceled"
 msgid "canceled"
 msgstr "annulé"
-
-#: uwaptconsoleres.rscanceledbyuser
-msgctxt "uwaptconsoleres.rscanceledbyuser"
-msgid "Task %s has been canceled by the user"
-msgstr "La tâche %s a été interrompue par l'utilisateur"
 
 #: uwaptconsoleres.rscanceledtask
 msgctxt "uwaptconsoleres.rscanceledtask"

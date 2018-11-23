@@ -14,8 +14,9 @@ object VisLoading: TVisLoading
   ClientHeight = 171
   ClientWidth = 305
   OnCreate = FormCreate
+  ParentFont = True
   Position = poScreenCenter
-  LCLVersion = '1.3'
+  LCLVersion = '1.8.4.0'
   object AMessage: TLabel
     Left = 6
     Height = 13

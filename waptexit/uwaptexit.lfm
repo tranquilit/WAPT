@@ -1,14 +1,14 @@
 object VisWaptExit: TVisWaptExit
   Left = 416
-  Height = 387
+  Height = 378
   Top = 195
-  Width = 405
+  Width = 389
   Anchors = [akTop, akRight]
   AutoSize = True
   BorderStyle = bsDialog
   Caption = 'Launching updates...'
-  ClientHeight = 387
-  ClientWidth = 405
+  ClientHeight = 378
+  ClientWidth = 389
   DefaultMonitor = dmDesktop
   FormStyle = fsSystemStayOnTop
   OnCloseQuery = FormCloseQuery
@@ -20,12 +20,12 @@ object VisWaptExit: TVisWaptExit
     Left = 0
     Height = 172
     Top = 0
-    Width = 405
+    Width = 395
     Align = alTop
     AutoSize = True
     BevelOuter = bvNone
     ClientHeight = 172
-    ClientWidth = 405
+    ClientWidth = 395
     Constraints.MinWidth = 395
     TabOrder = 0
     object CustomLogo: TImage
@@ -44,28 +44,28 @@ object VisWaptExit: TVisWaptExit
       Left = 98
       Height = 100
       Top = 0
-      Width = 307
+      Width = 297
       Align = alClient
       BevelOuter = bvNone
       ClientHeight = 100
-      ClientWidth = 307
+      ClientWidth = 297
       TabOrder = 0
       object panTop: TPanel
         Left = 0
         Height = 36
         Top = 0
-        Width = 307
+        Width = 297
         Align = alTop
         AutoSize = True
         BevelOuter = bvNone
         ClientHeight = 36
-        ClientWidth = 307
+        ClientWidth = 297
         TabOrder = 0
         object LabDontShutdown: TLabel
           Left = 3
           Height = 30
           Top = 3
-          Width = 301
+          Width = 291
           Align = alClient
           BorderSpacing.Around = 3
           Caption = 'Upgrades in progress...'#13#10'Don''t shutdown your computer !'
@@ -78,7 +78,7 @@ object VisWaptExit: TVisWaptExit
           Left = 3
           Height = 26
           Top = 5
-          Width = 301
+          Width = 291
           Align = alClient
           BorderSpacing.Top = 2
           BorderSpacing.Bottom = 2
@@ -91,7 +91,7 @@ object VisWaptExit: TVisWaptExit
         Left = 3
         Height = 32
         Top = 39
-        Width = 301
+        Width = 291
         Align = alTop
         AutoSize = True
         BorderSpacing.Around = 3
@@ -105,10 +105,10 @@ object VisWaptExit: TVisWaptExit
         ChildSizing.Layout = cclLeftToRightThenTopToBottom
         ChildSizing.ControlsPerLine = 2
         ClientHeight = 32
-        ClientWidth = 301
+        ClientWidth = 291
         TabOrder = 1
         object ButUpgradeNow: TBitBtn
-          Left = 14
+          Left = 11
           Height = 26
           Top = 3
           Width = 174
@@ -117,7 +117,7 @@ object VisWaptExit: TVisWaptExit
           TabOrder = 0
         end
         object ButNotNow: TBitBtn
-          Left = 202
+          Left = 196
           Height = 26
           Top = 3
           Width = 86
@@ -131,7 +131,7 @@ object VisWaptExit: TVisWaptExit
       Left = 0
       Height = 72
       Top = 100
-      Width = 405
+      Width = 395
       Align = alBottom
       AutoSize = True
       BevelOuter = bvNone
@@ -144,13 +144,14 @@ object VisWaptExit: TVisWaptExit
       ChildSizing.ShrinkHorizontal = crsHomogenousSpaceResize
       ChildSizing.ShrinkVertical = crsHomogenousSpaceResize
       ClientHeight = 72
-      ClientWidth = 405
+      ClientWidth = 395
       TabOrder = 1
       object ProgressBar: TProgressBar
         Left = 6
         Height = 20
         Top = 3
-        Width = 392
+        Width = 382
+        Anchors = [akTop, akLeft, akRight]
         TabOrder = 0
       end
       object CheckBox1: TCheckBox
@@ -165,7 +166,7 @@ object VisWaptExit: TVisWaptExit
         Left = 6
         Height = 21
         Top = 28
-        Width = 395
+        Width = 385
         Anchors = [akTop, akLeft, akRight]
         ReadOnly = True
         TabOrder = 2
@@ -176,12 +177,12 @@ object VisWaptExit: TVisWaptExit
     Left = 0
     Height = 218
     Top = 172
-    Width = 405
+    Width = 389
     Align = alClient
     AutoSize = True
     BevelOuter = bvNone
     ClientHeight = 218
-    ClientWidth = 405
+    ClientWidth = 389
     Constraints.MinHeight = 218
     TabOrder = 1
     Visible = False
@@ -189,7 +190,7 @@ object VisWaptExit: TVisWaptExit
       Left = 251
       Height = 212
       Top = 3
-      Width = 151
+      Width = 135
       Align = alClient
       BorderSpacing.Around = 3
       ItemHeight = 0

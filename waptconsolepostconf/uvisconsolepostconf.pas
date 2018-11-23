@@ -8,8 +8,8 @@ uses
   CommCtrl,
   PythonEngine, Classes, SysUtils, FileUtil, LazFileUtils, LazUTF8, IpHtml,
   Forms, Controls, Graphics, Dialogs, ComCtrls, StdCtrls, ExtCtrls, Buttons,
-  ActnList, IdHTTP, IdComponent, uvisLoading, LCLTranslator,
-  LCLProc, EditBtn, Menus, waptconsolepostconfres;
+  ActnList, IdHTTP, IdComponent, LCLTranslator,
+  LCLProc, EditBtn, Menus, uvisLoading;
 
 type
 
@@ -150,11 +150,11 @@ uses
   Windows,
   waptcommon,
   waptwinutils,
-  UScaleDPI,
   tisinifiles,
   superobject,
   tiscommon,
-  IniFiles;
+  IniFiles,
+  waptconsolepostconfres;
 
 {$R *.lfm}
 
@@ -167,8 +167,6 @@ const
 procedure TVisWAPTConsolePostConf.FormCreate(Sender: TObject);
 begin
   preload_python(nil);
-
-  ScaleDPI(Self,96);
   ReadWaptConfig(WaptBaseDir+'wapt-get.ini');
 
   remove_page_control_border( self.PagesControl.Handle );
@@ -1420,7 +1418,6 @@ begin
 end;
 
 
-
 procedure TVisWAPTConsolePostConf.ed_manual_repo_urlKeyPress(Sender: TObject; var Key: char);
 begin
   self.img_manual_repo_url.Picture.Clear;
@@ -1432,10 +1429,6 @@ begin
   self.img_manual_wapt_server_url_status.Picture.Clear;
   self.on_key_press( Sender, Key );
 end;
-
-
-
-
 
 
 end.

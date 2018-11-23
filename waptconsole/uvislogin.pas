@@ -49,7 +49,7 @@ var
   VisLogin: TVisLogin;
 
 implementation
-uses LCLIntf,  uwaptconsole,waptcommon, DefaultTranslator,UScaleDPI,tiscommon,tisinifiles,dmwaptpython,LazFileUtils, FileUtil;
+uses LCLIntf,  uwaptconsole,waptcommon, DefaultTranslator,tiscommon,tisinifiles,dmwaptpython,LazFileUtils, FileUtil;
 {$R *.lfm}
 
 { TVisLogin }
@@ -82,9 +82,7 @@ end;
 
 procedure TVisLogin.FormCreate(Sender: TObject);
 begin
-  ScaleDPI(Self,96); // 96 is the DPI you designed;
   LabVersion.Caption := ApplicationName+' '+WaptEdition+' Edition '+GetApplicationVersion;
-
 end;
 
 procedure TVisLogin.FormShow(Sender: TObject);

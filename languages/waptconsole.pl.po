@@ -3038,6 +3038,11 @@ msgctxt "TVISWUARULES.WUPANRIGHT.CAPTION"
 msgid "wupanright"
 msgstr ""
 
+#: uvisloading.rscanceledbyuser
+msgctxt "uvisloading.rscanceledbyuser"
+msgid "Task %s has been canceled by the user"
+msgstr ""
+
 #: uwaptconsoleres.rsaddadsgroups
 msgid ""
 "This will get the Active Directory groups of each selected host and \n"
@@ -3060,11 +3065,6 @@ msgstr ""
 #: uwaptconsoleres.rscanceled
 msgctxt "uwaptconsoleres.rscanceled"
 msgid "canceled"
-msgstr ""
-
-#: uwaptconsoleres.rscanceledbyuser
-msgctxt "uwaptconsoleres.rscanceledbyuser"
-msgid "Task %s has been canceled by the user"
 msgstr ""
 
 #: uwaptconsoleres.rscanceledtask

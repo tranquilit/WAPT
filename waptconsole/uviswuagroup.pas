@@ -204,7 +204,7 @@ begin
     WUAGroupRules.AsArray.Add(wselection);
     WUARulesModified:=True;
   end;
-  TSOGrid(GridWUARules).LoadData;
+  GridWUARules.LoadData;
 end;
 
 procedure TVisWUAGroup.ActWUALoadGroupExecute(Sender: TObject);

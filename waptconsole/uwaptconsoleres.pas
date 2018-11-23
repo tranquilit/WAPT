@@ -154,8 +154,6 @@ resourcestring
 
   rsUninstallingPackage = 'Uninstalling %s...';
 
-  rsCanceledByUser = 'Task %s has been canceled by the user';
-
   rsFilterAll = '(All)';
 
   rsAddADSGroups = 'This will get the Active Directory groups of each selected host and '+LineEnding+

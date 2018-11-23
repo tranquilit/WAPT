@@ -7,8 +7,14 @@
       <SessionStorage Value="InProjectDir"/>
       <MainUnit Value="0"/>
       <Title Value="wapttray"/>
+      <UseAppBundle Value="False"/>
       <ResourceType Value="res"/>
       <UseXPManifest Value="True"/>
+      <XPManifest>
+        <DpiAware Value="True"/>
+        <TextName Value="Tranquil IT Systems"/>
+        <TextDesc Value="Tray application for Wapt notifications"/>
+      </XPManifest>
       <Icon Value="0"/>
     </General>
     <i18n>
@@ -20,9 +26,9 @@
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="1"/>
       <MinorVersionNr Value="7"/>
-      <RevisionNr Value="1"/>
+      <RevisionNr Value="2"/>
       <BuildNr Value="1"/>
-      <StringTable CompanyName="Tranquil IT Systems" FileDescription="WAPT Tray Icon" LegalCopyright="Tranquil IT Systems 2012-2018" ProductName="WAPT Enterprise Edition" ProductVersion="1.7.1"/>
+      <StringTable CompanyName="Tranquil IT Systems" FileDescription="WAPT Tray Icon" LegalCopyright="Tranquil IT Systems 2012-2018" ProductName="WAPT Enterprise Edition" ProductVersion="1.7.2"/>
     </VersionInfo>
     <BuildModes Count="1">
       <Item1 Name="Default" Default="True"/>
