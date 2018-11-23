@@ -286,7 +286,7 @@ class HostCapabilities(BaseObjectClass):
         return dict(self)
 
     def fingerprint(self):
-        return hashlib.sha256(serialize_content_for_signature(self)).hexdigest()
+        return hashlib.sha256(serialize_content_for_signature(self.as_dict())).hexdigest()
 
 
 def PackageVersion(package_or_versionstr):
@@ -1926,19 +1926,19 @@ class PackageEntry(BaseObjectClass):
             if not allowed:
                 return False
 
-        if self.min_wapt_version and Version(self.min_wapt_version) > Version(capabilities.wapt_version):
+        if capabilities.wapt_version is not None and self.min_wapt_version and Version(self.min_wapt_version) > Version(capabilities.wapt_version):
             return False
-        if (self.locale and self.locale != 'all') and capabilities.packages_locales is not None and not list_intersection(ensure_list(self.locale),ensure_list(capabilities.packages_locales)):
+        if capabilities.packages_locales is not None and (self.locale and self.locale != 'all') and not list_intersection(ensure_list(self.locale),ensure_list(capabilities.packages_locales)):
             return False
-        if self.maturity and capabilities.packages_maturities is not None and not self.maturity in ensure_list(capabilities.packages_maturities):
+        if capabilities.packages_maturities is not None and self.maturity and capabilities.packages_maturities is not None and not self.maturity in ensure_list(capabilities.packages_maturities):
             return False
-        if self.target_os and self.target_os != capabilities.os:
+        if capabilities.os is not None and self.target_os and self.target_os != capabilities.os:
             return False
-        if self.min_os_version and capabilities.os_version is not None and Version(capabilities.os_version) < Version(self.min_os_version):
+        if capabilities.os_version is not None and self.min_os_version and Version(capabilities.os_version) < Version(self.min_os_version):
             return False
-        if self.max_os_version and capabilities.os_version is not None and Version(capabilities.os_version) > Version(self.max_os_version):
+        if capabilities.os_version is not None and self.max_os_version and Version(capabilities.os_version) > Version(self.max_os_version):
             return False
-        if (self.architecture and self.architecture != 'all') and capabilities.architecture is not None and not self.architecture in ensure_list(capabilities.architecture):
+        if capabilities.architecture is not None and (self.architecture and self.architecture != 'all') and not self.architecture in ensure_list(capabilities.architecture):
             return False
         return True
 
@@ -2248,7 +2248,7 @@ class WaptBaseRepo(BaseObjectClass):
         searchwords = ensure_list(searchwords)
         sections = ensure_list(sections)
         exclude_sections = ensure_list(exclude_sections)
-        if not isinstance(host_capabilities,HostCapabilities):
+        if host_capabilities is not None and not isinstance(host_capabilities,HostCapabilities):
             # if dict
             host_capabilities = HostCapabilities(**host_capabilities)
 

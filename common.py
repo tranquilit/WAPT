@@ -3821,6 +3821,11 @@ class Wapt(BaseObjectClass):
             old_status = repo.invalidate_packages_cache()
             discarded = []
 
+            if filter_on_host_cap:
+                host_capabilities = self.host_capabilities()
+            else:
+                host_capabilities = None
+
             with self.waptdb:
                 try:
                     logger.debug(u'Read remote Packages index file %s' % repo.packages_url)
@@ -3831,47 +3836,13 @@ class Wapt(BaseObjectClass):
                     discarded.extend(repo.discarded)
                     for package in repo_packages:
                         if filter_on_host_cap:
-                            if not self.is_locally_allowed_package(package):
-                                logger.info('Discarding %s on repo "%s" because of local whitelist of blacklist rules' % (package.asrequirement(),repo.name))
+                            if not package.match_capabilities(host_capabilities):
                                 discarded.append(package)
                                 continue
-                            if package.min_wapt_version and Version(package.min_wapt_version)>Version(setuphelpers.__version__):
-                                logger.debug('Discarding package %s on repo %s, requires a newer Wapt agent. Minimum version: %s' % (package.asrequirement(),repo.name,package.min_wapt_version))
-                                discarded.append(package)
-                                continue
-                            if (package.locale and package.locale != 'all') and self.locales and not list_intersection(ensure_list(package.locale),self.locales):
-                                logger.debug('Discarding package %s on repo %s, designed for locale %s' %(package.asrequirement(),repo.name,package.locale))
-                                discarded.append(package)
-                                continue
-                            if package.maturity and self.maturities and not package.maturity in self.maturities:
-                                logger.debug('Discarding package %s on repo %s, maturity  %s not enabled on this host' %(package.asrequirement(),repo.name,package.maturity))
-                                discarded.append(package)
-                                continue
-                            if package.target_os and package.target_os != 'windows':
-                                logger.debug('Discarding package %s on repo %s, designed for OS %s' %(package.asrequirement(),repo.name,package.target_os))
-                                discarded.append(package)
-                                continue
-                            if package.min_os_version and os_version < Version(package.min_os_version):
-                                logger.debug('Discarding package %s on repo %s, requires OS version > %s' % (package.asrequirement(),repo.name,package.min_os_version))
-                                discarded.append(package)
-                                continue
-                            if package.max_os_version and os_version > Version(package.max_os_version):
-                                logger.debug('Discarding package %s on repo %s, requires OS version < %s' % (package.asrequirement(),repo.name,package.max_os_version))
-                                discarded.append(package)
-                                continue
-                            if package.architecture == 'x64' and not setuphelpers.iswin64():
-                                logger.debug('Discarding package %s on repo %s, requires OS with x64 architecture' % (package.asrequirement(),repo.name,))
-                                discarded.append(package)
-                                continue
-                            if package.architecture == 'x86' and setuphelpers.iswin64():
-                                logger.debug('Discarding package %s on repo %s, target OS with x86-32 architecture' % (package.asrequirement(),repo.name,))
-                                discarded.append(package)
-                                continue
-
                         try:
                             self.waptdb.add_package_entry(package,self.language)
                         except Exception as e:
-                            logger.critical('Invalid signature for package control entry %s on repo %s : discarding : %s' % (package.asrequirement(),repo.name,e) )
+                            logger.critical('Error adding entry %s to local DB for repo %s : discarding : %s' % (package.asrequirement(),repo.name,e) )
                             discarded.append(package)
 
                     logger.debug(u'Storing last-modified header for repo_url %s : %s' % (repo.repo_url,repo.packages_date()))
