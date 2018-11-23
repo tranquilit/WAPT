@@ -18,6 +18,7 @@ uses
 {$R languages.rc}
 
 begin
+  Application.Scaled:=True;
   // we use wapt-get.ini global config
   RequireDerivedFormResource := True;
   Application.Initialize;

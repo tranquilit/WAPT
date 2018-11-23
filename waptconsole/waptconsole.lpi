@@ -8,6 +8,7 @@
       <MainUnit Value="0"/>
       <AutoCreateForms Value="False"/>
       <Title Value="waptconsole"/>
+      <Scaled Value="True"/>
       <UseAppBundle Value="False"/>
       <ResourceType Value="res"/>
       <XPManifest>

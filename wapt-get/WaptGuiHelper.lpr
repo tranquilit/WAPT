@@ -169,6 +169,8 @@ initialization
 
     LoadDLL;
   end;
+  Application.Scaled := True;
+  RequireDerivedFormResource := True;
   Application.Initialize;
 
 finalization

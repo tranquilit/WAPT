@@ -7,7 +7,14 @@
       <SessionStorage Value="InProjectDir"/>
       <MainUnit Value="0"/>
       <Title Value="waptconsolepostconf"/>
+      <Scaled Value="True"/>
       <ResourceType Value="res"/>
+      <XPManifest>
+        <DpiAware Value="True"/>
+        <UIAccess Value="True"/>
+        <TextName Value="Tranquil IT WAPT"/>
+        <TextDesc Value=""/>
+      </XPManifest>
       <Icon Value="0"/>
     </General>
     <i18n>
