@@ -227,7 +227,7 @@ var
   RegWaptBaseDir:String;
 begin
   {$ifdef ENTERPRISE}
-  //CheckPySources;
+  CheckPySources;
   {$endif}
 
   RegWaptBaseDir:=WaptBaseDir();
