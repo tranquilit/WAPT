@@ -12,8 +12,8 @@
       </SearchPaths>
     </CompilerOptions>
     <Description Value="Common files for wapt fpc"/>
-    <Version Major="1" Minor="7" Release="1"/>
-    <Files Count="6">
+    <Version Major="1" Minor="7" Release="2"/>
+    <Files Count="7">
       <Item1>
         <Filename Value="waptwinutils.pas"/>
         <UnitName Value="waptwinutils"/>
@@ -35,9 +35,13 @@
         <UnitName Value="waptdb"/>
       </Item5>
       <Item6>
-        <Filename Value="waptcrypto.pas"/>
-        <UnitName Value="waptcrypto"/>
+        <Filename Value="uwaptcrypto.pas"/>
+        <UnitName Value="uwaptcrypto"/>
       </Item6>
+      <Item7>
+        <Filename Value="uwaptpythonutils.pas"/>
+        <UnitName Value="uWaptPythonUtils"/>
+      </Item7>
     </Files>
     <RequiredPkgs Count="5">
       <Item1>

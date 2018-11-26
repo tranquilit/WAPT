@@ -49,7 +49,7 @@ var
 
 implementation
 
-uses dmwaptpython,tisinifiles,tiscommon,VirtualTrees,waptcommon;
+uses dmwaptpython,tisinifiles,tiscommon,VirtualTrees,waptcommon,uWaptPythonUtils;
 
 {$R *.lfm}
 

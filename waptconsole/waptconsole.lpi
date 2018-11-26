@@ -81,7 +81,7 @@
         <PackageName Value="LCL"/>
       </Item12>
     </RequiredPackages>
-    <Units Count="26">
+    <Units Count="27">
       <Unit0>
         <Filename Value="waptconsole.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -270,6 +270,11 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uVisHostDelete"/>
       </Unit25>
+      <Unit26>
+        <Filename Value="..\wapt-get\uwaptpythonutils.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="uWaptPythonUtils"/>
+      </Unit26>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -280,6 +285,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
+      <OtherUnitFiles Value="..\wapt-get"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <CodeGeneration>

@@ -13,7 +13,7 @@ uses
   tisstrings,
   tiscommon,
   waptwinutils,
-  waptcrypto;
+  uwaptcrypto;
 
   procedure WaitPendingTasks(timeout:Integer);
   var

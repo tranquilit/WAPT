@@ -5,9 +5,9 @@ unit dmwaptpython;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, LazFileUtils, LazUTF8, PythonEngine, PythonGUIInputOutput,
+  Classes, SysUtils, FileUtil, LazFileUtils, LazUTF8, PythonEngine, PythonGUIInputOutput, WrapDelphi,
   VarPyth, vte_json, superobject, fpjson, jsonparser, DefaultTranslator,LCLTranslator,
-  Controls, WrapDelphi;
+  Controls;
 
 type
 
@@ -111,155 +111,21 @@ type
 
   end;
 
-  function CreateSignedCert(keyfilename,
-          crtbasename,
-          destdir,
-          country,
-          locality,
-          organization,
-          orgunit,
-          commonname,
-          email,
-          keypassword:UnicodeString;
-          codesigning:Boolean;
-          IsCACert:Boolean;
-          CACertificateFilename:UnicodeString='';
-          CAKeyFilename:UnicodeString=''
-      ):String;
-
-
-  function pyObjectToSuperObject(pvalue:PPyObject):ISuperObject;
-  function PyVarToSuperObject(PyVar:Variant):ISuperObject;
-
-
-  function SuperObjectToPyObject(aso:ISuperObject):PPyObject;
-  function SuperObjectToPyVar(aso:ISuperObject):Variant;
-
   function ExtractResourceString(Ident:String):RawByteString;
-
-  function PyUTF8Decode(s:RawByteString):UnicodeString;
 
   function ExtractCertificateOptionalsFields( cert_filename : String ) : ISuperObject;
 var
   DMPython: TDMPython;
 
 implementation
-uses variants, waptcommon, uWaptRes, waptcrypto, uvisprivatekeyauth,inifiles,forms,Dialogs,uvisloading,dateutils,tisstrings,gettext;
+uses variants, waptcommon, uWaptPythonUtils, uWaptRes, uwaptcrypto, uvisprivatekeyauth, inifiles,
+    forms,Dialogs,uvisloading,dateutils,tisstrings,gettext;
 {$R *.lfm}
 {$ifdef ENTERPRISE }
 {$R res_enterprise.rc}
 {$else}
 {$R res_community.rc}
 {$endif}
-
-function pyObjectToSuperObject(pvalue:PPyObject):ISuperObject;
-var
-  j,k: Integer;
-  pyKey,pyDict,pyValue: PPyObject;
-begin
-  if GetPythonEngine.PyUnicode_Check(pvalue) or GetPythonEngine.PyString_Check(pvalue) then
-    Result := TSuperObject.Create(GetPythonEngine.PyString_AsDelphiString(pvalue))
-  else if GetPythonEngine.PyInt_Check(pvalue) then
-    Result := TSuperObject.Create(GetPythonEngine.PyInt_AsLong(pvalue))
-  else if GetPythonEngine.PyFloat_Check(pvalue) then
-    Result := TSuperObject.Create(GetPythonEngine.PyFloat_AsDouble(pvalue))
-  else if GetPythonEngine.PyList_Check(pvalue) then
-  begin
-    Result := TSuperObject.Create(stArray);
-    for k := 0 to GetPythonEngine.PyList_Size(pvalue) - 1 do
-        Result.AsArray.Add(pyObjectToSuperObject(GetPythonEngine.PyList_GetItem(pvalue,k)));
-  end
-  else if GetPythonEngine.PyTuple_Check(pvalue) then
-  begin
-    Result := TSuperObject.Create(stArray);
-    for k := 0 to GetPythonEngine.PyTuple_Size(pvalue) - 1 do
-        Result.AsArray.Add(pyObjectToSuperObject(GetPythonEngine.PyTuple_GetItem(pvalue,k)));
-  end
-  else if GetPythonEngine.PyDict_Check(pvalue) then
-  begin
-    Result := TSuperObject.Create(stObject);
-    j := 0;
-    pyKey := Nil;
-    pyValue := Nil;
-    while GetPythonEngine.PyDict_Next(pvalue,@j,@pyKey,@pyValue) <> 0 do
-      Result[GetPythonEngine.PyObjectAsString(pyKey)] := pyObjectToSuperObject(pyvalue);
-  end
-  else if GetPythonEngine.PyObject_HasAttrString(pvalue,'as_dict') <> 0  then
-  begin
-    Result := TSuperObject.Create(stObject);
-    pyDict := GetPythonEngine.PyObject_CallMethodStr(pvalue,'as_dict',Nil,Nil);
-    j := 0;
-    pyKey := Nil;
-    pyValue := Nil;
-    while GetPythonEngine.PyDict_Next(pyDict,@j,@pyKey,@pyValue) <> 0 do
-      Result[GetPythonEngine.PyObjectAsString(pyKey)] := pyObjectToSuperObject(pyvalue);
-  end
-  else if pvalue = GetPythonEngine.Py_None then
-    Result := TSuperObject.Create(stNull)
-  else
-    Result := TSuperObject.Create(GetPythonEngine.PyObjectAsString(pvalue));
-end;
-
-function PyVarToSuperObject(PyVar:Variant):ISuperObject;
-begin
-  Result := pyObjectToSuperObject(ExtractPythonObjectFrom(PyVar));
-end;
-
-function SuperObjectToPyObject(aso: ISuperObject): PPyObject;
-var
-  i:integer;
-  item: ISuperObject;
-  key: ISuperObject;
-
-begin
-  if aso<>Nil then
-  begin
-    case aso.DataType of
-      stBoolean: begin
-          if aso.AsBoolean then
-            Result := PPyObject(GetPythonEngine.Py_True)
-          else
-            Result := PPyObject(GetPythonEngine.Py_False);
-          GetPythonEngine.Py_INCREF(result);
-      end;
-      stNull: begin
-          Result := GetPythonEngine.ReturnNone;
-        end;
-      stInt: begin
-          Result := GetPythonEngine.PyInt_FromLong(aso.AsInteger);
-        end;
-      stDouble,stCurrency: begin
-        Result := GetPythonEngine.PyFloat_FromDouble(aso.AsDouble);
-        end;
-      stString: begin
-        Result := GetPythonEngine.PyUnicode_FromWideString(aso.AsString);
-        end;
-      stArray: begin
-        Result := GetPythonEngine.PyTuple_New(aso.AsArray.Length);
-        i:=0;
-        for item in aso do
-        begin
-          GetPythonEngine.PyTuple_SetItem(Result,i,SuperObjectToPyObject(item));
-          inc(i);
-        end;
-      end;
-      stObject: begin
-        Result := GetPythonEngine.PyDict_New();
-        for key in Aso.AsObject.GetNames do
-          GetPythonEngine.PyDict_SetItem(Result, SuperObjectToPyObject(key),SuperObjectToPyObject(Aso[key.AsString]));
-      end
-      else
-        Result := GetPythonEngine.VariantAsPyObject(aso);
-    end
-  end
-  else
-    Result := GetPythonEngine.ReturnNone;
-end;
-
-function SuperObjectToPyVar(aso: ISuperObject): Variant;
-begin
-  result := VarPyth.VarPythonCreate(SuperObjectToPyObject(aso));
-end;
 
 function ExtractResourceString(Ident: String): RawByteString;
 var
@@ -361,7 +227,7 @@ var
   RegWaptBaseDir:String;
 begin
   {$ifdef ENTERPRISE}
-  CheckPySources;
+  //CheckPySources;
   {$endif}
 
   RegWaptBaseDir:=WaptBaseDir();
@@ -773,126 +639,6 @@ begin
 end;
 
 
-function CreateSignedCert(keyfilename,
-        crtbasename,
-        destdir,
-        country,
-        locality,
-        organization,
-        orgunit,
-        commonname,
-        email,
-        keypassword:UnicodeString;
-        codesigning:Boolean;
-        IsCACert:Boolean;
-        CACertificateFilename:UnicodeString='';
-        CAKeyFilename:UnicodeString=''
-    ):String;
-var
-  CAKeyFilenameU,destpem,destcrt : Variant;
-  key,cert,cakey,cacert:Variant;
-  cakey_pwd: String;
-  ca_pem: RawByteString;
-
-begin
-  result := '';
-  cacert := Null;
-  cakey := Null;
-  cakey_pwd := '';
-
-  if (CACertificateFilename<>'') then
-    if not FileExists(CACertificateFilename) then
-      raise Exception.CreateFmt('CA Certificate %s does not exist',[CACertificateFilename])
-    else
-      cacert:= dmpython.waptcrypto.SSLCertificate(crt_filename := CACertificateFilename);
-
-  if (CAKeyFilename<>'') then
-    if not FileExists(CAKeyFilename) then
-      raise Exception.CreateFmt('CA private key %s does not exist',[CAKeyFilename])
-    else
-    begin
-      if InputQuery('CA Private key password','Password',True,cakey_pwd) then
-      begin
-        CAKeyFilenameU := CAKeyFilename;
-        cakey:= dmpython.waptcrypto.SSLPrivateKey(filename := CAKeyFilenameU, password := cakey_pwd);
-      end
-      else
-        raise Exception.CreateFmt('No password for decryption of %s',[CAKeyFilename]);
-    end;
-
-  if FileExists(keyfilename) then
-    destpem := keyfilename
-  else
-  begin
-    if ExtractFileNameOnly(keyfilename) = keyfilename then
-      destpem := AppendPathDelim(destdir)+ExtractFileNameOnly(keyfilename)+'.pem'
-    else
-      destpem := keyfilename;
-  end;
-
-  if crtbasename = '' then
-    crtbasename := ExtractFileNameOnly(keyfilename);
-
-  destcrt := AppendPathDelim(destdir)+crtbasename+'.crt';
-  if not DirectoryExists(destdir) then
-    ForceDirectories(destdir);
-
-  key := dmpython.waptcrypto.SSLPrivateKey(filename := destpem,password := keypassword);
-
-  // Create private key  if not already exist
-  if not FileExists(destpem) then
-  begin
-    key.create(bits := 2048);
-    key.save_as_pem(password := keypassword)
-  end;
-
-  // None can not be passed... not accepted : invalid Variant type
-  // using default None on the python side to workaround this...
-  // python call
-  if  VarIsNull(cacert) or VarIsNull(cakey) or VarIsEmpty(cacert) or VarIsEmpty(cakey) then
-    // self signed
-    cert := key.build_sign_certificate(
-      cn := commonname,
-      organization := organization,
-      locality := locality,
-      country := country,
-      organizational_unit := orgunit,
-      email := email,
-      is_ca := IsCACert,
-      is_code_signing := codesigning)
-  else
-    cert := key.build_sign_certificate(
-      ca_signing_key := cakey,
-      ca_signing_cert := cacert,
-      cn := commonname,
-      organization := organization,
-      locality := locality,
-      country := country,
-      organizational_unit := orgunit,
-      email := email,
-      is_ca := IsCACert,
-      is_code_signing := codesigning);
-
-  cert.save_as_pem(filename := destcrt);
-
-  if not VarIsNull(cacert) and not VarIsEmpty(cacert) then
-    // append CA
-    with TFileStream.Create(destcrt,fmOpenReadWrite) do
-    try
-      Seek(0,soEnd);
-      ca_pem := VarToStr(cacert.as_pem('--noarg--'));
-      WriteBuffer(ca_pem[1],length(ca_pem));
-    finally
-      Free;
-    end;
-
-  result := utf8encode(destcrt);
-end;
-
-function PyUTF8Decode(s:RawByteString):UnicodeString;
-begin
-  result := UTF8Decode(s);
-end;
 
 function ExtractCertificateOptionalsFields( cert_filename : String ) : ISuperObject;
 var

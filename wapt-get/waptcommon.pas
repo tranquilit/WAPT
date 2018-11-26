@@ -219,6 +219,8 @@ const
 
   WaptPersonalCertificatePath: String ='';
 
+  WaptCAKeyFilename: String ='';
+  WaptCACertFilename: String ='';
 
   WAPTServerMinVersion='1.7.1.1';
 
@@ -227,7 +229,7 @@ const
 
 implementation
 
-uses LazFileUtils, LazUTF8, soutils, Variants,uwaptres,waptwinutils,waptcrypto,tisinifiles,tislogging,
+uses LazFileUtils, LazUTF8, soutils, Variants,uwaptres,waptwinutils,uwaptcrypto,tisinifiles,tislogging,
   NetworkAdapterInfo, JwaWinsock2, windirs,
   IdSSLOpenSSL,IdMultipartFormData,IdExceptionCore,IdException,IdURI,
   gettext,IdStack,IdCompressorZLib,IdAuthentication,shfolder,IniFiles,tiscommon,strutils,tisstrings,registry;
@@ -1021,7 +1023,7 @@ begin
 end;
 
 function WAPTLocalJsonGet(action: String; user: AnsiString;
-  password: AnsiString; timeout: integer;OnAuthorization:TIdOnAuthorization=Nil;RetryCount:Integer=3): ISuperObject;
+  password: AnsiString; timeout: integer=-1;OnAuthorization:TIdOnAuthorization=Nil;RetryCount:Integer=3): ISuperObject;
 var
   url,strresult : String;
   http:TIdHTTP;
@@ -1030,50 +1032,46 @@ begin
   ssl_handler := Nil;
   http := TIdHTTP.Create;
   try
-    try
-      http.Request.AcceptLanguage := Language;
-      http.Request.UserAgent := DefaultUserAgent;
+    http.Request.AcceptLanguage := Language;
+    http.Request.UserAgent := DefaultUserAgent;
 
-      if timeout<0 then
-        timeout := waptservice_timeout * 1000;
+    if timeout<=0 then
+      timeout := waptservice_timeout * 1000;
 
-      http.ConnectTimeout := timeout;
-      http.ReadTimeout:=timeout;
+    http.ConnectTimeout := timeout;
+    http.ReadTimeout:=timeout;
 
-      if (user<>'') or (OnAuthorization <> Nil) then
-      begin
-        http.Request.Authentication := TIdBasicAuthentication.Create;
-        http.Request.Authentication.Username:=user;
-        http.Request.Authentication.Password:=password;
-        http.MaxAuthRetries := 2;
-        http.OnAuthorization:=OnAuthorization;
-      end;
-
-      if copy(action,length(action),1)<>'/' then
-        action := '/'+action;
-
-      url := GetWaptLocalURL+action;
-      ssl_handler := TIdSSLIOHandlerSocketOpenSSL.Create;
-      ssl_handler.SSLOptions.Method:=sslvSSLv23;
-
-      HTTP.IOHandler := ssl_handler;
-      strresult := '';
-      repeat
-        try
-          strresult := http.Get(url);
-        except
-          Dec(RetryCount);
-          if (RetryCount<=0) then
-            raise
-          else
-            Sleep(1000);
-        end;
-      until (strresult<>'') or (RetryCount<=0);
-      Result := SO(strresult);
-
-    except
-      on E:EIdReadTimeout do Result := Nil;
+    if (user<>'') or (OnAuthorization <> Nil) then
+    begin
+      http.Request.Authentication := TIdBasicAuthentication.Create;
+      http.Request.Authentication.Username:=user;
+      http.Request.Authentication.Password:=password;
+      http.MaxAuthRetries := 2;
+      http.OnAuthorization:=OnAuthorization;
     end;
+
+    if copy(action,length(action),1)<>'/' then
+      action := '/'+action;
+
+    url := GetWaptLocalURL+action;
+    ssl_handler := TIdSSLIOHandlerSocketOpenSSL.Create;
+    ssl_handler.SSLOptions.Method:=sslvSSLv23;
+
+    HTTP.IOHandler := ssl_handler;
+    strresult := '';
+    repeat
+      try
+        strresult := http.Get(url);
+      except
+        Dec(RetryCount);
+        if (RetryCount<=0) then
+          raise
+        else
+          Sleep(1000);
+      end;
+    until (strresult<>'') or (RetryCount<=0);
+    Result := SO(strresult);
+
   finally
     http.Free;
     if Assigned(ssl_handler) then
@@ -1464,7 +1462,11 @@ begin
     DefaultSourcesRoot := ReadString('global','default_sources_root','');
 
     WaptPersonalCertificatePath :=  ReadString('global','personal_certificate_path','');
+    WaptCAKeyFilename := ReadString('global', 'default_ca_key_path', '');
+    WaptCACertFilename := ReadString('global', 'default_ca_cert_path', '');
+
     AuthorizedCertsDir := ReadString('global','public_certs_dir',MakePath([WaptBaseDir,'ssl']));
+
     Result := True
 
   finally
@@ -1782,11 +1784,7 @@ begin
     http.OnWork:=OnHTTPWork;
 
     St.AddFile(FileArg,FileName);
-    try
-      res := HTTP.Post(waptserver+action,St);
-    except
-      on E:EIdException do raise;
-    end;
+    res := HTTP.Post(waptserver+action,St);
     result := SO(res);
   finally
     st.Free;

@@ -61,7 +61,7 @@ var
 implementation
 
 {$R *.lfm}
-uses tiscommon,waptcommon,IdHTTP,dmwaptpython,VarPyth;
+uses tiscommon,waptcommon,IdHTTP,dmwaptpython,VarPyth,uWaptPythonUtils;
 
 { TVisTriggerHostsAction }
 

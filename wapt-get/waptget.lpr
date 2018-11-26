@@ -31,7 +31,9 @@ uses
   { you can add units after this }
   Interfaces, Windows, PythonEngine, VarPyth, superobject, soutils, tislogging, uWaptRes,
   waptcommon, waptwinutils, tiscommon, tisstrings, LazFileUtils,
-  IdAuthentication, Variants, IniFiles;
+  IdAuthentication, IdExceptionCore, Variants, IniFiles,uwaptcrypto,uWaptPythonUtils,
+  tisinifiles;
+
 type
   { PWaptGet }
 
@@ -72,7 +74,9 @@ type
     function CreateWaptAgent(TargetDir: String; Edition: String='waptagent'
       ): String;
 
-    function GetPrivateKeyPassword: String;
+    function CreateKeycert(commonname: String; basedir: String='';keypassword: String='';CodeSigning:Boolean=True): String;
+
+    function GetPrivateKeyPassword(crtname:String=''): String;
     function GetWaptServerPassword: String;
     function GetWaptServerUser: String;
 
@@ -112,7 +116,7 @@ type
   begin
     inherited Create(True);
     app := anapp;
-    PollTimeout:=3000;
+    PollTimeout:=1000;
     LastReadEventId := MaxInt;
   end;
 
@@ -120,11 +124,13 @@ type
   begin
     while not Terminated do
     try
-      Events := WAPTLocalJsonGet(Format('events?last_read=%d',[LastReadEventId]),'','',-1,Nil,0);
-      if Events <> Nil then
-      begin
-        If Events.AsArray.Length>0 then
+      try
+        Events := WAPTLocalJsonGet(Format('events?last_read=%d',[LastReadEventId]),'','',-1,Nil,0);
+        If (Events.AsArray <> Nil) and (Events.AsArray.Length>0) then
           LastReadEventId := Events.AsArray.O[Events.AsArray.Length-1].I['id'];
+      except
+        on e:EIdReadTimeout do
+          Events := Nil;
       end;
       Synchronize(@HandleMessage);
     except
@@ -230,12 +236,14 @@ begin
   Result := WaptServerPassword;
 end;
 
-function PWaptGet.GetPrivateKeyPassword: String;
+function PWaptGet.GetPrivateKeyPassword(crtname:String=''): String;
 begin
+  if crtname ='' then
+    crtname:=WaptPersonalCertificatePath;
   result := GetCmdParams('PrivateKeyPassword','');
   while Result='' do
   begin
-    Write('Private key Password for '+WaptPersonalCertificatePath+' : ');
+    Write('Private key Password for '+crtname+' : ');
     Result := GetPassword;
     WriteLn;
   end;
@@ -258,7 +266,7 @@ begin
 end;
 
 
-function PWaptGet.getwaptpackage: Variant;
+function PWaptGet.Getwaptpackage: Variant;
 begin
   if not Assigned(PythonEngine) then
     Raise Exception.Create('No python engine available');
@@ -380,6 +388,12 @@ begin
   if HasOption('v','version') then
     writeln(format(rsWin32exeWrapper, [ApplicationName, GetApplicationVersion]));
 
+  if (action = 'create-keycert') then
+  begin
+    ReadWaptConfig(AppIniFilename('waptconsole'));
+    CreateKeycert(GetCmdParams('CommonName'),'',GetCmdParams('KeyPassword'),GetCmdParams('CodeSigning','1')='1');
+  end
+  else
   if (action = 'build-waptagent') then
   begin
     ReadWaptConfig(AppIniFilename('waptconsole'));
@@ -426,7 +440,9 @@ begin
   else
   // use http service mode if --service or not --direct or not (--service and isadmin
   if  ((not IsAdminLoggedOn or HasOption('S','service')) and not HasOption('D','direct')) and
-      StrIsOneOf(action,['update','upgrade','register','install','remove','forget','longtask','cancel','cancel-all','tasks','wuascan','wuadownload','wuainstall','audit']) and
+      StrIsOneOf(action,['update','upgrade','register','install','remove','forget',
+                        'longtask','cancel','cancel-all','tasks',
+                        'wuascan','wuadownload','wuainstall','audit']) and
       CheckOpenPort(waptservice_port,'127.0.0.1',waptservice_timeout) then
   begin
     writeln('About to speak to waptservice...');
@@ -443,56 +459,42 @@ begin
         begin
           Logger('Call longtask URL...',DEBUG);
           res := WAPTLocalJsonGet('longtask.json?notify_user=1','admin','',-1,@HTTPLogin);
-          if res = Nil then
-            WriteLn(utf8decode((format(rsLongtaskError, [res.S['message']]))))
-          else
-            tasks.AsArray.Add(res);
+          tasks.AsArray.Add(res);
           Logger('Task '+res.S['id']+' added to queue',DEBUG);
         end
         else
         if action='tasks' then
         begin
           res := WAPTLocalJsonGet('tasks.json');
-          if res = Nil then
-            WriteLn(utf8decode(format(rsTaskListError, [res.S['message']])))
+          if res['running'].DataType<>stNull then
+            writeln(utf8decode(format(rsRunningTask,[ res['running'].I['id'],res['running'].S['description'],res['running'].S['runstatus']])))
           else
-          begin
-            if res['running'].DataType<>stNull then
-              writeln(utf8decode(format(rsRunningTask,[ res['running'].I['id'],res['running'].S['description'],res['running'].S['runstatus']])))
-            else
-              writeln(utf8decode(rsNoRunningTask));
-            if res['pending'].AsArray.length>0 then
-              writeln(utf8decode(rsPending));
-              for task in res['pending'] do
-                writeln(utf8decode('  '+task.S['id']+' '+task.S['description']));
-          end;
+            writeln(utf8decode(rsNoRunningTask));
+          if res['pending'].AsArray.length>0 then
+            writeln(utf8decode(rsPending));
+            for task in res['pending'] do
+              writeln(utf8decode('  '+task.S['id']+' '+task.S['description']));
         end
         else
         if action='cancel' then
         begin
           res := WAPTLocalJsonGet('cancel_running_task.json');
-          if res = Nil then
-            WriteLn(utf8decode(format(rsErrorCanceling, [res.S['message']])))
+          if res.DataType<>stNull then
+            writeln(utf8decode(format(rsCanceledTask, [res.S['description']])))
           else
-            if res.DataType<>stNull then
-              writeln(utf8decode(format(rsCanceledTask, [res.S['description']])))
-            else
-              writeln(rsNoRunningTask);
+            writeln(rsNoRunningTask);
         end
         else
         if (action='cancel-all') or (action='cancelall') then
         begin
           res := WAPTLocalJsonGet('cancel_all_tasks.json');
-          if res = Nil then
-            WriteLn(utf8decode(format(rsErrorCanceling, [res.S['message']])))
+          if res.DataType<>stNull then
+          begin
+            for task in res do
+              writeln(utf8decode(format(rsCanceledTask, [task.S['description']])))
+          end
           else
-            if res.DataType<>stNull then
-            begin
-              for task in res do
-                writeln(utf8decode(format(rsCanceledTask, [task.S['description']])))
-            end
-            else
-              writeln(utf8decode(rsNoRunningTask));
+            writeln(utf8decode(rsNoRunningTask));
         end
         else
         if action='update' then
@@ -502,10 +504,7 @@ begin
             res := WAPTLocalJsonGet('update.json?notify_user=0&force=1')
           else
             res := WAPTLocalJsonGet('update.json?notify_user=0');
-          if res = Nil then
-            WriteLn(utf8decode(format(rsErrorLaunchingUpdate, [res.S['message']])))
-          else
-            tasks.AsArray.Add(res);
+          tasks.AsArray.Add(res);
           Logger('Task '+res.S['id']+' added to queue',DEBUG);
         end
         else
@@ -528,10 +527,7 @@ begin
         begin
           Logger('Call register URL...',DEBUG);
           res := WAPTLocalJsonGet('register.json?notify_user=0&notify_server=1','admin','',-1,@HTTPLogin);
-          if (res = Nil) or (res.AsObject=Nil) or not res.AsObject.Exists('id') then
-            WriteLn(utf8decode(format(rsErrorLaunchingRegister, [res.AsString])))
-          else
-            tasks.AsArray.Add(res);
+          tasks.AsArray.Add(res);
           Logger('Task '+res.S['id']+' added to queue',DEBUG);
         end
         else
@@ -547,7 +543,7 @@ begin
             if (action='install') or (action='forget')  then
             begin
               // single action
-              if (res = Nil) or (res.AsObject=Nil) or not res.AsObject.Exists('id') then
+              if (res.AsObject=Nil) or not res.AsObject.Exists('id') then
                 WriteLn(utf8decode(format(rsErrorWithMessage, [res.AsString])))
               else
                 tasks.AsArray.Add(res);
@@ -556,7 +552,7 @@ begin
             if (action='remove') then
             begin
               // list of actions..
-              if (res = Nil) or (res.AsArray=Nil) then
+              if (res.AsArray=Nil) then
                 WriteLn(utf8decode(format(rsErrorWithMessage, [res.AsString])))
               else
               for task in res do
@@ -584,30 +580,21 @@ begin
         if action='wuascan' then
         begin
           res := WAPTLocalJsonGet('waptwua_scan?notify_user=1');
-          if res = Nil then
-            WriteLn(utf8decode(format(rsErrorLaunchingUpdate, [res.S['message']])))
-          else
-            tasks.AsArray.Add(res);
+          tasks.AsArray.Add(res);
           Logger('Task '+res.S['id']+' added to queue',DEBUG);
         end
         else
         if action='wuadownload' then
         begin
           res := WAPTLocalJsonGet('waptwua_download?notify_user=1');
-          if res = Nil then
-            WriteLn(utf8decode(format(rsErrorLaunchingUpdate, [res.S['message']])))
-          else
-            tasks.AsArray.Add(res);
+          tasks.AsArray.Add(res);
           Logger('Task '+res.S['id']+' added to queue',DEBUG);
         end
         else
         if action='wuainstall' then
         begin
           res := WAPTLocalJsonGet('waptwua_install?notify_user=1');
-          if res = Nil then
-            WriteLn(utf8decode(format(rsErrorLaunchingUpdate, [res.S['message']])))
-          else
-            tasks.AsArray.Add(res);
+          tasks.AsArray.Add(res);
           Logger('Task '+res.S['id']+' added to queue',DEBUG);
         end;
 
@@ -618,7 +605,6 @@ begin
             raise Exception.create('Timeout waiting for events')
           else
           begin
-            write('.');
             While CheckSynchronize(100) do;
             sleep(1000)
           end;
@@ -627,11 +613,11 @@ begin
             begin
               writeln(Format(rsCanceledTask,[E.Message]));
               for task in tasks do
-                  WAPTLocalJsonGet('cancel_task.json?id='+task.S['id']);
+                WAPTLocalJsonGet('cancel_task.json?id='+task.S['id']);
             end;
         end;
 
-        while CheckSynchronize(100) do;
+        while CheckSynchronize(1000) do;
 
       except
         localpassword := '';
@@ -723,39 +709,48 @@ begin
   try
     lastMessageTime := Now;
     If Events <> Nil then
-      for Event in Events do
-      try
-        EventType := Event.S['event_type'];
-        EventData := Event['data'];
-        if EventType.StartsWith('TASK_') then
-        begin
-          Step := EventType.Substring(5);
-          taskresult := EventData;
-          //Writeln(EventType,' ',taskresult.S['id'],' ',taskresult.S['summary']);
-          if isInTasksList(taskresult.I['id']) then
+    begin
+      //if Event.AsArray.Length>0 then
+      begin
+        for Event in Events do
+        try
+          EventType := Event.S['event_type'];
+          EventData := Event['data'];
+          if EventType.StartsWith('TASK_') then
           begin
-            //writeln(taskresult.AsString);
-            if (Step = 'START') then
-              writeln(#13+UTF8Encode(taskresult.S['description']));
-            if (Step = 'PROGRESS') then
-              write(#13+utf8Encode(format(rsCompletionProgress,[taskresult.S['runstatus'], taskresult.D['progress']])+#13));
-            if (Step = 'STATUS') then
-              write(#13+utf8Encode(format(rsCompletionProgress,[taskresult.S['runstatus'], taskresult.D['progress']])+#13));
-            //catch finish of task
-            if (Step = 'FINISH') or (Step = 'ERROR') or (Step = 'CANCEL') then
+            Step := EventType.Substring(5);
+            taskresult := EventData;
+            //Writeln(EventType,' ',taskresult.S['id'],' ',taskresult.S['summary']);
+            if isInTasksList(taskresult.I['id']) then
             begin
-              WriteLn(UTF8Encode(taskresult.S['summary']));
-              if (Step = 'ERROR') or (Step = 'CANCEL') then
-                ExitCode:=3;
-              removeTask(taskresult.I['id']);
+              //writeln(taskresult.AsString);
+              if (Step = 'START') then
+                writeln(#13+UTF8Encode(taskresult.S['description']));
+              if (Step = 'PROGRESS') then
+                write(#13+utf8Encode(format(rsCompletionProgress,[taskresult.S['runstatus'], taskresult.D['progress']])+#13));
+              if (Step = 'STATUS') then
+                write(#13+utf8Encode(format(rsCompletionProgress,[taskresult.S['runstatus'], taskresult.D['progress']])+#13));
+              //catch finish of task
+              if (Step = 'FINISH') or (Step = 'ERROR') or (Step = 'CANCEL') then
+              begin
+                WriteLn(UTF8Encode(taskresult.S['summary']));
+                if (Step = 'ERROR') or (Step = 'CANCEL') then
+                  ExitCode:=3;
+                removeTask(taskresult.I['id']);
+              end;
             end;
-          end;
-        end
-        else if (EventType = 'PRINT') then
-          Writeln(#13+UTF8Encode(EventData.AsString));
-      except
-        on E:Exception do WriteLn(#13+Format('Error listening to events: %s',[e.Message]));
-      end;
+          end
+          else if (EventType = 'PRINT') then
+            Writeln(#13+UTF8Encode(EventData.AsString));
+        except
+          on E:Exception do WriteLn(#13+Format('Error listening to events: %s',[e.Message]));
+        end;
+      end
+      //else
+      //  Write('.');
+    end
+    else
+      Write('.');
   finally
     LeaveCriticalSection(lock);
   end;
@@ -799,8 +794,72 @@ begin
       );
 
   finally
-    Free;
+    ini.Free;
   end;
+end;
+
+function PWaptGet.CreateKeycert(commonname: String; basedir:String=''; keypassword: String='';CodeSigning:Boolean=True): String;
+var
+    keyfilename,
+    crtbasename,
+    country,
+    locality,
+    organization,
+    orgunit,
+    email,
+    CACertFilename,
+    CAKeyFilename,
+    CAKeyPassword:String;
+    PrintPwd: Boolean;
+
+begin
+  if basedir = '' then
+    basedir:=GetCmdParams('BaseDir',ExtractFilePath(WaptPersonalCertificatePath));
+  if basedir = '' then
+    basedir:=AppendPathDelim(GetPersonalFolder)+'private';
+
+  if keypassword='' then
+  begin
+    printPwd := True;
+    keypassword := RandomPassword(12);
+  end
+  else
+    printPwd := False;
+
+  keyfilename := AppendPathDelim(basedir)+commonname+'.pem';
+  crtbasename := commonname;
+
+  country := GetCmdParams('Country',Language);
+  locality := GetCmdParams('Locality','');
+  organization := GetCmdParams('Organization','');
+  orgunit := GetCmdParams('OrgUnit','');
+  email := GetCmdParams('Email','');
+
+  CAKeyFilename := GetCmdParams('CAKeyFilename',WaptCAKeyFilename);
+  CACertFilename := GetCmdParams('CACertFilename',WaptCACertFilename);
+  if CAKeyFilename<>'' then
+    CAKeyPassword := GetCmdParams('CAKeyPassword',GetPrivateKeyPassword(CAKeyFilename));
+
+  result := CreateSignedCert(waptcrypto,
+        keyfilename,
+        crtbasename,
+        basedir,
+        country,
+        locality,
+        organization,
+        orgunit,
+        commonname,
+        email,
+        keypassword,
+        codesigning,
+        False,
+        CACertFilename,
+        CAKeyFilename,
+        CAKeyPassword);
+
+  WriteLn(Result);
+  if PrintPwd then
+    WriteLn(keypassword);
 end;
 
 function PWaptGet.BuildWaptUpgrade(SetupFilename: String): String;

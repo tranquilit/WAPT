@@ -77,8 +77,9 @@ implementation
 {$R *.lfm}
 
 uses
-  Variants,dmwaptpython,IdUri,IdSSLOpenSSLHeaders,uWaptConsoleRes,uWaptRes,tiscommon,
-  tisstrings,waptcommon,VarPyth,superobject,PythonEngine,inifiles,tisinifiles;
+  Variants,dmwaptpython,IdUri,IdSSLOpenSSLHeaders,uWaptConsoleRes,uWaptRes,
+  tiscommon,tisstrings,waptcommon,VarPyth,superobject,inifiles,tisinifiles,
+  PythonEngine, uWaptPythonUtils;
 
 { TVisCreateWaptSetup }
 procedure TVisCreateWaptSetup.FormCloseQuery(Sender: TObject; var CanClose: boolean);

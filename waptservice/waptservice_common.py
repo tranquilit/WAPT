@@ -1070,16 +1070,25 @@ class WaptAuditPackage(WaptTask):
 
     def _run(self):
         self.result = []
+        self.progress = 0.0
+        astep = 100.0 / len(self.packagenames)
         for package in self.packagenames:
             self.update_status(_(u'Auditing %s') % package)
             self.result.append(u'%s: %s' % (package,self.wapt.audit(package,force = self.force)))
+            self.progress += astep
+
+        self.progress = 100.0
         if self.result:
             self.summary = _(u"Audit result : %s") % ('\n'.join(self.result))
         else:
             self.summary = _(u"No audit result for %s") % (self.packagenames,)
 
     def __unicode__(self):
-        return _(u"Audit of {packagenames} (task #{id})").format(classname=self.__class__.__name__,id=self.id,packagenames=','.join(self.packagenames))
+        if len(self.packagenames)>3:
+            desc = u'%s packages' % len(self.packagenames)
+        else:
+            desc = ','.join(self.packagenames)
+        return _(u"Audit of {packagenames} (task #{id})").format(classname=self.__class__.__name__,id=self.id,packagenames=desc)
 
     def same_action(self,other):
         return (self.__class__ == other.__class__) and (self.packagenames == other.packagenames)

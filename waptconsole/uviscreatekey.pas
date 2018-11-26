@@ -113,7 +113,8 @@ implementation
 {$R *.lfm}
 
 uses
-  inifiles,uWaptConsoleRes,uWaptRes,dmwaptpython,lazFileUtils,waptcommon,VarPyth;
+  inifiles,uWaptConsoleRes,uWaptRes,dmwaptpython,lazFileUtils,waptcommon,VarPyth,
+  uWaptPythonUtils,uwaptcrypto;
 
 { TVisCreateKey }
 
@@ -158,7 +159,7 @@ end;
 
 function TVisCreateKey.CreateKeyAndCertificate:String;
 var
-  pemfn, certFile: String;
+  pemfn, certFile,CAKeyPassword: String;
   CreatePrivateKey: boolean;
 begin
   Result := '';
@@ -169,21 +170,26 @@ begin
     else
       pemfn:=AppendPathDelim(DirectoryCert.Text)+ExtractFileNameOnly(EdKeyFileName.Text)+'.pem';
 
+    if (EdCAKeyFilename.Text<>'') and (CAKeyPassword='') then
+      InputQuery('CA Private key password','Password',True,CAKeyPassword);
+
     certFile := CreateSignedCert(
-      utf8Decode(pemfn),
-      utf8Decode(edCertBaseName.Text),
-      utf8Decode(DirectoryCert.Text),
-      utf8Decode(edCountry.Text),
-      utf8Decode(edLocality.Text),
-      utf8Decode(edOrganization.Text),
-      utf8Decode(edUnit.Text),
-      utf8Decode(edCommonName.Text),
+      DMPython.waptcrypto,
+      pemfn,
+      edCertBaseName.Text,
+      DirectoryCert.Text,
+      edCountry.Text,
+      edLocality.Text,
+      edOrganization.Text,
+      edUnit.Text,
+      edCommonName.Text,
       edEmail.Text,
       EdKeyPassword.Text,
       CBCodeSigning.Checked,
       CBIsCA.Checked,
-      utf8Decode(EdCACertificate.Text),
-      utf8Decode(EdCAKeyFilename.Text));
+      EdCACertificate.Text,
+      EdCAKeyFilename.Text,
+      CAKeyPassword);
 
     FPrivateKeyFilename:=pemfn;
 

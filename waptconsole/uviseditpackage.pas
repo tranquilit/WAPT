@@ -164,7 +164,8 @@ var
 implementation
 
 uses uWaptConsoleRes,soutils, LCLType, Variants, waptcommon, dmwaptpython, jwawinuser, uvisloading,
-  uvisprivatekeyauth, uwaptconsole, tiscommon, uWaptRes,tisinifiles,tisstrings,LazFileUtils, FileUtil;
+  uvisprivatekeyauth, uwaptconsole, tiscommon, uWaptRes,tisinifiles,tisstrings,
+  LazFileUtils, FileUtil, uWaptPythonUtils;
 
 {$R *.lfm}
 

@@ -1307,7 +1307,7 @@ class LogOutput(BaseObjectClass):
         self.error_status = error_status
         self.exit_status = exit_status
 
-        self.update_buffer_time = 5
+        self.update_buffer_time = 1.0
         self.last_update_time = 0
         self.last_update_idx = 0
 

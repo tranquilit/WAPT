@@ -97,7 +97,7 @@ var
 implementation
 uses tiscommon,waptcommon,LCLIntf,IDURI,superobject,uWaptConsoleRes,
     tisstrings,dmwaptpython,variants,VarPyth,uvisprivatekeyauth,tisinifiles,
-    LazFileUtils,FileUtil,strutils,Windows;
+    LazFileUtils,FileUtil,strutils,Windows,uWaptPythonUtils;
 {$R *.lfm}
 
 { TVisWAPTConfig }

@@ -92,7 +92,8 @@ implementation
 
 uses Variants, VarPyth, PythonEngine, uwaptconsole, tiscommon, soutils,
   dmwaptpython, uvisloading, uvisprivatekeyauth, uWaptRes, md5,
-  uWaptConsoleRes, uvisrepositories, inifiles, tisstrings, tisinifiles,LCLIntf,LazFileUtils,FileUtil;
+  uWaptConsoleRes, uvisrepositories, inifiles, tisstrings,
+  tisinifiles,LCLIntf,LazFileUtils,FileUtil, uWaptPythonUtils;
 
 {$R *.lfm}
 

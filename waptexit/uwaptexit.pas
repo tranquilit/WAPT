@@ -240,6 +240,7 @@ end;
 procedure TVisWaptExit.FormShow(Sender: TObject);
 var
   aso: ISuperObject;
+  description: String;
 begin
   ActShowDetails.Checked:=False;
 
@@ -294,7 +295,13 @@ begin
     end
     else
     if running <> Nil then
-      LabIntro.Caption := UTF8Encode(running.S['description']);
+    begin
+      description := UTF8Encode(running.S['description']);
+      if Length(description)>100 then
+        LabIntro.Caption := copy(description,1,100)+'...'
+      else
+        LabIntro.Caption := description;
+    end;
   end;
 
   if CheckAllowCancelUpgrade then
@@ -345,6 +352,8 @@ begin
 end;
 
 procedure TVisWaptExit.Timer1Timer(Sender: TObject);
+var
+  description: String;
 begin
   timer1.Enabled:=False;
   try
@@ -354,7 +363,11 @@ begin
     GridPending.Data := pending;
     if (running<>Nil) then
     begin
-      EdRunning.Text := UTF8Encode(running.S['description']);
+      description := UTF8Encode(running.S['description']);
+      if Length(description)>100 then
+        EdRunning.Text := copy(description,1,100)+'...'
+      else
+        EdRunning.Text := description;
       MemoLog.Items.Text := UTF8Encode(running.S['runstatus']);
     end;
     Application.ProcessMessages;

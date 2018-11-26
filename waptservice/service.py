@@ -732,17 +732,21 @@ def audit():
     notify_server_on_finish = int(request.args.get('notify_server','1')) != 0
     force = int(request.args.get('force','0')) != 0
 
+    packagenames = []
+
     now = setuphelpers.currentdatetime()
     for package_status in wapt().installed():
         if force or not package_status.next_audit_on or (now >= package_status.next_audit_on):
-            task = WaptAuditPackage(package_status.package,force=force)
-            task.notify_user=notify_user
-            task.notify_server_on_finish=notify_server_on_finish
-            tasks.append(task_manager.add_task(task).as_dict())
+            packagenames.append(package_status.package)
 
-    tasks.append(task_manager.add_task(WaptUpdateServerStatus(priority=100)).as_dict())
+    if packagenames:
+        task = WaptAuditPackage(packagenames,force=force)
+        task.notify_user=notify_user
+        task.notify_server_on_finish=notify_server_on_finish
+        tasks.append(task_manager.add_task(task).as_dict())
+        tasks.append(task_manager.add_task(WaptUpdateServerStatus(priority=100)).as_dict())
 
-    data = {'result':'OK','content':tasks,'message':'%s auditing tasks queued' % len(tasks)}
+    data = {'result':'OK','content':tasks,'message':'%s tasks queued' % len(tasks)}
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
     else:
@@ -896,8 +900,7 @@ def install():
     if package_requests:
         data = task_manager.add_task(WaptPackageInstall(package_requests,force=force,installed_by=username,
             only_priorities = only_priorities,only_if_not_process_running=only_if_not_process_running,notify_user=notify_user)).as_dict()
-        for apackage in package_requests:
-            task_manager.add_task(WaptAuditPackage(packagename=apackage,force=force,notify_user=notify_user,priority=100)).as_dict()
+        task_manager.add_task(WaptAuditPackage(packagenames=package_requests,force=force,notify_user=notify_user,priority=100)).as_dict()
 
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')

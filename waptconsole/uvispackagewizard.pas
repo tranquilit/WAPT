@@ -54,7 +54,8 @@ var
 
 implementation
 
-uses Dialogs,dmwaptpython,superobject,uWaptRes,uWaptConsoleRes,waptcommon,VarPyth;
+uses Dialogs,dmwaptpython,superobject,uWaptRes,uWaptConsoleRes,waptcommon,
+  VarPyth, uWaptPythonUtils;
 
 {$R *.lfm}
 

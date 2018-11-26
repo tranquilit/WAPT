@@ -953,7 +953,7 @@ uses LCLIntf, LCLType, IniFiles, variants, LazFileUtils,FileUtil, uvisprivatekey
   uvisgroupchoice, uvistriggerhostsaction, uVisAPropos,
   uVisImportPackage, PythonEngine, Clipbrd, RegExpr, tisinifiles, IdURI,
   uVisPackageWizard, uVisChangeKeyPassword, uVisDisplayPreferences,
-  uvisrepositories, uVisHostDelete, windirs,winutils
+  uvisrepositories, uVisHostDelete, windirs,winutils,uWaptPythonUtils
   {$ifdef wsus}
   ,uVisWUAGroup, uVisWAPTWUAProducts, uviswuapackageselect,
   uVisWUAClassificationsSelect

@@ -4,11 +4,12 @@
 
 unit pltis_wapt;
 
+{$warn 5023 off : no warning about unused units}
 interface
 
 uses
-  waptwinutils, NetworkAdapterInfo, uWaptRes, waptcommon, waptdb, waptcrypto, 
-  LazarusPackageIntf;
+  waptwinutils, NetworkAdapterInfo, uWaptRes, waptcommon, waptdb, uwaptcrypto, 
+  uWaptPythonUtils, LazarusPackageIntf;
 
 implementation
 

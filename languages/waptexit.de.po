@@ -51,6 +51,10 @@ msgstr "Pakete installieren/updaten"
 msgid "Launching updates..."
 msgstr "Start der Updates..."
 
+#: tviswaptexit.edrunning.text
+msgid "some upgrades are pending, launch upgrades after timeout expired or manual action"
+msgstr ""
+
 #: tviswaptexit.labdontshutdown.caption
 msgid ""
 "Upgrades in progress...\n"

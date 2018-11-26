@@ -84,6 +84,8 @@ object VisWaptExit: TVisWaptExit
           BorderSpacing.Bottom = 2
           BorderSpacing.Around = 3
           Caption = 'Installs or updates pending.'#13#10'Do you wish to apply them now ?'
+          Constraints.MaxHeight = 52
+          Constraints.MaxWidth = 291
           ParentColor = False
         end
       end
@@ -170,6 +172,7 @@ object VisWaptExit: TVisWaptExit
         Anchors = [akTop, akLeft, akRight]
         ReadOnly = True
         TabOrder = 2
+        Text = 'some upgrades are pending, launch upgrades after timeout expired or manual action'
       end
     end
   end

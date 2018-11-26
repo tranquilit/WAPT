@@ -37,7 +37,7 @@
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
-        <CommandLineParams Value="build-waptagent /ConfigFilename=odaim"/>
+        <CommandLineParams Value="create-keycert /ConfigFilename=waptconsole /CommonName=htouvettest"/>
       </local>
     </RunParams>
     <RequiredPackages Count="4">
@@ -58,10 +58,12 @@
       <Unit0>
         <Filename Value="waptget.lpr"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="1"/>
-        <TopLine Value="379"/>
-        <CursorPos Y="396"/>
+        <TopLine Value="824"/>
+        <CursorPos X="66" Y="838"/>
         <UsageCount Value="222"/>
+        <Bookmarks Count="1">
+          <Item0 X="49" Y="838" ID="2"/>
+        </Bookmarks>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit0>

@@ -12,70 +12,71 @@ uses
   SysUtils;
 
 type
-Tcreate_signed_cert_params = record
-  keyfilename           : String;
-  crtbasename           : String;
-  destdir               : String;
-  country               : String;
-  locality              : String;
-  organization          : String;
-  orgunit               : String;
-  commonname            : String;
-  keypassword           : String;
-  email                 : String;
-  codesigning           : Boolean;
-  IsCACert              : Boolean;
-  CACertificateFilename : String;
-  CAKeyFilename         : String;
+  Tcreate_signed_cert_params = record
+    keyfilename           : String;
+    crtbasename           : String;
+    destdir               : String;
+    country               : String;
+    locality              : String;
+    organization          : String;
+    orgunit               : String;
+    commonname            : String;
+    keypassword           : String;
+    email                 : String;
+    codesigning           : Boolean;
+    IsCACert              : Boolean;
+    CACertificateFilename : String;
+    CAKeyFilename         : String;
 
-  _certificate          : String;
-  _error_message        : String;
-end;
-Pcreate_signed_cert_params = ^Tcreate_signed_cert_params;
+    _certificate          : String;
+    _error_message        : String;
+  end;
 
-Tcreate_setup_waptagent_params = record
-  default_public_cert       : String;
-  default_repo_url          : String;
-  default_wapt_server       : String;
-  destination               : String;
-  company                   : String;
-  OnProgress                : TNotifyEvent;
-  WaptEdition               : String;
-  VerifyCert                : String;
-  UseKerberos               : Boolean;
-  CheckCertificatesValidity : Boolean;
-  EnterpriseEdition         : Boolean;
-  OverwriteRepoURL          : Boolean;
-  OverwriteWaptServerURL    : Boolean;
+  Pcreate_signed_cert_params = ^Tcreate_signed_cert_params;
 
-  _agent_filename           : String;
-  _err_message              : String;
-  _result                   : integer;
-end;
-Pcreate_setup_waptagent_params = ^Tcreate_setup_waptagent_params;
+  Tcreate_setup_waptagent_params = record
+    default_public_cert       : String;
+    default_repo_url          : String;
+    default_wapt_server       : String;
+    destination               : String;
+    company                   : String;
+    OnProgress                : TNotifyEvent;
+    WaptEdition               : String;
+    VerifyCert                : String;
+    UseKerberos               : Boolean;
+    CheckCertificatesValidity : Boolean;
+    EnterpriseEdition         : Boolean;
+    OverwriteRepoURL          : Boolean;
+    OverwriteWaptServerURL    : Boolean;
 
-Tcreate_package_waptupgrade_params = record
-  config_filename      : String;
-  server_username      : String;
-  server_password      : String;
-  dualsign             : boolean;
-  private_key_password : String;
+    _agent_filename           : String;
+    _err_message              : String;
+    _result                   : integer;
+  end;
+  Pcreate_setup_waptagent_params = ^Tcreate_setup_waptagent_params;
 
-  _filename             : String;
-  _err_message          : String;
-  _result               : integer;
-end;
-Pcreate_package_waptupgrade_params = ^Tcreate_package_waptupgrade_params;
+  Tcreate_package_waptupgrade_params = record
+    config_filename      : String;
+    server_username      : String;
+    server_password      : String;
+    dualsign             : boolean;
+    private_key_password : String;
 
-TRunSyncParameters = record
-  cmd_line         : String;
-  timout_ms        : integer;
-  on_run_sync_out  : procedure ( const str_out : PChar ) of object;
-  on_run_sync_err  : procedure ( const str_err : PChar ) of object;
-end;
-PRunSyncParameters = ^TRunSyncParameters;
+    _filename             : String;
+    _err_message          : String;
+    _result               : integer;
+  end;
+  Pcreate_package_waptupgrade_params = ^Tcreate_package_waptupgrade_params;
 
-THttpProtocol = ( hpNone, hpHttp, hpHttps );
+  TRunSyncParameters = record
+    cmd_line         : String;
+    timout_ms        : integer;
+    on_run_sync_out  : procedure ( const str_out : PChar ) of object;
+    on_run_sync_err  : procedure ( const str_err : PChar ) of object;
+  end;
+  PRunSyncParameters = ^TRunSyncParameters;
+
+  THttpProtocol = ( hpNone, hpHttp, hpHttps );
 
 function str_is_alphanum( const str : String ) : boolean;
 function str_is_empty_when_trimmed( const str : String ) : boolean;
@@ -159,6 +160,8 @@ uses
   VarPyth,
   character,
   udefault,
+  uwaptcrypto,
+  uWaptPythonUtils,
   dmwaptpython;
 
 function str_is_alphanum( const str : String ) : boolean;
@@ -208,21 +211,21 @@ end;
 function create_signed_cert_params(params: PCreate_signed_cert_params): integer;
 begin
   try
-      params^._certificate := CreateSignedCert(
-      UTF8Decode(params^.keyfilename),
-      UTF8Decode(params^.crtbasename),
-      UTF8Decode(params^.destdir),
-      UTF8Decode(params^.country),
-      UTF8Decode(params^.locality),
-      UTF8Decode(params^.organization),
-      UTF8Decode(params^.orgunit),
-      UTF8Decode(params^.commonname),
-      UTF8Decode(params^.email),
-      UTF8Decode(params^.keypassword),
-      params^.codesigning,
-      params^.IsCACert,
-      UTF8Decode(params^.CACertificateFilename),
-      UTF8Decode(params^.CAKeyFilename)
+      params^._certificate := CreateSignedCert(DMPython.waptcrypto,
+        params^.keyfilename,
+        params^.crtbasename,
+        params^.destdir,
+        params^.country,
+        params^.locality,
+        params^.organization,
+        params^.orgunit,
+        params^.commonname,
+        params^.email,
+        params^.keypassword,
+        params^.codesigning,
+        params^.IsCACert,
+        params^.CACertificateFilename,
+        params^.CAKeyFilename
     );
     result := 0;
   except on Ex : Exception do
