@@ -817,8 +817,21 @@ begin
     basedir:=GetCmdParams('BaseDir',ExtractFilePath(WaptPersonalCertificatePath));
   if basedir = '' then
     basedir:=AppendPathDelim(GetPersonalFolder)+'private';
+  WriteLn('Key and certificate will be created in '+basedir);
 
-  if keypassword='' then
+  if not DirectoryExistsUTF8(basedir) then
+    mkdir(basedir);
+
+  keyfilename := AppendPathDelim(basedir)+commonname+'.pem';
+  if commonname = '' then
+  begin
+    Write('Common name of certificate to create:');
+    readln(commonname);
+  end;
+  if commonname='' then
+    Raise Exception.Create('No common name for certificate');
+
+  if (keypassword='') and not FileExistsUTF8(keyfilename) then
   begin
     printPwd := True;
     keypassword := RandomPassword(12);
@@ -826,7 +839,9 @@ begin
   else
     printPwd := False;
 
-  keyfilename := AppendPathDelim(basedir)+commonname+'.pem';
+  if keypassword='' then
+    keypassword:=GetPrivateKeyPassword(keyfilename);
+
   crtbasename := commonname;
 
   country := GetCmdParams('Country',Language);
@@ -838,7 +853,14 @@ begin
   CAKeyFilename := GetCmdParams('CAKeyFilename',WaptCAKeyFilename);
   CACertFilename := GetCmdParams('CACertFilename',WaptCACertFilename);
   if CAKeyFilename<>'' then
+  begin
+    if (CACertFilename<>'') and FileExistsUTF8(CACertFilename) then
+      Writeln('Certificate will be issued and signed by '+CACertFilename)
+    else
+      Raise Exception.Create('No CA Certificate to issue the new certificate');
+
     CAKeyPassword := GetCmdParams('CAKeyPassword',GetPrivateKeyPassword(CAKeyFilename));
+  end;
 
   result := CreateSignedCert(waptcrypto,
         keyfilename,
