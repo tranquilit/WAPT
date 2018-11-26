@@ -76,6 +76,7 @@ type
 
     function CreateKeycert(commonname: String; basedir: String='';keypassword: String='';CodeSigning:Boolean=True): String;
 
+    function GetCAKeyPassword(crtname:String): String;
     function GetPrivateKeyPassword(crtname:String=''): String;
     function GetWaptServerPassword: String;
     function GetWaptServerUser: String;
@@ -249,6 +250,19 @@ begin
   end;
 end;
 
+
+function PWaptGet.GetCAKeyPassword(crtname:String): String;
+begin
+  result := GetCmdParams('CAKeyPassword','');
+  while Result='' do
+  begin
+    Write('CA key Password for '+crtname+' : ');
+    Result := GetPassword;
+    WriteLn;
+  end;
+end;
+
+
 function PWaptGet.GetRepoURL: String;
 begin
   if FRepoURL='' then
@@ -391,7 +405,7 @@ begin
   if (action = 'create-keycert') then
   begin
     ReadWaptConfig(AppIniFilename('waptconsole'));
-    CreateKeycert(GetCmdParams('CommonName'),'',GetCmdParams('KeyPassword'),GetCmdParams('CodeSigning','1')='1');
+    CreateKeycert(GetCmdParams('CommonName'),'','',GetCmdParams('CodeSigning','1')='1');
   end
   else
   if (action = 'build-waptagent') then
@@ -859,7 +873,7 @@ begin
     else
       Raise Exception.Create('No CA Certificate to issue the new certificate');
 
-    CAKeyPassword := GetCmdParams('CAKeyPassword',GetPrivateKeyPassword(CAKeyFilename));
+    CAKeyPassword := GetCmdParams('CAKeyPassword',GetCAKeyPassword(CAKeyFilename));
   end;
 
   result := CreateSignedCert(waptcrypto,
