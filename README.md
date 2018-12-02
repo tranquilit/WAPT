@@ -4,7 +4,7 @@ WAPT
 WAPT is a software deployment tool whose core set of features is licensed under the GPLv3.
 
 * Official Site : https://wapt.fr/
-* Documentation : https://wapt.fr/en/doc-1.5
+* Documentation : https://wapt.fr/en/doc/
 * Official git repo : https://github.com/tranquilit/WAPT
 
 Main features
