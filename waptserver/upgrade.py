@@ -69,10 +69,7 @@ def create_import_data():
     """Connect to a mongo instance and write all wapt.hosts collection as json into a file"""
     if platform.system()=='Linux':
         mongo_datadir = '/var/lib/mongodb/'
-        if 'dbpath' in subprocess.check_output('mongoexport --help',shell=True):
-            data = subprocess.check_output('mongoexport -d wapt -c hosts --jsonArray --dbpath=%s' % mongo_datadir,shell=True)
-        else:
-            data = subprocess.check_output('mongoexport -c hosts --jsonArray --db wapt',shell=True)
+        data = subprocess.check_output('mongoexport -c hosts --jsonArray --db wapt',shell=True)
         data = data.replace('\u0000', ' ')
         jsondata = ujson.loads(data)
     elif platform.system()=='Windows':

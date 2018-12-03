@@ -239,8 +239,8 @@ def check_mongo2pgsql_upgrade_needed(waptserver_ini):
 def upgrade2postgres(configfilename):
     print ("mongodb process running, need to migrate")
     run_verbose('sudo -u wapt PYTHONPATH=/opt/wapt PYTHONHOME=/opt/wapt /opt/wapt/bin/python /opt/wapt/waptserver/upgrade.py upgrade2postgres -c "%s"' % configfilename)
-    run_verbose("systemctl stop mongodb")
-    run_verbose("systemctl disable mongodb")
+    run_verbose("systemctl stop mongod")
+    run_verbose("systemctl disable mongod")
 
 def nginx_set_worker_limit(nginx_conf):
     already_set=False
