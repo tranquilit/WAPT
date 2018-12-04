@@ -74,7 +74,7 @@ type
     function CreateWaptAgent(TargetDir: String; Edition: String='waptagent'
       ): String;
 
-    function CreateKeycert(commonname: String; basedir: String='';keypassword: String='';CodeSigning:Boolean=True): String;
+    function CreateKeycert(commonname: String; basedir: String='';keypassword: String='';CodeSigning:Boolean=True; CA:Boolean=False): String;
 
     function GetCAKeyPassword(crtname:String): String;
     function GetPrivateKeyPassword(crtname:String=''): String;
@@ -405,7 +405,7 @@ begin
   if (action = 'create-keycert') then
   begin
     ReadWaptConfig(AppIniFilename('waptconsole'));
-    CreateKeycert(GetCmdParams('CommonName'),'','',GetCmdParams('CodeSigning','1')='1');
+    CreateKeycert(GetCmdParams('CommonName'),'','',GetCmdParams('CodeSigning','1')='1',GetCmdParams('CA','1')='1');
   end
   else
   if (action = 'build-waptagent') then
@@ -812,7 +812,8 @@ begin
   end;
 end;
 
-function PWaptGet.CreateKeycert(commonname: String; basedir:String=''; keypassword: String='';CodeSigning:Boolean=True): String;
+function PWaptGet.CreateKeycert(commonname: String; basedir: String;
+  keypassword: String; CodeSigning: Boolean; CA: Boolean): String;
 var
     keyfilename,
     crtbasename,
@@ -845,13 +846,16 @@ begin
   if commonname='' then
     Raise Exception.Create('No common name for certificate');
 
+  printPwd := False;
   if (keypassword='') and not FileExistsUTF8(keyfilename) then
   begin
-    printPwd := True;
-    keypassword := RandomPassword(12);
-  end
-  else
-    printPwd := False;
+    keypassword := GetCmdParams('PrivateKeyPassword','');
+    if keypassword='' then
+    begin
+      printPwd := True;
+      keypassword := RandomPassword(12);
+    end
+  end;
 
   if keypassword='' then
     keypassword:=GetPrivateKeyPassword(keyfilename);
@@ -887,8 +891,8 @@ begin
         commonname,
         email,
         keypassword,
-        codesigning,
-        False,
+        CodeSigning,
+        CA,
         CACertFilename,
         CAKeyFilename,
         CAKeyPassword);
