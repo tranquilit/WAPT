@@ -28,26 +28,28 @@ type
     ActWUAProductShow: TAction;
     ActWUAResetSelectedUpdates: TAction;
     ActWUASaveUpdatesGroup: TAction;
-    BitBtn3: TBitBtn;
-    BitBtn4: TBitBtn;
-    BitBtn5: TBitBtn;
     BitBtn6: TBitBtn;
+    ButAddPackages: TBitBtn;
+    ButAddPackages1: TBitBtn;
     cbWUCritical: TCheckBox;
     cbWUImportant: TCheckBox;
     cbWULow: TCheckBox;
     cbWUModerate: TCheckBox;
     cbWUOther: TCheckBox;
+    ComboBox1: TComboBox;
     EdWUAGroupName: TEdit;
     EdWUAGroupVersion: TEdit;
     EdWUAGroupDescription: TEdit;
+    GridForbiddenWU: TSOGrid;
     GridWinproducts: TSOGrid;
-    GridWinUpdates: TSOGrid;
-    GridWUARules: TSOGrid;
+    GridWUUpdates: TSOGrid;
+    GridAllowedWU: TSOGrid;
     ImageList1: TImageList;
     Label1: TLabel;
     Label16: TLabel;
     Label2: TLabel;
     Label3: TLabel;
+    Label4: TLabel;
     MenuItem58: TMenuItem;
     MenuItem59: TMenuItem;
     MenuItem60: TMenuItem;
@@ -59,25 +61,24 @@ type
     MenuItem67: TMenuItem;
     MenuItem68: TMenuItem;
     MenuItem69: TMenuItem;
+    Z: TPageControl;
     panbaswinupdates: TPanel;
     Panel14: TPanel;
     Panel15: TPanel;
     Panel16: TPanel;
+    Panel17: TPanel;
     panhautwinupdates: TPanel;
     PopupWUAProducts: TPopupMenu;
     PopupWUAUpdates: TPopupMenu;
     Splitter6: TSplitter;
+    TabSheet1: TTabSheet;
+    TabSheet2: TTabSheet;
     TimerWUAFilterWinUpdates: TTimer;
     wupanleft: TPanel;
     wupanright: TPanel;
     procedure ActWUAAllowSelectedUpdatesExecute(Sender: TObject);
     procedure ActWUAForbidSelectedUpdatesExecute(Sender: TObject);
     procedure ActWUALoadGroupExecute(Sender: TObject);
-    procedure ActWUAProductAllowExecute(Sender: TObject);
-    procedure ActWUAProductAllowSeverityExecute(Sender: TObject);
-    procedure ActWUAProductForbidExecute(Sender: TObject);
-    procedure ActWUAProductForbidSeverityExecute(Sender: TObject);
-    procedure ActWUASaveUpdatesGroupExecute(Sender: TObject);
     procedure ActWUASaveUpdatesGroupUpdate(Sender: TObject);
     procedure EdWUAGroupNameExit(Sender: TObject);
     procedure EdWUAGroupNameKeyPress(Sender: TObject; var Key: char);
@@ -185,26 +186,13 @@ end;
 procedure TVisWUAGroup.TimerWUAFilterWinUpdatesTimer(Sender: TObject);
 begin
   TimerWUAFilterWinUpdates.Enabled:=False;
-  GridWinUpdates.Data := FilterWinUpdates(WUAWinupdates);
+  GridWUUpdates.Data := FilterWinUpdates(WUAWinupdates);
 end;
 
 procedure TVisWUAGroup.ActWUAForbidSelectedUpdatesExecute(Sender: TObject);
-var
-  wupdate,wselection:ISuperObject;
 begin
-  for wupdate in GridWinUpdates.SelectedRows do
-  begin
-    wupdate.S['status'] := 'FORBIDDEN';
-
-    wselection := TSuperObject.Create();
-    wselection['update_id'] := wupdate['update_id'];
-    wselection['kb_article_id'] := wupdate['kb_article_id'];
-    wselection['title'] := wupdate['title'];
-    wselection.S['status'] := 'FORBIDDEN';
-    WUAGroupRules.AsArray.Add(wselection);
-    WUARulesModified:=True;
-  end;
-  GridWUARules.LoadData;
+  GridAllowedWU.DeleteRows(GridWUUpdates.SelectedRows);
+  GridForbiddenWU.AddRows(GridWUUpdates.SelectedRows);
 end;
 
 procedure TVisWUAGroup.ActWUALoadGroupExecute(Sender: TObject);
@@ -213,99 +201,33 @@ var
 begin
   if FWUAGroup<>'' then
   begin
-    wsus_rules :=WAPTServerJsonGet('api/v2/windows_updates_rules?group=%s',[FWUAGroup])['result'];
-    for item in wsus_rules do
-    begin
-      WUAGroupRules.Clear;
-      WUAGroupRules.Merge(item['rules']);
-
-      EdWUAGroupName.Text:=FWUAGroup;
-      EdWUAGroupDescription.Text := utf8encode(item.S['description']);
-
-      GridWUARules.LoadData;
-      WUARulesModified:=False;
-    end;
+    EdWUAGroupName.Text:=FWUAGroup;
+    EdWUAGroupDescription.Text := '';
+    WUARulesModified:=False;
   end
   else
   begin
-    WUAGroupRules.Clear;
     EdWUAGroupName.Text:=FWUAGroup;
     EdWUAGroupDescription.Text := '';
-    GridWUARules.LoadData;
     WUARulesModified:=False;
   end;
 end;
 
 procedure TVisWUAGroup.ActWUADownloadSelectedUpdateUpdate(Sender: TObject);
 begin
-  (Sender as TAction).Enabled:=GridWinUpdates.SelectedCount>0;
+  (Sender as TAction).Enabled:=GridWUUpdates.SelectedCount>0;
 end;
 
 procedure TVisWUAGroup.ActWUAAllowSelectedUpdatesExecute(Sender: TObject);
-var
-  wupdate,wselection:ISuperObject;
 begin
-  for wupdate in GridWinUpdates.SelectedRows do
-  begin
-    wupdate.S['status'] := 'ALLOWED';
-
-    wselection := TSuperObject.Create();
-    wselection['update_id'] := wupdate['update_id'];
-    wselection['kb_article_id'] := wupdate['kb_article_id'];
-    wselection['title'] := wupdate['title'];
-    wselection.S['status'] := 'ALLOWED';
-    WUAGroupRules.AsArray.Add(wselection);
-    WUARulesModified:=True;
-  end;
-  TSOGrid(GridWUARules).LoadData;
+  GridForbiddenWU.DeleteRows(GridWUUpdates.SelectedRows);
+  GridAllowedWU.AddRows(GridWUUpdates.SelectedRows);
 end;
 
 procedure TVisWUAGroup.ActWUALoadUpdatesUpdate(Sender: TObject);
 begin
   ActWUALoadUpdates.Enabled:=GridWinproducts.SelectedCount>0;
 end;
-
-procedure TVisWUAGroup.ActWUAProductAllowExecute(Sender: TObject);
-var
-  wupdate,wselection:ISuperObject;
-begin
-  for wupdate in GridWinproducts.SelectedRows do
-  begin
-    wupdate.S['status'] := 'ALLOWED';
-
-    wselection := TSuperObject.Create();
-    wselection['product'] := wupdate['title'];
-    wselection['product_id'] := wupdate['product'];
-
-    wselection.S['status'] := 'ALLOWED';
-    WUAGroupRules.AsArray.Add(wselection);
-    WUARulesModified:=True;
-  end;
-  TSOGrid(GridWUARules).LoadData;
-end;
-
-procedure TVisWUAGroup.ActWUAProductAllowSeverityExecute(Sender: TObject);
-var
-  severities:String;
-  wupdate,wselection:ISuperObject;
-begin
-  severities:=Join(',',SelectedSeverities);
-  for wupdate in GridWinproducts.SelectedRows do
-  begin
-    wupdate.S['status'] := 'ALLOWED';
-
-    wselection := TSuperObject.Create();
-    wselection['product'] := wupdate['title'];
-    wselection['product_id'] := wupdate['product'];
-    wselection.S['msrc_severity'] := severities;
-
-    wselection.S['status'] := 'ALLOWED';
-    WUAGroupRules.AsArray.Add(wselection);
-    WUARulesModified:=True;
-  end;
-  TSOGrid(GridWUARules).LoadData;
-end;
-
 
 function TVisWUAGroup.SelectedSeverities:ISUperObject;
 begin
@@ -321,59 +243,6 @@ begin
   if cbWUOther.Checked then
     Result.AsArray.Add('null');
 
-end;
-
-procedure TVisWUAGroup.ActWUAProductForbidExecute(Sender: TObject);
-var
-  wupdate,wselection:ISuperObject;
-begin
-  for wupdate in GridWinproducts.SelectedRows do
-  begin
-    wupdate.S['status'] := 'FORBIDDEN';
-
-    wselection := TSuperObject.Create();
-    wselection['product'] := wupdate['title'];
-    wselection['product_id'] := wupdate['product'];
-    wselection.S['status'] := 'FORBIDDEN';
-    WUAGroupRules.AsArray.Add(wselection);
-    WUARulesModified:=True;
-  end;
-  TSOGrid(GridWUARules).LoadData;
-end;
-
-procedure TVisWUAGroup.ActWUAProductForbidSeverityExecute(Sender: TObject);
-var
-  severities:String;
-  wupdate,wselection:ISuperObject;
-begin
-  severities:=Join(',',SelectedSeverities);
-  for wupdate in GridWinproducts.SelectedRows do
-  begin
-    wupdate.S['status'] := 'FORBIDDEN';
-
-    wselection := TSuperObject.Create();
-    wselection['product'] := wupdate['title'];
-    wselection['product_id'] := wupdate['product'];
-    wselection.S['msrc_severity'] := severities;
-
-    wselection.S['status'] := 'FORBIDDEN';
-    WUAGroupRules.AsArray.Add(wselection);
-    WUARulesModified:=True;
-  end;
-  TSOGrid(GridWUARules).LoadData;
-end;
-
-procedure TVisWUAGroup.ActWUASaveUpdatesGroupExecute(Sender: TObject);
-var
-  wsus_rules :ISuperObject;
-begin
-  wsus_rules := TSuperObject.Create();
-  wsus_rules.S['group'] := WUAGroup;
-  wsus_rules['rules']   := WUAGroupRules;
-  wsus_rules.S['description']   := UTF8Decode(EdWUAGroupDescription.Text);
-  WAPTServerJsonPost('api/v2/windows_updates_rules?group=%s',[WUAGroup],wsus_rules);
-  WUARulesModified := False;
-  ModalResult:=mrOK;
 end;
 
 procedure TVisWUAGroup.ActWUASaveUpdatesGroupUpdate(Sender: TObject);
@@ -399,13 +268,7 @@ procedure TVisWUAGroup.FormCreate(Sender: TObject);
 begin
   Screen.Cursor:=crHourGlass;
   try
-    WUAGroupRules := TSuperObject.Create(stArray);
-    WUAProducts := WAPTServerJsonGet('api/v2/windows_products?selected=1',[])['result'];
-    WUAWinupdates := WAPTServerJsonGet('api/v2/windows_updates?selected_products=1',[])['result'];
-
     WUAGroup:='default';
-    GridWUARules.Data := WUAGroupRules;
-
   finally
     Screen.Cursor:=crdefault;
   end;
@@ -414,13 +277,13 @@ end;
 procedure TVisWUAGroup.FormShow(Sender: TObject);
 begin
   GridWinproducts.Data := FilterWinproducts(WUAProducts);
-  GridWinUpdates.Data := FilterWinUpdates(WUAWinupdates);
+  GridWUUpdates.Data := FilterWinUpdates(WUAWinupdates);
 end;
 
 procedure TVisWUAGroup.GridWinproductsChange(Sender: TBaseVirtualTree;
   Node: PVirtualNode);
 begin
-  GridWinUpdates.Data := Nil;
+  GridWUUpdates.Data := Nil;
   TimerWUAFilterWinUpdates.Enabled:=False;
   TimerWUAFilterWinUpdates.Enabled:=True;
 end;

@@ -1,5 +1,5 @@
 object VisWaptGUI: TVisWaptGUI
-  Left = 1952
+  Left = 422
   Height = 866
   Top = 141
   Width = 1375
@@ -27,9 +27,9 @@ object VisWaptGUI: TVisWaptGUI
     Height = 703
     Top = 0
     Width = 1375
-    ActivePage = pgInventory
+    ActivePage = pgGroups
     Align = alClient
-    TabIndex = 0
+    TabIndex = 1
     TabOrder = 0
     OnChange = MainPagesChange
     object pgInventory: TTabSheet
@@ -3385,7 +3385,7 @@ object VisWaptGUI: TVisWaptGUI
         ChildSizing.TopBottomSpacing = 3
         ChildSizing.HorizontalSpacing = 6
         ChildSizing.Layout = cclLeftToRightThenTopToBottom
-        ChildSizing.ControlsPerLine = 5
+        ChildSizing.ControlsPerLine = 10
         ClientHeight = 40
         ClientWidth = 1367
         TabOrder = 0
@@ -3440,6 +3440,15 @@ object VisWaptGUI: TVisWaptGUI
           Caption = 'Show Hosts'
           OnClick = CBShowHostsForGroupsClick
           TabOrder = 4
+        end
+        object btAddGroup1: TBitBtn
+          Left = 615
+          Height = 34
+          Top = 3
+          Width = 199
+          Action = ActWUANewGroup
+          AutoSize = True
+          TabOrder = 5
         end
       end
       object Splitter8: TSplitter
@@ -8701,6 +8710,7 @@ object VisWaptGUI: TVisWaptGUI
     object ActWUANewGroup: TAction
       Category = 'wua'
       Caption = 'New Windows Updates bundle'
+      ImageIndex = 10
       OnExecute = ActWUANewGroupExecute
     end
     object ActWSUSRefresh: TAction

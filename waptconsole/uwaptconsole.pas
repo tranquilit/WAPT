@@ -38,6 +38,7 @@ type
     ActReportingQueryDelete: TAction;
     ActNormalizationImportSoftwares: TAction;
     ActNormalizationWriteTable: TAction;
+    btAddGroup1: TBitBtn;
     ButNormalizationImport: TBitBtn;
     ButNormalizationSave: TBitBtn;
     ButNormalizationFilter: TBitBtn;
@@ -953,9 +954,8 @@ uses LCLIntf, LCLType, IniFiles, variants, LazFileUtils,FileUtil, uvisprivatekey
   uvisgroupchoice, uvistriggerhostsaction, uVisAPropos,
   uVisImportPackage, PythonEngine, Clipbrd, RegExpr, tisinifiles, IdURI,
   uVisPackageWizard, uVisChangeKeyPassword, uVisDisplayPreferences,
-  uvisrepositories, uVisHostDelete, windirs,winutils,uWaptPythonUtils
-  {$ifdef wsus}
-  ,uVisWUAGroup, uVisWAPTWUAProducts, uviswuapackageselect,
+  uvisrepositories, uVisHostDelete, windirs,winutils,uWaptPythonUtils,uVisWUAGroup
+  {$ifdef wsus},uVisWAPTWUAProducts, uviswuapackageselect,
   uVisWUAClassificationsSelect
   {$endif};
 
@@ -3415,20 +3415,6 @@ begin
 end;
 
 
-procedure TVisWaptGUI.ActWUANewGroupExecute(Sender: TObject);
-begin
-  {$ifdef wsus}
-  With TVisWUAGroup.Create(Self) do
-  try
-    WUAGroup:='';
-    if ShowModal = mrOK then
-      ActWUALoadGroups.Execute;
-  finally
-    Free;
-  end;
-  {$endif wsus}
-end;
-
 procedure TVisWaptGUI.ActWUAProductHideExecute(Sender: TObject);
 {$ifdef wsus2}
 var
@@ -4918,6 +4904,7 @@ begin
   PgReports.TabVisible:=False;
   ActTriggerHostAudit.Visible:=False;
   ActPackagesAudit.Visible:=False;
+  ActWUANewGroup.Visible := False;
 
   SetSOGridVisible(GridHosts,'audit_status',False);
   SetSOGridVisible(GridHosts,'waptwua.status',False);
@@ -5651,6 +5638,12 @@ procedure TVisWaptGUI.GridWUDownloadsNodesDelete(Sender: TSOGrid;
   Nodes: ISuperObject);
 begin
 end;
+
+procedure TVisWaptGUI.ActWUANewGroupExecute(Sender: TObject);
+begin
+end;
+
+
 {$endif}
 
 end.

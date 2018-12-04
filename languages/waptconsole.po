@@ -2466,6 +2466,10 @@ msgctxt "tviswuagroup.cbwuother.caption"
 msgid "Other"
 msgstr ""
 
+#: tviswuagroup.combobox1.text
+msgid "ComboBox1"
+msgstr ""
+
 #: tviswuagroup.label1.caption
 msgid "Windows Updates Group name"
 msgstr ""
@@ -2484,8 +2488,16 @@ msgctxt "tviswuagroup.label3.caption"
 msgid "Description"
 msgstr ""
 
-#: tviswuagroup.wupanleft.caption
-msgid "wupanleft"
+#: tviswuagroup.label4.caption
+msgid "Maturity"
+msgstr ""
+
+#: tviswuagroup.tabsheet1.caption
+msgid "Allowed Windows updates"
+msgstr ""
+
+#: tviswuagroup.tabsheet2.caption
+msgid "Forbidden Windows updates"
 msgstr ""
 
 #: tviswuagroup.wupanright.caption
