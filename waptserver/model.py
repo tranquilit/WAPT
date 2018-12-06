@@ -427,9 +427,9 @@ class ReportingQueries(WaptBaseModel):
 
 class Normalization(WaptBaseModel):
     """Normalization table"""
-    original_name = CharField(   max_length=500 )
-    key = CharField(             max_length=500 )
-    normalized_name = CharField( max_length=500, null=True,  index=True )
+    original_name = CharField(   max_length=2000 )
+    key = CharField(             max_length=600 )
+    normalized_name = CharField( max_length=2000, null=True,  index=True )
     banned = BooleanField( null=True )
     windows_update = BooleanField( null=True  )
     class Meta:
