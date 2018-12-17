@@ -836,6 +836,8 @@ def wget(url,target=None,printhook=None,proxies=None,connect_timeout=10,download
         if printhook is None and ProgressBar is not None and total_bytes:
             progress_bar = ProgressBar(label=filename,expected_size=target_size or total_bytes, filled_char='=')
             progress_bar.show(actual_size)
+        else:
+            progress_bar = None
 
         with open(target_fn,write_mode) as output_file:
             last_time_display = time.time()
@@ -846,7 +848,7 @@ def wget(url,target=None,printhook=None,proxies=None,connect_timeout=10,download
                     output_file.flush()
                     if download_timeout is not None and (time.time()-start_time>download_timeout):
                         raise requests.Timeout(r'Download of %s takes more than the requested %ss'%(url,download_timeout))
-                    if printhook is None and ProgressBar is not None:
+                    if printhook is None and ProgressBar is not None and progress_bar:
                         if (time.time()-start_time>0.2) and (time.time()-last_time_display>=0.2):
                             progress_bar.show(actual_size + cnt*len(chunk))
                             last_time_display = time.time()
@@ -855,7 +857,7 @@ def wget(url,target=None,printhook=None,proxies=None,connect_timeout=10,download
                             last_time_display = time.time()
                     last_downloaded += len(chunk)
                     cnt +=1
-                if printhook is None and ProgressBar is not None:
+                if printhook is None and ProgressBar is not None and progress_bar:
                     progress_bar.show(total_bytes)
                     progress_bar.done()
                     last_time_display = time.time()
