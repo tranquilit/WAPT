@@ -712,8 +712,11 @@ def wget(url,target=None,printhook=None,proxies=None,connect_timeout=10,download
     last_downloaded = 0
 
     def reporthook(received,total):
-        total = float(total)
-        if total>1 and received>1:
+        if total is not None:
+            total = float(total)
+        else:
+            total = received
+        if received>1:
             # print only every second or at end
             if (time.time()-start_time>1) and ((time.time()-last_time_display>=1) or (received>=total)):
                 speed = received /(1024.0 * (time.time()-start_time))
@@ -858,10 +861,10 @@ def wget(url,target=None,printhook=None,proxies=None,connect_timeout=10,download
                     last_downloaded += len(chunk)
                     cnt +=1
                 if printhook is None and ProgressBar is not None and progress_bar:
-                    progress_bar.show(total_bytes)
+                    progress_bar.show(total_bytes or last_downloaded)
                     progress_bar.done()
                     last_time_display = time.time()
-                elif reporthook(last_downloaded,total_bytes):
+                elif reporthook(last_downloaded,total_bytes or last_downloaded):
                     last_time_display = time.time()
 
         # check hashes
