@@ -86,9 +86,9 @@ def update_hash_file(filepath):
 def sign_exe(exe_path,p12path,p12password):
     #SIGNTOOL = os.path.join(setuphelpers.programfiles64,'Microsoft SDKs','Windows','v7.1','Bin','signtool.exe')
     SIGNTOOL = os.path.join(wapt_root_dir,'utils','signtool.exe')
-    if not isfile(SIGNTOOL):
+    if not os.path.exists(SIGNTOOL):
       SIGNTOOL = os.path.join(programfiles32,'wapt','utils','signtool.exe')
-    if not isfile(SIGNTOOL):
+    if not os.path.exists(SIGNTOOL):
       SIGNTOOL = os.path.join(r'c:\wapt','utils','signtool.exe')
 
     for attempt in [1, 2, 3]:
