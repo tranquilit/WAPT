@@ -608,7 +608,11 @@ def get_checkupgrades():
             query = u"""select * from wapt_params where name="last_update_status" limit 1"""
             cur = con.cursor()
             cur.execute(query)
-            data = json.loads(cur.fetchone()['value'])
+            row = cur.fetchone()
+            if row:
+                data = json.loads(row['value'])
+            else:
+                data = None
         except Exception as e :
             logger.critical(u"*********** error %s"  % (ensure_unicode(e)))
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
