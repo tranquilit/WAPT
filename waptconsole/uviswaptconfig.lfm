@@ -1,9 +1,8 @@
 object VisWAPTConfig: TVisWAPTConfig
-  Left = 414
+  Left = 1249
   Height = 327
-  Top = 198
+  Top = 169
   Width = 621
-  AutoSize = True
   BorderStyle = bsDialog
   Caption = 'WAPTConsole configuration'
   ClientHeight = 327
@@ -32,6 +31,7 @@ object VisWAPTConfig: TVisWAPTConfig
     CancelButton.Name = 'CancelButton'
     CancelButton.DefaultCaption = True
     TabOrder = 1
+    OnClick = ButtonPanel1Click
     ShowButtons = [pbOK, pbCancel, pbHelp]
   end
   object PageControl1: TPageControl
@@ -39,10 +39,11 @@ object VisWAPTConfig: TVisWAPTConfig
     Height = 281
     Top = 0
     Width = 621
-    ActivePage = pgBase
+    ActivePage = TabSheet1
     Align = alClient
-    TabIndex = 0
+    TabIndex = 2
     TabOrder = 0
+    OnChange = PageControl1Change
     object pgBase: TTabSheet
       Caption = 'Base'
       ChildSizing.TopBottomSpacing = 15
@@ -410,6 +411,187 @@ object VisWAPTConfig: TVisWAPTConfig
         Visible = False
       end
     end
+    object TabSheet1: TTabSheet
+      Caption = 'External tools'
+      ClientHeight = 255
+      ClientWidth = 613
+      object Label7: TLabel
+        AnchorSideTop.Control = EdPathVnc
+        AnchorSideRight.Control = EdPathVnc
+        Left = -39
+        Height = 13
+        Top = 24
+        Width = 164
+        Alignment = taRightJustify
+        Anchors = [akTop, akRight]
+        BorderSpacing.Top = 2
+        BorderSpacing.Right = 3
+        Caption = 'Path to Vncviewer'
+        Constraints.MinWidth = 164
+        ParentColor = False
+      end
+      object EdPathVnc: TFileNameEdit
+        Left = 128
+        Height = 21
+        Hint = 'E.g. : C:\Program Files\UltraVnc\vncviewer.exe'
+        Top = 22
+        Width = 233
+        Filter = 'Executable File|*.exe|Tous les fichiers|*.*'
+        FilterIndex = 0
+        HideDirectories = False
+        ButtonWidth = 23
+        NumGlyphs = 1
+        Flat = True
+        MaxLength = 0
+        TabOrder = 0
+      end
+      object EdPortVnc: TLabeledEdit
+        Left = 416
+        Height = 21
+        Hint = 'E.g. : 5900'
+        Top = 22
+        Width = 80
+        EditLabel.AnchorSideTop.Control = EdPortVnc
+        EditLabel.AnchorSideTop.Side = asrCenter
+        EditLabel.AnchorSideRight.Control = EdPortVnc
+        EditLabel.AnchorSideBottom.Control = EdPortVnc
+        EditLabel.AnchorSideBottom.Side = asrBottom
+        EditLabel.Left = 390
+        EditLabel.Height = 13
+        EditLabel.Top = 26
+        EditLabel.Width = 23
+        EditLabel.Caption = 'Port '
+        EditLabel.ParentColor = False
+        LabelPosition = lpLeft
+        TabOrder = 1
+      end
+      object Label9: TLabel
+        AnchorSideTop.Control = EdPathVeyon
+        AnchorSideRight.Control = EdPathVeyon
+        Left = -39
+        Height = 13
+        Top = 58
+        Width = 164
+        Alignment = taRightJustify
+        Anchors = [akTop, akRight]
+        BorderSpacing.Top = 2
+        BorderSpacing.Right = 3
+        Caption = 'Path to Veyon'
+        Constraints.MinWidth = 164
+        ParentColor = False
+      end
+      object EdPathVeyon: TFileNameEdit
+        Left = 128
+        Height = 21
+        Hint = 'E.g. : C:\Program Files\Veyon\veyon-ctl.exe'
+        Top = 56
+        Width = 233
+        Filter = 'Executable File|*.exe|Tous les fichiers|*.*'
+        FilterIndex = 0
+        HideDirectories = False
+        ButtonWidth = 23
+        NumGlyphs = 1
+        Flat = True
+        MaxLength = 0
+        TabOrder = 2
+      end
+      object EdPortVeyon: TLabeledEdit
+        Left = 416
+        Height = 21
+        Hint = 'E.g. : 11100'
+        Top = 56
+        Width = 80
+        EditLabel.AnchorSideTop.Control = EdPortVeyon
+        EditLabel.AnchorSideTop.Side = asrCenter
+        EditLabel.AnchorSideRight.Control = EdPortVeyon
+        EditLabel.AnchorSideBottom.Control = EdPortVeyon
+        EditLabel.AnchorSideBottom.Side = asrBottom
+        EditLabel.Left = 390
+        EditLabel.Height = 13
+        EditLabel.Top = 60
+        EditLabel.Width = 23
+        EditLabel.Caption = 'Port '
+        EditLabel.ParentColor = False
+        LabelPosition = lpLeft
+        TabOrder = 3
+      end
+      object Label10: TLabel
+        AnchorSideTop.Control = EdServerCertificate3
+        AnchorSideRight.Control = EdServerCertificate3
+        Left = -40
+        Height = 13
+        Top = 178
+        Width = 164
+        Alignment = taRightJustify
+        Anchors = [akTop, akRight]
+        BorderSpacing.Top = 2
+        BorderSpacing.Right = 3
+        Caption = 'Path to executable'
+        Constraints.MinWidth = 164
+        ParentColor = False
+      end
+      object EdServerCertificate3: TFileNameEdit
+        Left = 127
+        Height = 21
+        Hint = 'E.g. : C:\Program Files\other\other.exe'
+        Top = 176
+        Width = 234
+        Filter = 'Executable File|*.exe|Tous les fichiers|*.*'
+        FilterIndex = 0
+        HideDirectories = False
+        ButtonWidth = 23
+        NumGlyphs = 1
+        Flat = True
+        MaxLength = 0
+        TabOrder = 6
+      end
+      object LabeledEdit3: TLabeledEdit
+        Left = 127
+        Height = 21
+        Top = 208
+        Width = 208
+        EditLabel.AnchorSideTop.Control = LabeledEdit3
+        EditLabel.AnchorSideTop.Side = asrCenter
+        EditLabel.AnchorSideRight.Control = LabeledEdit3
+        EditLabel.AnchorSideBottom.Control = LabeledEdit3
+        EditLabel.AnchorSideBottom.Side = asrBottom
+        EditLabel.Left = 89
+        EditLabel.Height = 13
+        EditLabel.Top = 212
+        EditLabel.Width = 35
+        EditLabel.Caption = 'Params'
+        EditLabel.ParentColor = False
+        LabelPosition = lpLeft
+        TabOrder = 7
+      end
+      object LabeledEdit4: TLabeledEdit
+        Left = 127
+        Height = 21
+        Top = 144
+        Width = 208
+        EditLabel.AnchorSideTop.Control = LabeledEdit4
+        EditLabel.AnchorSideTop.Side = asrCenter
+        EditLabel.AnchorSideRight.Control = LabeledEdit4
+        EditLabel.AnchorSideBottom.Control = LabeledEdit4
+        EditLabel.AnchorSideBottom.Side = asrBottom
+        EditLabel.Left = 46
+        EditLabel.Height = 13
+        EditLabel.Top = 148
+        EditLabel.Width = 78
+        EditLabel.Caption = 'Menu item name'
+        EditLabel.ParentColor = False
+        LabelPosition = lpLeft
+        TabOrder = 5
+      end
+      object StaticText1: TStaticText
+        Left = 32
+        Height = 17
+        Top = 115
+        Width = 360
+        Caption = 'Create a new button in the menu to perform an external action :'
+        TabOrder = 4
+      end
+    end
   end
   object Timer1: TTimer
     Enabled = False
@@ -418,8 +600,8 @@ object VisWAPTConfig: TVisWAPTConfig
     top = 71
   end
   object ImageList1: TImageList
-    left = 24
-    top = 136
+    left = 544
+    top = 40
     Bitmap = {
       4C69030000001000000010000000FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
       FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
@@ -521,8 +703,8 @@ object VisWAPTConfig: TVisWAPTConfig
     }
   end
   object ActionList1: TActionList
-    left = 489
-    top = 248
+    left = 544
+    top = 208
     object ActCheckAndSetwaptserver: TAction
       Caption = 'Check and set'
       Hint = 'Try to connect to waptserver and wapt_repo'

@@ -41,21 +41,33 @@ type
     edPersonalCertificatePath: TFileNameEdit;
     edrepo_url: TLabeledEdit;
     edServerAddress: TLabeledEdit;
+    EdPathVnc: TFileNameEdit;
+    EdPathVeyon: TFileNameEdit;
+    EdServerCertificate3: TFileNameEdit;
     edwapt_server: TLabeledEdit;
     ImageList1: TImageList;
     ImgStatusRepo: TImage;
     ImgStatusServer: TImage;
     Label1: TLabel;
+    Label10: TLabel;
     Label2: TLabel;
     Label4: TLabel;
     Label5: TLabel;
     Label6: TLabel;
+    Label7: TLabel;
     Label8: TLabel;
+    Label9: TLabel;
+    EdPortVnc: TLabeledEdit;
+    EdPortVeyon: TLabeledEdit;
+    LabeledEdit3: TLabeledEdit;
+    LabeledEdit4: TLabeledEdit;
     labStatusRepo: TLabel;
     labStatusServer: TLabel;
     PageControl1: TPageControl;
     pgBase: TTabSheet;
     pgAdvanced: TTabSheet;
+    StaticText1: TStaticText;
+    TabSheet1: TTabSheet;
     Timer1: TTimer;
     procedure ActCheckAndSetwaptserverExecute(Sender: TObject);
     procedure ActCheckPersonalKeyExecute(Sender: TObject);
@@ -65,6 +77,7 @@ type
     procedure ActSaveConfigExecute(Sender: TObject);
     procedure ActSaveConfigUpdate(Sender: TObject);
     procedure Button1Click(Sender: TObject);
+    procedure ButtonPanel1Click(Sender: TObject);
     procedure cbManualClick(Sender: TObject);
     procedure CBVerifyCertClick(Sender: TObject);
     procedure eddefault_package_prefixExit(Sender: TObject);
@@ -77,6 +90,7 @@ type
     procedure FormShow(Sender: TObject);
     procedure HelpButtonClick(Sender: TObject);
     procedure OKButtonClick(Sender: TObject);
+    procedure PageControl1Change(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
   private
     FIniFilename: String;
@@ -110,6 +124,11 @@ begin
     on E:Exception do
       ShowMessage('Unable to retrieve statistics : '+E.Message);
   end;
+end;
+
+procedure TVisWAPTConfig.ButtonPanel1Click(Sender: TObject);
+begin
+
 end;
 
 procedure TVisWAPTConfig.ActCheckAndSetwaptserverExecute(Sender: TObject);
@@ -484,6 +503,11 @@ end;
 procedure TVisWAPTConfig.OKButtonClick(Sender: TObject);
 begin
   ActSaveConfig.Execute;
+end;
+
+procedure TVisWAPTConfig.PageControl1Change(Sender: TObject);
+begin
+
 end;
 
 procedure TVisWAPTConfig.Timer1Timer(Sender: TObject);

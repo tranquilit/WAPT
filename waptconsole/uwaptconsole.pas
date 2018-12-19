@@ -29,6 +29,7 @@ type
     ActAddNewNetwork: TAction;
     ActDeleteNetwork: TAction;
     ActInstallLicence: TAction;
+    ActVeyon: TAction;
     ActReportingQueryDuplicate: TAction;
     ActTriggerTestLongTask: TAction;
     ActReportingQuerySaveAll: TAction;
@@ -58,6 +59,7 @@ type
     MenuItem105: TMenuItem;
     MenuItem106: TMenuItem;
     MenuItem107: TMenuItem;
+    VeyonConnect: TMenuItem;
     NormalizationActions: TActionList;
     ActReportingQueryReload: TAction;
     ActReportingQueryExportToExcel: TAction;
@@ -605,6 +607,8 @@ type
     procedure ActTriggerWaptwua_installExecute(Sender: TObject);
     procedure ActTriggerWaptwua_scanExecute(Sender: TObject);
     procedure ActTriggerWaptwua_scanUpdate(Sender: TObject);
+    procedure ActVeyonExecute(Sender: TObject);
+    procedure ActVeyonUpdate(Sender: TObject);
     procedure ActWSUSDowloadWSUSScanExecute(Sender: TObject);
     procedure ActWSUSRefreshExecute(Sender: TObject);
     procedure ActWSUSSaveBuildRulesExecute(Sender: TObject);
@@ -826,6 +830,7 @@ type
     procedure MenuItem103CheckAllClick(Sender: TObject);
     procedure MenuItem104Click(Sender: TObject);
     procedure MenuItem105UncheclAllClick(Sender: TObject);
+    procedure VeyonConnectClick(Sender: TObject);
     procedure MenuItem27Click(Sender: TObject);
     procedure MenuItem74Click(Sender: TObject);
     procedure MenuItemProductsCheckAllClick(Sender: TObject);
@@ -1036,12 +1041,34 @@ end;
 
 function GetVNCViewerPath:String;
 const
-  vncpathes: Array[0..2] of String = ('C:\Program Files\TightVNC\tvnviewer.exe','C:\Program Files\TightVNC\tvnviewer64.exe',
+  vncpathes: Array[0..6] of String = ('C:\Program Files\uvnc bvba\UltraVNC\vncviewer.exe',
+    'C:\Program Files (x86)\uvnc bvba\UltraVNC\vncviewer.exe',
+    'C:\Program Files (x86)\UltraVNC\vncviewer.exe',
+    'C:\Program Files\UltraVNC\vncviewer.exe',
+    'C:\Program Files\TightVNC\tvnviewer.exe',
+    'C:\Program Files\TightVNC\tvnviewer64.exe',
     'C:\Program Files (x86)\TightVNC\tvnviewer.exe');
 var
   p:String;
 begin
+  Result := '';
   for p in vncpathes do
+    if FileExistsUTF8(p) then
+    begin
+      Result := p;
+      Break;
+    end;
+end;
+
+function GetVeyonPath:String;
+const
+  veyonpathes: Array[0..1] of String = ('C:\Program Files\Veyon\veyon-ctl.exe',
+  'C:\Program Files (x86)\Veyon\veyon-ctl.exe');
+var
+  p:String;
+begin
+  Result := '';
+  for p in veyonpathes do
     if FileExistsUTF8(p) then
     begin
       Result := p;
@@ -5183,6 +5210,35 @@ begin
   TimerSearchPackages.Enabled:=False;
   ActSearchPackage.Execute;
 end;
+
+
+procedure TVisWaptGUI.ActVeyonExecute(Sender: TObject);
+var
+  ip: ansistring;
+begin
+  if (Gridhosts.FocusedRow <> nil) and
+    (Gridhosts.FocusedRow.S['connected_ips'] <> '') then
+  begin
+    ip := GetReachableIP(Gridhosts.FocusedRow['connected_ips'],11100,2000);
+    if ip<>'' then
+      ShellExecuteA(0, '', PAnsiChar(GetVeyonPath),PAnsiChar('remoteaccess control ' + ip),
+      nil, SW_SHOW)
+    else
+      ShowMessage(rsNoReachableIP);
+  end;
+end;
+
+procedure TVisWaptGUI.ActVeyonUpdate(Sender: TObject);
+begin
+  try
+    ActVeyon.Visible := (Gridhosts.FocusedRow <> nil) and
+      (Gridhosts.FocusedRow.S['connected_ips'] <> '') and
+      FileExistsUTF8(GetVeyonPath);
+  except
+    ActVeyon.Visible := False;
+  end;
+end;
+
 
 {$ifdef ENTERPRISE}
 {$include ..\waptenterprise\includes\uwaptconsole.inc}
