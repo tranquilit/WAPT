@@ -1,12 +1,13 @@
 object VisWAPTConfig: TVisWAPTConfig
   Left = 1249
-  Height = 327
+  Height = 328
   Top = 169
   Width = 621
   BorderStyle = bsDialog
   Caption = 'WAPTConsole configuration'
-  ClientHeight = 327
+  ClientHeight = 328
   ClientWidth = 621
+  Menu = MainMenu1
   OnDestroy = FormDestroy
   OnShow = FormShow
   ParentFont = True
@@ -16,7 +17,7 @@ object VisWAPTConfig: TVisWAPTConfig
   object ButtonPanel1: TButtonPanel
     Left = 6
     Height = 34
-    Top = 287
+    Top = 288
     Width = 609
     OKButton.Name = 'OKButton'
     OKButton.DefaultCaption = True
@@ -36,7 +37,7 @@ object VisWAPTConfig: TVisWAPTConfig
   end
   object PageControl1: TPageControl
     Left = 0
-    Height = 281
+    Height = 282
     Top = 0
     Width = 621
     ActivePage = TabSheet1
@@ -412,184 +413,57 @@ object VisWAPTConfig: TVisWAPTConfig
       end
     end
     object TabSheet1: TTabSheet
-      Caption = 'External tools'
-      ClientHeight = 255
+      Caption = 'Plugins'
+      ClientHeight = 256
       ClientWidth = 613
-      object Label7: TLabel
-        AnchorSideTop.Control = EdPathVnc
-        AnchorSideRight.Control = EdPathVnc
-        Left = -39
-        Height = 13
-        Top = 24
-        Width = 164
-        Alignment = taRightJustify
-        Anchors = [akTop, akRight]
-        BorderSpacing.Top = 2
-        BorderSpacing.Right = 3
-        Caption = 'Path to Vncviewer'
-        Constraints.MinWidth = 164
-        ParentColor = False
-      end
-      object EdPathVnc: TFileNameEdit
-        Left = 128
-        Height = 21
-        Hint = 'E.g. : C:\Program Files\UltraVnc\vncviewer.exe'
-        Top = 22
-        Width = 233
-        Filter = 'Executable File|*.exe|Tous les fichiers|*.*'
-        FilterIndex = 0
-        HideDirectories = False
-        ButtonWidth = 23
-        NumGlyphs = 1
-        Flat = True
-        MaxLength = 0
+      object SOGrid1: TSOGrid
+        Left = 8
+        Height = 208
+        Top = 8
+        Width = 593
+        ShowAdvancedColumnsCustomize = False
+        Color = clWhite
+        Colors.UnfocusedColor = clMedGray
+        Header.AutoSizeIndex = -1
+        Header.Columns = <        
+          item
+            Position = 0
+            Text = 'Name'
+            Width = 113
+          end        
+          item
+            Position = 1
+            Text = 'Command'
+            Width = 466
+            PropertyName = 'column1'
+          end>
+        Header.DefaultHeight = 18
+        Header.Height = 18
+        Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
+        Header.Style = hsFlatButtons
         TabOrder = 0
+        TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
+        TreeOptions.MiscOptions = [toAcceptOLEDrop, toEditable, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toFullRowDrag, toEditOnClick]
+        TreeOptions.PaintOptions = [toHideFocusRect, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages, toAlwaysHideSelection]
+        TreeOptions.SelectionOptions = [toExtendedFocus, toRightClickSelect, toSimpleDrawSelection]
+        WantTabs = True
       end
-      object EdPortVnc: TLabeledEdit
-        Left = 416
-        Height = 21
-        Hint = 'E.g. : 5900'
-        Top = 22
-        Width = 80
-        EditLabel.AnchorSideTop.Control = EdPortVnc
-        EditLabel.AnchorSideTop.Side = asrCenter
-        EditLabel.AnchorSideRight.Control = EdPortVnc
-        EditLabel.AnchorSideBottom.Control = EdPortVnc
-        EditLabel.AnchorSideBottom.Side = asrBottom
-        EditLabel.Left = 390
-        EditLabel.Height = 13
-        EditLabel.Top = 26
-        EditLabel.Width = 23
-        EditLabel.Caption = 'Port '
-        EditLabel.ParentColor = False
-        LabelPosition = lpLeft
+      object BitBtn1: TBitBtn
+        Left = 8
+        Height = 30
+        Top = 224
+        Width = 75
+        Action = ActAddPlugin
+        OnClick = BitBtn1Click
         TabOrder = 1
       end
-      object Label9: TLabel
-        AnchorSideTop.Control = EdPathVeyon
-        AnchorSideRight.Control = EdPathVeyon
-        Left = -39
-        Height = 13
-        Top = 58
-        Width = 164
-        Alignment = taRightJustify
-        Anchors = [akTop, akRight]
-        BorderSpacing.Top = 2
-        BorderSpacing.Right = 3
-        Caption = 'Path to Veyon'
-        Constraints.MinWidth = 164
-        ParentColor = False
-      end
-      object EdPathVeyon: TFileNameEdit
-        Left = 128
-        Height = 21
-        Hint = 'E.g. : C:\Program Files\Veyon\veyon-ctl.exe'
-        Top = 56
-        Width = 233
-        Filter = 'Executable File|*.exe|Tous les fichiers|*.*'
-        FilterIndex = 0
-        HideDirectories = False
-        ButtonWidth = 23
-        NumGlyphs = 1
-        Flat = True
-        MaxLength = 0
+      object BitBtn2: TBitBtn
+        Left = 104
+        Height = 30
+        Top = 224
+        Width = 75
+        Action = ActDeletePlugin
         TabOrder = 2
-      end
-      object EdPortVeyon: TLabeledEdit
-        Left = 416
-        Height = 21
-        Hint = 'E.g. : 11100'
-        Top = 56
-        Width = 80
-        EditLabel.AnchorSideTop.Control = EdPortVeyon
-        EditLabel.AnchorSideTop.Side = asrCenter
-        EditLabel.AnchorSideRight.Control = EdPortVeyon
-        EditLabel.AnchorSideBottom.Control = EdPortVeyon
-        EditLabel.AnchorSideBottom.Side = asrBottom
-        EditLabel.Left = 390
-        EditLabel.Height = 13
-        EditLabel.Top = 60
-        EditLabel.Width = 23
-        EditLabel.Caption = 'Port '
-        EditLabel.ParentColor = False
-        LabelPosition = lpLeft
-        TabOrder = 3
-      end
-      object Label10: TLabel
-        AnchorSideTop.Control = EdServerCertificate3
-        AnchorSideRight.Control = EdServerCertificate3
-        Left = -40
-        Height = 13
-        Top = 178
-        Width = 164
-        Alignment = taRightJustify
-        Anchors = [akTop, akRight]
-        BorderSpacing.Top = 2
-        BorderSpacing.Right = 3
-        Caption = 'Path to executable'
-        Constraints.MinWidth = 164
-        ParentColor = False
-      end
-      object EdServerCertificate3: TFileNameEdit
-        Left = 127
-        Height = 21
-        Hint = 'E.g. : C:\Program Files\other\other.exe'
-        Top = 176
-        Width = 234
-        Filter = 'Executable File|*.exe|Tous les fichiers|*.*'
-        FilterIndex = 0
-        HideDirectories = False
-        ButtonWidth = 23
-        NumGlyphs = 1
-        Flat = True
-        MaxLength = 0
-        TabOrder = 6
-      end
-      object LabeledEdit3: TLabeledEdit
-        Left = 127
-        Height = 21
-        Top = 208
-        Width = 208
-        EditLabel.AnchorSideTop.Control = LabeledEdit3
-        EditLabel.AnchorSideTop.Side = asrCenter
-        EditLabel.AnchorSideRight.Control = LabeledEdit3
-        EditLabel.AnchorSideBottom.Control = LabeledEdit3
-        EditLabel.AnchorSideBottom.Side = asrBottom
-        EditLabel.Left = 89
-        EditLabel.Height = 13
-        EditLabel.Top = 212
-        EditLabel.Width = 35
-        EditLabel.Caption = 'Params'
-        EditLabel.ParentColor = False
-        LabelPosition = lpLeft
-        TabOrder = 7
-      end
-      object LabeledEdit4: TLabeledEdit
-        Left = 127
-        Height = 21
-        Top = 144
-        Width = 208
-        EditLabel.AnchorSideTop.Control = LabeledEdit4
-        EditLabel.AnchorSideTop.Side = asrCenter
-        EditLabel.AnchorSideRight.Control = LabeledEdit4
-        EditLabel.AnchorSideBottom.Control = LabeledEdit4
-        EditLabel.AnchorSideBottom.Side = asrBottom
-        EditLabel.Left = 46
-        EditLabel.Height = 13
-        EditLabel.Top = 148
-        EditLabel.Width = 78
-        EditLabel.Caption = 'Menu item name'
-        EditLabel.ParentColor = False
-        LabelPosition = lpLeft
-        TabOrder = 5
-      end
-      object StaticText1: TStaticText
-        Left = 32
-        Height = 17
-        Top = 115
-        Width = 360
-        Caption = 'Create a new button in the menu to perform an external action :'
-        TabOrder = 4
       end
     end
   end
@@ -600,8 +474,8 @@ object VisWAPTConfig: TVisWAPTConfig
     top = 71
   end
   object ImageList1: TImageList
-    left = 544
-    top = 40
+    left = 488
+    top = 216
     Bitmap = {
       4C69030000001000000010000000FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
       FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
@@ -703,8 +577,8 @@ object VisWAPTConfig: TVisWAPTConfig
     }
   end
   object ActionList1: TActionList
-    left = 544
-    top = 208
+    left = 560
+    top = 216
     object ActCheckAndSetwaptserver: TAction
       Caption = 'Check and set'
       Hint = 'Try to connect to waptserver and wapt_repo'
@@ -737,5 +611,15 @@ object VisWAPTConfig: TVisWAPTConfig
       OnExecute = ActSaveConfigExecute
       OnUpdate = ActSaveConfigUpdate
     end
+    object ActAddPlugin: TAction
+      Caption = 'Add'
+    end
+    object ActDeletePlugin: TAction
+      Caption = 'Delete'
+    end
+  end
+  object MainMenu1: TMainMenu
+    left = 429
+    top = 101
   end
 end

@@ -8,7 +8,7 @@ uses
   Classes, SysUtils, Forms,
   Controls, Graphics, Dialogs, ButtonPanel,
   StdCtrls, ExtCtrls,EditBtn, DefaultTranslator, ComCtrls,
-  ActnList, types,inifiles;
+  ActnList, Grids, DBGrids, Menus, Buttons, sogrid, types,inifiles;
 
 type
 
@@ -20,9 +20,13 @@ type
     ActGetServerCertificate: TAction;
     ActCheckPersonalKey: TAction;
     ActCreateKeyCert: TAction;
+    ActAddPlugin: TAction;
+    ActDeletePlugin: TAction;
     ActSaveConfig: TAction;
     ActOpenCertDir: TAction;
     ActionList1: TActionList;
+    BitBtn1: TBitBtn;
+    BitBtn2: TBitBtn;
     Button1: TButton;
     Button2: TButton;
     Button3: TButton;
@@ -41,34 +45,26 @@ type
     edPersonalCertificatePath: TFileNameEdit;
     edrepo_url: TLabeledEdit;
     edServerAddress: TLabeledEdit;
-    EdPathVnc: TFileNameEdit;
-    EdPathVeyon: TFileNameEdit;
-    EdServerCertificate3: TFileNameEdit;
     edwapt_server: TLabeledEdit;
     ImageList1: TImageList;
     ImgStatusRepo: TImage;
     ImgStatusServer: TImage;
     Label1: TLabel;
-    Label10: TLabel;
     Label2: TLabel;
     Label4: TLabel;
     Label5: TLabel;
     Label6: TLabel;
-    Label7: TLabel;
     Label8: TLabel;
-    Label9: TLabel;
-    EdPortVnc: TLabeledEdit;
-    EdPortVeyon: TLabeledEdit;
-    LabeledEdit3: TLabeledEdit;
-    LabeledEdit4: TLabeledEdit;
     labStatusRepo: TLabel;
     labStatusServer: TLabel;
+    MainMenu1: TMainMenu;
     PageControl1: TPageControl;
     pgBase: TTabSheet;
     pgAdvanced: TTabSheet;
-    StaticText1: TStaticText;
+    SOGrid1: TSOGrid;
     TabSheet1: TTabSheet;
     Timer1: TTimer;
+    procedure AddExecute(Sender: TObject);
     procedure ActCheckAndSetwaptserverExecute(Sender: TObject);
     procedure ActCheckPersonalKeyExecute(Sender: TObject);
     procedure ActCheckPersonalKeyUpdate(Sender: TObject);
@@ -76,6 +72,7 @@ type
     procedure ActGetServerCertificateUpdate(Sender: TObject);
     procedure ActSaveConfigExecute(Sender: TObject);
     procedure ActSaveConfigUpdate(Sender: TObject);
+    procedure BitBtn1Click(Sender: TObject);
     procedure Button1Click(Sender: TObject);
     procedure ButtonPanel1Click(Sender: TObject);
     procedure cbManualClick(Sender: TObject);
@@ -153,6 +150,11 @@ begin
   ImageList1.GetBitmap(2, ImgStatusRepo.Picture.Bitmap);
   ImageList1.GetBitmap(2, ImgStatusServer.Picture.Bitmap);
   Timer1Timer(Timer1);
+end;
+
+procedure TVisWAPTConfig.AddExecute(Sender: TObject);
+begin
+
 end;
 
 procedure TVisWAPTConfig.ActCheckPersonalKeyExecute(Sender: TObject);
@@ -251,6 +253,11 @@ end;
 procedure TVisWAPTConfig.ActSaveConfigUpdate(Sender: TObject);
 begin
   ActSaveConfig.Enabled := FIniFilename <> '';
+end;
+
+procedure TVisWAPTConfig.BitBtn1Click(Sender: TObject);
+begin
+
 end;
 
 procedure TVisWAPTConfig.cbManualClick(Sender: TObject);
