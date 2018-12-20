@@ -711,6 +711,16 @@ msgstr "Annuler"
 msgid "Import packages"
 msgstr ""
 
+#: tvisimportpackage.cbfilterpackagesarch.caption
+msgctxt "tvisimportpackage.cbfilterpackagesarch.caption"
+msgid "Architecture"
+msgstr ""
+
+#: tvisimportpackage.cbfilterpackageslocales.caption
+msgctxt "tvisimportpackage.cbfilterpackageslocales.caption"
+msgid "Locale"
+msgstr ""
+
 #: tvisimportpackage.cbnewerthanmine.caption
 msgid "Newer packages than mine only"
 msgstr ""
@@ -816,6 +826,7 @@ msgid "Software Version"
 msgstr ""
 
 #: tvispackagewizard.edversion.text
+msgctxt "tvispackagewizard.edversion.text"
 msgid "0"
 msgstr ""
 
@@ -1697,6 +1708,10 @@ msgctxt "TVISWAPTGUI.ACTTRIGGERWAPTWUA_SCAN.CAPTION"
 msgid "Trigger the scan of missing Windows Updates"
 msgstr ""
 
+#: tviswaptgui.actveyon.caption
+msgid "Connect via Veyon"
+msgstr ""
+
 #: tviswaptgui.actvnc.caption
 msgctxt "tviswaptgui.actvnc.caption"
 msgid "Connect via VNC"
@@ -1862,6 +1877,7 @@ msgid "Architecture"
 msgstr ""
 
 #: tviswaptgui.cbfilterpackageslocales.caption
+msgctxt "tviswaptgui.cbfilterpackageslocales.caption"
 msgid "Locale"
 msgstr ""
 
@@ -2373,6 +2389,16 @@ msgstr ""
 msgid "Classifications"
 msgstr ""
 
+#: tviswuagroup.actbuilduploadpackage.caption
+msgctxt "tviswuagroup.actbuilduploadpackage.caption"
+msgid "Save"
+msgstr ""
+
+#: tviswuagroup.actloadpackage.caption
+msgctxt "tviswuagroup.actloadpackage.caption"
+msgid "Refresh"
+msgstr ""
+
 #: tviswuagroup.actwuaallowselectedupdates.caption
 msgctxt "tviswuagroup.actwuaallowselectedupdates.caption"
 msgid "Allow Selected Updates"
@@ -2386,11 +2412,6 @@ msgstr ""
 #: tviswuagroup.actwuaforbidselectedupdates.caption
 msgctxt "tviswuagroup.actwuaforbidselectedupdates.caption"
 msgid "Forbid Selected Updates"
-msgstr ""
-
-#: tviswuagroup.actwualoadgroup.caption
-msgctxt "tviswuagroup.actwualoadgroup.caption"
-msgid "Refresh"
 msgstr ""
 
 #: tviswuagroup.actwualoadupdates.caption
@@ -2432,11 +2453,6 @@ msgctxt "tviswuagroup.actwuaresetselectedupdates.caption"
 msgid "Reset Selected"
 msgstr ""
 
-#: tviswuagroup.actwuasaveupdatesgroup.caption
-msgctxt "tviswuagroup.actwuasaveupdatesgroup.caption"
-msgid "Save"
-msgstr ""
-
 #: tviswuagroup.caption
 msgid "Edit Windows updates Group"
 msgstr ""
@@ -2466,8 +2482,9 @@ msgctxt "tviswuagroup.cbwuother.caption"
 msgid "Other"
 msgstr ""
 
-#: tviswuagroup.combobox1.text
-msgid "ComboBox1"
+#: tviswuagroup.edpackageversion.text
+msgctxt "tviswuagroup.edpackageversion.text"
+msgid "0"
 msgstr ""
 
 #: tviswuagroup.label1.caption
@@ -2489,7 +2506,7 @@ msgid "Description"
 msgstr ""
 
 #: tviswuagroup.label4.caption
-msgid "Maturity"
+msgid "Package filename : "
 msgstr ""
 
 #: tviswuagroup.tabsheet1.caption

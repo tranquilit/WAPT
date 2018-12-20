@@ -958,7 +958,10 @@ uses LCLIntf, LCLType, IniFiles, variants, LazFileUtils,FileUtil, uvisprivatekey
   uvisgroupchoice, uvistriggerhostsaction, uVisAPropos,
   uVisImportPackage, PythonEngine, Clipbrd, RegExpr, tisinifiles, IdURI,
   uVisPackageWizard, uVisChangeKeyPassword, uVisDisplayPreferences,
-  uvisrepositories, uVisHostDelete, windirs,winutils,uWaptPythonUtils,uVisWUAGroup
+  uvisrepositories, uVisHostDelete, windirs,winutils,uWaptPythonUtils
+  {$ifdef ENTERPRISE}
+  ,uVisWUAGroup
+  {$endif}
   {$ifdef wsus},uVisWAPTWUAProducts, uviswuapackageselect,
   uVisWUAClassificationsSelect
   {$endif};

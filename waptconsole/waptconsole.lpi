@@ -27,7 +27,7 @@
       <MajorVersionNr Value="1"/>
       <MinorVersionNr Value="7"/>
       <RevisionNr Value="2"/>
-      <BuildNr Value="1"/>
+      <BuildNr Value="2"/>
       <StringTable LegalCopyright="Tranquil IT Systems 2012-2018" ProductName="WAPT Enterprise Edition" ProductVersion="1.7.2"/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -81,7 +81,7 @@
         <PackageName Value="LCL"/>
       </Item12>
     </RequiredPackages>
-    <Units Count="27">
+    <Units Count="22">
       <Unit0>
         <Filename Value="waptconsole.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -194,87 +194,49 @@
         <UnitName Value="uWaptConsoleRes"/>
       </Unit15>
       <Unit16>
-        <Filename Value="uviswuagroup.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="VisWUAGroup"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="uVisWUAGroup"/>
-      </Unit16>
-      <Unit17>
-        <Filename Value="uviswaptwuaproducts.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="VisWUAProducts"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="uVisWAPTWUAProducts"/>
-      </Unit17>
-      <Unit18>
-        <Filename Value="uviswuarules.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="VisWUARules"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-      </Unit18>
-      <Unit19>
-        <Filename Value="uviswuaclassificationsselect.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="VisWUAClassificationsSelect"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="uVisWUAClassificationsSelect"/>
-      </Unit19>
-      <Unit20>
-        <Filename Value="uviswuapackageselect.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="VisWUAPackageSelect"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-      </Unit20>
-      <Unit21>
         <Filename Value="uvispackagewizard.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="VisPackageWizard"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uVisPackageWizard"/>
-      </Unit21>
-      <Unit22>
+      </Unit16>
+      <Unit17>
         <Filename Value="uvischangekeypassword.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="VisChangeKeyPassword"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uVisChangeKeyPassword"/>
-      </Unit22>
-      <Unit23>
+      </Unit17>
+      <Unit18>
         <Filename Value="uvisrepositories.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="VisRepositories"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-      </Unit23>
-      <Unit24>
+      </Unit18>
+      <Unit19>
         <Filename Value="uvisdisplaypreferences.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="VisDisplayPreferences"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uVisDisplayPreferences"/>
-      </Unit24>
-      <Unit25>
+      </Unit19>
+      <Unit20>
         <Filename Value="uvishostdelete.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="VisHostDelete"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uVisHostDelete"/>
-      </Unit25>
-      <Unit26>
+      </Unit20>
+      <Unit21>
         <Filename Value="..\wapt-get\uwaptpythonutils.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="uWaptPythonUtils"/>
-      </Unit26>
+      </Unit21>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -285,7 +247,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="..\wapt-get"/>
+      <OtherUnitFiles Value="..\wapt-get;..\waptenterprise\includes"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <CodeGeneration>
@@ -313,4 +275,11 @@
       <CustomOptions Value="-dUseCThreads -dENTERPRISE"/>
     </Other>
   </CompilerOptions>
+  <Debugging>
+    <Exceptions Count="1">
+      <Item1>
+        <Name Value="EConvertError"/>
+      </Item1>
+    </Exceptions>
+  </Debugging>
 </CONFIG>

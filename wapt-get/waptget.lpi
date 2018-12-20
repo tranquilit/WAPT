@@ -23,7 +23,7 @@
       <MajorVersionNr Value="1"/>
       <MinorVersionNr Value="7"/>
       <RevisionNr Value="2"/>
-      <BuildNr Value="1"/>
+      <BuildNr Value="2"/>
       <StringTable CompanyName="Tranquil IT Systems" LegalCopyright="Tranquil IT Systems 2012-2018" ProductName="WAPT Enterprise Edition" ProductVersion="1.7.2"/>
     </VersionInfo>
     <BuildModes Count="1" Active="Default">
@@ -69,75 +69,7 @@
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit0>
     </Units>
-    <JumpHistory Count="17" HistoryIndex="16">
-      <Position1>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="316" Column="26" TopLine="306"/>
-      </Position1>
-      <Position2>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="395" Column="31" TopLine="405"/>
-      </Position2>
-      <Position3>
-        <Filename Value="waptget.lpr"/>
-      </Position3>
-      <Position4>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="441" Column="74" TopLine="420"/>
-      </Position4>
-      <Position5>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="463" Column="28" TopLine="473"/>
-      </Position5>
-      <Position6>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="834" Column="17" TopLine="774"/>
-      </Position6>
-      <Position7>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="199" TopLine="184"/>
-      </Position7>
-      <Position8>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="218" Column="10" TopLine="196"/>
-      </Position8>
-      <Position9>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="842" Column="17" TopLine="824"/>
-      </Position9>
-      <Position10>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="843" Column="39" TopLine="824"/>
-      </Position10>
-      <Position11>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="862" Column="72" TopLine="841"/>
-      </Position11>
-      <Position12>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="875" Column="20" TopLine="854"/>
-      </Position12>
-      <Position13>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="880" Column="22" TopLine="859"/>
-      </Position13>
-      <Position14>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="884" Column="24" TopLine="863"/>
-      </Position14>
-      <Position15>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="891" Column="14" TopLine="869"/>
-      </Position15>
-      <Position16>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="899" Column="39" TopLine="877"/>
-      </Position16>
-      <Position17>
-        <Filename Value="waptget.lpr"/>
-        <Caret Line="906" Column="34" TopLine="884"/>
-      </Position17>
-    </JumpHistory>
+    <JumpHistory HistoryIndex="-1"/>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="11"/>
@@ -173,22 +105,4 @@
       <CustomOptions Value="-dUseCThreads -dENTERPRISE"/>
     </Other>
   </CompilerOptions>
-  <Debugging>
-    <BreakPoints Count="2">
-      <Item1>
-        <Kind Value="bpkSource"/>
-        <WatchScope Value="wpsLocal"/>
-        <WatchKind Value="wpkWrite"/>
-        <Source Value="waptget.lpr"/>
-        <Line Value="834"/>
-      </Item1>
-      <Item2>
-        <Kind Value="bpkSource"/>
-        <WatchScope Value="wpsLocal"/>
-        <WatchKind Value="wpkWrite"/>
-        <Source Value="waptget.lpr"/>
-        <Line Value="75"/>
-      </Item2>
-    </BreakPoints>
-  </Debugging>
 </CONFIG>
