@@ -59,6 +59,7 @@ type
     MenuItem105: TMenuItem;
     MenuItem106: TMenuItem;
     MenuItem107: TMenuItem;
+    MenuGridHostsPlugins: TMenuItem;
     VeyonConnect: TMenuItem;
     NormalizationActions: TActionList;
     ActReportingQueryReload: TAction;
@@ -833,6 +834,7 @@ type
     procedure MenuItem27Click(Sender: TObject);
     procedure MenuItem74Click(Sender: TObject);
     procedure MenuItemProductsCheckAllClick(Sender: TObject);
+    procedure PopupMenuHostsPopup(Sender: TObject);
     procedure SynEditReportsSQLChange(Sender: TObject);
     procedure TimerSearchPackagesTimer(Sender: TObject);
     procedure TimerWUALoadWinUpdatesTimer(Sender: TObject);
@@ -846,7 +848,10 @@ type
     FWUAWinUpdatesLookup: ISuperObject;
     FReportingLoadingQuery : boolean;
     FReportingQueryTmpId: Integer;
+    FGridHostsPlugins: ISuperObject;
+
     procedure DoProgress(ASender: TObject);
+    procedure ExecuteHostsGruidPlugin(Sender: TObject);
     procedure FillcbADSiteDropDown;
     procedure FillcbGroups;
     procedure FilterDBOrgUnits;
@@ -855,6 +860,7 @@ type
     function FilterHostWinUpdates(wua: ISuperObject): ISuperObject;
     procedure FilterGridWindowsUpdates(Sender: TObject);
     function FilterWinProducts(products: ISuperObject): ISuperObject;
+    function GetGridHostsPlugins: ISuperObject;
     function GetWUAClassifications: ISuperObject;
     function GetWUAProducts: ISuperObject;
     function GetWUAWinUpdates: ISuperObject;
@@ -863,6 +869,7 @@ type
     function OneHostIsConnected(GridHostsReachable:TSOGrid=Nil): Boolean;
     function GetSelectedOrgUnits: TDynStringArray;
     procedure SelectOrgUnits(Search: String);
+    procedure SetGridHostsPlugins(AValue: ISuperObject);
     procedure SetIsEnterpriseEdition(AValue: Boolean);
     function GetIsEnterpriseEdition: Boolean;
     function GetSelectedUUID: ISuperObject;
@@ -906,6 +913,8 @@ type
     WUAPreferredClassifications : TDynStringArray;
 
     PollTasksThread: TPollTasksThread;
+
+    property GridHostsPlugins: ISuperObject read GetGridHostsPlugins write SetGridHostsPlugins;
 
     property WUAClassifications : ISuperObject read GetWUAClassifications write FWUAClassifications;
     property WUAProducts : ISuperObject read GetWUAProducts write FWUAProducts;
@@ -952,7 +961,9 @@ var
 
 implementation
 
-uses LCLIntf, LCLType, IniFiles, variants, LazFileUtils,FileUtil, uvisprivatekeyauth, soutils,
+uses LCLIntf, LCLType, IniFiles, variants, LazFileUtils,FileUtil, base64,
+  strutils,
+  uvisprivatekeyauth, soutils,
   waptcommon, waptwinutils, tiscommon, uVisCreateKey, uVisCreateWaptSetup,
   dmwaptpython, uviseditpackage, uvislogin, uviswaptconfig, uvischangepassword,
   uvisgroupchoice, uvistriggerhostsaction, uVisAPropos,
@@ -3855,6 +3866,7 @@ procedure TVisWaptGUI.ActWAPTConsoleConfigExecute(Sender: TObject);
 begin
   if EditIniFile then
   begin
+    GridHostsPlugins := Nil;
     ActReloadConfig.Execute;
     GridPackages.Clear;
     GridGroups.Clear;
@@ -5239,6 +5251,95 @@ begin
   except
     ActVeyon.Visible := False;
   end;
+end;
+
+function TVisWaptGUI.GetGridHostsPlugins: ISuperObject;
+var
+  b64: string;
+  inifile: TIniFile;
+begin
+  // external commands list is stored as base64 encoded json in waptconsole.ini file
+  if not Assigned(FGridHostsPlugins) then
+  begin
+    IniFile := TIniFile.Create(waptcommon.AppIniFilename());
+    try
+      b64 := inifile.readString('global','grid_hosts_plugins', '');
+      if b64 <> '' then
+         FGridHostsPlugins := SO(DecodeStringBase64(b64))
+      else
+         FGridHostsPlugins := TSuperObject.Create(stArray);
+    finally
+      FreeAndNil(iniFile);
+    end;
+  end;
+  Result := FGridHostsPlugins;
+end;
+
+procedure TVisWaptGUI.ExecuteHostsGruidPlugin(Sender: TObject);
+var
+  PluginName: String;
+  Executable,ExpandedExecutable: String;
+  Arguments,ExpandedArguments: String;
+  host,plugin : ISuperObject;
+begin
+  PluginName:=(Sender as TMenuItem).Caption;
+  for plugin in GridHostsPlugins do
+    if plugin.S['name']=PluginName then
+    begin
+      Executable := plugin.S['executable'];
+      Arguments := plugin.S['arguments'];
+      break;
+    end;
+
+  for host in GridHosts.SelectedRows do
+  begin
+    ExpandedExecutable:= StringsReplace(Executable,
+      ['{ip}',                '{uuid}', '{computer_fqdn}'],
+      [host.A['connected_ips'].S[0],host.S['uuid'],host.S['computer_fqdn']]
+      ,[rfReplaceAll]);
+
+    ExpandedArguments:= StringsReplace(Arguments,
+      ['{ip}',                '{uuid}', '{computer_fqdn}'],
+      [host.A['connected_ips'].S[0],host.S['uuid'],host.S['computer_fqdn']]
+      ,[rfReplaceAll]);
+
+    ShellExecuteA(0,'',PChar(ExpandedExecutable),PChar(ExpandedArguments),
+      Nil, SW_SHOW);
+  end;
+
+
+end;
+
+procedure TVisWaptGUI.PopupMenuHostsPopup(Sender: TObject);
+var
+  plugin : ISuperObject;
+  AMenuItem : TMenuItem;
+
+
+begin
+  if GridHostsPlugins.AsArray.Length = 0 then
+     MenuGridHostsPlugins.Visible:=False
+  else
+  begin
+    MenuGridHostsPlugins.Clear;
+    MenuGridHostsPlugins.Visible:=True;
+    for plugin in GridHostsPlugins do
+    begin
+      AMenuItem:= TMenuItem.Create(Self);
+      AMenuItem.Caption:=plugin.S['name'];
+      AMenuItem.OnClick:= @ExecuteHostsGruidPlugin ;
+      MenuGridHostsPlugins.Add(AMenuItem);
+    end;
+
+  end;
+end;
+
+
+procedure TVisWaptGUI.SetGridHostsPlugins(AValue: ISuperObject);
+begin
+  FGridHostsPlugins := AValue;
+  if Assigned(MenuGridHostsPlugins) then
+    MenuGridHostsPlugins.Clear;
 end;
 
 

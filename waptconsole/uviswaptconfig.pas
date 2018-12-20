@@ -8,7 +8,8 @@ uses
   Classes, SysUtils, Forms,
   Controls, Graphics, Dialogs, ButtonPanel,
   StdCtrls, ExtCtrls,EditBtn, DefaultTranslator, ComCtrls,
-  ActnList, Grids, DBGrids, Menus, Buttons, sogrid, types,inifiles;
+  ActnList, Grids, DBGrids, Menus, Buttons, sogrid, types,inifiles, VirtualTrees,
+  superobject;
 
 type
 
@@ -61,10 +62,11 @@ type
     PageControl1: TPageControl;
     pgBase: TTabSheet;
     pgAdvanced: TTabSheet;
-    SOGrid1: TSOGrid;
-    TabSheet1: TTabSheet;
+    GridPlugins: TSOGrid;
+    pgPlugins: TTabSheet;
     Timer1: TTimer;
-    procedure AddExecute(Sender: TObject);
+    procedure ActAddPluginExecute(Sender: TObject);
+    procedure ActDeletePluginExecute(Sender: TObject);
     procedure ActCheckAndSetwaptserverExecute(Sender: TObject);
     procedure ActCheckPersonalKeyExecute(Sender: TObject);
     procedure ActCheckPersonalKeyUpdate(Sender: TObject);
@@ -72,9 +74,7 @@ type
     procedure ActGetServerCertificateUpdate(Sender: TObject);
     procedure ActSaveConfigExecute(Sender: TObject);
     procedure ActSaveConfigUpdate(Sender: TObject);
-    procedure BitBtn1Click(Sender: TObject);
     procedure Button1Click(Sender: TObject);
-    procedure ButtonPanel1Click(Sender: TObject);
     procedure cbManualClick(Sender: TObject);
     procedure CBVerifyCertClick(Sender: TObject);
     procedure eddefault_package_prefixExit(Sender: TObject);
@@ -85,14 +85,16 @@ type
     procedure edServerAddressKeyPress(Sender: TObject; var Key: char);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure GridPluginsEditing(Sender: TBaseVirtualTree; Node: PVirtualNode;
+      Column: TColumnIndex; var Allowed: Boolean);
     procedure HelpButtonClick(Sender: TObject);
     procedure OKButtonClick(Sender: TObject);
-    procedure PageControl1Change(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
   private
     FIniFilename: String;
     Finifile: TIniFile;
     function CheckServer(Address: String): Boolean;
+    function GetGridHostsPluginsFromIni: ISuperObject;
     function GetInifile: TIniFile;
     procedure SetIniFilename(AValue: String);
     { private declarations }
@@ -106,7 +108,7 @@ var
   VisWAPTConfig: TVisWAPTConfig;
 
 implementation
-uses tiscommon,waptcommon,LCLIntf,IDURI,superobject,uWaptConsoleRes,
+uses base64, tiscommon,waptcommon,LCLIntf,IDURI,uWaptConsoleRes,
     tisstrings,dmwaptpython,variants,VarPyth,uvisprivatekeyauth,tisinifiles,
     LazFileUtils,FileUtil,strutils,Windows,uWaptPythonUtils;
 {$R *.lfm}
@@ -121,11 +123,6 @@ begin
     on E:Exception do
       ShowMessage('Unable to retrieve statistics : '+E.Message);
   end;
-end;
-
-procedure TVisWAPTConfig.ButtonPanel1Click(Sender: TObject);
-begin
-
 end;
 
 procedure TVisWAPTConfig.ActCheckAndSetwaptserverExecute(Sender: TObject);
@@ -152,9 +149,22 @@ begin
   Timer1Timer(Timer1);
 end;
 
-procedure TVisWAPTConfig.AddExecute(Sender: TObject);
+procedure TVisWAPTConfig.ActAddPluginExecute(Sender: TObject);
+var
+  APlugin: ISuperObject;
 begin
+  APlugin := TSuperObject.Create(stObject);
+  APlugin.S['name'] := 'New';
+  APlugin.S['executable'] := 'explorer.exe';
+  APlugin.S['arguments'] := 'c:\';
 
+  GridPlugins.Data.AsArray.Add(APlugin);
+  GridPlugins.LoadData;
+end;
+
+procedure TVisWAPTConfig.ActDeletePluginExecute(Sender: TObject);
+begin
+  GridPlugins.DeleteRows(GridPlugins.SelectedRows);
 end;
 
 procedure TVisWAPTConfig.ActCheckPersonalKeyExecute(Sender: TObject);
@@ -246,6 +256,9 @@ begin
     cbUseProxyForRepo.Checked);
   inifile.WriteBool('global', 'send_usage_report',
     cbSendStats.Checked);
+
+  inifile.WriteString('global','grid_hosts_plugins', EncodeStringBase64(GridPlugins.Data.AsJSon()));
+
   //inifile.WriteString('global','default_sources_url',eddefault_sources_url.text);
   ModalResult:=mrOk;
 end;
@@ -253,11 +266,6 @@ end;
 procedure TVisWAPTConfig.ActSaveConfigUpdate(Sender: TObject);
 begin
   ActSaveConfig.Enabled := FIniFilename <> '';
-end;
-
-procedure TVisWAPTConfig.BitBtn1Click(Sender: TObject);
-begin
-
 end;
 
 procedure TVisWAPTConfig.cbManualClick(Sender: TObject);
@@ -459,6 +467,20 @@ begin
 
   cbSendStats.Checked :=
     inifile.ReadBool('global', 'send_usage_report', True);
+
+  GridPlugins.Data := GetGridHostsPluginsFromIni;
+end;
+
+function TVisWAPTConfig.GetGridHostsPluginsFromIni: ISuperObject;
+var
+  b64: string;
+begin
+  // external commands list is stored as base64 encoded json in waptconsole.ini file
+  b64 := inifile.readString('global','grid_hosts_plugins', '');
+  if b64 <> '' then
+     Result := SO(DecodeStringBase64(b64))
+  else
+     Result := TSuperObject.Create(stArray);
 end;
 
 procedure TVisWAPTConfig.edServerAddressChange(Sender: TObject);
@@ -502,6 +524,12 @@ begin
   CBVerifyCertClick(Sender);
 end;
 
+procedure TVisWAPTConfig.GridPluginsEditing(Sender: TBaseVirtualTree;
+  Node: PVirtualNode; Column: TColumnIndex; var Allowed: Boolean);
+begin
+  Allowed := True
+end;
+
 procedure TVisWAPTConfig.HelpButtonClick(Sender: TObject);
 begin
   OpenDocument(FIniFilename);
@@ -510,11 +538,6 @@ end;
 procedure TVisWAPTConfig.OKButtonClick(Sender: TObject);
 begin
   ActSaveConfig.Execute;
-end;
-
-procedure TVisWAPTConfig.PageControl1Change(Sender: TObject);
-begin
-
 end;
 
 procedure TVisWAPTConfig.Timer1Timer(Sender: TObject);

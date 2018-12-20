@@ -1,7 +1,7 @@
 object VisWAPTConfig: TVisWAPTConfig
   Left = 1249
   Height = 328
-  Top = 169
+  Top = 171
   Width = 621
   BorderStyle = bsDialog
   Caption = 'WAPTConsole configuration'
@@ -32,7 +32,6 @@ object VisWAPTConfig: TVisWAPTConfig
     CancelButton.Name = 'CancelButton'
     CancelButton.DefaultCaption = True
     TabOrder = 1
-    OnClick = ButtonPanel1Click
     ShowButtons = [pbOK, pbCancel, pbHelp]
   end
   object PageControl1: TPageControl
@@ -40,15 +39,14 @@ object VisWAPTConfig: TVisWAPTConfig
     Height = 282
     Top = 0
     Width = 621
-    ActivePage = TabSheet1
+    ActivePage = pgBase
     Align = alClient
-    TabIndex = 2
+    TabIndex = 0
     TabOrder = 0
-    OnChange = PageControl1Change
     object pgBase: TTabSheet
       Caption = 'Base'
       ChildSizing.TopBottomSpacing = 15
-      ClientHeight = 255
+      ClientHeight = 256
       ClientWidth = 613
       object eddefault_package_prefix: TLabeledEdit
         Left = 167
@@ -283,7 +281,7 @@ object VisWAPTConfig: TVisWAPTConfig
     end
     object pgAdvanced: TTabSheet
       Caption = 'Advanced'
-      ClientHeight = 255
+      ClientHeight = 256
       ClientWidth = 613
       object eddefault_sources_root: TDirectoryEdit
         Left = 315
@@ -412,16 +410,17 @@ object VisWAPTConfig: TVisWAPTConfig
         Visible = False
       end
     end
-    object TabSheet1: TTabSheet
+    object pgPlugins: TTabSheet
       Caption = 'Plugins'
       ClientHeight = 256
       ClientWidth = 613
-      object SOGrid1: TSOGrid
+      object GridPlugins: TSOGrid
         Left = 8
         Height = 208
         Top = 8
         Width = 593
         ShowAdvancedColumnsCustomize = False
+        KeyFieldsNames = 'name'
         Color = clWhite
         Colors.UnfocusedColor = clMedGray
         Header.AutoSizeIndex = -1
@@ -430,12 +429,19 @@ object VisWAPTConfig: TVisWAPTConfig
             Position = 0
             Text = 'Name'
             Width = 113
+            PropertyName = 'name'
           end        
           item
             Position = 1
-            Text = 'Command'
-            Width = 466
-            PropertyName = 'column1'
+            Text = 'Executable'
+            Width = 147
+            PropertyName = 'executable'
+          end        
+          item
+            Position = 2
+            Text = 'Arguments'
+            Width = 217
+            PropertyName = 'arguments'
           end>
         Header.DefaultHeight = 18
         Header.Height = 18
@@ -445,8 +451,9 @@ object VisWAPTConfig: TVisWAPTConfig
         TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
         TreeOptions.MiscOptions = [toAcceptOLEDrop, toEditable, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toFullRowDrag, toEditOnClick]
         TreeOptions.PaintOptions = [toHideFocusRect, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages, toAlwaysHideSelection]
-        TreeOptions.SelectionOptions = [toExtendedFocus, toRightClickSelect, toSimpleDrawSelection]
+        TreeOptions.SelectionOptions = [toExtendedFocus, toMultiSelect, toRightClickSelect, toSimpleDrawSelection]
         WantTabs = True
+        OnEditing = GridPluginsEditing
       end
       object BitBtn1: TBitBtn
         Left = 8
@@ -454,7 +461,6 @@ object VisWAPTConfig: TVisWAPTConfig
         Top = 224
         Width = 75
         Action = ActAddPlugin
-        OnClick = BitBtn1Click
         TabOrder = 1
       end
       object BitBtn2: TBitBtn
@@ -613,9 +619,11 @@ object VisWAPTConfig: TVisWAPTConfig
     end
     object ActAddPlugin: TAction
       Caption = 'Add'
+      OnExecute = ActAddPluginExecute
     end
     object ActDeletePlugin: TAction
       Caption = 'Delete'
+      OnExecute = ActDeletePluginExecute
     end
   end
   object MainMenu1: TMainMenu
