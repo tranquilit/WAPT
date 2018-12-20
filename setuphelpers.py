@@ -4303,7 +4303,7 @@ def run_powershell(cmd,output_format='json',**kwargs):
         kwargs.pop('return_stderr')
     try:
         with disable_file_system_redirection():
-            result = run(u'powershell -ExecutionPolicy Unrestricted -OutputFormat %s -encodedCommand %s' %
+            result = run(u'powershell –NoLogo -NoProfile –NonInteractive -ExecutionPolicy Unrestricted -OutputFormat %s -EncodedCommand %s' %
                     (output_format_ps,
                      cmd.encode('utf-16le').encode('base64').replace('\n','')),
                      return_stderr = return_stderr,
