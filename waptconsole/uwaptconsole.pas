@@ -830,7 +830,6 @@ type
     procedure MenuItem103CheckAllClick(Sender: TObject);
     procedure MenuItem104Click(Sender: TObject);
     procedure MenuItem105UncheclAllClick(Sender: TObject);
-    procedure VeyonConnectClick(Sender: TObject);
     procedure MenuItem27Click(Sender: TObject);
     procedure MenuItem74Click(Sender: TObject);
     procedure MenuItemProductsCheckAllClick(Sender: TObject);
@@ -979,9 +978,9 @@ const
   IMG_CHECKBOX_DISABLE_UNCHECKED= 18;
 
 
-{ TVisWaptGUI }
-
 type TComponentsArray=Array of TComponent;
+
+{ TVisWaptGUI }
 
 function GetCheckListBoxItemsChecked(LB:TCheckListBox):TDynStringArray;
 var

@@ -724,6 +724,18 @@ msgstr "Annuler"
 msgid "Import packages"
 msgstr "Importer des paquets"
 
+#: tvisimportpackage.cbfilterpackagesarch.caption
+#, fuzzy
+msgctxt "tvisimportpackage.cbfilterpackagesarch.caption"
+msgid "Architecture"
+msgstr "Architecture"
+
+#: tvisimportpackage.cbfilterpackageslocales.caption
+#, fuzzy
+msgctxt "tvisimportpackage.cbfilterpackageslocales.caption"
+msgid "Locale"
+msgstr "Langue"
+
 #: tvisimportpackage.cbnewerthanmine.caption
 msgid "Newer packages than mine only"
 msgstr "Paquets plus récents seulement"
@@ -829,6 +841,7 @@ msgid "Software Version"
 msgstr "Version du logiciel"
 
 #: tvispackagewizard.edversion.text
+msgctxt "tvispackagewizard.edversion.text"
 msgid "0"
 msgstr ""
 
@@ -1768,6 +1781,10 @@ msgctxt "tviswaptgui.acttriggerwaptwua_scan.caption"
 msgid "Trigger the scan of missing Windows Updates"
 msgstr "Lancer la recherche des Mises à jour Windows à appliquer"
 
+#: tviswaptgui.actveyon.caption
+msgid "Connect via Veyon"
+msgstr "Se connecter au poste avec Veyon"
+
 #: tviswaptgui.actvnc.caption
 msgctxt "tviswaptgui.actvnc.caption"
 msgid "Connect via VNC"
@@ -1936,6 +1953,7 @@ msgid "Architecture"
 msgstr "Architecture"
 
 #: tviswaptgui.cbfilterpackageslocales.caption
+msgctxt "tviswaptgui.cbfilterpackageslocales.caption"
 msgid "Locale"
 msgstr "Langue"
 
@@ -2470,6 +2488,18 @@ msgstr "Sélection des classifications de Mise à jour Windows"
 msgid "Classifications"
 msgstr "Classisications"
 
+#: tviswuagroup.actbuilduploadpackage.caption
+#, fuzzy
+msgctxt "tviswuagroup.actbuilduploadpackage.caption"
+msgid "Save"
+msgstr "Enregistrer"
+
+#: tviswuagroup.actloadpackage.caption
+#, fuzzy
+msgctxt "tviswuagroup.actloadpackage.caption"
+msgid "Refresh"
+msgstr "Actualiser"
+
 #: tviswuagroup.actwuaallowselectedupdates.caption
 #, fuzzy
 msgctxt "tviswuagroup.actwuaallowselectedupdates.caption"
@@ -2487,12 +2517,6 @@ msgstr "Télécharger les mises à jour sélectionnées"
 msgctxt "tviswuagroup.actwuaforbidselectedupdates.caption"
 msgid "Forbid Selected Updates"
 msgstr "Interdire les mises à jour sélectionnées"
-
-#: tviswuagroup.actwualoadgroup.caption
-#, fuzzy
-msgctxt "tviswuagroup.actwualoadgroup.caption"
-msgid "Refresh"
-msgstr "Actualiser"
 
 #: tviswuagroup.actwualoadupdates.caption
 msgid "Load updates"
@@ -2540,12 +2564,6 @@ msgctxt "tviswuagroup.actwuaresetselectedupdates.caption"
 msgid "Reset Selected"
 msgstr "Réinitialiser la sélection"
 
-#: tviswuagroup.actwuasaveupdatesgroup.caption
-#, fuzzy
-msgctxt "tviswuagroup.actwuasaveupdatesgroup.caption"
-msgid "Save"
-msgstr "Enregistrer"
-
 #: tviswuagroup.caption
 msgid "Edit Windows updates Group"
 msgstr ""
@@ -2580,8 +2598,9 @@ msgctxt "tviswuagroup.cbwuother.caption"
 msgid "Other"
 msgstr "Autre"
 
-#: tviswuagroup.combobox1.text
-msgid "ComboBox1"
+#: tviswuagroup.edpackageversion.text
+msgctxt "tviswuagroup.edpackageversion.text"
+msgid "0"
 msgstr ""
 
 #: tviswuagroup.label1.caption
@@ -2605,16 +2624,16 @@ msgid "Description"
 msgstr "Description"
 
 #: tviswuagroup.label4.caption
-msgid "Maturity"
-msgstr ""
+msgid "Package filename : "
+msgstr "Nom de fichier du paquet"
 
 #: tviswuagroup.tabsheet1.caption
 msgid "Allowed Windows updates"
-msgstr ""
+msgstr "Mises à jour autorisées"
 
 #: tviswuagroup.tabsheet2.caption
 msgid "Forbidden Windows updates"
-msgstr ""
+msgstr "Mises à jour interdites"
 
 #: tviswuagroup.wupanright.caption
 msgctxt "tviswuagroup.wupanright.caption"
