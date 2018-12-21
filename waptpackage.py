@@ -289,6 +289,38 @@ class HostCapabilities(BaseObjectClass):
         return hashlib.sha256(serialize_content_for_signature(self.as_dict())).hexdigest()
 
 
+    def is_matching_package(self,package_entry):
+        if self.packages_blacklist is not None:
+            for bl in self.packages_blacklist:
+                if glob.fnmatch.fnmatch(package_entry.package,bl):
+                    return False
+
+        if self.packages_whitelist is not None:
+            allowed = False
+            for wl in self.packages_whitelist:
+                if glob.fnmatch.fnmatch(package_entry.package,wl):
+                    allowed = True
+                    break
+            if not allowed:
+                return False
+
+        if self.wapt_version is not None and package_entry.min_wapt_version and Version(package_entry.min_wapt_version) > Version(self.wapt_version):
+            return False
+        if self.packages_locales is not None and (package_entry.locale and package_entry.locale != 'all') and not list_intersection(ensure_list(package_entry.locale),ensure_list(self.packages_locales)):
+            return False
+        if self.packages_maturities is not None and package_entry.maturity and self.packages_maturities is not None and not package_entry.maturity in ensure_list(self.packages_maturities):
+            return False
+        if self.os is not None and package_entry.target_os and package_entry.target_os != self.os:
+            return False
+        if self.os_version is not None and package_entry.min_os_version and Version(self.os_version) < Version(package_entry.min_os_version):
+            return False
+        if self.os_version is not None and package_entry.max_os_version and Version(self.os_version) > Version(package_entry.max_os_version):
+            return False
+        if self.architecture is not None and (package_entry.architecture and package_entry.architecture != 'all') and not package_entry.architecture in ensure_list(self.architecture):
+            return False
+        return True
+
+
 def PackageVersion(package_or_versionstr):
     if isinstance(package_or_versionstr,PackageEntry):
         package_or_versionstr = package_or_versionstr.version
@@ -543,12 +575,22 @@ class PackageEntry(BaseObjectClass):
          return all
 
     def __init__(self,package='',version='0',repo='',waptfile=None, section = 'base',_default_md = 'sha256',**kwargs):
-        """Initialize a Package entry with either aiitbutes or an existing package file or directory.
+        """Initialize a Package entry with either attributes or an existing package file or directory.
 
         Args:
             waptfile (str): path to wapt zipped file or wapt development directory.
+
             package (str) : package name
             version (str) : package version
+            section (str): Type of package
+                                base : any standard software install or configuration package with setup.py python code
+                                restricted : same as base but is hidden by default in self service
+                                group : group of packages, without setup.py. Only WAPT/control file.
+                                host : host package without setup.py. Only WAPT/control file.
+                                unit : AD Organizational unit package. Only WAPT/control file
+                                profile : AD Group package. Only WAPT/control file
+                                wsus : WAPT WUA Windows updates rules package with WAPT/control and WAPT/waptwua_rules.json file.
+            _default_md (str) : sh256 or sha1. hash function for signatures
             any control attribute (str): initialize matching attribute
 
         Returns:
@@ -1058,10 +1100,10 @@ class PackageEntry(BaseObjectClass):
 
         if self.section == 'host':
             return self.package+'.wapt'
-        elif self.section == 'group':
+        elif self.section in ('group','wsus'):
             # we don't keep version for group
             return self.package + u'_'.join([f for f in (self.architecture,self.maturity,'-'.join(ensure_list(self.locale))) if (f and f != 'all')]) + '.wapt'
-        elif self.section == 'unit':
+        elif self.section == ('unit','profile'):
             # we have to hash the name.
             return hashlib.md5(self.package).hexdigest()+ u'_'.join([f for f in (self.architecture,self.maturity,u'-'.join(ensure_list(self.locale))) if (f and f != 'all')]) + '.wapt'
         else:
@@ -1911,37 +1953,6 @@ class PackageEntry(BaseObjectClass):
             sys.path = oldpath
 
 
-    def match_capabilities(self,capabilities):
-        if capabilities.packages_blacklist is not None:
-            for bl in capabilities.packages_blacklist:
-                if glob.fnmatch.fnmatch(self.package,bl):
-                    return False
-
-        if capabilities.packages_whitelist is not None:
-            allowed = False
-            for wl in capabilities.packages_whitelist:
-                if glob.fnmatch.fnmatch(self.package,wl):
-                    allowed = True
-                    break
-            if not allowed:
-                return False
-
-        if capabilities.wapt_version is not None and self.min_wapt_version and Version(self.min_wapt_version) > Version(capabilities.wapt_version):
-            return False
-        if capabilities.packages_locales is not None and (self.locale and self.locale != 'all') and not list_intersection(ensure_list(self.locale),ensure_list(capabilities.packages_locales)):
-            return False
-        if capabilities.packages_maturities is not None and self.maturity and capabilities.packages_maturities is not None and not self.maturity in ensure_list(capabilities.packages_maturities):
-            return False
-        if capabilities.os is not None and self.target_os and self.target_os != capabilities.os:
-            return False
-        if capabilities.os_version is not None and self.min_os_version and Version(capabilities.os_version) < Version(self.min_os_version):
-            return False
-        if capabilities.os_version is not None and self.max_os_version and Version(capabilities.os_version) > Version(self.max_os_version):
-            return False
-        if capabilities.architecture is not None and (self.architecture and self.architecture != 'all') and not self.architecture in ensure_list(capabilities.architecture):
-            return False
-        return True
-
 class WaptPackageDev(PackageEntry):
     """Source package directory"""
 
@@ -2256,7 +2267,7 @@ class WaptBaseRepo(BaseObjectClass):
 
         result = []
         for package in self.packages():
-            if host_capabilities is not None and not package.match_capabilities(host_capabilities):
+            if host_capabilities is not None and not host_capabilities.is_matching_package(package):
                 continue
             selected = True
             if description_locale is not None:

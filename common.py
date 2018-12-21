@@ -3836,7 +3836,7 @@ class Wapt(BaseObjectClass):
                     discarded.extend(repo.discarded)
                     for package in repo_packages:
                         if filter_on_host_cap:
-                            if not package.match_capabilities(host_capabilities):
+                            if not host_capabilities.is_matching_package(package):
                                 discarded.append(package)
                                 continue
                         try:
