@@ -172,7 +172,7 @@ def default_pwd_callback(*args):
     """Default password callback for opening private keys.
     """
     import getpass
-    print('Please type the password to decrypt the private key')
+    print('Please type the password to decrypt the private key %s' % (args and args[0] or '',))
     pwd = getpass.getpass().encode('ascii')
     if pwd:
         return pwd
@@ -852,10 +852,13 @@ class SSLPrivateKey(BaseObjectClass):
         self.password_callback = callback
         if isinstance(password,unicode):
             password = password.encode('utf8')
-        self.password = password
         self._rsa = None
-        if pem_data:
-            self.load_key_data(pem_data)
+        self.pem_data = pem_data
+        if not self.pem_data and self.private_key_filename and os.path.isfile(self.private_key_filename):
+            self._load_pem_data_from_file()
+        # decrypt immediately if possible...
+        if self.pem_data and (not self._is_encrypted or password is not None):
+            self.load_key_data(self.pem_data,password)
 
     def create(self,bits=2048):
         """Create a RSA key pair"""
@@ -865,6 +868,8 @@ class SSLPrivateKey(BaseObjectClass):
             backend=default_backend())
         return self
 
+    def _is_encrypted(self):
+        return 'ENCRYPTED' in self.pem_data
 
     def as_pem(self,password=None):
         """Return private key as a PEM str
@@ -910,28 +915,26 @@ class SSLPrivateKey(BaseObjectClass):
         pem_data = self.as_pem(password=password)
         with open(filename,'wb') as f:
             f.write(pem_data)
-        self.password = password
         self.private_key_filename = filename
 
-    def load_key_data(self,pem_data):
-        """Load RSA structure with the provided pem_dat
+    def load_key_data(self,pem_data,password=None):
+        """Load RSA structure with the provided pem_data
+
 
         Args;
             pem_data (str) : base64 PEM style encoded RSA private key
-
+            password (str) : try with this password first. If dails to decrypt, use password_callback if provided
         Returns:
             None
 
         """
         retry_cnt=3
-        password = self.password
         while retry_cnt>0:
             try:
                 self._rsa = serialization.load_pem_private_key(
                     str(pem_data),
                     password = password,
                     backend = default_backend())
-                self.password = password
                 break
             except (TypeError,ValueError) as e:
                 if "Password was not given but private key is encrypted" in e.message or\
@@ -944,6 +947,11 @@ class SSLPrivateKey(BaseObjectClass):
                         password = password.encode('utf8')
                 else:
                     raise
+
+    def _load_pem_data_from_file(self):
+        with open(self.private_key_filename,'rb') as pem_file:
+            self.pem_data = pem_file.read()
+
 
     @property
     def rsa(self):
@@ -960,8 +968,9 @@ class SSLPrivateKey(BaseObjectClass):
 
         """
         if not self._rsa:
-            with open(self.private_key_filename,'rb') as pem_file:
-                self.load_key_data(pem_file.read())
+            if not self.pem_data and self.private_key_filename and os.path.isfile(self.private_key_filename):
+                self._load_pem_data_from_file()
+            self.load_key_data(self.pem_data)
         if not self._rsa:
             raise EWaptEmptyPassword(u'Unable to load key %s'%self.private_key_filename)
         return self._rsa
@@ -976,6 +985,8 @@ class SSLPrivateKey(BaseObjectClass):
             md (str): lessage digest type to use
             clock_size (int) : unused
             pre_py3 (bool) : if True serialization is not compatible with python3
+                                (keys are sorted in the undeterministic python2 order
+                                    and there are spaces in json seperators)
 
         Returns:
             bytes: signature
@@ -1091,6 +1102,9 @@ class SSLPrivateKey(BaseObjectClass):
             attributes = claim.keys()
         if not isinstance(signer_certificate_chain,list):
             signer_certificate_chain = [signer_certificate_chain]
+
+        if not signer_certificate_chain:
+            raise EWaptCryptoException('sign_claim: No certificate provided for signature')
 
         signature_attributes = ['signed_attributes','signer','signature_date','signer_certificate']
         for att in signature_attributes+['signature']:
