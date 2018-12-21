@@ -29,6 +29,8 @@ type
     ActAddNewNetwork: TAction;
     ActDeleteNetwork: TAction;
     ActInstallLicence: TAction;
+    ActWUASearchPackage: TAction;
+    ActWUAEditPackage: TAction;
     ActVeyon: TAction;
     ActReportingQueryDuplicate: TAction;
     ActTriggerTestLongTask: TAction;
@@ -40,16 +42,21 @@ type
     ActNormalizationImportSoftwares: TAction;
     ActNormalizationWriteTable: TAction;
     btAddGroup1: TBitBtn;
+    btAddGroup3: TBitBtn;
     ButNormalizationImport: TBitBtn;
     ButNormalizationSave: TBitBtn;
     ButNormalizationFilter: TBitBtn;
+    ButPackagesUpdate2: TBitBtn;
     cbFilterPackagesArch: TCheckGroup;
     cbFilterPackagesLocales: TCheckGroup;
     cbHostsHasErrors: TCheckBox;
     cbHostsNeedUpgrade: TCheckBox;
     cbHostsReachable: TCheckBox;
+    CBShowHostsForWUAPackage: TCheckBox;
     EdNormalizationFilter: TEdit;
     EdSearchHosts: TSearchEdit;
+    EdWUASearchPackage: TSearchEdit;
+    GridWUAPackages: TSOGrid;
     GridReportingQueries: TSOGrid;
     ImgHostsHasErrors: TImage;
     ImgHostsNeedUpgrade: TImage;
@@ -59,6 +66,9 @@ type
     MenuItem105: TMenuItem;
     MenuItem106: TMenuItem;
     MenuItem107: TMenuItem;
+    Panel19: TPanel;
+    pgWAPTWuaPackages: TTabSheet;
+    ToolButton3: TToolButton;
     MenuGridHostsPlugins: TMenuItem;
     VeyonConnect: TMenuItem;
     NormalizationActions: TActionList;
@@ -331,7 +341,6 @@ type
     ToolBar1: TToolBar;
     TbReport: TToolBar;
     ToolButton10: TToolButton;
-    ToolButton3: TToolButton;
     ToolButton4: TToolButton;
     ToolButtonReportingQueryDuplicate: TToolButton;
     ToolButton7: TToolButton;
@@ -345,7 +354,7 @@ type
     ToolButtonSep1: TToolButton;
     GridOrgUnits: TVirtualDBTreeEx;
     WSUSActions: TActionList;
-    ActWUANewGroup: TAction;
+    ActWUANewPackage: TAction;
     ActWUAProductsSelection: TAction;
     ActWUAEditGroup: TAction;
     ActWUALoadGroups: TAction;
@@ -641,7 +650,7 @@ type
     procedure ActRefreshHostInventoryExecute(Sender: TObject);
     procedure ActRemoveConflictsExecute(Sender: TObject);
     procedure ActRemoveDependsExecute(Sender: TObject);
-    procedure ActWUANewGroupExecute(Sender: TObject);
+    procedure ActWUANewPackageExecute(Sender: TObject);
     procedure ActWUAProductHideExecute(Sender: TObject);
     procedure ActWUAProductShowExecute(Sender: TObject);
     procedure ActWUAProductsSelectionExecute(Sender: TObject);
@@ -665,6 +674,7 @@ type
     procedure ActVNCExecute(Sender: TObject);
     procedure ActVNCUpdate(Sender: TObject);
     procedure ActWAPTConsoleConfigExecute(Sender: TObject);
+    procedure ActWUASearchPackageExecute(Sender: TObject);
     procedure ActWUAShowMSUpdatesHelpExecute(Sender: TObject);
     procedure ApplicationProperties1Exception(Sender: TObject; E: Exception);
     procedure cbADOUSelect(Sender: TObject);
@@ -823,6 +833,8 @@ type
       Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
       var Ghosted: Boolean; var ImageIndex: Integer;
       var ImageList: TCustomImageList);
+    procedure GridWUAPackagesColumnDblClick(Sender: TBaseVirtualTree;
+      Column: TColumnIndex; Shift: TShiftState);
     procedure GridWUDownloadsNodesDelete(Sender: TSOGrid; Nodes: ISuperObject);
     procedure GridWUUpdatesNodesDelete(Sender: TSOGrid; Nodes: ISuperObject);
     procedure HostPagesChange(Sender: TObject);
@@ -3515,7 +3527,7 @@ end;
 procedure TVisWaptGUI.ActSearchGroupsExecute(Sender: TObject);
 begin
   EdSearchGroups.Modified := False;
-  GridGroups.Data := PyVarToSuperObject(DMPython.MainWaptRepo.search(searchwords := EdSearchGroups.Text, sections := 'group,unit', description_locale := Language));
+  GridGroups.Data := PyVarToSuperObject(DMPython.MainWaptRepo.search(searchwords := EdSearchGroups.Text, sections := 'group,unit,profile', description_locale := Language));
   //GridGroups.CreateColumnsFromData(False,True);
   //GridGroupsChange(GridGroups,GridGroups.FocusedNode);
 end;
@@ -3776,7 +3788,7 @@ begin
 
     GridPackages.Data :=
       PyVarToSuperObject(DMPython.MainWaptRepo.search(searchwords := EdSearchPackage.Text,
-         exclude_sections := 'host,group,unit',
+         exclude_sections := 'host,group,unit,wsus',
          newest_only := cbNewestOnly.Checked,
          description_locale := Language,
          host_capabilities := vCapabilities));
@@ -3794,6 +3806,10 @@ begin
     ActSearchPackage.Execute;
     ShowProgress('Filter groups',3);
     ActSearchGroups.Execute;
+    {$ifdef ENTERPRISE}
+    ShowProgress('Filter WAPT WUA packages',4);
+    ActWUASearchPackage.Execute;
+    {$endif}
   finally
     HideLoadWait;
   end;
@@ -3882,6 +3898,7 @@ begin
     MainPagesChange(MainPages);
   end;
 end;
+
 
 
 procedure TVisWaptGUI.ApplicationProperties1Exception(Sender: TObject;
@@ -4945,7 +4962,7 @@ begin
   PgReports.TabVisible:=False;
   ActTriggerHostAudit.Visible:=False;
   ActPackagesAudit.Visible:=False;
-  ActWUANewGroup.Visible := False;
+  ActWUANewPackage.Visible := False;
 
   SetSOGridVisible(GridHosts,'audit_status',False);
   SetSOGridVisible(GridHosts,'waptwua.status',False);
@@ -5071,6 +5088,8 @@ begin
   end
   else if MainPages.ActivePage = pgWindowsUpdates then
   begin
+    WUAClassifications;
+    WUAProducts;
     if GridWUUpdates.Data = Nil then
       ActWSUSRefresh.Execute
   end
@@ -5802,6 +5821,9 @@ procedure TVisWaptGUI.ActWUANewGroupExecute(Sender: TObject);
 begin
 end;
 
+procedure TVisWaptGUI.ActWUASearchPackageExecute(Sender: TObject);
+begin
+end;
 
 {$endif}
 

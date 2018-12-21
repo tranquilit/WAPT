@@ -1,21 +1,20 @@
 object VisImportPackage: TVisImportPackage
   Left = 492
-  Height = 445
+  Height = 540
   Top = 261
-  Width = 853
+  Width = 1261
   Caption = 'Import packages'
-  ClientHeight = 445
-  ClientWidth = 853
+  ClientHeight = 540
+  ClientWidth = 1261
   OnClose = FormClose
-  OnCreate = FormCreate
   OnShow = FormShow
   Position = poMainFormCenter
   LCLVersion = '1.8.4.0'
-  object Panel1: TPanel
+  object PanBas: TPanel
     Left = 0
     Height = 38
-    Top = 407
-    Width = 853
+    Top = 502
+    Width = 1261
     Align = alBottom
     AutoSize = True
     BevelOuter = bvNone
@@ -23,10 +22,10 @@ object VisImportPackage: TVisImportPackage
     ChildSizing.TopBottomSpacing = 2
     ChildSizing.HorizontalSpacing = 6
     ClientHeight = 38
-    ClientWidth = 853
-    TabOrder = 1
+    ClientWidth = 1261
+    TabOrder = 0
     object BitBtn2: TBitBtn
-      Left = 769
+      Left = 1177
       Height = 34
       Top = 2
       Width = 78
@@ -39,7 +38,7 @@ object VisImportPackage: TVisImportPackage
       TabOrder = 0
     end
     object ButPackageDuplicate: TBitBtn
-      Left = 453
+      Left = 861
       Height = 34
       Top = 2
       Width = 143
@@ -49,7 +48,7 @@ object VisImportPackage: TVisImportPackage
       TabOrder = 1
     end
     object ButPackageDuplicate1: TBitBtn
-      Left = 602
+      Left = 1010
       Height = 34
       Top = 2
       Width = 161
@@ -61,9 +60,9 @@ object VisImportPackage: TVisImportPackage
   end
   object GridExternalPackages: TSOGrid
     Left = 0
-    Height = 341
-    Top = 66
-    Width = 853
+    Height = 439
+    Top = 63
+    Width = 1261
     OnGetText = GridExternalPackagesGetText
     ShowAdvancedColumnsCustomize = False
     Align = alClient
@@ -220,7 +219,7 @@ object VisImportPackage: TVisImportPackage
     Header.SortColumn = 1
     Header.Style = hsFlatButtons
     PopupMenu = PopupMenuPackages
-    TabOrder = 0
+    TabOrder = 1
     TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
     TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
     TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages, toAlwaysHideSelection]
@@ -231,43 +230,39 @@ object VisImportPackage: TVisImportPackage
     OnMeasureItem = GridExternalPackagesMeasureItem
     ZebraPaint = True
   end
-  object Panel8: TPanel
+  object PanHaut: TPanel
     Left = 0
-    Height = 66
+    Height = 63
     Top = 0
-    Width = 853
+    Width = 1261
     Align = alTop
     AutoSize = True
     BevelOuter = bvNone
-    ChildSizing.LeftRightSpacing = 6
-    ChildSizing.HorizontalSpacing = 6
-    ChildSizing.EnlargeHorizontal = crsHomogenousSpaceResize
-    ChildSizing.ShrinkHorizontal = crsHomogenousSpaceResize
-    ClientHeight = 66
-    ClientWidth = 853
+    ClientHeight = 63
+    ClientWidth = 1261
     TabOrder = 2
-    object Panel4: TPanel
-      Left = 6
-      Height = 66
+    object PanSearch: TPanel
+      Left = 0
+      Height = 63
       Top = 0
-      Width = 384
-      Align = alLeft
+      Width = 291
       AutoSize = True
       BevelOuter = bvNone
       ChildSizing.LeftRightSpacing = 6
-      ChildSizing.TopBottomSpacing = 6
+      ChildSizing.TopBottomSpacing = 3
       ChildSizing.HorizontalSpacing = 6
       ChildSizing.VerticalSpacing = 3
       ChildSizing.Layout = cclLeftToRightThenTopToBottom
-      ChildSizing.ControlsPerLine = 2
-      ClientHeight = 66
-      ClientWidth = 384
+      ClientHeight = 63
+      ClientWidth = 291
       TabOrder = 0
       object EdSearchPackage: TSearchEdit
+        AnchorSideTop.Control = butSearchExternalPackages
+        AnchorSideTop.Side = asrCenter
         Left = 6
         Height = 21
-        Top = 6
-        Width = 279
+        Top = 10
+        Width = 150
         EmptyText = 'Type name or description'
         ExecuteDelay = 400
         Options = [seoExecuteEmpty, seoExecuteOnKillFocus]
@@ -279,28 +274,37 @@ object VisImportPackage: TVisImportPackage
         TabOrder = 0
       end
       object butSearchExternalPackages: TBitBtn
-        Left = 291
+        AnchorSideLeft.Control = EdSearchPackage
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = PanSearch
+        Left = 162
         Height = 34
-        Top = 6
+        Top = 3
         Width = 87
         Action = ActSearchExternalPackage
         AutoSize = True
         TabOrder = 1
       end
       object Panel2: TPanel
+        AnchorSideLeft.Control = PanSearch
+        AnchorSideTop.Control = butSearchExternalPackages
+        AnchorSideTop.Side = asrBottom
+        AnchorSideBottom.Control = PanSearch
+        AnchorSideBottom.Side = asrBottom
         Left = 6
         Height = 17
-        Top = 43
+        Top = 40
         Width = 279
         AutoSize = True
         BevelOuter = bvNone
         ChildSizing.HorizontalSpacing = 6
         ChildSizing.Layout = cclLeftToRightThenTopToBottom
-        ChildSizing.ControlsPerLine = 2
         ClientHeight = 17
         ClientWidth = 279
         TabOrder = 2
         object cbNewerThanMine: TCheckBox
+          AnchorSideLeft.Control = Panel2
+          AnchorSideTop.Control = Panel2
           Left = 0
           Height = 17
           Top = 0
@@ -310,6 +314,9 @@ object VisImportPackage: TVisImportPackage
           TabOrder = 0
         end
         object cbNewestOnly: TCheckBox
+          AnchorSideLeft.Control = cbNewerThanMine
+          AnchorSideLeft.Side = asrBottom
+          AnchorSideTop.Control = Panel2
           Left = 178
           Height = 17
           Top = 0
@@ -322,12 +329,83 @@ object VisImportPackage: TVisImportPackage
         end
       end
     end
-    object Panel5: TPanel
-      Left = 396
-      Height = 66
-      Top = 0
-      Width = 451
-      Align = alClient
+    object cbFilterPackagesArch: TCheckGroup
+      AnchorSideLeft.Control = cbFilterPackagesLocales
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = PanHaut
+      AnchorSideTop.Side = asrCenter
+      Left = 496
+      Height = 47
+      Top = 8
+      Width = 102
+      AutoFill = True
+      AutoSize = True
+      Caption = 'Architecture'
+      ChildSizing.LeftRightSpacing = 6
+      ChildSizing.TopBottomSpacing = 6
+      ChildSizing.HorizontalSpacing = 10
+      ChildSizing.EnlargeHorizontal = crsHomogenousChildResize
+      ChildSizing.EnlargeVertical = crsHomogenousChildResize
+      ChildSizing.ShrinkHorizontal = crsScaleChilds
+      ChildSizing.ShrinkVertical = crsScaleChilds
+      ChildSizing.Layout = cclLeftToRightThenTopToBottom
+      ChildSizing.ControlsPerLine = 5
+      ClientHeight = 29
+      ClientWidth = 98
+      Columns = 5
+      Items.Strings = (
+        'x86'
+        'x64'
+      )
+      TabOrder = 1
+      Data = {
+        020000000202
+      }
+    end
+    object cbFilterPackagesLocales: TCheckGroup
+      AnchorSideLeft.Control = PanSearch
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = PanHaut
+      AnchorSideTop.Side = asrCenter
+      Left = 291
+      Height = 47
+      Top = 8
+      Width = 205
+      AutoFill = True
+      AutoSize = True
+      Caption = 'Locale'
+      ChildSizing.LeftRightSpacing = 6
+      ChildSizing.TopBottomSpacing = 6
+      ChildSizing.HorizontalSpacing = 10
+      ChildSizing.EnlargeHorizontal = crsHomogenousChildResize
+      ChildSizing.EnlargeVertical = crsHomogenousChildResize
+      ChildSizing.ShrinkHorizontal = crsScaleChilds
+      ChildSizing.ShrinkVertical = crsScaleChilds
+      ChildSizing.Layout = cclLeftToRightThenTopToBottom
+      ChildSizing.ControlsPerLine = 6
+      ClientHeight = 29
+      ClientWidth = 201
+      Columns = 6
+      Items.Strings = (
+        'en'
+        'fr'
+        'de'
+        'it'
+        'es'
+      )
+      TabOrder = 2
+      Data = {
+        050000000202020202
+      }
+    end
+    object PanSettings: TPanel
+      AnchorSideLeft.Control = cbFilterPackagesArch
+      AnchorSideTop.Control = PanHaut
+      AnchorSideTop.Side = asrCenter
+      Left = 496
+      Height = 51
+      Top = 6
+      Width = 414
       AutoSize = True
       BevelOuter = bvNone
       ChildSizing.LeftRightSpacing = 6
@@ -335,10 +413,10 @@ object VisImportPackage: TVisImportPackage
       ChildSizing.HorizontalSpacing = 6
       ChildSizing.VerticalSpacing = 3
       ChildSizing.Layout = cclLeftToRightThenTopToBottom
-      ChildSizing.ControlsPerLine = 3
-      ClientHeight = 66
-      ClientWidth = 451
-      TabOrder = 1
+      ChildSizing.ControlsPerLine = 5
+      ClientHeight = 51
+      ClientWidth = 414
+      TabOrder = 3
       object EdRepoName: TComboBox
         Left = 6
         Height = 21

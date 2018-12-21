@@ -28,23 +28,25 @@ type
     ButPackageDuplicate: TBitBtn;
     ButPackageDuplicate1: TBitBtn;
     butSearchExternalPackages: TBitBtn;
+    cbFilterPackagesArch: TCheckGroup;
+    cbFilterPackagesLocales: TCheckGroup;
     cbNewerThanMine: TCheckBox;
     cbNewestOnly: TCheckBox;
     EdRepoName: TComboBox;
     EdSearchPackage: TSearchEdit;
     GridExternalPackages: TSOGrid;
+    LabRepoURL: TTILabel;
     LabServerCABundle: TTILabel;
     LabSignersCABundle: TTILabel;
     MenuItem1: TMenuItem;
     MenuItem25: TMenuItem;
-    Panel1: TPanel;
+    PanBas: TPanel;
     Panel2: TPanel;
+    PanHaut: TPanel;
     PanRepoParams: TPanel;
-    Panel4: TPanel;
-    Panel5: TPanel;
-    Panel8: TPanel;
+    PanSearch: TPanel;
+    PanSettings: TPanel;
     PopupMenuPackages: TPopupMenu;
-    LabRepoURL: TTILabel;
     procedure ActPackageDuplicateExecute(Sender: TObject);
     procedure ActPackageDuplicateUpdate(Sender: TObject);
     procedure ActPackageEditExecute(Sender: TObject);
@@ -57,7 +59,6 @@ type
     procedure EdSearch1Execute(Sender: TObject);
     procedure EdSearchPackageKeyPress(Sender: TObject; var Key: char);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
-    procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure GridExternalPackagesGetText(Sender: TBaseVirtualTree;
       Node: PVirtualNode; RowData, CellData: ISuperObject;
@@ -79,6 +80,7 @@ type
     function updateprogress(receiver: TObject; current, total: integer
       ): boolean;
     { private declarations }
+    function GetCapabilities:Variant;
   public
     { public declarations }
     property RepoName:String read GetRepoName write SetRepoName;
@@ -136,10 +138,6 @@ begin
   IniWriteInteger(Appuserinipath,Name,'EdRepoName.ItemIndex',EdRepoName.ItemIndex);
   GridExternalPackages.SaveSettingsToIni(Appuserinipath);
 
-end;
-
-procedure TVisImportPackage.FormCreate(Sender: TObject);
-begin
 end;
 
 procedure TVisImportPackage.FillReposList;
@@ -303,10 +301,53 @@ begin
   end;
 end;
 
+function TVisImportPackage.GetCapabilities:Variant;
+var
+  ASA, Capabilities: ISuperObject;
+  vCapabilities: Variant;
+
+  function AtLeastOne(cg:TCheckGroup):Boolean;
+  var
+    i: Integer;
+  begin
+    for i:=0 to cg.Items.Count-1 do
+      if cg.Checked[i] then
+      begin
+        Result := True;
+        Exit;
+      end;
+    Result := False;
+  end;
+
+begin
+  Capabilities := SO();
+
+  if AtLeastOne(cbFilterPackagesArch) then begin
+    ASA := TSuperObject.Create(stArray);
+    if cbFilterPackagesArch.Checked[0] then ASA.AsArray.Add('x86');
+    if cbFilterPackagesArch.Checked[1] then ASA.AsArray.Add('x64');
+    Capabilities['architecture'] := ASA;
+  end;
+
+  if AtLeastOne(cbFilterPackagesLocales) then begin
+    ASA := TSuperObject.Create(stArray);
+    if cbFilterPackagesLocales.Checked[0] then ASA.AsArray.Add('en');
+    if cbFilterPackagesLocales.Checked[1] then ASA.AsArray.Add('fr');
+    if cbFilterPackagesLocales.Checked[2] then ASA.AsArray.Add('de');
+    if cbFilterPackagesLocales.Checked[3] then ASA.AsArray.Add('it');
+    if cbFilterPackagesLocales.Checked[4] then ASA.AsArray.Add('es');
+    Capabilities['packages_locales'] := ASA;
+  end;
+
+  vCapabilities:=SuperObjectToPyVar(Capabilities);
+  result := vCapabilities;
+end;
+
+
 procedure TVisImportPackage.ActSearchExternalPackageExecute(Sender: TObject);
 var
   prefix,expr: String;
-  http_proxy,packages_python,verify_cert,myrepo: Variant;
+  http_proxy,packages_python,verify_cert,myrepo,capabilities: Variant;
 
 begin
   EdSearchPackage.Modified:=False;
@@ -338,6 +379,8 @@ begin
         prefix := '';
       end;
 
+      capabilities := GetCapabilities;
+
       packages_python := DMPython.waptdevutils.update_external_repo(
         repourl := Waptrepo.RepoURL,
         search_string := expr,
@@ -348,7 +391,8 @@ begin
         newest_only := cbNewestOnly.Checked,
         verify_cert := verify_cert,
         description_locale := Language,
-        timeout := Waptrepo.timeout);
+        timeout := Waptrepo.timeout,
+        capabilities := capabilities);
 
       GridExternalPackages.Data := PyVarToSuperObject(packages_python);
     finally

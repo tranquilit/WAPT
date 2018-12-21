@@ -240,7 +240,10 @@
       <Unit22>
         <Filename Value="..\waptenterprise\includes\uviswuagroup.pas"/>
         <IsPartOfProject Value="True"/>
+        <ComponentName Value="VisWUAGroup"/>
         <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="uVisWUAGroup"/>
       </Unit22>
     </Units>
   </ProjectOptions>
