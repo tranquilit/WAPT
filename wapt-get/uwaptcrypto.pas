@@ -5,7 +5,7 @@ unit uwaptcrypto;
 interface
 
 uses
-  Classes, SysUtils;
+  Classes, SysUtils, superobject, Variants;
 
 function BinToStr(const Bin: array of byte): ansistring;
 function SHA1Hash(FilePath: ansistring): ansistring;
@@ -33,9 +33,50 @@ function CreateSignedCert(pywaptcrypto:Variant;
 
 function RandomPassword(PLen: Integer): string;
 
+type
+
+  { TSigner }
+
+  TSigner = class(TObject)
+  private
+    PrivateKey: Variant;
+    PublicCertificate: Variant;
+
+  public
+    constructor Create(aPrivateKey: Variant; aPublicCertificate: Variant); overload;
+    destructor Destroy; override;
+
+    procedure SignAction(ActionDict: ISuperobject);
+    procedure SignActions(ActionsList: ISuperobject);
+    procedure SignPackage(PackageEntry: Variant);
+
+  end;
+
+  { TVerifier }
+
+  TVerifier = class(TObject)
+  private
+    // to rebuild a cert chain
+    KnownCertificates: Variant;
+    //
+    TrustedCertificates: Variant;
+
+  public
+    constructor Create(const aTrustedCertificates: Variant; const aKnownCertificates: Variant); overload;
+    destructor Destroy; override;
+
+    function CheckAction(ActionDict: ISuperobject; MaxAgeSecs: Integer=0): Variant;
+    function CheckActions(ActionsList: ISuperObject; MaxAgeSecs: Integer=0
+      ): Variant;
+    function CheckPackage(PackageEntry: Variant): Variant;
+    function CheckPackageControl(PackageEntry: Variant): Variant;
+
+  end;
+
+
 implementation
 
-uses Variants, DCPsha1, DCPsha256,FileUtil, LazFileUtils, LazUTF8,VarPyth;
+uses DCPsha1, DCPsha256,FileUtil, LazFileUtils, LazUTF8,VarPyth;
 
 function BinToStr(const Bin: array of byte): ansistring;
 const
@@ -275,6 +316,63 @@ begin
     end;
 
   result := VarPythonAsString(vdestcrt);
+end;
+
+{ TSigner }
+
+constructor TSigner.Create(aPrivateKey: Variant; aPublicCertificate: Variant);
+begin
+
+end;
+
+destructor TSigner.Destroy;
+begin
+  inherited Destroy;
+end;
+
+procedure TSigner.SignAction(ActionDict: ISuperobject);
+begin
+
+end;
+
+procedure TSigner.SignActions(ActionsList: ISuperobject);
+begin
+
+end;
+
+procedure TSigner.SignPackage(PackageEntry: Variant);
+begin
+
+end;
+
+{ TVerifier }
+
+constructor TVerifier.Create(const aTrustedCertificates: Variant;
+  const aKnownCertificates: Variant);
+begin
+  TrustedCertificates:=aTrustedCertificates;
+  KnownCertificates:=aKnownCertificates;
+end;
+
+destructor TVerifier.Destroy;
+begin
+  inherited Destroy;
+end;
+
+function TVerifier.CheckAction(ActionDict: ISuperobject;MaxAgeSecs:Integer=0): Variant;
+begin
+end;
+
+function TVerifier.CheckActions(ActionsList: ISuperObject;MaxAgeSecs:Integer=0): Variant;
+begin
+end;
+
+function TVerifier.CheckPackage(PackageEntry: Variant): Variant;
+begin
+end;
+
+function TVerifier.CheckPackageControl(PackageEntry: Variant): Variant;
+begin
 end;
 
 
