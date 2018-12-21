@@ -1843,6 +1843,10 @@ msgctxt "tviswaptgui.actwuaeditgroup.caption"
 msgid "Edit group"
 msgstr "Editer le groupe"
 
+#: tviswaptgui.actwuaeditpackage.caption
+msgid "ActWUAEditPackage"
+msgstr ""
+
 #: tviswaptgui.actwuaforbidselectedupdates.caption
 msgctxt "tviswaptgui.actwuaforbidselectedupdates.caption"
 msgid "Forbid Selected Updates"
@@ -1858,8 +1862,9 @@ msgctxt "tviswaptgui.actwualoadupdates.caption"
 msgid "Load"
 msgstr "Charger"
 
-#: tviswaptgui.actwuanewgroup.caption
-msgctxt "tviswaptgui.actwuanewgroup.caption"
+#: tviswaptgui.actwuanewpackage.caption
+#, fuzzy
+msgctxt "tviswaptgui.actwuanewpackage.caption"
 msgid "New Windows Updates bundle"
 msgstr "Nouvel ensemble de règles de mises à jour Windows"
 
@@ -1907,6 +1912,10 @@ msgstr "Réinitialiser la sélection"
 msgctxt "tviswaptgui.actwuasaveupdatesgroup.caption"
 msgid "Save"
 msgstr "Enregistrer"
+
+#: tviswaptgui.actwuasearchpackage.caption
+msgid "Refresh list"
+msgstr "Rafraîchir"
 
 #: tviswaptgui.actwuashowmsupdateshelp.caption
 msgid "Show MS Update Help"
@@ -2071,6 +2080,12 @@ msgstr "Afficher les clients"
 #: tviswaptgui.cbshowhostsforpackages.caption
 #, fuzzy
 msgctxt "tviswaptgui.cbshowhostsforpackages.caption"
+msgid "Show Hosts"
+msgstr "Afficher les clients"
+
+#: tviswaptgui.cbshowhostsforwuapackage.caption
+#, fuzzy
+msgctxt "tviswaptgui.cbshowhostsforwuapackage.caption"
 msgid "Show Hosts"
 msgstr "Afficher les clients"
 
@@ -2254,6 +2269,10 @@ msgstr "Utilisateur"
 #: tviswaptgui.menuexternaltools.caption
 msgid "Windows Computer management"
 msgstr "Gestion Windows de l'ordinateur"
+
+#: tviswaptgui.menugridhostsplugins.caption
+msgid "Plugins"
+msgstr "Outils externes"
 
 #: tviswaptgui.menuitem10.caption
 msgid "Save ..."
@@ -2445,6 +2464,10 @@ msgstr "Tâches"
 #: tviswaptgui.pgwaptwuadownloads.caption
 msgid "Windows Updates downloads"
 msgstr "Téléchargements Windows Updates"
+
+#: tviswaptgui.pgwaptwuapackages.caption
+msgid "WAPT WUA packages"
+msgstr "Paquets WAPT WUA"
 
 #: tviswaptgui.pgwindowsupdates.caption
 msgctxt "tviswaptgui.pgwindowsupdates.caption"

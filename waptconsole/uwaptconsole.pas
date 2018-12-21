@@ -5817,11 +5817,17 @@ procedure TVisWaptGUI.GridWUDownloadsNodesDelete(Sender: TSOGrid;
 begin
 end;
 
-procedure TVisWaptGUI.ActWUANewGroupExecute(Sender: TObject);
+procedure TVisWaptGUI.ActWUASearchPackageExecute(Sender: TObject);
 begin
 end;
 
-procedure TVisWaptGUI.ActWUASearchPackageExecute(Sender: TObject);
+
+procedure TVisWaptGUI.ActWUANewPackageExecute(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.GridWUAPackagesColumnDblClick(Sender: TBaseVirtualTree;
+  Column: TColumnIndex; Shift: TShiftState);
 begin
 end;
 

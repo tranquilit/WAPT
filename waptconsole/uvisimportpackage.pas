@@ -54,6 +54,10 @@ type
     procedure ActRepositoriesSettingsExecute(Sender: TObject);
     procedure ActSearchExternalPackageExecute(Sender: TObject);
     procedure ActWAPTLocalConfigExecute(Sender: TObject);
+    procedure cbFilterPackagesArchClick(Sender: TObject);
+    procedure cbFilterPackagesArchItemClick(Sender: TObject; Index: integer);
+    procedure cbFilterPackagesLocalesClick(Sender: TObject);
+    procedure cbFilterPackagesLocalesItemClick(Sender: TObject; Index: integer);
     procedure cbNewerThanMineClick(Sender: TObject);
     procedure EdRepoNameSelect(Sender: TObject);
     procedure EdSearch1Execute(Sender: TObject);
@@ -301,6 +305,28 @@ begin
   end;
 end;
 
+procedure TVisImportPackage.cbFilterPackagesArchClick(Sender: TObject);
+begin
+   ActSearchExternalPackageExecute(Sender);
+end;
+
+procedure TVisImportPackage.cbFilterPackagesArchItemClick(Sender: TObject;
+  Index: integer);
+begin
+   ActSearchExternalPackageExecute(Sender);
+end;
+
+procedure TVisImportPackage.cbFilterPackagesLocalesClick(Sender: TObject);
+begin
+   ActSearchExternalPackageExecute(Sender);
+end;
+
+procedure TVisImportPackage.cbFilterPackagesLocalesItemClick(Sender: TObject;
+  Index: integer);
+begin
+   ActSearchExternalPackageExecute(Sender);
+end;
+
 function TVisImportPackage.GetCapabilities:Variant;
 var
   ASA, Capabilities: ISuperObject;
@@ -392,7 +418,7 @@ begin
         verify_cert := verify_cert,
         description_locale := Language,
         timeout := Waptrepo.timeout,
-        capabilities := capabilities);
+        host_capabilities := capabilities);
 
       GridExternalPackages.Data := PyVarToSuperObject(packages_python);
     finally

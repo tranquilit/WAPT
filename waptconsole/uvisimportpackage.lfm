@@ -357,6 +357,7 @@ object VisImportPackage: TVisImportPackage
         'x86'
         'x64'
       )
+      OnItemClick = cbFilterPackagesArchItemClick
       TabOrder = 1
       Data = {
         020000000202
@@ -393,6 +394,7 @@ object VisImportPackage: TVisImportPackage
         'it'
         'es'
       )
+      OnItemClick = cbFilterPackagesLocalesItemClick
       TabOrder = 2
       Data = {
         050000000202020202
@@ -400,9 +402,10 @@ object VisImportPackage: TVisImportPackage
     end
     object PanSettings: TPanel
       AnchorSideLeft.Control = cbFilterPackagesArch
+      AnchorSideLeft.Side = asrBottom
       AnchorSideTop.Control = PanHaut
       AnchorSideTop.Side = asrCenter
-      Left = 496
+      Left = 598
       Height = 51
       Top = 6
       Width = 414
