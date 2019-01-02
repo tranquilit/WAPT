@@ -1350,8 +1350,9 @@ class WaptTaskManager(threading.Thread):
 
         logger.info(u'Wapt tasks management initialized with {} configuration, thread ID {}'.format(self.config_filename,threading.current_thread().ident))
 
-        self.start_network_monitoring()
-        self.start_ipaddr_monitoring()
+        if self.wapt.config.has_option('global','reconfig_on_network_change') and self.wapt.config.getboolean('global','reconfig_on_network_change'):
+            self.start_network_monitoring()
+            self.start_ipaddr_monitoring()
 
         logger.debug(u"Wapt tasks queue started")
         while True:
