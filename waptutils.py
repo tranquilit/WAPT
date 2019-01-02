@@ -1374,9 +1374,13 @@ class LogOutput(BaseObjectClass):
         return getattr(self.console,name)
 
 
-def get_time_delta(schedule):
+def get_time_delta(schedule,default_unit='m'):
     if schedule is not None:
-        if schedule.endswith('m'):
+        if schedule[-1] not in ('s','m','h','d','w'):
+            schedule = schedule + default_unit
+        if schedule.endswith('s'):
+            timedelta = datetime.timedelta(seconds=float(schedule[:-1]))
+        elif schedule.endswith('m'):
             timedelta = datetime.timedelta(minutes=float(schedule[:-1]))
         elif schedule.endswith('h'):
             timedelta = datetime.timedelta(hours=float(schedule[:-1]))

@@ -2650,6 +2650,10 @@ msgstr "Description"
 msgid "Package filename : "
 msgstr "Nom de fichier du paquet"
 
+#: tviswuagroup.label5.caption
+msgid "Minimum delay before installation (days after publish date)"
+msgstr "Délai minimum avant l'installation (en jours après la date de publication)"
+
 #: tviswuagroup.tabsheet1.caption
 msgid "Allowed Windows updates"
 msgstr "Mises à jour autorisées"

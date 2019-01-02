@@ -861,11 +861,11 @@ object VisWaptGUI: TVisWaptGUI
         end
         object pgHostWUA: TTabSheet
           Caption = 'Windows updates'
-          ClientHeight = 308
+          ClientHeight = 531
           ClientWidth = 564
           object GridHostWinUpdates: TSOGrid
             Left = 0
-            Height = 93
+            Height = 316
             Top = 104
             Width = 564
             OnGetText = GridHostWinUpdatesGetText
@@ -1073,6 +1073,12 @@ object VisWaptGUI: TVisWaptGUI
                 Text = 'local_status_id'
                 Width = 47
                 PropertyName = 'local_status_id'
+              end            
+              item
+                Position = 26
+                Text = 'Delayed'
+                Width = 52
+                PropertyName = 'delayed'
               end>
             Header.DefaultHeight = 17
             Header.Height = 19
@@ -1288,7 +1294,7 @@ object VisWaptGUI: TVisWaptGUI
           object GridHostWinUpdatesHistory: TSOGrid
             Left = 0
             Height = 108
-            Top = 200
+            Top = 423
             Width = 564
             OnGetText = GridHostWinUpdatesGetText
             ShowAdvancedColumnsCustomize = False
@@ -1375,7 +1381,7 @@ object VisWaptGUI: TVisWaptGUI
             Cursor = crVSplit
             Left = 0
             Height = 1
-            Top = 197
+            Top = 420
             Width = 564
             Align = alBottom
             ResizeAnchor = akBottom
@@ -6245,14 +6251,14 @@ object VisWaptGUI: TVisWaptGUI
     end
     object PgNetworksConfig: TTabSheet
       Caption = 'Sites / networks configuration'
-      ClientHeight = 454
-      ClientWidth = 1151
+      ClientHeight = 677
+      ClientWidth = 1367
       TabVisible = False
       object Panel8: TPanel
         Left = 0
         Height = 40
         Top = 0
-        Width = 1151
+        Width = 1367
         Align = alTop
         AutoSize = True
         BevelOuter = bvNone
@@ -6262,7 +6268,7 @@ object VisWaptGUI: TVisWaptGUI
         ChildSizing.Layout = cclLeftToRightThenTopToBottom
         ChildSizing.ControlsPerLine = 10
         ClientHeight = 40
-        ClientWidth = 1151
+        ClientWidth = 1367
         TabOrder = 0
         object EdSearchPackage1: TSearchEdit
           Left = 6
@@ -6384,9 +6390,9 @@ object VisWaptGUI: TVisWaptGUI
       end
       object GridNetworks: TSOGrid
         Left = 0
-        Height = 414
+        Height = 637
         Top = 40
-        Width = 1151
+        Width = 1367
         Datasource = SrcNetworks
         ShowAdvancedColumnsCustomize = False
         Align = alClient

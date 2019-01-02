@@ -170,7 +170,8 @@ def tryurl(url,proxies=None,timeout=5.0,auth=None,verify_cert=False,cert=None):
             auth=auth,
             verify=verify_cert,
             headers=default_http_headers(),
-            cert=cert)
+            cert=cert,
+            allow_redirects=True)
         if headers.ok:
             logger.debug(u'  OK')
             return time.time() - starttime

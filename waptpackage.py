@@ -1347,7 +1347,7 @@ class PackageEntry(BaseObjectClass):
             raise EWaptNotSigned(u'Package control %s on repo %s is not signed' % (self.asrequirement(),self.repo))
         assert(isinstance(trusted_bundle,SSLCABundle))
 
-        certs = self.package_certificate()
+        certs = self.package_certificates()
         if certs is None and signers_bundle is not None:
             certs = signers_bundle.certificate_chain(fingerprint = self.signer_fingerprint)
         if not certs and trusted_bundle:
@@ -1392,7 +1392,7 @@ class PackageEntry(BaseObjectClass):
             return None
 
 
-    def package_certificate(self):
+    def package_certificates(self):
         """Return certificates from package. If package is built, take it from Zip
         else take the certificates from unzipped directory
 
@@ -1734,7 +1734,7 @@ class PackageEntry(BaseObjectClass):
         with open(signature_filename,'r') as signature_file:
             signature = signature_file.read().decode('base64')
         try:
-            certs = self.package_certificate()
+            certs = self.package_certificates()
             if certs:
                 issued_by = ', '.join('%s' % ca.cn for ca in trusted_bundle.check_certificates_chain(certs))
                 logger.debug(u'Certificate %s is trusted by root CA %s' % (certs[0].subject,issued_by))
@@ -2500,19 +2500,93 @@ class WaptLocalRepo(WaptBaseRepo):
             self._packages = []
             logger.info(u'Index file %s does not yet exist' % self.packages_path)
 
-    def update_packages_index(self,force_all=False):
+    def _extract_icon(self,entry):
+        # looks for an icon in wapt package
+        icons_path = os.path.abspath(os.path.join(self.localpath,'icons'))
+        if not os.path.isdir(icons_path):
+            os.makedirs(icons_path)
+        icon_fn = os.path.join(icons_path,u"%s.png" % entry.package)
+        if entry.section not in ['group','host','unit','profile','wsus'] and not os.path.isfile(icon_fn):
+            try:
+                icon = extract_iconpng_from_wapt(entry.localpath)
+                open(icon_fn,'wb').write(icon)
+            except Exception as e:
+                logger.debug(r"Unable to extract icon for %s:%s"%(entry.localpath,e))
+
+    def _append_package_to_index(self,entry):
+        """Append a single package to zipped index Packages without checking if it exists already
+
+        Returns:
+
+
+        """
+        packages_fname = os.path.abspath(os.path.join(self.localpath,'Packages'))
+        self._packages = None
+
+        logger.info(u"Writing new %s" % packages_fname)
+        tmp_packages_fname = packages_fname+'.%s'%datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+        try:
+            shutil.copy2(packages_fname,tmp_packages_fname)
+            with zipfile.ZipFile(tmp_packages_fname, "a",compression=zipfile.ZIP_DEFLATED) as  myzipfile:
+                packages_lines = myzipfile.read('Packages').decode('utf8').splitlines()
+                if packages_lines and packages_lines[-1] != '':
+                    packages_lines.append('')
+                packages_lines.append(entry.ascontrol(with_non_control_attributes=True))
+                packages_lines.append('')
+
+                myzipfile.remove(u"Packages")
+                zi = zipfile.ZipInfo(u"Packages",date_time = time.localtime())
+                zi.compress_type = zipfile.ZIP_DEFLATED
+                myzipfile.writestr(zi,u'\n'.join(packages_lines).encode('utf8'))
+
+                # Add list of signers certificates
+                certs = entry.package_certificates()
+                if certs:
+                    for crt in certs:
+                        crt_filename = u"ssl/%s.crt" % crt.fingerprint
+                        if not myzipfile.NameToInfo.get(crt_filename):
+                            zi = zipfile.ZipInfo(crt_filename,date_time = time.localtime())
+                            zi.compress_type = zipfile.ZIP_DEFLATED
+                            myzipfile.writestr(zi,crt.as_pem())
+
+            if os.path.isfile(packages_fname):
+                os.unlink(packages_fname)
+            os.rename(tmp_packages_fname,packages_fname)
+            logger.info(u"Finished")
+            return entry.localpath
+
+        except Exception as e:
+            if os.path.isfile(tmp_packages_fname):
+                os.unlink(tmp_packages_fname)
+            logger.critical(u'Unable to create new Packages file : %s' % e)
+            raise e
+
+    def _ensure_canonical_package_filename(self,entry):
+        """Rename the local wapt package so that it complies with canonical package naming rules
+
+        """
+        theoritical_package_filename =  entry.make_package_filename()
+        package_filename = entry.filename
+        if package_filename != theoritical_package_filename:
+            logger.warning(u'Package filename %s should be %s to comply with control metadata. Renaming...'%(package_filename,theoritical_package_filename))
+            new_fn = os.path.join(os.path.dirname(entry.localpath),theoritical_package_filename)
+            os.rename(entry.localpath,new_fn)
+            return new_fn
+        else:
+            return None
+
+    def update_packages_index(self,force_all=False,proxies=None):
         """Scan self.localpath directory for WAPT packages and build a Packages (utf8) zip file with control data and MD5 hash
 
         Extract icons from packages (WAPT/icon.png) and stores them in <repo path>/icons/<package name>.png
         Extract certificate and add it to Packages zip file in ssl/<fingerprint.crt>
         Append CRL for certificates.
 
+        Returns:
+            dict :  {'processed':processed,'kept':kept,'errors':errors,'packages_filename':packages_fname}
+
         """
         packages_fname = os.path.abspath(os.path.join(self.localpath,'Packages'))
-        icons_path = os.path.abspath(os.path.join(self.localpath,'icons'))
-        if not os.path.isdir(icons_path):
-            os.makedirs(icons_path)
-
         if force_all:
             self._packages = []
 
@@ -2573,10 +2647,7 @@ class WaptLocalRepo(WaptBaseRepo):
                     logger.info(u"  Processing new %s" % fname)
                     entry.load_control_from_wapt(fname)
                     processed.append(fname)
-                    theoritical_package_filename =  entry.make_package_filename()
-                    if package_filename != theoritical_package_filename:
-                        logger.warning(u'Package filename %s should be %s to comply with control metadata. Renaming...'%(package_filename,theoritical_package_filename))
-                        os.rename(fname,os.path.join(os.path.dirname(fname),theoritical_package_filename))
+                    self._ensure_canonical_package_filename(entry)
 
                 packages_lines.append(entry.ascontrol(with_non_control_attributes=True))
                 # add a blank line between each package control
@@ -2588,18 +2659,11 @@ class WaptLocalRepo(WaptBaseRepo):
                     self._index[entry.package] = entry
 
                 # looks for the signer certificate and add it to Packages if not already
-                certs = entry.package_certificate()
+                certs = entry.package_certificates()
                 if certs:
                     signer_certificates.add_certificates(certs)
 
-                # looks for an icon in wapt package
-                icon_fn = os.path.join(icons_path,"%s.png"%entry.package)
-                if entry.section not in ['group','host','unit'] and (force_all or not os.path.isfile(icon_fn)):
-                    try:
-                        icon = extract_iconpng_from_wapt(fname)
-                        open(icon_fn,'wb').write(icon)
-                    except Exception as e:
-                        logger.debug(r"Unable to extract icon for %s:%s"%(fname,e))
+                self._extract_icon(entry)
 
             except Exception as e:
                 logger.critical(u"package %s: %s" % (fname,ensure_unicode(e)))
@@ -2607,7 +2671,7 @@ class WaptLocalRepo(WaptBaseRepo):
 
         try:
             logger.info(u"Check / update CRL for embedded certificates")
-            signer_certificates.update_crl(force = force_all)
+            signer_certificates.update_crl(force = force_all, proxies=proxies)
         except Exception as e:
             logger.critical(u'Error when updating CRL for signers certificates : %s' % e)
 
@@ -2621,13 +2685,13 @@ class WaptLocalRepo(WaptBaseRepo):
 
                 # Add list of signers certificates
                 for crt in signer_certificates.certificates():
-                    zi = zipfile.ZipInfo(u"ssl/%s.crt" % crt.fingerprint,date_time = time.localtime())
+                    zi = zipfile.ZipInfo(u"ssl/%s.crt" % crt.fingerprint,date_time = crt.not_before.timetuple())
                     zi.compress_type = zipfile.ZIP_DEFLATED
                     myzipfile.writestr(zi,crt.as_pem())
 
                 for crl in signer_certificates.crls:
                     aki = crl.authority_key_identifier
-                    zi = zipfile.ZipInfo(u"crl/%s.crl" % aki.encode('hex'),date_time = time.localtime())
+                    zi = zipfile.ZipInfo(u"crl/%s.crl" % aki.encode('hex'),date_time = crl.last_update.timetuple())
                     zi.compress_type = zipfile.ZIP_DEFLATED
                     myzipfile.writestr(zi,crl.as_der())
 
@@ -3075,7 +3139,7 @@ class WaptRemoteRepo(WaptBaseRepo):
                     errors.append((download_url,"%s" % e))
         return {"downloaded":downloaded,"skipped":skipped,"errors":errors,"packages":packages}
 
-def update_packages(adir,force=False):
+def update_packages(adir,force=False,proxies=None):
     """Helper function to update a local packages index
 
     This function is used on repositories to rescan all packages and
@@ -3102,7 +3166,7 @@ def update_packages(adir,force=False):
     ["test (=10)"]
     """
     repo = WaptLocalRepo(localpath=os.path.abspath(adir))
-    return repo.update_packages_index(force_all=force)
+    return repo.update_packages_index(force_all=force,proxies=proxies)
 
 if __name__ == '__main__':
     import doctest

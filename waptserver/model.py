@@ -472,6 +472,7 @@ class HostWsus(WaptBaseModel):
     installed = BooleanField(null=True)
     present = BooleanField(null=True)
     hidden = BooleanField(null=True)
+    delayed = BooleanField(null=True)
     downloaded = BooleanField(null=True)
     install_date = CharField(null=True)
     history = BinaryJSONField(null=True,index=False)
@@ -1466,6 +1467,22 @@ def upgrade_db_structure():
             v.value = next_version
             v.save()
 
+    next_version = '1.7.2.1'
+    if get_db_version() <= next_version:
+        with wapt_db.atomic():
+            logger.info("Migrating from %s to %s" % (get_db_version(), next_version))
+
+            opes = []
+
+            columns = [c.name for c in wapt_db.get_columns('hostwsus')]
+            for c in ['delayed',]:
+                if not c in columns:
+                    opes.append(migrator.add_column(HostWsus._meta.name, c, getattr(HostWsus,c)))
+
+            migrate(*opes)
+            (v, created) = ServerAttribs.get_or_create(key='db_version')
+            v.value = next_version
+            v.save()
 
 if __name__ == '__main__':
     if platform.system() != 'Windows' and getpass.getuser() != 'wapt':

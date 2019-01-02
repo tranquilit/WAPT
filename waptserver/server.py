@@ -88,6 +88,7 @@ from waptserver.model import Hosts, HostSoftwares, HostPackagesStatus, ServerAtt
 from waptserver.model import get_db_version, init_db, wapt_db, model_to_dict, dict_to_model, update_host_data
 from waptserver.model import upgrade_db_structure
 from waptserver.model import load_db_config
+from waptserver.config import get_http_proxies
 
 from waptpackage import PackageEntry,update_packages,WaptLocalRepo,EWaptBadSignature,EWaptMissingCertificate
 from waptcrypto import SSLCertificate,SSLVerifyException,SSLCertificateSigningRequest,InvalidSignature,SSLPrivateKey
@@ -621,6 +622,7 @@ def upload_packages():
     """Handle the streamed upload of multiple packages
 
     Args:
+        scanpackages : if 1, rescan packages, else only append new packages to packages index
         POST body are packages file handles
 
     Returns:
@@ -665,7 +667,7 @@ def upload_packages():
 
             if entry.has_file('setup.py'):
                 # check if certificate has code_signing extended attribute
-                signer_certs = entry.package_certificate()
+                signer_certs = entry.package_certificates()
                 if not signer_certs or not signer_certs[0].is_code_signing:
                     raise EWaptForbiddden(u'The package %s contains setup.py code but has not been signed with a proper code_signing certificate' % entry.package)
 
@@ -738,9 +740,16 @@ def upload_packages():
 
             if [e for e in done if e.section != 'host']:
                 logger.debug(u'Update package index')
-                packages_index_result = update_packages(app.conf['wapt_folder'])
-                if packages_index_result['errors']:
-                    errors_msg.extend(packages_index_result['errors'])
+                if request.args.get('scanpackages','0') == '1':
+                    repo = WaptLocalRepo(localpath=app.conf['wapt_folder'])
+                    packages_index_result = repo.update_packages_index(proxies=get_http_proxies(app.conf))
+                    if packages_index_result['errors']:
+                        errors_msg.extend(packages_index_result['errors'])
+                else:
+                    packages_index_result = {'processed':[],'kept':None,'errors':None,'packages_filename':None}
+                    repo = WaptLocalRepo(localpath=app.conf['wapt_folder'])
+                    for pe in done:
+                        packages_index_result['processed'].append(repo._append_package_to_index(pe))
             else:
                 packages_index_result = None
 
@@ -988,8 +997,8 @@ def packages_delete():
                     errors.append(filename)
             except Exception as e:
                 errors.append(filename)
-
-        result = update_packages(app.conf['wapt_folder'])
+        repo = WaptLocalRepo(localpath=app.conf['wapt_folder'])
+        result = repo.update_packages_index(proxies=get_http_proxies(app.conf))
     else:
         pass
     msg = ['%s packages deleted' % len(deleted)]

@@ -248,3 +248,9 @@ def rewrite_config_item(cfg_file=DEFAULT_CONFIG_FILE, *args):
     with open(cfg_file, 'wb') as cfg:
         config.write(cfg)
 
+def get_http_proxies(config):
+    if config.get('http_proxy') is not None:
+        http_proxies = {'http':config['http_proxy'],'https':config['http_proxy']}
+    else:
+        http_proxies = None
+    return http_proxies

@@ -154,6 +154,7 @@ def get_wapt_exe_version(exe):
             pe.close()
     return (present, version)
 
+
 # Custom exceptions #####
 class EWaptMissingHostData(Exception):
     pass
