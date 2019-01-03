@@ -991,8 +991,21 @@ def packages_delete():
                     raise EWaptForbiddden(u'Bad filename: %s' % filename)
                 package_path = os.path.join(app.conf['wapt_folder'], secure_filename(filename))
                 if os.path.isfile(package_path):
+                    package = PackageEntry(waptfile=package_path)
+                    package_uuid = package.package_uuid
                     os.unlink(package_path)
                     deleted.append(filename)
+                    if package_uuid:
+                        Packages.delete().where(Packages.package_uuid == package_uuid).execute()
+                    else:
+                        # backward compatibility
+                        Packages.delete().where(
+                            (Packages.package == package.package) &
+                            (Packages.version == package.version) &
+                            (Packages.architecture == package.architecture) &
+                            (Packages.locale == package.locale) &
+                            (Packages.maturity == package.maturity)
+                            ).execute()
                 else:
                     errors.append(filename)
             except Exception as e:
