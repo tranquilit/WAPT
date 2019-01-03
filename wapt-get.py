@@ -44,6 +44,8 @@ from waptpackage import update_packages
 from waptcrypto import EWaptCryptoException,SSLCertificate,SSLCABundle,default_pwd_callback
 from waptpackage import EWaptException
 
+import atexit
+
 import common
 
 from common import Wapt
@@ -1285,6 +1287,7 @@ def main():
             sys.stderr = old_stderr
             # print final result
             print(jsondump(jsonresult,indent=True))
+
 
 if __name__ == "__main__":
     logger.debug(u'Python path %s' % sys.path)

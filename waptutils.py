@@ -51,7 +51,6 @@ import traceback
 import imp
 import shutil
 import threading
-from timer_cm import Timer
 
 if hasattr(sys.stdout,'name') and sys.stdout.name == '<stdout>':
     # not in pyscripter debugger
@@ -63,7 +62,6 @@ if hasattr(sys.stdout,'name') and sys.stdout.name == '<stdout>':
 else:
     ProgressBar = None
 
-_WAPT_TIMER = Timer('waptcore')
 
 def setloglevel(logger,loglevel):
     """set loglevel as string"""

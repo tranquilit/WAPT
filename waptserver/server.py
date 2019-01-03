@@ -698,7 +698,7 @@ def upload_packages():
                     # immediate feedback in waptconsole
                     Hosts.update(host_status='TO-UPGRADE').where(Hosts.uuid == entry.package).execute()
             else:
-                Packages.update_from_control(entry)
+                (rec,_isnew) = Packages.update_from_control(entry)
 
             return entry
 
@@ -995,17 +995,17 @@ def packages_delete():
                     package_uuid = package.package_uuid
                     os.unlink(package_path)
                     deleted.append(filename)
-                    if package_uuid:
-                        Packages.delete().where(Packages.package_uuid == package_uuid).execute()
-                    else:
-                        # backward compatibility
-                        Packages.delete().where(
-                            (Packages.package == package.package) &
-                            (Packages.version == package.version) &
-                            (Packages.architecture == package.architecture) &
-                            (Packages.locale == package.locale) &
-                            (Packages.maturity == package.maturity)
-                            ).execute()
+
+                    #if package_uuid:
+                    #    Packages.update(Packages.available == False).where(Packages.package_uuid == package_uuid).execute()
+                    #else:
+                    #    Packages.update(Packages.available == False).where(
+                    #        (Packages.package == package.package) &
+                    #        (Packages.version == package.version) &
+                    #        (Packages.architecture == package.architecture) &
+                    #        (Packages.locale == package.locale) &
+                    #        (Packages.maturity == package.maturity)
+                    #        ).execute()
                 else:
                     errors.append(filename)
             except Exception as e:
@@ -1913,22 +1913,22 @@ def trigger_host_action():
                     else:
                         socket_callback = None
                     try:
-                        socketio.emit('trigger_host_action', action, room=host['listening_address'], callback = socket_callback)
+                        socketio.emit('trigger_host_action', action, room=host['listening_address']) #, callback = socket_callback)
                         if notify_server:
                             expected_result_count += 1
                         # notify console that action is in progress until client send it updated status.
-                        if notify_server and not uuid in notified_uuids:
-                            notified_uuids.append(uuid)
-                            Hosts.update(host_status='RUNNING').where(Hosts.uuid == uuid).execute()
+                        #if notify_server and not uuid in notified_uuids:
+                        #    notified_uuids.append(uuid)
+                        #    Hosts.update(host_status='RUNNING').where(Hosts.uuid == uuid).execute()
                     except Exception as e:
                         server_errors.append('Error for %s: %s' % (uuid,e))
                 last_uuid= uuid
 
-        wait_until = time.time() + timeout + expected_result_count * timeout / 100
-        while len(ok) + len(client_errors) + len(server_errors) < expected_result_count:
-            if time.time() >= wait_until:
-                break
-            socketio.sleep(0.05)
+        #wait_until = time.time() + timeout + expected_result_count * timeout / 100
+        #while len(ok) + len(client_errors) + len(server_errors) < expected_result_count:
+        #    if time.time() >= wait_until:
+        #        break
+        #    socketio.sleep(0.05)
 
         msg = '%s actions launched, %s errors, %s skipped, %s server errors' % (len(ok), len(client_errors), len(other_server),len(server_errors))
 
