@@ -109,7 +109,7 @@ from _winreg import HKEY_LOCAL_MACHINE,EnumKey,OpenKey,QueryValueEx,\
 from waptutils import BaseObjectClass,ensure_list,ensure_unicode,default_http_headers,get_time_delta
 from waptutils import httpdatetime2isodate,datetime2isodate,FileChunks,jsondump,ZipFile,LogOutput,isodate2datetime
 from waptutils import import_code,import_setup,force_utf8_no_bom,format_bytes,wget,merge_dict,remove_encoding_declaration,list_intersection
-from waptutils import _disable_file_system_redirection
+from waptutils import _disable_file_system_redirection,_WAPT_TIMER
 
 from waptcrypto import SSLCABundle,SSLCertificate,SSLPrivateKey,SSLCRL,SSLVerifyException,SSLCertificateSigningRequest
 from waptcrypto import get_peer_cert_chain_from_server,default_pwd_callback,hexdigest_for_data,get_cert_chain_as_pem
@@ -2152,11 +2152,13 @@ class WaptHostRepo(WaptRepo):
         try:
             host_package_url = self.host_package_url()
             logger.debug(u'Trying to get  host package for %s at %s' % (self.host_id,host_package_url))
-            host_package = requests.head(host_package_url,proxies=self.proxies,verify=self.verify_cert,timeout=self.timeout,
-                headers=default_http_headers(),
+            req = requests.head(host_package_url,proxies=self.proxies,verify=self.verify_cert,timeout=self.timeout,
+                headers=default_http_headers(),cert = self.client_auth(),
                 allow_redirects=True)
-            host_package.raise_for_status()
-            return httpdatetime2isodate(host_package.headers.get('last-modified',None))
+            req.raise_for_status()
+            packages_last_modified = req.headers.get('last-modified')
+
+            return httpdatetime2isodate(packages_last_modified)
         except requests.HTTPError as e:
             logger.info(u'No host package available at this time for %s on %s' % (self.host_id,self.name))
             return None
@@ -2252,9 +2254,8 @@ class WaptHostRepo(WaptRepo):
 
                 # Packages file is a zipfile with one Packages file inside
                 with ZipFile(StringIO.StringIO(_host_package_content)) as zip:
-                    control_data = \
-                            codecs.decode(zip.read(name='WAPT/control'),'UTF-8').splitlines()
-                    package.load_control_from_wapt(control_data)
+                    control_data = codecs.decode(zip.read(name='WAPT/control'),'UTF-8')
+                    package._load_control(control_data)
                     package.filename = package.make_package_filename()
 
                     try:

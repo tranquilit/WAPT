@@ -408,9 +408,7 @@ def status():
                 rec_dict = dict((cur.description[idx][0], value) for idx, value in enumerate(row))
                 for k in rec_dict:
                     setattr(pe,k,rec_dict[k])
-                    # add joined field to calculated attributes list
-                    if not k in pe.all_attributes:
-                        pe._calculated_attributes.append(k)
+
                 # hack to enable proper version comparison in templates
                 pe.version = Version(pe.version)
                 # calc most up to date repo version
@@ -422,7 +420,6 @@ def status():
                 if not search or pe.match_search(search):
                     rows.append(pe)
 
-            #rows = [ waptpackage.PackageEntry().load_control_from_dict(dict(x)) for x in cur.fetchall() ]
         except sqlite3.Error as e:
             logger.critical(u"*********** Error %s:" % e.args[0])
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):

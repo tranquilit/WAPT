@@ -91,9 +91,9 @@ import traceback
 
 from waptutils import BaseObjectClass,Version,ensure_unicode,ZipFile,force_utf8_no_bom
 from waptutils import create_recursive_zip,ensure_list,all_files,list_intersection
-from waptutils import datetime2isodate,httpdatetime2isodate,fileutcdate,fileisoutcdate
+from waptutils import datetime2isodate,httpdatetime2isodate,httpdatetime2datetime,fileutcdate,fileisoutcdate
 from waptutils import default_http_headers,wget,get_language,import_setup,import_code
-from waptutils import _disable_file_system_redirection
+from waptutils import _disable_file_system_redirection,_WAPT_TIMER
 
 from waptcrypto import EWaptMissingCertificate,EWaptBadCertificate
 from waptcrypto import SSLCABundle,SSLCertificate,SSLPrivateKey,SSLCRL
@@ -479,7 +479,7 @@ def control_to_dict(control,int_params=('size','installed_size')):
     Breaks when an empty line is reached (limit between 2 package in Packages indexes)
 
     Args:
-        control (file): file like object to read control from (until an empty line is reached)
+        control (file,str or list): file like object to read control from (until an empty line is reached)
         int_params (list): attributes which must be converted to int
 
     Returns:
@@ -487,10 +487,24 @@ def control_to_dict(control,int_params=('size','installed_size')):
     """
     result = {}
     (key,value) = ('','')
+    linenr = 0
+
+    if isinstance(control,(unicode,str)):
+        control = control.splitlines()
+
     while 1:
-        line = control.readline()
-        if not line or not line.strip():
-            break
+        if isinstance(control,list):
+            if linenr>=len(control):
+                line = None
+            else:
+                line = control[linenr]
+            if not line or not line.strip():
+                break
+        else:
+            line = control.readline()
+            if not line or not line.strip():
+                break
+
         if line.startswith(' '):
             # additional lines begin with a space!
             value = result[key]
@@ -509,6 +523,8 @@ def control_to_dict(control,int_params=('size','installed_size')):
                 except:
                     pass
             result[key] = value
+        linenr += 1
+
     return result
 
 class PackageEntry(BaseObjectClass):
@@ -915,20 +931,26 @@ class PackageEntry(BaseObjectClass):
         Returns:
             PackageEntry: self
         """
-        for k in adict:
-            setattr(self,k,adict[k])
-            if not k in self.all_attributes:
-                self._calculated_attributes.append(k)
-        return self
+        with _WAPT_TIMER.child('PackageEntry.load_control_from_dict'):
+            for k in adict:
+                setattr(self,k,adict[k])
+                if not k in self.all_attributes:
+                    self._calculated_attributes.append(k)
+            return self
+
+    def _load_control(self,control_text):
+        with _WAPT_TIMER.child('PackageEntry._load_control'):
+            self.load_control_from_dict(control_to_dict(control_text))
+            self._control_updated = False
 
     def load_control_from_wapt(self,fname=None,calc_md5=True):
         """Load package attributes from the control file (utf8 encoded) included in WAPT zipfile fname
 
         Args:
-            fname (str or list): If None, try to load entry attributes from self.sourcespath or self.localpath
-                                 If fname is a list, consider fname is the lines of control file
-                                 If fname is file, it must be Wapt zipped file, and try to load control data from it
-                                 If fname is a directory, it must be root dir of unzipped package file and load control from <fname>/WAPT/control
+            fname (str or unicode): Package file/directory path
+                                    If None, try to load entry attributes from self.sourcespath or self.localpath
+                                    If fname is a file path, it must be Wapt zipped file, and try to load control data from it
+                                    If fname is a directory path, it must be root dir of unzipped package file and load control from <fname>/WAPT/control
 
             calc_md5 (boolean): if True and fname is a zipped file, initialize md5sum attribute with md5 sum of Zipped file/
 
@@ -936,44 +958,43 @@ class PackageEntry(BaseObjectClass):
             PackageEntry: self
 
         """
-        if fname is None:
-            if self.sourcespath and os.path.isdir(self.sourcespath):
-                fname = self.sourcespath
-            elif self.localpath and os.path.isfile(self.localpath):
-                fname = self.localpath
+        with _WAPT_TIMER.child('PackageEntry.load_control_from_wapt'):
+            if fname is None:
+                if self.sourcespath and os.path.isdir(self.sourcespath):
+                    fname = self.sourcespath
+                elif self.localpath and os.path.isfile(self.localpath):
+                    fname = self.localpath
 
-        if isinstance(fname,list):
-            control =  StringIO.StringIO(u'\n'.join(fname))
-        elif os.path.isfile(fname):
-            with zipfile.ZipFile(fname,'r',allowZip64=True) as waptzip:
-                control = StringIO.StringIO(waptzip.open(u'WAPT/control').read().decode('utf8'))
-        elif os.path.isdir(fname):
-            try:
-                control = codecs.open(os.path.join(fname,'WAPT','control'),'r',encoding='utf8')
-            except Exception as e:
-                raise EWaptBadControl(e)
-        else:
-            raise EWaptBadControl(u'Bad or no control found for %s' % (fname,))
+            if os.path.isfile(fname):
+                with zipfile.ZipFile(fname,'r',allowZip64=True) as waptzip:
+                    control = waptzip.open(u'WAPT/control').read().decode('utf8')
+            elif os.path.isdir(fname):
+                try:
+                    with codecs.open(os.path.join(fname,'WAPT','control'),'r',encoding='utf8') as control_file:
+                        control = control_file.read()
+                except Exception as e:
+                    raise EWaptBadControl(e)
+            else:
+                raise EWaptBadControl(u'Bad or no control found for %s' % (fname,))
 
-        self.load_control_from_dict(control_to_dict(control))
-        self._control_updated = False
+            self._load_control(control)
 
-        if isinstance(fname,list):
             self.filename = self.make_package_filename()
             self.localpath = ''
-        elif os.path.isfile(fname):
-            if calc_md5:
-                self.md5sum = md5_for_file(fname)
-            else:
-                self.md5sum = ''
-            self.size = os.path.getsize(fname)
-            self.filename = os.path.basename(fname)
-            self.localpath = os.path.abspath(fname)
-        elif os.path.isdir(fname):
-            self.filename = None
-            self.localpath = None
-            self.sourcespath = os.path.abspath(fname)
-        return self
+
+            if os.path.isfile(fname):
+                if calc_md5:
+                    self.md5sum = md5_for_file(fname)
+                else:
+                    self.md5sum = ''
+                self.size = os.path.getsize(fname)
+                self.filename = os.path.basename(fname)
+                self.localpath = os.path.abspath(fname)
+            elif os.path.isdir(fname):
+                self.filename = None
+                self.localpath = None
+                self.sourcespath = os.path.abspath(fname)
+            return self
 
     def save_control_to_wapt(self,fname=None,force=True):
         """Save package attributes to the control file (utf8 encoded)
@@ -1343,30 +1364,31 @@ class PackageEntry(BaseObjectClass):
         >>> p.check_control_signature(SSLCABundle('c:/wapt/ssl'))
 
         """
-        if not self.signature:
-            raise EWaptNotSigned(u'Package control %s on repo %s is not signed' % (self.asrequirement(),self.repo))
-        assert(isinstance(trusted_bundle,SSLCABundle))
+        with _WAPT_TIMER.child('PackageEntry.check_control_signature'):
+            if not self.signature:
+                raise EWaptNotSigned(u'Package control %s on repo %s is not signed' % (self.asrequirement(),self.repo))
+            assert(isinstance(trusted_bundle,SSLCABundle))
 
-        certs = self.package_certificates()
-        if certs is None and signers_bundle is not None:
-            certs = signers_bundle.certificate_chain(fingerprint = self.signer_fingerprint)
-        if not certs and trusted_bundle:
-            certs = trusted_bundle.certificate_chain(fingerprint = self.signer_fingerprint)
-        if not certs:
-            raise EWaptMissingCertificate(u'Control %s data has no matching certificate in Packages index or Package, please rescan your Packages index.' % self.asrequirement())
+            certs = self.package_certificates()
+            if certs is None and signers_bundle is not None:
+                certs = signers_bundle.certificate_chain(fingerprint = self.signer_fingerprint)
+            if not certs and trusted_bundle:
+                certs = trusted_bundle.certificate_chain(fingerprint = self.signer_fingerprint)
+            if not certs:
+                raise EWaptMissingCertificate(u'Control %s data has no matching certificate in Packages index or Package, please rescan your Packages index.' % self.asrequirement())
 
-        #append trusted to ca
+            #append trusted to ca
 
-        issued_by = trusted_bundle.check_certificates_chain(certs)[-1]
-        #logger.debug('Certificate %s is trusted by root CA %s' % (cert.subject,issued_by.subject))
+            issued_by = trusted_bundle.check_certificates_chain(certs)[-1]
+            #logger.debug('Certificate %s is trusted by root CA %s' % (cert.subject,issued_by.subject))
 
-        signed_content = self._signed_content()
-        signature_raw = self.signature.decode('base64')
-        if certs[0].verify_content(signed_content,signature_raw,md=self._default_md):
-            self._md = self._default_md
-            return certs[0]
+            signed_content = self._signed_content()
+            signature_raw = self.signature.decode('base64')
+            if certs[0].verify_content(signed_content,signature_raw,md=self._default_md):
+                self._md = self._default_md
+                return certs[0]
 
-        raise SSLVerifyException(u'SSL signature verification failed for control %s against embedded certificate %s' % (self.asrequirement(),certs[0].cn))
+            raise SSLVerifyException(u'SSL signature verification failed for control %s against embedded certificate %s' % (self.asrequirement(),certs[0].cn))
 
     def has_file(self,fname):
         """Return None if fname is not in package, else return file datetime
@@ -1377,19 +1399,20 @@ class PackageEntry(BaseObjectClass):
         Returns:
             datetime : last modification datetime of file in Wapt archive if zipped or local sources if unzipped
         """
-        if self.localpath or self._package_content is not None:
-            try:
-                with self.as_zipfile() as waptzip:
-                    return datetime.datetime(*waptzip.getinfo(fname).date_time)
-            except KeyError as e:
+        with _WAPT_TIMER.child('PackageEntry.has_file'):
+            if self.localpath or self._package_content is not None:
+                try:
+                    with self.as_zipfile() as waptzip:
+                        return datetime.datetime(*waptzip.getinfo(fname).date_time)
+                except KeyError as e:
+                    return None
+            elif self.sourcespath and os.path.isdir(self.sourcespath) and os.path.isfile(os.path.join(self.sourcespath,fname)):
+                # unzipped sources
+                fpath = os.path.abspath(os.path.join(self.sourcespath,fname))
+                return datetime.datetime.fromtimestamp(os.stat(fpath).st_mtime)
+            else:
+                # package is not yet built/signed.
                 return None
-        elif self.sourcespath and os.path.isdir(self.sourcespath) and os.path.isfile(os.path.join(self.sourcespath,fname)):
-            # unzipped sources
-            fpath = os.path.abspath(os.path.join(self.sourcespath,fname))
-            return datetime.datetime.fromtimestamp(os.stat(fpath).st_mtime)
-        else:
-            # package is not yet built/signed.
-            return None
 
 
     def package_certificates(self):
@@ -1400,23 +1423,24 @@ class PackageEntry(BaseObjectClass):
             list: list of embedded certificates when package was signed or None if not provided or signed.
                     First one of the list is the signer, the others are optional intermediate CA
         """
-        if self.localpath and os.path.isfile(self.localpath):
-            try:
-                with ZipFile(self.localpath,allowZip64=True) as zip:
-                    cert_pem = zip.read('WAPT/certificate.crt')
-                certs = SSLCABundle()
-                certs.add_pem(cert_pem)
+        with _WAPT_TIMER.child('PackageEntry.package_certificates'):
+            if self.localpath and os.path.isfile(self.localpath):
+                try:
+                    with ZipFile(self.localpath,allowZip64=True) as zip:
+                        cert_pem = zip.read('WAPT/certificate.crt')
+                    certs = SSLCABundle()
+                    certs.add_pem(cert_pem)
+                    return certs.certificates()
+                except Exception as e:
+                    logger.warning(u'No certificate found in %s : %s'% (self.localpath,repr(e)))
+                    return None
+            elif self.sourcespath and os.path.isdir(self.sourcespath) and os.path.isfile(os.path.join(self.sourcespath,'WAPT','certificate.crt')):
+                # unzipped sources
+                certs = SSLCABundle(os.path.join(self.sourcespath,'WAPT','certificate.crt'))
                 return certs.certificates()
-            except Exception as e:
-                logger.warning(u'No certificate found in %s : %s'% (self.localpath,repr(e)))
+            else:
+                # package is not yet built/signed.
                 return None
-        elif self.sourcespath and os.path.isdir(self.sourcespath) and os.path.isfile(os.path.join(self.sourcespath,'WAPT','certificate.crt')):
-            # unzipped sources
-            certs = SSLCABundle(os.path.join(self.sourcespath,'WAPT','certificate.crt'))
-            return certs.certificates()
-        else:
-            # package is not yet built/signed.
-            return None
 
     def build_manifest(self,exclude_filenames = None,block_size=2**20,forbidden_files=[],md='sha256',waptzip=None):
         """Calc the manifest of an already built (zipped) wapt package
@@ -2150,7 +2174,11 @@ class WaptBaseRepo(BaseObjectClass):
         return signer_certificates
 
     def invalidate_packages_cache(self):
-        """Reset in memory packages index"""
+        """Reset in memory packages index
+
+        Returns:
+            dict : old cache status dict(_packages=self._packages,_packages_date=self._packages_date,discarded=self.discarded)
+        """
         old_status = dict(_packages=self._packages,_packages_date=self._packages_date,discarded=self.discarded)
         self._packages = None
         self._packages_date = None
@@ -2159,8 +2187,12 @@ class WaptBaseRepo(BaseObjectClass):
         return old_status
 
     def update(self):
-        """Update local index of packages from source index"""
-        return self._load_packages_index()
+        """Update local index of packages from source index
+
+        Returns:
+            None
+        """
+        self._load_packages_index()
 
     def is_locally_allowed_package(self,package):
         """Return True if package is not in blacklist and is in whitelist if whitelist is not None
@@ -2191,7 +2223,11 @@ class WaptBaseRepo(BaseObjectClass):
         return self._packages
 
     def packages_date(self):
-        """Date of last known packages index"""
+        """Date of last known packages index
+
+        Returns:
+            str: date/time of Packages index in iso format (string)
+        """
         if self._packages is None:
             self._load_packages_index()
         return self._packages_date
@@ -2435,6 +2471,9 @@ class WaptLocalRepo(WaptBaseRepo):
         This files is the concatenation of control files of each package
           in the repository
 
+        Returns:
+            None
+
         >>> repo = WaptLocalRepo(localpath='c:\\wapt\\cache')
         >>> repo._load_packages_index()
         >>> isinstance(repo.packages,list)
@@ -2464,7 +2503,7 @@ class WaptLocalRepo(WaptBaseRepo):
             def add(start,end):
                 if start != end:
                     package = PackageEntry()
-                    package.load_control_from_wapt(packages_lines[start:end])
+                    package._load_control(u'\n'.join(packages_lines[start:end]))
                     logger.debug(u"%s (%s)" % (package.package,package.version))
                     package.repo_url = u'file:///%s'%(self.localpath.replace('\\','/'))
                     package.repo = self.name
@@ -2925,7 +2964,7 @@ class WaptRemoteRepo(WaptBaseRepo):
                 allow_redirects=True,
                 )
             req.raise_for_status()
-            packages_last_modified = req.headers['last-modified']
+            packages_last_modified = req.headers.get('last-modified')
             return httpdatetime2isodate(packages_last_modified)
         except requests.exceptions.SSLError as e:
             print(u'Certificate check failed for %s and verify_cert %s'%(self.packages_url,self.verify_cert))
@@ -2974,7 +3013,7 @@ class WaptRemoteRepo(WaptBaseRepo):
         def add(start,end):
             if start != end:
                 package = PackageEntry()
-                package.load_control_from_wapt(packages_lines[start:end])
+                package._load_control(u'\n'.join(packages_lines[start:end]))
                 #logger.debug(u"%s (%s)" % (package.package,package.version))
                 package.repo_url = self.repo_url
                 package.repo = self.name
@@ -3026,7 +3065,8 @@ class WaptRemoteRepo(WaptBaseRepo):
             allow_redirects=True,
             )
         packages_answer.raise_for_status()
-        _packages_index_date = datetime.datetime(*email.utils.parsedate(packages_answer.headers['last-modified'])[:6])
+        packages_last_modified = packages_answer.headers.get('last-modified')
+        _packages_index_date = httpdatetime2datetime(packages_last_modified)
         return (str(packages_answer.content),_packages_index_date)
 
     def packages(self):

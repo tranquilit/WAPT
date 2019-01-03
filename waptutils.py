@@ -51,6 +51,7 @@ import traceback
 import imp
 import shutil
 import threading
+from timer_cm import Timer
 
 if hasattr(sys.stdout,'name') and sys.stdout.name == '<stdout>':
     # not in pyscripter debugger
@@ -61,6 +62,8 @@ if hasattr(sys.stdout,'name') and sys.stdout.name == '<stdout>':
         ProgressBar = None
 else:
     ProgressBar = None
+
+_WAPT_TIMER = Timer('waptcore')
 
 def setloglevel(logger,loglevel):
     """set loglevel as string"""
@@ -467,26 +470,32 @@ def httpdatetime2isodate(httpdate):
     >>> len(httpdatetime2isodate(last_modified)) == 19
     True
     """
-    date_time_tz = email.utils.parsedate_tz(httpdate)
-    return datetime2isodate(datetime.datetime(*date_time_tz[:6]) - datetime.timedelta(seconds=date_time_tz[9]))
+    if httpdate:
+        date_time_tz = email.utils.parsedate_tz(httpdate)
+        return datetime2isodate(datetime.datetime(*date_time_tz[:6]) - datetime.timedelta(seconds=date_time_tz[9]))
+    else:
+        return None
 
 
 def httpdatetime2datetime(httpdate):
-    """convert a date string as returned in http headers or mail headers to isodate (UTC)
+    """convert a date string as returned in http headers or mail headers to datetime.datetime (UTC)
 
     Args:
         httpdate (str): form '2018-07-11T04:53:01'
 
     Returns:
-        datetime
+        datetime.datetime
 
     >>> import requests
     >>> last_modified = requests.head('http://wapt/wapt/Packages',headers={'cache-control':'no-cache','pragma':'no-cache'}).headers['last-modified']
     >>> len(httpdatetime2isodate(last_modified)) == 19
     True
     """
-    date_time_tz = email.utils.parsedate_tz(httpdate)
-    return datetime.datetime(*date_time_tz[:6]) - datetime.timedelta(seconds=date_time_tz[9])
+    if httpdate:
+        date_time_tz = email.utils.parsedate_tz(httpdate)
+        return datetime.datetime(*date_time_tz[:6]) - datetime.timedelta(seconds=date_time_tz[9])
+    else:
+        return None
 
 def httpdatetime2time(httpdate):
     """convert a date string as returned in http headers or mail headers to isodate
@@ -496,8 +505,11 @@ def httpdatetime2time(httpdate):
     >>> len(httpdatetime2isodate(last_modified)) == 19
     True
     """
-    date_time_tz = email.utils.parsedate_tz(httpdate)
-    return time.mktime(date_time_tz[:9]) - date_time_tz[9]
+    if httpdate:
+        date_time_tz = email.utils.parsedate_tz(httpdate)
+        return time.mktime(date_time_tz[:9]) - date_time_tz[9]
+    else:
+        return None
 
 
 def isodate2datetime(isodatestr):
