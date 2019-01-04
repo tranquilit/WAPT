@@ -2593,7 +2593,22 @@ def win_startup_info():
     return result
 
 
-def wmi_info(keys=['Win32_ComputerSystem','Win32_ComputerSystemProduct','Win32_BIOS','Win32_NetworkAdapter','Win32_Printer','Win32_VideoController','Win32_LogicalDisk','Win32_OperatingSystem'],
+def wmi_info(keys=['Win32_ComputerSystem',
+    'Win32_ComputerSystemProduct',
+    'Win32_BIOS',
+    'Win32_NetworkAdapter',
+    'Win32_Printer',
+    'Win32_VideoController',
+    'Win32_LogicalDisk',
+    'Win32_OperatingSystem',
+    'Win32_FloppyController',
+    'Win32_IDEController',
+    'Win32_SCSIController',
+    'Win32_InfraredDevice',
+    'Win32_USBController',
+    'Win32_1394Controller',
+    'Win32_PCMCIAController',
+    'CIM_LogicalDevice'],
         exclude_subkeys=['OEMLogoBitmap'],**where):
     """Get WMI machine informations as dictionaries
 
@@ -2859,6 +2874,7 @@ def host_info():
     info['installation_date'] = datetime.datetime.fromtimestamp(int(registry_readstring(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows NT\CurrentVersion','InstallDate','0'))).isoformat()
 
     info['cpu_name'] = registry_readstring(HKEY_LOCAL_MACHINE,r'HARDWARE\DESCRIPTION\System\CentralProcessor\0','ProcessorNameString','').strip()
+    info['cpu_identifier'] = registry_readstring(HKEY_LOCAL_MACHINE,r'HARDWARE\DESCRIPTION\System\CentralProcessor\0','Identifier','').strip()
 
     info['physical_memory'] = memory_status().ullTotalPhys
     info['virtual_memory'] = memory_status().ullTotalVirtual
