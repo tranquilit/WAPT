@@ -1768,6 +1768,10 @@ msgctxt "tviswaptgui.actwuaeditgroup.caption"
 msgid "Edit group"
 msgstr ""
 
+#: tviswaptgui.actwuaeditpackage.caption
+msgid "ActWUAEditPackage"
+msgstr ""
+
 #: tviswaptgui.actwuaforbidselectedupdates.caption
 msgctxt "tviswaptgui.actwuaforbidselectedupdates.caption"
 msgid "Forbid Selected Updates"
@@ -1783,8 +1787,8 @@ msgctxt "tviswaptgui.actwualoadupdates.caption"
 msgid "Load"
 msgstr ""
 
-#: tviswaptgui.actwuanewgroup.caption
-msgctxt "tviswaptgui.actwuanewgroup.caption"
+#: tviswaptgui.actwuanewpackage.caption
+msgctxt "tviswaptgui.actwuanewpackage.caption"
 msgid "New Windows Updates bundle"
 msgstr ""
 
@@ -1831,6 +1835,10 @@ msgstr ""
 #: tviswaptgui.actwuasaveupdatesgroup.caption
 msgctxt "TVISWAPTGUI.ACTWUASAVEUPDATESGROUP.CAPTION"
 msgid "Save"
+msgstr ""
+
+#: tviswaptgui.actwuasearchpackage.caption
+msgid "Refresh list"
 msgstr ""
 
 #: tviswaptgui.actwuashowmsupdateshelp.caption
@@ -1989,6 +1997,11 @@ msgctxt "tviswaptgui.cbshowhostsforpackages.caption"
 msgid "Show Hosts"
 msgstr ""
 
+#: tviswaptgui.cbshowhostsforwuapackage.caption
+msgctxt "tviswaptgui.cbshowhostsforwuapackage.caption"
+msgid "Show Hosts"
+msgstr ""
+
 #: tviswaptgui.cbshowlog.caption
 msgctxt "tviswaptgui.cbshowlog.caption"
 msgid "Show debug"
@@ -2089,10 +2102,6 @@ msgctxt "tviswaptgui.label2.caption"
 msgid "Manufacturer"
 msgstr ""
 
-#: tviswaptgui.label20.caption
-msgid "Site"
-msgstr ""
-
 #: tviswaptgui.label21.caption
 msgctxt "tviswaptgui.label21.caption"
 msgid "WAPT WUA Enabled"
@@ -2145,6 +2154,11 @@ msgctxt "tviswaptgui.labelreportingnumber.caption"
 msgid "Selected / Total : %d / %d"
 msgstr ""
 
+#: tviswaptgui.labfiltersite.caption
+msgctxt "tviswaptgui.labfiltersite.caption"
+msgid "Site"
+msgstr ""
+
 #: tviswaptgui.labuser.caption
 msgctxt "TVISWAPTGUI.LABUSER.CAPTION"
 msgid "User"
@@ -2158,6 +2172,10 @@ msgstr ""
 #: tviswaptgui.menuexternaltools.caption
 msgctxt "TVISWAPTGUI.MENUEXTERNALTOOLS.CAPTION"
 msgid "Windows Computer management"
+msgstr ""
+
+#: tviswaptgui.menugridhostsplugins.caption
+msgid "Plugins"
 msgstr ""
 
 #: tviswaptgui.menuitem10.caption
@@ -2347,6 +2365,10 @@ msgstr ""
 msgid "Windows Updates downloads"
 msgstr ""
 
+#: tviswaptgui.pgwaptwuapackages.caption
+msgid "WAPT WUA packages"
+msgstr ""
+
 #: tviswaptgui.pgwindowsupdates.caption
 msgctxt "tviswaptgui.pgwindowsupdates.caption"
 msgid "Windows Updates"
@@ -2507,6 +2529,10 @@ msgstr ""
 
 #: tviswuagroup.label4.caption
 msgid "Package filename : "
+msgstr ""
+
+#: tviswuagroup.label5.caption
+msgid "Minimum delay before installation (days after publish date)"
 msgstr ""
 
 #: tviswuagroup.tabsheet1.caption

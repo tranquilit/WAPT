@@ -711,6 +711,16 @@ msgstr "Annuler"
 msgid "Import packages"
 msgstr ""
 
+#: tvisimportpackage.cbfilterpackagesarch.caption
+msgctxt "tvisimportpackage.cbfilterpackagesarch.caption"
+msgid "Architecture"
+msgstr ""
+
+#: tvisimportpackage.cbfilterpackageslocales.caption
+msgctxt "tvisimportpackage.cbfilterpackageslocales.caption"
+msgid "Locale"
+msgstr ""
+
 #: tvisimportpackage.cbnewerthanmine.caption
 msgid "Newer packages than mine only"
 msgstr ""
@@ -816,6 +826,7 @@ msgid "Software Version"
 msgstr ""
 
 #: tvispackagewizard.edversion.text
+msgctxt "tvispackagewizard.edversion.text"
 msgid "0"
 msgstr ""
 
@@ -1700,6 +1711,10 @@ msgctxt "tviswaptgui.acttriggerwaptwua_scan.caption"
 msgid "Trigger the scan of missing Windows Updates"
 msgstr ""
 
+#: tviswaptgui.actveyon.caption
+msgid "Connect via Veyon"
+msgstr ""
+
 #: tviswaptgui.actvnc.caption
 msgctxt "tviswaptgui.actvnc.caption"
 msgid "Connect via VNC"
@@ -1756,6 +1771,10 @@ msgctxt "tviswaptgui.actwuaeditgroup.caption"
 msgid "Edit group"
 msgstr ""
 
+#: tviswaptgui.actwuaeditpackage.caption
+msgid "ActWUAEditPackage"
+msgstr ""
+
 #: tviswaptgui.actwuaforbidselectedupdates.caption
 msgctxt "tviswaptgui.actwuaforbidselectedupdates.caption"
 msgid "Forbid Selected Updates"
@@ -1771,8 +1790,8 @@ msgctxt "tviswaptgui.actwualoadupdates.caption"
 msgid "Load"
 msgstr ""
 
-#: tviswaptgui.actwuanewgroup.caption
-msgctxt "tviswaptgui.actwuanewgroup.caption"
+#: tviswaptgui.actwuanewpackage.caption
+msgctxt "tviswaptgui.actwuanewpackage.caption"
 msgid "New Windows Updates bundle"
 msgstr ""
 
@@ -1821,6 +1840,10 @@ msgctxt "tviswaptgui.actwuasaveupdatesgroup.caption"
 msgid "Save"
 msgstr ""
 
+#: tviswaptgui.actwuasearchpackage.caption
+msgid "Refresh list"
+msgstr ""
+
 #: tviswaptgui.actwuashowmsupdateshelp.caption
 msgid "Show MS Update Help"
 msgstr ""
@@ -1865,6 +1888,7 @@ msgid "Architecture"
 msgstr ""
 
 #: tviswaptgui.cbfilterpackageslocales.caption
+msgctxt "tviswaptgui.cbfilterpackageslocales.caption"
 msgid "Locale"
 msgstr ""
 
@@ -1976,6 +2000,11 @@ msgctxt "tviswaptgui.cbshowhostsforpackages.caption"
 msgid "Show Hosts"
 msgstr ""
 
+#: tviswaptgui.cbshowhostsforwuapackage.caption
+msgctxt "tviswaptgui.cbshowhostsforwuapackage.caption"
+msgid "Show Hosts"
+msgstr ""
+
 #: tviswaptgui.cbshowlog.caption
 msgctxt "tviswaptgui.cbshowlog.caption"
 msgid "Show debug"
@@ -2076,10 +2105,6 @@ msgctxt "tviswaptgui.label2.caption"
 msgid "Manufacturer"
 msgstr ""
 
-#: tviswaptgui.label20.caption
-msgid "Site"
-msgstr ""
-
 #: tviswaptgui.label21.caption
 msgctxt "tviswaptgui.label21.caption"
 msgid "WAPT WUA Enabled"
@@ -2132,6 +2157,11 @@ msgctxt "tviswaptgui.labelreportingnumber.caption"
 msgid "Selected / Total : %d / %d"
 msgstr ""
 
+#: tviswaptgui.labfiltersite.caption
+msgctxt "tviswaptgui.labfiltersite.caption"
+msgid "Site"
+msgstr ""
+
 #: tviswaptgui.labuser.caption
 msgctxt "tviswaptgui.labuser.caption"
 msgid "User"
@@ -2145,6 +2175,10 @@ msgstr ""
 #: tviswaptgui.menuexternaltools.caption
 msgctxt "tviswaptgui.menuexternaltools.caption"
 msgid "Windows Computer management"
+msgstr ""
+
+#: tviswaptgui.menugridhostsplugins.caption
+msgid "Plugins"
 msgstr ""
 
 #: tviswaptgui.menuitem10.caption
@@ -2334,6 +2368,10 @@ msgstr ""
 msgid "Windows Updates downloads"
 msgstr ""
 
+#: tviswaptgui.pgwaptwuapackages.caption
+msgid "WAPT WUA packages"
+msgstr ""
+
 #: tviswaptgui.pgwindowsupdates.caption
 msgctxt "tviswaptgui.pgwindowsupdates.caption"
 msgid "Windows Updates"
@@ -2376,6 +2414,16 @@ msgstr ""
 msgid "Classifications"
 msgstr ""
 
+#: tviswuagroup.actbuilduploadpackage.caption
+msgctxt "tviswuagroup.actbuilduploadpackage.caption"
+msgid "Save"
+msgstr ""
+
+#: tviswuagroup.actloadpackage.caption
+msgctxt "tviswuagroup.actloadpackage.caption"
+msgid "Refresh"
+msgstr ""
+
 #: tviswuagroup.actwuaallowselectedupdates.caption
 msgctxt "tviswuagroup.actwuaallowselectedupdates.caption"
 msgid "Allow Selected Updates"
@@ -2389,11 +2437,6 @@ msgstr ""
 #: tviswuagroup.actwuaforbidselectedupdates.caption
 msgctxt "tviswuagroup.actwuaforbidselectedupdates.caption"
 msgid "Forbid Selected Updates"
-msgstr ""
-
-#: tviswuagroup.actwualoadgroup.caption
-msgctxt "tviswuagroup.actwualoadgroup.caption"
-msgid "Refresh"
 msgstr ""
 
 #: tviswuagroup.actwualoadupdates.caption
@@ -2435,11 +2478,6 @@ msgctxt "tviswuagroup.actwuaresetselectedupdates.caption"
 msgid "Reset Selected"
 msgstr ""
 
-#: tviswuagroup.actwuasaveupdatesgroup.caption
-msgctxt "tviswuagroup.actwuasaveupdatesgroup.caption"
-msgid "Save"
-msgstr ""
-
 #: tviswuagroup.caption
 msgid "Edit Windows updates Group"
 msgstr ""
@@ -2469,8 +2507,9 @@ msgctxt "tviswuagroup.cbwuother.caption"
 msgid "Other"
 msgstr ""
 
-#: tviswuagroup.combobox1.text
-msgid "ComboBox1"
+#: tviswuagroup.edpackageversion.text
+msgctxt "tviswuagroup.edpackageversion.text"
+msgid "0"
 msgstr ""
 
 #: tviswuagroup.label1.caption
@@ -2492,7 +2531,11 @@ msgid "Description"
 msgstr ""
 
 #: tviswuagroup.label4.caption
-msgid "Maturity"
+msgid "Package filename : "
+msgstr ""
+
+#: tviswuagroup.label5.caption
+msgid "Minimum delay before installation (days after publish date)"
 msgstr ""
 
 #: tviswuagroup.tabsheet1.caption

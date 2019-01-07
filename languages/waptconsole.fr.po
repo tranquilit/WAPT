@@ -2195,10 +2195,6 @@ msgctxt "tviswaptgui.label2.caption"
 msgid "Manufacturer"
 msgstr "Constructeur"
 
-#: tviswaptgui.label20.caption
-msgid "Site"
-msgstr "Site"
-
 #: tviswaptgui.label21.caption
 #, fuzzy
 #| msgid "IP address"
@@ -2253,6 +2249,12 @@ msgstr "Sélectionnés / Total : %d / %d"
 msgctxt "tviswaptgui.labelreportingnumber.caption"
 msgid "Selected / Total : %d / %d"
 msgstr "Sélectionné / Total : %d / %d"
+
+#: tviswaptgui.labfiltersite.caption
+#, fuzzy
+msgctxt "tviswaptgui.labfiltersite.caption"
+msgid "Site"
+msgstr "Site"
 
 #: tviswaptgui.labuser.caption
 msgctxt "tviswaptgui.labuser.caption"

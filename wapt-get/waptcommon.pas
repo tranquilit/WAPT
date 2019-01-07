@@ -623,7 +623,6 @@ begin
   progress.CBReceiver:=CBReceiver;
   try
     // init ssl stack
-    ;
     ssl_handler := TIdSSLIOHandlerSocketOpenSSL.Create;
     ssl_handler.SSLOptions.Method:=sslvSSLv23;
 

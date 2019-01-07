@@ -270,7 +270,7 @@ type
     Label15: TLabel;
     Label19: TLabel;
     Label2: TLabel;
-    Label20: TLabel;
+    LabFilterSite: TLabel;
     Label23: TLabel;
     Label3: TLabel;
     Label5: TLabel;
@@ -4966,7 +4966,7 @@ begin
 
   {$else}
   dmpython.IsEnterpriseEdition:=False;
-  Label20.Visible:=False;
+  LabFilterSite.Visible:=False;
   PanOrgUnits.Visible:=False;
   cbADSite.Visible:=False;
   cbAuthorizedHosts.Visible:=False;
@@ -4975,7 +4975,11 @@ begin
   ActLaunchWaptExit.Visible:=False;
   ActTISHelp.Visible:=False;
   PgNetworksConfig.TabVisible:=False;
-  PgReports.TabVisible:=False;
+  PgReports.TabVisible := False;
+  pgNormalization.TabVisible := False;
+  pgWAPTWuaPackages.TabVisible:=False;
+  pgWAPTWUADownloads.TabVisible:=False;
+  pgWindowsUpdates.TabVisible:=False;
   ActTriggerHostAudit.Visible:=False;
   ActPackagesAudit.Visible:=False;
   ActWUANewPackage.Visible := False;
@@ -4995,9 +4999,6 @@ begin
   cbAuthorizedHosts.Checked := False;
 
   CBShowHostsForGroups.Visible := False;
-
-  PgReports.TabVisible := False;
-  pgNormalization.TabVisible := False;
 
   CBShowHostsForPackages.Visible := False;
   CBShowHostsForGroups.Checked := False;
