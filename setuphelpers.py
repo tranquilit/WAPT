@@ -2608,7 +2608,8 @@ def wmi_info(keys=['Win32_ComputerSystem',
     'Win32_USBController',
     'Win32_1394Controller',
     'Win32_PCMCIAController',
-    'CIM_LogicalDevice'],
+    'CIM_LogicalDevice',
+    'Win32_Volume'],
         exclude_subkeys=['OEMLogoBitmap'],**where):
     """Get WMI machine informations as dictionaries
 
