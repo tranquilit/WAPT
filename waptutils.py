@@ -859,6 +859,7 @@ def wget(url,target=None,printhook=None,proxies=None,connect_timeout=10,download
                 for chunk in httpreq.iter_content(chunk_size=chunk_size):
                     output_file.write(chunk)
                     output_file.flush()
+                    cnt +=1
                     if download_timeout is not None and (time.time()-start_time>download_timeout):
                         raise requests.Timeout(r'Download of %s takes more than the requested %ss'%(url,download_timeout))
                     if printhook is None and ProgressBar is not None and progress_bar:
@@ -869,7 +870,6 @@ def wget(url,target=None,printhook=None,proxies=None,connect_timeout=10,download
                         if reporthook(cnt*len(chunk),total_bytes):
                             last_time_display = time.time()
                     last_downloaded += len(chunk)
-                    cnt +=1
                 if printhook is None and ProgressBar is not None and progress_bar:
                     progress_bar.show(total_bytes or last_downloaded)
                     progress_bar.done()
