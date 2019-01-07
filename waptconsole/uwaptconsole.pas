@@ -940,6 +940,7 @@ type
     function TriggerActionOnHosts(uuids: ISuperObject;AAction:String;Args:ISuperObject;title,errortitle:String;Force:Boolean=False;NotifyServer:Boolean=True):ISuperObject;
     procedure LoadHostsForPackage(Grid:TSOGrid;PackageName:String);
     procedure TriggerActionOnHostPackages(APackagesStatusGrid:TSOGrid;HostUUIDs:ISuperObject;AAction, title, errortitle: String;Force:Boolean=False);
+    function DownloadPackage(RepoUrl, Filename: String): Variant;
 
     property IsEnterpriseEdition:Boolean read GetIsEnterpriseEdition write SetIsEnterpriseEdition;
     property ReportingEditMode:Boolean read FReportingEditMode write SetReportingEditMode;
@@ -2040,64 +2041,79 @@ begin
   end;
 end;
 
+
+function TVisWaptGUI.DownloadPackage(RepoUrl,Filename:String):Variant;
+var
+  filePath, proxy: string;
+  vFilePath,vDevPath: Variant;
+  cabundle: Variant;
+  DevRoot,Devpath : String;
+begin
+  DevRoot:=IniReadString(AppIniFilename,'global','default_sources_root');
+  if DevRoot<>'' then
+  begin
+    try
+      with TVisLoading.Create(Self) do
+      try
+        ProgressTitle(rsDownloading);
+        Application.ProcessMessages;
+        try
+          filePath := AppLocalDir + 'cache\' + filename;
+          if not DirectoryExists(AppLocalDir + 'cache') then
+            mkdir(AppLocalDir + 'cache');
+
+          Proxy := DMPython.MainWaptRepo.http_proxy;
+          cabundle:= VarPyth.None;
+          // if check package signature...
+          //cabundle:=DMPython.PackagesAuthorizedCA;
+          IdWget(UTF8Encode(RepoUrl+'/'+filename), filePath,
+              ProgressForm, @updateprogress, Proxy);
+          vFilePath := PyUTF8Decode(filePath);
+          Result := DMPython.waptpackage.PackageEntry(waptfile := vFilePath);
+          DevPath := AppendPathDelim(DevRoot)+VarPythonAsString(Result.make_package_edit_directory('--noarg--'));
+          vDevPath:= PyUTF8Decode(DevPath);
+          Result.unzip_package(cabundle := cabundle, target_dir := vDevPath);
+          //DMPython.WAPT.add_pyscripter_project(vDevPath);
+          //DMPython.common.wapt_sources_edit( wapt_sources_dir := vDevPath);
+        except
+          ShowMessage(rsDlCanceled);
+          if FileExistsUTF8(filePath) then
+            DeleteFileUTF8(filePath);
+          raise;
+        end;
+      finally
+        Free;
+      end;
+    except
+      on E:Exception do
+      begin
+        ShowMessageFmt(rsErrorWithMessage,[e.Message]);
+        exit;
+      end;
+    end;
+  end
+  else
+    ShowMessage(rsDefineWaptdevPath);
+end;
+
 procedure TVisWaptGUI.ActEditPackageExecute(Sender: TObject);
 var
-  filename, filePath, proxy: string;
-  vFilePath,vDevPath: Variant;
-  PackageEdited,cabundle: Variant;
-
-  DevRoot,Devpath : String;
+  RepoUrl,Filename: string;
+  cabundle,vDevPath,PackageEdited: Variant;
+  Devpath : String;
 begin
   if GridPackages.FocusedNode <> nil then
   begin
-    DevRoot:=IniReadString(AppIniFilename,'global','default_sources_root');
-    if DevRoot<>'' then
-    begin
-      try
-        with TVisLoading.Create(Self) do
-        try
-          ProgressTitle(rsDownloading);
-          Application.ProcessMessages;
-          try
-            filename := UTF8Encode(GridPackages.FocusedRow.S['filename']);
-            filePath := AppLocalDir + 'cache\' + filename;
-            if not DirectoryExists(AppLocalDir + 'cache') then
-              mkdir(AppLocalDir + 'cache');
-
-            Proxy := DMPython.MainWaptRepo.http_proxy;
-            cabundle:= VarPyth.None;
-            // if check package signature...
-            //cabundle:=DMPython.PackagesAuthorizedCA;
-
-            IdWget(UTF8Encode(GridPackages.FocusedRow.S['repo_url'])+'/'+filename, filePath,
-                ProgressForm, @updateprogress, Proxy);
-            vFilePath := PyUTF8Decode(filePath);
-            PackageEdited := DMPython.waptpackage.PackageEntry(waptfile := vFilePath);
-            DevPath := AppendPathDelim(DevRoot)+VarPythonAsString(PackageEdited.make_package_edit_directory('--noarg--'));
-            vDevPath:= PyUTF8Decode(DevPath);
-            PackageEdited.unzip_package(cabundle := cabundle, target_dir := vDevPath);
-            DMPython.WAPT.add_pyscripter_project(vDevPath);
-            DMPython.common.wapt_sources_edit( wapt_sources_dir := vDevPath);
-          except
-            ShowMessage(rsDlCanceled);
-            if FileExistsUTF8(filePath) then
-              DeleteFileUTF8(filePath);
-            raise;
-          end;
-        finally
-          Free;
-        end;
-      except
-        on E:Exception do
-        begin
-          ShowMessageFmt(rsErrorWithMessage,[e.Message]);
-          exit;
-        end;
-      end;
-    end
-    else
-      ShowMessage(rsDefineWaptdevPath);
-  end
+    Filename := UTF8Encode(GridPackages.FocusedRow.S['filename']);
+    RepoUrl := GridPackages.FocusedRow.S['repo_url'];
+    PackageEdited := DownloadPackage(RepoUrl,Filename);
+    DevPath := AppendPathDelim(DefaultSourcesRoot)+VarPythonAsString(PackageEdited.make_package_edit_directory('--noarg--'));
+    vDevPath:= PyUTF8Decode(DevPath);
+    cabundle := None();
+    PackageEdited.unzip_package(cabundle := cabundle, target_dir := vDevPath);
+    DMPython.WAPT.add_pyscripter_project(vDevPath);
+    DMPython.common.wapt_sources_edit( wapt_sources_dir := vDevPath);
+  end;
 end;
 
 procedure TVisWaptGUI.ActEditpackageUpdate(Sender: TObject);
