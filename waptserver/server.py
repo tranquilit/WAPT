@@ -740,7 +740,7 @@ def upload_packages():
 
             if [e for e in done if e.section != 'host']:
                 logger.debug(u'Update package index')
-                if request.args.get('scanpackages','0') == '1':
+                if request.args.get('scanpackages','1') == '1':
                     repo = WaptLocalRepo(localpath=app.conf['wapt_folder'])
                     packages_index_result = repo.update_packages_index(proxies=get_http_proxies(app.conf))
                     if packages_index_result['errors']:
