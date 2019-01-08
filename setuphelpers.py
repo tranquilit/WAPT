@@ -2895,6 +2895,8 @@ def host_info():
     info['computer_ad_dn'] =  registry_readstring(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows\CurrentVersion\Group Policy\State\Machine','Distinguished-Name')
     info['computer_ad_site'] =  registry_readstring(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows\CurrentVersion\Group Policy\State\Machine','Site-Name')
 
+    info['environ'] = dict(os.environ)
+
     return info
 
 def wua_agent_version():
