@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-from __future__ import absolute_import
+from __future__ import absolute_import,print_function
 from waptutils import __version__
 
 import sys
@@ -647,7 +647,7 @@ def main():
 
                 for packagename in packages_list:
                     try:
-                        print(u"Auditing %s ..." % (packagename,),)
+                        print(u"Auditing %s ..." % (packagename,))
                         packagename = guess_package_root_dir(packagename)
                         audit_result = mywapt.audit(packagename,force=options.force)
                         result.append([packagename,audit_result])
