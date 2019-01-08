@@ -338,8 +338,29 @@ ApplicationName=$[PythonExe-Short]
 Parameters=$[ActiveScript-Short]
 WorkingDirectory=$[ActiveScript-Dir]
 
+[Project\ChildNodes\Node1\ChildNodes\Node6]
+ClassName=TProjectRunConfiguationNode
+Name=debug-srvwapt
+
+[Project\ChildNodes\Node1\ChildNodes\Node6\RunConfig]
+ScriptName=ssh://srvwapt.ad.tranquil.it//opt/wapt/waptserver/server.py
+EngineType=peSSH
+ReinitializeBeforeRun=TRUE
+Parameters=-l critical
+WorkingDir=$[ActiveScript-Dir]
+WriteOutputToFile=FALSE
+OutputFileName=$[ActiveScript-NoExt].log
+AppendToFile=FALSE
+
+[Project\ChildNodes\Node1\ChildNodes\Node6\RunConfig\ExternalRun]
+Caption=External Run
+Description=Run script using an external Python Interpreter
+ApplicationName=$[PythonExe-Short]
+Parameters=$[ActiveScript-Short]
+WorkingDirectory=$[ActiveScript-Dir]
+
 [Project\ChildNodes\Node1\ChildNodes]
-Count=6
+Count=7
 
 [Project\ChildNodes]
 Count=2
