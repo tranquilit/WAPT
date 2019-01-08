@@ -647,13 +647,13 @@ def main():
 
                 for packagename in packages_list:
                     try:
-                        print(u"Auditing %s ..." % (packagename,))
+                        print(u"Auditing %s ..." % (packagename,),)
                         packagename = guess_package_root_dir(packagename)
                         audit_result = mywapt.audit(packagename,force=options.force)
                         result.append([packagename,audit_result])
                         print("%s -> %s" % (packagename,audit_result))
                     except Exception as e:
-                        logger.critical(ensure_unicode(e))
+                        logger.critical('Audit %s : %s' % (packagename,ensure_unicode(e)))
 
                 if mywapt.waptserver:
                     try:

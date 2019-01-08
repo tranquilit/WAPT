@@ -1326,6 +1326,7 @@ class LogOutput(BaseObjectClass):
         self.error_status = error_status
         self.exit_status = exit_status
 
+        # don't send output to update_hook too often
         self.update_buffer_time = 1.0
         self.last_update_time = 0
         self.last_update_idx = 0
@@ -1385,6 +1386,11 @@ class LogOutput(BaseObjectClass):
 
 
 def get_time_delta(schedule,default_unit='m'):
+    """Convert a str time delta with unit to a datetime.timedelta
+
+    Returns:
+        datetime.timedelta
+    """
     if schedule is not None:
         if schedule[-1] not in ('s','m','h','d','w'):
             schedule = schedule + default_unit
