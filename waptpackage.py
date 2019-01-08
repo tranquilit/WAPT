@@ -291,13 +291,13 @@ class HostCapabilities(BaseObjectClass):
 
     def is_matching_package(self,package_entry):
         if self.packages_blacklist is not None:
-            for bl in self.packages_blacklist:
+            for bl in self.packages_blacklist:  # pylint: disable=not-an-iterable
                 if glob.fnmatch.fnmatch(package_entry.package,bl):
                     return False
 
         if self.packages_whitelist is not None:
             allowed = False
-            for wl in self.packages_whitelist:
+            for wl in self.packages_whitelist:  # pylint: disable=not-an-iterable
                 if glob.fnmatch.fnmatch(package_entry.package,wl):
                     allowed = True
                     break
