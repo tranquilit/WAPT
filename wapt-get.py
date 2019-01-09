@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-from __future__ import absolute_import
+from __future__ import absolute_import,print_function
 from waptutils import __version__
 
 import sys
@@ -653,7 +653,7 @@ def main():
                         result.append([packagename,audit_result])
                         print("%s -> %s" % (packagename,audit_result))
                     except Exception as e:
-                        logger.critical(ensure_unicode(e))
+                        logger.critical('Audit %s : %s' % (packagename,ensure_unicode(e)))
 
                 if mywapt.waptserver:
                     try:

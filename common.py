@@ -2423,7 +2423,7 @@ class WaptPackageSessionSetupLogger(LogOutput):
             error_status=error_status)
 
 class WaptPackageAuditLogger(LogOutput):
-    """Context handler to log all print messages to a wapt package install log
+    """Context handler to log all print messages to a wapt package audit log
 
     Args:
         console (file) : sys.stderr
@@ -2539,7 +2539,7 @@ class Wapt(BaseObjectClass):
 
         self.packages_whitelist = None
         self.packages_blacklist = None
-        self.host_profiles = None
+        self._host_profiles = None
 
         self.load_config(config_filename = self.config_filename)
 
@@ -2609,6 +2609,25 @@ class Wapt(BaseObjectClass):
             if self.repositories and isinstance(self.repositories[-1],WaptHostRepo):
                 del self.repositories[-1]
         self._use_hostpackages = value
+
+    @property
+    def host_profiles(self):
+        if self._host_profiles is not None:
+            return self._host_profiles
+        else:
+            host_ad_groups_ttl = self.read_param('host_ad_groups_ttl',0.0,'float')
+            host_ad_groups     = self.read_param('host_ad_groups',None)
+
+            if not host_ad_groups_ttl or time.time() > host_ad_groups_ttl:
+                try:
+                    ad_groups = setuphelpers.get_computer_groups()
+                    self.write_param('host_ad_groups',ad_groups)
+                    self.write_param('host_ad_groups_ttl',time.time() + 10.0 * 60)
+                    return ad_groups
+                except:
+                    result = host_ad_groups
+            else:
+                return host_ad_groups
 
     def load_config(self,config_filename=None):
         """Load configuration parameters from supplied inifilename
@@ -2751,7 +2770,7 @@ class Wapt(BaseObjectClass):
             self.packages_blacklist = ensure_list(self.config.get('global','packages_blacklist'),allow_none=True)
 
         if self.config.has_option('global','host_profiles'):
-            self.host_profiles = ensure_list(self.config.get('global','host_profiles'),allow_none=True)
+            self._host_profiles = ensure_list(self.config.get('global','host_profiles'),allow_none=True)
 
         if self.config.has_option('global','locales'):
             self.locales = ensure_list(self.config.get('global','locales'),allow_none=True)
@@ -4062,6 +4081,16 @@ class Wapt(BaseObjectClass):
                     # not changed
                     result.append(ssl_crl)
         return result
+
+    def check_all_depends_conflicts(self):
+        """Check the whole dependencies/conflicts tree for installed packages
+
+
+        """
+        packages = self.installed(True)
+        depends = []
+        conflicts = []
+
 
 
     def check_depends(self,apackages,forceupgrade=False,force=False,assume_removed=[]):
@@ -5713,7 +5742,6 @@ class Wapt(BaseObjectClass):
                 package_install = self.waptdb.install_status(install_id)
 
             if force or not package_install.next_audit_on or now >= package_install.next_audit_on:
-                logger.info(u"Audit run for package %s and user %s" % (package,self.user))
                 next_audit = None
 
                 if package_install.audit_schedule:
@@ -5727,6 +5755,12 @@ class Wapt(BaseObjectClass):
                     timedelta = get_time_delta(audit_period)
                     next_audit = datetime.datetime.now()+timedelta
 
+                # skip audit entirely if no uninstall_key and no audit hook
+                if not package_install['uninstall_key']  and (not package_entry.has_setup_py() or not 'def audit():' in package_entry.setuppy):
+                    self.waptdb.update_audit_status(install_id,set_status='OK',set_last_audit_on=datetime2isodate(),set_next_audit_on=datetime2isodate(next_audit))
+                    return 'OK'
+
+                logger.info(u"Audit run for package %s and user %s" % (package,self.user))
                 self.waptdb.update_audit_status(install_id,set_status='RUNNING',set_output='',
                     set_last_audit_on=datetime2isodate(),
                     set_next_audit_on=datetime2isodate(next_audit))
@@ -5768,7 +5802,6 @@ class Wapt(BaseObjectClass):
                         dblog.exit_status = 'ERROR'
                         return dblog.exit_status
             else:
-                print('Skipping audit of %s, returning last audit from %s' % (package_install.asrequirement(),package_install.last_audit_on))
                 return package_install.last_audit_status
 
         finally:

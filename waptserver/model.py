@@ -213,6 +213,7 @@ class Hosts(WaptBaseModel):
     # running, pending, errors, finished , upgradable, errors,
     last_update_status = BinaryJSONField(null=True,index=False)
     host_info = BinaryJSONField(null=True)
+    host_capabilities = BinaryJSONField(null=True)
 
     # variable structures... so keep them as json
     dmi = BinaryJSONField(null=True,index=False)
@@ -1483,6 +1484,23 @@ def upgrade_db_structure():
             (v, created) = ServerAttribs.get_or_create(key='db_version')
             v.value = next_version
             v.save()
+
+    next_version = '1.7.3.0'
+    if get_db_version() <= next_version:
+        with wapt_db.atomic():
+            logger.info("Migrating from %s to %s" % (get_db_version(), next_version))
+
+            opes = []
+
+            columns = [c.name for c in wapt_db.get_columns('hosts')]
+            if not 'host_capabilities' in columns:
+                opes.append(migrator.add_column(Hosts._meta.name, 'host_capabilities',Hosts.host_capabilities))
+
+            migrate(*opes)
+            (v, created) = ServerAttribs.get_or_create(key='db_version')
+            v.value = next_version
+            v.save()
+
 
 if __name__ == '__main__':
     if platform.system() != 'Windows' and getpass.getuser() != 'wapt':

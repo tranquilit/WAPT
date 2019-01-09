@@ -2874,6 +2874,8 @@ def host_info():
     info['windows_product_infos'] =  keyfinder.windows_product_infos()
     info['installation_date'] = datetime.datetime.fromtimestamp(int(registry_readstring(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows NT\CurrentVersion','InstallDate','0'))).isoformat()
 
+    info['uac_level'] =  registry_readstring(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System','EnableLUA')
+
     info['cpu_name'] = registry_readstring(HKEY_LOCAL_MACHINE,r'HARDWARE\DESCRIPTION\System\CentralProcessor\0','ProcessorNameString','').strip()
     info['cpu_identifier'] = registry_readstring(HKEY_LOCAL_MACHINE,r'HARDWARE\DESCRIPTION\System\CentralProcessor\0','Identifier','').strip()
 
@@ -2884,6 +2886,8 @@ def host_info():
     info['profiles_users'] = get_profiles_users()
     info['last_logged_on_user'] = get_last_logged_on_user()
     info['local_administrators'] = local_admins()
+    info['local_groups'] =  {g:local_group_members(g) for g in local_groups()}
+    info['local_users'] =  local_users()
 
     info['windows_startup_items'] = win_startup_info()
 
