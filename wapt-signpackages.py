@@ -94,7 +94,7 @@ def main():
 
     ca_bundle = SSLCABundle()
     signers_bundle = SSLCABundle()
-    signers_bundle.add_pem(pem_filename=options.public_key)
+    signers_bundle.add_certificates_from_pem(pem_filename=options.public_key)
 
     waptpackages = []
     for arg in args:

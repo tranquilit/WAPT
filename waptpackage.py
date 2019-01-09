@@ -1423,7 +1423,7 @@ class PackageEntry(BaseObjectClass):
                 with ZipFile(self.localpath,allowZip64=True) as zip:
                     cert_pem = zip.read('WAPT/certificate.crt')
                 certs = SSLCABundle()
-                certs.add_pem(cert_pem)
+                certs.add_certificates_from_pem(cert_pem)
                 return certs.certificates()
             except Exception as e:
                 logger.warning(u'No certificate found in %s : %s'% (self.localpath,repr(e)))
@@ -1721,7 +1721,7 @@ class PackageEntry(BaseObjectClass):
         if isinstance(trusted_bundle,SSLCertificate):
             cert = trusted_bundle
             trusted_bundle = SSLCABundle()
-            trusted_bundle.add_pem(cert.as_pem())
+            trusted_bundle.add_certificates_from_pem(cert.as_pem())
 
         assert(isinstance(trusted_bundle,SSLCABundle))
 

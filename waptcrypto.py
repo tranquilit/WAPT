@@ -243,11 +243,11 @@ class SSLCABundle(BaseObjectClass):
             if os.path.isdir(cert_pattern_or_dir):
                 # load pems from provided directory
                 for fn in glob.glob(os.path.join(cert_pattern_or_dir,u'*.crt'))+glob.glob(os.path.join(cert_pattern_or_dir,u'*.pem')):
-                    self.add_pem(pem_filename = fn,load_keys=load_keys)
+                    self.add_certificates_from_pem(pem_filename = fn,load_keys=load_keys)
             else:
                 # load pems based on file wildcards
                 for fn in glob.glob(cert_pattern_or_dir):
-                    self.add_pem(pem_filename = fn,load_keys=load_keys)
+                    self.add_certificates_from_pem(pem_filename = fn,load_keys=load_keys)
         return self
 
     def add_certificates(self,certificates):
@@ -274,7 +274,7 @@ class SSLCABundle(BaseObjectClass):
                 logger.warning(u'Error adding certificate %s: %s' % (cert.subject,e))
         return result
 
-    def add_pem(self,pem_data=None,load_keys=False,pem_filename=None):
+    def add_certificates_from_pem(self,pem_data=None,load_keys=False,pem_filename=None):
         """Parse a PEM encoded bundle with multiple certificates, CRL and keys.
         If key needs to be decrypted, password callback property must be assigned.
 
@@ -1107,7 +1107,7 @@ class SSLPrivateKey(BaseObjectClass):
         if not signer_certificate_chain:
             raise EWaptCryptoException('sign_claim: No certificate provided for signature')
 
-        signature_attributes = ['signed_attributes','signer','signature_date']
+        signature_attributes = ['signed_attributes','signer','signature_date','signer_certificate']
         for att in signature_attributes+['signature']:
             if att in attributes:
                 attributes.remove(att)
@@ -1117,7 +1117,9 @@ class SSLPrivateKey(BaseObjectClass):
         reclaim['signature_date'] = datetime.datetime.utcnow().isoformat()
         if signer_certificate_chain[0].issuer != signer_certificate_chain[0]:
             reclaim['signer_certificate'] = '\n'.join(cert.as_pem() for cert in signer_certificate_chain)
-            signature_attributes.append('signed_attributes')
+        else:
+            # avoid passing something we know already as we will check
+            reclaim['signer_certificate'] = None
 
         reclaim['signed_attributes'] = attributes+signature_attributes
         signature = base64.b64encode(self.sign_content(reclaim))

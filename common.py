@@ -2261,7 +2261,7 @@ class WaptHostRepo(WaptRepo):
                     try:
                         cert_data = zip.read(name='WAPT/certificate.crt')
                         signers_bundle = SSLCABundle()
-                        signers_bundle.add_pem(cert_data)
+                        signers_bundle.add_certificates_from_pem(cert_data)
                     except Exception as e:
                         logger.warning('Error reading host package certificate: %s'%repr(e))
                         signers_bundle = None
@@ -5481,7 +5481,7 @@ class Wapt(BaseObjectClass):
             list (of SSLCertificate). The first one is the personal certificate. The other are useful if intermediate CA are used.
         """
         cert_chain = SSLCABundle()
-        cert_chain.add_pem(pem_filename = self.personal_certificate_path)
+        cert_chain.add_certificates_from_pem(pem_filename = self.personal_certificate_path)
         return cert_chain.certificates()
 
     def private_key(self,passwd_callback=None,private_key_password = None):
