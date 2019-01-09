@@ -6821,6 +6821,19 @@ class Wapt(BaseObjectClass):
 
         return True
 
+def merge_rules_self_service(listrules):
+    rulesselfservice = {}
+    for rules in listrules :
+        for package in rules:
+            if package in rulesselfservice:
+                for user in rules[package]:
+                    if not user in rulesselfservice[package]:
+                        rulesselfservice[package].append(user)
+            else:
+                rulesselfservice[package]=rules[package]
+
+    return rulesselfservice
+
 def wapt_sources_edit(wapt_sources_dir):
     """Utility to open Pyscripter with package source if it is installed
         else open the development directory in Shell Explorer.
