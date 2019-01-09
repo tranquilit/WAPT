@@ -1115,11 +1115,11 @@ class SSLPrivateKey(BaseObjectClass):
         reclaim = {att:claim.get(att,None) for att in attributes if att not in signature_attributes and att != 'signature'}
         reclaim['signer'] = signer_certificate_chain[0].fingerprint
         reclaim['signature_date'] = datetime.datetime.utcnow().isoformat()
-        if signer_certificate_chain[0].issuer != signer_certificate_chain[0]:
-            reclaim['signer_certificate'] = '\n'.join(cert.as_pem() for cert in signer_certificate_chain)
-        else:
-            # avoid passing something we know already as we will check
-            reclaim['signer_certificate'] = None
+        #if signer_certificate_chain[0].issuer != signer_certificate_chain[0]:
+        reclaim['signer_certificate'] = '\n'.join(cert.as_pem() for cert in signer_certificate_chain)
+        #else:
+        #    # avoid passing something we know already as we will check
+        #    reclaim['signer_certificate'] = ''
 
         reclaim['signed_attributes'] = attributes+signature_attributes
         signature = base64.b64encode(self.sign_content(reclaim))
