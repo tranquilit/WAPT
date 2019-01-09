@@ -6821,7 +6821,77 @@ class Wapt(BaseObjectClass):
 
         return True
 
+def check_user_authorisation(rules,packagename,listgroupuser):
+    """Returns True if the user is allowed to install software based on their group and selfservice rules
+
+    Args:
+        rules (dict): dict rules with group allowed
+        packagename(str): name of the package the user wants to install
+        listgroupuser(list): selfservice group list of the user
+
+    Returns:
+        boolean: True
+    """
+    if 'waptselfservice' in listgroupuser :
+        return True
+    if not packagename in rules:
+        return False
+    else:
+        for group in listgroupuser :
+            if group in rules[packagename]:
+                return True
+    return False
+
+def list_group_selfservice_from_user(rules,logon_name,password):
+    """Returns the group list for a given user based on the selfservice group
+
+    Args:
+        rules (dict): dict rules with group allowed
+        logon_name(str): Username of user
+        password(str): Password of user
+
+    Returns:
+        list: ['compta','tech']
+    """
+    try:
+        domain = ''
+        if logon_name.count('\\') > 1 or logon_name.count('@') > 1  or (logon_name.count('\\') == 1 and logon_name.count('@')==1)  :
+            logger.debug("malformed logon credential : %s "% logon_name)
+            return False
+
+        if '\\' in logon_name:
+            domain = logon_name.split('\\')[0]
+            username = logon_name.split('\\')[1]
+        elif '@' in logon_name:
+            username = logon_name.split('@')[0]
+            domain = logon_name.split('@')[1]
+        else:
+            username = logon_name
+        huser = win32security.LogonUser (username,domain,password,win32security.LOGON32_LOGON_NETWORK,win32security.LOGON32_PROVIDER_DEFAULT)
+    except Exception as e:
+        return []
+
+    listgroupuser = []
+    listgroupok = []
+    listgroupuser.append('waptselfservice')
+    listgroupuser.append(username)
+    for package in rules :
+        for group in rules[package]:
+            if not group in listgroupok:
+                listgroupok.append(group)
+                if check_is_member_of(huser,group) :
+                    listgroupuser.append(group)
+    return listgroupuser
+
 def merge_rules_self_service(listrules):
+    """Returns dict rules merged
+
+    Args:
+        rules (dict): dictionary list
+
+    Returns:
+        list: {'tis-7zip':['waptadmins'],'tis-firefox':['testgrp','waptadmins']}
+    """
     rulesselfservice = {}
     for rules in listrules :
         for package in rules:
