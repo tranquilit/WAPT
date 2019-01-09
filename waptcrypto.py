@@ -1107,17 +1107,19 @@ class SSLPrivateKey(BaseObjectClass):
         if not signer_certificate_chain:
             raise EWaptCryptoException('sign_claim: No certificate provided for signature')
 
-        signature_attributes = ['signed_attributes','signer','signature_date','signer_certificate']
+        signature_attributes = ['signed_attributes','signer','signature_date']
         for att in signature_attributes+['signature']:
             if att in attributes:
                 attributes.remove(att)
 
         reclaim = {att:claim.get(att,None) for att in attributes if att not in signature_attributes and att != 'signature'}
-        reclaim['signed_attributes'] = attributes+signature_attributes
         reclaim['signer'] = signer_certificate_chain[0].fingerprint
         reclaim['signature_date'] = datetime.datetime.utcnow().isoformat()
         if signer_certificate_chain[0].issuer != signer_certificate_chain[0]:
             reclaim['signer_certificate'] = '\n'.join(cert.as_pem() for cert in signer_certificate_chain)
+            signature_attributes.append('signed_attributes')
+
+        reclaim['signed_attributes'] = attributes+signature_attributes
         signature = base64.b64encode(self.sign_content(reclaim))
         reclaim['signature'] = signature
         return reclaim
@@ -2134,7 +2136,7 @@ class SSLCertificate(BaseObjectClass):
         """
         attributes = claim['signed_attributes']
 
-        for att in ['signed_attributes','signer','signature_date','signer_certificate']:
+        for att in ['signed_attributes','signer','signature_date']:
             if not att in required_attributes:
                 required_attributes.append(att)
 
