@@ -454,8 +454,12 @@ def all_packages(page=1):
     mergerules = common.merge_rules_self_service(listrules)
     grpuser = ['waptselfservice']
     if request.authorization:
-        auth = request.authorization
-        grpuser = common.list_group_selfservice_from_user(mergerules,auth.username,auth.password)
+        if check_auth(auth.username,auth.password):
+            grpuser = ['waptselfservice']
+        else:
+            auth = request.authorization
+            grpuser = common.list_group_selfservice_from_user(mergerules,auth.username,auth.password)
+
 
     with sqlite3.connect(app.waptconfig.dbpath) as con:
         try:
