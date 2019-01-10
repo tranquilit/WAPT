@@ -21,6 +21,7 @@
 # -----------------------------------------------------------------------
 from __future__ import absolute_import
 
+import glob
 import os
 import sys
 import types
@@ -446,6 +447,9 @@ def latest_only(packages):
 @app.route('/list')
 @allow_local
 def all_packages(page=1):
+    if not (request.args.get('format','html')=='json' or request.path.endswith('.json')):
+        if not request.authorization:
+            return authenticate()
 
     listrules = []
     for rules in glob.glob(makepath(wapt_root_dir,'private','persistent','*','selfservice.json')):
@@ -454,10 +458,10 @@ def all_packages(page=1):
     mergerules = common.merge_rules_self_service(listrules)
     grpuser = ['waptselfservice']
     if request.authorization:
+        auth = request.authorization
         if check_auth(auth.username,auth.password):
             grpuser = ['waptselfservice']
         else:
-            auth = request.authorization
             grpuser = common.list_group_selfservice_from_user(mergerules,auth.username,auth.password)
 
 
@@ -880,6 +884,20 @@ def install():
     package_requests = request.args.get('package')
     if not isinstance(package_requests,list):
         package_requests = [package_requests]
+
+    listrules = []
+    for rules in glob.glob(makepath(wapt_root_dir,'private','persistent','*','selfservice.json')):
+        with open(rules) as f:
+            listrules.append(json.loads(f.read()))
+    mergerules = common.merge_rules_self_service(listrules)
+    grpuser = []
+    if request.authorization:
+        auth = request.authorization
+        if check_auth(auth.username,auth.password):
+            grpuser = ['waptselfservice']
+        else:
+            grpuser = common.list_group_selfservice_from_user(mergerules,auth.username,auth.password)
+
     force = int(request.args.get('force','0')) == 1
     notify_user = int(request.args.get('notify_user','0')) == 1
     only_priorities = None
@@ -899,6 +917,8 @@ def install():
                 username = auth.username
 
             is_authorized = wapt().is_authorized_package(apackage,username)
+            if not is_authorized:
+                is_authorized = common.check_user_authorisation(mergerules,apackage.split('(=')[0],grpuser)
 
             if not is_authorized:
                 if not auth:
@@ -909,6 +929,8 @@ def install():
                     return authenticate()
 
                 is_authorized = wapt().is_authorized_package(apackage,username)
+                if not is_authorized:
+                    is_authorized = common.check_user_authorisation(mergerules,apackage.split('(=')[0],grpuser)
                 logging.info("user %s authenticated" % username)
                 logging.info("package %s authorization : %s" % (apackage,is_authorized))
         else:
