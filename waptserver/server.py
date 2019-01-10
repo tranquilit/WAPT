@@ -1930,7 +1930,7 @@ def trigger_host_action():
         #        break
         #    socketio.sleep(0.05)
 
-        msg = '%s actions launched, %s errors, %s skipped, %s server errors' % (len(ok), len(client_errors), len(other_server),len(server_errors))
+        msg = '%s actions launched, %s errors, %s skipped, %s server errors' % (len(expected_result_count), len(client_errors), len(other_server),len(server_errors))
 
         return make_response([r.get('result', None) for r in (ok + client_errors)],
                              msg=msg,
