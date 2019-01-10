@@ -150,6 +150,7 @@ parser.add_option("-f","--force",    dest="force",    default=False, action='sto
 parser.add_option("-p","--params", dest="params", default='{}', help="Setup params as a JSon Object (example : {'licence':'AZE-567-34','company':'TIS'}} (default: %default)")
 parser.add_option("-r","--repository", dest="wapt_url", default='', help="URL of main wapt repository (override url from ini file, example http://wapt/wapt) (default: %default)")
 parser.add_option("-i","--inc-release",    dest="increlease",    default=False, action='store_true', help="Increase release number when building package (default: %default)")
+parser.add_option(     "--keep-signature-date", dest="keep_signature_date",default=False, action='store_true', help="Keep the current package signature date, and file changetime (default: %default)")
 parser.add_option("-s","--sections",    dest="section_filter",    default=None,  help="Add a filter section to search query (default: ALL)")
 parser.add_option("-j","--json",    dest="json_output",    default=False, action='store_true', help="Switch to json output for scripts purpose (default: %default)")
 parser.add_option("-e","--encoding",    dest="encoding",    default=None, help="Chararacter encoding for the output (default: no change)")
@@ -1015,10 +1016,13 @@ def main():
                             print('Signing %s' % (waptfile,))
                             if options.maturity is not None:
                                 print('Change maturity to %s' % (options.maturity,))
-                            if options.increlease is not None:
+                            if options.increlease:
                                 print('Incrementing package revision')
 
-                            signature = mywapt.sign_package(waptfile,certificate=certificate,private_key=key,set_maturity=options.maturity,inc_package_release=options.increlease)
+                            signature = mywapt.sign_package(waptfile,certificate=certificate,private_key=key,
+                                    set_maturity=options.maturity,
+                                    inc_package_release=options.increlease,
+                                    keep_signature_date=options.keep_signature_date)
                             print(u"   OK: Package %s signed : signature : %s...%s" % (waptfile, signature[0:10],signature[-10:-1]))
                         else:
                             logger.critical(u'Package %s not found' % waptfile)

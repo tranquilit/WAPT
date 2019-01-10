@@ -53,10 +53,13 @@ def main():
     parser.add_option("-k","--private-key", dest="private_key", default='', help="Path to the PEM RSA private key to sign packages.  (default: %default)")
     #parser.add_option("-w","--private-key-passwd", dest="private_key_passwd", default='', help="Path to the password of the private key. (default: %default)")
     parser.add_option("-l","--loglevel", dest="loglevel", default=None, type='choice',  choices=['debug','warning','info','error','critical'], metavar='LOGLEVEL',help="Loglevel (default: warning)")
-    parser.add_option("-i","--if-needed", dest="if_needed", default=False, action='store_true',help="Re-sign package only if needed (default: warning)")
     parser.add_option("-m","--message-digest", dest="md", default='sha256', help="Message digest type for signatures.  (default: %default)")
     parser.add_option("-s","--scan-packages", dest="doscan", default=False, action='store_true', help="Rescan packages and update local Packages index after signing.  (default: %default)")
     parser.add_option("-r","--remove-setup", dest="removesetup", default=False, action='store_true', help="Remove setup.py.  (default: %default)")
+    parser.add_option("-i","--inc-release",    dest="increlease",    default=False, action='store_true', help="Increase release number when building package (default: %default)")
+    parser.add_option("--maturity", dest="set_maturity", default=None, help="Set/change package maturity when signing package.  (default: None)")
+    parser.add_option(     "--keep-signature-date", dest="keep_signature_date",default=False, action='store_true', help="Keep the current package signature date, and file changetime (default: %default)")
+    parser.add_option(     "--if-needed", dest="if_needed", default=False, action='store_true',help="Re-sign package only if needed (default: warning)")
     (options,args) = parser.parse_args()
 
     loglevel = options.loglevel
@@ -129,8 +132,25 @@ def main():
                     logger.info('Sign is needed for %s because %s' % (pe.asrequirement(),e))
                     sign_needed = True
 
+            if options.increlease:
+                pe.inc_build()
+                sign_needed = True
+
+            if options.set_maturity is not None and pe.maturity != options.set_maturity:
+                pe.maturity = options.set_maturity
+                sign_needed = True
+
             if not options.if_needed or sign_needed:
-                pe.sign_package(private_key=key,certificate = signers_bundle.certificates(),mds = ensure_list(options.md))
+                pe.sign_package(private_key=key,certificate = signers_bundle.certificates(),mds = ensure_list(options.md),keep_signature_date=options.keep_signature_date)
+                newfn = pe.make_package_filename()
+                if newfn != pe.filename:
+                    newfn_path = os.path.join(package_dir,newfn)
+                    if not os.path.isfile(newfn_path):
+                        print(u"Renaming file from %s to %s to match new package's properties" % (pe.filename,newfn))
+                        os.rename(os.path.join(package_dir,pe.filename),newfn_path)
+                    else:
+                        print('WARNING: unable to rename file from %s to %s because target already exists' % (pe.filename,newfn))
+
             print('Done')
         except Exception as e:
             print(u'Error: %s'%ensure_unicode(e.message))

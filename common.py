@@ -5509,7 +5509,7 @@ class Wapt(BaseObjectClass):
             raise EWaptMissingPrivateKey(u'The key matching the certificate %s can not be found or decrypted' % (cert.public_cert_filename or cert.subject))
         return self._private_key_cache
 
-    def sign_package(self,zip_or_directoryname,certificate=None,callback=None,private_key_password=None,private_key = None,set_maturity=None,inc_package_release=False):
+    def sign_package(self,zip_or_directoryname,certificate=None,callback=None,private_key_password=None,private_key = None,set_maturity=None,inc_package_release=False,keep_signature_date=False):
         """Calc the signature of the WAPT/manifest.sha256 file and put/replace it in ZIP or directory.
             if directory, creates WAPT/manifest.sha256 and add it to the content of package
             create a WAPT/signature file and it to directory or zip file.
@@ -5547,7 +5547,11 @@ class Wapt(BaseObjectClass):
         if inc_package_release:
             pe.inc_build()
         pe.save_control_to_wapt()
-        return pe.sign_package(private_key=private_key,certificate = certificate,password_callback=callback,private_key_password=private_key_password,mds = self.sign_digests)
+        return pe.sign_package(private_key=private_key,
+                certificate = certificate,password_callback=callback,
+                private_key_password=private_key_password,
+                mds = self.sign_digests,
+                keep_signature_date=keep_signature_date)
 
     def build_package(self,directoryname,inc_package_release=False,excludes=['.svn','.git','.gitignore','setup.pyc'],
                 target_directory=None,set_maturity=None):

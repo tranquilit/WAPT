@@ -91,7 +91,7 @@ import traceback
 
 from waptutils import BaseObjectClass,Version,ensure_unicode,ZipFile,force_utf8_no_bom
 from waptutils import create_recursive_zip,ensure_list,all_files,list_intersection
-from waptutils import datetime2isodate,httpdatetime2isodate,httpdatetime2datetime,fileutcdate,fileisoutcdate
+from waptutils import datetime2isodate,httpdatetime2isodate,httpdatetime2datetime,fileutcdate,fileisoutcdate,isodate2datetime
 from waptutils import default_http_headers,wget,get_language,import_setup,import_code
 from waptutils import _disable_file_system_redirection
 
@@ -1313,7 +1313,7 @@ class PackageEntry(BaseObjectClass):
             effective_signed_attributes = self.signed_attributes
         return {att:getattr(self,att,None) for att in ensure_list(effective_signed_attributes)}
 
-    def _sign_control(self,private_key,certificate):
+    def _sign_control(self,private_key,certificate,keep_signature_date=False):
         """Sign the contractual attributes of the control file using
         the provided key, add certificate Fingerprint and CN too
 
@@ -1326,7 +1326,8 @@ class PackageEntry(BaseObjectClass):
         """
         self.make_uuid()
         self.signed_attributes = ','.join(self.get_default_signed_attributes())
-        self.signature_date = time.strftime('%Y%m%d-%H%M%S')
+        if not keep_signature_date or not self.signature_date:
+            self.signature_date = datetime2isodate()
         self.signer = certificate.cn
         self.signer_fingerprint = certificate.fingerprint
         self.signature = base64.b64encode(
@@ -1480,7 +1481,7 @@ class PackageEntry(BaseObjectClass):
                 waptzip.close()
 
 
-    def sign_package(self,certificate,private_key=None,password_callback=None,private_key_password=None,mds=['sha256']):
+    def sign_package(self,certificate,private_key=None,password_callback=None,private_key_password=None,mds=['sha256'],keep_signature_date=False):
         """Sign an already built package.
         Should follow immediately the build_package step.
 
@@ -1521,7 +1522,7 @@ class PackageEntry(BaseObjectClass):
         # sign the control (one md only, so take default if many)
         if len(mds) == 1:
             self._default_md = mds[0]
-        self._sign_control(certificate=signer_cert,private_key=private_key)
+        self._sign_control(certificate=signer_cert,private_key=private_key,keep_signature_date=keep_signature_date)
 
         # control file is appended to manifest file separately.
         control = self.ascontrol().encode('utf8')
@@ -1582,6 +1583,8 @@ class PackageEntry(BaseObjectClass):
                 waptzip.writestr(self.get_signature_filename(md),signature.encode('base64'))
 
         self._md = self._default_md
+        mtime = time.mktime(isodate2datetime(self.signature_date).timetuple())
+        os.utime(self.localpath,(mtime,mtime))
 
         return signature.encode('base64')
 
