@@ -1121,7 +1121,7 @@ class PackageEntry(BaseObjectClass):
         elif self.section in ('group','wsus'):
             # we don't keep version for group
             return self.package + u'_'.join([f for f in (self.architecture,self.maturity,'-'.join(ensure_list(self.locale))) if (f and f != 'all')]) + '.wapt'
-        elif self.section == ('unit','profile'):
+        elif self.section in ('unit','profile'):
             # we have to hash the name.
             return hashlib.md5(self.package).hexdigest()+ u'_'.join([f for f in (self.architecture,self.maturity,u'-'.join(ensure_list(self.locale))) if (f and f != 'all')]) + '.wapt'
         else:
