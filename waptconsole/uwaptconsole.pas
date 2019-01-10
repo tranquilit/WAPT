@@ -2000,8 +2000,8 @@ procedure TVisWaptGUI.ActAddGroupExecute(Sender: TObject);
 begin
   if DefaultSourcesRoot <> '' then
   begin
-    CreateGroup('agroup', AdvancedMode);
-    ActPackagesUpdate.Execute;
+    if Assigned(CreateGroup('agroup', AdvancedMode)) then
+      ActPackagesUpdate.Execute;
   end
   else
     ShowMessage(rsDefineWaptdevPath);

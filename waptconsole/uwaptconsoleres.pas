@@ -178,6 +178,8 @@ resourcestring
   { Messages dans uVisEditPackage.pas }
   rsEditBundle = 'Edit package bundle.';
   rsEditUnitBundle = 'Edit Organizational Unit bundle.';
+  rsEditHostProfile = 'Edit Host profile bundle.';
+  rsEditWUAGroup = 'Edit WAPT WUA bundle.';
   rsEdPackage = 'Package bundle';
   rsPackagesNeededCaption = 'Packages needed in package bundle';
 
