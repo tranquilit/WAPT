@@ -131,7 +131,7 @@ action is either :
 
  For repository management
   upload-package  <filenames> : upload package to repository (using winscp for example.)
-  update-packages <directory> : rebuild a "Packages" file for http package repository
+  scan-packages <directory> : rebuild a "Packages" file for http package repository
 
 """
 
@@ -294,7 +294,7 @@ def main():
         development_actions = ['sources','make-template',
             'make-host-template','make-group-template','build-package',
             'sign-package','build-upload','duplicate','edit','edit-host',
-            'upload-package','update-packages','update-package-sources']
+            'upload-package','scan-packages','update-packages','update-package-sources']
         if not options.config:
             if action in development_actions and os.path.isfile(default_waptconsole_ini):
                 config_file = default_waptconsole_ini
@@ -781,7 +781,7 @@ def main():
                 else:
                     print(u"\n=== Packages removed from status ===\n%s" % (u'\n'.join( [u"  %-30s " % (p) for p in  result]),))
 
-            elif action == 'update-packages':
+            elif action in ('update-packages','scan-packages'):
                 if len(args) < 2:
                     print(u"You must provide the directory")
                     sys.exit(1)
