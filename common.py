@@ -6877,7 +6877,8 @@ def list_group_selfservice_from_user(rules,logon_name,password):
 
     listgroupuser = []
     listgroupok = []
-    listgroupuser.append('waptselfservice')
+    if check_is_member_of(huser,'waptselfservice') :
+        listgroupuser.append('waptselfservice')
     listgroupuser.append(username)
     for package in rules :
         for group in rules[package]:

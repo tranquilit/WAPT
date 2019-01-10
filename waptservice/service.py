@@ -446,6 +446,17 @@ def latest_only(packages):
 @app.route('/list')
 @allow_local
 def all_packages(page=1):
+
+    listrules = []
+    for rules in glob.glob(makepath(wapt_root_dir,'private','persistent','*','selfservice.json')):
+        with open(rules) as f:
+            listrules.append(json.loads(f.read()))
+    mergerules = common.merge_rules_self_service(listrules)
+    grpuser = ['waptselfservice']
+    if request.authorization:
+        auth = request.authorization
+        grpuser = common.list_group_selfservice_from_user(mergerules,auth.username,auth.password)
+
     with sqlite3.connect(app.waptconfig.dbpath) as con:
         try:
             con.row_factory=sqlite3.Row
@@ -466,7 +477,8 @@ def all_packages(page=1):
                 pe = PackageEntry().load_control_from_dict(
                     dict((cur.description[idx][0], value) for idx, value in enumerate(row)))
                 if not search or pe.match_search(search):
-                    rows.append(pe)
+                    if common.check_user_authorisation(mergerules,pe.package,grpuser):
+                        rows.append(pe)
 
             if request.args.get('latest','0') == '1':
                 filtered = []
