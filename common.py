@@ -6879,6 +6879,15 @@ def list_group_selfservice_from_user(rules,logon_name,password):
     listgroupok = []
     if check_is_member_of(huser,'waptselfservice') :
         listgroupuser.append('waptselfservice')
+    localadmin = common.get_domain_admins_group_name()
+    if check_is_member_of(huser,localadmin) :
+        listgroupuser.append(localadmin)
+    try :
+        domain_admins_group_name = common.get_domain_admins_group_name()
+        if check_is_member_of(huser,domain_admins_group_name) :
+            listgroupuser.append(domain_admins_group_name)
+    except:
+        pass
     listgroupuser.append(username)
     for package in rules :
         for group in rules[package]:
