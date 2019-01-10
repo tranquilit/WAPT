@@ -566,7 +566,7 @@ msgstr ""
 
 #: tviseditpackage.edsection.text
 msgctxt "tviseditpackage.edsection.text"
-msgid "base"
+msgid "group"
 msgstr ""
 
 #: tviseditpackage.edversion.editlabel.caption
@@ -589,14 +589,14 @@ msgctxt "tviseditpackage.label2.caption"
 msgid "Available packages : "
 msgstr ""
 
-#: tviseditpackage.label5.caption
-msgctxt "tviseditpackage.label5.caption"
-msgid "Section"
-msgstr ""
-
 #: tviseditpackage.labpackage.caption
 msgctxt "TVISEDITPACKAGE.LABPACKAGE.CAPTION"
 msgid "Package"
+msgstr ""
+
+#: tviseditpackage.labsection.caption
+msgctxt "tviseditpackage.labsection.caption"
+msgid "Section"
 msgstr ""
 
 #: tviseditpackage.panel7.caption
@@ -3384,8 +3384,16 @@ msgid ""
 "If package is signed with a foreign key, you may want to delete host package first to workaround the issue...\n"
 msgstr ""
 
+#: uwaptconsoleres.rsedithostprofile
+msgid "Edit Host profile bundle."
+msgstr ""
+
 #: uwaptconsoleres.rseditunitbundle
 msgid "Edit Organizational Unit bundle."
+msgstr ""
+
+#: uwaptconsoleres.rseditwuagroup
+msgid "Edit WAPT WUA bundle."
 msgstr ""
 
 #: uwaptconsoleres.rsedpackage

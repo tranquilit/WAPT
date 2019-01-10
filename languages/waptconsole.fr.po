@@ -577,9 +577,11 @@ msgid "Use keywords to narrow search."
 msgstr "Affinez la recherche à l'aide de mots-clés."
 
 #: tviseditpackage.edsection.text
+#, fuzzy
+#| msgid "base"
 msgctxt "tviseditpackage.edsection.text"
-msgid "base"
-msgstr "base"
+msgid "group"
+msgstr "group"
 
 #: tviseditpackage.edversion.editlabel.caption
 msgctxt "tviseditpackage.edversion.editlabel.caption"
@@ -602,15 +604,16 @@ msgctxt "tviseditpackage.label2.caption"
 msgid "Available packages : "
 msgstr "Paquets disponibles :"
 
-#: tviseditpackage.label5.caption
-msgctxt "tviseditpackage.label5.caption"
-msgid "Section"
-msgstr "Section"
-
 #: tviseditpackage.labpackage.caption
 msgctxt "tviseditpackage.labpackage.caption"
 msgid "Package"
 msgstr "Paquet"
+
+#: tviseditpackage.labsection.caption
+#, fuzzy
+msgctxt "tviseditpackage.labsection.caption"
+msgid "Section"
+msgstr "Section"
 
 #: tviseditpackage.panel7.caption
 msgctxt "TVISEDITPACKAGE.PANEL7.CAPTION"
@@ -3507,9 +3510,17 @@ msgid ""
 "If package is signed with a foreign key, you may want to delete host package first to workaround the issue...\n"
 msgstr "Si le paquet est signé avec une clé inconnue, vous pourriez peut-être effacer la configuration machine pour contourner ce problème..."
 
+#: uwaptconsoleres.rsedithostprofile
+msgid "Edit Host profile bundle."
+msgstr "Editer un profil de poste"
+
 #: uwaptconsoleres.rseditunitbundle
 msgid "Edit Organizational Unit bundle."
 msgstr "Editer le paquet de configuration de l'OU"
+
+#: uwaptconsoleres.rseditwuagroup
+msgid "Edit WAPT WUA bundle."
+msgstr "Editer un profil Wapt WUA"
 
 #: uwaptconsoleres.rsedpackage
 msgctxt "uwaptconsoleres.rsedpackage"

@@ -46,7 +46,7 @@ type
     labPackage: TLabel;
     Label2: TLabel;
     GridDepends: TSOGrid;
-    Label5: TLabel;
+    LabSection: TLabel;
     MemoLog: TMemo;
     MenuItem1: TMenuItem;
     MenuAddPackages: TMenuItem;
@@ -191,7 +191,8 @@ begin
       isAdvancedMode := advancedMode;
       IsNewPackage := True;
       PackageRequest := packagename;
-      EdSection.ItemIndex := 4;
+      EdSection.Enabled:=advancedMode;
+      EdSection.ItemIndex := EdSection.Items.IndexOf('group');
       EdVersion.Enabled:=advancedMode;
       EdVersion.ReadOnly:=not advancedMode;
       if ShowModal = mrOk then
@@ -210,9 +211,10 @@ begin
       if section='group' then
         Caption:= rsEditBundle
       else if section='unit' then
-        Caption:= rsEditUnitBundle;
+        Caption:= rsEditUnitBundle
+      else if section='profile' then
+        Caption:= rsEditHostProfile;
 
-      EdSection.Text:=section;
 
       LabPackage.Caption := rsEdPackage;
       pgDepends.Caption := rsPackagesNeededCaption;
@@ -220,6 +222,7 @@ begin
       isAdvancedMode := advancedMode;
       IsNewPackage := True;
       PackageRequest := packagename;
+      EdSection.Text:=section;
       EdSection.ItemIndex := EdSection.Items.IndexOf(section);
       ActBUApply.Visible:=False;
       EdVersion.Enabled:=advancedMode;
@@ -443,7 +446,7 @@ begin
   FisAdvancedMode := AValue;
   // Advance mode in mainWindow -> tools => advance
   PanelDevlop.Visible := isAdvancedMode;
-  Label5.Visible := isAdvancedMode;
+  LabSection.Visible := isAdvancedMode;
   EdSection.Visible := isAdvancedMode;
   cbShowLog.Visible := isAdvancedMode;
   pgDevelop.TabVisible := isAdvancedMode;
@@ -600,7 +603,7 @@ end;
 
 procedure TVisEditPackage.ActEditSavePackageExecute(Sender: TObject);
 var
-  vpackagename,vdescription,vsection,vversion,vdepends,vconflicts,vsourcepath:Variant;
+  vpackagename,vdescription,vsection,vversion,vdepends,vconflicts:Variant;
 begin
   Screen.Cursor := crHourGlass;
   try
@@ -829,7 +832,7 @@ end;
 
 procedure TVisEditPackage.SetPackageRequest(AValue: string);
 var
-  filename, filePath, target_directory,proxy: string;
+  filename, filePath, proxy: string;
   vFilePath: Variant;
   PackagesCount: Integer;
   PyNone,repo,packages,cabundle,VWaptIniFilename: Variant;
@@ -873,6 +876,10 @@ begin
         PackageEdited := packages.__getitem__(-1)
       else
         PackageEdited := DMPython.waptpackage.PackageEntry(package := FPackageRequest,version := String('0'),section := EdSection.Text);
+
+      {$ifdef ENTERPRISE}
+      EdSection.Enabled:=IsNewPackage;
+      {$endif}
     end;
 
     if not IsNewPackage
@@ -883,7 +890,7 @@ begin
       try
         ProgressTitle('Téléchargement en cours');
         Application.ProcessMessages;
-        if EdSection.Text='group' then
+        if StrIsOneOf(EdSection.Text,['group','profile','unit']) then
           Caption := rsBundleConfigEditCaption;
 
         try

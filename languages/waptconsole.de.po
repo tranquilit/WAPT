@@ -599,9 +599,11 @@ msgid "Use keywords to narrow search."
 msgstr "Benutzen Sie Keywörter um die Suche einzugrenzen."
 
 #: tviseditpackage.edsection.text
+#, fuzzy
+#| msgid "base"
 msgctxt "tviseditpackage.edsection.text"
-msgid "base"
-msgstr "basiert"
+msgid "group"
+msgstr "group"
 
 #: tviseditpackage.edversion.editlabel.caption
 msgctxt "tviseditpackage.edversion.editlabel.caption"
@@ -623,15 +625,16 @@ msgctxt "tviseditpackage.label2.caption"
 msgid "Available packages : "
 msgstr "Verfügbare Pakete :"
 
-#: tviseditpackage.label5.caption
-msgctxt "tviseditpackage.label5.caption"
-msgid "Section"
-msgstr "Bereich"
-
 #: tviseditpackage.labpackage.caption
 msgctxt "tviseditpackage.labpackage.caption"
 msgid "Package"
 msgstr "Packet"
+
+#: tviseditpackage.labsection.caption
+#, fuzzy
+msgctxt "tviseditpackage.labsection.caption"
+msgid "Section"
+msgstr "Bereich"
 
 #: tviseditpackage.panel7.caption
 msgctxt "TVISEDITPACKAGE.PANEL7.CAPTION"
@@ -5475,8 +5478,16 @@ msgid ""
 "If package is signed with a foreign key, you may want to delete host package first to workaround the issue...\n"
 msgstr ""
 
+#: uwaptconsoleres.rsedithostprofile
+msgid "Edit Host profile bundle."
+msgstr ""
+
 #: uwaptconsoleres.rseditunitbundle
 msgid "Edit Organizational Unit bundle."
+msgstr ""
+
+#: uwaptconsoleres.rseditwuagroup
+msgid "Edit WAPT WUA bundle."
 msgstr ""
 
 #: uwaptconsoleres.rsedpackage
