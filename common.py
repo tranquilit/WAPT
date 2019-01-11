@@ -3530,7 +3530,7 @@ class Wapt(BaseObjectClass):
 
                     if entry.package_uuid:
                         persistent_source_dir = os.path.join(packagetempdir,'WAPT','persistent')
-                        persistent_dir = os.path.join(self.wapt_base_dir,'private',entry.package_uuid)
+                        persistent_dir = os.path.join(self.wapt_base_dir,'private','persistent',entry.package_uuid)
 
                         if os.path.isdir(persistent_dir):
                             logger.debug(u'Removing existing persistent dir %s' % persistent_dir)

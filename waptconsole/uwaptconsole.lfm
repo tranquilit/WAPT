@@ -41,9 +41,9 @@ object VisWaptGUI: TVisWaptGUI
         Height = 557
         Top = 120
         Width = 572
-        ActivePage = pgPackages
+        ActivePage = pgTasks
         Align = alRight
-        TabIndex = 0
+        TabIndex = 4
         TabOrder = 0
         OnChange = HostPagesChange
         object pgPackages: TTabSheet
@@ -1389,7 +1389,7 @@ object VisWaptGUI: TVisWaptGUI
         end
         object pgTasks: TTabSheet
           Caption = 'Tasks'
-          ClientHeight = 308
+          ClientHeight = 531
           ClientWidth = 564
           object HostTaskRunningProgress: TProgressBar
             Left = 4
@@ -1428,14 +1428,14 @@ object VisWaptGUI: TVisWaptGUI
             Cursor = crVSplit
             Left = 0
             Height = 5
-            Top = 253
+            Top = 476
             Width = 564
             Align = alBottom
             ResizeAnchor = akBottom
           end
           object PageControl1: TPageControl
             Left = 0
-            Height = 151
+            Height = 374
             Top = 102
             Width = 564
             ActivePage = TabSheet1
@@ -1445,11 +1445,11 @@ object VisWaptGUI: TVisWaptGUI
             TabOrder = 3
             object TabSheet1: TTabSheet
               Caption = 'Pending'
-              ClientHeight = 125
+              ClientHeight = 348
               ClientWidth = 556
               object GridHostTasksPending: TSOGrid
                 Left = 0
-                Height = 123
+                Height = 346
                 Top = 2
                 Width = 556
                 ShowAdvancedColumnsCustomize = False
@@ -1878,7 +1878,7 @@ object VisWaptGUI: TVisWaptGUI
           object Panel6: TPanel
             Left = 0
             Height = 50
-            Top = 258
+            Top = 481
             Width = 564
             Align = alBottom
             BevelOuter = bvNone
@@ -4653,7 +4653,7 @@ object VisWaptGUI: TVisWaptGUI
           Top = 12
           Width = 76
           Caption = 'Show Hosts'
-          OnClick = CBShowHostsForGroupsClick
+          OnClick = CBShowHostsForWUAPackageClick
           TabOrder = 3
         end
       end
@@ -4666,6 +4666,7 @@ object VisWaptGUI: TVisWaptGUI
         Top = 41
         Width = 1367
         OnGetText = GridGroupsGetText
+        OnNodesDelete = GridWUAPackagesNodesDelete
         ShowAdvancedColumnsCustomize = False
         KeyFieldsNames = 'package_uuid'
         Align = alClient
@@ -4982,8 +4983,8 @@ object VisWaptGUI: TVisWaptGUI
         TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages, toAlwaysHideSelection]
         TreeOptions.SelectionOptions = [toDisableDrawSelection, toExtendedFocus, toMultiSelect, toRightClickSelect]
         WantTabs = True
+        OnChange = GridWUAPackagesChange
         OnColumnDblClick = GridWUAPackagesColumnDblClick
-        OnPaintText = GridPackagesPaintText
         OnInitNode = GridGroupsInitNode
         OnMeasureItem = GridGroupsMeasureItem
         ZebraPaint = True
@@ -7653,7 +7654,6 @@ object VisWaptGUI: TVisWaptGUI
       Category = 'Host'
       Caption = 'Cancel current task'
       Enabled = False
-      ImageIndex = 31
       OnExecute = ActCancelRunningTaskExecute
     end
     object ActPackagesRemove: TAction

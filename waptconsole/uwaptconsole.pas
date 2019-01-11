@@ -694,6 +694,7 @@ type
     procedure cbSearchAllClick(Sender: TObject);
     procedure CBShowHostsForGroupsClick(Sender: TObject);
     procedure CBShowHostsForPackagesClick(Sender: TObject);
+    procedure CBShowHostsForWUAPackageClick(Sender: TObject);
     procedure cbShowLogClick(Sender: TObject);
     procedure cbADSiteDropDown(Sender: TObject);
     procedure cbWUAPendingChange(Sender: TObject);
@@ -833,8 +834,11 @@ type
       Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
       var Ghosted: Boolean; var ImageIndex: Integer;
       var ImageList: TCustomImageList);
+    procedure GridWUAPackagesChange(Sender: TBaseVirtualTree; Node: PVirtualNode
+      );
     procedure GridWUAPackagesColumnDblClick(Sender: TBaseVirtualTree;
       Column: TColumnIndex; Shift: TShiftState);
+    procedure GridWUAPackagesNodesDelete(Sender: TSOGrid; Nodes: ISuperObject);
     procedure GridWUDownloadsNodesDelete(Sender: TSOGrid; Nodes: ISuperObject);
     procedure GridWUUpdatesNodesDelete(Sender: TSOGrid; Nodes: ISuperObject);
     procedure HostPagesChange(Sender: TObject);
@@ -5848,6 +5852,21 @@ end;
 
 procedure TVisWaptGUI.GridWUAPackagesColumnDblClick(Sender: TBaseVirtualTree;
   Column: TColumnIndex; Shift: TShiftState);
+begin
+end;
+
+
+procedure TVisWaptGUI.GridWUAPackagesNodesDelete(Sender: TSOGrid;
+  Nodes: ISuperObject);
+begin
+end;
+
+procedure TVisWaptGUI.CBShowHostsForWUAPackageClick(Sender: TObject);
+begin
+end;
+
+procedure TVisWaptGUI.GridWUAPackagesChange(Sender: TBaseVirtualTree;
+  Node: PVirtualNode);
 begin
 end;
 
