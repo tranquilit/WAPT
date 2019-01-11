@@ -46,7 +46,7 @@ type
     ButNormalizationImport: TBitBtn;
     ButNormalizationSave: TBitBtn;
     ButNormalizationFilter: TBitBtn;
-    ButPackagesUpdate2: TBitBtn;
+    ButWUAPackagesSearch: TBitBtn;
     cbFilterPackagesArch: TCheckGroup;
     cbFilterPackagesLocales: TCheckGroup;
     cbHostsHasErrors: TCheckBox;

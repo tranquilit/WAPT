@@ -618,7 +618,10 @@ class PackageEntry(BaseObjectClass):
         self._control_updated = None
 
         # init package attributes
-        for key in self.required_attributes + self.optional_attributes:
+        for key in self.required_attributes:
+            setattr(self,key,'')
+
+        for key in self.optional_attributes:
             setattr(self,key,'')
 
         self.package=package

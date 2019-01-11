@@ -496,6 +496,9 @@ class WaptSessionDB(WaptBaseDB):
 
     def add_start_install(self,package_entry):
         """Register the start of installation in local db
+
+        Returns:
+            int : rowid of the inserted record
         """
         with self:
             cur = self.db.execute("""delete from wapt_sessionsetup where package=?""" ,(package_entry.package,))
@@ -583,7 +586,7 @@ class WaptSessionDB(WaptBaseDB):
             return None
 
 
-PackageKey = namedtuple('package',('packagename','version'))
+PackageKey = namedtuple('package',('packagename','version','architecture','locale','maturity'))
 
 class WaptDB(WaptBaseDB):
     """Class to manage SQLite database with local installation status"""
@@ -866,9 +869,18 @@ class WaptDB(WaptBaseDB):
             setuppy (str) : python source code used for install, uninstall or session_setup
                             code used for uninstall or session_setup must use only wapt self library as
                             package content is no longer available at this step.
+
+        Returns:
+            int : rowid of the inserted install status row
         """
         with self:
-            cur = self.db.execute("""delete from wapt_localstatus where package=?""" ,(package_entry.package,))
+            if package_entry.package_uuid:
+                # keep old entry for reference until install is completed.
+                cur = self.db.execute("""update wapt_localstatus set install_status='UPGRADING' where package=? and package_uuid <> ?""" ,(package_entry.package,package_entry.package_uuid))
+                cur = self.db.execute("""delete from wapt_localstatus where package_uuid=?""" ,(package_entry.package_uuid,))
+            else:
+                cur = self.db.execute("""delete from wapt_localstatus where package_uuid=?""" ,(package_entry.package,))
+
             cur = self.db.execute("""\
                   insert into wapt_localstatus (
                     package_uuid,
@@ -919,6 +931,9 @@ class WaptDB(WaptBaseDB):
                 pid = None
             else:
                 pid = os.getpid()
+
+            install_rec = self.query('select package_uuid,package from wapt_localstatus where rowid = ?',(rowid,),one=True)
+
             cur = self.db.execute("""\
                   update wapt_localstatus
                     set install_status=coalesce(?,install_status),
@@ -936,6 +951,8 @@ class WaptDB(WaptBaseDB):
                      rowid,
                      )
                    )
+            if set_status in ('OK','WARNING','ERROR') and install_rec['package_uuid']:
+                cur = self.db.execute("""delete from wapt_localstatus where package=? and package_uuid <> ?""" ,(install_rec['package'],install_rec['package_uuid']))
             return cur.lastrowid
 
     def update_audit_status(self,rowid,set_status=None,set_output=None,append_output=None,set_last_audit_on=None,set_next_audit_on=None):
@@ -1020,18 +1037,21 @@ class WaptDB(WaptBaseDB):
                    )
             return cur.lastrowid
 
-    def remove_install_status(self,package):
+    def remove_install_status(self,package=None,package_uuid=None):
         """Remove status of package installation from localdb"""
         with self:
-            cur = self.db.execute("""delete from wapt_localstatus where package=?""" ,(package,))
+            if package_uuid is not None:
+                cur = self.db.execute("""delete from wapt_localstatus where package_uuid=?""" ,(package_uuid,))
+            else:
+                cur = self.db.execute("""delete from wapt_localstatus where package=?""" ,(package,))
             return cur.rowcount
 
     def known_packages(self):
         """return a list of all (package,version)"""
         q = self.db.execute("""\
-              select distinct wapt_package.package,wapt_package.version from wapt_package
+              select distinct wapt_package.package,wapt_package.version,architecture,locale,maturity from wapt_package
            """)
-        return [PackageKey(*e) for e in q.fetchall()]
+        return [PackageKey(e[0],Version(e[1]),*e[2:]) for e in q.fetchall()]
 
     def packages_matching(self,package_cond):
         """Return an ordered list of available packages entries which match
@@ -1113,7 +1133,7 @@ class WaptDB(WaptBaseDB):
         return result
 
     def install_status(self,id):
-        """Return a the local install status for id
+        """Return the local install status for id
 
         Args:
             id: sql rowid
@@ -1339,7 +1359,7 @@ class WaptDB(WaptBaseDB):
             setattr(result,k,v)
         return result
 
-    def query_package_entry(self,query, args=(), one=False):
+    def query_package_entry(self,query, args=(), one=False, package_request=None):
         """Execute la requete query sur la db et renvoie un tableau de PackageEntry
 
         Le matching est fait sur le nom de champs.
@@ -1365,7 +1385,10 @@ class WaptDB(WaptBaseDB):
                 # add joined field to calculated attributes list
                 if not k in pe.all_attributes:
                     pe._calculated_attributes.append(k)
+            if package_request is None or package_request.is_matched_by(pe):
+                result.append(pe)
             result.append(pe)
+
         if one and result:
             result = sorted(result)[-1]
         return result
@@ -3510,10 +3533,12 @@ class Wapt(BaseObjectClass):
                         persistent_dir = os.path.join(self.wapt_base_dir,'private',entry.package_uuid)
 
                         if os.path.isdir(persistent_dir):
+                            logger.debug(u'Removing existing persistent dir %s' % persistent_dir)
                             shutil.rmtree(persistent_dir,ignore_errors=False)
 
                         # install persistent files
                         if os.path.isdir(persistent_source_dir):
+                            logger.info(u'Copy persistent package data to %s' % persistent_dir)
                             shutil.copytree(persistent_source_dir,persistent_dir)
                         else:
                             # create always
@@ -3642,6 +3667,12 @@ class Wapt(BaseObjectClass):
                     else:
                         logger.info(u'No setup.py')
                         dblogger.exit_status = 'OK'
+
+                    if entry.package_uuid:
+                        for row in self.waptdb.query('select persistent_dir from wapt_localstatus l where l.package=? and l.package_uuid<>?',(entry.package, entry.package_uuid)):
+                            if row['persistent_dir'] and os.path.isdir(os.path.abspath(row['persistent_dir'])):
+                                logger.info('Cleanup of previous versions of %s  persistent dir: %s' % (entry.package,row['persistent_dir']))
+                                shutil.rmtree(os.path.abspath(row['persistent_dir']))
 
                     self.waptdb.update_install_status(install_id,
                         uninstall_key = jsondump(new_uninstall_key),persistent_dir=persistent_dir)
@@ -4359,6 +4390,29 @@ class Wapt(BaseObjectClass):
         actions = self.check_depends(apackages,force=force,forceupgrade=forceupgrade)
         return  actions
 
+    def packages_matching(self,package_request=None,query=None,args=()):
+        """Returns the list of known packages Entries matching a PackageRequest
+
+        Args:
+            package_request (PackageRequest): request
+
+        Returns:
+            list (of PackageEntry)
+        """
+        if query is None:
+            if package_request is not None and package_request.package:
+                if len(package_request.package_names) == 1:
+                    query = 'select * from wapt_package where package=?'
+                    args = (package_request.package,)
+                else:
+                    query = "select * from wapt_package where package in (%s)" % (','.join(["'%s'"% p  for p in package_request.package_names]),)
+                    args = ()
+            else:
+                query = u'select * from wapt_package'
+                args = ()
+
+        return self.waptdb.query_package_entry(query=query,args=args,package_request=package_request)
+
     def install(self,apackages,
             force=False,
             params_dict = {},
@@ -4693,7 +4747,12 @@ class Wapt(BaseObjectClass):
                         shutil.rmtree(os.path.abspath(mydict['persistent_dir']))
 
                     logger.info(u'Remove status record from local DB for %s' % package)
-                    self.waptdb.remove_install_status(package)
+                    if mydict['package_uuid']:
+                        self.waptdb.remove_install_status(package_uuid=mydict['package_uuid'])
+                    else:
+                        # backard
+                        self.waptdb.remove_install_status(package=package)
+
                     result['removed'].append(package)
 
                     if reversed(additional_removes):

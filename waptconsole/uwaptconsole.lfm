@@ -4619,7 +4619,7 @@ object VisWaptGUI: TVisWaptGUI
           ParentFont = False
           TabOrder = 0
         end
-        object ButPackagesUpdate2: TBitBtn
+        object ButWUAPackagesSearch: TBitBtn
           AnchorSideLeft.Control = EdWUASearchPackage
           AnchorSideLeft.Side = asrBottom
           Left = 162
@@ -4631,7 +4631,7 @@ object VisWaptGUI: TVisWaptGUI
           TabOrder = 1
         end
         object btAddGroup3: TBitBtn
-          AnchorSideLeft.Control = ButPackagesUpdate2
+          AnchorSideLeft.Control = ButWUAPackagesSearch
           AnchorSideLeft.Side = asrBottom
           AnchorSideTop.Control = Panel19
           AnchorSideTop.Side = asrCenter
@@ -4976,7 +4976,6 @@ object VisWaptGUI: TVisWaptGUI
         Header.Height = 18
         Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
         Header.Style = hsFlatButtons
-        PopupMenu = PopupMenuGroups
         TabOrder = 1
         TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
         TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize]

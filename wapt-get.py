@@ -44,8 +44,6 @@ from waptpackage import update_packages
 from waptcrypto import EWaptCryptoException,SSLCertificate,SSLCABundle,default_pwd_callback
 from waptpackage import EWaptException
 
-import atexit
-
 import common
 
 from common import Wapt
