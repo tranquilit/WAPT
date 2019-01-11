@@ -3512,12 +3512,13 @@ class Wapt(BaseObjectClass):
                         if os.path.isdir(persistent_dir):
                             shutil.rmtree(persistent_dir,ignore_errors=False)
 
-                        # create always
-                        os.makedirs(persistent_dir)
-
                         # install persistent files
                         if os.path.isdir(persistent_source_dir):
                             shutil.copytree(persistent_source_dir,persistent_dir)
+                        else:
+                            # create always
+                            os.makedirs(persistent_dir)
+
                     else:
                         persistent_source_dir = None
                         persistent_dir = None
