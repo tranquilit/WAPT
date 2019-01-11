@@ -73,6 +73,7 @@ from optparse import OptionParser
 
 from collections import namedtuple
 from collections import OrderedDict
+from collections import defaultdict
 from types import ModuleType
 
 import shutil
@@ -587,7 +588,7 @@ PackageKey = namedtuple('package',('packagename','version'))
 class WaptDB(WaptBaseDB):
     """Class to manage SQLite database with local installation status"""
 
-    curr_db_version = '20181004'
+    curr_db_version = '20190111'
 
     def initdb(self):
         """Initialize current sqlite db with empty table and return structure version"""
@@ -664,7 +665,8 @@ class WaptDB(WaptBaseDB):
           last_audit_output TEXT,
           next_audit_on varchar(255),
           impacted_process varchar(255),
-          audit_schedule varchar(255)
+          audit_schedule varchar(255),
+          persistent_dir varchar(255)
           )
           """)
         self.db.execute("""
@@ -910,7 +912,7 @@ class WaptDB(WaptBaseDB):
                    ))
             return cur.lastrowid
 
-    def update_install_status(self,rowid,set_status=None,append_output=None,uninstall_key=None):
+    def update_install_status(self,rowid,set_status=None,append_output=None,uninstall_key=None,persistent_dir=None):
         """Update status of package installation on localdb"""
         with self:
             if set_status in ('OK','WARNING','ERROR'):
@@ -919,13 +921,18 @@ class WaptDB(WaptBaseDB):
                 pid = os.getpid()
             cur = self.db.execute("""\
                   update wapt_localstatus
-                    set install_status=coalesce(?,install_status),install_output = coalesce(install_output,'') || ?,uninstall_key=coalesce(?,uninstall_key),process_id=?
+                    set install_status=coalesce(?,install_status),
+                        install_output = coalesce(install_output,'') || ?,
+                        uninstall_key=coalesce(?,uninstall_key),
+                        process_id=?,
+                        persistent_dir = coalesce(?,persistent_dir)
                     where rowid = ?
                 """,(
                      set_status,
                      ensure_unicode(append_output) if append_output is not None else u'',
                      uninstall_key,
                      pid,
+                     persistent_dir,
                      rowid,
                      )
                    )
@@ -1088,7 +1095,8 @@ class WaptDB(WaptBaseDB):
                 coalesce(l.depends,r.depends) as depends,coalesce(l.conflicts,r.conflicts) as conflicts,coalesce(l.section,r.section) as section,coalesce(l.priority,r.priority) as priority,
                 r.maintainer,r.description,r.sources,r.filename,r.size,
                 r.repo_url,r.md5sum,r.repo,l.maturity,l.locale,
-                l.last_audit_status,l.last_audit_on,l.last_audit_output,l.next_audit_on,l.package_uuid
+                l.last_audit_status,l.last_audit_on,l.last_audit_output,l.next_audit_on,l.package_uuid,
+                l.persistent_dir
                 from wapt_localstatus l
                 left join wapt_package r on r.package=l.package and l.version=r.version and
                     (l.architecture is null or l.architecture=r.architecture) and
@@ -1119,7 +1127,7 @@ class WaptDB(WaptBaseDB):
                     l.depends,l.conflicts,l.uninstall_key,
                     l.last_audit_status,l.last_audit_on,l.last_audit_output,l.next_audit_on,l.audit_schedule,l.package_uuid,
                     r.section,r.priority,r.maintainer,r.description,r.sources,r.filename,r.size,
-                    r.repo_url,r.md5sum,r.repo,l.maturity,l.locale
+                    r.repo_url,r.md5sum,r.repo,l.maturity,l.locale,l.persistent_dir
                 from wapt_localstatus l
                 left join wapt_package r on
                     r.package=l.package and l.version=r.version and
@@ -1159,7 +1167,7 @@ class WaptDB(WaptBaseDB):
                 coalesce(l.depends,r.depends) as depends,coalesce(l.conflicts,r.conflicts) as conflicts,coalesce(l.section,r.section) as section,coalesce(l.priority,r.priority) as priority,
                 l.last_audit_status,l.last_audit_on,l.last_audit_output,l.next_audit_on,l.audit_schedule,l.package_uuid,
                 r.maintainer,r.description,r.sources,r.filename,r.size,
-                r.repo_url,r.md5sum,r.repo
+                r.repo_url,r.md5sum,r.repo,l.persistent_dir
               from wapt_localstatus l
                 left join wapt_package r on r.package=l.package and l.version=r.version and (l.architecture is null or l.architecture=r.architecture)
               where %s
@@ -1189,7 +1197,7 @@ class WaptDB(WaptBaseDB):
                 l.last_audit_status,l.last_audit_on,l.last_audit_output,l.next_audit_on,l.package_uuid,
                 coalesce(l.depends,r.depends) as depends,coalesce(l.conflicts,r.conflicts) as conflicts,coalesce(l.section,r.section) as section,coalesce(l.priority,r.priority) as priority,
                 r.maintainer,r.description,r.sources,r.filename,r.size,
-                r.repo_url,r.md5sum,r.repo
+                r.repo_url,r.md5sum,r.repo,l.persistent_dir
                 from wapt_localstatus l
                 left join wapt_package r on r.package=l.package and l.version=r.version and (l.architecture is null or l.architecture=r.architecture)
               where l.package=? and l.install_status in (%s)
@@ -1222,6 +1230,13 @@ class WaptDB(WaptBaseDB):
         """Given a list of packages conditions (packagename (optionalcondition))
         return a list of dependencies (packages conditions) to install
 
+
+        Args:
+            packages (list of str): list of packages requirements ( package_name(=version) )
+
+        Returns:
+            (list depends,list conflicts,list missing) : tuple of (all_depends,missing_depends)
+
         TODO : choose available dependencies in order to reduce the number of new packages to install
 
         >>> waptdb = WaptDB(':memory:')
@@ -1250,15 +1265,19 @@ class WaptDB(WaptBaseDB):
         MAXDEPTH = 30
         # roots : list of initial packages to avoid infinite loops
 
-        def dodepends(explored,packages,depth,missing):
+        alldepends = []
+        allconflicts = []
+        missing = []
+        explored = []
+
+        def dodepends(packages,depth):
             if depth>MAXDEPTH:
                 raise Exception('Max depth in build dependencies reached, aborting')
-            alldepends = []
             # loop over all package names
             for package in packages:
                 if not package in explored:
                     entries = self.packages_matching(package)
-                    if not entries:
+                    if not entries and package not in missing:
                         missing.append(package)
                     else:
                         # get depends of the most recent matching entry
@@ -1268,20 +1287,25 @@ class WaptDB(WaptBaseDB):
                         for d in depends:
                             if self.packages_matching(d):
                                 available_depends.append(d)
-                            else:
+                            elif d not in missing:
                                 missing.append(d)
-                        alldepends.extend(dodepends(explored,available_depends,depth+1,missing))
+
+                        alldepends.extend(dodepends(available_depends,depth+1))
                         for d in available_depends:
                             if not d in alldepends:
                                 alldepends.append(d)
+
+                        conflicts = ensure_list(entries[-1].conflicts)
+                        for d in conflicts:
+                            if not d in allconflicts:
+                                allconflicts.append(d)
+
                     explored.append(package)
             return alldepends
 
-        missing = []
-        explored = []
         depth = 0
-        alldepends = dodepends(explored,packages,depth,missing)
-        return (alldepends,missing)
+        alldepends = dodepends(packages,depth)
+        return (alldepends,allconflicts,missing)
 
     def package_entry_from_db(self,package,version_min='',version_max=''):
         """Return the most recent package entry given its packagename and minimum and maximum version
@@ -3481,6 +3505,23 @@ class Wapt(BaseObjectClass):
                     new_uninstall_key = None
                     uninstallstring = None
 
+                    if entry.package_uuid:
+                        persistent_source_dir = os.path.join(packagetempdir,'WAPT','persistent')
+                        persistent_dir = os.path.join(self.wapt_base_dir,'private',entry.package_uuid)
+
+                        if os.path.isdir(persistent_dir):
+                            shutil.rmtree(persistent_dir,ignore_errors=False)
+
+                        # create always
+                        os.makedirs(persistent_dir)
+
+                        # install persistent files
+                        if os.path.isdir(persistent_source_dir):
+                            shutil.copytree(persistent_source_dir,persistent_dir)
+                    else:
+                        persistent_source_dir = None
+                        persistent_dir = None
+
                     setup_filename = os.path.join( packagetempdir,'setup.py')
 
                     # take in account the case we have no setup.py
@@ -3602,7 +3643,7 @@ class Wapt(BaseObjectClass):
                         dblogger.exit_status = 'OK'
 
                     self.waptdb.update_install_status(install_id,
-                        uninstall_key = jsondump(new_uninstall_key))
+                        uninstall_key = jsondump(new_uninstall_key),persistent_dir=persistent_dir)
 
                 finally:
                     if istemporary:
@@ -4087,10 +4128,53 @@ class Wapt(BaseObjectClass):
 
 
         """
-        packages = self.installed(True)
-        depends = []
-        conflicts = []
+        installed_packages = self.installed(True)
 
+        all_depends = defaultdict(list)
+        all_conflicts = defaultdict(list)
+        all_missing = defaultdict(list)
+
+        conflictings = []
+        orphans = []
+
+        # host_depends = host_packages ^
+        # host_conflicts = blacklist
+
+        if self.use_hostpackages:
+            for p in self.get_host_packages():
+                all_depends[p.asrequirement()].append(None)
+                (depends,conflicts,missing) = self.waptdb.build_depends(p.asrequirement())
+                for d in depends:
+                    if not p in all_depends[d]:
+                        all_depends[d].append(p.asrequirement())
+                for c in conflicts:
+                    if not p in all_conflicts[c]:
+                        all_conflicts[c].append(p.asrequirement())
+                for m in missing:
+                    if not m in all_missing:
+                        all_missing[m].append(p.asrequirement())
+
+
+        for p in installed_packages:
+            if self.is_locally_allowed_package(p):
+                if not p.asrequirement() in all_depends:
+                    all_depends[p.asrequirement()] = []
+            else:
+                if not p.asrequirement() in all_conflicts:
+                    all_conflicts[p.asrequirement()] = []
+
+            (depends,conflicts,missing) = self.waptdb.build_depends(p.asrequirement())
+            for d in depends:
+                if not p in all_depends[d]:
+                    all_depends[d].append(p.asrequirement())
+            for c in conflicts:
+                if not p in all_conflicts[c]:
+                    all_conflicts[c].append(p.asrequirement())
+            for m in missing:
+                if not m in all_missing:
+                    all_missing[m].append(p.asrequirement())
+
+        return (all_depends,all_conflicts,all_missing)
 
 
     def check_depends(self,apackages,forceupgrade=False,force=False,assume_removed=[]):
@@ -4158,9 +4242,9 @@ class Wapt(BaseObjectClass):
 
         # get dependencies of not installed top packages
         if forceupgrade:
-            (depends,missing) = self.waptdb.build_depends(apackages)
+            (depends,conflicts,missing) = self.waptdb.build_depends(apackages)
         else:
-            (depends,missing) = self.waptdb.build_depends([p[0] for p in packages])
+            (depends,conflicts,missing) = self.waptdb.build_depends([p[0] for p in packages])
 
         for p in missing:
             if (p,None) not in unavailable:
@@ -4603,6 +4687,9 @@ class Wapt(BaseObjectClass):
                         except Exception as e:
                             logger.critical(u'Error running uninstall script: %s'%e)
                             result['errors'].append(package)
+
+                    if mydict['persistent_dir'] and os.path.isdir(os.path.abspath(mydict['persistent_dir'])):
+                        shutil.rmtree(os.path.abspath(mydict['persistent_dir']))
 
                     logger.info(u'Remove status record from local DB for %s' % package)
                     self.waptdb.remove_install_status(package)
@@ -6751,8 +6838,17 @@ class Wapt(BaseObjectClass):
 
     def get_package_entries(self,packages_names):
         r"""Return most up to date packages entries for packages_names
-        packages_names is either a list or a string
-        return a dictionnary with {'packages':[],'missing':[]}
+        packages_names is either a list or a string.
+
+        'missing' key lists the package requirements which are not available in the
+        package index.
+
+        Args;
+            packages_names (list or str): list of package requirements
+
+        Returns:
+            dict : {'packages':[PackageEntries,],'missing':[str,]}
+
         >>> wapt = Wapt(config_filename='c:/wapt/wapt-get.ini')
         >>> res = wapt.get_package_entries(['tis-firefox','tis-putty'])
         >>> isinstance(res['missing'],list) and isinstance(res['packages'][0],PackageEntry)
@@ -6771,7 +6867,10 @@ class Wapt(BaseObjectClass):
 
 
     def network_reconfigure(self):
-        """Called whenever the network configuration has changed"""
+        """Called whenever the network configuration has changed
+
+
+        """
         try:
             for repo in self.repositories:
                 repo.reset_network()
