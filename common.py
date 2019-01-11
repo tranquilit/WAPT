@@ -7010,7 +7010,7 @@ def check_user_authorisation(rules,packagename,listgroupuser):
                 return True
     return False
 
-def list_group_selfservice_from_user(rules,logon_name,password):
+def list_group_selfservice_from_user(listgroup,logon_name,password):
     """Returns the group list for a given user based on the selfservice group
 
     Args:
@@ -7037,16 +7037,12 @@ def list_group_selfservice_from_user(rules,logon_name,password):
         username = logon_name
     huser = win32security.LogonUser (username,domain,password,win32security.LOGON32_LOGON_NETWORK,win32security.LOGON32_PROVIDER_DEFAULT)
 
-
-    listgroupuser = []
-    listgroupok = []
-    listgroupuser.append(username)
-    for package in rules :
-        for group in rules[package]:
-            if not group in listgroupok:
-                listgroupok.append(group)
-                if check_is_member_of(huser,group) :
-                    listgroupuser.append(group)
+    listgroupuser =  [username]
+    for group in listgroup :
+        if group in listgroupuser:
+            continue
+        if check_is_member_of(huser,group) :
+            listgroupuser.append(group)
     return listgroupuser
 
 def merge_rules_self_service(listrules):
@@ -7069,6 +7065,18 @@ def merge_rules_self_service(listrules):
                 rulesselfservice[package]=rules[package]
 
     return rulesselfservice
+
+def revers_rules_self_service(dict_group_paquet):
+    dict_paquet_group = {}
+    for group in dict_group_paquet:
+        for package in dict_group_paquet[group]:
+            if not package in dict_paquet_group:
+                dict_paquet_group[package] = [group]
+            else:
+                if not group in dict_paquet_group[package]:
+                    dict_paquet_group[package].append(group)
+
+    return dict_paquet_group
 
 def wapt_sources_edit(wapt_sources_dir):
     """Utility to open Pyscripter with package source if it is installed

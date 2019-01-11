@@ -451,10 +451,14 @@ def all_packages(page=1):
         if not request.authorization:
             return authenticate()
 
+    listgroup = []
     listrules = []
     for rules in glob.glob(makepath(wapt_root_dir,'private','persistent','*','selfservice.json')):
         with open(rules) as f:
-            listrules.append(json.loads(f.read()))
+            data = json.loads(f.read())
+            listgroup.append(data)
+            listrules.append(common.revers_rules_self_service(data))
+    mergegroup = common.merge_rules_self_service(listgroup)
     mergerules = common.merge_rules_self_service(listrules)
     grpuser = ['waptselfservice']
     if request.authorization:
@@ -463,7 +467,7 @@ def all_packages(page=1):
             grpuser = ['waptselfservice']
         else:
             try:
-                grpuser = common.list_group_selfservice_from_user(mergerules,auth.username,auth.password)
+                grpuser = common.list_group_selfservice_from_user(mergegroup,auth.username,auth.password)
             except:
                 return authenticate()
 
@@ -888,11 +892,16 @@ def install():
     if not isinstance(package_requests,list):
         package_requests = [package_requests]
 
+    listgroup = []
     listrules = []
     for rules in glob.glob(makepath(wapt_root_dir,'private','persistent','*','selfservice.json')):
         with open(rules) as f:
-            listrules.append(json.loads(f.read()))
+            data = json.loads(f.read())
+            listgroup.append(data)
+            listrules.append(common.revers_rules_self_service(data))
+    mergegroup = common.merge_rules_self_service(listgroup)
     mergerules = common.merge_rules_self_service(listrules)
+
     grpuser = []
     if request.authorization:
         auth = request.authorization
@@ -900,7 +909,7 @@ def install():
             grpuser = ['waptselfservice']
         else:
             try:
-                grpuser = common.list_group_selfservice_from_user(mergerules,auth.username,auth.password)
+                grpuser = common.list_group_selfservice_from_user(mergegroup,auth.username,auth.password)
             except:
                 return authenticate()
 
@@ -976,10 +985,14 @@ def remove():
     if not request.authorization:
             return authenticate()
 
+    listgroup = []
     listrules = []
     for rules in glob.glob(makepath(wapt_root_dir,'private','persistent','*','selfservice.json')):
         with open(rules) as f:
-            listrules.append(json.loads(f.read()))
+            data = json.loads(f.read())
+            listgroup.append(data)
+            listrules.append(common.revers_rules_self_service(data))
+    mergegroup = common.merge_rules_self_service(listgroup)
     mergerules = common.merge_rules_self_service(listrules)
     grpuser = []
     if request.authorization:
@@ -988,7 +1001,7 @@ def remove():
             grpuser = ['waptselfservice']
         else:
             try:
-                grpuser = common.list_group_selfservice_from_user(mergerules,auth.username,auth.password)
+                grpuser = common.list_group_selfservice_from_user(mergegroup,auth.username,auth.password)
             except:
                 return authenticate()
 
