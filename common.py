@@ -6857,23 +6857,22 @@ def list_group_selfservice_from_user(rules,logon_name,password):
     Returns:
         list: ['compta','tech']
     """
-    try:
-        domain = ''
-        if logon_name.count('\\') > 1 or logon_name.count('@') > 1  or (logon_name.count('\\') == 1 and logon_name.count('@')==1)  :
-            logger.debug("malformed logon credential : %s "% logon_name)
-            return False
 
-        if '\\' in logon_name:
-            domain = logon_name.split('\\')[0]
-            username = logon_name.split('\\')[1]
-        elif '@' in logon_name:
-            username = logon_name.split('@')[0]
-            domain = logon_name.split('@')[1]
-        else:
-            username = logon_name
-        huser = win32security.LogonUser (username,domain,password,win32security.LOGON32_LOGON_NETWORK,win32security.LOGON32_PROVIDER_DEFAULT)
-    except Exception as e:
-        return []
+    domain = ''
+    if logon_name.count('\\') > 1 or logon_name.count('@') > 1  or (logon_name.count('\\') == 1 and logon_name.count('@')==1)  :
+        logger.debug("malformed logon credential : %s "% logon_name)
+        return False
+
+    if '\\' in logon_name:
+        domain = logon_name.split('\\')[0]
+        username = logon_name.split('\\')[1]
+    elif '@' in logon_name:
+        username = logon_name.split('@')[0]
+        domain = logon_name.split('@')[1]
+    else:
+        username = logon_name
+    huser = win32security.LogonUser (username,domain,password,win32security.LOGON32_LOGON_NETWORK,win32security.LOGON32_PROVIDER_DEFAULT)
+
 
     listgroupuser = []
     listgroupok = []

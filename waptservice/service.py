@@ -462,7 +462,10 @@ def all_packages(page=1):
         if check_auth(auth.username,auth.password):
             grpuser = ['waptselfservice']
         else:
-            grpuser = common.list_group_selfservice_from_user(mergerules,auth.username,auth.password)
+            try:
+                grpuser = common.list_group_selfservice_from_user(mergerules,auth.username,auth.password)
+            except:
+                return authenticate()
 
 
     with sqlite3.connect(app.waptconfig.dbpath) as con:
@@ -896,7 +899,10 @@ def install():
         if check_auth(auth.username,auth.password):
             grpuser = ['waptselfservice']
         else:
-            grpuser = common.list_group_selfservice_from_user(mergerules,auth.username,auth.password)
+            try:
+                grpuser = common.list_group_selfservice_from_user(mergerules,auth.username,auth.password)
+            except:
+                return authenticate()
 
     force = int(request.args.get('force','0')) == 1
     notify_user = int(request.args.get('notify_user','0')) == 1
@@ -965,8 +971,27 @@ def package_download():
 
 @app.route('/remove', methods=['GET'])
 @app.route('/remove.json', methods=['GET'])
-@allow_local_auth
 def remove():
+
+    if not request.authorization:
+            return authenticate()
+
+    listrules = []
+    for rules in glob.glob(makepath(wapt_root_dir,'private','persistent','*','selfservice.json')):
+        with open(rules) as f:
+            listrules.append(json.loads(f.read()))
+    mergerules = common.merge_rules_self_service(listrules)
+    grpuser = []
+    if request.authorization:
+        auth = request.authorization
+        if check_auth(auth.username,auth.password):
+            grpuser = ['waptselfservice']
+        else:
+            try:
+                grpuser = common.list_group_selfservice_from_user(mergerules,auth.username,auth.password)
+            except:
+                return authenticate()
+
     packages = request.args.get('package')
     if not isinstance(packages,list):
         packages = [packages]
@@ -975,6 +1000,8 @@ def remove():
     notify_user = int(request.args.get('notify_user','0')) == 1
     data = []
     for package in packages:
+        if not common.check_user_authorisation(mergerules,package,grpuser):
+            return authenticate()
         data.append(task_manager.add_task(WaptPackageRemove(package,force = force),notify_user=notify_user).as_dict())
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
