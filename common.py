@@ -5503,6 +5503,12 @@ class Wapt(BaseObjectClass):
         result['packages_whitelist'] = self.packages_whitelist
         result['packages_blacklist'] = self.packages_blacklist
 
+        listrules = []
+        for rules in glob.glob(setuphelpers.makepath(os.path.dirname(__file__),'private','persistent','*','selfservice.json')):
+            with open(rules) as f:
+                listrules.append(json.loads(f.read()))
+        result['rules_waptselfservice'] = merge_rules_self_service(listrules)
+
         return result
 
     def reachable_ip(self):
