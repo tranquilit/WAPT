@@ -1387,7 +1387,6 @@ class WaptDB(WaptBaseDB):
                     pe._calculated_attributes.append(k)
             if package_request is None or package_request.is_matched_by(pe):
                 result.append(pe)
-            result.append(pe)
 
         if one and result:
             result = sorted(result)[-1]
