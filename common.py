@@ -2860,8 +2860,9 @@ class Wapt(BaseObjectClass):
             self.use_hostpackages = self.config.getboolean('global','use_hostpackages')
 
         self.waptwua_enabled = None
-        if self.config.has_option('global','waptwua_enabled'):
-            self.waptwua_enabled = self.config.getboolean('global','waptwua_enabled')
+        if self.config.has_section('waptwua'):
+            if self.config.has_option('waptwua','enabled'):
+                self.waptwua_enabled = self.config.getboolean('waptwua','enabled')
 
         # clear host key cache
         self._host_key = None
