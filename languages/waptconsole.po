@@ -991,6 +991,10 @@ msgstr ""
 msgid "Launch actions on hosts"
 msgstr ""
 
+#: tviswaptconfig.actaddplugin.caption
+msgid "Add"
+msgstr ""
+
 #: tviswaptconfig.actcheckandsetwaptserver.caption
 msgctxt "TVISWAPTCONFIG.ACTCHECKANDSETWAPTSERVER.CAPTION"
 msgid "Check and set"
@@ -1019,6 +1023,10 @@ msgid ""
 "Generate a new private key and personal certificate.\n"
 "This must be done only once per Wapt amdin user.\n"
 "When upgrading, you must not recreate a private key and certificate.\n"
+msgstr ""
+
+#: tviswaptconfig.actdeleteplugin.caption
+msgid "Delete"
 msgstr ""
 
 #: tviswaptconfig.actdownloadcertificate.caption
@@ -1221,6 +1229,11 @@ msgstr ""
 
 #: tviswaptconfig.pgbase.caption
 msgid "Base"
+msgstr ""
+
+#: tviswaptconfig.pgplugins.caption
+msgctxt "tviswaptconfig.pgplugins.caption"
+msgid "Plugins"
 msgstr ""
 
 #: tviswaptdeploy.actdeploywapt.caption
@@ -2175,6 +2188,7 @@ msgid "Windows Computer management"
 msgstr ""
 
 #: tviswaptgui.menugridhostsplugins.caption
+msgctxt "tviswaptgui.menugridhostsplugins.caption"
 msgid "Plugins"
 msgstr ""
 
@@ -2479,6 +2493,10 @@ msgstr ""
 msgid "Edit Windows updates Group"
 msgstr ""
 
+#: tviswuagroup.cbdefaultallow.caption
+msgid "Updates are allowed by default"
+msgstr ""
+
 #: tviswuagroup.cbwucritical.caption
 msgctxt "tviswuagroup.cbwucritical.caption"
 msgid "Critical"
@@ -2533,6 +2551,10 @@ msgstr ""
 
 #: tviswuagroup.label5.caption
 msgid "Minimum delay before installation (days after publish date)"
+msgstr ""
+
+#: tviswuagroup.label6.caption
+msgid "Maturity"
 msgstr ""
 
 #: tviswuagroup.tabsheet1.caption

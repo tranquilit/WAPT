@@ -226,6 +226,7 @@ const
 
   FAppIniFilename:Utf8String = '';
 
+  DefaultMaturity:String = '';
 
 implementation
 
@@ -1465,6 +1466,7 @@ begin
     WaptCACertFilename := ReadString('global', 'default_ca_cert_path', '');
 
     AuthorizedCertsDir := ReadString('global','public_certs_dir',MakePath([WaptBaseDir,'ssl']));
+    DefaultMaturity :=  ReadString('global','default_maturity','');
 
     Result := True
 

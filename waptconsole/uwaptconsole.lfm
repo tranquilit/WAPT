@@ -4699,9 +4699,16 @@ object VisWaptGUI: TVisWaptGUI
             PropertyName = 'version'
           end        
           item
-            MaxWidth = 400
             Position = 3
             Tag = 3
+            Text = 'Maturity'
+            Width = 59
+            PropertyName = 'maturity'
+          end        
+          item
+            MaxWidth = 400
+            Position = 4
+            Tag = 4
             Text = 'Description'
             Width = 310
             PropertyName = '_localized_description'
@@ -4709,57 +4716,49 @@ object VisWaptGUI: TVisWaptGUI
           item
             MaxWidth = 400
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 4
-            Tag = 4
+            Position = 5
+            Tag = 5
             Text = 'Dependencies'
             Width = 226
             PropertyName = 'depends'
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 5
-            Tag = 5
+            Position = 6
+            Tag = 6
             Text = 'Conflicts'
             Width = 183
             PropertyName = 'conflicts'
           end        
           item
-            Position = 6
-            Tag = 6
+            Position = 7
+            Tag = 7
             Text = 'Signer'
             Width = 115
             PropertyName = 'signer'
           end        
           item
-            Position = 7
-            Tag = 7
+            Position = 8
+            Tag = 8
             Text = 'Signed on'
             Width = 99
             PropertyName = 'signature_date'
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 8
-            Tag = 8
+            Position = 9
+            Tag = 9
             Text = 'Arch'
             Width = 64
             PropertyName = 'architecture'
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 9
-            Tag = 9
+            Position = 10
+            Tag = 10
             Text = 'Locale'
             Width = 53
             PropertyName = 'locale'
-          end        
-          item
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 10
-            Tag = 10
-            Text = 'Maturity'
-            Width = 59
-            PropertyName = 'maturity'
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
@@ -4788,18 +4787,21 @@ object VisWaptGUI: TVisWaptGUI
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
             Position = 14
+            Tag = 14
             Text = 'Repository'
             PropertyName = 'repo_url'
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
             Position = 15
+            Tag = 15
             Text = 'Filename'
             PropertyName = 'filename'
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
             Position = 16
+            Tag = 16
             Text = 'priority'
             Width = 100
             PropertyName = 'priority'
@@ -4807,6 +4809,7 @@ object VisWaptGUI: TVisWaptGUI
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
             Position = 17
+            Tag = 17
             Text = 'signature'
             Width = 100
             PropertyName = 'signature'
@@ -4814,6 +4817,7 @@ object VisWaptGUI: TVisWaptGUI
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
             Position = 18
+            Tag = 18
             Text = 'sources'
             Width = 100
             PropertyName = 'sources'
@@ -4821,6 +4825,7 @@ object VisWaptGUI: TVisWaptGUI
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
             Position = 19
+            Tag = 19
             Text = 'audit_schedule'
             Width = 100
             PropertyName = 'audit_schedule'
@@ -4828,6 +4833,7 @@ object VisWaptGUI: TVisWaptGUI
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
             Position = 20
+            Tag = 20
             Text = 'signed_attributes'
             Width = 100
             PropertyName = 'signed_attributes'
@@ -4835,6 +4841,7 @@ object VisWaptGUI: TVisWaptGUI
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
             Position = 21
+            Tag = 21
             Text = 'md5sum'
             Width = 100
             PropertyName = 'md5sum'
@@ -4842,6 +4849,7 @@ object VisWaptGUI: TVisWaptGUI
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
             Position = 22
+            Tag = 22
             Text = 'description_pl'
             Width = 100
             PropertyName = 'description_pl'
@@ -4849,6 +4857,7 @@ object VisWaptGUI: TVisWaptGUI
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
             Position = 23
+            Tag = 23
             Text = 'description_fr'
             Width = 100
             PropertyName = 'description_fr'
@@ -4856,6 +4865,7 @@ object VisWaptGUI: TVisWaptGUI
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
             Position = 24
+            Tag = 24
             Text = 'description_es'
             Width = 100
             PropertyName = 'description_es'
@@ -4863,6 +4873,7 @@ object VisWaptGUI: TVisWaptGUI
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
             Position = 25
+            Tag = 25
             Text = 'description_de'
             Width = 100
             PropertyName = 'description_de'
@@ -4870,6 +4881,7 @@ object VisWaptGUI: TVisWaptGUI
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
             Position = 26
+            Tag = 26
             Text = 'maintainer'
             Width = 100
             PropertyName = 'maintainer'
@@ -4877,6 +4889,7 @@ object VisWaptGUI: TVisWaptGUI
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
             Position = 27
+            Tag = 27
             Text = 'package_uuid'
             Width = 100
             PropertyName = 'package_uuid'
@@ -4884,6 +4897,7 @@ object VisWaptGUI: TVisWaptGUI
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
             Position = 28
+            Tag = 28
             Text = 'description'
             Width = 100
             PropertyName = 'description'
@@ -4891,6 +4905,7 @@ object VisWaptGUI: TVisWaptGUI
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
             Position = 29
+            Tag = 29
             Text = 'impacted_process'
             Width = 100
             PropertyName = 'impacted_process'
@@ -4898,6 +4913,7 @@ object VisWaptGUI: TVisWaptGUI
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
             Position = 30
+            Tag = 30
             Text = 'installed_size'
             Width = 100
             PropertyName = 'installed_size'
@@ -4905,6 +4921,7 @@ object VisWaptGUI: TVisWaptGUI
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
             Position = 31
+            Tag = 31
             Text = 'signer_fingerprint'
             Width = 100
             PropertyName = 'signer_fingerprint'
@@ -4912,6 +4929,7 @@ object VisWaptGUI: TVisWaptGUI
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
             Position = 32
+            Tag = 32
             Text = 'editor'
             Width = 100
             PropertyName = 'editor'
@@ -4919,6 +4937,7 @@ object VisWaptGUI: TVisWaptGUI
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
             Position = 33
+            Tag = 33
             Text = 'licence'
             Width = 100
             PropertyName = 'licence'
@@ -4926,6 +4945,7 @@ object VisWaptGUI: TVisWaptGUI
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
             Position = 34
+            Tag = 34
             Text = 'keywords'
             Width = 100
             PropertyName = 'keywords'
@@ -4934,6 +4954,7 @@ object VisWaptGUI: TVisWaptGUI
             Alignment = taRightJustify
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
             Position = 35
+            Tag = 35
             Text = 'size'
             Width = 100
             PropertyName = 'size'
@@ -4941,6 +4962,7 @@ object VisWaptGUI: TVisWaptGUI
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
             Position = 36
+            Tag = 36
             Text = 'repo'
             Width = 100
             PropertyName = 'repo'
@@ -4948,6 +4970,7 @@ object VisWaptGUI: TVisWaptGUI
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
             Position = 37
+            Tag = 37
             Text = 'target_os'
             Width = 100
             PropertyName = 'target_os'
@@ -4955,6 +4978,7 @@ object VisWaptGUI: TVisWaptGUI
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
             Position = 38
+            Tag = 38
             Text = 'localpath'
             Width = 100
             PropertyName = 'localpath'
@@ -4962,6 +4986,7 @@ object VisWaptGUI: TVisWaptGUI
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
             Position = 39
+            Tag = 39
             Text = 'homepage'
             Width = 100
             PropertyName = 'homepage'
@@ -4969,6 +4994,7 @@ object VisWaptGUI: TVisWaptGUI
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
             Position = 40
+            Tag = 40
             Text = 'sourcespath'
             Width = 13
             PropertyName = 'sourcespath'

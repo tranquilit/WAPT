@@ -2691,7 +2691,6 @@ class Wapt(BaseObjectClass):
             'wapt_server_timeout':30.0,
             'maturities':'PROD',
             'default_maturity':'',
-            'waptwua_enabled':'0',
             'http_proxy':'',
             'public_certs_dir':os.path.join(self.wapt_base_dir,'ssl'),
 

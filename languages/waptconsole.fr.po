@@ -1012,6 +1012,10 @@ msgstr "Lancer les mises à jour en attente"
 msgid "Launch actions on hosts"
 msgstr "Lancer les actions sur les macgines"
 
+#: tviswaptconfig.actaddplugin.caption
+msgid "Add"
+msgstr "Ajouter"
+
 #: tviswaptconfig.actcheckandsetwaptserver.caption
 msgctxt "tviswaptconfig.actcheckandsetwaptserver.caption"
 msgid "Check and set"
@@ -1044,6 +1048,10 @@ msgstr ""
 "Génère une nouvelle clé privée et un certificat personnel.\n"
 "Cela doit être effectué seulement une fois par administrateur Wapt.\n"
 "Lors d'un upgrade, vous ne devez pas recréer les clé privée et certificat\n"
+
+#: tviswaptconfig.actdeleteplugin.caption
+msgid "Delete"
+msgstr "Supprimer"
 
 #: tviswaptconfig.actdownloadcertificate.caption
 msgctxt "tviswaptconfig.actdownloadcertificate.caption"
@@ -1274,6 +1282,12 @@ msgstr "Avancé"
 #: tviswaptconfig.pgbase.caption
 msgid "Base"
 msgstr "Basique"
+
+#: tviswaptconfig.pgplugins.caption
+#, fuzzy
+msgctxt "tviswaptconfig.pgplugins.caption"
+msgid "Plugins"
+msgstr "Outils externes"
 
 #: tviswaptdeploy.actdeploywapt.caption
 msgid "Deploy"
@@ -2276,6 +2290,7 @@ msgid "Windows Computer management"
 msgstr "Gestion Windows de l'ordinateur"
 
 #: tviswaptgui.menugridhostsplugins.caption
+msgctxt "tviswaptgui.menugridhostsplugins.caption"
 msgid "Plugins"
 msgstr "Outils externes"
 
@@ -2596,6 +2611,10 @@ msgstr "Réinitialiser la sélection"
 msgid "Edit Windows updates Group"
 msgstr ""
 
+#: tviswuagroup.cbdefaultallow.caption
+msgid "Updates are allowed by default"
+msgstr "Les mises à jour sont autorisées par défaut"
+
 #: tviswuagroup.cbwucritical.caption
 #, fuzzy
 msgctxt "tviswuagroup.cbwucritical.caption"
@@ -2658,6 +2677,10 @@ msgstr "Nom de fichier du paquet"
 #: tviswuagroup.label5.caption
 msgid "Minimum delay before installation (days after publish date)"
 msgstr "Délai minimum avant l'installation (en jours après la date de publication)"
+
+#: tviswuagroup.label6.caption
+msgid "Maturity"
+msgstr "Maturité"
 
 #: tviswuagroup.tabsheet1.caption
 msgid "Allowed Windows updates"
