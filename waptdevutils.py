@@ -739,6 +739,17 @@ def sign_actions(actions,sign_certs=None,sign_key=None,key_password=None):
     return json.dumps(result)
 
 def change_key_password(private_key_path,old_password=None,new_password=None):
+    """Re-encrypt the PEM formated private RSA key with new_password
+    One must have file create rights  on the directory of private_key.
+
+    Args:
+        private_key_path (str): FilePath to the PEM encoded RSA Key to (re)encrypt
+        old_password (str): Old password to decrypt the key
+        new_password (str): New password to encrypt the key
+
+    Returns:
+        str: private key path
+    """
     if not os.path.isfile(private_key_path):
         raise Exception(u'The private key %s does not exists' % private_key_path)
     key = SSLPrivateKey(filename = private_key_path,password=old_password)
@@ -756,11 +767,20 @@ def change_key_password(private_key_path,old_password=None,new_password=None):
         raise
 
 def render_jinja2_template(template_str,json_data):
+    """Small helper to render a Jinja2 template string with provided JSon data
+
+    Args:
+        template_str (str): Jinja2 template as a string
+        json_data (str) : data (in json format) to be pushed into the template
+
+    Returns:
+        str: result.
+
+    """
     try:
         jinja_env = jinja2.Environment()
         template = jinja_env.from_string(template_str)
         template_data = json.loads(json_data)
-        open('c:/tmp/template_data.json','w').write(json.dumps(template_data))
         return template.render(template_data)
     except:
         return json_data

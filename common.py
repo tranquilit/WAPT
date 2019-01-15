@@ -2668,10 +2668,10 @@ class Wapt(BaseObjectClass):
                 try:
                     ad_groups = setuphelpers.get_computer_groups()
                     self.write_param('host_ad_groups',ad_groups)
-                    self.write_param('host_ad_groups_ttl',time.time() + 10.0 * 60)
+                    self.write_param('host_ad_groups_ttl',time.time() + 2.0 * 60)
                     return ad_groups
                 except:
-                    result = host_ad_groups
+                    return host_ad_groups
             else:
                 return host_ad_groups
 
@@ -6937,6 +6937,7 @@ class Wapt(BaseObjectClass):
 
         """
         try:
+            self.write_param('host_ad_groups_ttl',0.0)
             for repo in self.repositories:
                 repo.reset_network()
             if not self.disable_update_server_status and self.waptserver_available():
