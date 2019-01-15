@@ -305,6 +305,8 @@ from win32com.taskscheduler import taskscheduler
 
 import win32com.client
 
+import active_directory
+
 import locale
 import re
 import threading
@@ -377,9 +379,9 @@ def get_computer_groups():
     """Try to finc the computer in the Active Directory
         and return the list of groups
     """
-    from active_directory import find_computer
     groups = []
-    computer = find_computer()
+    active_directory._CACHE.clear()
+    computer = active_directory.find_computer()
     if computer:
         computer_groups = computer.memberOf
         if computer_groups:
