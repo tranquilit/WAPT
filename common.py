@@ -2669,7 +2669,7 @@ class Wapt(BaseObjectClass):
                     try:
                         ad_groups = setuphelpers.get_computer_groups()
                         self.write_param('host_ad_groups',ad_groups)
-                        self.write_param('host_ad_groups_ttl',time.time() + 10.0 * 60) # ttl
+                        self.write_param('host_ad_groups_ttl',time.time() + (110.0 + 20.0 * random()) * 60.0) # random ttl
 
                         return ad_groups
                     except:
@@ -5310,6 +5310,7 @@ class Wapt(BaseObjectClass):
         # optionally forced dn
         host_info['computer_ad_dn'] = self.host_dn
 
+        self.write_param('host_ad_groups_ttl',0.0)
         _add_data_if_updated(inv,'host_capabilities',self.host_capabilities(),old_hashes,new_hashes)
         _add_data_if_updated(inv,'host_info',host_info,old_hashes,new_hashes)
         _add_data_if_updated(inv,'audit_status',self.get_audit_status(),old_hashes,new_hashes)
