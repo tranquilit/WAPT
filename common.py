@@ -2664,15 +2664,19 @@ class Wapt(BaseObjectClass):
             host_ad_groups_ttl = self.read_param('host_ad_groups_ttl',0.0,'float')
             host_ad_groups     = self.read_param('host_ad_groups',None)
 
-            if not host_ad_groups_ttl or time.time() > host_ad_groups_ttl:
-                try:
-                    ad_groups = setuphelpers.get_computer_groups()
-                    self.write_param('host_ad_groups',ad_groups)
-                    self.write_param('host_ad_groups_ttl',time.time() + 2.0 * 60)
-                    return ad_groups
-                except:
-                    return host_ad_groups
+            if host_ad_groups_ttl<=0 or time.time() > host_ad_groups_ttl:
+                with self.waptdb:
+                    try:
+                        ad_groups = setuphelpers.get_computer_groups()
+                        self.write_param('host_ad_groups',ad_groups)
+                        self.write_param('host_ad_groups_ttl',time.time() + 10.0 * 60) # ttl
+
+                        return ad_groups
+                    except:
+
+                        return host_ad_groups
             else:
+
                 return host_ad_groups
 
     def load_config(self,config_filename=None):
@@ -4094,6 +4098,8 @@ class Wapt(BaseObjectClass):
         True
 
         """
+        # be sure to get up to date host groups if possible
+        self.write_param('host_ad_groups_ttl',0.0)
         previous = self.waptdb.known_packages()
         # (main repo is at the end so that it will used in priority)
         self._update_repos_list(force=force,filter_on_host_cap=filter_on_host_cap)
