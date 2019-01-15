@@ -6943,7 +6943,6 @@ class Wapt(BaseObjectClass):
 
         """
         try:
-            self.write_param('host_ad_groups_ttl',0.0)
             for repo in self.repositories:
                 repo.reset_network()
             if not self.disable_update_server_status and self.waptserver_available():
