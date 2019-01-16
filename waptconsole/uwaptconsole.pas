@@ -707,6 +707,8 @@ type
     procedure cbSearchAllClick(Sender: TObject);
     procedure CBShowHostsForGroupsClick(Sender: TObject);
     procedure CBShowHostsForPackagesClick(Sender: TObject);
+    procedure CBShowHostsForWUAPackageChange(Sender: TObject);
+    procedure CBShowHostsForWUAPackageClick(Sender: TObject);
     procedure CBShowHostsForSelfServicePackageClick(Sender: TObject);
     procedure cbShowLogClick(Sender: TObject);
     procedure cbADSiteDropDown(Sender: TObject);

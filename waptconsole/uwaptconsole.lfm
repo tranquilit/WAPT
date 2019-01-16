@@ -4655,7 +4655,8 @@ object VisWaptGUI: TVisWaptGUI
           Top = 11
           Width = 82
           Caption = 'Show Hosts'
-          OnClick = CBShowHostsForSelfServicePackageClick
+          OnChange = CBShowHostsForWUAPackageChange
+          OnClick = CBShowHostsForWUAPackageClick
           TabOrder = 3
         end
       end
