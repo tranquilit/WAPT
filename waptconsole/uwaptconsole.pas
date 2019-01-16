@@ -29,6 +29,9 @@ type
     ActAddNewNetwork: TAction;
     ActDeleteNetwork: TAction;
     ActInstallLicence: TAction;
+    ActSelfServiceNewPackage: TAction;
+    ActSelfServiceSearchPackage: TAction;
+    SelfServiceActions: TActionList;
     ActWUASearchPackage: TAction;
     ActWUAEditPackage: TAction;
     ActVeyon: TAction;
@@ -43,17 +46,25 @@ type
     ActNormalizationWriteTable: TAction;
     btAddGroup1: TBitBtn;
     btAddGroup3: TBitBtn;
+    btAddSelfServicePackage: TBitBtn;
+    ButNormalizationFilter: TBitBtn;
+    ButNormalizationImport: TBitBtn;
+    ButNormalizationSave: TBitBtn;
     ButWUAPackagesSearch: TBitBtn;
+    ButSelfServicePackagesSearch: TBitBtn;
     cbFilterPackagesArch: TCheckGroup;
     cbFilterPackagesLocales: TCheckGroup;
     cbHostsHasErrors: TCheckBox;
     cbHostsNeedUpgrade: TCheckBox;
     cbHostsReachable: TCheckBox;
     CBShowHostsForWUAPackage: TCheckBox;
+    CBShowHostsForSelfServicePackage: TCheckBox;
     EdSearchHosts: TSearchEdit;
     EdWUASearchPackage: TSearchEdit;
+    EdSelfServiceSearchPackage: TSearchEdit;
     GridWUAPackages: TSOGrid;
     GridReportingQueries: TSOGrid;
+    GridSelfServicePackages: TSOGrid;
     ImgHostsHasErrors: TImage;
     ImgHostsNeedUpgrade: TImage;
     ImgHostsConnected: TImage;
@@ -62,8 +73,11 @@ type
     MenuItem105: TMenuItem;
     MenuItem106: TMenuItem;
     MenuItem107: TMenuItem;
+    Panel10: TPanel;
     Panel19: TPanel;
+    Panel20: TPanel;
     pgWAPTWuaPackages: TTabSheet;
+    pgSelfService: TTabSheet;
     ToolButton3: TToolButton;
     MenuGridHostsPlugins: TMenuItem;
     VeyonConnect: TMenuItem;
@@ -568,6 +582,8 @@ type
     procedure ActGermanUpdate(Sender: TObject);
     procedure ActHostsDeletePackageUpdate(Sender: TObject);
     procedure ActHostsDeleteUpdate(Sender: TObject);
+    procedure ActSelfServiceNewPackageExecute(Sender: TObject);
+    procedure ActSelfServiceSearchPackageExecute(Sender: TObject);
     procedure ActLaunchGPUpdateExecute(Sender: TObject);
     procedure ActLaunchWaptExitExecute(Sender: TObject);
     procedure ActmakePackageTemplateExecute(Sender: TObject);
@@ -691,7 +707,7 @@ type
     procedure cbSearchAllClick(Sender: TObject);
     procedure CBShowHostsForGroupsClick(Sender: TObject);
     procedure CBShowHostsForPackagesClick(Sender: TObject);
-    procedure CBShowHostsForWUAPackageClick(Sender: TObject);
+    procedure CBShowHostsForSelfServicePackageClick(Sender: TObject);
     procedure cbShowLogClick(Sender: TObject);
     procedure cbADSiteDropDown(Sender: TObject);
     procedure cbWUAPendingChange(Sender: TObject);
@@ -2792,6 +2808,16 @@ procedure TVisWaptGUI.ActHostsDeleteUpdate(Sender: TObject);
 begin
   (Sender as TAction).Enabled:=(GridHosts.SelectedCount>0);
 
+end;
+
+procedure TVisWaptGUI.ActSelfServiceNewPackageExecute(Sender: TObject);
+begin
+
+end;
+
+procedure TVisWaptGUI.ActSelfServiceSearchPackageExecute(Sender: TObject);
+begin
+     GridSelfServicePackages.Data := PyVarToSuperObject(DMPython.MainWaptRepo.search(searchwords := EdSelfServiceSearchPackage.Text, sections := 'selfservice', description_locale := Language));
 end;
 
 
@@ -4982,6 +5008,7 @@ begin
   PgReports.TabVisible := False;
   pgNormalization.TabVisible := False;
   pgWAPTWuaPackages.TabVisible:=False;
+  pgSelfService.TabVisible:=False;
   pgWAPTWUADownloads.TabVisible:=False;
   pgWindowsUpdates.TabVisible:=False;
   ActTriggerHostAudit.Visible:=False;
@@ -5094,6 +5121,20 @@ begin
     if GridPackages.Data = nil then
       ActSearchPackage.Execute;
     EdSearchPackage.SetFocus;
+  end
+  else if MainPages.ActivePage = pgWAPTWuaPackages then
+  begin
+    CopyMenu(PopupMenuPackages, MenuItem24);
+    if GridWUAPackages.Data = nil then
+       ActWUASearchPackage.Execute;
+    EdWUASearchPackage.SetFocus;
+  end
+  else if MainPages.ActivePage = pgSelfService then
+  begin
+    CopyMenu(PopupMenuPackages, MenuItem24);
+    if GridSelfServicePackages.Data = nil then
+       ActSelfServiceSearchPackage.Execute;
+    EdSelfServiceSearchPackage.SetFocus;
   end
   else if MainPages.ActivePage = pgGroups then
   begin

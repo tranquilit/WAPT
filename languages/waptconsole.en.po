@@ -1672,6 +1672,15 @@ msgctxt "tviswaptgui.actsearchsoftwares.caption"
 msgid "ActSearchSoftware"
 msgstr ""
 
+#: tviswaptgui.actselfservicenewpackage.caption
+msgid "Create New SelfService rules Package"
+msgstr ""
+
+#: tviswaptgui.actselfservicesearchpackage.caption
+msgctxt "tviswaptgui.actselfservicesearchpackage.caption"
+msgid "Refresh list"
+msgstr ""
+
 #: tviswaptgui.acttishelp.caption
 msgid "Launch TISHelp"
 msgstr ""
@@ -1869,6 +1878,7 @@ msgid "Save"
 msgstr ""
 
 #: tviswaptgui.actwuasearchpackage.caption
+msgctxt "tviswaptgui.actwuasearchpackage.caption"
 msgid "Refresh list"
 msgstr ""
 
@@ -2025,6 +2035,11 @@ msgstr ""
 
 #: tviswaptgui.cbshowhostsforpackages.caption
 msgctxt "tviswaptgui.cbshowhostsforpackages.caption"
+msgid "Show Hosts"
+msgstr ""
+
+#: tviswaptgui.cbshowhostsforselfservicepackage.caption
+msgctxt "tviswaptgui.cbshowhostsforselfservicepackage.caption"
 msgid "Show Hosts"
 msgstr ""
 
@@ -2379,6 +2394,11 @@ msgstr ""
 
 #: tviswaptgui.pgreports.caption
 msgid "Reports"
+msgstr ""
+
+#: tviswaptgui.pgselfservice.caption
+msgctxt "tviswaptgui.pgselfservice.caption"
+msgid "SelfService Package"
 msgstr ""
 
 #: tviswaptgui.pgsoftwares.caption

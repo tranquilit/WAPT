@@ -545,10 +545,11 @@ msgstr ""
 
 #: tviseditpackage.edsection.text
 msgctxt "tviseditpackage.edsection.text"
-msgid "base"
+msgid "group"
 msgstr ""
 
 #: tviseditpackage.edversion.editlabel.caption
+msgctxt "tviseditpackage.edversion.editlabel.caption"
 msgid "Version"
 msgstr ""
 
@@ -566,13 +567,13 @@ msgstr ""
 msgid "Available packages : "
 msgstr ""
 
-#: tviseditpackage.label5.caption
-msgctxt "tviseditpackage.label5.caption"
-msgid "Section"
-msgstr ""
-
 #: tviseditpackage.labpackage.caption
 msgid "Package"
+msgstr ""
+
+#: tviseditpackage.labsection.caption
+msgctxt "tviseditpackage.labsection.caption"
+msgid "Section"
 msgstr ""
 
 #: tviseditpackage.panel7.caption
@@ -688,6 +689,16 @@ msgstr "Annuler"
 msgid "Import packages"
 msgstr ""
 
+#: tvisimportpackage.cbfilterpackagesarch.caption
+msgctxt "tvisimportpackage.cbfilterpackagesarch.caption"
+msgid "Architecture"
+msgstr ""
+
+#: tvisimportpackage.cbfilterpackageslocales.caption
+msgctxt "tvisimportpackage.cbfilterpackageslocales.caption"
+msgid "Locale"
+msgstr ""
+
 #: tvisimportpackage.cbnewerthanmine.caption
 msgid "Newer packages than mine only"
 msgstr ""
@@ -695,6 +706,11 @@ msgstr ""
 #: tvisimportpackage.cbnewestonly.caption
 msgctxt "tvisimportpackage.cbnewestonly.caption"
 msgid "Last version only"
+msgstr ""
+
+#: tvisimportpackage.label7.caption
+msgctxt "tvisimportpackage.label7.caption"
+msgid "Default package maturity"
 msgstr ""
 
 #: tvisloading.amessage.caption
@@ -791,6 +807,7 @@ msgid "Software Version"
 msgstr ""
 
 #: tvispackagewizard.edversion.text
+msgctxt "tvispackagewizard.edversion.text"
 msgid "0"
 msgstr ""
 
@@ -799,12 +816,18 @@ msgid "Installer / Setup"
 msgstr ""
 
 #: tvispackagewizard.label2.caption
+msgctxt "tvispackagewizard.label2.caption"
 msgid "Architecture"
 msgstr ""
 
 #: tvispackagewizard.label3.caption
 msgctxt "tvispackagewizard.label3.caption"
 msgid "Section"
+msgstr ""
+
+#: tvispackagewizard.label7.caption
+msgctxt "tvispackagewizard.label7.caption"
+msgid "Default package maturity"
 msgstr ""
 
 #: tvisprivatekeyauth.caption
@@ -849,6 +872,7 @@ msgid "Register new repository"
 msgstr ""
 
 #: tvisrepositories.actsavesettings.caption
+msgctxt "tvisrepositories.actsavesettings.caption"
 msgid "OK"
 msgstr ""
 
@@ -949,6 +973,10 @@ msgstr ""
 msgid "Launch actions on hosts"
 msgstr ""
 
+#: tviswaptconfig.actaddplugin.caption
+msgid "Add"
+msgstr ""
+
 #: tviswaptconfig.actcheckandsetwaptserver.caption
 msgid "Check and set"
 msgstr ""
@@ -976,6 +1004,10 @@ msgid ""
 "When upgrading, you must not recreate a private key and certificate.\n"
 msgstr ""
 
+#: tviswaptconfig.actdeleteplugin.caption
+msgid "Delete"
+msgstr ""
+
 #: tviswaptconfig.actdownloadcertificate.caption
 msgctxt "tviswaptconfig.actdownloadcertificate.caption"
 msgid "Browse certificates"
@@ -995,6 +1027,11 @@ msgstr ""
 #: tviswaptconfig.actopencertdir.caption
 msgctxt "tviswaptconfig.actopencertdir.caption"
 msgid "Explore dir"
+msgstr ""
+
+#: tviswaptconfig.actsaveconfig.caption
+msgctxt "tviswaptconfig.actsaveconfig.caption"
+msgid "OK"
 msgstr ""
 
 #: tviswaptconfig.button1.caption
@@ -1150,6 +1187,11 @@ msgstr ""
 msgid "Path to CA certificates bundle"
 msgstr ""
 
+#: tviswaptconfig.label7.caption
+msgctxt "tviswaptconfig.label7.caption"
+msgid "Default package maturity"
+msgstr ""
+
 #: tviswaptconfig.label8.caption
 msgid "Send anonymous usage statistics to Tranquil IT"
 msgstr ""
@@ -1171,6 +1213,11 @@ msgstr ""
 
 #: tviswaptconfig.pgbase.caption
 msgid "Base"
+msgstr ""
+
+#: tviswaptconfig.pgplugins.caption
+msgctxt "tviswaptconfig.pgplugins.caption"
+msgid "Plugins"
 msgstr ""
 
 #: tviswaptdeploy.actdeploywapt.caption
@@ -1587,6 +1634,15 @@ msgctxt "tviswaptgui.actsearchsoftwares.caption"
 msgid "ActSearchSoftware"
 msgstr ""
 
+#: tviswaptgui.actselfservicenewpackage.caption
+msgid "Create New SelfService rules Package"
+msgstr ""
+
+#: tviswaptgui.actselfservicesearchpackage.caption
+msgctxt "tviswaptgui.actselfservicesearchpackage.caption"
+msgid "Refresh list"
+msgstr ""
+
 #: tviswaptgui.acttishelp.caption
 msgid "Launch TISHelp"
 msgstr ""
@@ -1651,6 +1707,10 @@ msgctxt "tviswaptgui.acttriggerwaptwua_scan.caption"
 msgid "Trigger the scan of missing Windows Updates"
 msgstr ""
 
+#: tviswaptgui.actveyon.caption
+msgid "Connect via Veyon"
+msgstr ""
+
 #: tviswaptgui.actvnc.caption
 msgctxt "tviswaptgui.actvnc.caption"
 msgid "Connect via VNC"
@@ -1706,6 +1766,10 @@ msgctxt "tviswaptgui.actwuaeditgroup.caption"
 msgid "Edit group"
 msgstr ""
 
+#: tviswaptgui.actwuaeditpackage.caption
+msgid "ActWUAEditPackage"
+msgstr ""
+
 #: tviswaptgui.actwuaforbidselectedupdates.caption
 msgctxt "tviswaptgui.actwuaforbidselectedupdates.caption"
 msgid "Forbid Selected Updates"
@@ -1721,8 +1785,8 @@ msgctxt "tviswaptgui.actwualoadupdates.caption"
 msgid "Load"
 msgstr ""
 
-#: tviswaptgui.actwuanewgroup.caption
-msgctxt "tviswaptgui.actwuanewgroup.caption"
+#: tviswaptgui.actwuanewpackage.caption
+msgctxt "tviswaptgui.actwuanewpackage.caption"
 msgid "New Windows Updates bundle"
 msgstr ""
 
@@ -1771,6 +1835,11 @@ msgctxt "tviswaptgui.actwuasaveupdatesgroup.caption"
 msgid "Save"
 msgstr ""
 
+#: tviswaptgui.actwuasearchpackage.caption
+msgctxt "tviswaptgui.actwuasearchpackage.caption"
+msgid "Refresh list"
+msgstr ""
+
 #: tviswaptgui.actwuashowmsupdateshelp.caption
 msgid "Show MS Update Help"
 msgstr ""
@@ -1809,6 +1878,16 @@ msgstr ""
 msgid "Returns only computers accepting current personal certificate"
 msgstr ""
 
+#: tviswaptgui.cbfilterpackagesarch.caption
+msgctxt "tviswaptgui.cbfilterpackagesarch.caption"
+msgid "Architecture"
+msgstr ""
+
+#: tviswaptgui.cbfilterpackageslocales.caption
+msgctxt "tviswaptgui.cbfilterpackageslocales.caption"
+msgid "Locale"
+msgstr ""
+
 #: tviswaptgui.cbforcedwsusscandownload.caption
 msgid "Force download even if already up to date"
 msgstr ""
@@ -1819,7 +1898,23 @@ msgid "Filter hosts which have this direct package dependency"
 msgstr ""
 
 #: tviswaptgui.cbhaserrors.caption
+msgctxt "tviswaptgui.cbhaserrors.caption"
 msgid "Has errors"
+msgstr ""
+
+#: tviswaptgui.cbhostshaserrors.caption
+msgctxt "tviswaptgui.cbhostshaserrors.caption"
+msgid "Has errors"
+msgstr ""
+
+#: tviswaptgui.cbhostsneedupgrade.caption
+msgctxt "tviswaptgui.cbhostsneedupgrade.caption"
+msgid "Needs updating"
+msgstr ""
+
+#: tviswaptgui.cbhostsreachable.caption
+msgctxt "tviswaptgui.cbhostsreachable.caption"
+msgid "Connected only"
 msgstr ""
 
 #: tviswaptgui.cbincludesubou.caption
@@ -1839,6 +1934,7 @@ msgid "Hide system components"
 msgstr ""
 
 #: tviswaptgui.cbneedupgrade.caption
+msgctxt "tviswaptgui.cbneedupgrade.caption"
 msgid "Needs updating"
 msgstr ""
 
@@ -1848,6 +1944,7 @@ msgid "Last version only"
 msgstr ""
 
 #: tviswaptgui.cbreachable.caption
+msgctxt "tviswaptgui.cbreachable.caption"
 msgid "Connected only"
 msgstr ""
 
@@ -1898,6 +1995,16 @@ msgctxt "tviswaptgui.cbshowhostsforpackages.caption"
 msgid "Show Hosts"
 msgstr ""
 
+#: tviswaptgui.cbshowhostsforselfservicepackage.caption
+msgctxt "tviswaptgui.cbshowhostsforselfservicepackage.caption"
+msgid "Show Hosts"
+msgstr ""
+
+#: tviswaptgui.cbshowhostsforwuapackage.caption
+msgctxt "tviswaptgui.cbshowhostsforwuapackage.caption"
+msgid "Show Hosts"
+msgstr ""
+
 #: tviswaptgui.cbshowlog.caption
 msgctxt "tviswaptgui.cbshowlog.caption"
 msgid "Show debug"
@@ -1932,6 +2039,11 @@ msgstr ""
 
 #: tviswaptgui.edsearchhost.hint
 msgctxt "tviswaptgui.edsearchhost.hint"
+msgid "Regular expressions allowed"
+msgstr ""
+
+#: tviswaptgui.edsearchhosts.hint
+msgctxt "tviswaptgui.edsearchhosts.hint"
 msgid "Regular expressions allowed"
 msgstr ""
 
@@ -1985,10 +2097,6 @@ msgstr ""
 msgid "Manufacturer"
 msgstr ""
 
-#: tviswaptgui.label20.caption
-msgid "Site"
-msgstr ""
-
 #: tviswaptgui.label21.caption
 msgid "WAPT WUA Enabled"
 msgstr ""
@@ -2037,6 +2145,11 @@ msgctxt "tviswaptgui.labelreportingnumber.caption"
 msgid "Selected / Total : %d / %d"
 msgstr ""
 
+#: tviswaptgui.labfiltersite.caption
+msgctxt "tviswaptgui.labfiltersite.caption"
+msgid "Site"
+msgstr ""
+
 #: tviswaptgui.labuser.caption
 msgctxt "tviswaptgui.labuser.caption"
 msgid "User"
@@ -2048,6 +2161,11 @@ msgstr ""
 
 #: tviswaptgui.menuexternaltools.caption
 msgid "Windows Computer management"
+msgstr ""
+
+#: tviswaptgui.menugridhostsplugins.caption
+msgctxt "tviswaptgui.menugridhostsplugins.caption"
+msgid "Plugins"
 msgstr ""
 
 #: tviswaptgui.menuitem10.caption
@@ -2220,6 +2338,11 @@ msgstr ""
 msgid "Reports"
 msgstr ""
 
+#: tviswaptgui.pgselfservice.caption
+msgctxt "tviswaptgui.pgselfservice.caption"
+msgid "SelfService Package"
+msgstr ""
+
 #: tviswaptgui.pgsoftwares.caption
 msgid "Software inventory"
 msgstr ""
@@ -2234,6 +2357,10 @@ msgstr ""
 
 #: tviswaptgui.pgwaptwuadownloads.caption
 msgid "Windows Updates downloads"
+msgstr ""
+
+#: tviswaptgui.pgwaptwuapackages.caption
+msgid "WAPT WUA packages"
 msgstr ""
 
 #: tviswaptgui.pgwindowsupdates.caption
@@ -2275,6 +2402,151 @@ msgstr ""
 
 #: tviswuaclassificationsselect.label1.caption
 msgid "Classifications"
+msgstr ""
+
+#: tviswuagroup.actbuilduploadpackage.caption
+msgctxt "tviswuagroup.actbuilduploadpackage.caption"
+msgid "Save"
+msgstr ""
+
+#: tviswuagroup.actloadpackage.caption
+msgctxt "tviswuagroup.actloadpackage.caption"
+msgid "Refresh"
+msgstr ""
+
+#: tviswuagroup.actwuaallowselectedupdates.caption
+msgctxt "tviswuagroup.actwuaallowselectedupdates.caption"
+msgid "Allow Selected Updates"
+msgstr ""
+
+#: tviswuagroup.actwuadownloadselectedupdate.caption
+msgctxt "tviswuagroup.actwuadownloadselectedupdate.caption"
+msgid "Download selected"
+msgstr ""
+
+#: tviswuagroup.actwuaforbidselectedupdates.caption
+msgctxt "tviswuagroup.actwuaforbidselectedupdates.caption"
+msgid "Forbid Selected Updates"
+msgstr ""
+
+#: tviswuagroup.actwualoadupdates.caption
+msgid "Load updates"
+msgstr ""
+
+#: tviswuagroup.actwuaproductallow.caption
+msgctxt "tviswuagroup.actwuaproductallow.caption"
+msgid "Allow all updates for selected products"
+msgstr ""
+
+#: tviswuagroup.actwuaproductallowseverity.caption
+msgctxt "tviswuagroup.actwuaproductallowseverity.caption"
+msgid "Allow updates for selected products and severities"
+msgstr ""
+
+#: tviswuagroup.actwuaproductforbid.caption
+msgctxt "tviswuagroup.actwuaproductforbid.caption"
+msgid "Forbid updates for selected products"
+msgstr ""
+
+#: tviswuagroup.actwuaproductforbidseverity.caption
+msgctxt "tviswuagroup.actwuaproductforbidseverity.caption"
+msgid "Forbid updates for selected products and severities"
+msgstr ""
+
+#: tviswuagroup.actwuaproducthide.caption
+msgctxt "tviswuagroup.actwuaproducthide.caption"
+msgid "Hide product"
+msgstr ""
+
+#: tviswuagroup.actwuaproductshow.caption
+msgctxt "tviswuagroup.actwuaproductshow.caption"
+msgid "Show product"
+msgstr ""
+
+#: tviswuagroup.actwuaresetselectedupdates.caption
+msgctxt "tviswuagroup.actwuaresetselectedupdates.caption"
+msgid "Reset Selected"
+msgstr ""
+
+#: tviswuagroup.caption
+msgid "Edit Windows updates Group"
+msgstr ""
+
+#: tviswuagroup.cbdefaultallow.caption
+msgid "Updates are allowed by default"
+msgstr ""
+
+#: tviswuagroup.cbwucritical.caption
+msgctxt "tviswuagroup.cbwucritical.caption"
+msgid "Critical"
+msgstr ""
+
+#: tviswuagroup.cbwuimportant.caption
+msgctxt "tviswuagroup.cbwuimportant.caption"
+msgid "Important"
+msgstr ""
+
+#: tviswuagroup.cbwulow.caption
+msgctxt "tviswuagroup.cbwulow.caption"
+msgid "Low"
+msgstr ""
+
+#: tviswuagroup.cbwumoderate.caption
+msgctxt "tviswuagroup.cbwumoderate.caption"
+msgid "Moderate"
+msgstr ""
+
+#: tviswuagroup.cbwuother.caption
+msgctxt "tviswuagroup.cbwuother.caption"
+msgid "Other"
+msgstr ""
+
+#: tviswuagroup.edpackageversion.text
+msgctxt "tviswuagroup.edpackageversion.text"
+msgid "0"
+msgstr ""
+
+#: tviswuagroup.label1.caption
+msgid "Windows Updates Group name"
+msgstr ""
+
+#: tviswuagroup.label16.caption
+msgid "Windows Updates group content"
+msgstr ""
+
+#: tviswuagroup.label2.caption
+msgctxt "tviswuagroup.label2.caption"
+msgid "Version"
+msgstr ""
+
+#: tviswuagroup.label3.caption
+msgctxt "tviswuagroup.label3.caption"
+msgid "Description"
+msgstr ""
+
+#: tviswuagroup.label4.caption
+msgid "Package filename : "
+msgstr ""
+
+#: tviswuagroup.label5.caption
+msgid "Minimum delay before installation (days after publish date)"
+msgstr ""
+
+#: tviswuagroup.label6.caption
+msgid "Maturity"
+msgstr ""
+
+#: tviswuagroup.tabsheet1.caption
+msgid "Allowed Windows updates"
+msgstr ""
+
+#: tviswuagroup.tabsheet2.caption
+msgid "Forbidden Windows updates"
+msgstr ""
+
+#: tviswuagroup.wupanright.caption
+msgctxt "tviswuagroup.wupanright.caption"
+msgid "wupanright"
 msgstr ""
 
 #: tviswuapackageselect.actdefaultfilter.caption
@@ -2787,10 +3059,6 @@ msgstr ""
 msgid "Windows updates restrictions"
 msgstr ""
 
-#: tviswuarules.menuitem67.caption
-msgid "-"
-msgstr ""
-
 #: tviswuarules.panel1.caption
 msgid "Panel1"
 msgstr ""
@@ -2800,7 +3068,13 @@ msgid "Panel13"
 msgstr ""
 
 #: tviswuarules.wupanright.caption
+msgctxt "tviswuarules.wupanright.caption"
 msgid "wupanright"
+msgstr ""
+
+#: uvisloading.rscanceledbyuser
+msgctxt "uvisloading.rscanceledbyuser"
+msgid "Task %s has been canceled by the user"
 msgstr ""
 
 #: uwaptconsoleres.rsaddadsgroups
@@ -2824,11 +3098,6 @@ msgstr ""
 #: uwaptconsoleres.rscanceled
 msgctxt "uwaptconsoleres.rscanceled"
 msgid "canceled"
-msgstr ""
-
-#: uwaptconsoleres.rscanceledbyuser
-msgctxt "uwaptconsoleres.rscanceledbyuser"
-msgid "Task %s has been canceled by the user"
 msgstr ""
 
 #: uwaptconsoleres.rscanceledtask
@@ -2878,6 +3147,14 @@ msgstr ""
 
 #: uwaptconsoleres.rsconfirmdeletequery
 msgid "Delete query %s ?"
+msgstr ""
+
+#: uwaptconsoleres.rsconfirmdeletewudownload
+msgid "Delete download log record ?"
+msgstr ""
+
+#: uwaptconsoleres.rsconfirmdeletewudownloads
+msgid "Delete %d download log records ?"
 msgstr ""
 
 #: uwaptconsoleres.rsconfirmdeletewuupdate
@@ -3081,8 +3358,16 @@ msgid ""
 "If package is signed with a foreign key, you may want to delete host package first to workaround the issue...\n"
 msgstr ""
 
+#: uwaptconsoleres.rsedithostprofile
+msgid "Edit Host profile bundle."
+msgstr ""
+
 #: uwaptconsoleres.rseditunitbundle
 msgid "Edit Organizational Unit bundle."
+msgstr ""
+
+#: uwaptconsoleres.rseditwuagroup
+msgid "Edit WAPT WUA bundle."
 msgstr ""
 
 #: uwaptconsoleres.rsedpackage
