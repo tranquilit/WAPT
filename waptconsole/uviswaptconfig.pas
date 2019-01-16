@@ -5,11 +5,10 @@ unit uviswaptconfig;
 interface
 
 uses
-  Classes, SysUtils, Forms,
-  Controls, Graphics, Dialogs, ButtonPanel,
-  StdCtrls, ExtCtrls,EditBtn, DefaultTranslator, ComCtrls,
-  ActnList, Grids, DBGrids, Menus, Buttons, sogrid, types,inifiles, VirtualTrees,
-  superobject;
+  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ButtonPanel, StdCtrls,
+  ExtCtrls, EditBtn, DefaultTranslator, ComCtrls, ActnList, Grids, DBGrids,
+  Menus, Buttons, AsyncProcess, RTTIGrids, sogrid, types, inifiles,
+  VirtualTrees, superobject, PropEdits, ObjectInspector;
 
 type
 
@@ -26,6 +25,7 @@ type
     ActSaveConfig: TAction;
     ActOpenCertDir: TAction;
     ActionList1: TActionList;
+    AsyncProcess1: TAsyncProcess;
     BitBtn1: TBitBtn;
     BitBtn2: TBitBtn;
     Button1: TButton;
@@ -39,6 +39,7 @@ type
     cbUseProxyForRepo: TCheckBox;
     cbUseProxyForServer: TCheckBox;
     CBVerifyCert: TCheckBox;
+    EdMaturity: TComboBox;
     EdServerCertificate: TFileNameEdit;
     eddefault_package_prefix: TLabeledEdit;
     eddefault_sources_root: TDirectoryEdit;
@@ -55,6 +56,7 @@ type
     Label4: TLabel;
     Label5: TLabel;
     Label6: TLabel;
+    Label7: TLabel;
     Label8: TLabel;
     labStatusRepo: TLabel;
     labStatusServer: TLabel;
@@ -256,6 +258,7 @@ begin
     cbUseProxyForRepo.Checked);
   inifile.WriteBool('global', 'send_usage_report',
     cbSendStats.Checked);
+  inifile.WriteString('global', 'default_maturity',EdMaturity.Text);
 
   inifile.WriteString('global','grid_hosts_plugins', EncodeStringBase64(GridPlugins.Data.AsJSon()));
 
@@ -464,6 +467,8 @@ begin
     edPersonalCertificatePath.InitialDir:=GetUserDir
   else
     edPersonalCertificatePath.InitialDir:=ExtractFileDir(edPersonalCertificatePath.text);
+
+  EdMaturity.Text := inifile.ReadString('global', 'default_maturity', '');
 
   cbSendStats.Checked :=
     inifile.ReadBool('global', 'send_usage_report', True);

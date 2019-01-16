@@ -262,7 +262,7 @@ def get_packages_filenames(packages,with_depends=True,waptconfigfile=None,repo_n
                     result.append((fn,md5,))
     return result
 
-def duplicate_from_file(package_filename,new_prefix='test',target_directory=None,authorized_certs=None):
+def duplicate_from_file(package_filename,new_prefix='test',target_directory=None,authorized_certs=None,set_maturity=None):
     r"""Duplicate a downloaded package to match prefix defined in waptconfigfile
     renames all dependencies
 
@@ -300,6 +300,8 @@ def duplicate_from_file(package_filename,new_prefix='test',target_directory=None
     oldname = source_package.package
     package.package = rename_package(oldname,new_prefix)
     package.inc_build()
+    if set_maturity is not None:
+        package.maturity = set_maturity
 
     result = package['sourcespath']
 

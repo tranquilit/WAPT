@@ -409,6 +409,30 @@ object VisWAPTConfig: TVisWAPTConfig
         ParentColor = False
         Visible = False
       end
+      object Label7: TLabel
+        Left = 191
+        Height = 13
+        Top = 154
+        Width = 121
+        Alignment = taRightJustify
+        Caption = 'Default package maturity'
+        ParentColor = False
+      end
+      object EdMaturity: TComboBox
+        Left = 315
+        Height = 21
+        Top = 152
+        Width = 120
+        ItemHeight = 13
+        ItemIndex = 0
+        Items.Strings = (
+          ''
+          'DEV'
+          'PREPROD'
+          'PROD'
+        )
+        TabOrder = 6
+      end
     end
     object pgPlugins: TTabSheet
       Caption = 'Plugins'
@@ -629,5 +653,21 @@ object VisWAPTConfig: TVisWAPTConfig
   object MainMenu1: TMainMenu
     left = 429
     top = 101
+  end
+  object AsyncProcess1: TAsyncProcess
+    Active = False
+    Options = []
+    Priority = ppNormal
+    StartupOptions = []
+    ShowWindow = swoNone
+    WindowColumns = 0
+    WindowHeight = 0
+    WindowLeft = 0
+    WindowRows = 0
+    WindowTop = 0
+    WindowWidth = 0
+    FillAttribute = 0
+    left = 28
+    top = 7
   end
 end

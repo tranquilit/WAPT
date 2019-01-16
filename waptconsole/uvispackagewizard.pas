@@ -21,6 +21,7 @@ type
     ButPackageDuplicate: TBitBtn;
     ButOK: TBitBtn;
     EdArchitecture: TComboBox;
+    EdMaturity: TComboBox;
     EdSection: TComboBox;
     EdDescription: TLabeledEdit;
     EdInstallerPath: TFileNameEdit;
@@ -31,6 +32,7 @@ type
     EdPackageName: TLabeledEdit;
     Label2: TLabel;
     Label3: TLabel;
+    Label7: TLabel;
     Panel1: TPanel;
     Panel2: TPanel;
     Panel3: TPanel;
@@ -67,6 +69,11 @@ begin
   InstallerFilename:=Value;
 end;
 
+procedure TVisPackageWizard.FormCreate(Sender: TObject);
+begin
+  EdMaturity.Text:=DefaultMaturity;
+end;
+
 procedure TVisPackageWizard.ActMakeUploadUpdate(Sender: TObject);
 begin
   ActMakeUpload.Enabled := ExtractFileExt(FInstallerFilename) ='.msi'
@@ -84,7 +91,7 @@ end;
 
 procedure TVisPackageWizard.ActMakeUploadExecute(Sender: TObject);
 var
-  packageSources,PackageName,Version,Description,Section,UninstallKey: Variant;
+  packageSources,PackageName,Version,Description,Section,UninstallKey,Maturity: Variant;
   wapt,SilentFlags,VInstallerFilename:Variant;
   UploadResult : ISuperObject;
 begin
@@ -102,6 +109,7 @@ begin
     Description := PyUTF8Decode(EdDescription.Text);
     UninstallKey := PyUTF8Decode(EdUninstallKey.Text);
     Section :=  PyUTF8Decode(EdSection.Text);
+    Maturity := PyUTF8Decode(EdMaturity.Text);;
 
     VInstallerFilename := PyUTF8Decode(InstallerFilename);
 
@@ -111,7 +119,8 @@ begin
       description := Description,
       version := Version,
       uninstallkey := UninstallKey,
-      silentflags := SilentFlags));
+      silentflags := SilentFlags,
+      maturity := Maturity));
 
     if Sender = ActMakeAndEdit then
     begin
@@ -137,10 +146,6 @@ begin
   end
   else
     ShowMessageFmt(rsInstallerFileNotFound,[EdInstallerPath.FileName]);
-end;
-
-procedure TVisPackageWizard.FormCreate(Sender: TObject);
-begin
 end;
 
 procedure TVisPackageWizard.SetInstallerFilename(AValue: String);

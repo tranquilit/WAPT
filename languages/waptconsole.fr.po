@@ -748,6 +748,11 @@ msgctxt "tvisimportpackage.cbnewestonly.caption"
 msgid "Last version only"
 msgstr "Dernière version seulement"
 
+#: tvisimportpackage.label7.caption
+msgctxt "tvisimportpackage.label7.caption"
+msgid "Default package maturity"
+msgstr "Maturité des paquets par défaut"
+
 #: tvisloading.amessage.caption
 msgid "Loading..."
 msgstr "Chargement en cours..."
@@ -861,6 +866,11 @@ msgstr "Architecture"
 msgctxt "tvispackagewizard.label3.caption"
 msgid "Section"
 msgstr "Section"
+
+#: tvispackagewizard.label7.caption
+msgctxt "tvispackagewizard.label7.caption"
+msgid "Default package maturity"
+msgstr "Maturité des paquets par défaut"
 
 #: tvisprivatekeyauth.caption
 msgid "Private key authentication"
@@ -1259,6 +1269,11 @@ msgstr "Active le proxy pour l'accès au serveur WAPT"
 msgctxt "tviswaptconfig.label6.caption"
 msgid "Path to CA certificates bundle"
 msgstr "Chemin vers le bundle de CA"
+
+#: tviswaptconfig.label7.caption
+msgctxt "tviswaptconfig.label7.caption"
+msgid "Default package maturity"
+msgstr "Maturité des paquets par défaut"
 
 #: tviswaptconfig.label8.caption
 msgid "Send anonymous usage statistics to Tranquil IT"

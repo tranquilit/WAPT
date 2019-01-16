@@ -730,6 +730,11 @@ msgctxt "tvisimportpackage.cbnewestonly.caption"
 msgid "Last version only"
 msgstr ""
 
+#: tvisimportpackage.label7.caption
+msgctxt "tvisimportpackage.label7.caption"
+msgid "Default package maturity"
+msgstr ""
+
 #: tvisloading.amessage.caption
 msgid "Loading..."
 msgstr ""
@@ -842,6 +847,11 @@ msgstr ""
 #: tvispackagewizard.label3.caption
 msgctxt "tvispackagewizard.label3.caption"
 msgid "Section"
+msgstr ""
+
+#: tvispackagewizard.label7.caption
+msgctxt "tvispackagewizard.label7.caption"
+msgid "Default package maturity"
 msgstr ""
 
 #: tvisprivatekeyauth.caption
@@ -1207,6 +1217,11 @@ msgstr ""
 #: tviswaptconfig.label6.caption
 msgctxt "tviswaptconfig.label6.caption"
 msgid "Path to CA certificates bundle"
+msgstr ""
+
+#: tviswaptconfig.label7.caption
+msgctxt "tviswaptconfig.label7.caption"
+msgid "Default package maturity"
 msgstr ""
 
 #: tviswaptconfig.label8.caption

@@ -2,11 +2,12 @@ object VisImportPackage: TVisImportPackage
   Left = 492
   Height = 540
   Top = 261
-  Width = 1261
+  Width = 1235
   Caption = 'Import packages'
   ClientHeight = 540
-  ClientWidth = 1261
+  ClientWidth = 1235
   OnClose = FormClose
+  OnCreate = FormCreate
   OnShow = FormShow
   Position = poMainFormCenter
   LCLVersion = '1.8.4.0'
@@ -14,7 +15,7 @@ object VisImportPackage: TVisImportPackage
     Left = 0
     Height = 38
     Top = 502
-    Width = 1261
+    Width = 1235
     Align = alBottom
     AutoSize = True
     BevelOuter = bvNone
@@ -22,10 +23,10 @@ object VisImportPackage: TVisImportPackage
     ChildSizing.TopBottomSpacing = 2
     ChildSizing.HorizontalSpacing = 6
     ClientHeight = 38
-    ClientWidth = 1261
+    ClientWidth = 1235
     TabOrder = 0
     object BitBtn2: TBitBtn
-      Left = 1177
+      Left = 1151
       Height = 34
       Top = 2
       Width = 78
@@ -38,7 +39,7 @@ object VisImportPackage: TVisImportPackage
       TabOrder = 0
     end
     object ButPackageDuplicate: TBitBtn
-      Left = 861
+      Left = 835
       Height = 34
       Top = 2
       Width = 143
@@ -48,7 +49,7 @@ object VisImportPackage: TVisImportPackage
       TabOrder = 1
     end
     object ButPackageDuplicate1: TBitBtn
-      Left = 1010
+      Left = 984
       Height = 34
       Top = 2
       Width = 161
@@ -57,12 +58,45 @@ object VisImportPackage: TVisImportPackage
       AutoSize = True
       TabOrder = 2
     end
+    object Label7: TLabel
+      AnchorSideTop.Control = PanBas
+      AnchorSideTop.Side = asrCenter
+      AnchorSideRight.Control = EdMaturity
+      Left = 338
+      Height = 13
+      Top = 13
+      Width = 144
+      Alignment = taRightJustify
+      Anchors = [akTop, akLeft, akRight]
+      AutoSize = False
+      Caption = 'Default package maturity'
+      ParentColor = False
+    end
+    object EdMaturity: TComboBox
+      AnchorSideTop.Control = PanBas
+      AnchorSideTop.Side = asrCenter
+      AnchorSideRight.Control = ButPackageDuplicate
+      Left = 488
+      Height = 21
+      Top = 9
+      Width = 341
+      Anchors = [akTop, akLeft, akRight]
+      ItemHeight = 13
+      ItemIndex = 0
+      Items.Strings = (
+        ''
+        'DEV'
+        'PREPROD'
+        'PROD'
+      )
+      TabOrder = 3
+    end
   end
   object GridExternalPackages: TSOGrid
     Left = 0
     Height = 439
     Top = 63
-    Width = 1261
+    Width = 1235
     OnGetText = GridExternalPackagesGetText
     ShowAdvancedColumnsCustomize = False
     Align = alClient
@@ -234,12 +268,12 @@ object VisImportPackage: TVisImportPackage
     Left = 0
     Height = 63
     Top = 0
-    Width = 1261
+    Width = 1235
     Align = alTop
     AutoSize = True
     BevelOuter = bvNone
     ClientHeight = 63
-    ClientWidth = 1261
+    ClientWidth = 1235
     TabOrder = 2
     object PanSearch: TPanel
       Left = 0
@@ -415,15 +449,16 @@ object VisImportPackage: TVisImportPackage
       ChildSizing.TopBottomSpacing = 6
       ChildSizing.HorizontalSpacing = 6
       ChildSizing.VerticalSpacing = 3
-      ChildSizing.Layout = cclLeftToRightThenTopToBottom
       ChildSizing.ControlsPerLine = 5
       ClientHeight = 51
       ClientWidth = 414
       TabOrder = 3
       object EdRepoName: TComboBox
+        AnchorSideTop.Control = PanSettings
+        AnchorSideTop.Side = asrCenter
         Left = 6
         Height = 21
-        Top = 6
+        Top = 15
         Width = 150
         AutoComplete = True
         AutoCompleteText = [cbactEnabled, cbactEndOfLineComplete, cbactSearchAscending]
@@ -434,11 +469,14 @@ object VisImportPackage: TVisImportPackage
         TabOrder = 1
       end
       object ButExtRepoChange: TBitBtn
+        AnchorSideLeft.Control = EdRepoName
         AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = PanSettings
+        AnchorSideTop.Side = asrCenter
         AnchorSideRight.Side = asrBottom
         Left = 162
         Height = 34
-        Top = 6
+        Top = 8
         Width = 147
         Action = ActRepositoriesSettings
         AutoSize = True
@@ -446,6 +484,10 @@ object VisImportPackage: TVisImportPackage
         TabOrder = 0
       end
       object PanRepoParams: TPanel
+        AnchorSideLeft.Control = ButExtRepoChange
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = PanSettings
+        AnchorSideTop.Side = asrCenter
         Left = 315
         Height = 39
         Top = 6

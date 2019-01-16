@@ -32,9 +32,11 @@ type
     cbFilterPackagesLocales: TCheckGroup;
     cbNewerThanMine: TCheckBox;
     cbNewestOnly: TCheckBox;
+    EdMaturity: TComboBox;
     EdRepoName: TComboBox;
     EdSearchPackage: TSearchEdit;
     GridExternalPackages: TSOGrid;
+    Label7: TLabel;
     LabRepoURL: TTILabel;
     LabServerCABundle: TTILabel;
     LabSignersCABundle: TTILabel;
@@ -63,6 +65,7 @@ type
     procedure EdSearch1Execute(Sender: TObject);
     procedure EdSearchPackageKeyPress(Sender: TObject; var Key: char);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
+    procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure GridExternalPackagesGetText(Sender: TBaseVirtualTree;
       Node: PVirtualNode; RowData, CellData: ISuperObject;
@@ -142,6 +145,11 @@ begin
   IniWriteInteger(Appuserinipath,Name,'EdRepoName.ItemIndex',EdRepoName.ItemIndex);
   GridExternalPackages.SaveSettingsToIni(Appuserinipath);
 
+end;
+
+procedure TVisImportPackage.FormCreate(Sender: TObject);
+begin
+  EdMaturity.Text:=DefaultMaturity;
 end;
 
 procedure TVisImportPackage.FillReposList;
@@ -520,7 +528,9 @@ begin
           DMPython.waptdevutils.duplicate_from_file(
             package_filename := PackageFilename,
             new_prefix := DefaultPackagePrefix,
-            authorized_certs := SignersCABundle
+            authorized_certs := SignersCABundle,
+            set_maturity := EdMaturity.Text
+
             ));
         sources.AsArray.Add(sourceDir);
       end;
@@ -638,7 +648,8 @@ begin
           package_filename := target,
           new_prefix := DefaultPackagePrefix,
           target_directory := DevDirectory,
-          authorized_certs := Waptrepo.SignersCABundle
+          authorized_certs := Waptrepo.SignersCABundle,
+          set_maturity := EdMaturity.Text
           ));
         { TODO : Remove use of WAPT instance, use waptpackage.PackageEntry instead }
         dmpython.WAPT.add_pyscripter_project(sourceDir);

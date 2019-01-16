@@ -6015,7 +6015,9 @@ class Wapt(BaseObjectClass):
             logger.debug(u'  Change current directory to %s' % previous_cwd)
             os.chdir(previous_cwd)
 
-    def make_package_template(self,installer_path='',packagename='',directoryname='',section='',description=None,depends='',version=None,silentflags=None,uninstallkey=None):
+    def make_package_template(self,installer_path='',packagename='',directoryname='',
+        section='',description=None,depends='',version=None,silentflags=None,uninstallkey=None,
+        maturity=None):
         r"""Build a skeleton of WAPT package based on the properties of the supplied installer
            Return the path of the skeleton
         >>> wapt = Wapt(config_filename='c:/wapt/wapt-get.ini')
@@ -6128,7 +6130,11 @@ class Wapt(BaseObjectClass):
             entry = PackageEntry()
             entry.package = packagename
             entry.architecture='all'
-            entry.maturity=self.default_maturity
+            if maturity is None:
+                entry.maturity=self.default_maturity
+            else:
+                entry.maturity=maturity
+
             entry.description = description
             try:
                 entry.maintainer = ensure_unicode(win32api.GetUserNameEx(3))
