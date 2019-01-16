@@ -294,8 +294,8 @@ def check_auth(logon_name, password):
                 username,
                 domain,
                 password,
-            win32security.LOGON32_LOGON_NETWORK,
-            win32security.LOGON32_PROVIDER_DEFAULT
+                win32security.LOGON32_LOGON_NETWORK_CLEARTEXT,
+                win32security.LOGON32_PROVIDER_DEFAULT
             )
             #check if user is domain admins ou member of waptselfservice admin
             try:
