@@ -7337,6 +7337,18 @@ object VisWaptGUI: TVisWaptGUI
           BorderSpacing.Around = 5
           TabOrder = 1
         end
+        object ButNormalizationFilter: TBitBtn
+          AnchorSideTop.Control = ButNormalizationImport
+          AnchorSideTop.Side = asrCenter
+          AnchorSideRight.Side = asrBottom
+          Left = 1263
+          Height = 30
+          Top = 5
+          Width = 98
+          Action = ActNormalizationFilter
+          Anchors = [akTop, akRight]
+          TabOrder = 2
+        end
         object EdNormalizationFilter: TEdit
           AnchorSideLeft.Control = ButNormalizationSave
           AnchorSideLeft.Side = asrBottom
@@ -7352,18 +7364,6 @@ object VisWaptGUI: TVisWaptGUI
           BorderSpacing.Right = 5
           BorderSpacing.Around = 5
           OnKeyPress = EdNormalizationFilterKeyPress
-          TabOrder = 2
-        end
-        object ButNormalizationFilter: TBitBtn
-          AnchorSideTop.Control = ButNormalizationImport
-          AnchorSideTop.Side = asrCenter
-          AnchorSideRight.Side = asrBottom
-          Left = 1263
-          Height = 30
-          Top = 5
-          Width = 98
-          Action = ActNormalizationFilter
-          Anchors = [akTop, akRight]
           TabOrder = 3
         end
       end

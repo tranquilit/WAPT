@@ -178,6 +178,7 @@ type
     EdWsusscn2cabDate: TEdit;
     EdLastScanDate: TEdit;
     EdLastScanDuration: TEdit;
+    EdNormalizationFilter: TEdit;
     GridHostsForPackage: TSOGrid;
     GridHostWinUpdatesHistory: TSOGrid;
     GridPackages: TSOGrid;
