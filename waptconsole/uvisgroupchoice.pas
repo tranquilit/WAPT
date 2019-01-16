@@ -35,7 +35,6 @@ type
     procedure EdSearchKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState
       );
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
-    procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
   private
     { private declarations }
@@ -112,10 +111,6 @@ begin
   IniWriteBool(Appuserinipath,Name,'cbBase.Checked',cbBase.Checked);
   IniWriteBool(Appuserinipath,Name,'cbrestricted.Checked',cbrestricted.Checked);
   GridPackages.SaveSettingsToIni(Appuserinipath);
-end;
-
-procedure TvisGroupChoice.FormCreate(Sender: TObject);
-begin
 end;
 
 procedure TvisGroupChoice.FormShow(Sender: TObject);

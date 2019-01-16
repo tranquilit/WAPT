@@ -43,9 +43,6 @@ type
     ActNormalizationWriteTable: TAction;
     btAddGroup1: TBitBtn;
     btAddGroup3: TBitBtn;
-    ButNormalizationImport: TBitBtn;
-    ButNormalizationSave: TBitBtn;
-    ButNormalizationFilter: TBitBtn;
     ButWUAPackagesSearch: TBitBtn;
     cbFilterPackagesArch: TCheckGroup;
     cbFilterPackagesLocales: TCheckGroup;
@@ -53,7 +50,6 @@ type
     cbHostsNeedUpgrade: TCheckBox;
     cbHostsReachable: TCheckBox;
     CBShowHostsForWUAPackage: TCheckBox;
-    EdNormalizationFilter: TEdit;
     EdSearchHosts: TSearchEdit;
     EdWUASearchPackage: TSearchEdit;
     GridWUAPackages: TSOGrid;

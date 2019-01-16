@@ -81,7 +81,7 @@ object VisEditPackage: TVisEditPackage
         Header.Style = hsPlates
         PopupMenu = PopupMenuEditDepends
         TabOrder = 0
-        TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
+        TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes, toAutoChangeScale]
         TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
         TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
         TreeOptions.SelectionOptions = [toExtendedFocus, toMultiSelect, toRightClickSelect]
@@ -93,13 +93,13 @@ object VisEditPackage: TVisEditPackage
     end
     object pgConflicts: TTabSheet
       Caption = 'Blocked package'
-      ClientHeight = 315
-      ClientWidth = 487
+      ClientHeight = 308
+      ClientWidth = 622
       object GridConflicts: TSOGrid
         Left = 0
-        Height = 315
+        Height = 308
         Top = 0
-        Width = 487
+        Width = 622
         ShowAdvancedColumnsCustomize = False
         Align = alClient
         BorderStyle = bsNone
@@ -144,7 +144,7 @@ object VisEditPackage: TVisEditPackage
         Header.Style = hsPlates
         PopupMenu = PopupMenuEditConflicts
         TabOrder = 0
-        TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
+        TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes, toAutoChangeScale]
         TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
         TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
         TreeOptions.SelectionOptions = [toExtendedFocus, toMultiSelect, toRightClickSelect]
@@ -156,14 +156,14 @@ object VisEditPackage: TVisEditPackage
     end
     object pgDevelop: TTabSheet
       Caption = 'setup.py'
-      ClientHeight = 315
-      ClientWidth = 487
+      ClientHeight = 308
+      ClientWidth = 622
       TabVisible = False
       inline EdSetupPy: TSynEdit
         Left = 0
-        Height = 281
+        Height = 274
         Top = 34
-        Width = 487
+        Width = 622
         Align = alClient
         Font.Height = -13
         Font.Name = 'Courier New'
@@ -676,11 +676,11 @@ object VisEditPackage: TVisEditPackage
         Left = 0
         Height = 34
         Top = 0
-        Width = 487
+        Width = 622
         Align = alTop
         BevelOuter = bvNone
         ClientHeight = 34
-        ClientWidth = 487
+        ClientWidth = 622
         TabOrder = 1
         object butInitWapt: TBitBtn
           Left = 0
@@ -746,7 +746,7 @@ object VisEditPackage: TVisEditPackage
         Header.DefaultHeight = 17
         Header.Options = [hoAutoResize, hoColumnResize, hoDrag, hoShowSortGlyphs, hoVisible, hoAutoSpring]
         TabOrder = 1
-        TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSpanColumns, toAutoTristateTracking, toAutoDeleteMovedNodes]
+        TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSpanColumns, toAutoTristateTracking, toAutoDeleteMovedNodes, toAutoChangeScale]
         TreeOptions.MiscOptions = [toAcceptOLEDrop, toEditable, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toEditOnClick]
         TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowRoot, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
         TreeOptions.SelectionOptions = [toExtendedFocus]
@@ -1318,7 +1318,7 @@ object VisEditPackage: TVisEditPackage
       Header.Style = hsPlates
       PopupMenu = PopupPackages
       TabOrder = 1
-      TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
+      TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes, toAutoChangeScale]
       TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
       TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
       TreeOptions.SelectionOptions = [toDisableDrawSelection, toExtendedFocus, toMultiSelect]

@@ -7,10 +7,9 @@ object visGroupChoice: TvisGroupChoice
   ClientHeight = 549
   ClientWidth = 749
   OnClose = FormClose
-  OnCreate = FormCreate
   OnShow = FormShow
   Position = poMainFormCenter
-  LCLVersion = '1.3'
+  LCLVersion = '1.8.4.0'
   object GridPackages: TSOGrid
     Left = 0
     Height = 488
@@ -19,6 +18,7 @@ object visGroupChoice: TvisGroupChoice
     ShowAdvancedColumnsCustomize = False
     Align = alClient
     Color = clWhite
+    Colors.UnfocusedColor = clMedGray
     Header.AutoSizeIndex = -1
     Header.Columns = <    
       item
@@ -184,7 +184,7 @@ object visGroupChoice: TvisGroupChoice
     Header.SortColumn = 0
     Header.Style = hsFlatButtons
     TabOrder = 1
-    TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
+    TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes, toAutoChangeScale]
     TreeOptions.MiscOptions = [toAcceptOLEDrop, toCheckSupport, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toEditOnClick]
     TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
     TreeOptions.SelectionOptions = [toDisableDrawSelection, toExtendedFocus, toFullRowSelect]
