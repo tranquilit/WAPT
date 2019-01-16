@@ -2669,7 +2669,7 @@ class Wapt(BaseObjectClass):
                     try:
                         ad_groups = setuphelpers.get_computer_groups()
                         self.write_param('host_ad_groups',ad_groups)
-                        self.write_param('host_ad_groups_ttl',time.time() + (110.0 + 20.0 * random()) * 60.0) # random ttl
+                        self.write_param('host_ad_groups_ttl',time.time() + (110.0 + 20.0 * random.random()) * 60.0) # random ttl
 
                         return ad_groups
                     except:
