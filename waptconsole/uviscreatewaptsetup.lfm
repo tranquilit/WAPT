@@ -1,13 +1,13 @@
 object VisCreateWaptSetup: TVisCreateWaptSetup
-  Left = 409
-  Height = 530
-  Top = 209
-  Width = 588
+  Left = 526
+  Height = 538
+  Top = 199
+  Width = 573
   AutoSize = True
   BorderStyle = bsDialog
   Caption = 'Create WAPT agent'
-  ClientHeight = 530
-  ClientWidth = 588
+  ClientHeight = 538
+  ClientWidth = 573
   OnCloseQuery = FormCloseQuery
   OnDestroy = FormDestroy
   OnShow = FormShow
@@ -19,11 +19,11 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
     Left = 0
     Height = 510
     Top = 0
-    Width = 588
+    Width = 573
     Align = alClient
     BevelOuter = bvNone
     ClientHeight = 510
-    ClientWidth = 588
+    ClientWidth = 573
     Constraints.MinHeight = 510
     Constraints.MinWidth = 560
     TabOrder = 0
@@ -32,7 +32,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       Height = 21
       Hint = 'X509 PEM encoded file with CA certificates which are trusted'
       Top = 8
-      Width = 318
+      Width = 303
       Filter = '*.crt|*.crt'
       FilterIndex = 0
       HideDirectories = False
@@ -61,8 +61,8 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       Height = 21
       Hint = 'E.g. : https://wapt.mydomain.lan/wapt If empty, use dnsdomain setting'
       Top = 252
-      Width = 223
-      Anchors = [akLeft, akRight]
+      Width = 225
+      AutoSize = False
       TabOrder = 1
     end
     object Label2: TLabel
@@ -83,8 +83,8 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       Height = 21
       Hint = 'E.g. : Tranquil IT Systems.'
       Top = 397
-      Width = 318
-      Anchors = [akLeft, akRight]
+      Width = 303
+      Anchors = [akTop, akLeft, akRight]
       TabOrder = 2
     end
     object Label3: TLabel
@@ -115,24 +115,25 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       Left = 265
       Height = 21
       Top = 224
-      Width = 318
+      Width = 303
       ShowHidden = False
       ButtonWidth = 23
       NumGlyphs = 1
       Flat = True
-      Anchors = [akLeft, akRight]
+      Anchors = [akTop, akLeft, akRight]
       MaxLength = 0
       TabOrder = 3
       Visible = False
     end
     object edWaptServerUrl: TEdit
       AnchorSideLeft.Control = fnPublicCert
+      AnchorSideRight.Control = fnPublicCert
+      AnchorSideRight.Side = asrBottom
       Left = 265
       Height = 21
       Hint = 'E.g. : https://wapt.mydomain.lan'
       Top = 280
-      Width = 222
-      Anchors = [akLeft, akRight]
+      Width = 226
       TabOrder = 4
     end
     object Label5: TLabel
@@ -162,14 +163,14 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       Height = 21
       Hint = 'E.g. : c:\wapt\ssl\server\tranquilit.crt  Path to trusted certificates bundle for https connections'
       Top = 323
-      Width = 318
+      Width = 303
       Filter = 'CA Certificates bundles PEM|*.crt;*.pem|Tous les fichiers|*.*'
       FilterIndex = 0
       HideDirectories = False
       ButtonWidth = 23
       NumGlyphs = 1
       Flat = True
-      Anchors = [akLeft, akRight]
+      Anchors = [akTop, akLeft, akRight]
       MaxLength = 0
       PopupMenu = PopupMenu1
       TabOrder = 5
@@ -179,8 +180,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       Left = 265
       Height = 17
       Top = 304
-      Width = 315
-      Anchors = [akLeft, akRight]
+      Width = 318
       AutoSize = False
       Caption = 'Verify https server certificate'
       OnClick = CBVerifyCertClick
@@ -193,8 +193,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       Height = 17
       Hint = 'When first registering to waptserver, host will try to authenticate using their kerberos account'
       Top = 351
-      Width = 315
-      Anchors = [akLeft, akRight]
+      Width = 186
       Caption = 'Use Kerberos for initial registration'
       TabOrder = 7
     end
@@ -204,8 +203,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       Height = 17
       Hint = 'Check that certificate dates are valid and  issuer is a know one.'
       Top = 371
-      Width = 315
-      Anchors = [akLeft, akRight]
+      Width = 190
       Caption = 'Check packages certificates validity'
       TabOrder = 8
       Visible = False
@@ -217,7 +215,6 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       Hint = 'Check that certificate dates are valid and  issuer is a know one.'
       Top = 424
       Width = 240
-      Anchors = [akLeft]
       Caption = 'Sign waptupgrade with both sha256 and sha1'
       TabOrder = 9
     end
@@ -225,9 +222,9 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       Left = 10
       Height = 159
       Top = 58
-      Width = 570
+      Width = 555
       ShowAdvancedColumnsCustomize = False
-      Anchors = [akTop, akLeft, akRight, akBottom]
+      Anchors = [akTop, akLeft, akRight]
       BorderSpacing.Top = 2
       Color = clWhite
       Colors.UnfocusedColor = clMedGray
@@ -325,32 +322,32 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       ParentColor = False
     end
     object CBForceRepoURL: TCheckBox
-      AnchorSideLeft.Control = fnPublicCert
+      AnchorSideLeft.Control = edRepoUrl
+      AnchorSideLeft.Side = asrBottom
       AnchorSideRight.Control = fnPublicCert
       AnchorSideRight.Side = asrBottom
-      Left = 494
+      Left = 490
       Height = 17
       Hint = 'Overwrite the URL when installing on the client even if there is a diffrent current setting in wapt-get.ini'
       Top = 254
-      Width = 89
-      Anchors = [akTop, akRight]
-      AutoSize = False
+      Width = 78
+      Anchors = [akTop, akLeft, akRight]
       Caption = 'Overwrite'
       Checked = True
       State = cbChecked
       TabOrder = 11
     end
     object CBForceWaptServerURL: TCheckBox
-      AnchorSideLeft.Control = fnPublicCert
+      AnchorSideLeft.Control = edWaptServerUrl
+      AnchorSideLeft.Side = asrBottom
       AnchorSideRight.Control = fnPublicCert
       AnchorSideRight.Side = asrBottom
-      Left = 494
+      Left = 491
       Height = 17
       Hint = 'Overwrite the URL when installing on the client even if there is a diffrent current setting in wapt-get.ini'
       Top = 281
-      Width = 89
-      Anchors = [akTop, akRight]
-      AutoSize = False
+      Width = 77
+      Anchors = [akTop, akLeft, akRight]
       Caption = 'Overwrite'
       Checked = True
       State = cbChecked
@@ -363,7 +360,6 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       Hint = 'Ask Wapt agent to use the computer Fully Qualified Domain Name (name.domaine.lan) instead of BIOD unique ID.'#13#10'This can be useful if Wapt is not used as asset management, but only as a deployment solutioN.'
       Top = 448
       Width = 164
-      Anchors = [akLeft]
       Caption = 'Use Computer FQDN for UUID'
       TabOrder = 13
     end
@@ -385,27 +381,27 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       Height = 21
       Hint = 'E.g. : socle,accounting'
       Top = 472
-      Width = 318
-      Anchors = [akLeft, akRight]
+      Width = 303
+      Anchors = [akTop, akLeft, akRight]
       TabOrder = 14
     end
   end
   object Panel1: TPanel
     Left = 0
     Height = 35
-    Top = 495
-    Width = 588
+    Top = 503
+    Width = 573
     Align = alBottom
     AutoSize = True
     BorderSpacing.InnerBorder = 2
     BevelOuter = bvNone
     ClientHeight = 35
-    ClientWidth = 588
+    ClientWidth = 573
     TabOrder = 1
     object BitBtn1: TBitBtn
       AnchorSideTop.Control = Panel1
       AnchorSideRight.Control = BitBtn2
-      Left = 430
+      Left = 415
       Height = 26
       Top = 5
       Width = 60
@@ -423,7 +419,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       AnchorSideTop.Control = Panel1
       AnchorSideRight.Control = Panel1
       AnchorSideRight.Side = asrBottom
-      Left = 500
+      Left = 485
       Height = 26
       Top = 5
       Width = 83

@@ -5712,7 +5712,7 @@ object VisWaptGUI: TVisWaptGUI
       end
     end
     object pgSelfService: TTabSheet
-      Caption = 'Self-service rules Packages'
+      Caption = 'Self-service rules packages'
       ClientHeight = 592
       ClientWidth = 1276
       object Panel20: TPanel
@@ -6223,14 +6223,14 @@ object VisWaptGUI: TVisWaptGUI
     end
     object pgSources: TTabSheet
       Caption = 'Sources'
-      ClientHeight = 677
-      ClientWidth = 1367
+      ClientHeight = 592
+      ClientWidth = 1276
       TabVisible = False
       inline testedit: TSynEdit
         Left = 0
-        Height = 643
+        Height = 558
         Top = 34
-        Width = 1367
+        Width = 1276
         Align = alClient
         Font.Height = -13
         Font.Name = 'Courier New'
@@ -6754,11 +6754,11 @@ object VisWaptGUI: TVisWaptGUI
         Left = 0
         Height = 34
         Top = 0
-        Width = 1367
+        Width = 1276
         Align = alTop
         BevelOuter = bvNone
         ClientHeight = 34
-        ClientWidth = 1367
+        ClientWidth = 1276
         TabOrder = 1
         object butInitWapt: TBitBtn
           Left = 4
@@ -8608,7 +8608,7 @@ object VisWaptGUI: TVisWaptGUI
         Caption = '-'
       end
       object MenuItem51: TMenuItem
-        Action = ActNormalizationFilter
+        Action = ActmakePackageTemplate
       end
       object MenuItem84: TMenuItem
         Action = ActExternalRepositoriesSettings

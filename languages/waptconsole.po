@@ -2395,7 +2395,7 @@ msgstr ""
 
 #: tviswaptgui.pgselfservice.caption
 msgctxt "tviswaptgui.pgselfservice.caption"
-msgid "Self-service rules Packages"
+msgid "Self-service rules packages"
 msgstr ""
 
 #: tviswaptgui.pgsoftwares.caption
@@ -2592,17 +2592,16 @@ msgstr ""
 msgid "Maturity"
 msgstr ""
 
+#: tviswuagroup.panright.caption
+msgid "PanRight"
+msgstr ""
+
 #: tviswuagroup.tabsheet1.caption
 msgid "Allowed Windows updates"
 msgstr ""
 
 #: tviswuagroup.tabsheet2.caption
 msgid "Forbidden Windows updates"
-msgstr ""
-
-#: tviswuagroup.wupanright.caption
-msgctxt "tviswuagroup.wupanright.caption"
-msgid "wupanright"
 msgstr ""
 
 #: tviswuapackageselect.actdefaultfilter.caption

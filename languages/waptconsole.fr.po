@@ -2503,7 +2503,7 @@ msgstr "Reporting"
 
 #: tviswaptgui.pgselfservice.caption
 msgctxt "tviswaptgui.pgselfservice.caption"
-msgid "Self-service rules Packages"
+msgid "Self-service rules packages"
 msgstr "Paquets de règles self-service"
 
 #: tviswaptgui.pgsoftwares.caption
@@ -2719,6 +2719,10 @@ msgstr "Délai minimum avant l'installation (en jours après la date de publicat
 msgid "Maturity"
 msgstr "Maturité"
 
+#: tviswuagroup.panright.caption
+msgid "PanRight"
+msgstr ""
+
 #: tviswuagroup.tabsheet1.caption
 msgid "Allowed Windows updates"
 msgstr "Mises à jour autorisées"
@@ -2726,11 +2730,6 @@ msgstr "Mises à jour autorisées"
 #: tviswuagroup.tabsheet2.caption
 msgid "Forbidden Windows updates"
 msgstr "Mises à jour interdites"
-
-#: tviswuagroup.wupanright.caption
-msgctxt "tviswuagroup.wupanright.caption"
-msgid "wupanright"
-msgstr ""
 
 #: tviswuapackageselect.actdefaultfilter.caption
 msgid "Default filter"

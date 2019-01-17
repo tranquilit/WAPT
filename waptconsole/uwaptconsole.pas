@@ -3825,7 +3825,7 @@ begin
 
     GridPackages.Data :=
       PyVarToSuperObject(DMPython.MainWaptRepo.search(searchwords := EdSearchPackage.Text,
-         exclude_sections := 'host,group,unit,wsus',
+         exclude_sections := 'host,group,unit,wsus,profile',
          newest_only := cbNewestOnly.Checked,
          description_locale := Language,
          host_capabilities := vCapabilities));
@@ -5002,6 +5002,7 @@ begin
   pgSelfService.TabVisible:=False;
   pgWAPTWUADownloads.TabVisible:=False;
   pgWindowsUpdates.TabVisible:=False;
+  pgSelfService.TabVisible:=False;
   ActTriggerHostAudit.Visible:=False;
   ActPackagesAudit.Visible:=False;
   ActWUANewPackage.Visible := False;
