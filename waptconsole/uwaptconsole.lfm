@@ -27,9 +27,9 @@ object VisWaptGUI: TVisWaptGUI
     Height = 618
     Top = 0
     Width = 1284
-    ActivePage = pgWAPTWuaPackages
+    ActivePage = pgInventory
     Align = alClient
-    TabIndex = 3
+    TabIndex = 0
     TabOrder = 0
     OnChange = MainPagesChange
     object pgInventory: TTabSheet
@@ -2986,7 +2986,7 @@ object VisWaptGUI: TVisWaptGUI
           end
           object ToolButtonSep1: TToolButton
             Left = 48
-            Height = 5
+            Height = 45
             Top = 0
             Caption = 'ToolButtonSep1'
             Style = tbsDivider
@@ -3008,7 +3008,7 @@ object VisWaptGUI: TVisWaptGUI
           end
           object ToolButton6: TToolButton
             Left = 193
-            Height = 5
+            Height = 45
             Top = 0
             Caption = 'ToolButton6'
             Style = tbsDivider
@@ -4655,7 +4655,6 @@ object VisWaptGUI: TVisWaptGUI
           Top = 11
           Width = 82
           Caption = 'Show Hosts'
-          OnChange = CBShowHostsForWUAPackageChange
           OnClick = CBShowHostsForWUAPackageClick
           TabOrder = 3
         end
@@ -7517,7 +7516,6 @@ object VisWaptGUI: TVisWaptGUI
           Top = 11
           Width = 82
           Caption = 'Show Hosts'
-          OnClick = CBShowHostsForSelfServicePackageClick
           TabOrder = 3
         end
       end
