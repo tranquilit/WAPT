@@ -10,8 +10,8 @@ uses
   SynCompletion, vte_json, vte_dbtreeex, ExtCtrls, StdCtrls, ComCtrls, ActnList,
   Menus, jsonparser, superobject, VirtualTrees, VarPyth, ImgList, SOGrid,
   uvisloading, IdComponent, DefaultTranslator, IniPropStorage, DBGrids,
-  ShellCtrls, CheckLst, GetText, uWaptConsoleRes, db, BufDataset, SearchEdit,
-  MenuButton, ToggleLabel, tisstrings;
+  ShellCtrls, CheckLst, GetText, uWaptConsoleRes, uVisSelfServiceGroup, db,
+  BufDataset, SearchEdit, MenuButton, ToggleLabel, tisstrings;
 
 type
 

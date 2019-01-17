@@ -988,6 +988,10 @@ msgstr ""
 msgid "PanAdvanced"
 msgstr ""
 
+#: tvisselfservicegroup.caption
+msgid "VisSelfServiceGroup"
+msgstr ""
+
 #: tvistriggerhostsaction.actstop.caption
 msgctxt "tvistriggerhostsaction.actstop.caption"
 msgid "Terminate"

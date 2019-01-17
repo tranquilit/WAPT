@@ -81,7 +81,7 @@
         <PackageName Value="LCL"/>
       </Item12>
     </RequiredPackages>
-    <Units Count="23">
+    <Units Count="24">
       <Unit0>
         <Filename Value="waptconsole.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -245,6 +245,14 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uVisWUAGroup"/>
       </Unit22>
+      <Unit23>
+        <Filename Value="..\waptenterprise\includes\uvisselfservicegroup.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="VisSelfServiceGroup"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="uVisSelfServiceGroup"/>
+      </Unit23>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

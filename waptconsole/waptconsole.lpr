@@ -19,7 +19,7 @@ uses
   uviswaptconfig, uvischangepassword, uvistriggerhostsaction, uVisAPropos,
   uVisImportPackage, uwaptconsoleres, uVisPackageWizard,
   uVisChangeKeyPassword, uvisrepositories, uvisdisplaypreferences,
-  uVisHostDelete,waptcommon,tiscommon;
+  uVisHostDelete,waptcommon,tiscommon, uVisSelfServiceGroup;
 
 {$R *.res}
 

@@ -1006,6 +1006,10 @@ msgstr "Dépôt externe de paquets "
 msgid "PanAdvanced"
 msgstr ""
 
+#: tvisselfservicegroup.caption
+msgid "VisSelfServiceGroup"
+msgstr ""
+
 #: tvistriggerhostsaction.actstop.caption
 #, fuzzy
 msgctxt "tvistriggerhostsaction.actstop.caption"
