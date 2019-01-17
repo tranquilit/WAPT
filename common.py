@@ -1302,7 +1302,7 @@ class WaptDB(WaptBaseDB):
                     else:
                         # get depends of the most recent matching entry
                         # TODO : use another older if this can limit the number of packages to install !
-                        depends =  ensure_list(entries[-1].depends)
+                        depends = ensure_list(entries[-1].depends)
                         available_depends = []
                         for d in depends:
                             if self.packages_matching(d):
@@ -1310,7 +1310,11 @@ class WaptDB(WaptBaseDB):
                             elif d not in missing:
                                 missing.append(d)
 
-                        alldepends.extend(dodepends(available_depends,depth+1))
+                        newdepends = dodepends(available_depends,depth+1)
+                        for d in newdepends:
+                            if not d in alldepends:
+                                alldepends.append(d)
+
                         for d in available_depends:
                             if not d in alldepends:
                                 alldepends.append(d)
