@@ -1,5 +1,5 @@
 ﻿[PyScripter]
-Version=3.5.1.0
+Version=3.5.2.0
 
 [Project]
 ClassName=TProjectRootNode
@@ -46,11 +46,11 @@ FileName=C:\tranquilit\wapt\waptdevutils.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node5]
 ClassName=TProjectFileNode
-FileName=C:\tranquilit\wapt\wapt-get.ini
+FileName=C:\tranquilit\wapt\wapt-get.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node6]
 ClassName=TProjectFileNode
-FileName=C:\tranquilit\wapt\wapt-get.py
+FileName=C:\tranquilit\wapt\wapt-get.ini
 
 [Project\ChildNodes\Node0\ChildNodes\Node7]
 ClassName=TProjectFileNode
@@ -83,7 +83,7 @@ ScriptName=C:\tranquilit\wapt\wapt-get.py
 Description=install 7zip
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
-Parameters=-ldebug install -f tis-7zip -p "{'test':'toto'}"
+Parameters=install -f tis-7zip -p "{'test':'toto'}"
 WorkingDir=$[ActiveScript-Dir]
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log
@@ -1435,8 +1435,29 @@ ApplicationName=$[PythonExe-Short]
 Parameters=$[ActiveScript-Short]
 WorkingDirectory=$[ActiveScript-Dir]
 
+[Project\ChildNodes\Node1\ChildNodes\Node63]
+ClassName=TProjectRunConfiguationNode
+Name=Untitled
+
+[Project\ChildNodes\Node1\ChildNodes\Node63\RunConfig]
+ScriptName=C:\tranquilit\wapt\wapt-get.py
+EngineType=peRemote
+ReinitializeBeforeRun=TRUE
+Parameters=install -f C:\waptdev\tis-7zip-wapt
+WorkingDir=$[ActiveScript-Dir]
+WriteOutputToFile=FALSE
+OutputFileName=$[ActiveScript-NoExt].log
+AppendToFile=FALSE
+
+[Project\ChildNodes\Node1\ChildNodes\Node63\RunConfig\ExternalRun]
+Caption=External Run
+Description=Run script using an external Python Interpreter
+ApplicationName=$[PythonExe-Short]
+Parameters=$[ActiveScript-Short]
+WorkingDirectory=$[ActiveScript-Dir]
+
 [Project\ChildNodes\Node1\ChildNodes]
-Count=63
+Count=64
 
 [Project\ChildNodes]
 Count=2

@@ -12,13 +12,14 @@ uses
   process,
 
   Interfaces, // this includes the LCL widgetset
-  Forms, luicontrols, runtimetypeinfocontrols, memdslaz,
+  Forms, Dialogs,Controls,windows,
+  luicontrols, runtimetypeinfocontrols, memdslaz,
   uwaptconsole, uVisCreateKey, dmwaptpython, uVisEditPackage,
   uviscreatewaptsetup, uvislogin, uvisprivatekeyauth, uvisloading,
   uviswaptconfig, uvischangepassword, uvistriggerhostsaction, uVisAPropos,
   uVisImportPackage, uwaptconsoleres, uVisPackageWizard,
   uVisChangeKeyPassword, uvisrepositories, uvisdisplaypreferences,
-  uVisHostDelete,waptcommon,Dialogs,Controls,windows,tiscommon;
+  uVisHostDelete,waptcommon,tiscommon;
 
 {$R *.res}
 

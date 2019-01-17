@@ -1964,6 +1964,10 @@ msgstr "Rafraîchir"
 msgid "Show MS Update Help"
 msgstr "Voir l'information MS sur la mise à jour."
 
+#: tviswaptgui.btaddselfservicepackage.caption
+msgid "Create new self-service rules package"
+msgstr "Créer un paquet de règles self-service"
+
 #: tviswaptgui.butsearchpackages1.caption
 msgctxt "tviswaptgui.butsearchpackages1.caption"
 msgid "Search"
@@ -2390,10 +2394,6 @@ msgstr "Supprimer"
 msgid "&File"
 msgstr "&Fichier"
 
-#: tviswaptgui.menuitem51.caption
-msgid "Package wizard"
-msgstr "Assistant de création de paquet"
-
 #: tviswaptgui.menuitem57.caption
 msgctxt "tviswaptgui.menuitem57.caption"
 msgid "Trigger Burst Updates"
@@ -2503,8 +2503,8 @@ msgstr "Reporting"
 
 #: tviswaptgui.pgselfservice.caption
 msgctxt "tviswaptgui.pgselfservice.caption"
-msgid "SelfService Package"
-msgstr ""
+msgid "Self-service rules Packages"
+msgstr "Paquets de règles self-service"
 
 #: tviswaptgui.pgsoftwares.caption
 msgid "Software inventory"

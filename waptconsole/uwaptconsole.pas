@@ -707,7 +707,6 @@ type
     procedure cbSearchAllClick(Sender: TObject);
     procedure CBShowHostsForGroupsClick(Sender: TObject);
     procedure CBShowHostsForPackagesClick(Sender: TObject);
-    procedure CBShowHostsForWUAPackageChange(Sender: TObject);
     procedure CBShowHostsForWUAPackageClick(Sender: TObject);
     procedure CBShowHostsForSelfServicePackageClick(Sender: TObject);
     procedure cbShowLogClick(Sender: TObject);
@@ -2810,16 +2809,6 @@ procedure TVisWaptGUI.ActHostsDeleteUpdate(Sender: TObject);
 begin
   (Sender as TAction).Enabled:=(GridHosts.SelectedCount>0);
 
-end;
-
-procedure TVisWaptGUI.ActSelfServiceNewPackageExecute(Sender: TObject);
-begin
-
-end;
-
-procedure TVisWaptGUI.ActSelfServiceSearchPackageExecute(Sender: TObject);
-begin
-     GridSelfServicePackages.Data := PyVarToSuperObject(DMPython.MainWaptRepo.search(searchwords := EdSelfServiceSearchPackage.Text, sections := 'selfservice', description_locale := Language));
 end;
 
 
@@ -5909,6 +5898,24 @@ procedure TVisWaptGUI.GridWUAPackagesChange(Sender: TBaseVirtualTree;
   Node: PVirtualNode);
 begin
 end;
+
+procedure TVisWaptGUI.CBShowHostsForSelfServicePackageClick(Sender: TObject);
+begin
+;;
+end;
+
+procedure TVisWaptGUI.ActSelfServiceNewPackageExecute(Sender: TObject);
+begin
+;;
+end;
+
+procedure TVisWaptGUI.ActSelfServiceSearchPackageExecute(Sender: TObject);
+begin
+;;
+end;
+
+
+
 
 {$endif}
 
