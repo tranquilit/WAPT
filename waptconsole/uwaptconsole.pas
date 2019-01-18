@@ -1924,6 +1924,7 @@ begin
       HostTaskRunningProgress.Position := running.I['progress'];
       HostRunningTask.Text := UTF8Encode(running.S['description']);
       HostRunningTaskLog.Text := UTF8Encode(running.S['logs']);
+      Windows.SendMessage(HostRunningTaskLog.Handle, EM_LINESCROLL, 0, HostRunningTaskLog.Lines.Count)
     end
     else
     begin
@@ -1931,13 +1932,6 @@ begin
       HostTaskRunningProgress.Position := 0;
       HostRunningTask.Text := 'Idle';
       HostRunningTaskLog.Clear;
-    end;
-
-    with HostRunningTaskLog do
-    begin
-      selstart := GetTextLen; // MUCH more efficient then Length(text)!
-      SelLength := 0;
-      ScrollBy(0, 65535);
     end;
   end
   else
