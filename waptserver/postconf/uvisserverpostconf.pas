@@ -1591,27 +1591,33 @@ var
   s : String;
   r : integer;
 begin
-  push_cursor( crHourGlass );
+  try
+    try
+      push_cursor( crHourGlass );
 
-  s := Trim(self.ed_existing_key_certificat_filename.Text);
-  if 0 = Length(s) then
-    goto LBL_FAILED;
+      s := Trim(self.ed_existing_key_certificat_filename.Text);
+      if 0 = Length(s) then
+        goto LBL_FAILED;
 
-  if not FileExists(s) then
-    goto LBL_FAILED;
+      if not FileExists(s) then
+        goto LBL_FAILED;
 
-  r := find_private_key( s, s, self.ed_existing_key_password.Text );
-  if r <> 0 then
-    goto LBL_FAILED;
+      FindPrivateKey(s, self.ed_existing_key_password.Text );
 
-  self.ed_existing_key_key_filename.Text := s;
+      self.ed_existing_key_key_filename.Text := s;
 
-  pop_cursor();
-  exit;
+      pop_cursor();
+      exit;
 
-LBL_FAILED:
-  MessageDlg( Application.Name, 'No private key has been found in certificate directory with this this password', mtInformation, [mbOK], 0 );
-  pop_cursor();
+    LBL_FAILED:
+      MessageDlg( Application.Name, 'No private key has been found in certificate directory with this this password', mtInformation, [mbOK], 0 );
+    except
+      MessageDlg( Application.Name, 'No private key has been found in certificate directory with this this password', mtInformation, [mbOK], 0 );
+    end;
+
+  finally
+    pop_cursor();
+  end;
 end;
 
 procedure TVisWAPTServerPostConf.ActCancelExecute(Sender: TObject);
