@@ -130,7 +130,7 @@ function wapt_server_agent_version( var version : String; const server_url : Str
 
 function offset_language(): integer;
 
-function find_private_key(var key_filename: String; const certificate_filename: String; const key_password : String ): integer;
+function FindPrivateKey(const CertificateFilename: String; const KeyPassword : String ): String;
 
 
 procedure push_cursor( cr : TCursor );
@@ -1174,30 +1174,21 @@ begin
 
 end;
 
-function find_private_key(var key_filename: String; const certificate_filename: String; const key_password : String ): integer;
-label
-  LBL_NOT_FOUND;
+function FindPrivateKey(const CertificateFilename: String; const KeyPassword : String ): String;
 var
   p  : Variant;
   c  : Variant;
   v  : Variant;
-  s  : String;
 begin
-  if not FileExists( certificate_filename ) then
-    goto LBL_NOT_FOUND;
+  if not FileExists( CertificateFilename ) then
+    raise Exception.CreateFmt('Certificate file %s not found',[CertificateFilename]);
 
-  p := PyUTF8Decode( key_password );
-  c := PyUTF8Decode( certificate_filename );
+  p := PyUTF8Decode( KeyPassword );
+  c := PyUTF8Decode( CertificateFilename );
   v := DMPython.waptdevutils.get_private_key_encrypted( certificate_path := c, password := p );
-  s := VarPythonAsString(v);
-  if Length(s) = 0 then
-    goto LBL_NOT_FOUND;
-
-  key_filename := s;
-  exit(0);
-
-LBL_NOT_FOUND:
-  exit(-1);
+  Result := VarPythonAsString(v);
+  if (Result='') or not FileExists(Result) then
+    raise Exception.CreateFmt('Key not found for certificate file %s',[CertificateFilename]);
 end;
 
 var
@@ -1254,7 +1245,7 @@ var
   p : Variant;
   c : Variant;
 begin
-  if nil = data then
+  if data = Nil then
   begin
     TThread.ExecuteInThread( TThreadExecuteCallback(@preload_python), Pointer(1), nil );
     exit;

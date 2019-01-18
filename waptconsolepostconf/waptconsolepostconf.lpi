@@ -8,6 +8,7 @@
       <MainUnit Value="0"/>
       <Title Value="waptconsolepostconf"/>
       <Scaled Value="True"/>
+      <UseAppBundle Value="False"/>
       <ResourceType Value="res"/>
       <XPManifest>
         <DpiAware Value="True"/>

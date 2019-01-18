@@ -36,8 +36,8 @@ resourcestring
   rs_a_problem_has_occured_while_trying_to_login_server =  'A problem has occured when trying to login to server';
   rs_wapt_server_installation_may_be_broken = 'Wapt server installation may be broken';
   rs_bad_login_password = 'Bad login password';
-  rs_wapt_agent_has_been_found_on_server_confirm_create_package_key = 'Wapt agent has been found on the server' + #13#10 + 'Are you sure you want to recreate a new package key ?';
-  rs_wapt_agent_has_been_found_on_server_overwrite_agent =  'Wapt agent has been found on the server' + #13#10 + 'Build and overwrite agent ?';
+  rs_wapt_agent_has_been_found_on_server_confirm_create_package_key = 'Wapt agent has been found on the server' + #13#10 + 'Are you sure you want to recreate a new pair of private key / personal certificate and build a new waptagent installer?';
+  rs_wapt_agent_has_been_found_on_server_overwrite_agent =  'Wapt agent has been found on the server' + #13#10 + 'Build and overwrite the waptagent.exe installer ?';
   rs_confirm_cancel_post_config = 'Are you sure you want to abort wapt console post configuration ?';
   rs_confirm = 'Confirm';
   rs_you_wapt_agent_version_mismatch = 'Wapt agent version exception (%s) Post configuration tool cannot continue, please follow tutorial at : http://wapt.fr';
