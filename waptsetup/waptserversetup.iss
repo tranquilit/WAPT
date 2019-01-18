@@ -72,6 +72,7 @@ Source: "..\waptserver\waptserver.ini.template"; DestDir: "{app}\conf"; DestName
 Source: "..\waptserver\*.py"; DestDir: "{app}\waptserver"; Tasks: InstallWaptserver       
 Source: "..\waptserver\*.bat"; DestDir: "{app}\waptserver"; Tasks: InstallWaptserver       
 Source: "..\waptserver\*.template"; DestDir: "{app}\waptserver"; Tasks: InstallWaptserver
+Source: "..\waptserver\static\*"; DestDir: "{app}\waptserver\static"; Flags: createallsubdirs recursesubdirs; Tasks: InstallWaptserver
 Source: "..\waptserver\templates\*"; DestDir: "{app}\waptserver\templates"; Flags: createallsubdirs recursesubdirs; Tasks: InstallWaptserver
 Source: "..\waptserver\translations\*"; DestDir: "{app}\waptserver\translations"; Flags: createallsubdirs recursesubdirs; Tasks: InstallWaptserver
 Source: "..\waptserver\scripts\*"; DestDir: "{app}\waptserver\scripts"; Flags: createallsubdirs recursesubdirs; Tasks: InstallWaptserver
@@ -89,6 +90,7 @@ Source: "..\waptserver\waptserver.ini.template"; DestDir: "{app}\conf"; DestName
 Source: "..\waptserver\*.py"; DestDir: "{app}\waptserver";   
 Source: "..\waptserver\*.bat"; DestDir: "{app}\waptserver";   
 Source: "..\waptserver\*.template"; DestDir: "{app}\waptserver"; 
+Source: "..\waptserver\static\*"; DestDir: "{app}\waptserver\static"; Flags: createallsubdirs recursesubdirs;
 Source: "..\waptserver\templates\*"; DestDir: "{app}\waptserver\templates"; Flags: createallsubdirs recursesubdirs;
 Source: "..\waptserver\translations\*"; DestDir: "{app}\waptserver\translations"; Flags: createallsubdirs recursesubdirs; 
 Source: "..\waptserver\scripts\*"; DestDir: "{app}\waptserver\scripts"; Flags: createallsubdirs recursesubdirs;

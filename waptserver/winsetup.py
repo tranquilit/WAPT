@@ -256,8 +256,8 @@ def install_nginx_service(options,conf=None):
     mkdir_p(os.path.join(wapt_root_dir,'waptserver','nginx','temp'))
     run(r'icacls "%s" /grant  "*S-1-5-20":(OI)(CI)(M)' % (os.path.join(wapt_root_dir,'waptserver','nginx','temp')))
 
-    run(r'icacls "%s" /grant  "*S-1-5-20":(OI)(CI)(M)' % os.path.join(
-                wapt_root_dir,'waptserver','nginx','logs'))
+    run(r'icacls "%s" /grant  "*S-1-5-20":(OI)(CI)(M)' % os.path.join(wapt_root_dir,'waptserver','nginx','logs'))
+    run(r'icacls "%s" /grant  "*S-1-5-20":(OI)(CI)(M)' % os.path.join(wapt_root_dir,'log'))
 
     make_nginx_config(wapt_root_dir, conf['wapt_folder'],force=options.force)
     service_binary = os.path.abspath(os.path.join(wapt_root_dir,'waptserver','nginx','nginx.exe'))
@@ -310,8 +310,14 @@ def install_postgresql_service(options,conf=None):
     pgsql_data_dir = pgsql_data_dir.replace('\\','/')
 
 
-    print ("build database directory")
+    print ("about to build database directory")
     if not os.path.exists(os.path.join(pgsql_data_dir,'postgresql.conf')):
+        if setuphelpers.service_is_installed('waptpostgresql') and setuphelpers.service_is_running('waptpostgresql'):
+            print('stopping postgresql')
+            setuphelpers.service_stop('waptpostgresql')
+            # waiting for postgres to be ready
+            time.sleep(2)
+
         setuphelpers.mkdirs(pgsql_data_dir)
 
         # need to have specific write acls for current user otherwise initdb fails...
@@ -350,7 +356,7 @@ def install_postgresql_service(options,conf=None):
         # waiting for postgres to be ready
         time.sleep(2)
 
-    print("creating wapt database")
+    print("checking wapt database")
     import psycopg2
     from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
     conn = None
@@ -377,22 +383,31 @@ def install_postgresql_service(options,conf=None):
         if conn:
             conn.close()
 
-    print("Creating/upgrading wapt tables")
+    print("Creating/upgrading wapt db tables")
     run(r'"%s\waptpython.exe" "%s\waptserver\model.py" init_db -c "%s"' % (wapt_root_dir, wapt_root_dir, options.configfile ))
     print("Done")
 
     print('Import lcoal Packages data into database')
-
 
     repo = WaptLocalRepo(conf['wapt_folder'])
     load_db_config(conf)
     Packages.update_from_repo(repo)
 
 
-
 def install_waptserver_service(options,conf=None):
+    if setuphelpers.service_installed('WAPTServer'):
+        if setuphelpers.service_is_running('WAPTServer'):
+            setuphelpers.service_stop('WAPTServer')
+        setuphelpers.service_delete('WAPTServer')
+
     if conf is None:
         conf = waptserver.config.load_config(options.configfile)
+
+    conf_dir =  os.path.join(wapt_root_dir,'conf')
+    if not os.path.isdir(conf_dir):
+        os.makedirs(conf_dir)
+    run(r'icacls "%s" /t /grant  "*S-1-5-20":(OI)(CI)(M)' % conf_dir)
+
     print("install waptserver")
     service_binary = os.path.abspath(os.path.join(wapt_root_dir,'waptpython.exe'))
     service_parameters = '"%s"' % os.path.join(wapt_root_dir,'waptserver','server.py')
@@ -416,7 +431,17 @@ def install_waptserver_service(options,conf=None):
     repo = WaptLocalRepo(conf['wapt_folder'])
     repo.update_packages_index()
 
+    if setuphelpers.service_installed('WAPTServer'):
+        if not setuphelpers.service_is_running('WAPTServer'):
+            setuphelpers.service_start('WAPTServer')
+
+
 def install_wapttasks_service(options,conf=None):
+    if setuphelpers.service_installed('WAPTTasks'):
+        if setuphelpers.service_is_running('WAPTTasks'):
+            setuphelpers.service_stop('WAPTTasks')
+        setuphelpers.service_delete('WAPTTasks')
+
     if conf is None:
         conf = waptserver.config.load_config(options.configfile)
     print("install wapttasks")
@@ -428,6 +453,11 @@ def install_wapttasks_service(options,conf=None):
 
     tasks_db = os.path.join(wapt_root_dir,'db')
     setuphelpers.run(r'icacls "%s" /grant  "*S-1-5-20":(OI)(CI)(M)' % tasks_db)
+
+    if setuphelpers.service_installed('WAPTTasks'):
+        if not setuphelpers.service_is_running('WAPTTasks'):
+            setuphelpers.service_start('WAPTTasks')
+
 
 if __name__ == '__main__':
     usage = """\
@@ -472,6 +502,7 @@ if __name__ == '__main__':
     log_directory = os.path.join(wapt_root_dir, 'log')
     if not os.path.exists(log_directory):
         os.mkdir(log_directory)
+        run(r'icacls "%s" /t /grant  "*S-1-5-20":(OI)(CI)(M)' % os.path.join(wapt_root_dir,'log'))
 
     if args == ['all']:
         args = ['install_nginx','install_postgresql','install_waptserver']
@@ -488,7 +519,4 @@ if __name__ == '__main__':
             install_waptserver_service(options,conf)
             if os.path.isfile(os.path.join(wapt_root_dir,'waptenterprise','waptserver','wsus_tasks.py')):
                 install_wapttasks_service(options,conf)
-
-    setuphelpers.run(r'icacls "%s" /t /grant  "*S-1-5-20":(OI)(CI)(M)' % os.path.join(wapt_root_dir,'conf'))
-    setuphelpers.run(r'icacls "%s" /t /grant  "*S-1-5-20":(OI)(CI)(M)' % os.path.join(wapt_root_dir,'log'))
 
