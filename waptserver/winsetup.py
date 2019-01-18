@@ -312,7 +312,7 @@ def install_postgresql_service(options,conf=None):
 
     print ("about to build database directory")
     if not os.path.exists(os.path.join(pgsql_data_dir,'postgresql.conf')):
-        if setuphelpers.service_is_installed('waptpostgresql') and setuphelpers.service_is_running('waptpostgresql'):
+        if setuphelpers.service_installed('waptpostgresql') and setuphelpers.service_is_running('waptpostgresql'):
             print('stopping postgresql')
             setuphelpers.service_stop('waptpostgresql')
             # waiting for postgres to be ready
