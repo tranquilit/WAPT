@@ -457,17 +457,18 @@ def all_packages(page=1):
         with open(rules) as f:
             data = json.loads(f.read())
             listgroup.append(data)
-            listrules.append(common.revers_rules_self_service(data))
-    mergegroup = common.merge_rules_self_service(listgroup)
-    mergerules = common.merge_rules_self_service(listrules)
-    grpuser = ['waptselfservice']
+            listrules.append(common.reversed_self_service_rules(data))
+
+    merged_groups = common.merge_self_service_rules(listgroup)
+    merged_rules = common.merge_self_service_rules(listrules)
+    user_self_service_groups = ['waptselfservice']
     if request.authorization:
         auth = request.authorization
         if check_auth(auth.username,auth.password):
-            grpuser = ['waptselfservice']
+            user_self_service_groups = ['waptselfservice']
         else:
             try:
-                grpuser = common.list_group_selfservice_from_user(mergegroup,auth.username,auth.password)
+                user_self_service_groups = common.get_user_self_service_groups(merged_groups,auth.username,auth.password)
             except:
                 return authenticate()
 
@@ -481,7 +482,7 @@ def all_packages(page=1):
                     s.version as install_version,s.install_status,s.install_date,s.explicit_by
                 from wapt_package r
                 left join wapt_localstatus s on s.package=r.package
-                where not r.section in ("host","unit")
+                where not r.section in ("host","unit","profile")
                 order by r.package,r.version'''
             cur = con.cursor()
             cur.execute(query)
@@ -492,7 +493,7 @@ def all_packages(page=1):
                 pe = PackageEntry().load_control_from_dict(
                     dict((cur.description[idx][0], value) for idx, value in enumerate(row)))
                 if not search or pe.match_search(search):
-                    if common.check_user_authorisation(mergerules,pe.package,grpuser):
+                    if common.check_user_authorisation_for_self_service(merged_rules,pe.package,user_self_service_groups):
                         rows.append(pe)
 
             if request.args.get('latest','0') == '1':
@@ -898,9 +899,9 @@ def install():
         with open(rules) as f:
             data = json.loads(f.read())
             listgroup.append(data)
-            listrules.append(common.revers_rules_self_service(data))
-    mergegroup = common.merge_rules_self_service(listgroup)
-    mergerules = common.merge_rules_self_service(listrules)
+            listrules.append(common.reversed_self_service_rules(data))
+    mergegroup = common.merge_self_service_rules(listgroup)
+    mergerules = common.merge_self_service_rules(listrules)
 
     grpuser = []
     if request.authorization:
@@ -909,7 +910,7 @@ def install():
             grpuser = ['waptselfservice']
         else:
             try:
-                grpuser = common.list_group_selfservice_from_user(mergegroup,auth.username,auth.password)
+                grpuser = common.get_user_self_service_groups(mergegroup,auth.username,auth.password)
             except:
                 return authenticate()
 
@@ -933,7 +934,7 @@ def install():
 
             is_authorized = wapt().is_authorized_package(apackage,username)
             if not is_authorized:
-                is_authorized = common.check_user_authorisation(mergerules,apackage.split('(=')[0],grpuser)
+                is_authorized = common.check_user_authorisation_for_self_service(mergerules,apackage.split('(=')[0],grpuser)
 
             if not is_authorized:
                 if not auth:
@@ -945,7 +946,7 @@ def install():
 
                 is_authorized = wapt().is_authorized_package(apackage,username)
                 if not is_authorized:
-                    is_authorized = common.check_user_authorisation(mergerules,apackage.split('(=')[0],grpuser)
+                    is_authorized = common.check_user_authorisation_for_self_service(mergerules,apackage.split('(=')[0],grpuser)
                 logging.info("user %s authenticated" % username)
                 logging.info("package %s authorization : %s" % (apackage,is_authorized))
         else:
@@ -991,9 +992,9 @@ def remove():
         with open(rules) as f:
             data = json.loads(f.read())
             listgroup.append(data)
-            listrules.append(common.revers_rules_self_service(data))
-    mergegroup = common.merge_rules_self_service(listgroup)
-    mergerules = common.merge_rules_self_service(listrules)
+            listrules.append(common.reversed_self_service_rules(data))
+    mergegroup = common.merge_self_service_rules(listgroup)
+    mergerules = common.merge_self_service_rules(listrules)
     grpuser = []
     if request.authorization:
         auth = request.authorization
@@ -1001,7 +1002,7 @@ def remove():
             grpuser = ['waptselfservice']
         else:
             try:
-                grpuser = common.list_group_selfservice_from_user(mergegroup,auth.username,auth.password)
+                grpuser = common.get_user_self_service_groups(mergegroup,auth.username,auth.password)
             except:
                 return authenticate()
 
@@ -1013,7 +1014,7 @@ def remove():
     notify_user = int(request.args.get('notify_user','0')) == 1
     data = []
     for package in packages:
-        if not common.check_user_authorisation(mergerules,package,grpuser):
+        if not common.check_user_authorisation_for_self_service(mergerules,package,grpuser):
             return authenticate()
         data.append(task_manager.add_task(WaptPackageRemove(package,force = force),notify_user=notify_user).as_dict())
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):

@@ -44,7 +44,7 @@ from playhouse.shortcuts import dict_to_model, model_to_dict
 from playhouse.signals import Model as SignaledModel, pre_save, post_save
 
 from waptutils import Version
-from waptutils import ensure_unicode,ensure_list,datetime2isodate
+from waptutils import ensure_unicode,ensure_list,datetime2isodate,jsondump
 
 from waptserver.utils import setloglevel
 
@@ -210,10 +210,12 @@ class Hosts(WaptBaseModel):
 
     # raw json data
     wapt_status = BinaryJSONField(null=True)
+
     # running, pending, errors, finished , upgradable, errors,
     last_update_status = BinaryJSONField(null=True,index=False)
     host_info = BinaryJSONField(null=True)
     host_capabilities = BinaryJSONField(null=True)
+    host_metrics = BinaryJSONField(null=True)
 
     # variable structures... so keep them as json
     dmi = BinaryJSONField(null=True,index=False)
@@ -221,6 +223,7 @@ class Hosts(WaptBaseModel):
 
     wuauserv_status = BinaryJSONField(null=True,index=False)
     waptwua_status = BinaryJSONField(null=True,index=False)
+    waptwua_rules = BinaryJSONField(null=True,index=False)
 
     #
     status_hashes = BinaryJSONField(null=True,index=False)
@@ -702,16 +705,62 @@ def update_waptwua(uuid,data,applied_status_hashes):
             HostWsus.insert_many(host_wsus).execute() # pylint: disable=no-value-for-parameter
         applied_status_hashes['waptwua_updates_localstatus'] = data.get('status_hashes',{}).get('waptwua_updates_localstatus')
 
+def update_known_ssl_certificates(data,server_conf):
+    """Append supplied sertificates_pems to the local ssl known certificates directory
+    (<waptrepodir>/wapt/ssl/<sha256 of cert>.crt)
 
-def update_host_data(data):
+    Args:
+        server_conf (dict)
+        certificates (list of X509 pem encoded certificates)
+
+    Returns:
+        None
+    """
+    if server_conf is None:
+        return False
+
+    certificates = data.get('authorized_certificates',None)
+    fingerprints = data.get('wapt_status',{}).get('authorized_certificates_sha256',None)
+    if not certificates:
+        return False
+
+    ssl_dir = os.path.join(server_conf['wapt_folder'],'ssl')
+    if not os.path.isdir(ssl_dir):
+        os.makedirs(ssl_dir)
+
+    # optimization... if all fingerprints are already in ssl dir, skip whole proc
+    if fingerprints is not None:
+        skip = True
+        for fg in fingerprints:
+            cert_fn = os.path.join(ssl_dir,'%s.crt' % fg)
+            if not os.path.isfile(cert_fn):
+                skip = False
+                break
+
+        if skip:
+            return True
+
+    for pem in certificates:
+        certs = SSLCABundle()
+        certs.add_certificates_from_pem(pem)
+        for cert in certs.certificates():
+            cert_fn = os.path.join(ssl_dir,'%s.crt'%cert.fingerprint)
+            if not os.path.isfile(cert_fn):
+                open(cert_fn,'w').write(cert.as_pem())
+
+    return True
+
+def update_host_data(data,server_conf=None):
     """Helper function to insert or update host data in db
 
     Args :
         data (dict) : data to push in DB with at least 'uuid' key
-                        if uuid key already exists, update the data
-                        eld insert
+                      if uuid key already exists, update the data
+                      else insert
                       only keys in data are pushed to DB.
-                        Other data (fields) are left untouched
+                      Other data (fields) are left untouched
+
+        server_conf(dict) : server configuraation dict (to get wapt_folder)
 
     Returns:
         dict : with uuid,computer_fqdn,host_info from db after update
@@ -762,6 +811,7 @@ def update_host_data(data):
                         if target_key and hasattr(updhost, target_key):
                             set_host_field(updhost, target_key, data[k])
                             if k in supplied_hashes:
+                                # logger.info('set data: %s , size: %s' % (target_key,len(jsondump(data[k]))))
                                 applied_status_hashes[k] = supplied_hashes[k]
                 # merge already known data with new set
                 updhost.status_hashes.update(applied_status_hashes)
@@ -794,6 +844,11 @@ def update_host_data(data):
                     # be tolerant
                     translocal.rollback()
                     logger.critical(u'Unable to update wuauserv_status or waptwua_status for %s: %s' % (uuid,ensure_unicode(e)))
+
+            # extract X50 certificates PEM and store them in repo wapt/ssl
+            if update_known_ssl_certificates(data,server_conf):
+                if 'authorized_certificates' in supplied_hashes:
+                    updhost.status_hashes['authorized_certificates'] = supplied_hashes['authorized_certificates']
 
             # merge new known hashes for properly applied data, for next round
             updhost.status_hashes.update(applied_status_hashes)
@@ -1417,7 +1472,7 @@ def upgrade_db_structure():
             v.save()
 
     next_version = '1.6.2.8'
-    if get_db_version() <= next_version:
+    if get_db_version() < next_version:
         with wapt_db.atomic():
             logger.info('Migrating from %s to %s' % (get_db_version(), next_version))
 
@@ -1449,7 +1504,7 @@ def upgrade_db_structure():
             v.save()
 
     next_version = '1.7.0.0'
-    if get_db_version() <= next_version:
+    if get_db_version() < next_version:
         with wapt_db.atomic():
             logger.info("Migrating from %s to %s" % (get_db_version(), next_version))
 
@@ -1469,7 +1524,7 @@ def upgrade_db_structure():
             v.save()
 
     next_version = '1.7.2.1'
-    if get_db_version() <= next_version:
+    if get_db_version() < next_version:
         with wapt_db.atomic():
             logger.info("Migrating from %s to %s" % (get_db_version(), next_version))
 
@@ -1486,7 +1541,7 @@ def upgrade_db_structure():
             v.save()
 
     next_version = '1.7.3.0'
-    if get_db_version() <= next_version:
+    if get_db_version() < next_version:
         with wapt_db.atomic():
             logger.info("Migrating from %s to %s" % (get_db_version(), next_version))
 
@@ -1495,12 +1550,27 @@ def upgrade_db_structure():
             columns = [c.name for c in wapt_db.get_columns('hosts')]
             if not 'host_capabilities' in columns:
                 opes.append(migrator.add_column(Hosts._meta.name, 'host_capabilities',Hosts.host_capabilities))
-
             migrate(*opes)
             (v, created) = ServerAttribs.get_or_create(key='db_version')
             v.value = next_version
             v.save()
 
+    next_version = '1.7.3.1'
+    if get_db_version() <= next_version:
+        with wapt_db.atomic():
+            logger.info("Migrating from %s to %s" % (get_db_version(), next_version))
+
+            opes = []
+
+            columns = [c.name for c in wapt_db.get_columns('hosts')]
+            if not 'waptwua_rules' in columns:
+                opes.append(migrator.add_column(Hosts._meta.name, 'waptwua_rules',Hosts.waptwua_rules))
+            if not 'host_metrics' in columns:
+                opes.append(migrator.add_column(Hosts._meta.name, 'host_metrics',Hosts.host_metrics))
+            migrate(*opes)
+            (v, created) = ServerAttribs.get_or_create(key='db_version')
+            v.value = next_version
+            v.save()
 
 if __name__ == '__main__':
     if platform.system() != 'Windows' and getpass.getuser() != 'wapt':

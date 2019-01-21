@@ -113,6 +113,7 @@ __all__ = \
  'get_installer_defaults',
  'glob',
  'host_info',
+ 'host_metrics',
  'inifile_hasoption',
  'inifile_hassection',
  'inifile_deleteoption',
@@ -2881,19 +2882,13 @@ def host_info():
     info['cpu_name'] = registry_readstring(HKEY_LOCAL_MACHINE,r'HARDWARE\DESCRIPTION\System\CentralProcessor\0','ProcessorNameString','').strip()
     info['cpu_identifier'] = registry_readstring(HKEY_LOCAL_MACHINE,r'HARDWARE\DESCRIPTION\System\CentralProcessor\0','Identifier','').strip()
 
-    info['physical_memory'] = memory_status().ullTotalPhys
-    info['virtual_memory'] = memory_status().ullTotalVirtual
-
-    info['current_user'] = get_loggedinusers()
     info['profiles_users'] = get_profiles_users()
-    info['last_logged_on_user'] = get_last_logged_on_user()
     info['local_administrators'] = local_admins()
     info['local_groups'] =  {g:local_group_members(g) for g in local_groups()}
     info['local_users'] =  local_users()
 
     info['windows_startup_items'] = win_startup_info()
 
-    info['local_drives'] = local_drives()
     info['wua_agent_version'] = wua_agent_version()
 
     # empty if computer is not in a AD domain... status from last gpupdate
@@ -2981,6 +2976,22 @@ def local_drives():
         logger.critical(u'WMI is broken on this computer. See https://blogs.technet.microsoft.com/askperf/2009/04/13/wmi-rebuilding-the-wmi-repository : %s' % ensure_unicode(e))
     return result
 
+def host_metrics():
+    """Frequently updated host data
+    """
+    result = {}
+    # volatile...
+    result['physical_memory'] = memory_status().ullTotalPhys
+    result['virtual_memory'] = memory_status().ullTotalVirtual
+    result['local_drives'] = local_drives()
+    result['logged_in_users'] = get_loggedinusers()
+    result['last_logged_on_user'] = get_last_logged_on_user()
+
+    # memory usage
+    current_process = psutil.Process()
+    result['wapt-memory-usage'] = vars(current_process.memory_info())
+
+    return result
 
 def fix_wmi():
     """reregister all the WMI related DLLs in the wbem folder

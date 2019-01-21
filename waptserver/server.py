@@ -92,7 +92,7 @@ from waptserver.config import get_http_proxies
 
 from waptpackage import PackageEntry,update_packages,WaptLocalRepo,EWaptBadSignature,EWaptMissingCertificate
 from waptcrypto import SSLCertificate,SSLVerifyException,SSLCertificateSigningRequest,InvalidSignature,SSLPrivateKey
-from waptcrypto import sha256_for_file,sha256_for_data
+from waptcrypto import sha256_for_file,sha256_for_data,SSLCABundle
 
 from waptutils import datetime2isodate,ensure_list,ensure_unicode,Version,setloglevel
 
@@ -271,6 +271,8 @@ def sign_host_csr(host_certificate_csr):
     return host_cert
 
 
+
+
 @app.route('/add_host_kerberos',methods=['HEAD','POST'])
 @app.route('/add_host',methods=['HEAD','POST'])
 @check_auth_is_provided
@@ -400,7 +402,7 @@ def register_host():
 
             data['last_seen_on'] = datetime2isodate()
             data['registration_auth_user'] = registration_auth_user
-            db_data = update_host_data(data)
+            db_data = update_host_data(data,app.conf)
 
             if 'host_certificate_signing_request' in data and host_cert:
                 # return back signed host certificate
@@ -494,7 +496,7 @@ def update_host():
             del data['host_certificate']
 
         data['last_seen_on'] = datetime2isodate()
-        db_data = update_host_data(data)
+        db_data = update_host_data(data,app.conf)
 
         result = db_data
         message = 'update_host'
@@ -1489,7 +1491,6 @@ def get_hosts():
                                'last_seen_on',
                                'mac_addresses',
                                'connected_ips',
-                               'wapt_status',
                                'uuid',
                                'md5sum',
                                'purchase_order',
@@ -1515,7 +1516,6 @@ def get_hosts():
                        'computer_fqdn',
                        'computer_name',
                        'description',
-                       'wapt_status',
                        'dnsdomain',
                        'server_uuid',
                        'listening_protocol',

@@ -1832,7 +1832,7 @@ class WaptServer(BaseObjectClass):
 
             # TODO : issue if more hosts to upload than allowed open file handles.
             if pe.localpath and os.path.isfile(pe.localpath):
-                if pe.section in ['host','group','unit']:
+                if pe.section in ['host','group','unit','profile']:
                     # small local files, don't stream, we will upload many at once with form encoded files
                     files[os.path.basename(package_filename)] = open(pe.localpath,'rb').read()
                 else:
@@ -5307,7 +5307,6 @@ class Wapt(BaseObjectClass):
                 new_hashes[key] = newhash
 
         inv = {'uuid': self.host_uuid}
-        inv['wapt_status'] = self.wapt_status()
         inv['status_revision'] = self.read_param('status_revision',0,'int')
 
         host_info = setuphelpers.host_info()
@@ -5315,12 +5314,17 @@ class Wapt(BaseObjectClass):
         host_info['computer_ad_dn'] = self.host_dn
 
         self.write_param('host_ad_groups_ttl',0.0)
+        _add_data_if_updated(inv,'wapt_status',self.wapt_status(),old_hashes,new_hashes)
         _add_data_if_updated(inv,'host_capabilities',self.host_capabilities(),old_hashes,new_hashes)
         _add_data_if_updated(inv,'host_info',host_info,old_hashes,new_hashes)
+        _add_data_if_updated(inv,'host_metrics',setuphelpers.host_metrics(),old_hashes,new_hashes)
         _add_data_if_updated(inv,'audit_status',self.get_audit_status(),old_hashes,new_hashes)
         _add_data_if_updated(inv,'installed_softwares',setuphelpers.installed_softwares(''),old_hashes,new_hashes)
         _add_data_if_updated(inv,'installed_packages',[p.as_dict() for p in self.waptdb.installed(include_errors=True,include_setup=False)],old_hashes,new_hashes)
         _add_data_if_updated(inv,'last_update_status', self.get_last_update_status(),old_hashes,new_hashes)
+
+        authorized_certificates_pem = [c.as_pem() for c in self.authorized_certificates()]
+        _add_data_if_updated(inv,'authorized_certificates',authorized_certificates_pem,old_hashes,new_hashes)
 
         if include_wmi:
             try:
@@ -5340,11 +5344,13 @@ class Wapt(BaseObjectClass):
                 wua_client = waptenterprise.waptwua.client.WaptWUA(self)
                 try:
                     waptwua_status = wua_client.stored_waptwua_status()
+                    waptwua_rules = wua_client.stored_waptwua_rules()
                     waptwua_updates = wua_client.stored_updates()
                     waptwua_updates_localstatus = wua_client.stored_updates_localstatus()
 
                     _add_data_if_updated(inv,'wuauserv_status', wua_client.get_wuauserv_status(),old_hashes,new_hashes)
                     _add_data_if_updated(inv,'waptwua_status', waptwua_status,old_hashes,new_hashes)
+                    _add_data_if_updated(inv,'waptwua_rules', waptwua_rules,old_hashes,new_hashes)
                     _add_data_if_updated(inv,'waptwua_updates', waptwua_updates,old_hashes,new_hashes)
                     _add_data_if_updated(inv,'waptwua_updates_localstatus', waptwua_updates_localstatus,old_hashes,new_hashes)
 
@@ -5531,7 +5537,6 @@ class Wapt(BaseObjectClass):
                 logger.warning('Certificate %s invalid (fingerprint %s expiration %s): %s' % (c.cn,c.fingerprint,c.not_after,e))
                 invalid_certs_sha256.append(c.fingerprint)
 
-        result['authorized_certificates'] = [c.as_pem() for c in self.authorized_certificates()]
         result['authorized_certificates_sha256'] = trusted_certs_sha256
         result['invalid_certificates_sha256'] = invalid_certs_sha256
         result['authorized_certificates_cn'] = trusted_certs_cn
@@ -5565,9 +5570,6 @@ class Wapt(BaseObjectClass):
         result['repositories'] = [ r.as_dict() for r in self.repositories]
         if self.waptserver:
             result['waptserver'] = self.waptserver.as_dict()
-        # memory usage
-        current_process = psutil.Process()
-        result['wapt-memory-usage'] = vars(current_process.memory_info())
 
         result['packages_whitelist'] = self.packages_whitelist
         result['packages_blacklist'] = self.packages_blacklist
@@ -5576,7 +5578,7 @@ class Wapt(BaseObjectClass):
         for rules in glob.glob(setuphelpers.makepath(os.path.dirname(__file__),'private','persistent','*','selfservice.json')):
             with open(rules) as f:
                 listrules.append(json.loads(f.read()))
-        result['rules_waptselfservice'] = merge_rules_self_service(listrules)
+        result['self_service_rules'] = merge_self_service_rules(listrules)
 
         return result
 
@@ -7006,37 +7008,37 @@ class Wapt(BaseObjectClass):
 
         return True
 
-def check_user_authorisation(rules,packagename,listgroupuser):
+def check_user_authorisation_for_self_service(rules,packagename,user_groups):
     """Returns True if the user is allowed to install software based on their group and selfservice rules
 
     Args:
-        rules (dict): dict rules with group allowed
+        rules (dict): dict rules with allowed groups for a package name
         packagename(str): name of the package the user wants to install
         listgroupuser(list): selfservice group list of the user
 
     Returns:
         boolean: True
     """
-    if 'waptselfservice' in listgroupuser :
+    if 'waptselfservice' in user_groups :
         return True
     if not packagename in rules:
         return False
     else:
-        for group in listgroupuser :
+        for group in user_groups :
             if group in rules[packagename]:
                 return True
     return False
 
-def list_group_selfservice_from_user(listgroup,logon_name,password):
-    """Returns the group list for a given user based on the selfservice group
+def get_user_self_service_groups(self_service_groups,logon_name,password):
+    """Returns the self-service groups for a given user
 
     Args:
-        rules (dict): dict rules with group allowed
+        self_service_groups (dict): dict rules with group allowed
         logon_name(str): Username of user
         password(str): Password of user
 
     Returns:
-        list: ['compta','tech']
+        list: of user's self service groups memberships ex: ['compta','tech']
     """
 
     domain = ''
@@ -7052,7 +7054,7 @@ def list_group_selfservice_from_user(listgroup,logon_name,password):
         domain = logon_name.split('@')[1]
     else:
         username = logon_name
-    huser = win32security.LogonUser (username,domain,password,win32security.LOGON32_LOGON_NETWORK,win32security.LOGON32_PROVIDER_DEFAULT)
+    huser = win32security.LogonUser (username,domain,password,win32security.LOGON32_LOGON_NETWORK_CLEARTEXT,win32security.LOGON32_PROVIDER_DEFAULT)
 
     listgroupuser =  [username]
     for group in listgroup :
@@ -7062,17 +7064,19 @@ def list_group_selfservice_from_user(listgroup,logon_name,password):
             listgroupuser.append(group)
     return listgroupuser
 
-def merge_rules_self_service(listrules):
-    """Returns dict rules merged
+def merge_self_service_rules(all_rules):
+    """Returns a map of all authorized groups for a package
 
     Args:
-        rules (dict): dictionary list
+        all_rules (dict): list of dicts.
+                          Each dict map a package with the list of
+
 
     Returns:
         list: {'tis-7zip':['waptadmins'],'tis-firefox':['testgrp','waptadmins']}
     """
     rulesselfservice = {}
-    for rules in listrules :
+    for rules in all_rules :
         for package in rules:
             if package in rulesselfservice:
                 for user in rules[package]:
@@ -7083,17 +7087,27 @@ def merge_rules_self_service(listrules):
 
     return rulesselfservice
 
-def revers_rules_self_service(dict_group_paquet):
-    dict_paquet_group = {}
-    for group in dict_group_paquet:
-        for package in dict_group_paquet[group]:
-            if not package in dict_paquet_group:
-                dict_paquet_group[package] = [group]
-            else:
-                if not group in dict_paquet_group[package]:
-                    dict_paquet_group[package].append(group)
+def reversed_self_service_rules(dict_group_packages):
+    """Returns a map of authorized packages for a group
+    given the map from authorized groups for a list of package
 
-    return dict_paquet_group
+    Args:
+        dict_group_packages (dict): map from group to package
+
+    Returns:
+        dict : map from package to group
+
+    """
+    dict_package_groups = {}
+    for group in dict_group_packages:
+        for package in dict_group_packages[group]:
+            if not package in dict_package_groups:
+                dict_package_groups[package] = [group]
+            else:
+                if not group in dict_package_groups[package]:
+                    dict_package_groups[package].append(group)
+
+    return dict_package_groups
 
 def wapt_sources_edit(wapt_sources_dir):
     """Utility to open Pyscripter with package source if it is installed

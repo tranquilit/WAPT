@@ -357,7 +357,7 @@ def main():
             else:
                 if private_key_password_cache is None:
                     if (options.use_gui_helper or sys.stdin is not sys.__stdin__) and waptguihelper:
-                        res = waptguihelper.key_password_dialog('Password for orivate key',mywapt.personal_certificate_path.encode('utf8'),private_key_password_cache or '')
+                        res = waptguihelper.key_password_dialog('Password for private key',mywapt.personal_certificate_path.encode('utf8'),private_key_password_cache or '')
                         if res:
                             private_key_password_cache = res['keypassword']
                         else:
