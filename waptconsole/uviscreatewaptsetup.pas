@@ -74,6 +74,7 @@ type
     ActiveCertBundle: UnicodeString;
     property CurrentVisLoading: TVisLoading read GetCurrentVisLoading;
     function GetWUAParams: ISuperObject;
+    procedure SaveWAPTAgentSettings;
 
     Function BuildWaptSetup: String;
     procedure UploadWaptSetup(SetupFilename:String);
@@ -323,6 +324,42 @@ begin
   end;
 end;
 
+
+procedure TVisCreateWaptSetup.SaveWAPTAgentSettings;
+var
+  ini: TIniFile;
+begin
+  try
+    ini := TIniFile.Create(AppIniFilename);
+    ini.WriteString('global', 'default_ca_cert_path',ActiveCertBundle );
+
+    ini.WriteBool('global', 'use_kerberos', CBUseKerberos.Checked);
+    ini.WriteBool('global', 'use_fqdn_as_uuid',CBUseFQDNAsUUID.Checked);
+
+    if GBWUA.Visible and (CBWUAEnabled.State in [cbChecked,cbGrayed]) then
+    begin
+        // no key -> don't change anything -> grayed
+        if CBWUAEnabled.State <> cbGrayed then
+          ini.WriteBool('waptwua','enabled',CBWUAEnabled.Checked);
+
+        if CBWUADefaultAllow.State <> cbGrayed then
+          ini.WriteBool('waptwua','default_allow',CBWUADefaultAllow.Checked);
+
+        if CBWUAOffline.State <> cbGrayed then
+          ini.WriteBool('waptwua','offline',CBWUAOffline.Checked);
+
+        if CBWUAAllowDirectDownload.State <> cbGrayed then
+          ini.WriteBool('waptwua','allow_direct_download',CBWUAAllowDirectDownload.Checked);
+
+        ini.WriteString('waptwua','install_delay',EdWUAInstallDelay.Text);
+        ini.WriteString('waptwua','download_scheduling',EdWUADownloadScheduling.Text);
+    end;
+  finally
+    ini.Free;
+  end;
+end;
+
+
 function TVisCreateWaptSetup.GetCurrentVisLoading: TVisLoading;
 begin
   if FCurrentVisLoading=Nil then
@@ -335,24 +372,7 @@ function TVisCreateWaptSetup.BuildWaptSetup: String;
 var
   WAPTSetupPath: string;
 begin
-  {// Global settings
-  if CBWUADefaultAllow.State = cbChecked then
-    Result.B['default_allow'] := True
-  else if CBWUADefaultAllow.State.State = cbUnChecked then
-    Result.B['default_allow'] := False
-  else
-    Result['default_allow'] := Nil;
-
-  if Trim(EdWUAInstallDelay.Text) <>'' then
-    Result.S['install_delay'] := Trim(EdWUAInstallDelay.Text)
-  else
-    Result['install_delay'] := Nil;
-
-  Result.B['allow_direct_download'] := True;
-  Result.B['offline'] := True;
-  }
-
-
+  SaveWAPTAgentSettings;
   with CurrentVisLoading do
   try
     Screen.Cursor := crHourGlass;
