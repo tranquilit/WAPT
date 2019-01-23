@@ -3998,7 +3998,8 @@ class Wapt(BaseObjectClass):
             packages_maturities=self.maturities,
             use_host_packages=self.use_hostpackages,
             host_profiles=self.host_profiles,
-            host_certificate=self.get_host_certificate().fingerprint
+            host_certificate=self.get_host_certificate().fingerprint,
+            host_packages_names=self.get_host_packages_names(),
             #authorized_maturities=self.get_host_maturities(),
         )
 

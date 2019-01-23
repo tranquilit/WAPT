@@ -232,6 +232,10 @@ msgctxt "tviscreatekey.labunit.hint"
 msgid "E.g. : IT department."
 msgstr "E.g. : DSI"
 
+#: tviscreatewaptsetup.actbuildupload.caption
+msgid "Build / upload waptagent"
+msgstr ""
+
 #: tviscreatewaptsetup.actgetservercertificate.caption
 msgctxt "tviscreatewaptsetup.actgetservercertificate.caption"
 msgid "Get Server https Certificate"
@@ -303,6 +307,26 @@ msgctxt "tviscreatewaptsetup.cbverifycert.caption"
 msgid "Verify https server certificate"
 msgstr "Vérifier le certificat https serveur"
 
+#: tviscreatewaptsetup.cbwuaallowdirectdownload.caption
+msgid "Allow direct download of Windows updates cabs"
+msgstr "Autoriser le téléchargement direct des MAJ"
+
+#: tviscreatewaptsetup.cbwuaallowdirectdownload.hint
+msgid "Allow to download cabs from Microsoft windows update site if it is not (yet) avalable on waptwua repository"
+msgstr "Autrose de télécharger directement depuis le site de Microsoft si les fichiers ne sont pas disponibles sur le dépôt WaptWUA"
+
+#: tviscreatewaptsetup.cbwuadefaultallow.caption
+msgid "Allow all Updates by default unless explicitely forbidden by rules"
+msgstr "Autoriser toutes les MAJ par défaut."
+
+#: tviscreatewaptsetup.cbwuaenabled.caption
+msgid "Manage Windows Updates with WAPT"
+msgstr "Gérer les MAJ Windows avec WAPT"
+
+#: tviscreatewaptsetup.cbwuaoffline.caption
+msgid "Scan offline using wsusscn2.cab"
+msgstr "Scan hors ligne avec wsusscn2.cab"
+
 #: tviscreatewaptsetup.edappendhostprofiles.hint
 msgid "E.g. : socle,accounting"
 msgstr "Par exemple : socle,compta"
@@ -329,6 +353,10 @@ msgstr "Par exemple : https://wapt.mondomaine.lan"
 #: tviscreatewaptsetup.fnpubliccert.hint
 msgid "X509 PEM encoded file with CA certificates which are trusted"
 msgstr "Fichier X509 au format PEM avec les certificats auxquels on fait confiance "
+
+#: tviscreatewaptsetup.gbwua.caption
+msgid "WAPTWUA Windows Updates "
+msgstr "Mises à jour Windows par WAPTWUA"
 
 #: tviscreatewaptsetup.label1.caption
 #| msgid "Authorized Packages Certificate / CA bundle"
@@ -384,6 +412,16 @@ msgstr "Ajouter les profils de poste"
 #: tviscreatewaptsetup.label8.hint
 msgid "Comma separated list of profile packages to add for hosts. Host will belongs to these additional profiles"
 msgstr "Liste (séparée par des virgules) de paquets profils à ajouter aux machines."
+
+#: tviscreatewaptsetup.labwuainstalldelay.caption
+#, fuzzy
+msgctxt "tviscreatewaptsetup.labwuainstalldelay.caption"
+msgid "Minimum delay before installation (days after publish date)"
+msgstr "Délai minimum avant l'installation (en jours après la date de publication)"
+
+#: tviscreatewaptsetup.labwuascandownloadperiod.caption
+msgid "Scan / download scheduling"
+msgstr "Planification du scan/téléchargement"
 
 #: tvisdisplaypreferences.caption
 msgctxt "tvisdisplaypreferences.caption"
@@ -2652,10 +2690,6 @@ msgstr "Réinitialiser la sélection"
 msgid "Edit Windows updates Group"
 msgstr ""
 
-#: tviswuagroup.cbdefaultallow.caption
-msgid "Updates are allowed by default"
-msgstr "Les mises à jour sont autorisées par défaut"
-
 #: tviswuagroup.cbwucritical.caption
 #, fuzzy
 msgctxt "tviswuagroup.cbwucritical.caption"
@@ -2714,10 +2748,6 @@ msgstr "Description"
 #: tviswuagroup.label4.caption
 msgid "Package filename : "
 msgstr "Nom de fichier du paquet"
-
-#: tviswuagroup.label5.caption
-msgid "Minimum delay before installation (days after publish date)"
-msgstr "Délai minimum avant l'installation (en jours après la date de publication)"
 
 #: tviswuagroup.label6.caption
 msgid "Maturity"

@@ -1638,7 +1638,7 @@ var
   sores:ISuperObject;
 begin
   try
-    sores := WAPTServerJsonGet('api/v1/hosts?columns=dmi,wmi,host_info,waptwua_status,wuauserv_status,host_capabilities&uuid=%S',[uuid]);
+    sores := WAPTServerJsonGet('api/v1/hosts?columns=dmi,wmi,host_info,host_metrics,waptwua_status,wuauserv_status,host_capabilities,wapt_status&uuid=%S',[uuid]);
     if (sores<>nil) and sores.B['success'] then
     begin
       if sores['result'].AsArray.Length>0 then

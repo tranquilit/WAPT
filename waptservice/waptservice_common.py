@@ -26,6 +26,7 @@ import os
 import datetime
 import logging
 import threading
+from functools import wraps
 
 try:
     wapt_root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__),'..'))
@@ -44,10 +45,14 @@ from optparse import OptionParser
 
 # wapt specific stuff
 from waptutils import ensure_unicode,ensure_list,LogOutput,jsondump,get_time_delta
+
 import common
 from common import Wapt
+
 import setuphelpers
 from setuphelpers import Version
+
+from flask import request, Response, send_from_directory, send_file, session, redirect, url_for, abort, render_template, flash, stream_with_context
 
 logger = logging.getLogger()
 
@@ -68,6 +73,38 @@ waptservice_remote_actions = {}
 
 def register_remote_action(name,action,required_attributes=[]):
     waptservice_remote_actions[name] = WaptServiceRemoteAction(name,action,required_attributes)
+
+
+def forbidden():
+    """Sends a 403 response that enables basic auth"""
+    return Response(
+        'Restricted access.\n',
+         403)
+
+def badtarget():
+    """Sends a 400 response if uuid mismatch"""
+    return Response(
+        'Host target UUID is not matching your request.\n',
+         400)
+
+def authenticate():
+    """Sends a 401 response that enables basic auth"""
+    return Response(
+        'Could not verify your access level for that URL.\n'
+        'You have to login with proper credentials', 401,
+        {'WWW-Authenticate': 'Basic realm="Login Required"'})
+
+def allow_local(f):
+    """Restrict access to localhost"""
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if request.remote_addr in ['127.0.0.1']:
+            return f(*args, **kwargs)
+        else:
+            return forbidden()
+    return decorated
+
+
 
 class WaptEvent(object):
     """Store single event with list of subscribers"""

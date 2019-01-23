@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, LazFileUtils, Forms, Controls, Graphics, Dialogs, StdCtrls,
   EditBtn, ExtCtrls, Buttons, ActnList, DefaultTranslator, Menus, sogrid,
-  uVisLoading,IdComponent;
+  uVisLoading,IdComponent,superobject;
 
 type
 
@@ -15,6 +15,7 @@ type
 
   TVisCreateWaptSetup = class(TForm)
     ActGetServerCertificate: TAction;
+    ActBuildUpload: TAction;
     ActionList1: TActionList;
     BitBtn1: TBitBtn;
     BitBtn2: TBitBtn;
@@ -25,14 +26,21 @@ type
     CBVerifyCert: TCheckBox;
     CBUseKerberos: TCheckBox;
     CBForceRepoURL: TCheckBox;
+    CBWUADefaultAllow: TCheckBox;
+    CBWUAOffline: TCheckBox;
+    CBWUAEnabled: TCheckBox;
+    CBWUAAllowDirectDownload: TCheckBox;
     edAppendHostProfiles: TEdit;
     EdServerCertificate: TFileNameEdit;
     edWaptServerUrl: TEdit;
+    EdWUAInstallDelay: TEdit;
+    EdWUADownloadScheduling: TEdit;
     fnWaptDirectory: TDirectoryEdit;
     edRepoUrl: TEdit;
     edOrgName: TEdit;
     fnPublicCert: TFileNameEdit;
     GridCertificates: TSOGrid;
+    GBWUA: TGroupBox;
     Label1: TLabel;
     Label2: TLabel;
     Label3: TLabel;
@@ -41,12 +49,15 @@ type
     Label6: TLabel;
     Label7: TLabel;
     Label8: TLabel;
+    LabWUAInstallDelay: TLabel;
+    LabWUAScanDownloadPeriod: TLabel;
     MenuItem1: TMenuItem;
     Panel1: TPanel;
     Panel2: TPanel;
     PopupMenu1: TPopupMenu;
     procedure ActGetServerCertificateExecute(Sender: TObject);
     procedure CBVerifyCertClick(Sender: TObject);
+    procedure CBWUAEnabledClick(Sender: TObject);
     procedure fnPublicCertChange(Sender: TObject);
     procedure fnPublicCertEditingDone(Sender: TObject);
     procedure fnPublicCertExit(Sender: TObject);
@@ -62,6 +73,7 @@ type
     { public declarations }
     ActiveCertBundle: UnicodeString;
     property CurrentVisLoading: TVisLoading read GetCurrentVisLoading;
+    function GetWUAParams: ISuperObject;
 
     Function BuildWaptSetup: String;
     procedure UploadWaptSetup(SetupFilename:String);
@@ -78,7 +90,7 @@ implementation
 
 uses
   Variants,dmwaptpython,IdUri,IdSSLOpenSSLHeaders,uWaptConsoleRes,uWaptRes,
-  tiscommon,tisstrings,waptcommon,VarPyth,superobject,inifiles,tisinifiles,
+  tiscommon,tisstrings,waptcommon,VarPyth,inifiles,tisinifiles,
   PythonEngine, uWaptPythonUtils;
 
 { TVisCreateWaptSetup }
@@ -188,6 +200,11 @@ begin
   EdServerCertificate.Enabled:=CBVerifyCert.Checked;
 end;
 
+procedure TVisCreateWaptSetup.CBWUAEnabledClick(Sender: TObject);
+begin
+  GBWUA.Enabled:=CBWUAEnabled.State = cbChecked;
+end;
+
 procedure TVisCreateWaptSetup.fnPublicCertChange(Sender: TObject);
 begin
   fnPublicCertEditingDone(Sender);
@@ -263,6 +280,44 @@ begin
     if not CBCheckCertificatesValidity.Checked then
       CBCheckCertificatesValidity.Visible := True;
 
+    CBWUAEnabled.Visible:=DMPython.IsEnterpriseEdition;
+    GBWUA.Visible:=DMPython.IsEnterpriseEdition;
+    if not DMPython.IsEnterpriseEdition then
+      CBWUAEnabled.State := cbGrayed
+    else
+    begin
+      if ini.SectionExists('waptwua') then
+      begin
+        // no key -> don't change anything -> grayed
+        if not ini.ValueExists('waptwua','enabled') then
+          CBWUAEnabled.State:=cbGrayed
+        else
+          CBWUAEnabled.Checked:=ini.ReadBool('waptwua','enabled',False);
+
+        if not ini.ValueExists('waptwua','default_allow') then
+          CBWUADefaultAllow.State:=cbGrayed
+        else
+          CBWUADefaultAllow.Checked:=ini.ReadBool('waptwua','default_allow',False);
+
+        if not ini.ValueExists('waptwua','offline') then
+          CBWUAOffline.State:=cbGrayed
+        else
+          CBWUAOffline.Checked:=ini.ReadBool('waptwua','offline',True);
+
+        if not ini.ValueExists('waptwua','allow_direct_download') then
+          CBWUAAllowDirectDownload.State:=cbGrayed
+        else
+          CBWUAAllowDirectDownload.Checked:=ini.ReadBool('waptwua','allow_direct_download',True);
+
+        EdWUAInstallDelay.Text := ini.ReadString('waptwua','install_delay','');
+      end
+      else
+      begin
+        CBWUAEnabled.State:=cbGrayed;
+        CBWUADefaultAllow.State:=cbGrayed;
+        EdWUAInstallDelay.Text := '';
+      end;
+    end;
   finally
     ini.Free;
   end;
@@ -280,6 +335,24 @@ function TVisCreateWaptSetup.BuildWaptSetup: String;
 var
   WAPTSetupPath: string;
 begin
+  {// Global settings
+  if CBWUADefaultAllow.State = cbChecked then
+    Result.B['default_allow'] := True
+  else if CBWUADefaultAllow.State.State = cbUnChecked then
+    Result.B['default_allow'] := False
+  else
+    Result['default_allow'] := Nil;
+
+  if Trim(EdWUAInstallDelay.Text) <>'' then
+    Result.S['install_delay'] := Trim(EdWUAInstallDelay.Text)
+  else
+    Result['install_delay'] := Nil;
+
+  Result.B['allow_direct_download'] := True;
+  Result.B['offline'] := True;
+  }
+
+
   with CurrentVisLoading do
   try
     Screen.Cursor := crHourGlass;
@@ -295,7 +368,8 @@ begin
       CBForceRepoURL.Checked,
       CBForceWaptServerURL.Checked,
       CBUseFQDNAsUUID.Checked,
-      edAppendHostProfiles.Text
+      edAppendHostProfiles.Text,
+      GetWUAParams()
       );
     Result := WAPTSetupPath;
   finally
@@ -328,7 +402,7 @@ begin
 end;
 
 // Return base filename of built package. Empty string if no package built.
-Function TVisCreateWaptSetup.BuildWaptUpgrade(SetupFilename: String):String;
+function TVisCreateWaptSetup.BuildWaptUpgrade(SetupFilename: String): String;
 var
   BuildDir, SignDigests: String;
   BuildResult: Variant;
@@ -380,6 +454,49 @@ procedure TVisCreateWaptSetup.IdHTTPWork(ASender: TObject;
 begin
   if CurrentVisLoading <> nil then
     CurrentVisLoading.DoProgress(ASender)
+end;
+
+function TVisCreateWaptSetup.GetWUAParams: ISuperObject;
+begin
+  if GBWUA.Visible then
+  begin
+    Result := TSuperObject.Create(stObject);
+    Result.S['filter'] := 'Type=''Software'' or Type=''Driver''';
+
+    if CBWUAEnabled.State = cbGrayed then
+      Result['enabled'] := Nil
+    else
+      Result.B['enabled'] := CBWUAEnabled.Checked;
+
+    if CBWUADefaultAllow.State = cbGrayed then
+      Result['default_allow'] := Nil
+    else
+      Result.B['default_allow'] := CBWUADefaultAllow.Checked;
+
+    Result.S['filter'] := 'Type=''Software'' or Type=''Driver''';
+
+    if Trim(EdWUADownloadScheduling.Text) <>'' then
+      Result.S['download_scheduling'] := Trim(EdWUADownloadScheduling.Text)
+    else
+      Result['download_scheduling'] := Nil;
+
+    if Trim(EdWUAInstallDelay.Text) <>'' then
+      Result.S['install_delay'] := Trim(EdWUAInstallDelay.Text)
+    else
+      Result['install_delay'] := Nil;
+
+    if CBWUAAllowDirectDownload.State = cbGrayed then
+      Result['allow_direct_download'] := Nil
+    else
+      Result.B['allow_direct_download'] := CBWUAAllowDirectDownload.Checked;
+
+    if CBWUAOffline.State = cbGrayed then
+      Result['offline'] := Nil
+    else
+      Result.B['offline'] := CBWUAOffline.Checked;
+  end
+  else
+    result := Nil;
 end;
 
 end.

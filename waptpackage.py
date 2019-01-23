@@ -243,7 +243,7 @@ class HostCapabilities(BaseObjectClass):
     __all_attributes = ['uuid', 'language', 'os', 'os_version', 'architecture', 'dn', 'fqdn',
             'site', 'wapt_version', 'wapt_edition', 'packages_trusted_ca',
             'packages_blacklist', 'packages_whitelist', 'packages_locales',
-            'packages_maturities', 'use_host_packages',
+            'packages_maturities', 'use_host_packages','host_packages_names',
             'host_profiles', 'host_certificate']
     def __init__(self,**kwargs):
         self.uuid = None
@@ -263,6 +263,7 @@ class HostCapabilities(BaseObjectClass):
         self.packages_maturities = None
         self.use_host_packages = None
         self.host_profiles = None
+        self.host_packages_names = None
         self.host_certificate = None
         for (k,v) in kwargs.iteritems():
             if hasattr(self,k):

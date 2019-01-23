@@ -204,11 +204,16 @@ class Hosts(WaptBaseModel):
     listening_port = IntegerField(null=True)
     listening_timestamp = CharField(null=True)
 
+    # OK, TO-UPGRADE, ERROR, RUNNING
     host_status = CharField(null=True)
     last_seen_on = CharField(null=True)
     last_logged_on_user = CharField(null=True)
 
+    # OK, WARNING, ERROR
     audit_status = CharField(null=True)
+
+    #
+    wapt_version = CharField(null=True)
 
     # raw json data
     wapt_status = BinaryJSONField(null=True)
@@ -847,7 +852,7 @@ def update_host_data(data,server_conf=None):
                     translocal.rollback()
                     logger.critical(u'Unable to update wuauserv_status or waptwua_status for %s: %s' % (uuid,ensure_unicode(e)))
 
-            # extract X50 certificates PEM and store them in repo wapt/ssl
+            # extract X509 certificates PEM and store them in repo wapt/ssl
             if update_known_ssl_certificates(data,server_conf):
                 if 'authorized_certificates' in supplied_hashes:
                     updhost.status_hashes['authorized_certificates'] = supplied_hashes['authorized_certificates']
@@ -921,9 +926,22 @@ def wapthosts_json(model_class, instance, created):
             else:
                 setattr(instance, field, dictgetpath(instance.dmi, attribute))
 
+    if (created or Hosts.host_metrics in instance.dirty_fields) and instance.host_metrics:
+        extractmap = [
+            ['connected_users','connected_users'],
+            ['last_logged_on_user', 'last_logged_on_user'],
+        ]
+        for field, attribute in extractmap:
+            if callable(attribute):
+                setattr(instance, field, attribute(instance.host_metrics))
+            else:
+                setattr(instance, field, dictgetpath(instance.host_metrics, attribute))
+
+
     # extract list for fast query.
-    if instance.wapt_status:
-        instance.authorized_certificates_sha256 = dictgetpath(instance.wapt_status, 'authorized_certificates_sha256')
+    if (created or Hosts.host_capabilities in instance.dirty_fields) and instance.host_capabilities:
+        instance.authorized_certificates_sha256 = dictgetpath(instance.host_capabilities, 'packages_trusted_ca')
+        instance.wapt_version = dictgetpath(instance.wapt_status, 'wapt_version')
 
     if not instance.connected_ips:
         instance.connected_ips = dictgetpath(instance.host_info, 'networking.*.addr')
@@ -1569,6 +1587,8 @@ def upgrade_db_structure():
                 opes.append(migrator.add_column(Hosts._meta.name, 'waptwua_rules',Hosts.waptwua_rules))
             if not 'host_metrics' in columns:
                 opes.append(migrator.add_column(Hosts._meta.name, 'host_metrics',Hosts.host_metrics))
+            if not 'wapt_version' in columns:
+                opes.append(migrator.add_column(Hosts._meta.name, 'wapt_version',Hosts.wapt_version))
             migrate(*opes)
             (v, created) = ServerAttribs.get_or_create(key='db_version')
             v.value = next_version

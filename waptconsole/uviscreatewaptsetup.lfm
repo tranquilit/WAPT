@@ -1,12 +1,12 @@
 object VisCreateWaptSetup: TVisCreateWaptSetup
-  Left = 526
-  Height = 538
-  Top = 199
+  Left = 549
+  Height = 705
+  Top = 115
   Width = 573
   AutoSize = True
   BorderStyle = bsDialog
   Caption = 'Create WAPT agent'
-  ClientHeight = 538
+  ClientHeight = 705
   ClientWidth = 573
   OnCloseQuery = FormCloseQuery
   OnDestroy = FormDestroy
@@ -17,12 +17,12 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
   LCLVersion = '1.8.4.0'
   object Panel2: TPanel
     Left = 0
-    Height = 510
+    Height = 670
     Top = 0
     Width = 573
     Align = alClient
     BevelOuter = bvNone
-    ClientHeight = 510
+    ClientHeight = 670
     ClientWidth = 573
     Constraints.MinHeight = 510
     Constraints.MinWidth = 560
@@ -385,11 +385,95 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       Anchors = [akTop, akLeft, akRight]
       TabOrder = 14
     end
+    object CBWUAEnabled: TCheckBox
+      Left = 8
+      Height = 17
+      Top = 504
+      Width = 202
+      AllowGrayed = True
+      Caption = 'Manage Windows Updates with WAPT'
+      OnClick = CBWUAEnabledClick
+      State = cbGrayed
+      TabOrder = 15
+      Visible = False
+    end
+    object GBWUA: TGroupBox
+      Left = 8
+      Height = 136
+      Top = 528
+      Width = 567
+      Caption = 'WAPTWUA Windows Updates '
+      ClientHeight = 118
+      ClientWidth = 563
+      TabOrder = 16
+      Visible = False
+      object CBWUADefaultAllow: TCheckBox
+        Left = 8
+        Height = 17
+        Top = 0
+        Width = 326
+        Caption = 'Allow all Updates by default unless explicitely forbidden by rules'
+        TabOrder = 0
+      end
+      object EdWUAInstallDelay: TEdit
+        Left = 208
+        Height = 21
+        Top = 80
+        Width = 80
+        TabOrder = 1
+      end
+      object LabWUAInstallDelay: TLabel
+        Left = 8
+        Height = 32
+        Top = 80
+        Width = 192
+        AutoSize = False
+        Caption = 'Minimum delay before installation (days after publish date)'
+        ParentColor = False
+        WordWrap = True
+      end
+      object CBWUAOffline: TCheckBox
+        Left = 8
+        Height = 17
+        Top = 24
+        Width = 174
+        Caption = 'Scan offline using wsusscn2.cab'
+        Checked = True
+        State = cbChecked
+        TabOrder = 2
+      end
+      object CBWUAAllowDirectDownload: TCheckBox
+        Left = 296
+        Height = 17
+        Hint = 'Allow to download cabs from Microsoft windows update site if it is not (yet) avalable on waptwua repository'
+        Top = 24
+        Width = 250
+        AllowGrayed = True
+        Caption = 'Allow direct download of Windows updates cabs'
+        TabOrder = 3
+      end
+      object LabWUAScanDownloadPeriod: TLabel
+        Left = 72
+        Height = 13
+        Top = 52
+        Width = 132
+        Caption = 'Scan / download scheduling'
+        ParentColor = False
+        WordWrap = True
+      end
+      object EdWUADownloadScheduling: TEdit
+        Left = 208
+        Height = 21
+        Top = 48
+        Width = 80
+        TabOrder = 4
+      end
+    end
   end
   object Panel1: TPanel
     Left = 0
     Height = 35
-    Top = 503
+    Top = 670
     Width = 573
     Align = alBottom
     AutoSize = True
@@ -440,6 +524,9 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
     object ActGetServerCertificate: TAction
       Caption = 'Get Server https Certificate'
       OnExecute = ActGetServerCertificateExecute
+    end
+    object ActBuildUpload: TAction
+      Caption = 'Build / upload waptagent'
     end
   end
   object PopupMenu1: TPopupMenu

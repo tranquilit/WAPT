@@ -98,7 +98,9 @@ interface
             default_wapt_server:Utf8String='';destination:Utf8String='';company:Utf8String='';OnProgress:TNotifyEvent = Nil;WaptEdition:Utf8String='waptagent';
             VerifyCert:Utf8String='0'; UseKerberos:Boolean=False; CheckCertificatesValidity:Boolean=True;
             EnterpriseEdition:Boolean=False; OverwriteRepoURL:Boolean=True;OverwriteWaptServerURL:Boolean=True;
-            UseFQDNAsUUID:Boolean=False;AppendHostProfiles:String=''):Utf8String;
+            UseFQDNAsUUID:Boolean=False;
+            AppendHostProfiles:String='';
+            WUAParams:ISuperObject=Nil):Utf8String;
 
   function pyformat(template:String;params:ISuperobject):String;
   function pyformat(template:Utf8String;params:ISuperobject):Utf8String; overload;
@@ -1808,10 +1810,14 @@ function CreateWaptSetup(default_public_cert: Utf8String;
   WaptEdition: Utf8String; VerifyCert: Utf8String; UseKerberos: Boolean;
   CheckCertificatesValidity: Boolean; EnterpriseEdition: Boolean;
   OverwriteRepoURL: Boolean; OverwriteWaptServerURL: Boolean;
-  UseFQDNAsUUID:Boolean=False; AppendHostProfiles:String=''): Utf8String;
+  UseFQDNAsUUID:Boolean=False; AppendHostProfiles:String='';
+  WUAParams:ISuperObject=Nil): Utf8String;
 var
   iss_template,custom_iss : utf8String;
   iss,new_iss,line : ISuperObject;
+
+  //WuaKey,WuaParams: ISuperObject;
+
   wapt_base_dir,inno_fn,p12keypath,signtool: Utf8String;
   // for windows copyfilew
   source,target: WideString;
@@ -1880,8 +1886,11 @@ begin
           else
             new_iss.AsArray.Add(format('#undef waptenterprise',[]))
       end
-      else if startswith(line,'WizardImageFile=') then
-
+      // WUA Params
+      else if startswith(line,'#define wua_') then
+      begin
+        new_iss.AsArray.Add(line)
+      end
       else if startswith(line,'#define edition') and (waptedition <> '') then
         new_iss.AsArray.Add(format('#define edition "%s"' ,[waptedition]))
       else if not startswith(line,'#define signtool') then

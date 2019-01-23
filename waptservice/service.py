@@ -89,6 +89,7 @@ from waptpackage import PackageEntry,WaptLocalRepo,WaptPackage,EWaptException
 from waptcrypto import SSLVerifyException,SSLCABundle,SSLCertificate,SSLPrivateKey
 
 from waptservice.waptservice_common import waptconfig
+from waptservice.waptservice_common import forbidden,badtarget,authenticate,allow_local
 from waptservice.waptservice_common import WaptClientUpgrade,WaptServiceRestart,WaptNetworkReconfig,WaptPackageInstall
 from waptservice.waptservice_common import WaptUpgrade,WaptUpdate,WaptUpdateServerStatus,WaptCleanup,WaptDownloadPackage,WaptLongTask,WaptAuditPackage
 from waptservice.waptservice_common import WaptRegisterComputer,WaptPackageRemove,WaptPackageRemove,WaptPackageForget,WaptServiceRestart
@@ -97,7 +98,13 @@ from waptservice.waptservice_common import WaptEvents,WaptEvent
 from waptservice.waptservice_socketio import WaptSocketIOClient
 
 if os.path.isdir(os.path.join(wapt_root_dir,'waptenterprise')):
-    from waptenterprise.waptservice.enterprise import *  # pylint: disable=import-error
+    from waptenterprise.waptservice.enterprise import get_active_sessions,start_interactive_process  # pylint: disable=import-error
+    from waptenterprise.waptservice.enterprise import WaptGPUpdate,WaptWUAScanTask,WaptWUADowloadTask,WaptWUAInstallTask  # pylint: disable=import-error
+    from waptenterprise.waptservice.enterprise import run_cleanmgr,WaptRunCleanMgr # pylint: disable=import-error
+    from waptenterprise.waptservice.enterprise import run_scheduled_wua_scan,run_scheduled_wua_downloads,run_scheduled_wua_installs # pylint: disable=import-error
+    from waptenterprise.waptservice.enterprise import waptwua_api
+else:
+    waptwua_api = None
 
 from waptservice.plugins import *
 
@@ -167,6 +174,9 @@ try:
 except Exception as e:
     WaptWUA = None
     pass
+
+if waptwua_api is not None:
+    app.register_blueprint(waptwua_api)
 
 app.jinja_env.filters['beautify'] = beautify # pylint: disable=no-member
 app.waptconfig = waptconfig
@@ -244,26 +254,6 @@ def close_connection(exception):
 #       response.cache_control.max_age = 300
 #    return response
 
-def forbidden():
-    """Sends a 403 response that enables basic auth"""
-    return Response(
-        'Restricted access.\n',
-         403)
-
-def badtarget():
-    """Sends a 400 response if uuid mismatch"""
-    return Response(
-        'Host target UUID is not matching your request.\n',
-         400)
-
-def authenticate():
-    """Sends a 401 response that enables basic auth"""
-    return Response(
-        'Could not verify your access level for that URL.\n'
-        'You have to login with proper credentials', 401,
-        {'WWW-Authenticate': 'Basic realm="Login Required"'})
-
-
 def check_auth(logon_name, password):
     """This function is called to check if a username /
         password combination is valid against local waptservice admin configuration
@@ -318,16 +308,6 @@ def check_auth(logon_name, password):
             return False
     else:
         return True
-
-def allow_local(f):
-    """Restrict access to localhost"""
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        if request.remote_addr in ['127.0.0.1']:
-            return f(*args, **kwargs)
-        else:
-            return forbidden()
-    return decorated
 
 def allow_local_auth(f):
     """Restrict access to localhost authenticated"""
@@ -453,7 +433,7 @@ def all_packages(page=1):
 
     listgroup = []
     listrules = []
-    for rules in glob.glob(makepath(wapt_root_dir,'private','persistent','*','selfservice.json')):
+    for rules in glob.glob(setuphelpers.makepath(wapt_root_dir,'private','persistent','*','selfservice.json')):
         with open(rules) as f:
             data = json.loads(f.read())
             listgroup.append(data)
@@ -651,7 +631,7 @@ def get_checkupgrades():
 @allow_local
 def waptclientupgrade():
     """Launch an external 'wapt-get waptupgrade' process to upgrade local copy of wapt client"""
-    data = task_manager.add_task(WaptClientUpgrade()).as_dict()
+    data = app.task_manager.add_task(WaptClientUpgrade()).as_dict()
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
     else:
@@ -663,7 +643,7 @@ def waptclientupgrade():
 @allow_local
 def waptservicerestart():
     """Restart local waptservice using a spawned batch file"""
-    data = task_manager.add_task(WaptServiceRestart()).as_dict()
+    data = app.task_manager.add_task(WaptServiceRestart()).as_dict()
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
     else:
@@ -677,7 +657,7 @@ def reload_config():
     """trigger reload of wapt-get.ini file for the service"""
     force = int(request.args.get('force','0')) == 1
     notify_user = int(request.args.get('notify_user','0')) == 1
-    data = task_manager.add_task(WaptNetworkReconfig(notify_user=notify_user)).as_dict()
+    data = app.task_manager.add_task(WaptNetworkReconfig(notify_user=notify_user)).as_dict()
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
     else:
@@ -702,16 +682,16 @@ def upgrade():
     to_install = actions['upgrade']+actions['additional']+actions['install']
     to_remove = actions['remove']
     for req in to_remove:
-        all_tasks.append(task_manager.add_task(WaptPackageRemove(req,force=force,notify_user=notify_user,
+        all_tasks.append(app.task_manager.add_task(WaptPackageRemove(req,force=force,notify_user=notify_user,
             only_priorities=only_priorities,
             only_if_not_process_running=only_if_not_process_running)).as_dict())
     for req in to_install:
-        all_tasks.append(task_manager.add_task(WaptPackageInstall(req,force=force,notify_user=notify_user,
+        all_tasks.append(app.task_manager.add_task(WaptPackageInstall(req,force=force,notify_user=notify_user,
             only_priorities=only_priorities,
             only_if_not_process_running=only_if_not_process_running)).as_dict())
-    all_tasks.append(task_manager.add_task(WaptUpgrade(notify_user=notify_user,only_priorities=only_priorities,
+    all_tasks.append(app.task_manager.add_task(WaptUpgrade(notify_user=notify_user,only_priorities=only_priorities,
             only_if_not_process_running=only_if_not_process_running)).as_dict())
-    all_tasks.append(task_manager.add_task(WaptCleanup(notify_user=False)))
+    all_tasks.append(app.task_manager.add_task(WaptCleanup(notify_user=False)))
     data = {'result':'OK','content':all_tasks}
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
@@ -729,7 +709,7 @@ def download_upgrades():
     wapt().update()
     reqs = wapt().check_downloads()
     for req in reqs:
-        all_tasks.append(task_manager.add_task(WaptDownloadPackage(req.asrequirement(),usecache=not force,notify_user=notify_user)).as_dict())
+        all_tasks.append(app.task_manager.add_task(WaptDownloadPackage(req.asrequirement(),usecache=not force,notify_user=notify_user)).as_dict())
     data = {'result':'OK','content':all_tasks}
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
@@ -745,7 +725,7 @@ def update():
     task.force = int(request.args.get('force','0')) != 0
     task.notify_user = int(request.args.get('notify_user','0' if not waptconfig.notify_user else '1')) != 0
     task.notify_server_on_finish = int(request.args.get('notify_server','0')) != 0
-    data = task_manager.add_task(task).as_dict()
+    data = app.task_manager.add_task(task).as_dict()
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
     else:
@@ -772,8 +752,8 @@ def audit():
         task = WaptAuditPackage(packagenames,force=force)
         task.notify_user=notify_user
         task.notify_server_on_finish=notify_server_on_finish
-        tasks.append(task_manager.add_task(task).as_dict())
-        tasks.append(task_manager.add_task(WaptUpdateServerStatus(priority=100)).as_dict())
+        tasks.append(app.task_manager.add_task(task).as_dict())
+        tasks.append(app.task_manager.add_task(WaptUpdateServerStatus(priority=100)).as_dict())
 
     data = {'result':'OK','content':tasks,'message':'%s tasks queued' % len(tasks)}
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
@@ -787,7 +767,7 @@ def audit():
 @allow_local
 def update_status():
     task = WaptUpdateServerStatus()
-    data = task_manager.add_task(task).as_dict()
+    data = app.task_manager.add_task(task).as_dict()
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
     else:
@@ -801,7 +781,7 @@ def longtask():
     notify_user = request.args.get('notify_user',None)
     if notify_user is not None:
         notify_user=int(notify_user)
-    data = task_manager.add_task(
+    data = app.task_manager.add_task(
         WaptLongTask(
             duration=int(request.args.get('duration','60')),
             raise_error=int(request.args.get('raise_error',0)),
@@ -820,7 +800,7 @@ def cleanup():
     task = WaptCleanup()
     task.force = int(request.args.get('force','0')) == 1
     notify_user = int(request.args.get('notify_user','0')) == 1
-    data = task_manager.add_task(task,notify_user=notify_user)
+    data = app.task_manager.add_task(task,notify_user=notify_user)
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
     else:
@@ -865,7 +845,7 @@ def disable():
 def register():
     logger.info(u"register computer")
     notify_user = int(request.args.get('notify_user','0')) == 1
-    data = task_manager.add_task(WaptRegisterComputer(),notify_user=notify_user).as_dict()
+    data = app.task_manager.add_task(WaptRegisterComputer(),notify_user=notify_user).as_dict()
 
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
@@ -895,7 +875,7 @@ def install():
 
     listgroup = []
     listrules = []
-    for rules in glob.glob(makepath(wapt_root_dir,'private','persistent','*','selfservice.json')):
+    for rules in glob.glob(setuphelpers.makepath(wapt_root_dir,'private','persistent','*','selfservice.json')):
         with open(rules) as f:
             data = json.loads(f.read())
             listgroup.append(data)
@@ -953,9 +933,9 @@ def install():
             return authenticate()
 
     if package_requests:
-        data = task_manager.add_task(WaptPackageInstall(package_requests,force=force,installed_by=username,
+        data = app.task_manager.add_task(WaptPackageInstall(package_requests,force=force,installed_by=username,
             only_priorities = only_priorities,only_if_not_process_running=only_if_not_process_running,notify_user=notify_user)).as_dict()
-        task_manager.add_task(WaptAuditPackage(packagenames=package_requests,force=force,notify_user=notify_user,priority=100)).as_dict()
+        app.task_manager.add_task(WaptAuditPackage(packagenames=package_requests,force=force,notify_user=notify_user,priority=100)).as_dict()
 
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
@@ -971,7 +951,7 @@ def package_download():
     logger.info(u"download package %s" % package)
     notify_user = int(request.args.get('notify_user','0')) == 1
     usecache = int(request.args.get('usecache','1')) == 1
-    data = task_manager.add_task(WaptDownloadPackage(package,usecache=usecache,notify_user=notify_user)).as_dict()
+    data = app.task_manager.add_task(WaptDownloadPackage(package,usecache=usecache,notify_user=notify_user)).as_dict()
 
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
@@ -982,13 +962,12 @@ def package_download():
 @app.route('/remove', methods=['GET'])
 @app.route('/remove.json', methods=['GET'])
 def remove():
-
     if not request.authorization:
             return authenticate()
 
     listgroup = []
     listrules = []
-    for rules in glob.glob(makepath(wapt_root_dir,'private','persistent','*','selfservice.json')):
+    for rules in glob.glob(setuphelpers.makepath(wapt_root_dir,'private','persistent','*','selfservice.json')):
         with open(rules) as f:
             data = json.loads(f.read())
             listgroup.append(data)
@@ -1016,7 +995,7 @@ def remove():
     for package in packages:
         if not common.check_user_authorisation_for_self_service(mergerules,package,grpuser):
             return authenticate()
-        data.append(task_manager.add_task(WaptPackageRemove(package,force = force),notify_user=notify_user).as_dict())
+        data.append(app.task_manager.add_task(WaptPackageRemove(package,force = force),notify_user=notify_user).as_dict())
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
     else:
@@ -1032,7 +1011,7 @@ def forget():
         packages = [packages]
     logger.info(u"Forget package(s) %s" % packages)
     notify_user = int(request.args.get('notify_user','0')) == 1
-    data = task_manager.add_task(WaptPackageForget(packages),notify_user=notify_user).as_dict()
+    data = app.task_manager.add_task(WaptPackageForget(packages),notify_user=notify_user).as_dict()
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
     else:
@@ -1064,13 +1043,13 @@ def tasks():
     start_time = time.time()
 
     while True:
-        actual_last_event_id = task_manager.events.last_event_id()
+        actual_last_event_id = app.task_manager.events.last_event_id()
         if actual_last_event_id is not None and actual_last_event_id <= last_received_event_id:
-            data = {'last_event_id':task_manager.events.last_event_id()}
+            data = {'last_event_id':app.task_manager.events.last_event_id()}
             if time.time() - start_time > timeout:
                 break
         elif actual_last_event_id is None or actual_last_event_id > last_received_event_id:
-            data = task_manager.tasks_status()
+            data = app.task_manager.tasks_status()
             break
 
         if time.time() - start_time > timeout:
@@ -1096,13 +1075,13 @@ def tasks_status():
     start_time = time.time()
 
     while True:
-        actual_last_event_id = task_manager.events.last_event_id()
+        actual_last_event_id = app.task_manager.events.last_event_id()
         if actual_last_event_id is not None and actual_last_event_id <= last_received_event_id:
-            data = {'last_event_id':task_manager.events.last_event_id()}
+            data = {'last_event_id':app.task_manager.events.last_event_id()}
             if time.time() - start_time > timeout:
                 break
         elif actual_last_event_id is None or actual_last_event_id > last_received_event_id:
-            data = task_manager.tasks_status()
+            data = app.task_manager.tasks_status()
             break
 
         if time.time() - start_time > timeout:
@@ -1129,7 +1108,7 @@ def tasks_status():
 @allow_local
 def task():
     id = int(request.args['id'])
-    tasks = task_manager.tasks_status()
+    tasks = app.task_manager.tasks_status()
     all_tasks = tasks['done']+tasks['pending']+tasks['errors']
     if tasks['running']:
         all_tasks.append(tasks['running'])
@@ -1149,7 +1128,7 @@ def task():
 @app.route('/cancel_all_tasks.json')
 @allow_local
 def cancel_all_tasks():
-    data = task_manager.cancel_all_tasks()
+    data = app.task_manager.cancel_all_tasks()
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
     else:
@@ -1160,7 +1139,7 @@ def cancel_all_tasks():
 @app.route('/cancel_running_task.json')
 @allow_local
 def cancel_running_task():
-    data = task_manager.cancel_running_task()
+    data = app.task_manager.cancel_running_task()
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
     else:
@@ -1171,7 +1150,7 @@ def cancel_running_task():
 @allow_local
 def cancel_task():
     id = int(request.args['id'])
-    data = task_manager.cancel_task(id)
+    data = app.task_manager.cancel_task(id)
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
     else:
@@ -1214,15 +1193,15 @@ def events():
     last_read = int(request.args.get('last_read',session.get('last_read_event_id','0')))
     timeout = int(request.args.get('timeout','10'))
     max_count = int(request.args.get('max_count','0')) or None
-    if task_manager.events:
-        data = task_manager.events.get_missed(last_read=last_read,max_count=max_count)
+    if app.task_manager.events:
+        data = app.task_manager.events.get_missed(last_read=last_read,max_count=max_count)
         if timeout>0:
             start_time = time.time()
             while not data and time.time() - start_time <= timeout:
                 time.sleep(1.0)
-                data = task_manager.events.get_missed(last_read=last_read,max_count=max_count)
-            if task_manager.events.events:
-                session['last_read_event_id'] = task_manager.events.events[-1].id
+                data = app.task_manager.events.get_missed(last_read=last_read,max_count=max_count)
+            if app.task_manager.events.events:
+                session['last_read_event_id'] = app.task_manager.events.events[-1].id
     else:
         data = None
     return Response(jsondump(data), mimetype='application/json')
@@ -1402,15 +1381,18 @@ class WaptTaskManager(threading.Thread):
                     logger.debug(u'Error checking audit: %s' % e)
 
         if WaptWUA is not None:
+            if waptconfig.waptwua_install_scheduling:
+                if self.last_waptwua_install is None or (datetime.datetime.now() - self.last_waptwua_install > get_time_delta(waptconfig.waptwua_install_scheduling)):
+                    if self.wapt.read_param('waptwua.status',{}).get('status') != 'OK':
+                        self.add_task(WaptWUAInstallTask(notify_user=False,notify_server_on_finish=True,created_by='SCHEDULER'))
+                    self.last_waptwua_install = datetime.datetime.now()
+                    self.last_waptwua_download = datetime.datetime.now()
+
             if waptconfig.waptwua_download_scheduling:
                 if self.last_waptwua_download is None or (datetime.datetime.now() - self.last_waptwua_download > get_time_delta(waptconfig.waptwua_download_scheduling)):
                     self.add_task(WaptWUADowloadTask(notify_user=False,notify_server_on_finish=True,created_by='SCHEDULER'))
                     self.last_waptwua_download = datetime.datetime.now()
 
-                if waptconfig.waptwua_install_scheduling:
-                    if self.last_waptwua_install is None or (datetime.datetime.now() - self.last_waptwua_install > get_time_delta(waptconfig.waptwua_install_scheduling)):
-                        self.add_task(WaptWUAInstallTask(notify_user=False,notify_server_on_finish=True,created_by='SCHEDULER'))
-                        self.last_waptwua_install = datetime.datetime.now()
 
     def run(self):
         """Queue management, event processing"""
@@ -1764,6 +1746,10 @@ if __name__ == "__main__":
     task_manager = WaptTaskManager(config_filename = waptconfig.config_filename)
     task_manager.daemon = True
     task_manager.start()
+    app.task_manager = task_manager
+    if waptwua_api is not None:
+        waptwua_api.task_manager = task_manager
+
     logger.info('Task queue running')
 
     if waptconfig.waptserver:

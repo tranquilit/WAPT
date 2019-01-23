@@ -2083,12 +2083,12 @@ object VisWaptGUI: TVisWaptGUI
               PropertyName = 'mac_addresses'
             end          
             item
-              Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+              Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus]
               Position = 14
               Tag = 14
               Text = 'WAPT version'
               Width = 80
-              PropertyName = 'wapt_status.wapt-exe-version'
+              PropertyName = 'wapt_version'
             end          
             item
               MaxWidth = 400

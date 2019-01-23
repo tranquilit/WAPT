@@ -231,6 +231,10 @@ msgctxt "TVISCREATEKEY.LABUNIT.HINT"
 msgid "E.g. : IT department."
 msgstr ""
 
+#: tviscreatewaptsetup.actbuildupload.caption
+msgid "Build / upload waptagent"
+msgstr ""
+
 #: tviscreatewaptsetup.actgetservercertificate.caption
 msgctxt "tviscreatewaptsetup.actgetservercertificate.caption"
 msgid "Get Server https Certificate"
@@ -302,6 +306,26 @@ msgctxt "TVISCREATEWAPTSETUP.CBVERIFYCERT.CAPTION"
 msgid "Verify https server certificate"
 msgstr ""
 
+#: tviscreatewaptsetup.cbwuaallowdirectdownload.caption
+msgid "Allow direct download of Windows updates cabs"
+msgstr ""
+
+#: tviscreatewaptsetup.cbwuaallowdirectdownload.hint
+msgid "Allow to download cabs from Microsoft windows update site if it is not (yet) avalable on waptwua repository"
+msgstr ""
+
+#: tviscreatewaptsetup.cbwuadefaultallow.caption
+msgid "Allow all Updates by default unless explicitely forbidden by rules"
+msgstr ""
+
+#: tviscreatewaptsetup.cbwuaenabled.caption
+msgid "Manage Windows Updates with WAPT"
+msgstr ""
+
+#: tviscreatewaptsetup.cbwuaoffline.caption
+msgid "Scan offline using wsusscn2.cab"
+msgstr ""
+
 #: tviscreatewaptsetup.edappendhostprofiles.hint
 msgid "E.g. : socle,accounting"
 msgstr ""
@@ -325,6 +349,10 @@ msgstr ""
 
 #: tviscreatewaptsetup.fnpubliccert.hint
 msgid "X509 PEM encoded file with CA certificates which are trusted"
+msgstr ""
+
+#: tviscreatewaptsetup.gbwua.caption
+msgid "WAPTWUA Windows Updates "
 msgstr ""
 
 #: tviscreatewaptsetup.label1.caption
@@ -378,6 +406,15 @@ msgstr ""
 
 #: tviscreatewaptsetup.label8.hint
 msgid "Comma separated list of profile packages to add for hosts. Host will belongs to these additional profiles"
+msgstr ""
+
+#: tviscreatewaptsetup.labwuainstalldelay.caption
+msgctxt "tviscreatewaptsetup.labwuainstalldelay.caption"
+msgid "Minimum delay before installation (days after publish date)"
+msgstr ""
+
+#: tviscreatewaptsetup.labwuascandownloadperiod.caption
+msgid "Scan / download scheduling"
 msgstr ""
 
 #: tvisdisplaypreferences.caption
@@ -2532,10 +2569,6 @@ msgstr ""
 msgid "Edit Windows updates Group"
 msgstr ""
 
-#: tviswuagroup.cbdefaultallow.caption
-msgid "Updates are allowed by default"
-msgstr ""
-
 #: tviswuagroup.cbwucritical.caption
 msgctxt "tviswuagroup.cbwucritical.caption"
 msgid "Critical"
@@ -2586,10 +2619,6 @@ msgstr ""
 
 #: tviswuagroup.label4.caption
 msgid "Package filename : "
-msgstr ""
-
-#: tviswuagroup.label5.caption
-msgid "Minimum delay before installation (days after publish date)"
 msgstr ""
 
 #: tviswuagroup.label6.caption
