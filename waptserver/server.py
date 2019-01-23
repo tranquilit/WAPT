@@ -92,7 +92,7 @@ from waptserver.config import get_http_proxies
 
 from waptpackage import PackageEntry,update_packages,WaptLocalRepo,EWaptBadSignature,EWaptMissingCertificate
 from waptcrypto import SSLCertificate,SSLVerifyException,SSLCertificateSigningRequest,InvalidSignature,SSLPrivateKey
-from waptcrypto import sha256_for_file,sha256_for_data,SSLCABundle
+from waptcrypto import sha256_for_file,sha256_for_data
 
 from waptutils import datetime2isodate,ensure_list,ensure_unicode,Version,setloglevel
 

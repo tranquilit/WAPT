@@ -46,6 +46,8 @@ from playhouse.signals import Model as SignaledModel, pre_save, post_save
 from waptutils import Version
 from waptutils import ensure_unicode,ensure_list,datetime2isodate,jsondump
 
+from waptcrypto import SSLCABundle
+
 from waptserver.utils import setloglevel
 
 import json
