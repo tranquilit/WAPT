@@ -5631,10 +5631,6 @@ procedure TVisWaptGUI.FilterGridWindowsUpdates(Sender: TObject);
 begin
 end;
 
-procedure TVisWaptGUI.ActWUADownloadsRefreshExecute(Sender: TObject);
-begin
-end;
-
 procedure TVisWaptGUI.ActTriggerUpgradesOrgUnitExecute(Sender: TObject);
 begin
 end;
@@ -5841,11 +5837,6 @@ begin
 end;
 
 procedure TVisWaptGUI.GridWUUpdatesNodesDelete(Sender: TSOGrid;
-  Nodes: ISuperObject);
-begin
-end;
-
-procedure TVisWaptGUI.GridWUDownloadsNodesDelete(Sender: TSOGrid;
   Nodes: ISuperObject);
 begin
 end;

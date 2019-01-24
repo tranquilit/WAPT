@@ -2986,7 +2986,7 @@ object VisWaptGUI: TVisWaptGUI
           end
           object ToolButtonSep1: TToolButton
             Left = 47
-            Height = 45
+            Height = 5
             Top = 0
             Caption = 'ToolButtonSep1'
             Style = tbsDivider
@@ -3008,7 +3008,7 @@ object VisWaptGUI: TVisWaptGUI
           end
           object ToolButton6: TToolButton
             Left = 181
-            Height = 45
+            Height = 5
             Top = 0
             Caption = 'ToolButton6'
             Style = tbsDivider
