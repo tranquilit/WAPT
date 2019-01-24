@@ -224,7 +224,7 @@ const
   WaptCAKeyFilename: String ='';
   WaptCACertFilename: String ='';
 
-  WAPTServerMinVersion='1.7.1.1';
+  WAPTServerMinVersion='1.7.3.1';
 
   FAppIniFilename:Utf8String = '';
 
