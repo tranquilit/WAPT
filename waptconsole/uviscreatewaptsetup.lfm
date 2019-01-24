@@ -453,7 +453,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
         TabOrder = 3
       end
       object LabWUAScanDownloadPeriod: TLabel
-        Left = 72
+        Left = 8
         Height = 13
         Top = 52
         Width = 132
@@ -524,9 +524,6 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
     object ActGetServerCertificate: TAction
       Caption = 'Get Server https Certificate'
       OnExecute = ActGetServerCertificateExecute
-    end
-    object ActBuildUpload: TAction
-      Caption = 'Build / upload waptagent'
     end
   end
   object PopupMenu1: TPopupMenu

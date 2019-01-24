@@ -94,17 +94,15 @@ Filename: {app}\wapt-get.ini; Section: global; Key: send_usage_report; String:  
 
 #if edition != "waptstarter"
 Filename: {app}\wapt-get.ini; Section: global; Key: use_hostpackages; String: 1; 
-
-#if edition != "waptserversetup"
+  #if edition != "waptserversetup"
 Filename: {app}\wapt-get.ini; Section: global; Key: wapt_server; String: {code:GetWaptServerURL}; Check: MustChangeServerConfig;
-#endif
+  #endif
 
-#if set_use_kerberos == ''
+  #if set_use_kerberos == ''
 Filename: {app}\wapt-get.ini; Section: global; Key: use_kerberos; String: {code:UseKerberosCheck};
-#else
+  #else
 Filename: {app}\wapt-get.ini; Section: global; Key: use_kerberos; String: {#set_use_kerberos}; 
-#endif
-
+  #endif
 #endif
 
 #if edition != "waptstarter"
@@ -132,10 +130,38 @@ Filename: {app}\wapt-get.ini; Section: global; Key: max_gpo_script_wait; String:
 Filename: {app}\wapt-get.ini; Section: global; Key: pre_shutdown_timeout; String: 180; Tasks: DisableHiberboot; 
 Filename: {app}\wapt-get.ini; Section: global; Key: hiberboot_enabled; String: {code:Gethiberboot_enabled};
 
-#if append_host_profiles != ""
+  #if append_host_profiles != ""
 Filename: {app}\wapt-get.ini; Section: global; Key: host_profiles; String: {code:GetHostProfiles};
-#endif
+  #endif
 
+  ; WaptWUA specific settings
+  #ifdef waptwua
+    #if set_waptwua_enabled != ""
+Filename: {app}\wapt-get.ini; Section: global; Key: waptwua_enabled; String: {#set_waptwua_enabled}; 
+Filename: {app}\wapt-get.ini; Section: waptwua; Key: enabled; String: {#set_waptwua_enabled}; 
+    #endif
+
+    #if set_waptwua_default_allow != ""
+Filename: {app}\wapt-get.ini; Section: waptwua; Key: default_allow; String: {#set_waptwua_default_allow}; 
+    #endif
+
+    #if set_waptwua_offline != ""
+Filename: {app}\wapt-get.ini; Section: waptwua; Key: offline; String: {#set_waptwua_offline}; 
+    #endif
+    
+    #if set_waptwua_allow_direct_download != ""
+Filename: {app}\wapt-get.ini; Section: waptwua; Key: allow_direct_download; String: {#set_waptwua_allow_direct_download}; 
+    #endif
+    
+    #if set_waptwua_install_delay != ""
+Filename: {app}\wapt-get.ini; Section: waptwua; Key: install_delay; String: {#set_waptwua_install_delay}; 
+    #endif
+    
+    #if set_waptwua_download_scheduling != ""
+Filename: {app}\wapt-get.ini; Section: waptwua; Key: download_scheduling; String: {#set_waptwua_download_scheduling}; 
+    #endif
+
+  #endif
 #endif
 
 

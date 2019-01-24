@@ -36,10 +36,19 @@
 ;#define FastDebug
 
 #ifndef set_disable_hiberboot
-#define set_disable_hiberboot ""
+  #define set_disable_hiberboot ""
 #endif
 
 #define use_fqdn_as_uuid ""
+
+#ifdef waptenterprise
+  #define set_waptwua_enabled ""
+  #define set_waptwua_default_allow ""
+  #define set_waptwua_offline ""
+  #define set_waptwua_allow_direct_download ""
+  #define set_waptwua_install_delay ""
+  #define set_waptwua_download_scheduling ""
+#endif
 
 
 #include "common.iss"

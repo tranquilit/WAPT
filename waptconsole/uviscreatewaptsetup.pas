@@ -15,7 +15,6 @@ type
 
   TVisCreateWaptSetup = class(TForm)
     ActGetServerCertificate: TAction;
-    ActBuildUpload: TAction;
     ActionList1: TActionList;
     BitBtn1: TBitBtn;
     BitBtn2: TBitBtn;
@@ -311,6 +310,7 @@ begin
           CBWUAAllowDirectDownload.Checked:=ini.ReadBool('waptwua','allow_direct_download',True);
 
         EdWUAInstallDelay.Text := ini.ReadString('waptwua','install_delay','');
+        EdWUADownloadScheduling.Text := ini.ReadString('waptwua','download_scheduling','');
       end
       else
       begin
@@ -481,9 +481,9 @@ begin
   if GBWUA.Visible then
   begin
     Result := TSuperObject.Create(stObject);
-    Result.S['filter'] := 'Type=''Software'' or Type=''Driver''';
+    //Result.S['filter'] := 'Type=''Software'' or Type=''Driver''';
 
-    if CBWUAEnabled.State = cbGrayed then
+    if CBWUAEnabled.State <> cbGrayed then
       Result['enabled'] := Nil
     else
       Result.B['enabled'] := CBWUAEnabled.Checked;
@@ -492,8 +492,6 @@ begin
       Result['default_allow'] := Nil
     else
       Result.B['default_allow'] := CBWUADefaultAllow.Checked;
-
-    Result.S['filter'] := 'Type=''Software'' or Type=''Driver''';
 
     if Trim(EdWUADownloadScheduling.Text) <>'' then
       Result.S['download_scheduling'] := Trim(EdWUADownloadScheduling.Text)

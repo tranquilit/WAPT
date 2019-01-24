@@ -232,10 +232,6 @@ msgctxt "tviscreatekey.labunit.hint"
 msgid "E.g. : IT department."
 msgstr "E.g. : DSI"
 
-#: tviscreatewaptsetup.actbuildupload.caption
-msgid "Build / upload waptagent"
-msgstr ""
-
 #: tviscreatewaptsetup.actgetservercertificate.caption
 msgctxt "tviscreatewaptsetup.actgetservercertificate.caption"
 msgid "Get Server https Certificate"

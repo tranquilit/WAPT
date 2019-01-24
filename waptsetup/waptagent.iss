@@ -33,6 +33,7 @@
 ; if not empty, the host will inherit these (comma separated) list of profile packages.
 #define append_host_profiles ""
 
+
 ;#define signtool "kSign /d $qWAPT Client$q /du $qhttp://www.tranquil-it-systems.fr$q $f"
 
 #ifndef set_disable_hiberboot
@@ -43,5 +44,34 @@
 ;#define FastDebug
 
 ;#define waptenterprise
+
+; Here we put specific settings to configure waptwua
+#ifdef waptenterprise
+  #define waptwua
+  ; here will be set
+  #ifndef set_waptwua_enabled
+  #define set_waptwua_enabled ""
+  #endif
+  
+  #ifndef set_waptwua_default_allow
+  #define set_waptwua_default_allow ""
+  #endif
+  
+  #ifndef set_waptwua_offline
+  #define set_waptwua_offline ""
+  #endif
+  
+  #ifndef set_waptwua_allow_direct_download
+  #define set_waptwua_allow_direct_download ""
+  #endif
+  
+  #ifndef set_waptwua_install_delay
+  #define set_waptwua_install_delay ""
+  #endif
+  
+  #ifndef set_waptwua_download_scheduling
+  #define set_waptwua_download_scheduling ""
+  #endif
+#endif
 
 #include "common.iss"

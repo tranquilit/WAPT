@@ -1815,6 +1815,7 @@ function CreateWaptSetup(default_public_cert: Utf8String;
 var
   iss_template,custom_iss : utf8String;
   iss,new_iss,line : ISuperObject;
+  akey,avalue : ISuperObject;
 
   //WuaKey,WuaParams: ISuperObject;
 
@@ -1887,9 +1888,14 @@ begin
             new_iss.AsArray.Add(format('#undef waptenterprise',[]))
       end
       // WUA Params
-      else if startswith(line,'#define wua_') then
+      else if startswith(line,'#define waptwua') and (WUAParams<>Nil) then
       begin
-        new_iss.AsArray.Add(line)
+        new_iss.AsArray.Add(line);
+        for akey in WUAParams.AsObject.GetNames do
+        begin
+          if WUAParams[akey.AsString]<>Nil then
+            new_iss.AsArray.Add(Format('  #define set_waptwua_%s "%s"',[akey.AsString,WUAParams.S[akey.AsString]]));
+        end;
       end
       else if startswith(line,'#define edition') and (waptedition <> '') then
         new_iss.AsArray.Add(format('#define edition "%s"' ,[waptedition]))

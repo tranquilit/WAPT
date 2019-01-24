@@ -46,6 +46,15 @@
 
 ;#define signtool "kSign /d $qWAPT Client$q /du $qhttp://www.tranquil-it-systems.fr$q $f"
 
+#ifdef waptenterprise
+  #define set_waptwua_enabled ""
+  #define set_waptwua_default_allow ""
+  #define set_waptwua_offline ""
+  #define set_waptwua_allow_direct_download ""
+  #define set_waptwua_install_delay ""
+  #define set_waptwua_download_scheduling ""
+#endif
+
 ; for fast compile in developent mode
 ;#define FastDebug
 
