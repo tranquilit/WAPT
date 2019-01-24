@@ -27,9 +27,9 @@ object VisWaptGUI: TVisWaptGUI
     Height = 618
     Top = 0
     Width = 1284
-    ActivePage = pgInventory
+    ActivePage = pgWaptWUAConfig
     Align = alClient
-    TabIndex = 0
+    TabIndex = 3
     TabOrder = 0
     OnChange = MainPagesChange
     object pgInventory: TTabSheet
@@ -41,9 +41,9 @@ object VisWaptGUI: TVisWaptGUI
         Height = 472
         Top = 120
         Width = 572
-        ActivePage = pgPackages
+        ActivePage = pgSoftwares
         Align = alRight
-        TabIndex = 0
+        TabIndex = 2
         TabOrder = 0
         OnChange = HostPagesChange
         object pgPackages: TTabSheet
@@ -718,11 +718,11 @@ object VisWaptGUI: TVisWaptGUI
         end
         object pgSoftwares: TTabSheet
           Caption = 'Software inventory'
-          ClientHeight = 531
+          ClientHeight = 446
           ClientWidth = 564
           object GridHostSoftwares: TSOGrid
             Left = 0
-            Height = 504
+            Height = 419
             Top = 27
             Width = 564
             ShowAdvancedColumnsCustomize = False
@@ -861,11 +861,11 @@ object VisWaptGUI: TVisWaptGUI
         end
         object pgHostWUA: TTabSheet
           Caption = 'Windows updates'
-          ClientHeight = 531
+          ClientHeight = 446
           ClientWidth = 564
           object GridHostWinUpdates: TSOGrid
             Left = 0
-            Height = 316
+            Height = 231
             Top = 104
             Width = 564
             OnGetText = GridHostWinUpdatesGetText
@@ -1294,7 +1294,7 @@ object VisWaptGUI: TVisWaptGUI
           object GridHostWinUpdatesHistory: TSOGrid
             Left = 0
             Height = 108
-            Top = 423
+            Top = 338
             Width = 564
             OnGetText = GridHostWinUpdatesGetText
             ShowAdvancedColumnsCustomize = False
@@ -1381,7 +1381,7 @@ object VisWaptGUI: TVisWaptGUI
             Cursor = crVSplit
             Left = 0
             Height = 1
-            Top = 420
+            Top = 335
             Width = 564
             Align = alBottom
             ResizeAnchor = akBottom
@@ -3412,15 +3412,6 @@ object VisWaptGUI: TVisWaptGUI
           OnClick = CBShowHostsForGroupsClick
           TabOrder = 4
         end
-        object btAddGroup1: TBitBtn
-          Left = 615
-          Height = 34
-          Top = 3
-          Width = 199
-          Action = ActWUANewPackage
-          AutoSize = True
-          TabOrder = 5
-        end
       end
       object Splitter8: TSplitter
         Cursor = crVSplit
@@ -4584,1137 +4575,1018 @@ object VisWaptGUI: TVisWaptGUI
         end
       end
     end
-    object pgWAPTWuaPackages: TTabSheet
-      Caption = 'WAPT WUA packages'
-      ClientHeight = 592
-      ClientWidth = 1276
-      object Panel19: TPanel
-        Left = 0
-        Height = 41
-        Top = 0
-        Width = 1276
-        Align = alTop
-        AutoSize = True
-        BevelOuter = bvNone
-        ChildSizing.LeftRightSpacing = 6
-        ChildSizing.TopBottomSpacing = 3
-        ChildSizing.HorizontalSpacing = 6
-        ChildSizing.ControlsPerLine = 10
-        ClientHeight = 41
-        ClientWidth = 1276
-        TabOrder = 0
-        object EdWUASearchPackage: TSearchEdit
-          AnchorSideLeft.Control = Panel19
-          AnchorSideTop.Control = Panel19
-          AnchorSideTop.Side = asrCenter
-          Left = 6
-          Height = 21
-          Top = 10
-          Width = 150
-          EmptyText = 'Type name or description'
-          ExecuteDelay = 400
-          OnExecute = ActWUASearchPackageExecute
-          Options = [seoExecuteEmpty, seoExecuteOnKillFocus]
-          Constraints.MaxHeight = 21
-          Constraints.MinWidth = 150
-          Font.Color = clGray
-          ParentFont = False
-          TabOrder = 0
-        end
-        object ButWUAPackagesSearch: TBitBtn
-          AnchorSideLeft.Control = EdWUASearchPackage
-          AnchorSideLeft.Side = asrBottom
-          Left = 162
-          Height = 34
-          Top = 4
-          Width = 108
-          Action = ActWUASearchPackage
-          AutoSize = True
-          TabOrder = 1
-        end
-        object btAddGroup3: TBitBtn
-          AnchorSideLeft.Control = ButWUAPackagesSearch
-          AnchorSideLeft.Side = asrBottom
-          AnchorSideTop.Control = Panel19
-          AnchorSideTop.Side = asrCenter
-          Left = 276
-          Height = 34
-          Top = 3
-          Width = 199
-          Action = ActWUANewPackage
-          AutoSize = True
-          TabOrder = 2
-        end
-        object CBShowHostsForWUAPackage: TCheckBox
-          AnchorSideLeft.Control = btAddGroup3
-          AnchorSideLeft.Side = asrBottom
-          AnchorSideTop.Control = Panel19
-          AnchorSideTop.Side = asrCenter
-          Left = 481
-          Height = 17
-          Top = 12
-          Width = 76
-          Caption = 'Show Hosts'
-          OnClick = CBShowHostsForWUAPackageClick
-          TabOrder = 3
-        end
-      end
-      object GridWUAPackages: TSOGrid
-        AnchorSideLeft.Side = asrBottom
-        AnchorSideTop.Side = asrBottom
-        AnchorSideBottom.Side = asrBottom
-        Left = 0
-        Height = 551
-        Top = 41
-        Width = 1276
-        OnGetText = GridGroupsGetText
-        OnNodesDelete = GridWUAPackagesNodesDelete
-        ShowAdvancedColumnsCustomize = False
-        KeyFieldsNames = 'package_uuid'
-        Align = alClient
-        Color = clWhite
-        Colors.UnfocusedColor = clMedGray
-        Header.AutoSizeIndex = -1
-        Header.Columns = <        
-          item
-            MaxWidth = 100
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 0
-            Text = 'Section'
-            Width = 70
-            PropertyName = 'section'
-          end        
-          item
-            MaxWidth = 400
-            Position = 1
-            Tag = 1
-            Text = 'Package'
-            Width = 124
-            PropertyName = 'package'
-          end        
-          item
-            MaxWidth = 200
-            Position = 2
-            Tag = 2
-            Text = 'Version'
-            Width = 82
-            PropertyName = 'version'
-          end        
-          item
-            Position = 3
-            Tag = 3
-            Text = 'Maturity'
-            Width = 59
-            PropertyName = 'maturity'
-          end        
-          item
-            MaxWidth = 400
-            Position = 4
-            Tag = 4
-            Text = 'Description'
-            Width = 310
-            PropertyName = '_localized_description'
-          end        
-          item
-            MaxWidth = 400
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 5
-            Tag = 5
-            Text = 'Dependencies'
-            Width = 226
-            PropertyName = 'depends'
-          end        
-          item
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 6
-            Tag = 6
-            Text = 'Conflicts'
-            Width = 183
-            PropertyName = 'conflicts'
-          end        
-          item
-            Position = 7
-            Tag = 7
-            Text = 'Signer'
-            Width = 115
-            PropertyName = 'signer'
-          end        
-          item
-            Position = 8
-            Tag = 8
-            Text = 'Signed on'
-            Width = 99
-            PropertyName = 'signature_date'
-          end        
-          item
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 9
-            Tag = 9
-            Text = 'Arch'
-            Width = 64
-            PropertyName = 'architecture'
-          end        
-          item
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 10
-            Tag = 10
-            Text = 'Locale'
-            Width = 53
-            PropertyName = 'locale'
-          end        
-          item
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 11
-            Tag = 11
-            Text = 'Min OS version'
-            Width = 72
-            PropertyName = 'min_os_version'
-          end        
-          item
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 12
-            Tag = 12
-            Text = 'Max OS version'
-            Width = 63
-            PropertyName = 'max_os_version'
-          end        
-          item
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 13
-            Tag = 13
-            Text = 'Min Wapt version'
-            Width = 69
-            PropertyName = 'min_wapt_version'
-          end        
-          item
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 14
-            Tag = 14
-            Text = 'Repository'
-            PropertyName = 'repo_url'
-          end        
-          item
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 15
-            Tag = 15
-            Text = 'Filename'
-            PropertyName = 'filename'
-          end        
-          item
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 16
-            Tag = 16
-            Text = 'priority'
-            Width = 100
-            PropertyName = 'priority'
-          end        
-          item
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 17
-            Tag = 17
-            Text = 'signature'
-            Width = 100
-            PropertyName = 'signature'
-          end        
-          item
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 18
-            Tag = 18
-            Text = 'sources'
-            Width = 100
-            PropertyName = 'sources'
-          end        
-          item
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 19
-            Tag = 19
-            Text = 'audit_schedule'
-            Width = 100
-            PropertyName = 'audit_schedule'
-          end        
-          item
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 20
-            Tag = 20
-            Text = 'signed_attributes'
-            Width = 100
-            PropertyName = 'signed_attributes'
-          end        
-          item
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 21
-            Tag = 21
-            Text = 'md5sum'
-            Width = 100
-            PropertyName = 'md5sum'
-          end        
-          item
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 22
-            Tag = 22
-            Text = 'description_pl'
-            Width = 100
-            PropertyName = 'description_pl'
-          end        
-          item
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 23
-            Tag = 23
-            Text = 'description_fr'
-            Width = 100
-            PropertyName = 'description_fr'
-          end        
-          item
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 24
-            Tag = 24
-            Text = 'description_es'
-            Width = 100
-            PropertyName = 'description_es'
-          end        
-          item
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 25
-            Tag = 25
-            Text = 'description_de'
-            Width = 100
-            PropertyName = 'description_de'
-          end        
-          item
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 26
-            Tag = 26
-            Text = 'maintainer'
-            Width = 100
-            PropertyName = 'maintainer'
-          end        
-          item
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 27
-            Tag = 27
-            Text = 'package_uuid'
-            Width = 100
-            PropertyName = 'package_uuid'
-          end        
-          item
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 28
-            Tag = 28
-            Text = 'description'
-            Width = 100
-            PropertyName = 'description'
-          end        
-          item
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 29
-            Tag = 29
-            Text = 'impacted_process'
-            Width = 100
-            PropertyName = 'impacted_process'
-          end        
-          item
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 30
-            Tag = 30
-            Text = 'installed_size'
-            Width = 100
-            PropertyName = 'installed_size'
-          end        
-          item
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 31
-            Tag = 31
-            Text = 'signer_fingerprint'
-            Width = 100
-            PropertyName = 'signer_fingerprint'
-          end        
-          item
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 32
-            Tag = 32
-            Text = 'editor'
-            Width = 100
-            PropertyName = 'editor'
-          end        
-          item
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 33
-            Tag = 33
-            Text = 'licence'
-            Width = 100
-            PropertyName = 'licence'
-          end        
-          item
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 34
-            Tag = 34
-            Text = 'keywords'
-            Width = 100
-            PropertyName = 'keywords'
-          end        
-          item
-            Alignment = taRightJustify
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 35
-            Tag = 35
-            Text = 'size'
-            Width = 100
-            PropertyName = 'size'
-          end        
-          item
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 36
-            Tag = 36
-            Text = 'repo'
-            Width = 100
-            PropertyName = 'repo'
-          end        
-          item
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 37
-            Tag = 37
-            Text = 'target_os'
-            Width = 100
-            PropertyName = 'target_os'
-          end        
-          item
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 38
-            Tag = 38
-            Text = 'localpath'
-            Width = 100
-            PropertyName = 'localpath'
-          end        
-          item
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 39
-            Tag = 39
-            Text = 'homepage'
-            Width = 100
-            PropertyName = 'homepage'
-          end        
-          item
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 40
-            Tag = 40
-            Text = 'sourcespath'
-            Width = 13
-            PropertyName = 'sourcespath'
-          end>
-        Header.DefaultHeight = 18
-        Header.Height = 18
-        Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
-        Header.Style = hsFlatButtons
-        TabOrder = 1
-        TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes, toAutoChangeScale]
-        TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize]
-        TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages, toAlwaysHideSelection]
-        TreeOptions.SelectionOptions = [toDisableDrawSelection, toExtendedFocus, toMultiSelect, toRightClickSelect]
-        WantTabs = True
-        OnChange = GridWUAPackagesChange
-        OnColumnDblClick = GridWUAPackagesColumnDblClick
-        OnInitNode = GridGroupsInitNode
-        OnMeasureItem = GridGroupsMeasureItem
-        ZebraPaint = True
-      end
-    end
-    object pgWindowsUpdates: TTabSheet
+    object pgWaptWUAConfig: TTabSheet
       Caption = 'Windows Updates'
       ClientHeight = 592
       ClientWidth = 1276
-      object GridWSUSScan: TSOGrid
-        Left = 736
-        Height = 280
-        Top = 40
-        Width = 520
-        ShowAdvancedColumnsCustomize = False
-        Align = alCustom
-        Anchors = [akTop, akLeft, akRight]
-        BorderSpacing.Top = 2
-        Color = clWhite
-        Colors.UnfocusedColor = clMedGray
-        Header.AutoSizeIndex = -1
-        Header.Columns = <        
-          item
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 0
-            Text = '_id'
-            Width = 100
-            PropertyName = '_id'
-          end        
-          item
-            Position = 1
-            Tag = 1
-            Text = 'Date'
-            Width = 142
-            PropertyName = 'created_on'
-          end        
-          item
-            Alignment = taRightJustify
-            Position = 2
-            Tag = 2
-            Text = 'WSUS Cab Date'
-            Width = 122
-            PropertyName = 'file_date'
-          end        
-          item
-            Position = 3
-            Tag = 4
-            Text = 'Status'
-            Width = 61
-            PropertyName = 'status'
-          end        
-          item
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 4
-            Tag = 5
-            Text = 'Result'
-            Width = 171
-            PropertyName = 'result'
-          end        
-          item
-            Alignment = taRightJustify
-            Position = 5
-            Tag = 6
-            Text = 'WSUS Cab Size'
-            Width = 128
-            PropertyName = 'file_size'
-          end        
-          item
-            Position = 6
-            Tag = 7
-            Text = 'Error'
-            Width = 204
-            PropertyName = 'error'
-          end        
-          item
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 7
-            Tag = 8
-            Text = 'Forced'
-            PropertyName = 'forced'
-          end        
-          item
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 8
-            Tag = 9
-            Text = 'Skipped'
-            Width = 52
-            PropertyName = 'skipped'
-          end        
-          item
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 9
-            Tag = 10
-            Text = 'cablist'
-            Width = 100
-            PropertyName = 'cablist'
-          end        
-          item
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus]
-            Position = 10
-            Tag = 11
-            Text = 'Reason'
-            Width = 100
-            PropertyName = 'reason'
-          end        
-          item
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 11
-            Tag = 12
-            Text = 'uuid'
-            Width = 100
-            PropertyName = 'uuid'
-          end        
-          item
-            Alignment = taRightJustify
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 12
-            Tag = 13
-            Text = 'Expected File size'
-            Width = 100
-            PropertyName = 'target_size'
-          end        
-          item
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 13
-            Tag = 14
-            Text = 'file_timestamp'
-            Width = 13
-            PropertyName = 'file_timestamp'
-          end        
-          item
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 14
-            Tag = 15
-            Text = 'updated_on'
-            Width = 100
-            PropertyName = 'updated_on'
-          end        
-          item
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 15
-            Tag = 16
-            Text = 'updated_by'
-            Width = 100
-            PropertyName = 'updated_by'
-          end        
-          item
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 16
-            Tag = 17
-            Text = 'created_by'
-            Width = 100
-            PropertyName = 'created_by'
-          end        
-          item
-            Alignment = taRightJustify
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 17
-            Tag = 18
-            Text = 'id'
-            Width = 25
-            PropertyName = 'id'
-          end>
-        Header.DefaultHeight = 17
-        Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
-        Header.Style = hsFlatButtons
-        Images = ImageList1
-        PopupMenu = PopupGridWSUSScan
-        TabOrder = 0
-        TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
-        TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
-        TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages, toAlwaysHideSelection]
-        TreeOptions.SelectionOptions = [toDisableDrawSelection, toExtendedFocus, toMultiSelect, toRightClickSelect]
-        WantTabs = True
-      end
-      object Label19: TLabel
-        Left = 932
-        Height = 13
-        Top = 226
-        Width = 137
-        Caption = 'Forbidden Windows Updates'
-        ParentColor = False
-      end
-      object Panel2: TPanel
+      object WUAConfigPages: TPageControl
         Left = 0
-        Height = 31
+        Height = 592
         Top = 0
         Width = 1276
-        Align = alTop
-        AutoSize = True
-        BevelOuter = bvNone
-        ChildSizing.LeftRightSpacing = 4
-        ChildSizing.TopBottomSpacing = 4
-        ChildSizing.HorizontalSpacing = 4
-        ChildSizing.VerticalSpacing = 4
-        ChildSizing.Layout = cclLeftToRightThenTopToBottom
-        ChildSizing.ControlsPerLine = 4
-        ClientHeight = 31
-        ClientWidth = 1276
-        TabOrder = 1
-        object BitBtn10: TBitBtn
-          Left = 4
-          Height = 23
-          Top = 4
-          Width = 64
-          Action = ActWSUSRefresh
-          TabOrder = 0
-        end
-        object BitBtn9: TBitBtn
-          Left = 72
-          Height = 23
-          Top = 4
-          Width = 265
-          Action = ActWSUSDowloadWSUSScan
-          TabOrder = 1
-        end
-        object cbForcedWSUSscanDownload: TCheckBox
-          Left = 341
-          Height = 23
-          Top = 4
-          Width = 224
-          Caption = 'Force download even if already up to date'
-          TabOrder = 2
-        end
-      end
-      object PanWUAMain: TPanel
-        Left = 0
-        Height = 561
-        Top = 31
-        Width = 1276
+        ActivePage = pgWAPTWuaPackages
         Align = alClient
-        BevelOuter = bvNone
-        ClientHeight = 561
-        ClientWidth = 1276
-        TabOrder = 2
-        object PanWUALeft: TPanel
-          Left = 0
-          Height = 561
-          Top = 0
-          Width = 156
-          Align = alLeft
-          AutoSize = True
-          BevelOuter = bvNone
-          Caption = 'PanWUALeft'
-          ChildSizing.LeftRightSpacing = 3
-          ChildSizing.TopBottomSpacing = 3
-          ChildSizing.HorizontalSpacing = 3
-          ChildSizing.VerticalSpacing = 3
-          ChildSizing.Layout = cclLeftToRightThenTopToBottom
-          ChildSizing.ControlsPerLine = 1
-          ClientHeight = 561
-          ClientWidth = 156
-          TabOrder = 0
-          object PanWUASearch: TPanel
-            Left = 3
-            Height = 1
-            Top = 3
-            Width = 150
+        TabIndex = 0
+        TabOrder = 0
+        OnChange = WUAConfigPagesChange
+        object pgWAPTWuaPackages: TTabSheet
+          Caption = 'Wapt WUA packages'
+          ClientHeight = 566
+          ClientWidth = 1268
+          object PanTopWAPTWuaPackages: TPanel
+            Left = 0
+            Height = 41
+            Top = 0
+            Width = 1268
+            Align = alTop
+            AutoSize = True
+            BevelOuter = bvNone
+            ChildSizing.LeftRightSpacing = 6
+            ChildSizing.TopBottomSpacing = 3
+            ChildSizing.HorizontalSpacing = 6
+            ChildSizing.ControlsPerLine = 10
+            ClientHeight = 41
+            ClientWidth = 1268
+            TabOrder = 0
+            object EdWUASearchPackage: TSearchEdit
+              AnchorSideLeft.Control = PanTopWAPTWuaPackages
+              AnchorSideTop.Control = PanTopWAPTWuaPackages
+              AnchorSideTop.Side = asrCenter
+              Left = 6
+              Height = 21
+              Top = 10
+              Width = 150
+              EmptyText = 'Type name or description'
+              ExecuteDelay = 400
+              OnExecute = ActWUASearchPackageExecute
+              Options = [seoExecuteEmpty, seoExecuteOnKillFocus]
+              Constraints.MaxHeight = 21
+              Constraints.MinWidth = 150
+              Font.Color = clGray
+              ParentFont = False
+              TabOrder = 0
+            end
+            object ButWUAPackagesSearch: TBitBtn
+              AnchorSideLeft.Control = EdWUASearchPackage
+              AnchorSideLeft.Side = asrBottom
+              Left = 162
+              Height = 34
+              Top = 4
+              Width = 108
+              Action = ActWUASearchPackage
+              AutoSize = True
+              TabOrder = 1
+            end
+            object btAddGroup3: TBitBtn
+              AnchorSideLeft.Control = ButWUAPackagesSearch
+              AnchorSideLeft.Side = asrBottom
+              AnchorSideTop.Control = PanTopWAPTWuaPackages
+              AnchorSideTop.Side = asrCenter
+              Left = 276
+              Height = 34
+              Top = 3
+              Width = 199
+              Action = ActWUANewPackage
+              AutoSize = True
+              TabOrder = 2
+            end
+            object CBShowHostsForWUAPackage: TCheckBox
+              AnchorSideLeft.Control = btAddGroup3
+              AnchorSideLeft.Side = asrBottom
+              AnchorSideTop.Control = PanTopWAPTWuaPackages
+              AnchorSideTop.Side = asrCenter
+              Left = 481
+              Height = 17
+              Top = 12
+              Width = 76
+              Caption = 'Show Hosts'
+              OnClick = CBShowHostsForWUAPackageClick
+              TabOrder = 3
+            end
+          end
+          object GridWUAPackages: TSOGrid
+            AnchorSideLeft.Side = asrBottom
+            AnchorSideTop.Side = asrBottom
+            AnchorSideBottom.Side = asrBottom
+            Left = 0
+            Height = 525
+            Top = 41
+            Width = 1268
+            OnGetText = GridGroupsGetText
+            OnNodesDelete = GridWUAPackagesNodesDelete
+            ShowAdvancedColumnsCustomize = False
+            KeyFieldsNames = 'package_uuid'
+            Align = alClient
+            Color = clWhite
+            Colors.UnfocusedColor = clMedGray
+            Header.AutoSizeIndex = -1
+            Header.Columns = <            
+              item
+                MaxWidth = 100
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                Position = 0
+                Text = 'Section'
+                Width = 70
+                PropertyName = 'section'
+              end            
+              item
+                MaxWidth = 400
+                Position = 1
+                Tag = 1
+                Text = 'Package'
+                Width = 124
+                PropertyName = 'package'
+              end            
+              item
+                MaxWidth = 200
+                Position = 2
+                Tag = 2
+                Text = 'Version'
+                Width = 82
+                PropertyName = 'version'
+              end            
+              item
+                Position = 3
+                Tag = 3
+                Text = 'Maturity'
+                Width = 59
+                PropertyName = 'maturity'
+              end            
+              item
+                MaxWidth = 400
+                Position = 4
+                Tag = 4
+                Text = 'Description'
+                Width = 310
+                PropertyName = '_localized_description'
+              end            
+              item
+                MaxWidth = 400
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                Position = 5
+                Tag = 5
+                Text = 'Dependencies'
+                Width = 226
+                PropertyName = 'depends'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                Position = 6
+                Tag = 6
+                Text = 'Conflicts'
+                Width = 183
+                PropertyName = 'conflicts'
+              end            
+              item
+                Position = 7
+                Tag = 7
+                Text = 'Signer'
+                Width = 115
+                PropertyName = 'signer'
+              end            
+              item
+                Position = 8
+                Tag = 8
+                Text = 'Signed on'
+                Width = 99
+                PropertyName = 'signature_date'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                Position = 9
+                Tag = 9
+                Text = 'Arch'
+                Width = 64
+                PropertyName = 'architecture'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                Position = 10
+                Tag = 10
+                Text = 'Locale'
+                Width = 53
+                PropertyName = 'locale'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                Position = 11
+                Tag = 11
+                Text = 'Min OS version'
+                Width = 72
+                PropertyName = 'min_os_version'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                Position = 12
+                Tag = 12
+                Text = 'Max OS version'
+                Width = 63
+                PropertyName = 'max_os_version'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                Position = 13
+                Tag = 13
+                Text = 'Min Wapt version'
+                Width = 69
+                PropertyName = 'min_wapt_version'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+                Position = 14
+                Tag = 14
+                Text = 'Repository'
+                PropertyName = 'repo_url'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+                Position = 15
+                Tag = 15
+                Text = 'Filename'
+                PropertyName = 'filename'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                Position = 16
+                Tag = 16
+                Text = 'priority'
+                Width = 100
+                PropertyName = 'priority'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                Position = 17
+                Tag = 17
+                Text = 'signature'
+                Width = 100
+                PropertyName = 'signature'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                Position = 18
+                Tag = 18
+                Text = 'sources'
+                Width = 100
+                PropertyName = 'sources'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                Position = 19
+                Tag = 19
+                Text = 'audit_schedule'
+                Width = 100
+                PropertyName = 'audit_schedule'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                Position = 20
+                Tag = 20
+                Text = 'signed_attributes'
+                Width = 100
+                PropertyName = 'signed_attributes'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                Position = 21
+                Tag = 21
+                Text = 'md5sum'
+                Width = 100
+                PropertyName = 'md5sum'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                Position = 22
+                Tag = 22
+                Text = 'description_pl'
+                Width = 100
+                PropertyName = 'description_pl'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                Position = 23
+                Tag = 23
+                Text = 'description_fr'
+                Width = 100
+                PropertyName = 'description_fr'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                Position = 24
+                Tag = 24
+                Text = 'description_es'
+                Width = 100
+                PropertyName = 'description_es'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                Position = 25
+                Tag = 25
+                Text = 'description_de'
+                Width = 100
+                PropertyName = 'description_de'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                Position = 26
+                Tag = 26
+                Text = 'maintainer'
+                Width = 100
+                PropertyName = 'maintainer'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                Position = 27
+                Tag = 27
+                Text = 'package_uuid'
+                Width = 100
+                PropertyName = 'package_uuid'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                Position = 28
+                Tag = 28
+                Text = 'description'
+                Width = 100
+                PropertyName = 'description'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                Position = 29
+                Tag = 29
+                Text = 'impacted_process'
+                Width = 100
+                PropertyName = 'impacted_process'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                Position = 30
+                Tag = 30
+                Text = 'installed_size'
+                Width = 100
+                PropertyName = 'installed_size'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                Position = 31
+                Tag = 31
+                Text = 'signer_fingerprint'
+                Width = 100
+                PropertyName = 'signer_fingerprint'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                Position = 32
+                Tag = 32
+                Text = 'editor'
+                Width = 100
+                PropertyName = 'editor'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                Position = 33
+                Tag = 33
+                Text = 'licence'
+                Width = 100
+                PropertyName = 'licence'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                Position = 34
+                Tag = 34
+                Text = 'keywords'
+                Width = 100
+                PropertyName = 'keywords'
+              end            
+              item
+                Alignment = taRightJustify
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                Position = 35
+                Tag = 35
+                Text = 'size'
+                Width = 100
+                PropertyName = 'size'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                Position = 36
+                Tag = 36
+                Text = 'repo'
+                Width = 100
+                PropertyName = 'repo'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                Position = 37
+                Tag = 37
+                Text = 'target_os'
+                Width = 100
+                PropertyName = 'target_os'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                Position = 38
+                Tag = 38
+                Text = 'localpath'
+                Width = 100
+                PropertyName = 'localpath'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                Position = 39
+                Tag = 39
+                Text = 'homepage'
+                Width = 100
+                PropertyName = 'homepage'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                Position = 40
+                Tag = 40
+                Text = 'sourcespath'
+                Width = 13
+                PropertyName = 'sourcespath'
+              end>
+            Header.DefaultHeight = 18
+            Header.Height = 18
+            Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
+            Header.Style = hsFlatButtons
+            TabOrder = 1
+            TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes, toAutoChangeScale]
+            TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize]
+            TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages, toAlwaysHideSelection]
+            TreeOptions.SelectionOptions = [toDisableDrawSelection, toExtendedFocus, toMultiSelect, toRightClickSelect]
+            WantTabs = True
+            OnChange = GridWUAPackagesChange
+            OnColumnDblClick = GridWUAPackagesColumnDblClick
+            OnInitNode = GridGroupsInitNode
+            OnMeasureItem = GridGroupsMeasureItem
+            ZebraPaint = True
+          end
+        end
+        object pgWindowsUpdates2: TTabSheet
+          Caption = 'Windows Updates list'
+          ClientHeight = 566
+          ClientWidth = 1268
+          object GridWSUSScan: TSOGrid
+            Left = 736
+            Height = 280
+            Top = 40
+            Width = 520
+            ShowAdvancedColumnsCustomize = False
+            Align = alCustom
+            Anchors = [akTop, akLeft, akRight]
+            BorderSpacing.Top = 2
+            Color = clWhite
+            Colors.UnfocusedColor = clMedGray
+            Header.AutoSizeIndex = -1
+            Header.Columns = <            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+                Position = 0
+                Text = '_id'
+                Width = 100
+                PropertyName = '_id'
+              end            
+              item
+                Position = 1
+                Tag = 1
+                Text = 'Date'
+                Width = 142
+                PropertyName = 'created_on'
+              end            
+              item
+                Alignment = taRightJustify
+                Position = 2
+                Tag = 2
+                Text = 'WSUS Cab Date'
+                Width = 122
+                PropertyName = 'file_date'
+              end            
+              item
+                Position = 3
+                Tag = 4
+                Text = 'Status'
+                Width = 61
+                PropertyName = 'status'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                Position = 4
+                Tag = 5
+                Text = 'Result'
+                Width = 171
+                PropertyName = 'result'
+              end            
+              item
+                Alignment = taRightJustify
+                Position = 5
+                Tag = 6
+                Text = 'WSUS Cab Size'
+                Width = 128
+                PropertyName = 'file_size'
+              end            
+              item
+                Position = 6
+                Tag = 7
+                Text = 'Error'
+                Width = 204
+                PropertyName = 'error'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+                Position = 7
+                Tag = 8
+                Text = 'Forced'
+                PropertyName = 'forced'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+                Position = 8
+                Tag = 9
+                Text = 'Skipped'
+                Width = 52
+                PropertyName = 'skipped'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+                Position = 9
+                Tag = 10
+                Text = 'cablist'
+                Width = 100
+                PropertyName = 'cablist'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus]
+                Position = 10
+                Tag = 11
+                Text = 'Reason'
+                Width = 100
+                PropertyName = 'reason'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+                Position = 11
+                Tag = 12
+                Text = 'uuid'
+                Width = 100
+                PropertyName = 'uuid'
+              end            
+              item
+                Alignment = taRightJustify
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+                Position = 12
+                Tag = 13
+                Text = 'Expected File size'
+                Width = 100
+                PropertyName = 'target_size'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+                Position = 13
+                Tag = 14
+                Text = 'file_timestamp'
+                Width = 13
+                PropertyName = 'file_timestamp'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                Position = 14
+                Tag = 15
+                Text = 'updated_on'
+                Width = 100
+                PropertyName = 'updated_on'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                Position = 15
+                Tag = 16
+                Text = 'updated_by'
+                Width = 100
+                PropertyName = 'updated_by'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                Position = 16
+                Tag = 17
+                Text = 'created_by'
+                Width = 100
+                PropertyName = 'created_by'
+              end            
+              item
+                Alignment = taRightJustify
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                Position = 17
+                Tag = 18
+                Text = 'id'
+                Width = 25
+                PropertyName = 'id'
+              end>
+            Header.DefaultHeight = 17
+            Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
+            Header.Style = hsFlatButtons
+            Images = ImageList1
+            PopupMenu = PopupGridWSUSScan
+            TabOrder = 0
+            TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
+            TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
+            TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages, toAlwaysHideSelection]
+            TreeOptions.SelectionOptions = [toDisableDrawSelection, toExtendedFocus, toMultiSelect, toRightClickSelect]
+            WantTabs = True
+          end
+          object PanWUAMain: TPanel
+            Left = 0
+            Height = 524
+            Top = 42
+            Width = 1268
+            Align = alClient
+            BevelOuter = bvNone
+            ClientHeight = 524
+            ClientWidth = 1268
+            TabOrder = 1
+            object PanWUALeft: TPanel
+              Left = 0
+              Height = 524
+              Top = 0
+              Width = 156
+              Align = alLeft
+              AutoSize = True
+              BevelOuter = bvNone
+              Caption = 'PanWUALeft'
+              ChildSizing.LeftRightSpacing = 3
+              ChildSizing.TopBottomSpacing = 3
+              ChildSizing.HorizontalSpacing = 3
+              ChildSizing.VerticalSpacing = 3
+              ChildSizing.Layout = cclLeftToRightThenTopToBottom
+              ChildSizing.ControlsPerLine = 1
+              ClientHeight = 524
+              ClientWidth = 156
+              TabOrder = 0
+              object PanWUASearch: TPanel
+                Left = 3
+                Height = 1
+                Top = 3
+                Width = 150
+                AutoSize = True
+                BevelOuter = bvNone
+                ChildSizing.LeftRightSpacing = 4
+                ChildSizing.HorizontalSpacing = 4
+                ChildSizing.Layout = cclTopToBottomThenLeftToRight
+                ChildSizing.ControlsPerLine = 5
+                TabOrder = 0
+              end
+              object cbWUCritical: TCheckBox
+                Left = 3
+                Height = 17
+                Top = 7
+                Width = 150
+                Caption = 'Critical only'
+                OnClick = CBWUClassificationsClick
+                TabOrder = 1
+              end
+              object cbAllClassifications: TCheckBox
+                Left = 3
+                Height = 17
+                Top = 27
+                Width = 150
+                Caption = 'All classifications'
+                OnClick = cbAllClassificationsClick
+                TabOrder = 2
+              end
+              object CBWUClassifications: TCheckListBox
+                Left = 3
+                Height = 100
+                Top = 47
+                Width = 150
+                Constraints.MinWidth = 150
+                ItemHeight = 0
+                OnClick = CBWUClassificationsClick
+                PopupMenu = PopupWUAClassifications
+                TabOrder = 3
+              end
+              object cbAllproducts: TCheckBox
+                Left = 3
+                Height = 17
+                Top = 150
+                Width = 150
+                Caption = 'All products'
+                OnClick = cbAllproductsClick
+                TabOrder = 4
+              end
+              object CBWUProducts: TCheckListBox
+                Left = 3
+                Height = 294
+                Top = 170
+                Width = 150
+                Anchors = [akTop, akLeft, akBottom]
+                Constraints.MinHeight = 150
+                ItemHeight = 0
+                OnClick = CBWUProductsClick
+                PopupMenu = PopupWUAProducts
+                TabOrder = 5
+              end
+            end
+            object GridWUUpdates: TSOGrid
+              Left = 156
+              Height = 522
+              Top = 2
+              Width = 1112
+              OnGetText = GridHostWinUpdatesGetText
+              OnNodesDelete = GridWUUpdatesNodesDelete
+              ShowAdvancedColumnsCustomize = False
+              KeyFieldsNames = 'update_id'
+              Align = alClient
+              Anchors = [akTop, akLeft, akBottom]
+              BorderSpacing.Top = 2
+              Color = clWhite
+              Colors.UnfocusedColor = clMedGray
+              Header.AutoSizeIndex = -1
+              Header.Columns = <              
+                item
+                  Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+                  Position = 0
+                  Text = 'Update Id'
+                  Width = 79
+                  PropertyName = 'update_id'
+                end              
+                item
+                  Position = 1
+                  Tag = 1
+                  Text = 'Published on'
+                  Width = 95
+                  PropertyName = 'changetime'
+                end              
+                item
+                  Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                  Position = 15
+                  Tag = 2
+                  Text = 'Reported on'
+                  Width = 73
+                  PropertyName = 'created_on'
+                end              
+                item
+                  Position = 2
+                  Tag = 3
+                  Text = 'KBs'
+                  Width = 94
+                  PropertyName = 'kbids'
+                end              
+                item
+                  Position = 3
+                  Tag = 4
+                  Text = 'Product'
+                  Width = 125
+                  PropertyName = 'product'
+                end              
+                item
+                  Position = 4
+                  Tag = 5
+                  Text = 'Classification'
+                  Width = 88
+                  PropertyName = 'classification'
+                end              
+                item
+                  Position = 5
+                  Tag = 6
+                  Text = 'Title'
+                  Width = 331
+                  PropertyName = 'title'
+                end              
+                item
+                  Position = 6
+                  Tag = 7
+                  Text = 'Severity'
+                  Width = 89
+                  PropertyName = 'severity'
+                end              
+                item
+                  Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                  Position = 7
+                  Tag = 8
+                  Text = 'CVE'
+                  Width = 114
+                  PropertyName = 'cve_ids'
+                end              
+                item
+                  Alignment = taRightJustify
+                  Position = 8
+                  Tag = 9
+                  Text = 'Max download size'
+                  Width = 131
+                  PropertyName = 'max_download_size'
+                end              
+                item
+                  Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                  Position = 9
+                  Tag = 10
+                  Text = 'security_bulletin_ids'
+                  Width = 100
+                  PropertyName = 'security_bulletin_ids'
+                end              
+                item
+                  Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                  Position = 10
+                  Tag = 11
+                  Text = 'can_request_user_input'
+                  Width = 100
+                  PropertyName = 'can_request_user_input'
+                end              
+                item
+                  Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                  Position = 11
+                  Tag = 12
+                  Text = 'is_mandatory'
+                  Width = 100
+                  PropertyName = 'is_mandatory'
+                end              
+                item
+                  Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                  Position = 12
+                  Tag = 13
+                  Text = 'superseded_update_ids'
+                  Width = 100
+                  PropertyName = 'superseded_update_ids'
+                end              
+                item
+                  Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                  Position = 13
+                  Tag = 14
+                  Text = 'requires_network_connectivity'
+                  Width = 76
+                  PropertyName = 'requires_network_connectivity'
+                end              
+                item
+                  Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                  Position = 14
+                  Tag = 15
+                  Text = 'created_on'
+                  Width = 73
+                  PropertyName = 'created_on'
+                end              
+                item
+                  Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                  Position = 16
+                  Tag = 16
+                  Text = 'created_by'
+                  Width = 80
+                  PropertyName = 'created_by'
+                end              
+                item
+                  Alignment = taRightJustify
+                  Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                  Position = 17
+                  Tag = 17
+                  Text = 'min_download_size'
+                  Width = 85
+                  PropertyName = 'min_download_size'
+                end              
+                item
+                  Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                  Position = 18
+                  Tag = 18
+                  Text = 'reboot_behaviour'
+                  Width = 101
+                  PropertyName = 'reboot_behaviour'
+                end              
+                item
+                  Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                  Position = 19
+                  Tag = 19
+                  Text = 'download_urls'
+                  Width = 100
+                  PropertyName = 'download_urls'
+                end              
+                item
+                  Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                  Position = 20
+                  Tag = 20
+                  Text = 'updated_on'
+                  Width = 100
+                  PropertyName = 'updated_on'
+                end              
+                item
+                  Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                  Position = 21
+                  Tag = 21
+                  Text = 'updated_by'
+                  Width = 100
+                  PropertyName = 'updated_by'
+                end              
+                item
+                  Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                  Position = 22
+                  Tag = 22
+                  Text = 'update_type'
+                  Width = 100
+                  PropertyName = 'update_type'
+                end              
+                item
+                  Position = 23
+                  Tag = 23
+                  Text = 'Downloaded on'
+                  Width = 159
+                  PropertyName = 'downloaded_on'
+                end>
+              Header.DefaultHeight = 17
+              Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
+              Header.SortDirection = sdDescending
+              Header.Style = hsFlatButtons
+              Images = ImageList1
+              PopupMenu = PopupWUAUpdates
+              TabOrder = 1
+              TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes, toAutoChangeScale]
+              TreeOptions.MiscOptions = [toAcceptOLEDrop, toEditable, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
+              TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages, toAlwaysHideSelection]
+              TreeOptions.SelectionOptions = [toDisableDrawSelection, toExtendedFocus, toMultiSelect, toRightClickSelect]
+              WantTabs = True
+            end
+          end
+          object PanTopWindowsUpdates: TPanel
+            Left = 0
+            Height = 42
+            Top = 0
+            Width = 1268
+            Align = alTop
             AutoSize = True
             BevelOuter = bvNone
             ChildSizing.LeftRightSpacing = 4
+            ChildSizing.TopBottomSpacing = 4
             ChildSizing.HorizontalSpacing = 4
-            ChildSizing.Layout = cclTopToBottomThenLeftToRight
+            ChildSizing.VerticalSpacing = 4
+            ChildSizing.Layout = cclLeftToRightThenTopToBottom
             ChildSizing.ControlsPerLine = 5
-            TabOrder = 0
-          end
-          object cbWUCritical: TCheckBox
-            Left = 3
-            Height = 17
-            Top = 7
-            Width = 150
-            Caption = 'Critical only'
-            OnClick = CBWUClassificationsClick
-            TabOrder = 1
-          end
-          object cbAllClassifications: TCheckBox
-            Left = 3
-            Height = 17
-            Top = 27
-            Width = 150
-            Caption = 'All classifications'
-            OnClick = cbAllClassificationsClick
+            ClientHeight = 42
+            ClientWidth = 1268
             TabOrder = 2
-          end
-          object CBWUClassifications: TCheckListBox
-            Left = 3
-            Height = 100
-            Top = 47
-            Width = 150
-            Constraints.MinWidth = 150
-            ItemHeight = 0
-            OnClick = CBWUClassificationsClick
-            PopupMenu = PopupWUAClassifications
-            TabOrder = 3
-          end
-          object cbAllproducts: TCheckBox
-            Left = 3
-            Height = 17
-            Top = 150
-            Width = 150
-            Caption = 'All products'
-            OnClick = cbAllproductsClick
-            TabOrder = 4
-          end
-          object CBWUProducts: TCheckListBox
-            Left = 3
-            Height = 331
-            Top = 170
-            Width = 150
-            Anchors = [akTop, akLeft, akBottom]
-            Constraints.MinHeight = 150
-            ItemHeight = 0
-            OnClick = CBWUProductsClick
-            PopupMenu = PopupWUAProducts
-            TabOrder = 5
+            object EdWUASearchWindowsUpdate: TSearchEdit
+              AnchorSideLeft.Control = PanTopWindowsUpdates
+              AnchorSideTop.Control = PanTopWindowsUpdates
+              AnchorSideTop.Side = asrCenter
+              AnchorSideRight.Control = ButRefreshWindowsUpdates
+              Left = 4
+              Height = 21
+              Top = 11
+              Width = 150
+              EmptyText = 'Type name or description'
+              ExecuteDelay = 400
+              OnExecute = ActWSUSRefreshExecute
+              Options = [seoExecuteEmpty, seoExecuteOnKillFocus]
+              Constraints.MaxHeight = 21
+              Constraints.MinWidth = 150
+              Font.Color = clGray
+              ParentFont = False
+              TabOrder = 4
+            end
+            object ButRefreshWindowsUpdates: TBitBtn
+              AnchorSideLeft.Control = EdWUASearchWindowsUpdate
+              AnchorSideLeft.Side = asrBottom
+              Left = 158
+              Height = 34
+              Top = 4
+              Width = 92
+              Action = ActWSUSRefresh
+              TabOrder = 0
+            end
+            object ButDownloadWsusscn2cab: TBitBtn
+              AnchorSideLeft.Control = ButRefreshWindowsUpdates
+              AnchorSideLeft.Side = asrBottom
+              Left = 254
+              Height = 34
+              Top = 4
+              Width = 265
+              Action = ActWSUSDowloadWSUSScan
+              TabOrder = 1
+            end
+            object cbForcedWSUSscanDownload: TCheckBox
+              AnchorSideLeft.Control = ButDownloadWsusscn2cab
+              AnchorSideLeft.Side = asrBottom
+              AnchorSideTop.Control = PanTopWindowsUpdates
+              AnchorSideTop.Side = asrCenter
+              Left = 523
+              Height = 17
+              Top = 13
+              Width = 224
+              Caption = 'Force download even if already up to date'
+              TabOrder = 2
+            end
+            object ButShowDownloadTasks: TBitBtn
+              AnchorSideLeft.Control = cbForcedWSUSscanDownload
+              AnchorSideLeft.Side = asrBottom
+              Left = 751
+              Height = 34
+              Top = 4
+              Width = 157
+              Action = ActWUAShowDownloadTasks
+              TabOrder = 3
+            end
           end
         end
-        object GridWUUpdates: TSOGrid
-          Left = 156
-          Height = 559
-          Top = 2
-          Width = 1120
-          OnGetText = GridHostWinUpdatesGetText
-          OnNodesDelete = GridWUUpdatesNodesDelete
-          ShowAdvancedColumnsCustomize = False
-          KeyFieldsNames = 'update_id'
-          Align = alClient
-          Anchors = [akTop, akLeft, akBottom]
-          BorderSpacing.Top = 2
-          Color = clWhite
-          Colors.UnfocusedColor = clMedGray
-          Header.AutoSizeIndex = -1
-          Header.Columns = <          
-            item
-              Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-              Position = 0
-              Text = 'Update Id'
-              Width = 79
-              PropertyName = 'update_id'
-            end          
-            item
-              Position = 1
-              Tag = 1
-              Text = 'Published on'
-              Width = 95
-              PropertyName = 'changetime'
-            end          
-            item
-              Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-              Position = 15
-              Tag = 2
-              Text = 'Reported on'
-              Width = 73
-              PropertyName = 'created_on'
-            end          
-            item
-              Position = 2
-              Tag = 3
-              Text = 'KBs'
-              Width = 94
-              PropertyName = 'kbids'
-            end          
-            item
-              Position = 3
-              Tag = 4
-              Text = 'Product'
-              Width = 125
-              PropertyName = 'product'
-            end          
-            item
-              Position = 4
-              Tag = 5
-              Text = 'Classification'
-              Width = 88
-              PropertyName = 'classification'
-            end          
-            item
-              Position = 5
-              Tag = 6
-              Text = 'Title'
-              Width = 331
-              PropertyName = 'title'
-            end          
-            item
-              Position = 6
-              Tag = 7
-              Text = 'Severity'
-              Width = 89
-              PropertyName = 'severity'
-            end          
-            item
-              Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-              Position = 7
-              Tag = 8
-              Text = 'CVE'
-              Width = 114
-              PropertyName = 'cve_ids'
-            end          
-            item
-              Alignment = taRightJustify
-              Position = 8
-              Tag = 9
-              Text = 'Max download size'
-              Width = 131
-              PropertyName = 'max_download_size'
-            end          
-            item
-              Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-              Position = 9
-              Tag = 10
-              Text = 'security_bulletin_ids'
-              Width = 100
-              PropertyName = 'security_bulletin_ids'
-            end          
-            item
-              Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-              Position = 10
-              Tag = 11
-              Text = 'can_request_user_input'
-              Width = 100
-              PropertyName = 'can_request_user_input'
-            end          
-            item
-              Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-              Position = 11
-              Tag = 12
-              Text = 'is_mandatory'
-              Width = 100
-              PropertyName = 'is_mandatory'
-            end          
-            item
-              Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-              Position = 12
-              Tag = 13
-              Text = 'superseded_update_ids'
-              Width = 100
-              PropertyName = 'superseded_update_ids'
-            end          
-            item
-              Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-              Position = 13
-              Tag = 14
-              Text = 'requires_network_connectivity'
-              Width = 76
-              PropertyName = 'requires_network_connectivity'
-            end          
-            item
-              Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-              Position = 14
-              Tag = 15
-              Text = 'created_on'
-              Width = 73
-              PropertyName = 'created_on'
-            end          
-            item
-              Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-              Position = 16
-              Tag = 16
-              Text = 'created_by'
-              Width = 80
-              PropertyName = 'created_by'
-            end          
-            item
-              Alignment = taRightJustify
-              Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-              Position = 17
-              Tag = 17
-              Text = 'min_download_size'
-              Width = 85
-              PropertyName = 'min_download_size'
-            end          
-            item
-              Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-              Position = 18
-              Tag = 18
-              Text = 'reboot_behaviour'
-              Width = 101
-              PropertyName = 'reboot_behaviour'
-            end          
-            item
-              Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-              Position = 19
-              Tag = 19
-              Text = 'download_urls'
-              Width = 100
-              PropertyName = 'download_urls'
-            end          
-            item
-              Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-              Position = 20
-              Tag = 20
-              Text = 'updated_on'
-              Width = 100
-              PropertyName = 'updated_on'
-            end          
-            item
-              Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-              Position = 21
-              Tag = 21
-              Text = 'updated_by'
-              Width = 100
-              PropertyName = 'updated_by'
-            end          
-            item
-              Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-              Position = 22
-              Tag = 22
-              Text = 'update_type'
-              Width = 100
-              PropertyName = 'update_type'
-            end          
-            item
-              Position = 23
-              Tag = 23
-              Text = 'Downloaded on'
-              Width = 159
-              PropertyName = 'downloaded_on'
-            end>
-          Header.DefaultHeight = 17
-          Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
-          Header.SortDirection = sdDescending
-          Header.Style = hsFlatButtons
-          Images = ImageList1
-          PopupMenu = PopupWUAUpdates
-          TabOrder = 1
-          TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes, toAutoChangeScale]
-          TreeOptions.MiscOptions = [toAcceptOLEDrop, toEditable, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
-          TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages, toAlwaysHideSelection]
-          TreeOptions.SelectionOptions = [toDisableDrawSelection, toExtendedFocus, toMultiSelect, toRightClickSelect]
-          WantTabs = True
-        end
-      end
-    end
-    object pgWAPTWUADownloads: TTabSheet
-      Caption = 'Windows Updates downloads'
-      ClientHeight = 592
-      ClientWidth = 1276
-      object Panel13: TPanel
-        Left = 0
-        Height = 31
-        Top = 0
-        Width = 1276
-        Align = alTop
-        AutoSize = True
-        BevelOuter = bvNone
-        ChildSizing.LeftRightSpacing = 4
-        ChildSizing.TopBottomSpacing = 4
-        ChildSizing.HorizontalSpacing = 4
-        ChildSizing.VerticalSpacing = 4
-        ChildSizing.Layout = cclLeftToRightThenTopToBottom
-        ChildSizing.ControlsPerLine = 4
-        ClientHeight = 31
-        ClientWidth = 1276
-        TabOrder = 0
-        object BitBtn11: TBitBtn
-          Left = 4
-          Height = 23
-          Top = 4
-          Width = 64
-          Action = ActWUADownloadsRefresh
-          TabOrder = 0
-        end
-      end
-      object GridWUDownloads: TSOGrid
-        Left = 0
-        Height = 559
-        Top = 33
-        Width = 1276
-        OnGetText = GridHostWinUpdatesGetText
-        OnNodesDelete = GridWUDownloadsNodesDelete
-        ShowAdvancedColumnsCustomize = False
-        KeyFieldsNames = 'task_id'
-        Align = alClient
-        Anchors = [akTop, akLeft, akBottom]
-        BorderSpacing.Top = 2
-        Color = clWhite
-        Colors.UnfocusedColor = clMedGray
-        Header.AutoSizeIndex = -1
-        Header.Columns = <        
-          item
-            Alignment = taRightJustify
-            Position = 0
-            Text = 'id'
-            Width = 63
-            PropertyName = 'id'
-          end        
-          item
-            Position = 1
-            Tag = 1
-            Text = 'Task ID'
-            Width = 67
-            PropertyName = 'task_id'
-          end        
-          item
-            Position = 2
-            Tag = 2
-            Text = 'Kind'
-            Width = 83
-            PropertyName = 'kind'
-          end        
-          item
-            Position = 3
-            Tag = 3
-            Text = 'Status'
-            Width = 57
-            PropertyName = 'status'
-          end        
-          item
-            Position = 4
-            Tag = 4
-            Text = 'Message'
-            Width = 185
-            PropertyName = 'msg'
-          end        
-          item
-            Position = 5
-            Tag = 5
-            Text = 'Download URL'
-            Width = 248
-            PropertyName = 'url'
-          end        
-          item
-            Position = 6
-            Tag = 6
-            Text = 'Started on'
-            Width = 121
-            PropertyName = 'started_on'
-          end        
-          item
-            Position = 7
-            Tag = 7
-            Text = 'Finished on'
-            Width = 120
-            PropertyName = 'finished_on'
-          end        
-          item
-            Position = 8
-            Tag = 8
-            Text = 'Local Filename'
-            Width = 176
-            PropertyName = 'local_filename'
-          end        
-          item
-            Alignment = taRightJustify
-            Position = 9
-            Tag = 9
-            Text = 'File size'
-            Width = 76
-            PropertyName = 'file_size'
-          end        
-          item
-            Position = 10
-            Tag = 10
-            Text = 'Target size'
-            Width = 84
-            PropertyName = 'target_size'
-          end        
-          item
-            Position = 11
-            Tag = 11
-            Text = 'File date'
-            Width = 129
-            PropertyName = 'file_date'
-          end        
-          item
-            Position = 12
-            Tag = 12
-            Text = 'Error message'
-            Width = 88
-            PropertyName = 'error'
-          end        
-          item
-            Position = 13
-            Tag = 13
-            Text = 'Skipped'
-            Width = 58
-            PropertyName = 'skipped'
-          end        
-          item
-            Position = 14
-            Tag = 14
-            Text = 'Forced'
-            Width = 100
-            PropertyName = 'forced'
-          end>
-        Header.DefaultHeight = 17
-        Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
-        Header.SortDirection = sdDescending
-        Header.Style = hsFlatButtons
-        Images = ImageList1
-        TabOrder = 1
-        TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes, toAutoChangeScale]
-        TreeOptions.MiscOptions = [toAcceptOLEDrop, toEditable, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
-        TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages, toAlwaysHideSelection]
-        TreeOptions.SelectionOptions = [toDisableDrawSelection, toExtendedFocus, toMultiSelect, toRightClickSelect]
-        WantTabs = True
       end
     end
     object pgSelfService: TTabSheet
       Caption = 'Self-service rules packages'
-      ClientHeight = 590
+      ClientHeight = 592
       ClientWidth = 1276
+      TabVisible = False
       object Panel20: TPanel
         Left = 0
         Height = 40
@@ -5754,7 +5626,7 @@ object VisWaptGUI: TVisWaptGUI
           Left = 162
           Height = 34
           Top = 3
-          Width = 111
+          Width = 108
           Action = ActSelfServiceSearchPackage
           AutoSize = True
           Glyph.Data = {
@@ -5840,10 +5712,10 @@ object VisWaptGUI: TVisWaptGUI
           AnchorSideLeft.Side = asrBottom
           AnchorSideTop.Control = Panel20
           AnchorSideTop.Side = asrCenter
-          Left = 279
+          Left = 276
           Height = 34
           Top = 3
-          Width = 250
+          Width = 237
           Action = ActSelfServiceNewPackage
           AutoSize = True
           Caption = 'Create new self-service rules package'
@@ -5854,10 +5726,10 @@ object VisWaptGUI: TVisWaptGUI
           AnchorSideLeft.Side = asrBottom
           AnchorSideTop.Control = Panel20
           AnchorSideTop.Side = asrCenter
-          Left = 535
-          Height = 19
-          Top = 11
-          Width = 82
+          Left = 519
+          Height = 17
+          Top = 12
+          Width = 76
           Caption = 'Show Hosts'
           TabOrder = 3
         end
@@ -5867,7 +5739,7 @@ object VisWaptGUI: TVisWaptGUI
         AnchorSideTop.Side = asrBottom
         AnchorSideBottom.Side = asrBottom
         Left = 0
-        Height = 550
+        Height = 552
         Top = 40
         Width = 1276
         OnGetText = GridGroupsGetText
@@ -6789,7 +6661,7 @@ object VisWaptGUI: TVisWaptGUI
     end
     object PgNetworksConfig: TTabSheet
       Caption = 'Sites / networks configuration'
-      ClientHeight = 590
+      ClientHeight = 592
       ClientWidth = 1276
       TabVisible = False
       object Panel8: TPanel
@@ -6826,7 +6698,7 @@ object VisWaptGUI: TVisWaptGUI
           Left = 162
           Height = 34
           Top = 3
-          Width = 89
+          Width = 87
           AutoSize = True
           Caption = 'Search'
           Glyph.Data = {
@@ -6908,19 +6780,19 @@ object VisWaptGUI: TVisWaptGUI
           TabOrder = 1
         end
         object butSearchPackages2: TBitBtn
-          Left = 257
+          Left = 255
           Height = 34
           Top = 3
-          Width = 147
+          Width = 138
           Action = ActAddNewNetwork
           AutoSize = True
           TabOrder = 2
         end
         object butSearchPackages3: TBitBtn
-          Left = 410
+          Left = 399
           Height = 34
           Top = 3
-          Width = 133
+          Width = 127
           Action = ActDeleteNetwork
           AutoSize = True
           TabOrder = 3
@@ -6928,7 +6800,7 @@ object VisWaptGUI: TVisWaptGUI
       end
       object GridNetworks: TSOGrid
         Left = 0
-        Height = 550
+        Height = 552
         Top = 40
         Width = 1276
         Datasource = SrcNetworks
@@ -7019,33 +6891,33 @@ object VisWaptGUI: TVisWaptGUI
     end
     object PgReports: TTabSheet
       Caption = 'Reports'
-      ClientHeight = 590
+      ClientHeight = 592
       ClientWidth = 1276
       TabVisible = False
       object PanReportingRight: TPanel
         Left = 275
-        Height = 540
+        Height = 542
         Top = 50
         Width = 1001
         Align = alClient
         BevelOuter = bvNone
-        ClientHeight = 540
+        ClientHeight = 542
         ClientWidth = 1001
         TabOrder = 1
         object PanelReportingGrid: TPanel
           Left = 0
-          Height = 383
+          Height = 385
           Top = 157
           Width = 1001
           Align = alClient
           BevelOuter = bvNone
           Caption = 'PanelReportingGrid'
-          ClientHeight = 383
+          ClientHeight = 385
           ClientWidth = 1001
           TabOrder = 0
           object GridReporting: TSOGrid
             Left = 5
-            Height = 352
+            Height = 356
             Top = 5
             Width = 991
             OnGetText = GridReportingGetText
@@ -7079,8 +6951,8 @@ object VisWaptGUI: TVisWaptGUI
           end
           object Panel18: TPanel
             Left = 0
-            Height = 21
-            Top = 362
+            Height = 19
+            Top = 366
             Width = 1001
             Align = alBottom
             AutoSize = True
@@ -7089,14 +6961,14 @@ object VisWaptGUI: TVisWaptGUI
             ChildSizing.TopBottomSpacing = 3
             ChildSizing.HorizontalSpacing = 6
             ChildSizing.VerticalSpacing = 6
-            ClientHeight = 21
+            ClientHeight = 19
             ClientWidth = 1001
             TabOrder = 1
             object LabelReportingNumber: TLabel
-              Left = 860
-              Height = 15
+              Left = 866
+              Height = 13
               Top = 3
-              Width = 135
+              Width = 129
               Align = alRight
               Caption = 'Selected / Total : %d / %d'
               ParentColor = False
@@ -7640,17 +7512,17 @@ object VisWaptGUI: TVisWaptGUI
         ShowCaptions = True
         TabOrder = 0
         object ToolButton4: TToolButton
-          Left = 164
+          Left = 149
           Top = 2
           Action = ActReportingQueryNew
         end
         object ToolButton7: TToolButton
-          Left = 229
+          Left = 209
           Top = 2
           Action = ActReportingQueryDelete
         end
         object ToolButton10: TToolButton
-          Left = 79
+          Left = 70
           Top = 2
           Action = ActReportingQueryReload
         end
@@ -7661,36 +7533,36 @@ object VisWaptGUI: TVisWaptGUI
           Style = tbsCheck
         end
         object ToolButton9: TToolButton
-          Left = 361
+          Left = 331
           Top = 2
           Action = ActReportingQuerySaveAll
         end
         object tbReportingExportExcel: TToolButton
-          Left = 434
+          Left = 401
           Top = 2
           Action = ActReportingQueryExportToExcel
           AutoSize = True
         end
         object ToolButtonReportingQueryDuplicate: TToolButton
-          Left = 303
+          Left = 279
           Top = 2
           Action = ActReportingQueryDuplicate
         end
         object ToolButton3: TToolButton
-          Left = 518
+          Left = 482
           Top = 2
           Action = ActReportingQueryExecute
         end
       end
       object Splitter11: TSplitter
         Left = 270
-        Height = 540
+        Height = 542
         Top = 50
         Width = 5
       end
       object GridReportingQueries: TSOGrid
         Left = 0
-        Height = 540
+        Height = 542
         Top = 50
         Width = 270
         OnBeforePaste = GridReportingQueriesBeforePaste
@@ -9644,10 +9516,12 @@ object VisWaptGUI: TVisWaptGUI
     end
     object ActWSUSRefresh: TAction
       Caption = 'Refresh'
+      ImageIndex = 5
       OnExecute = ActWSUSRefreshExecute
     end
     object ActWSUSDowloadWSUSScan: TAction
       Caption = 'Download WSUSScan cab from Microsoft Web site'
+      ImageIndex = 10
       OnExecute = ActWSUSDowloadWSUSScanExecute
     end
     object ActWUAAddAllowedClassification: TAction
@@ -9672,11 +9546,6 @@ object VisWaptGUI: TVisWaptGUI
       Caption = 'Show MS Update Help'
       OnExecute = ActWUAShowMSUpdatesHelpExecute
     end
-    object ActWUADownloadsRefresh: TAction
-      Category = 'wuadownloads'
-      Caption = 'Refresh'
-      OnExecute = ActWUADownloadsRefreshExecute
-    end
     object ActWUAEditPackage: TAction
       Category = 'wua'
       Caption = 'ActWUAEditPackage'
@@ -9686,6 +9555,12 @@ object VisWaptGUI: TVisWaptGUI
       Caption = 'Refresh list'
       ImageIndex = 0
       OnExecute = ActWUASearchPackageExecute
+    end
+    object ActWUAShowDownloadTasks: TAction
+      Category = 'wua'
+      Caption = 'Show download tasks'
+      ImageIndex = 2
+      OnExecute = ActWUAShowDownloadTasksExecute
     end
   end
   object PopupGridWSUSScan: TPopupMenu

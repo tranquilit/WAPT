@@ -1832,11 +1832,6 @@ msgctxt "tviswaptgui.actwuadownloadselectedupdate.caption"
 msgid "Download selected"
 msgstr ""
 
-#: tviswaptgui.actwuadownloadsrefresh.caption
-msgctxt "tviswaptgui.actwuadownloadsrefresh.caption"
-msgid "Refresh"
-msgstr ""
-
 #: tviswaptgui.actwuaeditgroup.caption
 msgctxt "tviswaptgui.actwuaeditgroup.caption"
 msgid "Edit group"
@@ -1914,6 +1909,10 @@ msgstr ""
 #: tviswaptgui.actwuasearchpackage.caption
 msgctxt "tviswaptgui.actwuasearchpackage.caption"
 msgid "Refresh list"
+msgstr ""
+
+#: tviswaptgui.actwuashowdownloadtasks.caption
+msgid "Show download tasks"
 msgstr ""
 
 #: tviswaptgui.actwuashowmsupdateshelp.caption
@@ -2175,10 +2174,6 @@ msgstr ""
 #: tviswaptgui.label18.caption
 msgctxt "tviswaptgui.label18.caption"
 msgid "Last scan date"
-msgstr ""
-
-#: tviswaptgui.label19.caption
-msgid "Forbidden Windows Updates"
 msgstr ""
 
 #: tviswaptgui.label2.caption
@@ -2447,17 +2442,18 @@ msgstr ""
 msgid "Tasks"
 msgstr ""
 
-#: tviswaptgui.pgwaptwuadownloads.caption
-msgid "Windows Updates downloads"
+#: tviswaptgui.pgwaptwuaconfig.caption
+msgctxt "tviswaptgui.pgwaptwuaconfig.caption"
+msgid "Windows Updates"
 msgstr ""
 
 #: tviswaptgui.pgwaptwuapackages.caption
-msgid "WAPT WUA packages"
+msgctxt "tviswaptgui.pgwaptwuapackages.caption"
+msgid "Wapt WUA packages"
 msgstr ""
 
-#: tviswaptgui.pgwindowsupdates.caption
-msgctxt "tviswaptgui.pgwindowsupdates.caption"
-msgid "Windows Updates"
+#: tviswaptgui.pgwindowsupdates2.caption
+msgid "Windows Updates list"
 msgstr ""
 
 #: tviswaptgui.tabsheet1.caption
@@ -2495,6 +2491,15 @@ msgstr ""
 
 #: tviswuaclassificationsselect.label1.caption
 msgid "Classifications"
+msgstr ""
+
+#: tviswuadownloads.actwuadownloadsrefresh.caption
+msgctxt "tviswuadownloads.actwuadownloadsrefresh.caption"
+msgid "Refresh"
+msgstr ""
+
+#: tviswuadownloads.caption
+msgid "Windows updates dowload tasks"
 msgstr ""
 
 #: tviswuagroup.actbuilduploadpackage.caption

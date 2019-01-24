@@ -1912,12 +1912,6 @@ msgctxt "tviswaptgui.actwuadownloadselectedupdate.caption"
 msgid "Download selected"
 msgstr "Télécharger les mises à jour sélectionnées"
 
-#: tviswaptgui.actwuadownloadsrefresh.caption
-#, fuzzy
-msgctxt "tviswaptgui.actwuadownloadsrefresh.caption"
-msgid "Refresh"
-msgstr "Actualiser"
-
 #: tviswaptgui.actwuaeditgroup.caption
 msgctxt "tviswaptgui.actwuaeditgroup.caption"
 msgid "Edit group"
@@ -1997,6 +1991,10 @@ msgstr "Enregistrer"
 msgctxt "tviswaptgui.actwuasearchpackage.caption"
 msgid "Refresh list"
 msgstr "Rafraîchir"
+
+#: tviswaptgui.actwuashowdownloadtasks.caption
+msgid "Show download tasks"
+msgstr "Voir les tâches de téléchargement"
 
 #: tviswaptgui.actwuashowmsupdateshelp.caption
 msgid "Show MS Update Help"
@@ -2277,10 +2275,6 @@ msgctxt "tviswaptgui.label18.caption"
 msgid "Last scan date"
 msgstr "Dernière connexion"
 
-#: tviswaptgui.label19.caption
-msgid "Forbidden Windows Updates"
-msgstr "Mises à jour interdites"
-
 #: tviswaptgui.label2.caption
 msgctxt "tviswaptgui.label2.caption"
 msgid "Manufacturer"
@@ -2556,18 +2550,22 @@ msgstr "Sources"
 msgid "Tasks"
 msgstr "Tâches"
 
-#: tviswaptgui.pgwaptwuadownloads.caption
-msgid "Windows Updates downloads"
-msgstr "Téléchargements Windows Updates"
-
-#: tviswaptgui.pgwaptwuapackages.caption
-msgid "WAPT WUA packages"
-msgstr "Paquets WAPT WUA"
-
-#: tviswaptgui.pgwindowsupdates.caption
-msgctxt "tviswaptgui.pgwindowsupdates.caption"
+#: tviswaptgui.pgwaptwuaconfig.caption
+#, fuzzy
+msgctxt "tviswaptgui.pgwaptwuaconfig.caption"
 msgid "Windows Updates"
 msgstr "Windows Updates"
+
+#: tviswaptgui.pgwaptwuapackages.caption
+#, fuzzy
+#| msgid "WaptWUA Packages"
+msgctxt "tviswaptgui.pgwaptwuapackages.caption"
+msgid "Wapt WUA packages"
+msgstr "Paquets WAPT WUA"
+
+#: tviswaptgui.pgwindowsupdates2.caption
+msgid "Windows Updates list"
+msgstr "Liste des mises à jour Windows"
 
 #: tviswaptgui.tabsheet1.caption
 msgctxt "tviswaptgui.tabsheet1.caption"
@@ -2605,6 +2603,16 @@ msgstr "Sélection des classifications de Mise à jour Windows"
 #: tviswuaclassificationsselect.label1.caption
 msgid "Classifications"
 msgstr "Classisications"
+
+#: tviswuadownloads.actwuadownloadsrefresh.caption
+#, fuzzy
+msgctxt "tviswuadownloads.actwuadownloadsrefresh.caption"
+msgid "Refresh"
+msgstr "Actualiser"
+
+#: tviswuadownloads.caption
+msgid "Windows updates dowload tasks"
+msgstr "Tâches de téléchargement de mises à jour Windows"
 
 #: tviswuagroup.actbuilduploadpackage.caption
 #, fuzzy

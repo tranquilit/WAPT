@@ -1950,12 +1950,6 @@ msgctxt "tviswaptgui.actwuadownloadselectedupdate.caption"
 msgid "Download selected"
 msgstr "Ausgewähltes herunterladen"
 
-#: tviswaptgui.actwuadownloadsrefresh.caption
-#, fuzzy
-msgctxt "tviswaptgui.actwuadownloadsrefresh.caption"
-msgid "Refresh"
-msgstr "Aktualisiere"
-
 #: tviswaptgui.actwuaeditgroup.caption
 msgctxt "tviswaptgui.actwuaeditgroup.caption"
 msgid "Edit group"
@@ -2034,6 +2028,10 @@ msgstr "Speichern"
 #: tviswaptgui.actwuasearchpackage.caption
 msgctxt "tviswaptgui.actwuasearchpackage.caption"
 msgid "Refresh list"
+msgstr ""
+
+#: tviswaptgui.actwuashowdownloadtasks.caption
+msgid "Show download tasks"
 msgstr ""
 
 #: tviswaptgui.actwuashowmsupdateshelp.caption
@@ -2307,10 +2305,6 @@ msgstr "Betriebssystem"
 msgctxt "tviswaptgui.label18.caption"
 msgid "Last scan date"
 msgstr "Aktualisiert"
-
-#: tviswaptgui.label19.caption
-msgid "Forbidden Windows Updates"
-msgstr "Unzulässige Windows Updates"
 
 #: tviswaptgui.label2.caption
 msgctxt "tviswaptgui.label2.caption"
@@ -2592,18 +2586,20 @@ msgstr "Quellen"
 msgid "Tasks"
 msgstr "Tasks"
 
-#: tviswaptgui.pgwaptwuadownloads.caption
-msgid "Windows Updates downloads"
-msgstr ""
-
-#: tviswaptgui.pgwaptwuapackages.caption
-msgid "WAPT WUA packages"
-msgstr ""
-
-#: tviswaptgui.pgwindowsupdates.caption
-msgctxt "tviswaptgui.pgwindowsupdates.caption"
+#: tviswaptgui.pgwaptwuaconfig.caption
+#, fuzzy
+msgctxt "tviswaptgui.pgwaptwuaconfig.caption"
 msgid "Windows Updates"
 msgstr "Windows Updates"
+
+#: tviswaptgui.pgwaptwuapackages.caption
+msgctxt "tviswaptgui.pgwaptwuapackages.caption"
+msgid "Wapt WUA packages"
+msgstr ""
+
+#: tviswaptgui.pgwindowsupdates2.caption
+msgid "Windows Updates list"
+msgstr ""
 
 #: tviswaptgui.tabsheet1.caption
 msgctxt "tviswaptgui.tabsheet1.caption"
@@ -2641,6 +2637,16 @@ msgstr "Auswahl der Widows Updates Klassifikation"
 #: tviswuaclassificationsselect.label1.caption
 msgid "Classifications"
 msgstr "Klassifikation"
+
+#: tviswuadownloads.actwuadownloadsrefresh.caption
+#, fuzzy
+msgctxt "tviswuadownloads.actwuadownloadsrefresh.caption"
+msgid "Refresh"
+msgstr "Aktualisieren"
+
+#: tviswuadownloads.caption
+msgid "Windows updates dowload tasks"
+msgstr ""
 
 #: tviswuagroup.actbuilduploadpackage.caption
 #, fuzzy

@@ -29,8 +29,12 @@ type
     ActAddNewNetwork: TAction;
     ActDeleteNetwork: TAction;
     ActInstallLicence: TAction;
+    ActWUAShowDownloadTasks: TAction;
     ActSelfServiceNewPackage: TAction;
     ActSelfServiceSearchPackage: TAction;
+    ButShowDownloadTasks: TBitBtn;
+    EdWUASearchWindowsUpdate: TSearchEdit;
+    WUAConfigPages: TPageControl;
     SelfServiceActions: TActionList;
     ActWUASearchPackage: TAction;
     ActWUAEditPackage: TAction;
@@ -44,7 +48,6 @@ type
     ActReportingQueryDelete: TAction;
     ActNormalizationImportSoftwares: TAction;
     ActNormalizationWriteTable: TAction;
-    btAddGroup1: TBitBtn;
     btAddGroup3: TBitBtn;
     btAddSelfServicePackage: TBitBtn;
     ButNormalizationFilter: TBitBtn;
@@ -74,10 +77,11 @@ type
     MenuItem106: TMenuItem;
     MenuItem107: TMenuItem;
     Panel10: TPanel;
-    Panel19: TPanel;
+    PanTopWAPTWuaPackages: TPanel;
     Panel20: TPanel;
-    pgWAPTWuaPackages: TTabSheet;
     pgSelfService: TTabSheet;
+    pgWindowsUpdates2: TTabSheet;
+    pgWAPTWuaPackages: TTabSheet;
     ToolButton3: TToolButton;
     MenuGridHostsPlugins: TMenuItem;
     VeyonConnect: TMenuItem;
@@ -92,7 +96,6 @@ type
     PanelReportingEditSQL: TPanel;
     PopupMenuSQL: TPopupMenu;
     ReportingActions: TActionList;
-    ActWUADownloadsRefresh: TAction;
     ActResetWebsocketConnections: TAction;
     ActRunCleanMgr: TAction;
     ActWUAShowMSUpdatesHelp: TAction;
@@ -137,10 +140,9 @@ type
     ActWSUSRefresh: TAction;
     ApplicationProperties1: TApplicationProperties;
     ButImportFromRepo: TBitBtn;
-    BitBtn10: TBitBtn;
-    BitBtn11: TBitBtn;
+    ButRefreshWindowsUpdates: TBitBtn;
     ButImportFromFile: TBitBtn;
-    BitBtn9: TBitBtn;
+    ButDownloadWsusscn2cab: TBitBtn;
     btAddGroup: TBitBtn;
     ButHostSearch: TBitBtn;
     ButPackagesUpdate: TBitBtn;
@@ -197,7 +199,6 @@ type
     GridHostWinUpdatesHistory: TSOGrid;
     GridPackages: TSOGrid;
     GridWUUpdates: TSOGrid;
-    GridWUDownloads: TSOGrid;
     Label10: TLabel;
     Label17: TLabel;
     Label18: TLabel;
@@ -229,12 +230,11 @@ type
     MenuItem97: TMenuItem;
     MenuItem98: TMenuItem;
     MenuItem99: TMenuItem;
-    Panel13: TPanel;
     Panel17: TPanel;
     Panel9: TPanel;
     PanHostsForPackage: TPanel;
     PanWUALeft: TPanel;
-    Panel2: TPanel;
+    PanTopWindowsUpdates: TPanel;
     Panel8: TPanel;
     PanWUAMain: TPanel;
     PanWUASearch: TPanel;
@@ -279,7 +279,6 @@ type
     Label11: TLabel;
     Label12: TLabel;
     Label15: TLabel;
-    Label19: TLabel;
     Label2: TLabel;
     LabFilterSite: TLabel;
     Label23: TLabel;
@@ -336,12 +335,11 @@ type
     MenuItem71: TMenuItem;
     MenuItem72: TMenuItem;
     MenuItem73: TMenuItem;
-    pgWindowsUpdates: TTabSheet;
+    pgWaptWUAConfig: TTabSheet;
     PopupDelete: TPopupMenu;
     Splitter6: TSplitter;
     Splitter7: TSplitter;
     PgReports: TTabSheet;
-    pgWAPTWUADownloads: TTabSheet;
     pgNormalization: TTabSheet;
     SynCompletion1: TSynCompletion;
     SynEditReportsSQL: TSynEdit;
@@ -653,7 +651,6 @@ type
     procedure ActHostsActionsUpdate(Sender: TObject);
     procedure ActImportFromFileExecute(Sender: TObject);
     procedure ActImportFromRepoExecute(Sender: TObject);
-    procedure ActWUADownloadsRefreshExecute(Sender: TObject);
     procedure ActWUALoadUpdatesExecute(Sender: TObject);
     procedure ActWUALoadUpdatesUpdate(Sender: TObject);
     procedure ActPackagesInstallExecute(Sender: TObject);
@@ -688,6 +685,7 @@ type
     procedure ActVNCUpdate(Sender: TObject);
     procedure ActWAPTConsoleConfigExecute(Sender: TObject);
     procedure ActWUASearchPackageExecute(Sender: TObject);
+    procedure ActWUAShowDownloadTasksExecute(Sender: TObject);
     procedure ActWUAShowMSUpdatesHelpExecute(Sender: TObject);
     procedure ApplicationProperties1Exception(Sender: TObject; E: Exception);
     procedure cbADOUSelect(Sender: TObject);
@@ -853,7 +851,6 @@ type
     procedure GridWUAPackagesColumnDblClick(Sender: TBaseVirtualTree;
       Column: TColumnIndex; Shift: TShiftState);
     procedure GridWUAPackagesNodesDelete(Sender: TSOGrid; Nodes: ISuperObject);
-    procedure GridWUDownloadsNodesDelete(Sender: TSOGrid; Nodes: ISuperObject);
     procedure GridWUUpdatesNodesDelete(Sender: TSOGrid; Nodes: ISuperObject);
     procedure HostPagesChange(Sender: TObject);
     procedure Image1Click(Sender: TObject);
@@ -868,6 +865,7 @@ type
     procedure SynEditReportsSQLChange(Sender: TObject);
     procedure TimerSearchPackagesTimer(Sender: TObject);
     procedure TimerWUALoadWinUpdatesTimer(Sender: TObject);
+    procedure WUAConfigPagesChange(Sender: TObject);
   private
     { private declarations }
     CurrentVisLoading: TVisLoading;
@@ -1002,7 +1000,7 @@ uses LCLIntf, LCLType, IniFiles, variants, LazFileUtils,FileUtil, base64,
   uVisPackageWizard, uVisChangeKeyPassword, uVisDisplayPreferences,
   uvisrepositories, uVisHostDelete, windirs,winutils,uWaptPythonUtils
   {$ifdef ENTERPRISE}
-  ,uVisWUAGroup
+  ,uVisWUAGroup,uviswuadownloads
   {$endif}
   {$ifdef wsus},uVisWAPTWUAProducts, uviswuapackageselect,
   uVisWUAClassificationsSelect
@@ -1485,7 +1483,6 @@ begin
   {$ifdef ENTERPRISE}
   if IsEnterpriseEdition then
   begin
-    GridWUDownloads.SaveSettingsToIni(Appuserinipath);
     GridWUUpdates.SaveSettingsToIni(Appuserinipath);
     GridHostWinUpdates.SaveSettingsToIni(Appuserinipath);
     GridReportingQueries.SaveSettingsToIni(Appuserinipath);
@@ -3547,7 +3544,6 @@ begin
   GridHostsForPackage.LoadSettingsFromIni(Appuserinipath+'.default');
 
   {$ifdef enterprise}
-  GridWUDownloads.LoadSettingsFromIni(Appuserinipath+'.default');
   GridWUUpdates.LoadSettingsFromIni(Appuserinipath+'.default');
   GridHostWinUpdates.LoadSettingsFromIni(Appuserinipath+'.default');
   GridReportingQueries.LoadSettingsFromIni(Appuserinipath+'.default');
@@ -3863,7 +3859,6 @@ begin
   begin
     GridHostWinUpdates.ShowAdvancedColumnsCustomize:=AdvancedMode;
     GridWUUpdates.ShowAdvancedColumnsCustomize:=AdvancedMode;
-    GridWUDownloads.ShowAdvancedColumnsCustomize:=AdvancedMode;
     GridHostsForPackage.ShowAdvancedColumnsCustomize:=AdvancedMode;
   end;
 
@@ -3877,7 +3872,6 @@ begin
   begin
     GridHostWinUpdates.Data := Nil;
     GridWUUpdates.Data := Nil;
-    GridWUDownloads.Data := Nil;
   end;
 
 end;
@@ -4274,7 +4268,6 @@ begin
     {$ifdef ENTERPRISE}
     if IsEnterpriseEdition then
     begin
-      GridWUDownloads.SaveSettingsToIni(Appuserinipath+'.default');
       GridWUUpdates.SaveSettingsToIni(Appuserinipath+'.default');
       GridHostWinUpdates.SaveSettingsToIni(Appuserinipath+'.default');
     end;
@@ -4992,10 +4985,10 @@ begin
   PgNetworksConfig.TabVisible:=False;
   PgReports.TabVisible := False;
   pgNormalization.TabVisible := False;
-  pgWAPTWuaPackages.TabVisible:=False;
+  pgWAPTWuaPackages2.TabVisible:=False;
   pgSelfService.TabVisible:=False;
-  pgWAPTWUADownloads.TabVisible:=False;
-  pgWindowsUpdates.TabVisible:=False;
+  pgWAPTWUADownloads2.TabVisible:=False;
+  pgWaptWUAConfig.TabVisible:=False;
   pgSelfService.TabVisible:=False;
   ActTriggerHostAudit.Visible:=False;
   ActPackagesAudit.Visible:=False;
@@ -5108,12 +5101,9 @@ begin
       ActSearchPackage.Execute;
     EdSearchPackage.SetFocus;
   end
-  else if MainPages.ActivePage = pgWAPTWuaPackages then
+  else if MainPages.ActivePage = pgWaptWUAConfig then
   begin
-    CopyMenu(PopupMenuPackages, MenuItem24);
-    if GridWUAPackages.Data = nil then
-       ActWUASearchPackage.Execute;
-    EdWUASearchPackage.SetFocus;
+
   end
   else if MainPages.ActivePage = pgSelfService then
   begin
@@ -5134,17 +5124,12 @@ begin
     if not SrcNetworks.Active then
       SrcNetworks.open;
   end
-  else if MainPages.ActivePage = pgWindowsUpdates then
+  else if MainPages.ActivePage = pgWaptWUAConfig then
   begin
     WUAClassifications;
     WUAProducts;
     if GridWUUpdates.Data = Nil then
       ActWSUSRefresh.Execute
-  end
-  else if MainPages.ActivePage = pgWAPTWUADownloads then
-  begin
-    if GridWUDownloads.Data = Nil then
-      ActWUADownloadsRefresh.Execute
   end
   else if MainPages.ActivePage = PgReports then
   begin
