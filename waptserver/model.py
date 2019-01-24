@@ -515,6 +515,48 @@ class WsusDownloadTasks(WaptBaseModel):
     skipped = BooleanField(null=True)
     error = CharField(max_length=1200,null=True)
 
+class storeDownload(WaptBaseModel):
+    id = PrimaryKeyField(primary_key=True)
+    package = CharField(null=True)
+    download = BigIntegerField(null=True)
+    last_download = DateTimeField(null=True)
+
+class storeMember(WaptBaseModel):
+    id = PrimaryKeyField(primary_key=True)
+    email = CharField(null=True)
+    password = CharField(null=True)
+    surname = CharField(null=True)
+    firstname = CharField(null=True)
+    organization = CharField(null=True)
+    lastconnection = DateTimeField(null=True)
+    gdpr = BooleanField(null=True)
+    tos = BooleanField(null=True)
+    token = CharField(null=True)
+    validat_account = BooleanField(null=True)
+
+class storeUsage(SignaledModel):
+    class Meta:
+        database = wapt_db
+
+    id = PrimaryKeyField(primary_key=True)
+    architecture = CharField(null=True)
+    date = DateTimeField(null=True)
+    host_count = IntegerField(null=True)
+    ip = CharField(null=True)
+    netname = CharField(null=True)
+    platform = CharField(null=True)
+    ptr = CharField(null=True)
+    uuid = CharField(null=True)
+    version = CharField(null=True)
+    oldest_query = DateTimeField(null=True)
+    newest_query = DateTimeField(null=True)
+    first_seen = DateTimeField(null=True)
+    packages_count_avg = FloatField(null=True)
+    packages_count_ok = IntegerField(null=True)
+    packages_count_max = IntegerField(null=True)
+    hosts_count_need_upgrade = IntegerField(null=True)
+    hosts_count_has_error = IntegerField(null=True)
+
 
 def dictgetpath(adict, pathstr):
     """Iterates a list of path pathstr of the form 'key.subkey.sskey' and returns
