@@ -1477,6 +1477,7 @@ def get_hosts():
             default_columns = ['host_status',
                                'last_update_status',
                                'reachable',
+                               'wapt_version',
                                'computer_fqdn',
                                'dnsdomain',
                                'description',
@@ -1524,6 +1525,7 @@ def get_hosts():
                        'listening_timestamp',
                        'connected_users',
                        'registration_auth_user',
+                       'wapt_version',
                        ]
             other_columns = ensure_list(
                 request.args.get(
