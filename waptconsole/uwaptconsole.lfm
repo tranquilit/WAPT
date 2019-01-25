@@ -5544,6 +5544,7 @@ object VisWaptGUI: TVisWaptGUI
               Top = 4
               Width = 92
               Action = ActWSUSRefresh
+              AutoSize = True
               TabOrder = 0
             end
             object ButDownloadWsusscn2cab: TBitBtn
@@ -5552,8 +5553,9 @@ object VisWaptGUI: TVisWaptGUI
               Left = 254
               Height = 34
               Top = 4
-              Width = 265
+              Width = 293
               Action = ActWSUSDowloadWSUSScan
+              AutoSize = True
               TabOrder = 1
             end
             object cbForcedWSUSscanDownload: TCheckBox
@@ -5561,7 +5563,7 @@ object VisWaptGUI: TVisWaptGUI
               AnchorSideLeft.Side = asrBottom
               AnchorSideTop.Control = PanTopWindowsUpdates
               AnchorSideTop.Side = asrCenter
-              Left = 523
+              Left = 551
               Height = 17
               Top = 13
               Width = 224
@@ -5571,11 +5573,12 @@ object VisWaptGUI: TVisWaptGUI
             object ButShowDownloadTasks: TBitBtn
               AnchorSideLeft.Control = cbForcedWSUSscanDownload
               AnchorSideLeft.Side = asrBottom
-              Left = 751
+              Left = 779
               Height = 34
               Top = 4
               Width = 157
               Action = ActWUAShowDownloadTasks
+              AutoSize = True
               TabOrder = 3
             end
           end

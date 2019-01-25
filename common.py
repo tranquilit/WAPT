@@ -932,8 +932,6 @@ class WaptDB(WaptBaseDB):
             else:
                 pid = os.getpid()
 
-            install_rec = self.query('select package_uuid,package from wapt_localstatus where rowid = ?',(rowid,),one=True)
-
             cur = self.db.execute("""\
                   update wapt_localstatus
                     set install_status=coalesce(?,install_status),
@@ -951,8 +949,11 @@ class WaptDB(WaptBaseDB):
                      rowid,
                      )
                    )
-            if set_status in ('OK','WARNING','ERROR') and install_rec['package_uuid']:
-                cur = self.db.execute("""delete from wapt_localstatus where package=? and package_uuid <> ?""" ,(install_rec['package'],install_rec['package_uuid']))
+
+            # removed repviously installed package entry
+            install_rec = self.query('select package_uuid,package from wapt_localstatus where rowid = ?',(rowid,),one=True)
+            if install_rec and set_status in ('OK','WARNING','ERROR'):
+                cur = self.db.execute("""delete from wapt_localstatus where package=? and rowid <> ?""" ,(install_rec['package'],rowid))
             return cur.lastrowid
 
     def update_audit_status(self,rowid,set_status=None,set_output=None,append_output=None,set_last_audit_on=None,set_next_audit_on=None):

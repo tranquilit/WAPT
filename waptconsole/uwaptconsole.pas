@@ -5031,7 +5031,7 @@ begin
   end
   else if MainPages.ActivePage = pgWaptWUAConfig then
   begin
-
+    WUAConfigPages.OnChange(WUAConfigPages);
   end
   else if MainPages.ActivePage = pgSelfService then
   begin
