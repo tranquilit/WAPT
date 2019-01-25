@@ -1621,6 +1621,9 @@ def upgrade_db_structure():
     if get_db_version() <= next_version:
         with wapt_db.atomic():
             logger.info("Migrating from %s to %s" % (get_db_version(), next_version))
+            StoreDownload.create_table(fail_silently=True)
+            StoreMember.create_table(fail_silently=True)
+            StoreUsage.create_table(fail_silently=True)
 
             opes = []
 

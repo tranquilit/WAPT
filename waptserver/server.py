@@ -1050,16 +1050,16 @@ def serve_icons(iconfilename):
     return r
 
 
-@app.route('/css/<string:fn>')
-@app.route('/fonts/<string:fn>')
-@app.route('/img/<string:fn>')
-@app.route('/js/<string:fn>')
+@app.route('/static/css/<string:fn>')
+@app.route('/static/fonts/<string:fn>')
+@app.route('/static/img/<string:fn>')
+@app.route('/static/js/<string:fn>')
 def serve_static(fn):
     """Serve"""
-    rootdir = os.path.join(app.template_folder, request.path.split('/')[1])
+    rootdir = os.path.join(wapt_root_dir,'waptserver','static')
     if fn is not None:
-        fn = secure_filename(fn)
-        r = send_from_directory(rootdir, fn)
+        fn = request.path.split('/')[2:]
+        r = send_from_directory(os.path.join(rootdir,secure_filename(fn[0])),secure_filename(fn[-1]))
         if 'content-length' not in r.headers:
             r.headers.add_header(
                 'content-length', int(os.path.getsize(os.path.join(rootdir, fn))))
