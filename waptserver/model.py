@@ -515,13 +515,13 @@ class WsusDownloadTasks(WaptBaseModel):
     skipped = BooleanField(null=True)
     error = CharField(max_length=1200,null=True)
 
-class storeDownload(WaptBaseModel):
+class StoreDownload(WaptBaseModel):
     id = PrimaryKeyField(primary_key=True)
     package = CharField(null=True)
     download = BigIntegerField(null=True)
     last_download = DateTimeField(null=True)
 
-class storeMember(WaptBaseModel):
+class StoreMember(WaptBaseModel):
     id = PrimaryKeyField(primary_key=True)
     email = CharField(null=True)
     password = CharField(null=True)
@@ -534,7 +534,7 @@ class storeMember(WaptBaseModel):
     token = CharField(null=True)
     validat_account = BooleanField(null=True)
 
-class storeUsage(SignaledModel):
+class StoreUsage(SignaledModel):
     class Meta:
         database = wapt_db
 
