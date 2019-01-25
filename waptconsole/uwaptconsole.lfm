@@ -27,9 +27,9 @@ object VisWaptGUI: TVisWaptGUI
     Height = 618
     Top = 0
     Width = 1284
-    ActivePage = pgWaptWUAConfig
+    ActivePage = pgInventory
     Align = alClient
-    TabIndex = 3
+    TabIndex = 0
     TabOrder = 0
     OnChange = MainPagesChange
     object pgInventory: TTabSheet
@@ -627,7 +627,7 @@ object VisWaptGUI: TVisWaptGUI
         end
         object pgHostInventory: TTabSheet
           Caption = 'Hardware inventory'
-          ClientHeight = 531
+          ClientHeight = 446
           ClientWidth = 564
           object Panel14: TPanel
             Left = 0
@@ -683,7 +683,7 @@ object VisWaptGUI: TVisWaptGUI
           end
           object GridhostInventory: TVirtualJSONInspector
             Left = 0
-            Height = 502
+            Height = 417
             Top = 29
             Width = 564
             PropertyDefs = <>
@@ -2986,7 +2986,7 @@ object VisWaptGUI: TVisWaptGUI
           end
           object ToolButtonSep1: TToolButton
             Left = 47
-            Height = 5
+            Height = 45
             Top = 0
             Caption = 'ToolButtonSep1'
             Style = tbsDivider
@@ -3008,7 +3008,7 @@ object VisWaptGUI: TVisWaptGUI
           end
           object ToolButton6: TToolButton
             Left = 181
-            Height = 5
+            Height = 45
             Top = 0
             Caption = 'ToolButton6'
             Style = tbsDivider
@@ -6915,14 +6915,14 @@ object VisWaptGUI: TVisWaptGUI
           ClientHeight = 385
           ClientWidth = 1001
           TabOrder = 0
-          object GridReporting: TSOGrid
+          object GridReportingResult: TSOGrid
             Left = 5
             Height = 356
             Top = 5
             Width = 991
-            OnGetText = GridReportingGetText
+            OnGetText = GridReportingResultGetText
             ShowAdvancedColumnsCustomize = True
-            OnSOCompareNodes = GridReportingSOCompareNodes
+            OnSOCompareNodes = GridReportingResultSOCompareNodes
             Align = alClient
             Anchors = [akLeft, akBottom]
             BorderSpacing.Left = 5
@@ -6944,10 +6944,10 @@ object VisWaptGUI: TVisWaptGUI
             TreeOptions.PaintOptions = [toHideFocusRect, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages, toAlwaysHideSelection]
             TreeOptions.SelectionOptions = [toExtendedFocus, toMultiSelect, toRightClickSelect, toSimpleDrawSelection]
             WantTabs = True
-            OnChange = GridReportingChange
-            OnColumnResize = GridReportingColumnResize
-            OnHeaderClick = GridReportingHeaderClick
-            OnHeaderDragged = GridReportingHeaderDragged
+            OnChange = GridReportingResultChange
+            OnColumnResize = GridReportingResultColumnResize
+            OnHeaderClick = GridReportingResultHeaderClick
+            OnHeaderDragged = GridReportingResultHeaderDragged
           end
           object Panel18: TPanel
             Left = 0
@@ -7604,6 +7604,7 @@ object VisWaptGUI: TVisWaptGUI
         Header.Height = 18
         Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
         Header.Style = hsFlatButtons
+        PopupMenu = PopupMenuReportingQueries
         TabOrder = 3
         TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes, toAutoChangeScale]
         TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize]
@@ -7616,139 +7617,6 @@ object VisWaptGUI: TVisWaptGUI
         OnEditing = GridReportingQueriesEditing
         OnKeyPress = GridReportingQueriesKeyPress
         ZebraPaint = True
-      end
-    end
-    object pgNormalization: TTabSheet
-      Caption = 'Normalization'
-      ClientHeight = 592
-      ClientWidth = 1276
-      object GridNormalization: TSOGrid
-        Left = 5
-        Height = 542
-        Top = 45
-        Width = 1266
-        ShowAdvancedColumnsCustomize = False
-        Align = alClient
-        Alignment = taCenter
-        BorderSpacing.Around = 5
-        CheckImageKind = ckDarkCheck
-        Color = clWhite
-        Colors.UnfocusedColor = clMedGray
-        Header.AutoSizeIndex = -1
-        Header.Columns = <        
-          item
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus]
-            Position = 0
-            Text = 'Name'
-            Width = 327
-            PropertyName = 'original_name'
-          end        
-          item
-            Position = 1
-            Text = 'Normalized'
-            Width = 260
-            PropertyName = 'normalized_name'
-          end        
-          item
-            Position = 2
-            Text = 'Key'
-            Width = 166
-            PropertyName = 'key'
-          end        
-          item
-            Alignment = taCenter
-            Position = 3
-            Text = 'Windows update'
-            Width = 168
-            PropertyName = 'windows_update'
-          end        
-          item
-            Alignment = taCenter
-            Position = 4
-            Text = 'Banned'
-            Width = 432
-            PropertyName = 'banned'
-          end>
-        Header.DefaultHeight = 18
-        Header.Height = 18
-        Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
-        Header.SortDirection = sdDescending
-        Header.Style = hsFlatButtons
-        TabOrder = 0
-        TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes, toAutoChangeScale]
-        TreeOptions.MiscOptions = [toAcceptOLEDrop, toEditable, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toFullRowDrag, toEditOnClick]
-        TreeOptions.PaintOptions = [toHideFocusRect, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowRoot, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages, toAlwaysHideSelection]
-        TreeOptions.SelectionOptions = [toExtendedFocus, toMultiSelect, toSimpleDrawSelection]
-        WantTabs = True
-        OnClick = GridNormalizationClick
-        OnDrawText = GridNormalizationDrawText
-        OnEdited = GridNormalizationEdited
-        OnEditing = GridNormalizationEditing
-        OnKeyDown = GridNormalizationKeyDown
-      end
-      object Panel10: TPanel
-        Left = 0
-        Height = 40
-        Top = 0
-        Width = 1276
-        Align = alTop
-        AutoSize = True
-        BevelOuter = bvNone
-        ClientHeight = 40
-        ClientWidth = 1276
-        TabOrder = 1
-        object ButNormalizationImport: TBitBtn
-          Left = 5
-          Height = 30
-          Top = 5
-          Width = 94
-          Action = ActNormalizationImportSoftwares
-          BorderSpacing.Around = 5
-          TabOrder = 0
-        end
-        object ButNormalizationSave: TBitBtn
-          AnchorSideLeft.Control = ButNormalizationImport
-          AnchorSideLeft.Side = asrBottom
-          AnchorSideTop.Control = ButNormalizationImport
-          AnchorSideTop.Side = asrCenter
-          Left = 109
-          Height = 30
-          Top = 5
-          Width = 94
-          Action = ActNormalizationWriteTable
-          BorderSpacing.Left = 5
-          BorderSpacing.Around = 5
-          TabOrder = 1
-        end
-        object ButNormalizationFilter: TBitBtn
-          AnchorSideTop.Control = ButNormalizationImport
-          AnchorSideTop.Side = asrCenter
-          AnchorSideRight.Side = asrBottom
-          Left = 1172
-          Height = 30
-          Top = 5
-          Width = 98
-          Action = ActNormalizationFilter
-          Anchors = [akTop, akRight]
-          TabOrder = 2
-        end
-        object EdNormalizationFilter: TEdit
-          AnchorSideLeft.Control = ButNormalizationSave
-          AnchorSideLeft.Side = asrBottom
-          AnchorSideTop.Control = ButNormalizationImport
-          AnchorSideTop.Side = asrCenter
-          AnchorSideRight.Control = ButNormalizationFilter
-          Left = 213
-          Height = 21
-          Top = 10
-          Width = 949
-          Anchors = [akTop, akLeft, akRight]
-          BorderSpacing.Left = 5
-          BorderSpacing.Right = 5
-          BorderSpacing.Around = 5
-          OnKeyPress = EdNormalizationFilterKeyPress
-          TabOrder = 3
-        end
       end
     end
   end
@@ -7865,8 +7733,8 @@ object VisWaptGUI: TVisWaptGUI
   object SynPythonSyn1: TSynPythonSyn
     DefaultFilter = 'Fichiers Python (*.py)|*.py'
     Enabled = False
-    left = 64
-    top = 248
+    left = 800
+    top = 72
   end
   object MainActionList: TActionList
     Images = ActionsImages24
@@ -8380,17 +8248,10 @@ object VisWaptGUI: TVisWaptGUI
       Action = ActEditpackage
     end
   end
-  object PopupMenuEditDepends: TPopupMenu
-    left = 200
-    top = 224
-    object MenuItem4: TMenuItem
-      Caption = 'Remove'
-    end
-  end
   object MainMenu1: TMainMenu
     Images = ActionsImages24
-    left = 64
-    top = 184
+    left = 104
+    top = 104
     object MenuItem5: TMenuItem
       Caption = '&File'
       object MenuItem6: TMenuItem
@@ -8485,6 +8346,9 @@ object VisWaptGUI: TVisWaptGUI
       object MenuItem84: TMenuItem
         Action = ActExternalRepositoriesSettings
       end
+      object MenuItem112: TMenuItem
+        Action = ActSoftwaresNormalization
+      end
       object MenuItem75: TMenuItem
         Action = ActWAPTConsoleConfig
       end
@@ -8504,7 +8368,7 @@ object VisWaptGUI: TVisWaptGUI
     Images = ActionsImages24
     OnPopup = PopupMenuHostsPopup
     left = 200
-    top = 296
+    top = 104
     object MenuItem18: TMenuItem
       Action = ActEditHostPackage
     end
@@ -8703,7 +8567,7 @@ object VisWaptGUI: TVisWaptGUI
   end
   object ImageList1: TImageList
     left = 440
-    top = 320
+    top = 344
     Bitmap = {
       4C69130000001000000010000000FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
       FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
@@ -9319,7 +9183,7 @@ object VisWaptGUI: TVisWaptGUI
   object PopupMenuGroups: TPopupMenu
     Images = ActionsImages24
     left = 200
-    top = 360
+    top = 248
     object MenuItem36: TMenuItem
       Action = ActAddGroup
     end
@@ -9565,45 +9429,37 @@ object VisWaptGUI: TVisWaptGUI
   end
   object PopupGridWSUSScan: TPopupMenu
     left = 200
-    top = 120
+    top = 408
     object MenuItem74: TMenuItem
       Caption = 'Delete task'
       ShortCut = 16430
       OnClick = MenuItem74Click
     end
   end
-  object PopupDelete: TPopupMenu
-    left = 200
-    top = 472
-    object MenuItem76: TMenuItem
-      Caption = 'Remove'
-      ShortCut = 16430
-    end
-  end
   object ApplicationProperties1: TApplicationProperties
     OnException = ApplicationProperties1Exception
-    left = 328
-    top = 472
+    left = 584
+    top = 500
   end
   object TimerWUALoadWinUpdates: TTimer
     Enabled = False
     Interval = 400
     OnTimer = TimerWUALoadWinUpdatesTimer
-    left = 352
-    top = 200
+    left = 416
+    top = 136
   end
   object odSelectInstaller: TOpenDialog
     Title = 'Select an installer executable or msi'
     Filter = 'Installer Files (*.exe;*.msi;*.msu;*.appx)|*.exe;*.msi;*.msu;*.appx|All files|*.*'
     Options = [ofPathMustExist, ofEnableSizing, ofViewDetail]
-    left = 628
-    top = 500
+    left = 584
+    top = 448
   end
   object ActionsImages24: TImageList
     Height = 24
     Width = 24
     left = 440
-    top = 376
+    top = 408
     Bitmap = {
       4C69200000001800000018000000000000000000000000000000000000000000
       000000BFFF14000000000000000000AAFF120DD3FF7910CFFFBA0ECEFFDA0ECE
@@ -11999,8 +11855,8 @@ object VisWaptGUI: TVisWaptGUI
   end
   object PopupMenuOrgUnits: TPopupMenu
     Images = ActionsImages24
-    left = 96
-    top = 464
+    left = 200
+    top = 328
     object MenuItem90: TMenuItem
       Action = ActEditOrgUnitPackage
     end
@@ -12060,8 +11916,8 @@ object VisWaptGUI: TVisWaptGUI
   end
   object ReportingActions: TActionList
     Images = ImageListReports
-    left = 904
-    top = 352
+    left = 320
+    top = 432
     object ActReportingQueryNew: TAction
       Caption = 'New query'
       ImageIndex = 7
@@ -12124,28 +11980,36 @@ object VisWaptGUI: TVisWaptGUI
       OnUpdate = ActReportingQueryDuplicateUpdate
       ShortCut = 16452
     end
+    object ActReportingQueryExport: TAction
+      Caption = 'Export queries to file...'
+      OnExecute = ActReportingQueryExportExecute
+    end
+    object ActReportingQueryImport: TAction
+      Caption = 'Import queries from file...'
+      OnExecute = ActReportingQueryImportExecute
+    end
+    object ActSoftwaresNormalization: TAction
+      Caption = 'Normalize software titles'
+      OnExecute = ActSoftwaresNormalizationExecute
+    end
   end
   object NormalizationActions: TActionList
     Images = ActionsImages24
-    left = 1008
-    top = 352
+    left = 320
+    top = 504
     object ActNormalizationWriteTable: TAction
       Caption = 'Write'
       Enabled = False
       ImageIndex = 8
-      OnExecute = ActNormalizationWriteTableExecute
-      OnUpdate = ActNormalizationWriteTableUpdate
       ShortCut = 16467
     end
     object ActNormalizationImportSoftwares: TAction
       Caption = 'Import'
       ImageIndex = 16
-      OnExecute = ActNormalizationImportSoftwaresExecute
     end
     object ActNormalizationFilter: TAction
       Caption = 'Filter'
       ImageIndex = 4
-      OnExecute = ActNormalizationFilterExecute
     end
   end
   object SynSQLSyn: TSynSQLSyn
@@ -12174,13 +12038,13 @@ object VisWaptGUI: TVisWaptGUI
     )
     SQLDialect = sqlPostgres
     left = 872
-    top = 104
+    top = 72
   end
   object ImageListReports: TImageList
     Height = 24
     Width = 24
-    left = 982
-    top = 246
+    left = 440
+    top = 272
     Bitmap = {
       4C692000000018000000180000003B7408FF3B7408FF3B7408FF3B7408FF3B74
       08FF3B7408FF3B7408FF3B7408FF3B7408FF3B7408FF3B7408FF3B7408FF3B74
@@ -14489,16 +14353,6 @@ object VisWaptGUI: TVisWaptGUI
       F400000000000000000000000000
     }
   end
-  object PopupMenuSQL: TPopupMenu
-    left = 1039
-    top = 162
-    object MenuItem105: TMenuItem
-      Action = ActReportingQueryExecute
-    end
-    object MenuItem106: TMenuItem
-      Action = ActReportingQuerySaveAll
-    end
-  end
   object SynCompletion1: TSynCompletion
     ItemList.Strings = (
       'select'
@@ -14527,8 +14381,8 @@ object VisWaptGUI: TVisWaptGUI
     ExecCommandID = ecSynCompletionExecute
     Editor = SynEditReportsSQL
     ToggleReplaceWhole = False
-    left = 872
-    top = 168
+    left = 952
+    top = 72
   end
   object TimerSearchPackages: TTimer
     Enabled = False
@@ -14539,8 +14393,8 @@ object VisWaptGUI: TVisWaptGUI
   end
   object SelfServiceActions: TActionList
     Images = ActionsImages24
-    left = 344
-    top = 120
+    left = 320
+    top = 246
     object ActSelfServiceSearchPackage: TAction
       Caption = 'Refresh list'
       OnExecute = ActSelfServiceSearchPackageExecute
@@ -14549,6 +14403,34 @@ object VisWaptGUI: TVisWaptGUI
       Caption = 'Create New SelfService rules Package'
       ImageIndex = 28
       OnExecute = ActSelfServiceNewPackageExecute
+    end
+  end
+  object PopupMenuReportingQueries: TPopupMenu
+    left = 200
+    top = 480
+    object MenuItem105: TMenuItem
+      Action = ActReportingQueryExecute
+    end
+    object MenuItem106: TMenuItem
+      Action = ActReportingQueryExportToExcel
+    end
+    object MenuItem109: TMenuItem
+      Caption = '-'
+    end
+    object MenuItem4: TMenuItem
+      Action = ActReportingQueryDuplicate
+    end
+    object MenuItem76: TMenuItem
+      Action = ActReportingQueryExport
+    end
+    object MenuItem108: TMenuItem
+      Action = ActReportingQueryImport
+    end
+    object MenuItem110: TMenuItem
+      Caption = '-'
+    end
+    object MenuItem111: TMenuItem
+      Action = ActReportingQueryDelete
     end
   end
 end

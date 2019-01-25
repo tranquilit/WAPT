@@ -121,6 +121,8 @@ begin
   Width := IniReadInteger(Appuserinipath,Name,'Width',Width);
   Height := IniReadInteger(Appuserinipath,Name,'Height',Height);
 
+  MakeFullyVisible;
+
   cbGroup.Checked := IniReadBool(Appuserinipath,Name,'cbGroup.Checked',cbGroup.Checked);
   cbBase.Checked := IniReadBool(Appuserinipath,Name,'cbBase.Checked',cbBase.Checked);
   cbrestricted.Checked := IniReadBool(Appuserinipath,Name,'cbrestricted.Checked',cbrestricted.Checked);

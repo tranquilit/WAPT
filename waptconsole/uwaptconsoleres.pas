@@ -262,6 +262,7 @@ resourcestring
   rsDefaultUsageStatsURL = 'http://wapt.tranquil.it/usage_stats';
   rsErrorBuildingUploadPackage = 'Error building or uploading package %s';
 
+  rsNotAValidQueriesFile = 'The file %s does not looks like a valid WAPT json Queries file';
 
   { Messages Report SQL }
   rsConfirmDeleteQuery = 'Delete query %s ?';
@@ -277,6 +278,7 @@ resourcestring
 
   { Messages Normalizarion }
   rsQueryApplyUpdates = 'Some of your changes are not yet saved. Do you want to save your changes ?';
+
 implementation
 
 end.

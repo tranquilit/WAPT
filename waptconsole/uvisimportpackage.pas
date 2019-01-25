@@ -229,6 +229,8 @@ begin
   Width := IniReadInteger(Appuserinipath,Name,'Width',Width);
   Height := IniReadInteger(Appuserinipath,Name,'Height',Height);
 
+  MakeFullyVisible;
+
   EdRepoName.ItemIndex := IniReadInteger(Appuserinipath,Name,'EdRepoName.ItemIndex',0);
   if EdRepoName.ItemIndex<0 then
     EdRepoName.ItemIndex := 0;

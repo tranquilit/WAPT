@@ -29,11 +29,24 @@ type
     ActAddNewNetwork: TAction;
     ActDeleteNetwork: TAction;
     ActInstallLicence: TAction;
+    ActSoftwaresNormalization: TAction;
+    ActReportingQueryExport: TAction;
+    ActReportingQueryImport: TAction;
     ActWUAShowDownloadTasks: TAction;
     ActSelfServiceNewPackage: TAction;
     ActSelfServiceSearchPackage: TAction;
     ButShowDownloadTasks: TBitBtn;
     EdWUASearchWindowsUpdate: TSearchEdit;
+    MenuItem105: TMenuItem;
+    MenuItem106: TMenuItem;
+    MenuItem108: TMenuItem;
+    MenuItem109: TMenuItem;
+    MenuItem110: TMenuItem;
+    MenuItem111: TMenuItem;
+    MenuItem112: TMenuItem;
+    MenuItem4: TMenuItem;
+    MenuItem76: TMenuItem;
+    PopupMenuReportingQueries: TPopupMenu;
     WUAConfigPages: TPageControl;
     SelfServiceActions: TActionList;
     ActWUASearchPackage: TAction;
@@ -43,16 +56,10 @@ type
     ActTriggerTestLongTask: TAction;
     ActReportingQuerySaveAll: TAction;
     ActReportingQueryDesign: TAction;
-    ActNormalizationFilter: TAction;
     ActReportingQueryNew: TAction;
     ActReportingQueryDelete: TAction;
-    ActNormalizationImportSoftwares: TAction;
-    ActNormalizationWriteTable: TAction;
     btAddGroup3: TBitBtn;
     btAddSelfServicePackage: TBitBtn;
-    ButNormalizationFilter: TBitBtn;
-    ButNormalizationImport: TBitBtn;
-    ButNormalizationSave: TBitBtn;
     ButWUAPackagesSearch: TBitBtn;
     ButSelfServicePackagesSearch: TBitBtn;
     cbFilterPackagesArch: TCheckGroup;
@@ -73,10 +80,7 @@ type
     ImgHostsConnected: TImage;
     ImageListReports: TImageList;
     LabelReportingNumber: TLabel;
-    MenuItem105: TMenuItem;
-    MenuItem106: TMenuItem;
     MenuItem107: TMenuItem;
-    Panel10: TPanel;
     PanTopWAPTWuaPackages: TPanel;
     Panel20: TPanel;
     pgSelfService: TTabSheet;
@@ -85,7 +89,6 @@ type
     ToolButton3: TToolButton;
     MenuGridHostsPlugins: TMenuItem;
     VeyonConnect: TMenuItem;
-    NormalizationActions: TActionList;
     ActReportingQueryReload: TAction;
     ActReportingQueryExportToExcel: TAction;
     ActReportingQueryExecute: TAction;
@@ -94,7 +97,6 @@ type
     PanReportingRight: TPanel;
     PanelReportingGrid: TPanel;
     PanelReportingEditSQL: TPanel;
-    PopupMenuSQL: TPopupMenu;
     ReportingActions: TActionList;
     ActResetWebsocketConnections: TAction;
     ActRunCleanMgr: TAction;
@@ -194,7 +196,6 @@ type
     EdWsusscn2cabDate: TEdit;
     EdLastScanDate: TEdit;
     EdLastScanDuration: TEdit;
-    EdNormalizationFilter: TEdit;
     GridHostsForPackage: TSOGrid;
     GridHostWinUpdatesHistory: TSOGrid;
     GridPackages: TSOGrid;
@@ -242,8 +243,7 @@ type
     PopupWUAClassifications: TPopupMenu;
     PopupMenuOrgUnits: TPopupMenu;
     PopupHostWUAUpdates: TPopupMenu;
-    GridReporting: TSOGrid;
-    GridNormalization: TSOGrid;
+    GridReportingResult: TSOGrid;
     SOWaptServer: TSOConnection;
     SplitHostsForPackage: TSplitter;
     Splitter11: TSplitter;
@@ -304,7 +304,6 @@ type
     MenuItem57: TMenuItem;
     MenuItem74: TMenuItem;
     MenuItem75: TMenuItem;
-    MenuItem76: TMenuItem;
     MenuItem77: TMenuItem;
     MenuItem78: TMenuItem;
     MenuItem79: TMenuItem;
@@ -336,11 +335,9 @@ type
     MenuItem72: TMenuItem;
     MenuItem73: TMenuItem;
     pgWaptWUAConfig: TTabSheet;
-    PopupDelete: TPopupMenu;
     Splitter6: TSplitter;
     Splitter7: TSplitter;
     PgReports: TTabSheet;
-    pgNormalization: TTabSheet;
     SynCompletion1: TSynCompletion;
     SynEditReportsSQL: TSynEdit;
     SynSQLSyn: TSynSQLSyn;
@@ -512,7 +509,6 @@ type
     MenuItem3: TMenuItem;
     MenuItem30: TMenuItem;
     MenuItem32: TMenuItem;
-    MenuItem4: TMenuItem;
     MenuItem5: TMenuItem;
     MenuItem6: TMenuItem;
     MenuItem7: TMenuItem;
@@ -526,7 +522,6 @@ type
     Panel7: TPanel;
     PopupMenuHosts: TPopupMenu;
     PopupMenuPackages: TPopupMenu;
-    PopupMenuEditDepends: TPopupMenu;
     Splitter1: TSplitter;
     Splitter2: TSplitter;
     Splitter4: TSplitter;
@@ -580,15 +575,13 @@ type
     procedure ActGermanUpdate(Sender: TObject);
     procedure ActHostsDeletePackageUpdate(Sender: TObject);
     procedure ActHostsDeleteUpdate(Sender: TObject);
+    procedure ActReportingQueryExportExecute(Sender: TObject);
+    procedure ActReportingQueryImportExecute(Sender: TObject);
     procedure ActSelfServiceNewPackageExecute(Sender: TObject);
     procedure ActSelfServiceSearchPackageExecute(Sender: TObject);
     procedure ActLaunchGPUpdateExecute(Sender: TObject);
     procedure ActLaunchWaptExitExecute(Sender: TObject);
     procedure ActmakePackageTemplateExecute(Sender: TObject);
-    procedure ActNormalizationFilterExecute(Sender: TObject);
-    procedure ActNormalizationImportSoftwaresExecute(Sender: TObject);
-    procedure ActNormalizationWriteTableExecute(Sender: TObject);
-    procedure ActNormalizationWriteTableUpdate(Sender: TObject);
     procedure ActPackagesAuditExecute(Sender: TObject);
     procedure ActPackagesForceInstallExecute(Sender: TObject);
     procedure ActPackagesRemoveUpdate(Sender: TObject);
@@ -721,7 +714,6 @@ type
     procedure EdDescriptionExit(Sender: TObject);
     procedure EdDescriptionKeyPress(Sender: TObject; var Key: char);
     procedure EdHardwareFilterChange(Sender: TObject);
-    procedure EdNormalizationFilterKeyPress(Sender: TObject; var Key: char);
     procedure EdRunKeyPress(Sender: TObject; var Key: char);
     procedure EdSearchOrgUnitsChange(Sender: TObject);
     procedure EdSearchOrgUnitsKeyPress(Sender: TObject; var Key: char);
@@ -803,11 +795,6 @@ type
       Column: TColumnIndex; TextType: TVSTTextType; var CellText: string);
     procedure GridNetworksEditing(Sender: TBaseVirtualTree; Node: PVirtualNode;
       Column: TColumnIndex; var Allowed: Boolean);
-    procedure GridNormalizationClick(Sender: TObject);
-    procedure GridNormalizationDrawText(Sender: TBaseVirtualTree;TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex; const aText: String; const CellRect: TRect; var DefaultDraw: Boolean);
-    procedure GridNormalizationEdited(Sender: TBaseVirtualTree;Node: PVirtualNode; Column: TColumnIndex);
-    procedure GridNormalizationEditing(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex; var Allowed: Boolean);
-    procedure GridNormalizationKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure GridOrgUnitsChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
     procedure GridOrgUnitsGetHint(Sender: TBaseVirtualTree; Node: PVirtualNode;
       Column: TColumnIndex; var LineBreakStyle: TVTTooltipLineBreakStyle;
@@ -818,14 +805,14 @@ type
     procedure GridPackagesPaintText(Sender: TBaseVirtualTree;
       const TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex;
       TextType: TVSTTextType);
-    procedure GridReportingChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
-    procedure GridReportingColumnResize(Sender: TVTHeader; Column: TColumnIndex );
-    procedure GridReportingGetText(Sender: TBaseVirtualTree;
+    procedure GridReportingResultChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
+    procedure GridReportingResultColumnResize(Sender: TVTHeader; Column: TColumnIndex );
+    procedure GridReportingResultGetText(Sender: TBaseVirtualTree;
       Node: PVirtualNode; RowData, CellData: ISuperObject;
       Column: TColumnIndex; TextType: TVSTTextType; var CellText: string);
-    procedure GridReportingHeaderClick(Sender: TVTHeader;
+    procedure GridReportingResultHeaderClick(Sender: TVTHeader;
       HitInfo: TVTHeaderHitInfo);
-    procedure GridReportingHeaderDragged(Sender: TVTHeader;
+    procedure GridReportingResultHeaderDragged(Sender: TVTHeader;
       Column: TColumnIndex; OldPosition: Integer);
     function GridReportingQueriesBeforePaste(Sender: TSOGrid; Row: ISuperObject
       ): boolean;
@@ -839,7 +826,7 @@ type
     procedure GridReportingQueriesEditing(Sender: TBaseVirtualTree;
       Node: PVirtualNode; Column: TColumnIndex; var Allowed: Boolean);
     procedure GridReportingQueriesKeyPress(Sender: TObject; var Key: char);
-    procedure GridReportingSOCompareNodes(Sender: TSOGrid; Node1,
+    procedure GridReportingResultSOCompareNodes(Sender: TSOGrid; Node1,
       Node2: ISuperObject; const Columns: array of String; var Result: Integer);
     procedure GridWinproductsChange(Sender: TBaseVirtualTree; Node: PVirtualNode );
     procedure GridWinUpdatesGetImageIndexEx(Sender: TBaseVirtualTree;
@@ -866,6 +853,7 @@ type
     procedure TimerSearchPackagesTimer(Sender: TObject);
     procedure TimerWUALoadWinUpdatesTimer(Sender: TObject);
     procedure WUAConfigPagesChange(Sender: TObject);
+    procedure ActSoftwaresNormalizationExecute(Sender: TObject);
   private
     { private declarations }
     CurrentVisLoading: TVisLoading;
@@ -1000,25 +988,13 @@ uses LCLIntf, LCLType, IniFiles, variants, LazFileUtils,FileUtil, base64,
   uVisPackageWizard, uVisChangeKeyPassword, uVisDisplayPreferences,
   uvisrepositories, uVisHostDelete, windirs,winutils,uWaptPythonUtils
   {$ifdef ENTERPRISE}
-  ,uVisWUAGroup,uviswuadownloads
+  ,uVisWUAGroup,uviswuadownloads,uvissoftwaresnormalization
   {$endif}
   {$ifdef wsus},uVisWAPTWUAProducts, uviswuapackageselect,
   uVisWUAClassificationsSelect
   {$endif};
 
 {$R *.lfm}
-
-const
-  GRID_NORMALIZATION_COL_NAME           = 0;
-  GRID_NORMALIZATION_COL_NORMALIZED     = 1;
-  GRID_NORMALIZATION_COL_KEY            = 2;
-  GRID_NORMALIZATION_COL_WINDOWS_UPDATE = 3;
-  GRID_NORMALIZATION_COL_BANNED         = 4;
-
-  IMG_CHECKBOX_ENABLE_CHECKED   = 15;
-  IMG_CHECKBOX_ENABLE_UNCHECKED = 16;
-  IMG_CHECKBOX_DISABLE_CHECKED  = 17;
-  IMG_CHECKBOX_DISABLE_UNCHECKED= 18;
 
 
 type TComponentsArray=Array of TComponent;
@@ -1318,53 +1294,6 @@ begin
   end;
 end;
 
-procedure TVisWaptGUI.EdNormalizationFilterKeyPress(Sender: TObject; var Key: char);
-const
-  cols_search : array[0..2] of UnicodeString = ( 'normalized_name', 'key', 'original_name' );
-var
-  sa : ISuperObject;
-  so : ISuperObject;
-  i  : integer;
-  s  : String;
-  e  : String;
-  j  : integer;
-begin
-{
-  e := LowerCase( Trim(self.EdNormalizationFilter.Text) );
-  if Length(e) = 0 then
-  begin
-    self.GridNormalization.Data := self.FNormalization;
-    self.GridNormalization.Invalidate;
-    Application.ProcessMessages;
-  end;
-
-
-
-
-  sa := TSuperObject.ParseString( '[]', True );
-  for i := 0 to self.FNormalization.AsArray.Length -1 do
-  begin
-    so := self.FNormalization.AsArray.O[i];
-    for j := 0 to Length(cols_search) -1 do
-    begin
-      s := LowerCase( UTF8Encode(so.S[cols_search[j]]) );
-      if Pos( s, e ) = 0 then
-        continue;
-      sa.AsArray.Add( so );
-      break;
-    end;
-  end;
-
-  self.GridNormalization.Data := sa;
-  self.GridNormalization.Invalidate;
-  Application.ProcessMessages;
-}
-
-  if VK_RETURN = Integer(Key) then
-    self.ActNormalizationFilter.Execute;
-
-end;
-
 procedure TVisWaptGUI.EdRunKeyPress(Sender: TObject; var Key: char);
 begin
   if Key = #13 then
@@ -1523,7 +1452,7 @@ end;
 
 procedure TVisWaptGUI.FormCloseQuery(Sender: TObject; var CanClose: boolean);
 begin
-  CanClose := CheckUpdates([GridReportingQueries.Data,GridNormalization.Data]);
+  CanClose := CheckUpdates([GridReportingQueries.Data]);
 end;
 
 function TVisWaptGUI.FilterSoftwares(softs: ISuperObject): ISuperObject;
@@ -2042,10 +1971,7 @@ begin
       ActPackagesUpdate.Execute
     else
     if MainPages.ActivePage = PgReports then
-      ActReportingQueryExecute.Execute
-    else
-    if MainPages.ActivePage = pgNormalization then
-      ActNormalizationFilter.Execute;
+      ActReportingQueryExecute.Execute;
 
 
   finally
@@ -2801,7 +2727,6 @@ begin
   (Sender as TAction).Enabled:=(GridHosts.SelectedCount>0);
 
 end;
-
 
 procedure TVisWaptGUI.ActmakePackageTemplateExecute(Sender: TObject);
 begin
@@ -4118,7 +4043,7 @@ end;
 
 procedure TVisWaptGUI.SetReportingEditMode(AValue: Boolean);
 begin
-  if not AValue and (GridReporting.FocusedRow<>Nil) then
+  if not AValue and (GridReportingResult.FocusedRow<>Nil) then
     SynEditReportsSQLChange(SynEditReportsSQL);
 
   FReportingEditMode:=AValue;
@@ -4292,9 +4217,12 @@ begin
         HostPages.Width := ini.ReadInteger(self.name,HostPages.Name+'.width',HostPages.Width);
 
         Self.Left := ini.ReadInteger(self.name,'Left',Integer(Self.Left));
+
         Self.Top := ini.ReadInteger(self.name,'Top',Integer(Self.Top));
         Self.Width := ini.ReadInteger(self.name,'Width',Integer(Self.Width));
         Self.Height := ini.ReadInteger(self.name,'Height',Integer(Self.Height));
+
+        MakeFullyVisible;
 
         Self.WindowState := TWindowState(ini.ReadInteger(self.Name,'WindowState',Integer(Self.WindowState)));
 
@@ -4984,7 +4912,6 @@ begin
   ActTISHelp.Visible:=False;
   PgNetworksConfig.TabVisible:=False;
   PgReports.TabVisible := False;
-  pgNormalization.TabVisible := False;
   pgWAPTWuaPackages2.TabVisible:=False;
   pgSelfService.TabVisible:=False;
   pgWAPTWUADownloads2.TabVisible:=False;
@@ -4993,6 +4920,7 @@ begin
   ActTriggerHostAudit.Visible:=False;
   ActPackagesAudit.Visible:=False;
   ActWUANewPackage.Visible := False;
+  ActSoftwaresNormalization.Visible := False;
 
   SetSOGridVisible(GridHosts,'audit_status',False);
   SetSOGridVisible(GridHosts,'waptwua.status',False);
@@ -5140,11 +5068,7 @@ begin
       else
         ActReportingQueryExecute.Execute;
     end;
-  end
-  else if MainPages.ActivePage = pgNormalization then
-  begin
-    ActNormalizationFilter.Execute;
-  end
+  end;
 
 end;
 
@@ -5244,9 +5168,7 @@ begin
     if IsUpdated([ADataset]) then
     begin
       if ADataset = GridReportingQueries.Data then
-        ActReportingQuerySaveAll.Execute
-      else if ADataset = GridNormalization.Data then
-        ActNormalizationWriteTable.Execute;
+        ActReportingQuerySaveAll.Execute;
     end;
   result := not IsUpdated(datasets);
 end;
@@ -5639,9 +5561,6 @@ procedure TVisWaptGUI.ActTriggerUpdateOrgUnitExecute(Sender: TObject);
 begin
 end;
 
-procedure TVisWaptGUI.ActNormalizationImportSoftwaresExecute(Sender: TObject);
-begin
-end;
 procedure TVisWaptGUI.CBShowHostsForGroupsClick(Sender: TObject);
 begin
 end;
@@ -5653,17 +5572,6 @@ end;
 procedure TVisWaptGUI.LoadHostsForPackage(Grid: TSOGrid;PackageName: String);
 begin
   Grid.Data := Nil;
-end;
-
-procedure TVisWaptGUI.ActNormalizationWriteTableExecute(Sender: TObject);
-begin
-end;
-
-procedure TVisWaptGUI.ActNormalizationWriteTableUpdate(Sender: TObject);
-begin
-end;
-procedure TVisWaptGUI.ActNormalizationFilterExecute(Sender: TObject);
-begin
 end;
 
 procedure TVisWaptGUI.ActReportingQueryDeleteExecute(Sender: TObject);
@@ -5706,30 +5614,6 @@ procedure TVisWaptGUI.SetGridReportingData(data: ISuperObject);
 begin
 end;
 
-procedure TVisWaptGUI.GridNormalizationClick(Sender: TObject);
-begin
-end;
-
-procedure TVisWaptGUI.GridNormalizationDrawText(Sender: TBaseVirtualTree;
-  TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex;
-  const aText: String; const CellRect: TRect; var DefaultDraw: Boolean);
-begin
-end;
-
-procedure TVisWaptGUI.GridNormalizationEdited(Sender: TBaseVirtualTree;
-  Node: PVirtualNode; Column: TColumnIndex);
-begin
-end;
-
-procedure TVisWaptGUI.GridNormalizationEditing(Sender: TBaseVirtualTree;
-  Node: PVirtualNode; Column: TColumnIndex; var Allowed: Boolean);
-begin
-end;
-
-procedure TVisWaptGUI.GridNormalizationKeyDown(Sender: TObject; var Key: Word;
-  Shift: TShiftState);
-begin
-end;
 procedure TVisWaptGUI.ActReportingQueryDesignExecute(Sender: TObject);
 begin
 end;
@@ -5843,31 +5727,37 @@ end;
 
 procedure TVisWaptGUI.ActWUASearchPackageExecute(Sender: TObject);
 begin
+;;
 end;
 
 
 procedure TVisWaptGUI.ActWUANewPackageExecute(Sender: TObject);
 begin
+;;
 end;
 
 procedure TVisWaptGUI.GridWUAPackagesColumnDblClick(Sender: TBaseVirtualTree;
   Column: TColumnIndex; Shift: TShiftState);
 begin
+;;
 end;
 
 
 procedure TVisWaptGUI.GridWUAPackagesNodesDelete(Sender: TSOGrid;
   Nodes: ISuperObject);
 begin
+;;
 end;
 
 procedure TVisWaptGUI.CBShowHostsForWUAPackageClick(Sender: TObject);
 begin
+;;
 end;
 
 procedure TVisWaptGUI.GridWUAPackagesChange(Sender: TBaseVirtualTree;
   Node: PVirtualNode);
 begin
+;;
 end;
 
 procedure TVisWaptGUI.CBShowHostsForSelfServicePackageClick(Sender: TObject);
@@ -5885,8 +5775,20 @@ begin
 ;;
 end;
 
+procedure TVisWaptGUI.ActReportingQueryExportExecute(Sender: TObject);
+begin
+;;
+end;
 
+procedure TVisWaptGUI.ActReportingQueryImportExecute(Sender: TObject);
+begin
+  ;;
+end;
 
+procedure TVisWaptGUI.ActSoftwaresNormalizationExecute(Sender: TObject);
+begin
+  ;;
+end;
 
 {$endif}
 

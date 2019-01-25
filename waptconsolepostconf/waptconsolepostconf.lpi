@@ -27,9 +27,9 @@
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="1"/>
       <MinorVersionNr Value="7"/>
-      <RevisionNr Value="2"/>
+      <RevisionNr Value="3"/>
       <BuildNr Value="2"/>
-      <StringTable LegalCopyright="Tranquil IT Systems 2012-2018" ProductName="WAPT Enterprise Edition" ProductVersion="1.7.2"/>
+      <StringTable LegalCopyright="Tranquil IT Systems 2012-2019" ProductName="WAPT Enterprise Edition" ProductVersion="1.7.3"/>
     </VersionInfo>
     <BuildModes Count="1">
       <Item1 Name="Default" Default="True"/>

@@ -1076,6 +1076,26 @@ msgstr ""
 msgid "VisSelfServiceGroup"
 msgstr ""
 
+#: tvissoftwaresnormalization.actnormalizationfilter.caption
+#, fuzzy
+msgctxt "tvissoftwaresnormalization.actnormalizationfilter.caption"
+msgid "Filter"
+msgstr "Filter"
+
+#: tvissoftwaresnormalization.actnormalizationimportsoftwares.caption
+msgctxt "tvissoftwaresnormalization.actnormalizationimportsoftwares.caption"
+msgid "Import"
+msgstr ""
+
+#: tvissoftwaresnormalization.actnormalizationwritetable.caption
+msgctxt "tvissoftwaresnormalization.actnormalizationwritetable.caption"
+msgid "Write"
+msgstr ""
+
+#: tvissoftwaresnormalization.caption
+msgid "Normalizes sofware titles"
+msgstr ""
+
 #: tvistriggerhostsaction.actstop.caption
 #, fuzzy
 msgctxt "tvistriggerhostsaction.actstop.caption"
@@ -1624,15 +1644,18 @@ msgid "Make package template from setup file"
 msgstr ""
 
 #: tviswaptgui.actnormalizationfilter.caption
+#, fuzzy
 msgctxt "tviswaptgui.actnormalizationfilter.caption"
 msgid "Filter"
-msgstr ""
+msgstr "Filter"
 
 #: tviswaptgui.actnormalizationimportsoftwares.caption
+msgctxt "tviswaptgui.actnormalizationimportsoftwares.caption"
 msgid "Import"
 msgstr ""
 
 #: tviswaptgui.actnormalizationwritetable.caption
+msgctxt "tviswaptgui.actnormalizationwritetable.caption"
 msgid "Write"
 msgstr ""
 
@@ -1746,8 +1769,16 @@ msgstr ""
 msgid "Execute the SQL query "
 msgstr ""
 
+#: tviswaptgui.actreportingqueryexport.caption
+msgid "Export queries to file..."
+msgstr ""
+
 #: tviswaptgui.actreportingqueryexporttoexcel.caption
 msgid "Export to Excel"
+msgstr ""
+
+#: tviswaptgui.actreportingqueryimport.caption
+msgid "Import queries from file..."
 msgstr ""
 
 #: tviswaptgui.actreportingquerynew.caption
@@ -1816,6 +1847,10 @@ msgstr ""
 #: tviswaptgui.actselfservicesearchpackage.caption
 msgctxt "tviswaptgui.actselfservicesearchpackage.caption"
 msgid "Refresh list"
+msgstr ""
+
+#: tviswaptgui.actsoftwaresnormalization.caption
+msgid "Normalize software titles"
 msgstr ""
 
 #: tviswaptgui.acttishelp.caption
@@ -2452,11 +2487,6 @@ msgstr "?"
 msgid "About"
 msgstr "Über"
 
-#: tviswaptgui.menuitem4.caption
-msgctxt "tviswaptgui.menuitem4.caption"
-msgid "Remove"
-msgstr "Entfernen"
-
 #: tviswaptgui.menuitem5.caption
 msgid "&File"
 msgstr "&Datei"
@@ -2473,11 +2503,6 @@ msgstr "Neu"
 #: tviswaptgui.menuitem74.caption
 msgid "Delete task"
 msgstr "Task löschen"
-
-#: tviswaptgui.menuitem76.caption
-msgctxt "tviswaptgui.menuitem76.caption"
-msgid "Remove"
-msgstr "Entfernen"
 
 #: tviswaptgui.menuitem8.caption
 msgid "Open..."
@@ -2549,10 +2574,6 @@ msgstr "Inventar"
 
 #: tviswaptgui.pgnetworksconfig.caption
 msgid "Sites / networks configuration"
-msgstr ""
-
-#: tviswaptgui.pgnormalization.caption
-msgid "Normalization"
 msgstr ""
 
 #: tviswaptgui.pgpackages.caption
@@ -5801,6 +5822,10 @@ msgstr "Keine IP erreichbar für diesen Host. Überprüfen Sie die Firewall, die
 msgctxt "uwaptconsoleres.rsnorunningtask"
 msgid "No running tasks"
 msgstr "Keine laufenden Tasks"
+
+#: uwaptconsoleres.rsnotavalidqueriesfile
+msgid "The file %s does not looks like a valid WAPT json Queries file"
+msgstr ""
 
 #: uwaptconsoleres.rsnotrunningasadmin
 msgid "Waptconsole is not running with Admin priviledges. Please restart with elevated rights"

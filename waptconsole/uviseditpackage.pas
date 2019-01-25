@@ -781,6 +781,9 @@ begin
   Left := IniReadInteger(Appuserinipath,Name,'Left',Left);
   Width := IniReadInteger(Appuserinipath,Name,'Width',Width);
   Height := IniReadInteger(Appuserinipath,Name,'Height',Height);
+
+  MakeFullyVisible();
+
   PanRight.Width:=IniReadInteger(Appuserinipath,Name,PanRight.Name+'.Width',PanRight.Width);
   GridConflicts.LoadSettingsFromIni(Appuserinipath);
   GridDepends.LoadSettingsFromIni(Appuserinipath);
