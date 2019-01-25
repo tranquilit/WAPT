@@ -277,6 +277,7 @@ import win32net
 import win32gui
 import win32netcon
 import win32security
+import win32print
 
 import win32con
 import msilib
@@ -4505,6 +4506,31 @@ def unzip(zipfn,target=None,filenames=None):
         zipf.extractall(target)
 
     return [makepath(target,fn.replace('/',os.sep)) for fn in files]
+
+def list_local_printers():
+    """Return a list of local printers
+    .. versionadded:: 1.7.1
+    """
+    return json.dumps(win32print.EnumPrinters(2))
+
+def remove_printer(name):
+    """Remove a printer by its name
+
+    Args:
+        name (str) : name of local printer to be deleted
+    
+    .. versionadded:: 1.7.1
+    
+    >>> remove_printer('Brother QL-1060')
+    """
+    try:
+        if name in list_local_printers():
+            print('Deleting local printer : %s' % name)
+            run('"RUNDLL32" printui.dll,PrintUIEntry /n "%s" /dl' % name)
+        else:
+            error('Printer %s does not exists on this computer' % name)
+    except Exception as e:
+        logger.critical('Error deleting printer : %s' % ensure_unicode(e))
 
 CalledProcessError = subprocess.CalledProcessError
 
