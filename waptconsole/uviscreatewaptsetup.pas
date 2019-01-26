@@ -25,6 +25,7 @@ type
     CBVerifyCert: TCheckBox;
     CBUseKerberos: TCheckBox;
     CBForceRepoURL: TCheckBox;
+    CBInstallWUAUpdatesAtShutdown: TCheckBox;
     CBWUADefaultAllow: TCheckBox;
     CBWUAOffline: TCheckBox;
     CBWUAEnabled: TCheckBox;
@@ -311,6 +312,10 @@ begin
 
         EdWUAInstallDelay.Text := ini.ReadString('waptwua','install_delay','');
         EdWUADownloadScheduling.Text := ini.ReadString('waptwua','download_scheduling','');
+
+        CBInstallWUAUpdatesAtShutdown.Checked := ini.ReadBool('waptwua','install_at_shutdown',False);
+
+
       end
       else
       begin
@@ -353,6 +358,7 @@ begin
 
         ini.WriteString('waptwua','install_delay',EdWUAInstallDelay.Text);
         ini.WriteString('waptwua','download_scheduling',EdWUADownloadScheduling.Text);
+        ini.WriteBool('waptwua','install_at_shutdown',CBInstallWUAUpdatesAtShutdown.Checked);
     end;
   finally
     ini.Free;
@@ -512,6 +518,12 @@ begin
       Result['offline'] := Nil
     else
       Result.B['offline'] := CBWUAOffline.Checked;
+
+    if CBInstallWUAUpdatesAtShutdown.State = cbGrayed then
+      Result['install_at_shutdown'] := Nil
+    else
+      Result.B['install_at_shutdown'] := CBInstallWUAUpdatesAtShutdown.Checked;
+
   end
   else
     result := Nil;

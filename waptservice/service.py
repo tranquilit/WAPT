@@ -676,6 +676,11 @@ def upgrade():
         only_priorities = ensure_list(request.args.get('only_priorities',None),allow_none=True)
     only_if_not_process_running = int(request.args.get('only_if_not_process_running','0')) != 0
 
+    if waptwua_api:
+        install_wua_updates= int(request.args.get('install_wua_update','0')) != 0
+    else:
+        install_wua_updates = False
+
     all_tasks = []
     wapt().update()
     actions = wapt().list_upgrade()
@@ -692,6 +697,11 @@ def upgrade():
     all_tasks.append(app.task_manager.add_task(WaptUpgrade(notify_user=notify_user,only_priorities=only_priorities,
             only_if_not_process_running=only_if_not_process_running)).as_dict())
     all_tasks.append(app.task_manager.add_task(WaptCleanup(notify_user=False)))
+
+    # append install wua tasks only if last scan reported to something to install
+    if install_wua_updates and wapt().waptwua_enabled and wapt().read_param('waptwua.status','UNKNONW') == 'OK':
+        all_tasks.append(app.task_manager.add_task(WaptWUAInstallTask(notify_user=False)))
+
     data = {'result':'OK','content':all_tasks}
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')

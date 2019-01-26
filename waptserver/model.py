@@ -970,7 +970,7 @@ def wapthosts_json(model_class, instance, created):
 
     if (created or Hosts.host_metrics in instance.dirty_fields) and instance.host_metrics:
         extractmap = [
-            ['connected_users','connected_users'],
+            ['connected_users',('logged_in_users','connected_users')],
             ['last_logged_on_user', 'last_logged_on_user'],
         ]
         for field, attribute in extractmap:

@@ -295,6 +295,14 @@ msgctxt "tviscreatewaptsetup.cbforcewaptserverurl.hint"
 msgid "Overwrite the URL when installing on the client even if there is a diffrent current setting in wapt-get.ini"
 msgstr ""
 
+#: tviscreatewaptsetup.cbinstallwuaupdatesatshutdown.caption
+msgid "Install Pending Windows at Shutdown"
+msgstr ""
+
+#: tviscreatewaptsetup.cbinstallwuaupdatesatshutdown.hint
+msgid "If some Windows updates are pending, waptexit will append a task to install all pending Windows updates"
+msgstr ""
+
 #: tviscreatewaptsetup.cbusefqdnasuuid.caption
 msgid "Use Computer FQDN for UUID"
 msgstr ""

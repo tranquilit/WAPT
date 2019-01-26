@@ -17,6 +17,10 @@ msgstr ""
 msgid "Launching updates..."
 msgstr ""
 
+#: tviswaptexit.cbskipwindowsupdates.caption
+msgid "Skip the installation of Windows Updates"
+msgstr ""
+
 #: tviswaptexit.edrunning.text
 msgid "some upgrades are pending, launch upgrades after timeout expired or manual action"
 msgstr ""

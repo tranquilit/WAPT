@@ -1,12 +1,12 @@
 object VisCreateWaptSetup: TVisCreateWaptSetup
   Left = 549
-  Height = 705
+  Height = 723
   Top = 115
   Width = 573
   AutoSize = True
   BorderStyle = bsDialog
   Caption = 'Create WAPT agent'
-  ClientHeight = 705
+  ClientHeight = 723
   ClientWidth = 573
   OnCloseQuery = FormCloseQuery
   OnDestroy = FormDestroy
@@ -17,12 +17,12 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
   LCLVersion = '1.8.4.0'
   object Panel2: TPanel
     Left = 0
-    Height = 670
+    Height = 688
     Top = 0
     Width = 573
     Align = alClient
     BevelOuter = bvNone
-    ClientHeight = 670
+    ClientHeight = 688
     ClientWidth = 573
     Constraints.MinHeight = 510
     Constraints.MinWidth = 560
@@ -399,11 +399,11 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
     end
     object GBWUA: TGroupBox
       Left = 8
-      Height = 136
+      Height = 160
       Top = 528
       Width = 567
       Caption = 'WAPTWUA Windows Updates '
-      ClientHeight = 118
+      ClientHeight = 142
       ClientWidth = 563
       TabOrder = 16
       Visible = False
@@ -468,12 +468,21 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
         Width = 80
         TabOrder = 4
       end
+      object CBInstallWUAUpdatesAtShutdown: TCheckBox
+        Left = 8
+        Height = 17
+        Hint = 'If some Windows updates are pending, waptexit will append a task to install all pending Windows updates'
+        Top = 112
+        Width = 200
+        Caption = 'Install Pending Windows at Shutdown'
+        TabOrder = 5
+      end
     end
   end
   object Panel1: TPanel
     Left = 0
     Height = 35
-    Top = 670
+    Top = 688
     Width = 573
     Align = alBottom
     AutoSize = True

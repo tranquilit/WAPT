@@ -128,6 +128,14 @@ object VisWaptExit: TVisWaptExit
           TabOrder = 1
         end
       end
+      object CBSkipWindowsUpdates: TCheckBox
+        Left = 16
+        Height = 17
+        Top = 75
+        Width = 214
+        Caption = 'Skip the installation of Windows Updates'
+        TabOrder = 2
+      end
     end
     object PanProgress: TPanel
       Left = 0

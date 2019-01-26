@@ -19,6 +19,10 @@ msgstr "Installer ou mettre à jour"
 msgid "Launching updates..."
 msgstr "Lancement des mises à jour..."
 
+#: tviswaptexit.cbskipwindowsupdates.caption
+msgid "Skip the installation of Windows Updates"
+msgstr "Ne pas installer les mises à jour Windows"
+
 #: tviswaptexit.edrunning.text
 msgid "some upgrades are pending, launch upgrades after timeout expired or manual action"
 msgstr "Des mises à jour sont en attente, lancement après l'expiration du délai ou une action manuelle"

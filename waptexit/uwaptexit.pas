@@ -21,6 +21,7 @@ type
     ButNotNow: TBitBtn;
     ButUpgradeNow: TBitBtn;
     CheckBox1: TCheckBox;
+    CBSkipWindowsUpdates: TCheckBox;
     EdRunning: TEdit;
     GridPending: TSOGrid;
     CustomLogo: TImage;
@@ -54,9 +55,11 @@ type
     FInitialCountDown: Integer;
     FPriorities: String;
     FOnlyIfNotProcessRunning: Boolean;
+    FInstallWUAUpdates: Boolean;
     procedure SetCountDown(AValue: Integer);
     function  CheckAllowCancelUpgrade:Boolean;
     procedure SetInitialCountDown(AValue: Integer);
+    procedure SetInstallWUAUpdates(AValue: Boolean);
   public
     { public declarations }
     upgrades,tasks,running,pending : ISuperObject;
@@ -72,6 +75,7 @@ type
     property CountDown:Integer read FCountDown write SetCountDown;
     property Priorities: String read FPriorities write FPriorities;
     property OnlyIfNotProcessRunning: Boolean read FOnlyIfNotProcessRunning write FOnlyIfNotProcessRunning;
+    property InstallWUAUpdates: Boolean read FInstallWUAUpdates write SetInstallWUAUpdates;
   end;
 
 var
@@ -101,6 +105,12 @@ begin
   FInitialCountDown:=AValue;
 end;
 
+procedure TVisWaptExit.SetInstallWUAUpdates(AValue: Boolean);
+begin
+  if FInstallWUAUpdates=AValue then Exit;
+  FInstallWUAUpdates:=AValue;
+end;
+
 function GetWaptLocalURL: String;
 begin
   result := format('http://127.0.0.1:%d',[waptservice_port]);
@@ -127,6 +137,10 @@ begin
         args.AsArray.Add('only_if_not_process_running=1');
       if Priorities <> '' then
         args.AsArray.Add(Format('only_priorities=%s',[Priorities]));
+      {$ifdef enterprise}
+      if InstallWUAUpdates and not CBSkipWindowsUpdates.Checked then
+        args.AsArray.Add(Format('install_wua_updates=1',[]));
+      {$endif}
 
       aso := WAPTLocalJsonGet('upgrade.json?'+Join('&',args),'','');
       if aso <> Nil then
@@ -144,7 +158,7 @@ begin
         ButUpgradeNow.Visible := False;
         LabIntro.Visible := False;
         LabDontShutdown.Visible := True;
-      end
+      end;
     except
       // TODO: handle properly the exception..
       upgrades := Nil;
@@ -212,6 +226,9 @@ begin
     InitialCountDown := StrToInt(GetCmdParams('waptexit_countdown',ini.ReadString('global','waptexit_countdown','10')));
     Priorities := GetCmdParams('priorities',ini.ReadString('global','upgrade_priorities',''));
     OnlyIfNotProcessRunning := FindCmdLineSwitch('only_if_not_process_running') or ini.ReadBool('global','upgrade_only_if_not_process_running',False);
+    {$ifdef enterprise}
+    InstallWUAUpdates := FindCmdLineSwitch('install_wua_updates',ini.ReadBool('waptwua','install_at_shutdown',False));
+    {$endif}
   finally
     ini.Free;
   end;
@@ -232,7 +249,7 @@ begin
   panBas.Visible:=ActShowDetails.Checked;
 end;
 
-Function TVisWaptExit.ShouldBeUpgraded:Boolean;
+function TVisWaptExit.ShouldBeUpgraded: Boolean;
 begin
   Result := (Upgrades <> Nil) and (upgrades.AsArray <> Nil) and (upgrades.AsArray.Length>0);
 end;
@@ -311,14 +328,14 @@ begin
   Timer1.Enabled := True;
 end;
 
-Function TVisWaptExit.WorkInProgress:Boolean;
+function TVisWaptExit.WorkInProgress: Boolean;
 begin
   Result :=
       ((running<>Nil) and (running.dataType<>stNull)) or
       ((pending<>Nil) and (pending.dataType=stArray) and (pending.AsArray.Length>0))
 end;
 
-Function TVisWaptExit.CheckRunningAndPending:Boolean;
+function TVisWaptExit.CheckRunningAndPending: Boolean;
 var
   aso:ISuperObject;
 begin

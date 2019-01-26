@@ -817,6 +817,8 @@ type
     procedure GridReportingQueriesEditing(Sender: TBaseVirtualTree;
       Node: PVirtualNode; Column: TColumnIndex; var Allowed: Boolean);
     procedure GridReportingQueriesKeyPress(Sender: TObject; var Key: char);
+    procedure GridReportingResultChange(Sender: TBaseVirtualTree;
+      Node: PVirtualNode);
     procedure GridReportingResultColumnResize(Sender: TVTHeader;
       Column: TColumnIndex);
     procedure GridReportingResultGetText(Sender: TBaseVirtualTree;
@@ -880,8 +882,6 @@ type
     function GetWUAClassifications: ISuperObject;
     function GetWUAProducts: ISuperObject;
     function GetWUAWinUpdates: ISuperObject;
-    procedure GridReportingResultChange(Sender: TBaseVirtualTree;
-      Node: PVirtualNode);
     procedure GridReportingSaveSettings(Report: ISuperObject);
     function OneHostHasConnectedIP(GridHostsIPs:TSOGrid=Nil): Boolean;
     function OneHostIsConnected(GridHostsReachable:TSOGrid=Nil): Boolean;
@@ -1788,7 +1788,7 @@ begin
       RowSO['wuauserv_status'] := wuauserv_status;
 
       EdWUAStatus.Text := waptwua_status.S['status'];
-      EdWAPTWUAEnabled.Text := waptwua_status.S['waptwua_enabled'];
+      EdWAPTWUAEnabled.Text := waptwua_status.S['enabled'];
       EdWsusscn2cabDate.Text:= waptwua_status.S['wsusscn2cab_date'];
       EdLastScanDate.Text:= waptwua_status.S['last_scan_date'];
       EdLastScanDuration.Text:= waptwua_status.S['last_scan_duration'];
@@ -2600,7 +2600,7 @@ begin
         inifile.ReadBool('global', 'hide_unavailable_actions', HideUnavailableActions);
 
       cbEnableWAPTWUAFeatures.Checked :=
-        inifile.ReadBool('global', 'waptwua_enabled', EnableWaptWUAFeatures);
+        inifile.ReadBool('waptwua', 'enabled', EnableWaptWUAFeatures);
 
       cbDebugWindow.Checked:= inifile.ReadBool('global','advanced_mode',AdvancedMode);
 
@@ -2628,7 +2628,7 @@ begin
         inifile.WriteBool('global', 'hide_unavailable_actions',
           cbHideUnavailableActions.Checked);
 
-        inifile.WriteBool('global', 'waptwua_enabled',
+        inifile.WriteBool('waptwua', 'enabled',
           cbEnableWAPTWUAFeatures.Checked);
 
         if cbLanguage.ItemIndex=0 then
@@ -5845,7 +5845,37 @@ begin
   ;;
 end;
 
+procedure TVisWaptGUI.GridReportingResultColumnResize(Sender: TVTHeader; Column: TColumnIndex);
+begin
+  ;;
+end;
 
+
+procedure TVisWaptGUI.GridReportingResultGetText(Sender: TBaseVirtualTree;
+  Node: PVirtualNode; RowData, CellData: ISuperObject; Column: TColumnIndex;
+  TextType: TVSTTextType; var CellText: string);
+begin
+  ;;
+end;
+
+procedure TVisWaptGUI.GridReportingResultHeaderClick(Sender: TVTHeader;
+  HitInfo: TVTHeaderHitInfo);
+begin
+;;
+end;
+
+
+procedure TVisWaptGUI.GridReportingResultHeaderDragged(Sender: TVTHeader;
+  Column: TColumnIndex; OldPosition: Integer);
+begin
+;;
+end;
+
+procedure TVisWaptGUI.GridReportingResultChange(Sender: TBaseVirtualTree;
+  Node: PVirtualNode);
+begin
+;;
+end;
 {$endif}
 
 end.

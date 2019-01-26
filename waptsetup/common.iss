@@ -137,7 +137,6 @@ Filename: {app}\wapt-get.ini; Section: global; Key: host_profiles; String: {code
   ; WaptWUA specific settings
   #ifdef waptwua
     #if set_waptwua_enabled != ""
-Filename: {app}\wapt-get.ini; Section: global; Key: waptwua_enabled; String: {#set_waptwua_enabled}; 
 Filename: {app}\wapt-get.ini; Section: waptwua; Key: enabled; String: {#set_waptwua_enabled}; 
     #endif
 
@@ -149,6 +148,10 @@ Filename: {app}\wapt-get.ini; Section: waptwua; Key: default_allow; String: {#se
 Filename: {app}\wapt-get.ini; Section: waptwua; Key: offline; String: {#set_waptwua_offline}; 
     #endif
     
+    #if set_waptwua_install_at_shutdown != ""
+Filename: {app}\wapt-get.ini; Section: waptwua; Key: install_at_shutdown; String: {#set_waptwua_install_at_shutdown}; 
+    #endif
+
     #if set_waptwua_allow_direct_download != ""
 Filename: {app}\wapt-get.ini; Section: waptwua; Key: allow_direct_download; String: {#set_waptwua_allow_direct_download}; 
     #endif
