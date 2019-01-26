@@ -3395,11 +3395,11 @@ msgstr "%s : %.0f%% terminé"
 
 #: uwaptconsoleres.rsconfirmburstupdate
 msgid "Are you sure you want to trigger Status Update on %d hosts ?"
-msgstr ""
+msgstr "Êtes vous sûr de vouloir déclencher la vérification des mises à jour sur %d machines ?"
 
 #: uwaptconsoleres.rsconfirmburstupgrades
 msgid "Are you sure you want to Apply Upgrades on %d hosts ?"
-msgstr ""
+msgstr "Êtes vous sûr de vouloir installer les mises à jour sur %d machines ?"
 
 #: uwaptconsoleres.rsconfirmcaption
 msgctxt "uwaptconsoleres.rsconfirmcaption"
@@ -3412,11 +3412,11 @@ msgstr "Êtes-vous sûr de vouloir lancer CleanMgr sur %s machines ?"
 
 #: uwaptconsoleres.rsconfirmdeletequeries
 msgid "Delete %d queries ?"
-msgstr ""
+msgstr "Supprimer %d requêtes ?"
 
 #: uwaptconsoleres.rsconfirmdeletequery
 msgid "Delete query %s ?"
-msgstr ""
+msgstr "Effacer la requête %s ?"
 
 #: uwaptconsoleres.rsconfirmdeletewudownload
 msgid "Delete download log record ?"

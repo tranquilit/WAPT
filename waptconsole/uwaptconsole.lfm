@@ -27,9 +27,9 @@ object VisWaptGUI: TVisWaptGUI
     Height = 618
     Top = 0
     Width = 1284
-    ActivePage = pgInventory
+    ActivePage = PgReports
     Align = alClient
-    TabIndex = 0
+    TabIndex = 7
     TabOrder = 0
     OnChange = MainPagesChange
     object pgInventory: TTabSheet
@@ -6947,7 +6947,6 @@ object VisWaptGUI: TVisWaptGUI
             TreeOptions.PaintOptions = [toHideFocusRect, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages, toAlwaysHideSelection]
             TreeOptions.SelectionOptions = [toExtendedFocus, toMultiSelect, toRightClickSelect, toSimpleDrawSelection]
             WantTabs = True
-            OnChange = GridReportingResultChange
             OnColumnResize = GridReportingResultColumnResize
             OnHeaderClick = GridReportingResultHeaderClick
             OnHeaderDragged = GridReportingResultHeaderDragged
