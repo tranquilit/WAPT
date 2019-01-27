@@ -922,7 +922,7 @@ begin
         TerminateProcess(myProcessInfo.hProcess, UINT(ERROR_CANCELLED));
         raise;
       end;
-      if (GetTickCount-start_ms > Wait) then
+      if (GetTickCount-start_ms > Wait) and  (iWaitRes = WAIT_TIMEOUT) then
       begin
         TerminateProcess(myProcessInfo.hProcess, UINT(ERROR_CANCELLED));
         raise Exception.Create('Timeout running '+CmdLine);
@@ -934,8 +934,12 @@ begin
       myReadErrorThread.WaitFor;
       Error := myReadErrorThread.Content;
       exitCode :=0;
-      if not GetExitCodeProcess(myProcessInfo.hProcess, exitCode) or (exitCode>0) then
+      if GetExitCodeProcess(myProcessInfo.hProcess, exitCode) and (exitCode>0) then
+      try
         raise EOSError.CreateFmt(SOSError, [exitCode, SysErrorMessage(exitCode)+' : '+Error])
+      except
+        raise EOSError.CreateFmt(SOSError, [exitCode, Error])
+      end;
     finally
       if myWriteInputThread<>Nil then  myWriteInputThread.Free;
       if myReadOutputThread<>Nil then myReadOutputThread.Free;

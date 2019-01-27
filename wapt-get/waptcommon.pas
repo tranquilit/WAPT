@@ -1341,17 +1341,12 @@ end;
 
 function WaptBaseDir: String;
 begin
-  result := ExtractFilePath(ParamStrUTF8(0));
+  result := GetCmdParams('waptbasedir',ExtractFilePath(ParamStrUTF8(0)));
 end;
 
 function WaptgetPath: String;
 begin
-  result := ExtractFilePath(ParamStrUtf8(0))+'wapt-get.exe'
-end;
-
-function WaptservicePath: String;
-begin
-  result := ExtractFilePath(ParamStrUtf8(0))+'waptservice.exe'
+  result := IncludeTrailingPathDelimiter(WaptBaseDir)+'wapt-get.exe'
 end;
 
 function GetSpecialFolderPath(folder : integer) : String;
@@ -1391,7 +1386,7 @@ end;
 function WaptIniFilename: String;
 begin
   if wapt_config_filename = '' then
-      wapt_config_filename := ExtractFilePath(ParamStrUTF8(0))+'wapt-get.ini';
+      wapt_config_filename := IncludeTrailingPathDelimiter(WaptBaseDir)+'wapt-get.ini';
   result :=  wapt_config_filename;
 end;
 
@@ -1695,7 +1690,6 @@ begin
   so['ethernet'] := GetEthernetInfo(false);
   so.S['ipaddress'] := GetLocalIP;
   so.S['waptget-version'] := GetApplicationVersion(WaptgetPath);
-  so.S['waptservice-version'] := GetApplicationVersion(WaptservicePath);
   result := so;
 end;
 
