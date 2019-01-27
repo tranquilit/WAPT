@@ -40,6 +40,7 @@
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
+        <CommandLineParams Value="--waptbasedir=c:\wapt"/>
       </local>
     </RunParams>
     <RequiredPackages Count="7">

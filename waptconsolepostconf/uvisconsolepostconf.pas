@@ -1092,23 +1092,32 @@ end;
 
 function TVisWAPTConsolePostConf.RestartWaptserviceAndRegister(): integer;
 var
-   waptget : String;
+   waptget,waptgetini : String;
    sl : TStringList;
    r : integer;
+   wapt: Variant;
 begin
-  waptget := IncludeTrailingPathDelimiter(WaptBaseDir) + 'wapt-get.exe';
-
-  sl := TStringList.Create;
   try
-    sl.AddObject('net stop waptservice', TObject(1) );  // Continue on error ( Service not runing )
-    sl.Append( waptget + ' --direct register --wapt-server-user=admin --wapt-server-passwd="' + self.ed_wapt_server_password.Text + '"' );
-    sl.Append( 'net start waptservice' );
-    sl.Append( waptget + ' update' );
+    waptgetini:=IncludeTrailingPathDelimiter(WaptBaseDir) + 'wapt-get.ini';
+    waptget := IncludeTrailingPathDelimiter(WaptBaseDir) + 'wapt-get.exe';
+    wapt := DMPython.common.Wapt(config_filename := waptgetini);
+    wapt.register_computer('--noarg--');
+    wapt.update('--noarg--');
+    try
+      Run('net stop waptservice');
+    except
+    end;
+    Run('net start waptservice');
 
-    r := RunCommands( sl );
-    Result := r;
-  finally
-    sl.Free;
+
+    //sl.Append( waptget + ' --direct register --wapt-server-user=admin --wapt-server-passwd="' + self.ed_wapt_server_password.Text + '"' );
+    Result := 0;
+  except
+      on E:Exception do
+      begin
+        ShowMessageFmt('Error registering computer and updating packages: %s',[e.Message]);
+        Result := 1;
+      end;
   end;
 end;
 
