@@ -723,6 +723,8 @@ type
     procedure EdSearchHostExecute(Sender: TObject);
     procedure EdSearchHostKeyPress(Sender: TObject; var Key: char);
     procedure EdSoftwaresFilterChange(Sender: TObject);
+    procedure EdWUASearchPackageKeyPress(Sender: TObject; var Key: char);
+    procedure EdWUASearchWindowsUpdateKeyPress(Sender: TObject; var Key: char);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
     procedure FormCreate(Sender: TObject);
@@ -1363,6 +1365,26 @@ procedure TVisWaptGUI.EdSoftwaresFilterChange(Sender: TObject);
 begin
   if (Gridhosts.FocusedRow <> nil) then
     GridHostSoftwares.Data := FilterSoftwares(Gridhosts.FocusedRow['installed_softwares']);
+end;
+
+procedure TVisWaptGUI.EdWUASearchPackageKeyPress(Sender: TObject; var Key: char
+  );
+begin
+  If Key=#13 then
+  begin
+    EdWUASearchPackage.SelectAll;
+    ActWUASearchPackage.Execute;
+  end;
+end;
+
+procedure TVisWaptGUI.EdWUASearchWindowsUpdateKeyPress(Sender: TObject;
+  var Key: char);
+begin
+  if key=#13 then
+  begin
+    EdWUASearchWindowsUpdate.SelectAll;
+    ActWSUSRefresh.Execute;
+  end;
 end;
 
 

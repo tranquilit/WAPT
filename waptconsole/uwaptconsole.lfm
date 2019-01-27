@@ -27,9 +27,9 @@ object VisWaptGUI: TVisWaptGUI
     Height = 618
     Top = 0
     Width = 1284
-    ActivePage = pgInventory
+    ActivePage = pgWaptWUAConfig
     Align = alClient
-    TabIndex = 0
+    TabIndex = 3
     TabOrder = 0
     OnChange = MainPagesChange
     object pgInventory: TTabSheet
@@ -4618,11 +4618,11 @@ object VisWaptGUI: TVisWaptGUI
               Width = 150
               EmptyText = 'Type name or description'
               ExecuteDelay = 400
-              OnExecute = ActWUASearchPackageExecute
               Options = [seoExecuteEmpty, seoExecuteOnKillFocus]
               Constraints.MaxHeight = 21
               Constraints.MinWidth = 150
               Font.Color = clGray
+              OnKeyPress = EdWUASearchPackageKeyPress
               ParentFont = False
               TabOrder = 0
             end
@@ -5528,11 +5528,11 @@ object VisWaptGUI: TVisWaptGUI
               Width = 150
               EmptyText = 'Type name or description'
               ExecuteDelay = 400
-              OnExecute = ActWSUSRefreshExecute
               Options = [seoExecuteEmpty, seoExecuteOnKillFocus]
               Constraints.MaxHeight = 21
               Constraints.MinWidth = 150
               Font.Color = clGray
+              OnKeyPress = EdWUASearchWindowsUpdateKeyPress
               ParentFont = False
               TabOrder = 4
             end
