@@ -1,3 +1,6 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8"
+
 msgid "Do you wish to apply them now ?"
 msgstr "Voulez-vous les appliquer maintenant ?"
 

@@ -1,7 +1,7 @@
 object VisWAPTServerPostConf: TVisWAPTServerPostConf
-  Left = 2103
+  Left = 521
   Height = 345
-  Top = 157
+  Top = 275
   Width = 937
   Caption = 'Configuration of WAPT server for Windows'
   ClientHeight = 345

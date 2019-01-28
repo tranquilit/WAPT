@@ -23,7 +23,7 @@ msgstr "Echec de la copie du certificat %s vers %s."
 
 #: uwaptres.rscname
 msgid "CNAME: %s"
-msgstr "CNAME : %s"
+msgstr "CNAME: %s"
 
 #: uwaptres.rscompletionprogress
 msgid "%s : %.0f%% completed"

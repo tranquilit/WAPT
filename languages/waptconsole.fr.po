@@ -1630,21 +1630,6 @@ msgstr "Proposer la mise à jour aux utilisateurs"
 msgid "Make package template from setup file"
 msgstr "Générer un modèle de paquet"
 
-#: tviswaptgui.actnormalizationfilter.caption
-msgctxt "tviswaptgui.actnormalizationfilter.caption"
-msgid "Filter"
-msgstr "Filtrer"
-
-#: tviswaptgui.actnormalizationimportsoftwares.caption
-msgctxt "tviswaptgui.actnormalizationimportsoftwares.caption"
-msgid "Import"
-msgstr "Importer"
-
-#: tviswaptgui.actnormalizationwritetable.caption
-msgctxt "tviswaptgui.actnormalizationwritetable.caption"
-msgid "Write"
-msgstr "Enregistrer"
-
 #: tviswaptgui.actpackagesaudit.caption
 msgid "Audit package"
 msgstr "Auditer le paquets"
@@ -4952,4 +4937,104 @@ msgstr "waptupgade : upgrade wapt-get.exe et la base de données"
 msgctxt "uwaptres.rswaptuploaderror"
 msgid "Error while uploading WAPT agent to the repository : %s"
 msgstr "Erreur lors du chargement de l'agent WAPT vers le dépôt : %s"
+
+#: sogrid.gsconst_advancedcustomizecolumns
+msgid "Advanced customize of table..."
+msgstr "Configuration avancée de la grille..."
+
+#: sogrid.gsconst_collapseall
+msgid "Collapse all"
+msgstr ""
+
+#: sogrid.gsconst_confdeleterow
+msgid "Confirm the deletion of selected rows ?"
+msgstr "Confirmer la suppresson des lignes sélectionnées ?"
+
+#: sogrid.gsconst_confirmation
+msgid "Confirm"
+msgstr "Confirmer"
+
+#: sogrid.gsconst_copy
+msgid "Copy"
+msgstr "Copier"
+
+#: sogrid.gsconst_copycell
+msgid "Copy cell"
+msgstr "Copier la cellule"
+
+#: sogrid.gsconst_customizecolumns
+msgid "Customize columns..."
+msgstr "Configurer les colonnes..."
+
+#: sogrid.gsconst_cut
+msgid "Cut"
+msgstr "Couper"
+
+#: sogrid.gsconst_delete
+msgid "Delete"
+msgstr "Supprimer"
+
+#: sogrid.gsconst_deleterows
+msgid "Delete selected rows"
+msgstr "Supprimer les lignes sélectionnées"
+
+#: sogrid.gsconst_expandall
+msgid "Expand all"
+msgstr "Tout développer"
+
+#: sogrid.gsconst_exportallexcel
+msgid "Export all rows to CSV file..."
+msgstr "Exporter toutes les lignes vers un fichier CSV..."
+
+#: sogrid.gsconst_exportselectedexcel
+msgid "Export selected rows to CSV file..."
+msgstr "Exporter les lignes sélectionnées vers un fichier CSV..."
+
+#: sogrid.gsconst_find
+msgid "Search..."
+msgstr "Rechercher..."
+
+#: sogrid.gsconst_findnext
+msgid "Find next"
+msgstr "Rechercher le suivant"
+
+#: sogrid.gsconst_findreplace
+msgid "Find and replace..."
+msgstr "Rechercher et remplacer..."
+
+#: sogrid.gsconst_insert
+msgid "Insert"
+msgstr "Insérer"
+
+#: sogrid.gsconst_norecordfind
+msgid "No record found"
+msgstr "Pas d'enregistrement trouvé"
+
+#: sogrid.gsconst_page
+msgid "Page"
+msgstr "Page"
+
+#: sogrid.gsconst_paste
+msgid "Paste"
+msgstr "Coller"
+
+#: sogrid.gsconst_print
+msgid "Print..."
+msgstr "Imprimer..."
+
+#: sogrid.gsconst_printon
+msgid "Printed on"
+msgstr "Imprimé le"
+
+#: sogrid.gsconst_revertrecord
+msgid "Revert to initial record"
+msgstr "Revenir à la version initiale"
+
+#: sogrid.gsconst_selectall
+msgid "Select all rows"
+msgstr "Sélectionner toutes les lignes"
+
+#: sogrid.gsconst_undolastupdate
+msgid "Undo last change"
+msgstr "Annuler la dernière modification"
 

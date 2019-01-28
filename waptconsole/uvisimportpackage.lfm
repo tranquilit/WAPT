@@ -68,7 +68,6 @@ object VisImportPackage: TVisImportPackage
       Width = 144
       Alignment = taRightJustify
       Anchors = [akTop, akLeft, akRight]
-      AutoSize = False
       Caption = 'Default package maturity'
       ParentColor = False
     end
