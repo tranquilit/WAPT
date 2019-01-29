@@ -7059,7 +7059,7 @@ def get_user_self_service_groups(self_service_groups,logon_name,password):
     huser = win32security.LogonUser (username,domain,password,win32security.LOGON32_LOGON_NETWORK_CLEARTEXT,win32security.LOGON32_PROVIDER_DEFAULT)
 
     listgroupuser =  [username]
-    for group in listgroup :
+    for group in self_service_groups :
         if group in listgroupuser:
             continue
         if check_is_member_of(huser,group) :
