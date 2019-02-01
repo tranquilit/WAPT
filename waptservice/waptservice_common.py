@@ -251,7 +251,8 @@ class WaptServiceConfig(object):
         self.waptserver = None
 
         self.waptservice_poll_timeout = 10
-        self.waptupdate_task_period = get_time_delta('120m')
+        # str
+        self.waptupdate_task_period = '120m'
         self.waptupgrade_task_period = None
 
 
@@ -321,14 +322,14 @@ class WaptServiceConfig(object):
                 self.waptservice_poll_timeout = 10
 
             if config.has_option('global','waptupgrade_task_period'):
-                self.waptupgrade_task_period = int(config.get('global','waptupgrade_task_period'))
+                self.waptupgrade_task_period = config.get('global','waptupgrade_task_period')
             else:
                 self.waptupgrade_task_period = None
 
             if config.has_option('global','waptupdate_task_period'):
                 self.waptupdate_task_period = config.get('global','waptupdate_task_period')
             else:
-                self.waptupdate_task_period = get_time_delta('120m')
+                self.waptupdate_task_period = '120'
 
             if config.has_option('global','waptaudit_task_period'):
                 self.waptaudit_task_period = config.get('global','waptaudit_task_period')
