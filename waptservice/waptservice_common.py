@@ -251,7 +251,7 @@ class WaptServiceConfig(object):
         self.waptserver = None
 
         self.waptservice_poll_timeout = 10
-        self.waptupdate_task_period = 120
+        self.waptupdate_task_period = get_time_delta('120m')
         self.waptupgrade_task_period = None
 
 
@@ -273,16 +273,6 @@ class WaptServiceConfig(object):
 
         # tolerance time replay limit for signed actions from server
         self.signature_clockskew = 5*60
-
-        # for Wapt Windows updates service (enterprise)
-        self.waptwua_enabled = None
-        self.waptwua_allowed_updates = None
-        self.waptwua_forbidden_updates = None
-        self.waptwua_allowed_severities = None
-        self.waptwua_allowed_classifications = None
-
-        self.waptwua_download_scheduling = None
-        self.waptwua_install_scheduling = None
 
         # for Wapt Windows updates service (enterprise)
         self.waptaudit_task_period = None
@@ -336,9 +326,9 @@ class WaptServiceConfig(object):
                 self.waptupgrade_task_period = None
 
             if config.has_option('global','waptupdate_task_period'):
-                self.waptupdate_task_period = int(config.get('global','waptupdate_task_period'))
+                self.waptupdate_task_period = config.get('global','waptupdate_task_period')
             else:
-                self.waptupdate_task_period = 120
+                self.waptupdate_task_period = get_time_delta('120m')
 
             if config.has_option('global','waptaudit_task_period'):
                 self.waptaudit_task_period = config.get('global','waptaudit_task_period')
@@ -433,24 +423,6 @@ class WaptServiceConfig(object):
             for param in ('hiberboot_enabled','max_gpo_script_wait','pre_shutdown_timeout'):
                 if config.has_option('global',param):
                     setattr(self,param,config.getint('global',param))
-                else:
-                    setattr(self,param,None)
-
-            # waptwua settings (Enterprise)
-            if config.has_option('global','waptwua_enabled'):
-                setattr(self,'waptwua_enabled',config.getboolean('global','waptwua_enabled'))
-            else:
-                setattr(self,'waptwua_enabled',None)
-
-            for param in ['waptwua_allowed_updates','waptwua_forbidden_updates','waptwua_allowed_severities','waptwua_allowed_classifications']:
-                if config.has_option('global',param):
-                    setattr(self,param,ensure_list(config.get('global',param)))
-                else:
-                    setattr(self,param,None)
-
-            for param in ['waptwua_download_scheduling','waptwua_install_scheduling']:
-                if config.has_option('global',param):
-                    setattr(self,param,config.get('global',param))
                 else:
                     setattr(self,param,None)
 

@@ -82,10 +82,6 @@ action is either :
   clean             : remove all WAPT cached files from local drive
   upgradedb         : manually upgrade the schema used by the WAPT database. If the database file can't be found, it will be recreated.
 
-  setup-tasks       : creates Windows daily scheduled tasks for update/download-upgrade/upgrade
-  enable-tasks
-  disable-tasks
-
   add-upgrade-shutdown    : add a local shutdown policy to launch upgrade
                             of packages at windows shutdown (via waptexit.exe)
   remove-upgrade-shutdown : remove shutdown policy
@@ -1165,13 +1161,6 @@ def main():
                 else:
                     print(jsondump(result,indent=True))
 
-            elif action == 'setup-tasks':
-                result = mywapt.setup_tasks()
-                if options.json_output:
-                    jsonresult['result'] = result
-                else:
-                    print(result)
-
             elif action == 'add-upgrade-shutdown':
                 result = mywapt.add_upgrade_shutdown_policy()
                 if options.json_output:
@@ -1181,20 +1170,6 @@ def main():
 
             elif action == 'remove-upgrade-shutdown':
                 result = mywapt.remove_upgrade_shutdown_policy()
-                if options.json_output:
-                    jsonresult['result'] = result
-                else:
-                    print(result)
-
-            elif action == 'enable-tasks':
-                result = mywapt.enable_tasks()
-                if options.json_output:
-                    jsonresult['result'] = result
-                else:
-                    print(result)
-
-            elif action == 'disable-tasks':
-                result = mywapt.disable_tasks()
                 if options.json_output:
                     jsonresult['result'] = result
                 else:

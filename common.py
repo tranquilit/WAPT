@@ -2702,6 +2702,7 @@ class Wapt(BaseObjectClass):
             'default_maturity':'',
             'http_proxy':'',
             'public_certs_dir':os.path.join(self.wapt_base_dir,'ssl'),
+            'persistent_root_dir':os.path.join(self.wapt_base_dir,'private','persistent'),
 
             # optional...
             'default_sources_root':'c:\\waptdev',
@@ -2836,6 +2837,11 @@ class Wapt(BaseObjectClass):
 
         if self.config.has_option('global','default_maturity'):
             self.default_maturity = self.config.get('global','default_maturity')
+
+        if self.config.has_option('global','persistent_root_dir'):
+            self.persistent_root_dir = self.config.get('global','persistent_root_dir').decode('utf8')
+        else:
+            self.persistent_root_dir = os.path.join(self.wapt_base_dir,'private','persistent')
 
         # Get the configuration of all repositories (url, ...)
         self.repositories = []
@@ -3538,7 +3544,7 @@ class Wapt(BaseObjectClass):
 
                     if entry.package_uuid:
                         persistent_source_dir = os.path.join(packagetempdir,'WAPT','persistent')
-                        persistent_dir = os.path.join(self.wapt_base_dir,'private','persistent',entry.package_uuid)
+                        persistent_dir = os.path.join(self.persistent_root_dir,entry.package_uuid)
 
                         if os.path.isdir(persistent_dir):
                             logger.debug(u'Removing existing persistent dir %s' % persistent_dir)
@@ -5577,7 +5583,7 @@ class Wapt(BaseObjectClass):
         result['packages_blacklist'] = self.packages_blacklist
 
         listrules = []
-        for rules in glob.glob(setuphelpers.makepath(os.path.dirname(__file__),'private','persistent','*','selfservice.json')):
+        for rules in glob.glob(setuphelpers.makepath(self.persistent_root_dir,'*','selfservice.json')):
             with open(rules) as f:
                 listrules.append(json.loads(f.read()))
         result['self_service_rules'] = merge_self_service_rules(listrules)
@@ -6823,56 +6829,6 @@ class Wapt(BaseObjectClass):
             self.add_pyscripter_project(target_directory)
         dest_control.invalidate_signature()
         return dest_control
-
-    def setup_tasks(self):
-        """Setup cron job on windows for update and download-upgrade"""
-        result = []
-        # update and download new packages
-        if setuphelpers.task_exists('wapt-update'):
-            setuphelpers.delete_task('wapt-update')
-        if self.config.has_option('global','waptupdate_task_period'):
-            task = setuphelpers.create_daily_task(
-                'wapt-update',
-                sys.argv[0],
-                '--update-packages download-upgrade',
-                max_runtime=int(self.config.get('global','waptupdate_task_maxruntime')),
-                repeat_minutes=int(self.config.get('global','waptupdate_task_period')))
-            result.append('%s : %s' % ('wapt-update',task.GetTriggerString(0)))
-
-        # upgrade of packages
-        if setuphelpers.task_exists('wapt-upgrade'):
-            setuphelpers.delete_task('wapt-upgrade')
-        if self.config.has_option('global','waptupgrade_task_period'):
-            task = setuphelpers.create_daily_task(
-                'wapt-upgrade',
-                sys.argv[0],
-                '--update-packages upgrade',
-                max_runtime=int(self.config.get('global','waptupgrade_task_maxruntime')),
-                repeat_minutes= int(self.config.get('global','waptupgrade_task_period')))
-            result.append('%s : %s' % ('wapt-upgrade',task.GetTriggerString(0)))
-        return '\n'.join(result)
-
-    def enable_tasks(self):
-        """Enable Wapt automatic update/upgrade scheduling through windows scheduler"""
-        result = []
-        if setuphelpers.task_exists('wapt-upgrade'):
-            setuphelpers.enable_task('wapt-upgrade')
-            result.append('wapt-upgrade')
-        if setuphelpers.task_exists('wapt-update'):
-            setuphelpers.enable_task('wapt-update')
-            result.append('wapt-update')
-        return result
-
-    def disable_tasks(self):
-        """Disable Wapt automatic update/upgrade scheduling through windows scheduler"""
-        result = []
-        if setuphelpers.task_exists('wapt-upgrade'):
-            setuphelpers.disable_task('wapt-upgrade')
-            result.append('wapt-upgrade')
-        if setuphelpers.task_exists('wapt-update'):
-            setuphelpers.disable_task('wapt-update')
-            result.append('wapt-update')
-        return result
 
     def write_param(self,name,value):
         """Store in local db a key/value pair for later use"""

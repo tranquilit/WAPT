@@ -169,10 +169,12 @@ app.config['PROPAGATE_EXCEPTIONS'] = True
 app.config['SECRET_KEY'] = waptconfig.secret_key
 
 try:
-    from waptenterprise.waptwua.client import WaptWUA # pylint: disable=no-name-in-module
+    from waptenterprise.waptwua.client import WaptWUA,WaptWUAParams,WaptWUARules # pylint: disable=no-name-in-module
     #app.register_blueprint(WaptWUA.waptwua)
 except Exception as e:
     WaptWUA = None
+    WaptWUARules = None
+    WaptWUAParams = None
     pass
 
 if waptwua_api is not None:
@@ -699,7 +701,7 @@ def upgrade():
     all_tasks.append(app.task_manager.add_task(WaptCleanup(notify_user=False)))
 
     # append install wua tasks only if last scan reported to something to install
-    if install_wua_updates and wapt().waptwua_enabled and wapt().read_param('waptwua.status','UNKNONW') == 'OK':
+    if waptwua_api and install_wua_updates and wapt().waptwua_enabled and wapt().read_param('waptwua.status','UNKNONW') != 'OK':
         all_tasks.append(app.task_manager.add_task(WaptWUAInstallTask(notify_user=False)))
 
     data = {'result':'OK','content':all_tasks}
@@ -1284,9 +1286,9 @@ class WaptTaskManager(threading.Thread):
 
             # keep track of last update/upgrade add date to avoid relaunching
             if isinstance(task,WaptUpdate):
-                self.last_update = time.time()
+                self.last_update = datetime.datetime.now()
             if isinstance(task,WaptUpgrade):
-                self.last_upgrade = time.time()
+                self.last_upgrade = datetime.datetime.now()
 
             # not already in pending  actions...
             if not same:
@@ -1361,7 +1363,7 @@ class WaptTaskManager(threading.Thread):
             self.add_task(WaptServiceRestart(created_by='DAILY RESTART'))
 
         if waptconfig.waptupgrade_task_period is not None and setuphelpers.running_on_ac():
-            if self.last_upgrade is None or (time.time()-self.last_upgrade)/60>waptconfig.waptupgrade_task_period:
+            if self.last_upgrade is None or (datetime.datetime.now() - self.last_upgrade) > get_time_delta(waptconfig.waptupgrade_task_period):
                 try:
                     actions = self.wapt.list_upgrade()
                     to_install = actions['upgrade']+actions['additional']+actions['install']
@@ -1373,7 +1375,7 @@ class WaptTaskManager(threading.Thread):
                 self.add_task(WaptCleanup(notifyuser=False,created_by='SCHEDULER'))
 
         if waptconfig.waptupdate_task_period is not None:
-            if self.last_update is None or (time.time() - self.last_update)/60>waptconfig.waptupdate_task_period:
+            if self.last_update is None or (datetime.datetime.now() - self.last_update) > get_time_delta(waptconfig.waptupdate_task_period):
                 try:
                     self.wapt.update()
                     reqs = self.wapt.check_downloads()
@@ -1390,16 +1392,19 @@ class WaptTaskManager(threading.Thread):
                 except Exception as e:
                     logger.debug(u'Error checking audit: %s' % e)
 
-        if WaptWUA is not None:
-            if waptconfig.waptwua_install_scheduling:
-                if self.last_waptwua_install is None or (datetime.datetime.now() - self.last_waptwua_install > get_time_delta(waptconfig.waptwua_install_scheduling)):
+        if WaptWUAParams is not None and self.wapt.waptwua_enabled:
+            params = WaptWUAParams()
+            if self.wapt.config and self.wapt.config.has_section('waptwua'):
+                params.load_from_ini(config=self.wapt.config,section='waptwua')
+            if params.install_scheduling:
+                if self.last_waptwua_install is None or (datetime.datetime.now() - self.last_waptwua_install > get_time_delta(params.install_scheduling)):
                     if self.wapt.read_param('waptwua.status',{}).get('status') != 'OK':
                         self.add_task(WaptWUAInstallTask(notify_user=False,notify_server_on_finish=True,created_by='SCHEDULER'))
                     self.last_waptwua_install = datetime.datetime.now()
                     self.last_waptwua_download = datetime.datetime.now()
 
-            if waptconfig.waptwua_download_scheduling:
-                if self.last_waptwua_download is None or (datetime.datetime.now() - self.last_waptwua_download > get_time_delta(waptconfig.waptwua_download_scheduling)):
+            if params.download_scheduling:
+                if self.last_waptwua_download is None or (datetime.datetime.now() - self.last_waptwua_download > get_time_delta(params.download_scheduling)):
                     self.add_task(WaptWUADowloadTask(notify_user=False,notify_server_on_finish=True,created_by='SCHEDULER'))
                     self.last_waptwua_download = datetime.datetime.now()
 
