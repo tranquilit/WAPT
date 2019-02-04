@@ -153,7 +153,7 @@ type
 function EditPackage(packagename: string; advancedMode: boolean): ISuperObject;
 function CreatePackage(packagename: string; advancedMode: boolean): ISuperObject;
 function CreateGroup(packagename: string; advancedMode: boolean=False; section: String ='group'): ISuperObject;
-function EditHost(hostuuid: string; advancedMode: boolean; var ApplyUpdates:Boolean; description:String=''; HostReachable:Boolean=False;computer_fqdn_hint:String='';ForceMinVersion:String=''): ISuperObject;
+function EditHost(hostuuid: string; advancedMode: boolean; var ApplyUpdates:Boolean; description:String=''; HostReachable:Boolean=False;computer_fqdn_hint:String='';ForceMinVersion:String=''): Variant;
 
 function EditGroup(group: string; advancedMode: boolean; section:String = 'group';description:String=''): ISuperObject;
 
@@ -236,7 +236,7 @@ begin
     end;
 end;
 
-function EditHost(hostuuid: string; advancedMode: boolean;var ApplyUpdates:Boolean;description:String='';HostReachable:Boolean=False;computer_fqdn_hint:String='';ForceMinVersion:String=''): ISuperObject;
+function EditHost(hostuuid: string; advancedMode: boolean;var ApplyUpdates:Boolean;description:String='';HostReachable:Boolean=False;computer_fqdn_hint:String='';ForceMinVersion:String=''): Variant;
 begin
   with TVisEditPackage.Create(nil) do
     try
@@ -274,14 +274,14 @@ begin
 
       if ShowModal = mrOk then
       try
-        Result := PyVarToSuperObject(PackageEdited.as_dict('--noarg--'));
+        Result := PackageEdited;
         ApplyUpdates:=ApplyUpdatesImmediately;
       except
         on E:Exception do
           ShowMessageFmt('Error editing host %s',[e.Message]);
       end
       else
-        Result := nil;
+        Result := None();
     finally
       Free;
     end;

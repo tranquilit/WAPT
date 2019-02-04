@@ -164,7 +164,7 @@ begin
       upgrades := Nil;
       Close;
     end
-    else
+    {else
       // try using direct call
       try
         //GridTasks.Data := tasks;
@@ -178,7 +178,7 @@ begin
         Run('wapt-get -D upgrade','',3600000,'','','',@OnRunNotify);
       Finally
         Close;
-      end;
+      end;}
   finally
     if PrevTimer then
       Timer1.Enabled := True;
@@ -214,9 +214,6 @@ begin
   else
     CustomLogo.Picture.LoadFromResourceName(HINSTANCE,'WAPT_PNG',TPortableNetworkGraphic);
 
-  //ScaleDPI(Self,96); // 96 is the DPI you designed
-  //ScaleImageList(ImageList1,96);
-
   ReadWaptConfig(WaptIniFilename);
 
   //Load config
@@ -228,6 +225,9 @@ begin
     OnlyIfNotProcessRunning := FindCmdLineSwitch('only_if_not_process_running') or ini.ReadBool('global','upgrade_only_if_not_process_running',False);
     {$ifdef enterprise}
     InstallWUAUpdates := FindCmdLineSwitch('install_wua_updates',ini.ReadBool('waptwua','install_at_shutdown',False));
+    CBSkipWindowsUpdates.Visible:=InstallWUAUpdates;
+    {$else}
+    CBSkipWindowsUpdates.Visible:=False;
     {$endif}
   finally
     ini.Free;

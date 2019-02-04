@@ -982,7 +982,7 @@ def wapthosts_json(model_class, instance, created):
 
     # extract list for fast query.
     if (created or Hosts.host_capabilities in instance.dirty_fields) and instance.host_capabilities:
-        instance.authorized_certificates_sha256 = dictgetpath(instance.host_capabilities, 'packages_trusted_ca')
+        instance.authorized_certificates_sha256 = dictgetpath(instance.host_capabilities, 'packages_trusted_ca_fingerprints')
         instance.wapt_version = dictgetpath(instance.host_capabilities, 'wapt_version')
 
     if not instance.connected_ips:

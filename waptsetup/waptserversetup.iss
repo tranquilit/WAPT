@@ -179,6 +179,10 @@ fr.InstallPostgreSQL=Installer le serveur PostgreSQL
 fr.InstallWaptServer=Installer le serveur Wapt
 fr.ScanPackages=Scan des paquets actuels
 fr.InstallingServerServices=Installation des services Serveur
+fr.SpecifyServerPassword=Choisissez un mot de passe pour le compte admin Wapt
+fr.BothPasswordsDontMatch=Les mots de passe saisis ne correpondent pas
+fr.WaptAdminPassword=Mot de passe Admin du serveur WAPT (laisser vide pour ne pas le changer)
+fr.ConfirmPassword=Confirmer le mot de passe
 
 en.RegisteringService=Setup WaptServer Service
 en.InstallMSVC2013=Installing MSVC++ 2013 Redistribuable
@@ -188,13 +192,22 @@ en.InstallPostgreSQL=Install PostgreSQL Server
 en.InstallWaptServer=Install Wapt server
 en.ScanPackages=Scan packages
 en.InstallingServerServices=Installing Server services...
+en.SpecifyServerPassword=Please specify a password for the Wapt admin account
+en.BothPasswordsDontMatch=Passwords entries are not matching
+en.WaptAdminPassword=WAPT Server Admin password (leave blank to not change password)
+en.ConfirmPassword=Confirm password
 
 de.RegisteringService=Setup WaptServer Service
 de.InstallMSVC2013=MSVC++ 2013 Redistribuable installieren
 de.LaunchingPostconf=Server Post-Konfiguration starten
 de.InstallNGINX=NGINX installieren http Server
 de.InstallPostgreSQL=PostgreSQL Server installieren
-en.InstallWaptServer=Wapt server installieren
+de.InstallWaptServer=Wapt server installieren
+de.ScanPackages=Scan packages
+de.SpecifyServerPassword=Please specify a password for the Wapt admin account
+de.BothPasswordsDontMatch=Passwords entries are not matching
+de.WaptAdminPassword=WAPT Server Admin password (leave blank to not change password)
+de.ConfirmPassword=Confirm password
 
 
 [InstallDelete]
@@ -209,10 +222,10 @@ var
     edServerPassword,edServerPassword2: TEdit;
     
 
-procedure waptsetuputil_init( language : integer );                     external 'waptsetuputil_init@files:waptsetuputil.dll stdcall';
-function  waptsetuputil_validate_wapt_server_install_ports() : boolean; external 'waptsetuputil_validate_wapt_server_install_ports@files:waptsetuputil.dll stdcall';
-function  SSLLeay_version( _type  : integer ) : Cardinal;               external 'SSLeay_version@files:libeay32.dll cdecl';
-function  SSL_library_init() : integer;                                 external 'SSL_library_init@files:ssleay32.dll cdecl'; 
+//procedure waptsetuputil_init( language : integer );                     external 'waptsetuputil_init@files:waptsetuputil.dll stdcall';
+//function  waptsetuputil_validate_wapt_server_install_ports() : boolean; external 'waptsetuputil_validate_wapt_server_install_ports@files:waptsetuputil.dll stdcall';
+//function  SSLLeay_version( _type  : integer ) : Cardinal;               external 'SSLeay_version@files:libeay32.dll cdecl';
+//function  SSL_library_init() : integer;                                 external 'SSL_library_init@files:ssleay32.dll cdecl'; 
 
 const Codes64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 
@@ -300,20 +313,26 @@ begin
       r := 3
     else
       r := 1;  
-    waptsetuputil_init( r );
+    //waptsetuputil_init( r );
     exit;
   end;
 
   if CurPageID = CustomPage.Id then
   begin
-    if edServerPassword.text = edServerPassword2.text then
+    // Be sure at least a password is defined
+    if (edServerPassword.text='') and (GetIniString('options','wapt_password','', ExpandConstant('{app}\conf\waptserver.ini'))='') then
+    begin
+      MsgBox(ExpandConstant('{cm:SpecifyServerPassword}'), mbError, MB_ABORTRETRYIGNORE);
+      Result := False;
+      Exit;
+        end
+    else if edServerPassword.text = edServerPassword2.text then
     begin
       Result := True;
       Exit;
     end
-    else
-    begin
-      MsgBox('Check both password', mbError, MB_ABORTRETRYIGNORE);
+    else begin
+      MsgBox(ExpandConstant('{cm:BothPasswordsDontMatch}'), mbError, MB_ABORTRETRYIGNORE);
       Result := False;
       Exit;
     end;
@@ -322,7 +341,7 @@ begin
 
   if CurPageID = wpSelectTasks then
   begin
-    result := waptsetuputil_validate_wapt_server_install_ports();
+    //result := waptsetuputil_validate_wapt_server_install_ports();
     exit;
   end;
 
@@ -342,7 +361,7 @@ begin
   
   labServerPassword := TLabel.Create(WizardForm);
   labServerPassword.Parent := CustomPage.Surface; 
-  labServerPassword.Caption := 'WAPT Server Admin password (leave blank to not change password):';
+  labServerPassword.Caption := ExpandConstant('{cm:WaptAdminPassword}');
 
   edServerPassword := TEdit.Create(WizardForm);
   edServerPassword.PasswordChar := '*';
@@ -354,7 +373,7 @@ begin
   
   labServerPassword2 := TLabel.Create(WizardForm);
   labServerPassword2.Parent := CustomPage.Surface; 
-  labServerPassword2.Caption := 'Confirm password:';
+  labServerPassword2.Caption := ExpandConstant('{cm:ConfirmPassword}');
   labServerPassword2.Top := edServerPassword.Top + edServerPassword.Height + 5;
 
   edServerPassword2 := TEdit.Create(WizardForm);

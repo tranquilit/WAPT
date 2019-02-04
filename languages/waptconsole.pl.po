@@ -1,6 +1,108 @@
 msgid ""
 msgstr "Content-Type: text/plain; charset=UTF-8"
 
+#: sogrid.gsconst_advancedcustomizecolumns
+msgid "Advanced customize of table..."
+msgstr ""
+
+#: sogrid.gsconst_collapseall
+msgid "Collapse all"
+msgstr ""
+
+#: sogrid.gsconst_confdeleterow
+msgid "Confirm the deletion of selected rows ?"
+msgstr ""
+
+#: sogrid.gsconst_confirmation
+msgctxt "sogrid.gsconst_confirmation"
+msgid "Confirm"
+msgstr ""
+
+#: sogrid.gsconst_copy
+msgid "Copy"
+msgstr ""
+
+#: sogrid.gsconst_copycell
+msgid "Copy cell"
+msgstr ""
+
+#: sogrid.gsconst_customizecolumns
+msgid "Customize columns..."
+msgstr ""
+
+#: sogrid.gsconst_cut
+msgid "Cut"
+msgstr ""
+
+#: sogrid.gsconst_delete
+msgctxt "sogrid.gsconst_delete"
+msgid "Delete"
+msgstr ""
+
+#: sogrid.gsconst_deleterows
+msgid "Delete selected rows"
+msgstr ""
+
+#: sogrid.gsconst_expandall
+msgid "Expand all"
+msgstr ""
+
+#: sogrid.gsconst_exportallexcel
+msgid "Export all rows to CSV file..."
+msgstr ""
+
+#: sogrid.gsconst_exportselectedexcel
+msgid "Export selected rows to CSV file..."
+msgstr ""
+
+#: sogrid.gsconst_find
+msgid "Search..."
+msgstr ""
+
+#: sogrid.gsconst_findnext
+msgid "Find next"
+msgstr ""
+
+#: sogrid.gsconst_findreplace
+msgid "Find and replace..."
+msgstr ""
+
+#: sogrid.gsconst_insert
+msgid "Insert"
+msgstr ""
+
+#: sogrid.gsconst_norecordfind
+msgid "No record found"
+msgstr ""
+
+#: sogrid.gsconst_page
+msgid "Page"
+msgstr ""
+
+#: sogrid.gsconst_paste
+msgid "Paste"
+msgstr ""
+
+#: sogrid.gsconst_print
+msgid "Print..."
+msgstr ""
+
+#: sogrid.gsconst_printon
+msgid "Printed on"
+msgstr ""
+
+#: sogrid.gsconst_revertrecord
+msgid "Revert to initial record"
+msgstr ""
+
+#: sogrid.gsconst_selectall
+msgid "Select all rows"
+msgstr ""
+
+#: sogrid.gsconst_undolastupdate
+msgid "Undo last change"
+msgstr ""
+
 #: tform1.buttonpanel1.helpbutton.caption
 msgctxt "tform1.buttonpanel1.helpbutton.caption"
 msgid "&Show config file"
@@ -1101,6 +1203,7 @@ msgid ""
 msgstr ""
 
 #: tviswaptconfig.actdeleteplugin.caption
+msgctxt "tviswaptconfig.actdeleteplugin.caption"
 msgid "Delete"
 msgstr ""
 

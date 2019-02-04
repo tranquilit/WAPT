@@ -241,10 +241,10 @@ class EWaptMissingLocalWaptFile(EWaptException):
 
 class HostCapabilities(BaseObjectClass):
     __all_attributes = ['uuid', 'language', 'os', 'os_version', 'architecture', 'dn', 'fqdn',
-            'site', 'wapt_version', 'wapt_edition', 'packages_trusted_ca',
+            'site', 'wapt_version', 'wapt_edition', 'packages_trusted_ca_fingerprints',
             'packages_blacklist', 'packages_whitelist', 'packages_locales',
             'packages_maturities', 'use_host_packages','host_packages_names',
-            'host_profiles', 'host_certificate']
+            'host_profiles', 'host_certificate_fingerprint','host_certificate_authority_key_identifier']
     def __init__(self,**kwargs):
         self.uuid = None
         self.language = None
@@ -256,7 +256,7 @@ class HostCapabilities(BaseObjectClass):
         self.site = None
         self.wapt_version = None
         self.wapt_edition = None
-        self.packages_trusted_ca = None
+        self.packages_trusted_ca_fingerprints = None
         self.packages_blacklist = None
         self.packages_whitelist = None
         self.packages_locales = None
@@ -264,7 +264,8 @@ class HostCapabilities(BaseObjectClass):
         self.use_host_packages = None
         self.host_profiles = None
         self.host_packages_names = None
-        self.host_certificate = None
+        self.host_certificate_fingerprint = None
+        self.host_certificate_authority_key_identifier = None
         for (k,v) in kwargs.iteritems():
             if hasattr(self,k):
                 setattr(self,k,v)
@@ -321,6 +322,8 @@ class HostCapabilities(BaseObjectClass):
             return False
         return True
 
+    def __repr__(self):
+        return repr(self.as_dict())
 
 def PackageVersion(package_or_versionstr):
     if isinstance(package_or_versionstr,PackageEntry):

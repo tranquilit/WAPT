@@ -1471,6 +1471,22 @@ class SSLCertificateSigningRequest(BaseObjectClass):
             return None
 
     @property
+    def authority_key_identifier(self):
+        """Identify the authority by its subject Id
+
+        Returns:
+            bytes
+
+        >>> c.authority_key_identifier
+        'L\xb3XL\xc3\x91\xc1\xe3hMc\xcec\x0c6\xf2\x9b\x9d\x95\xd0'
+        """
+        keyid = self.extensions.get('authorityKeyIdentifier',None)
+        if keyid:
+            return keyid.digest
+        else:
+            return None
+
+    @property
     def key_usage(self):
         keyusage = self.extensions.get('keyUsage',None)
         if keyusage:

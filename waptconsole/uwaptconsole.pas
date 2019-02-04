@@ -871,6 +871,7 @@ type
     FGridHostsPlugins: ISuperObject;
 
     procedure DoProgress(ASender: TObject);
+    function EditHostPackageEntry(host: ISuperObject): Variant;
     procedure ExecuteHostsGruidPlugin(Sender: TObject);
     procedure FillcbADSiteDropDown;
     procedure FillcbGroups;
@@ -952,6 +953,9 @@ type
 
     property IsEnterpriseEdition:Boolean read GetIsEnterpriseEdition write SetIsEnterpriseEdition;
     property ReportingEditMode:Boolean read FReportingEditMode write SetReportingEditMode;
+
+    function EditPackageEntry(Entry: ISuperObject): Variant;
+
 
   end;
 
@@ -1697,7 +1701,7 @@ begin
             end;
           end;
 
-          errors := RowSO['last_update_status.errors'];
+          {errors := RowSO['last_update_status.errors'];
           if (errors<>Nil) and (errors.AsArray.Length>0) then
           begin
             for package in RowSO['installed_packages'] do
@@ -1709,7 +1713,7 @@ begin
                   package.S['install_status'] := 'ERROR-UPGRADE';
               end;
             end;
-          end;
+          end;}
         end
         else
           RowSO['installed_packages'] := nil;
@@ -2077,6 +2081,39 @@ begin
     DMPython.common.wapt_sources_edit( wapt_sources_dir := vDevPath);
   end;
 end;
+
+
+function TVisWaptGUI.EditPackageEntry(Entry: ISuperObject): Variant;
+var
+  RepoUrl,Filename: string;
+  cabundle,vDevPath,PackageEdited: Variant;
+  Devpath : String;
+begin
+  if Entry <> nil then
+  begin
+    case Entry.S['section'] of
+      'host': ;
+      'group','profile': ;
+      {$ifdef enterprise}
+      'wsus':;
+      {$endif}
+      else
+      begin
+        Filename := UTF8Encode(Entry.S['filename']);
+        RepoUrl := Entry.S['repo_url'];
+        PackageEdited := DownloadPackage(RepoUrl,Filename);
+        DevPath := AppendPathDelim(DefaultSourcesRoot)+VarPythonAsString(PackageEdited.make_package_edit_directory('--noarg--'));
+        vDevPath:= PyUTF8Decode(DevPath);
+        cabundle := None();
+        PackageEdited.unzip_package(cabundle := cabundle, target_dir := vDevPath);
+        DMPython.WAPT.add_pyscripter_project(vDevPath);
+        DMPython.common.wapt_sources_edit( wapt_sources_dir := vDevPath);
+        Result := PackageEdited;
+      end;
+    end;
+  end;
+end;
+
 
 procedure TVisWaptGUI.ActEditpackageUpdate(Sender: TObject);
 begin
@@ -2894,23 +2931,21 @@ begin
   end;
 end;
 
-procedure TVisWaptGUI.ActEditHostPackageExecute(Sender: TObject);
+Function TVisWaptGUI.EditHostPackageEntry(host: ISuperObject): Variant;
 var
   hostname,uuid,desc,HostPackageVersion: String;
-  uuids,result: ISuperObject;
+  uuids: ISuperObject;
   ApplyUpdatesImmediately:Boolean;
-  Host: ISuperObject;
   Package,HostPackages:ISuperObject;
 begin
-  if GridHosts.FocusedRow<>Nil then
+  if Host<>Nil then
   try
-    host := GridHosts.FocusedRow;
     hostname := UTF8Encode(host.S['computer_fqdn']);
     uuid := UTF8Encode(host.S['uuid']);
     desc := UTF8Encode(host.S['description']);
-    uuids := TSuperobject.create(stArray);
-    uuids.AsArray.Add(uuid);
 
+    // Be sure edited package's version is at least installed one.
+    // Better use a dedicated API on server ?
     HostPackageVersion :='';
     HostPackages := host['installed_packages'];
     if HostPackages <> Nil then
@@ -2926,14 +2961,23 @@ begin
     end;
 
     result := EditHost(uuid, AdvancedMode, ApplyUpdatesImmediately, desc,host.S['reachable'] = 'OK',hostname,HostPackageVersion);
-    if (result<>Nil) and ApplyUpdatesImmediately and (uuid<>'')  then
-      result := TriggerActionOnHosts(uuids,'trigger_host_upgrade',Nil,rsUpgradingHost,rsErrorLaunchingUpgrade);
+
+    uuids := TSuperobject.create(stArray);
+    uuids.AsArray.Add(uuid);
+    if not VarIsNone(result) and ApplyUpdatesImmediately and (uuid<>'')  then
+      TriggerActionOnHosts(uuids,'trigger_host_upgrade',Nil,rsUpgradingHost,rsErrorLaunchingUpgrade);
 
   except
     on E:Exception do
       ShowMessageFmt(rsEditHostError+#13#10#13#10+e.Message,[hostname]);
   end;
 end;
+
+procedure TVisWaptGUI.ActEditHostPackageExecute(Sender: TObject);
+begin
+  EditHostPackageEntry(GridHosts.FocusedRow);
+end;
+
 
 procedure TVisWaptGUI.ActEnglishExecute(Sender: TObject);
 begin

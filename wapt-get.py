@@ -1145,10 +1145,10 @@ def main():
                             if result['success']:
                                 print(u"Updated host status correctly sent to server %s." % (mywapt.waptserver.server_url,))
                             else:
-                                print(u"Failed to send inventory to server %s: %s" % (mywapt.waptserver.server_url,result['msg']))
+                                print(u"Failed to store properly inventory to server %s: %s" % (mywapt.waptserver.server_url,result['msg']))
 
                     else:
-                        print(u"waptserver is not available. Update of status not sent")
+                        print(u"waptserver is not available or error in inventory. Update of status not properly sent")
                         sys.exit(3)
                 else:
                     print(u"No waptserver defined. Update of status unavailable")
