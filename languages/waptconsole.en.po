@@ -704,6 +704,7 @@ msgid "Show debug"
 msgstr ""
 
 #: tviseditpackage.edsearch.hint
+msgctxt "tviseditpackage.edsearch.hint"
 msgid "Use keywords to narrow search."
 msgstr ""
 
@@ -1131,8 +1132,83 @@ msgstr ""
 msgid "PanAdvanced"
 msgstr ""
 
+#: tvisselfservicegroup.actaddgroup.caption
+msgctxt "tvisselfservicegroup.actaddgroup.caption"
+msgid "Add"
+msgstr ""
+
+#: tvisselfservicegroup.actbuilduploadpackage.caption
+msgctxt "tvisselfservicegroup.actbuilduploadpackage.caption"
+msgid "Save"
+msgstr ""
+
+#: tvisselfservicegroup.actdisablepackage.caption
+msgid "Disable"
+msgstr ""
+
+#: tvisselfservicegroup.actenablepackage.caption
+msgid "Enable"
+msgstr ""
+
+#: tvisselfservicegroup.actloadpackage.caption
+msgctxt "tvisselfservicegroup.actloadpackage.caption"
+msgid "Refresh"
+msgstr ""
+
+#: tvisselfservicegroup.actpackagessearch.caption
+msgctxt "tvisselfservicegroup.actpackagessearch.caption"
+msgid "Search"
+msgstr ""
+
+#: tvisselfservicegroup.actremovegroup.caption
+msgctxt "tvisselfservicegroup.actremovegroup.caption"
+msgid "Remove"
+msgstr ""
+
 #: tvisselfservicegroup.caption
-msgid "VisSelfServiceGroup"
+msgid "Edit Self Service group package"
+msgstr ""
+
+#: tvisselfservicegroup.edpackageversion.text
+msgctxt "tvisselfservicegroup.edpackageversion.text"
+msgid "0"
+msgstr ""
+
+#: tvisselfservicegroup.label1.caption
+msgid "Self service group"
+msgstr ""
+
+#: tvisselfservicegroup.label2.caption
+msgctxt "tvisselfservicegroup.label2.caption"
+msgid "Version"
+msgstr ""
+
+#: tvisselfservicegroup.label3.caption
+msgctxt "tvisselfservicegroup.label3.caption"
+msgid "Description"
+msgstr ""
+
+#: tvisselfservicegroup.label4.caption
+msgctxt "tvisselfservicegroup.label4.caption"
+msgid "Package filename : "
+msgstr ""
+
+#: tvisselfservicegroup.label5.caption
+msgctxt "tvisselfservicegroup.label5.caption"
+msgid "Available packages : "
+msgstr ""
+
+#: tvisselfservicegroup.label6.caption
+msgctxt "tvisselfservicegroup.label6.caption"
+msgid "Maturity"
+msgstr ""
+
+#: tvisselfservicegroup.label7.caption
+msgid "Enabled packages"
+msgstr ""
+
+#: tvisselfservicegroup.pangrouppackages.caption
+msgid "PanGroupPackages"
 msgstr ""
 
 #: tvissoftwaresnormalization.actnormalizationfilter.caption
@@ -1169,6 +1245,7 @@ msgid "Launch actions on hosts"
 msgstr ""
 
 #: tviswaptconfig.actaddplugin.caption
+msgctxt "tviswaptconfig.actaddplugin.caption"
 msgid "Add"
 msgstr ""
 
@@ -2737,10 +2814,12 @@ msgid "Description"
 msgstr ""
 
 #: tviswuagroup.label4.caption
+msgctxt "tviswuagroup.label4.caption"
 msgid "Package filename : "
 msgstr ""
 
 #: tviswuagroup.label6.caption
+msgctxt "tviswuagroup.label6.caption"
 msgid "Maturity"
 msgstr ""
 

@@ -832,6 +832,8 @@ type
       Column: TColumnIndex; OldPosition: Integer);
     procedure GridReportingResultSOCompareNodes(Sender: TSOGrid; Node1,
       Node2: ISuperObject; const Columns: array of String; var Result: Integer);
+    procedure GridSelfServicePackagesColumnDblClick(Sender: TBaseVirtualTree;
+      Column: TColumnIndex; Shift: TShiftState);
     procedure GridWinproductsChange(Sender: TBaseVirtualTree; Node: PVirtualNode );
     procedure GridWinUpdatesGetImageIndexEx(Sender: TBaseVirtualTree;
       Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
@@ -997,7 +999,7 @@ uses LCLIntf, LCLType, IniFiles, variants, LazFileUtils,FileUtil, base64,
   uVisPackageWizard, uVisChangeKeyPassword, uVisDisplayPreferences,
   uvisrepositories, uVisHostDelete, windirs,winutils,uWaptPythonUtils
   {$ifdef ENTERPRISE}
-  ,uVisWUAGroup,uviswuadownloads,uvissoftwaresnormalization
+  ,uVisWUAGroup,uviswuadownloads,uvissoftwaresnormalization,uvisselfservicegroup
   {$endif}
   {$ifdef wsus},uVisWAPTWUAProducts, uviswuapackageselect,
   uVisWUAClassificationsSelect
@@ -5015,7 +5017,6 @@ begin
   pgWaptWUAConfig.TabVisible:=False;
   pgHostWUA.TabVisible:=False;
   pgWindowsUpdates2.TabVisible:=False;
-  pgSelfService.TabVisible:=False;
   ActTriggerHostAudit.Visible:=False;
   ActPackagesAudit.Visible:=False;
   ActWUANewPackage.Visible := False;
@@ -5972,6 +5973,12 @@ end;
 
 procedure TVisWaptGUI.GridReportingResultChange(Sender: TBaseVirtualTree;
   Node: PVirtualNode);
+begin
+;;
+end;
+
+procedure TVisWaptGUI.GridSelfServicePackagesColumnDblClick(
+  Sender: TBaseVirtualTree; Column: TColumnIndex; Shift: TShiftState);
 begin
 ;;
 end;

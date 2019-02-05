@@ -717,6 +717,7 @@ msgid "Show debug"
 msgstr "Afficher les informations de débogage"
 
 #: tviseditpackage.edsearch.hint
+msgctxt "tviseditpackage.edsearch.hint"
 msgid "Use keywords to narrow search."
 msgstr "Affinez la recherche à l'aide de mots-clés."
 
@@ -1150,8 +1151,93 @@ msgstr "Dépôt externe de paquets "
 msgid "PanAdvanced"
 msgstr ""
 
+#: tvisselfservicegroup.actaddgroup.caption
+#, fuzzy
+msgctxt "tvisselfservicegroup.actaddgroup.caption"
+msgid "Add"
+msgstr "Ajouter"
+
+#: tvisselfservicegroup.actbuilduploadpackage.caption
+#, fuzzy
+msgctxt "tvisselfservicegroup.actbuilduploadpackage.caption"
+msgid "Save"
+msgstr "Enregistrer"
+
+#: tvisselfservicegroup.actdisablepackage.caption
+msgid "Disable"
+msgstr "Enlever"
+
+#: tvisselfservicegroup.actenablepackage.caption
+msgid "Enable"
+msgstr "Ajouter"
+
+#: tvisselfservicegroup.actloadpackage.caption
+#, fuzzy
+msgctxt "tvisselfservicegroup.actloadpackage.caption"
+msgid "Refresh"
+msgstr "Actualiser"
+
+#: tvisselfservicegroup.actpackagessearch.caption
+#, fuzzy
+msgctxt "tvisselfservicegroup.actpackagessearch.caption"
+msgid "Search"
+msgstr "Rechercher"
+
+#: tvisselfservicegroup.actremovegroup.caption
+#, fuzzy
+msgctxt "tvisselfservicegroup.actremovegroup.caption"
+msgid "Remove"
+msgstr "Enlever"
+
 #: tvisselfservicegroup.caption
-msgid "VisSelfServiceGroup"
+msgid "Edit Self Service group package"
+msgstr "Modifier le paquet de règles Self-Service"
+
+#: tvisselfservicegroup.edpackageversion.text
+msgctxt "tvisselfservicegroup.edpackageversion.text"
+msgid "0"
+msgstr ""
+
+#: tvisselfservicegroup.label1.caption
+msgid "Self service group"
+msgstr "Groupe Self-Service"
+
+#: tvisselfservicegroup.label2.caption
+#, fuzzy
+msgctxt "tvisselfservicegroup.label2.caption"
+msgid "Version"
+msgstr "Version"
+
+#: tvisselfservicegroup.label3.caption
+#, fuzzy
+msgctxt "tvisselfservicegroup.label3.caption"
+msgid "Description"
+msgstr "Description"
+
+#: tvisselfservicegroup.label4.caption
+#, fuzzy
+msgctxt "tvisselfservicegroup.label4.caption"
+msgid "Package filename : "
+msgstr "Nom de fichier du paquet"
+
+#: tvisselfservicegroup.label5.caption
+#, fuzzy
+msgctxt "tvisselfservicegroup.label5.caption"
+msgid "Available packages : "
+msgstr "Paquets disponibles :"
+
+#: tvisselfservicegroup.label6.caption
+#, fuzzy
+msgctxt "tvisselfservicegroup.label6.caption"
+msgid "Maturity"
+msgstr "Maturité"
+
+#: tvisselfservicegroup.label7.caption
+msgid "Enabled packages"
+msgstr "Paquets autorisés"
+
+#: tvisselfservicegroup.pangrouppackages.caption
+msgid "PanGroupPackages"
 msgstr ""
 
 #: tvissoftwaresnormalization.actnormalizationfilter.caption
@@ -1193,6 +1279,7 @@ msgid "Launch actions on hosts"
 msgstr "Lancer les actions sur les macgines"
 
 #: tviswaptconfig.actaddplugin.caption
+msgctxt "tviswaptconfig.actaddplugin.caption"
 msgid "Add"
 msgstr "Ajouter"
 
@@ -2868,10 +2955,12 @@ msgid "Description"
 msgstr "Description"
 
 #: tviswuagroup.label4.caption
+msgctxt "tviswuagroup.label4.caption"
 msgid "Package filename : "
 msgstr "Nom de fichier du paquet"
 
 #: tviswuagroup.label6.caption
+msgctxt "tviswuagroup.label6.caption"
 msgid "Maturity"
 msgstr "Maturité"
 

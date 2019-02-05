@@ -617,6 +617,26 @@ def localrepo_packages():
     except Exception as e:
         return make_response_from_exception(e)
 
+@app.route('/api/v3/known_packages')
+@requires_auth
+def known_packages():
+    try:
+        start_time = time.time()
+        exclude_sections = ensure_list(request.args.get('exclude_sections','unit,host,profile'))
+        if exclude_sections:
+            where = ~ Packages.section.in_(exclude_sections)
+        else:
+            where = None
+
+        packages = Packages.select(Packages.package,fn.MAX(Packages.signature_date).alias('last_signature_date'))
+        if where:
+            packages = packages.where(where)
+        packages = list(packages.group_by(Packages.package).dicts())
+        return make_response(packages,
+                             msg = '%s known packages' % (len(packages),),
+                             request_time=time.time() - start_time)
+    except Exception as e:
+        return make_response_from_exception(e)
 
 @app.route('/api/v3/upload_packages',methods=['HEAD','POST'])
 @requires_auth
