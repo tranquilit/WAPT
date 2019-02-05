@@ -3720,9 +3720,10 @@ begin
 
       urlParams.AsArray.Add(format('filter=%s:%s',[join(',',fields),EncodeURIComponent(EdSearchHost.Text)]));
 
-      if CBInverseSelect.Checked then
-        urlParams.AsArray.Add(format('not_filter=1',[]));
     end;
+
+    if CBInverseSelect.Checked then
+      urlParams.AsArray.Add(format('not_filter=1',[]));
 
     if cbHasErrors.Checked then
       urlParams.AsArray.Add('has_errors=1');

@@ -1537,30 +1537,33 @@ def get_hosts():
                 if not fn in columns:
                     columns.append(fn)
 
-            not_filter = request.args.get('not_filter', 0)
+            not_filter = request.args.get('not_filter', '0') == '1'
 
             query = None
 
-            def and_query(q):
+            def and_query(q,not_filter=False):
                 if query is None:
-                    return q
+                    if not_filter:
+                        return ~(q)
+                    else:
+                        return q
                 else:
-                    return query & q
+                    if not_filter:
+                        return query & ~(q)
+                    else:
+                        return query & q
 
             # build filter
             if 'uuid' in request.args:
                 query = and_query(Hosts.uuid.in_(ensure_list(request.args['uuid'])))
             elif 'filter' in request.args:
-                query = and_query(build_hosts_filter(Hosts, request.args['filter']))
+                query = and_query(build_hosts_filter(Hosts, request.args['filter']),not_filter)
 
             ## TODO : pylint does not like this block... raises 'Uninferable' object is not iterable
             if 'groups' in request.args:
                 groups = ensure_list(request.args.get('groups', ''))
                 in_group = HostGroups.select(HostGroups.host).where(HostGroups.group_name << groups)
-                query = and_query(Hosts.uuid << in_group)
-
-            if query is not None and not_filter:
-                query = ~ query  # pylint: disable=invalid-unary-operand-type
+                query = and_query(Hosts.uuid << in_group,not_filter)
 
             if 'trusted_certs_sha256' in request.args:
                 trusted_certs_sha256 = ensure_list(request.args.get('trusted_certs_sha256', ''))
@@ -1570,7 +1573,10 @@ def get_hosts():
                         certs_sub = Hosts.authorized_certificates_sha256.contains(cert_fingerprint)
                     else:
                         certs_sub = certs_sub | Hosts.authorized_certificates_sha256.contains(cert_fingerprint)
-                query = query & certs_sub
+                query = and_query(certs_sub,not_filter)
+
+            if 'ad_site' in request.args:
+                query = and_query(Hosts.computer_ad_site  == request.args.get('ad_site'),not_filter)
 
             if 'organizational_unit' in request.args:
                 ou_list = request.args.get('organizational_unit').split('||')
@@ -1582,8 +1588,6 @@ def get_hosts():
                 else:
                     query = and_query(Hosts.computer_ad_ou.in_(ou_list))
 
-            if 'ad_site' in request.args:
-                query = and_query(Hosts.computer_ad_site  == request.args.get('ad_site'))
             if 'has_errors' in request.args and request.args['has_errors']:
                 query = and_query(Hosts.host_status == 'ERROR')
             if 'need_upgrade' in request.args and request.args['need_upgrade']:

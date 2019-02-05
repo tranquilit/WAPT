@@ -264,6 +264,7 @@ class HostPackagesStatus(WaptBaseModel):
     priority = CharField(null=True)
     signer = CharField(null=True)
     signer_fingerprint = CharField(null=True)
+    signature_date = CharField(null=True)
     description = TextField(null=True)
     install_status = CharField(null=True)
     install_date = CharField(null=True)
@@ -297,6 +298,7 @@ class Packages(WaptBaseModel):
     priority = CharField(null=True)
     signer = CharField(null=True)
     signer_fingerprint = CharField(null=True)
+    signature_date = CharField(null=True)
     description = TextField(null=True)
     depends = ArrayField(CharField,null=True)
     conflicts = ArrayField(CharField,null=True)
@@ -1618,7 +1620,7 @@ def upgrade_db_structure():
             v.save()
 
     next_version = '1.7.3.1'
-    if get_db_version() <= next_version:
+    if get_db_version() < next_version:
         with wapt_db.atomic():
             logger.info("Migrating from %s to %s" % (get_db_version(), next_version))
             StoreDownload.create_table(fail_silently=True)
@@ -1634,6 +1636,23 @@ def upgrade_db_structure():
                 opes.append(migrator.add_column(Hosts._meta.name, 'host_metrics',Hosts.host_metrics))
             if not 'wapt_version' in columns:
                 opes.append(migrator.add_column(Hosts._meta.name, 'wapt_version',Hosts.wapt_version))
+            migrate(*opes)
+            (v, created) = ServerAttribs.get_or_create(key='db_version')
+            v.value = next_version
+            v.save()
+
+    next_version = '1.7.3.2'
+    if get_db_version() <= next_version:
+        with wapt_db.atomic():
+            logger.info("Migrating from %s to %s" % (get_db_version(), next_version))
+            opes = []
+
+            columns = [c.name for c in wapt_db.get_columns('hostpackagestatus')]
+            if not 'signature_date' in columns:
+                opes.append(migrator.add_column(HostPackagesStatus._meta.name, 'signature_date',HostPackagesStatus.signature_date))
+            columns = [c.name for c in wapt_db.get_columns('packages')]
+            if not 'signature_date' in columns:
+                opes.append(migrator.add_column(Packages._meta.name, 'signature_date',Packages.signature_date))
             migrate(*opes)
             (v, created) = ServerAttribs.get_or_create(key='db_version')
             v.value = next_version
