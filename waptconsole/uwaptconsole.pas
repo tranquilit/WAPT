@@ -1614,31 +1614,45 @@ begin
   end;
 end;
 
-function PackageNameFromreq(req:String):String;
+type TPackageReq=record
+  package:String;
+  op:String;
+  version:String;
+end;
+
+function PackageReqFromreq(req:String):TPackageReq;
 var
   PosVersion:Integer;
+  re: TRegExpr;
+  name,oper,version:String;
 begin
-  PosVersion:=pos('(',req);
-  if PosVersion > 0 then
-    Result := Trim(copy(UTF8Encode(req),1,PosVersion-1))
-  else
-    Result := Trim(UTF8Encode(req));
+  // optional version
+  re := TRegExpr.Create('([^()]+)\s*(\(\s*([<=>]*)\s*(\S+)\s*\))?.*');
+  try
+    if re.Exec(req) then
+    begin
+      result.package := re.Match[1];
+      result.op := re.Match[3];
+      result.version := re.Match[4];
+    end;
+  finally
+    re.Free;
+  end;
+end;
+
+function PackageNameFromreq(req:String):String;
+begin
+  Result := PackageReqFromreq(req).package;
 end;
 
 function PackageVersionFromReq(req:String):String;
-var
-  PosVersion:Integer;
 begin
-  PosVersion:=pos('(=',req);
-  if PosVersion > 0 then
-    Result := Trim(copy(UTF8Encode(req),PosVersion+2,Length(req)-(PosVersion+2)))
-  else
-    Result := '';
+  Result := PackageReqFromreq(req).version;
 end;
 
 procedure TVisWaptGUI.UpdateHostPages(Sender: TObject);
 var
-  currhost,packagename : ansistring;
+  currhost,packagename,packageversion : String;
   RowSO, package,packagereq, packages, softwares: ISuperObject;
   waptwua_status,wuauserv_status,wsusupdates: ISuperObject;
   sores,all_missing,pending_install,additional,upgrades,errors,remove: ISuperObject;
@@ -1710,19 +1724,20 @@ begin
             end;
           end;
 
-          {errors := RowSO['last_update_status.errors'];
+          errors := RowSO['last_update_status.errors'];
           if (errors<>Nil) and (errors.AsArray.Length>0) then
           begin
             for package in RowSO['installed_packages'] do
             begin
               for packagereq in errors do
               begin
-                packagename:= PackageNameFromreq(packagereq.AsString);
-                if package.S['package'] = packagename then
+                packagename:= PackageNameFromreq(UTF8Encode(packagereq.AsString));
+                packageversion := PackageVersionFromReq(UTF8Encode(packagereq.AsString));
+                if (package.S['package'] = packagename) and (package.S['version'] = packageversion) then
                   package.S['install_status'] := 'ERROR-UPGRADE';
               end;
             end;
-          end;}
+          end;
         end
         else
           RowSO['installed_packages'] := nil;

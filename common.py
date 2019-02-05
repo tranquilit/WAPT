@@ -1115,7 +1115,8 @@ class WaptDB(WaptBaseDB):
                 l.uninstall_key,l.explicit_by,
                 coalesce(l.depends,r.depends) as depends,coalesce(l.conflicts,r.conflicts) as conflicts,coalesce(l.section,r.section) as section,coalesce(l.priority,r.priority) as priority,
                 r.maintainer,r.description,r.sources,r.filename,r.size,
-                r.repo_url,r.md5sum,r.repo,l.maturity,l.locale,
+                r.repo_url,r.md5sum,r.repo,r.signer,r.signature_date,r.signer_fingerprint,
+                l.maturity,l.locale,
                 l.last_audit_status,l.last_audit_on,l.last_audit_output,l.next_audit_on,l.package_uuid,
                 l.persistent_dir
                 from wapt_localstatus l
@@ -1147,7 +1148,7 @@ class WaptDB(WaptBaseDB):
               select l.package,l.version,l.architecture,l.install_date,l.install_status,l.install_output,l.install_params,l.explicit_by,
                     l.depends,l.conflicts,l.uninstall_key,
                     l.last_audit_status,l.last_audit_on,l.last_audit_output,l.next_audit_on,l.audit_schedule,l.package_uuid,
-                    r.section,r.priority,r.maintainer,r.description,r.sources,r.filename,r.size,
+                    r.section,r.priority,r.maintainer,r.description,r.sources,r.filename,r.size,r.signer,r.signature_date,r.signer_fingerprint,
                     r.repo_url,r.md5sum,r.repo,l.maturity,l.locale,l.persistent_dir
                 from wapt_localstatus l
                 left join wapt_package r on
@@ -1187,7 +1188,7 @@ class WaptDB(WaptBaseDB):
                 l.uninstall_key,l.explicit_by,
                 coalesce(l.depends,r.depends) as depends,coalesce(l.conflicts,r.conflicts) as conflicts,coalesce(l.section,r.section) as section,coalesce(l.priority,r.priority) as priority,
                 l.last_audit_status,l.last_audit_on,l.last_audit_output,l.next_audit_on,l.audit_schedule,l.package_uuid,
-                r.maintainer,r.description,r.sources,r.filename,r.size,
+                r.maintainer,r.description,r.sources,r.filename,r.size,r.signer,r.signature_date,r.signer_fingerprint,
                 r.repo_url,r.md5sum,r.repo,l.persistent_dir
               from wapt_localstatus l
                 left join wapt_package r on r.package=l.package and l.version=r.version and (l.architecture is null or l.architecture=r.architecture)
@@ -1217,7 +1218,7 @@ class WaptDB(WaptBaseDB):
                 l.uninstall_key,l.explicit_by,
                 l.last_audit_status,l.last_audit_on,l.last_audit_output,l.next_audit_on,l.package_uuid,
                 coalesce(l.depends,r.depends) as depends,coalesce(l.conflicts,r.conflicts) as conflicts,coalesce(l.section,r.section) as section,coalesce(l.priority,r.priority) as priority,
-                r.maintainer,r.description,r.sources,r.filename,r.size,
+                r.maintainer,r.description,r.sources,r.filename,r.size,r.signer,r.signature_date,r.signer_fingerprint,
                 r.repo_url,r.md5sum,r.repo,l.persistent_dir
                 from wapt_localstatus l
                 left join wapt_package r on r.package=l.package and l.version=r.version and (l.architecture is null or l.architecture=r.architecture)
