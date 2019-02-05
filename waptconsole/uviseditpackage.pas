@@ -144,7 +144,7 @@ type
     IsNewPackage: boolean;
     PackageEdited: Variant;
     ApplyUpdatesImmediately:Boolean;
-    PackageFilter: Variant;
+    HostCapabilities: Variant;
     property isAdvancedMode: boolean read FisAdvancedMode write SetisAdvancedMode;
     procedure EditPackage;
     property SourcePath: string read GetSourcePath write SetSourcePath;
@@ -154,8 +154,7 @@ type
 function EditPackage(packagename: string; advancedMode: boolean): ISuperObject;
 function CreatePackage(packagename: string; advancedMode: boolean): ISuperObject;
 function CreateGroup(packagename: string; advancedMode: boolean=False; section: String ='group'): ISuperObject;
-function EditHost(hostuuid: string; advancedMode: boolean; var ApplyUpdates:Boolean; description:String=''; HostReachable:Boolean=False;computer_fqdn_hint:String='';
-    ForceMinVersion:String=''; HostCapabilities: ISuperObject=Nil): Variant;
+function EditHost(host: ISuperObject; advancedMode: boolean; var ApplyUpdates:Boolean; ForceMinVersion:String=''): Variant;
 
 function EditGroup(group: string; advancedMode: boolean; section:String = 'group';description:String=''): ISuperObject;
 
@@ -238,10 +237,19 @@ begin
     end;
 end;
 
-function EditHost(hostuuid: string; advancedMode: boolean;var ApplyUpdates:Boolean;description:String='';HostReachable:Boolean=False;computer_fqdn_hint:String='';ForceMinVersion:String=''; HostCapabilities: ISuperObject=Nil): Variant;
+function EditHost(host: ISuperObject; advancedMode: boolean;var ApplyUpdates:Boolean;
+      ForceMinVersion:String=''): Variant;
+var
+  hostuuid,description,computer_fqdn_hint: String;
 begin
   with TVisEditPackage.Create(nil) do
     try
+      computer_fqdn_hint := UTF8Encode(host.S['computer_fqdn']);
+      hostuuid := UTF8Encode(host.S['uuid']);
+      description := UTF8Encode(host.S['description']);
+      HostCapabilities := SuperObjectToPyVar(host['host_capabilities']);
+      ShowMessage(host['host_capabilities'].S['packages_locales']);
+
       EdSection.Text:='host';
       Result := Nil;
       isAdvancedMode := advancedMode;
@@ -264,15 +272,15 @@ begin
       begin
         Eddescription.Text := description;
         if computer_fqdn_hint<>'' then
-          EdDescription.Text:=EdDescription.Text+' ('+computer_fqdn_hint+')';
+          EdDescription.Text := EdDescription.Text+' ('+computer_fqdn_hint+')';
       end
       else
-        EdDescription.Text:=computer_fqdn_hint;
+        EdDescription.Text := computer_fqdn_hint;
 
       EdPackage.ReadOnly:=True;
       EdPackage.ParentColor:=True;
 
-      ActBUApply.Visible := HostReachable;
+      ActBUApply.Visible := host.S['reachable'] = 'OK';
 
       if ShowModal = mrOk then
       try
@@ -658,7 +666,7 @@ begin
   GridPackages.Data := PyVarToSuperObject(DMPython.MainWaptRepo.search(
     searchwords := EdSearch.Text, newest_only := True,description_locale := Language,
     exclude_sections := 'host,unit,profile',
-    package_request := PackageFilter));
+    host_capabilities := HostCapabilities));
 end;
 
 procedure TVisEditPackage.ActBuildUploadExecute(Sender: TObject);
@@ -781,7 +789,7 @@ begin
   GridDepends.Clear;
   GridConflicts.Clear;
 
-  PackageFilter:=None();
+  HostCapabilities := None();
 
 end;
 

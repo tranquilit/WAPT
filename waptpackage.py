@@ -270,7 +270,8 @@ class HostCapabilities(BaseObjectClass):
             if hasattr(self,k):
                 setattr(self,k,v)
             else:
-                raise Exception('HostCapabilities has no attribute %s' % k)
+                #raise Exception('HostCapabilities has no attribute %s' % k)
+                logger.critical('HostCapabilities has no attribute %s : ignored' % k)
 
     def __getitem__(self,name):
         if name is str or name is unicode:

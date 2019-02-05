@@ -886,6 +886,7 @@ type
     function GetWUAProducts: ISuperObject;
     function GetWUAWinUpdates: ISuperObject;
     procedure GridReportingSaveSettings(Report: ISuperObject);
+    Function LoadHostInventory(host:ISuperObject): ISuperObject;
     function OneHostHasConnectedIP(GridHostsIPs:TSOGrid=Nil): Boolean;
     function OneHostIsConnected(GridHostsReachable:TSOGrid=Nil): Boolean;
     function GetSelectedOrgUnits: TDynStringArray;
@@ -1279,24 +1280,11 @@ end;
 
 procedure TVisWaptGUI.EdHardwareFilterChange(Sender: TObject);
 var
-  host_infos,data,inventory_keys,key : ISuperObject;
+  host,data,inventory_keys,key : ISuperObject;
 begin
   if (Gridhosts.FocusedRow <> nil) then
   begin
-    host_infos := Gridhosts.FocusedRow;
-    inventory_keys := host_infos['_inventory_keys'];
-    if (inventory_keys = Nil) then
-    begin
-      data := InventoryData(host_infos.S['uuid']);
-      host_infos.Merge(data);
-      host_infos['_inventory_keys'] := data.AsObject.GetNames;
-    end
-    else
-    begin
-      data := TSuperObject.Create(stObject);
-      for key in inventory_keys do
-        data[key.AsString] := host_infos[key.AsString];
-    end;
+    data := LoadHostInventory(Gridhosts.FocusedRow);
     TreeLoadData(GridhostInventory, FilterHardware(data));
     GridhostInventory.FullExpand;
   end;
@@ -1586,11 +1574,12 @@ begin
   {$endif}
 end;
 
-
+//Retrieve all inventory data from server
 function TVisWaptGUI.InventoryData(uuid:String):ISuperObject;
 var
   sores:ISuperObject;
 begin
+  result := Nil;
   try
     sores := WAPTServerJsonGet('api/v1/hosts?columns=dmi,wmi,host_info,host_metrics,waptwua_status,wuauserv_status,host_capabilities,wapt_status&uuid=%S',[uuid]);
     if (sores<>nil) and sores.B['success'] then
@@ -1602,6 +1591,26 @@ begin
       result := nil;
   except
     result := nil;
+  end;
+end;
+
+//Cache inventory data into host row
+Function TVisWaptGUI.LoadHostInventory(host:ISUperObject):ISuperObject;
+var
+  key,inventory_keys: ISuperObject;
+begin
+  inventory_keys := host['_inventory_keys'];
+  if (inventory_keys = Nil) then
+  begin
+    Result := InventoryData(host.S['uuid']);
+    host.Merge(Result);
+    host['_inventory_keys'] := Result.AsObject.GetNames;
+  end
+  else
+  begin
+    Result := TSuperObject.Create(stObject);
+    for key in inventory_keys do
+      Result[key.AsString] := host[key.AsString];
   end;
 end;
 
@@ -2940,10 +2949,6 @@ var
 begin
   if Host<>Nil then
   try
-    hostname := UTF8Encode(host.S['computer_fqdn']);
-    uuid := UTF8Encode(host.S['uuid']);
-    desc := UTF8Encode(host.S['description']);
-
     // Be sure edited package's version is at least installed one.
     // Better use a dedicated API on server ?
     HostPackageVersion :='';
@@ -2960,12 +2965,17 @@ begin
       end;
     end;
 
-    result := EditHost(uuid, AdvancedMode, ApplyUpdatesImmediately, desc,host.S['reachable'] = 'OK',hostname,HostPackageVersion);
+    if not host.AsObject.Exists('host_capabilities') then
+      LoadHostInventory(host);
 
-    uuids := TSuperobject.create(stArray);
-    uuids.AsArray.Add(uuid);
+    result := EditHost(host, AdvancedMode, ApplyUpdatesImmediately, HostPackageVersion);
+
     if not VarIsNone(result) and ApplyUpdatesImmediately and (uuid<>'')  then
+    begin
+      uuids := TSuperobject.create(stArray);
+      uuids.AsArray.Add(uuid);
       TriggerActionOnHosts(uuids,'trigger_host_upgrade',Nil,rsUpgradingHost,rsErrorLaunchingUpgrade);
+    end;
 
   except
     on E:Exception do
@@ -2977,7 +2987,6 @@ procedure TVisWaptGUI.ActEditHostPackageExecute(Sender: TObject);
 begin
   EditHostPackageEntry(GridHosts.FocusedRow);
 end;
-
 
 procedure TVisWaptGUI.ActEnglishExecute(Sender: TObject);
 begin
