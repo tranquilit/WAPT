@@ -144,6 +144,7 @@ type
     IsNewPackage: boolean;
     PackageEdited: Variant;
     ApplyUpdatesImmediately:Boolean;
+    PackageFilter: Variant;
     property isAdvancedMode: boolean read FisAdvancedMode write SetisAdvancedMode;
     procedure EditPackage;
     property SourcePath: string read GetSourcePath write SetSourcePath;
@@ -153,7 +154,8 @@ type
 function EditPackage(packagename: string; advancedMode: boolean): ISuperObject;
 function CreatePackage(packagename: string; advancedMode: boolean): ISuperObject;
 function CreateGroup(packagename: string; advancedMode: boolean=False; section: String ='group'): ISuperObject;
-function EditHost(hostuuid: string; advancedMode: boolean; var ApplyUpdates:Boolean; description:String=''; HostReachable:Boolean=False;computer_fqdn_hint:String='';ForceMinVersion:String=''): Variant;
+function EditHost(hostuuid: string; advancedMode: boolean; var ApplyUpdates:Boolean; description:String=''; HostReachable:Boolean=False;computer_fqdn_hint:String='';
+    ForceMinVersion:String=''; HostCapabilities: ISuperObject=Nil): Variant;
 
 function EditGroup(group: string; advancedMode: boolean; section:String = 'group';description:String=''): ISuperObject;
 
@@ -236,7 +238,7 @@ begin
     end;
 end;
 
-function EditHost(hostuuid: string; advancedMode: boolean;var ApplyUpdates:Boolean;description:String='';HostReachable:Boolean=False;computer_fqdn_hint:String='';ForceMinVersion:String=''): Variant;
+function EditHost(hostuuid: string; advancedMode: boolean;var ApplyUpdates:Boolean;description:String='';HostReachable:Boolean=False;computer_fqdn_hint:String='';ForceMinVersion:String=''; HostCapabilities: ISuperObject=Nil): Variant;
 begin
   with TVisEditPackage.Create(nil) do
     try
@@ -449,7 +451,8 @@ begin
   LabSection.Visible := isAdvancedMode;
   EdSection.Visible := isAdvancedMode;
   cbShowLog.Visible := isAdvancedMode;
-  pgDevelop.TabVisible := isAdvancedMode;
+  if isAdvancedMode then
+    pgDevelop.TabVisible := True;
   Eddescription.Visible := (EdSection.Text<>'host') or isAdvancedMode;
 
 end;
@@ -470,7 +473,10 @@ begin
   begin
     setuppypath := VarPythonAsString(PackageEdited.sourcespath) + '\setup.py';
     if FileExistsUTF8(setuppypath) then
-      EdSetupPy.Lines.LoadFromFile(setuppypath)
+    begin
+      EdSetupPy.Lines.LoadFromFile(setuppypath);
+      pgDevelop.TabVisible := True;
+    end
     else
       EdSetupPy.Lines.Clear;
   end;
@@ -649,7 +655,10 @@ end;
 procedure TVisEditPackage.ActEditSearchExecute(Sender: TObject);
 begin
   EdSearch.Modified:=False;
-  GridPackages.Data := PyVarToSuperObject(DMPython.MainWaptRepo.search(searchwords := EdSearch.Text, newest_only := True,description_locale := Language,exclude_sections := 'host,unit,profile'));
+  GridPackages.Data := PyVarToSuperObject(DMPython.MainWaptRepo.search(
+    searchwords := EdSearch.Text, newest_only := True,description_locale := Language,
+    exclude_sections := 'host,unit,profile',
+    package_request := PackageFilter));
 end;
 
 procedure TVisEditPackage.ActBuildUploadExecute(Sender: TObject);
@@ -772,6 +781,7 @@ begin
   GridDepends.Clear;
   GridConflicts.Clear;
 
+  PackageFilter:=None();
 
 end;
 

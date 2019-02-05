@@ -1205,7 +1205,7 @@ class WaptDB(WaptBaseDB):
         if isinstance(package_cond,(str,unicode)):
             package = REGEX_PACKAGE_CONDITION.match(package_cond).groupdict()['package']
         elif isinstance(package_cond,PackageRequest):
-            package = package_cond.packages
+            package = package_cond
 
         if include_errors:
             status = '"OK","UNKNOWN","ERROR"'
@@ -2336,7 +2336,7 @@ class WaptHostRepo(WaptRepo):
                         logger.critical("Control data of package %s on repository %s is either corrupted or doesn't match any of the expected certificates %s" % (package.asrequirement(),self.name,self.cabundle))
                         self.discarded.append(package)
                 else:
-                    logger.info('Discarding %s on repo "%s" because of local whitelist of blacklist rules' % (package.asrequirement(),self.name))
+                    logger.info('Discarding %s on repo "%s" because of local whitelist/blacklist rules' % (package.asrequirement(),self.name))
                     self.discarded.append(package)
 
 
@@ -4010,7 +4010,6 @@ class Wapt(BaseObjectClass):
             host_packages_names=self.get_host_packages_names(),
             #authorized_maturities=self.get_host_maturities(),
         )
-
         return host_capa
 
     def get_wapt_edition(self):
@@ -4419,12 +4418,8 @@ class Wapt(BaseObjectClass):
         """
         if query is None:
             if package_request is not None and package_request.package:
-                if len(package_request.package_names) == 1:
-                    query = 'select * from wapt_package where package=?'
-                    args = (package_request.package,)
-                else:
-                    query = "select * from wapt_package where package in (%s)" % (','.join(["'%s'"% p  for p in package_request.package_names]),)
-                    args = ()
+                query = 'select * from wapt_package where package=?'
+                args = (package_request.package,)
             else:
                 query = u'select * from wapt_package'
                 args = ()

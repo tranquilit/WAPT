@@ -290,8 +290,24 @@ class HostCapabilities(BaseObjectClass):
     def fingerprint(self):
         return hashlib.sha256(serialize_content_for_signature(self.as_dict())).hexdigest()
 
+    def get_package_request_filter(self):
+        """Returns a filter for package search in repositories
+
+        Returns:
+            PackageRequest
+        """
+        return PackageRequest(
+            architectures=ensure_list(self.architecture),
+            locales=ensure_list(self.packages_locales),
+            maturities=self.packages_maturities,
+            min_os_version=self.os_version,
+            max_os_version=self.os_version,
+            )
 
     def is_matching_package(self,package_entry):
+        """Check if package_entry is matching the current capabilities and restrictions
+
+        """
         if self.packages_blacklist is not None:
             for bl in self.packages_blacklist:  # pylint: disable=not-an-iterable
                 if glob.fnmatch.fnmatch(package_entry.package,bl):
@@ -308,50 +324,70 @@ class HostCapabilities(BaseObjectClass):
 
         if self.wapt_version is not None and package_entry.min_wapt_version and Version(package_entry.min_wapt_version) > Version(self.wapt_version):
             return False
-        if self.packages_locales is not None and (package_entry.locale and package_entry.locale != 'all') and not list_intersection(ensure_list(package_entry.locale),ensure_list(self.packages_locales)):
-            return False
-        if self.packages_maturities is not None and package_entry.maturity and self.packages_maturities is not None and not package_entry.maturity in ensure_list(self.packages_maturities):
-            return False
         if self.os is not None and package_entry.target_os and package_entry.target_os != self.os:
             return False
-        if self.os_version is not None and package_entry.min_os_version and Version(self.os_version) < Version(package_entry.min_os_version):
-            return False
-        if self.os_version is not None and package_entry.max_os_version and Version(self.os_version) > Version(package_entry.max_os_version):
-            return False
-        if self.architecture is not None and (package_entry.architecture and package_entry.architecture != 'all') and not package_entry.architecture in ensure_list(self.architecture):
-            return False
-        return True
+
+        package_request = self.get_package_request_filter()
+        return package_request.is_matched_by(package_entry)
 
     def __repr__(self):
         return repr(self.as_dict())
 
 def PackageVersion(package_or_versionstr):
+    """Splits a version string 1.2.3.4-567
+    software version is clipped to 4 members
+    if '-packaging' is not provided, the second member will be None
+
+    Args:
+        package_or_versionstr (str): package version string
+
+    Returns:
+        tuple: (Version,int) : soft version on 4 members / packaging as an int
+
+    """
     if isinstance(package_or_versionstr,PackageEntry):
         package_or_versionstr = package_or_versionstr.version
     if isinstance(package_or_versionstr,Version):
-        return (Version(package_or_versionstr,4),0)
+        return (Version(package_or_versionstr,4),None)
     version_build = package_or_versionstr.split('-',1)
     if len(version_build)>1:
         return (Version(version_build[0],4),int(version_build[1]))
     else:
-        return (Version(version_build[0],4),0)
+        return (Version(version_build[0],4),None)
 
 class PackageRequest(BaseObjectClass):
     """Package and version request / condition
+    The request is the basic packagename(=version) request
+    Additional filters can be sepcified as arguments
+    The list filters are ordered from most preferred to least preferred options
+
+    Args:
+        request (str): packagename(<=>version)
+        architectures (list) : list of x64, x86
+        locales (list) : list of 2 letters lki
+
     """
-    def __init__(self,**kwargs):
+    def __init__(self,request=None,**kwargs):
         self.package = None
         self.version = None
-        self.architecture = None
-        self.locale = None
-        self.maturity = None
+        self.architectures = None
+        self.locales = None
+        self.maturities = None
+        # boundaries are included
+        self.min_os_version = None
+        self.max_os_version = None
 
-        self._package_names = None
+        self._request = None
+        self._package = None
         self._version_operator = None
         self._version = None
         self._architectures = None
         self._locales = None
         self._maturities = None
+        self._min_os_version = None
+        self._max_os_version = None
+
+        self.request = request
 
         for (k,v) in kwargs.iteritems():
             if hasattr(self,k):
@@ -359,32 +395,67 @@ class PackageRequest(BaseObjectClass):
             else:
                 raise Exception('PackageRequest has no attribute %s' % k)
 
-        # split package name and package version if version operator is given "tis-7zip(>=1.5.0)"
-        if self.package:
-            package_version = REGEX_PACKAGE_CONDITION.match(self.package).groupdict()
-            self.package=package_version['package']
+    @property
+    def request(self):
+        return self._request
+
+    @request.setter
+    def request(self,value):
+        self._request = value
+        if value:
+            package_version = REGEX_PACKAGE_CONDITION.match(value).groupdict()
+            self._package=package_version['package']
             if package_version['operator'] is not None:
-                self.version=package_version['operator']+package_version['version']
+                self._version_operator = package_version['operator']
+            else:
+                self._version_operator = '='
 
-
-    def __setattribute__(self,k,v):
-        if k in ['package','version','architecture','locale','maturity']:
-            self._package_names = None
-            self._version_operator = None
+            if package_version['version'] is not None:
+                self._version = PackageVersion(package_version['version'])
+            else:
+                self._version = None
+        else:
+            self._package = None
             self._version = None
-            self._architectures = None
-            self._locales = None
-            self._maturities = None
-        super(PackageRequest).__setattribute__(self,k,v)
+            self._version_operator = None
 
     @property
-    def package_names(self):
-        """Return list of package names from initial csv package criteria"""
-        if self.package is not None and self._package_names is None:
-            self._package_names = ensure_list(self.package)
-        return self._package_names
+    def version(self):
+        return self._version
 
-    def is_matched_version(self,version):
+    @version.setter
+    def version(self,value):
+        if value is None:
+            self._version_operator = None
+            self._version = None
+        else:
+            package_version = REGEX_VERSION_CONDITION.match(value).groupdict()
+            if package_version['operator'] is not None:
+                self._version_operator = package_version['operator']
+            else:
+                self._version_operator = '='
+            if package_version['version'] is not None:
+                self._version = PackageVersion(package_version['version'])
+            else:
+                self._version = None
+
+    @property
+    def min_os_version(self):
+        return self._min_os_version
+
+    @min_os_version.setter
+    def min_os_version(self,value):
+        self._min_os_version = Version(value)
+
+    @property
+    def max_os_version(self):
+        return self._max_os_version
+
+    @max_os_version.setter
+    def max_os_version(self,value):
+        self._max_os_version = Version(value)
+
+    def _is_matched_version(self,version):
         """Return True if this request is verified by the provided version
 
         Args:
@@ -394,12 +465,7 @@ class PackageRequest(BaseObjectClass):
             bool : True if version is verified by this request
         """
 
-        if self.version is not None and self._version is None:
-            parts = REGEX_VERSION_CONDITION.match(self.version).groupdict()
-            self._version_operator = parts['operator'] or '='
-            self._version = Version(parts['version'])
-
-        if self.version is None:
+        if self._version is None:
             return True
         else:
             possibilities_dict = {
@@ -411,53 +477,77 @@ class PackageRequest(BaseObjectClass):
                 '<=': (-1, 0)
             }
             possibilities = possibilities_dict[self._version_operator]
-            if not isinstance(version,Version):
-                version = Version(version)
-            cmp_res = version.__cmp__(self._version)
+            if not isinstance(version,tuple):
+                version = PackageVersion(version)
+            if self._version[1] is None:
+                # omit packaging in comparison
+                cmp_res = cmp(version[0],self._version[0])
+            else:
+                cmp_res = cmp(version,self._version)
             return cmp_res in possibilities
+
+    @property
+    def package(self):
+        return self._package or None
+
+    @package.setter
+    def package(self,value):
+        if value:
+            self._package = value
+        else:
+            self._package = None
 
     @property
     def architectures(self):
         """List of accepted architecturs"""
-        if self.architecture is not None and self._architectures is None:
-            if self.architecture in ('all',''):
-                self._architectures=None
-            else:
-                self._architectures = ensure_list(self.architecture)
-
         return self._architectures
+
+    @architectures.setter
+    def architectures(self,value):
+        if value in ('all','',None):
+            self._architectures = None
+        else:
+            self._architectures = ensure_list(value)
 
     @property
     def maturities(self):
         """List of accepted maturities"""
-        if self.maturity is not None and self._maturities is None:
-            if self.maturity in ('all',''):
-                self._maturities = None
-            else:
-                self._maturities = ensure_list(self.maturity,allow_none=True)
         return self._maturities
+
+    @maturities.setter
+    def maturities(self,value):
+        """List of accepted maturities"""
+        if value in ('all','',None):
+            self._maturities = None
+        else:
+            self._maturities = ensure_list(value,allow_none=True)
 
     @property
     def locales(self):
-        if self.locale is not None and self._locales is None:
-            if self.locale in ('all',''):
-                self._locales = None
-            else:
-                self._locales = ensure_list(self.locale)
         return self._locales
+
+    @locales.setter
+    def locales(self,value):
+        if value in ('all','',None):
+            self._locales = None
+        else:
+            self._locales = ensure_list(value)
 
     def is_matched_by(self,package_entry):
         """Check if package_entry is matching this request"""
-        return  ((self.package is None or package_entry.package in self.package_names) and
-                self.is_matched_version(package_entry.version) and
-                (self.architecture is None or package_entry.architecture in ('','all') or package_entry.architecture in self.architectures) and
-                (self.locale is None or package_entry.locale in ('','all') or len(list_intersection(ensure_list(package_entry.locale),self.locales))>0) and
-                (self.maturity is None or (package_entry.maturity == '' and  (self.maturities is None or 'PROD' in self.maturities)) or package_entry.maturity in self.maturities))
+        return  (
+                (self.package is None or package_entry.package == self.package) and
+                self._is_matched_version(package_entry.version) and
+                (self.min_os_version is None or not package_entry.max_os_version or Version(package_entry.max_os_version)>=self.min_os_version) and
+                (self.max_os_version is None or not package_entry.min_os_version or Version(package_entry.min_os_version)<=self.max_os_version) and
+                (self.architectures is None or package_entry.architecture in ('','all') or package_entry.architecture in self.architectures) and
+                (self.locales is None or package_entry.locale in ('','all') or len(list_intersection(ensure_list(package_entry.locale),self.locales))>0) and
+                (self.maturities is None or (package_entry.maturity == '' and  (self.maturities is None or 'PROD' in self.maturities)) or package_entry.maturity in self.maturities))
 
     def __cmp__(self,other):
         if isinstance(other,str) or isinstance(other,unicode):
-            other = PackageRequest(package=other)
-        return 0 if self.is_matched_by(other) else cmp((self.package,self.version,self.architecture,self.locale,self.maturity),(other.package,other.version,other.architecture,other.locale,other.maturity))
+            other = PackageRequest(request=other)
+        return 0 if self.is_matched_by(other) else cmp((self.package,self.version,self.architectures,self.locales,self.maturities),(other.package,other.version,other.architectures,other.locales,other.maturities))
 
     def __repr__(self):
         def or_list(v):
@@ -466,9 +556,41 @@ class PackageRequest(BaseObjectClass):
             else:
                 return v
         attribs=[]
-        attribs.extend(["%s=%s" % (a,repr(or_list(getattr(self,a)))) for a in ['package','version','architecture','locale','maturity'] if getattr(self,a) is not None and getattr(self,a) != '' and getattr(self,a) != 'all'])
+        attribs.extend(["%s=%s" % (a,repr(or_list(getattr(self,a)))) for a in ['package','version','architectures','locales','maturities'] if getattr(self,a) is not None and getattr(self,a) != '' and getattr(self,a) != 'all'])
         attribs = ','.join(attribs)
         return "PackageRequest(%s)" % attribs
+
+
+    def compare_packages(self,pe1,pe2):
+        """Compare packages taken in account the preferences from filter
+        """
+        def _safe_rev_index(alist,avalue):
+            if avalue in ('','all'):
+                return -1000
+            elif alist and avalue in alist:
+                return -alist.index(avalue)
+            elif alist is None:
+                return avalue
+            else:
+                return -10000
+
+        t1 = (
+            pe1.package,
+            (self.version is None and '') or PackageVersion(pe1.version),
+            _safe_rev_index(self.architectures,pe1.architecture),
+            _safe_rev_index(self.locales,pe1.locale),
+            _safe_rev_index(self.maturities,pe1.maturity),
+           )
+
+        t2 = (
+            pe2.package,
+            (self.version is None and '') or PackageVersion(pe2.version),
+            _safe_rev_index(self.architectures,pe2.architecture),
+            _safe_rev_index(self.locales,pe2.locale),
+            _safe_rev_index(self.maturities,pe2.maturity),
+           )
+
+        return cmp(t1,t2)
 
 
 def control_to_dict(control,int_params=('size','installed_size')):
@@ -2293,7 +2415,8 @@ class WaptBaseRepo(BaseObjectClass):
             else:
                 return True
 
-    def search(self,searchwords = [],sections=[],newest_only=False,exclude_sections=[],description_locale=None,host_capabilities=None):
+    def search(self,searchwords = [],sections=[],newest_only=False,exclude_sections=[],description_locale=None,
+            host_capabilities=None,package_request=None):
         """Return list of package entries
             with description or name matching all the searchwords and section in
             provided sections list
@@ -2305,6 +2428,7 @@ class WaptBaseRepo(BaseObjectClass):
             exclude_sections (list or csv): list of package sections to exclude when searching
             description_locale (str): if not None, search in description using this locale
             host_capabilities (HostCapabilities or dict): restrict output to these capabilities (os version locales, arch etc..)
+            package_request (PackageRequest or dict) : restrict output to these filters, and sort output based on them
 
         Returns:
             list of PackageEntry with additional _localized_description added if description_locale is provided
@@ -2319,10 +2443,19 @@ class WaptBaseRepo(BaseObjectClass):
             # if dict
             host_capabilities = HostCapabilities(**host_capabilities)
 
+        if package_request is not None and not isinstance(package_request,PackageRequest):
+            # if given as dict from lazarus
+            package_request = PackageRequest(**package_request)
+
         words = [ w.lower() for w in searchwords ]
 
         result = []
-        for package in self.packages():
+        if package_request is not None:
+            packages = self.packages_matching(package_request)
+        else:
+            packages = self.packages()
+
+        for package in packages:
             if host_capabilities is not None and not host_capabilities.is_matching_package(package):
                 continue
             selected = True
@@ -2390,29 +2523,29 @@ class WaptBaseRepo(BaseObjectClass):
             version ascending
 
         Args;
-            package_cond (str): package name with optional version sepcifier.
+            package_cond (str or PackageRequest): package name with optional version specifier.
 
         Returns:
             list of PackageEntry
 
         >>> from waptpackage import *
         >>> r = WaptRemoteRepo('http://wapt.tranquil.it/wapt')
-        >>> r.packages_matching('tis-firefox (>=20)')
+        >>> r.packages_matching('tis-firefox(>=20)')
         [PackageEntry('tis-firefox','20.0.1-02'),
          PackageEntry('tis-firefox','21.0.0-00'),
          ...]
         """
-        if isinstance(package_cond,PackageRequest):
-            return [p for p in self.packages() if p.match(package_cond)]
+        if package_cond is not None and not isinstance(package_cond,PackageRequest):
+            package_cond = PackageRequest(request=package_cond)
+
+        if package_cond is None:
+            return sorted(self.packages())
         else:
-            pcv_match = REGEX_PACKAGE_CONDITION.match(package_cond)
-            if pcv_match:
-                pcv = pcv_match.groupdict()
-                result = [ pe for pe in self.packages() if pe.package == pcv['package'] and pe.match(package_cond)]
-                result.sort()
-                return result
-            else:
-                return []
+            # sort using filter criteria preferences
+            return sorted(
+                    [p for p in self.packages() if package_cond.is_matched_by(p)],
+                    cmp=lambda p1,p2: package_cond.compare_packages(p1,p2)
+                )
 
     def __iter__(self):
         """Return an iterator for package names (higer version)"""

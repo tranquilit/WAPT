@@ -3269,9 +3269,15 @@ begin
 end;
 
 procedure TVisWaptGUI.ActImportFromRepoExecute(Sender: TObject);
+var
+  i: Integer;
 begin
   with TVisImportPackage.Create(Self) do
   try
+    for i := 0 to self.cbFilterPackagesArch.Items.Count-1 do
+      cbFilterPackagesArch.Checked[i] := self.cbFilterPackagesArch.Checked[i];
+    for i := 0 to self.cbFilterPackagesLocales.Items.Count-1 do
+      cbFilterPackagesLocales.Checked[i] := self.cbFilterPackagesLocales.Checked[i];
     if ShowModal = mrOk then
     begin
       ActPackagesUpdate.Execute;
@@ -3764,8 +3770,8 @@ end;
 
 procedure TVisWaptGUI.ActSearchPackageExecute(Sender: TObject);
 var
-  ASA, Capabilities: ISuperObject;
-  vCapabilities: Variant;
+  ASA, RequestFilter: ISuperObject;
+  vRequestFilter: Variant;
 
   function AtLeastOne(cg:TCheckGroup):Boolean;
   var
@@ -3784,13 +3790,13 @@ begin
   try
     Screen.Cursor:=crHourGlass;
 
-    Capabilities := SO();
+    RequestFilter := SO();
 
     if AtLeastOne(cbFilterPackagesArch) then begin
       ASA := TSuperObject.Create(stArray);
       if cbFilterPackagesArch.Checked[0] then ASA.AsArray.Add('x86');
       if cbFilterPackagesArch.Checked[1] then ASA.AsArray.Add('x64');
-      Capabilities['architecture'] := ASA;
+      RequestFilter['architectures'] := ASA;
     end;
 
     if AtLeastOne(cbFilterPackagesLocales) then begin
@@ -3800,10 +3806,10 @@ begin
       if cbFilterPackagesLocales.Checked[2] then ASA.AsArray.Add('de');
       if cbFilterPackagesLocales.Checked[3] then ASA.AsArray.Add('it');
       if cbFilterPackagesLocales.Checked[4] then ASA.AsArray.Add('es');
-      Capabilities['packages_locales'] := ASA;
+      RequestFilter['locales'] := ASA;
     end;
 
-    vCapabilities:=SuperObjectToPyVar(Capabilities);
+    vRequestFilter:=SuperObjectToPyVar(RequestFilter);
     EdSearchPackage.Modified:=False;
 
     GridPackages.Data :=
@@ -3811,7 +3817,7 @@ begin
          exclude_sections := 'host,group,unit,wsus,profile',
          newest_only := cbNewestOnly.Checked,
          description_locale := Language,
-         host_capabilities := vCapabilities));
+         package_request := vRequestFilter));
   finally
     Screen.Cursor:=crDefault;
   end;
@@ -4982,6 +4988,8 @@ begin
   PgReports.TabVisible := False;
   pgSelfService.TabVisible:=False;
   pgWaptWUAConfig.TabVisible:=False;
+  pgHostWUA.TabVisible:=False;
+  pgWindowsUpdates2.TabVisible:=False;
   pgSelfService.TabVisible:=False;
   ActTriggerHostAudit.Visible:=False;
   ActPackagesAudit.Visible:=False;

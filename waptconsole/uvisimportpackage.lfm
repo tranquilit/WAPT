@@ -62,12 +62,12 @@ object VisImportPackage: TVisImportPackage
       AnchorSideTop.Control = PanBas
       AnchorSideTop.Side = asrCenter
       AnchorSideRight.Control = EdMaturity
-      Left = 338
+      Left = 361
       Height = 13
       Top = 13
-      Width = 144
+      Width = 121
       Alignment = taRightJustify
-      Anchors = [akTop, akLeft, akRight]
+      Anchors = [akTop, akRight]
       Caption = 'Default package maturity'
       ParentColor = False
     end

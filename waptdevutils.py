@@ -62,7 +62,7 @@ from setuphelpers import uac_enabled,inifile_readstring,shell_launch
 from waptutils import ensure_list,ensure_unicode,Version
 from waptcrypto import check_key_password,SSLCABundle,SSLCertificate,SSLPrivateKey
 from waptcrypto import NOPASSWORD_CALLBACK,sha256_for_file
-from waptpackage import PackageEntry,WaptRemoteRepo,PackageVersion
+from waptpackage import PackageEntry,WaptRemoteRepo,PackageVersion,HostCapabilities,PackageRequest
 
 from common import Wapt,WaptServer,WaptHostRepo,logger
 
@@ -185,7 +185,7 @@ def diff_computer_wapt_ad(wapt,wapt_server_user='admin',wapt_server_passwd=None)
 
 
 def update_external_repo(repourl,search_string,proxy=None,myrepo=None,my_prefix='',newer_only=False,newest_only=False,
-    host_capabilities=None,
+    package_request=None,
     verify_cert=True,repo_name='wapt-templates',description_locale=None,timeout=30):
     """Get a list of entries from external templates public repository matching search_string
     >>> firefox = update_tis_repo(r"c:\users\htouvet\AppData\Local\waptconsole\waptconsole.ini","tis-firefox-esr")
@@ -196,7 +196,7 @@ def update_external_repo(repourl,search_string,proxy=None,myrepo=None,my_prefix=
     if verify_cert == '' or verify_cert == '0':
         verify_cert = False
     repo.verify_cert = verify_cert
-    packages = repo.search(search_string,newest_only=newest_only,description_locale=description_locale,host_capabilities=host_capabilities)
+    packages = repo.search(search_string,newest_only=newest_only,description_locale=description_locale,package_request=package_request)
     if newer_only and myrepo:
         result = []
         for package in packages:
@@ -215,7 +215,7 @@ def update_external_repo(repourl,search_string,proxy=None,myrepo=None,my_prefix=
     else:
         return [p.as_dict() for p in packages]
 
-def get_packages_filenames(packages,with_depends=True,waptconfigfile=None,repo_name='wapt-templates',remoterepo=None):
+def get_packages_filenames(packages,with_depends=True,waptconfigfile=None,repo_name='wapt-templates',remoterepo=None,package_request=None):
     """Returns list of package filenames (latest version) and md5 matching comma separated list of packages names and their dependencies
     helps to batch download a list of selected packages using tools like curl or wget
 
@@ -246,15 +246,33 @@ def get_packages_filenames(packages,with_depends=True,waptconfigfile=None,repo_n
         remoterepo = WaptRemoteRepo(name=repo_name,config=config)
         remoterepo.update()
 
+    if package_request is not None and isinstance(package_request,dict):
+        package_request = PackageRequest(**package_request)
+
     for pe in packages:
         if not isinstance(pe,PackageEntry):
             pe = PackageEntry(**pe)
+
+        # propagate capa to parent package
+        if package_request is None:
+            request_filter = PackageRequest()
+            if pe.locale != 'all' and pe.locale:
+                request_filter.locales = [pe.locale]
+            if pe.architecture != 'all' and pe.architecture:
+                request_filter.architectures = [pe.architecture]
+            if pe.min_os_version:
+                request_filter.min_os_version = pe.min_os_version
+            if pe.max_os_version:
+                request_filter.max_os_version = pe.max_os_version
+        else:
+            request_filter = package_request
 
         result.append((pe.filename,pe.md5sum,))
         if with_depends and pe.depends:
             depends_list = []
             for depname in ensure_list(pe.depends):
-                pe_dep = remoterepo.packages_matching(depname)
+                request_filter.request = depname
+                pe_dep = remoterepo.packages_matching(request_filter)
                 if pe_dep:
                     depends_list.append(pe_dep[-1])
             for (fn,md5) in get_packages_filenames(depends_list,remoterepo = remoterepo):

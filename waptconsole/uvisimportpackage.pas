@@ -87,7 +87,7 @@ type
     function updateprogress(receiver: TObject; current, total: integer
       ): boolean;
     { private declarations }
-    function GetCapabilities:Variant;
+    function GetRequestFilter:Variant;
   public
     { public declarations }
     property RepoName:String read GetRepoName write SetRepoName;
@@ -337,10 +337,10 @@ begin
    ActSearchExternalPackageExecute(Sender);
 end;
 
-function TVisImportPackage.GetCapabilities:Variant;
+function TVisImportPackage.GetRequestFilter:Variant;
 var
-  ASA, Capabilities: ISuperObject;
-  vCapabilities: Variant;
+  ASA, RequestFilter: ISuperObject;
+  vRequestFilter: Variant;
 
   function AtLeastOne(cg:TCheckGroup):Boolean;
   var
@@ -356,13 +356,13 @@ var
   end;
 
 begin
-  Capabilities := SO();
+  RequestFilter := SO();
 
   if AtLeastOne(cbFilterPackagesArch) then begin
     ASA := TSuperObject.Create(stArray);
     if cbFilterPackagesArch.Checked[0] then ASA.AsArray.Add('x86');
     if cbFilterPackagesArch.Checked[1] then ASA.AsArray.Add('x64');
-    Capabilities['architecture'] := ASA;
+    RequestFilter['architectures'] := ASA;
   end;
 
   if AtLeastOne(cbFilterPackagesLocales) then begin
@@ -372,18 +372,18 @@ begin
     if cbFilterPackagesLocales.Checked[2] then ASA.AsArray.Add('de');
     if cbFilterPackagesLocales.Checked[3] then ASA.AsArray.Add('it');
     if cbFilterPackagesLocales.Checked[4] then ASA.AsArray.Add('es');
-    Capabilities['packages_locales'] := ASA;
+    RequestFilter['locales'] := ASA;
   end;
 
-  vCapabilities:=SuperObjectToPyVar(Capabilities);
-  result := vCapabilities;
+  vRequestFilter:=SuperObjectToPyVar(RequestFilter);
+  result := vRequestFilter;
 end;
 
 
 procedure TVisImportPackage.ActSearchExternalPackageExecute(Sender: TObject);
 var
   prefix,expr: String;
-  http_proxy,packages_python,verify_cert,myrepo,capabilities: Variant;
+  http_proxy,packages_python,verify_cert,myrepo,RequestFilter: Variant;
 
 begin
   EdSearchPackage.Modified:=False;
@@ -415,7 +415,7 @@ begin
         prefix := '';
       end;
 
-      capabilities := GetCapabilities;
+      RequestFilter := GetRequestFilter;
 
       packages_python := DMPython.waptdevutils.update_external_repo(
         repourl := Waptrepo.RepoURL,
@@ -428,7 +428,7 @@ begin
         verify_cert := verify_cert,
         description_locale := Language,
         timeout := Waptrepo.timeout,
-        host_capabilities := capabilities);
+        package_request := RequestFilter);
 
       GridExternalPackages.Data := PyVarToSuperObject(packages_python);
     finally
@@ -446,7 +446,7 @@ var
   target,sourceDir,http_proxy: string;
   package,uploadResult, FileName, FileNames, ListPackages,Sources,aDir: ISuperObject;
   SourcesVar,SignersCABundle,ListPackagesVar: Variant;
-
+  RequestFilter: Variant;
   PackageFilename:String;
 begin
   Sources := Nil;
@@ -472,11 +472,13 @@ begin
     ListPackages.AsArray.Add(package);
 
   ListPackagesVar := SuperObjectToPyVar(ListPackages);
+  RequestFilter := GetRequestFilter();
 
   FileNames := PyVarToSuperObject(DMPython.waptdevutils.get_packages_filenames(
         packages := ListPackagesVar,
         waptconfigfile := AppIniFilename,
-        repo_name := RepoName));
+        repo_name := RepoName,
+        package_request := RequestFilter ));
 
   if MessageDlg(rsPackageDuplicateConfirmCaption, format(rsPackageDuplicateConfirm, [Join(',',ExtractField(FileNames,'0')) + ' '+intToStr(Filenames.AsArray.Length)+' packages']),
         mtConfirmation, mbYesNoCancel, 0) <> mrYes then
@@ -584,7 +586,7 @@ var
   http_proxy:String;
   SourceDir,target,DevDirectory: string;
   package,FileName, FileNames, listPackages: ISuperObject;
-
+  RequestFilter: Variant;
   ListPackagesVar: Variant;
 
 begin
@@ -602,11 +604,13 @@ begin
     listPackages.AsArray.Add(package);
 
   ListPackagesVar := SuperObjectToPyVar(ListPackages);
-
+  RequestFilter := GetRequestFilter;
   FileNames := PyVarToSuperObject(DMPython.waptdevutils.get_packages_filenames(
         packages := ListPackagesVar,
         waptconfigfile := AppIniFilename,
-        repo_name := RepoName ));
+        repo_name := RepoName,
+        package_request := RequestFilter
+        ));
 
   if not DirectoryExists(AppLocalDir + 'cache') then
     mkdir(AppLocalDir + 'cache');

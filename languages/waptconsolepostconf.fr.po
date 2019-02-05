@@ -1,6 +1,108 @@
 msgid ""
 msgstr "Content-Type: text/plain; charset=UTF-8"
 
+#: sogrid.gsconst_advancedcustomizecolumns
+msgid "Advanced customize of table..."
+msgstr ""
+
+#: sogrid.gsconst_collapseall
+msgid "Collapse all"
+msgstr ""
+
+#: sogrid.gsconst_confdeleterow
+msgid "Confirm the deletion of selected rows ?"
+msgstr ""
+
+#: sogrid.gsconst_confirmation
+msgctxt "sogrid.gsconst_confirmation"
+msgid "Confirm"
+msgstr ""
+
+#: sogrid.gsconst_copy
+msgid "Copy"
+msgstr ""
+
+#: sogrid.gsconst_copycell
+msgid "Copy cell"
+msgstr ""
+
+#: sogrid.gsconst_customizecolumns
+msgid "Customize columns..."
+msgstr ""
+
+#: sogrid.gsconst_cut
+msgid "Cut"
+msgstr ""
+
+#: sogrid.gsconst_delete
+msgctxt "sogrid.gsconst_delete"
+msgid "Delete"
+msgstr ""
+
+#: sogrid.gsconst_deleterows
+msgid "Delete selected rows"
+msgstr ""
+
+#: sogrid.gsconst_expandall
+msgid "Expand all"
+msgstr ""
+
+#: sogrid.gsconst_exportallexcel
+msgid "Export all rows to CSV file..."
+msgstr ""
+
+#: sogrid.gsconst_exportselectedexcel
+msgid "Export selected rows to CSV file..."
+msgstr ""
+
+#: sogrid.gsconst_find
+msgid "Search..."
+msgstr ""
+
+#: sogrid.gsconst_findnext
+msgid "Find next"
+msgstr ""
+
+#: sogrid.gsconst_findreplace
+msgid "Find and replace..."
+msgstr ""
+
+#: sogrid.gsconst_insert
+msgid "Insert"
+msgstr ""
+
+#: sogrid.gsconst_norecordfind
+msgid "No record found"
+msgstr ""
+
+#: sogrid.gsconst_page
+msgid "Page"
+msgstr ""
+
+#: sogrid.gsconst_paste
+msgid "Paste"
+msgstr ""
+
+#: sogrid.gsconst_print
+msgid "Print..."
+msgstr ""
+
+#: sogrid.gsconst_printon
+msgid "Printed on"
+msgstr ""
+
+#: sogrid.gsconst_revertrecord
+msgid "Revert to initial record"
+msgstr ""
+
+#: sogrid.gsconst_selectall
+msgid "Select all rows"
+msgstr ""
+
+#: sogrid.gsconst_undolastupdate
+msgid "Undo last change"
+msgstr ""
+
 #: tform1.buttonpanel1.helpbutton.caption
 msgctxt "tform1.buttonpanel1.helpbutton.caption"
 msgid "&Show config file"
@@ -41,10 +143,9 @@ msgid "New password"
 msgstr ""
 
 #: tvischangekeypassword.label9.caption
-#, fuzzy
 msgctxt "tvischangekeypassword.label9.caption"
 msgid "Key filename :"
-msgstr "Clef :"
+msgstr "Nom de fichier de la clé:"
 
 #: tvischangekeypassword.label9.hint
 msgctxt "tvischangekeypassword.label9.hint"
@@ -52,11 +153,9 @@ msgid "E.g. 'tranquilit'. Please don't use any special characters."
 msgstr ""
 
 #: tvischangekeypassword.lapassword.caption
-#, fuzzy
-#| msgid "Password :"
 msgctxt "tvischangekeypassword.lapassword.caption"
 msgid "Private key password :"
-msgstr "Mot de passe :"
+msgstr "Mot de passe de la clé :"
 
 #: tvischangepassword.caption
 msgid "WAPT server password"
@@ -167,7 +266,7 @@ msgstr ""
 #, fuzzy
 msgctxt "tviscreatekey.labkeyfn.caption"
 msgid "Key filename :"
-msgstr "Clef :"
+msgstr "Nom de fichier de la clé:"
 
 #: tviscreatekey.labkeyfn.hint
 msgctxt "tviscreatekey.labkeyfn.hint"
@@ -265,6 +364,14 @@ msgctxt "tviscreatewaptsetup.cbforcewaptserverurl.hint"
 msgid "Overwrite the URL when installing on the client even if there is a diffrent current setting in wapt-get.ini"
 msgstr ""
 
+#: tviscreatewaptsetup.cbinstallwuaupdatesatshutdown.caption
+msgid "Install Pending Windows at Shutdown"
+msgstr ""
+
+#: tviscreatewaptsetup.cbinstallwuaupdatesatshutdown.hint
+msgid "If some Windows updates are pending, waptexit will append a task to install all pending Windows updates"
+msgstr ""
+
 #: tviscreatewaptsetup.cbusefqdnasuuid.caption
 msgid "Use Computer FQDN for UUID"
 msgstr ""
@@ -286,6 +393,26 @@ msgstr ""
 #: tviscreatewaptsetup.cbverifycert.caption
 msgctxt "tviscreatewaptsetup.cbverifycert.caption"
 msgid "Verify https server certificate"
+msgstr ""
+
+#: tviscreatewaptsetup.cbwuaallowdirectdownload.caption
+msgid "Allow direct download of Windows updates cabs"
+msgstr ""
+
+#: tviscreatewaptsetup.cbwuaallowdirectdownload.hint
+msgid "Allow to download cabs from Microsoft windows update site if it is not (yet) avalable on waptwua repository"
+msgstr ""
+
+#: tviscreatewaptsetup.cbwuadefaultallow.caption
+msgid "Allow all Updates by default unless explicitely forbidden by rules"
+msgstr ""
+
+#: tviscreatewaptsetup.cbwuaenabled.caption
+msgid "Manage Windows Updates with WAPT"
+msgstr ""
+
+#: tviscreatewaptsetup.cbwuaoffline.caption
+msgid "Scan offline using wsusscn2.cab"
 msgstr ""
 
 #: tviscreatewaptsetup.edappendhostprofiles.hint
@@ -310,6 +437,10 @@ msgstr ""
 
 #: tviscreatewaptsetup.fnpubliccert.hint
 msgid "X509 PEM encoded file with CA certificates which are trusted"
+msgstr ""
+
+#: tviscreatewaptsetup.gbwua.caption
+msgid "WAPTWUA Windows Updates "
 msgstr ""
 
 #: tviscreatewaptsetup.label1.caption
@@ -364,6 +495,14 @@ msgstr ""
 msgid "Comma separated list of profile packages to add for hosts. Host will belongs to these additional profiles"
 msgstr ""
 
+#: tviscreatewaptsetup.labwuainstalldelay.caption
+msgid "Minimum delay before installation (days after publish date)"
+msgstr ""
+
+#: tviscreatewaptsetup.labwuascandownloadperiod.caption
+msgid "Scan / download scheduling"
+msgstr ""
+
 #: tvisdisplaypreferences.caption
 msgctxt "tvisdisplaypreferences.caption"
 msgid "Display preferences"
@@ -389,7 +528,6 @@ msgid ""
 msgstr ""
 
 #: tvisdisplaypreferences.cbenablewaptwuafeatures.hint
-msgctxt "tvisdisplaypreferences.cbenablewaptwuafeatures.hint"
 msgid "Make change server password, create certificate, create waptagent features visible"
 msgstr ""
 
@@ -502,7 +640,6 @@ msgid "Unblock package"
 msgstr ""
 
 #: tviseditpackage.acteditremovedepends.caption
-msgctxt "tviseditpackage.acteditremovedepends.caption"
 msgid "Remove"
 msgstr ""
 
@@ -544,7 +681,6 @@ msgid "Use keywords to narrow search."
 msgstr ""
 
 #: tviseditpackage.edsection.text
-msgctxt "tviseditpackage.edsection.text"
 msgid "group"
 msgstr ""
 
@@ -680,10 +816,9 @@ msgid "Waptconsole settings"
 msgstr ""
 
 #: tvisimportpackage.bitbtn2.caption
-#, fuzzy
 msgctxt "tvisimportpackage.bitbtn2.caption"
 msgid "Cancel"
-msgstr "Annuler"
+msgstr ""
 
 #: tvisimportpackage.caption
 msgid "Import packages"
@@ -767,10 +902,9 @@ msgid "Make and upload"
 msgstr ""
 
 #: tvispackagewizard.butcancel.caption
-#, fuzzy
 msgctxt "tvispackagewizard.butcancel.caption"
 msgid "Cancel"
-msgstr "Annuler"
+msgstr ""
 
 #: tvispackagewizard.caption
 msgid "Package Wizard"
@@ -790,7 +924,6 @@ msgid "Package name"
 msgstr ""
 
 #: tvispackagewizard.edsection.text
-msgctxt "tvispackagewizard.edsection.text"
 msgid "base"
 msgstr ""
 
@@ -844,10 +977,9 @@ msgstr ""
 
 #: tvisprivatekeyauth.lapassword.caption
 #, fuzzy
-#| msgid "Password :"
 msgctxt "tvisprivatekeyauth.lapassword.caption"
 msgid "Private key password :"
-msgstr "Mot de passe :"
+msgstr "Mot de passe de la clé :"
 
 #: tvisrepositories.actcertificacert.caption
 msgid "Use default Wapt bundle"
@@ -911,7 +1043,6 @@ msgid "Select CA Bundle"
 msgstr ""
 
 #: tvisrepositories.edhttpproxy.hint
-msgctxt "tvisrepositories.edhttpproxy.hint"
 msgid "E.g. : http://proxy.tranquilit.local:3128"
 msgstr ""
 
@@ -926,7 +1057,6 @@ msgid "E.g. : https://store.wapt.fr/wapt"
 msgstr ""
 
 #: tvisrepositories.edservercabundle.hint
-msgctxt "tvisrepositories.edservercabundle.hint"
 msgid "E.g. : c:\\wapt\\ssl\\server\\cacert.pem"
 msgstr ""
 
@@ -961,6 +1091,25 @@ msgstr ""
 
 #: tvisselfservicegroup.caption
 msgid "VisSelfServiceGroup"
+msgstr ""
+
+#: tvissoftwaresnormalization.actnormalizationfilter.caption
+msgctxt "tvissoftwaresnormalization.actnormalizationfilter.caption"
+msgid "Filter"
+msgstr ""
+
+#: tvissoftwaresnormalization.actnormalizationimportsoftwares.caption
+msgctxt "tvissoftwaresnormalization.actnormalizationimportsoftwares.caption"
+msgid "Import"
+msgstr ""
+
+#: tvissoftwaresnormalization.actnormalizationwritetable.caption
+msgctxt "tvissoftwaresnormalization.actnormalizationwritetable.caption"
+msgid "Write"
+msgstr ""
+
+#: tvissoftwaresnormalization.caption
+msgid "Normalizes sofware titles"
 msgstr ""
 
 #: tvistriggerhostsaction.actstop.caption
@@ -1009,6 +1158,7 @@ msgid ""
 msgstr ""
 
 #: tviswaptconfig.actdeleteplugin.caption
+msgctxt "tviswaptconfig.actdeleteplugin.caption"
 msgid "Delete"
 msgstr ""
 
@@ -1065,15 +1215,13 @@ msgid "WAPTConsole configuration"
 msgstr ""
 
 #: tviswaptconfig.cbmanual.caption
-#, fuzzy
-msgctxt "tviswaptconfig.cbmanual.caption"
 msgid "Manual overrride"
-msgstr "Spécifié manuellement"
+msgstr ""
 
 #: tviswaptconfig.cbuseproxyforrepo.hint
 msgctxt "tviswaptconfig.cbuseproxyforrepo.hint"
 msgid "Activates proxy when accessing the main repository"
-msgstr "Activer le proxy pour accéder au dépôt principal"
+msgstr ""
 
 #: tviswaptconfig.cbuseproxyforserver.hint
 msgctxt "tviswaptconfig.cbuseproxyforserver.hint"
@@ -1113,7 +1261,6 @@ msgid "http proxy to use (if needed)"
 msgstr ""
 
 #: tviswaptconfig.edhttp_proxy.hint
-msgctxt "tviswaptconfig.edhttp_proxy.hint"
 msgid ""
 "E.g. : http://proxy.tranquilit.local:3128\n"
 "Only required if a proxy is needed for waptserver and main waptrepo\n"
@@ -1149,7 +1296,6 @@ msgid ""
 msgstr ""
 
 #: tviswaptconfig.edservercertificate.hint
-msgctxt "tviswaptconfig.edservercertificate.hint"
 msgid ""
 "E.g. : c:\\wapt\\ssl\\server\\cacert.pem\n"
 "Path to certificate bundle with https servers CA certificates\n"
@@ -1224,184 +1370,13 @@ msgctxt "tviswaptconfig.pgplugins.caption"
 msgid "Plugins"
 msgstr ""
 
-#: tviswaptconsolepostconf.actcancel.caption
-#, fuzzy
-msgctxt "tviswaptconsolepostconf.actcancel.caption"
-msgid "Cancel"
-msgstr "Annuler"
-
-#: tviswaptconsolepostconf.actcheckserverpassword.caption
-msgctxt "tviswaptconsolepostconf.actcheckserverpassword.caption"
-msgid "Check"
-msgstr "Vérifier"
-
-#: tviswaptconsolepostconf.actcheckwapthostname.caption
-msgctxt "tviswaptconsolepostconf.actcheckwapthostname.caption"
-msgid "Check"
-msgstr "Vérifier"
-
-#: tviswaptconsolepostconf.actfindprivatekey.caption
-msgid "Find private key"
-msgstr "Trouver la clé privée"
-
-#: tviswaptconsolepostconf.actnext.caption
-msgid "Next"
-msgstr "Suivant"
-
-#: tviswaptconsolepostconf.actprevious.caption
-msgid "Previous"
-msgstr "Précédent"
-
-#: tviswaptconsolepostconf.caption
-msgid "Configuration of WAPT console for Windows"
-msgstr "Configuration de WAPTConsole pour Windows"
-
-#: tviswaptconsolepostconf.cblaunchwaptconsoleonexit.caption
-msgid "Run WAPT console after setup"
-msgstr "Lancer la console WAPT après la configuration"
-
-#: tviswaptconsolepostconf.cb_create_new_key_show_password.caption
-msgctxt "tviswaptconsolepostconf.cb_create_new_key_show_password.caption"
-msgid "Show password"
-msgstr "Voir le mot de passe"
-
-#: tviswaptconsolepostconf.cb_manual_wapt_server.caption
-msgctxt "tviswaptconsolepostconf.cb_manual_wapt_server.caption"
-msgid "Manual override"
-msgstr "Spécifié manuellement"
-
-#: tviswaptconsolepostconf.cb_use_existing_key_show_password.caption
-msgctxt "tviswaptconsolepostconf.cb_use_existing_key_show_password.caption"
-msgid "Show password"
-msgstr "Voir le mot de passe"
-
-#: tviswaptconsolepostconf.cb_wapt_server_show_password.caption
-msgctxt "tviswaptconsolepostconf.cb_wapt_server_show_password.caption"
-msgid "Show password"
-msgstr "Voir le mot de passe"
-
-#: tviswaptconsolepostconf.edwaptserverhostname.hint
-msgctxt "tviswaptconsolepostconf.edwaptserverhostname.hint"
-msgid ""
-"WAPT clients make requests to the server. In order to connect to the WAPT server,\n"
-"it is advisable that a DNS name be used, as long as it has been correctly\n"
-"configured in your network's DNS environment. We suggest naming your WAPT server\n"
-"'srvwapt.mydomain.local' (A record type), then binding an alias\n"
-"(CNAME record type, e.g. 'wapt.mondomain.local') to srvwapt.\n"
-"In case you don't trust your DNS, or you are just setting up a testing environment,\n"
-"you can fall back to the server IP address. For further information :\n"
-"'http://dev.tranquil.it/scenari/guide_admin/co/wapt_server_configuration_champDNS.html'\n"
-msgstr ""
-
-#: tviswaptconsolepostconf.ed_package_prefix.text
-msgid "ed_package_prefix"
-msgstr ""
-
-#: tviswaptconsolepostconf.lbl_ed_create_new_key_directory.caption
-msgid "Secret directory :"
-msgstr "Répertoire privé"
-
-#: tviswaptconsolepostconf.lbl_ed_create_new_key_key_name.caption
-msgid "Key name :"
-msgstr "Nom de la clé :"
-
-#: tviswaptconsolepostconf.lbl_ed_create_new_key_password_1.caption
-msgctxt "tviswaptconsolepostconf.lbl_ed_create_new_key_password_1.caption"
-msgid "Password :"
-msgstr "Mot de passe :"
-
-#: tviswaptconsolepostconf.lbl_ed_create_new_key_password_2.caption
-msgid "Password confirm :"
-msgstr "Confirmation de mot de passe :"
-
-#: tviswaptconsolepostconf.lbl_ed_existing_key_cert_filename.caption
-msgid "Certificat filename :"
-msgstr "Fichier certificat :"
-
-#: tviswaptconsolepostconf.lbl_ed_existing_key_key_filename.caption
-#, fuzzy
-msgctxt "tviswaptconsolepostconf.lbl_ed_existing_key_key_filename.caption"
-msgid "Key filename :"
-msgstr "Fichier Clé  :"
-
-#: tviswaptconsolepostconf.lbl_ed_existing_key_password.caption
-#, fuzzy
-#| msgid "Password :"
-msgctxt "tviswaptconsolepostconf.lbl_ed_existing_key_password.caption"
-msgid "Private key Password :"
-msgstr "Mot de passe"
-
-#: tviswaptconsolepostconf.lbl_ed_package_prefix.caption
-msgid "Package prefix :"
-msgstr "Préfixe de paquet :"
-
-#: tviswaptconsolepostconf.lbl_manual_repo_url.caption
-msgid "Repository URL :"
-msgstr "URL du dépot : "
-
-#: tviswaptconsolepostconf.lbl_manual_wapt_server_url.caption
-msgid "Server URL :"
-msgstr "URL du serveur :"
-
-#: tviswaptconsolepostconf.lbl_wapt_server_hostname.caption
-msgid "WAPT server hostname :"
-msgstr "Nom DNS du serveur WAPT :"
-
-#: tviswaptconsolepostconf.lbl_wapt_server_password.caption
-msgid "WAPT server password :"
-msgstr "Mot de passe du serveur WAPT :"
-
-#: tviswaptconsolepostconf.panel15.caption
-msgid "Panel15"
-msgstr ""
-
-#: tviswaptconsolepostconf.pgbuildagent.caption
-msgid "Agent"
-msgstr "Agent"
-
-#: tviswaptconsolepostconf.pgfinish.caption
-msgid "Fin"
-msgstr "Fin"
-
-#: tviswaptconsolepostconf.pgkey.caption
-msgid "Package key"
-msgstr ""
-
-#: tviswaptconsolepostconf.pgkey_ts_create_new_key.caption
-msgid "pgkey_ts_create_new_key"
-msgstr ""
-
-#: tviswaptconsolepostconf.pgkey_ts_use_existing_key.caption
-msgid "pgkey_ts_use_existing_key"
-msgstr ""
-
-#: tviswaptconsolepostconf.pgpackage.caption
-msgid "Package prefix"
-msgstr "Préfixe de paquet"
-
-#: tviswaptconsolepostconf.pgparameters.caption
-msgid "Parameters"
-msgstr "Paramètres"
-
-#: tviswaptconsolepostconf.p_right.caption
-msgid "p_right"
-msgstr ""
-
-#: tviswaptconsolepostconf.rb_createkey.caption
-msgid "Create a new key"
-msgstr "Créer une nouvelle clé"
-
-#: tviswaptconsolepostconf.rb_usekey.caption
-msgid "Use existing key"
-msgstr "Utiliser une clé existante"
-
 #: tviswaptdeploy.actdeploywapt.caption
 msgid "Deploy"
-msgstr "Déployer"
+msgstr ""
 
 #: tviswaptdeploy.actstop.caption
 msgid "Stop"
-msgstr "Stop"
+msgstr ""
 
 #: tviswaptdeploy.caption
 msgid "Déployer WAPT"
@@ -1633,19 +1608,6 @@ msgstr ""
 msgid "Make package template from setup file"
 msgstr ""
 
-#: tviswaptgui.actnormalizationfilter.caption
-msgctxt "tviswaptgui.actnormalizationfilter.caption"
-msgid "Filter"
-msgstr "Filtre"
-
-#: tviswaptgui.actnormalizationimportsoftwares.caption
-msgid "Import"
-msgstr "Importer"
-
-#: tviswaptgui.actnormalizationwritetable.caption
-msgid "Write"
-msgstr "Enregistrer"
-
 #: tviswaptgui.actpackagesaudit.caption
 msgid "Audit package"
 msgstr ""
@@ -1724,16 +1686,12 @@ msgid "Remove packages from host dependencies"
 msgstr ""
 
 #: tviswaptgui.actreportingquerydelete.caption
-#, fuzzy
-#| msgid "Delete"
 msgid "Delete query"
-msgstr "Effacer"
+msgstr ""
 
 #: tviswaptgui.actreportingquerydesign.caption
-#, fuzzy
-#| msgid "Design query"
 msgid "Design mode"
-msgstr "Construire la requête"
+msgstr ""
 
 #: tviswaptgui.actreportingqueryduplicate.caption
 msgid "Duplicate"
@@ -1741,32 +1699,35 @@ msgstr ""
 
 #: tviswaptgui.actreportingqueryexecute.caption
 msgid "Execute"
-msgstr "Exécuter"
+msgstr ""
 
 #: tviswaptgui.actreportingqueryexecute.hint
 msgid "Execute the SQL query "
 msgstr ""
 
+#: tviswaptgui.actreportingqueryexport.caption
+msgid "Export queries to file..."
+msgstr ""
+
 #: tviswaptgui.actreportingqueryexporttoexcel.caption
 msgid "Export to Excel"
-msgstr "Exporter vers Excel"
+msgstr ""
+
+#: tviswaptgui.actreportingqueryimport.caption
+msgid "Import queries from file..."
+msgstr ""
 
 #: tviswaptgui.actreportingquerynew.caption
-#, fuzzy
-#| msgid "New"
-msgctxt "tviswaptgui.actreportingquerynew.caption"
 msgid "New query"
-msgstr "Nouvelle"
+msgstr ""
 
 #: tviswaptgui.actreportingqueryreload.caption
 msgid "Reload queries"
-msgstr "Recharger les requêtes"
+msgstr ""
 
 #: tviswaptgui.actreportingquerysaveall.caption
-#, fuzzy
-#| msgid "Save all"
 msgid "Save queries"
-msgstr "Tout enregistrer"
+msgstr ""
 
 #: tviswaptgui.actresetwebsocketconnections.caption
 msgid "Reset Websocket connections"
@@ -1816,6 +1777,10 @@ msgstr ""
 #: tviswaptgui.actselfservicesearchpackage.caption
 msgctxt "tviswaptgui.actselfservicesearchpackage.caption"
 msgid "Refresh list"
+msgstr ""
+
+#: tviswaptgui.actsoftwaresnormalization.caption
+msgid "Normalize software titles"
 msgstr ""
 
 #: tviswaptgui.acttishelp.caption
@@ -1931,11 +1896,6 @@ msgctxt "tviswaptgui.actwuadownloadselectedupdate.caption"
 msgid "Download selected"
 msgstr ""
 
-#: tviswaptgui.actwuadownloadsrefresh.caption
-msgctxt "tviswaptgui.actwuadownloadsrefresh.caption"
-msgid "Refresh"
-msgstr ""
-
 #: tviswaptgui.actwuaeditgroup.caption
 msgctxt "tviswaptgui.actwuaeditgroup.caption"
 msgid "Edit group"
@@ -2013,6 +1973,10 @@ msgstr ""
 #: tviswaptgui.actwuasearchpackage.caption
 msgctxt "tviswaptgui.actwuasearchpackage.caption"
 msgid "Refresh list"
+msgstr ""
+
+#: tviswaptgui.actwuashowdownloadtasks.caption
+msgid "Show download tasks"
 msgstr ""
 
 #: tviswaptgui.actwuashowmsupdateshelp.caption
@@ -2268,10 +2232,6 @@ msgstr ""
 msgid "Last scan date"
 msgstr ""
 
-#: tviswaptgui.label19.caption
-msgid "Forbidden Windows Updates"
-msgstr ""
-
 #: tviswaptgui.label2.caption
 msgid "Manufacturer"
 msgstr ""
@@ -2325,7 +2285,6 @@ msgid "Selected / Total : %d / %d"
 msgstr ""
 
 #: tviswaptgui.labfiltersite.caption
-msgctxt "tviswaptgui.labfiltersite.caption"
 msgid "Site"
 msgstr ""
 
@@ -2399,11 +2358,6 @@ msgstr ""
 msgid "About"
 msgstr ""
 
-#: tviswaptgui.menuitem4.caption
-msgctxt "tviswaptgui.menuitem4.caption"
-msgid "Remove"
-msgstr ""
-
 #: tviswaptgui.menuitem5.caption
 msgid "&File"
 msgstr ""
@@ -2413,18 +2367,11 @@ msgid "Trigger Burst Updates"
 msgstr ""
 
 #: tviswaptgui.menuitem6.caption
-#, fuzzy
-msgctxt "tviswaptgui.menuitem6.caption"
 msgid "New"
-msgstr "Nouvelle"
+msgstr ""
 
 #: tviswaptgui.menuitem74.caption
 msgid "Delete task"
-msgstr ""
-
-#: tviswaptgui.menuitem76.caption
-msgctxt "tviswaptgui.menuitem76.caption"
-msgid "Remove"
 msgstr ""
 
 #: tviswaptgui.menuitem8.caption
@@ -2497,10 +2444,6 @@ msgstr ""
 msgid "Sites / networks configuration"
 msgstr ""
 
-#: tviswaptgui.pgnormalization.caption
-msgid "Normalization"
-msgstr ""
-
 #: tviswaptgui.pgpackages.caption
 msgid "Overview"
 msgstr ""
@@ -2514,7 +2457,6 @@ msgid "Reports"
 msgstr ""
 
 #: tviswaptgui.pgselfservice.caption
-msgctxt "tviswaptgui.pgselfservice.caption"
 msgid "Self-service rules packages"
 msgstr ""
 
@@ -2530,16 +2472,16 @@ msgstr ""
 msgid "Tasks"
 msgstr ""
 
-#: tviswaptgui.pgwaptwuadownloads.caption
-msgid "Windows Updates downloads"
+#: tviswaptgui.pgwaptwuaconfig.caption
+msgid "Windows Updates"
 msgstr ""
 
 #: tviswaptgui.pgwaptwuapackages.caption
-msgid "WAPT WUA packages"
+msgid "Wapt WUA packages"
 msgstr ""
 
-#: tviswaptgui.pgwindowsupdates.caption
-msgid "Windows Updates"
+#: tviswaptgui.pgwindowsupdates2.caption
+msgid "Windows Updates list"
 msgstr ""
 
 #: tviswaptgui.tabsheet1.caption
@@ -2577,6 +2519,15 @@ msgstr ""
 
 #: tviswuaclassificationsselect.label1.caption
 msgid "Classifications"
+msgstr ""
+
+#: tviswuadownloads.actwuadownloadsrefresh.caption
+msgctxt "tviswuadownloads.actwuadownloadsrefresh.caption"
+msgid "Refresh"
+msgstr ""
+
+#: tviswuadownloads.caption
+msgid "Windows updates dowload tasks"
 msgstr ""
 
 #: tviswuagroup.actbuilduploadpackage.caption
@@ -2647,10 +2598,6 @@ msgstr ""
 msgid "Edit Windows updates Group"
 msgstr ""
 
-#: tviswuagroup.cbdefaultallow.caption
-msgid "Updates are allowed by default"
-msgstr ""
-
 #: tviswuagroup.cbwucritical.caption
 msgctxt "tviswuagroup.cbwucritical.caption"
 msgid "Critical"
@@ -2701,10 +2648,6 @@ msgstr ""
 
 #: tviswuagroup.label4.caption
 msgid "Package filename : "
-msgstr ""
-
-#: tviswuagroup.label5.caption
-msgid "Minimum delay before installation (days after publish date)"
 msgstr ""
 
 #: tviswuagroup.label6.caption
@@ -2783,10 +2726,9 @@ msgid "Classifications  and products"
 msgstr ""
 
 #: tviswuapackageselect.label2.caption
-#, fuzzy
 msgctxt "tviswuapackageselect.label2.caption"
 msgid "Filter"
-msgstr "Filtre"
+msgstr ""
 
 #: tviswuarules.actaddadsgroups.caption
 msgctxt "tviswuarules.actaddadsgroups.caption"
@@ -3242,7 +3184,6 @@ msgid "Panel13"
 msgstr ""
 
 #: tviswuarules.wupanright.caption
-msgctxt "tviswuarules.wupanright.caption"
 msgid "wupanright"
 msgstr ""
 
@@ -3760,6 +3701,10 @@ msgstr ""
 #: uwaptconsoleres.rsnorunningtask
 msgctxt "uwaptconsoleres.rsnorunningtask"
 msgid "No running tasks"
+msgstr ""
+
+#: uwaptconsoleres.rsnotavalidqueriesfile
+msgid "The file %s does not looks like a valid WAPT json Queries file"
 msgstr ""
 
 #: uwaptconsoleres.rsnotrunningasadmin
@@ -4795,7 +4740,7 @@ msgstr "Le nom de fichier certificat ne peut pas être vide"
 
 #: waptconsolepostconfres.rs_certificate_filename_is_invalid
 msgid "Certificate filename '%s' is invalid"
-msgstr "Le nome de fichier certificat %s n'est pas valide"
+msgstr "Le nom de fichier certificat %s n'est pas valide"
 
 #: waptconsolepostconfres.rs_compilation_failed
 msgid "Compilation Failed"
@@ -4811,7 +4756,7 @@ msgid "Are you sure you want to abort wapt console post configuration ?"
 msgstr "Êtes vous sûr de vouloir annuler la configuration de la console Wapt ?"
 
 #: waptconsolepostconfres.rs_create_key_a_certificat_this_key_name_exist
-msgid "A certificat with key name has beenfound, change key name and click next again"
+msgid "A certificate with this key name already exists, change key name and click next again"
 msgstr "Un certificat existant avec ce nom de clé a été trouvé, changer le nom de clé et réessayer"
 
 #: waptconsolepostconfres.rs_create_key_a_key_with_this_name_exist
@@ -4832,14 +4777,14 @@ msgstr "Un répertoire valide pour la clé privée doit être sélectionné"
 
 #: waptconsolepostconfres.rs_finished
 msgid "Finished"
-msgstr "Terminé"
+msgstr ""
 
 #: waptconsolepostconfres.rs_iscc_instance_found
 msgid "A instance of ISCC as been found, cannot continue."
 msgstr "Une instance de ISCC a été trouvée, on ne peut pas continuer."
 
 #: waptconsolepostconfres.rs_key_filename_cannot_be_empty
-msgid "Key filename cannot be empty"
+msgid "Key filename can not be empty"
 msgstr "Le nom de fichier de la clé ne peut pas être vide"
 
 #: waptconsolepostconfres.rs_key_filename_is_invalid
@@ -4855,16 +4800,16 @@ msgid "Please provide the private key password first"
 msgstr "Merci de préciser d'abord le mot de passe de la clé privée"
 
 #: waptconsolepostconfres.rs_no_matching_key
-msgid "No private key has been found in certificate directory with this password"
+msgid "No private key has been found in certificate directory using this password"
 msgstr "Aucune clé privée n'a pu être trouvée ou déchiffrée avce ce mote de passe dans le répertoire du certificat"
 
 #: waptconsolepostconfres.rs_other_process_has_been_found
 msgid ""
 "An instance of %s has been found.\n"
-"The program cannot continue unitl this process has terminated.\n"
+"The program cannot continue until this process has terminated.\n"
 "\n"
 "Click on Yes to kill all the process named %s\n"
-"Click on Retry to recheck processes satus\n"
+"Click on Retry to recheck processes status\n"
 "Click on Cancel to abort\n"
 msgstr ""
 
@@ -4873,7 +4818,7 @@ msgid "Package prefix cannot be empty"
 msgstr "Le préfixe de paquet ne peut pas être vide"
 
 #: waptconsolepostconfres.rs_package_prefix_must_be_alphanum
-msgid "Pacakge prefix must be alphanum"
+msgid "Package prefix must be alphanum"
 msgstr "Le préfixe de paquet doit être alpha numérique"
 
 #: waptconsolepostconfres.rs_post_conf_will_now_exit
@@ -4881,7 +4826,7 @@ msgid "Post configuration tool will now exit"
 msgstr ""
 
 #: waptconsolepostconfres.rs_supplied_passwords_differs
-msgid "Supplied password differs"
+msgid "Supplied passwords differs"
 msgstr "Les mots de passe entrés diffèrent"
 
 #: waptconsolepostconfres.rs_supplied_passwords_must_be_at_least_six_chars_length

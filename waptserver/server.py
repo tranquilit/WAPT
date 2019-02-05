@@ -1541,26 +1541,26 @@ def get_hosts():
 
             query = None
 
+            def and_query(q):
+                if query is None:
+                    return q
+                else:
+                    return query & q
+
             # build filter
             if 'uuid' in request.args:
-                query = Hosts.uuid.in_(ensure_list(request.args['uuid']))
+                query = and_query(Hosts.uuid.in_(ensure_list(request.args['uuid'])))
             elif 'filter' in request.args:
-                query = build_hosts_filter(Hosts, request.args['filter'])
-            else:
-                query = ~(Hosts.uuid.is_null())
-
-            if 'has_errors' in request.args and request.args['has_errors']:
-                query = query & (Hosts.host_status == 'ERROR')
-            if 'need_upgrade' in request.args and request.args['need_upgrade']:
-                query = query & (Hosts.host_status.in_(['ERROR', 'TO-UPGRADE']))
-            if 'reachable' in request.args and (request.args['reachable'] == '1'):
-                query = query & (Hosts.reachable == 'OK')
+                query = and_query(build_hosts_filter(Hosts, request.args['filter']))
 
             ## TODO : pylint does not like this block... raises 'Uninferable' object is not iterable
             if 'groups' in request.args:
                 groups = ensure_list(request.args.get('groups', ''))
                 in_group = HostGroups.select(HostGroups.host).where(HostGroups.group_name << groups)
-                query = query & (Hosts.uuid << in_group )
+                query = and_query(Hosts.uuid << in_group)
+
+            if query is not None and not_filter:
+                query = ~ query  # pylint: disable=invalid-unary-operand-type
 
             if 'trusted_certs_sha256' in request.args:
                 trusted_certs_sha256 = ensure_list(request.args.get('trusted_certs_sha256', ''))
@@ -1578,15 +1578,18 @@ def get_hosts():
                     or_list = Hosts.computer_ad_ou.endswith(ou_list[0])
                     for ou in ou_list[1:]:
                        or_list = or_list | Hosts.computer_ad_ou.endswith(ou)
-                    query = query & (or_list)
+                    query = and_query(or_list)
                 else:
-                    query = query & (Hosts.computer_ad_ou.in_(ou_list))
+                    query = and_query(Hosts.computer_ad_ou.in_(ou_list))
 
             if 'ad_site' in request.args:
-                query = query & (Hosts.computer_ad_site  == request.args.get('ad_site'))
-
-            if query is not None and not_filter:
-                query = ~ query  # pylint: disable=invalid-unary-operand-type
+                query = and_query(Hosts.computer_ad_site  == request.args.get('ad_site'))
+            if 'has_errors' in request.args and request.args['has_errors']:
+                query = and_query(Hosts.host_status == 'ERROR')
+            if 'need_upgrade' in request.args and request.args['need_upgrade']:
+                query = and_query(Hosts.host_status.in_(['ERROR', 'TO-UPGRADE']))
+            if 'reachable' in request.args and (request.args['reachable'] == '1'):
+                query = and_query(Hosts.reachable == 'OK')
 
             limit = int(request.args.get('limit', 1000))
 
