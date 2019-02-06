@@ -463,7 +463,7 @@ begin
       if (hashString='') and FileExists(WaptGuessBaseDir+'\waptupgrade\waptagent.sha256') then
       begin
         writeln('Got hash from '+ WaptGuessBaseDir+'\waptupgrade\waptagent.sha256');
-        hashString:=StrSplit(FileToString(WaptGuessBaseDir+'\waptupgrade\waptagent.sha256'),' ')[0];
+        hashString := StrSplit(UTF8String(FileToString(WaptGuessBaseDir+'\waptupgrade\waptagent.sha256')),' ')[0];
       end;
 
       setuphash:=SHA256Hash(waptsetupPath);
