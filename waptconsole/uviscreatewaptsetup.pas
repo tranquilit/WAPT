@@ -57,7 +57,6 @@ type
     procedure ActGetServerCertificateExecute(Sender: TObject);
     procedure CBVerifyCertClick(Sender: TObject);
     procedure CBWUAEnabledClick(Sender: TObject);
-    procedure fnPublicCertChange(Sender: TObject);
     procedure fnPublicCertEditingDone(Sender: TObject);
     procedure fnPublicCertExit(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
@@ -151,13 +150,16 @@ var
 
 begin
   NewCertFilename:=fnPublicCert.FileName;
-  if FileExistsUTF8(NewCertFilename) and ((ActiveCertBundle <> NewCertFilename) or (GridCertificates.Data = Nil) )  then
+  //if FileExistsUTF8(NewCertFilename) and ((ActiveCertBundle <> NewCertFilename) or (GridCertificates.Data = Nil) )  then
   try
-    edOrgName.text := VarPythonAsString(dmpython.waptcrypto.SSLCertificate(crt_filename := NewCertFilename).cn);
     SOCerts := TSuperObject.Create(stArray);
     CABundle:=dmpython.waptcrypto.SSLCABundle('--noarg--');
     CABundle.add_pems(IncludeTrailingPathDelimiter(WaptBaseDir)+'ssl\*.crt');
-    CABundle.add_pems(NewCertFilename);
+    if FileExistsUTF8(NewCertFilename) then
+    begin
+      CABundle.add_pems(NewCertFilename);
+      edOrgName.text := VarPythonAsString(dmpython.waptcrypto.SSLCertificate(crt_filename := NewCertFilename).cn);
+    end;
 
     CertList := CABundle.certificates('--noarg--');
     CertIter := iter(CertList);
@@ -203,11 +205,6 @@ end;
 procedure TVisCreateWaptSetup.CBWUAEnabledClick(Sender: TObject);
 begin
   GBWUA.Enabled:=CBWUAEnabled.State = cbChecked;
-end;
-
-procedure TVisCreateWaptSetup.fnPublicCertChange(Sender: TObject);
-begin
-  fnPublicCertEditingDone(Sender);
 end;
 
 procedure TVisCreateWaptSetup.ActGetServerCertificateExecute(Sender: TObject);

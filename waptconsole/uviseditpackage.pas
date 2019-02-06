@@ -247,8 +247,9 @@ begin
       computer_fqdn_hint := UTF8Encode(host.S['computer_fqdn']);
       hostuuid := UTF8Encode(host.S['uuid']);
       description := UTF8Encode(host.S['description']);
+
+      // TO filte rout available packages
       HostCapabilities := SuperObjectToPyVar(host['host_capabilities']);
-      ShowMessage(host['host_capabilities'].S['packages_locales']);
 
       EdSection.Text:='host';
       Result := Nil;

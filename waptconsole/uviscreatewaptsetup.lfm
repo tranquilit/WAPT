@@ -42,7 +42,6 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       Anchors = [akTop, akLeft, akRight]
       MaxLength = 0
       TabOrder = 0
-      OnChange = fnPublicCertChange
       OnEditingDone = fnPublicCertEditingDone
       OnExit = fnPublicCertExit
     end
