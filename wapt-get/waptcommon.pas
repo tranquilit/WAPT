@@ -191,15 +191,15 @@ const
   waptserver_sslport:integer = 443;
   waptservice_timeout:integer = 4;
 
-  WaptServerUser: AnsiString ='admin';
-  WaptServerPassword: Ansistring ='';
-  WaptServerUUID: AnsiString ='';
-  WaptServerEdition: AnsiString ='';
+  WaptServerUser: String ='admin';
+  WaptServerPassword: String ='';
+  WaptServerUUID: String ='';
+  WaptServerEdition: String ='';
 
   // active session until user or password is changed
   WaptServerSession: TIdCookieManager = Nil;
 
-  HttpProxy:AnsiString = '';
+  HttpProxy:String = '';
   UseProxyForRepo: Boolean = False;
   UseProxyForServer: Boolean = False;
 
@@ -209,7 +209,7 @@ const
   DefaultPackagePrefix:String = '';
   DefaultSourcesRoot:String = '';
 
-  AuthorizedCertsDir:Utf8String = '';
+  AuthorizedCertsDir:String = '';
 
   AdvancedMode:Boolean = False;
 
@@ -226,7 +226,7 @@ const
 
   WAPTServerMinVersion='1.7.3.1';
 
-  FAppIniFilename:Utf8String = '';
+  FAppIniFilename:String = '';
 
   DefaultMaturity:String = '';
 
@@ -238,8 +238,8 @@ uses LazFileUtils, LazUTF8, soutils, Variants,uwaptres,waptwinutils,uwaptcrypto,
   gettext,IdStack,IdCompressorZLib,IdAuthentication,shfolder,IniFiles,tiscommon,strutils,tisstrings,registry;
 
 const
-  CacheWaptServerUrl: AnsiString = 'None';
-  wapt_config_filename : Utf8String = '';
+  CacheWaptServerUrl: String = 'None';
+  wapt_config_filename : String = '';
 
 function DefaultUserAgent:String;
 begin
@@ -507,7 +507,7 @@ begin
   end;
 end;
 
-function GetHostFromURL(url:AnsiString):AnsiString;
+function GetHostFromURL(url:String):String;
 var
   uri : TIdURI;
 begin
@@ -533,7 +533,7 @@ end;
 
 function TSSLVerifyCert.VerifypeerCertificate(Certificate: TIdX509; AOk: Boolean; ADepth, AError: Integer): Boolean;
 var
-  Subject,SubjectAlternativeName:String;
+  Subject:String;
   CNPart,token,att,value:String;
 begin
   Subject := Certificate.Subject.OneLine;
@@ -1019,7 +1019,7 @@ begin
   else
     Proxy:='';
 
-  res := IdhttpPostData(GetWaptServerURL+action, data.AsJson, method, proxy, ConnectTimeout,SendTimeout,ReceiveTimeout,
+  res := IdhttpPostData(GetWaptServerURL+action, Utf8Encode(data.AsJson), method, proxy, ConnectTimeout,SendTimeout,ReceiveTimeout,
     WaptServerUser,WaptServerPassword,'','application/json',GetWaptServerCertificateFilename,'application/json',GetWaptServerSession());
   result := SO(res);
 end;
@@ -1081,13 +1081,13 @@ begin
   end;
 end;
 
-function SameNet(connected:ISuperObject;IP:AnsiString):Boolean;
+function SameNet(connected:ISuperObject;IP:String):Boolean;
 var
   conn:ISuperObject;
 begin
   for conn in Connected do
   begin
-    if SameIPV4Subnet(conn.S['ipAddress'],IP,conn.S['ipMask']) then
+    if SameIPV4Subnet(UTF8Encode(conn.S['ipAddress']),UTF8Encode(IP),UTF8Encode(conn.S['ipMask'])) then
     begin
       Result := True;
       Exit;
@@ -1166,14 +1166,14 @@ begin
     for rec in recs do
     begin
       if rec.I['port'] = 443 then
-        url := 'https://' + rec.S['name']
+        url := 'https://' + UTF8Encode(rec.S['name'])
       else
-        url := 'http://' + rec.S['name'] + ':' + rec.S['port'];
+        url := 'http://' + UTF8Encode(rec.S['name']) + ':' + UTF8Encode(rec.S['port']);
       rec.S['url'] := url;
       try
-        ServerIp := DNSAQuery(rec.S['name']);
+        ServerIp := DNSAQuery(UTF8Encode(rec.S['name']));
         if ServerIp.AsArray.Length > 0 then
-          rec.B['outside'] := not SameNet(ConnectedIps, ServerIp.AsArray.S[0])
+          rec.B['outside'] := not SameNet(ConnectedIps, UTF8Encode(ServerIp.AsArray.S[0]))
         else
           rec.B['outside'] := True;
       except
@@ -1186,7 +1186,7 @@ begin
 
     for rec in recs do
     begin
-      Result := rec.S['url'];
+      Result := UTF8Encode(rec.S['url']);
       CacheWaptServerUrl := Result;
       exit;
     end;
@@ -1217,14 +1217,14 @@ begin
     for rec in recs do
     begin
       if rec.I['port'] = 443 then
-        url := 'https://'+rec.S['name']+'/wapt'
+        url := UTF8Encode('https://'+rec.S['name']+'/wapt')
       else
-        url := 'http://'+rec.S['name']+':'+rec.S['port']+'/wapt';
+        url := UTF8Encode('http://'+rec.S['name']+':'+rec.S['port']+'/wapt');
       rec.S['url'] := url;
       try
-        ServerIp := DNSAQuery(rec.S['name']);
+        ServerIp := DNSAQuery(UTF8Encode(rec.S['name']));
         if ServerIp.AsArray.Length > 0 then
-          rec.B['outside'] := not SameNet(ConnectedIps,ServerIp.AsArray.S[0])
+          rec.B['outside'] := not SameNet(ConnectedIps,UTF8Encode(ServerIp.AsArray.S[0]))
         else
           rec.B['outside'] := True;
       except
@@ -1237,7 +1237,7 @@ begin
 
     for rec in recs do
     begin
-      Result := rec.S['url'];
+      Result := UTF8Encode(rec.S['url']);
       Logger('trying '+Result,INFO);
       if IdWget_try(Result+'/Packages',http_proxy,'','0') then
         Exit;
@@ -1247,7 +1247,7 @@ begin
     recs := DNSCNAMEQuery(RepoName+'.'+dnsdomain);
     for rec in recs do
     begin
-      Result := 'http://'+rec.AsString+'/wapt';
+      Result := UTF8Encode('http://'+rec.AsString+'/wapt');
       Logger('trying '+result,INFO);
       if IdWget_try(result,http_proxy,'','0') then
         Exit;
@@ -1497,7 +1497,7 @@ function VarArrayToStr(const vArray: variant): string;
           varDouble,
           varCurrency : Result := FloatToStr(Double(V));
           varDate     : Result := VarToStr(V);
-          varOleStr   : Result := WideString(V);
+          varOleStr   : Result := UTF8Encode(WideString(V));
           varBoolean  : Result := VarToStr(V);
           varVariant  : Result := VarToStr(Variant(V));
           varByte     : Result := char(byte(V));
@@ -1656,7 +1656,7 @@ begin
   for card in eth do
   begin
     SetLength(macs,i+1);
-    macs[i] := card.S['mac'];
+    macs[i] := UTF8Encode(card.S['mac']);
     inc(i);
   end;
   if length(macs)>0 then
@@ -1667,7 +1667,7 @@ begin
   else
   begin
     CreateGUID(guid);
-    result := UUIDToString(guid);
+    result := UTF8Encode(UUIDToString(guid));
   end;
 end;
 
@@ -1700,7 +1700,7 @@ var
 begin
   Result := template;
   for key in params.AsObject.GetNames do
-    Result := StringReplace(Result,'%('+key.AsString+')s',params.S[key.AsString],[rfReplaceAll]);
+    Result := StringReplace(Result,'%('+UTF8Encode(key.AsString)+')s',UTF8Encode(params.S[key.AsString]),[rfReplaceAll]);
 end;
 
 function pyformat(template:Utf8String;params:ISuperobject):Utf8String; overload;
@@ -1709,7 +1709,7 @@ var
 begin
   Result := template;
   for key in params.AsObject.GetNames do
-    Result := UTF8StringReplace(Result,'%('+key.AsString+')s',params.S[key.AsString],[rfReplaceAll]);
+    Result := UTF8StringReplace(Result,'%('+UTF8Encode(key.AsString)+')s',UTF8Encode(params.S[key.AsString]),[rfReplaceAll]);
 end;
 
 function CARoot: String;
@@ -1809,13 +1809,13 @@ function CreateWaptSetup(default_public_cert: Utf8String;
 var
   iss_template,custom_iss : utf8String;
   iss,new_iss,line : ISuperObject;
-  akey,avalue : ISuperObject;
+  akey : ISuperObject;
 
   //WuaKey,WuaParams: ISuperObject;
 
-  wapt_base_dir,inno_fn,p12keypath,signtool: Utf8String;
+  wapt_base_dir,inno_fn,p12keypath,signtool:  Utf8String;
   // for windows copyfilew
-  source,target: WideString;
+  source,target: String;
 
   function startswith(st:ISuperObject;subst:Utf8String):Boolean;
   begin
@@ -1897,15 +1897,15 @@ begin
           new_iss.AsArray.Add(line);
   end;
 
-  source := UTF8Decode(default_public_cert);
+  source := default_public_cert;
   if (Source<>'') and FileExistsUTF8(Source) then
   begin
-    target := UTF8Decode(ExpandFileName(AppendPathDelim(ExtractFileDir(iss_template))+ '..\ssl\' + ExtractFileName(default_public_cert)));
-    if not FileExists(target) then
-      if not CopyFileW(PWideChar(source),PWideChar(target),True) then
+    target := ExpandFileName(AppendPathDelim(ExtractFileDir(iss_template))+ '..\ssl\' + ExtractFileName(default_public_cert));
+    if not FileExistsUTF8(target) then
+      if not CopyFileW(PWideChar(Utf8Decode(source)),PWideChar(Utf8Decode(target)),True) then
         raise Exception.CreateFmt(rsCertificateCopyFailure,[source,target]);
   end;
-  StringToFile(custom_iss,SOUtils.Join(#13#10,new_iss));
+  StringToFile(custom_iss,Utf8Encode(SOUtils.Join(#13#10,new_iss)));
 
   inno_fn :=  AppendPathDelim(wapt_base_dir) + 'waptsetup\innosetup\ISCC.exe';
   if not FileExists(inno_fn) then
@@ -1931,8 +1931,8 @@ begin
   else
   if (IPS.DataType=stString) then
   begin
-    if CheckOpenPort(port,IPS.AsString,timeout) then
-      Result := IPS.AsString
+    if CheckOpenPort(port,UTF8Encode(IPS.AsString),timeout) then
+      Result := UTF8Encode(IPS.AsString)
     else
       Result := '';
   end
@@ -1941,9 +1941,9 @@ begin
   begin
     for IP in IPS do
     begin
-      if CheckOpenPort(port,IP.AsString,timeout) then
+      if CheckOpenPort(port,UTF8Encode(IP.AsString),timeout) then
       begin
-        Result := IP.AsString;
+        Result := UTF8Encode(IP.AsString);
         Break;
       end;
     end;
@@ -2022,7 +2022,7 @@ begin
     params.S['req_extensions'] := 'v3_ca';
 
   opensslbin :=  AppendPathDelim(wapt_base_dir)+'openssl.exe';
-  opensslcfg :=  pyformat(FileToString(AppendPathDelim(wapt_base_dir) + 'templates\openssl_template.cfg'),params);
+  opensslcfg :=  pyformat(Utf8String(UTF8Decode(FileToString(AppendPathDelim(wapt_base_dir) + 'templates\openssl_template.cfg'))),params);
   opensslcfg_fn := AppendPathDelim(destdir)+'openssl.cfg';
   StringToFile(opensslcfg_fn,opensslcfg);
   try

@@ -34,7 +34,7 @@ var
   VisApropos: TVisApropos;
 
 implementation
-uses uWaptConsoleRes,tiscommon,waptcommon,LCLIntf,tisstrings, uwaptconsole,dmwaptpython;
+uses uWaptConsoleRes,tiscommon,waptcommon,LCLIntf,tisstrings, uwaptconsole,dmwaptpython,LazFileUtils;
 {$R *.lfm}
 
 { TVisApropos }
@@ -49,7 +49,7 @@ begin
   Image1.Picture.LoadFromResourceName(HINSTANCE,'WAPT_PNG',TPortableNetworkGraphic);
 
   LabInfos.Caption := ApplicationName+' '+GetApplicationVersion+' (c) 2012-2018 Tranquil IT Systems.';
-  if FileExists(ExtractFilePath(ParamStr(0))+'revision.txt') then
+  if FileExistsUTF8(ExtractFilePath(ParamStr(0))+'revision.txt') then
     LabInfos.Caption:=LabInfos.Caption+' rev '+FileToString(ExtractFilePath(ParamStr(0))+'revision.txt');
 
   LicenceLog.Clear;

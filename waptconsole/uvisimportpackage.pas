@@ -402,7 +402,7 @@ begin
   try
     try
       Screen.Cursor:=crHourGlass;
-      expr := UTF8Decode(EdSearchPackage.Text);
+      expr := EdSearchPackage.Text;
       packages_python := Nil;
       if cbNewerThanMine.Checked then
       begin
@@ -454,7 +454,7 @@ begin
 
   http_proxy:=Waptrepo.HttpProxy;
 
-  if not FileExists(WaptPersonalCertificatePath) then
+  if not FileExistsUTF8(WaptPersonalCertificatePath) then
   begin
     ShowMessageFmt(rsPrivateKeyDoesntExist, [WaptPersonalCertificatePath]);
     exit;
@@ -497,21 +497,21 @@ begin
         Application.ProcessMessages;
         ProgressTitle(
           format(rsDownloadingPackage, [Filename.AsArray[0].AsString]));
-        target := AppLocalDir + 'cache\' + Filename.AsArray[0].AsString;
+        target := AppLocalDir + 'cache\' + UTF8Encode(Filename.AsArray[0].AsString);
         try
-          if not FileExists(target) or (MD5Print(MD5File(target)) <> Filename.AsArray[1].AsString) then
+          if not FileExistsUTF8(target) or (MD5Print(MD5File(target)) <> UTF8Encode(Filename.AsArray[1].AsString)) then
           begin
-            IdWget(Waptrepo.RepoURL + '/' + Filename.AsArray[0].AsString,
+            IdWget(Waptrepo.RepoURL + '/' + UTF8Encode(Filename.AsArray[0].AsString),
               target, ProgressForm, @updateprogress, http_proxy);
             if (MD5Print(MD5File(target)) <> Filename.AsArray[1].AsString) then
-              raise Exception.CreateFmt(rsDownloadCurrupted,[Filename.AsArray[0].AsString]);
+              raise Exception.CreateFmt(rsDownloadCurrupted,[UTF8Encode(Filename.AsArray[0].AsString)]);
           end;
         except
           on e:Exception do
           begin
             ShowMessage(rsDlCanceled+' : '+e.Message);
-            if FileExists(target) then
-              DeleteFile(Target);
+            if FileExistsUTF8(target) then
+              DeleteFileUTF8(Target);
             exit;
           end;
         end;
@@ -526,7 +526,7 @@ begin
         else
           SignersCABundle := Waptrepo.SignersCABundle;
 
-        PackageFilename := AppLocalDir + 'cache\' + Filename.AsArray[0].AsString;
+        PackageFilename := AppLocalDir + 'cache\' + UTF8Encode(Filename.AsArray[0].AsString);
 
         sourceDir := VarPyth.VarPythonAsString(
           DMPython.waptdevutils.duplicate_from_file(
@@ -565,7 +565,7 @@ begin
           DeleteDirectory(UTF8Encode(aDir.AsString),False);
       if uploadResult <> Nil then
         for aDir in uploadResult do
-          DeleteFile(UTF8Encode(aDir.AsString));
+          DeleteFileUTF8(UTF8Encode(aDir.AsString));
       Free;
     end;
     ModalResult:=mrOK;
@@ -623,22 +623,22 @@ begin
       begin
         Application.ProcessMessages;
         ProgressTitle(
-          format(rsDownloadingPackage, [Filename.AsArray[0].AsString]));
-        target := AppLocalDir + 'cache\' + Filename.AsArray[0].AsString;
+          format(rsDownloadingPackage, [UTF8Encode(Filename.AsArray[0].AsString)]));
+        target := AppLocalDir + 'cache\' + UTF8Encode(Filename.AsArray[0].AsString);
         try
-          if not FileExists(target) or (MD5Print(MD5File(target)) <> Filename.AsArray[1].AsString) then
+          if not FileExistsUTF8(target) or (MD5Print(MD5File(target)) <> Filename.AsArray[1].AsString) then
           begin
-            IdWget(Waptrepo.RepoURL + '/' + Filename.AsArray[0].AsString,
+            IdWget(Waptrepo.RepoURL + '/' + UTF8Encode(Filename.AsArray[0].AsString),
               target, ProgressForm, @updateprogress, http_proxy);
-            if (MD5Print(MD5File(target)) <> Filename.AsArray[1].AsString) then
-              raise Exception.CreateFmt(rsDownloadCurrupted,[Filename.AsArray[0].AsString]);
+            if (MD5Print(MD5File(target)) <> UTF8Encode(Filename.AsArray[1].AsString)) then
+              raise Exception.CreateFmt(rsDownloadCurrupted,[UTF8Encode(Filename.AsArray[0].AsString)]);
           end;
         except
           on e:Exception do
           begin
             ShowMessage(rsDlCanceled+' : '+e.Message);
-            if FileExists(target) then
-              DeleteFile(Target);
+            if FileExistsUTF8(target) then
+              DeleteFileUTF8(target);
             exit;
           end;
         end;
@@ -648,8 +648,8 @@ begin
       begin
         ProgressTitle(format(rsDuplicating, [Filename.AsArray[0].AsString]));
         Application.ProcessMessages;
-        target := AppLocalDir + 'cache\' + Filename.AsArray[0].AsString;
-        DevDirectory := AppendPathDelim(DefaultSourcesRoot)+ExtractFileNameWithoutExt(Filename.AsArray[0].AsString)+'-wapt';
+        target := AppLocalDir + 'cache\' + UTF8Encode(Filename.AsArray[0].AsString);
+        DevDirectory := AppendPathDelim(DefaultSourcesRoot)+ExtractFileNameWithoutExt(UTF8Encode(Filename.AsArray[0].AsString))+'-wapt';
         sourceDir := VarPythonAsString(DMPython.waptdevutils.duplicate_from_file(
           package_filename := target,
           new_prefix := DefaultPackagePrefix,

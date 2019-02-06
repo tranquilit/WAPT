@@ -1248,7 +1248,7 @@ class PackageEntry(BaseObjectClass):
 
         if self.section == 'host':
             return self.package+'.wapt'
-        elif self.section in ('group','wsus'):
+        elif self.section in ('group'):
             # we don't keep version for group
             return self.package + u'_'.join([f for f in (self.architecture,self.maturity,'-'.join(ensure_list(self.locale))) if (f and f != 'all')]) + '.wapt'
         elif self.section in ('unit','profile'):

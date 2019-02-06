@@ -231,7 +231,7 @@ begin
   {$endif}
 
   RegWaptBaseDir:=WaptBaseDir();
-  if not FileExists(AppendPathDelim(RegWaptBaseDir)+'python27.dll') then
+  if not FileExistsUTF8(AppendPathDelim(RegWaptBaseDir)+'python27.dll') then
     RegWaptBaseDir:=RegisteredAppInstallLocation('wapt_is1');
 
   if RegWaptBaseDir='' then
@@ -466,6 +466,7 @@ begin
             begin
               FCachedPrivateKeyPassword:=edPasswordKey.Text;
               break;
+
             end;
           end
           else
@@ -650,7 +651,7 @@ begin
   if cert_filename = '' then
     exit;
 
-  if FileExists(cert_filename) = false then
+  if FileExistsUTF8(cert_filename) = false then
     exit;
 
   crt := dmpython.waptcrypto.SSLCertificate(crt_filename:=cert_filename);
@@ -675,7 +676,6 @@ end;
 function TDMPython.GetPersonalCertificate: Variant;
 var
   vcrt_filename: Variant;
-  bundle: Variant;
 begin
   if VarIsEmpty(FPersonalCertificate) or VarIsNull(FPersonalCertificate) then
   begin
@@ -683,7 +683,6 @@ begin
     try
       vcrt_filename := PyUTF8Decode(waptcommon.WaptPersonalCertificatePath);
       FPersonalCertificate := waptcrypto.SSLCABundle(vcrt_filename);
-
     except
       Result := Unassigned;
     end;

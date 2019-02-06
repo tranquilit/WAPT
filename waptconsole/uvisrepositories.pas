@@ -116,6 +116,8 @@ begin
       EdName.Items.Delete(EdName.Items.IndexOf('global'));
     if EdName.Items.IndexOf('options')>=0 then
       EdName.Items.Delete(EdName.Items.IndexOf('options'));
+    if EdName.Items.IndexOf('waptwua')>=0 then
+      EdName.Items.Delete(EdName.Items.IndexOf('waptwua'));
   finally
     inifile.Free;
   end;
@@ -201,7 +203,7 @@ begin
       certfn:= AppendPathDelim(GetAppUserFolder)+'ssl\server\'+cert.cn+'.crt';
       if not DirectoryExists(ExtractFileDir(certfn)) then
         ForceDirectory(ExtractFileDir(certfn));
-      StringToFile(certfn,pem_data);
+      StringToFile(certfn,String(pem_data));
       WaptRepo.ServerCABundle := certfn;
     end
     else

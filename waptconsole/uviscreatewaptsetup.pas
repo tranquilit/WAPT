@@ -12,7 +12,6 @@ uses
 type
 
   { TVisCreateWaptSetup }
-
   TVisCreateWaptSetup = class(TForm)
     ActGetServerCertificate: TAction;
     ActionList1: TActionList;
@@ -71,7 +70,7 @@ type
     procedure IdHTTPWork(ASender: TObject; AWorkMode: TWorkMode; AWorkCount: int64);
   public
     { public declarations }
-    ActiveCertBundle: UnicodeString;
+    ActiveCertBundle: String;
     property CurrentVisLoading: TVisLoading read GetCurrentVisLoading;
     function GetWUAParams: ISuperObject;
     procedure SaveWAPTAgentSettings;
@@ -147,17 +146,18 @@ var
   CABundle,CertIter, Cert,CertList: Variant;
   SOCert,SOCerts: ISuperObject;
   att:String;
-  NewCertFilename:UnicodeString;
+  NewCertFilename:String;
   atts: Array[0..8] of String=('cn','issuer_cn','subject_dn','issuer_dn','fingerprint','not_after','is_ca','is_code_signing','serial_number');
 
 begin
-  NewCertFilename:=UTF8Decode(fnPublicCert.FileName);
-  if FileExists(NewCertFilename) and ((ActiveCertBundle <> NewCertFilename) or (GridCertificates.Data = Nil) )  then
+  NewCertFilename:=fnPublicCert.FileName;
+  if FileExistsUTF8(NewCertFilename) and ((ActiveCertBundle <> NewCertFilename) or (GridCertificates.Data = Nil) )  then
   try
     edOrgName.text := VarPythonAsString(dmpython.waptcrypto.SSLCertificate(crt_filename := NewCertFilename).cn);
     SOCerts := TSuperObject.Create(stArray);
-    CABundle:=dmpython.waptcrypto.SSLCABundle(cert_pattern_or_dir := NewCertFilename);
+    CABundle:=dmpython.waptcrypto.SSLCABundle('--noarg--');
     CABundle.add_pems(IncludeTrailingPathDelimiter(WaptBaseDir)+'ssl\*.crt');
+    CABundle.add_pems(NewCertFilename);
 
     CertList := CABundle.certificates('--noarg--');
     CertIter := iter(CertList);
@@ -176,8 +176,7 @@ begin
         on EPyStopIteration do Break;
       end;
     GridCertificates.Data := SOCerts;
-    ActiveCertBundle := UTF8Decode(fnPublicCert.FileName);
-
+    ActiveCertBundle := fnPublicCert.FileName;
   finally
   end;
 end;
@@ -213,9 +212,8 @@ end;
 
 procedure TVisCreateWaptSetup.ActGetServerCertificateExecute(Sender: TObject);
 var
-  i:integer;
   certfn: String;
-  url,certchain,pem_data,certbundle,certs,cert:Variant;
+  url,certchain,pem_data,cert:Variant;
 begin
   url := edWaptServerUrl.Text;
   With TIdURI.Create(url) do
@@ -229,7 +227,7 @@ begin
         certfn:= AppendPathDelim(WaptBaseDir)+'ssl\server\'+cert.cn+'.crt';
         if not DirectoryExists(ExtractFileDir(certfn)) then
           ForceDirectory(ExtractFileDir(certfn));
-        StringToFile(certfn,pem_data);
+        StringToFile(certfn,UTF8Encode(pem_data));
         EdServerCertificate.Text := certfn;
         CBVerifyCert.Checked:=True;
       end
@@ -256,9 +254,9 @@ begin
   try
     ini := TIniFile.Create(AppIniFilename);
     if ini.ReadString('global', 'default_ca_cert_path', '') <> '' then
-      ActiveCertBundle := UTF8Decode(ini.ReadString('global', 'default_ca_cert_path', ''))
+      ActiveCertBundle := ini.ReadString('global', 'default_ca_cert_path', '')
     else
-      ActiveCertBundle := UTF8Decode(ini.ReadString('global', 'personal_certificate_path', ''));
+      ActiveCertBundle := ini.ReadString('global', 'personal_certificate_path', '');
 
     edWaptServerUrl.Text := ini.ReadString('global', 'wapt_server', '');
     edRepoUrl.Text := ini.ReadString('global', 'repo_url', '');
@@ -270,7 +268,7 @@ begin
     fnWaptDirectory.Directory := WaptBaseDir()+'\waptupgrade';
 
     fnPublicCert.FileName := UTF8Encode(ActiveCertBundle);
-    if FileExists(ActiveCertBundle) then
+    if FileExistsUtf8(ActiveCertBundle) then
       fnPublicCertEditingDone(Sender);
         //edOrgName.text := VarPythonAsString(dmpython.waptcrypto.SSLCertificate(crt_filename := fnPublicCert.FileName).cn);
         //edOrgName.text := dmwaptpython.DMPython.PythonEng.EvalStringAsStr(Format('common.SSLCertificate(r"""%s""").cn',[fnPublicCert.FileName]));

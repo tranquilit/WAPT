@@ -1282,7 +1282,7 @@ end;
 
 procedure TVisWaptGUI.EdHardwareFilterChange(Sender: TObject);
 var
-  host,data,inventory_keys,key : ISuperObject;
+  data : ISuperObject;
 begin
   if (Gridhosts.FocusedRow <> nil) then
   begin
@@ -1456,7 +1456,7 @@ begin
         {$else}
         stats.S['edition'] := 'community';
         {$endif}
-        IdHttpPostData(stats_report_url,stats.AsJSon,'POST',Proxy,4000,60000,60000,'','','Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko');
+        IdHttpPostData(stats_report_url,UTF8Encode(stats.AsJSon),'POST',Proxy,4000,60000,60000,'','','Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko');
         ini.WriteDateTime('global','last_usage_report',Now);
       except
         ini.WriteDateTime('global','last_usage_report',Now);
@@ -1497,8 +1497,8 @@ begin
         reg := EdSoftwaresFilter.Text;
       reg := '(?i)' + reg;
 
-      accept := accept and (ExecRegExpr(reg, soft.S['name']) or
-        ExecRegExpr(reg, soft.S['key']));
+      accept := accept and (ExecRegExpr(reg, UTF8Encode(soft.S['name'])) or
+        ExecRegExpr(reg, UTF8Encode(soft.S['key'])));
       {accept:= accept and ((EdSoftwaresFilter.Text='') or
                       (pos(LowerCase(EdSoftwaresFilter.Text),LowerCase(soft.S['name']))>0) or
                       (pos(LowerCase(EdSoftwaresFilter.Text),LowerCase(soft.S['key']))>0));
@@ -1604,7 +1604,7 @@ begin
   inventory_keys := host['_inventory_keys'];
   if (inventory_keys = Nil) then
   begin
-    Result := InventoryData(host.S['uuid']);
+    Result := InventoryData(UTF8Encode(host.S['uuid']));
     host.Merge(Result);
     host['_inventory_keys'] := Result.AsObject.GetNames;
   end
@@ -1624,9 +1624,7 @@ end;
 
 function PackageReqFromreq(req:String):TPackageReq;
 var
-  PosVersion:Integer;
   re: TRegExpr;
-  name,oper,version:String;
 begin
   // optional version
   re := TRegExpr.Create('([^()]+)\s*(\(\s*([<=>]*)\s*(\S+)\s*\))?.*');
@@ -1692,8 +1690,8 @@ begin
           for packagereq in all_missing do
           begin
             package := TSuperObject.Create();
-            package.S['package'] := PackageNameFromreq(packagereq.AsString);
-            package.S['version'] := PackageVersionFromReq(packagereq.AsString);
+            package.S['package'] := PackageNameFromreq(UTF8Encode(packagereq.AsString));
+            package.S['version'] := PackageVersionFromReq(UTF8Encode(packagereq.AsString));
             package.S['install_status'] := 'MISSING';
             RowSO.A['installed_packages'].Add(package);
           end;
@@ -1705,7 +1703,7 @@ begin
             begin
               for packagereq in upgrades do
               begin
-                packagename:= PackageNameFromreq(packagereq.AsString);
+                packagename:= PackageNameFromreq(UTF8Encode(packagereq.AsString));
                 if package.S['package'] = packagename then
                   package.S['install_status'] := 'NEED-UPGRADE';
               end;
@@ -1719,7 +1717,7 @@ begin
             begin
               for packagereq in remove do
               begin
-                packagename:= PackageNameFromreq(packagereq.AsString);
+                packagename:= PackageNameFromreq(UTF8Encode(packagereq.AsString));
                 if package.S['package'] = packagename then
                   package.S['install_status'] := 'NEED-REMOVE';
               end;
@@ -1754,10 +1752,10 @@ begin
       if RowSO['connected_ips'].DataType=stArray then
         EdIPAddress.Text := soutils.join(',',RowSO['connected_ips'])
       else
-        EdIPAddress.Text := RowSO.S['connected_ips'];
+        EdIPAddress.Text := Utf8Encode(RowSO.S['connected_ips']);
       EdManufacturer.Text := UTF8Encode(RowSO.S['manufacturer']);
       EdModelName.Text := UTF8Encode(RowSO.S['productname']);
-      EdUpdateDate.Text :=  UTF8Encode(Copy(StrReplaceChar(RowSO.S['last_seen_on'],'T',' '),1,16));
+      EdUpdateDate.Text :=  Copy(StrReplaceChar(UTF8Encode(RowSO.S['last_seen_on']),'T',' '),1,16);
       If RowSO['connected_users'].DataType=stArray then
         EdUser.Text := UTF8Encode(soutils.join(',',RowSO['connected_users']))
       else
@@ -1839,13 +1837,13 @@ begin
       end;
       RowSO['wuauserv_status'] := wuauserv_status;
 
-      EdWUAStatus.Text := waptwua_status.S['status'];
-      EdWAPTWUAEnabled.Text := waptwua_status.S['enabled'];
-      EdWsusscn2cabDate.Text:= waptwua_status.S['wsusscn2cab_date'];
-      EdLastScanDate.Text:= waptwua_status.S['last_scan_date'];
-      EdLastScanDuration.Text:= waptwua_status.S['last_scan_duration'];
+      EdWUAStatus.Text := UTF8Encode(waptwua_status.S['status']);
+      EdWAPTWUAEnabled.Text := UTF8Encode(waptwua_status.S['enabled']);
+      EdWsusscn2cabDate.Text:= UTF8Encode(waptwua_status.S['wsusscn2cab_date']);
+      EdLastScanDate.Text:= UTF8Encode(waptwua_status.S['last_scan_date']);
+      EdLastScanDuration.Text:= UTF8Encode(waptwua_status.S['last_scan_duration']);
 
-      EdWUAAgentVersion.Text := wuauserv_status.S['agent_version'];
+      EdWUAAgentVersion.Text := UTF8Encode(wuauserv_status.S['agent_version']);
 
     end
     else if HostPages.ActivePage = pgHostInventory then
@@ -2097,7 +2095,7 @@ begin
   if GridPackages.FocusedNode <> nil then
   begin
     Filename := UTF8Encode(GridPackages.FocusedRow.S['filename']);
-    RepoUrl := GridPackages.FocusedRow.S['repo_url'];
+    RepoUrl := UTF8Encode(GridPackages.FocusedRow.S['repo_url']);
     PackageEdited := DownloadPackage(RepoUrl,Filename);
     DevPath := AppendPathDelim(DefaultSourcesRoot)+VarPythonAsString(PackageEdited.make_package_edit_directory('--noarg--'));
     vDevPath:= PyUTF8Decode(DevPath);
@@ -2126,7 +2124,7 @@ begin
       else
       begin
         Filename := UTF8Encode(Entry.S['filename']);
-        RepoUrl := Entry.S['repo_url'];
+        RepoUrl := UTF8Encode(Entry.S['repo_url']);
         PackageEdited := DownloadPackage(RepoUrl,Filename);
         DevPath := AppendPathDelim(DefaultSourcesRoot)+VarPythonAsString(PackageEdited.make_package_edit_directory('--noarg--'));
         vDevPath:= PyUTF8Decode(DevPath);
@@ -2959,7 +2957,7 @@ end;
 
 Function TVisWaptGUI.EditHostPackageEntry(host: ISuperObject): Variant;
 var
-  hostname,uuid,desc,HostPackageVersion: String;
+  hostname,uuid,HostPackageVersion: String;
   uuids: ISuperObject;
   ApplyUpdatesImmediately:Boolean;
   Package,HostPackages:ISuperObject;
@@ -3055,7 +3053,7 @@ begin
       end;
 
       //transfer actions as json string to python
-      actions_json := SOActions.AsString;
+      actions_json := UTF8Encode(SOActions.AsString);
 
       VPrivateKeyPassword := PyUTF8Decode(dmpython.privateKeyPassword);
 
@@ -3136,7 +3134,7 @@ begin
         end;
 
         //transfer actions as json string to python
-        actions_json := SOActions.AsString;
+        actions_json := UTF8Encode(SOActions.AsString);
 
         VPrivateKeyPassword := PyUTF8Decode(dmpython.privateKeyPassword);
 
@@ -4226,15 +4224,15 @@ begin
         sores := WAPTServerJsonPost('api/v3/login', [],cred);
         if sores.B['success'] then
         begin
-            WaptServerUUID := sores['result'].S['server_uuid'];
-            WaptServerEdition := sores['result'].S['edition'];
+            WaptServerUUID := UTF8Encode(sores['result'].S['server_uuid']);
+            WaptServerEdition := UTF8Encode(sores['result'].S['edition']);
             HostsCount := sores['result'].I['hosts_count'];
             {$ifdef ENTERPRISE}
             {$include ..\waptenterprise\includes\uwaptconsole.login.check_licence.inc}
             {$endif}
             Result := True;
-            if (CompareVersion(sores['result'].S['version'],WAPTServerMinVersion)<0) then
-              ShowMessageFmt(rsWaptServerOldVersion,[sores['result'].S['version'],WAPTServerMinVersion]);
+            if (CompareVersion(UTF8Encode(sores['result'].S['version']),WAPTServerMinVersion)<0) then
+              ShowMessageFmt(rsWaptServerOldVersion,[UTF8Encode(sores['result'].S['version']),WAPTServerMinVersion]);
             break;
         end
         else
@@ -4259,7 +4257,6 @@ end;
 
 procedure TVisWaptGUI.FormShow(Sender: TObject);
 var
-  i:integer;
   sores: ISuperObject;
   CB:TComponent;
   ini:TIniFile;
@@ -4371,7 +4368,7 @@ begin
       if sores.B['success'] then
         if sores['result'].S['waptagent_version'] = '' then
           ShowMessageFmt(rsWaptAgentNotPresent,[])
-        else if (CompareVersion(sores['result'].S['waptagent_version'],sores['result'].S['waptsetup_version'])<0) then
+        else if (CompareVersion(UTF8Encode(sores['result'].S['waptagent_version']),UTF8Encode(sores['result'].S['waptsetup_version']))<0) then
         begin
             MessageDlg('waptgent.exe / waptsetup mismatch',
               Format(rsWaptAgentOldVersion,[sores['result'].S['waptagent_version'],sores['result'].S['waptsetup_version']]),
@@ -4689,7 +4686,7 @@ begin
   if (jsondata <> Nil) then
   try
     tree.BeginUpdate;
-    jsp := TJSONParser.Create(jsondata.AsJSon);
+    jsp := TJSONParser.Create(UTF8Encode(jsondata.AsJSon));
     if assigned(tree.RootData) then
       tree.rootdata.Free;
     tree.rootData := jsp.Parse;
@@ -4881,12 +4878,12 @@ begin
     if (d1 <> nil) and (d2 <> nil) then
     begin
       if (pos('version', propname) > 0) then
-        Result := CompareVersion(d1.AsString, d2.AsString)
+        Result := CompareVersion(UTF8Encode(d1.AsString), UTF8Encode(d2.AsString))
       else if (pos('connected_ips', propname) > 0) then
-          Result := CompareVersion(d1.AsArray.S[0],d2.AsArray.S[0])
+          Result := CompareVersion(UTF8Encode(d1.AsArray.S[0]),UTF8Encode(d2.AsArray.S[0]))
       else
       if (pos('mac_addresses', propname) > 0) then
-        Result := UTF8CompareText(d1.AsArray.S[0], d2.AsArray.S[0])
+        Result := UTF8CompareText(UTF8Encode(d1.AsArray.S[0]), UTF8Encode(d2.AsArray.S[0]))
       else
       begin
         CompResult := d1.Compare(d2);
@@ -5193,7 +5190,7 @@ begin
   if MainPages.ActivePage = pgPrivateRepo then
     if GridPackages.FocusedRow <> Nil then
     begin
-      PackageName := GridPackages.FocusedRow.S['package'];
+      PackageName := UTF8Encode(GridPackages.FocusedRow.S['package']);
       if CBShowHostsForPackages.Checked then
       begin
         if CBShowHostsForPackages.Checked then
@@ -5214,7 +5211,7 @@ begin
   if MainPages.ActivePage = pgGroups then
     if GridGroups.FocusedRow <> Nil then
     begin
-      PackageName := GridGroups.FocusedRow.S['package'];
+      PackageName := UTF8Encode(GridGroups.FocusedRow.S['package']);
       if CBShowHostsForGroups.Checked then
         LoadHostsForPackage(GridHostsForPackage,PackageName)
       else
@@ -5360,21 +5357,20 @@ begin
   for plugin in GridHostsPlugins do
     if plugin.S['name']=PluginName then
     begin
-      Executable := plugin.S['executable'];
-      Arguments := plugin.S['arguments'];
+      Executable := UTF8Encode(plugin.S['executable']);
+      Arguments := UTF8Encode(plugin.S['arguments']);
       break;
     end;
-
   for host in GridHosts.SelectedRows do
   begin
     ExpandedExecutable:= StringsReplace(Executable,
       ['{ip}',                '{uuid}', '{computer_fqdn}'],
-      [host.A['connected_ips'].S[0],host.S['uuid'],host.S['computer_fqdn']]
+      [UTF8Encode(host.A['connected_ips'].S[0]),UTF8Encode(host.S['uuid']),UTF8Encode(host.S['computer_fqdn'])]
       ,[rfReplaceAll]);
 
     ExpandedArguments:= StringsReplace(Arguments,
       ['{ip}',                '{uuid}', '{computer_fqdn}'],
-      [host.A['connected_ips'].S[0],host.S['uuid'],host.S['computer_fqdn']]
+      [UTF8Encode(host.A['connected_ips'].S[0]),UTF8Encode(host.S['uuid']),UTF8Encode(host.S['computer_fqdn'])]
       ,[rfReplaceAll]);
 
     ShellExecuteA(0,'',PChar(ExpandedExecutable),PChar(ExpandedArguments),
@@ -5400,7 +5396,7 @@ begin
     for plugin in GridHostsPlugins do
     begin
       AMenuItem:= TMenuItem.Create(Self);
-      AMenuItem.Caption:=plugin.S['name'];
+      AMenuItem.Caption:=UTF8Encode(plugin.S['name']);
       AMenuItem.OnClick:= @ExecuteHostsGruidPlugin ;
       MenuGridHostsPlugins.Add(AMenuItem);
     end;

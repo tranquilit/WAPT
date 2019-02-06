@@ -1099,23 +1099,43 @@ msgid "Select CA Bundle"
 msgstr "Sélectionner le groupe de certificat CA"
 
 #: tvisrepositories.edhttpproxy.hint
+#, fuzzy
+#| msgid "E.g. : http://proxy.tranquilit.local:3128"
 msgctxt "tvisrepositories.edhttpproxy.hint"
-msgid "E.g. : http://proxy.tranquilit.local:3128"
+msgid ""
+"E.g. : http://proxy.tranquilit.local:3128\n"
+"Only required if a proxy is needed for templates access\n"
 msgstr "Par exemple : http://proxy.tranquilit.local:3128"
 
 #: tvisrepositories.edname.hint
+#, fuzzy
+#| msgid "E.g. : https://store.wapt.fr/wapt"
 msgctxt "tvisrepositories.edname.hint"
-msgid "E.g. : https://store.wapt.fr/wapt"
+msgid ""
+"E.g. : https://store.wapt.fr/wapt\n"
+"Used by WAPT console for duplicating packages.\n"
 msgstr "Par exemple : https://store.tranquil.it/wapt"
 
 #: tvisrepositories.edrepourl.hint
+#, fuzzy
+#| msgid "E.g. : https://store.wapt.fr/wapt"
 msgctxt "tvisrepositories.edrepourl.hint"
-msgid "E.g. : https://store.wapt.fr/wapt"
+msgid ""
+"E.g. : https://store.wapt.fr/wapt\n"
+"Used by WAPT console for duplicating packages.\n"
 msgstr "Par exemple : http://store.tranquil.it/wapt"
 
 #: tvisrepositories.edservercabundle.hint
+#, fuzzy
+#| msgid "E.g. : c:\\wapt\\ssl\\server\\cacert.pem"
 msgctxt "tvisrepositories.edservercabundle.hint"
-msgid "E.g. : c:\\wapt\\ssl\\server\\cacert.pem"
+msgid ""
+"E.g. : c:\\wapt\\ssl\\server\\cacert.pem\n"
+"Path to certificate bundle with https servers CA certificates\n"
+"The bundle must contain intermediate and root certificates\n"
+"\n"
+"If 0: no check on https server certificates issuers\n"
+"If 1 : use default wapt cacert.pem bundle\n"
 msgstr "Par ex. : c:\\wapt\\ssl\\server\\cacert.pem"
 
 #: tvisrepositories.edsignerscabundle.hint

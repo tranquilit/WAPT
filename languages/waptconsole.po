@@ -1080,22 +1080,34 @@ msgstr ""
 
 #: tvisrepositories.edhttpproxy.hint
 msgctxt "TVISREPOSITORIES.EDHTTPPROXY.HINT"
-msgid "E.g. : http://proxy.tranquilit.local:3128"
+msgid ""
+"E.g. : http://proxy.tranquilit.local:3128\n"
+"Only required if a proxy is needed for templates access\n"
 msgstr ""
 
 #: tvisrepositories.edname.hint
 msgctxt "TVISREPOSITORIES.EDNAME.HINT"
-msgid "E.g. : https://store.wapt.fr/wapt"
+msgid ""
+"E.g. : https://store.wapt.fr/wapt\n"
+"Used by WAPT console for duplicating packages.\n"
 msgstr ""
 
 #: tvisrepositories.edrepourl.hint
 msgctxt "TVISREPOSITORIES.EDREPOURL.HINT"
-msgid "E.g. : https://store.wapt.fr/wapt"
+msgid ""
+"E.g. : https://store.wapt.fr/wapt\n"
+"Used by WAPT console for duplicating packages.\n"
 msgstr ""
 
 #: tvisrepositories.edservercabundle.hint
 msgctxt "TVISREPOSITORIES.EDSERVERCABUNDLE.HINT"
-msgid "E.g. : c:\\wapt\\ssl\\server\\cacert.pem"
+msgid ""
+"E.g. : c:\\wapt\\ssl\\server\\cacert.pem\n"
+"Path to certificate bundle with https servers CA certificates\n"
+"The bundle must contain intermediate and root certificates\n"
+"\n"
+"If 0: no check on https server certificates issuers\n"
+"If 1 : use default wapt cacert.pem bundle\n"
 msgstr ""
 
 #: tvisrepositories.edsignerscabundle.hint

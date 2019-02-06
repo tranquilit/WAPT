@@ -198,7 +198,7 @@ end;
 
 procedure TVisWAPTConfig.ActCheckPersonalKeyUpdate(Sender: TObject);
 begin
-  ActCheckPersonalKey.Enabled:= FileExists(edPersonalCertificatePath.FileName);
+  ActCheckPersonalKey.Enabled:= FileExistsUTF8(edPersonalCertificatePath.FileName);
 end;
 
 procedure TVisWAPTConfig.ActGetServerCertificateExecute(Sender: TObject);
@@ -221,7 +221,7 @@ begin
         certfn:= AppendPathDelim(WaptBaseDir)+'ssl\server\'+cert.cn+'.crt';
         if not DirectoryExists(ExtractFileDir(certfn)) then
           ForceDirectory(ExtractFileDir(certfn));
-        StringToFile(certfn,pem_data);
+        StringToFile(certfn,String(pem_data));
         EdServerCertificate.Text := certfn;
         CBVerifyCert.Checked:=True;
       end
