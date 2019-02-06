@@ -27,9 +27,9 @@ object VisWaptGUI: TVisWaptGUI
     Height = 618
     Top = 0
     Width = 1284
-    ActivePage = pgInventory
+    ActivePage = pgPrivateRepo
     Align = alClient
-    TabIndex = 0
+    TabIndex = 2
     TabOrder = 0
     OnChange = MainPagesChange
     object pgInventory: TTabSheet
@@ -4416,7 +4416,7 @@ object VisWaptGUI: TVisWaptGUI
             Top = 8
             Width = 70
             Caption = 'Has errors'
-            OnClick = cbNeedUpgradeClick
+            OnClick = cbHostsHasErrorsClick
             TabOrder = 0
           end
           object ImgHostsNeedUpgrade: TImage
@@ -4482,7 +4482,7 @@ object VisWaptGUI: TVisWaptGUI
             Top = 8
             Width = 95
             Caption = 'Needs updating'
-            OnClick = cbNeedUpgradeClick
+            OnClick = cbHostsHasErrorsClick
             TabOrder = 1
           end
           object ImgHostsConnected: TImage
@@ -4548,7 +4548,7 @@ object VisWaptGUI: TVisWaptGUI
             Top = 8
             Width = 95
             Caption = 'Connected only'
-            OnClick = cbNeedUpgradeClick
+            OnClick = cbHostsHasErrorsClick
             TabOrder = 2
           end
           object EdSearchHosts: TSearchEdit
@@ -4568,7 +4568,7 @@ object VisWaptGUI: TVisWaptGUI
             Constraints.MaxHeight = 21
             Constraints.MinWidth = 180
             Font.Color = clGray
-            OnKeyPress = EdSearchHostKeyPress
+            OnKeyPress = EdSearchHostsKeyPress
             ParentFont = False
             TabOrder = 3
           end
@@ -5534,7 +5534,7 @@ object VisWaptGUI: TVisWaptGUI
               Font.Color = clGray
               OnKeyPress = EdWUASearchWindowsUpdateKeyPress
               ParentFont = False
-              TabOrder = 4
+              TabOrder = 3
             end
             object ButRefreshWindowsUpdates: TBitBtn
               AnchorSideLeft.Control = EdWUASearchWindowsUpdate
@@ -5553,33 +5553,22 @@ object VisWaptGUI: TVisWaptGUI
               Left = 254
               Height = 34
               Top = 4
-              Width = 293
+              Width = 330
               Action = ActWSUSDowloadWSUSScan
               AutoSize = True
+              Caption = 'Download index and missing cabs from Microsoft Web site'
               TabOrder = 1
             end
-            object cbForcedWSUSscanDownload: TCheckBox
+            object ButShowDownloadTasks: TBitBtn
               AnchorSideLeft.Control = ButDownloadWsusscn2cab
               AnchorSideLeft.Side = asrBottom
-              AnchorSideTop.Control = PanTopWindowsUpdates
-              AnchorSideTop.Side = asrCenter
-              Left = 551
-              Height = 17
-              Top = 13
-              Width = 224
-              Caption = 'Force download even if already up to date'
-              TabOrder = 2
-            end
-            object ButShowDownloadTasks: TBitBtn
-              AnchorSideLeft.Control = cbForcedWSUSscanDownload
-              AnchorSideLeft.Side = asrBottom
-              Left = 779
+              Left = 588
               Height = 34
               Top = 4
               Width = 157
               Action = ActWUAShowDownloadTasks
               AutoSize = True
-              TabOrder = 3
+              TabOrder = 2
             end
           end
         end

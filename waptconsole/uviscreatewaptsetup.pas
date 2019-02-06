@@ -26,9 +26,7 @@ type
     CBForceRepoURL: TCheckBox;
     CBInstallWUAUpdatesAtShutdown: TCheckBox;
     CBWUADefaultAllow: TCheckBox;
-    CBWUAOffline: TCheckBox;
     CBWUAEnabled: TCheckBox;
-    CBWUAAllowDirectDownload: TCheckBox;
     edAppendHostProfiles: TEdit;
     EdServerCertificate: TFileNameEdit;
     edWaptServerUrl: TEdit;
@@ -295,7 +293,7 @@ begin
         else
           CBWUADefaultAllow.Checked:=ini.ReadBool('waptwua','default_allow',False);
 
-        if not ini.ValueExists('waptwua','offline') then
+        {if not ini.ValueExists('waptwua','offline') then
           CBWUAOffline.State:=cbGrayed
         else
           CBWUAOffline.Checked:=ini.ReadBool('waptwua','offline',True);
@@ -304,6 +302,7 @@ begin
           CBWUAAllowDirectDownload.State:=cbGrayed
         else
           CBWUAAllowDirectDownload.Checked:=ini.ReadBool('waptwua','allow_direct_download',True);
+        }
 
         EdWUAInstallDelay.Text := ini.ReadString('waptwua','install_delay','');
         EdWUADownloadScheduling.Text := ini.ReadString('waptwua','download_scheduling','');
@@ -345,12 +344,12 @@ begin
         if CBWUADefaultAllow.State <> cbGrayed then
           ini.WriteBool('waptwua','default_allow',CBWUADefaultAllow.Checked);
 
-        if CBWUAOffline.State <> cbGrayed then
+        {if CBWUAOffline.State <> cbGrayed then
           ini.WriteBool('waptwua','offline',CBWUAOffline.Checked);
 
         if CBWUAAllowDirectDownload.State <> cbGrayed then
           ini.WriteBool('waptwua','allow_direct_download',CBWUAAllowDirectDownload.Checked);
-
+        }
         ini.WriteString('waptwua','install_delay',EdWUAInstallDelay.Text);
         ini.WriteString('waptwua','download_scheduling',EdWUADownloadScheduling.Text);
         ini.WriteBool('waptwua','install_at_shutdown',CBInstallWUAUpdatesAtShutdown.Checked);
@@ -504,7 +503,7 @@ begin
     else
       Result['install_delay'] := Nil;
 
-    if CBWUAAllowDirectDownload.State = cbGrayed then
+    {if CBWUAAllowDirectDownload.State = cbGrayed then
       Result['allow_direct_download'] := Nil
     else
       Result.B['allow_direct_download'] := CBWUAAllowDirectDownload.Checked;
@@ -513,6 +512,7 @@ begin
       Result['offline'] := Nil
     else
       Result.B['offline'] := CBWUAOffline.Checked;
+    }
 
     if CBInstallWUAUpdatesAtShutdown.State = cbGrayed then
       Result['install_at_shutdown'] := Nil

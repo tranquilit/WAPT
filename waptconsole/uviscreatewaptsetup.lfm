@@ -1,12 +1,12 @@
 object VisCreateWaptSetup: TVisCreateWaptSetup
   Left = 549
-  Height = 723
+  Height = 711
   Top = 115
   Width = 573
   AutoSize = True
   BorderStyle = bsDialog
   Caption = 'Create WAPT agent'
-  ClientHeight = 723
+  ClientHeight = 711
   ClientWidth = 573
   OnCloseQuery = FormCloseQuery
   OnDestroy = FormDestroy
@@ -17,12 +17,12 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
   LCLVersion = '1.8.4.0'
   object Panel2: TPanel
     Left = 0
-    Height = 688
+    Height = 676
     Top = 0
     Width = 573
     Align = alClient
     BevelOuter = bvNone
-    ClientHeight = 688
+    ClientHeight = 676
     ClientWidth = 573
     Constraints.MinHeight = 510
     Constraints.MinWidth = 560
@@ -397,12 +397,12 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       Visible = False
     end
     object GBWUA: TGroupBox
-      Left = 8
-      Height = 160
+      Left = 1
+      Height = 144
       Top = 528
       Width = 567
       Caption = 'WAPTWUA Windows Updates '
-      ClientHeight = 142
+      ClientHeight = 126
       ClientWidth = 563
       TabOrder = 16
       Visible = False
@@ -417,44 +417,24 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       object EdWUAInstallDelay: TEdit
         Left = 208
         Height = 21
-        Top = 80
+        Top = 64
         Width = 80
         TabOrder = 1
       end
       object LabWUAInstallDelay: TLabel
         Left = 8
         Height = 32
-        Top = 80
+        Top = 64
         Width = 192
         AutoSize = False
         Caption = 'Minimum delay before installation (days after publish date)'
         ParentColor = False
         WordWrap = True
       end
-      object CBWUAOffline: TCheckBox
-        Left = 8
-        Height = 17
-        Top = 24
-        Width = 174
-        Caption = 'Scan offline using wsusscn2.cab'
-        Checked = True
-        State = cbChecked
-        TabOrder = 2
-      end
-      object CBWUAAllowDirectDownload: TCheckBox
-        Left = 296
-        Height = 17
-        Hint = 'Allow to download cabs from Microsoft windows update site if it is not (yet) avalable on waptwua repository'
-        Top = 24
-        Width = 250
-        AllowGrayed = True
-        Caption = 'Allow direct download of Windows updates cabs'
-        TabOrder = 3
-      end
       object LabWUAScanDownloadPeriod: TLabel
         Left = 8
         Height = 13
-        Top = 52
+        Top = 36
         Width = 132
         Caption = 'Scan / download scheduling'
         ParentColor = False
@@ -463,25 +443,25 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       object EdWUADownloadScheduling: TEdit
         Left = 208
         Height = 21
-        Top = 48
+        Top = 32
         Width = 80
-        TabOrder = 4
+        TabOrder = 2
       end
       object CBInstallWUAUpdatesAtShutdown: TCheckBox
         Left = 8
         Height = 17
         Hint = 'If some Windows updates are pending, waptexit will append a task to install all pending Windows updates'
-        Top = 112
+        Top = 96
         Width = 200
         Caption = 'Install Pending Windows at Shutdown'
-        TabOrder = 5
+        TabOrder = 3
       end
     end
   end
   object Panel1: TPanel
     Left = 0
     Height = 35
-    Top = 688
+    Top = 676
     Width = 573
     Align = alBottom
     AutoSize = True

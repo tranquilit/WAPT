@@ -157,7 +157,6 @@ type
     cbAdvancedSearch: TCheckBox;
     cbAllClassifications: TCheckBox;
     cbAllproducts: TCheckBox;
-    cbForcedWSUSscanDownload: TCheckBox;
     cbGroups: TComboBox;
     cbHasErrors: TCheckBox;
     CBIncludeSubOU: TCheckBox;
@@ -691,6 +690,7 @@ type
     procedure cbGroupsDropDown(Sender: TObject);
     procedure cbGroupsKeyPress(Sender: TObject; var Key: char);
     procedure cbGroupsSelect(Sender: TObject);
+    procedure cbHostsHasErrorsClick(Sender: TObject);
     procedure CBIncludeSubOUClick(Sender: TObject);
     procedure CBInverseSelectClick(Sender: TObject);
     procedure cbMaskSystemComponentsClick(Sender: TObject);
@@ -715,6 +715,7 @@ type
     procedure EdDescriptionKeyPress(Sender: TObject; var Key: char);
     procedure EdHardwareFilterChange(Sender: TObject);
     procedure EdRunKeyPress(Sender: TObject; var Key: char);
+    procedure EdSearchHostsKeyPress(Sender: TObject; var Key: char);
     procedure EdSearchOrgUnitsChange(Sender: TObject);
     procedure EdSearchOrgUnitsKeyPress(Sender: TObject; var Key: char);
     procedure EdSearchPackageExecute(Sender: TObject);
@@ -878,6 +879,7 @@ type
     procedure FillcbADSiteDropDown;
     procedure FillcbGroups;
     procedure FilterDBOrgUnits;
+    function FilterHostsForPackage(HostsData: ISuperObject): ISuperObject;
     function FilterSoftwares(softs: ISuperObject): ISuperObject;
     function FilterHardware(data: ISuperObject): ISuperObject;
     function FilterHostWinUpdates(wua: ISuperObject): ISuperObject;
@@ -938,6 +940,8 @@ type
 
     PollTasksThread: TPollTasksThread;
 
+    HostsForPackageData: ISuperObject;
+
     property GridHostsPlugins: ISuperObject read GetGridHostsPlugins write SetGridHostsPlugins;
 
     property WUAClassifications : ISuperObject read GetWUAClassifications write FWUAClassifications;
@@ -950,7 +954,7 @@ type
     function EditIniFile: boolean;
     function updateprogress(receiver: TObject; current, total: integer): boolean;
     function TriggerActionOnHosts(uuids: ISuperObject;AAction:String;Args:ISuperObject;title,errortitle:String;Force:Boolean=False;NotifyServer:Boolean=True):ISuperObject;
-    procedure LoadHostsForPackage(Grid:TSOGrid;PackageName:String);
+    procedure LoadHostsForPackage(PackageName:String);
     procedure TriggerActionOnHostPackages(APackagesStatusGrid:TSOGrid;HostUUIDs:ISuperObject;AAction, title, errortitle: String;Force:Boolean=False);
     function DownloadPackage(RepoUrl, Filename: String): Variant;
 
@@ -1296,6 +1300,15 @@ procedure TVisWaptGUI.EdRunKeyPress(Sender: TObject; var Key: char);
 begin
   if Key = #13 then
     ActEvaluate.Execute;
+end;
+
+procedure TVisWaptGUI.EdSearchHostsKeyPress(Sender: TObject; var Key: char);
+begin
+  if key = #13 then
+    GridHostsForPackage.Data := FilterHostsForPackage(HostsForPackageData)
+  else
+    if CharIsAlphaNum(Key) then
+      GridHostsForPackage.Clear;
 end;
 
 procedure TVisWaptGUI.EdSearchOrgUnitsChange(Sender: TObject);
@@ -4022,6 +4035,11 @@ begin
   ActSearchHost.Execute;
 end;
 
+procedure TVisWaptGUI.cbHostsHasErrorsClick(Sender: TObject);
+begin
+  GridHostsForPackage.Data := FilterHostsForPackage(HostsForPackageData);
+end;
+
 procedure TVisWaptGUI.CBIncludeSubOUClick(Sender: TObject);
 begin
   GridOrgUnits.OnChange(GridOrgUnits,GridOrgUnits.FocusedNode);
@@ -5192,12 +5210,9 @@ begin
     begin
       PackageName := UTF8Encode(GridPackages.FocusedRow.S['package']);
       if CBShowHostsForPackages.Checked then
-      begin
-        if CBShowHostsForPackages.Checked then
-          LoadHostsForPackage(GridHostsForPackage,PackageName)
-        else
-          GridHostsForPackage.Data := Nil;
-      end;
+        LoadHostsForPackage(PackageName)
+      else
+        GridHostsForPackage.Data := Nil;
     end
     else
       GridHostsForPackage.Data := Nil;
@@ -5213,7 +5228,7 @@ begin
     begin
       PackageName := UTF8Encode(GridGroups.FocusedRow.S['package']);
       if CBShowHostsForGroups.Checked then
-        LoadHostsForPackage(GridHostsForPackage,PackageName)
+        LoadHostsForPackage(PackageName)
       else
         GridHostsForPackage.Data := Nil;
     end
@@ -5978,6 +5993,13 @@ procedure TVisWaptGUI.GridSelfServicePackagesColumnDblClick(
 begin
 ;;
 end;
+
+function TVisWaptGUI.FilterHostsForPackage(HostsData:ISuperObject):ISuperObject;
+begin
+;;
+end;
+
+
 {$endif}
 
 end.

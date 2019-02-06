@@ -429,24 +429,12 @@ msgctxt "tviscreatewaptsetup.cbverifycert.caption"
 msgid "Verify https server certificate"
 msgstr ""
 
-#: tviscreatewaptsetup.cbwuaallowdirectdownload.caption
-msgid "Allow direct download of Windows updates cabs"
-msgstr ""
-
-#: tviscreatewaptsetup.cbwuaallowdirectdownload.hint
-msgid "Allow to download cabs from Microsoft windows update site if it is not (yet) avalable on waptwua repository"
-msgstr ""
-
 #: tviscreatewaptsetup.cbwuadefaultallow.caption
 msgid "Allow all Updates by default unless explicitely forbidden by rules"
 msgstr ""
 
 #: tviscreatewaptsetup.cbwuaenabled.caption
 msgid "Manage Windows Updates with WAPT"
-msgstr ""
-
-#: tviscreatewaptsetup.cbwuaoffline.caption
-msgid "Scan offline using wsusscn2.cab"
 msgstr ""
 
 #: tviscreatewaptsetup.edappendhostprofiles.hint
@@ -2271,6 +2259,10 @@ msgstr ""
 msgid "Create new self-service rules package"
 msgstr ""
 
+#: tviswaptgui.butdownloadwsusscn2cab.caption
+msgid "Download index and missing cabs from Microsoft Web site"
+msgstr ""
+
 #: tviswaptgui.butsearchpackages1.caption
 msgctxt "tviswaptgui.butsearchpackages1.caption"
 msgid "Search"
@@ -2314,12 +2306,6 @@ msgstr ""
 msgctxt "tviswaptgui.cbfilterpackageslocales.caption"
 msgid "Locale"
 msgstr ""
-
-#: tviswaptgui.cbforcedwsusscandownload.caption
-#, fuzzy
-#| msgid "Force download even if aready up to date"
-msgid "Force download even if already up to date"
-msgstr "Download erzwingen, wenn es aktuell ist"
 
 #: tviswaptgui.cbgroups.hint
 msgctxt "tviswaptgui.cbgroups.hint"

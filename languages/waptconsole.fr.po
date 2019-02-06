@@ -413,14 +413,6 @@ msgctxt "tviscreatewaptsetup.cbverifycert.caption"
 msgid "Verify https server certificate"
 msgstr "Vérifier le certificat https serveur"
 
-#: tviscreatewaptsetup.cbwuaallowdirectdownload.caption
-msgid "Allow direct download of Windows updates cabs"
-msgstr "Autoriser le téléchargement direct des MAJ"
-
-#: tviscreatewaptsetup.cbwuaallowdirectdownload.hint
-msgid "Allow to download cabs from Microsoft windows update site if it is not (yet) avalable on waptwua repository"
-msgstr "Autrose de télécharger directement depuis le site de Microsoft si les fichiers ne sont pas disponibles sur le dépôt WaptWUA"
-
 #: tviscreatewaptsetup.cbwuadefaultallow.caption
 msgid "Allow all Updates by default unless explicitely forbidden by rules"
 msgstr "Autoriser toutes les MAJ par défaut."
@@ -428,10 +420,6 @@ msgstr "Autoriser toutes les MAJ par défaut."
 #: tviscreatewaptsetup.cbwuaenabled.caption
 msgid "Manage Windows Updates with WAPT"
 msgstr "Gérer les MAJ Windows avec WAPT"
-
-#: tviscreatewaptsetup.cbwuaoffline.caption
-msgid "Scan offline using wsusscn2.cab"
-msgstr "Scan hors ligne avec wsusscn2.cab"
 
 #: tviscreatewaptsetup.edappendhostprofiles.hint
 msgid "E.g. : socle,accounting"
@@ -2243,6 +2231,10 @@ msgstr "Voir l'information MS sur la mise à jour."
 msgid "Create new self-service rules package"
 msgstr "Créer un paquet de règles self-service"
 
+#: tviswaptgui.butdownloadwsusscn2cab.caption
+msgid "Download index and missing cabs from Microsoft Web site"
+msgstr "Télécharger l'index et les cabs manquants depuis le site de MS"
+
 #: tviswaptgui.butsearchpackages1.caption
 msgctxt "tviswaptgui.butsearchpackages1.caption"
 msgid "Search"
@@ -2287,10 +2279,6 @@ msgstr "Architecture"
 msgctxt "tviswaptgui.cbfilterpackageslocales.caption"
 msgid "Locale"
 msgstr "Langue"
-
-#: tviswaptgui.cbforcedwsusscandownload.caption
-msgid "Force download even if already up to date"
-msgstr "Forcer le téléchargement même si déjà à jour"
 
 #: tviswaptgui.cbgroups.hint
 msgctxt "tviswaptgui.cbgroups.hint"
