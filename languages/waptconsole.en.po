@@ -3469,11 +3469,11 @@ msgid "Delete %d download log records ?"
 msgstr ""
 
 #: uwaptconsoleres.rsconfirmdeletewuupdate
-msgid "Delete windows update %s record and cached file ?"
+msgid "Delete windows update %s associated cached files on server ?"
 msgstr ""
 
 #: uwaptconsoleres.rsconfirmdeletewuupdates
-msgid "Delete %d windows updates records and cached files ?"
+msgid "Delete %d windows updates cached files on server ?"
 msgstr ""
 
 #: uwaptconsoleres.rsconfirmdeletion

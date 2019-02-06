@@ -269,8 +269,8 @@ resourcestring
   rsConfirmDeleteQueries = 'Delete %d queries ?';
 
   { Messages WUUpdates }
-  rsConfirmDeleteWUUpdate = 'Delete windows update %s record and cached file ?';
-  rsConfirmDeleteWUUpdates = 'Delete %d windows updates records and cached files ?';
+  rsConfirmDeleteWUUpdate = 'Delete windows update %s associated cached files on server ?';
+  rsConfirmDeleteWUUpdates = 'Delete %d windows updates cached files on server ?';
 
   { Messages WUDownloads }
   rsConfirmDeleteWUDownload = 'Delete download log record ?';

@@ -3620,12 +3620,16 @@ msgid "Delete %d download log records ?"
 msgstr "Effacer %s enregistrements de log de téléchargement ?"
 
 #: uwaptconsoleres.rsconfirmdeletewuupdate
-msgid "Delete windows update %s record and cached file ?"
-msgstr "Supprimer %s enregistrements de Windows Updates ainsi que les fichiers ?"
+#, fuzzy
+#| msgid "Delete windows update %s record and cached file ?"
+msgid "Delete windows update %s associated cached files on server ?"
+msgstr "Supprimer du serveur les fichiers associés à la mise à jour Windows %s ?"
 
 #: uwaptconsoleres.rsconfirmdeletewuupdates
-msgid "Delete %d windows updates records and cached files ?"
-msgstr "Supprimer la mise à jour Windows %s et les fichiers en cache associés"
+#, fuzzy
+#| msgid "Delete %d windows updates records and cached files ?"
+msgid "Delete %d windows updates cached files on server ?"
+msgstr "Supprimer du serveur les fichiers associés à %s mises à jour Windows ?"
 
 #: uwaptconsoleres.rsconfirmdeletion
 msgctxt "uwaptconsoleres.rsconfirmdeletion"

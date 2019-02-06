@@ -27,9 +27,9 @@ object VisWaptGUI: TVisWaptGUI
     Height = 618
     Top = 0
     Width = 1284
-    ActivePage = pgPrivateRepo
+    ActivePage = pgInventory
     Align = alClient
-    TabIndex = 2
+    TabIndex = 0
     TabOrder = 0
     OnChange = MainPagesChange
     object pgInventory: TTabSheet
@@ -9374,6 +9374,7 @@ object VisWaptGUI: TVisWaptGUI
       Caption = 'Refresh'
       ImageIndex = 5
       OnExecute = ActWSUSRefreshExecute
+      ShortCut = 116
     end
     object ActWSUSDowloadWSUSScan: TAction
       Caption = 'Download WSUSScan cab from Microsoft Web site'
