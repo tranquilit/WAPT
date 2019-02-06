@@ -5734,9 +5734,9 @@ begin
   ;;
 end;
 
-procedure TVisWaptGUI.LoadHostsForPackage(Grid: TSOGrid;PackageName: String);
+procedure TVisWaptGUI.LoadHostsForPackage(PackageName: String);
 begin
-  Grid.Data := Nil;
+  ;;
 end;
 
 procedure TVisWaptGUI.ActReportingQueryDeleteExecute(Sender: TObject);
