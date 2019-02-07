@@ -101,7 +101,6 @@ begin
   else
     SilentFlags := None();
 
-  if FileExistsUTF8(EdInstallerPath.FileName) then
   try
     wapt := dmpython.WAPT;
     Version := EdVersion.Text;
@@ -145,8 +144,6 @@ begin
   finally
     Screen.cursor := crDefault;
   end
-  else
-    ShowMessageFmt(rsInstallerFileNotFound,[EdInstallerPath.FileName]);
 end;
 
 procedure TVisPackageWizard.SetInstallerFilename(AValue: String);
