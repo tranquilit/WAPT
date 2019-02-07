@@ -40,8 +40,8 @@ msgstr ""
 "Ne pas arrêter votre ordinateur\n"
 
 #: tviswaptexit.labwaptupgrades.caption
-msgid "Packages installs or updates pending."
-msgstr "Installations de paquets en attente"
+msgid "WAPT Packages installs or updates pending."
+msgstr "Installations de paquets WAPT en attente"
 
 #: tviswaptexit.labwuaupgrades.caption
 msgid "Windows Updates pending."
@@ -65,8 +65,8 @@ msgstr "Mise à jour des logiciels dans %s sec..."
 
 #: uwaptexitres.rsupdatesavailable
 msgctxt "uwaptexitres.rsupdatesavailable"
-msgid "%d installs or updates pending"
-msgstr "%d installations en attente"
+msgid "%d WAPT installs or updates pending"
+msgstr "%d installations WAPT en attente"
 
 #: uwaptexitres.rsupdatingsoftware
 msgid "Updating software"

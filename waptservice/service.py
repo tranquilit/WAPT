@@ -700,7 +700,7 @@ def upgrade():
     only_if_not_process_running = int(request.args.get('only_if_not_process_running','0')) != 0
 
     if waptwua_api:
-        install_wua_updates= int(request.args.get('install_wua_update','0')) != 0
+        install_wua_updates= int(request.args.get('install_wua_updates','0')) != 0
     else:
         install_wua_updates = False
 

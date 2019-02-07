@@ -32,7 +32,7 @@ msgid ""
 msgstr ""
 
 #: tviswaptexit.labwaptupgrades.caption
-msgid "Packages installs or updates pending."
+msgid "WAPT Packages installs or updates pending."
 msgstr ""
 
 #: tviswaptexit.labwuaupgrades.caption
@@ -57,7 +57,7 @@ msgstr ""
 
 #: uwaptexitres.rsupdatesavailable
 msgctxt "uwaptexitres.rsupdatesavailable"
-msgid "%d installs or updates pending"
+msgid "%d WAPT installs or updates pending"
 msgstr ""
 
 #: uwaptexitres.rsupdatingsoftware

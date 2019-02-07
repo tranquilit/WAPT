@@ -68,7 +68,7 @@ msgid ""
 msgstr ""
 
 #: tviswaptexit.labwaptupgrades.caption
-msgid "Packages installs or updates pending."
+msgid "WAPT Packages installs or updates pending."
 msgstr ""
 
 #: tviswaptexit.labwuaupgrades.caption
@@ -93,11 +93,9 @@ msgstr "Akutalisierung der Sofware in %s sec..."
 
 #: uwaptexitres.rsupdatesavailable
 #, fuzzy
-#| msgid ""
-#| "There are %d installs or updates pending.\n"
-#| "Do you wish to apply them now ?\n"
+#| msgid "%d installs or updates pending"
 msgctxt "uwaptexitres.rsupdatesavailable"
-msgid "%d installs or updates pending"
+msgid "%d WAPT installs or updates pending"
 msgstr "Es gibt ausstehende Installationen oder Updates"
 
 #: uwaptexitres.rsupdatingsoftware

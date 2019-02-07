@@ -18,19 +18,19 @@ object VisWaptExit: TVisWaptExit
   LCLVersion = '1.8.4.0'
   object panHaut: TPanel
     Left = 0
-    Height = 202
+    Height = 200
     Top = 0
     Width = 416
     Align = alTop
     AutoSize = True
     BevelOuter = bvNone
-    ClientHeight = 202
+    ClientHeight = 200
     ClientWidth = 416
     Constraints.MinWidth = 395
     TabOrder = 0
     object CustomLogo: TImage
       Left = 5
-      Height = 120
+      Height = 118
       Top = 5
       Width = 88
       AntialiasingMode = amOn
@@ -42,29 +42,29 @@ object VisWaptExit: TVisWaptExit
     end
     object PanOut: TPanel
       Left = 98
-      Height = 130
+      Height = 128
       Top = 0
       Width = 318
       Align = alClient
       BevelOuter = bvNone
-      ClientHeight = 130
+      ClientHeight = 128
       ClientWidth = 318
       TabOrder = 0
       object panTop: TPanel
         Left = 0
-        Height = 72
+        Height = 70
         Top = 0
         Width = 318
         Align = alTop
         AutoSize = True
         BevelOuter = bvNone
-        ClientHeight = 72
+        ClientHeight = 70
         ClientWidth = 318
         TabOrder = 0
         object LabDontShutdown: TLabel
           Left = 3
           Height = 26
-          Top = 23
+          Top = 41
           Width = 312
           Align = alClient
           BorderSpacing.Around = 3
@@ -83,7 +83,7 @@ object VisWaptExit: TVisWaptExit
           BorderSpacing.Top = 2
           BorderSpacing.Bottom = 2
           BorderSpacing.Around = 3
-          Caption = 'Packages installs or updates pending.'
+          Caption = 'WAPT Packages installs or updates pending.'
           Constraints.MaxHeight = 52
           Constraints.MaxWidth = 291
           ParentColor = False
@@ -91,9 +91,9 @@ object VisWaptExit: TVisWaptExit
         object LabWUAUpgrades: TLabel
           Left = 3
           Height = 13
-          Top = 54
+          Top = 23
           Width = 291
-          Align = alBottom
+          Align = alTop
           BorderSpacing.Top = 2
           BorderSpacing.Bottom = 2
           BorderSpacing.Around = 3
@@ -107,7 +107,7 @@ object VisWaptExit: TVisWaptExit
       object PanButtons: TPanel
         Left = 3
         Height = 52
-        Top = 75
+        Top = 73
         Width = 312
         Align = alTop
         AutoSize = True
@@ -155,7 +155,7 @@ object VisWaptExit: TVisWaptExit
     object PanProgress: TPanel
       Left = 0
       Height = 72
-      Top = 130
+      Top = 128
       Width = 416
       Align = alBottom
       AutoSize = True
@@ -202,7 +202,7 @@ object VisWaptExit: TVisWaptExit
   object panBas: TPanel
     Left = 0
     Height = 218
-    Top = 202
+    Top = 200
     Width = 416
     Align = alClient
     AutoSize = True

@@ -147,7 +147,7 @@ begin
       if aso <> Nil then
       begin
         upgrades := Nil;
-        MemoLog.Items.Text:=aso.AsJSon(True);
+        //MemoLog.Items.Text := aso.AsJSon(True);
         tasks := aso['content'];
         pending := tasks;
         if (tasks <> Nil) and (tasks.AsArray<>Nil) then
