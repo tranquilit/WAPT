@@ -87,6 +87,10 @@ msgstr "Sofware Update unterbrechen"
 msgid "Launch software update"
 msgstr "Software Update starten"
 
+#: uwaptexitres.rspendingremoves
+msgid "%d packages to uninstall"
+msgstr ""
+
 #: uwaptexitres.rssoftwareupdatein
 msgid "Updating software in %s sec..."
 msgstr "Akutalisierung der Sofware in %s sec..."

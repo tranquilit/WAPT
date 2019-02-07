@@ -51,6 +51,10 @@ msgstr ""
 msgid "Launch software update"
 msgstr ""
 
+#: uwaptexitres.rspendingremoves
+msgid "%d packages to uninstall"
+msgstr ""
+
 #: uwaptexitres.rssoftwareupdatein
 msgid "Updating software in %s sec..."
 msgstr ""

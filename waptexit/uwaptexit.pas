@@ -63,7 +63,7 @@ type
     procedure SetInstallWUAUpdates(AValue: Boolean);
   public
     { public declarations }
-    upgrades,tasks,running,pending,wua_status,wua_pending_count : ISuperObject;
+    upgrades,Removes,tasks,running,pending,wua_status,wua_pending_count : ISuperObject;
     // wait for waptservice answer in seconds
     WAPTServiceRunning:Boolean;
 
@@ -238,7 +238,9 @@ end;
 
 function TVisWaptExit.ShouldBeUpgraded: Boolean;
 begin
-  Result := ((Upgrades <> Nil) and (upgrades.AsArray <> Nil) and (upgrades.AsArray.Length>0))
+  Result := ((Upgrades <> Nil) and (Upgrades.AsArray <> Nil) and (Upgrades.AsArray.Length>0))
+            or
+            ((Removes <> Nil) and (Removes.AsArray <> Nil) and (Removes.AsArray.Length>0))
             {$ifdef enterprise}
             or
             (InstallWUAUpdates and Assigned(wua_status) and (wua_status.AsString <> 'OK') and
@@ -259,6 +261,7 @@ begin
   tasks := Nil;
   running := Nil;
   pending := Nil;
+  Removes := Nil;
 
   ActUpgrade.Enabled:=false;
 
@@ -272,6 +275,7 @@ begin
     begin
       WAPTServiceRunning:=True;
       upgrades := aso['upgrades'];
+      Removes := aso['pending.remove'];
       {$ifdef enterprise}
       wua_status := aso['wua_status'];
       wua_pending_count := aso['wua_pending_count'];
@@ -286,6 +290,7 @@ begin
     on E:Exception do
     begin
       upgrades := Nil;
+      Removes := Nil;
       wua_status := Nil;
       wua_pending_count := Nil;
     end;
@@ -303,7 +308,11 @@ begin
     if ShouldBeUpgraded then
     begin
       MemoLog.Items.Text:= Join(#13#10, upgrades);
-      LabWaptUpgrades.Caption := Format(rsUpdatesAvailable,[upgrades.AsArray.Length]);
+      if Removes.AsArray.Length>0 then
+        MemoLog.Items.Text:=MemoLog.Items.Text + #13#10 + Format(rsPendingRemoves,[Removes.AsArray.Length])+#13#10 +
+            Join(#13#10, Removes);
+
+      LabWaptUpgrades.Caption := Format(rsUpdatesAvailable,[upgrades.AsArray.Length+Removes.AsArray.Length]);
       {$ifdef enterprise}
       if (wua_status<>Nil) and (wua_pending_count<>Nil) then
       begin

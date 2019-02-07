@@ -10,14 +10,10 @@ msgid "Not now"
 msgstr "Pas maintenant"
 
 #: tviswaptexit.actupgrade.caption
-#, fuzzy
-#| msgid "Install/update packages"
 msgid "Install / Upgrade packages"
 msgstr "Installer ou mettre à jour"
 
 #: tviswaptexit.caption
-#, fuzzy
-#| msgid "Launching updates..."
 msgid "WAPT Softwares Updates"
 msgstr "WAPT - Mises à jour de logiciels "
 
@@ -30,8 +26,6 @@ msgid "some upgrades are pending, launch upgrades after timeout expired or manua
 msgstr "Des mises à jour sont en attente, lancement après l'expiration du délai ou une action manuelle"
 
 #: tviswaptexit.labdontshutdown.caption
-#, fuzzy
-#| msgid "Upgrades in progress..."
 msgid ""
 "Upgrades in progress...\n"
 "Don't shutdown your computer !\n"
@@ -58,6 +52,10 @@ msgstr "Interrompre la mise à jour des logiciels"
 #: uwaptexitres.rslaunchsoftwareupdate
 msgid "Launch software update"
 msgstr "Lancer la mise à jour des logiciels"
+
+#: uwaptexitres.rspendingremoves
+msgid "%d packages to uninstall"
+msgstr "%d paquets à désinstaller"
 
 #: uwaptexitres.rssoftwareupdatein
 msgid "Updating software in %s sec..."
@@ -187,7 +185,6 @@ msgid "Removing %s"
 msgstr "Suppression de %s"
 
 #: uwaptres.rsdeletioninprogress
-#, fuzzy
 msgid "Removing packages..."
 msgstr "Suppression des paquets..."
 
@@ -196,7 +193,6 @@ msgid "Selection of packages to add to the hosts as dependencies"
 msgstr "Choix des paquets à ajouter aux hôtes en tant que dépendances"
 
 #: uwaptres.rsdiffpwerror
-#, fuzzy
 msgid "Passwords do not match."
 msgstr "Les mots de passe ne correspondent pas."
 
@@ -269,7 +265,6 @@ msgid "Error cancelling: %s"
 msgstr "Erreur de l'annulation : %s"
 
 #: uwaptres.rserrorfor
-#, fuzzy
 msgid "Error for %s"
 msgstr "Erreur pour %s"
 
@@ -391,7 +386,6 @@ msgid "%s hosts affected."
 msgstr "%s machines modifiées."
 
 #: uwaptres.rsnobundle
-#, fuzzy
 msgid "There is no package bundle."
 msgstr "Il n'y a pas de groupe de paquets."
 
@@ -519,12 +513,10 @@ msgid "Setting up server password"
 msgstr "Mise en place du mot de passe du serveur"
 
 #: uwaptres.rssoftwareupdatein
-#, fuzzy
-msgid "Mise Ã  jour des logiciels dans %s sec..."
-msgstr "Mise Ã  jour des logiciels dans %s sec..."
+msgid "Mise à jour des logiciels dans %s sec..."
+msgstr "Mise à jour des logiciels dans %s sec..."
 
 #: uwaptres.rssrv
-#, fuzzy
 msgid "SRV: %s"
 msgstr "SRV: %s"
 
@@ -669,7 +661,6 @@ msgid "Win32 Exe wrapper: %s %s"
 msgstr "wrapper Win32 Exe : %s %s"
 
 #: uwaptres.rswinterruptreceived
-#, fuzzy
 #| msgid "W: interrupt received, killing serverâ?¦"
 msgid "W: interrupt received, killing serverâ¦"
 msgstr "W: interruption reçue, arrêt du serveur"

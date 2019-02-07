@@ -16,6 +16,7 @@ resourcestring
   rsLaunchSoftwareUpdate = 'Launch software update';
   rsErrorWininetFlags = 'Internal error in SetToIgnoreCerticateErrors when trying to get wininet flags. %s';
   rsUpdatesAvailable = '%d WAPT installs or updates pending';
+  rsPendingRemoves = '%d packages to uninstall';
   rsWUAUpdatesAvailable = '%d Windows Updates pending';
   rsUpgradeRunning = 'Upgrade running...';
 
