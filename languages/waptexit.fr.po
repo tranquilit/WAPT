@@ -1,8 +1,5 @@
-msgid ""
-msgstr "Content-Type: text/plain; charset=UTF-8"
-
 msgid "Do you wish to apply them now ?"
-msgstr "Voulez-vous les appliquer maintenant ?"
+msgstr "Content-Type: text/plain; charset=UTF-8Voulez-vous les appliquer maintenant ?"
 
 #: tviswaptexit.actshowdetails.caption
 msgid "Show details"
@@ -40,16 +37,13 @@ msgstr ""
 "Mises à jour en cours\n"
 "Ne pas arrêter votre ordinateur\n"
 
-#: tviswaptexit.labintro.caption
-#, fuzzy
-#| msgid ""
-#| "There are %d installs or updates pending.\n"
-#| "Do you wish to apply them now ?\n"
-msgctxt "tviswaptexit.labintro.caption"
-msgid ""
-"Installs or updates pending.\n"
-"Do you wish to apply them now ?\n"
-msgstr "%d installations ou mises à jour sont en attente."
+#: tviswaptexit.labwaptupgrades.caption
+msgid "Packages installs or updates pending."
+msgstr "Installations de paquets en attente"
+
+#: tviswaptexit.labwuaupgrades.caption
+msgid "Windows Updates pending."
+msgstr "Mises à jour Windows en attente"
 
 #: uwaptexitres.rserrorwininetflags
 msgid "Internal error in SetToIgnoreCerticateErrors when trying to get wininet flags. %s"
@@ -68,11 +62,10 @@ msgid "Updating software in %s sec..."
 msgstr "Mise à jour des logiciels dans %s sec..."
 
 #: uwaptexitres.rsupdatesavailable
+
 msgctxt "uwaptexitres.rsupdatesavailable"
-msgid ""
-"There are %d installs or updates pending.\n"
-"Do you wish to apply them now ?\n"
-msgstr ""
+msgid "%d installs or updates pending"
+msgstr "%d installations en attente"
 "Il y %d installations ou mises à jour en attente\n"
 "Souhaitez-vous les lancer maintenant ?\n"
 
@@ -83,6 +76,10 @@ msgstr "Mise à jour des logiciels"
 #: uwaptexitres.rsupgraderunning
 msgid "Upgrade running..."
 msgstr "Mises à jour en cours..."
+
+#: uwaptexitres.rswuaupdatesavailable
+msgid "%d Windows Updates pending"
+msgstr "%d Mises à jour Windows en attente"
 
 #: uwaptres.rsbundleconfigeditcaption
 msgid "Edit package bundle configuration"

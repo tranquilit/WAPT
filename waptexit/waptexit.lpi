@@ -44,6 +44,7 @@
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
+        <CommandLineParams Value="/install_wua_updates=1"/>
       </local>
     </RunParams>
     <RequiredPackages Count="6">

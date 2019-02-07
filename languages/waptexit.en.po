@@ -31,11 +31,12 @@ msgid ""
 "Don't shutdown your computer !\n"
 msgstr ""
 
-#: tviswaptexit.labintro.caption
-msgctxt "tviswaptexit.labintro.caption"
-msgid ""
-"Installs or updates pending.\n"
-"Do you wish to apply them now ?\n"
+#: tviswaptexit.labwaptupgrades.caption
+msgid "Packages installs or updates pending."
+msgstr ""
+
+#: tviswaptexit.labwuaupgrades.caption
+msgid "Windows Updates pending."
 msgstr ""
 
 #: uwaptexitres.rserrorwininetflags
@@ -56,9 +57,7 @@ msgstr ""
 
 #: uwaptexitres.rsupdatesavailable
 msgctxt "uwaptexitres.rsupdatesavailable"
-msgid ""
-"There are %d installs or updates pending.\n"
-"Do you wish to apply them now ?\n"
+msgid "%d installs or updates pending"
 msgstr ""
 
 #: uwaptexitres.rsupdatingsoftware
@@ -67,6 +66,10 @@ msgstr ""
 
 #: uwaptexitres.rsupgraderunning
 msgid "Upgrade running..."
+msgstr ""
+
+#: uwaptexitres.rswuaupdatesavailable
+msgid "%d Windows Updates pending"
 msgstr ""
 
 #: uwaptres.rsbundleconfigeditcaption

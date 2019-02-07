@@ -65,16 +65,13 @@ msgid ""
 "Don't shutdown your computer !\n"
 msgstr ""
 
-#: tviswaptexit.labintro.caption
-#, fuzzy
-#| msgid ""
-#| "There are %d installs or updates pending.\n"
-#| "Do you wish to apply them now ?\n"
-msgctxt "tviswaptexit.labintro.caption"
-msgid ""
-"Installs or updates pending.\n"
-"Do you wish to apply them now ?\n"
-msgstr "Es gibt ausstehende Installationen oder Updates"
+#: tviswaptexit.labwaptupgrades.caption
+msgid "Packages installs or updates pending."
+msgstr ""
+
+#: tviswaptexit.labwuaupgrades.caption
+msgid "Windows Updates pending."
+msgstr ""
 
 #: uwaptexitres.rserrorwininetflags
 msgid "Internal error in SetToIgnoreCerticateErrors when trying to get wininet flags. %s"
@@ -94,11 +91,11 @@ msgstr "Akutalisierung der Sofware in %s sec..."
 
 #: uwaptexitres.rsupdatesavailable
 #, fuzzy
-#| msgid "There are %d installs or updates pending."
+#| msgid ""
+#| "There are %d installs or updates pending.\n"
+#| "Do you wish to apply them now ?\n"
 msgctxt "uwaptexitres.rsupdatesavailable"
-msgid ""
-"There are %d installs or updates pending.\n"
-"Do you wish to apply them now ?\n"
+msgid "%d installs or updates pending"
 msgstr "Es gibt ausstehende Installationen oder Updates"
 
 #: uwaptexitres.rsupdatingsoftware
@@ -107,6 +104,10 @@ msgstr "Software aktualisieren"
 
 #: uwaptexitres.rsupgraderunning
 msgid "Upgrade running..."
+msgstr ""
+
+#: uwaptexitres.rswuaupdatesavailable
+msgid "%d Windows Updates pending"
 msgstr ""
 
 #: uwaptres.rsbundleconfigeditcaption

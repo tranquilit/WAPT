@@ -1,14 +1,14 @@
 object VisWaptExit: TVisWaptExit
   Left = 416
-  Height = 378
+  Height = 377
   Top = 195
-  Width = 389
+  Width = 416
   Anchors = [akTop, akRight]
   AutoSize = True
   BorderStyle = bsDialog
   Caption = 'Launching updates...'
-  ClientHeight = 378
-  ClientWidth = 389
+  ClientHeight = 377
+  ClientWidth = 416
   DefaultMonitor = dmDesktop
   FormStyle = fsSystemStayOnTop
   OnCloseQuery = FormCloseQuery
@@ -18,19 +18,19 @@ object VisWaptExit: TVisWaptExit
   LCLVersion = '1.8.4.0'
   object panHaut: TPanel
     Left = 0
-    Height = 172
+    Height = 202
     Top = 0
-    Width = 395
+    Width = 416
     Align = alTop
     AutoSize = True
     BevelOuter = bvNone
-    ClientHeight = 172
-    ClientWidth = 395
+    ClientHeight = 202
+    ClientWidth = 416
     Constraints.MinWidth = 395
     TabOrder = 0
     object CustomLogo: TImage
       Left = 5
-      Height = 90
+      Height = 120
       Top = 5
       Width = 88
       AntialiasingMode = amOn
@@ -42,30 +42,30 @@ object VisWaptExit: TVisWaptExit
     end
     object PanOut: TPanel
       Left = 98
-      Height = 100
+      Height = 130
       Top = 0
-      Width = 297
+      Width = 318
       Align = alClient
       BevelOuter = bvNone
-      ClientHeight = 100
-      ClientWidth = 297
+      ClientHeight = 130
+      ClientWidth = 318
       TabOrder = 0
       object panTop: TPanel
         Left = 0
-        Height = 36
+        Height = 72
         Top = 0
-        Width = 297
+        Width = 318
         Align = alTop
         AutoSize = True
         BevelOuter = bvNone
-        ClientHeight = 36
-        ClientWidth = 297
+        ClientHeight = 72
+        ClientWidth = 318
         TabOrder = 0
         object LabDontShutdown: TLabel
           Left = 3
-          Height = 30
-          Top = 3
-          Width = 291
+          Height = 26
+          Top = 23
+          Width = 312
           Align = alClient
           BorderSpacing.Around = 3
           Caption = 'Upgrades in progress...'#13#10'Don''t shutdown your computer !'
@@ -74,26 +74,41 @@ object VisWaptExit: TVisWaptExit
           ParentFont = False
           Visible = False
         end
-        object LabIntro: TLabel
+        object LabWaptUpgrades: TLabel
           Left = 3
-          Height = 26
+          Height = 13
           Top = 5
           Width = 291
-          Align = alClient
+          Align = alTop
           BorderSpacing.Top = 2
           BorderSpacing.Bottom = 2
           BorderSpacing.Around = 3
-          Caption = 'Installs or updates pending.'#13#10'Do you wish to apply them now ?'
+          Caption = 'Packages installs or updates pending.'
           Constraints.MaxHeight = 52
           Constraints.MaxWidth = 291
           ParentColor = False
         end
+        object LabWUAUpgrades: TLabel
+          Left = 3
+          Height = 13
+          Top = 54
+          Width = 291
+          Align = alBottom
+          BorderSpacing.Top = 2
+          BorderSpacing.Bottom = 2
+          BorderSpacing.Around = 3
+          Caption = 'Windows Updates pending.'
+          Constraints.MaxHeight = 52
+          Constraints.MaxWidth = 291
+          ParentColor = False
+          Visible = False
+        end
       end
       object PanButtons: TPanel
         Left = 3
-        Height = 32
-        Top = 39
-        Width = 291
+        Height = 52
+        Top = 75
+        Width = 312
         Align = alTop
         AutoSize = True
         BorderSpacing.Around = 3
@@ -106,20 +121,20 @@ object VisWaptExit: TVisWaptExit
         ChildSizing.ShrinkHorizontal = crsHomogenousSpaceResize
         ChildSizing.Layout = cclLeftToRightThenTopToBottom
         ChildSizing.ControlsPerLine = 2
-        ClientHeight = 32
-        ClientWidth = 291
+        ClientHeight = 52
+        ClientWidth = 312
         TabOrder = 1
         object ButUpgradeNow: TBitBtn
-          Left = 11
+          Left = 6
           Height = 26
           Top = 3
-          Width = 174
+          Width = 214
           Action = ActUpgrade
           AutoSize = True
           TabOrder = 0
         end
         object ButNotNow: TBitBtn
-          Left = 196
+          Left = 226
           Height = 26
           Top = 3
           Width = 86
@@ -127,21 +142,21 @@ object VisWaptExit: TVisWaptExit
           AutoSize = True
           TabOrder = 1
         end
-      end
-      object CBSkipWindowsUpdates: TCheckBox
-        Left = 16
-        Height = 17
-        Top = 75
-        Width = 214
-        Caption = 'Skip the installation of Windows Updates'
-        TabOrder = 2
+        object CBSkipWindowsUpdates: TCheckBox
+          Left = 6
+          Height = 17
+          Top = 32
+          Width = 214
+          Caption = 'Skip the installation of Windows Updates'
+          TabOrder = 2
+        end
       end
     end
     object PanProgress: TPanel
       Left = 0
       Height = 72
-      Top = 100
-      Width = 395
+      Top = 130
+      Width = 416
       Align = alBottom
       AutoSize = True
       BevelOuter = bvNone
@@ -154,13 +169,13 @@ object VisWaptExit: TVisWaptExit
       ChildSizing.ShrinkHorizontal = crsHomogenousSpaceResize
       ChildSizing.ShrinkVertical = crsHomogenousSpaceResize
       ClientHeight = 72
-      ClientWidth = 395
+      ClientWidth = 416
       TabOrder = 1
       object ProgressBar: TProgressBar
         Left = 6
         Height = 20
         Top = 3
-        Width = 382
+        Width = 403
         Anchors = [akTop, akLeft, akRight]
         TabOrder = 0
       end
@@ -176,7 +191,7 @@ object VisWaptExit: TVisWaptExit
         Left = 6
         Height = 21
         Top = 28
-        Width = 385
+        Width = 406
         Anchors = [akTop, akLeft, akRight]
         ReadOnly = True
         TabOrder = 2
@@ -187,13 +202,13 @@ object VisWaptExit: TVisWaptExit
   object panBas: TPanel
     Left = 0
     Height = 218
-    Top = 172
-    Width = 389
+    Top = 202
+    Width = 416
     Align = alClient
     AutoSize = True
     BevelOuter = bvNone
     ClientHeight = 218
-    ClientWidth = 389
+    ClientWidth = 416
     Constraints.MinHeight = 218
     TabOrder = 1
     Visible = False
@@ -201,7 +216,7 @@ object VisWaptExit: TVisWaptExit
       Left = 251
       Height = 212
       Top = 3
-      Width = 135
+      Width = 162
       Align = alClient
       BorderSpacing.Around = 3
       ItemHeight = 0

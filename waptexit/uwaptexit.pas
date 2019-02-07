@@ -26,7 +26,8 @@ type
     GridPending: TSOGrid;
     CustomLogo: TImage;
     LabDontShutdown: TLabel;
-    LabIntro: TLabel;
+    LabWaptUpgrades: TLabel;
+    LabWUAUpgrades: TLabel;
     PanButtons: TPanel;
     ImageList1: TImageList;
     MemoLog: TListBox;
@@ -62,7 +63,7 @@ type
     procedure SetInstallWUAUpdates(AValue: Boolean);
   public
     { public declarations }
-    upgrades,tasks,running,pending : ISuperObject;
+    upgrades,tasks,running,pending,wua_status,wua_pending_count : ISuperObject;
     // wait for waptservice answer in seconds
     WAPTServiceRunning:Boolean;
 
@@ -156,7 +157,8 @@ begin
         ActUpgrade.Caption:=rsUpdatingSoftware;
         actSkip.Caption:=rsInterruptUpdate;
         ButUpgradeNow.Visible := False;
-        LabIntro.Visible := False;
+        LabWaptUpgrades.Visible := False;
+        LabWUAUpgrades.Visible := False;
         LabDontShutdown.Visible := True;
       end;
     except
@@ -164,21 +166,6 @@ begin
       upgrades := Nil;
       Close;
     end
-    {else
-      // try using direct call
-      try
-        //GridTasks.Data := tasks;
-        upgrades := Nil;
-        ActUpgrade.Caption:=rsUpdatingSoftware;
-        actSkip.Caption:=rsInterruptUpdate;
-        ButUpgradeNow.Visible := False;
-        LabIntro.Visible := False;
-        LabDontShutdown.Visible := True;
-        Application.ProcessMessages;
-        Run('wapt-get -D upgrade','',3600000,'','','',@OnRunNotify);
-      Finally
-        Close;
-      end;}
   finally
     if PrevTimer then
       Timer1.Enabled := True;
@@ -251,7 +238,13 @@ end;
 
 function TVisWaptExit.ShouldBeUpgraded: Boolean;
 begin
-  Result := (Upgrades <> Nil) and (upgrades.AsArray <> Nil) and (upgrades.AsArray.Length>0);
+  Result := ((Upgrades <> Nil) and (upgrades.AsArray <> Nil) and (upgrades.AsArray.Length>0))
+            {$ifdef enterprise}
+            or
+            (InstallWUAUpdates and Assigned(wua_status) and (wua_status.AsString <> 'OK') and
+                                   Assigned(wua_pending_count) and (wua_pending_count.AsInteger > 0))
+            {$endif}
+            ;
 end;
 
 procedure TVisWaptExit.FormShow(Sender: TObject);
@@ -273,26 +266,28 @@ begin
   try
     if not (GetServiceStatusByName('','WAPTService') in [ssRunning])  then
       Raise Exception.Create('WAPTService is not running: '+GetEnumName(TypeInfo(TServiceState),ord(GetServiceStatusByName('','WAPTService'))));
+
     aso := WAPTLocalJsonGet('checkupgrades.json');
     if aso<>Nil then
     begin
       WAPTServiceRunning:=True;
       upgrades := aso['upgrades'];
+      {$ifdef enterprise}
+      wua_status := aso['wua_status'];
+      wua_pending_count := aso['wua_pending_count'];
+      {$else}
+      wua_status := Nil;
+      wua_pending_count := Nil;
+      {$endif}
       CheckRunningAndPending;
       GridPending.data := pending;
     end;
   except
     on E:Exception do
     begin
-      // timeout on waptservice, trying direct call...
-      WAPTServiceRunning:=False;
-      try
-        aso := SO(Run('wapt-get -j check-upgrades','',10000));
-        if aso<>Nil then
-          upgrades := aso['result.upgrades'];
-      except
-        upgrades := Nil;
-      end;
+      upgrades := Nil;
+      wua_status := Nil;
+      wua_pending_count := Nil;
     end;
   end;
 
@@ -308,16 +303,23 @@ begin
     if ShouldBeUpgraded then
     begin
       MemoLog.Items.Text:= Join(#13#10, upgrades);
-      LabIntro.Caption := Format(rsUpdatesAvailable,[upgrades.AsArray.Length]);
+      LabWaptUpgrades.Caption := Format(rsUpdatesAvailable,[upgrades.AsArray.Length]);
+      {$ifdef enterprise}
+      if (wua_status<>Nil) and (wua_pending_count<>Nil) then
+      begin
+        LabWUAUpgrades.Visible := True;
+        LabWUAUpgrades.Caption := Format(rsWUAUpdatesAvailable,[wua_pending_count.AsInteger]);
+      {$endif}
+      end;
     end
     else
     if running <> Nil then
     begin
       description := UTF8Encode(running.S['description']);
       if Length(description)>100 then
-        LabIntro.Caption := copy(description,1,100)+'...'
+        LabWaptUpgrades.Caption := copy(description,1,100)+'...'
       else
-        LabIntro.Caption := description;
+        LabWaptUpgrades.Caption := description;
     end;
   end;
 
