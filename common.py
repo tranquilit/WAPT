@@ -6027,8 +6027,8 @@ class Wapt(BaseObjectClass):
             os.chdir(previous_cwd)
 
     def make_package_template(self,installer_path='',packagename='',directoryname='',
-        section='',description=None,depends='',version=None,silentflags=None,uninstallkey=None,
-        maturity=None):
+        section='base',description=None,depends='',version=None,silentflags=None,uninstallkey=None,
+        maturity=None,architecture='all'):
         r"""Build a skeleton of WAPT package based on the properties of the supplied installer
            Return the path of the skeleton
         >>> wapt = Wapt(config_filename='c:/wapt/wapt-get.ini')
@@ -6095,7 +6095,7 @@ class Wapt(BaseObjectClass):
         version = version or props['version']
 
         if not directoryname:
-            directoryname = self.get_default_development_dir(packagename,section='base')
+            directoryname = self.get_default_development_dir(packagename,section=section)
 
         if not os.path.isdir(os.path.join(directoryname,'WAPT')):
             os.makedirs(os.path.join(directoryname,'WAPT'))
@@ -6140,7 +6140,7 @@ class Wapt(BaseObjectClass):
         if not os.path.isfile(control_filename):
             entry = PackageEntry()
             entry.package = packagename
-            entry.architecture='all'
+            entry.architecture=architecture
             if maturity is None:
                 entry.maturity=self.default_maturity
             else:

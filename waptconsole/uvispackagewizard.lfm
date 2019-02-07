@@ -56,7 +56,6 @@ object VisPackageWizard: TVisPackageWizard
       BorderSpacing.Right = 3
       Caption = 'Architecture'
       ParentColor = False
-      Visible = False
     end
     object EdArchitecture: TComboBox
       Left = 324
@@ -72,7 +71,6 @@ object VisPackageWizard: TVisPackageWizard
       )
       TabOrder = 1
       Text = 'all'
-      Visible = False
     end
     object EdDescription: TLabeledEdit
       Left = 130
@@ -145,7 +143,6 @@ object VisPackageWizard: TVisPackageWizard
       BorderSpacing.Right = 3
       Caption = 'Section'
       ParentColor = False
-      Visible = False
     end
     object EdSection: TComboBox
       Left = 489
@@ -161,7 +158,6 @@ object VisPackageWizard: TVisPackageWizard
       )
       TabOrder = 2
       Text = 'base'
-      Visible = False
     end
   end
   object Panel2: TPanel

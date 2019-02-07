@@ -91,7 +91,8 @@ end;
 
 procedure TVisPackageWizard.ActMakeUploadExecute(Sender: TObject);
 var
-  packageSources,PackageName,Version,Description,Section,UninstallKey,Maturity: Variant;
+  packageSources,PackageName,Version,Description,Section,UninstallKey,Maturity,
+    Architecture: Variant;
   wapt,SilentFlags,VInstallerFilename:Variant;
   UploadResult : ISuperObject;
 begin
@@ -108,6 +109,7 @@ begin
     Description := PyUTF8Decode(EdDescription.Text);
     UninstallKey := PyUTF8Decode(EdUninstallKey.Text);
     Section :=  PyUTF8Decode(EdSection.Text);
+    Architecture :=  PyUTF8Decode(EdArchitecture.Text);
     Maturity := PyUTF8Decode(EdMaturity.Text);;
 
     VInstallerFilename := PyUTF8Decode(InstallerFilename);
@@ -119,7 +121,9 @@ begin
       version := Version,
       uninstallkey := UninstallKey,
       silentflags := SilentFlags,
-      maturity := Maturity));
+      maturity := Maturity,
+      section := Section,
+      architecture := Architecture));
 
     if Sender = ActMakeAndEdit then
     begin
