@@ -28,11 +28,11 @@ type
     EdSilentFlags: TLabeledEdit;
     EdUninstallKey: TLabeledEdit;
     EdVersion: TLabeledEdit;
-    Label1: TLabel;
+    LabSetupFilename: TLabel;
     EdPackageName: TLabeledEdit;
-    Label2: TLabel;
-    Label3: TLabel;
-    Label7: TLabel;
+    LabArcgitecture: TLabel;
+    LabSection: TLabel;
+    LabMaturity: TLabel;
     Panel1: TPanel;
     Panel2: TPanel;
     Panel3: TPanel;
@@ -76,7 +76,7 @@ end;
 
 procedure TVisPackageWizard.ActMakeUploadUpdate(Sender: TObject);
 begin
-  ActMakeUpload.Enabled := ExtractFileExt(FInstallerFilename) ='.msi'
+  ActMakeUpload.Enabled := ExtractFileExt(FInstallerFilename) = '.msi'
 end;
 
 procedure TVisPackageWizard.ActMakeAndEditUpdate(Sender: TObject);

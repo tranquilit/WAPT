@@ -43,12 +43,17 @@ object VisPackageWizard: TVisPackageWizard
       LabelPosition = lpLeft
       TabOrder = 5
     end
-    object Label2: TLabel
-      Left = 258
+    object LabArcgitecture: TLabel
+      AnchorSideTop.Control = EdArchitecture
+      AnchorSideTop.Side = asrCenter
+      AnchorSideRight.Control = EdArchitecture
+      Left = 262
       Height = 13
-      Top = 4
+      Top = 6
       Width = 59
       Alignment = taRightJustify
+      Anchors = [akTop, akRight]
+      BorderSpacing.Right = 3
       Caption = 'Architecture'
       ParentColor = False
       Visible = False
@@ -127,12 +132,17 @@ object VisPackageWizard: TVisPackageWizard
       TabOrder = 0
       Text = '0'
     end
-    object Label3: TLabel
-      Left = 450
+    object LabSection: TLabel
+      AnchorSideTop.Control = EdSection
+      AnchorSideTop.Side = asrCenter
+      AnchorSideRight.Control = EdSection
+      Left = 451
       Height = 13
-      Top = 5
+      Top = 6
       Width = 35
       Alignment = taRightJustify
+      Anchors = [akTop, akRight]
+      BorderSpacing.Right = 3
       Caption = 'Section'
       ParentColor = False
       Visible = False
@@ -248,22 +258,32 @@ object VisPackageWizard: TVisPackageWizard
       MaxLength = 0
       TabOrder = 0
     end
-    object Label1: TLabel
-      Left = 52
+    object LabSetupFilename: TLabel
+      AnchorSideTop.Control = EdInstallerPath
+      AnchorSideTop.Side = asrCenter
+      AnchorSideRight.Control = EdInstallerPath
+      Left = 56
       Height = 13
-      Top = 11
+      Top = 12
       Width = 77
       Alignment = taRightJustify
+      Anchors = [akTop, akRight]
+      BorderSpacing.Right = 3
       Caption = 'Installer / Setup'
       ParentColor = False
     end
-    object Label7: TLabel
-      Left = 8
+    object LabMaturity: TLabel
+      AnchorSideTop.Control = EdMaturity
+      AnchorSideTop.Side = asrCenter
+      AnchorSideRight.Control = EdMaturity
+      Left = 51
       Height = 13
-      Top = 69
-      Width = 121
+      Top = 71
+      Width = 83
       Alignment = taRightJustify
-      Caption = 'Default package maturity'
+      Anchors = [akTop, akRight]
+      BorderSpacing.Right = 2
+      Caption = 'Package maturity'
       ParentColor = False
     end
     object EdMaturity: TComboBox

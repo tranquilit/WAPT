@@ -1011,23 +1011,24 @@ msgctxt "tvispackagewizard.edversion.text"
 msgid "0"
 msgstr ""
 
-#: tvispackagewizard.label1.caption
-msgid "Installer / Setup"
-msgstr ""
-
-#: tvispackagewizard.label2.caption
-msgctxt "tvispackagewizard.label2.caption"
+#: tvispackagewizard.labarcgitecture.caption
+msgctxt "tvispackagewizard.labarcgitecture.caption"
 msgid "Architecture"
 msgstr ""
 
-#: tvispackagewizard.label3.caption
-msgctxt "tvispackagewizard.label3.caption"
+#: tvispackagewizard.labmaturity.caption
+msgid "Package maturity"
+msgstr ""
+
+#: tvispackagewizard.labsection.caption
+#, fuzzy
+msgctxt "tvispackagewizard.labsection.caption"
 msgid "Section"
 msgstr "Bereich"
 
-#: tvispackagewizard.label7.caption
-msgctxt "tvispackagewizard.label7.caption"
-msgid "Default package maturity"
+#: tvispackagewizard.labsetupfilename.caption
+msgctxt "tvispackagewizard.labsetupfilename.caption"
+msgid "Installer / Setup"
 msgstr ""
 
 #: tvisprivatekeyauth.caption
@@ -1224,7 +1225,7 @@ msgid "Remove"
 msgstr "Entferne"
 
 #: tvisselfservicegroup.caption
-msgid "Edit Self Service group package"
+msgid "Edit Self Service rules package"
 msgstr ""
 
 #: tvisselfservicegroup.edpackageversion.text
@@ -1232,26 +1233,11 @@ msgctxt "tvisselfservicegroup.edpackageversion.text"
 msgid "0"
 msgstr ""
 
-#: tvisselfservicegroup.label1.caption
-msgid "Self service group"
-msgstr ""
-
-#: tvisselfservicegroup.label2.caption
-#, fuzzy
-msgctxt "tvisselfservicegroup.label2.caption"
-msgid "Version"
-msgstr "Version"
-
 #: tvisselfservicegroup.label3.caption
 #, fuzzy
 msgctxt "tvisselfservicegroup.label3.caption"
 msgid "Description"
 msgstr "Beschreibung"
-
-#: tvisselfservicegroup.label4.caption
-msgctxt "tvisselfservicegroup.label4.caption"
-msgid "Package filename : "
-msgstr ""
 
 #: tvisselfservicegroup.label5.caption
 #, fuzzy
@@ -1267,6 +1253,21 @@ msgstr ""
 #: tvisselfservicegroup.label7.caption
 msgid "Enabled packages"
 msgstr ""
+
+#: tvisselfservicegroup.labpackagefilename.caption
+msgctxt "tvisselfservicegroup.labpackagefilename.caption"
+msgid "Package filename : "
+msgstr ""
+
+#: tvisselfservicegroup.labpackagename.caption
+msgid "Self service rules name"
+msgstr ""
+
+#: tvisselfservicegroup.labversion.caption
+#, fuzzy
+msgctxt "tvisselfservicegroup.labversion.caption"
+msgid "Version"
+msgstr "Version"
 
 #: tvisselfservicegroup.pangrouppackages.caption
 msgid "PanGroupPackages"
