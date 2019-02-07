@@ -318,8 +318,8 @@ begin
       begin
         LabWUAUpgrades.Visible := True;
         LabWUAUpgrades.Caption := Format(rsWUAUpdatesAvailable,[wua_pending_count.AsInteger]);
-      {$endif}
       end;
+      {$endif}
     end
     else
     if running <> Nil then
