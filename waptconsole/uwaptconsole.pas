@@ -36,6 +36,8 @@ type
     ActSelfServiceNewPackage: TAction;
     ActSelfServiceSearchPackage: TAction;
     ButShowDownloadTasks: TBitBtn;
+    cbNewestOnlyWUA: TCheckBox;
+    cbNewestOnlySelfService: TCheckBox;
     EdWUASearchWindowsUpdate: TSearchEdit;
     MenuItem105: TMenuItem;
     MenuItem106: TMenuItem;
@@ -82,7 +84,7 @@ type
     LabelReportingNumber: TLabel;
     MenuItem107: TMenuItem;
     PanTopWAPTWuaPackages: TPanel;
-    Panel20: TPanel;
+    PanTopSelfService: TPanel;
     pgSelfService: TTabSheet;
     pgWindowsUpdates2: TTabSheet;
     pgWAPTWuaPackages: TTabSheet;
@@ -695,6 +697,8 @@ type
     procedure CBInverseSelectClick(Sender: TObject);
     procedure cbMaskSystemComponentsClick(Sender: TObject);
     procedure cbNewestOnlyClick(Sender: TObject);
+    procedure cbNewestOnlySelfServiceClick(Sender: TObject);
+    procedure cbNewestOnlyWUAClick(Sender: TObject);
     procedure cbSearchAllClick(Sender: TObject);
     procedure CBShowHostsForGroupsClick(Sender: TObject);
     procedure CBShowHostsForPackagesClick(Sender: TObject);
@@ -833,6 +837,8 @@ type
       Column: TColumnIndex; OldPosition: Integer);
     procedure GridReportingResultSOCompareNodes(Sender: TSOGrid; Node1,
       Node2: ISuperObject; const Columns: array of String; var Result: Integer);
+    procedure GridSelfServicePackagesChange(Sender: TBaseVirtualTree;
+      Node: PVirtualNode);
     procedure GridSelfServicePackagesColumnDblClick(Sender: TBaseVirtualTree;
       Column: TColumnIndex; Shift: TShiftState);
     procedure GridWinproductsChange(Sender: TBaseVirtualTree; Node: PVirtualNode );
@@ -962,6 +968,7 @@ type
     property ReportingEditMode:Boolean read FReportingEditMode write SetReportingEditMode;
 
     function EditPackageEntry(Entry: ISuperObject): Variant;
+    procedure ImportPackageFromFiles(Filenames: TStrings);
 
 
   end;
@@ -3234,13 +3241,60 @@ begin
 end;
 
 
-procedure TVisWaptGUI.ActImportFromFileExecute(Sender: TObject);
+procedure TVisWaptGUI.ImportPackageFromFiles(Filenames:TStrings);
 var
   i: integer;
   sourceDir: string;
   Sources, uploadResult: ISuperObject;
   SourcesVar: Variant;
 
+begin
+  if MessageDlg(rsConfirmImportCaption,
+    format(rsConfirmImport,
+    [Filenames.Text]), mtConfirmation, mbYesNoCancel, 0) <> mrYes then
+    Exit;
+  with TVisLoading.Create(Self) do
+  try
+    Sources := TSuperObject.Create(stArray);
+    for i := 0 to Filenames.Count - 1 do
+    begin
+      ProgressTitle(format(rsImportingFile, [Filenames[i]]));
+      ProgressStep(i, Filenames.Count - 1);
+      Application.ProcessMessages;
+      sourceDir := VarPythonAsString(DMPython.waptdevutils.duplicate_from_file(
+        package_filename := Filenames[i],new_prefix:=DefaultPackagePrefix));
+      //sources.AsArray.Add('r"' + sourceDir + '"');
+      sources.AsArray.Add(sourceDir);
+    end;
+
+    ProgressTitle(format(rsUploadingPackagesToWaptSrv, [IntToStr(Sources.AsArray.Length)]));
+    Application.ProcessMessages;
+
+    SourcesVar := SuperObjectToPyVar(sources);
+    { TODO : Remove use of WAPT instance, use waptpackage.PackageEntry instead }
+    uploadResult := PyVarToSuperObject(DMPython.WAPT.build_upload(
+      sources_directories := SourcesVar,
+      private_key_passwd := dmpython.privateKeyPassword,
+      wapt_server_user := waptServerUser,
+      wapt_server_passwd := waptServerPassword,
+      inc_package_release := False));
+
+    if (uploadResult <> nil) and
+      (uploadResult.AsArray.length = Sources.AsArray.Length) then
+    begin
+      ShowMessage(format(rsSuccessfullyImported,
+        [soutils.Join(',', Sources)]));
+      ModalResult := mrOk;
+      ActPackagesUpdate.Execute;
+    end
+    else
+      ShowMessage(rsFailedImport);
+  finally
+    Free;
+  end;
+end;
+
+procedure TVisWaptGUI.ActImportFromFileExecute(Sender: TObject);
 begin
   if not FileExistsUTF8(WaptPersonalCertificatePath) then
   begin
@@ -3256,52 +3310,7 @@ begin
   end;
 
   if OpenDialogWapt.Execute then
-  begin
-    if MessageDlg(rsConfirmImportCaption,
-      format(rsConfirmImport,
-      [OpenDialogWapt.Files.Text]), mtConfirmation, mbYesNoCancel, 0) <> mrYes then
-      Exit;
-
-    with  TVisLoading.Create(Self) do
-      try
-        Sources := TSuperObject.Create(stArray);
-        for i := 0 to OpenDialogWapt.Files.Count - 1 do
-        begin
-          ProgressTitle(format(rsImportingFile, [OpenDialogWapt.Files[i]]));
-          ProgressStep(i, OpenDialogWapt.Files.Count - 1);
-          Application.ProcessMessages;
-          sourceDir := VarPythonAsString(DMPython.waptdevutils.duplicate_from_file(
-            package_filename := OpenDialogWapt.Files[i],new_prefix:=DefaultPackagePrefix));
-          //sources.AsArray.Add('r"' + sourceDir + '"');
-          sources.AsArray.Add(sourceDir);
-        end;
-
-        ProgressTitle(format(rsUploadingPackagesToWaptSrv, [IntToStr(Sources.AsArray.Length)]));
-        Application.ProcessMessages;
-
-        SourcesVar := SuperObjectToPyVar(sources);
-        { TODO : Remove use of WAPT instance, use waptpackage.PackageEntry instead }
-        uploadResult := PyVarToSuperObject(DMPython.WAPT.build_upload(
-          sources_directories := SourcesVar,
-          private_key_passwd := dmpython.privateKeyPassword,
-          wapt_server_user := waptServerUser,
-          wapt_server_passwd := waptServerPassword,
-          inc_package_release := False));
-
-        if (uploadResult <> nil) and
-          (uploadResult.AsArray.length = Sources.AsArray.Length) then
-        begin
-          ShowMessage(format(rsSuccessfullyImported,
-            [soutils.Join(',', Sources)]));
-          ModalResult := mrOk;
-          ActPackagesUpdate.Execute;
-        end
-        else
-          ShowMessage(rsFailedImport);
-      finally
-        Free;
-      end;
-  end;
+    ImportPackageFromFiles(OpenDialogWapt.Files);
 end;
 
 procedure TVisWaptGUI.ActImportFromRepoExecute(Sender: TObject);
@@ -3851,7 +3860,7 @@ begin
 
     GridPackages.Data :=
       PyVarToSuperObject(DMPython.MainWaptRepo.search(searchwords := EdSearchPackage.Text,
-         exclude_sections := 'host,group,unit,wsus,profile',
+         exclude_sections := 'host,group,unit,wsus,profile,selfservice',
          newest_only := cbNewestOnly.Checked,
          description_locale := Language,
          package_request := vRequestFilter));
@@ -4082,6 +4091,16 @@ begin
   TimerSearchPackages.Enabled:=True;
 end;
 
+procedure TVisWaptGUI.cbNewestOnlySelfServiceClick(Sender: TObject);
+begin
+  ActSelfServiceSearchPackage.Execute;
+end;
+
+procedure TVisWaptGUI.cbNewestOnlyWUAClick(Sender: TObject);
+begin
+  ActWUASearchPackage.Execute;
+end;
+
 procedure TVisWaptGUI.cbSearchAllClick(Sender: TObject);
 begin
   Gridhosts.Clear;
@@ -4138,10 +4157,31 @@ end;
 
 procedure TVisWaptGUI.FormDropFiles(Sender: TObject;
   const FileNames: array of String);
+var
+  Filename,ext: String;
+  WaptFiles,SetupFiles: TStringList;
 begin
   if MainPages.ActivePage = pgPrivateRepo then
-  begin
-    MakePackageTemplate(FileNames[0]);
+  try
+    WaptFiles := TStringList.Create;
+    SetupFiles := TStringList.Create;
+
+    for Filename in FileNames do
+    begin
+      Ext := ExtractFileExt(FileName);
+      if lowercase(Ext) = '.wapt' then
+        WaptFiles.Add(Filename)
+      else if lowercase(Ext) = '.msi' then
+        SetupFiles.Add(Filename);
+    end;
+    if WaptFiles.Count>0 then
+      ImportPackageFromFiles(WaptFiles);
+
+    if SetupFiles.Count>0 then
+      MakePackageTemplate(SetupFiles[0]);
+  finally
+    WaptFiles.Free;
+    SetupFiles.Free;
   end;
 end;
 
@@ -5994,6 +6034,12 @@ begin
 end;
 
 function TVisWaptGUI.FilterHostsForPackage(HostsData:ISuperObject):ISuperObject;
+begin
+;;
+end;
+
+procedure TVisWaptGUI.GridSelfServicePackagesChange(Sender: TBaseVirtualTree;
+  Node: PVirtualNode);
 begin
 ;;
 end;

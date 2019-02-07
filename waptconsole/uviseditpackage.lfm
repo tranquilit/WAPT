@@ -937,7 +937,7 @@ object VisEditPackage: TVisEditPackage
       TabOrder = 2
     end
     object cbShowLog: TCheckBox
-      Left = 344
+      Left = 1
       Height = 17
       Top = 6
       Width = 79

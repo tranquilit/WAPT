@@ -2228,6 +2228,16 @@ msgctxt "TVISWAPTGUI.CBNEWESTONLY.CAPTION"
 msgid "Last version only"
 msgstr ""
 
+#: tviswaptgui.cbnewestonlyselfservice.caption
+msgctxt "tviswaptgui.cbnewestonlyselfservice.caption"
+msgid "Last version only"
+msgstr ""
+
+#: tviswaptgui.cbnewestonlywua.caption
+msgctxt "tviswaptgui.cbnewestonlywua.caption"
+msgid "Last version only"
+msgstr ""
+
 #: tviswaptgui.cbreachable.caption
 msgctxt "tviswaptgui.cbreachable.caption"
 msgid "Connected only"

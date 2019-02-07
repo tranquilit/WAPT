@@ -140,6 +140,7 @@ begin
       if (uploadResult.AsArray=nil) or (uploadResult.AsArray.Length <=0) then
         raise Exception.CreateFmt(rsErrorBuildingUploadPackage,[packageSources]);
       ShowMessageFmt(rsPackageBuiltSourcesAvailable,[packageSources]);
+      ModalResult := mrOk;
     end;
   finally
     Screen.cursor := crDefault;

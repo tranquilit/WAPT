@@ -4595,7 +4595,7 @@ object VisWaptGUI: TVisWaptGUI
           ClientWidth = 1268
           object PanTopWAPTWuaPackages: TPanel
             Left = 0
-            Height = 41
+            Height = 40
             Top = 0
             Width = 1268
             Align = alTop
@@ -4605,7 +4605,7 @@ object VisWaptGUI: TVisWaptGUI
             ChildSizing.TopBottomSpacing = 3
             ChildSizing.HorizontalSpacing = 6
             ChildSizing.ControlsPerLine = 10
-            ClientHeight = 41
+            ClientHeight = 40
             ClientWidth = 1268
             TabOrder = 0
             object EdWUASearchPackage: TSearchEdit
@@ -4629,20 +4629,22 @@ object VisWaptGUI: TVisWaptGUI
             object ButWUAPackagesSearch: TBitBtn
               AnchorSideLeft.Control = EdWUASearchPackage
               AnchorSideLeft.Side = asrBottom
+              AnchorSideTop.Control = PanTopWAPTWuaPackages
+              AnchorSideTop.Side = asrCenter
               Left = 162
               Height = 34
-              Top = 4
+              Top = 3
               Width = 108
               Action = ActWUASearchPackage
               AutoSize = True
               TabOrder = 1
             end
             object btAddGroup3: TBitBtn
-              AnchorSideLeft.Control = ButWUAPackagesSearch
+              AnchorSideLeft.Control = cbNewestOnlyWUA
               AnchorSideLeft.Side = asrBottom
               AnchorSideTop.Control = PanTopWAPTWuaPackages
               AnchorSideTop.Side = asrCenter
-              Left = 276
+              Left = 383
               Height = 34
               Top = 3
               Width = 199
@@ -4655,7 +4657,7 @@ object VisWaptGUI: TVisWaptGUI
               AnchorSideLeft.Side = asrBottom
               AnchorSideTop.Control = PanTopWAPTWuaPackages
               AnchorSideTop.Side = asrCenter
-              Left = 481
+              Left = 588
               Height = 17
               Top = 12
               Width = 76
@@ -4663,14 +4665,29 @@ object VisWaptGUI: TVisWaptGUI
               OnClick = CBShowHostsForWUAPackageClick
               TabOrder = 3
             end
+            object cbNewestOnlyWUA: TCheckBox
+              AnchorSideLeft.Control = ButWUAPackagesSearch
+              AnchorSideLeft.Side = asrBottom
+              AnchorSideTop.Control = PanTopWAPTWuaPackages
+              AnchorSideTop.Side = asrCenter
+              Left = 276
+              Height = 17
+              Top = 12
+              Width = 101
+              Caption = 'Last version only'
+              Checked = True
+              OnClick = cbNewestOnlyWUAClick
+              State = cbChecked
+              TabOrder = 4
+            end
           end
           object GridWUAPackages: TSOGrid
             AnchorSideLeft.Side = asrBottom
             AnchorSideTop.Side = asrBottom
             AnchorSideBottom.Side = asrBottom
             Left = 0
-            Height = 525
-            Top = 41
+            Height = 526
+            Top = 40
             Width = 1268
             OnGetText = GridGroupsGetText
             OnNodesDelete = GridWUAPackagesNodesDelete
@@ -5579,7 +5596,7 @@ object VisWaptGUI: TVisWaptGUI
       ClientHeight = 592
       ClientWidth = 1276
       TabVisible = False
-      object Panel20: TPanel
+      object PanTopSelfService: TPanel
         Left = 0
         Height = 40
         Top = 0
@@ -5595,8 +5612,8 @@ object VisWaptGUI: TVisWaptGUI
         ClientWidth = 1276
         TabOrder = 0
         object EdSelfServiceSearchPackage: TSearchEdit
-          AnchorSideLeft.Control = Panel20
-          AnchorSideTop.Control = Panel20
+          AnchorSideLeft.Control = PanTopSelfService
+          AnchorSideTop.Control = PanTopSelfService
           AnchorSideTop.Side = asrCenter
           Left = 6
           Height = 21
@@ -5615,6 +5632,7 @@ object VisWaptGUI: TVisWaptGUI
         object ButSelfServicePackagesSearch: TBitBtn
           AnchorSideLeft.Control = EdSelfServiceSearchPackage
           AnchorSideLeft.Side = asrBottom
+          AnchorSideTop.Control = PanTopSelfService
           Left = 162
           Height = 34
           Top = 3
@@ -5700,11 +5718,11 @@ object VisWaptGUI: TVisWaptGUI
           TabOrder = 1
         end
         object btAddSelfServicePackage: TBitBtn
-          AnchorSideLeft.Control = ButSelfServicePackagesSearch
+          AnchorSideLeft.Control = cbNewestOnlySelfService
           AnchorSideLeft.Side = asrBottom
-          AnchorSideTop.Control = Panel20
+          AnchorSideTop.Control = PanTopSelfService
           AnchorSideTop.Side = asrCenter
-          Left = 276
+          Left = 383
           Height = 34
           Top = 3
           Width = 237
@@ -5716,14 +5734,30 @@ object VisWaptGUI: TVisWaptGUI
         object CBShowHostsForSelfServicePackage: TCheckBox
           AnchorSideLeft.Control = btAddSelfServicePackage
           AnchorSideLeft.Side = asrBottom
-          AnchorSideTop.Control = Panel20
+          AnchorSideTop.Control = PanTopSelfService
           AnchorSideTop.Side = asrCenter
-          Left = 519
+          Left = 626
           Height = 17
           Top = 12
           Width = 76
           Caption = 'Show Hosts'
+          OnClick = CBShowHostsForSelfServicePackageClick
           TabOrder = 3
+        end
+        object cbNewestOnlySelfService: TCheckBox
+          AnchorSideLeft.Control = ButSelfServicePackagesSearch
+          AnchorSideLeft.Side = asrBottom
+          AnchorSideTop.Control = PanTopSelfService
+          AnchorSideTop.Side = asrCenter
+          Left = 276
+          Height = 17
+          Top = 12
+          Width = 101
+          Caption = 'Last version only'
+          Checked = True
+          OnClick = cbNewestOnlySelfServiceClick
+          State = cbChecked
+          TabOrder = 4
         end
       end
       object GridSelfServicePackages: TSOGrid
@@ -6078,7 +6112,7 @@ object VisWaptGUI: TVisWaptGUI
         TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages, toAlwaysHideSelection]
         TreeOptions.SelectionOptions = [toDisableDrawSelection, toExtendedFocus, toMultiSelect, toRightClickSelect]
         WantTabs = True
-        OnChange = GridWUAPackagesChange
+        OnChange = GridSelfServicePackagesChange
         OnColumnDblClick = GridSelfServicePackagesColumnDblClick
         OnInitNode = GridGroupsInitNode
         OnMeasureItem = GridGroupsMeasureItem

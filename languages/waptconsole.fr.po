@@ -174,7 +174,6 @@ msgid "Old password :"
 msgstr "Ancien mot de passe :"
 
 #: tviscreatekey.actadvanced.caption
-#, fuzzy
 msgctxt "tviscreatekey.actadvanced.caption"
 msgid "Advanced"
 msgstr "Avancé"
@@ -508,7 +507,6 @@ msgid "Comma separated list of profile packages to add for hosts. Host will belo
 msgstr "Liste (séparée par des virgules) de paquets profils à ajouter aux machines."
 
 #: tviscreatewaptsetup.labwuainstalldelay.caption
-#, fuzzy
 msgctxt "tviscreatewaptsetup.labwuainstalldelay.caption"
 msgid "Minimum delay before installation (days after publish date)"
 msgstr "Délai minimum avant l'installation (en jours après la date de publication)"
@@ -533,7 +531,6 @@ msgid "Make rdp, vnc, remoteassist... features visible"
 msgstr "Faire apparaître les fonctions RDP, VNC et Remote Assist"
 
 #: tvisdisplaypreferences.cbenablemanagementfeatures.hint
-#, fuzzy
 #| msgid "Make change server password, create certificate, create waptagent features visible"
 msgctxt "tvisdisplaypreferences.cbenablemanagementfeatures.hint"
 msgid ""
@@ -545,7 +542,6 @@ msgid ""
 msgstr "Faire apparaître les fonctions de changement de mot de passe, création de certificats et de waptagent, modification des requêtes de reporting."
 
 #: tvisdisplaypreferences.cbenablewaptwuafeatures.hint
-#, fuzzy
 msgctxt "tvisdisplaypreferences.cbenablewaptwuafeatures.hint"
 msgid "Make change server password, create certificate, create waptagent features visible"
 msgstr "Faire apparaître les fonctions de changement de mot de passe, création de certificats et de waptagent."
@@ -574,8 +570,6 @@ msgid "Enable management features"
 msgstr "Activer les fonctionalités d'administration"
 
 #: tvisdisplaypreferences.label11.hint
-#, fuzzy
-#| msgid "Make change server password, create certificate, create waptagent features visible"
 msgctxt "tvisdisplaypreferences.label11.hint"
 msgid ""
 "Enable the following actions: \n"
@@ -656,8 +650,6 @@ msgid "Save and apply"
 msgstr "Enregistrer et appliquer"
 
 #: tviseditpackage.actbuildupload.caption
-#, fuzzy
-#| msgid "Activate package"
 msgctxt "TVISEDITPACKAGE.ACTBUILDUPLOAD.CAPTION"
 msgid "Save"
 msgstr "Enregister"
@@ -710,11 +702,9 @@ msgid "Use keywords to narrow search."
 msgstr "Affinez la recherche à l'aide de mots-clés."
 
 #: tviseditpackage.edsection.text
-#, fuzzy
-#| msgid "base"
 msgctxt "tviseditpackage.edsection.text"
 msgid "group"
-msgstr "group"
+msgstr ""
 
 #: tviseditpackage.edversion.editlabel.caption
 msgctxt "tviseditpackage.edversion.editlabel.caption"
@@ -722,7 +712,6 @@ msgid "Version"
 msgstr "Version"
 
 #: tviseditpackage.edversion.text
-#, fuzzy
 msgctxt "TVISEDITPACKAGE.EDVERSION.TEXT"
 msgid " "
 msgstr " "
@@ -743,7 +732,6 @@ msgid "Package"
 msgstr "Paquet"
 
 #: tviseditpackage.labsection.caption
-#, fuzzy
 msgctxt "tviseditpackage.labsection.caption"
 msgid "Section"
 msgstr "Section"
@@ -861,13 +849,11 @@ msgid "Import packages"
 msgstr "Importer des paquets"
 
 #: tvisimportpackage.cbfilterpackagesarch.caption
-#, fuzzy
 msgctxt "tvisimportpackage.cbfilterpackagesarch.caption"
 msgid "Architecture"
 msgstr "Architecture"
 
 #: tvisimportpackage.cbfilterpackageslocales.caption
-#, fuzzy
 msgctxt "tvisimportpackage.cbfilterpackageslocales.caption"
 msgid "Locale"
 msgstr "Langue"
@@ -987,7 +973,6 @@ msgid "0"
 msgstr ""
 
 #: tvispackagewizard.labarcgitecture.caption
-#, fuzzy
 msgctxt "tvispackagewizard.labarcgitecture.caption"
 msgid "Architecture"
 msgstr "Architecture"
@@ -997,13 +982,11 @@ msgid "Package maturity"
 msgstr "Maturité"
 
 #: tvispackagewizard.labsection.caption
-#, fuzzy
 msgctxt "tvispackagewizard.labsection.caption"
 msgid "Section"
 msgstr "Section"
 
 #: tvispackagewizard.labsetupfilename.caption
-#, fuzzy
 msgctxt "tvispackagewizard.labsetupfilename.caption"
 msgid "Installer / Setup"
 msgstr "Installeur"
@@ -1090,8 +1073,6 @@ msgid "Select CA Bundle"
 msgstr "Sélectionner le groupe de certificat CA"
 
 #: tvisrepositories.edhttpproxy.hint
-#, fuzzy
-#| msgid "E.g. : http://proxy.tranquilit.local:3128"
 msgctxt "tvisrepositories.edhttpproxy.hint"
 msgid ""
 "E.g. : http://proxy.tranquilit.local:3128\n"
@@ -1099,8 +1080,6 @@ msgid ""
 msgstr "Par exemple : http://proxy.tranquilit.local:3128"
 
 #: tvisrepositories.edname.hint
-#, fuzzy
-#| msgid "E.g. : https://store.wapt.fr/wapt"
 msgctxt "tvisrepositories.edname.hint"
 msgid ""
 "E.g. : https://store.wapt.fr/wapt\n"
@@ -1108,8 +1087,6 @@ msgid ""
 msgstr "Par exemple : https://store.tranquil.it/wapt"
 
 #: tvisrepositories.edrepourl.hint
-#, fuzzy
-#| msgid "E.g. : https://store.wapt.fr/wapt"
 msgctxt "tvisrepositories.edrepourl.hint"
 msgid ""
 "E.g. : https://store.wapt.fr/wapt\n"
@@ -1117,8 +1094,6 @@ msgid ""
 msgstr "Par exemple : http://store.tranquil.it/wapt"
 
 #: tvisrepositories.edservercabundle.hint
-#, fuzzy
-#| msgid "E.g. : c:\\wapt\\ssl\\server\\cacert.pem"
 msgctxt "tvisrepositories.edservercabundle.hint"
 msgid ""
 "E.g. : c:\\wapt\\ssl\\server\\cacert.pem\n"
@@ -1163,13 +1138,11 @@ msgid "PanAdvanced"
 msgstr ""
 
 #: tvisselfservicegroup.actaddgroup.caption
-#, fuzzy
 msgctxt "tvisselfservicegroup.actaddgroup.caption"
 msgid "Add"
 msgstr "Ajouter"
 
 #: tvisselfservicegroup.actbuilduploadpackage.caption
-#, fuzzy
 msgctxt "tvisselfservicegroup.actbuilduploadpackage.caption"
 msgid "Save"
 msgstr "Enregistrer"
@@ -1183,26 +1156,21 @@ msgid "Enable"
 msgstr "Ajouter"
 
 #: tvisselfservicegroup.actloadpackage.caption
-#, fuzzy
 msgctxt "tvisselfservicegroup.actloadpackage.caption"
 msgid "Refresh"
 msgstr "Actualiser"
 
 #: tvisselfservicegroup.actpackagessearch.caption
-#, fuzzy
 msgctxt "tvisselfservicegroup.actpackagessearch.caption"
 msgid "Search"
 msgstr "Rechercher"
 
 #: tvisselfservicegroup.actremovegroup.caption
-#, fuzzy
 msgctxt "tvisselfservicegroup.actremovegroup.caption"
 msgid "Remove"
 msgstr "Enlever"
 
 #: tvisselfservicegroup.caption
-#, fuzzy
-#| msgid "Edit Self Service group package"
 msgid "Edit Self Service rules package"
 msgstr "Modifier le paquet de règles Self-Service"
 
@@ -1212,19 +1180,16 @@ msgid "0"
 msgstr ""
 
 #: tvisselfservicegroup.label3.caption
-#, fuzzy
 msgctxt "tvisselfservicegroup.label3.caption"
 msgid "Description"
 msgstr "Description"
 
 #: tvisselfservicegroup.label5.caption
-#, fuzzy
 msgctxt "tvisselfservicegroup.label5.caption"
 msgid "Available packages : "
 msgstr "Paquets disponibles :"
 
 #: tvisselfservicegroup.label6.caption
-#, fuzzy
 msgctxt "tvisselfservicegroup.label6.caption"
 msgid "Maturity"
 msgstr "Maturité"
@@ -1234,7 +1199,6 @@ msgid "Enabled packages"
 msgstr "Paquets autorisés"
 
 #: tvisselfservicegroup.labpackagefilename.caption
-#, fuzzy
 msgctxt "tvisselfservicegroup.labpackagefilename.caption"
 msgid "Package filename : "
 msgstr "Nom de fichier du paquet : "
@@ -1244,7 +1208,6 @@ msgid "Self service rules name"
 msgstr "Nom des règles self-service :"
 
 #: tvisselfservicegroup.labversion.caption
-#, fuzzy
 msgctxt "tvisselfservicegroup.labversion.caption"
 msgid "Version"
 msgstr "Version"
@@ -1254,19 +1217,16 @@ msgid "PanGroupPackages"
 msgstr ""
 
 #: tvissoftwaresnormalization.actnormalizationfilter.caption
-#, fuzzy
 msgctxt "tvissoftwaresnormalization.actnormalizationfilter.caption"
 msgid "Filter"
 msgstr "Filtre"
 
 #: tvissoftwaresnormalization.actnormalizationimportsoftwares.caption
-#, fuzzy
 msgctxt "tvissoftwaresnormalization.actnormalizationimportsoftwares.caption"
 msgid "Import"
 msgstr "Importer"
 
 #: tvissoftwaresnormalization.actnormalizationwritetable.caption
-#, fuzzy
 msgctxt "tvissoftwaresnormalization.actnormalizationwritetable.caption"
 msgid "Write"
 msgstr "Enregistrer"
@@ -1276,13 +1236,11 @@ msgid "Normalizes sofware titles"
 msgstr "Normaliser le nom des logiciels"
 
 #: tvistriggerhostsaction.actstop.caption
-#, fuzzy
 msgctxt "tvistriggerhostsaction.actstop.caption"
 msgid "Terminate"
 msgstr "Arrêter"
 
 #: tvistriggerhostsaction.actupgrade.caption
-#, fuzzy
 msgctxt "tvistriggerhostsaction.actupgrade.caption"
 msgid "Launch update"
 msgstr "Lancer les mises à jour en attente"
@@ -1340,8 +1298,6 @@ msgid "Browse certificates"
 msgstr "Parcourir les certificats"
 
 #: tviswaptconfig.actgetservercertificate.caption
-#, fuzzy
-#| msgid "Get Server https Certitificate"
 msgctxt "tviswaptconfig.actgetservercertificate.caption"
 msgid "Get Server https Certificate"
 msgstr "Récupération certificat serveur https"
@@ -1360,7 +1316,6 @@ msgid "Explore dir"
 msgstr "Explorer"
 
 #: tviswaptconfig.actsaveconfig.caption
-#, fuzzy
 msgctxt "tviswaptconfig.actsaveconfig.caption"
 msgid "OK"
 msgstr "OK"
@@ -1370,8 +1325,6 @@ msgid "Show statistics"
 msgstr "Afficher les statistiques"
 
 #: tviswaptconfig.button5.hint
-#, fuzzy
-#| msgid "Click to retrieve the https certificate chain from server."
 msgid ""
 "Click to retrieve the https certificate chain from server.\n"
 "This works only if chain contain full certificate validation chain.\n"
@@ -1379,8 +1332,6 @@ msgid ""
 msgstr "Cliquer pour récupérer la chaîne de certificats pour le serveur https "
 
 #: tviswaptconfig.button6.hint
-#, fuzzy
-#| msgid "Try to find a private key (pem encoded RSA key) in same directory as certificate."
 msgid ""
 "Try to find a private key (pem encoded RSA key) in same directory as certificate.\n"
 "This will ask for the password for decrypting the key.\n"
@@ -1415,8 +1366,6 @@ msgid "Verify https server certificate"
 msgstr "Vérifier le certificat https serveur"
 
 #: tviswaptconfig.cbverifycert.hint
-#, fuzzy
-#| msgid "Check to enable the check of https server certificates"
 msgid ""
 "Check to enable the check of https server certificates\n"
 "(Main repository access and wapt server)\n"
@@ -1428,16 +1377,12 @@ msgid "WAPT packages prefix"
 msgstr "Préfixe des paquets WAPT"
 
 #: tviswaptconfig.eddefault_package_prefix.hint
-#, fuzzy
-#| msgid "E.g. : tis"
 msgid ""
 "E.g. : tis\n"
 "Which prefix to use when naming created or duplicated packages\n"
 msgstr "Par exemple :tis"
 
 #: tviswaptconfig.eddefault_sources_root.hint
-#, fuzzy
-#| msgid "E.g. : c:\\waptdev"
 msgid ""
 "E.g. : c:\\waptdev\n"
 "Local directory for saving package development projects\n"
@@ -1449,8 +1394,6 @@ msgid "http proxy to use (if needed)"
 msgstr "Proxy http à utiliser"
 
 #: tviswaptconfig.edhttp_proxy.hint
-#, fuzzy
-#| msgid "E.g. : http://proxy.tranquilit.local:3128"
 msgctxt "tviswaptconfig.edhttp_proxy.hint"
 msgid ""
 "E.g. : http://proxy.tranquilit.local:3128\n"
@@ -1458,8 +1401,6 @@ msgid ""
 msgstr "Par exemple : http://proxy.tranquilit.local:3128"
 
 #: tviswaptconfig.edpersonalcertificatepath.hint
-#, fuzzy
-#| msgid "E.g. : c:\\private\\tranquilit.crt"
 msgctxt "tviswaptconfig.edpersonalcertificatepath.hint"
 msgid ""
 "E.g. : c:\\private\\tranquilit.crt\n"
@@ -1472,8 +1413,6 @@ msgid "URL to the main repository"
 msgstr "URL du dépôt principal"
 
 #: tviswaptconfig.edrepo_url.hint
-#, fuzzy
-#| msgid "E.g. : https://wapt.tranquilit.local/wapt"
 msgid ""
 "E.g. : https://wapt.tranquilit.local/wapt\n"
 "Leave empty for auto DNS discovery\n"
@@ -1486,16 +1425,12 @@ msgid "WAPT Server address or name"
 msgstr "Adresse du serveur WAPT :"
 
 #: tviswaptconfig.edserveraddress.hint
-#, fuzzy
-#| msgid "E.g. : wapt.tranquilit.local"
 msgid ""
 "E.g. : wapt.tranquilit.local\n"
 "Leave empty for auto discovery with DNS queries\n"
 msgstr "Exemple : srvwapt.tranquilit.local"
 
 #: tviswaptconfig.edservercertificate.hint
-#, fuzzy
-#| msgid "E.g. : c:\\wapt\\ssl\\server\\cacert.pem"
 msgctxt "tviswaptconfig.edservercertificate.hint"
 msgid ""
 "E.g. : c:\\wapt\\ssl\\server\\cacert.pem\n"
@@ -1511,8 +1446,6 @@ msgid "URL du serveur WAPT"
 msgstr "URL du serveur WAPT"
 
 #: tviswaptconfig.edwapt_server.hint
-#, fuzzy
-#| msgid "E.g. : https://wapt.tranquilit.local"
 msgid ""
 "E.g. : https://wapt.tranquilit.local\n"
 "Leave empty if you don't want a central management server.\n"
@@ -1570,7 +1503,6 @@ msgid "Base"
 msgstr "Basique"
 
 #: tviswaptconfig.pgplugins.caption
-#, fuzzy
 msgctxt "tviswaptconfig.pgplugins.caption"
 msgid "Plugins"
 msgstr "Outils externes"
@@ -1588,18 +1520,15 @@ msgid "Déployer WAPT"
 msgstr "Déployer WAPT"
 
 #: tviswaptdeploy.eddomaine.editlabel.caption
-#, fuzzy
 msgctxt "tviswaptdeploy.eddomaine.editlabel.caption"
 msgid "Domaine"
 msgstr "Domaine"
 
 #: tviswaptdeploy.eddomainpassword.editlabel.caption
-#, fuzzy
 msgid "Mot de passe"
 msgstr "Mot de passe"
 
 #: tviswaptdeploy.eddomainuser.editlabel.caption
-#, fuzzy
 msgid "Utilisateur"
 msgstr "Utilisateur"
 
@@ -1608,7 +1537,6 @@ msgid "This method lets you deploy waptagent.exe onto all hosts via psexec."
 msgstr "Cette méthode vous permet de déployer waptagent.exe sur toutes les machines par psexec."
 
 #: tviswaptdeploy.label2.caption
-#, fuzzy
 msgid "Identifiants"
 msgstr "Identifiants"
 
@@ -1659,8 +1587,6 @@ msgid "Cancel current task"
 msgstr "Annuler la tâche en cours"
 
 #: tviswaptgui.actchangepassword.caption
-#, fuzzy
-#| msgid "Update password"
 msgctxt "tviswaptgui.actchangepassword.caption"
 msgid "Change admin password"
 msgstr "Changer le mot de passe admin du serveur"
@@ -1680,20 +1606,14 @@ msgid "Remove all packages locall cached by WaptConsole"
 msgstr "Effacer les paquets mis en cache localement par WaptConsole"
 
 #: tviswaptgui.actcomputermgmt.caption
-#, fuzzy
-#| msgid "Gérer l'ordinateur"
 msgid "Computer management"
 msgstr "Gérer l'ordinateur"
 
 #: tviswaptgui.actcomputerservices.caption
-#, fuzzy
-#| msgid "Gérer les services"
 msgid "Services management"
 msgstr "Gérer les services"
 
 #: tviswaptgui.actcomputerusers.caption
-#, fuzzy
-#| msgid "Gérer les utilisateur et groupes"
 msgid "Local users and groups management"
 msgstr "Gérer les utilisateurs et groupes"
 
@@ -1901,8 +1821,6 @@ msgid "Reload preferences"
 msgstr "Recharger les préférences"
 
 #: tviswaptgui.actremoteassist.caption
-#, fuzzy
-#| msgid "Assistance à distance"
 msgid "Remote Assistance"
 msgstr "Assistance à distance"
 
@@ -1917,14 +1835,10 @@ msgid "Remove packages from host dependencies"
 msgstr "Supprimer des dépendances de paquets ou groupes de paquets"
 
 #: tviswaptgui.actreportingquerydelete.caption
-#, fuzzy
-#| msgid "Delete"
 msgid "Delete query"
 msgstr "Supprimer la requête"
 
 #: tviswaptgui.actreportingquerydesign.caption
-#, fuzzy
-#| msgid "Design query"
 msgid "Design mode"
 msgstr "Mode conception"
 
@@ -1954,8 +1868,6 @@ msgid "Import queries from file..."
 msgstr "Importer les requêtes depuis un fichier..."
 
 #: tviswaptgui.actreportingquerynew.caption
-#, fuzzy
-#| msgid "New"
 msgctxt "tviswaptgui.actreportingquerynew.caption"
 msgid "New query"
 msgstr "Nouvelle requête"
@@ -1965,8 +1877,6 @@ msgid "Reload queries"
 msgstr "Recharger les requêtes"
 
 #: tviswaptgui.actreportingquerysaveall.caption
-#, fuzzy
-#| msgid "Save all"
 msgid "Save queries"
 msgstr "Enregistrer tout"
 
@@ -2017,7 +1927,6 @@ msgid "Create New SelfService rules Package"
 msgstr ""
 
 #: tviswaptgui.actselfservicesearchpackage.caption
-#, fuzzy
 msgctxt "tviswaptgui.actselfservicesearchpackage.caption"
 msgid "Refresh list"
 msgstr "Rafraîchir"
@@ -2113,7 +2022,6 @@ msgid "Download WSUSScan cab from Microsoft Web site"
 msgstr "Télécharger le cab WSUSScan depuis le site de Microsoft"
 
 #: tviswaptgui.actwsusrefresh.caption
-#, fuzzy
 msgctxt "tviswaptgui.actwsusrefresh.caption"
 msgid "Refresh"
 msgstr "Actualiser"
@@ -2169,7 +2077,6 @@ msgid "Load"
 msgstr "Charger"
 
 #: tviswaptgui.actwuanewpackage.caption
-#, fuzzy
 msgctxt "tviswaptgui.actwuanewpackage.caption"
 msgid "New Windows Updates bundle"
 msgstr "Nouvel ensemble de règles de mises à jour Windows"
@@ -2275,7 +2182,6 @@ msgid "Returns only computers accepting current personal certificate"
 msgstr "Ne liste que les machines qui acceptent le certificat personnel actif"
 
 #: tviswaptgui.cbfilterpackagesarch.caption
-#, fuzzy
 msgctxt "tviswaptgui.cbfilterpackagesarch.caption"
 msgid "Architecture"
 msgstr "Architecture"
@@ -2296,19 +2202,16 @@ msgid "Has errors"
 msgstr "En erreurs"
 
 #: tviswaptgui.cbhostshaserrors.caption
-#, fuzzy
 msgctxt "tviswaptgui.cbhostshaserrors.caption"
 msgid "Has errors"
 msgstr "En erreurs"
 
 #: tviswaptgui.cbhostsneedupgrade.caption
-#, fuzzy
 msgctxt "tviswaptgui.cbhostsneedupgrade.caption"
 msgid "Needs updating"
 msgstr "A mettre à jour"
 
 #: tviswaptgui.cbhostsreachable.caption
-#, fuzzy
 #| msgid "Reachables only"
 msgctxt "tviswaptgui.cbhostsreachable.caption"
 msgid "Connected only"
@@ -2319,8 +2222,6 @@ msgid "Include computers from  subfolders"
 msgstr "Inclure les postes des sous-dossiers"
 
 #: tviswaptgui.cbinverseselect.caption
-#, fuzzy
-#| msgid "NOT"
 msgid "Not"
 msgstr "Ne contient pas"
 
@@ -2342,9 +2243,17 @@ msgctxt "tviswaptgui.cbnewestonly.caption"
 msgid "Last version only"
 msgstr "Dernière version seulement"
 
+#: tviswaptgui.cbnewestonlyselfservice.caption
+msgctxt "tviswaptgui.cbnewestonlyselfservice.caption"
+msgid "Last version only"
+msgstr "Dernière version seulement"
+
+#: tviswaptgui.cbnewestonlywua.caption
+msgctxt "tviswaptgui.cbnewestonlywua.caption"
+msgid "Last version only"
+msgstr "Dernière version seulement"
+
 #: tviswaptgui.cbreachable.caption
-#, fuzzy
-#| msgid "Reachables only"
 msgctxt "tviswaptgui.cbreachable.caption"
 msgid "Connected only"
 msgstr "Connectés"
@@ -2393,19 +2302,16 @@ msgid "Show Hosts"
 msgstr "Afficher les clients"
 
 #: tviswaptgui.cbshowhostsforpackages.caption
-#, fuzzy
 msgctxt "tviswaptgui.cbshowhostsforpackages.caption"
 msgid "Show Hosts"
 msgstr "Afficher les clients"
 
 #: tviswaptgui.cbshowhostsforselfservicepackage.caption
-#, fuzzy
 msgctxt "tviswaptgui.cbshowhostsforselfservicepackage.caption"
 msgid "Show Hosts"
 msgstr "Afficher les clients"
 
 #: tviswaptgui.cbshowhostsforwuapackage.caption
-#, fuzzy
 msgctxt "tviswaptgui.cbshowhostsforwuapackage.caption"
 msgid "Show Hosts"
 msgstr "Afficher les clients"
@@ -2434,7 +2340,6 @@ msgid "Pending"
 msgstr "En attente"
 
 #: tviswaptgui.cbwucritical.caption
-#, fuzzy
 msgctxt "tviswaptgui.cbwucritical.caption"
 msgid "Critical only"
 msgstr "Critiques seulement"
@@ -2449,7 +2354,6 @@ msgid "Regular expressions allowed"
 msgstr "Expressions régulières autorisées"
 
 #: tviswaptgui.edsearchhosts.hint
-#, fuzzy
 msgctxt "tviswaptgui.edsearchhosts.hint"
 msgid "Regular expressions allowed"
 msgstr "Expressions régulières autorisées"
@@ -2494,18 +2398,14 @@ msgid "Groups"
 msgstr "Groupes"
 
 #: tviswaptgui.label17.caption
-#, fuzzy
-#| msgid "Operating system"
 msgctxt "tviswaptgui.label17.caption"
 msgid "WSUS Scan Cab Date"
-msgstr "Système d'exploitation"
+msgstr "Date du fichier index WSUS"
 
 #: tviswaptgui.label18.caption
-#, fuzzy
-#| msgid "Last seen"
 msgctxt "tviswaptgui.label18.caption"
 msgid "Last scan date"
-msgstr "Dernière connexion"
+msgstr "Dernier scan"
 
 #: tviswaptgui.label2.caption
 msgctxt "tviswaptgui.label2.caption"
@@ -2513,11 +2413,9 @@ msgid "Manufacturer"
 msgstr "Constructeur"
 
 #: tviswaptgui.label21.caption
-#, fuzzy
-#| msgid "IP address"
 msgctxt "tviswaptgui.label21.caption"
 msgid "WAPT WUA Enabled"
-msgstr "Adresse IP"
+msgstr "WAPT WUA activé"
 
 #: tviswaptgui.label23.caption
 msgctxt "tviswaptgui.label23.caption"
@@ -2562,13 +2460,11 @@ msgid "Selected / Total : %d / %d"
 msgstr "Sélectionnés / Total : %d / %d"
 
 #: tviswaptgui.labelreportingnumber.caption
-#, fuzzy
 msgctxt "tviswaptgui.labelreportingnumber.caption"
 msgid "Selected / Total : %d / %d"
 msgstr "Sélectionné / Total : %d / %d"
 
 #: tviswaptgui.labfiltersite.caption
-#, fuzzy
 msgctxt "tviswaptgui.labfiltersite.caption"
 msgid "Site"
 msgstr "Site"
@@ -2579,11 +2475,9 @@ msgid "User"
 msgstr "Utilisateur"
 
 #: tviswaptgui.labuser1.caption
-#, fuzzy
-#| msgid "User"
 msgctxt "tviswaptgui.labuser1.caption"
 msgid "Last scan duration"
-msgstr "Utilisateur"
+msgstr "Durée du dernier scan"
 
 #: tviswaptgui.menuexternaltools.caption
 msgid "Windows Computer management"
@@ -2604,7 +2498,6 @@ msgid "Check all"
 msgstr "Cocher tout"
 
 #: tviswaptgui.menuitem103checkall.hint
-#, fuzzy
 msgctxt "tviswaptgui.menuitem103checkall.hint"
 msgid "Add the WAPT group packages matching the ADS groups of the machines"
 msgstr "Ajoute les groupes WAPT qui correspondent avec les groupes Active Directory des machines"
@@ -2636,10 +2529,8 @@ msgid "&View"
 msgstr "&Affichage"
 
 #: tviswaptgui.menuitem24.caption
-#, fuzzy
-#| msgid "&Edit"
 msgid "&Actions"
-msgstr "&Editer"
+msgstr "&Actions"
 
 #: tviswaptgui.menuitem26.caption
 msgid "?"
@@ -2769,14 +2660,11 @@ msgid "Tasks"
 msgstr "Tâches"
 
 #: tviswaptgui.pgwaptwuaconfig.caption
-#, fuzzy
 msgctxt "tviswaptgui.pgwaptwuaconfig.caption"
 msgid "Windows Updates"
 msgstr "Windows Updates"
 
 #: tviswaptgui.pgwaptwuapackages.caption
-#, fuzzy
-#| msgid "WaptWUA Packages"
 msgctxt "tviswaptgui.pgwaptwuapackages.caption"
 msgid "Wapt WUA packages"
 msgstr "Paquets WAPT WUA"
@@ -2823,7 +2711,6 @@ msgid "Classifications"
 msgstr "Classisications"
 
 #: tviswuadownloads.actwuadownloadsrefresh.caption
-#, fuzzy
 msgctxt "tviswuadownloads.actwuadownloadsrefresh.caption"
 msgid "Refresh"
 msgstr "Actualiser"
@@ -2833,31 +2720,26 @@ msgid "Windows updates dowload tasks"
 msgstr "Tâches de téléchargement de mises à jour Windows"
 
 #: tviswuagroup.actbuilduploadpackage.caption
-#, fuzzy
 msgctxt "tviswuagroup.actbuilduploadpackage.caption"
 msgid "Save"
 msgstr "Enregistrer"
 
 #: tviswuagroup.actloadpackage.caption
-#, fuzzy
 msgctxt "tviswuagroup.actloadpackage.caption"
 msgid "Refresh"
 msgstr "Actualiser"
 
 #: tviswuagroup.actwuaallowselectedupdates.caption
-#, fuzzy
 msgctxt "tviswuagroup.actwuaallowselectedupdates.caption"
 msgid "Allow Selected Updates"
 msgstr "Autoriser les mises à jour sélectionnées"
 
 #: tviswuagroup.actwuadownloadselectedupdate.caption
-#, fuzzy
 msgctxt "tviswuagroup.actwuadownloadselectedupdate.caption"
 msgid "Download selected"
 msgstr "Télécharger les mises à jour sélectionnées"
 
 #: tviswuagroup.actwuaforbidselectedupdates.caption
-#, fuzzy
 msgctxt "tviswuagroup.actwuaforbidselectedupdates.caption"
 msgid "Forbid Selected Updates"
 msgstr "Interdire les mises à jour sélectionnées"
@@ -2867,77 +2749,65 @@ msgid "Load updates"
 msgstr "Charger les mises à jour Windows"
 
 #: tviswuagroup.actwuaproductallow.caption
-#, fuzzy
 msgctxt "tviswuagroup.actwuaproductallow.caption"
 msgid "Allow all updates for selected products"
 msgstr "Autoriser les mises à jour pour les produits sélectionnés"
 
 #: tviswuagroup.actwuaproductallowseverity.caption
-#, fuzzy
 msgctxt "tviswuagroup.actwuaproductallowseverity.caption"
 msgid "Allow updates for selected products and severities"
 msgstr "Autoriser les mises à jour pour les produits et criticités sélectionnés"
 
 #: tviswuagroup.actwuaproductforbid.caption
-#, fuzzy
 msgctxt "tviswuagroup.actwuaproductforbid.caption"
 msgid "Forbid updates for selected products"
 msgstr "Interdire les mises à jour pour les produits sélectionnés"
 
 #: tviswuagroup.actwuaproductforbidseverity.caption
-#, fuzzy
 msgctxt "tviswuagroup.actwuaproductforbidseverity.caption"
 msgid "Forbid updates for selected products and severities"
 msgstr "Interdire les mises à jour pour les produits et criticités sélectionnés"
 
 #: tviswuagroup.actwuaproducthide.caption
-#, fuzzy
 msgctxt "tviswuagroup.actwuaproducthide.caption"
 msgid "Hide product"
 msgstr "Cacher les produits"
 
 #: tviswuagroup.actwuaproductshow.caption
-#, fuzzy
 msgctxt "tviswuagroup.actwuaproductshow.caption"
 msgid "Show product"
 msgstr "Montrer les produits"
 
 #: tviswuagroup.actwuaresetselectedupdates.caption
-#, fuzzy
 msgctxt "tviswuagroup.actwuaresetselectedupdates.caption"
 msgid "Reset Selected"
 msgstr "Réinitialiser la sélection"
 
 #: tviswuagroup.caption
 msgid "Edit Windows updates Group"
-msgstr ""
+msgstr "Modifier les règles Windows Updates"
 
 #: tviswuagroup.cbwucritical.caption
-#, fuzzy
 msgctxt "tviswuagroup.cbwucritical.caption"
 msgid "Critical"
 msgstr "Critique"
 
 #: tviswuagroup.cbwuimportant.caption
-#, fuzzy
 msgctxt "tviswuagroup.cbwuimportant.caption"
 msgid "Important"
 msgstr "Important"
 
 #: tviswuagroup.cbwulow.caption
-#, fuzzy
 msgctxt "tviswuagroup.cbwulow.caption"
 msgid "Low"
 msgstr "Basse"
 
 #: tviswuagroup.cbwumoderate.caption
-#, fuzzy
 msgctxt "tviswuagroup.cbwumoderate.caption"
 msgid "Moderate"
 msgstr "Modérée"
 
 #: tviswuagroup.cbwuother.caption
-#, fuzzy
 msgctxt "tviswuagroup.cbwuother.caption"
 msgid "Other"
 msgstr "Autre"
@@ -2949,20 +2819,18 @@ msgstr ""
 
 #: tviswuagroup.label1.caption
 msgid "Windows Updates Group name"
-msgstr ""
+msgstr "Nom des règles Win Updates"
 
 #: tviswuagroup.label16.caption
 msgid "Windows Updates group content"
-msgstr ""
+msgstr "Contenu du groupe Windows Updates"
 
 #: tviswuagroup.label2.caption
-#, fuzzy
 msgctxt "tviswuagroup.label2.caption"
 msgid "Version"
 msgstr "Version"
 
 #: tviswuagroup.label3.caption
-#, fuzzy
 msgctxt "tviswuagroup.label3.caption"
 msgid "Description"
 msgstr "Description"
@@ -3537,7 +3405,6 @@ msgid "wupanright"
 msgstr ""
 
 #: uvisloading.rscanceledbyuser
-#, fuzzy
 msgctxt "uvisloading.rscanceledbyuser"
 msgid "Task %s has been canceled by the user"
 msgstr "La tâche %s a été interrompue par l'utilisateur"
@@ -3552,7 +3419,6 @@ msgid ""
 msgstr ""
 
 #: uwaptconsoleres.rsbuildinprogress
-#, fuzzy
 msgctxt "uwaptconsoleres.rsbuildinprogress"
 msgid "Build in progress."
 msgstr "Compilation en cours."
@@ -3625,14 +3491,10 @@ msgid "Delete %d download log records ?"
 msgstr "Effacer %s enregistrements de log de téléchargement ?"
 
 #: uwaptconsoleres.rsconfirmdeletewuupdate
-#, fuzzy
-#| msgid "Delete windows update %s record and cached file ?"
 msgid "Delete windows update %s associated cached files on server ?"
 msgstr "Supprimer du serveur les fichiers associés à la mise à jour Windows %s ?"
 
 #: uwaptconsoleres.rsconfirmdeletewuupdates
-#, fuzzy
-#| msgid "Delete %d windows updates records and cached files ?"
 msgid "Delete %d windows updates cached files on server ?"
 msgstr "Supprimer du serveur les fichiers associés à %s mises à jour Windows ?"
 
@@ -4041,8 +3903,6 @@ msgid "Message to send"
 msgstr ""
 
 #: uwaptconsoleres.rsnbmodifiedhosts
-#, fuzzy
-#| msgid "%s hosts affected."
 msgctxt "uwaptconsoleres.rsnbmodifiedhosts"
 msgid "%d hosts affected. %d hosts discarded (errors). %d hosts unchanged"
 msgstr "%d machines modifiées, %d machines ignorées (erreur), %d machines inchangées"
@@ -4096,7 +3956,6 @@ msgid "Error while building package : %s"
 msgstr "Erreur lors de la compilation du paquet : %s"
 
 #: uwaptconsoleres.rspackageduplicateconfirm
-#, fuzzy
 msgctxt "uwaptconsoleres.rspackageduplicateconfirm"
 msgid ""
 "Are you sure you want to duplicate the package(s)\n"
@@ -4166,15 +4025,11 @@ msgid "Error during key generation : %s"
 msgstr "Erreur lors de la création de la clé : %s"
 
 #: uwaptconsoleres.rspublickeygenfailure
-#, fuzzy
-#| msgid "The generation of the public key has failed."
 msgctxt "uwaptconsoleres.rspublickeygenfailure"
 msgid "The generation of the public certificate has failed."
 msgstr "La création de la clé publique a échoué."
 
 #: uwaptconsoleres.rspublickeygensuccess
-#, fuzzy
-#| msgid "Key %s has been successfully created."
 msgctxt "uwaptconsoleres.rspublickeygensuccess"
 msgid "Public certificate %s has been successfully created."
 msgstr "La clé %s a bien été créée."
@@ -4348,7 +4203,6 @@ msgid "Warning, waptagent.exe installer is not present on server, please build w
 msgstr "Attention, l'installeur waptagent.exe n'est pas présent sur le serveur. Veuillez le générer pour le déploiement de Wapt sur les clients"
 
 #: uwaptconsoleres.rswaptagentoldversion
-#, fuzzy
 msgid ""
 "Warning, the version of the waptagent.exe installer is too old.\n"
 "Current waptagent.exe version: %s\n"
@@ -4401,18 +4255,6 @@ msgstr ""
 "%s\n"
 
 #: uwaptconsoleres.rswaptserveroldversion
-#, fuzzy
-#| msgid ""
-#| "Required server version: %s\n"
-#| "Warning, the version of the server is too old.\n"
-#| "Current server version: %s\n"
-#| "Required server version: %s\n"
-#| "Warning, the version of the server is too old.\n"
-#| "Current server version: %s\n"
-#| "Required server version: %s\n"
-#| "Warning, the version of the server is too old.\n"
-#| "Current server version: %s\n"
-#| "Required server version: %s\n"
 msgid ""
 "Warning, the version of the server is too old.\n"
 "Current server version: %s\n"
@@ -4432,7 +4274,6 @@ msgid "WAPTSetup file %s has not been found"
 msgstr "Le fichier WAPTSetup %s n'a pas été trouvé"
 
 #: uwaptconsoleres.rswaptsetupuploadsuccess
-#, fuzzy
 msgctxt "uwaptconsoleres.rswaptsetupuploadsuccess"
 msgid ""
 "WAPT agent and upgrade package successfully created and uploaded to the main repository\n"
@@ -4447,8 +4288,6 @@ msgid " waptupgrade : upgrade wapt-get.exe and database"
 msgstr "waptupgade : upgrade wapt-get.exe et la base de données"
 
 #: uwaptconsoleres.rswaptupgradepackagebuilderror
-#, fuzzy
-#| msgid "Unable to build WAPT Upgrade package"
 msgid "Unable to create WAPT Upgrade package"
 msgstr "Création impossible du paquet de mise à jour WAPT"
 
@@ -4467,8 +4306,6 @@ msgid "Win32 Exe wrapper: %s %s"
 msgstr "Wrapper Win32 Exe  : %s %s"
 
 #: uwaptconsoleres.rswinterruptreceived
-#, fuzzy
-#| msgid "W: interrupt received, killing serverâ¦"
 msgctxt "uwaptconsoleres.rswinterruptreceived"
 msgid "W: interrupt received, killing server…"
 msgstr "W : interruption reçue, arrêt du serveur"
@@ -4784,7 +4621,6 @@ msgid "Innosetup is unavailable (path : %s), please install it first."
 msgstr "Innosetup n'est pas disponible (emplacement : %s), veuillez l'installer en premier lieu."
 
 #: uwaptres.rsinputkeyname
-#, fuzzy
 msgctxt "uwaptres.rsinputkeyname"
 msgid "Please input a key name."
 msgstr "Veuillez spécifier le nom de la clé"

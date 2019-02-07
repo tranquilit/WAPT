@@ -297,15 +297,15 @@ object VisWAPTConfig: TVisWAPTConfig
       end
       object Label1: TLabel
         AnchorSideTop.Control = eddefault_sources_root
+        AnchorSideTop.Side = asrCenter
         AnchorSideRight.Control = eddefault_sources_root
-        Left = 112
+        Left = 8
         Height = 13
-        Top = 11
-        Width = 200
+        Top = 12
+        Width = 302
         Alignment = taRightJustify
         Anchors = [akTop, akLeft, akRight]
-        BorderSpacing.Top = 3
-        BorderSpacing.Right = 3
+        BorderSpacing.Right = 5
         Caption = 'Base directory for package development'
         ParentColor = False
       end
@@ -410,11 +410,16 @@ object VisWAPTConfig: TVisWAPTConfig
         Visible = False
       end
       object Label7: TLabel
+        AnchorSideTop.Control = EdMaturity
+        AnchorSideTop.Side = asrCenter
+        AnchorSideRight.Control = EdMaturity
         Left = 191
         Height = 13
-        Top = 154
+        Top = 156
         Width = 121
         Alignment = taRightJustify
+        Anchors = [akTop, akRight]
+        BorderSpacing.Right = 3
         Caption = 'Default package maturity'
         ParentColor = False
       end
