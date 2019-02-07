@@ -724,7 +724,9 @@ msgid "Error while checking..."
 msgstr "Fehler beim üperprüfen..."
 
 #: uwapttrayres.rsinstalling
-msgid "Installation en cours"
+#, fuzzy
+#| msgid "Installation en cours"
+msgid "Install in progess"
 msgstr "Aktuelle Installation"
 
 #: uwapttrayres.rsnotaskcanceled
@@ -741,6 +743,18 @@ msgstr "Die fertige Konfiguration der Pakete für die Benutzersitzung"
 msgctxt "uwapttrayres.rspackageconfigerror"
 msgid "Error while configuring packages for the current user session"
 msgstr "Fehler bei der Konfiguration der Pakete für die aktuelle Benutzersitzung"
+
+#: uwapttrayres.rspendinginstalls
+msgid "Pending packages installs: %s"
+msgstr ""
+
+#: uwapttrayres.rspendingremoves
+msgid "Pending packages removes: %s"
+msgstr ""
+
+#: uwapttrayres.rspendingwuaupdates
+msgid "Pending WUA updates: %s"
+msgstr ""
 
 #: uwapttrayres.rsstartingwaptservice
 msgid "Starting WAPTService"

@@ -715,9 +715,30 @@ begin
 end;
 
 procedure TDMWaptTray.SetLastUpdateStatus(AValue: ISuperObject);
+var
+  UpgradesCount,RemovesCount,WUACount:Integer;
+  Msg: String;
 begin
   if LastUpdateStatus=AValue then Exit;
   FLastUpdateStatus:=AValue;
+  // {"wua_status": "SCANNING",
+  //  "errors": [], "wua_pending_count": 15, "running_tasks": [],
+  //  "upgrades": [], "date": "2019-02-07T18:09:44.044000",
+  //  "pending":
+  //           {"upgrade": [], "additional": [], "install": [], "remove": ["compta2"]}}
+  Msg := '';
+  if Assigned(FLastUpdateStatus) then
+  begin
+    UpgradesCount := FLastUpdateStatus.A['upgrades'].Length;
+    if UpgradesCount>0 then
+      Msg := Msg + Format(rsPendingInstalls,[ Join(',',FLastUpdateStatus['upgrades']) ]);
+    RemovesCount := FLastUpdateStatus.A['pending.remove'].Length;
+    if RemovesCount>0 then
+      Msg := Msg + Format(rsPendingRemoves,[ Join(',',FLastUpdateStatus['pending.remove']) ]);
+    if UpgradesCount+RemovesCount>0 then
+      trayMode:=tmUpgrades;
+  end;
+  trayHint:=msg;
 end;
 
 procedure TDMWaptTray.SettrayHint(AValue: String);

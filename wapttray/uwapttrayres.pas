@@ -22,7 +22,10 @@ resourcestring
   rsWaptServiceTerminated = 'WAPTService terminated';
   rsChecking = 'Checking...';
   rsErrorWhileChecking = 'Error while checking...';
-  rsInstalling = 'Installation en cours';
+  rsInstalling = 'Install in progess';
+  rsPendingInstalls = 'Pending packages installs: %s';
+  rsPendingRemoves = 'Pending packages removes: %s';
+  rsPendingWUAUpdates = 'Pending WUA updates: %s';
   rsStartingWaptService = 'Starting WAPTService';
   rsStoppingWaptService = 'Stopping WAPTService';
   rsWaptServiceStarted = 'WAPTService started';

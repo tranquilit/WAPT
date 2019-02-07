@@ -707,12 +707,15 @@ class WaptUpdate(WaptTask):
                         self.result['upgrades']['additional']+\
                         self.result['upgrades']['upgrade']
         installs = u','.join(all_install)
+        removes = u','.join(self.result['upgrades']['remove'])
         errors = u','.join([p.asrequirement() for p in  self.wapt.error_packages()])
         if installs:
             s.append(_(u'Packages to be updated : {}').format(installs))
+        if removes:
+            s.append(_(u'Packages to be removed : {}').format(removes))
         if errors:
             s.append(_(u'Packages with errors : {}').format(errors))
-        if not installs and not errors:
+        if not installs and not errors and not removes:
             s.append(_(u'System up-to-date'))
         print(u'\n'.join(s))
         self.summary = u'\n'.join(s)

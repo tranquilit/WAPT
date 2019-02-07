@@ -689,7 +689,7 @@ msgid "Error while checking..."
 msgstr ""
 
 #: uwapttrayres.rsinstalling
-msgid "Installation en cours"
+msgid "Install in progess"
 msgstr ""
 
 #: uwapttrayres.rsnotaskcanceled
@@ -705,6 +705,18 @@ msgstr ""
 #: uwapttrayres.rspackageconfigerror
 msgctxt "uwapttrayres.rspackageconfigerror"
 msgid "Error while configuring packages for the current user session"
+msgstr ""
+
+#: uwapttrayres.rspendinginstalls
+msgid "Pending packages installs: %s"
+msgstr ""
+
+#: uwapttrayres.rspendingremoves
+msgid "Pending packages removes: %s"
+msgstr ""
+
+#: uwapttrayres.rspendingwuaupdates
+msgid "Pending WUA updates: %s"
 msgstr ""
 
 #: uwapttrayres.rsstartingwaptservice
