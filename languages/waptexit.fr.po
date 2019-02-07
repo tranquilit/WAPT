@@ -16,8 +16,10 @@ msgid "Install / Upgrade packages"
 msgstr "Installer ou mettre à jour"
 
 #: tviswaptexit.caption
-msgid "Launching updates..."
-msgstr "Lancement des mises à jour..."
+#, fuzzy
+#| msgid "Launching updates..."
+msgid "WAPT Softwares Updates"
+msgstr "WAPT - Mises à jour de logiciels "
 
 #: tviswaptexit.cbskipwindowsupdates.caption
 msgid "Skip the installation of Windows Updates"
@@ -62,12 +64,9 @@ msgid "Updating software in %s sec..."
 msgstr "Mise à jour des logiciels dans %s sec..."
 
 #: uwaptexitres.rsupdatesavailable
-
 msgctxt "uwaptexitres.rsupdatesavailable"
 msgid "%d installs or updates pending"
 msgstr "%d installations en attente"
-"Il y %d installations ou mises à jour en attente\n"
-"Souhaitez-vous les lancer maintenant ?\n"
 
 #: uwaptexitres.rsupdatingsoftware
 msgid "Updating software"

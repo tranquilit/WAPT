@@ -6,7 +6,7 @@ object VisWaptExit: TVisWaptExit
   Anchors = [akTop, akRight]
   AutoSize = True
   BorderStyle = bsDialog
-  Caption = 'Launching updates...'
+  Caption = 'WAPT Softwares Updates'
   ClientHeight = 377
   ClientWidth = 416
   DefaultMonitor = dmDesktop

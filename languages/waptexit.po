@@ -14,7 +14,7 @@ msgid "Install / Upgrade packages"
 msgstr ""
 
 #: tviswaptexit.caption
-msgid "Launching updates..."
+msgid "WAPT Softwares Updates"
 msgstr ""
 
 #: tviswaptexit.cbskipwindowsupdates.caption

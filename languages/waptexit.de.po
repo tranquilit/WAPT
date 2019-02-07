@@ -48,7 +48,9 @@ msgid "Install / Upgrade packages"
 msgstr "Pakete installieren/updaten"
 
 #: tviswaptexit.caption
-msgid "Launching updates..."
+#, fuzzy
+#| msgid "Launching updates..."
+msgid "WAPT Softwares Updates"
 msgstr "Start der Updates..."
 
 #: tviswaptexit.cbskipwindowsupdates.caption
