@@ -4742,7 +4742,7 @@ class Wapt(BaseObjectClass):
                                             # if running porcesses, kill them before launching uninstaller
                                             print(self.run(uninstall_cmd))
                                     except Exception as e:
-                                        logger.critical(u"Critical error during uninstall cmd %s: %s" % (uninstall_cmd,ensure_unicode(e)))
+                                        logger.critical(u"Critical error during uninstall: %s" % (ensure_unicode(e)))
                                         result['errors'].append(package)
                                         if not force:
                                             raise

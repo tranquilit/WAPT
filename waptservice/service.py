@@ -618,8 +618,29 @@ def get_checkupgrades():
             row = cur.fetchone()
             if row:
                 data = json.loads(row['value'])
+
+                # if enterprise, add waptwua status
+                query = u"""select * from wapt_params where name="waptwua.status" limit 1"""
+                cur = con.cursor()
+                cur.execute(query)
+                row = cur.fetchone()
+                if row:
+                    data['wua_status'] = row['value']
+                    # check count of updates
+                    try:
+                        query = u"""select * from wapt_params where name="waptwua.updates_localstatus" limit 1"""
+                        cur = con.cursor()
+                        cur.execute(query)
+                        row = cur.fetchone()
+                        if row:
+                            wua_localstatus = json.loads(row['value'])
+                            wua_pending_count = len([u['update_id'] for u in wua_localstatus if u['status'] == 'PENDING'])
+                            data['wua_pending_count']= wua_pending_count
+                    except Exception as e:
+                        logger.critical('Unable to read waptwua updates_localstatus from DB: %s' % e)
             else:
                 data = None
+
         except Exception as e :
             logger.critical(u"*********** error %s"  % (ensure_unicode(e)))
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):

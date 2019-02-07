@@ -2998,10 +2998,9 @@ begin
 
     result := EditHost(host, AdvancedMode, ApplyUpdatesImmediately, HostPackageVersion);
 
-    if not VarIsNone(result) and ApplyUpdatesImmediately and (uuid<>'')  then
+    if not VarIsNone(result) and ApplyUpdatesImmediately and (host.S['uuid']<>'')  then
     begin
-      uuids := TSuperobject.create(stArray);
-      uuids.AsArray.Add(uuid);
+      uuids := SA([host['uuid']]);
       TriggerActionOnHosts(uuids,'trigger_host_upgrade',Nil,rsUpgradingHost,rsErrorLaunchingUpgrade);
     end;
 
