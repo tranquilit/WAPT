@@ -2897,7 +2897,7 @@ def host_info():
     info['computer_ad_dn'] =  registry_readstring(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows\CurrentVersion\Group Policy\State\Machine','Distinguished-Name')
     info['computer_ad_site'] =  registry_readstring(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows\CurrentVersion\Group Policy\State\Machine','Site-Name')
 
-    info['environ'] = dict(os.environ)
+    info['environ'] = {k:ensure_unicode(v) for k,v in os.environ.iteritems()}
 
     return info
 
@@ -4518,9 +4518,9 @@ def remove_printer(name):
 
     Args:
         name (str) : name of local printer to be deleted
-    
+
     .. versionadded:: 1.7.1
-    
+
     >>> remove_printer('Brother QL-1060')
     """
     try:
