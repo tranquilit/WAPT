@@ -209,9 +209,9 @@ begin
     AllowCancelUpgrade := FindCmdLineSwitch('allow_cancel_upgrade') or ini.ReadBool('global','allow_cancel_upgrade',True);
     InitialCountDown := StrToInt(GetCmdParams('waptexit_countdown',ini.ReadString('global','waptexit_countdown','10')));
     Priorities := GetCmdParams('priorities',ini.ReadString('global','upgrade_priorities',''));
-    OnlyIfNotProcessRunning := FindCmdLineSwitch('only_if_not_process_running') or ini.ReadBool('global','upgrade_only_if_not_process_running',False);
+    OnlyIfNotProcessRunning :=  StrToBool(GetCmdParams('only_if_not_process_running',ini.ReadString('global','upgrade_only_if_not_process_running','0')));
     {$ifdef enterprise}
-    InstallWUAUpdates := FindCmdLineSwitch('install_wua_updates',ini.ReadBool('waptwua','install_at_shutdown',False));
+    InstallWUAUpdates := StrToBool(GetCmdParams('install_wua_updates',ini.ReadString('waptwua','install_at_shutdown','0')));
     CBSkipWindowsUpdates.Visible:=InstallWUAUpdates;
     {$else}
     CBSkipWindowsUpdates.Visible:=False;
