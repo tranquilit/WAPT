@@ -3801,7 +3801,7 @@ class Wapt(BaseObjectClass):
         try:
             status={
                 "running_tasks": [ "%s : %s" % (p.asrequirement(),p.install_status) for p in self.running_tasks()],
-                "errors": [ "%s : %s" % (p.asrequirement(),p.install_status) for p in self.error_packages()],
+                "errors": [ "%s" % p.asrequirement() for p in self.error_packages()],
                 "date":datetime2isodate(),
                 }
             if upgrades is None:
@@ -4420,24 +4420,34 @@ class Wapt(BaseObjectClass):
         """Return a list of additional package to remove if apackages are removed
 
         Args:
-            apackages (str or list): list of packages fr which parent dependencies will be checked.
+            apackages (str or list of req or PackageRequest): list of packages for which parent dependencies will be checked.
 
         Returns:
-            list: list of package requirements with broken dependencies
+            list: list of PackageRequest with broken dependencies
 
         """
         if not isinstance(apackages,list):
             apackages = [apackages]
         result = []
-        installed = [ p.asrequirement() for p in self.installed() if p.asrequirement() not in apackages ]
-        for packagename in installed:
+
+        package_requests = self._ensure_package_requests_list(apackages,PackageRequest())
+
+        installed = []
+        for p in self.installed():
+            for req in package_requests:
+                if req.is_matched_by(p):
+                    continue
+
+            installed.append(p)
+
+        for pe in installed:
             # test for each installed package if the removal would imply a reinstall
-            test = self.check_depends(packagename,assume_removed=apackages)
+            test = self.check_depends(pe,assume_removed=apackages,package_request_filter=PackageRequest())
             # get package names only
             reinstall = [ p[0] for p in (test['upgrade'] + test['additional'])]
-            for p in reinstall:
-                if p in apackages and not packagename in result:
-                    result.append(packagename)
+            for pr in reinstall:
+                if pr in package_requests and not pe in result:
+                    result.append(pe)
         return result
 
     def check_install(self,apackages=None,force=True,forceupgrade=True):

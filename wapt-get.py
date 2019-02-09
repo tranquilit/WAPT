@@ -717,7 +717,7 @@ def main():
                     else:
                         for k in ('install','additional','upgrade','skipped','errors'):
                             if result[k]:
-                                print(u"\n=== %s packages ===\n%s" % (k,'\n'.join( ["  %-30s | %s (%s)" % (s[0],s[1].package,s[1].version) for s in  result[k]]),))
+                                print(u"\n=== %s packages ===\n%s" % (k,'\n'.join( [u"  %-30s | %s (%s)" % (s[0],s[1].package,s[1].version) for s in  result[k]]),))
                 if mywapt.waptserver:
                     try:
                         mywapt.update_server_status(force=options.force)

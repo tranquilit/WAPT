@@ -577,6 +577,20 @@ class PackageRequest(BaseObjectClass):
         return "PackageRequest(%s)" % attribs
 
 
+    def __unicode__(self):
+        def or_list(v):
+            if isinstance(v,list) or isinstance(v,tuple):
+                return u','.join(ensure_list(v))
+            else:
+                return v
+        attribs=[]
+        attribs.extend([u"%s" % (ensure_unicode(or_list(getattr(self,a)))) for a in ['architectures','locales','maturities']
+                                                if getattr(self,a) is not None and getattr(self,a) != '' and getattr(self,a) != 'all'])
+        if attribs:
+            attribs = u' [%s]' % u'_'.join(attribs)
+        return "%s%s" % (self.request,attribs)
+
+
     def compare_packages(self,pe1,pe2):
         """Compare packages taken in account the preferences from filter
         """
