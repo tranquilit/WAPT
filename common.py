@@ -4290,7 +4290,7 @@ class Wapt(BaseObjectClass):
         return (all_depends,all_conflicts,all_missing)
 
 
-    def check_depends(self,apackages,forceupgrade=False,force=False,assume_removed=[],packages_filter_for_host=None):
+    def check_depends(self,apackages,forceupgrade=False,force=False,assume_removed=[],package_request_filter=None):
         """Given a list of packagename or requirement "name (=version)",
         return a dictionnary of {'additional' 'upgrade' 'install' 'skipped' 'unavailable','remove'} of
         [packagerequest,matching PackageEntry]
@@ -4301,7 +4301,7 @@ class Wapt(BaseObjectClass):
             force (boolean): if True, install the latest version even if the package is already there and match the requirement
             assume_removed (list): list of packagename which are assumed to be absent even if they are actually installed to check the
                                     consequences of removal of packages, implies force=True
-            packages_filter_for_host (PackageRequest): additional filter to apply to packages to sort by locales/arch/mat preferences
+            package_request_filter (PackageRequest): additional filter to apply to packages to sort by locales/arch/mat preferences
                                                        if None, get active host filter
         Returns:
             dict : {'additional' 'upgrade' 'install' 'skipped' 'unavailable', 'remove'} with list of [packagerequest,matching PackageEntry]
@@ -4310,7 +4310,10 @@ class Wapt(BaseObjectClass):
         if apackages is None:
             apackages = []
 
-        package_requests = self._ensure_package_requests_list(apackages,packages_filter_for_host)
+        if package_request_filter is None:
+            package_request_filter = self.packages_filter_for_host()
+
+        package_requests = self._ensure_package_requests_list(apackages,package_request_filter=package_request_filter)
 
         if not isinstance(assume_removed,list):
             assume_removed = [assume_removed]
@@ -4363,7 +4366,7 @@ class Wapt(BaseObjectClass):
 
         # search for most recent matching package to install
         for request in depends:
-            package_request= PackageRequest(request=request,copy_from=packages_filter_for_host)
+            package_request= PackageRequest(request=request,copy_from=package_request_filter)
             # get the current installed package matching the request
             old_matches = self.waptdb.installed_matching(package_request)
 
@@ -4457,7 +4460,7 @@ class Wapt(BaseObjectClass):
             actions = self.list_upgrade()
             apackages = actions['install']+actions['additional']+actions['upgrade']
 
-        actions = self.check_depends(package_requests,force=force,forceupgrade=forceupgrade)
+        actions = self.check_depends(apackages,force=force,forceupgrade=forceupgrade)
         return  actions
 
     def packages_matching(self,package_request=None,query=None,args=()):
