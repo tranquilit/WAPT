@@ -368,7 +368,9 @@ class PackageRequest(BaseObjectClass):
         locales (list) : list of 2 letters lki
 
     """
-    def __init__(self,request=None,**kwargs):
+    _attributes = ['package','version','architectures','locales','maturities','min_os_version','max_os_version']
+
+    def __init__(self,request=None,copy_from=None,**kwargs):
         self.package = None
         self.version = None
         self.architectures = None
@@ -387,6 +389,10 @@ class PackageRequest(BaseObjectClass):
         self._maturities = None
         self._min_os_version = None
         self._max_os_version = None
+
+        if copy_from is not None:
+            for k in self._attributes:
+                setattr(self,k,getattr(copy_from,k))
 
         self.request = request
 
@@ -548,7 +554,16 @@ class PackageRequest(BaseObjectClass):
     def __cmp__(self,other):
         if isinstance(other,str) or isinstance(other,unicode):
             other = PackageRequest(request=other)
-        return 0 if self.is_matched_by(other) else cmp((self.package,self.version,self.architectures,self.locales,self.maturities),(other.package,other.version,other.architectures,other.locales,other.maturities))
+
+        if isinstance(other,PackageRequest):
+            return cmp((self.package,self.version,self.architectures,self.locales,self.maturities),(other.package,other.version,other.architectures,other.locales,other.maturities))
+        elif isinstance(other,PackageEntry):
+            if self.is_matched_by(other):
+                return 0
+            else:
+                return cmp((self.package,self.version,self.architectures,self.locales,self.maturities),(other.package,other.version,other.architecture,other.locale,other.maturity))
+        else:
+            raise Exception('Unsupported comparison between PackageRequest and %s' % other)
 
     def __repr__(self):
         def or_list(v):
@@ -557,7 +572,7 @@ class PackageRequest(BaseObjectClass):
             else:
                 return v
         attribs=[]
-        attribs.extend(["%s=%s" % (a,repr(or_list(getattr(self,a)))) for a in ['package','version','architectures','locales','maturities'] if getattr(self,a) is not None and getattr(self,a) != '' and getattr(self,a) != 'all'])
+        attribs.extend(["%s=%s" % (a,repr(getattr(self,a))) for a in self._attributes if getattr(self,a) is not None and getattr(self,a) != '' and getattr(self,a) != 'all'])
         attribs = ','.join(attribs)
         return "PackageRequest(%s)" % attribs
 
@@ -592,6 +607,10 @@ class PackageRequest(BaseObjectClass):
            )
 
         return cmp(t1,t2)
+
+    def __iter__(self):
+        for key in self._attributes:
+            yield (key, getattr(self,key))
 
 
 def control_to_dict(control,int_params=('size','installed_size')):
@@ -653,6 +672,8 @@ def control_to_dict(control,int_params=('size','installed_size')):
         linenr += 1
 
     return result
+
+
 
 class PackageEntry(BaseObjectClass):
     """Manage package attributes coming from either control files in WAPT package, local DB, or developement dir.
@@ -870,8 +891,8 @@ class PackageEntry(BaseObjectClass):
     """
 
     def __repr__(self):
-        return "PackageEntry(%s,%s) %s" % (repr(self.package),repr(self.version),
-            ','.join(["%s=%s"%(key,getattr(self,key)) for key in ('architecture','maturity','locale') if (getattr(self,key) is not None and getattr(self,key) != '' and getattr(self,key) != 'all')]))
+        return "PackageEntry(%s,%s %s)" % (repr(self.package),repr(self.version),
+            ','.join(["%s=%s"%(key,repr(getattr(self,key))) for key in ('architecture','maturity','locale') if (getattr(self,key) is not None and getattr(self,key) != '' and getattr(self,key) != 'all')]))
 
     def get(self,name,default=None):
         """Get PackageEntry property.
@@ -1791,6 +1812,10 @@ class PackageEntry(BaseObjectClass):
         Returns:
             list: non matching files (corrupted files)
         """
+
+        if not self.sourcespath:
+            raise EWaptNotSourcesDirPackage(u'Package %s (path %s) is not unzipped, checking corrupted files is not supported.' % (self,self.localpath))
+
         if not os.path.isdir(self.sourcespath):
             raise EWaptNotSourcesDirPackage(u'%s is not a valid package directory.'%self.sourcespath)
 
@@ -1932,6 +1957,9 @@ class PackageEntry(BaseObjectClass):
             EWaptNotAPackage, EWaptBadSignature,EWaptCorruptedFiles
             if check is not successful, unzipped files are deleted.
         """
+        if not self.localpath:
+            raise EWaptNotAPackage('unzip_package : Package %s is not downloaded' % ensure_unicode(self))
+
         if not os.path.isfile(self.localpath):
             raise EWaptNotAPackage('unzip_package : Package %s does not exists' % ensure_unicode(self.localpath))
 
@@ -3247,7 +3275,7 @@ class WaptRemoteRepo(WaptBaseRepo):
             package_requests (list) : list of PackageEntry to download or list of package with optional version
 
         Returns:
-            dict: 'downloaded', 'skipped', 'errors'
+            dict: 'packages', 'downloaded', 'skipped', 'errors'
 
         >>> repo = WaptRemoteRepo(url='http://wapt.tranquil.it/wapt')
         >>> wapt.download_packages(['tis-firefox','tis-waptdev'],printhook=nullhook)

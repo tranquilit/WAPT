@@ -1058,21 +1058,38 @@ class WaptDB(WaptBaseDB):
         """Return an ordered list of available packages entries which match
         the condition "packagename[([=<>]version)]?"
         version ascending
-        """
-        pcv_match = REGEX_PACKAGE_CONDITION.match(package_cond)
-        if pcv_match:
-            pcv = pcv_match.groupdict()
-            q = self.query_package_entry("""\
-                  select * from wapt_package where package = ?
-               """, (pcv['package'],))
-            result = [ p for p in q if p.match(package_cond)]
-            result.sort()
-            return result
-        else:
-            return []
 
-    def packages_search(self,searchwords=[],exclude_host_repo=True,section_filter=None):
-        """Return a list of package entries matching the search words"""
+        Args:
+            package_cond (PackageRequest or str): filter packages and determine the ordering
+
+        Returns:
+            list of PakcageEntry
+
+        """
+        if isinstance(package_cond,(unicode,str)):
+            package_cond = PackageRequest(request=package_cond)
+
+        q = self.query_package_entry("""\
+              select * from wapt_package where package = ?
+           """, (package_cond.package,))
+        result = [ p for p in q if package_cond.is_matched_by(p) ]
+        result.sort(cmp=lambda p1,p2: package_cond.compare_packages(p1,p2))
+        return result
+
+    def packages_search(self,searchwords=[],exclude_host_repo=True,section_filter=None,packages_filter=None):
+        """Return a list of package entries matching the search words
+
+        Args:
+            searchwords (list): list of words which must be in package name or description
+            exclude_host (bool): don't take in account packages comming from a repo named 'wapt-host"
+            section_filter (list): list of packages sections to take in account
+            packages_filter (PackageRequest): additional filters (arch, locale, maturities etc...)
+                                              to take in account for filter and sort
+
+        Returns:
+            list of PackageEntry
+
+        """
         if not isinstance(searchwords,list) and not isinstance(searchwords,tuple):
             searchwords = [searchwords]
         if not searchwords:
@@ -1087,8 +1104,15 @@ class WaptDB(WaptBaseDB):
             section_filter = ensure_list(section_filter)
             search.append(u'section in ( %s )' %  u",".join(['"%s"' % x for x in  section_filter]))
 
+        if isinstance(packages_filter,(unicode,str)):
+            packages_filter = PackageRequest(request=packages_filter)
+
         result = self.query_package_entry(u"select * from wapt_package where %s" % " and ".join(search),words)
-        result.sort()
+        if packages_filter is not None:
+            result = [p for p in result if packages_filter.is_matched_by(packages_filter)]
+            result.sort(cmp=lambda p1,p2: packages_filter.compare_packages(p1,p2))
+        else:
+            result.sort()
         return result
 
     def installed_package_names(self,include_errors=False):
@@ -1101,11 +1125,12 @@ class WaptDB(WaptBaseDB):
 
 
     def installed(self,include_errors=False,include_setup=True):
-        """Return a list of installed packages on this host
+        """Return a list of installed packages on this host (status 'OK' or 'UNKNWON')
 
         Args:
             include_errors (bool) : if False, only packages with status 'OK' and 'UNKNOWN' are returned
                                     if True, all packages are installed.
+            include_setup (bool) : if True, setup.py files content is in the result rows
 
         Returns:
             list: of installed PackageEntry
@@ -1204,9 +1229,12 @@ class WaptDB(WaptBaseDB):
 
         """
         if isinstance(package_cond,(str,unicode)):
-            package = REGEX_PACKAGE_CONDITION.match(package_cond).groupdict()['package']
-        elif isinstance(package_cond,PackageRequest):
-            package = package_cond
+            requ = package_cond
+            package_cond = PackageRequest(request=requ)
+        elif not isinstance(package_cond,PackageRequest):
+            raise Exception('installed_matching: package_cond must be either str ot PackageRequest')
+
+        package = package_cond.package
 
         if include_errors:
             status = '"OK","UNKNOWN","ERROR"'
@@ -1224,7 +1252,7 @@ class WaptDB(WaptBaseDB):
                 left join wapt_package r on r.package=l.package and l.version=r.version and (l.architecture is null or l.architecture=r.architecture)
               where l.package=? and l.install_status in (%s)
            """ % status,(package,))
-        return q[0] if q and q[0].match(package_cond) else None
+        return q[0] if q and package_cond.is_matched_by(q[0]) else None
 
     def upgradeable(self,include_errors=True):
         """Return a dictionary of upgradable Package entries"""
@@ -1248,7 +1276,7 @@ class WaptDB(WaptBaseDB):
             return 'WARNING'
         return 'OK'
 
-    def build_depends(self,packages):
+    def build_depends(self,packages,packages_filter=None):
         """Given a list of packages conditions (packagename (optionalcondition))
         return a list of dependencies (packages conditions) to install
 
@@ -1295,10 +1323,16 @@ class WaptDB(WaptBaseDB):
         def dodepends(packages,depth):
             if depth>MAXDEPTH:
                 raise Exception('Max depth in build dependencies reached, aborting')
+            package_request = PackageRequest(request=None,copy_from=packages_filter)
             # loop over all package names
             for package in packages:
                 if not package in explored:
-                    entries = self.packages_matching(package)
+                    if isinstance(package,(str,unicode)):
+                        package_request.request = package
+                        entries = self.packages_matching(package_request)
+                    else:
+                        entries = self.packages_matching(package)
+
                     if not entries and package not in missing:
                         missing.append(package)
                     else:
@@ -1307,7 +1341,8 @@ class WaptDB(WaptBaseDB):
                         depends = ensure_list(entries[-1].depends)
                         available_depends = []
                         for d in depends:
-                            if self.packages_matching(d):
+                            package_request.request = d
+                            if self.packages_matching(package_request):
                                 available_depends.append(d)
                             elif d not in missing:
                                 missing.append(d)
@@ -1382,6 +1417,7 @@ class WaptDB(WaptBaseDB):
         PackageEntry('dummy','2')
         """
         result = []
+
         cur = self.db.execute(query, args)
         for row in cur.fetchall():
             pe = PackageEntry()
@@ -1395,7 +1431,11 @@ class WaptDB(WaptBaseDB):
                 result.append(pe)
 
         if one and result:
-            result = sorted(result)[-1]
+            if not package_request:
+                result = sorted(result)[-1]
+            else:
+                result = sorted(result,cmp=lambda p1,p2:package_request.compare_packages(p1,p2))[-1]
+
         return result
 
     def purge_repo(self,repo_name):
@@ -2882,6 +2922,9 @@ class Wapt(BaseObjectClass):
         # clear host key cache
         self._host_key = None
 
+        # clear host filter for packages
+        self._packages_filter_for_host = None
+
         return self
 
     def write_config(self,config_filename=None):
@@ -3786,7 +3829,15 @@ class Wapt(BaseObjectClass):
 
     def get_sources(self,package):
         """Download sources of package (if referenced in package as a https svn)
-           in the current directory"""
+        in the current directory
+
+        Args:
+            package (str or PackageRequest): package to get sources for
+
+        Returns:
+            str : checkout directory path
+
+        """
         sources_url = None
         entry = None
         entries = self.waptdb.packages_matching(package)
@@ -3930,6 +3981,8 @@ class Wapt(BaseObjectClass):
             old_status = repo.invalidate_packages_cache()
             discarded = []
 
+            self._packages_filter_for_host = None
+
             if filter_on_host_cap:
                 host_capabilities = self.host_capabilities()
             else:
@@ -4012,6 +4065,16 @@ class Wapt(BaseObjectClass):
             #authorized_maturities=self.get_host_maturities(),
         )
         return host_capa
+
+    def packages_filter_for_host(self):
+        """Returns a PackageRequest object based on host capabilities to filter applicable packages from a repo
+
+        Returns:
+            PackageRequest
+        """
+        if self._packages_filter_for_host is None:
+            self._packages_filter_for_host = self.host_capabilities().get_package_request_filter()
+        return self._packages_filter_for_host
 
     def get_wapt_edition(self):
         return 'enterprise' if os.path.isfile(os.path.join(self.wapt_base_dir,'waptenterprise','licencing.py')) else 'community'
@@ -4227,7 +4290,7 @@ class Wapt(BaseObjectClass):
         return (all_depends,all_conflicts,all_missing)
 
 
-    def check_depends(self,apackages,forceupgrade=False,force=False,assume_removed=[]):
+    def check_depends(self,apackages,forceupgrade=False,force=False,assume_removed=[],packages_filter_for_host=None):
         """Given a list of packagename or requirement "name (=version)",
         return a dictionnary of {'additional' 'upgrade' 'install' 'skipped' 'unavailable','remove'} of
         [packagerequest,matching PackageEntry]
@@ -4238,18 +4301,16 @@ class Wapt(BaseObjectClass):
             force (boolean): if True, install the latest version even if the package is already there and match the requirement
             assume_removed (list): list of packagename which are assumed to be absent even if they are actually installed to check the
                                     consequences of removal of packages, implies force=True
+            packages_filter_for_host (PackageRequest): additional filter to apply to packages to sort by locales/arch/mat preferences
+                                                       if None, get active host filter
         Returns:
             dict : {'additional' 'upgrade' 'install' 'skipped' 'unavailable', 'remove'} with list of [packagerequest,matching PackageEntry]
 
         """
         if apackages is None:
             apackages = []
-        # for csv string list of dependencies
-        if not isinstance(apackages,list):
-            apackages = [apackages]
 
-        # check if all members are strings packages requirements "package_name(=version)"
-        apackages = [isinstance(p,PackageEntry) and p.asrequirement() or p for p in apackages]
+        package_requests = self._ensure_package_requests_list(apackages,packages_filter_for_host)
 
         if not isinstance(assume_removed,list):
             assume_removed = [assume_removed]
@@ -4264,9 +4325,9 @@ class Wapt(BaseObjectClass):
         packages = []
 
         # search for most recent matching package to install
-        for request in apackages:
+        for package_request in package_requests:
             # get the current installed package matching the request
-            old_matches = self.waptdb.installed_matching(request)
+            old_matches = self.waptdb.installed_matching(package_request)
 
             # removes "assumed removed" packages
             if old_matches:
@@ -4277,22 +4338,22 @@ class Wapt(BaseObjectClass):
 
             # current installed matches
             if not force and old_matches and not forceupgrade:
-                skipped.append((request,old_matches))
+                skipped.append((package_request,old_matches))
             else:
-                new_availables = self.waptdb.packages_matching(request)
+                new_availables = self.waptdb.packages_matching(package_request)
                 if new_availables:
                     if force or not old_matches or (forceupgrade and old_matches < new_availables[-1]):
-                        if not (request,new_availables[-1]) in packages:
-                            packages.append((request,new_availables[-1]))
+                        if not (package_request,new_availables[-1]) in packages:
+                            packages.append((package_request,new_availables[-1]))
                     else:
-                        skipped.append((request,old_matches))
+                        skipped.append((package_request,old_matches))
                 else:
-                    if (request,None) not in unavailable:
-                        unavailable.append((request,None))
+                    if (package_request,None) not in unavailable:
+                        unavailable.append((package_request,None))
 
         # get dependencies of not installed top packages
         if forceupgrade:
-            (depends,conflicts,missing) = self.waptdb.build_depends(apackages)
+            (depends,conflicts,missing) = self.waptdb.build_depends(package_requests)
         else:
             (depends,conflicts,missing) = self.waptdb.build_depends([p[0] for p in packages])
 
@@ -4302,8 +4363,9 @@ class Wapt(BaseObjectClass):
 
         # search for most recent matching package to install
         for request in depends:
+            package_request= PackageRequest(request=request,copy_from=packages_filter_for_host)
             # get the current installed package matching the request
-            old_matches = self.waptdb.installed_matching(request)
+            old_matches = self.waptdb.installed_matching(package_request)
 
             # removes "assumed removed" packages
             if old_matches:
@@ -4314,17 +4376,17 @@ class Wapt(BaseObjectClass):
 
             # current installed matches
             if not force and old_matches:
-                skipped.append((request,old_matches))
+                skipped.append((package_request,old_matches))
             else:
                 # check if installable or upgradable ?
-                new_availables = self.waptdb.packages_matching(request)
+                new_availables = self.waptdb.packages_matching(package_request)
                 if new_availables:
                     if not old_matches or (forceupgrade and old_matches < new_availables[-1]):
-                        additional_install.append((request,new_availables[-1]))
+                        additional_install.append((package_request,new_availables[-1]))
                     else:
-                        skipped.append((request,old_matches))
+                        skipped.append((package_request,old_matches))
                 else:
-                    unavailable.append((request,None))
+                    unavailable.append((package_request,None))
 
         # check new conflicts which should force removal
         all_new = additional_install+to_upgrade+packages
@@ -4394,18 +4456,8 @@ class Wapt(BaseObjectClass):
         if apackages is None:
             actions = self.list_upgrade()
             apackages = actions['install']+actions['additional']+actions['upgrade']
-        elif isinstance(apackages,(str,unicode)):
-            apackages = [apackages]
-        elif isinstance(apackages,list):
-            # ensure that apackages is a list of package requirements (strings)
-            new_apackages = []
-            for p in apackages:
-                if isinstance(p,PackageEntry):
-                    new_apackages.append(p.asrequirement())
-                else:
-                    new_apackages.append(p)
-            apackages = new_apackages
-        actions = self.check_depends(apackages,force=force,forceupgrade=forceupgrade)
+
+        actions = self.check_depends(package_requests,force=force,forceupgrade=forceupgrade)
         return  actions
 
     def packages_matching(self,package_request=None,query=None,args=()):
@@ -4417,6 +4469,9 @@ class Wapt(BaseObjectClass):
         Returns:
             list (of PackageEntry)
         """
+        if isinstance(package_request,(unicode,str)):
+            package_request = PackageRequest(request=package_request)
+
         if query is None:
             if package_request is not None and package_request.package:
                 query = 'select * from wapt_package where package=?'
@@ -4426,6 +4481,40 @@ class Wapt(BaseObjectClass):
                 args = ()
 
         return self.waptdb.query_package_entry(query=query,args=args,package_request=package_request)
+
+    def _ensure_package_requests_list(self,package_requests_or_str,package_request_filter=None,keep_package_entries=False):
+        """Takes a list of packages request as string, or PackageRequest or PackageEntry
+        and return a list of PackageRequest
+
+        Args:
+            package_requests ( (list of) str,PackageEntry,PackageRequest)
+            package_request_filter ( PackageRequest) : additional filter. If None, takes the host filter.
+
+        Returns:
+            list of PackageEntry
+        """
+        if package_request_filter is None:
+            package_request_filter = self.packages_filter_for_host()
+
+        package_requests = []
+        if not isinstance(package_requests_or_str,list):
+            package_requests_or_str = [package_requests_or_str]
+
+        for req in package_requests_or_str:
+            if isinstance(req,PackageEntry):
+                if keep_package_entries:
+                    package_requests.append(req)
+                else:
+                    package_requests.append(PackageRequest(request=req.asrequirement(),copy_from=package_request_filter))
+            elif isinstance(req,(str,unicode)):
+                package_requests.append(PackageRequest(request=req,copy_from=package_request_filter))
+            elif isinstance(req,PackageRequest):
+                package_requests.append(req)
+            else:
+                raise Exception.Create('Unsupported request %s for check_depends' % req)
+        return package_requests
+
+
 
     def install(self,apackages,
             force=False,
@@ -4465,17 +4554,9 @@ class Wapt(BaseObjectClass):
         >>> res == {'removed': ['tis-wapttest'], 'errors': []}
         True
         """
-        if not isinstance(apackages,list):
-            apackages = [apackages]
+        apackages = self._ensure_package_requests_list(apackages,keep_package_entries=True)
 
         # ensure that apackages is a list of package requirements (strings)
-        new_apackages = []
-        for p in apackages:
-            if isinstance(p,PackageEntry):
-                new_apackages.append(p.asrequirement())
-            else:
-                new_apackages.append(p)
-        apackages = new_apackages
 
         actions = self.check_depends(apackages,force=force or download_only,forceupgrade=True)
         actions['errors']=[]
@@ -4589,15 +4670,16 @@ class Wapt(BaseObjectClass):
         >>> wapt.download_packages(['tis-firefox','tis-waptdev'],usecache=False,printhook=nullhook)
         {'downloaded': [u'c:/wapt\\cache\\tis-firefox_37.0.2-9_all.wapt', u'c:/wapt\\cache\\tis-waptdev.wapt'], 'skipped': [], 'errors': []}
         """
-        if not isinstance(package_requests,(list,tuple)):
-            package_requests = [ package_requests ]
+
+        package_requests = self._ensure_package_requests_list(package_requests,keep_package_entries=True)
+
         downloaded = []
         skipped = []
         errors = []
         packages = []
 
         for p in package_requests:
-            if isinstance(p,str) or isinstance(p,unicode):
+            if isinstance(p,PackageRequest):
                 mp = self.waptdb.packages_matching(p)
                 if mp:
                     packages.append(mp[-1])
@@ -4963,11 +5045,11 @@ class Wapt(BaseObjectClass):
 
         """
         available = self.waptdb.packages_search(searchwords=searchwords,exclude_host_repo=exclude_host_repo,section_filter=section_filter)
-        installed = {p.package:p for p in self.waptdb.installed(include_errors=True)}
+        installed = {p.package_uuid:p for p in self.waptdb.installed(include_errors=True)}
         upgradable =  self.waptdb.upgradeable()
         for p in available:
-            if p.package in installed:
-                current = installed[p.package]
+            if p.package_uuid in installed:
+                current = installed[p.package_uuid]
                 if p == current:
                     p['installed'] = current
                     if p.package in upgradable:
@@ -4983,7 +5065,7 @@ class Wapt(BaseObjectClass):
         if newest_only:
             filtered = []
             last_package_name = None
-            for package in sorted(available,reverse=True):
+            for package in sorted(available,reverse=True,cmp=lambda p1,p2: self.packages_filter_for_host().compare_packages(p1,p2)):
                 if package.package != last_package_name:
                     filtered.append(package)
                 last_package_name = package.package
@@ -5349,13 +5431,14 @@ class Wapt(BaseObjectClass):
                 wua_client = waptenterprise.waptwua.client.WaptWUA(self)
                 try:
                     waptwua_status = wua_client.stored_waptwua_status()
-                    waptwua_rules = wua_client.stored_waptwua_rules()
+                    waptwua_rules_packages = wua_client.stored_waptwua_rules()
                     waptwua_updates = wua_client.stored_updates()
                     waptwua_updates_localstatus = wua_client.stored_updates_localstatus()
 
                     _add_data_if_updated(inv,'wuauserv_status', wua_client.get_wuauserv_status(),old_hashes,new_hashes)
                     _add_data_if_updated(inv,'waptwua_status', waptwua_status,old_hashes,new_hashes)
-                    _add_data_if_updated(inv,'waptwua_rules', waptwua_rules,old_hashes,new_hashes)
+                    # not useful
+                    _add_data_if_updated(inv,'waptwua_rules_packages', waptwua_rules_packages,old_hashes,new_hashes)
                     _add_data_if_updated(inv,'waptwua_updates', waptwua_updates,old_hashes,new_hashes)
                     _add_data_if_updated(inv,'waptwua_updates_localstatus', waptwua_updates_localstatus,old_hashes,new_hashes)
 
