@@ -2742,10 +2742,6 @@ msgctxt "tviswaptgui.panhostsforpackage.caption"
 msgid "PanHostsForPackage"
 msgstr ""
 
-#: tviswaptgui.panwualeft.caption
-msgid "PanWUALeft"
-msgstr ""
-
 #: tviswaptgui.pggroups.caption
 msgid "Bundles"
 msgstr "Bündel"

@@ -1,7 +1,7 @@
 object VisWaptGUI: TVisWaptGUI
-  Left = 307
+  Left = 350
   Height = 781
-  Top = 47
+  Top = 52
   Width = 1284
   AllowDropFiles = True
   Caption = 'WAPT console'
@@ -5224,95 +5224,126 @@ object VisWaptGUI: TVisWaptGUI
               Left = 0
               Height = 524
               Top = 0
-              Width = 156
+              Width = 173
               Align = alLeft
-              AutoSize = True
               BevelOuter = bvNone
-              Caption = 'PanWUALeft'
-              ChildSizing.LeftRightSpacing = 3
-              ChildSizing.TopBottomSpacing = 3
-              ChildSizing.HorizontalSpacing = 3
-              ChildSizing.VerticalSpacing = 3
-              ChildSizing.Layout = cclLeftToRightThenTopToBottom
-              ChildSizing.ControlsPerLine = 1
               ClientHeight = 524
-              ClientWidth = 156
+              ClientWidth = 173
               TabOrder = 0
-              object PanWUASearch: TPanel
-                Left = 3
-                Height = 1
-                Top = 3
-                Width = 150
-                AutoSize = True
+              object PanWUASearchProducts: TPanel
+                Left = 0
+                Height = 286
+                Top = 17
+                Width = 173
+                Align = alTop
                 BevelOuter = bvNone
-                ChildSizing.LeftRightSpacing = 4
-                ChildSizing.HorizontalSpacing = 4
-                ChildSizing.Layout = cclTopToBottomThenLeftToRight
-                ChildSizing.ControlsPerLine = 5
+                ChildSizing.LeftRightSpacing = 3
+                ChildSizing.TopBottomSpacing = 3
+                ChildSizing.HorizontalSpacing = 3
+                ChildSizing.VerticalSpacing = 3
+                ClientHeight = 286
+                ClientWidth = 173
                 TabOrder = 0
+                object cbAllproducts: TCheckBox
+                  Left = 3
+                  Height = 17
+                  Top = 3
+                  Width = 167
+                  Align = alTop
+                  Caption = 'All products'
+                  Checked = True
+                  OnClick = cbAllproductsClick
+                  State = cbChecked
+                  TabOrder = 0
+                end
+                object CBWUProducts: TCheckListBox
+                  Left = 3
+                  Height = 260
+                  Top = 23
+                  Width = 167
+                  Align = alClient
+                  Constraints.MinHeight = 150
+                  ItemHeight = 0
+                  OnClick = CBWUProductsClick
+                  PopupMenu = PopupWUAProducts
+                  TabOrder = 1
+                end
               end
               object cbWUCritical: TCheckBox
-                Left = 3
+                Left = 0
                 Height = 17
-                Top = 7
-                Width = 150
+                Top = 0
+                Width = 173
+                Align = alTop
                 Caption = 'Critical only'
                 OnClick = CBWUClassificationsClick
                 TabOrder = 1
               end
-              object cbAllClassifications: TCheckBox
-                Left = 3
-                Height = 17
-                Top = 27
-                Width = 150
-                Caption = 'All classifications'
-                OnClick = cbAllClassificationsClick
+              object PanWUASearchClassifications: TPanel
+                Left = 0
+                Height = 216
+                Top = 308
+                Width = 173
+                Align = alClient
+                BevelOuter = bvNone
+                ChildSizing.LeftRightSpacing = 3
+                ChildSizing.TopBottomSpacing = 3
+                ChildSizing.HorizontalSpacing = 3
+                ChildSizing.VerticalSpacing = 3
+                ClientHeight = 216
+                ClientWidth = 173
                 TabOrder = 2
+                object cbAllClassifications: TCheckBox
+                  Left = 3
+                  Height = 17
+                  Top = 3
+                  Width = 167
+                  Align = alTop
+                  Caption = 'All classifications'
+                  Checked = True
+                  OnClick = cbAllClassificationsClick
+                  State = cbChecked
+                  TabOrder = 0
+                end
+                object CBWUClassifications: TCheckListBox
+                  Left = 3
+                  Height = 190
+                  Top = 23
+                  Width = 167
+                  Align = alClient
+                  Constraints.MinWidth = 150
+                  ItemHeight = 0
+                  OnClick = CBWUClassificationsClick
+                  PopupMenu = PopupWUAClassifications
+                  TabOrder = 1
+                end
               end
-              object CBWUClassifications: TCheckListBox
-                Left = 3
-                Height = 100
-                Top = 47
-                Width = 150
-                Constraints.MinWidth = 150
-                ItemHeight = 0
-                OnClick = CBWUClassificationsClick
-                PopupMenu = PopupWUAClassifications
-                TabOrder = 3
-              end
-              object cbAllproducts: TCheckBox
-                Left = 3
-                Height = 17
-                Top = 150
-                Width = 150
-                Caption = 'All products'
-                OnClick = cbAllproductsClick
-                TabOrder = 4
-              end
-              object CBWUProducts: TCheckListBox
-                Left = 3
-                Height = 294
-                Top = 170
-                Width = 150
-                Anchors = [akTop, akLeft, akBottom]
-                Constraints.MinHeight = 150
-                ItemHeight = 0
-                OnClick = CBWUProductsClick
-                PopupMenu = PopupWUAProducts
-                TabOrder = 5
+              object Splitter13: TSplitter
+                Cursor = crVSplit
+                Left = 0
+                Height = 5
+                Top = 303
+                Width = 173
+                Align = alTop
+                ResizeAnchor = akTop
               end
             end
+            object Splitter12: TSplitter
+              Left = 173
+              Height = 524
+              Top = 0
+              Width = 5
+            end
             object GridWUUpdates: TSOGrid
-              Left = 156
+              Left = 178
               Height = 522
               Top = 2
-              Width = 1112
+              Width = 1090
               OnGetText = GridHostWinUpdatesGetText
               OnNodesDelete = GridWUUpdatesNodesDelete
               ShowAdvancedColumnsCustomize = False
               KeyFieldsNames = 'update_id'
               Align = alClient
-              Anchors = [akTop, akLeft, akBottom]
               BorderSpacing.Top = 2
               Color = clWhite
               Colors.UnfocusedColor = clMedGray
@@ -5509,12 +5540,13 @@ object VisWaptGUI: TVisWaptGUI
               Header.Style = hsFlatButtons
               Images = ImageList1
               PopupMenu = PopupWUAUpdates
-              TabOrder = 1
+              TabOrder = 2
               TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes, toAutoChangeScale]
               TreeOptions.MiscOptions = [toAcceptOLEDrop, toEditable, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toFullRowDrag, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
               TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages, toAlwaysHideSelection]
               TreeOptions.SelectionOptions = [toDisableDrawSelection, toExtendedFocus, toMultiSelect, toRightClickSelect]
               WantTabs = True
+              ZebraPaint = True
             end
           end
           object PanTopWindowsUpdates: TPanel

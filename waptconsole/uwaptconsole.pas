@@ -48,7 +48,10 @@ type
     MenuItem112: TMenuItem;
     MenuItem4: TMenuItem;
     MenuItem76: TMenuItem;
+    PanWUASearchClassifications: TPanel;
     PopupMenuReportingQueries: TPopupMenu;
+    Splitter12: TSplitter;
+    Splitter13: TSplitter;
     WUAConfigPages: TPageControl;
     SelfServiceActions: TActionList;
     ActWUASearchPackage: TAction;
@@ -239,7 +242,7 @@ type
     PanTopWindowsUpdates: TPanel;
     Panel8: TPanel;
     PanWUAMain: TPanel;
-    PanWUASearch: TPanel;
+    PanWUASearchProducts: TPanel;
     PgNetworksConfig: TTabSheet;
     PopupWUAClassifications: TPopupMenu;
     PopupMenuOrgUnits: TPopupMenu;
