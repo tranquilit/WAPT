@@ -1756,8 +1756,12 @@ begin
               begin
                 packagename:= PackageNameFromreq(UTF8Encode(packagereq.AsString));
                 packageversion := PackageVersionFromReq(UTF8Encode(packagereq.AsString));
-                if (package.S['package'] = packagename) and (package.S['version'] = packageversion) then
-                  package.S['install_status'] := 'ERROR-UPGRADE';
+                if (package.S['package'] = packagename) then
+                  if package.S['install_status'] = 'MISSING' THEN
+                    package.S['install_status'] := 'ERROR-INSTALL';
+
+                  //(package.S['version'] = packageversion)
+                  //if (packageversion = '') then
               end;
             end;
           end;
