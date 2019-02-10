@@ -957,7 +957,7 @@ class WaptDownloadPackage(WaptTask):
 
 
 class WaptPackageInstall(WaptTask):
-    def __init__(self,packagenames,force=False,only_priorities=None,only_if_not_process_running=False,**args):
+    def __init__(self,packagenames,force=False,only_priorities=None,only_if_not_process_running=False,process_dependencies=True,**args):
         super(WaptPackageInstall,self).__init__()
         if not isinstance(packagenames,list):
             self.packagenames = [packagenames]
@@ -966,6 +966,7 @@ class WaptPackageInstall(WaptTask):
         self.force = force
         self.only_priorities = only_priorities
         self.only_if_not_process_running = only_if_not_process_running
+        self.process_dependencies = process_dependencies
 
         for k in args:
             setattr(self,k,args[k])
@@ -977,7 +978,8 @@ class WaptPackageInstall(WaptTask):
         self.result = self.wapt.install(self.packagenames,
             force = self.force,
             only_priorities=self.only_priorities,
-            only_if_not_process_running=self.only_if_not_process_running)
+            only_if_not_process_running=self.only_if_not_process_running,
+            process_dependencies=self.process_dependencies)
 
         all_install = self.result.get('install',[])
         if self.result.get('additional',[]):

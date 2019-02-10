@@ -716,7 +716,9 @@ def upgrade():
     for req in to_install:
         all_tasks.append(app.task_manager.add_task(WaptPackageInstall(req,force=force,notify_user=notify_user,
             only_priorities=only_priorities,
-            only_if_not_process_running=only_if_not_process_running)).as_dict())
+            only_if_not_process_running=only_if_not_process_running,
+            # we don't reprocess depends
+            process_dependencies=False)).as_dict())
     all_tasks.append(app.task_manager.add_task(WaptUpgrade(notify_user=notify_user,only_priorities=only_priorities,
             only_if_not_process_running=only_if_not_process_running)).as_dict())
     all_tasks.append(app.task_manager.add_task(WaptCleanup(notify_user=False)))

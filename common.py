@@ -4537,7 +4537,8 @@ class Wapt(BaseObjectClass):
             printhook=None,
             installed_by=None,
             only_priorities=None,
-            only_if_not_process_running=False):
+            only_if_not_process_running=False,
+            process_dependencies=True):
 
         """Install a list of packages and its dependencies
         removes first packages which are in conflicts package attribute
@@ -4574,11 +4575,16 @@ class Wapt(BaseObjectClass):
         actions = self.check_depends(apackages,force=force or download_only,forceupgrade=True)
         actions['errors']=[]
 
-        skipped = actions['skipped']
-        additional_install = actions['additional']
-        to_upgrade = actions['upgrade']
         packages = actions['install']
+        skipped = actions['skipped']
         missing = actions['unavailable']
+
+        if process_dependencies:
+            to_upgrade = actions['upgrade']
+            additional_install = actions['additional']
+        else:
+            to_upgrade = []
+            additional_install = []
 
         # removal from conflicts
         to_remove = actions['remove']
@@ -4591,7 +4597,6 @@ class Wapt(BaseObjectClass):
                     logger.warning(u'Error removing %s:%s'%(request,ensure_unicode(res['errors'])))
             except Exception as e:
                 logger.critical(u'Error removing %s:%s'%(request,ensure_unicode(e)))
-
 
         to_install = []
 
