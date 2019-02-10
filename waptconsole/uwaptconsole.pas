@@ -1,6 +1,7 @@
 unit uwaptconsole;
 
 {$mode objfpc}{$H+}
+{$modeswitch ADVANCEDRECORDS}
 
 interface
 
@@ -1639,13 +1640,30 @@ begin
   end;
 end;
 
-type TPackageReq=record
+type
+
+{ TPackageReq }
+ TPackageReq=record
   package:String;
   op:String;
   version:String;
+
+  function FromSOPackage(sopackage:ISuperObject):TPackageReq;
+  function FromString(req:String):TPackageReq;
+  function AsString:String;
 end;
 
-function PackageReqFromreq(req:String):TPackageReq;
+{ TPackageReq }
+
+function TPackageReq.FromSOPackage(sopackage: ISUperObject):TPackageReq;
+begin
+  self.package := UTF8Encode(sopackage.S['package']);
+  self.version := UTF8Encode(sopackage.S['version']);
+  self.op := '=';
+  result := Self;
+end;
+
+function TPackageReq.FromString(req: String):TPackageReq;
 var
   re: TRegExpr;
 begin
@@ -1654,29 +1672,26 @@ begin
   try
     if re.Exec(req) then
     begin
-      result.package := re.Match[1];
-      result.op := re.Match[3];
-      result.version := re.Match[4];
+      self.package := re.Match[1];
+      self.op := re.Match[3];
+      self.version := re.Match[4];
     end;
   finally
     re.Free;
   end;
+  result := Self;
 end;
 
-function PackageNameFromreq(req:String):String;
+function TPackageReq.AsString: String;
 begin
-  Result := PackageReqFromreq(req).package;
-end;
-
-function PackageVersionFromReq(req:String):String;
-begin
-  Result := PackageReqFromreq(req).version;
+  Result := Format('%s(%s%s)',[package,op,version]);
 end;
 
 procedure TVisWaptGUI.UpdateHostPages(Sender: TObject);
 var
   currhost,packagename,packageversion : String;
-  RowSO, package,packagereq, packages, softwares: ISuperObject;
+  PackageRequest: TPackageReq;
+  RowSO, package,packages,packagereq,softwares,PackagesIndex: ISuperObject;
   waptwua_status,wuauserv_status,wsusupdates: ISuperObject;
   sores,all_missing,pending_install,additional,upgrades,errors,remove: ISuperObject;
 begin
@@ -1709,14 +1724,21 @@ begin
             for package in additional do
               all_missing.AsArray.Add(package);
 
+          PackagesIndex := TSuperObject.Create(stObject);
+          for package in RowSO['installed_packages'] do
+            PackagesIndex.AsObject.O[PackageRequest.FromSOPackage(package).AsString] := package;
 
           for packagereq in all_missing do
           begin
-            package := TSuperObject.Create();
-            package.S['package'] := PackageNameFromreq(UTF8Encode(packagereq.AsString));
-            package.S['version'] := PackageVersionFromReq(UTF8Encode(packagereq.AsString));
-            package.S['install_status'] := 'MISSING';
-            RowSO.A['installed_packages'].Add(package);
+            PackageRequest.FromString(UTF8Encode(packagereq.AsString));
+            if not PackagesIndex.AsObject.Exists(PackageRequest.AsString) then
+            begin
+              package := TSuperObject.Create();
+              package.S['package'] := PackageRequest.package ;
+              package.S['version'] := PackageRequest.version;
+              package.S['install_status'] := 'NEED-INSTALL';
+              RowSO.A['installed_packages'].Add(package);
+            end;
           end;
 
           upgrades := RowSO['last_update_status.pending.upgrade'];
@@ -1726,7 +1748,7 @@ begin
             begin
               for packagereq in upgrades do
               begin
-                packagename:= PackageNameFromreq(UTF8Encode(packagereq.AsString));
+                packagename := PackageRequest.FromString(UTF8Encode(packagereq.AsString)).package;
                 if package.S['package'] = packagename then
                   package.S['install_status'] := 'NEED-UPGRADE';
               end;
@@ -1740,7 +1762,7 @@ begin
             begin
               for packagereq in remove do
               begin
-                packagename:= PackageNameFromreq(UTF8Encode(packagereq.AsString));
+                packagename:= PackageRequest.FromString(UTF8Encode(packagereq.AsString)).package;
                 if package.S['package'] = packagename then
                   package.S['install_status'] := 'NEED-REMOVE';
               end;
@@ -1754,14 +1776,12 @@ begin
             begin
               for packagereq in errors do
               begin
-                packagename:= PackageNameFromreq(UTF8Encode(packagereq.AsString));
-                packageversion := PackageVersionFromReq(UTF8Encode(packagereq.AsString));
-                if (package.S['package'] = packagename) then
+                PackageRequest.FromString(UTF8Encode(packagereq.AsString));
+                packagename:= PackageRequest.package;
+                packageversion := PackageRequest.version;
+                if (package.S['package'] = packagename) and (package.S['version'] = packageversion) then
                   if package.S['install_status'] = 'MISSING' THEN
-                    package.S['install_status'] := 'ERROR-INSTALL';
-
-                  //(package.S['version'] = packageversion)
-                  //if (packageversion = '') then
+                    package.S['install_status'] := 'ERROR';
               end;
             end;
           end;
@@ -4571,11 +4591,11 @@ begin
     begin
       case install_status.AsString of
         'OK': ImageIndex := 0;
-        'ERROR-UPGRADE','ERROR': ImageIndex := 2;
+        'ERROR-UPGRADE','ERROR','ERROR-INSTALL': ImageIndex := 2;
         'NEED-UPGRADE': ImageIndex := 1;
         'NEED-REMOVE': ImageIndex := 8;
         'RUNNING': ImageIndex := 6;
-        'MISSING': ImageIndex := 7;
+        'MISSING','NEED-INSTALL': ImageIndex := 7;
       end;
     end;
   end
