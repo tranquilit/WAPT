@@ -7,13 +7,15 @@ interface
 uses
   Classes, SysUtils, FileUtil, LazFileUtils, Forms,
   Controls, Graphics, Dialogs, StdCtrls, ExtCtrls, ActnList, Buttons,
-  superobject, DefaultTranslator, ComCtrls, uWaptExitRes, sogrid;
+  superobject, DefaultTranslator, ComCtrls, uWaptExitRes, sogrid,uWAPTPollThreads,
+  IdAntiFreeze;
 
 type
 
   { TVisWaptExit }
 
   TVisWaptExit = class(TForm)
+    ActStopCountDown: TAction;
     ActShowDetails: TAction;
     ActionList1: TActionList;
     actSkip: TAction;
@@ -42,34 +44,57 @@ type
     procedure ActShowDetailsExecute(Sender: TObject);
     procedure actSkipExecute(Sender: TObject);
     procedure actSkipUpdate(Sender: TObject);
+    procedure ActStopCountDownExecute(Sender: TObject);
     procedure ActUpgradeExecute(Sender: TObject);
     procedure ActUpgradeUpdate(Sender: TObject);
+    procedure ButUpgradeNowMouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
+    procedure CBSkipWindowsUpdatesEnter(Sender: TObject);
+    procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
     procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
+    procedure FormMouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
     procedure FormShow(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
-    procedure OnRunNotify(Sender: TObject);
   private
     { private declarations }
     FAllowCancelUpgrade: Boolean;
     FCountDown: Integer;
     FInitialCountDown: Integer;
+    FPending: ISuperObject;
     FPriorities: String;
     FOnlyIfNotProcessRunning: Boolean;
     FInstallWUAUpdates: Boolean;
+    FRunning: ISuperObject;
+    procedure OnCheckTasksThreadNotify(Sender: TObject);
+    procedure OnCheckWaptserviceNotify(Sender: TObject);
+    procedure OnUpgradeTriggered(Sender: TObject);
     procedure SetCountDown(AValue: Integer);
     function  CheckAllowCancelUpgrade:Boolean;
     procedure SetInitialCountDown(AValue: Integer);
     procedure SetInstallWUAUpdates(AValue: Boolean);
+    procedure SetPending(AValue: ISuperObject);
+    procedure SetRunning(AValue: ISuperObject);
   public
     { public declarations }
-    upgrades,Removes,tasks,running,pending,wua_status,wua_pending_count : ISuperObject;
-    // wait for waptservice answer in seconds
+    Upgrades,Removes,wua_status,wua_pending_count: ISuperObject;
+    UpgradeTasks: ISuperObject;
+
     WAPTServiceRunning:Boolean;
+    AutoUpgradeTime: TDateTime;
+
+    DisableAutoUpgrade: Boolean;
+
+    CheckTasksThread: TCheckTasksThread;
 
     Function ShouldBeUpgraded:Boolean;
-    Function CheckRunningAndPending:Boolean;
     Function WorkInProgress:Boolean;
+
+    // running task
+    property running: ISuperObject read FRunning write SetRunning;
+    property pending: ISuperObject read FPending write SetPending;
 
     property AllowCancelUpgrade:Boolean read FAllowCancelUpgrade write FAllowCancelUpgrade;
     property InitialCountDown:Integer read FInitialCountDown write SetInitialCountDown;
@@ -84,7 +109,7 @@ var
 
 implementation
 
-uses soutils,IniFiles,waptcommon,tisstrings, waptwinutils,tiscommon,typinfo;
+uses soutils,IniFiles,waptcommon,tiscommon,typinfo,IdException,IdExceptionCore;
 {$R *.lfm}
 {$ifdef ENTERPRISE }
 {$R res_enterprise.rc}
@@ -112,6 +137,46 @@ begin
   FInstallWUAUpdates:=AValue;
 end;
 
+procedure TVisWaptExit.SetPending(AValue: ISuperObject);
+begin
+  if FPending=AValue then Exit;
+  FPending:=AValue;
+
+  GridPending.Data := pending;
+
+  if (pending<>Nil) then
+  begin
+    if ProgressBar.Max=0 then
+    begin
+      ProgressBar.Max := pending.AsArray.Length;
+      ProgressBar.Position := 0;
+    end
+    else
+      ProgressBar.Position := ProgressBar.Max - pending.AsArray.Length;
+  end;
+  Application.ProcessMessages;
+end;
+
+procedure TVisWaptExit.SetRunning(AValue: ISuperObject);
+var
+  Description: String;
+begin
+  if FRunning=AValue then Exit;
+  FRunning:=AValue;
+
+  if (running<>Nil) then
+  begin
+    description := UTF8Encode(running.S['description']);
+    if Length(description)>100 then
+      EdRunning.Text := copy(description,1,100)+'...'
+    else
+      EdRunning.Text := description;
+    MemoLog.Items.Text := UTF8Encode(running.S['runstatus']);
+  end;
+  Application.ProcessMessages;
+
+end;
+
 function GetWaptLocalURL: String;
 begin
   result := format('http://127.0.0.1:%d',[waptservice_port]);
@@ -122,74 +187,158 @@ begin
   result := ExtractFilePath(ParamStr(0))+'wapt-get.ini';
 end;
 
+
+{ TCheckWaptservice }
+type
+
+{ TTriggerWaptserviceAction }
+
+TTriggerWaptserviceAction = Class(TThread)
+private
+  FOnNotifyEvent: TNotifyEvent;
+  procedure NotifyListener; Virtual;
+  procedure SetOnNotifyEvent(AValue: TNotifyEvent);
+public
+  Action:String;
+  Message:String;
+  Tasks : ISuperObject;
+  constructor Create(aNotifyEvent:TNotifyEvent;aAction:String='upgrade.json');
+  procedure Execute; override;
+  property OnNotifyEvent: TNotifyEvent read FOnNotifyEvent write SetOnNotifyEvent;
+end;
+
+{ TTriggerWaptserviceAction }
+
+procedure TTriggerWaptserviceAction.NotifyListener;
+begin
+  if Assigned(FOnNotifyEvent) then
+    FOnNotifyEvent(Self);
+end;
+
+procedure TTriggerWaptserviceAction.SetOnNotifyEvent(AValue: TNotifyEvent);
+begin
+  FOnNotifyEvent:=AValue;
+end;
+
+constructor TTriggerWaptserviceAction.Create(aNotifyEvent: TNotifyEvent;
+  aAction: String);
+begin
+  inherited Create(False);
+  OnNotifyEvent:=aNotifyEvent;
+  Action := aAction;
+  FreeOnTerminate:=True;
+end;
+
+procedure TTriggerWaptserviceAction.Execute;
+begin
+  try
+    Tasks := WAPTLocalJsonGet(Action,'','',10000,Nil,3);
+    Message := 'OK';
+  except
+    on E:EIdException do
+    begin
+      Tasks := Nil;
+      Message :=  Format(rsErrorTriggeringTask,[E.Message]);
+    end;
+  end;
+  Synchronize(@NotifyListener);
+end;
+
+
+procedure TVisWaptExit.OnUpgradeTriggered(Sender: TObject);
+var
+  aso: ISuperObject;
+begin
+  aso := (Sender as TTriggerWaptserviceAction).Tasks;
+  if aso <> Nil then
+  begin
+    UpgradeTasks:= aso['content'];
+    // be sure we don't close before getting new pending tasks with CheckTasksThread thread
+    pending := UpgradeTasks;
+    ProgressBar.max := ProgressBar.max + UpgradeTasks.AsArray.Length;
+
+    ActUpgrade.Caption:=rsUpdatingSoftware;
+    actSkip.Caption:=rsInterruptUpdate;
+    ButUpgradeNow.Visible := False;
+    LabWaptUpgrades.Visible := False;
+    LabWUAUpgrades.Visible := False;
+    LabDontShutdown.Visible := True;
+  end
+  else
+  begin
+    // something went wrong...
+    UpgradeTasks:= Nil;
+    //ShowMessage((Sender as TTriggerWaptserviceAction).Message);
+    Close;
+  end;
+end;
+
 procedure TVisWaptExit.ActUpgradeExecute(Sender: TObject);
 var
-  aso,args: ISuperObject;
-  PrevTimer: Boolean;
+  args: ISuperObject;
 begin
-  PrevTimer:=Timer1.Enabled;
-  Timer1.Enabled := False;
+  DisableAutoUpgrade:=True;
   CountDown := 0;
-  try
-    if WAPTServiceRunning then
-    try
-      args := TSuperObject.Create(stArray);
-      if OnlyIfNotProcessRunning then
-        args.AsArray.Add('only_if_not_process_running=1');
-      if Priorities <> '' then
-        args.AsArray.Add(Format('only_priorities=%s',[Priorities]));
-      {$ifdef enterprise}
-      if InstallWUAUpdates and not CBSkipWindowsUpdates.Checked then
-        args.AsArray.Add(Format('install_wua_updates=1',[]));
-      {$endif}
+  ActUpgrade.Caption:=rsLaunchSoftwareUpdate;
+  Application.ProcessMessages;
 
-      aso := WAPTLocalJsonGet('upgrade.json?'+Join('&',args),'','');
-      if aso <> Nil then
-      begin
-        upgrades := Nil;
-        //MemoLog.Items.Text := aso.AsJSon(True);
-        tasks := aso['content'];
-        pending := tasks;
-        if (tasks <> Nil) and (tasks.AsArray<>Nil) then
-          ProgressBar.Max:=tasks.AsArray.Length;
-        ProgressBar.Position:=0;
-        //GridTasks.Data := tasks;
-        ActUpgrade.Caption:=rsUpdatingSoftware;
-        actSkip.Caption:=rsInterruptUpdate;
-        ButUpgradeNow.Visible := False;
-        LabWaptUpgrades.Visible := False;
-        LabWUAUpgrades.Visible := False;
-        LabDontShutdown.Visible := True;
-      end;
-    except
-      // TODO: handle properly the exception..
-      upgrades := Nil;
-      Close;
-    end
-  finally
-    if PrevTimer then
-      Timer1.Enabled := True;
-  end;
+  if WAPTServiceRunning then
+  begin
+    args := TSuperObject.Create(stArray);
+    if OnlyIfNotProcessRunning then
+      args.AsArray.Add('only_if_not_process_running=1');
+    if Priorities <> '' then
+      args.AsArray.Add(Format('only_priorities=%s',[Priorities]));
+    {$ifdef enterprise}
+    if InstallWUAUpdates and not CBSkipWindowsUpdates.Checked then
+      args.AsArray.Add(Format('install_wua_updates=1',[]));
+    {$endif}
+    TTriggerWaptserviceAction.Create(@OnUpgradeTriggered,'upgrade.json?'+Join('&',args));
+  end
+  else
+    MemoLog.Items.Add('Service not running');
 end;
 
 procedure TVisWaptExit.ActUpgradeUpdate(Sender: TObject);
 begin
-  ActUpgrade.Enabled:= (upgrades <> Nil) and ((tasks=Nil) or (tasks.AsArray.Length=0));
+  ActUpgrade.Enabled:= (upgrades <> Nil) and (UpgradeTasks=Nil);
+end;
+
+procedure TVisWaptExit.ButUpgradeNowMouseDown(Sender: TObject;
+  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+begin
+  ActStopCountDown.execute;
+end;
+
+procedure TVisWaptExit.CBSkipWindowsUpdatesEnter(Sender: TObject);
+begin
+  ActStopCountDown.Execute;
+end;
+
+procedure TVisWaptExit.FormClose(Sender: TObject; var CloseAction: TCloseAction);
+begin
+  if Assigned(CheckTasksThread) and (not CheckTasksThread.Suspended) then
+    CheckTasksThread.Terminate;
 end;
 
 procedure TVisWaptExit.FormCloseQuery(Sender: TObject; var CanClose: boolean);
 begin
-  if Not CheckAllowCancelUpgrade and WorkInProgress then
+  if WAPTServiceRunning then
   begin
-    CanClose:=False;
-    Exit;
-  end;
+    if Not CheckAllowCancelUpgrade and WorkInProgress then
+    begin
+      CanClose:=False;
+      Exit;
+    end;
 
-  if WorkInProgress then
-    if CheckAllowCancelUpgrade then
-      WAPTLocalJsonGet('cancel_all_tasks.json')
-    else
-      Canclose := False
+    if WorkInProgress then
+      if CheckAllowCancelUpgrade then
+        WAPTLocalJsonGet('cancel_all_tasks.json')
+      else
+        Canclose := False
+  end
+  else
+    CanClose:=True;
 end;
 
 procedure TVisWaptExit.FormCreate(Sender: TObject);
@@ -219,16 +368,147 @@ begin
   finally
     ini.Free;
   end;
+
+end;
+
+procedure TVisWaptExit.FormDestroy(Sender: TObject);
+begin
+  FreeAndNil(CheckTasksThread);
+end;
+
+procedure TVisWaptExit.OnCheckWaptserviceNotify(Sender: TObject);
+var
+  aso: ISuperObject;
+begin
+  aso := Nil;
+  upgrades := Nil;
+  Removes := Nil;
+
+  //Check if pending upgrades
+  try
+    WAPTServiceRunning:=(Sender as TCheckWaptservice).IsWaptServiceRunning;
+
+    aso := (Sender as TCheckWaptservice).LastUpdateStatus;
+    if aso<>Nil then
+    begin
+      upgrades := aso['upgrades'];
+      Removes := aso['pending.remove'];
+      {$ifdef enterprise}
+      wua_status := aso['wua_status'];
+      wua_pending_count := aso['wua_pending_count'];
+      {$else}
+      wua_status := Nil;
+      wua_pending_count := Nil;
+      {$endif}
+    end;
+  except
+    on E:Exception do
+    begin
+      upgrades := Nil;
+      Removes := Nil;
+      wua_status := Nil;
+      wua_pending_count := Nil;
+    end;
+  end;
+
+  //check if upgrades
+  if not ShouldBeUpgraded and not WorkInProgress then
+    Application.terminate
+  else
+  begin
+    if ShouldBeUpgraded then
+    begin
+      MemoLog.Items.Text:= Join(#13#10, upgrades);
+      if Removes.AsArray.Length>0 then
+        MemoLog.Items.Text:=MemoLog.Items.Text + #13#10 + Format(rsPendingRemoves,[Removes.AsArray.Length])+#13#10 +
+            Join(#13#10, Removes);
+
+      LabWaptUpgrades.Caption := Format(rsUpdatesAvailable,[upgrades.AsArray.Length+Removes.AsArray.Length]);
+      {$ifdef enterprise}
+      if (wua_status<>Nil) and (wua_pending_count<>Nil) then
+      begin
+        LabWUAUpgrades.Visible := True;
+        LabWUAUpgrades.Caption := Format(rsWUAUpdatesAvailable,[wua_pending_count.AsInteger]);
+      end;
+      {$endif}
+    end
+  end;
+
+  if CheckAllowCancelUpgrade then
+  begin
+    if AutoUpgradeTime < 1 then
+    begin
+      CountDown:=InitialCountDown;
+      AutoUpgradeTime := Now + InitialCountDown / 3600.0 /24.0;
+    end;
+  end
+  else
+  begin
+    CountDown:=0;
+    AutoUpgradeTime := Now;
+  end;
+  Timer1.Enabled:=True;
+end;
+
+procedure TVisWaptExit.OnCheckTasksThreadNotify(Sender: TObject);
+var
+  aso:ISuperObject;
+begin
+  try
+    aso := (Sender as TCheckTasksThread).Tasks;
+    if aso <> Nil then
+    begin
+      running := aso['running'];
+      if (running<>Nil) and (running.DataType=stNull) then
+        running := Nil;
+      pending := aso['pending'];
+      if (pending<>Nil) and (pending.DataType=stArray) and (pending.AsArray.Length=0) then
+        pending := Nil;
+    end
+    else
+    begin
+      running := Nil;
+      pending := Nil;
+      // service has been stopped
+      if WAPTServiceRunning and not (Sender as TCheckTasksThread).WaptServiceRunning then
+      begin
+        MemoLog.Items.Add((Sender as TCheckTasksThread).Message);
+        WAPTServiceRunning:=False;
+        Close;
+      end;
+    end
+  except
+    running := Nil;
+    pending := Nil;
+  end
+end;
+
+procedure TVisWaptExit.FormMouseDown(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
+begin
+  ActStopCountDown.execute;
 end;
 
 procedure TVisWaptExit.actSkipExecute(Sender: TObject);
 begin
+  ActUpgrade.Enabled:=False;
+  actSkip.Caption:=rsClosing;
+  Application.ProcessMessages;
   Close;
 end;
 
 procedure TVisWaptExit.actSkipUpdate(Sender: TObject);
 begin
   actSkip.Enabled:=CheckAllowCancelUpgrade;
+end;
+
+procedure TVisWaptExit.ActStopCountDownExecute(Sender: TObject);
+begin
+  if AllowCancelUpgrade then
+  begin
+    DisableAutoUpgrade:=True;
+    CountDown:=0;
+  end;
 end;
 
 procedure TVisWaptExit.ActShowDetailsExecute(Sender: TObject);
@@ -250,93 +530,31 @@ begin
 end;
 
 procedure TVisWaptExit.FormShow(Sender: TObject);
-var
-  aso: ISuperObject;
-  description: String;
 begin
+  if not (GetServiceStatusByName('','WAPTService') in [ssRunning]) and not FindCmdLineSwitch('debug') then
+  begin
+    Close;
+    Exit;
+  end;
+
   ActShowDetails.Checked:=False;
 
-  aso := Nil;
-  upgrades := Nil;
-  tasks := Nil;
-  running := Nil;
-  pending := Nil;
+  Upgrades := Nil;
   Removes := Nil;
 
-  ActUpgrade.Enabled:=false;
+  //Task
+  running := Nil;
+  pending := Nil;
 
-  //Check if pending upgrades
-  try
-    if not (GetServiceStatusByName('','WAPTService') in [ssRunning])  then
-      Raise Exception.Create('WAPTService is not running: '+GetEnumName(TypeInfo(TServiceState),ord(GetServiceStatusByName('','WAPTService'))));
+  //when Upgrade button pressed
+  UpgradeTasks := Nil;
 
-    aso := WAPTLocalJsonGet('checkupgrades.json');
-    if aso<>Nil then
-    begin
-      WAPTServiceRunning:=True;
-      upgrades := aso['upgrades'];
-      Removes := aso['pending.remove'];
-      {$ifdef enterprise}
-      wua_status := aso['wua_status'];
-      wua_pending_count := aso['wua_pending_count'];
-      {$else}
-      wua_status := Nil;
-      wua_pending_count := Nil;
-      {$endif}
-      CheckRunningAndPending;
-      GridPending.data := pending;
-    end;
-  except
-    on E:Exception do
-    begin
-      upgrades := Nil;
-      Removes := Nil;
-      wua_status := Nil;
-      wua_pending_count := Nil;
-    end;
-  end;
+  // Check service is running and list of upgrades in background at startup
+  TCheckWaptservice.Create(@OnCheckWaptserviceNotify,3000);
 
-  //check if upgrades
-  if not ShouldBeUpgraded and not WorkInProgress then
-  begin
-    Application.terminate;
-    Abort;
-  end
-  else
-  begin
-    ActUpgrade.Enabled := ShouldBeUpgraded;
-    if ShouldBeUpgraded then
-    begin
-      MemoLog.Items.Text:= Join(#13#10, upgrades);
-      if Removes.AsArray.Length>0 then
-        MemoLog.Items.Text:=MemoLog.Items.Text + #13#10 + Format(rsPendingRemoves,[Removes.AsArray.Length])+#13#10 +
-            Join(#13#10, Removes);
-
-      LabWaptUpgrades.Caption := Format(rsUpdatesAvailable,[upgrades.AsArray.Length+Removes.AsArray.Length]);
-      {$ifdef enterprise}
-      if (wua_status<>Nil) and (wua_pending_count<>Nil) then
-      begin
-        LabWUAUpgrades.Visible := True;
-        LabWUAUpgrades.Caption := Format(rsWUAUpdatesAvailable,[wua_pending_count.AsInteger]);
-      end;
-      {$endif}
-    end
-    else
-    if running <> Nil then
-    begin
-      description := UTF8Encode(running.S['description']);
-      if Length(description)>100 then
-        LabWaptUpgrades.Caption := copy(description,1,100)+'...'
-      else
-        LabWaptUpgrades.Caption := description;
-    end;
-  end;
-
-  if CheckAllowCancelUpgrade then
-    CountDown:=InitialCountDown
-  else
-    CountDown:=0;
-  Timer1.Enabled := True;
+  // Check running / pending tasks
+  CheckTasksThread := TCheckTasksThread.Create(@OnCheckTasksThreadNotify);
+  CheckTasksThread.Start;
 end;
 
 function TVisWaptExit.WorkInProgress: Boolean;
@@ -346,82 +564,24 @@ begin
       ((pending<>Nil) and (pending.dataType=stArray) and (pending.AsArray.Length>0))
 end;
 
-function TVisWaptExit.CheckRunningAndPending: Boolean;
-var
-  aso:ISuperObject;
-begin
-  If WAPTServiceRunning then
-  begin
-    // get current tasks manager status
-    aso := WAPTLocalJsonGet('tasks.json');
-    if aso <> Nil then
-    begin
-      running := aso['running'];
-      if (running<>Nil) and (running.DataType=stNull) then
-        running := Nil;
-      pending := aso['pending'];
-      if (pending<>Nil) and (pending.DataType=stArray) and (pending.AsArray.Length=0) then
-        pending := Nil;
-      Result := True;
-    end
-    else
-    begin
-      running := Nil;
-      pending := Nil;
-      Result := False;
-    end
-  end
-  else
-  begin
-    running := Nil;
-    pending := Nil;
-    Result := False;
-  end
-end;
-
 procedure TVisWaptExit.Timer1Timer(Sender: TObject);
-var
-  description: String;
 begin
   timer1.Enabled:=False;
   try
-    CheckRunningAndPending;
-
-    // Updates UI
-    GridPending.Data := pending;
-    if (running<>Nil) then
-    begin
-      description := UTF8Encode(running.S['description']);
-      if Length(description)>100 then
-        EdRunning.Text := copy(description,1,100)+'...'
-      else
-        EdRunning.Text := description;
-      MemoLog.Items.Text := UTF8Encode(running.S['runstatus']);
-    end;
-    Application.ProcessMessages;
-
     //No tasks and no upgrades
-    if not WorkInProgress and not ShouldBeUpgraded then
+    if not WorkInProgress and (not ShouldBeUpgraded or (UpgradeTasks<>Nil)) then
       Close;
 
-    if (pending<>Nil) then
-      ProgressBar.Position:=ProgressBar.Max - pending.AsArray.Length;
-
     //some upgrades are pending, launch upgrades after timeout expired or manual action
-    if ShouldBeUpgraded and (CountDown<=0) then
+    if not DisableAutoUpgrade and ShouldBeUpgraded and (AutoUpgradeTime>1) and (Now >= AutoUpgradeTime) then
       ActUpgrade.Execute;
 
   finally
-    CountDown := CountDown-1;
+    if CountDown>0 then;
+      CountDown := CountDown-1;
     Application.ProcessMessages;
     Timer1.Enabled := True;
   end;
-end;
-
-procedure TVisWaptExit.OnRunNotify(Sender: TObject);
-begin
-  EdRunning.Text:= rsUpgradeRunning;
-  Application.ProcessMessages;
 end;
 
 procedure TVisWaptExit.SetCountDown(AValue: Integer);

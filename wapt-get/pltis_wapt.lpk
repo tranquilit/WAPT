@@ -12,8 +12,8 @@
       </SearchPaths>
     </CompilerOptions>
     <Description Value="Common files for wapt fpc"/>
-    <Version Major="1" Minor="7" Release="2"/>
-    <Files Count="7">
+    <Version Major="1" Minor="7" Release="3" Build="3"/>
+    <Files Count="8">
       <Item1>
         <Filename Value="waptwinutils.pas"/>
         <UnitName Value="waptwinutils"/>
@@ -42,6 +42,10 @@
         <Filename Value="uwaptpythonutils.pas"/>
         <UnitName Value="uWaptPythonUtils"/>
       </Item7>
+      <Item8>
+        <Filename Value="uwaptpollthreads.pas"/>
+        <UnitName Value="uWAPTPollThreads"/>
+      </Item8>
     </Files>
     <RequiredPkgs Count="5">
       <Item1>

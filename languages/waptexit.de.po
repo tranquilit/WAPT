@@ -41,6 +41,10 @@ msgstr "Details anzeigen"
 msgid "Not now"
 msgstr "Nicht jetzt"
 
+#: tviswaptexit.actstopcountdown.caption
+msgid "Stop count down"
+msgstr ""
+
 #: tviswaptexit.actupgrade.caption
 #, fuzzy
 #| msgid "Install/update packages"
@@ -68,11 +72,19 @@ msgid ""
 msgstr ""
 
 #: tviswaptexit.labwaptupgrades.caption
-msgid "WAPT Packages installs or updates pending."
+msgid "Checking if WAPT Packages installs or updates are pending."
 msgstr ""
 
 #: tviswaptexit.labwuaupgrades.caption
 msgid "Windows Updates pending."
+msgstr ""
+
+#: uwaptexitres.rsclosing
+msgid "Closing..."
+msgstr ""
+
+#: uwaptexitres.rserrortriggeringtask
+msgid "Error triggering action: %s"
 msgstr ""
 
 #: uwaptexitres.rserrorwininetflags

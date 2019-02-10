@@ -1,18 +1,22 @@
 object VisWaptExit: TVisWaptExit
   Left = 416
-  Height = 377
+  Height = 435
   Top = 195
-  Width = 416
+  Width = 500
   Anchors = [akTop, akRight]
   AutoSize = True
   BorderStyle = bsDialog
   Caption = 'WAPT Softwares Updates'
-  ClientHeight = 377
-  ClientWidth = 416
+  ClientHeight = 435
+  ClientWidth = 500
+  Constraints.MinWidth = 500
   DefaultMonitor = dmDesktop
   FormStyle = fsSystemStayOnTop
+  OnClose = FormClose
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  OnMouseDown = FormMouseDown
   OnShow = FormShow
   Position = poScreenCenter
   LCLVersion = '1.8.4.0'
@@ -20,13 +24,12 @@ object VisWaptExit: TVisWaptExit
     Left = 0
     Height = 200
     Top = 0
-    Width = 416
+    Width = 500
     Align = alTop
     AutoSize = True
     BevelOuter = bvNone
     ClientHeight = 200
-    ClientWidth = 416
-    Constraints.MinWidth = 395
+    ClientWidth = 500
     TabOrder = 0
     object CustomLogo: TImage
       Left = 5
@@ -44,28 +47,28 @@ object VisWaptExit: TVisWaptExit
       Left = 98
       Height = 128
       Top = 0
-      Width = 318
+      Width = 402
       Align = alClient
       BevelOuter = bvNone
       ClientHeight = 128
-      ClientWidth = 318
+      ClientWidth = 402
       TabOrder = 0
       object panTop: TPanel
         Left = 0
         Height = 70
         Top = 0
-        Width = 318
+        Width = 402
         Align = alTop
         AutoSize = True
         BevelOuter = bvNone
         ClientHeight = 70
-        ClientWidth = 318
+        ClientWidth = 402
         TabOrder = 0
         object LabDontShutdown: TLabel
           Left = 3
           Height = 26
           Top = 41
-          Width = 312
+          Width = 396
           Align = alClient
           BorderSpacing.Around = 3
           Caption = 'Upgrades in progress...'#13#10'Don''t shutdown your computer !'
@@ -83,7 +86,7 @@ object VisWaptExit: TVisWaptExit
           BorderSpacing.Top = 2
           BorderSpacing.Bottom = 2
           BorderSpacing.Around = 3
-          Caption = 'WAPT Packages installs or updates pending.'
+          Caption = 'Checking if WAPT Packages installs or updates are pending.'
           Constraints.MaxHeight = 52
           Constraints.MaxWidth = 291
           ParentColor = False
@@ -108,7 +111,7 @@ object VisWaptExit: TVisWaptExit
         Left = 3
         Height = 52
         Top = 73
-        Width = 312
+        Width = 396
         Align = alTop
         AutoSize = True
         BorderSpacing.Around = 3
@@ -122,32 +125,36 @@ object VisWaptExit: TVisWaptExit
         ChildSizing.Layout = cclLeftToRightThenTopToBottom
         ChildSizing.ControlsPerLine = 2
         ClientHeight = 52
-        ClientWidth = 312
+        ClientWidth = 396
         TabOrder = 1
         object ButUpgradeNow: TBitBtn
-          Left = 6
+          Left = 32
           Height = 26
           Top = 3
           Width = 214
           Action = ActUpgrade
           AutoSize = True
+          OnMouseDown = FormMouseDown
           TabOrder = 0
         end
         object ButNotNow: TBitBtn
-          Left = 226
+          Left = 278
           Height = 26
           Top = 3
           Width = 86
           Action = actSkip
           AutoSize = True
+          OnMouseDown = FormMouseDown
           TabOrder = 1
         end
         object CBSkipWindowsUpdates: TCheckBox
-          Left = 6
+          Left = 32
           Height = 17
           Top = 32
           Width = 214
           Caption = 'Skip the installation of Windows Updates'
+          OnEnter = CBSkipWindowsUpdatesEnter
+          OnMouseDown = FormMouseDown
           TabOrder = 2
         end
       end
@@ -156,7 +163,7 @@ object VisWaptExit: TVisWaptExit
       Left = 0
       Height = 72
       Top = 128
-      Width = 416
+      Width = 500
       Align = alBottom
       AutoSize = True
       BevelOuter = bvNone
@@ -169,14 +176,15 @@ object VisWaptExit: TVisWaptExit
       ChildSizing.ShrinkHorizontal = crsHomogenousSpaceResize
       ChildSizing.ShrinkVertical = crsHomogenousSpaceResize
       ClientHeight = 72
-      ClientWidth = 416
+      ClientWidth = 500
       TabOrder = 1
       object ProgressBar: TProgressBar
         Left = 6
         Height = 20
         Top = 3
-        Width = 403
+        Width = 487
         Anchors = [akTop, akLeft, akRight]
+        Max = 0
         TabOrder = 0
       end
       object CheckBox1: TCheckBox
@@ -185,13 +193,14 @@ object VisWaptExit: TVisWaptExit
         Top = 52
         Width = 80
         Action = ActShowDetails
+        OnMouseDown = FormMouseDown
         TabOrder = 1
       end
       object EdRunning: TEdit
         Left = 6
         Height = 21
         Top = 28
-        Width = 406
+        Width = 490
         Anchors = [akTop, akLeft, akRight]
         ReadOnly = True
         TabOrder = 2
@@ -201,22 +210,22 @@ object VisWaptExit: TVisWaptExit
   end
   object panBas: TPanel
     Left = 0
-    Height = 218
+    Height = 235
     Top = 200
-    Width = 416
+    Width = 500
     Align = alClient
     AutoSize = True
     BevelOuter = bvNone
-    ClientHeight = 218
-    ClientWidth = 416
+    ClientHeight = 235
+    ClientWidth = 500
     Constraints.MinHeight = 218
     TabOrder = 1
     Visible = False
     object MemoLog: TListBox
       Left = 251
-      Height = 212
+      Height = 229
       Top = 3
-      Width = 162
+      Width = 246
       Align = alClient
       BorderSpacing.Around = 3
       ItemHeight = 0
@@ -224,7 +233,7 @@ object VisWaptExit: TVisWaptExit
     end
     object GridPending: TSOGrid
       Left = 3
-      Height = 210
+      Height = 227
       Top = 5
       Width = 241
       ShowAdvancedColumnsCustomize = False
@@ -357,7 +366,7 @@ object VisWaptExit: TVisWaptExit
     end
     object Splitter1: TSplitter
       Left = 247
-      Height = 218
+      Height = 235
       Top = 0
       Width = 1
     end
@@ -523,6 +532,10 @@ object VisWaptExit: TVisWaptExit
       AutoCheck = True
       Caption = 'Show details'
       OnExecute = ActShowDetailsExecute
+    end
+    object ActStopCountDown: TAction
+      Caption = 'Stop count down'
+      OnExecute = ActStopCountDownExecute
     end
   end
 end

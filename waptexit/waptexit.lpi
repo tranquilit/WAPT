@@ -44,7 +44,7 @@
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
-        <CommandLineParams Value="/install_wua_updates=1"/>
+        <CommandLineParams Value="--waptbasedir=c:\wapt /debug"/>
       </local>
     </RunParams>
     <RequiredPackages Count="6">
@@ -67,7 +67,7 @@
         <PackageName Value="LCL"/>
       </Item6>
     </RequiredPackages>
-    <Units Count="4">
+    <Units Count="5">
       <Unit0>
         <Filename Value="waptexit.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -89,6 +89,11 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="UScaleDPI"/>
       </Unit3>
+      <Unit4>
+        <Filename Value="..\wapt-get\uwaptpollthreads.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="uWAPTPollThreads"/>
+      </Unit4>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -123,4 +128,20 @@
       <CustomOptions Value="-dUseCThreads -dENTERPRISE"/>
     </Other>
   </CompilerOptions>
+  <Debugging>
+    <Exceptions Count="4">
+      <Item1>
+        <Name Value="EIdReadTimeout"/>
+      </Item1>
+      <Item2>
+        <Name Value="EIdWinsockStubError"/>
+      </Item2>
+      <Item3>
+        <Name Value="EIdConnectTimeout"/>
+      </Item3>
+      <Item4>
+        <Name Value="EIdHTTPProtocolException"/>
+      </Item4>
+    </Exceptions>
+  </Debugging>
 </CONFIG>

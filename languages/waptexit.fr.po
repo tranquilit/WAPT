@@ -9,6 +9,10 @@ msgstr "Afficher les détails"
 msgid "Not now"
 msgstr "Pas maintenant"
 
+#: tviswaptexit.actstopcountdown.caption
+msgid "Stop count down"
+msgstr "Stopper le décompte"
+
 #: tviswaptexit.actupgrade.caption
 msgid "Install / Upgrade packages"
 msgstr "Installer ou mettre à jour"
@@ -34,12 +38,20 @@ msgstr ""
 "Ne pas arrêter votre ordinateur\n"
 
 #: tviswaptexit.labwaptupgrades.caption
-msgid "WAPT Packages installs or updates pending."
-msgstr "Installations de paquets WAPT en attente"
+msgid "Checking if WAPT Packages installs or updates are pending."
+msgstr "Vérification des installations WAPT en attente"
 
 #: tviswaptexit.labwuaupgrades.caption
 msgid "Windows Updates pending."
 msgstr "Mises à jour Windows en attente"
+
+#: uwaptexitres.rsclosing
+msgid "Closing..."
+msgstr "Fermeture..."
+
+#: uwaptexitres.rserrortriggeringtask
+msgid "Error triggering action: %s"
+msgstr "Erreur lors du lanacement de l'action: %s"
 
 #: uwaptexitres.rserrorwininetflags
 msgid "Internal error in SetToIgnoreCerticateErrors when trying to get wininet flags. %s"
@@ -513,7 +525,9 @@ msgid "Setting up server password"
 msgstr "Mise en place du mot de passe du serveur"
 
 #: uwaptres.rssoftwareupdatein
-msgid "Mise à jour des logiciels dans %s sec..."
+#, fuzzy
+#| msgid "Mise à jour des logiciels dans %s sec..."
+msgid "Mise Ã  jour des logiciels dans %s sec..."
 msgstr "Mise à jour des logiciels dans %s sec..."
 
 #: uwaptres.rssrv

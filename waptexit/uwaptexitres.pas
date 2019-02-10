@@ -12,6 +12,7 @@ resourcestring
   { --- MESSAGES DANS WAPTEXIT --- }
   rsUpdatingSoftware = 'Updating software';
   rsInterruptUpdate = 'Interrupt software update';
+  rsClosing = 'Closing...';
   rsSoftwareUpdateIn = 'Updating software in %s sec...';
   rsLaunchSoftwareUpdate = 'Launch software update';
   rsErrorWininetFlags = 'Internal error in SetToIgnoreCerticateErrors when trying to get wininet flags. %s';
@@ -19,6 +20,7 @@ resourcestring
   rsPendingRemoves = '%d packages to uninstall';
   rsWUAUpdatesAvailable = '%d Windows Updates pending';
   rsUpgradeRunning = 'Upgrade running...';
+  rsErrorTriggeringTask = 'Error triggering action: %s';
 
 implementation
 

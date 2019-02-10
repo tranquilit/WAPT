@@ -9,7 +9,7 @@ interface
 
 uses
   waptwinutils, NetworkAdapterInfo, uWaptRes, waptcommon, waptdb, uwaptcrypto, 
-  uWaptPythonUtils, LazarusPackageIntf;
+  uWaptPythonUtils, uWAPTPollThreads, LazarusPackageIntf;
 
 implementation
 
