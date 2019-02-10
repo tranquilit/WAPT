@@ -2299,7 +2299,7 @@ class WaptHostRepo(WaptRepo):
         self._index = {}
         self.discarded = []
         if not self.repo_url:
-            raise EWaptException('URL for WaptHostRepo repository %s is empty. Either add a wapt-host section in ini, or add a _%s._tcp.%s SRV record' % (self.name,self.name,self.dnsdomain))
+            raise EWaptException(u'URL for WaptHostRepo repository %s is empty. Either add a wapt-host section in ini, or add a _%s._tcp.%s SRV record' % (self.name,self.name,self.dnsdomain))
         if self.host_id and not isinstance(self.host_id,list):
             host_ids = [self.host_id]
         else:
@@ -2329,7 +2329,7 @@ class WaptHostRepo(WaptRepo):
                 try:
                     host_package.raise_for_status()
                 except requests.HTTPError as e:
-                    logger.info('Discarding package for %s: error %s' % (package.package,e))
+                    logger.info(u'Discarding package for %s: error %s' % (package.package,e))
                     self.discarded.append(package)
                     continue
 
@@ -2340,7 +2340,7 @@ class WaptHostRepo(WaptRepo):
                     if self.host_key:
                         _host_package_content = self.host_key.decrypt_fernet(content)
                     else:
-                        raise EWaptNotAPackage('Package for %s does not look like a Zip file and no key is available to try to decrypt it'% host_id)
+                        raise EWaptNotAPackage(u'Package for %s does not look like a Zip file and no key is available to try to decrypt it'% host_id)
                 else:
                     _host_package_content = content
 
@@ -4004,7 +4004,7 @@ class Wapt(BaseObjectClass):
                         try:
                             self.waptdb.add_package_entry(package,self.language)
                         except Exception as e:
-                            logger.critical('Error adding entry %s to local DB for repo %s : discarding : %s' % (package.asrequirement(),repo.name,e) )
+                            logger.critical(u'Error adding entry %s to local DB for repo %s : discarding : %s' % (package.asrequirement(),repo.name,e) )
                             discarded.append(package)
 
                     logger.debug(u'Storing last-modified header for repo_url %s : %s' % (repo.repo_url,repo.packages_date()))
@@ -4716,10 +4716,10 @@ class Wapt(BaseObjectClass):
                         stat = u'%s : %i / %i (%.0f%%) (%.0f KB/s)\r' % (url,received,total,100.0*received/total, speed)
                         print(stat)
                     else:
-                        stat = ''
-                    self.runstatus='Downloading %s : %s' % (entry.package,stat)
+                        stat = u''
+                    self.runstatus = u'Downloading %s : %s' % (entry.package,stat)
                 except:
-                    self.runstatus='Downloading %s' % (entry.package,)
+                    self.runstatus = u'Downloading %s' % (entry.package,)
             """
             if not printhook:
                 printhook = report
@@ -4814,7 +4814,7 @@ class Wapt(BaseObjectClass):
 
                 # several versions installed of the same package... ?
                 for mydict in q:
-                    self.runstatus="Removing package %s version %s from computer..." % (mydict['package'],mydict['version'])
+                    self.runstatus = u"Removing package %s version %s from computer..." % (mydict['package'],mydict['version'])
 
                     # removes recursively meta packages which are not satisfied anymore
                     additional_removes = self.check_remove(package)
@@ -4879,7 +4879,7 @@ class Wapt(BaseObjectClass):
     def host_packagename(self):
         """Return package name for current computer"""
         #return "%s" % (setuphelpers.get_hostname().lower())
-        return "%s" % (self.host_uuid,)
+        return u"%s" % (self.host_uuid,)
 
     def get_host_packages_names(self):
         """Return list of implicit host package names based on computer UUID and AD Org Units
@@ -4936,7 +4936,7 @@ class Wapt(BaseObjectClass):
         logger.debug(u'Checking availability of host packages "%s"' % (host_packages, ))
         for package in host_packages:
             if self.is_locally_allowed_package(package):
-                logger.debug('Checking if %s is installed/outdated' % package.asrequirement())
+                logger.debug(u'Checking if %s is installed/outdated' % package.asrequirement())
                 installed_package = self.is_installed(package.asrequirement())
                 if not installed_package or installed_package < package:
                     result.append(package)
@@ -5144,12 +5144,12 @@ class Wapt(BaseObjectClass):
                         if entry != cached:
                             result.append(entry)
                     except Exception as e:
-                        logger.warning('Unable to get version of cached package %s: %s'%(fullpackagepath,ensure_unicode(e),))
+                        logger.warning(u'Unable to get version of cached package %s: %s'%(fullpackagepath,ensure_unicode(e),))
                         result.append(entry)
                 else:
                     result.append(entry)
             else:
-                logger.debug('check_downloads : Package %s is not available'%p)
+                logger.debug(u'check_downloads : Package %s is not available'%p)
         return result
 
     def download_upgrades(self):
@@ -5305,7 +5305,7 @@ class Wapt(BaseObjectClass):
         crt_filename = self.get_host_certificate_filename()
 
         if force_recreate or not os.path.isfile(crt_filename):
-            logger.info('Creates host keys pair and x509 certificate %s' % crt_filename)
+            logger.info(u'Creates host keys pair and x509 certificate %s' % crt_filename)
             self._host_key = self.get_host_key()
 
             crt = self._host_key.build_sign_certificate(
@@ -5436,7 +5436,7 @@ class Wapt(BaseObjectClass):
             try:
                 _add_data_if_updated(inv,'dmi',setuphelpers.dmi_info(),old_hashes,new_hashes)
             except:
-                logger.warning('WMI not working')
+                logger.warning(u'WMI not working')
 
         if self.get_wapt_edition() == 'enterprise':
             try:
@@ -5459,7 +5459,7 @@ class Wapt(BaseObjectClass):
                     wua_client = None
 
             except ImportError as e:
-                logger.warning('waptwua module not installed')
+                logger.warning(u'waptwua module not installed')
 
         return inv
 
@@ -5539,16 +5539,16 @@ class Wapt(BaseObjectClass):
             if result and not result['success']:
                 db_data = result.get('result',None)
                 if not db_data or db_data.get('computer_fqdn',None) != setuphelpers.get_hostname():
-                    logger.warning('Host on the server is not known or not known under this FQDN name (known as %s). Trying to register the computer...'%(db_data and db_data.get('computer_fqdn',None) or None))
+                    logger.warning(u'Host on the server is not known or not known under this FQDN name (known as %s). Trying to register the computer...'%(db_data and db_data.get('computer_fqdn',None) or None))
                     result = self.register_computer()
                     if result and result['success']:
-                        logger.info('New registration successful')
+                        logger.info(u'New registration successful')
                     else:
-                        logger.critical('Unable to register: %s' % result and result['msg'])
+                        logger.critical(u'Unable to register: %s' % result and result['msg'])
             elif not result:
-                logger.info('update_server_status failed, no result. Check server version.')
+                logger.info(u'update_server_status failed, no result. Check server version.')
             else:
-                logger.debug('update_server_status successful %s' % (result,))
+                logger.debug(u'update_server_status successful %s' % (result,))
         else:
             logger.info('WAPT Server is not available to store current host status')
         return result
@@ -5897,7 +5897,7 @@ class Wapt(BaseObjectClass):
             auth = (wapt_server_user,wapt_server_passwd)
         upload_res = self.waptserver.upload_packages(buildresults,auth=auth)
         if buildresults and not upload_res:
-            raise Exception('Packages built but no package were uploaded')
+            raise Exception(u'Packages built but no package were uploaded')
         return buildresults
 
     def cleanup_session_setup(self):
@@ -5923,7 +5923,7 @@ class Wapt(BaseObjectClass):
                 package_entry = self.is_installed(package)
 
             if not package_entry:
-                raise Exception('Package %s is not installed' % package)
+                raise Exception(u'Package %s is not installed' % package)
 
             if package_entry.has_setup_py():
                 # initialize a session db for the user
@@ -5953,7 +5953,7 @@ class Wapt(BaseObjectClass):
                                 dblog.exit_status = 'ERROR'
 
                     else:
-                        print('Already installed.')
+                        print(u'Already installed.')
             else:
                 logger.debug('No setup.py, skipping session-setup')
         finally:
@@ -6061,14 +6061,14 @@ class Wapt(BaseObjectClass):
                                 result = 'OK'
                             dblog.exit_status = worst(dblog.exit_status,result)
                         else:
-                            logger.debug('No setup.py, skipping session-setup')
+                            logger.debug(u'No setup.py, skipping session-setup')
                             print(u'OK: No setup.py')
                             dblog.exit_status = worst(dblog.exit_status,'OK')
 
                         return dblog.exit_status
 
                     except Exception as e:
-                        print('Audit aborted due to exception: %s' % e)
+                        print(u'Audit aborted due to exception: %s' % e)
                         dblog.exit_status = 'ERROR'
                         return dblog.exit_status
             else:
@@ -6116,7 +6116,7 @@ class Wapt(BaseObjectClass):
                 except EWaptMissingPackageHook:
                     pass
             else:
-                logger.info('Uninstall: no setup.py source in database.')
+                logger.info(u'Uninstall: no setup.py source in database.')
 
         finally:
             logger.debug(u'  Change current directory to %s' % previous_cwd)
@@ -6148,7 +6148,7 @@ class Wapt(BaseObjectClass):
              directoryname = os.path.abspath(directoryname)
 
         if not installer_path and not packagename:
-            raise EWaptException('You must provide at least installer_path or packagename to be able to prepare a package template')
+            raise EWaptException(u'You must provide at least installer_path or packagename to be able to prepare a package template')
 
         if installer_path:
             installer = os.path.basename(installer_path)
@@ -6163,7 +6163,7 @@ class Wapt(BaseObjectClass):
             silentflags = silentflags or setuphelpers.getsilentflags(installer_path)
             # for MSI, uninstallkey is in properties
             if not uninstallkey and 'ProductCode' in props:
-                uninstallkey = '"%s"' % props['ProductCode']
+                uninstallkey = u'"%s"' % props['ProductCode']
         elif os.path.isdir(installer_path):
             # case of a directory
             props = {
@@ -6185,9 +6185,9 @@ class Wapt(BaseObjectClass):
 
         if not packagename:
             simplename = re.sub(r'[\s\(\)\|\,\.\%]+','_',props['product'].lower())
-            packagename = '%s-%s' %  (self.config.get('global','default_package_prefix'),simplename)
+            packagename = u'%s-%s' %  (self.config.get('global','default_package_prefix'),simplename)
 
-        description = description or 'Package for %s ' % props['description']
+        description = description or u'Package for %s ' % props['description']
         version = version or props['version']
 
         if not directoryname:
@@ -6377,7 +6377,7 @@ class Wapt(BaseObjectClass):
         depends = ensure_list(depends)
         if depends:
             # use supplied list of packages
-            entry.depends = ','.join([u'%s' % p for p in depends if p and p != packagename ])
+            entry.depends = u','.join([u'%s' % p for p in depends if p and p != packagename ])
 
 
         # check if conflicts should be appended to existing conflicts
@@ -6395,7 +6395,7 @@ class Wapt(BaseObjectClass):
         conflicts = ensure_list(conflicts)
         if conflicts:
             # use supplied list of packages
-            entry.conflicts = ','.join([u'%s' % p for p in conflicts if p and p != packagename ])
+            entry.conflicts = u','.join([u'%s' % p for p in conflicts if p and p != packagename ])
 
         entry.save_control_to_wapt(directoryname)
         if entry.section != 'host':
@@ -6548,11 +6548,11 @@ class Wapt(BaseObjectClass):
             local_dev_entry = self.is_wapt_package_development_dir(target_directory)
             if local_dev_entry:
                 if use_local_sources and not local_dev_entry.match(packagerequest):
-                    raise Exception('Target directory %s contains a different package version %s' % (target_directory,entry.asrequirement()))
+                    raise Exception(u'Target directory %s contains a different package version %s' % (target_directory,entry.asrequirement()))
                 elif not use_local_sources:
-                    raise Exception('Target directory %s contains already a developement package %s' % (target_directory,entry.asrequirement()))
+                    raise Exception(u'Target directory %s contains already a developement package %s' % (target_directory,entry.asrequirement()))
                 else:
-                    logger.info('Using existing development sources %s' % target_directory)
+                    logger.info(u'Using existing development sources %s' % target_directory)
             elif not local_dev_entry:
                 entry.unzip_package(target_dir=target_directory, cabundle = cabundle)
                 entry.invalidate_signature()
@@ -6599,7 +6599,16 @@ class Wapt(BaseObjectClass):
         return os.path.isfile(os.path.join(directory,'WAPT','control')) and PackageEntry().load_control_from_wapt(directory,calc_md5=False)
 
     def is_wapt_package_file(self,filename):
-        """Return PackageEntry if filename is a wapt package or False"""
+        """Return PackageEntry if filename is a wapt package or False
+        True if file ends with .wapt and control file can be loaded and decoded from zip file
+
+        Args:
+            filename (str): path to a file
+
+        Returns:
+            False or PackageEntry
+
+        """
         (root,ext)=os.path.splitext(filename)
         if ext != '.wapt' or not os.path.isfile(filename):
             return False
@@ -6648,7 +6657,7 @@ class Wapt(BaseObjectClass):
             target_directory = self.get_default_development_dir(hostname,section='host')
 
         if os.path.isdir(target_directory) and os.listdir(target_directory):
-            raise Exception('directory %s is not empty, aborting.' % target_directory)
+            raise Exception(u'directory %s is not empty, aborting.' % target_directory)
 
         #self.use_hostpackages = True
 
@@ -6684,7 +6693,7 @@ class Wapt(BaseObjectClass):
             for d in remove_depends:
                 if d in prev_depends:
                     prev_depends.remove(d)
-            entry.depends = ','.join(prev_depends)
+            entry.depends = u','.join(prev_depends)
 
             # update conflicts list
             prev_conflicts = ensure_list(entry.conflicts)
@@ -6695,7 +6704,7 @@ class Wapt(BaseObjectClass):
                 for d in remove_conflicts:
                     if d in prev_conflicts:
                         prev_conflicts.remove(d)
-            entry.conflicts = ','.join(prev_conflicts)
+            entry.conflicts = u','.join(prev_conflicts)
             if description is not None:
                 entry.description = description
 
@@ -6808,7 +6817,7 @@ class Wapt(BaseObjectClass):
             while newname.endswith('.wapt'):
                 dot_wapt = newname.rfind('.wapt')
                 newname = newname[0:dot_wapt]
-                logger.warning("Target ends with '.wapt', stripping.  New name: %s", newname)
+                logger.warning(u"Target ends with '.wapt', stripping.  New name: %s", newname)
 
         # default empty result
         result = {}
@@ -6822,7 +6831,7 @@ class Wapt(BaseObjectClass):
             if os.path.isdir(target_directory) and os.listdir(target_directory):
                 pe = PackageEntry().load_control_from_wapt(target_directory)
                 if  pe.package != source_control.package or pe > source_control:
-                    raise Exception('Target directory "%s" is not empty and contains either another package or a newer version, aborting.' % target_directory)
+                    raise Exception(u'Target directory "%s" is not empty and contains either another package or a newer version, aborting.' % target_directory)
 
         # duplicate a development directory tree
         if os.path.isdir(packagename):
@@ -6854,12 +6863,12 @@ class Wapt(BaseObjectClass):
         else:
             source_package = self.is_available(packagename)
             if not source_package:
-                raise Exception('Package %s is not available is current repositories.'%(packagename,))
+                raise Exception(u'Package %s is not available is current repositories.'%(packagename,))
             # duplicate package from a repository
             filenames = self.download_packages([packagename],usecache=usecache,printhook=printhook)
             package_paths = filenames['downloaded'] or filenames['skipped']
             if not package_paths:
-                raise Exception('Unable to download package %s'%(packagename,))
+                raise Exception(u'Unable to download package %s'%(packagename,))
             source_filename = package_paths[0]
             source_control = PackageEntry().load_control_from_wapt(source_filename)
             if not newname:
@@ -6890,7 +6899,7 @@ class Wapt(BaseObjectClass):
         for d in remove_depends:
             if d in prev_depends:
                 prev_depends.remove(d)
-        dest_control.depends = ','.join(prev_depends)
+        dest_control.depends = u','.join(prev_depends)
 
         # add / remove conflicts from copy
         prev_conflicts = ensure_list(dest_control.conflicts)
@@ -6901,7 +6910,7 @@ class Wapt(BaseObjectClass):
         for d in remove_conflicts:
             if d in prev_conflicts:
                 prev_conflicts.remove(d)
-        dest_control.conflicts = ','.join(prev_conflicts)
+        dest_control.conflicts = u','.join(prev_conflicts)
 
         # change package name
         dest_control.package = newname
@@ -7094,7 +7103,7 @@ def get_user_self_service_groups(self_service_groups,logon_name,password):
 
     domain = ''
     if logon_name.count('\\') > 1 or logon_name.count('@') > 1  or (logon_name.count('\\') == 1 and logon_name.count('@')==1)  :
-        logger.debug("malformed logon credential : %s "% logon_name)
+        logger.debug(u"malformed logon credential : %s "% logon_name)
         return False
 
     if '\\' in logon_name:
@@ -7237,8 +7246,9 @@ def lookup_name_from_rid(domain_controller, rid):
 
 
 def get_domain_admins_group_name():
-    r""" return localized version of domain admin group (ie "domain admins" or
+    r"""Return localized version of domain admin group (ie "domain admins" or
                  "administrateurs du domaine" with RID -512)
+
     >>> get_domain_admins_group_name()
     u'Domain Admins'
     """
@@ -7258,9 +7268,12 @@ def get_local_admins_group_name():
 
 
 def check_is_member_of(huser,group_name):
-    """ check if a user is a member of a group
-    huser : handle pywin32
-    group_name : group as a string
+    """Check if a user is a member of a group
+
+    Args:
+        huser (handle) : pywin32
+        group_name (str) : group
+
     >>> from win32security import LogonUser
     >>> hUser = win32security.LogonUser ('technique','tranquilit','xxxxxxx',win32security.LOGON32_LOGON_NETWORK,win32security.LOGON32_PROVIDER_DEFAULT)
     >>> check_is_member_of(hUser,'domain admins')
@@ -7275,11 +7288,14 @@ def check_is_member_of(huser,group_name):
 
 
 def check_user_membership(user_name,password,domain_name,group_name):
-    """ check if a user is a member of a group
-    user_name: user as a string
-    password: as a string
-    domain_name : as a string. If empty, check local then domain
-    group_name : group as a string
+    """Check if a user is a member of a group
+
+    Args:
+        user_name (str): user
+        password (str):
+        domain_name (str) : If empty, check local then domain
+        group_name (str): group
+
     >>> from win32security import LogonUser
     >>> hUser = win32security.LogonUser ('technique','tranquilit','xxxxxxx',win32security.LOGON32_LOGON_NETWORK,win32security.LOGON32_PROVIDER_DEFAULT)
     >>> check_is_member_of(hUser,'domain admins')
@@ -7289,7 +7305,7 @@ def check_user_membership(user_name,password,domain_name,group_name):
         sid, system, type = win32security.LookupAccountName(None,group_name)
     except pywintypes.error as e:
         if e.args[0] == 1332:
-            logger.warning('"%s" is not a valid group name'%group_name)
+            logger.warning(u'"%s" is not a valid group name' % group_name)
             return False
         else:
             raise
