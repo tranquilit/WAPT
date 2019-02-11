@@ -53,7 +53,7 @@ from common import WaptDB
 import setuphelpers
 
 try:
-    wapt_root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__),'..'))
+    wapt_root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__)))
 except NameError:
     wapt_root_dir = 'c:/tranquilit/wapt'
 

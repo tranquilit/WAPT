@@ -5008,6 +5008,10 @@ msgctxt "uwaptres.rswaptuploaderror"
 msgid "Error while uploading WAPT agent to the repository : %s"
 msgstr ""
 
+#: waptconsolepostconfres.rsbuildingkeycert
+msgid "Building a key pairs and certificate"
+msgstr ""
+
 #: waptconsolepostconfres.rsinvaliddns
 msgctxt "waptconsolepostconfres.rsinvaliddns"
 msgid "Invalid DNS"
