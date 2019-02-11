@@ -42,6 +42,14 @@ resourcestring
   rs_confirm = 'Confirm';
   rs_you_wapt_agent_version_mismatch = 'Wapt agent version exception (%s) Post configuration tool cannot continue, please follow tutorial at : http://wapt.fr';
   rs_post_conf_will_now_exit = 'Post configuration tool will now exit';
+
+  rsInvalidDNS = 'Invalid DNS';
+  rsInvalidDNSfallback = 'This DNS name is not valid, would you like to use the IP address instead ?';
+
+  rsStartingWaptservice = 'Starting WaptService';
+  rsStoppingWaptservice = 'Stopping WaptService';
+  rsRegisteringComputer = 'Registering current computer on the server.';
+
 implementation
 
 end.

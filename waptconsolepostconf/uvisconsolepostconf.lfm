@@ -66,10 +66,10 @@ object VisWAPTConsolePostConf: TVisWAPTConsolePostConf
       Height = 310
       Top = 0
       Width = 590
-      ActivePage = pgParameters
+      ActivePage = pgKey
       Align = alClient
       MultiLine = True
-      TabIndex = 0
+      TabIndex = 2
       TabOrder = 0
       Options = [nboMultiLine]
       object pgParameters: TTabSheet
@@ -86,15 +86,15 @@ object VisWAPTConsolePostConf: TVisWAPTConsolePostConf
           AnchorSideRight.Side = asrBottom
           AnchorSideBottom.Side = asrCenter
           Left = -4
-          Height = 167
-          Top = 59
+          Height = 189
+          Top = 48
           Width = 591
           Anchors = [akTop, akLeft, akRight]
           BevelOuter = bvNone
           ChildSizing.HorizontalSpacing = 5
           ChildSizing.VerticalSpacing = 5
           ChildSizing.ControlsPerLine = 4
-          ClientHeight = 167
+          ClientHeight = 189
           ClientWidth = 591
           TabOrder = 0
           object lbl_wapt_server_hostname: TLabel
@@ -105,7 +105,7 @@ object VisWAPTConsolePostConf: TVisWAPTConsolePostConf
             Left = 0
             Height = 13
             Top = 9
-            Width = 164
+            Width = 163
             Alignment = taRightJustify
             Anchors = [akTop, akLeft, akRight]
             BorderSpacing.Top = 5
@@ -116,11 +116,11 @@ object VisWAPTConsolePostConf: TVisWAPTConsolePostConf
           object EdWaptServerHostname: TEdit
             AnchorSideLeft.Control = lbl_wapt_server_hostname
             AnchorSideTop.Side = asrBottom
-            Left = 169
+            Left = 168
             Height = 21
             Hint = 'WAPT clients make requests to the server. In order to connect to the WAPT server,'#13#10'it is advisable that a DNS name be used, as long as it has been correctly'#13#10'configured in your network''s DNS environment. We suggest naming your WAPT server'#13#10'''srvwapt.mydomain.local'' (A record type), then binding an alias'#13#10'(CNAME record type, e.g. ''wapt.mondomain.local'') to srvwapt.'#13#10'In case you don''t trust your DNS, or you are just setting up a testing environment,'#13#10'you can fall back to the server IP address. For further information :'#13#10'''http://dev.tranquil.it/scenari/guide_admin/co/wapt_server_configuration_champDNS.html'''
             Top = 5
-            Width = 335
+            Width = 152
             Anchors = [akTop, akRight]
             BorderSpacing.Top = 5
             OnKeyPress = EdWaptServerHostnameKeyPress
@@ -132,26 +132,26 @@ object VisWAPTConsolePostConf: TVisWAPTConsolePostConf
             Top = 0
             Width = 1
             BevelOuter = bvNone
-            TabOrder = 3
+            TabOrder = 2
           end
           object cb_manual_wapt_server: TCheckBox
             AnchorSideLeft.Control = EdWaptServerHostname
-            Left = 169
+            Left = 168
             Height = 17
-            Top = 31
+            Top = 56
             Width = 97
             Caption = 'Manual override'
             OnChange = cb_manual_wapt_serverChange
-            TabOrder = 4
+            TabOrder = 3
           end
           object lbl_manual_wapt_server_url: TLabel
             AnchorSideLeft.Control = EdWaptServerHostname
             AnchorSideTop.Control = ed_manual_wapt_server_url
             AnchorSideTop.Side = asrCenter
             AnchorSideRight.Control = ed_manual_wapt_server_url
-            Left = 169
+            Left = 168
             Height = 13
-            Top = 52
+            Top = 77
             Width = 97
             Alignment = taRightJustify
             Anchors = [akTop, akLeft, akRight]
@@ -161,40 +161,23 @@ object VisWAPTConsolePostConf: TVisWAPTConsolePostConf
           object ed_manual_wapt_server_url: TEdit
             AnchorSideLeft.Control = cb_manual_wapt_server
             AnchorSideLeft.Side = asrBottom
-            AnchorSideRight.Control = EdWaptServerHostname
-            AnchorSideRight.Side = asrBottom
-            Left = 271
+            AnchorSideRight.Control = img_manual_wapt_server_url_status
+            Left = 270
             Height = 21
-            Top = 48
-            Width = 233
+            Top = 73
+            Width = 155
             Anchors = [akTop, akLeft, akRight]
             OnKeyPress = ed_manual_wapt_server_urlKeyPress
-            TabOrder = 5
-          end
-          object btn_check_wapt_server_hostname: TButton
-            AnchorSideLeft.Control = EdWaptServerHostname
-            AnchorSideLeft.Side = asrBottom
-            AnchorSideTop.Control = EdWaptServerHostname
-            AnchorSideTop.Side = asrCenter
-            Left = 509
-            Height = 23
-            Top = 4
-            Width = 51
-            Action = ActCheckWaptHostname
-            Anchors = [akTop, akLeft, akRight]
-            AutoSize = True
-            BorderSpacing.Left = 5
-            BorderSpacing.Top = 5
-            TabOrder = 1
+            TabOrder = 4
           end
           object img_manual_wapt_server_url_status: TImage
-            AnchorSideLeft.Control = btn_check_wapt_server_hostname
+            AnchorSideLeft.Control = btn_check_wapt_server_ping
             AnchorSideTop.Control = ed_manual_wapt_server_url
             AnchorSideTop.Side = asrCenter
             AnchorSideRight.Side = asrCenter
-            Left = 509
+            Left = 430
             Height = 16
-            Top = 50
+            Top = 75
             Width = 16
             Anchors = [akTop, akLeft, akRight]
             Constraints.MaxHeight = 16
@@ -205,9 +188,9 @@ object VisWAPTConsolePostConf: TVisWAPTConsolePostConf
             AnchorSideTop.Control = ed_manual_repo_url
             AnchorSideTop.Side = asrCenter
             AnchorSideRight.Control = ed_manual_repo_url
-            Left = 169
+            Left = 168
             Height = 13
-            Top = 84
+            Top = 109
             Width = 97
             Alignment = taRightJustify
             Anchors = [akTop, akLeft, akRight]
@@ -216,23 +199,22 @@ object VisWAPTConsolePostConf: TVisWAPTConsolePostConf
           end
           object ed_manual_repo_url: TEdit
             AnchorSideLeft.Control = ed_manual_wapt_server_url
-            AnchorSideRight.Control = EdWaptServerHostname
-            AnchorSideRight.Side = asrBottom
-            Left = 271
+            AnchorSideRight.Control = img_manual_repo_url
+            Left = 270
             Height = 21
-            Top = 80
-            Width = 233
+            Top = 105
+            Width = 155
             Anchors = [akTop, akLeft, akRight]
             OnKeyPress = ed_manual_repo_urlKeyPress
-            TabOrder = 6
+            TabOrder = 5
           end
           object img_manual_repo_url: TImage
-            AnchorSideLeft.Control = btn_check_wapt_server_hostname
+            AnchorSideLeft.Control = btn_check_wapt_server_ping
             AnchorSideTop.Control = ed_manual_repo_url
             AnchorSideTop.Side = asrCenter
-            Left = 509
+            Left = 430
             Height = 16
-            Top = 82
+            Top = 107
             Width = 16
             Anchors = [akTop, akLeft, akRight]
             Constraints.MaxHeight = 16
@@ -245,8 +227,8 @@ object VisWAPTConsolePostConf: TVisWAPTConsolePostConf
             AnchorSideRight.Control = ed_wapt_server_password
             Left = 0
             Height = 13
-            Top = 116
-            Width = 164
+            Top = 141
+            Width = 163
             Alignment = taRightJustify
             Anchors = [akTop, akLeft, akRight]
             Caption = 'WAPT server password :'
@@ -255,41 +237,115 @@ object VisWAPTConsolePostConf: TVisWAPTConsolePostConf
           end
           object ed_wapt_server_password: TEdit
             AnchorSideLeft.Control = EdWaptServerHostname
-            AnchorSideRight.Control = ed_manual_wapt_server_url
-            Left = 169
+            AnchorSideRight.Control = EdWaptServerIP
+            AnchorSideRight.Side = asrBottom
+            Left = 168
             Height = 21
-            Top = 112
-            Width = 97
+            Top = 137
+            Width = 152
             Anchors = [akTop, akLeft, akRight]
             OnKeyPress = ed_wapt_server_passwordKeyPress
-            TabOrder = 7
+            TabOrder = 6
           end
           object cb_wapt_server_show_password: TCheckBox
             AnchorSideLeft.Control = EdWaptServerHostname
-            Left = 169
+            Left = 168
             Height = 17
-            Top = 144
+            Top = 160
             Width = 95
             Caption = 'Show password'
             OnChange = on_show_password_change
             ParentBidiMode = False
-            TabOrder = 2
+            TabOrder = 1
             TabStop = False
           end
-          object btn_check_wapt_server_hostname1: TButton
+          object btn_check_wapt_server_password: TButton
             AnchorSideLeft.Control = ed_wapt_server_password
             AnchorSideLeft.Side = asrBottom
             AnchorSideTop.Control = ed_wapt_server_password
             AnchorSideTop.Side = asrCenter
-            Left = 271
+            Left = 325
             Height = 23
-            Top = 111
-            Width = 90
+            Top = 136
+            Width = 100
             Action = ActCheckServerPassword
             Anchors = [akTop, akLeft, akRight]
             AutoSize = True
             BorderSpacing.Top = 5
+            TabOrder = 7
+          end
+          object EdWaptServerIP: TEdit
+            AnchorSideLeft.Control = lbl_wapt_server_hostname
+            AnchorSideTop.Side = asrBottom
+            Left = 168
+            Height = 21
+            Hint = 'WAPT clients make requests to the server. In order to connect to the WAPT server,'#13#10'it is advisable that a DNS name be used, as long as it has been correctly'#13#10'configured in your network''s DNS environment. We suggest naming your WAPT server'#13#10'''srvwapt.mydomain.local'' (A record type), then binding an alias'#13#10'(CNAME record type, e.g. ''wapt.mondomain.local'') to srvwapt.'#13#10'In case you don''t trust your DNS, or you are just setting up a testing environment,'#13#10'you can fall back to the server IP address. For further information :'#13#10'''http://dev.tranquil.it/scenari/guide_admin/co/wapt_server_configuration_champDNS.html'''
+            Top = 32
+            Width = 152
+            Anchors = [akTop, akRight]
+            BorderSpacing.Top = 5
+            OnKeyPress = EdWaptServerHostnameKeyPress
             TabOrder = 8
+          end
+          object LabWaptServerIP: TLabel
+            AnchorSideLeft.Control = Panel1
+            AnchorSideTop.Control = EdWaptServerIP
+            AnchorSideTop.Side = asrCenter
+            AnchorSideRight.Control = EdWaptServerIP
+            Left = 0
+            Height = 13
+            Top = 36
+            Width = 163
+            Alignment = taRightJustify
+            Anchors = [akTop, akLeft, akRight]
+            BorderSpacing.Top = 5
+            Caption = 'WAPT ServerIP :'
+            Layout = tlCenter
+            ParentColor = False
+          end
+          object btn_check_wapt_server_hostname: TButton
+            AnchorSideLeft.Control = EdWaptServerHostname
+            AnchorSideLeft.Side = asrBottom
+            AnchorSideTop.Control = EdWaptServerHostname
+            AnchorSideTop.Side = asrCenter
+            Left = 325
+            Height = 23
+            Top = 4
+            Width = 99
+            Action = ActCheckDNS
+            Anchors = [akTop, akLeft, akRight]
+            AutoSize = True
+            BorderSpacing.Left = 5
+            BorderSpacing.Top = 5
+            TabOrder = 9
+          end
+          object btn_check_wapt_server_ping: TButton
+            AnchorSideLeft.Control = btn_check_wapt_server_password
+            AnchorSideLeft.Side = asrBottom
+            AnchorSideTop.Control = EdWaptServerHostname
+            AnchorSideTop.Side = asrCenter
+            Left = 430
+            Height = 23
+            Top = 4
+            Width = 125
+            Action = ActCheckWaptHostname
+            Anchors = [akTop, akLeft, akRight]
+            AutoSize = True
+            BorderSpacing.Left = 5
+            BorderSpacing.Top = 5
+            TabOrder = 10
+          end
+          object img_check_password: TImage
+            AnchorSideLeft.Control = btn_check_wapt_server_ping
+            AnchorSideTop.Control = btn_check_wapt_server_password
+            AnchorSideTop.Side = asrCenter
+            Left = 430
+            Height = 16
+            Top = 139
+            Width = 16
+            Anchors = [akTop, akLeft, akRight]
+            Constraints.MaxHeight = 16
+            Constraints.MaxWidth = 16
           end
         end
       end
@@ -356,9 +412,9 @@ object VisWAPTConsolePostConf: TVisWAPTConsolePostConf
           Height = 142
           Top = 71
           Width = 582
-          ActivePage = pgkey_ts_create_new_key
+          ActivePage = pgkey_ts_use_existing_key
           Anchors = [akTop, akLeft, akRight]
-          TabIndex = 0
+          TabIndex = 1
           TabOrder = 1
           object pgkey_ts_create_new_key: TTabSheet
             Caption = 'pgkey_ts_create_new_key'
@@ -482,7 +538,6 @@ object VisWAPTConsolePostConf: TVisWAPTConsolePostConf
               Width = 100
               BorderSpacing.Top = 5
               Constraints.MaxWidth = 100
-              OnKeyPress = ed_create_new_key_password_2KeyPress
               TabOrder = 3
             end
             object cb_create_new_key_show_password: TCheckBox
@@ -499,6 +554,20 @@ object VisWAPTConsolePostConf: TVisWAPTConsolePostConf
               OnChange = on_show_password_change
               TabOrder = 4
               TabStop = False
+            end
+            object Button1: TButton
+              AnchorSideLeft.Control = ed_create_new_key_password_2
+              AnchorSideLeft.Side = asrBottom
+              AnchorSideTop.Control = ed_create_new_key_password_2
+              AnchorSideTop.Side = asrCenter
+              Left = 323
+              Height = 23
+              Top = 82
+              Width = 105
+              Action = ActCreateKeys
+              AutoSize = True
+              BorderSpacing.Left = 7
+              TabOrder = 5
             end
           end
           object pgkey_ts_use_existing_key: TTabSheet
@@ -638,6 +707,20 @@ object VisWAPTConsolePostConf: TVisWAPTConsolePostConf
               TabOrder = 3
               TabStop = False
             end
+            object Button3: TButton
+              AnchorSideLeft.Control = ed_create_new_key_password_2
+              AnchorSideLeft.Side = asrBottom
+              AnchorSideTop.Control = ed_create_new_key_password_2
+              AnchorSideTop.Side = asrCenter
+              Left = 216
+              Height = 23
+              Top = 88
+              Width = 152
+              Action = ActUseExistingKey
+              AutoSize = True
+              BorderSpacing.Left = 7
+              TabOrder = 5
+            end
           end
         end
         object Panel3: TPanel
@@ -698,8 +781,8 @@ object VisWAPTConsolePostConf: TVisWAPTConsolePostConf
         OnShow = on_page_show
         object pg_agent_memo: TMemo
           Left = 0
-          Height = 284
-          Top = 0
+          Height = 250
+          Top = 34
           Width = 582
           Align = alClient
           Lines.Strings = (
@@ -708,6 +791,26 @@ object VisWAPTConsolePostConf: TVisWAPTConsolePostConf
           ReadOnly = True
           ScrollBars = ssVertical
           TabOrder = 0
+        end
+        object PanAgentTop: TPanel
+          Left = 0
+          Height = 34
+          Top = 0
+          Width = 582
+          Align = alTop
+          BevelOuter = bvNone
+          ClientHeight = 34
+          ClientWidth = 582
+          TabOrder = 1
+          object Button2: TButton
+            Left = 8
+            Height = 23
+            Top = 4
+            Width = 143
+            Action = ActBuildWaptAgent
+            AutoSize = True
+            TabOrder = 0
+          end
         end
       end
       object pgFinish: TTabSheet
@@ -940,8 +1043,8 @@ object VisWAPTConsolePostConf: TVisWAPTConsolePostConf
     end
   end
   object ActionList1: TActionList
-    left = 64
-    top = 40
+    left = 280
+    top = 32
     object ActPrevious: TAction
       Caption = 'Previous'
       OnExecute = ActPreviousExecute
@@ -956,18 +1059,35 @@ object VisWAPTConsolePostConf: TVisWAPTConsolePostConf
       OnExecute = ActCancelExecute
     end
     object ActCheckWaptHostname: TAction
-      Caption = 'Check'
+      Caption = 'Check Server Access'
       OnExecute = ActCheckWaptHostnameExecute
       OnUpdate = ActCheckWaptHostnameUpdate
     end
     object ActCheckServerPassword: TAction
-      Caption = 'Check'
+      Caption = 'Check password'
       OnExecute = ActCheckServerPasswordExecute
     end
     object ActFindPrivateKey: TAction
       Caption = 'Find private key'
       OnExecute = ActFindPrivateKeyExecute
       OnUpdate = ActFindPrivateKeyUpdate
+    end
+    object ActCheckDNS: TAction
+      Caption = 'Check DNS'
+      OnExecute = ActCheckDNSExecute
+    end
+    object ActCreateKeys: TAction
+      Caption = 'Create keys pair'
+      OnExecute = ActCreateKeysExecute
+      OnUpdate = ActCreateKeysUpdate
+    end
+    object ActBuildWaptAgent: TAction
+      Caption = 'Build WAPT Agent Setup'
+      OnExecute = ActBuildWaptAgentExecute
+    end
+    object ActUseExistingKey: TAction
+      Caption = 'Take certificate in account'
+      OnExecute = ActUseExistingKeyExecute
     end
   end
   object IdHTTP1: TIdHTTP
