@@ -45,11 +45,22 @@ from waptcrypto import EWaptCryptoException,SSLCertificate,SSLCABundle,default_p
 from waptpackage import EWaptException
 
 import common
+import pprint
 
 from common import Wapt
 from common import WaptDB
 
 import setuphelpers
+
+try:
+    wapt_root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__),'..'))
+except NameError:
+    wapt_root_dir = 'c:/tranquilit/wapt'
+
+if os.path.isdir(os.path.join(wapt_root_dir,'waptenterprise')):
+    from waptenterprise.waptwua.client import WaptWUA
+else:
+    WaptWUA = None
 
 waptguihelper = None
 
@@ -126,6 +137,11 @@ action is either :
  For repository management
   upload-package  <filenames> : upload package to repository (using winscp for example.)
   scan-packages <directory> : rebuild a "Packages" file for http package repository
+
+ For windows updates WAPTWua management
+   waptwua-scan : scan status of windows against current rules and send result to server
+   waptwua-download : scan status of windows against current rules, download missing kb and send result to
+   waptwua-install : install pending updates
 
 """
 
@@ -1174,6 +1190,34 @@ def main():
                     jsonresult['result'] = result
                 else:
                     print(result)
+
+            elif action == 'waptwua-scan':
+                if WaptWUA is None:
+                    raise Exception('waptwua is not available on thid computer. Enterprise feature only')
+                with WaptWUA(mywapt) as wc:
+                    result = wc.scan_updates_status(force=options.force)
+                    print(pprint.pprint(result))
+
+            elif action == 'waptwua-download':
+                if WaptWUA is None:
+                    raise Exception('waptwua is not available on thid computer. Enterprise feature only')
+                with WaptWUA(mywapt) as wc:
+                    result = wc.download_updates(force=options.force)
+                    print(pprint.pprint(result))
+
+            elif action == 'waptwua-install':
+                if WaptWUA is None:
+                    raise Exception('waptwua is not available on thid computer. Enterprise feature only')
+                with WaptWUA(mywapt) as wc:
+                    result = wc.install_updates(force=options.force)
+                    print(pprint.pprint(result))
+
+            elif action == 'waptwua-status':
+                if WaptWUA is None:
+                    raise Exception('waptwua is not available on thid computer. Enterprise feature only')
+                wc = WaptWUA(mywapt)
+                result = wc.stored_waptwua_status()
+                print(pprint.pprint(result))
 
             elif action == 'list':
                 def cb(fieldname,value):

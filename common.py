@@ -7138,8 +7138,8 @@ def merge_self_service_rules(all_rules):
         for package in rules:
             if package in rulesselfservice:
                 for user in rules[package]:
-                    if not user in rulesselfservice[package]:
-                        rulesselfservice[package].append(user)
+                    if not user.lower() in rulesselfservice[package]:
+                        rulesselfservice[package].append(user.lower())
             else:
                 rulesselfservice[package]=rules[package]
 
