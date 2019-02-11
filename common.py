@@ -4978,39 +4978,32 @@ class Wapt(BaseObjectClass):
                         {'downloaded': [], 'skipped': [], 'errors': []},
                      'remove': [], 'skipped': [], 'install': [], 'errors': [], 'unavailable': []}
         """
-        self.runstatus='Upgrade system'
-        result = dict(
-            install=[],
-            upgrade=[],
-            additional=[],
-            remove=[],
-            errors=[])
         try:
-            if self.use_hostpackages:
-                unrelevant_host_packages = self.get_unrelevant_host_packages()
-            else:
-                unrelevant_host_packages = self.get_installed_host_packages()
+            self.runstatus='Upgrade system'
+            upgrades = self.list_upgrade()
+            logger.debug(u'upgrades : %s' % upgrades)
 
-            if unrelevant_host_packages:
-                result = merge_dict(result,self.remove(unrelevant_host_packages,force=True))
-            if self.use_hostpackages:
-                install_host_packages = self.get_outdated_host_packages()
-                if install_host_packages:
-                    logger.info(u'Host packages %s are available and not installed, installing host packages...' % (' '.join(h.package for h in install_host_packages),))
-                    hostresult = self.install(install_host_packages,force=True)
-                    result = merge_dict(result,hostresult)
-                else:
-                    hostresult = {}
-            else:
-                hostresult = {}
+            result = dict(
+                install=[],
+                upgrade=[],
+                additional=[],
+                remove=[],
+                errors=[])
 
-            upgrades = self.waptdb.upgradeable()
-            logger.debug(u'upgrades : %s' % upgrades.keys())
+            if upgrades['remove']:
+                self.runstatus = 'Removes outdated / conflicted packages' % key
+                result = merge_dict(result,self.remove(upgrades['remove'],force=True))
+
+            for key in ['additional','upgrade','install']:
+                self.runstatus='Install %s packages' % key
+                if upgrades[key]:
+                    result = merge_dict(result,self.install(upgrades[key],process_dependencies=False))
+
             result = merge_dict(result,self.install(upgrades.keys(),force=True,only_priorities=only_priorities,only_if_not_process_running=only_if_not_process_running))
             self.store_upgrade_status()
 
             # merge results
-            return merge_dict(result,hostresult)
+            return result
         finally:
             self.runstatus=''
 
