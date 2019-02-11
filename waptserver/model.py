@@ -737,8 +737,17 @@ def update_waptwua(uuid,data,applied_status_hashes):
             u['created_on'] = datetime.datetime.now()
             windows_updates.append(u)
         if windows_updates:
-            # if win update has already been registered, we don't update it, but simply ignore th einsert
-            WsusUpdates.insert_many(windows_updates).on_conflict('IGNORE').execute()
+            # if win update has already been registered, we don't update it, but simply ignore the insert
+            # we should append missing URLS... to do in a dedicated PG sql proc will be better.
+            for update in windows_updates:
+                download_urls = WsusUpdates.select(WsusUpdates.update_id,WsusUpdates.download_urls).where(WsusUpdates.update_id==update['update_id']).first()
+                if not download_urls:
+                    WsusUpdates.insert(windows_updates).execute()
+                elif download_urls.download_urls != update['download_urls']:
+                    new_urls = list(set(download_urls.download_urls + update['download_urls']))
+                    WsusUpdates.update(download_urls=new_urls).where(WsusUpdates.update_id == update['update_id']).execute()
+            #WsusUpdates.insert_many(windows_updates).on_conflict('IGNORE').execute()
+
         applied_status_hashes['waptwua_updates'] = data.get('status_hashes',{}).get('waptwua_updates')
 
     if 'waptwua_updates_localstatus' in data:
@@ -1647,7 +1656,7 @@ def upgrade_db_structure():
             logger.info("Migrating from %s to %s" % (get_db_version(), next_version))
             opes = []
 
-            columns = [c.name for c in wapt_db.get_columns('hostpackagestatus')]
+            columns = [c.name for c in wapt_db.get_columns('hostpackagesstatus')]
             if not 'signature_date' in columns:
                 opes.append(migrator.add_column(HostPackagesStatus._meta.name, 'signature_date',HostPackagesStatus.signature_date))
             columns = [c.name for c in wapt_db.get_columns('packages')]
