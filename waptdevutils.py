@@ -347,7 +347,7 @@ def duplicate_from_file(package_filename,new_prefix='test',target_directory=None
     return result
 
 
-def build_waptupgrade_package(waptconfigfile,target_directory=None,wapt_server_user=None,wapt_server_passwd=None,key_password=None,sign_digests=None):
+def build_waptupgrade_package(waptconfigfile,target_directory=None,wapt_server_user=None,wapt_server_passwd=None,key_password=None,sign_digests=None,priority='critical'):
     if target_directory is None:
         target_directory = tempfile.gettempdir()
 
@@ -394,6 +394,7 @@ def build_waptupgrade_package(waptconfigfile,target_directory=None,wapt_server_u
     entry.inc_build()
     entry.save_control_to_wapt()
     entry.build_package(target_directory=target_directory)
+    entry.priority = priority
     certs = wapt.personal_certificate()
     key = wapt.private_key(private_key_password=key_password)
     if not certs[0].is_code_signing:
