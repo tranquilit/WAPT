@@ -3,10 +3,17 @@ body {
   background-color: #eeeeee;
 }
 
-footer {
-    background-color: #222222;
-    bottom: 0;
-    display: block;
+footer{
+    width: 85%;
+    position:fixed;
+    bottom:0px;
+    background: #eee;
+    padding: 14px 8px;
+    margin-left: 15%;
+}
+
+footer .right {
+  text-align: right;
 }
 
 .banner {
@@ -42,10 +49,16 @@ a:hover {
 	border: 4px solid #eeeeee;
 	padding: 0.2%;
   background-color: white;
-  height: 230px;
+  height: 270px;
   overflow: hidden;
   padding: 30px;
+  min-width: 307px;
 }
+
+.tuile .col-md-8 {
+  padding-left: 0px;
+}
+
 
 .software_name {
 	/*font-family: "glyphicons-halflings-regular";*/
@@ -64,13 +77,12 @@ input[type=checkbox], input[type=radio] {
 }
 
 
-/*pour la nav responsive, aller voir ça : https://bootsnipp.com/snippets/featured/responsive-sidebar-menu*/
+/*pour la nav responsive, aller voir ?a : https://bootsnipp.com/snippets/featured/responsive-sidebar-menu*/
 /* The side navigation menu */
 
 #sidebar {
   margin: 0;
   padding: 0;
-  width: 15%;;
   position: fixed;
   height: 100%;
   overflow: auto;
@@ -83,6 +95,7 @@ input[type=checkbox], input[type=radio] {
   padding: 10px 0 10px 0;
 }
 
+
 /* Page content. The value of the margin-left property should match the value of the sidebar's width property */
 div#content.home {
   margin-left: 15%;
@@ -94,15 +107,50 @@ div#content.page {
   margin-left: 25%;
 }
 
-@media screen and (max-width: 1620px) {
-  div#content.page {
-    margin-left: 18%;
+
+
+@media screen and (max-width: 400px) {
+  #sidebar a {
+    text-align: center;
+    float: none;
   }
 }
 
-@media screen and (max-width: 1490px) {
-  div#content.page {
-    margin-left: 15%;
+@media (max-width: 655px) {
+  .container {
+    width: 300px;
+  }
+}
+
+@media screen and (max-width: 700px) {
+  #sidebar {
+    display: none;
+  }
+  #sidebar a {float: left;}
+  div#content.page {margin-left: 0;}
+}
+
+@media (max-width: 706px) {
+  .container {
+    width: 650px;
+  }
+}
+
+@media (max-width: 756px) {
+  .container {
+    width: 650px;
+  }
+}
+
+@media (max-width: 990px) {
+  .container {
+    width: 700px;
+  }
+}
+
+@media (max-width: 1290px) {
+  .container {
+    width: 863px;
   }
 }
 
@@ -112,57 +160,24 @@ div#content.page {
   }
 }
 
-@media screen and (max-width: 1341px) {
+@media screen and (max-width: 1490px) {
   div#content.page {
-    margin-left: 2%;
+    margin-left: 15%;
   }
 }
 
-@media (max-width: 1290px) {
-  .container {
-      width: 863px;
+@media screen and (max-width: 1612px) {
+  .tuile {
+    height: 282px;
   }
 }
 
-@media (max-width: 990px) {
-  .container {
-      width: 700px;
+@media screen and (max-width: 1620px) {
+  div#content.page {
+    margin-left: 18%;
   }
 }
 
-@media (max-width: 756px) {
-  .container {
-      width: 650px;
-  }
-}
-
-@media (max-width: 706px) {
-  .container {
-      width: 650px;
-  }
-}
-
-@media (max-width: 655px) {
-  .container {
-      width: 300px;
-  }
-}
-/* On screens that are less than 700px wide, make the sidebar into a topbar */
-@media screen and (max-width: 700px) {
-  #sidebar {
-    display: none;
-  }
-  #sidebar a {float: left;}
-  div#content.page {margin-left: 0;}
-}
-
-/* On screens that are less than 400px, display the bar vertically, instead of horizontally */
-@media screen and (max-width: 400px) {
-  #sidebar a {
-    text-align: center;
-    float: none;
-  }
-}
 
 /*essai 1*/
 @import url('https://fonts.googleapis.com/css?family=Varela+Round');
@@ -174,14 +189,48 @@ div#content.page {
     width: 15%;
     padding: 60px 30px 0px 30px;
     transition: transform 250ms ease-in-out;
-    background: #2d3047f5;
+    background: #2d3047;
     color: #fff;
     z-index: 1
 }
 @media screen and (max-width: 1341px) {
+  div#content.page {
+    margin-left: 2%;
+  }
+
   #sidebarMenu {
       width: 100%;
       transform: translateX(-100%);
+  }
+
+  .aside {
+  position: fixed;
+  background-color: #eee;
+  overflow-y: scroll;
+  }
+
+  .annonces-tis {
+    display: none;
+  }
+
+  footer {
+    margin-left: 0%;
+  }
+}
+
+@media screen and (max-width: 1047px) {
+  footer {
+    display:none;
+  }
+}
+
+.footer {
+  margin-top: 30px;
+}
+
+@media screen and (min-width: 1047px) {
+  .footer {
+    display:none;
   }
 }
 
@@ -191,6 +240,9 @@ div#content.page {
   }
   .thumbnail  {
     margin-top: -47px;
+  }
+  ul.item div#filter-button {
+    text-align: right;
   }
 }
 
@@ -215,7 +267,10 @@ input[type=checkbox].openSidebarMenu {
     left: 15px;
     height: 22px;
     width: 22px;
+    background: #eeeeee;
+    padding: 2px;
 }
+
 .spinner {
     transition: all 0.3s;
     box-sizing: border-box;
@@ -224,6 +279,11 @@ input[type=checkbox].openSidebarMenu {
     width: 100%;
     background-color: black;
 }
+
+#test-spinner {
+  background-color: white;
+}
+
 .horizontal {
     transition: all 0.3s;
     box-sizing: border-box;
@@ -353,14 +413,6 @@ ul.item ul li a:hover {
   text-decoration: underline;
 }
 
-#logo {
-    transform: translateY(15%);
-}
-
-#btn-contact {
-    transform: translateY(70%);
-}
-
 .navbar {
     background-color: #222222;
 }
@@ -426,7 +478,7 @@ ul.item ul li a:hover {
 }
 
 @media screen and (max-width: 991px) {
-        .banner {
+    .banner {
         margin-top: 52px;
     }
     .homepage {
@@ -465,6 +517,12 @@ ul.item ul li a:hover {
     .collapse.in{
         display:block !important;
     }
+    .tuile {
+      height: initial;
+    }
+    .btn {
+      margin-top: 15px;
+    }
 }
 
 @media screen and (max-width: 767px) {
@@ -487,3 +545,51 @@ ul.item ul li a:hover {
 .text-nav{
   text-align : right;
 }
+
+.breadcrumb {
+  background-color: transparent;
+  padding: 15px 0px 15px 15px;
+  margin-bottom: 0px;
+}
+
+/*.page .breadcrumb {
+  margin-left: -15%;
+}*/
+
+.software-description {
+  margin-top: 10px;
+}
+
+.btn {
+  border-radius: 0px;
+}
+
+.btn-outline-success {
+  background: transparent;
+  color: #4cae4c;
+  border: solid 1px #4cae4c;
+}
+
+.btn-outline-success:hover {
+  color: #4cae4c;
+  border: solid 2px #4cae4c;
+}
+
+.tuile .btn {
+  width: 100%;
+}
+
+/*bloc pub*/
+
+.annonces-tis {
+  margin-top: 30px;
+}
+
+.annonces-tis-responsive {
+  margin: 20px 0px 20px 0px;
+}
+
+@media screen and (min-width: 1342px) {
+  .annonces-tis-responsive {
+    display: none;
+  }
