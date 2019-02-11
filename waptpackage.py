@@ -452,7 +452,10 @@ class PackageRequest(BaseObjectClass):
 
     @min_os_version.setter
     def min_os_version(self,value):
-        self._min_os_version = Version(value)
+        if value is not None and value != '':
+            self._min_os_version = Version(value)
+        else:
+            self._min_os_version = None
 
     @property
     def max_os_version(self):
@@ -460,7 +463,10 @@ class PackageRequest(BaseObjectClass):
 
     @max_os_version.setter
     def max_os_version(self,value):
-        self._max_os_version = Version(value)
+        if value is not None and value != '':
+            self._max_os_version = Version(value)
+        else:
+            self._max_os_version = None
 
     def _is_matched_version(self,version):
         """Return True if this request is verified by the provided version
