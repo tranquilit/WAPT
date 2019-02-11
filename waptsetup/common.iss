@@ -348,6 +348,9 @@ begin
   cbUseWizard.Visible := False;
   #endif
   
+  cbUseWizard.Visible := False;
+  cbUseWizard.checked := False;
+  
   cbDontChangeServer := TNewRadioButton.Create(WizardForm);
   cbDontChangeServer.Parent := CustomPage.Surface;
   cbDontChangeServer.Width := CustomPage.SurfaceWidth;

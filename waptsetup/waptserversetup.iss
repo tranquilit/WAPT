@@ -142,7 +142,9 @@ Filename: "net"; Parameters: "start waptserver"; Flags: runhidden; StatusMsg: "S
 #ifdef waptenterprise
 Filename: "net"; Parameters: "start wapttasks"; Flags: runhidden; StatusMsg: "Starting service wapttasks"
 #endif
-Filename: "{app}\waptconsolepostconf.exe"; Parameters: "--lang {language}"; Flags: postinstall runascurrentuser skipifsilent shellexec; StatusMsg: {cm:RunConfigTool}; Description: "{cm:RunConfigTool}"
+
+;Filename: "{app}\waptconsolepostconf.exe"; Parameters: "--lang {language}"; Flags: postinstall runascurrentuser skipifsilent shellexec; StatusMsg: {cm:RunConfigTool}; Description: "{cm:RunConfigTool}"
+Filename: {cm:InstallDocURL}; Flags: postinstall runascurrentuser skipifsilent shellexec; StatusMsg: {cm:OpenWaptDocumentation}; Description: "{cm:OpenWaptDocumentation}"
 
 [Tasks]
 #ifdef choose_components
@@ -181,8 +183,10 @@ fr.ScanPackages=Scan des paquets actuels
 fr.InstallingServerServices=Installation des services Serveur
 fr.SpecifyServerPassword=Choisissez un mot de passe pour le compte admin Wapt
 fr.BothPasswordsDontMatch=Les mots de passe saisis ne correpondent pas
-fr.WaptAdminPassword=Mot de passe Admin du serveur WAPT (laisser vide pour ne pas le changer)
+fr.WaptAdminPassword=Mot de passe Admin du serveur WAPT
 fr.ConfirmPassword=Confirmer le mot de passe
+fr.OpenWaptDocumentation=Afficher la documentation d'installation
+fr.InstallDocURL=https://doc.wapt.fr
 
 en.RegisteringService=Setup WaptServer Service
 en.InstallMSVC2013=Installing MSVC++ 2013 Redistribuable
@@ -194,8 +198,10 @@ en.ScanPackages=Scan packages
 en.InstallingServerServices=Installing Server services...
 en.SpecifyServerPassword=Please specify a password for the Wapt admin account
 en.BothPasswordsDontMatch=Passwords entries are not matching
-en.WaptAdminPassword=WAPT Server Admin password (leave blank to not change password)
+en.WaptAdminPassword=WAPT Server Admin password
 en.ConfirmPassword=Confirm password
+en.OpenWaptDocumentation=Show installation documentation
+en.InstallDocURL=https://doc.wapt.fr
 
 de.RegisteringService=Setup WaptServer Service
 de.InstallMSVC2013=MSVC++ 2013 Redistribuable installieren
@@ -337,7 +343,6 @@ begin
       Exit;
     end;
   end;
-
 
   if CurPageID = wpSelectTasks then
   begin

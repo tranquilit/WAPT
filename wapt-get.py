@@ -138,7 +138,7 @@ action is either :
   upload-package  <filenames> : upload package to repository (using winscp for example.)
   scan-packages <directory> : rebuild a "Packages" file for http package repository
 
- For windows updates WAPTWua management
+ For windows updates WaptWUA management (Enterprise only)
    waptwua-scan : scan status of windows against current rules and send result to server
    waptwua-download : scan status of windows against current rules, download missing kb and send result to
    waptwua-install : install pending updates
