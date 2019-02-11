@@ -121,8 +121,6 @@ type
     procedure ed_create_new_key_password_1KeyPress(Sender: TObject;
       var Key: char);
     procedure ed_existing_key_passwordKeyPress(Sender: TObject; var Key: char);
-    procedure ed_manual_repo_urlKeyPress(Sender: TObject; var Key: char);
-    procedure ed_manual_wapt_server_urlKeyPress(Sender: TObject; var Key: char);
     procedure ed_package_prefixKeyPress(Sender: TObject; var Key: char);
     procedure ed_wapt_server_passwordKeyPress(Sender: TObject; var Key: char);
     procedure FormCreate(Sender: TObject);
@@ -1550,18 +1548,6 @@ begin
   end;
 end;
 
-
-procedure TVisWAPTConsolePostConf.ed_manual_repo_urlKeyPress(Sender: TObject; var Key: char);
-begin
-  self.img_manual_repo_url.Picture.Clear;
-  self.OnKeyPress( Sender, Key );
-end;
-
-procedure TVisWAPTConsolePostConf.ed_manual_wapt_server_urlKeyPress( Sender: TObject; var Key: char);
-begin
-  self.img_manual_wapt_server_url_status.Picture.Clear;
-  self.OnKeyPress( Sender, Key );
-end;
 
 procedure TVisWAPTConsolePostConf.ed_package_prefixKeyPress(Sender: TObject;
   var Key: char);

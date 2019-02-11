@@ -66,10 +66,10 @@ object VisWAPTConsolePostConf: TVisWAPTConsolePostConf
       Height = 310
       Top = 0
       Width = 590
-      ActivePage = pgKey
+      ActivePage = pgParameters
       Align = alClient
       MultiLine = True
-      TabIndex = 2
+      TabIndex = 0
       TabOrder = 0
       Options = [nboMultiLine]
       object pgParameters: TTabSheet
@@ -149,33 +149,34 @@ object VisWAPTConsolePostConf: TVisWAPTConsolePostConf
             AnchorSideTop.Control = ed_manual_wapt_server_url
             AnchorSideTop.Side = asrCenter
             AnchorSideRight.Control = ed_manual_wapt_server_url
-            Left = 168
+            Left = 204
             Height = 13
             Top = 77
-            Width = 97
+            Width = 61
             Alignment = taRightJustify
-            Anchors = [akTop, akLeft, akRight]
+            Anchors = [akTop, akRight]
             Caption = 'Server URL :'
             ParentColor = False
           end
           object ed_manual_wapt_server_url: TEdit
             AnchorSideLeft.Control = cb_manual_wapt_server
             AnchorSideLeft.Side = asrBottom
-            AnchorSideRight.Control = img_manual_wapt_server_url_status
+            AnchorSideRight.Control = btn_check_wapt_server_hostname
+            AnchorSideRight.Side = asrBottom
             Left = 270
             Height = 21
             Top = 73
-            Width = 155
+            Width = 154
             Anchors = [akTop, akLeft, akRight]
-            OnKeyPress = ed_manual_wapt_server_urlKeyPress
             TabOrder = 4
           end
           object img_manual_wapt_server_url_status: TImage
-            AnchorSideLeft.Control = btn_check_wapt_server_ping
+            AnchorSideLeft.Control = ed_manual_wapt_server_url
+            AnchorSideLeft.Side = asrBottom
             AnchorSideTop.Control = ed_manual_wapt_server_url
             AnchorSideTop.Side = asrCenter
             AnchorSideRight.Side = asrCenter
-            Left = 430
+            Left = 429
             Height = 16
             Top = 75
             Width = 16
@@ -188,31 +189,32 @@ object VisWAPTConsolePostConf: TVisWAPTConsolePostConf
             AnchorSideTop.Control = ed_manual_repo_url
             AnchorSideTop.Side = asrCenter
             AnchorSideRight.Control = ed_manual_repo_url
-            Left = 168
+            Left = 184
             Height = 13
             Top = 109
-            Width = 97
+            Width = 81
             Alignment = taRightJustify
-            Anchors = [akTop, akLeft, akRight]
+            Anchors = [akTop, akRight]
             Caption = 'Repository URL :'
             ParentColor = False
           end
           object ed_manual_repo_url: TEdit
             AnchorSideLeft.Control = ed_manual_wapt_server_url
-            AnchorSideRight.Control = img_manual_repo_url
+            AnchorSideRight.Control = btn_check_wapt_server_hostname
+            AnchorSideRight.Side = asrBottom
             Left = 270
             Height = 21
             Top = 105
-            Width = 155
+            Width = 154
             Anchors = [akTop, akLeft, akRight]
-            OnKeyPress = ed_manual_repo_urlKeyPress
             TabOrder = 5
           end
           object img_manual_repo_url: TImage
-            AnchorSideLeft.Control = btn_check_wapt_server_ping
+            AnchorSideLeft.Control = ed_manual_repo_url
+            AnchorSideLeft.Side = asrBottom
             AnchorSideTop.Control = ed_manual_repo_url
             AnchorSideTop.Side = asrCenter
-            Left = 430
+            Left = 429
             Height = 16
             Top = 107
             Width = 16
@@ -267,9 +269,8 @@ object VisWAPTConsolePostConf: TVisWAPTConsolePostConf
             Left = 325
             Height = 23
             Top = 136
-            Width = 100
+            Width = 104
             Action = ActCheckServerPassword
-            Anchors = [akTop, akLeft, akRight]
             AutoSize = True
             BorderSpacing.Top = 5
             TabOrder = 7
@@ -320,26 +321,26 @@ object VisWAPTConsolePostConf: TVisWAPTConsolePostConf
             TabOrder = 9
           end
           object btn_check_wapt_server_ping: TButton
-            AnchorSideLeft.Control = btn_check_wapt_server_password
+            AnchorSideLeft.Control = btn_check_wapt_server_hostname
             AnchorSideLeft.Side = asrBottom
             AnchorSideTop.Control = EdWaptServerHostname
             AnchorSideTop.Side = asrCenter
-            Left = 430
+            Left = 433
             Height = 23
             Top = 4
-            Width = 125
+            Width = 126
             Action = ActCheckWaptHostname
-            Anchors = [akTop, akLeft, akRight]
             AutoSize = True
-            BorderSpacing.Left = 5
+            BorderSpacing.Left = 9
             BorderSpacing.Top = 5
             TabOrder = 10
           end
           object img_check_password: TImage
-            AnchorSideLeft.Control = btn_check_wapt_server_ping
+            AnchorSideLeft.Control = btn_check_wapt_server_password
+            AnchorSideLeft.Side = asrBottom
             AnchorSideTop.Control = btn_check_wapt_server_password
             AnchorSideTop.Side = asrCenter
-            Left = 430
+            Left = 434
             Height = 16
             Top = 139
             Width = 16
@@ -412,9 +413,9 @@ object VisWAPTConsolePostConf: TVisWAPTConsolePostConf
           Height = 142
           Top = 71
           Width = 582
-          ActivePage = pgkey_ts_use_existing_key
+          ActivePage = pgkey_ts_create_new_key
           Anchors = [akTop, akLeft, akRight]
-          TabIndex = 1
+          TabIndex = 0
           TabOrder = 1
           object pgkey_ts_create_new_key: TTabSheet
             Caption = 'pgkey_ts_create_new_key'
@@ -785,9 +786,6 @@ object VisWAPTConsolePostConf: TVisWAPTConsolePostConf
           Top = 34
           Width = 582
           Align = alClient
-          Lines.Strings = (
-            'pg_agent_memo'
-          )
           ReadOnly = True
           ScrollBars = ssVertical
           TabOrder = 0
