@@ -742,7 +742,7 @@ def update_waptwua(uuid,data,applied_status_hashes):
             for update in windows_updates:
                 download_urls = WsusUpdates.select(WsusUpdates.update_id,WsusUpdates.download_urls).where(WsusUpdates.update_id==update['update_id']).first()
                 if not download_urls:
-                    WsusUpdates.insert(windows_updates).execute()
+                    WsusUpdates.insert(update).on_conflict('IGNORE').execute()
                 elif download_urls.download_urls != update['download_urls']:
                     new_urls = list(set(download_urls.download_urls + update['download_urls']))
                     WsusUpdates.update(download_urls=new_urls).where(WsusUpdates.update_id == update['update_id']).execute()
