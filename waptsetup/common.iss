@@ -4,6 +4,12 @@
 
 #include "wapt.iss"
 
+
+[InstallDelete]
+#ifndef waptenterprise
+Type: filesandordirs; Name: "{app}\waptenterprise"
+#endif
+
 [Files]
 ; sources of installer to rebuild a custom installer (ignoreversion because issc has no version)
 #ifndef FastDebug
