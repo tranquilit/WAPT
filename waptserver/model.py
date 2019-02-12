@@ -519,9 +519,10 @@ class WsusDownloadTasks(WaptBaseModel):
 
 class StoreDownload(WaptBaseModel):
     id = PrimaryKeyField(primary_key=True)
-    package = CharField(null=True)
-    download = BigIntegerField(null=True)
+    download_number = BigIntegerField(null=True)
     last_download = DateTimeField(null=True)
+    package_name = CharField(null=True)
+    package_version = CharField(null=True)
 
 class StoreMember(WaptBaseModel):
     id = PrimaryKeyField(primary_key=True)
