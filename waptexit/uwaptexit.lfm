@@ -223,8 +223,8 @@ object VisWaptExit: TVisWaptExit
     Visible = False
     object MemoLog: TListBox
       Left = 251
-      Height = 229
-      Top = 3
+      Height = 216
+      Top = 16
       Width = 246
       Align = alClient
       BorderSpacing.Around = 3
@@ -233,8 +233,8 @@ object VisWaptExit: TVisWaptExit
     end
     object GridPending: TSOGrid
       Left = 3
-      Height = 227
-      Top = 5
+      Height = 214
+      Top = 18
       Width = 241
       ShowAdvancedColumnsCustomize = False
       Align = alLeft
@@ -366,9 +366,30 @@ object VisWaptExit: TVisWaptExit
     end
     object Splitter1: TSplitter
       Left = 247
-      Height = 235
-      Top = 0
+      Height = 222
+      Top = 13
       Width = 1
+    end
+    object panTopDetails: TPanel
+      Left = 0
+      Height = 13
+      Top = 0
+      Width = 500
+      Align = alTop
+      AutoSize = True
+      BevelOuter = bvNone
+      ClientHeight = 13
+      ClientWidth = 500
+      TabOrder = 3
+      object Label1: TLabel
+        Left = 0
+        Height = 13
+        Top = 0
+        Width = 66
+        Align = alLeft
+        Caption = 'Pending tasks'
+        ParentColor = False
+      end
     end
   end
   object Timer1: TTimer

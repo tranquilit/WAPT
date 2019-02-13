@@ -37,6 +37,10 @@ msgstr ""
 "Mises à jour en cours\n"
 "Ne pas arrêter votre ordinateur\n"
 
+#: tviswaptexit.label1.caption
+msgid "Pending tasks"
+msgstr "Tâches en attente"
+
 #: tviswaptexit.labwaptupgrades.caption
 msgid "Checking if WAPT Packages installs or updates are pending."
 msgstr "Vérification des installations WAPT en attente"

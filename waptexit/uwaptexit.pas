@@ -28,11 +28,13 @@ type
     GridPending: TSOGrid;
     CustomLogo: TImage;
     LabDontShutdown: TLabel;
+    Label1: TLabel;
     LabWaptUpgrades: TLabel;
     LabWUAUpgrades: TLabel;
     PanButtons: TPanel;
     ImageList1: TImageList;
     MemoLog: TListBox;
+    panTopDetails: TPanel;
     PanOut: TPanel;
     panTop: TPanel;
     PanProgress: TPanel;
@@ -171,7 +173,9 @@ begin
       EdRunning.Text := copy(description,1,100)+'...'
     else
       EdRunning.Text := description;
-    MemoLog.Items.Text := UTF8Encode(running.S['runstatus']);
+
+    if running['runstatus']<>Nil then
+      MemoLog.Items.Text := UTF8Encode(running.S['runstatus']);
   end;
   Application.ProcessMessages;
 

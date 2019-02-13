@@ -71,6 +71,10 @@ msgid ""
 "Don't shutdown your computer !\n"
 msgstr ""
 
+#: tviswaptexit.label1.caption
+msgid "Pending tasks"
+msgstr ""
+
 #: tviswaptexit.labwaptupgrades.caption
 msgid "Checking if WAPT Packages installs or updates are pending."
 msgstr ""
