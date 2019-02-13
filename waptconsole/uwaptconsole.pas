@@ -4440,14 +4440,13 @@ begin
         HostPages.Width := ini.ReadInteger(self.name,HostPages.Name+'.width',HostPages.Width);
 
         Self.Left := ini.ReadInteger(self.name,'Left',Integer(Self.Left));
-
         Self.Top := ini.ReadInteger(self.name,'Top',Integer(Self.Top));
         Self.Width := ini.ReadInteger(self.name,'Width',Integer(Self.Width));
         Self.Height := ini.ReadInteger(self.name,'Height',Integer(Self.Height));
 
-        MakeFullyVisible;
-
         Self.WindowState := TWindowState(ini.ReadInteger(self.Name,'WindowState',Integer(Self.WindowState)));
+
+        MakeFullyVisible;
 
         self.cbGroups.Text := ini.ReadString(self.Name,'cbGroups.Text',self.cbGroups.Text);
 
