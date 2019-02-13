@@ -371,6 +371,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       Alignment = taRightJustify
       Caption = 'Append host''s profiles'
       ParentColor = False
+      Visible = False
     end
     object edAppendHostProfiles: TEdit
       AnchorSideLeft.Control = fnPublicCert
@@ -383,6 +384,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       Width = 303
       Anchors = [akTop, akLeft, akRight]
       TabOrder = 14
+      Visible = False
     end
     object CBWUAEnabled: TCheckBox
       Left = 8

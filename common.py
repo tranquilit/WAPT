@@ -5035,7 +5035,7 @@ class Wapt(BaseObjectClass):
 
         # get additional packages to install/upgrade based on new upgrades
         depends = self.check_depends(result['install']+result['upgrade']+result['additional'])
-        for l in ('install','additional','upgrade'):
+        for l in ('upgrade','additional','install'):
             for (r,candidate) in depends[l]:
                 req = candidate.asrequirement()
                 if not req in result['install']+result['upgrade']+result['additional']:

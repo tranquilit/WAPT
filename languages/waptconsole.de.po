@@ -1465,6 +1465,10 @@ msgid ""
 "Only required if a proxy is needed for waptserver and main waptrepo\n"
 msgstr "z. B. :http://proxy.tranquilit.local:3128"
 
+#: tviswaptconfig.edlicencesdirectory.hint
+msgid "c:\\wapt\\licences"
+msgstr ""
+
 #: tviswaptconfig.edpersonalcertificatepath.hint
 msgctxt "tviswaptconfig.edpersonalcertificatepath.hint"
 msgid ""
@@ -1555,6 +1559,10 @@ msgstr ""
 #: tviswaptconfig.label8.caption
 msgid "Send anonymous usage statistics to Tranquil IT"
 msgstr "Sende anonyme Nutzungsstatistiken an Tranquil IT"
+
+#: tviswaptconfig.lablicencesdirectory.caption
+msgid "Licences directory"
+msgstr ""
 
 #: tviswaptconfig.labstatusrepo.caption
 msgctxt "tviswaptconfig.labstatusrepo.caption"
@@ -1656,6 +1664,10 @@ msgstr ""
 
 #: tviswaptgui.actaddnewnetwork.caption
 msgid "Add new network"
+msgstr ""
+
+#: tviswaptgui.actaddprofile.caption
+msgid "New host AD profile"
 msgstr ""
 
 #: tviswaptgui.actcancelrunningtask.caption
@@ -1961,7 +1973,7 @@ msgid "Export to Excel"
 msgstr ""
 
 #: tviswaptgui.actreportingqueryimport.caption
-msgid "Import queries from file..."
+msgid "Import queries..."
 msgstr ""
 
 #: tviswaptgui.actreportingquerynew.caption
@@ -2361,6 +2373,11 @@ msgctxt "tviswaptgui.cbnewestonly.caption"
 msgid "Last version only"
 msgstr ""
 
+#: tviswaptgui.cbnewestonlygroups.caption
+msgctxt "tviswaptgui.cbnewestonlygroups.caption"
+msgid "Last version only"
+msgstr ""
+
 #: tviswaptgui.cbnewestonlyselfservice.caption
 msgctxt "tviswaptgui.cbnewestonlyselfservice.caption"
 msgid "Last version only"
@@ -2740,6 +2757,10 @@ msgstr ""
 #: tviswaptgui.panhostsforpackage.caption
 msgctxt "tviswaptgui.panhostsforpackage.caption"
 msgid "PanHostsForPackage"
+msgstr ""
+
+#: tviswaptgui.panleftreporting.caption
+msgid "PanLeftReporting"
 msgstr ""
 
 #: tviswaptgui.pggroups.caption

@@ -55,6 +55,9 @@ interface
 
   function GetWaptServerCertificateFilename(inifilename:String=''):String;
 
+  function GetWaptLicencesDirectory(inifilename:String=''):String;
+
+
   function ReadWaptConfig(inifilename:String = ''): Boolean; //read global parameters from wapt-get ini file
 
   function GetEthernetInfo(ConnectedOnly:Boolean):ISuperObject;
@@ -1405,6 +1408,15 @@ begin
   end;
   If Result = '' then
     Result := '1';
+end;
+
+function GetWaptLicencesDirectory(inifilename: String): String;
+begin
+  if inifilename='' then
+     inifilename:=WaptIniFilename;
+  Result := IniReadString(inifilename,'global','licences_directory','');
+  If Result = '' then
+    Result := AppendPathDelim(WaptBaseDir)+'licences';
 end;
 
 // Read Wapt config from inifile, set global const wapt_config_filename

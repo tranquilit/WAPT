@@ -54,7 +54,7 @@ resourcestring
   rsWAPTLicenceExpirationWarning = 'Licence will expire in %d days, keep in mind to renew them.';
   rsWAPTLicenceExpired = 'Licence nr %s has expired.';
   rsWAPTLicenceDuplicated = 'Duplicated Licence nr %s';
-  rsWAPTNoValidLicenceFound = 'No valid licence found, switching to Community features only';
+  rsWAPTNoValidLicenceFound = 'No valid licence found in %, switching to Community features only';
 
 
 

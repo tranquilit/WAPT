@@ -53,14 +53,10 @@ from common import WaptDB
 import setuphelpers
 
 try:
-    wapt_root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__)))
-except NameError:
-    wapt_root_dir = 'c:/tranquilit/wapt'
-
-if os.path.isdir(os.path.join(wapt_root_dir,'waptenterprise')):
     from waptenterprise.waptwua.client import WaptWUA
-else:
+except ImportError as e:
     WaptWUA = None
+    logger.debug(u'Not Enterprise edition: %s' % repr(e))
 
 waptguihelper = None
 

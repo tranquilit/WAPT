@@ -1400,6 +1400,10 @@ msgid ""
 "Only required if a proxy is needed for waptserver and main waptrepo\n"
 msgstr "Par exemple : http://proxy.tranquilit.local:3128"
 
+#: tviswaptconfig.edlicencesdirectory.hint
+msgid "c:\\wapt\\licences"
+msgstr ""
+
 #: tviswaptconfig.edpersonalcertificatepath.hint
 msgctxt "tviswaptconfig.edpersonalcertificatepath.hint"
 msgid ""
@@ -1482,6 +1486,10 @@ msgstr "Maturité des paquets par défaut"
 #: tviswaptconfig.label8.caption
 msgid "Send anonymous usage statistics to Tranquil IT"
 msgstr "Envoyer des statistiques anonymes à Tranquil IT"
+
+#: tviswaptconfig.lablicencesdirectory.caption
+msgid "Licences directory"
+msgstr "Répertoire des licences"
 
 #: tviswaptconfig.labstatusrepo.caption
 msgctxt "tviswaptconfig.labstatusrepo.caption"
@@ -1580,6 +1588,10 @@ msgstr "Ajouter l'élément à la liste"
 #: tviswaptgui.actaddnewnetwork.caption
 msgid "Add new network"
 msgstr "Ajouter un réseau"
+
+#: tviswaptgui.actaddprofile.caption
+msgid "New host AD profile"
+msgstr "Nouveau profil poste AD"
 
 #: tviswaptgui.actcancelrunningtask.caption
 msgctxt "tviswaptgui.actcancelrunningtask.caption"
@@ -1864,8 +1876,9 @@ msgid "Export to Excel"
 msgstr "Exporter vers excel"
 
 #: tviswaptgui.actreportingqueryimport.caption
-msgid "Import queries from file..."
-msgstr "Importer les requêtes depuis un fichier..."
+#| msgid "Import queries from file..."
+msgid "Import queries..."
+msgstr "Importer...
 
 #: tviswaptgui.actreportingquerynew.caption
 msgctxt "tviswaptgui.actreportingquerynew.caption"
@@ -2243,6 +2256,11 @@ msgctxt "tviswaptgui.cbnewestonly.caption"
 msgid "Last version only"
 msgstr "Dernière version seulement"
 
+#: tviswaptgui.cbnewestonlygroups.caption
+msgctxt "tviswaptgui.cbnewestonlygroups.caption"
+msgid "Last version only"
+msgstr "Dernière version seulement"
+
 #: tviswaptgui.cbnewestonlyselfservice.caption
 msgctxt "tviswaptgui.cbnewestonlyselfservice.caption"
 msgid "Last version only"
@@ -2603,6 +2621,10 @@ msgstr ""
 #: tviswaptgui.panhostsforpackage.caption
 msgctxt "tviswaptgui.panhostsforpackage.caption"
 msgid "PanHostsForPackage"
+msgstr ""
+
+#: tviswaptgui.panleftreporting.caption
+msgid "PanLeftReporting"
 msgstr ""
 
 #: tviswaptgui.pggroups.caption

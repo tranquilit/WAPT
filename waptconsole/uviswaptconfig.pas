@@ -39,6 +39,7 @@ type
     cbUseProxyForRepo: TCheckBox;
     cbUseProxyForServer: TCheckBox;
     CBVerifyCert: TCheckBox;
+    EdLicencesDirectory: TDirectoryEdit;
     EdMaturity: TComboBox;
     EdServerCertificate: TFileNameEdit;
     eddefault_package_prefix: TLabeledEdit;
@@ -53,6 +54,7 @@ type
     ImgStatusServer: TImage;
     Label1: TLabel;
     Label2: TLabel;
+    LabLicencesDirectory: TLabel;
     Label4: TLabel;
     Label5: TLabel;
     Label6: TLabel;
@@ -85,6 +87,7 @@ type
     procedure edServerAddressEnter(Sender: TObject);
     procedure edServerAddressExit(Sender: TObject);
     procedure edServerAddressKeyPress(Sender: TObject; var Key: char);
+    procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure GridPluginsEditing(Sender: TBaseVirtualTree; Node: PVirtualNode;
@@ -261,6 +264,9 @@ begin
   inifile.WriteString('global', 'default_maturity',EdMaturity.Text);
 
   inifile.WriteString('global','grid_hosts_plugins', EncodeStringBase64(GridPlugins.Data.AsJSon()));
+
+  if EdLicencesDirectory.Directory<>'' then
+    inifile.WriteString('global', 'licences_directory', EdLicencesDirectory.Directory);
 
   //inifile.WriteString('global','default_sources_url',eddefault_sources_url.text);
   ModalResult:=mrOk;
@@ -470,6 +476,8 @@ begin
 
   EdMaturity.Text := inifile.ReadString('global', 'default_maturity', '');
 
+  EdLicencesDirectory.Directory := inifile.ReadString('global', 'licences_directory', '');
+
   cbSendStats.Checked :=
     inifile.ReadBool('global', 'send_usage_report', True);
 
@@ -513,6 +521,14 @@ procedure TVisWAPTConfig.edServerAddressKeyPress(Sender: TObject; var Key: char
 begin
   if key=#13 then
     ActCheckAndSetwaptserver.Execute;
+end;
+
+procedure TVisWAPTConfig.FormCreate(Sender: TObject);
+begin
+  {$ifndef enterprise}
+  EdLicencesDirectory.Visible := False;
+  LabLicencesDirectory.Visible := False;
+  {$endif}
 end;
 
 procedure TVisWAPTConfig.FormDestroy(Sender: TObject);

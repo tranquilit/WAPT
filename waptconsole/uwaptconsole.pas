@@ -30,13 +30,18 @@ type
     ActAddNewNetwork: TAction;
     ActDeleteNetwork: TAction;
     ActInstallLicence: TAction;
+    ActAddProfile: TAction;
     ActSoftwaresNormalization: TAction;
     ActReportingQueryExport: TAction;
     ActReportingQueryImport: TAction;
     ActWUAShowDownloadTasks: TAction;
     ActSelfServiceNewPackage: TAction;
     ActSelfServiceSearchPackage: TAction;
+    btAddGroup: TBitBtn;
+    btAddGroup1: TBitBtn;
+    ButPackagesUpdate1: TBitBtn;
     ButShowDownloadTasks: TBitBtn;
+    cbNewestOnlyGroups: TCheckBox;
     cbNewestOnlyWUA: TCheckBox;
     cbNewestOnlySelfService: TCheckBox;
     EdWUASearchWindowsUpdate: TSearchEdit;
@@ -49,10 +54,18 @@ type
     MenuItem112: TMenuItem;
     MenuItem4: TMenuItem;
     MenuItem76: TMenuItem;
+    PanLeftReporting: TPanel;
     PanWUASearchClassifications: TPanel;
     PopupMenuReportingQueries: TPopupMenu;
     Splitter12: TSplitter;
     Splitter13: TSplitter;
+    TbLeftTopreporting: TToolBar;
+    tbSoftwaresNormalization: TToolButton;
+    ToolButton11: TToolButton;
+    ToolButton5: TToolButton;
+    ToolButton8: TToolButton;
+    ToolButton9: TToolButton;
+    ToolButtonReportingQueryDuplicate1: TToolButton;
     WUAConfigPages: TPageControl;
     SelfServiceActions: TActionList;
     ActWUASearchPackage: TAction;
@@ -151,10 +164,8 @@ type
     ButRefreshWindowsUpdates: TBitBtn;
     ButImportFromFile: TBitBtn;
     ButDownloadWsusscn2cab: TBitBtn;
-    btAddGroup: TBitBtn;
     ButHostSearch: TBitBtn;
     ButPackagesUpdate: TBitBtn;
-    ButPackagesUpdate1: TBitBtn;
     butSearchGroups: TBitBtn;
     butSearchPackages1: TBitBtn;
     butSearchPackages2: TBitBtn;
@@ -351,12 +362,7 @@ type
     TimerWUALoadWinUpdates: TTimer;
     ToolBar1: TToolBar;
     TbReport: TToolBar;
-    ToolButton10: TToolButton;
-    ToolButton4: TToolButton;
-    ToolButtonReportingQueryDuplicate: TToolButton;
-    ToolButton7: TToolButton;
     ToolButtonDesignQuery: TToolButton;
-    ToolButton9: TToolButton;
     ToolButtonUpgrade: TToolButton;
     ToolButton2: TToolButton;
     ToolButtonRefresh: TToolButton;
@@ -582,6 +588,7 @@ type
     procedure ActHostsDeleteUpdate(Sender: TObject);
     procedure ActReportingQueryExportExecute(Sender: TObject);
     procedure ActReportingQueryImportExecute(Sender: TObject);
+    procedure ActReportingQueryImportUpdate(Sender: TObject);
     procedure ActSelfServiceNewPackageExecute(Sender: TObject);
     procedure ActSelfServiceSearchPackageExecute(Sender: TObject);
     procedure ActLaunchGPUpdateExecute(Sender: TObject);
@@ -904,6 +911,8 @@ type
     function OneHostHasConnectedIP(GridHostsIPs:TSOGrid=Nil): Boolean;
     function OneHostIsConnected(GridHostsReachable:TSOGrid=Nil): Boolean;
     function GetSelectedOrgUnits: TDynStringArray;
+    function ReportingQueryAppend(AName: String='New query'; sql: String='SELEC'
+      +'T 1'): ISuperObject;
     procedure SelectOrgUnits(Search: String);
     procedure SetGridHostsPlugins(AValue: ISuperObject);
     procedure SetIsEnterpriseEdition(AValue: Boolean);
@@ -2037,7 +2046,7 @@ procedure TVisWaptGUI.ActAddGroupExecute(Sender: TObject);
 begin
   if DefaultSourcesRoot <> '' then
   begin
-    if Assigned(CreateGroup('agroup', AdvancedMode)) then
+    if Assigned(CreateGroup('agroup', AdvancedMode, 'group')) then
       ActPackagesUpdate.Execute;
   end
   else
@@ -2565,14 +2574,18 @@ end;
 
 procedure TVisWaptGUI.ActComputerMgmtExecute(Sender: TObject);
 var
-  ip: ansistring;
+  ip: String;
+  Args: WideString;
 begin
   if (Gridhosts.FocusedRow <> nil) and
     (Gridhosts.FocusedRow.S['connected_ips'] <> '') then
   begin
     ip := GetReachableIP(Gridhosts.FocusedRow['connected_ips'],135);
     if ip <> '' then
-      ShellExecuteW(0, '', PWideChar('compmgmt.msc'), PWideChar(' -a /computer=' + ip), nil, SW_SHOW)
+    begin
+      Args := ' -a /computer=' + ip;
+      ShellExecuteW(0, '', PWideChar('compmgmt.msc'), PWideChar(Args), nil, SW_SHOW)
+    end
     else
       ShowMessage(rsNoreachableIP);
   end;
@@ -2590,14 +2603,18 @@ end;
 
 procedure TVisWaptGUI.ActComputerServicesExecute(Sender: TObject);
 var
-  ip: ansistring;
+  ip: String;
+  Args: WideString;
 begin
   if (Gridhosts.FocusedRow <> nil) and
     (Gridhosts.FocusedRow.S['connected_ips'] <> '') then
   begin
     ip := GetReachableIP(Gridhosts.FocusedRow['connected_ips'],135);
     if ip <> '' then
-      ShellExecute(0, '', PAnsiChar('services.msc'), PAnsichar(' -a /computer=' + ip), nil, SW_SHOW)
+    begin
+      Args := ' -a /computer=' + ip;
+      ShellExecuteW(0, '', PWideChar('services.msc'), PWideChar(Args), nil, SW_SHOW);
+    end
     else
       ShowMessage(rsNoreachableIP);
   end;
@@ -2615,14 +2632,18 @@ end;
 
 procedure TVisWaptGUI.ActComputerUsersExecute(Sender: TObject);
 var
-  ip: ansistring;
+  ip: String;
+  Args: WideString;
 begin
   if (Gridhosts.FocusedRow <> nil) and
     (Gridhosts.FocusedRow.S['connected_ips'] <> '') then
   begin
     ip := GetReachableIP(Gridhosts.FocusedRow['connected_ips'],135);
     if ip <> '' then
-      ShellExecute(0, '', PAnsiChar('Lusrmgr.msc'), PAnsichar(' -a /computer=' + ip), nil, SW_SHOW)
+    begin
+      Args := ' -a /computer=' + ip;
+      ShellExecuteW(0, '', PWideChar('Lusrmgr.msc'), PWideChar(Args), nil, SW_SHOW)
+    end
     else
       ShowMessage(rsNoreachableIP);
   end;
@@ -3625,7 +3646,8 @@ end;
 procedure TVisWaptGUI.ActSearchGroupsExecute(Sender: TObject);
 begin
   EdSearchGroups.Modified := False;
-  GridGroups.Data := PyVarToSuperObject(DMPython.MainWaptRepo.search(searchwords := EdSearchGroups.Text, sections := 'group,unit,profile', description_locale := Language));
+  GridGroups.Data := PyVarToSuperObject(DMPython.MainWaptRepo.search(searchwords := EdSearchGroups.Text, sections := 'group,unit,profile',
+      description_locale := Language, newest_only := cbNewestOnlyGroups.Checked));
   //GridGroups.CreateColumnsFromData(False,True);
   //GridGroupsChange(GridGroups,GridGroups.FocusedNode);
 end;
@@ -4377,6 +4399,7 @@ begin
     begin
       GridWUUpdates.SaveSettingsToIni(Appuserinipath+'.default');
       GridHostWinUpdates.SaveSettingsToIni(Appuserinipath+'.default');
+      GridReportingQueries.SaveSettingsToIni(Appuserinipath+'.default');
     end;
     {$endif}
 
@@ -5430,31 +5453,32 @@ end;
 procedure TVisWaptGUI.ExecuteHostsGruidPlugin(Sender: TObject);
 var
   PluginName: String;
-  Executable,ExpandedExecutable: String;
-  Arguments,ExpandedArguments: String;
+  Executable,ExpandedExecutable: WideString;
+  Arguments,ExpandedArguments: WideString;
   host,plugin : ISuperObject;
 begin
   PluginName:=(Sender as TMenuItem).Caption;
   for plugin in GridHostsPlugins do
     if plugin.S['name']=PluginName then
     begin
-      Executable := UTF8Encode(plugin.S['executable']);
-      Arguments := UTF8Encode(plugin.S['arguments']);
+      Executable := plugin.S['executable'];
+      Arguments := plugin.S['arguments'];
       break;
     end;
+
   for host in GridHosts.SelectedRows do
   begin
-    ExpandedExecutable:= StringsReplace(Executable,
+    ExpandedExecutable:= UTF8Decode(StringsReplace(Executable,
       ['{ip}',                '{uuid}', '{computer_fqdn}'],
       [UTF8Encode(host.A['connected_ips'].S[0]),UTF8Encode(host.S['uuid']),UTF8Encode(host.S['computer_fqdn'])]
-      ,[rfReplaceAll]);
+      ,[rfReplaceAll]));
 
-    ExpandedArguments:= StringsReplace(Arguments,
+    ExpandedArguments:= UTF8Decode(StringsReplace(Arguments,
       ['{ip}',                '{uuid}', '{computer_fqdn}'],
       [UTF8Encode(host.A['connected_ips'].S[0]),UTF8Encode(host.S['uuid']),UTF8Encode(host.S['computer_fqdn'])]
-      ,[rfReplaceAll]);
+      ,[rfReplaceAll]));
 
-    ShellExecuteA(0,'',PChar(ExpandedExecutable),PChar(ExpandedArguments),
+    ShellExecuteW(0,'',PWideChar(ExpandedExecutable),PWideChar(ExpandedArguments),
       Nil, SW_SHOW);
   end;
 

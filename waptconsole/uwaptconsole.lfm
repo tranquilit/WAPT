@@ -27,9 +27,9 @@ object VisWaptGUI: TVisWaptGUI
     Height = 618
     Top = 0
     Width = 1284
-    ActivePage = pgWaptWUAConfig
+    ActivePage = PgReports
     Align = alClient
-    TabIndex = 3
+    TabIndex = 7
     TabOrder = 0
     OnChange = MainPagesChange
     object pgInventory: TTabSheet
@@ -1079,6 +1079,13 @@ object VisWaptGUI: TVisWaptGUI
                 Text = 'Delayed'
                 Width = 52
                 PropertyName = 'delayed'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                Position = 27
+                Text = 'local_status_history'
+                Width = 98
+                PropertyName = 'local_status_history'
               end>
             Header.DefaultHeight = 17
             Header.Height = 19
@@ -3385,32 +3392,54 @@ object VisWaptGUI: TVisWaptGUI
           AutoSize = True
           TabOrder = 1
         end
-        object btAddGroup: TBitBtn
-          Left = 255
-          Height = 34
-          Top = 3
-          Width = 110
-          Action = ActAddGroup
-          AutoSize = True
-          TabOrder = 2
-        end
-        object ButPackagesUpdate1: TBitBtn
-          Left = 371
-          Height = 34
-          Top = 3
-          Width = 156
-          Action = ActPackagesUpdate
-          AutoSize = True
-          TabOrder = 3
-        end
         object CBShowHostsForGroups: TCheckBox
-          Left = 533
+          Left = 255
           Height = 34
           Top = 3
           Width = 76
           Caption = 'Show Hosts'
           OnClick = CBShowHostsForGroupsClick
+          TabOrder = 2
+        end
+        object cbNewestOnlyGroups: TCheckBox
+          AnchorSideLeft.Side = asrBottom
+          AnchorSideTop.Side = asrCenter
+          Left = 337
+          Height = 34
+          Top = 3
+          Width = 101
+          Caption = 'Last version only'
+          Checked = True
+          OnClick = cbNewestOnlyClick
+          State = cbChecked
+          TabOrder = 3
+        end
+        object btAddGroup: TBitBtn
+          Left = 444
+          Height = 34
+          Top = 3
+          Width = 110
+          Action = ActAddGroup
+          AutoSize = True
           TabOrder = 4
+        end
+        object btAddGroup1: TBitBtn
+          Left = 560
+          Height = 34
+          Top = 3
+          Width = 149
+          Action = ActAddProfile
+          AutoSize = True
+          TabOrder = 5
+        end
+        object ButPackagesUpdate1: TBitBtn
+          Left = 715
+          Height = 34
+          Top = 3
+          Width = 156
+          Action = ActPackagesUpdate
+          AutoSize = True
+          TabOrder = 6
         end
       end
       object Splitter8: TSplitter
@@ -3655,7 +3684,7 @@ object VisWaptGUI: TVisWaptGUI
           end        
           item
             MaxWidth = 400
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption, coEditable]
             Position = 1
             Tag = 1
             Text = 'Package'
@@ -3664,7 +3693,7 @@ object VisWaptGUI: TVisWaptGUI
           end        
           item
             MaxWidth = 200
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption, coEditable]
             Position = 2
             Tag = 2
             Text = 'Version'
@@ -3687,7 +3716,7 @@ object VisWaptGUI: TVisWaptGUI
           end        
           item
             MaxWidth = 400
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption, coEditable]
             Position = 5
             Tag = 5
             Text = 'Description'
@@ -3696,7 +3725,7 @@ object VisWaptGUI: TVisWaptGUI
           end        
           item
             MaxWidth = 400
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption, coEditable]
             Position = 6
             Tag = 6
             Text = 'Dependencies'
@@ -3752,7 +3781,7 @@ object VisWaptGUI: TVisWaptGUI
             Tag = 13
             Text = 'Editor'
             Width = 90
-            PropertyName = 'edito'
+            PropertyName = 'editor'
           end        
           item
             Position = 14
@@ -3791,7 +3820,7 @@ object VisWaptGUI: TVisWaptGUI
             PropertyName = 'filename'
           end        
           item
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
             Position = 19
             Tag = 19
             Text = 'md5sum'
@@ -3905,48 +3934,41 @@ object VisWaptGUI: TVisWaptGUI
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
             Position = 35
-            Text = 'editor'
-            Width = 100
-            PropertyName = 'editor'
-          end        
-          item
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 36
             Text = 'keywords'
             Width = 100
             PropertyName = 'keywords'
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 37
+            Position = 36
             Text = 'repo'
             Width = 100
             PropertyName = 'repo'
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 38
+            Position = 37
             Text = 'target_os'
             Width = 100
             PropertyName = 'target_os'
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 39
+            Position = 38
             Text = 'localpath'
             Width = 100
             PropertyName = 'localpath'
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 40
+            Position = 39
             Text = 'homepage'
             Width = 100
             PropertyName = 'homepage'
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 41
+            Position = 40
             Text = 'sourcespath'
             Width = 13
             PropertyName = 'sourcespath'
@@ -6953,31 +6975,31 @@ object VisWaptGUI: TVisWaptGUI
       ClientWidth = 1276
       TabVisible = False
       object PanReportingRight: TPanel
-        Left = 275
+        Left = 304
         Height = 542
         Top = 50
-        Width = 1001
+        Width = 972
         Align = alClient
         BevelOuter = bvNone
         ClientHeight = 542
-        ClientWidth = 1001
+        ClientWidth = 972
         TabOrder = 1
         object PanelReportingGrid: TPanel
           Left = 0
           Height = 385
           Top = 157
-          Width = 1001
+          Width = 972
           Align = alClient
           BevelOuter = bvNone
           Caption = 'PanelReportingGrid'
           ClientHeight = 385
-          ClientWidth = 1001
+          ClientWidth = 972
           TabOrder = 0
           object GridReportingResult: TSOGrid
             Left = 5
             Height = 356
             Top = 5
-            Width = 991
+            Width = 962
             OnGetText = GridReportingResultGetText
             ShowAdvancedColumnsCustomize = True
             OnSOCompareNodes = GridReportingResultSOCompareNodes
@@ -7011,7 +7033,7 @@ object VisWaptGUI: TVisWaptGUI
             Left = 0
             Height = 19
             Top = 366
-            Width = 1001
+            Width = 972
             Align = alBottom
             AutoSize = True
             BevelOuter = bvNone
@@ -7020,10 +7042,10 @@ object VisWaptGUI: TVisWaptGUI
             ChildSizing.HorizontalSpacing = 6
             ChildSizing.VerticalSpacing = 6
             ClientHeight = 19
-            ClientWidth = 1001
+            ClientWidth = 972
             TabOrder = 1
             object LabelReportingNumber: TLabel
-              Left = 866
+              Left = 837
               Height = 13
               Top = 3
               Width = 129
@@ -7037,18 +7059,18 @@ object VisWaptGUI: TVisWaptGUI
           Left = 0
           Height = 152
           Top = 0
-          Width = 1001
+          Width = 972
           Align = alTop
           BevelOuter = bvNone
           Caption = 'PanelReportingEditSQL'
           ClientHeight = 152
-          ClientWidth = 1001
+          ClientWidth = 972
           TabOrder = 1
           inline SynEditReportsSQL: TSynEdit
             Left = 5
             Height = 142
             Top = 5
-            Width = 991
+            Width = 962
             Align = alClient
             BlockTabIndent = 2
             BorderSpacing.Around = 5
@@ -7488,6 +7510,7 @@ object VisWaptGUI: TVisWaptGUI
             MouseActions = <>
             MouseTextActions = <>
             MouseSelActions = <>
+            Options = [eoAutoIndent, eoBracketHighlight, eoGroupUndo, eoKeepCaretX, eoScrollPastEol, eoTabIndent, eoTabsToSpaces, eoTrimTrailingSpaces]
             VisibleSpecialChars = [vscSpace, vscTabAtLast]
             SelectedColor.BackPriority = 50
             SelectedColor.ForePriority = 50
@@ -7552,7 +7575,7 @@ object VisWaptGUI: TVisWaptGUI
           Left = 0
           Height = 5
           Top = 152
-          Width = 1001
+          Width = 972
           Align = alTop
           ResizeAnchor = akTop
         end
@@ -7569,112 +7592,143 @@ object VisWaptGUI: TVisWaptGUI
         Images = ImageListReports
         ShowCaptions = True
         TabOrder = 0
-        object ToolButton4: TToolButton
-          Left = 149
-          Top = 2
-          Action = ActReportingQueryNew
-        end
-        object ToolButton7: TToolButton
-          Left = 209
-          Top = 2
-          Action = ActReportingQueryDelete
-        end
-        object ToolButton10: TToolButton
-          Left = 70
-          Top = 2
-          Action = ActReportingQueryReload
-        end
         object ToolButtonDesignQuery: TToolButton
           Left = 1
           Top = 2
           Action = ActReportingQueryDesign
           Style = tbsCheck
         end
-        object ToolButton9: TToolButton
-          Left = 331
-          Top = 2
-          Action = ActReportingQuerySaveAll
-        end
         object tbReportingExportExcel: TToolButton
-          Left = 401
+          Left = 197
           Top = 2
           Action = ActReportingQueryExportToExcel
           AutoSize = True
         end
-        object ToolButtonReportingQueryDuplicate: TToolButton
-          Left = 279
-          Top = 2
-          Action = ActReportingQueryDuplicate
-        end
         object ToolButton3: TToolButton
-          Left = 482
+          Left = 149
           Top = 2
           Action = ActReportingQueryExecute
         end
+        object tbSoftwaresNormalization: TToolButton
+          Left = 278
+          Top = 2
+          Action = ActSoftwaresNormalization
+        end
+        object ToolButton11: TToolButton
+          Left = 70
+          Top = 2
+          Action = ActReportingQueryReload
+        end
       end
       object Splitter11: TSplitter
-        Left = 270
+        Left = 299
         Height = 542
         Top = 50
         Width = 5
       end
-      object GridReportingQueries: TSOGrid
+      object PanLeftReporting: TPanel
         Left = 0
         Height = 542
         Top = 50
-        Width = 270
-        OnBeforePaste = GridReportingQueriesBeforePaste
-        ShowAdvancedColumnsCustomize = False
-        KeyFieldsNames = 'id'
+        Width = 299
         Align = alLeft
-        Color = clWhite
-        Colors.UnfocusedColor = clMedGray
-        Header.AutoSizeIndex = -1
-        Header.Columns = <        
-          item
-            Alignment = taRightJustify
-            Position = 0
-            Text = 'id'
-            Width = 42
-            PropertyName = 'id'
-          end        
-          item
-            Position = 1
-            Text = 'name'
-            Width = 161
-            PropertyName = 'name'
-          end        
-          item
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 2
-            Text = 'query'
-            Width = 100
-            PropertyName = 'query'
-          end        
-          item
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 3
-            Text = 'settings'
-            Width = 3403
-            PropertyName = 'settings'
-          end>
-        Header.DefaultHeight = 18
-        Header.Height = 18
-        Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
-        Header.Style = hsFlatButtons
-        PopupMenu = PopupMenuReportingQueries
+        BevelOuter = bvNone
+        Caption = 'PanLeftReporting'
+        ClientHeight = 542
+        ClientWidth = 299
         TabOrder = 3
-        TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes, toAutoChangeScale]
-        TreeOptions.MiscOptions = [toAcceptOLEDrop, toEditable, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toFullRowDrag, toNodeHeightResize, toNodeHeightDblClickResize]
-        TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages, toAlwaysHideSelection]
-        TreeOptions.SelectionOptions = [toDisableDrawSelection, toExtendedFocus, toMultiSelect, toRightClickSelect]
-        WantTabs = True
-        OnChange = GridReportingQueriesChange
-        OnDrawText = GridReportingQueriesDrawText
-        OnEdited = GridReportingQueriesEdited
-        OnEditing = GridReportingQueriesEditing
-        OnKeyPress = GridReportingQueriesKeyPress
-        ZebraPaint = True
+        object GridReportingQueries: TSOGrid
+          Left = 0
+          Height = 494
+          Top = 48
+          Width = 299
+          OnBeforePaste = GridReportingQueriesBeforePaste
+          ShowAdvancedColumnsCustomize = False
+          KeyFieldsNames = 'id'
+          Align = alClient
+          Color = clWhite
+          Colors.UnfocusedColor = clMedGray
+          Header.AutoSizeIndex = -1
+          Header.Columns = <          
+            item
+              Alignment = taRightJustify
+              Position = 0
+              Text = 'id'
+              Width = 42
+              PropertyName = 'id'
+            end          
+            item
+              Position = 1
+              Text = 'name'
+              Width = 161
+              PropertyName = 'name'
+            end          
+            item
+              Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+              Position = 2
+              Text = 'query'
+              Width = 100
+              PropertyName = 'query'
+            end          
+            item
+              Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+              Position = 3
+              Text = 'settings'
+              Width = 3403
+              PropertyName = 'settings'
+            end>
+          Header.DefaultHeight = 18
+          Header.Height = 18
+          Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
+          Header.Style = hsFlatButtons
+          PopupMenu = PopupMenuReportingQueries
+          TabOrder = 0
+          TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes, toAutoChangeScale]
+          TreeOptions.MiscOptions = [toAcceptOLEDrop, toEditable, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toFullRowDrag, toNodeHeightResize, toNodeHeightDblClickResize]
+          TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages, toAlwaysHideSelection]
+          TreeOptions.SelectionOptions = [toDisableDrawSelection, toExtendedFocus, toMultiSelect, toRightClickSelect]
+          WantTabs = True
+          OnChange = GridReportingQueriesChange
+          OnDrawText = GridReportingQueriesDrawText
+          OnEdited = GridReportingQueriesEdited
+          OnEditing = GridReportingQueriesEditing
+          OnKeyPress = GridReportingQueriesKeyPress
+          ZebraPaint = True
+        end
+        object TbLeftTopreporting: TToolBar
+          Left = 0
+          Height = 48
+          Top = 0
+          Width = 299
+          AutoSize = True
+          ButtonHeight = 48
+          ButtonWidth = 48
+          EdgeBorders = []
+          Images = ImageListReports
+          ShowCaptions = True
+          TabOrder = 1
+          Visible = False
+          object ToolButton5: TToolButton
+            Left = 1
+            Top = 0
+            Action = ActReportingQueryNew
+          end
+          object ToolButton8: TToolButton
+            Left = 61
+            Top = 0
+            Action = ActReportingQueryDelete
+          end
+          object ToolButtonReportingQueryDuplicate1: TToolButton
+            Left = 201
+            Top = 0
+            Action = ActReportingQueryImport
+          end
+          object ToolButton9: TToolButton
+            Left = 131
+            Top = 0
+            Action = ActReportingQuerySaveAll
+          end
+        end
       end
     end
   end
@@ -8293,11 +8347,16 @@ object VisWaptGUI: TVisWaptGUI
       OnExecute = ActVeyonExecute
       OnUpdate = ActVeyonUpdate
     end
+    object ActAddProfile: TAction
+      Category = 'Bundles'
+      Caption = 'New host AD profile'
+      ImageIndex = 9
+    end
   end
   object PopupMenuPackages: TPopupMenu
     Images = ActionsImages24
     left = 200
-    top = 168
+    top = 192
     object MenuItem22: TMenuItem
       Action = ActDeletePackage
       ShortCut = 16430
@@ -8309,7 +8368,7 @@ object VisWaptGUI: TVisWaptGUI
   object MainMenu1: TMainMenu
     Images = ActionsImages24
     left = 104
-    top = 104
+    top = 184
     object MenuItem5: TMenuItem
       Caption = '&File'
       object MenuItem6: TMenuItem
@@ -8425,8 +8484,8 @@ object VisWaptGUI: TVisWaptGUI
   object PopupMenuHosts: TPopupMenu
     Images = ActionsImages24
     OnPopup = PopupMenuHostsPopup
-    left = 200
-    top = 104
+    left = 168
+    top = 200
     object MenuItem18: TMenuItem
       Action = ActEditHostPackage
     end
@@ -9520,7 +9579,7 @@ object VisWaptGUI: TVisWaptGUI
     left = 440
     top = 408
     Bitmap = {
-      4C69200000001800000018000000000000000000000000000000000000000000
+      4C69210000001800000018000000000000000000000000000000000000000000
       000000BFFF14000000000000000000AAFF120DD3FF7910CFFFBA0ECEFFDA0ECE
       FFDB10CFFFBB0CD0FF7D00D5FF18000000000000000000BFFF14000000000000
       00000000000000000000000000000000000000000000000000000000000000FF
@@ -11824,6 +11883,78 @@ object VisWaptGUI: TVisWaptGUI
       0000000000000000000000000000000000000000000000000000000000000000
       000000000000000000005454542154545479545454BA555555E6555555FB5555
       55FB555555E6545454BB54545479545454210000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000000000000000000000000000000000000000000050000002E000000630000
+      002C000000060000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000B00000067000000C60000
+      0077000000140000000100000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000010000001700000090000000EB0000
+      00AC0000002B0000000200000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000000000000000000000000000700000044000000C7000000F40000
+      00C3000000480000000500000000000000000000000000000000000000000000
+      0000000000000000000000000000000000020000000F0000000E000000030000
+      00000000000000000000000000060000002C00000091000000D3000000D90000
+      00CF000000550000000900000000000000000000000000000000000000000000
+      00000000000000000000000000020000001B0000006800000053000000180000
+      0001000000020000000D0000003400000085000000C600000099000000AE0000
+      00D40000005E0000000800000000000000000000000000000000000000000000
+      000000000000000000000000000400000042000000BF000000B2000000450000
+      00100000001A0000004900000095000000C60000009600000048000000970000
+      00CF000000570000000800000000000000080000005B00000060000000600000
+      005600000010000000000000000B0000006A000000E6000000E6000000880000
+      004F00000076000000B6000000C3000000830000002C0000002E000000AD0000
+      00BC0000003B000000020000000000000064000000FF000000FF000000FF0000
+      00FF0000006B000000010000001D000000A1000000E3000000D5000000D30000
+      00C1000000CA000000B7000000750000002C0000001300000059000000C50000
+      00930000001E000000010000000000000069000000FF000000820000005A0000
+      0054000000160000000500000040000000C2000000B60000007A000000B70000
+      00BE000000900000004A0000001400000006000000300000009D000000C90000
+      005B0000000B000000000000000000000069000000FF0000003C000000000000
+      0000000000000000000D0000006B000000D10000007B00000029000000440000
+      00430000001800000003000000050000002A0000008A000000D5000000980000
+      002400000001000000000000000000000069000000FF0000003E000000000000
+      0000000000010000001D00000098000000C60000004A00000008000000060000
+      00020000000000000004000000250000007F000000CE000000B6000000480000
+      000800000000000000000000000000000069000000FF0000003E000000000000
+      00000000000300000037000000C3000000AF0000002C00000001000000000000
+      00010000001500000052000000A9000000DC000000BA000000580000000F0000
+      000000000000000000000000000000000069000000FF0000003E000000000000
+      00000000000A00000065000000DC0000009D0000002400000006000000020000
+      00120000006B000000C8000000DA000000A80000005300000014000000010000
+      000000000000000000000000000000000069000000FF0000003E000000000000
+      0000000000130000007F000000E2000000CA000000800000004B000000270000
+      002800000082000000DF0000009F000000370000000700000000000000000000
+      000000000000000000000000000000000069000000FF0000003E000000000000
+      00000000000C000000520000009B000000C4000000D3000000C4000000A30000
+      00830000009D000000DD00000092000000290000000200000000000000000000
+      000000000000000000000000000000000069000000FF0000003E000000000000
+      0000000000010000000B0000001F000000390000006B0000009A000000BE0000
+      00D1000000DF000000F1000000C40000004B0000000A00000000000000000000
+      000000000000000000000000000000000069000000FF0000003E000000000000
+      0000000000000000000000000001000000030000000B000000200000003F0000
+      006500000097000000C4000000C8000000620000000F00000000000000010000
+      000000000000000000000000000000000069000000FF0000003E000000000000
+      0000000000000000000000000000000000000000000000000001000000040000
+      000A00000017000000390000005500000041000000C20000007F000000000000
+      000000000000000000000000000000000069000000FF00000058000000230000
+      0023000000230000002300000023000000230000002300000023000000230000
+      002300000024000000260000002900000048000000E8000000CA000000000000
+      000000000000000000000000000000000068000000FF000000FC000000F80000
+      00F8000000F8000000F8000000F8000000F8000000F8000000F8000000F80000
+      00F8000000F8000000F8000000F8000000FA000000FF000000C9000000000000
+      00000000000000000000000000000000001B0000008D00000090000000900000
+      0090000000900000009000000090000000900000009000000090000000900000
+      009000000090000000900000009000000090000000930000003F000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000
     }
   end
@@ -12041,14 +12172,18 @@ object VisWaptGUI: TVisWaptGUI
     end
     object ActReportingQueryExport: TAction
       Caption = 'Export queries to file...'
+      ImageIndex = 14
       OnExecute = ActReportingQueryExportExecute
     end
     object ActReportingQueryImport: TAction
-      Caption = 'Import queries from file...'
+      Caption = 'Import queries...'
+      ImageIndex = 32
       OnExecute = ActReportingQueryImportExecute
+      OnUpdate = ActReportingQueryImportUpdate
     end
     object ActSoftwaresNormalization: TAction
       Caption = 'Normalize software titles'
+      ImageIndex = 31
       OnExecute = ActSoftwaresNormalizationExecute
     end
   end
@@ -12086,7 +12221,7 @@ object VisWaptGUI: TVisWaptGUI
     left = 440
     top = 272
     Bitmap = {
-      4C692000000018000000180000003B7408FF3B7408FF3B7408FF3B7408FF3B74
+      4C692100000018000000180000003B7408FF3B7408FF3B7408FF3B7408FF3B74
       08FF3B7408FF3B7408FF3B7408FF3B7408FF3B7408FF3B7408FF3B7408FF3B74
       08FF3B7408FF3B7408FF3B7408FF3B7408FF3B7408FF3B7408FF3B7408FF3B74
       08FF3B7408FF3B7408FF3B7408FF3B7408FF3B7408FF3B7408FF3B7408FF3B74
@@ -14390,7 +14525,79 @@ object VisWaptGUI: TVisWaptGUI
       00002081F40000000000000000000000000000000000000000002081F4000000
       000000000000000000002081F4472081F48B2081F4BC2081F4DE2081F4FA2081
       F4FA2081F4E02081F4BB2081F48C2081F4462081F40000000000000000002081
-      F400000000000000000000000000
+      F400000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000000000000000000000000000000000000000000050000002E000000630000
+      002C000000060000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000B00000067000000C60000
+      0077000000140000000100000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000010000001700000090000000EB0000
+      00AC0000002B0000000200000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000000000000000000000000000700000044000000C7000000F40000
+      00C3000000480000000500000000000000000000000000000000000000000000
+      0000000000000000000000000000000000020000000F0000000E000000030000
+      00000000000000000000000000060000002C00000091000000D3000000D90000
+      00CF000000550000000900000000000000000000000000000000000000000000
+      00000000000000000000000000020000001B0000006800000053000000180000
+      0001000000020000000D0000003400000085000000C600000099000000AE0000
+      00D40000005E0000000800000000000000000000000000000000000000000000
+      000000000000000000000000000400000042000000BF000000B2000000450000
+      00100000001A0000004900000095000000C60000009600000048000000970000
+      00CF000000570000000800000000000000080000005B00000060000000600000
+      005600000010000000000000000B0000006A000000E6000000E6000000880000
+      004F00000076000000B6000000C3000000830000002C0000002E000000AD0000
+      00BC0000003B000000020000000000000064000000FF000000FF000000FF0000
+      00FF0000006B000000010000001D000000A1000000E3000000D5000000D30000
+      00C1000000CA000000B7000000750000002C0000001300000059000000C50000
+      00930000001E000000010000000000000069000000FF000000820000005A0000
+      0054000000160000000500000040000000C2000000B60000007A000000B70000
+      00BE000000900000004A0000001400000006000000300000009D000000C90000
+      005B0000000B000000000000000000000069000000FF0000003C000000000000
+      0000000000000000000D0000006B000000D10000007B00000029000000440000
+      00430000001800000003000000050000002A0000008A000000D5000000980000
+      002400000001000000000000000000000069000000FF0000003E000000000000
+      0000000000010000001D00000098000000C60000004A00000008000000060000
+      00020000000000000004000000250000007F000000CE000000B6000000480000
+      000800000000000000000000000000000069000000FF0000003E000000000000
+      00000000000300000037000000C3000000AF0000002C00000001000000000000
+      00010000001500000052000000A9000000DC000000BA000000580000000F0000
+      000000000000000000000000000000000069000000FF0000003E000000000000
+      00000000000A00000065000000DC0000009D0000002400000006000000020000
+      00120000006B000000C8000000DA000000A80000005300000014000000010000
+      000000000000000000000000000000000069000000FF0000003E000000000000
+      0000000000130000007F000000E2000000CA000000800000004B000000270000
+      002800000082000000DF0000009F000000370000000700000000000000000000
+      000000000000000000000000000000000069000000FF0000003E000000000000
+      00000000000C000000520000009B000000C4000000D3000000C4000000A30000
+      00830000009D000000DD00000092000000290000000200000000000000000000
+      000000000000000000000000000000000069000000FF0000003E000000000000
+      0000000000010000000B0000001F000000390000006B0000009A000000BE0000
+      00D1000000DF000000F1000000C40000004B0000000A00000000000000000000
+      000000000000000000000000000000000069000000FF0000003E000000000000
+      0000000000000000000000000001000000030000000B000000200000003F0000
+      006500000097000000C4000000C8000000620000000F00000000000000010000
+      000000000000000000000000000000000069000000FF0000003E000000000000
+      0000000000000000000000000000000000000000000000000001000000040000
+      000A00000017000000390000005500000041000000C20000007F000000000000
+      000000000000000000000000000000000069000000FF00000058000000230000
+      0023000000230000002300000023000000230000002300000023000000230000
+      002300000024000000260000002900000048000000E8000000CA000000000000
+      000000000000000000000000000000000068000000FF000000FC000000F80000
+      00F8000000F8000000F8000000F8000000F8000000F8000000F8000000F80000
+      00F8000000F8000000F8000000F8000000FA000000FF000000C9000000000000
+      00000000000000000000000000000000001B0000008D00000090000000900000
+      0090000000900000009000000090000000900000009000000090000000900000
+      009000000090000000900000009000000090000000930000003F000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000
     }
   end
   object SynCompletion1: TSynCompletion
