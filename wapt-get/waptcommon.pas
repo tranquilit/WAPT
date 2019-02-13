@@ -218,7 +218,12 @@ const
 
   EnableExternalTools:Boolean = True;
   EnableManagementFeatures:Boolean = True;
+
+  {$ifdef enterprise}
   EnableWaptWUAFeatures:Boolean = True;
+  {$else}
+  EnableWaptWUAFeatures:Boolean = False;
+  {$endif}
 
   HideUnavailableActions:Boolean = False;
 
@@ -227,7 +232,7 @@ const
   WaptCAKeyFilename: String ='';
   WaptCACertFilename: String ='';
 
-  WAPTServerMinVersion='1.7.3.1';
+  WAPTServerMinVersion='1.7.3.4';
 
   FAppIniFilename:String = '';
 

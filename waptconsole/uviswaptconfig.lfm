@@ -671,6 +671,7 @@ object VisWAPTConfig: TVisWAPTConfig
     object ActCreateKeyCert: TAction
       Caption = 'New  private key and certificate'
       Hint = 'Generate a new private key and personal certificate.'#13#10'This must be done only once per Wapt amdin user.'#13#10'When upgrading, you must not recreate a private key and certificate.'
+      OnExecute = ActCreateKeyCertExecute
     end
     object ActSaveConfig: TAction
       Caption = 'OK'
@@ -687,8 +688,8 @@ object VisWAPTConfig: TVisWAPTConfig
     end
   end
   object MainMenu1: TMainMenu
-    left = 429
-    top = 101
+    left = 28
+    top = 152
   end
   object AsyncProcess1: TAsyncProcess
     Active = False

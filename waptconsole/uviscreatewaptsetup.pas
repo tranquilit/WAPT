@@ -216,13 +216,13 @@ begin
     try
       certchain := dmpython.waptcrypto.get_peer_cert_chain_from_server(url);
       pem_data := dmpython.waptcrypto.get_cert_chain_as_pem(certificates_chain:=certchain);
-      if not VarIsNone(pem_data) then
+      if not VarIsNull(pem_data) then
       begin
         cert := certchain.__getitem__(0);
         certfn:= AppendPathDelim(WaptBaseDir)+'ssl\server\'+cert.cn+'.crt';
         if not DirectoryExists(ExtractFileDir(certfn)) then
           ForceDirectory(ExtractFileDir(certfn));
-        StringToFile(certfn,UTF8Encode(pem_data));
+        StringToFile(certfn,UTF8Encode(VarPythonAsString(pem_data)));
         EdServerCertificate.Text := certfn;
         CBVerifyCert.Checked:=True;
       end

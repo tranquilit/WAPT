@@ -70,6 +70,7 @@ type
     pgPlugins: TTabSheet;
     Timer1: TTimer;
     procedure ActAddPluginExecute(Sender: TObject);
+    procedure ActCreateKeyCertExecute(Sender: TObject);
     procedure ActDeletePluginExecute(Sender: TObject);
     procedure ActCheckAndSetwaptserverExecute(Sender: TObject);
     procedure ActCheckPersonalKeyExecute(Sender: TObject);
@@ -115,7 +116,7 @@ var
 implementation
 uses base64, tiscommon,waptcommon,LCLIntf,IDURI,uWaptConsoleRes,
     tisstrings,dmwaptpython,variants,VarPyth,uvisprivatekeyauth,tisinifiles,
-    LazFileUtils,FileUtil,strutils,Windows,uWaptPythonUtils;
+    LazFileUtils,FileUtil,strutils,Windows,uWaptPythonUtils,uVisCreateKey;
 {$R *.lfm}
 
 { TVisWAPTConfig }
@@ -165,6 +166,17 @@ begin
 
   GridPlugins.Data.AsArray.Add(APlugin);
   GridPlugins.LoadData;
+end;
+
+procedure TVisWAPTConfig.ActCreateKeyCertExecute(Sender: TObject);
+begin
+  With TVisCreateKey.Create(Self) do
+  try
+    if ShowModal = mrOk then
+      edPersonalCertificatePath.FileName:=CertificateFilename;
+  finally
+    Free;
+  end;
 end;
 
 procedure TVisWAPTConfig.ActDeletePluginExecute(Sender: TObject);

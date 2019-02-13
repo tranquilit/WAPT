@@ -554,6 +554,7 @@ type
     procedure ActAddHWPropertyToGridExecute(Sender: TObject);
     procedure ActAddHWPropertyToGridUpdate(Sender: TObject);
     procedure ActAddNewNetworkExecute(Sender: TObject);
+    procedure ActAddProfileExecute(Sender: TObject);
     procedure ActCancelRunningTaskExecute(Sender: TObject);
     procedure ActChangePasswordExecute(Sender: TObject);
     procedure ActChangePasswordUpdate(Sender: TObject);
@@ -1789,7 +1790,7 @@ begin
                 packagename:= PackageRequest.package;
                 packageversion := PackageRequest.version;
                 if (package.S['package'] = packagename) and (package.S['version'] = packageversion) then
-                  if package.S['install_status'] = 'MISSING' THEN
+                  if StrIsOneOf(package.S['install_status'],['MISSING','NEED-UPGRADE']) THEN
                     package.S['install_status'] := 'ERROR';
               end;
             end;
@@ -2488,6 +2489,17 @@ begin
   SrcNetworks.AppendRecord(SO());
 end;
 
+procedure TVisWaptGUI.ActAddProfileExecute(Sender: TObject);
+begin
+  if DefaultSourcesRoot <> '' then
+  begin
+    if Assigned(CreateGroup('agroup', AdvancedMode, 'profile')) then
+      ActPackagesUpdate.Execute;
+  end
+  else
+    ShowMessage(rsDefineWaptdevPath);
+end;
+
 procedure TVisWaptGUI.ActCancelRunningTaskExecute(Sender: TObject);
 var
   uuids: ISuperObject;
@@ -2750,8 +2762,12 @@ begin
       cbHideUnavailableActions.Checked :=
         inifile.ReadBool('global', 'hide_unavailable_actions', HideUnavailableActions);
 
+      {$ifdef enterprise}
       cbEnableWAPTWUAFeatures.Checked :=
         inifile.ReadBool('waptwua', 'enabled', EnableWaptWUAFeatures);
+      {$else}
+      cbEnableWAPTWUAFeatures.Visible :=False;
+      {$endif}
 
       cbDebugWindow.Checked:= inifile.ReadBool('global','advanced_mode',AdvancedMode);
 
@@ -2779,8 +2795,10 @@ begin
         inifile.WriteBool('global', 'hide_unavailable_actions',
           cbHideUnavailableActions.Checked);
 
+        {$ifdef enterprise}
         inifile.WriteBool('waptwua', 'enabled',
           cbEnableWAPTWUAFeatures.Checked);
+        {$endif}
 
         if cbLanguage.ItemIndex=0 then
           DMPython.Language := 'en'
@@ -5145,6 +5163,10 @@ begin
   CBShowHostsForPackages.Visible := False;
   CBShowHostsForGroups.Checked := False;
   CBShowHostsForPackages.Checked := False;
+
+  ActTriggerWaptwua_scan.Visible:=False;
+  ActTriggerWaptwua_download.Visible:=False;
+  ActTriggerWaptwua_install.Visible:=False;
 
   PanHostsForPackage.Visible:=False;
   {$endif}

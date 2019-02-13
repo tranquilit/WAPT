@@ -8351,6 +8351,7 @@ object VisWaptGUI: TVisWaptGUI
       Category = 'Bundles'
       Caption = 'New host AD profile'
       ImageIndex = 9
+      OnExecute = ActAddProfileExecute
     end
   end
   object PopupMenuPackages: TPopupMenu
