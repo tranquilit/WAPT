@@ -6095,6 +6095,17 @@ begin
 ;;
 end;
 
+procedure TVisWaptGUI.ActReportingQueryImportUpdate(Sender: TObject);
+begin
+;;
+end;
+
+Function TVisWaptGUI.ReportingQueryAppend(AName:String= 'New query'; sql:String='SELECT 1'): ISuperObject;
+begin
+;;
+end;
+
+
 
 {$endif}
 
