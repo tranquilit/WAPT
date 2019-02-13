@@ -49,6 +49,7 @@ type
     MenuItem8: TMenuItem;
     MenuItem9: TMenuItem;
     MenuWaptVersion: TMenuItem;
+    Timer1: TTimer;
     TrayUpdate: TImageList;
     TrayRunning: TImageList;
     MenuItem1: TMenuItem;
@@ -80,6 +81,8 @@ type
     procedure DataModuleDestroy(Sender: TObject);
     procedure PopupMenu1Close(Sender: TObject);
     procedure PopupMenu1Popup(Sender: TObject);
+    procedure Timer1Timer(Sender: TObject);
+    procedure TrayIcon1Click(Sender: TObject);
     procedure TrayIcon1DblClick(Sender: TObject);
     procedure TrayIcon1MouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
@@ -107,6 +110,8 @@ type
     popupvisible:Boolean;
     notify_user:Boolean;
     lastButton:TMouseButton;
+
+    CurrentTask: String;
 
     procedure ShowBalloon(Msg:String;BalloonFlags:TBalloonFlags=bfNone);
 
@@ -369,7 +374,7 @@ begin
   check_waptservice := TCheckWaptservice.Create(Self);
   check_waptservice.Start;
 
-  notify_user:= IniReadBool(WaptIniFilename,'global','notify_user',Win32MajorVersion<=6 );
+  notify_user:= IniReadBool(WaptIniFilename,'global','notify_user',False );
 
   SHiddenActions := IniReadString(WaptIniFilename,'global','hidden_wapttray_actions','');
   if SHiddenActions<>'' then
@@ -422,6 +427,17 @@ begin
 
   // to avoid message popups when popup menu is displayed
   PopupVisible := True;
+end;
+
+procedure TDMWaptTray.Timer1Timer(Sender: TObject);
+begin
+  Timer1.Enabled:=False;
+  TrayIcon1.ShowBalloonHint;
+end;
+
+procedure TDMWaptTray.TrayIcon1Click(Sender: TObject);
+begin
+  Timer1.Enabled:=True;
 end;
 
 procedure TDMWaptTray.ActConfigureExecute(Sender: TObject);
@@ -537,16 +553,7 @@ begin
       if EventType='PRINT' then
       begin
         msg := UTF8Encode(EventData.AsString);
-        if TrayIcon1.BalloonHint<>msg then
-        begin
-          if TrayIcon1.BalloonHint<>msg then
-          begin
-            TrayIcon1.BalloonHint := msg;
-            TrayIcon1.BalloonFlags:=bfNone;
-            if not popupvisible and notify_user then
-              TrayIcon1.ShowBalloonHint;
-          end;
-        end;
+        trayHint := msg;
       end
       else
       if EventType.StartsWith('TASK_') then
@@ -584,6 +591,7 @@ begin
         else
         if Step='START' then
         begin
+          CurrentTask:=desc;
           trayMode:= tmRunning;
           if taskresult<>Nil then
             TrayIcon1.BalloonHint :=  format(rsTaskStarted, [desc])
@@ -598,7 +606,7 @@ begin
         if (Step='PROGRESS') or (Step='STATUS') then
         begin
           trayMode:= tmRunning;
-          TrayIcon1.BalloonHint := desc+#13#10+Format('%.0f%%',[taskresult.D['progress']]);
+          trayHint := desc+#13#10+Format('%.0f%%',[taskresult.D['progress']]);
           TrayIcon1.BalloonFlags:=bfInfo;
           if not popupvisible and notify_user and task_notify_user then
             TrayIcon1.ShowBalloonHint;
@@ -607,10 +615,11 @@ begin
         if Step='FINISH' then
         begin
           trayMode:= tmOK;
-          TrayIcon1.BalloonHint := format(rsTaskDone, [desc, summary]);
+          trayHint := format(rsTaskDone, [desc, summary]);
           TrayIcon1.BalloonFlags:=bfInfo;
-          if not popupvisible and task_notify_user then
+          if not popupvisible and notify_user and task_notify_user then
             TrayIcon1.ShowBalloonHint;
+          CurrentTask:='';;
         end
         else
         if Step='CANCEL' then
@@ -629,7 +638,8 @@ begin
             TrayIcon1.BalloonFlags:=bfInfo;
             if not popupvisible and notify_user and task_notify_user  then
               TrayIcon1.ShowBalloonHint;
-          end
+          end;
+          CurrentTask:='';;
         end;
       end;
     finally
@@ -800,17 +810,18 @@ var
 begin
   if lastButton=mbLeft then
   try
+    Timer1.Enabled:=False;
     res := WAPTLocalJsonGet('update.json?notify_user=1');
     if (res<>Nil) and  (pos('ERROR',uppercase(res.AsJSon ))<=0) then
       TrayIcon1.BalloonHint:=rsChecking
     else
       TrayIcon1.BalloonHint:=rsErrorWhileChecking;
-    if notify_user then
-      TrayIcon1.ShowBalloonHint;
+    //if notify_user then
+    TrayIcon1.ShowBalloonHint;
   except
     on E:Exception do
       begin
-        TrayIcon1.BalloonHint := E.Message;
+        trayHint := E.Message;
         trayMode:=tmErrors;
       end;
   end;

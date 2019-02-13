@@ -52,6 +52,7 @@ object DMWaptTray: TDMWaptTray
     }
     Hint = 'WAPT Service'
     Visible = True
+    OnClick = TrayIcon1Click
     OnDblClick = TrayIcon1DblClick
     OnMouseDown = TrayIcon1MouseDown
     left = 112
@@ -449,5 +450,10 @@ object DMWaptTray: TDMWaptTray
       0000B9886000D1AD8FD0CFA98AFDC1926CFFB3794BC4AD704200BC8C63C3D6B5
       97E7D1AC8DC0CFA98C97C8A28500
     }
+  end
+  object Timer1: TTimer
+    OnTimer = Timer1Timer
+    left = 120
+    top = 120
   end
 end
