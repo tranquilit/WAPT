@@ -1878,7 +1878,7 @@ msgstr "Exporter vers excel"
 #: tviswaptgui.actreportingqueryimport.caption
 #| msgid "Import queries from file..."
 msgid "Import queries..."
-msgstr "Importer...
+msgstr "Importer..."
 
 #: tviswaptgui.actreportingquerynew.caption
 msgctxt "tviswaptgui.actreportingquerynew.caption"
@@ -2687,7 +2687,9 @@ msgctxt "tviswaptgui.pgwaptwuapackages.caption"
 msgid "Wapt WUA packages"
 msgstr "Paquets WAPT WUA"
 
-#: tviswaptgui.pgwindowsupdates2.caption
+#: tviswaptgui.pgwindowsupdates.caption
+
+msgctxt "tviswaptgui.pgwindowsupdates.caption"
 msgid "Windows Updates list"
 msgstr "Liste des mises à jour Windows"
 

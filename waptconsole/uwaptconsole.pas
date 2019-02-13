@@ -41,10 +41,19 @@ type
     btAddGroup1: TBitBtn;
     ButPackagesUpdate1: TBitBtn;
     ButShowDownloadTasks: TBitBtn;
+    cbHostsHasErrors: TCheckBox;
+    cbHostsNeedUpgrade: TCheckBox;
+    cbHostsReachable: TCheckBox;
     cbNewestOnlyGroups: TCheckBox;
     cbNewestOnlyWUA: TCheckBox;
     cbNewestOnlySelfService: TCheckBox;
+    EdSearchHosts: TSearchEdit;
     EdWUASearchWindowsUpdate: TSearchEdit;
+    GridHostsForPackage: TSOGrid;
+    ImgHostsConnected: TImage;
+    ImgHostsHasErrors: TImage;
+    ImgHostsNeedUpgrade: TImage;
+    MemoInstallOutput1: TMemo;
     MenuItem105: TMenuItem;
     MenuItem106: TMenuItem;
     MenuItem108: TMenuItem;
@@ -54,9 +63,13 @@ type
     MenuItem112: TMenuItem;
     MenuItem4: TMenuItem;
     MenuItem76: TMenuItem;
+    PanFilterHosts: TPanel;
+    PanHostsForPackage: TPanel;
     PanLeftReporting: TPanel;
     PanWUASearchClassifications: TPanel;
     PopupMenuReportingQueries: TPopupMenu;
+    SplitGridUnitsHosts1: TSplitter;
+    SplitHostsForPackage: TSplitter;
     Splitter12: TSplitter;
     Splitter13: TSplitter;
     TbLeftTopreporting: TToolBar;
@@ -83,27 +96,20 @@ type
     ButSelfServicePackagesSearch: TBitBtn;
     cbFilterPackagesArch: TCheckGroup;
     cbFilterPackagesLocales: TCheckGroup;
-    cbHostsHasErrors: TCheckBox;
-    cbHostsNeedUpgrade: TCheckBox;
-    cbHostsReachable: TCheckBox;
     CBShowHostsForWUAPackage: TCheckBox;
     CBShowHostsForSelfServicePackage: TCheckBox;
-    EdSearchHosts: TSearchEdit;
     EdWUASearchPackage: TSearchEdit;
     EdSelfServiceSearchPackage: TSearchEdit;
     GridWUAPackages: TSOGrid;
     GridReportingQueries: TSOGrid;
     GridSelfServicePackages: TSOGrid;
-    ImgHostsHasErrors: TImage;
-    ImgHostsNeedUpgrade: TImage;
-    ImgHostsConnected: TImage;
     ImageListReports: TImageList;
     LabelReportingNumber: TLabel;
     MenuItem107: TMenuItem;
     PanTopWAPTWuaPackages: TPanel;
     PanTopSelfService: TPanel;
     pgSelfService: TTabSheet;
-    pgWindowsUpdates2: TTabSheet;
+    pgWindowsUpdates: TTabSheet;
     pgWAPTWuaPackages: TTabSheet;
     ToolButton3: TToolButton;
     MenuGridHostsPlugins: TMenuItem;
@@ -111,7 +117,6 @@ type
     ActReportingQueryReload: TAction;
     ActReportingQueryExportToExcel: TAction;
     ActReportingQueryExecute: TAction;
-    PanFilterHosts: TPanel;
     Panel18: TPanel;
     PanReportingRight: TPanel;
     PanelReportingGrid: TPanel;
@@ -212,7 +217,6 @@ type
     EdWsusscn2cabDate: TEdit;
     EdLastScanDate: TEdit;
     EdLastScanDuration: TEdit;
-    GridHostsForPackage: TSOGrid;
     GridHostWinUpdatesHistory: TSOGrid;
     GridPackages: TSOGrid;
     GridWUUpdates: TSOGrid;
@@ -226,7 +230,6 @@ type
     GridNetworks: TSOGrid;
     Label4: TLabel;
     LabUser1: TLabel;
-    MemoInstallOutput1: TMemo;
     MenuItem100: TMenuItem;
     MenuItem101: TMenuItem;
     MenuItem102: TMenuItem;
@@ -249,7 +252,6 @@ type
     MenuItem99: TMenuItem;
     Panel17: TPanel;
     Panel9: TPanel;
-    PanHostsForPackage: TPanel;
     PanWUALeft: TPanel;
     PanTopWindowsUpdates: TPanel;
     Panel8: TPanel;
@@ -261,12 +263,9 @@ type
     PopupHostWUAUpdates: TPopupMenu;
     GridReportingResult: TSOGrid;
     SOWaptServer: TSOConnection;
-    SplitHostsForPackage: TSplitter;
-    Splitter11: TSplitter;
-    Splitter10: TSplitter;
+    SplitQueriesReport: TSplitter;
     SplitterReportingHorizontal: TSplitter;
-    Splitter8: TSplitter;
-    Splitter9: TSplitter;
+    SplitWinupdateHost: TSplitter;
     SrcNetworks: TSODataSource;
     SrcOrgUnits: TDataSource;
     EdDescription: TEdit;
@@ -337,7 +336,7 @@ type
     PanTopHosts: TPanel;
     panFilterStatus: TPanel;
     PanHostsFilters: TPanel;
-    Panel14: TPanel;
+    PanTopFilterInventory: TPanel;
     Panel15: TPanel;
     Panel16: TPanel;
     PanFilterGroups: TPanel;
@@ -351,8 +350,8 @@ type
     MenuItem72: TMenuItem;
     MenuItem73: TMenuItem;
     pgWaptWUAConfig: TTabSheet;
-    Splitter6: TSplitter;
-    Splitter7: TSplitter;
+    SplitPackagesStatusLogs: TSplitter;
+    SplitGridUnitsHosts: TSplitter;
     PgReports: TTabSheet;
     SynCompletion1: TSynCompletion;
     SynEditReportsSQL: TSynEdit;
@@ -478,7 +477,7 @@ type
     MenuItem69: TMenuItem;
     OpenDialogWapt: TOpenDialog;
     PageControl1: TPageControl;
-    Panel11: TPanel;
+    PanTopGroups: TPanel;
     Panel12: TPanel;
     PopupWUAProducts: TPopupMenu;
     Panel3: TPanel;
@@ -496,7 +495,7 @@ type
     HostTaskRunningProgress: TProgressBar;
     Splitter3: TSplitter;
     pgTasks: TTabSheet;
-    Splitter5: TSplitter;
+    SplitHostTaskLog: TSplitter;
     TabSheet1: TTabSheet;
     TabSheet2: TTabSheet;
     TabSheet3: TTabSheet;
@@ -527,15 +526,14 @@ type
     MenuItem9: TMenuItem;
     MainPages: TPageControl;
     HostPages: TPageControl;
-    Panel1: TPanel;
+    PanSourcesTop: TPanel;
     PanDebug: TPanel;
     Panel4: TPanel;
     Panel7: TPanel;
     PopupMenuHosts: TPopupMenu;
     PopupMenuPackages: TPopupMenu;
-    Splitter1: TSplitter;
+    SplitBottomDebug: TSplitter;
     Splitter2: TSplitter;
-    Splitter4: TSplitter;
     SynPythonSyn1: TSynPythonSyn;
     pgSources: TTabSheet;
     pgPrivateRepo: TTabSheet;
@@ -543,7 +541,7 @@ type
     pgPackages: TTabSheet;
     pgSoftwares: TTabSheet;
     pgHostInventory: TTabSheet;
-    testedit: TSynEdit;
+    MemoEditSourcesTest: TSynEdit;
     jsonlog: TVirtualJSONInspector;
     GridHostPackages: TSOGrid;
     GridHostSoftwares: TSOGrid;
@@ -3713,7 +3711,7 @@ end;
 procedure TVisWaptGUI.ActExecCodeExecute(Sender: TObject);
 begin
   MemoLog.Clear;
-  DMPython.PythonEng.ExecString(testedit.Lines.Text);
+  DMPython.PythonEng.ExecString(MemoEditSourcesTest.Lines.Text);
 end;
 
 procedure TVisWaptGUI.ActHostsCopyExecute(Sender: TObject);
@@ -5137,7 +5135,7 @@ begin
   pgSelfService.TabVisible:=False;
   pgWaptWUAConfig.TabVisible:=False;
   pgHostWUA.TabVisible:=False;
-  pgWindowsUpdates2.TabVisible:=False;
+  pgWindowsUpdates.TabVisible:=False;
   ActTriggerHostAudit.Visible:=False;
   ActPackagesAudit.Visible:=False;
   ActWUANewPackage.Visible := False;
@@ -5250,6 +5248,7 @@ begin
   else if MainPages.ActivePage = pgPrivateRepo then
   begin
     CopyMenu(PopupMenuPackages, MenuItem24);
+    CBShowHostsForPackagesClick(Self);
     if GridPackages.Data = nil then
       ActSearchPackage.Execute;
     EdSearchPackage.SetFocus;
@@ -5267,6 +5266,7 @@ begin
   end
   else if MainPages.ActivePage = pgGroups then
   begin
+    CBShowHostsForGroupsClick(Self);
     CopyMenu(PopupMenuGroups, MenuItem24);
     if GridGroups.Data = nil then
       ActSearchGroups.Execute;
@@ -5279,6 +5279,7 @@ begin
   end
   else if MainPages.ActivePage = pgWaptWUAConfig then
   begin
+    CBShowHostsForWUAPackageClick(Self);
     WUAClassifications;
     WUAProducts;
     if GridWUUpdates.Data = Nil then

@@ -2671,7 +2671,8 @@ msgctxt "tviswaptgui.pgwaptwuapackages.caption"
 msgid "Wapt WUA packages"
 msgstr ""
 
-#: tviswaptgui.pgwindowsupdates2.caption
+#: tviswaptgui.pgwindowsupdates.caption
+msgctxt "tviswaptgui.pgwindowsupdates.caption"
 msgid "Windows Updates list"
 msgstr ""
 
