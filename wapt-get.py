@@ -56,7 +56,6 @@ try:
     from waptenterprise.waptwua.client import WaptWUA
 except ImportError as e:
     WaptWUA = None
-    logger.debug(u'Not Enterprise edition: %s' % repr(e))
 
 waptguihelper = None
 

@@ -4524,7 +4524,7 @@ class Wapt(BaseObjectClass):
             elif isinstance(req,PackageRequest):
                 package_requests.append(req)
             else:
-                raise Exception.Create('Unsupported request %s for check_depends' % req)
+                raise Exception('Unsupported request %s for check_depends' % req)
         return package_requests
 
 
@@ -4991,7 +4991,7 @@ class Wapt(BaseObjectClass):
                 errors=[])
 
             if upgrades['remove']:
-                self.runstatus = 'Removes outdated / conflicted packages' % key
+                self.runstatus = 'Removes outdated / conflicted packages'
                 result = merge_dict(result,self.remove(upgrades['remove'],force=True))
 
             for key in ['additional','upgrade','install']:
