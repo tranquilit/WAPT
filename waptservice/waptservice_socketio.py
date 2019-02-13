@@ -276,7 +276,7 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
                             created_by=verified_by,
                             only_priorities=only_priorities,
                             only_if_not_process_running=only_if_not_process_running,
-                            process_dependencies=False,
+                            process_dependencies=True,
                             )).as_dict())
                     if to_install:
                         self.task_manager.add_task(WaptAuditPackage(packagenames=to_install,force=False,

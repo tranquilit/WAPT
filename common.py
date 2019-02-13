@@ -4997,7 +4997,7 @@ class Wapt(BaseObjectClass):
             for key in ['additional','upgrade','install']:
                 self.runstatus='Install %s packages' % key
                 if upgrades[key]:
-                    result = merge_dict(result,self.install(upgrades[key],process_dependencies=False))
+                    result = merge_dict(result,self.install(upgrades[key],process_dependencies=True))
 
             result = merge_dict(result,self.install(upgrades.keys(),force=True,only_priorities=only_priorities,only_if_not_process_running=only_if_not_process_running))
             self.store_upgrade_status()
