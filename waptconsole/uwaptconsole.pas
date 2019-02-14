@@ -2762,7 +2762,7 @@ begin
 
       {$ifdef enterprise}
       cbEnableWAPTWUAFeatures.Checked :=
-        inifile.ReadBool('waptwua', 'enabled', EnableWaptWUAFeatures);
+        inifile.ReadBool('global', 'waptwua_enabled', EnableWaptWUAFeatures);
       {$else}
       cbEnableWAPTWUAFeatures.Visible :=False;
       {$endif}
@@ -2794,7 +2794,7 @@ begin
           cbHideUnavailableActions.Checked);
 
         {$ifdef enterprise}
-        inifile.WriteBool('waptwua', 'enabled',
+        inifile.WriteBool('global', 'waptwua_enabled',
           cbEnableWAPTWUAFeatures.Checked);
         {$endif}
 
