@@ -3,17 +3,17 @@ body {
   background-color: #eeeeee;
 }
 
-footer{
-    width: 85%;
-    position:fixed;
-    bottom:0px;
-    background: #eee;
-    padding: 14px 8px;
-    margin-left: 15%;
+#footer{
+width: 85%;
+position:fixed;
+bottom:0px;
+background: #EEE;
+padding: 14px 8px;
+margin-left: 15%;
 }
 
-footer .right {
-  text-align: right;
+#footer .right {
+text-align: right;
 }
 
 .banner {
