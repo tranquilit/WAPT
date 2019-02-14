@@ -1291,13 +1291,19 @@ class PackageEntry(BaseObjectClass):
             return self.package+'.wapt'
         elif self.section in ('group'):
             # we don't keep version for group
-            return self.package+'_'+self.version+u'_'.join([f for f in (self.package,self.architecture,self.maturity,'-'.join(ensure_list(self.locale))) if (f and f != 'all')]) + '.wapt'
+            att = u'_'.join([f for f in (self.architecture,self.maturity,'-'.join(ensure_list(self.locale))) if (f and f != 'all')])
+            if att:
+                att = '_'+att
+            return self.package+'_'+self.version+att+'.wapt'
         elif self.section in ('unit','profile'):
             # we have to hash the name.
             return hashlib.md5(self.package).hexdigest()+ u'_'.join([f for f in (self.architecture,self.maturity,u'-'.join(ensure_list(self.locale))) if (f and f != 'all')]) + '.wapt'
         else:
             # includes only non empty fields
-            return self.package+'_'+self.version+u'_'.join([f for f in (self.architecture,self.maturity,'-'.join(ensure_list(self.locale))) if f]) + '.wapt'
+            att= u'_'.join([f for f in (self.architecture,self.maturity,'-'.join(ensure_list(self.locale))) if f])
+            if att:
+                att = '_'+att
+            return self.package+'_'+self.version+att+'.wapt'
 
     def make_package_edit_directory(self):
         """Return the standard package directory to edit the package based on current attributes
