@@ -219,11 +219,7 @@ const
   EnableExternalTools:Boolean = True;
   EnableManagementFeatures:Boolean = True;
 
-  {$ifdef enterprise}
   EnableWaptWUAFeatures:Boolean = True;
-  {$else}
-  EnableWaptWUAFeatures:Boolean = False;
-  {$endif}
 
   HideUnavailableActions:Boolean = False;
 
