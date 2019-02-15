@@ -313,6 +313,7 @@ class Packages(WaptBaseModel):
     licence = CharField(null=True)
     editor = CharField(null=True)
     homepage = CharField(null=True)
+    filename = CharField(null=True,index=True)
 
     @classmethod
     def _as_attribute(cls,k,v):
@@ -1652,7 +1653,7 @@ def upgrade_db_structure():
             v.save()
 
     next_version = '1.7.3.2'
-    if get_db_version() <= next_version:
+    if get_db_version() < next_version:
         with wapt_db.atomic():
             logger.info("Migrating from %s to %s" % (get_db_version(), next_version))
             opes = []
@@ -1664,6 +1665,21 @@ def upgrade_db_structure():
             if not 'signature_date' in columns:
                 opes.append(migrator.add_column(Packages._meta.name, 'signature_date',Packages.signature_date))
             migrate(*opes)
+            (v, created) = ServerAttribs.get_or_create(key='db_version')
+            v.value = next_version
+            v.save()
+
+    next_version = '1.7.3.6'
+    if get_db_version() <= next_version:
+        with wapt_db.atomic():
+            logger.info("Migrating from %s to %s" % (get_db_version(), next_version))
+            opes = []
+
+            columns = [c.name for c in wapt_db.get_columns('packages')]
+            if not 'filenale' in columns:
+                opes.append(migrator.add_column(Packages._meta.name, 'filename',Packages.filename))
+            migrate(*opes)
+
             (v, created) = ServerAttribs.get_or_create(key='db_version')
             v.value = next_version
             v.save()
