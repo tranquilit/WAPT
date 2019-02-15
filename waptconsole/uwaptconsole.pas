@@ -5140,7 +5140,7 @@ begin
   ActPackagesAudit.Visible:=False;
   ActWUANewPackage.Visible := False;
   ActSoftwaresNormalization.Visible := False;
-
+  ActAddProfile.Visible:=False;
   SetSOGridVisible(GridHosts,'audit_status',False);
   SetSOGridVisible(GridHosts,'waptwua.status',False);
 
