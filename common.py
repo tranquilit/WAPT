@@ -3647,8 +3647,8 @@ class Wapt(BaseObjectClass):
                                 return func(*args,**kwargs)
                             return new_func
 
-                        setattr(setup,'install_msi_if_needed',with_install_context(setuphelpers.install_msi_if_needed,entry.impacted_process,setup.uninstallkey,self.options.force,self.pidlist))
-                        setattr(setup,'install_exe_if_needed',with_install_context(setuphelpers.install_exe_if_needed,entry.impacted_process,setup.uninstallkey,self.options.force,self.pidlist))
+                        setattr(setup,'install_msi_if_needed',with_install_context(setuphelpers.install_msi_if_needed,entry.impacted_process,setup.uninstallkey,force,self.pidlist))
+                        setattr(setup,'install_exe_if_needed',with_install_context(setuphelpers.install_exe_if_needed,entry.impacted_process,setup.uninstallkey,force,self.pidlist))
                         setattr(setup,'WAPT',self)
                         setattr(setup,'control',entry)
                         setattr(setup,'language',self.language)
