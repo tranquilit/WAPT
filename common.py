@@ -2407,7 +2407,12 @@ class WaptHostRepo(WaptRepo):
             for pe in self.packages():
                 if ((isinstance(pr,PackageEntry) and (pe == pr)) or
                    (isinstance(pr,(str,unicode)) and pe.match(pr))):
-                    pfn = os.path.join(target_dir,pe.make_package_filename())
+                    if not pe.filename:
+                        # fallback
+                        pfn = os.path.join(target_dir,pe.make_package_filename())
+                    else:
+                        pfn = os.path.join(target_dir,pe.filename)
+
                     if pe._package_content is not None:
                         with open(pfn,'wb') as package_zip:
                             package_zip.write(pe._package_content)

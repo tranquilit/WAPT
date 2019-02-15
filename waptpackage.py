@@ -1328,11 +1328,16 @@ class PackageEntry(BaseObjectClass):
 
     @property
     def download_url(self):
-        """Calculate the download URL for this entry
+        """Calculate and return the download URL for this entry
 
         """
         if self.repo_url:
-            return self.repo_url+'/'+self.filename.strip('./')
+            if self.filename:
+                return self.repo_url+'/'+self.filename.strip('./')
+            else:
+                # fallback
+                return self.repo_url+'/'+self.make_package_filename()
+
         else:
             return None
 
@@ -2715,8 +2720,9 @@ class WaptLocalRepo(WaptBaseRepo):
                     logger.debug(u"%s (%s)" % (package.package,package.version))
                     package.repo_url = u'file:///%s'%(self.localpath.replace('\\','/'))
                     package.repo = self.name
-                    package.filename = package.make_package_filename()
-                    package.localpath = os.path.join(self.localpath,package.filename)
+                    # TO CHECK
+                    #package.filename = package.make_package_filename()
+                    #package.localpath = os.path.join(self.localpath,package.filename)
                     if self.is_locally_allowed_package(package):
                         try:
                             if self.cabundle is not None:
@@ -3330,9 +3336,8 @@ class WaptRemoteRepo(WaptBaseRepo):
                 raise Exception('Invalid package request %s' % p)
 
         for entry in packages:
-            packagefilename = entry.filename.strip('./')
-            download_url = entry.repo_url+'/'+packagefilename
-            fullpackagepath = os.path.join(target_dir,packagefilename)
+            download_url = entry.download_url
+            fullpackagepath = os.path.join(target_dir,entry.filename)
             skip = False
             if usecache and os.path.isfile(fullpackagepath) and os.path.getsize(fullpackagepath) == entry.size :
                 # check version
