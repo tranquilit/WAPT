@@ -22,18 +22,21 @@ type
     ActUpgrade: TAction;
     ButNotNow: TBitBtn;
     ButUpgradeNow: TBitBtn;
-    CheckBox1: TCheckBox;
     CBSkipWindowsUpdates: TCheckBox;
+    CBShowDetails: TCheckBox;
     EdRunning: TEdit;
-    GridPending: TSOGrid;
     CustomLogo: TImage;
+    GridPending: TSOGrid;
+    GridPendingUpgrades: TSOGrid;
     LabDontShutdown: TLabel;
     Label1: TLabel;
+    LabPendingUpgrades: TLabel;
     LabWaptUpgrades: TLabel;
     LabWUAUpgrades: TLabel;
     PanButtons: TPanel;
     ImageList1: TImageList;
     MemoLog: TListBox;
+    PanDetailsLeft: TPanel;
     panTopDetails: TPanel;
     PanOut: TPanel;
     panTop: TPanel;
@@ -42,6 +45,8 @@ type
     panBas: TPanel;
     ProgressBar: TProgressBar;
     Splitter1: TSplitter;
+    Splitter2: TSplitter;
+    Splitter3: TSplitter;
     Timer1: TTimer;
     procedure ActShowDetailsExecute(Sender: TObject);
     procedure actSkipExecute(Sender: TObject);
@@ -70,6 +75,7 @@ type
     FOnlyIfNotProcessRunning: Boolean;
     FInstallWUAUpdates: Boolean;
     FRunning: ISuperObject;
+    function GetPackageStatus(LastUpdateStatus: ISuperObject): ISuperObject;
     procedure OnCheckTasksThreadNotify(Sender: TObject);
     procedure OnCheckWaptserviceNotify(Sender: TObject);
     procedure OnUpgradeTriggered(Sender: TObject);
@@ -83,6 +89,8 @@ type
     { public declarations }
     Upgrades,Removes,wua_status,wua_pending_count: ISuperObject;
     UpgradeTasks: ISuperObject;
+
+    WaitingForUpgradeTasks: Boolean;
 
     WAPTServiceRunning:Boolean;
     AutoUpgradeTime: TDateTime;
@@ -253,6 +261,7 @@ procedure TVisWaptExit.OnUpgradeTriggered(Sender: TObject);
 var
   aso: ISuperObject;
 begin
+  WaitingForUpgradeTasks := False;
   aso := (Sender as TTriggerWaptserviceAction).Tasks;
   if aso <> Nil then
   begin
@@ -284,6 +293,7 @@ begin
   DisableAutoUpgrade:=True;
   CountDown := 0;
   ActUpgrade.Caption:=rsLaunchSoftwareUpdate;
+  WaitingForUpgradeTasks := True;
   Application.ProcessMessages;
 
   if WAPTServiceRunning then
@@ -305,7 +315,7 @@ end;
 
 procedure TVisWaptExit.ActUpgradeUpdate(Sender: TObject);
 begin
-  ActUpgrade.Enabled:= (upgrades <> Nil) and (UpgradeTasks=Nil);
+  ActUpgrade.Enabled:= (upgrades <> Nil) and (UpgradeTasks=Nil) and (not WaitingForUpgradeTasks);
 end;
 
 procedure TVisWaptExit.ButUpgradeNowMouseDown(Sender: TObject;
@@ -340,6 +350,8 @@ begin
         WAPTLocalJsonGet('cancel_all_tasks.json')
       else
         Canclose := False
+    else
+        CanClose := True;
   end
   else
     CanClose:=True;
@@ -378,6 +390,36 @@ end;
 procedure TVisWaptExit.FormDestroy(Sender: TObject);
 begin
   FreeAndNil(CheckTasksThread);
+end;
+
+Function TVisWaptExit.GetPackageStatus(LastUpdateStatus:ISuperObject):ISuperObject;
+var
+  pr,row,lremoves:ISuperObject;
+  i: integer;
+begin
+  Result := TSuperObject.Create(stArray);
+  i := 0;
+  lremoves := LastUpdateStatus['pending.remove'];
+  if Assigned(lremoves) then
+    for pr in lremoves do
+    begin
+      Row := TSuperObject.Create(stObject);
+      Row.I['id'] := i;;
+      Row.S['install_status'] := 'REMOVE';;
+      Row['package'] := pr;
+      Result.AsArray.Add(row);
+      inc(i);
+    end;
+
+  for pr in LastUpdateStatus['upgrades'] do
+  begin
+    Row := TSuperObject.Create(stObject);
+    Row.I['id'] := i;;
+    Row.S['install_status'] := 'INSTALL';;
+    Row['package'] := pr;
+    Result.AsArray.Add(row);
+    inc(i);
+  end;
 end;
 
 procedure TVisWaptExit.OnCheckWaptserviceNotify(Sender: TObject);
@@ -422,11 +464,7 @@ begin
   begin
     if ShouldBeUpgraded then
     begin
-      MemoLog.Items.Text:= Join(#13#10, upgrades);
-      if Removes.AsArray.Length>0 then
-        MemoLog.Items.Text:=MemoLog.Items.Text + #13#10 + Format(rsPendingRemoves,[Removes.AsArray.Length])+#13#10 +
-            Join(#13#10, Removes);
-
+      GridPendingUpgrades.Data := GetPackageStatus(aso);
       LabWaptUpgrades.Caption := Format(rsUpdatesAvailable,[upgrades.AsArray.Length+Removes.AsArray.Length]);
       {$ifdef enterprise}
       if (wua_status<>Nil) and (wua_pending_count<>Nil) then
@@ -497,6 +535,9 @@ procedure TVisWaptExit.actSkipExecute(Sender: TObject);
 begin
   ActUpgrade.Enabled:=False;
   actSkip.Caption:=rsClosing;
+  actSkip.Enabled:=False;
+  running := Nil;
+  pending := Nil;
   Application.ProcessMessages;
   Close;
 end;

@@ -75,6 +75,10 @@ msgstr ""
 msgid "Pending tasks"
 msgstr ""
 
+#: tviswaptexit.labpendingupgrades.caption
+msgid "Pending upgrades"
+msgstr ""
+
 #: tviswaptexit.labwaptupgrades.caption
 msgid "Checking if WAPT Packages installs or updates are pending."
 msgstr ""
