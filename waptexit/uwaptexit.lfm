@@ -5,7 +5,8 @@ object VisWaptExit: TVisWaptExit
   Width = 500
   Anchors = [akTop, akRight]
   AutoSize = True
-  BorderStyle = bsDialog
+  BorderIcons = [biSystemMenu, biMinimize]
+  BorderStyle = bsSingle
   Caption = 'WAPT Softwares Updates'
   ClientHeight = 435
   ClientWidth = 500
