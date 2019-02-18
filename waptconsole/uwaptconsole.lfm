@@ -1086,6 +1086,67 @@ object VisWaptGUI: TVisWaptGUI
                 Text = 'local_status_history'
                 Width = 98
                 PropertyName = 'local_status_history'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                Position = 28
+                Text = 'Updated on'
+                Width = 100
+                PropertyName = 'updated_on'
+              end            
+              item
+                Position = 29
+                Text = 'Uninstallable'
+                Width = 82
+                PropertyName = 'is_uninstallable'
+              end            
+              item
+                Position = 30
+                Text = 'Downloaded on'
+                Width = 90
+                PropertyName = 'downloaded_on'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                Position = 31
+                Text = 'Created on'
+                Width = 115
+                PropertyName = 'created_on'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                Position = 32
+                Text = 'Uninstallation impact'
+                Width = 100
+                PropertyName = 'uninstallation_impact'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                Position = 33
+                Text = 'Beta'
+                Width = 100
+                PropertyName = 'is_beta'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                Position = 34
+                Text = 'Installation impact'
+                Width = 100
+                PropertyName = 'installation_impact'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                Position = 35
+                Text = 'languages'
+                Width = 100
+                PropertyName = 'languages'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                Position = 36
+                Text = 'Release notes'
+                Width = 164
+                PropertyName = 'release_notes'
               end>
             Header.DefaultHeight = 17
             Header.Height = 19
@@ -5535,8 +5596,57 @@ object VisWaptGUI: TVisWaptGUI
                   Position = 23
                   Tag = 23
                   Text = 'Downloaded on'
-                  Width = 159
+                  Width = 112
                   PropertyName = 'downloaded_on'
+                end              
+                item
+                  Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                  Position = 24
+                  Text = 'Uninstallation notes'
+                  Width = 100
+                  PropertyName = 'uninstallation_notes'
+                end              
+                item
+                  Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                  Position = 25
+                  Text = 'Uninstallable'
+                  Width = 100
+                  PropertyName = 'is_uninstallable'
+                end              
+                item
+                  Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                  Position = 26
+                  Text = 'Support url'
+                  Width = 100
+                  PropertyName = 'support_url'
+                end              
+                item
+                  Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                  Position = 27
+                  Text = 'Is beta ?'
+                  Width = 100
+                  PropertyName = 'is_beta'
+                end              
+                item
+                  Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                  Position = 28
+                  Text = 'Uninstallation impact'
+                  Width = 100
+                  PropertyName = 'uninstallation_impact'
+                end              
+                item
+                  Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                  Position = 29
+                  Text = 'languages'
+                  Width = 78
+                  PropertyName = 'languages'
+                end              
+                item
+                  Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                  Position = 30
+                  Text = 'Release notes'
+                  Width = 83
+                  PropertyName = 'release_notes'
                 end>
               Header.DefaultHeight = 17
               Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]

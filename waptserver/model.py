@@ -472,7 +472,8 @@ class WsusUpdates(WaptBaseModel):
     requires_network_connectivity = BooleanField(null=True)
     is_beta = BooleanField(null=True)
     is_uninstallable = BooleanField(null=True)
-    uninstallation_behavior = CharField(null=True)
+    installation_impact = CharField(null=True)
+    uninstallation_impact = CharField(null=True)
     support_url = CharField(null=True)
     release_notes = TextField(null=True)
     uninstallation_notes = TextField(null=True)
@@ -1687,7 +1688,7 @@ def upgrade_db_structure():
                 opes.append(migrator.add_column(Packages._meta.name, 'filename',Packages.filename))
 
             columns = [c.name for c in wapt_db.get_columns('wsusupdates')]
-            for col in ['is_beta','is_uninstallable','uninstallation_behavior','support_url','release_notes','uninstallation_notes','languages']:
+            for col in ['is_beta','is_uninstallable','uninstallation_impact','installation_impact','support_url','release_notes','uninstallation_notes','languages']:
                 if not col in columns:
                     opes.append(migrator.add_column(WsusUpdates._meta.name, col,getattr(WsusUpdates,col)))
 

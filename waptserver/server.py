@@ -1711,6 +1711,16 @@ def host_data():
                 WsusUpdates.reboot_behaviour,
                 WsusUpdates.can_request_user_input,
                 WsusUpdates.requires_network_connectivity,
+                WsusUpdates.languages,
+                WsusUpdates.created_on,
+                WsusUpdates.updated_on,
+                WsusUpdates.downloaded_on,
+                WsusUpdates.is_beta,
+                WsusUpdates.release_notes,
+                WsusUpdates.is_uninstallable,
+                WsusUpdates.update_type,
+                WsusUpdates.installation_impact,
+                WsusUpdates.uninstallation_impact,
                 ]
             result = list(local_status.select(*fields).join(WsusUpdates,'RIGHT OUTER').where(local_status.host == uuid).order_by(WsusUpdates.changetime).dicts()) # pylint: disable=no-member
         else:
