@@ -123,6 +123,16 @@ else:
         def __exit__(self, type, value, traceback):
             pass
 
+
+
+def int2uhex(aint):
+    """Cnvert a signed integer to a unsigned hex representation
+    Useful for com error
+
+    """
+    return '%#4x' % (aint & 0xffffffff)
+
+
 #####################################
 # http://code.activestate.com/recipes/498181-add-thousands-separator-commas-to-formatted-number/
 # Code from Michael Robellard's comment made 28 Feb 2010
@@ -388,13 +398,16 @@ def ensure_unicode(data):
                     return data.decode(sys.getfilesystemencoding(),'replace')
         if platform.system() == 'Windows' and isinstance(data,pythoncom.com_error):
             try:
-                error_msg = ensure_unicode(win32api.FormatMessage(data.args[2][5]))
-                return u"%s (%s): %s (%s)" % (data.args[0], data.args[1].decode('cp850'),data.args[2][5],error_msg)
+                try:
+                    error_msg = ensure_unicode(win32api.FormatMessage(data.args[2][5]))
+                except Exception as e:
+                    error_msg = '(unable to get meaning for error code %s)' % int2uhex(data.args[2][5])
+                return u"%s (%s): %s (%s)" % (int2uhex(data.args[0]), data.args[1].decode('cp850'),int2uhex(data.args[2][5]),error_msg)
             except:
                 try:
-                    return u"%s : %s" % (data.args[0], data.args[1].decode('cp850'))
+                    return u"%s : %s" % (int2uhex(data.args[0]), data.args[1].decode('cp850'))
                 except UnicodeError:
-                    return u"%s : %s" % (data.args[0], data.args[1].decode(sys.getfilesystemencoding(),'ignore'))
+                    return u"%s : %s" % (int2uhex(data.args[0]), data.args[1].decode(sys.getfilesystemencoding(),'ignore'))
 
         if platform.system() == 'Windows' and isinstance(data,WindowsError):
             try:
