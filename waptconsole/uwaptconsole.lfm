@@ -718,11 +718,11 @@ object VisWaptGUI: TVisWaptGUI
         end
         object pgSoftwares: TTabSheet
           Caption = 'Software inventory'
-          ClientHeight = 446
+          ClientHeight = 479
           ClientWidth = 564
           object GridHostSoftwares: TSOGrid
             Left = 0
-            Height = 419
+            Height = 452
             Top = 27
             Width = 564
             ShowAdvancedColumnsCustomize = False
@@ -9527,6 +9527,12 @@ object VisWaptGUI: TVisWaptGUI
       ImageIndex = 2
       OnExecute = ActWUAShowDownloadTasksExecute
     end
+    object ActTriggerWaptwua_uninstall: TAction
+      Category = 'hostswua'
+      Caption = 'Trigger the Uninstall of selected Windows Updates'
+      OnExecute = ActTriggerWaptwua_uninstallExecute
+      OnUpdate = ActTriggerWaptwua_scanUpdate
+    end
   end
   object PopupGridWSUSScan: TPopupMenu
     left = 200
@@ -12071,6 +12077,12 @@ object VisWaptGUI: TVisWaptGUI
     end
     object MenuItem101: TMenuItem
       Action = ActWUAShowMSUpdatesHelp
+    end
+    object MenuItem113: TMenuItem
+      Caption = '-'
+    end
+    object MenuItem114: TMenuItem
+      Action = ActTriggerWaptwua_uninstall
     end
   end
   object PopupWUAClassifications: TPopupMenu

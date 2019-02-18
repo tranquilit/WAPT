@@ -92,6 +92,7 @@ resourcestring
   rsConfirmHostsWaptWUAScan = 'Are you sure you want to scan pending Windows updates on %d hosts ?';
   rsConfirmHostsWaptWUADownload = 'Are you sure you want to scan and download Windows updates on %d hosts ?';
   rsConfirmHostsWaptWUAInstall = 'Are you sure you want to scan and install Windows updates on %d hosts ?';
+  rsConfirmHostsWaptWUAUninstall = 'Are you sure you want to Uninstall %d Windows updates on %d hosts ?';
 
   rsConfirmWUADownload = 'Are you sure you want to download %d Windows updates on the server ?';
 

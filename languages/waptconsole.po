@@ -2000,6 +2000,10 @@ msgctxt "TVISWAPTGUI.ACTTRIGGERWAPTWUA_SCAN.CAPTION"
 msgid "Trigger the scan of missing Windows Updates"
 msgstr ""
 
+#: tviswaptgui.acttriggerwaptwua_uninstall.caption
+msgid "Trigger the Uninstall of selected Windows Updates"
+msgstr ""
+
 #: tviswaptgui.actveyon.caption
 msgid "Connect via Veyon"
 msgstr ""
@@ -3529,6 +3533,10 @@ msgstr ""
 
 #: uwaptconsoleres.rsconfirmhostswaptwuascan
 msgid "Are you sure you want to scan pending Windows updates on %d hosts ?"
+msgstr ""
+
+#: uwaptconsoleres.rsconfirmhostswaptwuauninstall
+msgid "Are you sure you want to Uninstall %d Windows updates on %d hosts ?"
 msgstr ""
 
 #: uwaptconsoleres.rsconfirmimport

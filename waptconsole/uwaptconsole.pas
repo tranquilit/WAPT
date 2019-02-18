@@ -31,6 +31,7 @@ type
     ActDeleteNetwork: TAction;
     ActInstallLicence: TAction;
     ActAddProfile: TAction;
+    ActTriggerWaptwua_uninstall: TAction;
     ActSoftwaresNormalization: TAction;
     ActReportingQueryExport: TAction;
     ActReportingQueryImport: TAction;
@@ -61,6 +62,8 @@ type
     MenuItem110: TMenuItem;
     MenuItem111: TMenuItem;
     MenuItem112: TMenuItem;
+    MenuItem113: TMenuItem;
+    MenuItem114: TMenuItem;
     MenuItem4: TMenuItem;
     MenuItem76: TMenuItem;
     PanFilterHosts: TPanel;
@@ -632,6 +635,7 @@ type
     procedure ActTriggerWaptwua_installExecute(Sender: TObject);
     procedure ActTriggerWaptwua_scanExecute(Sender: TObject);
     procedure ActTriggerWaptwua_scanUpdate(Sender: TObject);
+    procedure ActTriggerWaptwua_uninstallExecute(Sender: TObject);
     procedure ActVeyonExecute(Sender: TObject);
     procedure ActVeyonUpdate(Sender: TObject);
     procedure ActWSUSDowloadWSUSScanExecute(Sender: TObject);
@@ -5164,6 +5168,7 @@ begin
   ActTriggerWaptwua_scan.Visible:=False;
   ActTriggerWaptwua_download.Visible:=False;
   ActTriggerWaptwua_install.Visible:=False;
+  ActTriggerWaptwua_uninstall.Visible:=False;
 
   PanHostsForPackage.Visible:=False;
   {$endif}
@@ -6127,7 +6132,10 @@ begin
 ;;
 end;
 
-
+procedure TVisWaptGUI.ActTriggerWaptwua_uninstallExecute(Sender: TObject);
+begin
+;;
+end;
 
 {$endif}
 
