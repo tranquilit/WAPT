@@ -452,28 +452,32 @@ class Normalization(WaptBaseModel):
         return '<Normalization uuid=%s name=%s>' % (self.uuid, self.name)
 
 
-
-
 class WsusUpdates(WaptBaseModel):
     update_id = CharField(primary_key=True, index=True)
     title = CharField()
     update_type = CharField()
-    kbids = ArrayField(CharField, index=True)
+    kbids = ArrayField(CharField, index=True,null=True)
     severity = CharField(null=True)
     changetime = CharField(null=True)
     product = CharField(null=True, index=True)
     classification = CharField(null=True)
-    download_urls = ArrayField(CharField)
+    download_urls = ArrayField(CharField,null=True)
     min_download_size = BigIntegerField(null=True)
     max_download_size = BigIntegerField(null=True)
-    superseded_update_ids = ArrayField(CharField)
-    security_bulletin_ids = ArrayField(CharField)
+    superseded_update_ids = ArrayField(CharField,null=True)
+    security_bulletin_ids = ArrayField(CharField,null=True)
     is_mandatory = BooleanField(null=True)
     reboot_behaviour = CharField(null=True)
     can_request_user_input = CharField(null=True)
     requires_network_connectivity = BooleanField(null=True)
+    is_beta = BooleanField(null=True)
+    is_uninstallable = BooleanField(null=True)
+    uninstallation_behavior = CharField(null=True)
+    support_url = CharField(null=True)
+    release_notes = TextField(null=True)
+    uninstallation_notes = TextField(null=True)
+    languages = ArrayField(CharField,null=True)
     downloaded_on = CharField(null=True)
-
 
 class HostWsus(WaptBaseModel):
     """List of Windows Update discovered by waptwua for a Host with install status
@@ -1625,6 +1629,7 @@ def upgrade_db_structure():
             columns = [c.name for c in wapt_db.get_columns('hosts')]
             if not 'host_capabilities' in columns:
                 opes.append(migrator.add_column(Hosts._meta.name, 'host_capabilities',Hosts.host_capabilities))
+
             migrate(*opes)
             (v, created) = ServerAttribs.get_or_create(key='db_version')
             v.value = next_version
@@ -1647,6 +1652,7 @@ def upgrade_db_structure():
                 opes.append(migrator.add_column(Hosts._meta.name, 'host_metrics',Hosts.host_metrics))
             if not 'wapt_version' in columns:
                 opes.append(migrator.add_column(Hosts._meta.name, 'wapt_version',Hosts.wapt_version))
+
             migrate(*opes)
             (v, created) = ServerAttribs.get_or_create(key='db_version')
             v.value = next_version
@@ -1664,6 +1670,7 @@ def upgrade_db_structure():
             columns = [c.name for c in wapt_db.get_columns('packages')]
             if not 'signature_date' in columns:
                 opes.append(migrator.add_column(Packages._meta.name, 'signature_date',Packages.signature_date))
+
             migrate(*opes)
             (v, created) = ServerAttribs.get_or_create(key='db_version')
             v.value = next_version
@@ -1676,13 +1683,19 @@ def upgrade_db_structure():
             opes = []
 
             columns = [c.name for c in wapt_db.get_columns('packages')]
-            if not 'filenale' in columns:
+            if not 'filename' in columns:
                 opes.append(migrator.add_column(Packages._meta.name, 'filename',Packages.filename))
-            migrate(*opes)
 
+            columns = [c.name for c in wapt_db.get_columns('wsusupdates')]
+            for col in ['is_beta','is_uninstallable','uninstallation_behavior','support_url','release_notes','uninstallation_notes','languages']:
+                if not col in columns:
+                    opes.append(migrator.add_column(WsusUpdates._meta.name, col,getattr(WsusUpdates,col)))
+
+            migrate(*opes)
             (v, created) = ServerAttribs.get_or_create(key='db_version')
             v.value = next_version
             v.save()
+
 
 if __name__ == '__main__':
     if platform.system() != 'Windows' and getpass.getuser() != 'wapt':

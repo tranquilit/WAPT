@@ -2132,7 +2132,8 @@ if __name__ == '__main__':
     load_db_config(app.conf)
     try:
         upgrade_db_structure()
-    except:
+    except Exception as e:
+        logger.critical('Unable to upgrade DB structure, init instead: %s' % (repr(e)))
         init_db()
 
     logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s')
