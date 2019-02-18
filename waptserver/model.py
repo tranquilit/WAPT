@@ -750,9 +750,16 @@ def update_waptwua(uuid,data,applied_status_hashes):
                 download_urls = WsusUpdates.select(WsusUpdates.update_id,WsusUpdates.download_urls).where(WsusUpdates.update_id==update['update_id']).first()
                 if not download_urls:
                     WsusUpdates.insert(update).on_conflict('IGNORE').execute()
-                elif download_urls.download_urls != update['download_urls']:
-                    new_urls = list(set(download_urls.download_urls + update['download_urls']))
-                    WsusUpdates.update(download_urls=new_urls).where(WsusUpdates.update_id == update['update_id']).execute()
+                #elif download_urls.download_urls != update['download_urls']:
+                #    new_urls = list(set(download_urls.download_urls + update['download_urls']))
+                #    WsusUpdates.update(download_urls=new_urls).where(WsusUpdates.update_id == update['update_id']).execute()
+                else:
+                    # append new urls when different locales for example
+                    if download_urls.download_urls != update['download_urls']:
+                        new_urls = list(set(download_urls.download_urls + update['download_urls']))
+                        update['download_urls'] = new_urls
+                        update['downloaded'] = Node
+                    WsusUpdates.update(**update).where(WsusUpdates.update_id == update['update_id']).execute()
             #WsusUpdates.insert_many(windows_updates).on_conflict('IGNORE').execute()
 
         applied_status_hashes['waptwua_updates'] = data.get('status_hashes',{}).get('waptwua_updates')
