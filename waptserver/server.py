@@ -960,7 +960,7 @@ def login():
             password = request.args['password']
 
         # TODO : sanity check on username
-        if not re.match('[a-z0-9]+[a-z0-9-_]+[a-z0-9]+$', user, re.IGNORECASE):
+        if not re.match(r'[a-z0-9]+[a-z0-9_@\.-]+[a-z0-9_@\.-]+$', user, re.IGNORECASE):
             msg = 'login must be alphanumeric with a dash'
             raise EWaptAuthenticationFailure(msg)
 
