@@ -1226,10 +1226,18 @@ msgctxt "tvissoftwaresnormalization.actnormalizationimportsoftwares.caption"
 msgid "Import"
 msgstr "Importer"
 
+#: tvissoftwaresnormalization.actnormalizationimportsoftwares.hint
+msgid "Append all the software descriptions gathered from hosts inventory"
+msgstr "Ajoute tous les logiciels collectés lors de l'inventaire des postes"
+
 #: tvissoftwaresnormalization.actnormalizationwritetable.caption
 msgctxt "tvissoftwaresnormalization.actnormalizationwritetable.caption"
 msgid "Write"
 msgstr "Enregistrer"
+
+#: tvissoftwaresnormalization.butok.caption
+msgid "Close"
+msgstr "Fermer"
 
 #: tvissoftwaresnormalization.caption
 msgid "Normalizes sofware titles"

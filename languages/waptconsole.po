@@ -1220,9 +1220,17 @@ msgctxt "tvissoftwaresnormalization.actnormalizationimportsoftwares.caption"
 msgid "Import"
 msgstr ""
 
+#: tvissoftwaresnormalization.actnormalizationimportsoftwares.hint
+msgid "Append all the software descriptions gathered from hosts inventory"
+msgstr ""
+
 #: tvissoftwaresnormalization.actnormalizationwritetable.caption
 msgctxt "tvissoftwaresnormalization.actnormalizationwritetable.caption"
 msgid "Write"
+msgstr ""
+
+#: tvissoftwaresnormalization.butok.caption
+msgid "Close"
 msgstr ""
 
 #: tvissoftwaresnormalization.caption

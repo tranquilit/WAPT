@@ -273,7 +273,7 @@ class WaptServiceConfig(object):
         self.websockets_root = 'socket.io'
 
         # tolerance time replay limit for signed actions from server
-        self.signature_clockskew = 5*60
+        self.signature_clockskew = 30*60
 
         # for Wapt Windows updates service (enterprise)
         self.waptaudit_task_period = None

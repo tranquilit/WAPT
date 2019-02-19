@@ -271,7 +271,6 @@ procedure TVisImportPackage.GridExternalPackagesInitNode(
   var InitialStates: TVirtualNodeInitStates);
 begin
   InitialStates := InitialStates + [ivsMultiline];
-
 end;
 
 procedure TVisImportPackage.GridExternalPackagesMeasureItem(
