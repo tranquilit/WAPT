@@ -1677,6 +1677,12 @@ class WaptServer(BaseObjectClass):
                     elif not os.path.isfile(self.verify_cert):
                         logger.warning(u'waptserver certificate %s declared in configuration file can not be found. Waptserver communication will fail' % self.verify_cert)
 
+            if config.has_option(section,'client_certificate'):
+                self.client_certificate = config.get(section,'client_certificate')
+
+            if config.has_option(section,'client_private_key'):
+                self.client_private_key = config.get(section,'client_private_key')
+
         return self
 
     def load_config_from_file(self,config_filename,section='global'):
@@ -2312,7 +2318,9 @@ class WaptHostRepo(WaptRepo):
                 proxies=self.proxies,verify=self.verify_cert,
                 timeout=self.timeout,
                 headers=default_http_headers(),
-                allow_redirects=True)
+                allow_redirects=True,
+                cert = self.client_auth(),
+                )
 
             # prepare a package entry for further check
             package = PackageEntry()
