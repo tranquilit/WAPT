@@ -69,8 +69,11 @@ interface
   function WAPTServerJsonPost(action: String;args:Array of const;data: ISuperObject;method:AnsiString='POST';ConnectTimeout:integer=4000;SendTimeout:integer=60000;ReceiveTimeout:integer=60000): ISuperObject; //use global credentials and proxy settings
   function WAPTLocalJsonGet(action:String;user:AnsiString='';password:AnsiString='';timeout:integer=-1;OnAuthorization:TIdOnAuthorization=Nil;RetryCount:Integer=3):ISuperObject;
 
-  Function IdWget(const fileURL, DestFileName: Utf8String; CBReceiver:TObject=Nil;progressCallback:TProgressCallback=Nil;HttpProxy: String='';userAgent:String='';VerifyCertificateFilename:String='';CookieManage:TIdCookieManager=Nil): boolean;
-  Function IdWget_Try(const fileURL: Utf8String;HttpProxy: String='';userAgent:String='';VerifyCertificateFilename:String='';CookieManage:TIdCookieManager=Nil): boolean;
+  Function IdWget(const fileURL, DestFileName: Utf8String; CBReceiver:TObject=Nil;progressCallback:TProgressCallback=Nil;HttpProxy: String='';userAgent:String='';
+              VerifyCertificateFilename:String='';CookieManage:TIdCookieManager=Nil;ClientCertFilename:String='';ClientKeyFilename:String=''): boolean;
+  Function IdWget_Try(const fileURL: Utf8String;HttpProxy: String='';userAgent:String='';VerifyCertificateFilename:String='';CookieManage:TIdCookieManager=Nil;
+              ClientCertFilename:String='';
+              ClientKeyFilename:String=''): boolean;
   function IdHttpGetString(const url: ansistring; HttpProxy: String='';
       ConnectTimeout:integer=4000;
       SendTimeOut:integer=60000;
@@ -78,7 +81,9 @@ interface
       user:AnsiString='';password:AnsiString='';
       method:AnsiString='GET';userAGent:String='';
       VerifyCertificateFilename:String='';AcceptType:String='application/json';
-      CookieManager:TIdCookieManager=Nil):RawByteString;
+      CookieManager:TIdCookieManager=Nil;
+      ClientCertFilename:String='';
+      ClientKeyFilename:String=''):RawByteString;
 
   function IdHttpPostData(const url: Ansistring; const Data: RawByteString; const Method: String='POST'; const HttpProxy: String='';
       ConnectTimeout:integer=4000;SendTimeOut:integer=60000;
@@ -86,7 +91,9 @@ interface
       user:AnsiString='';password:AnsiString='';userAgent:String='';
       ContentType:String='application/json';
       VerifyCertificateFilename:String='';AcceptType:String='application/json';
-      CookieManager:TIdCookieManager=Nil):RawByteString;
+      CookieManager:TIdCookieManager=Nil;
+      ClientCertFilename:String='';
+      ClientKeyFilename:String=''):RawByteString;
 
   function GetReachableIP(IPS:ISuperObject;port:word;Timeout:Integer=200):String;
 
@@ -224,6 +231,9 @@ const
   HideUnavailableActions:Boolean = False;
 
   WaptPersonalCertificatePath: String ='';
+
+  WaptClientCertFilename:String='';
+  WaptClientKeyFilename:String='';
 
   WaptCAKeyFilename: String ='';
   WaptCACertFilename: String ='';
@@ -601,7 +611,8 @@ begin
 end;
 
 function IdWget(const fileURL, DestFileName: Utf8String; CBReceiver: TObject;
-  progressCallback: TProgressCallback; HttpProxy: String='';userAgent:String='';  VerifyCertificateFilename:String='';CookieManage:TIdCookieManager=Nil): boolean;
+  progressCallback: TProgressCallback; HttpProxy: String='';userAgent:String='';  VerifyCertificateFilename:String='';CookieManage:TIdCookieManager=Nil;
+  ClientCertFilename:String='';ClientKeyFilename:String=''): boolean;
 var
   http:TIdHTTP;
   OutputFile:TFileStream;
@@ -632,6 +643,11 @@ begin
     // init ssl stack
     ssl_handler := TIdSSLIOHandlerSocketOpenSSL.Create;
     ssl_handler.SSLOptions.Method:=sslvSSLv23;
+    if (ClientCertFilename<>'') and (ClientKeyFilename<>'') then
+    begin
+      ssl_handler.SSLOptions.CertFile:=ClientCertFilename;
+      ssl_handler.SSLOptions.KeyFile:=ClientKeyFilename;
+    end;
 
   	HTTP.IOHandler := ssl_handler;
     sslCheck := TSSLVerifyCert.Create(GetHostFromURL(fileurl));
@@ -699,7 +715,9 @@ begin
   end;
 end;
 
-function IdWget_Try(const fileURL: Utf8String; HttpProxy: String='';userAgent:String='';VerifyCertificateFilename:String='';CookieManage:TIdCookieManager=Nil): boolean;
+function IdWget_Try(const fileURL: Utf8String; HttpProxy: String='';userAgent:String='';VerifyCertificateFilename:String='';CookieManage:TIdCookieManager=Nil;
+      ClientCertFilename:String='';
+      ClientKeyFilename:String=''): boolean;
 var
   http:TIdHTTP;
   ssl_handler: TIdSSLIOHandlerSocketOpenSSL;
@@ -720,6 +738,11 @@ begin
     // init ssl stack
     ssl_handler := TIdSSLIOHandlerSocketOpenSSL.Create;
     ssl_handler.SSLOptions.Method:=sslvSSLv23;
+    if (ClientCertFilename<>'') and (ClientKeyFilename<>'') then
+    begin
+      ssl_handler.SSLOptions.CertFile:=ClientCertFilename;
+      ssl_handler.SSLOptions.KeyFile:=ClientKeyFilename;
+    end;
 
   	HTTP.IOHandler := ssl_handler;
     sslCheck := TSSLVerifyCert.Create(GetHostFromURL(fileurl));
@@ -768,7 +791,10 @@ end;
 
 function IdHttpGetString(const url: ansistring; HttpProxy:String='';
     ConnectTimeout:integer=4000;SendTimeOut:integer=60000;ReceiveTimeOut:integer=60000;user:AnsiString='';password:AnsiString='';method:AnsiString='GET';userAGent:String='';VerifyCertificateFilename:String='';
-    AcceptType:String='application/json';CookieManager:TIdCookieManager=Nil):RawByteString;
+    AcceptType:String='application/json';
+    CookieManager:TIdCookieManager=Nil;
+    ClientCertFilename:String='';
+    ClientKeyFilename:String=''):RawByteString;
 var
   http:TIdHTTP;
   ssl_handler: TIdSSLIOHandlerSocketOpenSSL;
@@ -794,6 +820,11 @@ begin
     // init ssl stack
     ssl_handler := TIdSSLIOHandlerSocketOpenSSL.Create;
     ssl_handler.SSLOptions.Method:=sslvSSLv23;
+    if (ClientCertFilename<>'') and (ClientKeyFilename<>'') then
+    begin
+      ssl_handler.SSLOptions.CertFile:=ClientCertFilename;
+      ssl_handler.SSLOptions.KeyFile:=ClientKeyFilename;
+    end;
 
     http.IOHandler := ssl_handler;
     sslCheck := TSSLVerifyCert.Create(GetHostFromURL(url));
@@ -859,7 +890,7 @@ end;
 
 function IdHttpPostData(const url: Ansistring; const Data: RawByteString; const Method: String='POST'; const HttpProxy: String='';
    ConnectTimeout:integer=4000;SendTimeOut:integer=60000;ReceiveTimeOut:integer=60000;user:AnsiString='';password:AnsiString='';userAgent:String='';ContentType:String='application/json';VerifyCertificateFilename:String='';
-   AcceptType:String='application/json';CookieManager:TIdCookieManager=Nil):RawByteString;
+   AcceptType:String='application/json';CookieManager:TIdCookieManager=Nil;ClientCertFilename:String='';ClientKeyFilename:String=''):RawByteString;
 var
   http:TIdHTTP;
   DataStream:TStringStream;
@@ -902,6 +933,11 @@ begin
     // init ssl stack
     ssl_handler := TIdSSLIOHandlerSocketOpenSSL.Create;
     ssl_handler.SSLOptions.Method:=sslvSSLv23;
+    if (ClientCertFilename<>'') and (ClientKeyFilename<>'') then
+    begin
+      ssl_handler.SSLOptions.CertFile:=ClientCertFilename;
+      ssl_handler.SSLOptions.KeyFile:=ClientKeyFilename;
+    end;
 
     HTTP.IOHandler := ssl_handler;
     sslCheck := TSSLVerifyCert.Create(GetHostFromURL(url));
@@ -909,6 +945,12 @@ begin
     if (VerifyCertificateFilename<>'') and (VerifyCertificateFilename <>'0') then
     begin
       ssl_handler.SSLOptions.VerifyDepth:=20;
+      if (ClientCertFilename<>'') and (ClientKeyFilename<>'') then
+      begin
+        ssl_handler.SSLOptions.CertFile:=ClientCertFilename;
+        ssl_handler.SSLOptions.KeyFile:=ClientKeyFilename;
+      end;
+
       ssl_handler.SSLOptions.VerifyMode:=[sslvrfPeer];
       ssl_handler.OnVerifyPeer:=@sslCheck.VerifypeerCertificate;
       //Self signed
@@ -982,7 +1024,8 @@ begin
     Proxy:='';
 
   strresult:=IdhttpGetString(GetWaptServerURL+action,Proxy,ConnectTimeout,SendTimeout ,ReceiveTimeout,
-    waptServerUser,waptServerPassword,method,'',GetWaptServerCertificateFilename,'application/json',GetWaptServerSession());
+    waptServerUser,waptServerPassword,method,'',GetWaptServerCertificateFilename,'application/json',GetWaptServerSession(),
+    WaptClientCertFilename,WaptClientKeyFilename );
   Result := SO(strresult);
 end;
 
@@ -1003,7 +1046,8 @@ begin
     Proxy:='';
 
   strresult:=IdhttpGetString(GetWaptServerURL+action,proxy,4000,60000,60000,waptServerUser, waptServerPassword,
-    'DELETE','',GetWaptServerCertificateFilename,'application/json',GetWaptServerSession());
+    'DELETE','',GetWaptServerCertificateFilename,'application/json',GetWaptServerSession(),
+    WaptClientCertFilename,WaptClientKeyFilename );
   Result := SO(strresult);
 end;
 
@@ -1024,7 +1068,8 @@ begin
     Proxy:='';
 
   res := IdhttpPostData(GetWaptServerURL+action, Utf8Encode(data.AsJson), method, proxy, ConnectTimeout,SendTimeout,ReceiveTimeout,
-    WaptServerUser,WaptServerPassword,'','application/json',GetWaptServerCertificateFilename,'application/json',GetWaptServerSession());
+    WaptServerUser,WaptServerPassword,'','application/json',GetWaptServerCertificateFilename,'application/json',GetWaptServerSession(),
+    WaptClientCertFilename,WaptClientKeyFilename );
   result := SO(res);
 end;
 
@@ -1243,7 +1288,7 @@ begin
     begin
       Result := UTF8Encode(rec.S['url']);
       Logger('trying '+Result,INFO);
-      if IdWget_try(Result+'/Packages',http_proxy,'','0') then
+      if IdWget_try(Result+'/Packages',http_proxy,'','0',Nil,WaptClientCertFilename,WaptClientKeyFilename) then
         Exit;
     end;
 
@@ -1253,14 +1298,14 @@ begin
     begin
       Result := UTF8Encode('http://'+rec.AsString+'/wapt');
       Logger('trying '+result,INFO);
-      if IdWget_try(result,http_proxy,'','0') then
+      if IdWget_try(result,http_proxy,'','0',Nil,WaptClientCertFilename,WaptClientKeyFilename ) then
         Exit;
     end;
 
     //A wapt
     Result := 'http://'+RepoName+'.'+dnsdomain+'/wapt';
       Logger('trying '+result,INFO);
-      if IdWget_try(result,http_proxy,'','0') then
+      if IdWget_try(result,http_proxy,'','0',Nil,WaptClientCertFilename,WaptClientKeyFilename) then
         Exit;
   end;
 end;
@@ -1471,9 +1516,15 @@ begin
     DefaultPackagePrefix := ReadString('global','default_package_prefix','');
     DefaultSourcesRoot := ReadString('global','default_sources_root','');
 
+    // for packages / configuration / actions signature
     WaptPersonalCertificatePath :=  ReadString('global','personal_certificate_path','');
+
     WaptCAKeyFilename := ReadString('global', 'default_ca_key_path', '');
     WaptCACertFilename := ReadString('global', 'default_ca_cert_path', '');
+
+    // For ssl client auth on wapt server and repos
+    WaptClientCertFilename :=  ReadString('global','client_certificate','');
+    WaptClientKeyFilename :=  ReadString('global','client_private_key','');
 
     AuthorizedCertsDir := ReadString('global','public_certs_dir',MakePath([WaptBaseDir,'ssl']));
     DefaultMaturity :=  ReadString('global','default_maturity','');
