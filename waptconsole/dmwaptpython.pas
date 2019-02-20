@@ -80,6 +80,7 @@ type
 
     function CertificateIsCodeSigning(crtfilename:String):Boolean;
     property privateKeyPassword: Ansistring read getprivateKeyPassword write setprivateKeyPassword;
+    procedure OnGetPrivateKeyPassword(var Password: String);
 
     property WaptConfigFileName:String read FWaptConfigFileName write SetWaptConfigFileName;
     function RunJSON(expr: String; jsonView: TVirtualJSONInspector=
@@ -107,7 +108,6 @@ type
     {$endif}
     function CheckLicence(domain: String; var LicencesLog: String): Integer;
     procedure CheckPySources;
-
 
   end;
 
@@ -260,6 +260,8 @@ begin
   finally
     st.free;
   end;
+
+  OnWaptGetKeyPassword := @Self.OnGetPrivateKeyPassword;
 
   {$ifdef ENTERPRISE}
   FMaxHostsCount :=0;
@@ -563,6 +565,7 @@ begin
       FMainWaptRepo := dmpython.waptpackage.WaptRemoteRepo(name := section {, cabundle := cabundle});
       VWaptConfigFileName:=PyUTF8Decode(WaptConfigFileName);
       FMainWaptRepo.load_config_from_file(VWaptConfigFileName);
+      //todo : load client cert and key
     finally
       Free;
     end;
@@ -603,6 +606,7 @@ begin
       FWaptHostRepo := dmpython.common.WaptHostRepo(name := section, cabundle := cabundle );
       VWaptConfigFileName := PyUTF8Decode(WaptConfigFileName);
       FWaptHostRepo.load_config_from_file(VWaptConfigFileName);
+      //todo : load client cert and key
     finally
       Free;
     end;
@@ -690,6 +694,11 @@ begin
   Result := FPersonalCertificate;
 end;
 
+
+procedure TDMPython.OnGetPrivateKeyPassword(var Password: String);
+begin
+  Password := getprivateKeyPassword;
+end;
 
 
 {$ifdef ENTERPRISE}
