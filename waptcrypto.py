@@ -1139,6 +1139,7 @@ class SSLPrivateKey(BaseObjectClass):
             email=None,
             is_ca=None,
             is_code_signing=None,
+            is_client_auth=True,
             key_usages=['digital_signature','content_commitment','key_cert_sign','data_encipherment'],
             crl_url = None,
             issuer_cert_url = None ):
@@ -1192,9 +1193,14 @@ class SSLPrivateKey(BaseObjectClass):
         if is_ca and not 'crl_sign' in key_usages:
             key_usages.append('crl_sign')
 
+        extended_key_usage = []
         if is_code_signing:
+            extended_key_usage.append(x509.OID_CODE_SIGNING)
+        if is_client_auth:
+            extended_key_usage.append(x509.OID_CLIENT_AUTH)
+        if extended_key_usage:
             extensions.append(dict(
-                extension=x509.ExtendedKeyUsage([x509.OID_CODE_SIGNING]),
+                extension=x509.ExtendedKeyUsage(extended_key_usage),
                 critical=True))
 
         extensions.append(dict(
@@ -1288,6 +1294,7 @@ class SSLPrivateKey(BaseObjectClass):
             email=None,
             is_ca=False,
             is_code_signing=None,
+            is_client_auth=True,
             key_usages=['digital_signature','content_commitment','key_cert_sign','data_encipherment']
             ):
         """Build a certificate signing request with self public key and supplied attributes,
@@ -1331,9 +1338,14 @@ class SSLPrivateKey(BaseObjectClass):
         if is_ca and not 'crl_sign' in key_usages:
             key_usages.append('crl_sign')
 
+        extended_key_usage = []
         if is_code_signing:
+            extended_key_usage.append(x509.OID_CODE_SIGNING)
+        if is_client_auth:
+            extended_key_usage.append(x509.OID_CLIENT_AUTH)
+        if extended_key_usage:
             extensions.append(dict(
-                extension=x509.ExtendedKeyUsage([x509.OID_CODE_SIGNING]),
+                extension=x509.ExtendedKeyUsage(extended_key_usage),
                 critical=True))
 
         extensions.append(dict(

@@ -25,7 +25,7 @@ unit waptcommon;
 interface
   uses
      Classes, SysUtils, Windows,
-     SuperObject,IdComponent,IdHttp,IdCookieManager,DefaultTranslator;
+     SuperObject,IdComponent,IdHttp,IdCookieManager,IdSSLOpenSSL,DefaultTranslator;
 
   type
       TProgressCallback=function(Receiver:TObject;current,total:Integer):Boolean of object;
@@ -244,11 +244,14 @@ const
 
   DefaultMaturity:String = '';
 
+  OnWaptGetKeyPassword: TPasswordEvent = Nil;
+
+
 implementation
 
 uses LazFileUtils, LazUTF8, soutils, Variants,uwaptres,waptwinutils,uwaptcrypto,tisinifiles,tislogging,
   NetworkAdapterInfo, JwaWinsock2, windirs,
-  IdSSLOpenSSL,IdMultipartFormData,IdExceptionCore,IdException,IdURI,
+  IdMultipartFormData,IdExceptionCore,IdException,IdURI,
   gettext,IdStack,IdCompressorZLib,IdAuthentication,shfolder,IniFiles,tiscommon,strutils,tisstrings,registry;
 
 const
@@ -643,10 +646,12 @@ begin
     // init ssl stack
     ssl_handler := TIdSSLIOHandlerSocketOpenSSL.Create;
     ssl_handler.SSLOptions.Method:=sslvSSLv23;
+    ssl_handler.SSLOptions.Mode:=sslmClient;
     if (ClientCertFilename<>'') and (ClientKeyFilename<>'') then
     begin
       ssl_handler.SSLOptions.CertFile:=ClientCertFilename;
       ssl_handler.SSLOptions.KeyFile:=ClientKeyFilename;
+      ssl_handler.OnGetPassword:=OnWaptGetKeyPassword;
     end;
 
   	HTTP.IOHandler := ssl_handler;
@@ -742,6 +747,7 @@ begin
     begin
       ssl_handler.SSLOptions.CertFile:=ClientCertFilename;
       ssl_handler.SSLOptions.KeyFile:=ClientKeyFilename;
+      ssl_handler.OnGetPassword:=OnWaptGetKeyPassword;
     end;
 
   	HTTP.IOHandler := ssl_handler;
@@ -824,6 +830,7 @@ begin
     begin
       ssl_handler.SSLOptions.CertFile:=ClientCertFilename;
       ssl_handler.SSLOptions.KeyFile:=ClientKeyFilename;
+      ssl_handler.OnGetPassword:=OnWaptGetKeyPassword;
     end;
 
     http.IOHandler := ssl_handler;
@@ -937,6 +944,7 @@ begin
     begin
       ssl_handler.SSLOptions.CertFile:=ClientCertFilename;
       ssl_handler.SSLOptions.KeyFile:=ClientKeyFilename;
+      ssl_handler.OnGetPassword:=OnWaptGetKeyPassword;
     end;
 
     HTTP.IOHandler := ssl_handler;
@@ -949,6 +957,7 @@ begin
       begin
         ssl_handler.SSLOptions.CertFile:=ClientCertFilename;
         ssl_handler.SSLOptions.KeyFile:=ClientKeyFilename;
+        ssl_handler.OnGetPassword:=OnWaptGetKeyPassword;
       end;
 
       ssl_handler.SSLOptions.VerifyMode:=[sslvrfPeer];
@@ -1811,6 +1820,12 @@ begin
 
   ssl_handler := TIdSSLIOHandlerSocketOpenSSL.Create(nil);
   ssl_handler.SSLOptions.Method:=sslvSSLv23;
+  if (WaptClientCertFilename<>'') and (WaptClientKeyFilename<>'') then
+  begin
+    ssl_handler.SSLOptions.CertFile:=WaptClientCertFilename;
+    ssl_handler.SSLOptions.KeyFile:=WaptClientKeyFilename;
+    ssl_handler.OnGetPassword:=OnWaptGetKeyPassword;
+  end;
 
   http.IOHandler := ssl_handler;
 
