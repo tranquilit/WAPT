@@ -116,6 +116,7 @@ msgid "Form1"
 msgstr ""
 
 #: tvisapropos.button1.caption
+msgctxt "tvisapropos.button1.caption"
 msgid "Close"
 msgstr "Schließen"
 
@@ -1294,8 +1295,10 @@ msgid "Write"
 msgstr ""
 
 #: tvissoftwaresnormalization.butok.caption
+#, fuzzy
+msgctxt "tvissoftwaresnormalization.butok.caption"
 msgid "Close"
-msgstr ""
+msgstr "Schließen"
 
 #: tvissoftwaresnormalization.caption
 msgid "Normalizes sofware titles"

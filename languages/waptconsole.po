@@ -113,6 +113,7 @@ msgid "Form1"
 msgstr ""
 
 #: tvisapropos.button1.caption
+msgctxt "tvisapropos.button1.caption"
 msgid "Close"
 msgstr ""
 
@@ -1230,6 +1231,7 @@ msgid "Write"
 msgstr ""
 
 #: tvissoftwaresnormalization.butok.caption
+msgctxt "tvissoftwaresnormalization.butok.caption"
 msgid "Close"
 msgstr ""
 
