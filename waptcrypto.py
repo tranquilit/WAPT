@@ -1139,7 +1139,7 @@ class SSLPrivateKey(BaseObjectClass):
             email=None,
             is_ca=None,
             is_code_signing=None,
-            is_client_auth=True,
+            is_client_auth=None,
             key_usages=['digital_signature','content_commitment','key_cert_sign','data_encipherment'],
             crl_url = None,
             issuer_cert_url = None ):
@@ -1294,7 +1294,7 @@ class SSLPrivateKey(BaseObjectClass):
             email=None,
             is_ca=False,
             is_code_signing=None,
-            is_client_auth=True,
+            is_client_auth=None,
             key_usages=['digital_signature','content_commitment','key_cert_sign','data_encipherment']
             ):
         """Build a certificate signing request with self public key and supplied attributes,
@@ -1580,6 +1580,15 @@ class SSLCertificateSigningRequest(BaseObjectClass):
         else:
             return False
 
+    @property
+    def is_client_auth(self):
+        """Return True if certificate has 'Code Signing' in its extendedKeyUsage"""
+        ext_key_usages = 'extendedKeyUsage' in self.extensions and self.extensions['extendedKeyUsage']
+        if ext_key_usages:
+            return len([usage for usage in ext_key_usages if usage._name == 'clientAuth'])>0
+        else:
+            return False
+
     def has_usage(self,usage):
         """Return usage if certificate has the requested usage
 
@@ -1589,7 +1598,9 @@ class SSLCertificateSigningRequest(BaseObjectClass):
         """
         if usage == 'ca' and self.is_ca:
             return usage
-        elif  usage == 'code_signing' and self.is_code_signing:
+        elif usage == 'code_signing' and self.is_code_signing:
+            return usage
+        elif usage == 'client_auth' and self.is_client_auth:
             return usage
         else:
             return ''
@@ -2048,6 +2059,15 @@ class SSLCertificate(BaseObjectClass):
         else:
             return False
 
+    @property
+    def is_client_auth(self):
+        """Return True if certificate has 'Code Signing' in its extendedKeyUsage"""
+        ext_key_usages = 'extendedKeyUsage' in self.extensions and self.extensions['extendedKeyUsage']
+        if ext_key_usages:
+            return len([usage for usage in ext_key_usages if usage._name == 'clientAuth'])>0
+        else:
+            return False
+
     def has_usage(self,usage):
         """Return usage if certificate has the requested usage
 
@@ -2057,7 +2077,9 @@ class SSLCertificate(BaseObjectClass):
         """
         if usage == 'ca' and self.is_ca:
             return usage
-        elif  usage == 'code_signing' and self.is_code_signing:
+        elif usage == 'code_signing' and self.is_code_signing:
+            return usage
+        elif usage == 'client_auth' and self.is_client_auth:
             return usage
         else:
             return ''

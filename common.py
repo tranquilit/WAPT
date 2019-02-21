@@ -2837,9 +2837,11 @@ class Wapt(BaseObjectClass):
             self.waptserver = WaptServer().load_config(self.config)
             # implicit auth
             if self.waptserver.client_auth() is None:
-                logger.debug('Using host certificate %s for auth on waptserver' % (self.get_host_key_filename(),))
-                self.waptserver.client_certificate = self.get_host_certificate_filename()
-                self.waptserver.client_private_key = self.get_host_key_filename()
+                crt = self.get_host_certificate()
+                if crt.is_client_auth:
+                    logger.debug('Using host certificate %s for auth on waptserver' % (self.get_host_key_filename(),))
+                    self.waptserver.client_certificate = self.get_host_certificate_filename()
+                    self.waptserver.client_private_key = self.get_host_key_filename()
 
         else:
             # force reset to None if config file is changed at runtime
@@ -2917,9 +2919,11 @@ class Wapt(BaseObjectClass):
 
                     # implicit auth
                     if w.client_auth() is None:
-                        logger.debug('Using host certificate %s for repo %s auth' % (self.get_host_key_filename(),w.name))
-                        w.client_certificate = self.get_host_certificate_filename()
-                        w.client_private_key = self.get_host_key_filename()
+                        crt = self.get_host_certificate()
+                        if crt.is_client_auth:
+                            logger.debug('Using host certificate %s for repo %s auth' % (self.get_host_key_filename(),w.name))
+                            w.client_certificate = self.get_host_certificate_filename()
+                            w.client_private_key = self.get_host_key_filename()
 
                     self.repositories.append(w)
                     logger.debug(u'    %s:%s' % (w.name,w._repo_url))
@@ -2934,9 +2938,11 @@ class Wapt(BaseObjectClass):
                 w.cabundle = self.cabundle
             # implicit auth
             if w.client_auth() is None:
-                logger.debug('Using host certificate %s for repo %s auth' % (self.get_host_key_filename(),w.name))
-                w.client_certificate = self.get_host_certificate_filename()
-                w.client_private_key = self.get_host_key_filename()
+                crt = self.get_host_certificate()
+                if crt.is_client_auth:
+                    logger.debug('Using host certificate %s for repo %s auth' % (self.get_host_key_filename(),w.name))
+                    w.client_certificate = self.get_host_certificate_filename()
+                    w.client_private_key = self.get_host_key_filename()
 
         # True if we want to use automatic host package based on host fqdn
         #   privacy problem as there is a request to wapt repo to get
@@ -3020,9 +3026,11 @@ class Wapt(BaseObjectClass):
 
             # implicit auth
             if host_repo.client_auth() is None:
-                logger.debug('Using host certificate %s for %s auth' % (self.get_host_key_filename(),host_repo.name))
-                host_repo.client_certificate = self.get_host_certificate_filename()
-                host_repo.client_private_key = self.get_host_key_filename()
+                crt = self.get_host_certificate()
+                if crt.is_client_auth:
+                    logger.debug('Using host certificate %s for %s auth' % (self.get_host_key_filename(),host_repo.name))
+                    host_repo.client_certificate = self.get_host_certificate_filename()
+                    host_repo.client_private_key = self.get_host_key_filename()
 
             # in case host repo is guessed from main repo (no specific section) ans main repor_url is set
             if section is None and main and main._repo_url:
@@ -5315,7 +5323,8 @@ class Wapt(BaseObjectClass):
                 organization = setuphelpers.registered_organization() or None,
                 is_ca=False,
                 is_code_signing=False,
-                key_usages=['digital_signature','content_commitment','key_cert_sign','data_encipherment'])
+                is_client_auth=True,
+                key_usages=['digital_signature','content_commitment','data_encipherment','key_encipherment'])
         return csr
 
     def create_or_update_host_certificate(self,force_recreate=False):
