@@ -227,7 +227,9 @@ var
   RegWaptBaseDir:String;
 begin
   {$ifdef ENTERPRISE}
+  {$ifndef DEVMODE}
   CheckPySources;
+  {$endif}
   {$endif}
 
   RegWaptBaseDir:=WaptBaseDir();
