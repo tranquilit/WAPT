@@ -758,7 +758,7 @@ def update_waptwua(uuid,data,applied_status_hashes):
                     if download_urls.download_urls != update['download_urls']:
                         new_urls = list(set(download_urls.download_urls + update['download_urls']))
                         update['download_urls'] = new_urls
-                        update['downloaded'] = Node
+                        update['downloaded_on'] = None
                     WsusUpdates.update(**update).where(WsusUpdates.update_id == update['update_id']).execute()
             #WsusUpdates.insert_many(windows_updates).on_conflict('IGNORE').execute()
 
