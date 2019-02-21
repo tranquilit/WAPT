@@ -44,6 +44,7 @@ from cryptography.x509.extensions import ExtensionNotFound,AccessDescription,Dis
 from cryptography.x509.verification import CertificateVerificationContext, InvalidCertificate, InvalidSigningCertificate
 from cryptography.x509.verification import CertificateRevocationListVerificationContext, InvalidCertificateRevocationList
 from cryptography.fernet import Fernet
+from cryptography.hazmat.primitives.serialization.pkcs12 import load_key_and_certificates
 
 from OpenSSL import crypto
 from OpenSSL import SSL
@@ -833,15 +834,16 @@ def get_cert_chain_as_pem(certificates_chain):
 
 
 class SSLPrivateKey(BaseObjectClass):
-    def __init__(self,filename=None,pem_data=None,callback=None,password = None):
+    def __init__(self,filename=None,pem_data=None,callback=None,password = None,rsa=None):
         """Args:
-            private_key (str) : Filename Path to PEM encoded Private Key
-            key (PKey) : Public/[private]  PKey structure
+            filename (str) : Filename Path to PEM encoded Private Key
+            pem_data (str)
             callback (func) : Called to provide password for the key if needed.
                               If password is set (not None), this parameter is ignored
                               else if None, default is default_pwd_callback.
             password (str) : passpharse to decrypt private key.
                              If '', no decryption and no password is asked. RSA key loadind will fail.
+            rsa (cryptography.hazmat.backends.openssl.rsa._RSAPrivateKey)
 
         """
         self.private_key_filename = filename
@@ -853,7 +855,7 @@ class SSLPrivateKey(BaseObjectClass):
         self.password_callback = callback
         if isinstance(password,unicode):
             password = password.encode('utf8')
-        self._rsa = None
+        self._rsa = rsa
         self.pem_data = pem_data
         if not self.pem_data and self.private_key_filename and os.path.isfile(self.private_key_filename):
             self._load_pem_data_from_file()
@@ -1078,6 +1080,9 @@ class SSLPrivateKey(BaseObjectClass):
     @property
     def modulus(self):
         return format(self.rsa.private_numbers().public_numbers.n, "x")
+
+    def as_PKey(self):
+        return crypto.PKey().from_cryptography_key(self.rsa)
 
     def __cmp__(self,key):
         return cmp(self.modulus,key.modulus)
@@ -2459,6 +2464,94 @@ class SSLCRL(BaseObjectClass):
 
     def __repr__(self):
         return '<SSLCRL %s>' % self.issuer
+
+
+class SSLPKCS12(object):
+    """Encapsulate a PKCS#12 key/certificate/ca certs store
+
+
+    """
+    def __init__(self,filename=None,password=None):
+        """Initialaize and load a p12 file
+
+        Args:
+            filename (str)
+            password (str)
+
+        """
+
+        self._filename = filename
+        self._private_key = None
+        self._certificate = None
+        self.ca_certificates = []
+        if self._filename is not None:
+            self.load_from_p12(password=password)
+
+    def load_from_p12(self,filename=None,password=None):
+        """Load a pkc#12 file from a file
+
+        """
+
+        self._private_key = None
+        self._certificate = None
+        self.ca_certificates = []
+
+        if filename is not None:
+            self._filename = filename
+
+        if os.path.isfile(self._filename):
+            data = open(self._filename,'rb').read()
+            (pc_private_key, pc_certificate, pc_additional_certificates) = load_key_and_certificates(data,password,default_backend())
+            self._private_key = SSLPrivateKey(rsa = pc_private_key)
+            self._certificate = SSLCertificate(crt = pc_certificate)
+            for pc_cert in pc_additional_certificates:
+                self.add_ca_certificate(SSLCertificate(crt=pc_cert))
+        return self
+
+    @property
+    def private_key(self):
+        """Returns the RSA Private key as a SSLPrivateKey object
+
+        Returns:
+            SSLPrivateKey
+        """
+        return self._private_key
+
+    @private_key.setter
+    def private_key(self,key):
+        self._private_key = key
+
+    @property
+    def certificate(self,certificate):
+        """Returns the X509 certificate as a SSLCertificate object
+
+        Returns:
+            SSLCertificate
+        """
+        return self._certificate
+
+    @certificate.setter
+    def certificate(self,certificate):
+        self._certificate = certificate
+
+    def add_ca_certificate(self,certificate):
+        if not certificate in self.ca_certificates:
+            self.ca_certificates.append(certificate)
+
+    def save_as_p12(self,filename=None,password=None,friendly_name=None):
+        pkcs12 = crypto.PKCS12()
+        pkcs12.set_privatekey(crypto.PKey().from_cryptography_key(self._private_key.rsa))
+        pkcs12.set_certificate(self._certificate.as_X509())
+        if friendly_name:
+            pkcs12.set_friendlyname(friendly_name)
+        pkcs12.set_ca_certificates([certificate.as_X509() for certificate in self.ca_certificates])
+        if filename is None:
+            filename = self._filename
+        if filename is not None:
+            open(filename,'wb').write(pkcs12.export(password))
+        else:
+            raise Exception('No filename supplied for pkcs12 export')
+
 
 if __name__ == '__main__':
     import doctest

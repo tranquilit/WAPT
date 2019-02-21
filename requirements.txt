@@ -14,7 +14,7 @@ click==6.7
 clint==0.5.1
 colorama==0.3.9
 configparser==3.5.0
-cryptography==2.3.1
+cryptography==2.5.0
 enum-compat==0.0.2
 enum34==1.1.6
 eventlet==0.24.1
@@ -46,7 +46,7 @@ psutil==3.4.2
 psycopg2==2.7.3.1
 pycparser==2.19
 pylint==1.7.4
-pyOpenSSL==18.0.0
+pyOpenSSL==19.0.0
 pyparsing==2.2.0
 python-engineio==2.1.1
 python-socketio==1.9.0
