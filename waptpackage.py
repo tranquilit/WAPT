@@ -2115,15 +2115,12 @@ class PackageEntry(BaseObjectClass):
             if not hasattr(setup,'uninstallkey'):
                 setup.uninstallkey = []
 
-            else:
-                persistent_source_dir = None
-                persistent_dir = None
+            persistent_source_dir = None
+            persistent_dir = None
 
-            if self.package_uuid:
-                if self.sourcespath and os.path.isdir(self.sourcespath):
-                    persistent_source_dir = os.path.join(self.sourcespath,'WAPT','persistent')
-                else:
-                    persistent_source_dir = None
+            if self.sourcespath and os.path.isdir(self.sourcespath):
+                persistent_source_dir = os.path.join(self.sourcespath,'WAPT','persistent')
+
             setattr(setup,'persistent_source_dir',persistent_source_dir)
 
             if wapt_context:
@@ -2134,10 +2131,6 @@ class PackageEntry(BaseObjectClass):
                 setattr(setup,'user',wapt_context.user)
                 setattr(setup,'usergroups',wapt_context.usergroups)
 
-                persistent_dir = os.path.join(wapt_context.wapt_base_dir,'private',self.package_uuid)
-                if not os.path.isdir(persistent_dir):
-                    setattr(setup,'persistent_dir',persistent_dir)
-
             else:
                 setattr(setup,'WAPT',None)
                 setattr(setup,'language',get_language())
@@ -2145,6 +2138,13 @@ class PackageEntry(BaseObjectClass):
                 setattr(setup,'user',None)
                 setattr(setup,'usergroups',[])
                 setattr(setup,'persistent_dir',None)
+
+            if hasattr(self,'persistent_dir') and self.persistent_dir:
+                persistent_dir = self.persistent_dir
+            elif self.package_uuid and wapt_context:
+                    persistent_dir = os.path.join(wapt_context.wapt_base_dir,'private',self.package_uuid)
+
+            setattr(setup,'persistent_dir',persistent_dir)
 
             # set params dictionary
             if not hasattr(setup,'params'):

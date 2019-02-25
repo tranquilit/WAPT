@@ -2836,7 +2836,7 @@ class Wapt(BaseObjectClass):
         if self.config.has_option('global','wapt_server'):
             self.waptserver = WaptServer().load_config(self.config)
             # implicit auth
-            if self.waptserver.client_auth() is None:
+            if self.waptserver.client_auth() is None and os.path.isfile(self.get_host_certificate_filename()) and os.path.isfile(self.get_host_key_filename()):
                 crt = self.get_host_certificate()
                 if crt.is_client_auth:
                     logger.debug('Using host certificate %s for auth on waptserver' % (self.get_host_key_filename(),))
@@ -2918,7 +2918,7 @@ class Wapt(BaseObjectClass):
                         w.cabundle = self.cabundle
 
                     # implicit auth
-                    if w.client_auth() is None:
+                    if w.client_auth() is None and os.path.isfile(self.get_host_certificate_filename()) and os.path.isfile(self.get_host_key_filename()):
                         crt = self.get_host_certificate()
                         if crt.is_client_auth:
                             logger.debug('Using host certificate %s for repo %s auth' % (self.get_host_key_filename(),w.name))
@@ -2939,7 +2939,7 @@ class Wapt(BaseObjectClass):
             # implicit auth
             if w.client_auth() is None:
                 crt = self.get_host_certificate()
-                if crt.is_client_auth:
+                if w.client_auth() is None and os.path.isfile(self.get_host_certificate_filename()) and os.path.isfile(self.get_host_key_filename()):
                     logger.debug('Using host certificate %s for repo %s auth' % (self.get_host_key_filename(),w.name))
                     w.client_certificate = self.get_host_certificate_filename()
                     w.client_private_key = self.get_host_key_filename()
@@ -3025,7 +3025,7 @@ class Wapt(BaseObjectClass):
                 host_repo.cabundle = self.cabundle
 
             # implicit auth
-            if host_repo.client_auth() is None:
+            if host_repo.client_auth() is None and os.path.isfile(self.get_host_certificate_filename()) and os.path.isfile(self.get_host_key_filename()):
                 crt = self.get_host_certificate()
                 if crt.is_client_auth:
                     logger.debug('Using host certificate %s for %s auth' % (self.get_host_key_filename(),host_repo.name))
