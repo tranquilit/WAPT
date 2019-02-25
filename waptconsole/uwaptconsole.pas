@@ -73,6 +73,7 @@ type
     PopupMenuReportingQueries: TPopupMenu;
     SplitGridUnitsHosts1: TSplitter;
     SplitHostsForPackage: TSplitter;
+    Splitter1: TSplitter;
     Splitter12: TSplitter;
     Splitter13: TSplitter;
     TbLeftTopreporting: TToolBar;
