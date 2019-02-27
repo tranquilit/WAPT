@@ -2834,12 +2834,15 @@ class Wapt(BaseObjectClass):
         if self.config.has_option('global','wapt_server'):
             self.waptserver = WaptServer().load_config(self.config)
             # implicit auth
-            if self.waptserver.client_auth() is None and os.path.isfile(self.get_host_certificate_filename()) and os.path.isfile(self.get_host_key_filename()):
-                crt = self.get_host_certificate()
-                if crt.is_client_auth:
-                    logger.debug('Using host certificate %s for auth on waptserver' % (self.get_host_key_filename(),))
-                    self.waptserver.client_certificate = self.get_host_certificate_filename()
-                    self.waptserver.client_private_key = self.get_host_key_filename()
+            try:
+                if self.waptserver.client_auth() is None and os.path.isfile(self.get_host_certificate_filename()) and os.path.isfile(self.get_host_key_filename()):
+                    crt = self.get_host_certificate()
+                    if crt.is_client_auth:
+                        logger.debug('Using host certificate %s for auth on waptserver' % (self.get_host_key_filename(),))
+                        self.waptserver.client_certificate = self.get_host_certificate_filename()
+                        self.waptserver.client_private_key = self.get_host_key_filename()
+            except Exception as e:
+                logger.debug(u'Unable to use client certificate auth: %s' % ensure_unicode(e))
 
         else:
             # force reset to None if config file is changed at runtime
@@ -2916,12 +2919,15 @@ class Wapt(BaseObjectClass):
                         w.cabundle = self.cabundle
 
                     # implicit auth
-                    if w.client_auth() is None and os.path.isfile(self.get_host_certificate_filename()) and os.path.isfile(self.get_host_key_filename()):
-                        crt = self.get_host_certificate()
-                        if crt.is_client_auth:
-                            logger.debug('Using host certificate %s for repo %s auth' % (self.get_host_key_filename(),w.name))
-                            w.client_certificate = self.get_host_certificate_filename()
-                            w.client_private_key = self.get_host_key_filename()
+                    try:
+                        if w.client_auth() is None and os.path.isfile(self.get_host_certificate_filename()) and os.path.isfile(self.get_host_key_filename()):
+                            crt = self.get_host_certificate()
+                            if crt.is_client_auth:
+                                logger.debug('Using host certificate %s for repo %s auth' % (self.get_host_key_filename(),w.name))
+                                w.client_certificate = self.get_host_certificate_filename()
+                                w.client_private_key = self.get_host_key_filename()
+                    except Exception as e:
+                        logger.debug(u'Unable to use client certificate auth: %s' % ensure_unicode(e))
 
                     self.repositories.append(w)
                     logger.debug(u'    %s:%s' % (w.name,w._repo_url))
@@ -2935,12 +2941,15 @@ class Wapt(BaseObjectClass):
             if w.cabundle is None:
                 w.cabundle = self.cabundle
             # implicit auth
-            if w.client_auth() is None:
-                crt = self.get_host_certificate()
+            try:
                 if w.client_auth() is None and os.path.isfile(self.get_host_certificate_filename()) and os.path.isfile(self.get_host_key_filename()):
-                    logger.debug('Using host certificate %s for repo %s auth' % (self.get_host_key_filename(),w.name))
-                    w.client_certificate = self.get_host_certificate_filename()
-                    w.client_private_key = self.get_host_key_filename()
+                    crt = self.get_host_certificate()
+                    if crt.is_client_auth:
+                        logger.debug('Using host certificate %s for repo %s auth' % (self.get_host_key_filename(),w.name))
+                        w.client_certificate = self.get_host_certificate_filename()
+                        w.client_private_key = self.get_host_key_filename()
+            except Exception as e:
+                logger.debug(u'Unable to use client certificate auth: %s' % ensure_unicode(e))
 
         # True if we want to use automatic host package based on host fqdn
         #   privacy problem as there is a request to wapt repo to get
