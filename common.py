@@ -121,7 +121,7 @@ from waptpackage import EWaptBadTargetOS,EWaptNeedsNewerAgent,EWaptDiskSpace
 from waptpackage import EWaptUnavailablePackage,EWaptConflictingPackage
 from waptpackage import EWaptDownloadError,EWaptMissingPackageHook
 
-from waptpackage import REGEX_PACKAGE_CONDITION,WaptRemoteRepo,PackageEntry,PackageRequest,HostCapabilities
+from waptpackage import REGEX_PACKAGE_CONDITION,WaptRemoteRepo,PackageEntry,PackageRequest,HostCapabilities,PackageKey
 
 import setuphelpers
 import netifaces
@@ -343,7 +343,7 @@ class WaptBaseDB(BaseObjectClass):
                 ptype = sptype
             if not value is None:
                 if ptype == 'int':
-                    value = int(value)
+                    value = long(value)
                 elif ptype == 'float':
                     value = float(value)
                 elif ptype in ('json','bool'):
@@ -585,8 +585,6 @@ class WaptSessionDB(WaptBaseDB):
         else:
             return None
 
-
-PackageKey = namedtuple('package',('packagename','version','architecture','locale','maturity'))
 
 class WaptDB(WaptBaseDB):
     """Class to manage SQLite database with local installation status"""
@@ -5263,7 +5261,7 @@ class Wapt(BaseObjectClass):
                     # invalidate unmatching hashes for next round.
                     self.write_param('last_update_server_hashes',result_data['status_hashes'])
                 if 'host_certificate' in result_data:
-                    # server has signed the certificate, we repkace our self signed one.
+                    # server has signed the certificate, we replace our self signed one.
                     new_host_cert = SSLCertificate(crt_string=result_data['host_certificate'])
                     if new_host_cert.cn == self.host_uuid and new_host_cert.match_key(self.get_host_key()):
                         new_host_cert.save_as_pem(self.get_host_certificate_filename())
