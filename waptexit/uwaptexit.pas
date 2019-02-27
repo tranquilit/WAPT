@@ -77,6 +77,7 @@ type
     FRunning: ISuperObject;
     function GetPackageStatus(LastUpdateStatus: ISuperObject): ISuperObject;
     procedure OnCheckTasksThreadNotify(Sender: TObject);
+    procedure OnCheckEventsThreadNotify(Sender: TObject);
     procedure OnCheckWaptserviceNotify(Sender: TObject);
     procedure OnUpgradeTriggered(Sender: TObject);
     procedure SetCountDown(AValue: Integer);
@@ -98,6 +99,7 @@ type
     DisableAutoUpgrade: Boolean;
 
     CheckTasksThread: TCheckTasksThread;
+    CheckEventsThread: TCheckEventsThread;
 
     Function ShouldBeUpgraded:Boolean;
     Function WorkInProgress:Boolean;
@@ -333,6 +335,8 @@ procedure TVisWaptExit.FormClose(Sender: TObject; var CloseAction: TCloseAction)
 begin
   if Assigned(CheckTasksThread) and (not CheckTasksThread.Suspended) then
     CheckTasksThread.Terminate;
+  if Assigned(CheckEventsThread) and (not CheckEventsThread.Suspended) then
+    CheckEventsThread.Terminate;
 end;
 
 procedure TVisWaptExit.FormCloseQuery(Sender: TObject; var CanClose: boolean);
@@ -390,6 +394,7 @@ end;
 procedure TVisWaptExit.FormDestroy(Sender: TObject);
 begin
   FreeAndNil(CheckTasksThread);
+  FreeAndNil(CheckEventsThread);
 end;
 
 Function TVisWaptExit.GetPackageStatus(LastUpdateStatus:ISuperObject):ISuperObject;
@@ -433,6 +438,12 @@ begin
   //Check if pending upgrades
   try
     WAPTServiceRunning:=(Sender as TCheckWaptservice).IsWaptServiceRunning;
+
+    if WAPTServiceRunning then
+    begin
+      CheckTasksThread.Start;
+      CheckEventsThread.Start;
+    end;
 
     aso := (Sender as TCheckWaptservice).LastUpdateStatus;
     if aso<>Nil then
@@ -500,12 +511,19 @@ begin
     aso := (Sender as TCheckTasksThread).Tasks;
     if aso <> Nil then
     begin
-      running := aso['running'];
-      if (running<>Nil) and (running.DataType=stNull) then
-        running := Nil;
-      pending := aso['pending'];
-      if (pending<>Nil) and (pending.DataType=stArray) and (pending.AsArray.Length=0) then
-        pending := Nil;
+      if aso.AsObject.Exists('running') then
+      begin
+        running := aso['running'];
+        if (running<>Nil) and (running.DataType=stNull) then
+          running := Nil;
+      end;
+
+      if aso.AsObject.Exists('pending') then
+      begin
+        pending := aso['pending'];
+        if (pending<>Nil) and (pending.DataType=stArray) and (pending.AsArray.Length=0) then
+          pending := Nil;
+      end;
     end
     else
     begin
@@ -516,6 +534,42 @@ begin
       begin
         MemoLog.Items.Add((Sender as TCheckTasksThread).Message);
         WAPTServiceRunning:=False;
+        Close;
+      end;
+    end
+  except
+    running := Nil;
+    pending := Nil;
+  end
+end;
+
+procedure TVisWaptExit.OnCheckEventsThreadNotify(Sender: TObject);
+var
+  lastevent,events:ISuperObject;
+begin
+  try
+    events := (Sender as TCheckEventsThread).Events;
+    if events <> Nil then
+    begin
+      if (events.AsArray<>Nil) and (events.AsArray.Length>0) then
+      begin
+        lastEvent := events.AsArray[events.AsArray.Length-1];
+        case lastEvent.S['event_type'] of
+          'PRINT': MemoLog.Items.Add(lastEvent.S['data']);
+          'TASK_START','TASKS_STATUS','TASK_FINISH': EdRunning.Text:=lastEvent.S['data.runstatus'];
+        end;
+
+      end;
+    end
+    else
+    begin
+      // service has been stopped
+      if WAPTServiceRunning and not (Sender as TCheckEventsThread).WaptServiceRunning then
+      begin
+        MemoLog.Items.Add((Sender as TCheckEventsThread).Message);
+        WAPTServiceRunning:=False;
+        CheckEventsThread.Terminate;
+        CheckTasksThread.Terminate;
         Close;
       end;
     end
@@ -599,7 +653,7 @@ begin
 
   // Check running / pending tasks
   CheckTasksThread := TCheckTasksThread.Create(@OnCheckTasksThreadNotify);
-  CheckTasksThread.Start;
+  CheckEventsThread := TCheckEventsThread.Create(@OnCheckEventsThreadNotify);
 end;
 
 function TVisWaptExit.WorkInProgress: Boolean;

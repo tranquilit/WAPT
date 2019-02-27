@@ -36,8 +36,29 @@ type
   public
     PollTimeout:Integer;
 
-    Events: ISuperObject;
     Tasks: ISuperObject;
+    LastReadEventId: Integer;
+    WaptServiceRunning:Boolean;
+    Message: String;
+
+    property OnNotifyEvent: TNotifyEvent read FOnNotifyEvent write SetOnNotifyEvent;
+
+    constructor Create(aNotifyEvent:TNotifyEvent;aPollTimeout:Integer=10000);
+    destructor Destroy; override;
+    procedure Execute; override;
+  end;
+
+  { TCheckTasksThread }
+
+  TCheckEventsThread = Class(TThread)
+  private
+    FOnNotifyEvent: TNotifyEvent;
+    procedure SetOnNotifyEvent(AValue: TNotifyEvent);
+    procedure NotifyListener; Virtual;
+  public
+    PollTimeout:Integer;
+
+    Events: ISuperObject;
     LastReadEventId: Integer;
     WaptServiceRunning:Boolean;
     Message: String;
@@ -177,7 +198,7 @@ begin
   FOnNotifyEvent:=AValue;
 end;
 
-constructor TCheckTasksThread.Create(aNotifyEvent: TNotifyEvent; aPollTimeout: Integer = 3000);
+constructor TCheckTasksThread.Create(aNotifyEvent: TNotifyEvent; aPollTimeout: Integer = 10000);
 begin
   inherited Create(True);
   OnNotifyEvent:=aNotifyEvent;
@@ -194,25 +215,11 @@ procedure TCheckTasksThread.Execute;
 begin
   while not Terminated do
   try
-    if LastReadEventId<0 then
-      // first time, get just last event
-      Events := WAPTLocalJsonGet(Format('events?max_count=1',[]),'','',PollTimeout,Nil,0)
-    else
-      Events := WAPTLocalJsonGet(Format('events?last_read=%d',[LastReadEventId]),'','',PollTimeout,Nil,0);
-    if (Events <> Nil) and (Events.DataType=stArray) then
-    begin
-      If Events.AsArray.Length>0 then
-        LastReadEventId := Events.AsArray.O[Events.AsArray.Length-1].I['id'];
-    end;
-
+    Tasks := WAPTLocalJsonGet(Format('tasks.json?last_event_id=%d&timeout=%d',[LastReadEventId,3]),'','',PollTimeout,Nil,0);
+    if Assigned(Tasks) then
+      LastReadEventId:=Tasks.I['last_event_id'];
     WaptServiceRunning:=True;
-
-    if not Terminated then
-    begin
-      Tasks := WAPTLocalJsonGet('tasks.json','','',10000,Nil,0);
-      Synchronize(@NotifyListener);
-    end;
-
+    Synchronize(@NotifyListener);
   except
     on E: EIdSocketError do
       begin
@@ -223,7 +230,6 @@ begin
             Message := E.Message;
             WaptServiceRunning:=False;
             Tasks := Nil;
-            Events := Nil;
             Synchronize(@NotifyListener);
             break;
           end;
@@ -246,7 +252,6 @@ begin
           Message := E.ClassName+' '+E.Message;
           WaptServiceRunning:=False;
           Tasks := Nil;
-          Events := Nil;
           Synchronize(@NotifyListener);
           break;
         end;
@@ -254,6 +259,90 @@ begin
   end;
 end;
 
+{ TCheckEventsThread }
+
+procedure TCheckEventsThread.NotifyListener;
+begin
+  if Assigned(FOnNotifyEvent) then
+    FOnNotifyEvent(Self);
+end;
+
+procedure TCheckEventsThread.SetOnNotifyEvent(AValue: TNotifyEvent);
+begin
+  if FOnNotifyEvent=AValue then Exit;
+  FOnNotifyEvent:=AValue;
+end;
+
+constructor TCheckEventsThread.Create(aNotifyEvent: TNotifyEvent; aPollTimeout: Integer = 3000);
+begin
+  inherited Create(True);
+  OnNotifyEvent:=aNotifyEvent;
+  LastReadEventId:=-1;
+  PollTimeout:=aPollTimeout;
+end;
+
+destructor TCheckEventsThread.Destroy;
+begin
+  inherited Destroy;
+end;
+
+procedure TCheckEventsThread.Execute;
+begin
+  while not Terminated do
+  try
+    Message := 'Waiting for events';
+    if LastReadEventId<0 then
+      // first time, get just last event
+      Events := WAPTLocalJsonGet(Format('events?max_count=1',[]),'','',PollTimeout,Nil,0)
+    else
+      Events := WAPTLocalJsonGet(Format('events?last_read=%d',[LastReadEventId]),'','',PollTimeout,Nil,0);
+    if (Events <> Nil) and (Events.DataType=stArray) then
+    begin
+      If Events.AsArray.Length>0 then
+        LastReadEventId := Events.AsArray.O[Events.AsArray.Length-1].I['id'];
+    end;
+
+    WaptServiceRunning:=True;
+    Synchronize(@NotifyListener);
+
+  except
+    on E: EIdSocketError do
+      begin
+        if e.LastError=10061 then // connection refused
+        begin
+          if WaptServiceRunning then
+          begin
+            Message := E.Message;
+            WaptServiceRunning:=False;
+            Events := Nil;
+            Synchronize(@NotifyListener);
+            break;
+          end;
+        end
+        else
+        if not Terminated then
+          Sleep(200);
+      end;
+
+    on E: EIdReadTimeout do
+      begin
+        if not Terminated then
+          Sleep(200);
+      end;
+
+    on E: Exception do
+      begin
+        if WaptServiceRunning then
+        begin
+          Message := E.ClassName+' '+E.Message;
+          WaptServiceRunning:=False;
+          Events := Nil;
+          Synchronize(@NotifyListener);
+          break;
+        end;
+      end;
+  end;
+end;
 
 end.
 

@@ -467,19 +467,21 @@ object VisWaptExit: TVisWaptExit
           item
             Position = 0
             Text = 'Id'
+            Width = 20
             PropertyName = 'id'
           end        
           item
             Position = 1
             Tag = 1
             Text = 'Status'
+            Width = 55
             PropertyName = 'install_status'
           end        
           item
             Position = 2
             Tag = 2
             Text = 'Package'
-            Width = 172
+            Width = 197
             PropertyName = 'package'
           end>
         Header.DefaultHeight = 17
