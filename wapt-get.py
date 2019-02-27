@@ -168,6 +168,9 @@ parser.add_option("-t","--maxttl", type='int',  dest="max_ttl", default=60, help
 parser.add_option("-L","--language",    dest="language",    default=setuphelpers.get_language(), help="Override language for install (example : fr) (default: %default)")
 parser.add_option("-m","--message-digest", dest="md", default=None, help="Message digest type for signatures.  (default: sha256)")
 parser.add_option("--maturity", dest="maturity", default=None, help="Set/change package maturity when building package.  (default: None)")
+parser.add_option("--pin-server-cert", dest="set_verify_cert", default=None, action='store_true', help="When registering, pin the server certificate. (default: %default)")
+parser.add_option("--wapt-server-url", dest="set_waptserver_url", default=None, help="When registering, set wapt-get.ini wapt_server setting. (default: %default)")
+parser.add_option("--wapt-repo-url", dest="set_waptrepo_url", default=None, help="When registering, set wapt-get.ini repo_url setting. (default: %default)")
 parser.add_option("--wapt-server-user", dest="wapt_server_user", default=None, help="User to upload packages to waptserver. (default: %default)")
 parser.add_option("--wapt-server-passwd", dest="wapt_server_passwd", default=None, help="Password to upload packages to waptserver. (default: %default)")
 parser.add_option("--log-to-windows-events",dest="log_to_windows_events",    default=False, action='store_true', help="Log steps to the Windows event log (default: %default)")
@@ -225,6 +228,21 @@ class JsonOutput(object):
         else:
             return self.output.__getattribute__(name)
 
+def guess_waptserver_url(host):
+    result = host.lower()
+    if not result.startswith('http://') and not result.startswith('https://'):
+        result = 'https://%s' % result
+    return result
+
+def guess_waptrepo_url(host):
+    result = host.lower()
+    if not result.startswith('http://') and not result.startswith('https://'):
+        result = 'https://%s' % result
+
+    url = urlparse.urlparse(result)
+    if not url.path:
+        result = result+'/wapt'
+    return result
 
 def guess_package_root_dir(fn):
     """return the root dir of package development dir given
@@ -278,6 +296,63 @@ try:
     import waptguihelper
 except ImportError:
     waptguihelper = None
+
+def do_update(mywapt,options):
+    # abort if there is already a running install in progress
+    running_install = mywapt.check_install_running(max_ttl=options.max_ttl)
+    if running_install:
+        raise Exception('Running wapt processes (%s) in progress, please wait...' % (running_install,))
+    if not options.json_output:
+        print(u"Update package list")
+    result = mywapt.update(force=options.force)
+    if not options.json_output:
+        print(u"Total packages : %i" % result['count'])
+        print(u"Added packages : \n%s" % "\n".join(["  %s" % (p,) for p in result['added']]))
+        print(u"Removed packages : \n%s" % "\n".join(["  %s" % (p,) for p in result['removed']]))
+        print(u"Discarded packages count : %s" % result['discarded_count'])
+        print(u"Pending operations : \n%s" %  "\n".join( ["  %s: %s" % (k,' '.join(result['upgrades'][k])) for k in result['upgrades']]) )
+        print(u"Repositories URL : \n%s" % "\n".join(["  %s" % p for p in result['repos']]))
+    return result
+
+def do_enable_check_certificate(mywapt,options):
+    """
+
+    Returns:
+        tuple (verify_cert,sha1)
+    """
+    mywapt.waptserver.verify_cert = False
+    if mywapt.waptserver and mywapt.waptserver_available():
+        cert_filename = mywapt.waptserver.save_server_certificate(os.path.join(mywapt.wapt_base_dir,'ssl','server'),overwrite = options.force)
+        print('Server certificate : %s' % cert_filename)
+        if cert_filename:
+            cert = SSLCertificate(cert_filename)
+            sha1_fingerprint = cert.digest('sha1')
+
+            server_host_name = urlparse.urlparse(mywapt.waptserver.server_url).netloc
+            if cert.cn != server_host_name:
+                raise Exception(u'Common name of certificate (%s) does not match server hostname (%s), aborting' % (cert.cn,server_host_name) )
+
+            # check if certificate match repo_url defined in global too
+            if mywapt.config.has_option('global','repo_url'):
+                repo_host_name = urlparse.urlparse(mywapt.config.get('global','repo_url')).netloc
+                if cert.cn != repo_host_name:
+                    raise Exception(u'Common name of certificate (%s) does not match repository hostname (%s), aborting' % (cert.cn,repo_host_name) )
+
+            if not options.json_output:
+                print('Certificate CN: %s' % cert.cn)
+                print('Pining certificate %s' % cert_filename)
+
+            mywapt.config.set('global','verify_cert',cert_filename)
+            mywapt.write_config()
+            if not options.json_output:
+                print('wapt config file updated')
+                print('Please check sha1 fingerprint of server certificate : %s' % sha1_fingerprint)
+                print('Don''t forget to restart waptservice to take the new settings in account !')
+        else:
+            print('No server certificate retrieved')
+    else:
+        print('Server not available')
+    return (cert_filename,sha1_fingerprint)
 
 def main():
     jsonresult = {'output':[]}
@@ -434,8 +509,7 @@ def main():
                     else:
                         print(u"%sing WAPT packages %s" % (action,','.join(args[1:])))
                         if options.update_packages:
-                            print(u"Update package list")
-                            mywapt.update()
+                            do_update(mywapt,options)
 
                         if running_install and action == 'install':
                             raise Exception(u'Running wapt processes (%s) in progress, please wait...' % (running_install,))
@@ -474,8 +548,7 @@ def main():
                     print(u"You must provide at least one package name to download")
                     sys.exit(1)
                 if options.update_packages:
-                    print(u"Update package list")
-                    mywapt.update()
+                    do_update(mywapt,options)
                 packages = []
                 for a in args[1:]:
                     packages.extend(ensure_list(a))
@@ -501,9 +574,7 @@ def main():
                     sys.exit(1)
                 result = []
                 if options.update_packages:
-                    if not options.json_output:
-                        print(u"Update packages list")
-                    mywapt.update()
+                    do_update(mywapt,options)
 
                 all_args = expand_args(args[1:])
                 for arg in all_args:
@@ -686,20 +757,7 @@ def main():
                     print(u"Uninstallation done")
 
             elif action == 'update':
-                # abort if there is already a running install in progress
-                if running_install:
-                    raise Exception('Running wapt processes (%s) in progress, please wait...' % (running_install,))
-                print(u"Update package list")
-                result = mywapt.update(force=options.force)
-                if options.json_output:
-                    jsonresult['result'] = result
-                else:
-                    print(u"Total packages : %i" % result['count'])
-                    print(u"Added packages : \n%s" % "\n".join(["  %s (%s)" % (p.packagename,p.version) for p in result['added']]))
-                    print(u"Removed packages : \n%s" % "\n".join(["  %s (%s)" % (p.packagename,p.version) for p in result['removed']]))
-                    print(u"Discarded packages count : %s" % result['discarded_count'])
-                    print(u"Pending operations : \n%s" %  "\n".join( ["  %s: %s" % (k,' '.join(result['upgrades'][k])) for k in result['upgrades']]) )
-                    print(u"Repositories URL : \n%s" % "\n".join(["  %s" % p for p in result['repos']]))
+                result = do_update(mywapt,options)
 
             elif action == 'upgradedb':
                 # abort if there is already a running install in progress
@@ -713,8 +771,7 @@ def main():
 
             elif action == 'upgrade':
                 if options.update_packages:
-                    print(u"Update packages list")
-                    mywapt.update()
+                    do_update(mywapt,options)
                 # abort if there is already a running install in progress
                 if running_install:
                     raise Exception('Running wapt processes (%s) in progress, please wait...' % (running_install,))
@@ -738,8 +795,7 @@ def main():
 
             elif action == 'check-upgrades':
                 if options.update_packages:
-                    print(u"Update package list")
-                    mywapt.update()
+                    do_update(mywapt,options)
                 result = mywapt.read_upgrade_status()
                 if options.json_output:
                     jsonresult['result'] = result
@@ -748,8 +804,7 @@ def main():
 
             elif action == 'list-upgrade':
                 if options.update_packages:
-                    print(u"Update package list")
-                    mywapt.update()
+                    do_update(mywapt,options)
                 result = mywapt.list_upgrade()
                 if options.json_output:
                     jsonresult['result'] = result
@@ -763,8 +818,7 @@ def main():
             elif action == 'download-upgrade':
                 # abort if there is already a running install in progress
                 if options.update_packages:
-                    print(u"Update packages list")
-                    mywapt.update()
+                    do_update(mywapt,options)
                 result = mywapt.download_upgrades()
                 if options.json_output:
                     jsonresult['result'] = result
@@ -1058,8 +1112,7 @@ def main():
 
             elif action == 'search':
                 if options.update_packages:
-                    print(u"Update package list")
-                    mywapt.update()
+                    do_update(mywapt,options)
                 result = mywapt.search([ensure_unicode(w) for w in args[1:]],
                                        section_filter=options.section_filter)
                 if options.json_output:
@@ -1083,22 +1136,69 @@ def main():
                     print(u"Removed files : \n%s" % "\n".join(["  %s" % p for p in result]))
 
             elif action == 'register':
+                reload_needed = False
+                result = {}
+                if options.set_waptrepo_url is not None and (
+                        not mywapt.config.has_option('global','repo_url') or mywapt.config.get('global','repo_url') != guess_waptrepo_url(options.set_waptrepo_url)):
+                    if mywapt.config.has_section('wapt'):
+                        mywapt.config.set('wapt','repo_url',guess_waptrepo_url(options.set_waptserver_url))
+                        result['repo_url'] = mywapt.config.get('wapt','repo_url')
+                    else:
+                        mywapt.config.set('global','repo_url',guess_waptrepo_url(options.set_waptrepo_url))
+                        result['repo_url'] = mywapt.config.get('global','repo_url')
+                    reload_needed = True
+
+
+                if options.set_waptserver_url is not None and (
+                        not mywapt.config.has_option('global','wapt_server') or mywapt.config.get('global','wapt_server') != guess_waptserver_url(options.set_waptserver_url)):
+                    mywapt.config.set('global','wapt_server',guess_waptserver_url(options.set_waptserver_url))
+                    result['wapt_server'] = mywapt.config.get('wapt','wapt_server')
+                    # use server name to set repo url
+                    if options.set_waptrepo_url is None and not mywapt.config.has_option('global','repo_url') and (not mywapt.config.has_section('wapt') or not mywapt.config.has_option('wapt','repo_url')):
+                        if mywapt.config.has_section('wapt'):
+                            mywapt.config.set('wapt','repo_url',guess_waptrepo_url(options.set_waptserver_url))
+                            result['repo_url']= mywapt.config.get('wapt','repo_url')
+                        else:
+                            mywapt.config.set('global','repo_url',guess_waptrepo_url(options.set_waptserver_url))
+                            result['repo_url'] = mywapt.config.get('global','repo_url')
+                    reload_needed = True
+
+                # be sure newly defined waptserver is instanciated
+                if reload_needed:
+                    mywapt.write_config()
+
+                if options.set_verify_cert:
+                    (verify_cert,sha1_fingerprint) = do_enable_check_certificate(mywapt,options)
+                    result['verify_cert'] = verify_cert
+                    result['server_certificate_sha1'] = sha1_fingerprint
+
+                    reload_needed = True
+
+                if reload_needed:
+                    mywapt.load_config()
+
                 if mywapt.waptserver:
                     if mywapt.waptserver.use_kerberos and not setuphelpers.running_as_system():
                         raise Exception('Kerberos is enabled, "register" must be launched under system account. Use --service switch or "psexec -s wapt-get register"')
 
-                    result = mywapt.register_computer(
+                    result['register'] = mywapt.register_computer(
                         description=(" ".join(args[1:])).decode(sys.getfilesystemencoding()),
                         )
-                    if options.json_output:
-                        jsonresult['result'] = result
-                    else:
+                    if not options.json_output:
                         logger.debug(u"Registering host info against server: %s", result)
-                        if not result['success']:
+                        if not result['register']['success']:
                             print(u"Error when registering host against server %s: %s" % (mywapt.waptserver.server_url,result['msg']))
                             sys.exit(1)
                         else:
                             print(u"Host correctly registered against server %s." % (mywapt.waptserver.server_url,))
+
+                    # update after register new server / repo
+                    if options.update_packages:
+                        result['update'] = do_update(mywapt,options)
+
+                    if options.json_output:
+                        jsonresult['result'] = result
+
                 else:
                     print(u"No waptserver defined. Register unavailable")
                     sys.exit(1)
@@ -1245,34 +1345,9 @@ def main():
 
             elif action == 'enable-check-certificate':
                 if mywapt.waptserver:
-                    mywapt.waptserver.verify_cert = False
-                    if mywapt.waptserver and mywapt.waptserver_available():
-                        result = mywapt.waptserver.save_server_certificate(os.path.join(mywapt.wapt_base_dir,'ssl','server'),overwrite = options.force)
-                        print('Server certificate : %s' % result)
-                        if result:
-                            cert = SSLCertificate(result)
-                            server_host_name = urlparse.urlparse(mywapt.waptserver.server_url).netloc
-                            if cert.cn != server_host_name:
-                                raise Exception(u'Common name of certificate (%s) does not match server hostname (%s), aborting' % (cert.cn,server_host_name) )
-                            else:
-                                print('Certificate CN: %s' % cert.cn)
-                            print('Pining certificate %s' % result)
-                            setuphelpers.inifile_writestring(mywapt.config_filename,'global','verify_cert',result)
-                            if options.json_output:
-                                jsonresult['result'] = result
-                            else:
-                                print('wapt config file updated')
-                            print('')
-                            print('Please check sha1 fingerprint of server certificate : %s' % cert.digest('sha1'))
-                            print('')
-                            print('Don''t forget to restart waptservice to take the new settings in account !')
-                        else:
-                            print('No server certificate retrieved')
-                    else:
-                        print('Server not available')
+                    jsonresult['result'] = do_enable_check_certificate(mywapt,options)
                 else:
                     print('No Wapt Server defined')
-
 
             else:
                 print(u'Unknown action %s' % action)

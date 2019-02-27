@@ -334,6 +334,54 @@ class HostCapabilities(BaseObjectClass):
     def __repr__(self):
         return repr(self.as_dict())
 
+class PackageKey(object):
+    def __init__(self,package=None,version=None,architecture=None,locale=None,maturity=None,**kwargs):
+        self.package = package
+        self.version = version
+        self.architecture = architecture
+        self.locale = locale
+        self.maturity = maturity
+        for k,v in kwargs:
+            if hasattr(self,k):
+                setattr(self,k,v)
+
+    def __unicode__(self):
+        def and_list(v):
+            if isinstance(v,list) or isinstance(v,tuple):
+                return u','.join(ensure_list(v))
+            else:
+                return v
+        attribs=[]
+        attribs.extend([u"%s" % (ensure_unicode(and_list(getattr(self,a)))) for a in ['architecture','locale','maturity']
+                                                if getattr(self,a) is not None and getattr(self,a) != '' and getattr(self,a) != 'all'])
+        if attribs:
+            attribs = u' [%s]' % u'_'.join(attribs)
+        else:
+            attribs = u''
+        return "%s (=%s)%s" % (self.package,self.version,attribs)
+
+    def __str__(self):
+        return "%s" % self.__unicode__()
+
+    def __iter__(self):
+        return iter((self.package,self.version,self.architecture,self.locale,self.maturity))
+
+    def as_dict(self):
+        return dict(
+            package=self.package,
+            version=self.version,
+            architecture=self.architecture,
+            locale=self.locale,
+            maturity=self.maturity,
+            )
+
+    def __repr__(self):
+        return repr(self.as_dict())
+
+    def __cmp__(self,other):
+        return cmp(list(self),list(other))
+
+
 def PackageVersion(package_or_versionstr):
     """Splits a version string 1.2.3.4-567
     software version is clipped to 4 members
@@ -594,6 +642,8 @@ class PackageRequest(BaseObjectClass):
                                                 if getattr(self,a) is not None and getattr(self,a) != '' and getattr(self,a) != 'all'])
         if attribs:
             attribs = u' [%s]' % u'_'.join(attribs)
+        else:
+            attribs = ''
         return "%s%s" % (self.request,attribs)
 
 
@@ -685,7 +735,7 @@ def control_to_dict(control,int_params=('size','installed_size')):
             key = key.lower()
             if key in int_params:
                 try:
-                    value = int(value)
+                    value = long(value)
                 except:
                     pass
             result[key] = value
@@ -859,7 +909,7 @@ class PackageEntry(BaseObjectClass):
                     setattr(self,key,value)
 
     def as_key(self):
-        return dict(
+        return PackageKey(
             package=self.package,
             version=self.version,
             architecture=self.architecture,
@@ -875,9 +925,9 @@ class PackageEntry(BaseObjectClass):
         return PackageRequest(
             package = self.package,
             version=self.version,
-            architecture=self.architecture,
-            locale=self.locale,
-            maturity=self.maturity,
+            architectures=[self.architecture],
+            locales=[self.locale],
+            maturities=[self.maturity],
             )
 
     def parse_version(self):
@@ -976,7 +1026,7 @@ class PackageEntry(BaseObjectClass):
 
             def convert(text):
                 if text.isdigit():
-                    return int(text)
+                    return long(text)
                 else:
                     return text.lower()
             alphanum_key = lambda key: [convert(c) for c in re.split('([0-9]+)', key)]
