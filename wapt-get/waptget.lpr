@@ -32,7 +32,7 @@ uses
   Interfaces, Windows, PythonEngine, VarPyth, superobject, soutils, tislogging, uWaptRes,
   waptcommon, waptwinutils, tiscommon, tisstrings, LazFileUtils,
   IdAuthentication, IdExceptionCore, Variants, IniFiles,uwaptcrypto,uWaptPythonUtils,
-  tisinifiles;
+  tisinifiles,base64;
 
 type
   { PWaptGet }
@@ -227,7 +227,9 @@ end;
 function PWaptGet.GetWaptServerPassword: String;
 begin
   if WaptServerPassword='' then
-    WaptServerPassword :=   GetCmdParams('WaptServerPassword','');
+    WaptServerPassword := DecodeStringBase64(GetCmdParams('WaptServerPassword64',''));
+  if WaptServerPassword='' then
+    WaptServerPassword := GetCmdParams('WaptServerPassword','');
   while WaptServerPassword='' do
   begin
     Write('Waptserver Password: ');
@@ -241,7 +243,9 @@ function PWaptGet.GetPrivateKeyPassword(crtname:String=''): String;
 begin
   if crtname ='' then
     crtname:=WaptPersonalCertificatePath;
-  result := GetCmdParams('PrivateKeyPassword','');
+  result := DecodeStringBase64(GetCmdParams('PrivateKeyPassword64',''));
+  if result='' then
+    result := GetCmdParams('PrivateKeyPassword','');
   while Result='' do
   begin
     Write('Private key Password for '+crtname+' : ');
@@ -849,7 +853,9 @@ begin
   printPwd := False;
   if (keypassword='') and not FileExistsUTF8(keyfilename) then
   begin
-    keypassword := GetCmdParams('PrivateKeyPassword','');
+    keypassword := DecodeStringBase64(GetCmdParams('PrivateKeyPassword64',''));
+    if keypassword='' then
+      keypassword := GetCmdParams('PrivateKeyPassword','');
     if keypassword='' then
     begin
       printPwd := True;

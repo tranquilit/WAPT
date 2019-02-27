@@ -138,6 +138,10 @@ action is either :
    waptwua-download : scan status of windows against current rules, download missing kb and send result to
    waptwua-install : install pending updates
 
+ For initial setup
+   create-keycert  : create a RSA key pair and X509 certificate with /CommonName, /CodeSigning and /CA params. Use /PrivateKeyPassword for key encrypt. Store crt and pem into /BaseDir
+   build-waptagent : compile a waptagent.exe and waptupgrade package using /ConfigFilename parameter to ini file. By default, use waptconsole configuration.
+
 """
 
 parser=OptionParser(usage=usage,version='wapt-get.py ' + __version__+' common.py '+common.__version__+' setuphelpers.py '+setuphelpers.__version__)
