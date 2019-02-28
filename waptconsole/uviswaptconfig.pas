@@ -240,13 +240,16 @@ begin
   else if (prev <> ActCheckPersonalKey.Enabled) and (ImgStatusPersonalCertificate.Tag<>ssUnknown) then
     SetStatus(ImgStatusPersonalCertificate,ssUnknown);
 
-  if edDefaultPackagePrefix.Text='' then
+  if (edDefaultPackagePrefix.Text='') then
     SetStatus(ImgStatusPackagePrefix,ssError)
   else
     SetStatus(ImgStatusPackagePrefix,ssOK);
 
-  if (EdLicencesDirectory.Text<>'') and not DirectoryExistsUTF8(EdLicencesDirectory.Text) then
-    SetStatus(ImgStatusPackagePrefix,ssError);
+  if (EdLicencesDirectory.Text<>'') then
+    if not DirectoryExistsUTF8(EdLicencesDirectory.Text) then
+      SetStatus(ImgStatusLicences,ssError)
+    else
+      SetStatus(ImgStatusLicences,ssUnknown);
 end;
 
 procedure TVisWAPTConfig.ActGetServerCertificateExecute(Sender: TObject);
@@ -272,6 +275,7 @@ begin
         StringToFile(certfn,String(pem_data));
         EdServerCertificate.Text := certfn;
         CBVerifyCert.Checked:=True;
+        ActCheckAndSetwaptserver.Execute;
       end
       else
         raise Exception.Create('No certificate returned from  get_pem_server_certificate');
@@ -358,12 +362,15 @@ begin
   If not CBVerifyCert.Checked then
     EdServerCertificate.Text:='0'
   else
+  begin
     if (EdServerCertificate.Text='') or (EdServerCertificate.Text='0') then
     begin
       EdServerCertificate.Text := IniReadString(IniFileName,'global','verify_cert','0');
       if (LowerCase(EdServerCertificate.Text) = '0') or (LowerCase(EdServerCertificate.Text) = 'false') then
         EdServerCertificate.Text:=CARoot();
+      ActCheckAndSetwaptserver.Execute;
     end;
+  end;
 
   EdServerCertificate.Enabled:=CBVerifyCert.Checked;
   ActGetServerCertificate.Enabled:=CBVerifyCert.Checked;

@@ -1,12 +1,12 @@
 object VisWAPTConfig: TVisWAPTConfig
-  Left = 639
+  Left = 483
   Height = 368
-  Top = 354
-  Width = 621
+  Top = 337
+  Width = 614
   BorderStyle = bsDialog
   Caption = 'WAPTConsole configuration'
   ClientHeight = 368
-  ClientWidth = 621
+  ClientWidth = 614
   Menu = MainMenu1
   OnCreate = FormCreate
   OnDestroy = FormDestroy
@@ -19,7 +19,7 @@ object VisWAPTConfig: TVisWAPTConfig
     Left = 6
     Height = 34
     Top = 328
-    Width = 609
+    Width = 602
     OKButton.Name = 'OKButton'
     OKButton.DefaultCaption = True
     OKButton.OnClick = OKButtonClick
@@ -39,7 +39,7 @@ object VisWAPTConfig: TVisWAPTConfig
     Left = 0
     Height = 322
     Top = 0
-    Width = 621
+    Width = 614
     ActivePage = pgBase
     Align = alClient
     TabIndex = 0
@@ -48,7 +48,7 @@ object VisWAPTConfig: TVisWAPTConfig
       Caption = 'Base'
       ChildSizing.TopBottomSpacing = 15
       ClientHeight = 296
-      ClientWidth = 613
+      ClientWidth = 606
       object edDefaultPackagePrefix: TLabeledEdit
         Left = 167
         Height = 21
@@ -87,14 +87,14 @@ object VisWAPTConfig: TVisWAPTConfig
       end
       object Label2: TLabel
         AnchorSideTop.Control = edPersonalCertificatePath
+        AnchorSideTop.Side = asrCenter
         AnchorSideRight.Control = edPersonalCertificatePath
         Left = 0
         Height = 13
-        Top = 190
+        Top = 192
         Width = 164
         Alignment = taRightJustify
         Anchors = [akTop, akRight]
-        BorderSpacing.Top = 2
         BorderSpacing.Right = 3
         Caption = 'Path to personal certificate'
         Constraints.MinWidth = 164
@@ -125,11 +125,15 @@ object VisWAPTConfig: TVisWAPTConfig
         OnKeyPress = edServerAddressKeyPress
       end
       object Button2: TButton
+        AnchorSideRight.Control = pgBase
+        AnchorSideRight.Side = asrBottom
         Left = 421
         Height = 25
         Top = 6
-        Width = 168
+        Width = 180
         Action = ActCheckAndSetwaptserver
+        Anchors = [akTop, akLeft, akRight]
+        BorderSpacing.Right = 5
         TabOrder = 1
       end
       object labStatusRepo: TLabel
@@ -235,14 +239,14 @@ object VisWAPTConfig: TVisWAPTConfig
       end
       object Label6: TLabel
         AnchorSideTop.Control = EdServerCertificate
+        AnchorSideTop.Side = asrCenter
         AnchorSideRight.Control = EdServerCertificate
         Left = 0
         Height = 13
-        Top = 130
+        Top = 132
         Width = 164
         Alignment = taRightJustify
         Anchors = [akTop, akRight]
-        BorderSpacing.Top = 2
         BorderSpacing.Right = 3
         Caption = 'Path to CA certificates bundle'
         Constraints.MinWidth = 164
@@ -264,12 +268,15 @@ object VisWAPTConfig: TVisWAPTConfig
         TabOrder = 6
       end
       object Button5: TButton
+        AnchorSideRight.Control = pgBase
+        AnchorSideRight.Side = asrBottom
         Left = 421
         Height = 25
         Hint = 'Click to retrieve the https certificate chain from server.'#13#10'This works only if chain contain full certificate validation chain.'#13#10'If not, you must add the missing root and intermediate certificates.'
         Top = 128
-        Width = 168
+        Width = 185
         Action = ActGetServerCertificate
+        Anchors = [akTop, akLeft, akRight]
         TabOrder = 7
       end
       object CBVerifyCert: TCheckBox
@@ -283,20 +290,26 @@ object VisWAPTConfig: TVisWAPTConfig
         TabOrder = 5
       end
       object Button6: TButton
+        AnchorSideRight.Control = pgBase
+        AnchorSideRight.Side = asrBottom
         Left = 421
         Height = 25
         Hint = 'Try to find a private key (pem encoded RSA key) in same directory as certificate.'#13#10'This will ask for the password for decrypting the key.'
         Top = 176
-        Width = 168
+        Width = 185
         Action = ActCheckPersonalKey
+        Anchors = [akTop, akLeft, akRight]
         TabOrder = 10
       end
       object Button3: TButton
+        AnchorSideRight.Control = pgBase
+        AnchorSideRight.Side = asrBottom
         Left = 421
         Height = 25
         Top = 208
-        Width = 168
+        Width = 185
         Action = ActCreateKeyCert
+        Anchors = [akTop, akLeft, akRight]
         TabOrder = 11
       end
       object LabLicencesDirectory: TLabel
