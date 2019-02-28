@@ -1425,16 +1425,20 @@ msgid ""
 "(Main repository access and wapt server)\n"
 msgstr "Cocher pour active rla vérification des certificats https"
 
-#: tviswaptconfig.eddefault_package_prefix.editlabel.caption
-#| msgid "Prefix for naming created WAPT packages"
+#: tviswaptconfig.eddefaultpackageprefix.editlabel.caption
+msgctxt "tviswaptconfig.eddefaultpackageprefix.editlabel.caption"
 msgid "WAPT packages prefix"
 msgstr "Préfixe des paquets WAPT"
 
-#: tviswaptconfig.eddefault_package_prefix.hint
+#: tviswaptconfig.eddefaultpackageprefix.hint
+msgctxt "tviswaptconfig.eddefaultpackageprefix.hint"
 msgid ""
 "E.g. : tis\n"
 "Which prefix to use when naming created or duplicated packages\n"
-msgstr "Par exemple :tis"
+msgstr ""
+"Par exemple :tis\n"
+"Préfixe à utiliser lors de la création ou la duplication de paquets\n"
+
 
 #: tviswaptconfig.eddefault_sources_root.hint
 msgid ""
@@ -1508,6 +1512,19 @@ msgid ""
 "E.g. : https://wapt.tranquilit.local\n"
 "Leave empty if you don't want a central management server.\n"
 msgstr "Par exemple : https://wapt.tranquilit.local"
+
+#: tviswaptconfig.gridplugins.header.columns[0].text
+msgctxt "tviswaptconfig.gridplugins.header.columns[0].text"
+msgid "Name"
+msgstr "Nom"
+
+#: tviswaptconfig.gridplugins.header.columns[1].text
+msgid "Executable"
+msgstr "Exécutable"
+
+#: tviswaptconfig.gridplugins.header.columns[2].text
+msgid "Arguments"
+msgstr "Arguments"
 
 #: tviswaptconfig.label1.caption
 msgid "Base directory for package development"
@@ -3274,7 +3291,7 @@ msgstr ""
 #: tviswaptgui.gridhosttaskserrors.header.columns[12].text
 msgctxt "tviswaptgui.gridhosttaskserrors.header.columns[12].text"
 msgid "pidlist"
-msgstr ""
+msgstr "Liste de PIDs"
 
 #: tviswaptgui.gridhosttaskserrors.header.columns[13].text
 msgctxt "tviswaptgui.gridhosttaskserrors.header.columns[13].text"
@@ -3342,9 +3359,10 @@ msgid "logs"
 msgstr "Traces"
 
 #: tviswaptgui.gridhosttaskspending.header.columns[12].text
+
 msgctxt "tviswaptgui.gridhosttaskspending.header.columns[12].text"
 msgid "pidlist"
-msgstr ""
+msgstr "Liste de PIDs"
 
 #: tviswaptgui.gridhosttaskspending.header.columns[13].text
 msgctxt "tviswaptgui.gridhosttaskspending.header.columns[13].text"
@@ -4558,6 +4576,7 @@ msgid "Search in"
 msgstr "Critère de recherche"
 
 #: tviswaptgui.label6.caption
+msgctxt "tviswaptgui.label6.caption"
 msgid "Name"
 msgstr "Nom"
 
@@ -5327,7 +5346,7 @@ msgstr "Rechercher"
 #: tviswuarules.actsearchsoftwares.caption
 msgctxt "tviswuarules.actsearchsoftwares.caption"
 msgid "ActSearchSoftware"
-msgstr ""
+msgstr "Rechercher"
 
 #: tviswuarules.acttriggerhostslistening.caption
 msgctxt "tviswuarules.acttriggerhostslistening.caption"
@@ -6369,6 +6388,7 @@ msgstr ""
 "Souhaitez-vous reconstruire un installeur waptagent.exe maintenant ?\n"
 
 #: uwaptconsoleres.rswaptagentsetuperror
+msgctxt "uwaptconsoleres.rswaptagentsetuperror"
 msgid "Error while creating waptagent.exe: %s"
 msgstr "Erreur lors de la création du waptagent.exe : %s"
 

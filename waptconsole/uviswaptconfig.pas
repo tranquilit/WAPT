@@ -42,7 +42,7 @@ type
     EdLicencesDirectory: TDirectoryEdit;
     EdMaturity: TComboBox;
     EdServerCertificate: TFileNameEdit;
-    eddefault_package_prefix: TLabeledEdit;
+    edDefaultPackagePrefix: TLabeledEdit;
     eddefault_sources_root: TDirectoryEdit;
     edhttp_proxy: TLabeledEdit;
     edPersonalCertificatePath: TFileNameEdit;
@@ -50,8 +50,11 @@ type
     edServerAddress: TLabeledEdit;
     edwapt_server: TLabeledEdit;
     ImageList1: TImageList;
+    ImgStatusPersonalCertificate: TImage;
+    ImgStatusLicences: TImage;
     ImgStatusRepo: TImage;
     ImgStatusServer: TImage;
+    ImgStatusPackagePrefix: TImage;
     Label1: TLabel;
     Label2: TLabel;
     LabLicencesDirectory: TLabel;
@@ -82,7 +85,7 @@ type
     procedure Button1Click(Sender: TObject);
     procedure cbManualClick(Sender: TObject);
     procedure CBVerifyCertClick(Sender: TObject);
-    procedure eddefault_package_prefixExit(Sender: TObject);
+    procedure edDefaultPackagePrefixExit(Sender: TObject);
     procedure edrepo_urlExit(Sender: TObject);
     procedure edServerAddressChange(Sender: TObject);
     procedure edServerAddressEnter(Sender: TObject);
@@ -103,6 +106,7 @@ type
     function GetGridHostsPluginsFromIni: ISuperObject;
     function GetInifile: TIniFile;
     procedure SetIniFilename(AValue: String);
+    procedure SetStatus(img:TImage;status:Integer);
     { private declarations }
   public
     { public declarations }
@@ -120,6 +124,13 @@ uses base64, tiscommon,waptcommon,LCLIntf,IDURI,uWaptConsoleRes,
 {$R *.lfm}
 
 { TVisWAPTConfig }
+
+const
+  ssUnknown=0;
+  ssWaiting=1;
+  ssError=2;
+  ssWarning=3;
+  ssOK=4;
 
 procedure TVisWAPTConfig.Button1Click(Sender: TObject);
 begin
@@ -150,8 +161,8 @@ begin
     Free;
   end;
 
-  ImageList1.GetBitmap(2, ImgStatusRepo.Picture.Bitmap);
-  ImageList1.GetBitmap(2, ImgStatusServer.Picture.Bitmap);
+  SetStatus(ImgStatusRepo,ssWaiting);
+  SetStatus(ImgStatusServer,ssWaiting);
   Timer1Timer(Timer1);
 end;
 
@@ -190,6 +201,7 @@ var
   vpassword,vcertificate_path:Variant;
 
 begin
+  SetStatus(ImgStatusPersonalCertificate,ssWaiting);
   with TVisPrivateKeyAuth.Create(Application.MainForm) do
   try
     laKeyPath.Caption := edPersonalCertificatePath.text;
@@ -199,12 +211,18 @@ begin
       vcertificate_path := PyUTF8Decode(edPersonalCertificatePath.Text);
       keyPath := VarPythonAsString(DMPython.waptdevutils.get_private_key_encrypted(certificate_path:=vcertificate_path,password:=vpassword));
       if keyPath = '' then
+      begin
+        SetStatus(ImgStatusPersonalCertificate,ssError);
         ShowMessageFmt('Error : No private key in directory %s could be decrypted with supplied password, or none matches the certificate.',[ExtractFileDir(edPersonalCertificatePath.Text)])
+      end
       else
+      begin
         if vpassword='' then
           ShowMessageFmt('Success: Matching private key %s found. Warning, key is not encrypted',[keyPath])
         else
           ShowMessageFmt('Success: Matching private key %s decrypted properly and matching the certificate.',[keyPath]);
+        SetStatus(ImgStatusPersonalCertificate,ssOK);
+      end;
     end;
   finally
     free;
@@ -212,8 +230,23 @@ begin
 end;
 
 procedure TVisWAPTConfig.ActCheckPersonalKeyUpdate(Sender: TObject);
+var
+  prev:Boolean;
 begin
+  prev := ActCheckPersonalKey.Enabled;
   ActCheckPersonalKey.Enabled:= FileExistsUTF8(edPersonalCertificatePath.FileName);
+  if not ActCheckPersonalKey.Enabled and (ImgStatusPersonalCertificate.Tag<>ssError) then
+    SetStatus(ImgStatusPersonalCertificate,ssError)
+  else if (prev <> ActCheckPersonalKey.Enabled) and (ImgStatusPersonalCertificate.Tag<>ssUnknown) then
+    SetStatus(ImgStatusPersonalCertificate,ssUnknown);
+
+  if edDefaultPackagePrefix.Text='' then
+    SetStatus(ImgStatusPackagePrefix,ssError)
+  else
+    SetStatus(ImgStatusPackagePrefix,ssOK);
+
+  if (EdLicencesDirectory.Text<>'') and not DirectoryExistsUTF8(EdLicencesDirectory.Text) then
+    SetStatus(ImgStatusPackagePrefix,ssError);
 end;
 
 procedure TVisWAPTConfig.ActGetServerCertificateExecute(Sender: TObject);
@@ -262,7 +295,7 @@ begin
 
   inifile.WriteString('global', 'http_proxy', edhttp_proxy.Text);
   inifile.WriteString('global', 'default_package_prefix',
-    LowerCase(eddefault_package_prefix.Text));
+    LowerCase(edDefaultPackagePrefix.Text));
   inifile.WriteString('global', 'wapt_server', edwapt_server.Text);
   inifile.WriteString('global', 'default_sources_root',
     eddefault_sources_root.Text);
@@ -282,6 +315,17 @@ begin
 
   //inifile.WriteString('global','default_sources_url',eddefault_sources_url.text);
   ModalResult:=mrOk;
+end;
+
+procedure TVisWAPTConfig.SetStatus(img: TImage; status: Integer);
+begin
+  if Status>4 then
+    Status := 0;
+  if Img.Tag <> status then
+  begin
+    ImageList1.GetBitmap(status, Img.Picture.Bitmap);
+    img.Tag:=status;
+  end;
 end;
 
 procedure TVisWAPTConfig.ActSaveConfigUpdate(Sender: TObject);
@@ -336,9 +380,9 @@ begin
       result := Result+st[i];
 end;
 
-procedure TVisWAPTConfig.eddefault_package_prefixExit(Sender: TObject);
+procedure TVisWAPTConfig.edDefaultPackagePrefixExit(Sender: TObject);
 begin
-  eddefault_package_prefix.Text:=LowerCase(MakeIdent(eddefault_package_prefix.Text));
+  edDefaultPackagePrefix.Text:=LowerCase(MakeIdent(edDefaultPackagePrefix.Text));
 end;
 
 procedure TVisWAPTConfig.edrepo_urlExit(Sender: TObject);
@@ -379,8 +423,9 @@ var
   serverRes:ISuperObject;
   strRes,packages,proxy:String;
 begin
-  ImageList1.GetBitmap(2, ImgStatusRepo.Picture.Bitmap);
-  ImageList1.GetBitmap(2, ImgStatusServer.Picture.Bitmap);
+  SetStatus(ImgStatusRepo,ssWaiting);
+  SetStatus(ImgStatusServer,ssWaiting);
+
   Application.ProcessMessages;
 
   try
@@ -412,11 +457,11 @@ begin
           raise Exception.CreateFmt(rsWaptServerError,[serverRes.S['msg']]);
 
         labStatusServer.Caption:= Format('Server access: %s. %s', [serverRes.S['success'],UTF8Encode(serverRes.S['msg'])]);
-        ImageList1.GetBitmap(0, ImgStatusServer.Picture.Bitmap)
+        SetStatus(ImgStatusServer,ssOK);
       except
         on E:Exception do
         begin
-          ImageList1.GetBitmap(1, ImgStatusServer.Picture.Bitmap);
+          SetStatus(ImgStatusServer,ssError);
           labStatusServer.Caption:=Format('Server access error: %s',[e.Message]);
         end;
       end;
@@ -431,11 +476,11 @@ begin
         if length(packages)<=0 then
           Raise Exception.Create('Packages file empty or not found');
         labStatusRepo.Caption:=Format('Repository access OK', []);
-        ImageList1.GetBitmap(0, ImgStatusRepo.Picture.Bitmap);
+        SetStatus(ImgStatusRepo,ssOK);
       except
         on E:Exception do
         begin
-          ImageList1.GetBitmap(1, ImgStatusRepo.Picture.Bitmap);
+          SetStatus(ImgStatusRepo,ssError);
           labStatusRepo.Caption:=Format('Repository access error: %s',[e.Message]);
         end;
       end;
@@ -473,7 +518,7 @@ begin
   cbUseProxyForRepo.Checked :=
     inifile.ReadBool('global', 'use_http_proxy_for_repo', edhttp_proxy.Text <> '');
 
-  eddefault_package_prefix.Text :=
+  edDefaultPackagePrefix.Text :=
     inifile.ReadString('global', 'default_package_prefix', '');
   edwapt_server.Text := inifile.ReadString('global', 'wapt_server', '');
 
@@ -513,8 +558,8 @@ begin
   //cbManual.Checked:=False;
   labStatusRepo.Caption := '';
   labStatusServer.Caption := '';
-  ImageList1.GetBitmap(2, ImgStatusRepo.Picture.Bitmap);
-  ImageList1.GetBitmap(2, ImgStatusServer.Picture.Bitmap);
+  SetStatus(ImgStatusRepo,0);
+  SetStatus(ImgStatusServer,0);
 
 end;
 
@@ -551,10 +596,28 @@ end;
 
 procedure TVisWAPTConfig.FormShow(Sender: TObject);
 begin
+  ImageList1.GetBitmap(ssUnknown, ImgStatusPackagePrefix.Picture.Bitmap);
+  ImageList1.GetBitmap(ssUnknown, ImgStatusPersonalCertificate.Picture.Bitmap);
+  ImageList1.GetBitmap(ssUnknown, ImgStatusRepo.Picture.Bitmap);
+  ImageList1.GetBitmap(ssUnknown, ImgStatusServer.Picture.Bitmap);
+  ImageList1.GetBitmap(ssUnknown, ImgStatusLicences.Picture.Bitmap);
+
   cbManualClick(cbManual);
   edrepo_urlExit(Sender);
   CBVerifyCert.Checked:=(EdServerCertificate.Text<>'') and (EdServerCertificate.Text<>'0');
   CBVerifyCertClick(Sender);
+
+  if edwapt_server.Text<>'' then
+    ActCheckAndSetwaptserver.Execute;
+
+  if edwapt_server.Text='' then
+      edwapt_server.SetFocus
+  else if (edPersonalCertificatePath.Text='') then
+    edPersonalCertificatePath.SetFocus
+  else if (edDefaultPackagePrefix.Text='') then
+    edDefaultPackagePrefix.Text:='';
+
+
 end;
 
 procedure TVisWAPTConfig.GridPluginsEditing(Sender: TBaseVirtualTree;

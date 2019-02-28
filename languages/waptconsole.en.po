@@ -1413,11 +1413,13 @@ msgid ""
 "(Main repository access and wapt server)\n"
 msgstr ""
 
-#: tviswaptconfig.eddefault_package_prefix.editlabel.caption
+#: tviswaptconfig.eddefaultpackageprefix.editlabel.caption
+msgctxt "tviswaptconfig.eddefaultpackageprefix.editlabel.caption"
 msgid "WAPT packages prefix"
 msgstr ""
 
-#: tviswaptconfig.eddefault_package_prefix.hint
+#: tviswaptconfig.eddefaultpackageprefix.hint
+msgctxt "tviswaptconfig.eddefaultpackageprefix.hint"
 msgid ""
 "E.g. : tis\n"
 "Which prefix to use when naming created or duplicated packages\n"
@@ -1494,6 +1496,19 @@ msgstr ""
 msgid ""
 "E.g. : https://wapt.tranquilit.local\n"
 "Leave empty if you don't want a central management server.\n"
+msgstr ""
+
+#: tviswaptconfig.gridplugins.header.columns[0].text
+msgctxt "tviswaptconfig.gridplugins.header.columns[0].text"
+msgid "Name"
+msgstr ""
+
+#: tviswaptconfig.gridplugins.header.columns[1].text
+msgid "Executable"
+msgstr ""
+
+#: tviswaptconfig.gridplugins.header.columns[2].text
+msgid "Arguments"
 msgstr ""
 
 #: tviswaptconfig.label1.caption
@@ -4543,6 +4558,7 @@ msgid "Search in"
 msgstr ""
 
 #: tviswaptgui.label6.caption
+msgctxt "tviswaptgui.label6.caption"
 msgid "Name"
 msgstr ""
 

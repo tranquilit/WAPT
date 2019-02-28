@@ -4140,13 +4140,6 @@ begin
   with TVisWAPTConfig.Create(self) do
   try
     IniFileName:=AppIniFilename;
-    if edwapt_server.Text='' then
-      edwapt_server.SetFocus
-    else if (edPersonalCertificatePath.Text='') then
-      edPersonalCertificatePath.SetFocus
-    else if (eddefault_package_prefix.Text='') then
-      eddefault_package_prefix.Text:='';
-
     if ShowModal = mrOk then
     begin
       DMPython.privateKeyPassword:='';
