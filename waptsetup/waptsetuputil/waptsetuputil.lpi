@@ -21,7 +21,7 @@
       <MajorVersionNr Value="1"/>
       <MinorVersionNr Value="7"/>
       <RevisionNr Value="3"/>
-      <BuildNr Value="3"/>
+      <BuildNr Value="9"/>
       <StringTable LegalCopyright="Tranquil IT Systems 2012-2019" ProductName="WAPT Enterprise Edition" ProductVersion="1.7.3"/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -36,34 +36,19 @@
         <HostApplicationFilename Value="C:\cygwin64\tmp\is-8ILM0.tmp\waptserversetup.tmp"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="3">
+    <RequiredPackages Count="2">
       <Item1>
-        <PackageName Value="pltis_superobject"/>
+        <PackageName Value="pltis_wapt"/>
       </Item1>
       <Item2>
-        <PackageName Value="indylaz"/>
+        <PackageName Value="pltis_superobject"/>
       </Item2>
-      <Item3>
-        <PackageName Value="LazControls"/>
-      </Item3>
     </RequiredPackages>
-    <Units Count="4">
+    <Units Count="1">
       <Unit0>
         <Filename Value="waptsetuputil.lpr"/>
         <IsPartOfProject Value="True"/>
       </Unit0>
-      <Unit1>
-        <Filename Value="setuputil.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit1>
-      <Unit2>
-        <Filename Value="constants.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit2>
-      <Unit3>
-        <Filename Value="setupvalidation.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit3>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

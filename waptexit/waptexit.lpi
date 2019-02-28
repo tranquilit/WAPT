@@ -29,7 +29,7 @@
       <MajorVersionNr Value="1"/>
       <MinorVersionNr Value="7"/>
       <RevisionNr Value="3"/>
-      <BuildNr Value="3"/>
+      <BuildNr Value="9"/>
       <Language Value="040C"/>
       <StringTable CompanyName="Tranquil IT Systems" FileDescription="check and launch packages upgrades at Windows Shutdown" InternalName="waptexit" LegalCopyright="Tranquil IT Systems 2012-2019" OriginalFilename="waptexit.exe" ProductName="WAPT Enterprise Edition" ProductVersion="1.7.3"/>
     </VersionInfo>
@@ -128,20 +128,4 @@
       <CustomOptions Value="-dUseCThreads -dENTERPRISE"/>
     </Other>
   </CompilerOptions>
-  <Debugging>
-    <Exceptions Count="4">
-      <Item1>
-        <Name Value="EIdReadTimeout"/>
-      </Item1>
-      <Item2>
-        <Name Value="EIdWinsockStubError"/>
-      </Item2>
-      <Item3>
-        <Name Value="EIdConnectTimeout"/>
-      </Item3>
-      <Item4>
-        <Name Value="EIdHTTPProtocolException"/>
-      </Item4>
-    </Exceptions>
-  </Debugging>
 </CONFIG>

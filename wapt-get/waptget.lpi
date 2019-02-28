@@ -23,7 +23,7 @@
       <MajorVersionNr Value="1"/>
       <MinorVersionNr Value="7"/>
       <RevisionNr Value="3"/>
-      <BuildNr Value="3"/>
+      <BuildNr Value="9"/>
       <StringTable CompanyName="Tranquil IT Systems" LegalCopyright="Tranquil IT Systems 2012-2019" ProductName="WAPT Enterprise Edition" ProductVersion="1.7.3"/>
     </VersionInfo>
     <BuildModes Count="1" Active="Default">
@@ -59,11 +59,11 @@
         <Filename Value="waptget.lpr"/>
         <IsPartOfProject Value="True"/>
         <IsVisibleTab Value="True"/>
-        <TopLine Value="66"/>
-        <CursorPos Y="75"/>
+        <TopLine Value="405"/>
+        <CursorPos X="18" Y="418"/>
         <UsageCount Value="222"/>
         <Bookmarks Count="1">
-          <Item0 X="49" Y="853" ID="2"/>
+          <Item0 X="49" Y="859" ID="2"/>
         </Bookmarks>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
