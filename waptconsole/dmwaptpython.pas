@@ -431,6 +431,8 @@ begin
   FWaptHostRepo:=AValue;
 end;
 
+//Returns the cached key password if it can decrypt a key matching Personal certificate
+//If not, ask the user for a new password and try to decrypt a key
 function TDMPython.getprivateKeyPassword: RawByteString;
 var
   PrivateKeyPath:String;
@@ -679,6 +681,7 @@ begin
   end;
 end;
 
+//Returns a CABundle python object which contains the user certificate (first one) and potentially intermediate CA.
 function TDMPython.GetPersonalCertificate: Variant;
 var
   vcrt_filename: Variant;

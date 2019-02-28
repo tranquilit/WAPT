@@ -140,7 +140,7 @@ end;
 procedure TVisCreateWaptSetup.fnPublicCertEditingDone(Sender: TObject);
 var
   id: Integer;
-  CABundle,CertIter, Cert,CertList: Variant;
+  CABundle,CertIter,Cert,CertList: Variant;
   SOCert,SOCerts: ISuperObject;
   att:String;
   NewCertFilename:String;
@@ -245,13 +245,18 @@ end;
 procedure TVisCreateWaptSetup.FormShow(Sender: TObject);
 var
   ini: TIniFile;
+  DefaultCA,PersonalCertificate:String;
 begin
   try
     ini := TIniFile.Create(AppIniFilename);
-    if ini.ReadString('global', 'default_ca_cert_path', '') <> '' then
-      ActiveCertBundle := ini.ReadString('global', 'default_ca_cert_path', '')
+    DefaultCA := ini.ReadString('global', 'default_ca_cert_path', '');
+    PersonalCertificate := ini.ReadString('global', 'personal_certificate_path', '');
+    if (DefaultCA <> '') and FileExistsUTF8(DefaultCA) then
+      ActiveCertBundle := DefaultCA
+    else if (PersonalCertificate <> '') and FileExistsUTF8(PersonalCertificate) then
+      ActiveCertBundle := PersonalCertificate
     else
-      ActiveCertBundle := ini.ReadString('global', 'personal_certificate_path', '');
+      ActiveCertBundle := '';
 
     edWaptServerUrl.Text := ini.ReadString('global', 'wapt_server', '');
     edRepoUrl.Text := ini.ReadString('global', 'repo_url', '');
@@ -405,7 +410,7 @@ begin
     With CurrentVisLoading do
     try
       Screen.Cursor := crHourGlass;
-      ProgressTitle(rsProgressTitle);
+      ProgressTitle(rsUploadInProgressTitle);
       SORes := WAPTServerJsonMultipartFilePost(
         GetWaptServerURL, 'upload_waptsetup', [], 'file', SetupFilename,
         WaptServerUser, WaptServerPassword, @IdHTTPWork,GetWaptServerCertificateFilename);

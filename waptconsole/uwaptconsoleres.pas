@@ -30,8 +30,13 @@ resourcestring
   rsSpecifyCertificateForFulter = 'Please specify a personal certificate in configuration first, in order to be able to filter hosts on it';
   rsWriteCertOnLocalMachine = 'Do you want to copy this certificate to ssl Authorized Package Certificate store (%s) ?';
 
+  rsMissingPersonalCertificate = 'Missing personal certificate';
+  rsMissingPersonalCertificateQuestion = 'No personal certificate defined.'#13#10+
+        'You need one certificate and matching private key to be able to sign actions and configurations'#13#10+
+        'Do you want to pick or create one now in preferences ?';
+
   rsBuildInProgress = 'Build in progress.';
-  rsProgressTitle = 'Started uploading to WAPT server...';  // TODO more meaningful var name
+  rsUploadInProgressTitle = 'Started uploading to WAPT server...';  // TODO more meaningful var name
   rsWaptSetupUploadSuccess = 'WAPT agent and upgrade package successfully created and uploaded to the main repository'#13#10'Don''t forget to change the hash of waptagent.exe in your GPO';
   rsWaptUploadError = 'Error while uploading WAPT agent to the repository : %s';
   rsWaptSetupError = 'Error while creating agent : %s';
@@ -55,11 +60,22 @@ resourcestring
   rsPasswordChangeError = 'Error : %s';
 
   rsWaptServerError = 'Error on WAPT server:'#13#10'%s';
-  rsWaptServerOldVersion = 'Warning, the version of the server is too old.'#13#10'Current server version: %s'#13#10'Required server version: %s';
+  rsWaptServerOldVersion =
+        'Warning, the version of the server is too old.'#13#10+
+        'Current server version: %s'#13#10+
+        'Required server version: %s';
   rsUnknownVersion = 'Unknown version';
 
-  rsWaptAgentOldVersion = 'Warning, the version of the waptagent.exe installer is too old.'#13#10'Current waptagent.exe version: %s'#13#10'waptsetup-tis.exe version: %s';
-  rsWaptAgentNotPresent = 'Warning, waptagent.exe installer is not present on server, please build waptagent.exe installer for the deployment of Wapt on client hosts.';
+  rsWaptAgentOldVersion = 'waptagent.exe needs to be upgraded'#13#10+
+          'Current waptagent.exe version: %s'#13#10+
+          'Required version: %s'#13#10+
+          #13#10+
+          'Do you want to rebuild a waptagent.exe installer now ?';
+  rsWaptAgentNotPresent = 'waptagent.exe installer is not present on server'#13#10+
+          #13#10+
+          'Do you want to build waptagent.exe installer for the deployment of Wapt on client hosts ?';
+  rsWaptAgentUnableToCheck = 'Warning, unable to check waptagent.exe installer on server'#13#10+
+          'Error: %s';
 
   rsWaptAgentUploadSuccess = 'Successfully uploaded WAPT agent !';
   rsWaptAgentUploadError = 'Error while uploading WAPT agent : %s';
@@ -109,14 +125,22 @@ resourcestring
   rsNotRunningAsAdminCanNotSSL = 'Waptconsole is not running with Admin priviledges. Will not be able to copy certificate to %s';
 
   rsConfirmImportCaption = 'Confirm import';
-  rsConfirmImport = 'Are you sure you want to import'#13#10'%s'#13#10' to your repository ?';
+  rsConfirmImport =
+          'Are you sure you want to import'#13#10+
+          '%s'#13#10+
+          ' to your repository ?';
   rsImportingFile = 'Importing %s';
   rsUploadingPackagesToWaptSrv = 'Uploading %s packages to WAPT server...';
   rsSuccessfullyImported = '%s successfully imported.';
   rsFailedImport = 'Error during import.';
   rsFailedExternalRepoUpdate = 'Unable to get Packages index from %';
 
+  rsWaptAgentCheck = 'WaptAgent version check';
+
+  rsWaptPackagePrefix = 'Package prefix';
   rsWaptPackagePrefixMissing = 'You must first define the Package prefix in preferences';
+  rsWaptPackagePrefixMissingQuestion = 'A Package prefix is needed to visually identify your packages.'#13#10+
+            'Do you want to define one now ?';
 
   rsPackageSourcesAvailable = 'The package sources are available in %s';
   rsPackageBuiltSourcesAvailable = 'The package is built and uploaded and sources are available in %s';
@@ -187,7 +211,8 @@ resourcestring
   rsEditHostCaption = 'Edit host profile %s';
   rsUpgradingHost = 'Upgrade triggered on the remote host.';
   rsUpgradeHostError = 'Failed to trigger upgrade : %s';
-  rsEditHostError =  'Unable to edit the host profile %s.'#13#10'If package is signed with a foreign key, you may want to delete host package first to workaround the issue...';
+  rsEditHostError =  'Unable to edit the host profile %s.'#13#10+
+        'If package is signed with a foreign key, you may want to delete host package first to workaround the issue...';
 
   rsRestartingWaptservice = 'Waptservice restart triggered on the remote hosts.';
 

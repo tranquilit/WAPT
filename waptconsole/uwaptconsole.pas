@@ -2283,6 +2283,7 @@ begin
   if not FileExistsUTF8(WaptPersonalCertificatePath) then
   begin
     ShowMessageFmt(rsPrivateKeyDoesntExist, [WaptPersonalCertificatePath]);
+    ActWAPTConsoleConfig.Execute;
     exit;
   end;
 
@@ -4139,6 +4140,13 @@ begin
   with TVisWAPTConfig.Create(self) do
   try
     IniFileName:=AppIniFilename;
+    if edwapt_server.Text='' then
+      edwapt_server.SetFocus
+    else if (edPersonalCertificatePath.Text='') then
+      edPersonalCertificatePath.SetFocus
+    else if (eddefault_package_prefix.Text='') then
+      eddefault_package_prefix.Text:='';
+
     if ShowModal = mrOk then
     begin
       DMPython.privateKeyPassword:='';
@@ -4387,6 +4395,7 @@ var
   sores: ISuperObject;
   CB:TComponent;
   ini:TIniFile;
+  WaptAgentCurrentVersion,WaptAgentExpectedVersion:String;
 begin
   {$ifdef ENTERPRISE}
   IsEnterpriseEdition:=True;
@@ -4487,24 +4496,39 @@ begin
     ProgressTitle(rsLoadInventory);
     ProgressStep(3,3);
 
+    // check minimum settings : prefix and personal certificate
+    if (WaptPersonalCertificatePath='') or not FileExistsUTF8(WaptPersonalCertificatePath) then
+      if MessageDlg(rsMissingPersonalCertificate,rsMissingPersonalCertificateQuestion,mtConfirmation,mbYesNoCancel,'') = mrYes then
+        ActWAPTConsoleConfig.Execute;
+
+    if (DefaultPackagePrefix='') then
+      if MessageDlg(rsWaptPackagePrefix,rsWaptPackagePrefixMissingQuestion,mtConfirmation,mbYesNoCancel,'') = mrYes then
+        ActWAPTConsoleConfig.Execute;
+
     ActSearchHost.Execute;
 
     // check waptagent version
     sores := WAPTServerJsonGet('api/v2/waptagent_version', []);
     try
       if sores.B['success'] then
-        if sores['result'].S['waptagent_version'] = '' then
-          ShowMessageFmt(rsWaptAgentNotPresent,[])
-        else if (CompareVersion(UTF8Encode(sores['result'].S['waptagent_version']),UTF8Encode(sores['result'].S['waptsetup_version']))<0) then
-        begin
-            MessageDlg('waptgent.exe / waptsetup mismatch',
-              Format(rsWaptAgentOldVersion,[sores['result'].S['waptagent_version'],sores['result'].S['waptsetup_version']]),
-              mtWarning,
-              [mbOK],'');
-        end;
+      begin
+        WaptAgentCurrentVersion := UTF8Encode(sores['result'].S['waptagent_version']);
+        WaptAgentExpectedVersion := UTF8Encode(sores['result'].S['waptsetup_version']);
+        // for windows server without waptsetup-tis
+        if WaptAgentExpectedVersion = '' then
+          WaptAgentExpectedVersion := WAPTServerMinVersion;
+
+        if ((WaptAgentCurrentVersion='') and (MessageDlg('waptagent check',rsWaptAgentNotPresent,mtConfirmation,mbYesNoCancel,'') = mrYes)) // needs to be created
+          or
+           ((CompareVersion(WaptAgentCurrentVersion,WaptAgentExpectedVersion) < 0 ) and (MessageDlg(rsWaptAgentCheck,
+                Format(rsWaptAgentOldVersion,[sores['result'].S['waptagent_version'],sores['result'].S['waptsetup_version']]),              // needs to be upgraded
+                mtConfirmation,
+                mbYesNoCancel,'') = mrYes)) then
+          ActCreateWaptSetup.Execute;
+      end;
     except
         on E:Exception do
-          ShowMessageFmt(rsWaptAgentNotPresent,[]);
+          ShowMessageFmt(rsWaptAgentUnableToCheck,[E.Message]);
     end;
   finally
     AppLoading:=False;

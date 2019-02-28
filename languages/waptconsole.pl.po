@@ -450,6 +450,48 @@ msgstr ""
 msgid "WAPTWUA Windows Updates "
 msgstr ""
 
+#: tviscreatewaptsetup.gridcertificates.header.columns[0].text
+msgctxt "tviscreatewaptsetup.gridcertificates.header.columns[0].text"
+msgid "id"
+msgstr ""
+
+#: tviscreatewaptsetup.gridcertificates.header.columns[1].text
+msgid "Certificate Name"
+msgstr ""
+
+#: tviscreatewaptsetup.gridcertificates.header.columns[2].text
+msgid "Issuer"
+msgstr ""
+
+#: tviscreatewaptsetup.gridcertificates.header.columns[3].text
+msgid "Valid until"
+msgstr ""
+
+#: tviscreatewaptsetup.gridcertificates.header.columns[4].text
+msgctxt "tviscreatewaptsetup.gridcertificates.header.columns[4].text"
+msgid "Serial number"
+msgstr ""
+
+#: tviscreatewaptsetup.gridcertificates.header.columns[5].text
+msgid "Fingerprint (sha256)"
+msgstr ""
+
+#: tviscreatewaptsetup.gridcertificates.header.columns[6].text
+msgid "Code signing"
+msgstr ""
+
+#: tviscreatewaptsetup.gridcertificates.header.columns[7].text
+msgid "CA"
+msgstr ""
+
+#: tviscreatewaptsetup.gridcertificates.header.columns[8].text
+msgid "subject_dn"
+msgstr ""
+
+#: tviscreatewaptsetup.gridcertificates.header.columns[9].text
+msgid "issuer_dn"
+msgstr ""
+
 #: tviscreatewaptsetup.label1.caption
 msgid "Authorized Packages Certificates Bundle"
 msgstr ""
@@ -5972,6 +6014,17 @@ msgstr ""
 msgid "Message to send"
 msgstr ""
 
+#: uwaptconsoleres.rsmissingpersonalcertificate
+msgid "Missing personal certificate"
+msgstr ""
+
+#: uwaptconsoleres.rsmissingpersonalcertificatequestion
+msgid ""
+"No personal certificate defined.\n"
+"You need one certificate and matching private key to be able to sign actions and configurations\n"
+"Do you want to pick or create one now in preferences ?\n"
+msgstr ""
+
 #: uwaptconsoleres.rsnbmodifiedhosts
 msgctxt "uwaptconsoleres.rsnbmodifiedhosts"
 msgid "%d hosts affected. %d hosts discarded (errors). %d hosts unchanged"
@@ -6079,11 +6132,6 @@ msgstr ""
 #: uwaptconsoleres.rsprivatekeydoesntexist
 msgctxt "uwaptconsoleres.rsprivatekeydoesntexist"
 msgid "Private key doesn't exist : %s"
-msgstr ""
-
-#: uwaptconsoleres.rsprogresstitle
-msgctxt "uwaptconsoleres.rsprogresstitle"
-msgid "Started uploading to WAPT server..."
 msgstr ""
 
 #: uwaptconsoleres.rspublickeygenerror
@@ -6248,6 +6296,11 @@ msgctxt "uwaptconsoleres.rsuploadingpackagestowaptsrv"
 msgid "Uploading %s packages to WAPT server..."
 msgstr ""
 
+#: uwaptconsoleres.rsuploadinprogresstitle
+msgctxt "uwaptconsoleres.rsuploadinprogresstitle"
+msgid "Started uploading to WAPT server..."
+msgstr ""
+
 #: uwaptconsoleres.rsurl
 msgctxt "uwaptconsoleres.rsurl"
 msgid "Url : %s"
@@ -6265,15 +6318,24 @@ msgid ""
 "Wapt-get version: %s\n"
 msgstr ""
 
+#: uwaptconsoleres.rswaptagentcheck
+msgid "WaptAgent version check"
+msgstr ""
+
 #: uwaptconsoleres.rswaptagentnotpresent
-msgid "Warning, waptagent.exe installer is not present on server, please build waptagent.exe installer for the deployment of Wapt on client hosts."
+msgid ""
+"waptagent.exe installer is not present on server\n"
+"\n"
+"Do you want to build waptagent.exe installer for the deployment of Wapt on client hosts ?\n"
 msgstr ""
 
 #: uwaptconsoleres.rswaptagentoldversion
 msgid ""
-"Warning, the version of the waptagent.exe installer is too old.\n"
+"waptagent.exe needs to be upgraded\n"
 "Current waptagent.exe version: %s\n"
-"waptsetup-tis.exe version: %s\n"
+"Required version: %s\n"
+"\n"
+"Do you want to rebuild a waptagent.exe installer now ?\n"
 msgstr ""
 
 #: uwaptconsoleres.rswaptagentsetuperror
@@ -6284,6 +6346,12 @@ msgstr ""
 #: uwaptconsoleres.rswaptagentsetupsuccess
 msgctxt "uwaptconsoleres.rswaptagentsetupsuccess"
 msgid "waptagent.exe successfully built : %s"
+msgstr ""
+
+#: uwaptconsoleres.rswaptagentunabletocheck
+msgid ""
+"Warning, unable to check waptagent.exe installer on server\n"
+"Error: %s\n"
 msgstr ""
 
 #: uwaptconsoleres.rswaptagentuploaderror
@@ -6306,8 +6374,18 @@ msgctxt "uwaptconsoleres.rswaptgetupgrade"
 msgid "WAPT-GET Upgrade using repository at %s"
 msgstr ""
 
+#: uwaptconsoleres.rswaptpackageprefix
+msgid "Package prefix"
+msgstr ""
+
 #: uwaptconsoleres.rswaptpackageprefixmissing
 msgid "You must first define the Package prefix in preferences"
+msgstr ""
+
+#: uwaptconsoleres.rswaptpackageprefixmissingquestion
+msgid ""
+"A Package prefix is needed to visually identify your packages.\n"
+"Do you want to define one now ?\n"
 msgstr ""
 
 #: uwaptconsoleres.rswaptservererror
