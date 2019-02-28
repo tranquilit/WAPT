@@ -269,10 +269,10 @@ var
     pgPackagesParams:TInputQueryWizardPage;
     pgBuildWaptAgentOptions:TInputOptionWizardPage;
 
-function GetComputerDNSName:PChar; external 'GetComputerDNSName@files:waptsetuputil.dll stdcall';
-function GetComputerConnectedIP:PChar; external 'GetComputerConnectedIP@files:waptsetuputil.dll stdcall';
-function GetComputerDNSNameOrIP:PChar; external 'GetComputerDNSNameOrIP@files:waptsetuputil.dll stdcall';
-function GetWaptServerOrComputerDNSNameOrIP:PChar; external 'GetWaptServerOrComputerDNSNameOrIP@files:waptsetuputil.dll stdcall';
+function GetComputerDNSName:PAnsiChar; external 'GetComputerDNSName@files:waptsetuputil.dll stdcall';
+function GetComputerConnectedIP:PAnsiChar; external 'GetComputerConnectedIP@files:waptsetuputil.dll stdcall';
+function GetComputerDNSNameOrIP:PAnsiChar; external 'GetComputerDNSNameOrIP@files:waptsetuputil.dll stdcall';
+function GetWaptServerOrComputerDNSNameOrIP:PAnsiChar; external 'GetWaptServerOrComputerDNSNameOrIP@files:waptsetuputil.dll stdcall';
 
 const Codes64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 
