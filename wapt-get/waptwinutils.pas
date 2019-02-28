@@ -106,7 +106,10 @@ function WaptGuessBaseDir: Utf8String;
 function WaptGuessIniPath: string;
 function WaptGuessedIniReadString(Parameter, DefaultValue: string): string;
 function LocalWaptVersion: ansistring;
+function WaptInstallLocation: ansistring;
 
+//function Wow64DisableWow64FsRedirection(var Wow64FsEnableRedirection:LongBool):LongBool; stdcall; external 'Kernel32.dll' name 'Wow64DisableWow64FsRedirection';
+//function Wow64RevertWow64FsRedirection(Wow64FsEnableRedirection:LongBool):LongBool; stdcall; external 'Kernel32.dll' name 'Wow64RevertWow64FsRedirection';
 
 implementation
 
@@ -571,13 +574,54 @@ begin
         'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\WAPT_is1',
         'DisplayVersion');
     except
-      local_version := '';
+      try
+        local_version := ReadRegEntry(
+          'SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\WAPT Server_is1',
+          'DisplayVersion');
+      except
+        local_version := '';
+      end;
     end;
     // check if looks like actual version string.
   end;
   for i := 1 to length(local_version) do
     if CharInSet(local_version[i],['0'..'9','-','.']) then
       Result := Result + local_version[i];
+end;
+
+function WaptInstallLocation: ansistring;
+var
+  InstallLocation: ansistring;
+begin
+  Result := '';
+  try
+    InstallLocation := ReadRegEntry(
+      'SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\WAPT_is1',
+      'InstallLocation');
+  except
+    try
+      InstallLocation := ReadRegEntry(
+        'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\WAPT_is1',
+        'InstallLocation');
+    except
+      try
+        InstallLocation := ReadRegEntry(
+          'SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\WAPT Server_is1',
+          'InstallLocation');
+      except
+        try
+          InstallLocation := ReadRegEntry(
+            'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\WAPT Server_is1',
+            'InstallLocation');
+
+        except
+          InstallLocation := '';
+        end;
+      end;
+    end;
+    // check if looks like actual version string.
+  end;
+  Result := InstallLocation;
 end;
 
 // Compare version member by member as int or string
@@ -689,10 +733,10 @@ var
   Size: cardinal;
 begin
   Key := 0;
-  Result := 'ERROR';
+  Result := '';
   Size := SizeOf(Buffer);
   subkey := PAnsiChar(strSubKey);
-  if RegOpenKeyEx(HKEY_LOCAL_MACHINE, subkey, 0, KEY_READ, Key) = ERROR_SUCCESS then
+  if RegOpenKeyEx(HKEY_LOCAL_MACHINE, subkey, 0, KEY_READ and KEY_WOW64_64KEY, Key) = ERROR_SUCCESS then
     try
       if RegQueryValueEx(Key, PAnsiChar(strValueName), nil, nil, @Buffer, @Size) =
         ERROR_SUCCESS then
@@ -706,6 +750,7 @@ end;
 
 function WaptGuessBaseDir: Utf8String;
 begin
+
   if FileExists('c:\wapt') then
     Result := 'c:\wapt'
   else
@@ -719,18 +764,16 @@ begin
     Result := 'c:\wapt';
 end;
 
-
-
 function WaptGuessIniPath: string;
 begin
-  if FileExists('c:\wapt\wapt-get.ini') then
+  if FileExists(WaptInstallLocation+'\wapt-get.ini') then
+    Result := WaptInstallLocation+'\wapt-get.ini'
+  else if FileExists('c:\wapt\wapt-get.ini') then
     Result := 'c:\wapt\wapt-get.ini'
-  else
-  if FileExists(SysUtils.GetEnvironmentVariable('ProgramFiles(x86)') +
+  else if FileExists(SysUtils.GetEnvironmentVariable('ProgramFiles(x86)') +
     '\wapt\wapt-get.ini') then
     Result := SysUtils.GetEnvironmentVariable('ProgramFiles(x86)') + '\wapt\wapt-get.ini'
-  else
-  if FileExists(SysUtils.GetEnvironmentVariable('ProgramFiles') + '\wapt\wapt-get.ini') then
+  else if FileExists(SysUtils.GetEnvironmentVariable('ProgramFiles') + '\wapt\wapt-get.ini') then
     Result := SysUtils.GetEnvironmentVariable('ProgramFiles') + '\wapt\wapt-get.ini'
   else
     Result := 'c:\wapt\wapt-get.ini';

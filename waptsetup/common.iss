@@ -606,7 +606,7 @@ function GetHostProfiles(param:String):String;
 var
   AppendProfiles,NewProfiles,profile: String;
 begin
-  Result := GetIniString('global', 'host_profiles', '','');
+  Result := GetIniString('global', 'host_profiles', '',ExpandConstant('{app}\wapt-get.ini'));
   AppendProfiles := ExpandConstant('{param:append_host_profiles|{#append_host_profiles}}');
   if Result = '' then begin
     if AppendProfiles='*' then
@@ -625,6 +625,15 @@ begin
   end;
 end;
 
+function IsPersonalCertificateDefined():Boolean;
+var
+  PersonalCertificatePath: String;
+begin
+  PersonalCertificatePath := GetIniString('global', 'personal_certificate', '',ExpandConstant('{app}\wapt-get.ini'));
+  Result := (PersonalCertificatePath<>'') and FileExists(PersonalCertificatePath);
+end;
+
+
 procedure PostClickNext();
 begin
   PostMessage(WizardForm.NextButton.Handle, $BD11 , 0, 0);
@@ -642,14 +651,8 @@ begin
     wpWelcome:
       begin
       end;
- 
-    customPage.Id:
+     customPage.Id:
       begin
-        //#if edition == "waptsetup"
-        //PostMessage(WizardForm.NextButton.Handle, $BD11 , 0, 0);
-        //exit;
-        //#endif
-
         edWaptRepoUrl.Text := GetRepoURL('');
         #if edition != "waptstarter"
         edWaptServerUrl.Text := GetWaptServerURL('');  
@@ -659,7 +662,6 @@ begin
         cbDnsServer.Checked := not cbDontChangeServer.Checked and not cbUseWizard.Checked and (edWaptRepoUrl.Text='');
         cbStaticUrl.Checked := (edWaptRepoUrl.Text<>'') and (edWaptRepoUrl.Text<>'unknown');
         edDNSDomain.Text := GetDNSDomain('');  
-
         //edWaptServerUrl.Visible := IsTaskSelected('use_waptserver');
         //labServer.Visible := edWaptServerUrl.Visible;
       end;
@@ -674,11 +676,8 @@ begin
         //WizardForm.RunList.Checked[i] := not LocalWaptServiceIsConfigured(); 
         //exit;
         //#endif
-        
-      end;
+              end;
   end;
-
-
 end;
 #endif
 

@@ -1156,7 +1156,7 @@ def main():
                 if options.set_waptserver_url is not None and (
                         not mywapt.config.has_option('global','wapt_server') or mywapt.config.get('global','wapt_server') != guess_waptserver_url(options.set_waptserver_url)):
                     mywapt.config.set('global','wapt_server',guess_waptserver_url(options.set_waptserver_url))
-                    result['wapt_server'] = mywapt.config.get('wapt','wapt_server')
+                    result['wapt_server'] = mywapt.config.get('global','wapt_server')
                     # use server name to set repo url
                     if options.set_waptrepo_url is None and not mywapt.config.has_option('global','repo_url') and (not mywapt.config.has_section('wapt') or not mywapt.config.has_option('wapt','repo_url')):
                         if mywapt.config.has_section('wapt'):
