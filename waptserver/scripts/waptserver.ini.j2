@@ -1,0 +1,21 @@
+[options]
+wapt_folder=/var/www/{{application_root}}/wapt
+
+wapt_user=admin
+wapt_password={{wapt_password}}
+server_uuid = {{server_uuid}}
+secret_key = {{secret_key}}
+
+#client_tasks_timeout=3
+
+use_kerberos = {{use_kerberos}}
+allow_unauthenticated_registration = False
+
+application_root={{application_root}}
+
+db_user={{application_root}}
+db_password={{application_root}}
+db_name={{application_root}}
+db_host=127.0.0.1
+
+waptserver_port={{waptserver_port}}
