@@ -217,7 +217,8 @@ fr.PersonalKeyCertParams=Paramètres de Clé / certificat personnel
 fr.PersonalKeyCertParamsRequest=merci de préciser les paramètres pour la génération des Clé / Certificat personnel.
 fr.PackageDesignParams=Paramètres de création des paquets
 fr.PackageDesignParamsDesc=Paramètres utilsiés lors de la création et l'import de paquets.
-fr.PackageDesignParamsRequest=Le préfixe de paquet est une chaîne simple (comme test) qui est présente au début de vos noms de paquets pour les identifier visuellement%nLe mot de passe de la clé sera utilisé pour signer un paquet de mises à jour Wapt
+; fr.PackageDesignParamsRequest=Le préfixe de paquet est une chaîne simple (comme test) qui est présente au début de vos noms de paquets pour les identifier visuellement%nLe mot de passe de la clé sera utilisé pour signer un paquet de mises à jour Wapt
+fr.PackageDesignParamsRequest=Le préfixe de paquet est une chaîne simple (comme test) qui est présente au début de vos noms de paquets pour les identifier visuellement
 fr.WaptAgentBuild=Compilation de Waptagent
 fr.WaptAgentBuildChoice=Spécifier si vous voulez (re)créer un installeur personnalisé waptagent pour cette version de Wapt
 fr.WaptAgentDoBuild=Compiler un nouveau waptagent.exe
@@ -254,7 +255,6 @@ en.SpecifyKeyName=Please specify a keyname
 en.SpecifyPrivateKeyPassword=Please specify a password to encrypt the personal key
 en.KeyPasswordsDontMatch=Both passwords don't match
 en.KeyExists=A private key with this name already exists in c:\private, please choose another name.
-
 en.WaptParameters=WAPT parameters
 en.SpecifyWaptInstallParameters=Please specify the parameters for your Wapt install, then click Next.
 en.Skip=Skip
@@ -267,7 +267,8 @@ en.PersonalKeyCertParams=Personal key / certificate parameters
 en.PersonalKeyCertParamsRequest=Please specify the parameters for the certificate/key initialization, then click Next to process.
 en.PackageDesignParams=Packages design parameters
 en.PackageDesignParamsDesc=Parameters used when creating / importing packages and for upgrade package.
-en.PackageDesignParamsRequest=Packages prefix is a simple string (like test) which is appended in front of packages name to identify the source%nKey password will be tested and used in next step to build an upgrade package
+;en.PackageDesignParamsRequest=Packages prefix is a simple string (like test) which is appended in front of packages name to identify the source%nKey password will be tested and used in next step to build an upgrade package
+en.PackageDesignParamsRequest=Packages prefix is a simple string (like test) which is appended in front of packages name to identify the source
 en.WaptAgentBuild=Waptagent build
 en.WaptAgentBuildChoice=Choose weither you want to (re)create the waptagent installer for this version of Wapt
 en.WaptAgentDoBuild=Compile a customized waptagent installer and waptupgrade package
@@ -410,9 +411,10 @@ end;
 
 function GetPrivateKeyPassword64(Param: String):String;
 begin
-  if (pgPackagesParams.Values[1]<>'') then
-    Result := Encode64(pgPackagesParams.Values[1])
-  else if (pgPersonalKeyParams.Values[2]<>'') then
+  //if (pgPackagesParams.Values[1]<>'') then
+  //  Result := Encode64(pgPackagesParams.Values[1])
+  //else 
+  if (pgPersonalKeyParams.Values[2]<>'') then
     Result := Encode64(pgPersonalKeyParams.Values[2])
   else
     Result := '';
@@ -570,8 +572,8 @@ function OnPackagesParamsNextButtonClick(Sender: TWizardPage): Boolean;
 begin
   if pgPackagesParams.Values[0] = '' then 
     RaiseException('You must specify a packages prefix');
-  if pgPackagesParams.Values[1] = '' then 
-    RaiseException('You must specify the private key password to check and build Agent');
+  //if pgPackagesParams.Values[1] = '' then 
+  //  RaiseException('You must specify the private key password to check and build Agent');
   //MsgBox('Lancement vérification de la clé pour le certificat '+GetPersonalCertificatePath('')+' and prefix '+pgPackagesParams.Values[0], mbInformation, MB_OK);  
   Result := True;
 end;
@@ -597,8 +599,8 @@ end;
 procedure OnPackagesParamsActivate(Sender: TWizardPage);
 begin
   // read key password
-  if pgPackagesParams.Values[1] = '' then
-    pgPackagesParams.Values[1] := pgPersonalKeyParams.Values[2];
+  //if pgPackagesParams.Values[1] = '' then
+  //  pgPackagesParams.Values[1] := pgPersonalKeyParams.Values[2];
 end;
 
 
@@ -656,7 +658,7 @@ begin
     ExpandConstant('{cm:PackageDesignParamsDesc}'),
     ExpandConstant('{cm:PackageDesignParamsRequest}'));
   pgPackagesParams.Add(ExpandConstant('{cm:PackagesPrefix}'),False);
-  pgPackagesParams.Add(ExpandConstant('{cm:PersonalKeyPassword}'),True);
+  //pgPackagesParams.Add(ExpandConstant('{cm:PersonalKeyPassword}'),True);
   pgPackagesParams.OnActivate := @OnPackagesParamsActivate;
   pgPackagesParams.OnShouldSkipPage := @OnPackagesParamsShouldSkipPage;
   pgPackagesParams.OnNextButtonClick := @OnPackagesParamsNextButtonClick;
