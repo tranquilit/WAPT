@@ -130,7 +130,7 @@ Filename: {app}\wapt-get.ini; Section: Global; Key: personal_certificate_path; S
 [RUN]
 Filename: "{app}\waptserver\pgsql-9.6\vcredist_x64.exe"; Parameters: "/passive /quiet"; StatusMsg: {cm:InstallMSVC2013}; Description: "{cm:InstallMSVC2013}";  
 Filename: "{app}\wapt-get.exe"; Parameters: " update-packages {app}\waptserver\repository\wapt"; Flags: runhidden; StatusMsg: {cm:ScanPackages}; Description: "{cm:ScanPackages}"
-Filename: "{app}\waptpython.exe"; Parameters: "{app}\waptserver\winsetup.py all -c {app}\conf\waptserver.ini -f --setpassword={code:GetServerPassword}"; StatusMsg: {cm:InstallingServerServices}; Description: "{cm:InstallingServerServices}"
+Filename: "{app}\waptpython.exe"; Parameters: "{app}\waptserver\winsetup.py all -c {app}\conf\waptserver.ini -f --setpassword={code:GetWaptServerPassword64}"; StatusMsg: {cm:InstallingServerServices}; Description: "{cm:InstallingServerServices}"
 Filename: "net"; Parameters: "start waptpostgresql"; Flags: runhidden; StatusMsg: "Starting service waptpostgresql"
 Filename: "net"; Parameters: "start waptnginx"; Flags: runhidden; StatusMsg: "Starting service waptnginx"
 Filename: "net"; Parameters: "start waptserver"; Flags: runhidden; StatusMsg: "Starting service waptserver"
@@ -139,8 +139,8 @@ Filename: "net"; Parameters: "start wapttasks"; Flags: runhidden; StatusMsg: "St
 #endif
 
 Filename: "{app}\wapt-get.exe"; Parameters: "register --wapt-server-url={code:GetWaptServerURL} --wapt-repo-url={code:GetWaptRepoURL} --use-gui --update "; Flags: runhidden; Description: {cm:SetupRegisterThisComputer}; Check: CheckRegisterUpdate(); Tasks: RegisterComputerOnLocalServer;
-Filename: "{app}\wapt-get.exe"; Parameters: "create-keycert /EnrollNewCert /BaseDir=c:\private /ConfigFilename={app}\wapt-get.ini /CommonName={code:GetCertificateCommonName} /Email={code:GetCertificateEmail} /PrivateKeyPassword64={code:GetPrivateKeyPassword}"; Description: {cm:CreatePackageRSAKeyCert}; Check: CheckCreatePersonalcertificate();
-Filename: "{app}\wapt-get.exe"; Parameters: "build-waptagent /ConfigFilename={app}\wapt-get.ini /PrivateKeyPassword64={code:GetPrivateKeyPassword}"; Description: {cm:CreateWaptAgentInstaller}; StatusMsg: {cm:CreateWaptAgentInstaller}; Check: CheckCreateWaptAgent();
+Filename: "{app}\wapt-get.exe"; Parameters: "create-keycert --use-gui /EnrollNewCert /BaseDir=c:\private /ConfigFilename={app}\wapt-get.ini /CommonName={code:GetCertificateCommonName} /Email={code:GetCertificateEmail} /PrivateKeyPassword64={code:GetPrivateKeyPassword64}"; Description: {cm:CreatePackageRSAKeyCert}; Check: CheckCreatePersonalcertificate();
+Filename: "{app}\wapt-get.exe"; Parameters: "build-waptagent --use-gui /DeployWaptAgentLocally /ConfigFilename={app}\wapt-get.ini /WaptServerPassword64={code:GetWaptServerPassword64} /PrivateKeyPassword64={code:GetPrivateKeyPassword64}"; Description: {cm:CreateWaptAgentInstaller}; StatusMsg: {cm:CreateWaptAgentInstaller}; Check: CheckCreateWaptAgent();
 
 Filename: "{app}\waptconsole.exe"; Parameters: "--lang {language}"; Flags: postinstall skipifsilent shellexec; StatusMsg: {cm:StartWaptconsole}; Description: "{cm:StartWaptconsole}"
 Filename: {cm:InstallDocURL}; Flags: postinstall skipifsilent shellexec; StatusMsg: {cm:OpenWaptDocumentation}; Description: "{cm:OpenWaptDocumentation}"
@@ -383,16 +383,6 @@ begin
 	end;
 end;
 
-
-// Encode password in base64
-function GetServerPassword(Param: String):String;
-begin
-  if (pgServerParams.Values[1]<>'') and (pgServerParams.Values[1] = pgServerParams.Values[2]) then
-    Result := Encode64(pgServerParams.Values[1])
-  else
-    Result := Encode64('');
-end;
-
 function GetDefaultPackagePrefix(Param: String):String;
 begin
   Result := pgPackagesParams.Values[0];
@@ -414,14 +404,22 @@ begin
     Result := '';
 end;
 
-function GetPrivateKeyPassword(Param: String):String;
+function GetPrivateKeyPassword64(Param: String):String;
 begin
   if (pgPackagesParams.Values[1]<>'') then
     Result := Encode64(pgPackagesParams.Values[1])
   else if (pgPersonalKeyParams.Values[2]<>'') then
     Result := Encode64(pgPersonalKeyParams.Values[2])
   else
-    Result := Encode64('')
+    Result := '';
+end;
+
+function GetWaptServerPassword64(Param: String):String;
+begin
+  if (pgServerParams.Values[1]<>'') then
+    Result := Encode64(pgServerParams.Values[1])
+  else
+    Result := '';
 end;
 
 function CheckSetDefaultPackagePrefix:Boolean;

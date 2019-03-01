@@ -42,6 +42,7 @@ type
     localuser,localpassword:AnsiString;
     FRepoURL: String;
     function GetIsEnterpriseEdition: Boolean;
+    function GetLocalWaptserverRepositoryPath: String;
     function GetPythonEngine: TPythonEngine;
     function GetRepoURL: String;
     function Getwaptcrypto: Variant;
@@ -346,6 +347,12 @@ begin
   FRepoURL:=AValue;
 end;
 
+function PWaptGet.GetLocalWaptserverRepositoryPath:String;
+begin
+  // todo use waptserver.ini config file for location
+  Result := AppendPathDelim(WaptBaseDir)+'waptserver\repository\wapt';
+end;
+
 procedure PWaptGet.DoRun;
 var
   MainModule : TStringList;
@@ -449,22 +456,39 @@ begin
     Writeln(rsBuildWaptAgent);
     WaptAgentTargetDir := WaptBaseDir+'\waptupgrade';
     WaptAgentFilename := CreateWaptagent(WaptAgentTargetDir);
-    //else
-    //  Writeln('Using already built waptagent in '+WAPTSetupPath);
-    Writeln(rsBuildWaptUpgradePackage);
-    GetWaptServerUser;
-    GetWaptServerPassword;
-    BuildWaptUpgrade(WaptAgentFilename);
-    Writeln(rsUploadWaptAgent);
-    Res := WAPTServerJsonMultipartFilePost(
-      GetWaptServerURL, 'upload_waptsetup', [], 'file', WaptAgentFilename,
-      WaptServerUser, WaptServerPassword, Nil,GetWaptServerCertificateFilename);
-    if Res.S['status'] = 'OK' then
-      Writeln('OK')
+    if FindCmdLineSwitch('DeployWaptAgentLocally') and DirectoryExistsUTF8(GetLocalWaptserverRepositoryPath) then
+    begin
+      if CopyFileW(
+        PWideChar(UTF8Decode(WaptAgentFilename)),
+        PWideChar(UTF8Decode(AppendPathDelim(GetLocalWaptserverRepositoryPath)+'waptagent.exe')),
+        False) then
+      begin
+        Writeln('waptagent copied to: '+AppendPathDelim(GetLocalWaptserverRepositoryPath)+'waptagent.exe');
+        ExitProcess(0);
+      end
+      else
+      begin
+        Writeln('Fails to copy waptagent to repository location');
+        ExitProcess(3);
+      end;
+    end
     else
-      Writeln('ERROR: '+Res.S['message']);
-    Terminate;
-    Exit;
+    begin
+      Writeln(rsBuildWaptUpgradePackage);
+      GetWaptServerUser;
+      GetWaptServerPassword;
+      BuildWaptUpgrade(WaptAgentFilename);
+      Writeln(rsUploadWaptAgent);
+      Res := WAPTServerJsonMultipartFilePost(
+        GetWaptServerURL, 'upload_waptsetup', [], 'file', WaptAgentFilename,
+        WaptServerUser, WaptServerPassword, Nil,GetWaptServerCertificateFilename);
+      if Res.S['status'] = 'OK' then
+        Writeln('OK')
+      else
+        Writeln('ERROR: '+Res.S['message']);
+      Terminate;
+      Exit;
+    end;
   end
   else
   if (action = 'waptupgrade') then
