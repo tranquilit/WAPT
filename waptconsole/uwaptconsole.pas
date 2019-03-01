@@ -4513,7 +4513,7 @@ begin
 
         if ((WaptAgentCurrentVersion='') and (MessageDlg('waptagent check',rsWaptAgentNotPresent,mtConfirmation,mbYesNoCancel,'') = mrYes)) // needs to be created
           or
-           ((CompareVersion(WaptAgentCurrentVersion,WaptAgentExpectedVersion) < 0 ) and (MessageDlg(rsWaptAgentCheck,
+           ((WaptAgentCurrentVersion<>'') and (CompareVersion(WaptAgentCurrentVersion,WaptAgentExpectedVersion) < 0 ) and (MessageDlg(rsWaptAgentCheck,
                 Format(rsWaptAgentOldVersion,[sores['result'].S['waptagent_version'],sores['result'].S['waptsetup_version']]),              // needs to be upgraded
                 mtConfirmation,
                 mbYesNoCancel,'') = mrYes)) then
