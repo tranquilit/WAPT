@@ -570,6 +570,13 @@ def get_websocket_auth_token():
         result = {
             'authorization_token': token_gen.dumps({'uuid':uuid,'server_uuid':get_server_uuid()}),
             }
+        with wapt_db.atomic() as trans:
+            # stores sid in database
+            hostcount = Hosts.update(
+                server_uuid=get_server_uuid(),
+                listening_timestamp=datetime2isodate(),
+                last_seen_on=datetime2isodate()
+            ).where(Hosts.uuid == uuid).execute()
         message = 'Authorization token'
         return make_response(result=result, msg=message, request_time=time.time() - starttime)
 
@@ -2094,7 +2101,6 @@ def on_waptclient_disconnect():
     # clear sid in database
     with wapt_db.atomic() as trans:
         Hosts.update(
-            server_uuid=None,
             listening_timestamp=datetime2isodate(),
             listening_protocol=None,
             listening_address=None,
@@ -2198,7 +2204,6 @@ if __name__ == '__main__':
                 logger.info(u'Reset connections SID for former hosts on this server')
                 hosts_count = Hosts.update(
                     reachable='DISCONNECTED',
-                    server_uuid=None,
                     listening_protocol=None,
                     listening_address=None,
                 ).where(

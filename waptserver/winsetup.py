@@ -311,13 +311,13 @@ def install_postgresql_service(options,conf=None):
 
 
     print ("about to build database directory")
-    if not os.path.exists(os.path.join(pgsql_data_dir,'postgresql.conf')):
-        if setuphelpers.service_installed('waptpostgresql') and setuphelpers.service_is_running('waptpostgresql'):
-            print('stopping postgresql')
-            setuphelpers.service_stop('waptpostgresql')
-            # waiting for postgres to be ready
-            time.sleep(2)
+    if setuphelpers.service_installed('waptpostgresql') and setuphelpers.service_is_running('waptpostgresql'):
+        print('stopping postgresql')
+        setuphelpers.service_stop('waptpostgresql')
+        # waiting for postgres to be ready
+        time.sleep(2)
 
+    if not os.path.exists(os.path.join(pgsql_data_dir,'postgresql.conf')):
         setuphelpers.mkdirs(pgsql_data_dir)
 
         # need to have specific write acls for current user otherwise initdb fails...
@@ -325,21 +325,20 @@ def install_postgresql_service(options,conf=None):
 
         setuphelpers.run(r'"%s\bin\initdb" -U postgres -E=UTF8 -D "%s"' % (pgsql_root_dir,pgsql_data_dir))
         setuphelpers.run(r'icacls "%s" /t /grant  "*S-1-5-20":(OI)(CI)(M)' % pgsql_data_dir)
-
-        print("start postgresql database")
-
-        if setuphelpers.service_installed('WaptPostgresql'):
-            if setuphelpers.service_is_running('WaptPostgresql'):
-                setuphelpers.service_stop('waptPostgresql')
-            setuphelpers.service_delete('waptPostgresql')
-
-        cmd = r'"%s\bin\pg_ctl" register -N WAPTPostgresql -U "nt authority\networkservice" -S auto -D "%s"  ' % (pgsql_root_dir ,pgsql_data_dir)
-        print cmd
-        run(cmd)
-        setuphelpers.run(r'icacls "%s" /grant  "*S-1-5-20":(OI)(CI)(M)' % log_directory)
-        setuphelpers.run(r'icacls "%s" /grant  "*S-1-5-20":(OI)(CI)(M)' % pgsql_data_dir)
     else:
         print("database already instanciated, doing nothing")
+
+    print("start postgresql database")
+
+    if setuphelpers.service_installed('WaptPostgresql'):
+        if setuphelpers.service_is_running('WaptPostgresql'):
+            setuphelpers.service_stop('waptPostgresql')
+        setuphelpers.service_delete('waptPostgresql')
+
+    cmd = r'"%s\bin\pg_ctl" register -N WAPTPostgresql -U "nt authority\networkservice" -S auto -D "%s"  ' % (pgsql_root_dir ,pgsql_data_dir)
+    run(cmd)
+    setuphelpers.run(r'icacls "%s" /grant  "*S-1-5-20":(OI)(CI)(M)' % log_directory)
+    setuphelpers.run(r'icacls "%s" /grant  "*S-1-5-20":(OI)(CI)(M)' % pgsql_data_dir)
 
     # try to migrate from old version (pg 9.4, wapt 1.5)
     old_pgsql_root_dir = r'%s\waptserver\pgsql' % wapt_root_dir
@@ -509,10 +508,10 @@ if __name__ == '__main__':
 
     for action in args:
         if action == 'install_nginx':
-            print('Installing postgresql as a service managed by nssm')
+            print('Installing nginx as a service managed by nssm')
             install_nginx_service(options,conf)
         elif action == 'install_postgresql':
-            print('Installing NGINX as a service managed by nssm')
+            print('Installing PostgreSQL as a service managed by nssm')
             install_postgresql_service(options,conf)
         elif action == 'install_waptserver':
             print('Installing WAPT Server as a service managed by nssm')
