@@ -111,12 +111,16 @@ function WaptInstallLocation: ansistring;
 //function Wow64DisableWow64FsRedirection(var Wow64FsEnableRedirection:LongBool):LongBool; stdcall; external 'Kernel32.dll' name 'Wow64DisableWow64FsRedirection';
 //function Wow64RevertWow64FsRedirection(Wow64FsEnableRedirection:LongBool):LongBool; stdcall; external 'Kernel32.dll' name 'Wow64RevertWow64FsRedirection';
 
+// from win xp
+function CheckTokenMembership(TokenHandle: THandle; SidToCheck: PSID; IsMember: PBOOL): BOOL; stdcall; external 'AdvApi32.dll' name 'CheckTokenMembership';
+
+
 function IsWindowsAdminLoggedIn: Boolean;
 
 implementation
 
 uses Variants, registry, sysconst, JwaIpHlpApi,
-  JwaIpTypes, JwaWinDNS, JwaWinsock2, tisinifiles, soutils;
+  JwaIpTypes, JwaWinDNS, JwaWinsock2, tisinifiles, soutils, dynlibs;
 
 Function IPV4ToInt(ipaddr:AnsiString):LongWord;
 begin
@@ -1010,8 +1014,8 @@ const
   DOMAIN_ALIAS_RID_ADMINS = $00000220;
 
 function IsWindowsAdminLoggedIn: Boolean;
-type
-  TCheckTokenMembership = function(TokenHandle: THandle; SidToCheck: PSID; var IsMember: BOOL): BOOL; stdcall;
+//type
+//  TCheckTokenMembership = function(ATokenHandle: HANDLE; SidToCheck: PSID; IsMember: PBOOL): BOOL; stdcall;
 
 var
   hAccessToken: THandle;
@@ -1020,7 +1024,7 @@ var
   psidAdministrators: PSID;
   g: Integer;
   IsMember,bSuccess: BOOL;
-  CheckTokenMembership:^TCheckTokenMembership;
+  //CheckTokenMembership:^TCheckTokenMembership;
 begin
   Result := False;
 
@@ -1039,15 +1043,8 @@ begin
     begin
       AllocateAndInitializeSid(SECURITY_NT_AUTHORITY, 2, SECURITY_BUILTIN_DOMAIN_RID, DOMAIN_ALIAS_RID_ADMINS, 0, 0, 0, 0, 0, 0, psidAdministrators) ;
 
-      CheckTokenMembership := nil;
-      if Lo(GetVersion) >= 5 then
-        CheckTokenMembership := GetProcAddress(GetModuleHandle(advapi32),
-          'CheckTokenMembership');
-      if Assigned(CheckTokenMembership) then
-        begin
-          if CheckTokenMembership^(0, psidAdministrators, IsMember) then
-            Result := IsMember;
-        end
+      if CheckTokenMembership(0, psidAdministrators, @IsMember) then
+        Result := IsMember
       else
         begin
           for g := 0 to ptgGroups^.GroupCount - 1 do
