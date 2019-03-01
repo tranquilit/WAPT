@@ -216,7 +216,9 @@ Name: installredist2008unchecked; Description: "{cm:ForceVCppReinstall}"; Check:
 #endif
 
 [InstallDelete]
+#ifndef FastDebug
 Type: filesandordirs; Name: "{app}\lib\site-packages"
+#endif FastDebug
 Type: files; Name: "{app}\*.pyc"
 Type: files; Name: "{app}\waptservice\*.pyc"
 Type: files; Name: "{app}\waptservice\waptservice.py*"

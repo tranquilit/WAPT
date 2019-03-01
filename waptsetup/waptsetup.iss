@@ -53,6 +53,7 @@
   #define set_waptwua_allow_direct_download ""
   #define set_waptwua_install_delay ""
   #define set_waptwua_download_scheduling ""
+  #desine set_waptwua_install_at_shutdown ""   
 #endif
 
 ; for fast compile in developent mode

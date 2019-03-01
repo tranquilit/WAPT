@@ -132,7 +132,8 @@ Type: files; Name: "{app}\waptserver\*.pyc"
 
 [INI]
 Filename: {app}\conf\waptserver.ini; Section: options; Key: allow_unauthenticated_registration; String: True;
-; Filename: {app}\wapt-get.ini; Section: Global; Key: default_package_prefix; String: "{code:GetDefaultPackagePrefix}"; Check: CheckSetDefaultPackagePrefix(); 
+Filename: {app}\wapt-get.ini; Section: Global; Key: default_package_prefix; String: "{code:GetDefaultPackagePrefix}"; Check: CheckSetDefaultPackagePrefix(); 
+Filename: {app}\wapt-get.ini; Section: Global; Key: personal_certificate_path; String: "{code:GetPersonalCertificatePath}"; Check: CheckSetPersonalCertificatePath(); 
 
 [RUN]
 Filename: "{app}\waptserver\pgsql-9.6\vcredist_x64.exe"; Parameters: "/passive /quiet"; StatusMsg: {cm:InstallMSVC2013}; Description: "{cm:InstallMSVC2013}";  
@@ -146,8 +147,8 @@ Filename: "net"; Parameters: "start wapttasks"; Flags: runhidden; StatusMsg: "St
 #endif
 
 Filename: "{app}\wapt-get.exe"; Parameters: "register --wapt-server-url={code:GetWaptServerURL} --wapt-repo-url={code:GetWaptRepoURL} --use-gui --update "; Flags: runhidden; Description: {cm:SetupRegisterThisComputer}; Check: CheckRegisterUpdate(); Tasks: RegisterComputerOnLocalServer;
-;Filename: "{app}\wapt-get.exe"; Parameters: "create-keycert /CommonName={code:GetCertificateCommonName} /PrivateKeyPassword={code:GetPrivateKeyPassword}"; Description: {cm:CreatePackageRSAKeyCert}; Check: IsPersonalcertificateDefined();
-;Filename: "{app}\wapt-get.exe"; Parameters: "build-waptagent /ConfigFilename={app}\wapt-get.ini /PrivateKeyPassword={code:GetPrivateKeyPassword}"; Description: {cm:CreateWaptAgentInstaller}; StatusMsg: {cm:CreateWaptAgentInstaller}; 
+Filename: "{app}\wapt-get.exe"; Parameters: "create-keycert /EnrollNewCert /BaseDir=c:\private /ConfigFilename={app}\wapt-get.ini /CommonName={code:GetCertificateCommonName} /Email={code:GetCertificateEmail} /PrivateKeyPassword64={code:GetPrivateKeyPassword}"; Description: {cm:CreatePackageRSAKeyCert}; Check: CheckCreatePersonalcertificate();
+Filename: "{app}\wapt-get.exe"; Parameters: "build-waptagent /ConfigFilename={app}\wapt-get.ini /PrivateKeyPassword64={code:GetPrivateKeyPassword}"; Description: {cm:CreateWaptAgentInstaller}; StatusMsg: {cm:CreateWaptAgentInstaller}; Check: CheckCreateWaptAgent();
 
 Filename: "{app}\waptconsole.exe"; Parameters: "--lang {language}"; Flags: postinstall skipifsilent shellexec; StatusMsg: {cm:StartWaptconsole}; Description: "{cm:StartWaptconsole}"
 Filename: {cm:InstallDocURL}; Flags: postinstall skipifsilent shellexec; StatusMsg: {cm:OpenWaptDocumentation}; Description: "{cm:OpenWaptDocumentation}"
@@ -204,6 +205,29 @@ fr.PersonalEmail=Courriel à intégrer au certificat
 fr.PersonalKeyPassword=Mot de passe de la clé privée
 fr.PersonalKeyConfirmPassword=Confirmer le mot de passe
 fr.StartWaptconsole=Lancer Waptconsole
+fr.MustSpecifyServerPassword=Vous devez spécifier un mot de passe pour le serveur
+fr.MustSpecifyAServerName=Vous devez spécifier un nom ou une IP pour le serveur
+fr.PasswordsDontMatch=Les mots de passe serveur ne correspondent pas
+fr.SpecifyKeyName=Vous devez spécifier un nom pour la clé/certificat personnel
+fr.SpecifyPrivateKeyPassword=Merci de spécifier un mot de passe pour chiffrer la clé
+fr.KeyPasswordsDontMatch=les mots de passe ne correspondent pas
+fr.KeyExists=Une clé avec ce nom existe dans c:\private. Merci de choisir un autre nom.
+fr.WaptParameters=Paramètres WAPT
+fr.SpecifyWaptInstallParameters=Merci de spécifier vos paramètres de serveur Wapt puis cliquer sur suivant.
+fr.Skip=Ne rien faire
+fr.PickCertificate=Sélectionner un certificat existant (.crt)
+fr.CreateNewCert=Créer une nouvelle clé / certificat personnel
+fr.PersonalKeyCert=Clé / certificat personnel
+fr.SelectExistingCertificate=Sélectionner votre certificat personnel existant
+fr.PersonalCertificateLocation=Emplacement de votre certificat existant
+fr.PersonalKeyCertParams=Paramètres de Clé / certificat personnel
+fr.PersonalKeyCertParamsRequest=merci de préciser les paramètres pour la génération des Clé / Certificat personnel.
+fr.PackageDesignParams=Paramètres de création des paquets
+fr.PackageDesignParamsDesc=Paramètres utilsiés lors de la création et l'import de paquets.
+fr.PackageDesignParamsRequest=Le préfixe de paquet est une chaîne simple (comme test) qui est présente au début de vos noms de paquets pour les identifier visuellement%nLe mot de passe de la clé sera utilisé pour signer un paquet de mises à jour Wapt
+fr.WaptAgentBuild=Compilation de Waptagent
+fr.WaptAgentBuildChoice=Spécifier si vous voulez (re)créer un installeur personnalisé waptagent pour cette version de Wapt
+fr.WaptAgentDoBuild=Compiler un nouveau waptagent.exe
 
 en.RegisteringService=Setup WaptServer Service
 en.InstallMSVC2013=Installing MSVC++ 2013 Redistribuable
@@ -229,6 +253,30 @@ en.PersonalEmail=Personal Email to embed in certificate
 en.PersonalKeyPassword=Personal key password
 en.PersonalKeyConfirmPassword=Confirm password
 en.StartWaptconsole=Run Waptconsole
+en.MustSpecifyServerPassword=You must specify a server password
+en.MustSpecifyAServerName=You must specify a server name or IP
+en.PasswordsDontMatch=Server passwords don't match
+en.SpecifyKeyName=Please specify a keyname
+en.SpecifyPrivateKeyPassword=Please specify a password to encrypt the personal key
+en.KeyPasswordsDontMatch=Both passwords don't match
+en.KeyExists=A private key with this name already exists in c:\private, please choose another name.
+
+en.WaptParameters=WAPT parameters
+en.SpecifyWaptInstallParameters=Please specify the parameters for your Wapt install, then click Next.
+en.Skip=Skip
+en.PickCertificate=Pick an existing certificate (.crt)
+en.CreateNewCert=Create a new self signed certificate / private key
+en.PersonalKeyCert=Personal key / certificate
+en.SelectExistingCertificate=Select your existing personal certificate
+en.PersonalCertificateLocation=Location of personal certificate file:
+en.PersonalKeyCertParams=Personal key / certificate parameters
+en.PersonalKeyCertParamsRequest=Please specify the parameters for the certificate/key initialization, then click Next to process.
+en.PackageDesignParams=Packages design parameters
+en.PackageDesignParamsDesc=Parameters used when creating / importing packages and for upgrade package.
+en.PackageDesignParamsRequest=Packages prefix is a simple string (like test) which is appended in front of packages name to identify the source%nKey password will be tested and used in next step to build an upgrade package
+en.WaptAgentBuild=Waptagent build
+en.WaptAgentBuildChoice=Choose weither you want to (re)create the waptagent installer for this version of Wapt
+en.WaptAgentDoBuild=Compile a customized waptagent installer and waptupgrade package
 
 de.RegisteringService=Setup WaptServer Service
 de.InstallMSVC2013=MSVC++ 2013 Redistribuable installieren
@@ -361,15 +409,25 @@ end;
 function GetCertificateCommonName(Param: String):String;
 begin
   if (pgPersonalKeyParams.Values[0]<>'') then
-    Result := Encode64(pgPersonalKeyParams.Values[0])
+    Result := AddQuotes(pgPersonalKeyParams.Values[0])
   else
-    Result := Encode64('')
+    Result := '';
+end;
+
+function GetCertificateEmail(Param: String):String;
+begin
+  if (pgPersonalKeyParams.Values[1]<>'') then
+    Result := AddQuotes(pgPersonalKeyParams.Values[1])
+  else
+    Result := '';
 end;
 
 function GetPrivateKeyPassword(Param: String):String;
 begin
   if (pgPackagesParams.Values[1]<>'') then
     Result := Encode64(pgPackagesParams.Values[1])
+  else if (pgPersonalKeyParams.Values[2]<>'') then
+    Result := Encode64(pgPersonalKeyParams.Values[2])
   else
     Result := Encode64('')
 end;
@@ -400,15 +458,46 @@ begin
   result := GetWaptServerURL('')<>'';
 end;
 
+function IsPersonalCertificateDefined():Boolean;
+var
+  PersonalCertificatePath: String;
+begin
+  PersonalCertificatePath := GetIniString('global', 'personal_certificate', '',ExpandConstant('{app}\wapt-get.ini'));
+  Result := (PersonalCertificatePath<>'') and FileExists(PersonalCertificatePath);
+end;
+
+function IsServerPasswordDefined():Boolean;
+var
+  ServerPassword:String;
+begin
+  ServerPassword :=  GetIniString('options', 'wapt_password', '',ExpandConstant('{app}\conf\waptserver.ini')); 
+  Result := (ServerPassword<>'') and (pos('$pbkdf2',ServerPassword)>0);
+end;
+
 function GetPersonalCertificatePath(Param: String):String;
 begin
   case pgPersonalKeyOptions.SelectedValueIndex of 
     0: Result := GetIniString('global','personal_certificate_path','',ExpandConstant('{app}\wapt-get.ini'));
     1: Result := pgPersonalKeyChoose.Values[0];
-    2: Result := pgPersonalKeyChoose.Values[0];
+    2: Result := 'c:\private\'+pgPersonalKeyParams.Values[0]+'.crt';
   else
     Result := '';
   end;
+end;
+
+function CheckSetPersonalCertificatePath:Boolean;
+begin
+  result := (GetPersonalCertificatePath('') <> '') and (ExtractFiledir(GetPersonalCertificatePath(''))<>ExpandConstant('{app}\ssl')) 
+end;
+
+function CheckCreatePersonalcertificate:Boolean;
+begin
+  Result := (pgPersonalKeyOptions.SelectedValueIndex=2) and (GetCertificateCommonName('')<>'');
+end;
+
+function CheckCreateWaptAgent:Boolean;
+begin
+  Result := (pgBuildWaptAgentOptions.SelectedValueIndex=1);
 end;
 
 
@@ -449,19 +538,34 @@ end;
 function OnPersonalKeyParamsNextButtonClick(Sender: TWizardPage): Boolean;
 begin
   if (pgPersonalKeyParams.Values[0] = '') then 
-      RaiseException('Please specify a keyname');
+      RaiseException(ExpandConstant('{cm:SpecifyKeyName}'));
 
   if (pgPersonalKeyParams.Values[2] = '') then 
-      RaiseException('Please specify a password to encrypt the personal key');
+      RaiseException(ExpandConstant('{cm:SpecifyPrivateKeyPassword}'));
 
   if (pgPersonalKeyParams.Values[2] <> pgPersonalKeyParams.Values[3]) then 
-      RaiseException('Both passwords don''t match');
+      RaiseException(ExpandConstant('{cm:KeyPasswordsDontMatch}'));
+
+  if FileExists(ExpandConstant('c:\private\'+pgPersonalKeyParams.Values[0]+'.pem')) or 
+     FileExists(ExpandConstant('c:\private\'+pgPersonalKeyParams.Values[0]+'.crt')) then 
+      RaiseException(ExpandConstant('{cm:KeyExists}'));
+  
 
   // Generate 
-
   Result := True;
 end;
 
+function GetFirstSSLCertificate():String;
+var
+  fr: TFindRec;
+begin
+  Result := '';
+  if FindFirst(ExpandConstant('{app}\ssl\*.crt'),fr) then
+  begin
+    Result := ExpandConstant('{app}\ssl\'+fr.Name);
+    FindClose(fr);
+  end;
+end;
 
 function OnPersonalKeyParamsShouldSkipPage(Sender: TWizardPage): Boolean;
 begin
@@ -474,19 +578,19 @@ begin
     RaiseException('You must specify a packages prefix');
   if pgPackagesParams.Values[1] = '' then 
     RaiseException('You must specify the private key password to check and build Agent');
-  MsgBox('Lancement vérification de la clé pour le certificat '+GetPersonalCertificatePath('')+' and prefix '+pgPackagesParams.Values[0], mbInformation, MB_OK);  
+  //MsgBox('Lancement vérification de la clé pour le certificat '+GetPersonalCertificatePath('')+' and prefix '+pgPackagesParams.Values[0], mbInformation, MB_OK);  
   Result := True;
 end;
 
 
 function OnServerParamsNextButtonClick(Sender: TWizardPage): Boolean;
-begin
+begin                                         
   if pgServerParams.Values[0] = '' then 
-    RaiseException('You must specify a server name or IP');
-  if pgServerParams.Values[1] = '' then 
-    RaiseException('You must specify a server password');
+    RaiseException(ExpandConstant('{cm:MustSpecifyAServerName}'));
+  if not IsServerPasswordDefined and (pgServerParams.Values[1] = '') then 
+    RaiseException(ExpandConstant('{cm:MustSpecifyServerPassword}'));
   if pgServerParams.Values[1] <> pgServerParams.Values[2]  then 
-    RaiseException('Server passwords don''t match');
+    RaiseException(ExpandConstant('{cm:PasswordsDontMatch}'));
   Result := True;
 end;
 
@@ -510,36 +614,42 @@ end;
 
 procedure InitializeWizard;
 begin
+
+
   pgServerParams := CreateInputQueryPage(wpSelectTasks,'Server Params',
-    'WAPT parameters',
-    'Please specify the parameters for your Wapt install, then click Next.');
+    ExpandConstant('{cm:WaptParameters}'),
+    ExpandConstant('{cm:SpecifyWaptInstallParameters}'));
   pgServerParams.Add(ExpandConstant('{cm:WaptServerHostName}'),False);
   pgServerParams.Add(ExpandConstant('{cm:WaptAdminPassword}'),True);
   pgServerParams.Add(ExpandConstant('{cm:ConfirmPassword}'),True);
   pgServerParams.OnActivate := @OnServerParamsActivate;
   pgServerParams.OnNextButtonClick := @OnServerParamsNextButtonClick;
 
-  (*
-  pgPersonalKeyOptions := CreateInputOptionPage(pgServerParams.ID,'Personal key / certificate',
-      'Choose wether you want to (re)create a pair of keys / certificate to sign your packages', '',True,False);
-  pgPersonalKeyOptions.Add('Skip');
-  pgPersonalKeyOptions.Add('Pick an existing certificate (.crt)');
-  pgPersonalKeyOptions.Add('Create a new self signed certificate / private key');
-  pgPersonalKeyOptions.OnActivate := @OnPersonalKeyOptionsActivate;
-   
 
+  pgPersonalKeyOptions := CreateInputOptionPage(pgServerParams.ID,ExpandConstant('{cm:PersonalKeyCert}'),
+      'Choose wether you want to (re)create a pair of keys / certificate to sign your packages', '',True,False);
+  pgPersonalKeyOptions.Add(ExpandConstant('{cm:Skip}'));
+  pgPersonalKeyOptions.Add(ExpandConstant('{cm:PickCertificate}'));
+  pgPersonalKeyOptions.Add(ExpandConstant('{cm:CreateNewCert}'));
+  pgPersonalKeyOptions.OnActivate := @OnPersonalKeyOptionsActivate;
+
+
+   
   // Choose an existing certificate
-  pgPersonalKeyChoose := CreateInputFilePage(pgPersonalKeyOptions.ID,'Personal key / certificate', 'Select your existing certificate','');
-  pgPersonalKeyChoose.Add('Location of personal certificate file:','X509 PEM encoded certificate|*.crt|All files|*.*','.crt');
+  pgPersonalKeyChoose := CreateInputFilePage(pgPersonalKeyOptions.ID,ExpandConstant('{cm:PersonalKeyCert}'),ExpandConstant('{cm:SelectExistingCertificate}'),'');
+  pgPersonalKeyChoose.Add(ExpandConstant('{cm:PersonalCertificateLocation}'),'X509 PEM encoded certificates|*.crt|All files|*.*','.crt');
   pgPersonalKeyChoose.Values[0] := '';
   pgPersonalKeyChoose.IsSaveButton[0] := False;
   pgPersonalKeyChoose.OnActivate := @OnPersonalKeyChooseActivate;
   pgPersonalKeyChoose.OnShouldSkipPage := @OnPersonalKeyChooseShouldSkipPage;
 
+
+
   // Specify key /certificate paramaters
-  pgPersonalKeyParams := CreateInputQueryPage(pgPersonalKeyChoose.ID,'Personal key / certificate',
-    'Certificate / key parameters',
-    'Please specify the parameters for the certificate/key initialization, then click Next to process.');
+  pgPersonalKeyParams := CreateInputQueryPage(pgPersonalKeyChoose.ID,ExpandConstant('{cm:PersonalKeyCert}'),
+    ExpandConstant('{cm:PersonalKeyCertParams}'),
+    ExpandConstant('{cm:PersonalKeyCertParamsrequest}')
+    );
   pgPersonalKeyParams.Add(ExpandConstant('{cm:PersonalKeyname}'),False);
   pgPersonalKeyParams.Add(ExpandConstant('{cm:PersonalEmail}'),False);
   pgPersonalKeyParams.Add(ExpandConstant('{cm:PersonalKeyPassword}'),True);
@@ -548,21 +658,20 @@ begin
   pgPersonalKeyParams.OnNextButtonClick := @OnPersonalKeyParamsNextButtonClick;
 
   // package prefix and password to check key
-  pgPackagesParams := CreateInputQueryPage(pgPersonalKeyParams.ID,'Packages design parameters',
-    'Parameters used when creating / importing packages and for upgrade package.',
-    'Packages prefix is a simple tring (like test) which is appended in front of packages name to identify the source'#13#10'Key password will be tested and used in next step to build an upgrade package');
+  pgPackagesParams := CreateInputQueryPage(pgPersonalKeyParams.ID,ExpandConstant('{cm:PackageDesignParams}'),
+    ExpandConstant('{cm:PackageDesignParamsDesc}'),
+    ExpandConstant('{cm:PackageDesignParamsRequest}'));
   pgPackagesParams.Add(ExpandConstant('{cm:PackagesPrefix}'),False);
   pgPackagesParams.Add(ExpandConstant('{cm:PersonalKeyPassword}'),True);
   pgPackagesParams.OnActivate := @OnPackagesParamsActivate;
   pgPackagesParams.OnShouldSkipPage := @OnPackagesParamsShouldSkipPage;
   pgPackagesParams.OnNextButtonClick := @OnPackagesParamsNextButtonClick;
 
-  pgBuildWaptAgentOptions := CreateInputOptionPage(pgPackagesParams.ID,'Waptagent build','',
-      'Choose wether you want to (re)create the waptagent installer for this version of Wapt',True,False);
-  pgBuildWaptAgentOptions.Add('Skip');
-  pgBuildWaptAgentOptions.Add('Compile a customized waptagent installer and waptupgrade package');
+  pgBuildWaptAgentOptions := CreateInputOptionPage(pgPackagesParams.ID,ExpandConstant('{cm:WaptAgentBuild}'),'',
+      ExpandConstant('{cm:WaptAgentBuildChoice}'),True,False);
+  pgBuildWaptAgentOptions.Add(ExpandConstant('{cm:Skip}'));
+  pgBuildWaptAgentOptions.Add(ExpandConstant('{cm:WaptAgentDoBuild}'));
   pgBuildWaptAgentOptions.OnActivate := @OnBuildWaptAgentOptionsActivate;
-  *)
 
 end;
 
@@ -576,19 +685,22 @@ begin
         Result := true;
         pgServerParams.Values[0] := GetWaptServerOrComputerDNSNameOrIP;
 
-        (*CertFilename := GetIniString('global','personal_certificate_path','',ExpandConstant('{app}\wapt-get.ini'));
+        CertFilename := GetIniString('global','personal_certificate_path','',ExpandConstant('{app}\wapt-get.ini'));
         if (CertFilename<>'') and (FileExists(CertFilename)) then 
           pgPersonalKeyOptions.SelectedValueIndex := 0
+        else if (CertFilename = '') and (GetFirstSSLCertificate<>'') then 
+          pgPersonalKeyOptions.SelectedValueIndex := 1
         else
           pgPersonalKeyOptions.SelectedValueIndex := 2;
+        
+        pgPersonalKeyParams.Values[0] := GetUserNameString;
 
         if CertFilename <> '' then
           pgPersonalKeyChoose.Values[0] := CertFilename
         else
-          pgPersonalKeyChoose.Values[0] := 'c:\private';
+          pgPersonalKeyChoose.Values[0] := 'c:\private\'+ExtractFileName(GetFirstSSLCertificate());
 
         pgPackagesParams.Values[0] := GetIniString('global','default_package_prefix','test',ExpandConstant('{app}\wapt-get.ini'));
-        *)
       end;
   else
     Result := True;

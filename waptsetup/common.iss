@@ -6,8 +6,10 @@
 
 
 [InstallDelete]
+#ifndef FastDebug
 #ifndef waptenterprise
 Type: filesandordirs; Name: "{app}\waptenterprise"
+#endif
 #endif
 
 [Files]
@@ -29,8 +31,8 @@ Source: "..\waptupgrade\setup.py"; DestDir: "{app}\waptupgrade"; Flags: ignoreve
 Source: "..\waptupgrade\WAPT\*"; DestDir: "{app}\waptupgrade\WAPT"; Flags: createallsubdirs recursesubdirs ignoreversion;
 
 #if edition != "waptagent"
-Source: "..\waptconsolepostconf.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\waptconsolepostconf.exe.manifest"; DestDir: "{app}";
+;Source: "..\waptconsolepostconf.exe"; DestDir: "{app}"; Flags: ignoreversion
+;Source: "..\waptconsolepostconf.exe.manifest"; DestDir: "{app}";
 #endif
 
 ; global management console
@@ -623,14 +625,6 @@ begin
       end;
     end
   end;
-end;
-
-function IsPersonalCertificateDefined():Boolean;
-var
-  PersonalCertificatePath: String;
-begin
-  PersonalCertificatePath := GetIniString('global', 'personal_certificate', '',ExpandConstant('{app}\wapt-get.ini'));
-  Result := (PersonalCertificatePath<>'') and FileExists(PersonalCertificatePath);
 end;
 
 
