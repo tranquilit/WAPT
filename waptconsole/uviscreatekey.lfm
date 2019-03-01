@@ -75,7 +75,7 @@ object VisCreateKey: TVisCreateKey
     object PanCA: TPanel
       Left = 0
       Height = 92
-      Top = 351
+      Top = 371
       Width = 412
       Align = alTop
       AutoSize = True
@@ -338,7 +338,7 @@ object VisCreateKey: TVisCreateKey
     end
     object PanCertificate: TPanel
       Left = 0
-      Height = 248
+      Height = 268
       Top = 103
       Width = 412
       Align = alTop
@@ -351,7 +351,7 @@ object VisCreateKey: TVisCreateKey
       ChildSizing.EnlargeHorizontal = crsScaleChilds
       ChildSizing.Layout = cclLeftToRightThenTopToBottom
       ChildSizing.ControlsPerLine = 2
-      ClientHeight = 248
+      ClientHeight = 268
       ClientWidth = 412
       TabOrder = 1
       object Shape2: TShape
@@ -385,7 +385,7 @@ object VisCreateKey: TVisCreateKey
       end
       object PanCertAttributesFiller: TPanel
         Left = 6
-        Height = 43
+        Height = 63
         Top = 34
         Width = 152
         BevelOuter = bvNone
@@ -394,7 +394,7 @@ object VisCreateKey: TVisCreateKey
       end
       object PanCertAttributes: TPanel
         Left = 164
-        Height = 43
+        Height = 63
         Top = 34
         Width = 218
         AutoSize = True
@@ -406,7 +406,7 @@ object VisCreateKey: TVisCreateKey
         ChildSizing.EnlargeHorizontal = crsScaleChilds
         ChildSizing.Layout = cclLeftToRightThenTopToBottom
         ChildSizing.ControlsPerLine = 2
-        ClientHeight = 43
+        ClientHeight = 63
         ClientWidth = 218
         TabOrder = 2
         Visible = False
@@ -446,11 +446,29 @@ object VisCreateKey: TVisCreateKey
           State = cbChecked
           TabOrder = 3
         end
+        object Filler4: TPanel
+          Left = 6
+          Height = 17
+          Top = 43
+          Width = 3
+          BevelOuter = bvNone
+          TabOrder = 4
+        end
+        object CBIsClientAuth: TCheckBox
+          Left = 15
+          Height = 17
+          Top = 43
+          Width = 197
+          Caption = 'Tag as Client Side Authentication'
+          Checked = True
+          State = cbChecked
+          TabOrder = 5
+        end
       end
       object LabCN: TLabel
         Left = 6
         Height = 21
-        Top = 80
+        Top = 100
         Width = 152
         Caption = 'Common Name(CN) :'
         Layout = tlCenter
@@ -460,7 +478,7 @@ object VisCreateKey: TVisCreateKey
         Left = 164
         Height = 21
         Hint = 'This information will be used as Signer identification in packages'
-        Top = 80
+        Top = 100
         Width = 218
         OnExit = edCommonNameExit
         TabOrder = 3
@@ -468,7 +486,7 @@ object VisCreateKey: TVisCreateKey
       object LabOptional: TStaticText
         Left = 6
         Height = 14
-        Top = 111
+        Top = 131
         Width = 152
         AutoSize = True
         BorderSpacing.Top = 10
@@ -480,7 +498,7 @@ object VisCreateKey: TVisCreateKey
       object Filler: TPanel
         Left = 164
         Height = 14
-        Top = 111
+        Top = 131
         Width = 218
         BevelOuter = bvNone
         TabOrder = 5
@@ -488,7 +506,7 @@ object VisCreateKey: TVisCreateKey
       object LabLocality: TLabel
         Left = 6
         Height = 21
-        Top = 128
+        Top = 148
         Width = 152
         Caption = 'City :'
         Layout = tlCenter
@@ -498,7 +516,7 @@ object VisCreateKey: TVisCreateKey
         Left = 164
         Height = 21
         Hint = 'E.g. : Nantes'
-        Top = 128
+        Top = 148
         Width = 218
         TabOrder = 6
       end
@@ -506,7 +524,7 @@ object VisCreateKey: TVisCreateKey
         Left = 6
         Height = 21
         Hint = 'Main site country code'
-        Top = 152
+        Top = 172
         Width = 152
         Caption = 'Country (2 chars. E.g. : FR):'
         Layout = tlCenter
@@ -517,7 +535,7 @@ object VisCreateKey: TVisCreateKey
       object edCountry: TEdit
         Left = 164
         Height = 21
-        Top = 152
+        Top = 172
         Width = 218
         MaxLength = 2
         TabOrder = 7
@@ -527,7 +545,7 @@ object VisCreateKey: TVisCreateKey
         Left = 6
         Height = 21
         Hint = 'E.g. : IT department.'
-        Top = 176
+        Top = 196
         Width = 152
         Caption = 'Service :'
         Layout = tlCenter
@@ -537,7 +555,7 @@ object VisCreateKey: TVisCreateKey
         Left = 164
         Height = 21
         Hint = 'E.g. : IT'
-        Top = 176
+        Top = 196
         Width = 218
         TabOrder = 8
       end
@@ -545,7 +563,7 @@ object VisCreateKey: TVisCreateKey
         Left = 6
         Height = 21
         Hint = 'Your company name'
-        Top = 200
+        Top = 220
         Width = 152
         Caption = 'Organisation:'
         Layout = tlCenter
@@ -555,7 +573,7 @@ object VisCreateKey: TVisCreateKey
         Left = 164
         Height = 21
         Hint = 'E.g. : Tranquil It Systems'
-        Top = 200
+        Top = 220
         Width = 218
         TabOrder = 9
       end
@@ -563,7 +581,7 @@ object VisCreateKey: TVisCreateKey
         Left = 6
         Height = 21
         Hint = 'Technical department e-mail address.'
-        Top = 224
+        Top = 244
         Width = 152
         Caption = 'E-mail address :'
         Layout = tlCenter
@@ -573,7 +591,7 @@ object VisCreateKey: TVisCreateKey
         Left = 164
         Height = 21
         Hint = 'E.g. : technique@tranquil-it-systems.fr'
-        Top = 224
+        Top = 244
         Width = 218
         TabOrder = 10
       end

@@ -19,6 +19,7 @@ type
     BitBtn2: TBitBtn;
     CBCodeSigning: TCheckBox;
     CBIsCA: TCheckBox;
+    CBIsClientAuth: TCheckBox;
     DirectoryCert: TDirectoryEdit;
     EdCACertificate: TFileNameEdit;
     EdCAKeyFilename: TFileNameEdit;
@@ -35,6 +36,7 @@ type
     Filler: TPanel;
     Filler2: TPanel;
     Filler3: TPanel;
+    Filler4: TPanel;
     LabCACert: TLabel;
     LabCAKey: TLabel;
     LabCertName: TLabel;
@@ -187,6 +189,7 @@ begin
       EdKeyPassword.Text,
       CBCodeSigning.Checked,
       CBIsCA.Checked,
+      CBIsClientAuth.Checked,
       EdCACertificate.Text,
       EdCAKeyFilename.Text,
       CAKeyPassword);

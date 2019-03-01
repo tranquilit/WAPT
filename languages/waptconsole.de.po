@@ -198,6 +198,10 @@ msgstr ""
 msgid "Tag as CA Certificate"
 msgstr ""
 
+#: tviscreatekey.cbisclientauth.caption
+msgid "Tag as Client Side Authentication"
+msgstr ""
+
 #: tviscreatekey.edcertbasename.hint
 #, fuzzy
 #| msgid "E.g. : srvwapt.tranquilit.local"

@@ -26,6 +26,7 @@ function CreateSignedCert(pywaptcrypto:Variant;
         keypassword:String;
         codesigning:Boolean;
         IsCACert:Boolean;
+        IsClientAuth:Boolean;
         CACertificateFilename:String='';
         CAKeyFilename:String='';
         CAKeyPassword:String=''
@@ -213,6 +214,7 @@ function CreateSignedCert(pywaptcrypto:Variant;
         keypassword:String;
         codesigning:Boolean;
         IsCACert:Boolean;
+        IsClientAuth:Boolean;
         CACertificateFilename:String='';
         CAKeyFilename:String='';
         CAKeyPassword:String=''
@@ -288,7 +290,8 @@ begin
       organizational_unit := orgunit,
       email := email,
       is_ca := IsCACert,
-      is_code_signing := codesigning)
+      is_code_signing := codesigning,
+      is_client_auth := IsClientAuth)
   else
     cert := key.build_sign_certificate(
       ca_signing_key := cakey,
@@ -300,7 +303,8 @@ begin
       organizational_unit := orgunit,
       email := email,
       is_ca := IsCACert,
-      is_code_signing := codesigning);
+      is_code_signing := codesigning,
+      is_client_auth := IsClientAuth);
 
   cert.save_as_pem(filename := vdestcrt);
 

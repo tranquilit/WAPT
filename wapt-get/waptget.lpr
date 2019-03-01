@@ -70,11 +70,13 @@ type
     procedure pollerEvent(Events:ISuperObject);
     function remainingtasks:ISuperObject;
 
+    function GetCommonNameFromCmdLine(): String;
+
     function BuildWaptUpgrade(SetupFilename: String): String;
     function CreateWaptAgent(TargetDir: String; Edition: String='waptagent'
       ): String;
 
-    function CreateKeycert(commonname: String; basedir: String='';keypassword: String='';CodeSigning:Boolean=True; CA:Boolean=False): String;
+    function CreateKeycert(commonname: String; basedir: String='';keypassword: String='';CodeSigning:Boolean=True; CA:Boolean=False; ClientAuth:Boolean=True): String;
 
     function GetCAKeyPassword(crtname:String): String;
     function GetPrivateKeyPassword(crtname:String=''): String;
@@ -226,7 +228,7 @@ end;
 
 function PWaptGet.GetWaptServerPassword: String;
 begin
-  if WaptServerPassword='' then
+  if (WaptServerPassword='') and FindCmdLineSwitch('WaptServerPassword64') then
     WaptServerPassword := DecodeStringBase64(GetCmdParams('WaptServerPassword64',''));
   if WaptServerPassword='' then
     WaptServerPassword := GetCmdParams('WaptServerPassword','');
@@ -243,7 +245,9 @@ function PWaptGet.GetPrivateKeyPassword(crtname:String=''): String;
 begin
   if crtname ='' then
     crtname:=WaptPersonalCertificatePath;
-  result := DecodeStringBase64(GetCmdParams('PrivateKeyPassword64',''));
+  Result := '';
+  if FindCmdLineSwitch('PrivateKeyPassword64') then
+    result := DecodeStringBase64(GetCmdParams('PrivateKeyPassword64'));
   if result='' then
     result := GetCmdParams('PrivateKeyPassword','');
   while Result='' do
@@ -254,6 +258,14 @@ begin
   end;
 end;
 
+function PWaptGet.GetCommonNameFromCmdLine(): String;
+begin
+  Result := '';
+  if FindCmdLineSwitch('CommonName64') then
+    result := DecodeStringBase64(GetCmdParams('CommonName64'));
+  if result='' then
+    result := GetCmdParams('CommonName','');
+end;
 
 function PWaptGet.GetCAKeyPassword(crtname:String): String;
 begin
@@ -352,6 +364,8 @@ var
 var
   i:integer;
   NextIsParamValue:Boolean;
+  NewCertificateFilename,DestCertPath:String;
+
 begin
   Action:='';
   sopackages  := TSuperObject.Create(stArray);
@@ -409,7 +423,24 @@ begin
   if (action = 'create-keycert') then
   begin
     ReadWaptConfig(AppIniFilename('waptconsole'));
-    CreateKeycert(GetCmdParams('CommonName'),'','',GetCmdParams('CodeSigning','1')='1',GetCmdParams('CA','1')='1');
+    NewCertificateFilename := CreateKeycert(GetCommonNameFromCmdLine,'','',GetCmdParams('CodeSigning','1')='1',GetCmdParams('CA','1')='1',GetCmdParams('ClientAuth','1')='1');
+    if FindCmdLineSwitch('EnrollNewCert') then
+    begin
+      DestCertPath := AppendPathDelim(WaptBaseDir)+'ssl\'+ExtractFileName(NewCertificateFilename);
+      if CopyFileW(PWideChar(UTF8Decode(NewCertificateFilename)),PWideChar(UTF8Decode(DestCertPath)),False) then
+        WriteLn('Enrolled in: '+DestCertPath)
+      else
+      begin
+        writeln('ERROR: Unable to copy certificate to '+DestCertPath);
+        ExitProcess(3);
+      end;
+
+    end;
+    if FindCmdLineSwitch('SetAsDefaultPersonalCert') then
+    begin
+      IniWriteString(AppIniFilename('waptconsole'),'global','personal_certificate_path',NewCertificateFilename);
+      WriteLn('Personal Certificate config filename: '+AppIniFilename);
+    end;
   end
   else
   if (action = 'build-waptagent') then
@@ -817,7 +848,7 @@ begin
 end;
 
 function PWaptGet.CreateKeycert(commonname: String; basedir: String;
-  keypassword: String; CodeSigning: Boolean; CA: Boolean): String;
+  keypassword: String; CodeSigning: Boolean; CA: Boolean; ClientAuth:Boolean=True): String;
 var
     keyfilename,
     crtbasename,
@@ -836,7 +867,7 @@ begin
     basedir:=GetCmdParams('BaseDir',ExtractFilePath(WaptPersonalCertificatePath));
   if basedir = '' then
     basedir:=AppendPathDelim(GetPersonalFolder)+'private';
-  WriteLn('Key and certificate will be created in '+basedir);
+  WriteLn('BaseDir: '+basedir);
 
   if not DirectoryExistsUTF8(basedir) then
     mkdir(basedir);
@@ -844,7 +875,7 @@ begin
   keyfilename := AppendPathDelim(basedir)+commonname+'.pem';
   if commonname = '' then
   begin
-    Write('Common name of certificate to create:');
+    Write('Common name of certificate to create: ');
     readln(commonname);
   end;
   if commonname='' then
@@ -853,7 +884,8 @@ begin
   printPwd := False;
   if (keypassword='') and not FileExistsUTF8(keyfilename) then
   begin
-    keypassword := DecodeStringBase64(GetCmdParams('PrivateKeyPassword64',''));
+    if FindCmdLineSwitch('PrivateKeyPassword64') then
+      keypassword := DecodeStringBase64(GetCmdParams('PrivateKeyPassword64'));
     if keypassword='' then
       keypassword := GetCmdParams('PrivateKeyPassword','');
     if keypassword='' then
@@ -879,7 +911,7 @@ begin
   if CAKeyFilename<>'' then
   begin
     if (CACertFilename<>'') and FileExistsUTF8(CACertFilename) then
-      Writeln('Certificate will be issued and signed by '+CACertFilename)
+      Writeln('Signed by: '+CACertFilename)
     else
       Raise Exception.Create('No CA Certificate to issue the new certificate');
 
@@ -898,14 +930,15 @@ begin
         email,
         keypassword,
         CodeSigning,
+        ClientAuth,
         CA,
         CACertFilename,
         CAKeyFilename,
         CAKeyPassword);
 
-  WriteLn(Result);
+  WriteLn('Certificate Filename: '+Result);
   if PrintPwd then
-    WriteLn(keypassword);
+    WriteLn('New private key password: '+keypassword);
 end;
 
 function PWaptGet.BuildWaptUpgrade(SetupFilename: String): String;

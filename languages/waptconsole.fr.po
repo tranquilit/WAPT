@@ -191,6 +191,10 @@ msgstr "Certificat de développeur"
 msgid "Tag as CA Certificate"
 msgstr "Certificat CA"
 
+#: tviscreatekey.cbisclientauth.caption
+msgid "Tag as Client Side Authentication"
+msgstr "Certificat authentification client"
+
 #: tviscreatekey.edcertbasename.hint
 msgctxt "tviscreatekey.edcertbasename.hint"
 msgid "This information will be used as Signer identification in packages"
@@ -1438,7 +1442,6 @@ msgid ""
 msgstr ""
 "Par exemple :tis\n"
 "Préfixe à utiliser lors de la création ou la duplication de paquets\n"
-
 
 #: tviswaptconfig.eddefault_sources_root.hint
 msgid ""
@@ -3359,7 +3362,6 @@ msgid "logs"
 msgstr "Traces"
 
 #: tviswaptgui.gridhosttaskspending.header.columns[12].text
-
 msgctxt "tviswaptgui.gridhosttaskspending.header.columns[12].text"
 msgid "pidlist"
 msgstr "Liste de PIDs"

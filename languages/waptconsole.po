@@ -191,6 +191,10 @@ msgstr ""
 msgid "Tag as CA Certificate"
 msgstr ""
 
+#: tviscreatekey.cbisclientauth.caption
+msgid "Tag as Client Side Authentication"
+msgstr ""
+
 #: tviscreatekey.edcertbasename.hint
 msgctxt "TVISCREATEKEY.EDCERTBASENAME.HINT"
 msgid "This information will be used as Signer identification in packages"

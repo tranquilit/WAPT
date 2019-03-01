@@ -128,12 +128,15 @@ object VisWAPTConfig: TVisWAPTConfig
         AnchorSideRight.Control = pgBase
         AnchorSideRight.Side = asrBottom
         Left = 421
-        Height = 25
+        Height = 24
         Top = 6
-        Width = 180
+        Width = 185
         Action = ActCheckAndSetwaptserver
         Anchors = [akTop, akLeft, akRight]
+        AutoSize = True
         BorderSpacing.Right = 5
+        Constraints.MinHeight = 24
+        Constraints.MinWidth = 185
         TabOrder = 1
       end
       object labStatusRepo: TLabel
@@ -271,12 +274,15 @@ object VisWAPTConfig: TVisWAPTConfig
         AnchorSideRight.Control = pgBase
         AnchorSideRight.Side = asrBottom
         Left = 421
-        Height = 25
+        Height = 24
         Hint = 'Click to retrieve the https certificate chain from server.'#13#10'This works only if chain contain full certificate validation chain.'#13#10'If not, you must add the missing root and intermediate certificates.'
         Top = 128
         Width = 185
         Action = ActGetServerCertificate
         Anchors = [akTop, akLeft, akRight]
+        AutoSize = True
+        Constraints.MinHeight = 24
+        Constraints.MinWidth = 185
         TabOrder = 7
       end
       object CBVerifyCert: TCheckBox
@@ -293,23 +299,29 @@ object VisWAPTConfig: TVisWAPTConfig
         AnchorSideRight.Control = pgBase
         AnchorSideRight.Side = asrBottom
         Left = 421
-        Height = 25
+        Height = 24
         Hint = 'Try to find a private key (pem encoded RSA key) in same directory as certificate.'#13#10'This will ask for the password for decrypting the key.'
         Top = 176
         Width = 185
         Action = ActCheckPersonalKey
         Anchors = [akTop, akLeft, akRight]
+        AutoSize = True
+        Constraints.MinHeight = 24
+        Constraints.MinWidth = 185
         TabOrder = 10
       end
       object Button3: TButton
         AnchorSideRight.Control = pgBase
         AnchorSideRight.Side = asrBottom
         Left = 421
-        Height = 25
+        Height = 24
         Top = 208
         Width = 185
         Action = ActCreateKeyCert
         Anchors = [akTop, akLeft, akRight]
+        AutoSize = True
+        Constraints.MinHeight = 24
+        Constraints.MinWidth = 185
         TabOrder = 11
       end
       object LabLicencesDirectory: TLabel
@@ -379,7 +391,7 @@ object VisWAPTConfig: TVisWAPTConfig
     object pgAdvanced: TTabSheet
       Caption = 'Advanced'
       ClientHeight = 296
-      ClientWidth = 613
+      ClientWidth = 606
       object eddefault_sources_root: TDirectoryEdit
         Left = 315
         Height = 21
@@ -538,8 +550,8 @@ object VisWAPTConfig: TVisWAPTConfig
     end
     object pgPlugins: TTabSheet
       Caption = 'Plugins'
-      ClientHeight = 256
-      ClientWidth = 613
+      ClientHeight = 296
+      ClientWidth = 606
       object GridPlugins: TSOGrid
         Left = 8
         Height = 208
