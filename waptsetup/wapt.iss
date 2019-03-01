@@ -294,6 +294,21 @@ begin
   end;
 end;
 
+// Usable even in the Uninstall section, contrary to WizardSilent
+function runningSilently(): Boolean;
+var
+    i: Cardinal;
+begin
+    result := False; 
+    for i := 1 to ParamCount do
+    begin
+        if ((CompareText(ParamStr(i), '/silent') = 0) or
+            (CompareText(ParamStr(i), '/verysilent') = 0)) then
+            result := True;
+    end;
+end;
+
+
 procedure CurStepChanged(CurStep: TSetupStep);
 var
   Reply, ResultCode: Integer;
@@ -335,30 +350,34 @@ begin
     Exec('taskkill', '/t /im "pyscripter.exe" /f', '', SW_HIDE,
        ewWaitUntilTerminated, ResultCode);
 
+    {
     repeat
       ConflictingService := '';
 
       NetstatOutput := RunCmd('netstat -a -n -p tcp', True);
-      if Pos('0.0.0.0:8088 ', NetstatOutput) > 0 then
+      if Pos('TCP    127.0.0.1:8088 ', NetstatOutput) > 0 then
         ConflictingService := '8088'
   #ifdef waptserver
-      else if Pos('0.0.0.0:8080 ', NetstatOutput) > 0 then
+      else if Pos('TCP    127.0.0.1:8080 ', NetstatOutput) > 0 then
         ConflictingService := '8080'
   #endif
       ;
 
       if ConflictingService <> '' then
       begin
-        Reply := MsgBox('A conflicting service is running on port '+ConflictingService+'. '+
-                        'This is not supported and you should probably abort the installer. '+
-                        'Visit http://dev.tranquil.it/ for documentation about WAPT.',
-                        mbError, MB_ABORTRETRYIGNORE);
-        if Reply = IDABORT then
-          Abort;
+        if RunningSilently then
+           Abort
+        else
+        begin
+          Reply := MsgBox('A conflicting service is running on port '+ConflictingService+'. '+
+                          'This is not supported and you should probably abort the installer. '+
+                          'Visit http://dev.tranquil.it/ for documentation about WAPT.',
+                          mbError, MB_ABORTRETRYIGNORE);
+          if Reply = IDABORT then
+            Abort;
+        end;
       end;
-    until (ConflictingService = '') or (Reply = IDIGNORE);
-    
-    //Result := True;
+    until (ConflictingService = '') or (Reply = IDIGNORE);}
   end
   else if CurStep = ssDone then
   begin
@@ -366,12 +385,6 @@ begin
       SimpleStartService('waptservice',True,True);
   end;
 end;
-
-{
-procedure DeinitializeSetup();
-begin
-end;
-}
 
 procedure killtask(name:String);
 var
@@ -464,20 +477,6 @@ begin
   Result := not VCVersionInstalled(VC_2008_SP1_MFC_SEC_UPD_REDIST_X86);
 end;
 #endif
-
-// Usable even in the Uninstall section, contrary to WizardSilent
-function runningSilently(): Boolean;
-var
-    i: Cardinal;
-begin
-    result := False; 
-    for i := 1 to ParamCount do
-    begin
-        if ((CompareText(ParamStr(i), '/silent') = 0) or
-            (CompareText(ParamStr(i), '/verysilent') = 0)) then
-            result := True;
-    end;
-end;
 
 function CurrentLanguage(Param: String):String;
 var

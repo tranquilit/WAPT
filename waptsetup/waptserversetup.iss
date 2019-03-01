@@ -138,11 +138,12 @@ Filename: "net"; Parameters: "start waptserver"; Flags: runhidden; StatusMsg: "S
 Filename: "net"; Parameters: "start wapttasks"; Flags: runhidden; StatusMsg: "Starting service wapttasks"
 #endif
 
-Filename: "{app}\wapt-get.exe"; Parameters: "register --wapt-server-url={code:GetWaptServerURL} --wapt-repo-url={code:GetWaptRepoURL} --use-gui --update "; Flags: runhidden; Description: {cm:SetupRegisterThisComputer}; Check: CheckRegisterUpdate(); Tasks: RegisterComputerOnLocalServer;
-Filename: "{app}\wapt-get.exe"; Parameters: "create-keycert --use-gui /EnrollNewCert /BaseDir=c:\private /ConfigFilename={app}\wapt-get.ini /CommonName={code:GetCertificateCommonName} /Email={code:GetCertificateEmail} /PrivateKeyPassword64={code:GetPrivateKeyPassword64}"; Description: {cm:CreatePackageRSAKeyCert}; Check: CheckCreatePersonalcertificate();
-Filename: "{app}\wapt-get.exe"; Parameters: "build-waptagent --use-gui /DeployWaptAgentLocally /ConfigFilename={app}\wapt-get.ini /WaptServerPassword64={code:GetWaptServerPassword64} /PrivateKeyPassword64={code:GetPrivateKeyPassword64}"; Description: {cm:CreateWaptAgentInstaller}; StatusMsg: {cm:CreateWaptAgentInstaller}; Check: CheckCreateWaptAgent();
+Filename: "{app}\wapt-get.exe"; Parameters: "register --wapt-server-url={code:GetWaptServerURL} --wapt-repo-url={code:GetWaptRepoURL} --use-gui --update "; Flags: runhidden skipifsilent; Description: {cm:SetupRegisterThisComputer}; Check: CheckRegisterUpdate(); Tasks: RegisterComputerOnLocalServer;
+Filename: "{app}\wapt-get.exe"; Flags: skipifsilent; Parameters: "create-keycert --use-gui /EnrollNewCert /BaseDir=c:\private /ConfigFilename={app}\wapt-get.ini /CommonName={code:GetCertificateCommonName} /Email={code:GetCertificateEmail} /PrivateKeyPassword64={code:GetPrivateKeyPassword64}"; Description: {cm:CreatePackageRSAKeyCert}; Check: CheckCreatePersonalcertificate();
+Filename: "{app}\wapt-get.exe"; Flags: skipifsilent; Parameters: "build-waptagent --use-gui /DeployWaptAgentLocally /ConfigFilename={app}\wapt-get.ini /WaptServerPassword64={code:GetWaptServerPassword64} /PrivateKeyPassword64={code:GetPrivateKeyPassword64}"; Description: {cm:CreateWaptAgentInstaller}; StatusMsg: {cm:CreateWaptAgentInstaller}; Check: CheckCreateWaptAgent();
 
 Filename: "{app}\waptconsole.exe"; Parameters: "--lang {language}"; Flags: postinstall skipifsilent shellexec; StatusMsg: {cm:StartWaptconsole}; Description: "{cm:StartWaptconsole}"
+Filename: {code:GetWaptServerURL}; Flags: postinstall skipifsilent shellexec; StatusMsg: {cm:ShowWaptServerHomePage}; Description: "{cm:ShowWaptServerHomePage}"
 Filename: {cm:InstallDocURL}; Flags: postinstall skipifsilent shellexec; StatusMsg: {cm:OpenWaptDocumentation}; Description: "{cm:OpenWaptDocumentation}"
 
 [Tasks]
@@ -189,7 +190,7 @@ fr.OpenWaptDocumentation=Afficher la documentation d'installation
 fr.InstallDocURL=https://doc.wapt.fr
 fr.SetupRegisterThisComputer=Enregistrer cette machine sur ce nouveau serveur Wapt
 fr.CreatePackageRSAKeyCert=Créer une clé et un certificat pour les paquets
-fr.CreateWaptAgentInstaller=Générer un installeur WaptAgent personnalisé pour les postes clients
+fr.CreateWaptAgentInstaller=Compilation d'un installeur WaptAgent personnalisé pour les postes clients (peut durer quelques minutes...)
 fr.WaptServerHostName=Nom d'hôte du serveur WAPT
 fr.PackagesPrefix=Préfixe de paquets
 fr.PersonalKeyname=Nom de clé personnelle
@@ -220,6 +221,7 @@ fr.PackageDesignParamsRequest=Le préfixe de paquet est une chaîne simple (comm
 fr.WaptAgentBuild=Compilation de Waptagent
 fr.WaptAgentBuildChoice=Spécifier si vous voulez (re)créer un installeur personnalisé waptagent pour cette version de Wapt
 fr.WaptAgentDoBuild=Compiler un nouveau waptagent.exe
+fr.ShowWaptServerHomePage=Ouvre la page d'accueil du serveur Wapt dans votre navigateur (Vous devrez vraisemblement accepter le certificat https auto-signé)
 
 en.RegisteringService=Setup WaptServer Service
 en.InstallMSVC2013=Installing MSVC++ 2013 Redistribuable
@@ -237,7 +239,7 @@ en.OpenWaptDocumentation=Show installation documentation
 en.InstallDocURL=https://doc.wapt.fr
 en.SetupRegisterThisComputer=Register this computer on this new Wapt server
 en.CreatePackageRSAKeyCert=Build a key and a certificate for packages signature
-en.CreateWaptAgentInstaller=Build a customized WaptAgent installer for client computers
+en.CreateWaptAgentInstaller=Building a customized WaptAgent installer for client computers (may need several minutes to complete...)
 en.WaptServerHostName=WAPT Server Hostname
 en.PackagesPrefix=Packages prefix
 en.PersonalKeyname=Personal key name
@@ -269,6 +271,8 @@ en.PackageDesignParamsRequest=Packages prefix is a simple string (like test) whi
 en.WaptAgentBuild=Waptagent build
 en.WaptAgentBuildChoice=Choose weither you want to (re)create the waptagent installer for this version of Wapt
 en.WaptAgentDoBuild=Compile a customized waptagent installer and waptupgrade package
+en.ShowWaptServerHomePage=Open WaptServer homepage in Web browser (You may need to accept self signed https certificate)
+
 
 de.RegisteringService=Setup WaptServer Service
 de.InstallMSVC2013=MSVC++ 2013 Redistribuable installieren
@@ -668,6 +672,7 @@ end;
 function NextButtonClick(CurPageID: Integer): Boolean;
 var
   CertFilename: String;
+  LocalRepositoryWaptagent: String;
 begin
   case CurPageID of
     wpSelectTasks:
@@ -689,6 +694,11 @@ begin
           pgPersonalKeyChoose.Values[0] := CertFilename
         else
           pgPersonalKeyChoose.Values[0] := 'c:\private\'+ExtractFileName(GetFirstSSLCertificate());
+
+        LocalRepositoryWaptagent := ExpandConstant('{app}\waptserver\repository\wapt\waptagent.exe');
+
+        if not FileExists( LocalRepositoryWaptagent) then
+          pgBuildWaptAgentOptions.SelectedValueIndex := 1;
 
         pgPackagesParams.Values[0] := GetIniString('global','default_package_prefix','test',ExpandConstant('{app}\wapt-get.ini'));
       end;

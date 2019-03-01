@@ -233,6 +233,8 @@ begin
     WaptServerPassword := DecodeStringBase64(GetCmdParams('WaptServerPassword64',''));
   if WaptServerPassword='' then
     WaptServerPassword := GetCmdParams('WaptServerPassword','');
+  if WaptServerPassword='' then
+    WaptServerPassword := GetCmdParams('wapt-server-passwd','');
   while WaptServerPassword='' do
   begin
     Write('Waptserver Password: ');
