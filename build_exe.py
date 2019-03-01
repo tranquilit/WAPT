@@ -33,8 +33,8 @@ try:
     def compile_exes(edition='enterprise',force=False):
         for lpi in ["wapt-get\\waptget.lpi","wapt-get\\waptguihelper.lpi","waptdeploy\\waptdeploy.lpi",
                     "wapttray\\wapttray.lpi","waptconsole\\waptconsole.lpi","waptexit\\waptexit.lpi",
-                    "waptserver\\postconf\\waptserverpostconf.lpi",
-                    "waptconsolepostconf\\waptconsolepostconf.lpi",
+                    #"waptserver\\postconf\\waptserverpostconf.lpi",
+                    #"waptconsolepostconf\\waptconsolepostconf.lpi",
                     "waptsetup\\waptsetuputil\\waptsetuputil.lpi",
                     ]:
             lpi_content = open(lpi,'r').read()
