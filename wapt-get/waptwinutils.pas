@@ -111,6 +111,8 @@ function WaptInstallLocation: ansistring;
 //function Wow64DisableWow64FsRedirection(var Wow64FsEnableRedirection:LongBool):LongBool; stdcall; external 'Kernel32.dll' name 'Wow64DisableWow64FsRedirection';
 //function Wow64RevertWow64FsRedirection(Wow64FsEnableRedirection:LongBool):LongBool; stdcall; external 'Kernel32.dll' name 'Wow64RevertWow64FsRedirection';
 
+function IsWindowsAdminLoggedIn: Boolean;
+
 implementation
 
 uses Variants, registry, sysconst, JwaIpHlpApi,
@@ -999,6 +1001,70 @@ begin
   end;
 end;
 
+
+const
+  SECURITY_NT_AUTHORITY: TSIDIdentifierAuthority = (Value: (0, 0, 0, 0, 0, 5)) ;
+
+const
+  SECURITY_BUILTIN_DOMAIN_RID = $00000020;
+  DOMAIN_ALIAS_RID_ADMINS = $00000220;
+
+function IsWindowsAdminLoggedIn: Boolean;
+type
+  TCheckTokenMembership = function(TokenHandle: THandle; SidToCheck: PSID; var IsMember: BOOL): BOOL; stdcall;
+
+var
+  hAccessToken: THandle;
+  ptgGroups: PTokenGroups;
+  dwInfoBufferSize: DWORD;
+  psidAdministrators: PSID;
+  g: Integer;
+  IsMember,bSuccess: BOOL;
+  CheckTokenMembership:^TCheckTokenMembership;
+begin
+  Result := False;
+
+  bSuccess := OpenThreadToken(GetCurrentThread, TOKEN_QUERY, True, hAccessToken) ;
+  if not bSuccess then
+  begin
+    if GetLastError = ERROR_NO_TOKEN then
+      bSuccess := OpenProcessToken(GetCurrentProcess, TOKEN_QUERY, hAccessToken) ;
+  end;
+
+  if bSuccess then
+  try
+    GetMem(ptgGroups, 1024) ;
+    bSuccess := GetTokenInformation(hAccessToken, TokenGroups, ptgGroups, 1024, dwInfoBufferSize) ;
+    if bSuccess then
+    begin
+      AllocateAndInitializeSid(SECURITY_NT_AUTHORITY, 2, SECURITY_BUILTIN_DOMAIN_RID, DOMAIN_ALIAS_RID_ADMINS, 0, 0, 0, 0, 0, 0, psidAdministrators) ;
+
+      CheckTokenMembership := nil;
+      if Lo(GetVersion) >= 5 then
+        CheckTokenMembership := GetProcAddress(GetModuleHandle(advapi32),
+          'CheckTokenMembership');
+      if Assigned(CheckTokenMembership) then
+        begin
+          if CheckTokenMembership^(0, psidAdministrators, IsMember) then
+            Result := IsMember;
+        end
+      else
+        begin
+          for g := 0 to ptgGroups^.GroupCount - 1 do
+            if EqualSid(psidAdministrators, ptgGroups^.Groups[g].Sid) then
+            begin
+              Result := True;
+              Break;
+            end;
+        end;
+      FreeSid(psidAdministrators) ;
+    end;
+
+  finally
+    FreeMem(ptgGroups) ;
+    CloseHandle(hAccessToken) ;
+  end;
+end;
 
 
 end.

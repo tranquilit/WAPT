@@ -184,7 +184,10 @@ begin
   With TVisCreateKey.Create(Self) do
   try
     if ShowModal = mrOk then
+    begin
       edPersonalCertificatePath.FileName:=CertificateFilename;
+      //TODO propose to copy to trusted certs if no certificate exists at the moment
+    end;
   finally
     Free;
   end;

@@ -229,7 +229,7 @@ end;
 
 function PWaptGet.GetWaptServerPassword: String;
 begin
-  if (WaptServerPassword='') and FindCmdLineSwitch('WaptServerPassword64') then
+  if (WaptServerPassword='') and (GetCmdParams('WaptServerPassword64')<>'') then
     WaptServerPassword := DecodeStringBase64(GetCmdParams('WaptServerPassword64',''));
   if WaptServerPassword='' then
     WaptServerPassword := GetCmdParams('WaptServerPassword','');
@@ -247,7 +247,7 @@ begin
   if crtname ='' then
     crtname:=WaptPersonalCertificatePath;
   Result := '';
-  if FindCmdLineSwitch('PrivateKeyPassword64') then
+  if GetCmdParams('PrivateKeyPassword64')<>'' then
     result := DecodeStringBase64(GetCmdParams('PrivateKeyPassword64'));
   if result='' then
     result := GetCmdParams('PrivateKeyPassword','');
@@ -262,7 +262,7 @@ end;
 function PWaptGet.GetCommonNameFromCmdLine(): String;
 begin
   Result := '';
-  if FindCmdLineSwitch('CommonName64') then
+  if GetCmdParams('CommonName64')<>'' then
     result := DecodeStringBase64(GetCmdParams('CommonName64'));
   if result='' then
     result := GetCmdParams('CommonName','');
@@ -906,17 +906,15 @@ begin
     Raise Exception.Create('No common name for certificate');
 
   printPwd := False;
+  if GetCmdParams('PrivateKeyPassword64')<>'' then
+    keypassword := DecodeStringBase64(GetCmdParams('PrivateKeyPassword64'));
+  if keypassword='' then
+    keypassword := GetCmdParams('PrivateKeyPassword','');
+
   if (keypassword='') and not FileExistsUTF8(keyfilename) then
   begin
-    if FindCmdLineSwitch('PrivateKeyPassword64') then
-      keypassword := DecodeStringBase64(GetCmdParams('PrivateKeyPassword64'));
-    if keypassword='' then
-      keypassword := GetCmdParams('PrivateKeyPassword','');
-    if keypassword='' then
-    begin
-      printPwd := True;
-      keypassword := RandomPassword(12);
-    end
+    printPwd := True;
+    keypassword := RandomPassword(12);
   end;
 
   if keypassword='' then

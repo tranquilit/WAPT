@@ -2225,7 +2225,7 @@ begin
       end;
 
       // If this a CA cert, we should perhaps take it in account right now...
-      if not winutils.IsWindowsAdmin() then
+      if not IsWindowsAdminLoggedIn then
         ShowMessageFmt(rsNotRunningAsAdminCanNotSSL,[AppendPathDelim(WaptBaseDir)+'ssl']);
 
       if CBIsCA.Checked and (MessageDlg(Format(rsWriteCertOnLocalMachine,[AppendPathDelim(WaptBaseDir)+'ssl']), mtConfirmation, [mbYes, mbNo],0) = mrYes) then
@@ -2270,7 +2270,7 @@ procedure TVisWaptGUI.ActCreateWaptSetupExecute(Sender: TObject);
 var
   WAPTSetupPath: string;
 begin
-  if not winutils.IsWindowsAdmin() then
+  if not IsWindowsAdminLoggedIn then
     ShowMessage(rsNotRunningAsAdmin);
 
   if (waptcommon.DefaultPackagePrefix = '') then
