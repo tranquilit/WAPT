@@ -63,14 +63,6 @@
 [Files]
 
 #ifndef FastDebug
-; server postconf utility
-#ifdef choose_components
-Source: "..\waptserverpostconf.exe"; DestDir: "{app}"; Flags: ignoreversion; Tasks: InstallWaptserver
-#else
-Source: "..\waptserverpostconf.exe"; DestDir: "{app}"; Flags: ignoreversion;
-#endif
-Source: "..\waptserverpostconf.exe.manifest"; DestDir: "{app}";
-
 ; deployment/upgrade tool
 Source: "..\waptdeploy.exe"; DestDir: "{app}\waptserver\repository\wapt\"; Flags: ignoreversion
 
