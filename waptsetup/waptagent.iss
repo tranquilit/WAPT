@@ -72,6 +72,10 @@
   #ifndef set_waptwua_download_scheduling
   #define set_waptwua_download_scheduling ""
   #endif
+
+  #ifndef set_waptwua_install_at_shutdown
+  #define set_waptwua_install_at_shutdown ""
+  #endif
 #endif
 
 #include "common.iss"
