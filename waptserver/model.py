@@ -1252,7 +1252,12 @@ def init_db(drop=False):
     if drop:
         for table in reversed([ServerAttribs, Hosts, HostPackagesStatus, HostSoftwares, HostGroups,WsusUpdates,HostWsus,WsusDownloadTasks,Packages, ReportingQueries, Normalization]):
             table.drop_table(fail_silently=True)
-    wapt_db.create_tables([ServerAttribs, Hosts, HostPackagesStatus, HostSoftwares, HostGroups,WsusUpdates,HostWsus,WsusDownloadTasks,Packages, ReportingQueries, Normalization], safe=True)
+
+    try:
+        wapt_db.create_tables([ServerAttribs, Hosts, HostPackagesStatus, HostSoftwares, HostGroups,WsusUpdates,HostWsus,WsusDownloadTasks,Packages, ReportingQueries, Normalization], safe=True)
+    except Exception as e:
+        wapt_db.rollback()
+        print(u'Unable to create tables, will try to upgrade step by step instead... : %s' % (repr(e),))
 
     if get_db_version() == None:
         # new database install, we setup the db_version key
