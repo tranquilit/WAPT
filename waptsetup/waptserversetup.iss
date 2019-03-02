@@ -129,8 +129,8 @@ Filename: {app}\wapt-get.ini; Section: Global; Key: personal_certificate_path; S
 
 [RUN]
 Filename: "{app}\waptserver\pgsql-9.6\vcredist_x64.exe"; Parameters: "/passive /quiet"; StatusMsg: {cm:InstallMSVC2013}; Description: "{cm:InstallMSVC2013}";  
-Filename: "{app}\wapt-get.exe"; Parameters: " update-packages {app}\waptserver\repository\wapt"; Flags: runhidden; StatusMsg: {cm:ScanPackages}; Description: "{cm:ScanPackages}"
-Filename: "{app}\waptpython.exe"; Parameters: "{app}\waptserver\winsetup.py all -c {app}\conf\waptserver.ini -f --setpassword={code:GetWaptServerPassword64}"; StatusMsg: {cm:InstallingServerServices}; Description: "{cm:InstallingServerServices}"
+Filename: "{app}\wapt-get.exe"; Parameters: " update-packages {app}\waptserver\repository\wapt"; Flags: runhidden; StatusMsg: {cm:ScanPackages}; Description: "{cm:ScanPackages}"; BeforeInstall: SetMarqueeProgress(True); AfterInstall: SetMarqueeProgress(False)
+Filename: "{app}\waptpython.exe"; Parameters: "{app}\waptserver\winsetup.py all -c {app}\conf\waptserver.ini -f --setpassword={code:GetWaptServerPassword64}"; StatusMsg: {cm:InstallingServerServices}; Description: "{cm:InstallingServerServices}"; BeforeInstall: SetMarqueeProgress(True); AfterInstall: SetMarqueeProgress(False)
 Filename: "net"; Parameters: "start waptpostgresql"; Flags: runhidden; StatusMsg: "Starting service waptpostgresql"
 Filename: "net"; Parameters: "start waptnginx"; Flags: runhidden; StatusMsg: "Starting service waptnginx"
 Filename: "net"; Parameters: "start waptserver"; Flags: runhidden; StatusMsg: "Starting service waptserver"
@@ -138,9 +138,9 @@ Filename: "net"; Parameters: "start waptserver"; Flags: runhidden; StatusMsg: "S
 Filename: "net"; Parameters: "start wapttasks"; Flags: runhidden; StatusMsg: "Starting service wapttasks"
 #endif
 
-Filename: "{app}\wapt-get.exe"; Parameters: "register --wapt-server-url={code:GetWaptServerURL} --wapt-repo-url={code:GetWaptRepoURL} --use-gui --update "; Flags: runhidden skipifsilent; Description: {cm:SetupRegisterThisComputer}; Check: CheckRegisterUpdate(); Tasks: RegisterComputerOnLocalServer;
+Filename: "{app}\wapt-get.exe"; Parameters: "register --wapt-server-url={code:GetWaptServerURL} --wapt-repo-url={code:GetWaptRepoURL} --use-gui --update "; Flags: runhidden skipifsilent; Description: {cm:SetupRegisterThisComputer}; Check: CheckRegisterUpdate(); Tasks: RegisterComputerOnLocalServer; BeforeInstall: SetMarqueeProgress(True); AfterInstall: SetMarqueeProgress(False)
 Filename: "{app}\wapt-get.exe"; Flags: skipifsilent; Parameters: "create-keycert --use-gui /EnrollNewCert /BaseDir=c:\private /ConfigFilename={app}\wapt-get.ini /CommonName={code:GetCertificateCommonName} /Email={code:GetCertificateEmail} /PrivateKeyPassword64={code:GetPrivateKeyPassword64}"; Description: {cm:CreatePackageRSAKeyCert}; Check: CheckCreatePersonalcertificate();
-Filename: "{app}\wapt-get.exe"; Flags: skipifsilent; Parameters: "build-waptagent --use-gui /DeployWaptAgentLocally /ConfigFilename={app}\wapt-get.ini /WaptServerPassword64={code:GetWaptServerPassword64} /PrivateKeyPassword64={code:GetPrivateKeyPassword64}"; Description: {cm:CreateWaptAgentInstaller}; StatusMsg: {cm:CreateWaptAgentInstaller}; Check: CheckCreateWaptAgent();
+Filename: "{app}\wapt-get.exe"; Flags: skipifsilent; Parameters: "build-waptagent --use-gui /DeployWaptAgentLocally /ConfigFilename={app}\wapt-get.ini /WaptServerPassword64={code:GetWaptServerPassword64} /PrivateKeyPassword64={code:GetPrivateKeyPassword64}"; Description: {cm:CreateWaptAgentInstaller}; StatusMsg: {cm:CreateWaptAgentInstaller}; Check: CheckCreateWaptAgent(); BeforeInstall: SetMarqueeProgress(True); AfterInstall: SetMarqueeProgress(False)
 
 Filename: "{app}\waptconsole.exe"; Parameters: "--lang {language}"; Flags: postinstall skipifsilent shellexec; StatusMsg: {cm:StartWaptconsole}; Description: "{cm:StartWaptconsole}"
 Filename: {code:GetWaptServerURL}; Flags: postinstall skipifsilent shellexec; StatusMsg: {cm:ShowWaptServerHomePage}; Description: "{cm:ShowWaptServerHomePage}"
@@ -386,6 +386,18 @@ begin
 	else
 		Exit; // finish at unknown
 	end;
+end;
+
+procedure SetMarqueeProgress(Marquee: Boolean);
+begin
+  if Marquee then
+  begin
+    WizardForm.ProgressGauge.Style := npbstMarquee;
+  end
+    else
+  begin
+    WizardForm.ProgressGauge.Style := npbstNormal;
+  end;
 end;
 
 function GetDefaultPackagePrefix(Param: String):String;
