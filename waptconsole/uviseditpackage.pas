@@ -99,9 +99,13 @@ type
     procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    function GridConflictsBeforePaste(Sender: TSOGrid; Row: ISuperObject
+      ): boolean;
     procedure GridConflictsDragDrop(Sender: TBaseVirtualTree; Source: TObject;
       DataObject: IDataObject; Formats: TFormatArray; Shift: TShiftState;
       const Pt: TPoint; var Effect: DWORD; Mode: TDropMode);
+    function GridDependsBeforePaste(Sender: TSOGrid; Row: ISuperObject
+      ): boolean;
     procedure GridDependsDragDrop(Sender: TBaseVirtualTree; Source: TObject;
       DataObject: IDataObject; Formats: TFormatArray; Shift: TShiftState;
       const Pt: TPoint; var Effect: DWORD; Mode: TDropMode);
@@ -813,11 +817,23 @@ begin
 
 end;
 
+function TVisEditPackage.GridConflictsBeforePaste(Sender: TSOGrid;
+  Row: ISuperObject): boolean;
+begin
+  Result := SOArrayFindFirst(Row,GridConflicts.data,['package']) = Nil;
+end;
+
 procedure TVisEditPackage.GridConflictsDragDrop(Sender: TBaseVirtualTree;
   Source: TObject; DataObject: IDataObject; Formats: TFormatArray;
   Shift: TShiftState; const Pt: TPoint; var Effect: DWORD; Mode: TDropMode);
 begin
   AddConflicts(Sender);
+end;
+
+function TVisEditPackage.GridDependsBeforePaste(Sender: TSOGrid;
+  Row: ISuperObject): boolean;
+begin
+  Result := SOArrayFindFirst(Row,GridDepends.data,['package']) = Nil;
 end;
 
 procedure TVisEditPackage.AddConflicts(Sender: TObject);

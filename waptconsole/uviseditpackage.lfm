@@ -37,7 +37,9 @@ object VisEditPackage: TVisEditPackage
         Height = 308
         Top = 0
         Width = 622
+        OnBeforePaste = GridDependsBeforePaste
         ShowAdvancedColumnsCustomize = False
+        KeyFieldsNames = 'package'
         Align = alClient
         BorderStyle = bsNone
         Color = clWhite
@@ -100,7 +102,9 @@ object VisEditPackage: TVisEditPackage
         Height = 308
         Top = 0
         Width = 622
+        OnBeforePaste = GridConflictsBeforePaste
         ShowAdvancedColumnsCustomize = False
+        KeyFieldsNames = 'package'
         Align = alClient
         BorderStyle = bsNone
         Color = clWhite
@@ -1321,7 +1325,7 @@ object VisEditPackage: TVisEditPackage
       TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes, toAutoChangeScale]
       TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toReadOnly, toVariableNodeHeight, toFullRowDrag, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
       TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
-      TreeOptions.SelectionOptions = [toDisableDrawSelection, toExtendedFocus, toMultiSelect]
+      TreeOptions.SelectionOptions = [toDisableDrawSelection, toExtendedFocus, toMultiSelect, toRightClickSelect]
       WantTabs = True
       ZebraPaint = True
     end

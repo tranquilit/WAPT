@@ -804,6 +804,7 @@ msgid "package"
 msgstr ""
 
 #: tviseditpackage.gridpackages.header.columns[10].text
+msgctxt "tviseditpackage.gridpackages.header.columns[10].text"
 msgid "min_wapt_version"
 msgstr ""
 
@@ -838,10 +839,12 @@ msgid "description_de"
 msgstr ""
 
 #: tviseditpackage.gridpackages.header.columns[17].text
+msgctxt "tviseditpackage.gridpackages.header.columns[17].text"
 msgid "min_os_version"
 msgstr ""
 
 #: tviseditpackage.gridpackages.header.columns[18].text
+msgctxt "tviseditpackage.gridpackages.header.columns[18].text"
 msgid "filename"
 msgstr ""
 
@@ -856,6 +859,7 @@ msgid "Version"
 msgstr ""
 
 #: tviseditpackage.gridpackages.header.columns[20].text
+msgctxt "tviseditpackage.gridpackages.header.columns[20].text"
 msgid "signature_date"
 msgstr ""
 
@@ -875,6 +879,7 @@ msgid "conflicts"
 msgstr ""
 
 #: tviseditpackage.gridpackages.header.columns[24].text
+msgctxt "tviseditpackage.gridpackages.header.columns[24].text"
 msgid "max_os_version"
 msgstr ""
 
@@ -894,6 +899,7 @@ msgid "editor"
 msgstr ""
 
 #: tviseditpackage.gridpackages.header.columns[28].text
+msgctxt "tviseditpackage.gridpackages.header.columns[28].text"
 msgid "repo_url"
 msgstr ""
 
@@ -913,6 +919,7 @@ msgid "keywords"
 msgstr ""
 
 #: tviseditpackage.gridpackages.header.columns[31].text
+msgctxt "tviseditpackage.gridpackages.header.columns[31].text"
 msgid "locale"
 msgstr ""
 
@@ -937,10 +944,12 @@ msgid "localpath"
 msgstr ""
 
 #: tviseditpackage.gridpackages.header.columns[36].text
+msgctxt "tviseditpackage.gridpackages.header.columns[36].text"
 msgid "maturity"
 msgstr ""
 
 #: tviseditpackage.gridpackages.header.columns[37].text
+msgctxt "tviseditpackage.gridpackages.header.columns[37].text"
 msgid "architecture"
 msgstr ""
 
@@ -1454,6 +1463,240 @@ msgstr ""
 #: tvisselfservicegroup.edpackageversion.text
 msgctxt "tvisselfservicegroup.edpackageversion.text"
 msgid "0"
+msgstr ""
+
+#: tvisselfservicegroup.gridenabledpackages.header.columns[0].text
+msgctxt "tvisselfservicegroup.gridenabledpackages.header.columns[0].text"
+msgid "Package"
+msgstr ""
+
+#: tvisselfservicegroup.gridenabledpackages.header.columns[1].text
+msgctxt "tvisselfservicegroup.gridenabledpackages.header.columns[1].text"
+msgid "Version"
+msgstr ""
+
+#: tvisselfservicegroup.gridenabledpackages.header.columns[2].text
+msgctxt "tvisselfservicegroup.gridenabledpackages.header.columns[2].text"
+msgid "Description"
+msgstr ""
+
+#: tvisselfservicegroup.gridenabledpackages.header.columns[3].text
+msgctxt "tvisselfservicegroup.gridenabledpackages.header.columns[3].text"
+msgid "Dependencies"
+msgstr ""
+
+#: tvisselfservicegroup.gridgroups.header.columns[0].text
+msgid "Users Group"
+msgstr ""
+
+#: tvisselfservicegroup.gridgroups.header.columns[1].text
+msgctxt "tvisselfservicegroup.gridgroups.header.columns[1].text"
+msgid "Packages"
+msgstr ""
+
+#: tvisselfservicegroup.gridpackages.header.columns[0].text
+msgctxt "tvisselfservicegroup.gridpackages.header.columns[0].text"
+msgid "package"
+msgstr ""
+
+#: tvisselfservicegroup.gridpackages.header.columns[10].text
+msgctxt "tvisselfservicegroup.gridpackages.header.columns[10].text"
+msgid "min_wapt_version"
+msgstr ""
+
+#: tvisselfservicegroup.gridpackages.header.columns[11].text
+msgctxt "tvisselfservicegroup.gridpackages.header.columns[11].text"
+msgid "signed_attributes"
+msgstr ""
+
+#: tvisselfservicegroup.gridpackages.header.columns[12].text
+msgctxt "tvisselfservicegroup.gridpackages.header.columns[12].text"
+msgid "md5sum"
+msgstr ""
+
+#: tvisselfservicegroup.gridpackages.header.columns[13].text
+msgctxt "tvisselfservicegroup.gridpackages.header.columns[13].text"
+msgid "description_pl"
+msgstr ""
+
+#: tvisselfservicegroup.gridpackages.header.columns[14].text
+msgctxt "tvisselfservicegroup.gridpackages.header.columns[14].text"
+msgid "description_fr"
+msgstr ""
+
+#: tvisselfservicegroup.gridpackages.header.columns[15].text
+msgctxt "tvisselfservicegroup.gridpackages.header.columns[15].text"
+msgid "description_es"
+msgstr ""
+
+#: tvisselfservicegroup.gridpackages.header.columns[16].text
+msgctxt "tvisselfservicegroup.gridpackages.header.columns[16].text"
+msgid "description_de"
+msgstr ""
+
+#: tvisselfservicegroup.gridpackages.header.columns[17].text
+msgctxt "tvisselfservicegroup.gridpackages.header.columns[17].text"
+msgid "min_os_version"
+msgstr ""
+
+#: tvisselfservicegroup.gridpackages.header.columns[18].text
+msgctxt "tvisselfservicegroup.gridpackages.header.columns[18].text"
+msgid "filename"
+msgstr ""
+
+#: tvisselfservicegroup.gridpackages.header.columns[19].text
+msgctxt "tvisselfservicegroup.gridpackages.header.columns[19].text"
+msgid "maintainer"
+msgstr ""
+
+#: tvisselfservicegroup.gridpackages.header.columns[1].text
+msgctxt "tvisselfservicegroup.gridpackages.header.columns[1].text"
+msgid "Version"
+msgstr ""
+
+#: tvisselfservicegroup.gridpackages.header.columns[20].text
+msgctxt "tvisselfservicegroup.gridpackages.header.columns[20].text"
+msgid "signature_date"
+msgstr ""
+
+#: tvisselfservicegroup.gridpackages.header.columns[21].text
+msgctxt "tvisselfservicegroup.gridpackages.header.columns[21].text"
+msgid "package_uuid"
+msgstr ""
+
+#: tvisselfservicegroup.gridpackages.header.columns[22].text
+msgctxt "tvisselfservicegroup.gridpackages.header.columns[22].text"
+msgid "impacted_process"
+msgstr ""
+
+#: tvisselfservicegroup.gridpackages.header.columns[23].text
+msgctxt "tvisselfservicegroup.gridpackages.header.columns[23].text"
+msgid "conflicts"
+msgstr ""
+
+#: tvisselfservicegroup.gridpackages.header.columns[24].text
+msgctxt "tvisselfservicegroup.gridpackages.header.columns[24].text"
+msgid "max_os_version"
+msgstr ""
+
+#: tvisselfservicegroup.gridpackages.header.columns[25].text
+msgctxt "tvisselfservicegroup.gridpackages.header.columns[25].text"
+msgid "installed_size"
+msgstr ""
+
+#: tvisselfservicegroup.gridpackages.header.columns[26].text
+msgctxt "tvisselfservicegroup.gridpackages.header.columns[26].text"
+msgid "signer_fingerprint"
+msgstr ""
+
+#: tvisselfservicegroup.gridpackages.header.columns[27].text
+msgctxt "tvisselfservicegroup.gridpackages.header.columns[27].text"
+msgid "editor"
+msgstr ""
+
+#: tvisselfservicegroup.gridpackages.header.columns[28].text
+msgctxt "tvisselfservicegroup.gridpackages.header.columns[28].text"
+msgid "repo_url"
+msgstr ""
+
+#: tvisselfservicegroup.gridpackages.header.columns[29].text
+msgctxt "tvisselfservicegroup.gridpackages.header.columns[29].text"
+msgid "licence"
+msgstr ""
+
+#: tvisselfservicegroup.gridpackages.header.columns[2].text
+msgctxt "tvisselfservicegroup.gridpackages.header.columns[2].text"
+msgid "Description"
+msgstr ""
+
+#: tvisselfservicegroup.gridpackages.header.columns[30].text
+msgctxt "tvisselfservicegroup.gridpackages.header.columns[30].text"
+msgid "keywords"
+msgstr ""
+
+#: tvisselfservicegroup.gridpackages.header.columns[31].text
+msgctxt "tvisselfservicegroup.gridpackages.header.columns[31].text"
+msgid "locale"
+msgstr ""
+
+#: tvisselfservicegroup.gridpackages.header.columns[32].text
+msgctxt "tvisselfservicegroup.gridpackages.header.columns[32].text"
+msgid "size"
+msgstr ""
+
+#: tvisselfservicegroup.gridpackages.header.columns[33].text
+msgctxt "tvisselfservicegroup.gridpackages.header.columns[33].text"
+msgid "repo"
+msgstr ""
+
+#: tvisselfservicegroup.gridpackages.header.columns[34].text
+msgctxt "tvisselfservicegroup.gridpackages.header.columns[34].text"
+msgid "target_os"
+msgstr ""
+
+#: tvisselfservicegroup.gridpackages.header.columns[35].text
+msgctxt "tvisselfservicegroup.gridpackages.header.columns[35].text"
+msgid "localpath"
+msgstr ""
+
+#: tvisselfservicegroup.gridpackages.header.columns[36].text
+msgctxt "tvisselfservicegroup.gridpackages.header.columns[36].text"
+msgid "maturity"
+msgstr ""
+
+#: tvisselfservicegroup.gridpackages.header.columns[37].text
+msgctxt "tvisselfservicegroup.gridpackages.header.columns[37].text"
+msgid "architecture"
+msgstr ""
+
+#: tvisselfservicegroup.gridpackages.header.columns[38].text
+msgctxt "tvisselfservicegroup.gridpackages.header.columns[38].text"
+msgid "homepage"
+msgstr ""
+
+#: tvisselfservicegroup.gridpackages.header.columns[39].text
+msgctxt "tvisselfservicegroup.gridpackages.header.columns[39].text"
+msgid "sourcespath"
+msgstr ""
+
+#: tvisselfservicegroup.gridpackages.header.columns[3].text
+msgctxt "tvisselfservicegroup.gridpackages.header.columns[3].text"
+msgid "Dependencies"
+msgstr ""
+
+#: tvisselfservicegroup.gridpackages.header.columns[40].text
+msgctxt "tvisselfservicegroup.gridpackages.header.columns[40].text"
+msgid "signer"
+msgstr ""
+
+#: tvisselfservicegroup.gridpackages.header.columns[4].text
+msgctxt "tvisselfservicegroup.gridpackages.header.columns[4].text"
+msgid "Installed by"
+msgstr ""
+
+#: tvisselfservicegroup.gridpackages.header.columns[5].text
+msgctxt "tvisselfservicegroup.gridpackages.header.columns[5].text"
+msgid "Section"
+msgstr ""
+
+#: tvisselfservicegroup.gridpackages.header.columns[6].text
+msgctxt "tvisselfservicegroup.gridpackages.header.columns[6].text"
+msgid "priority"
+msgstr ""
+
+#: tvisselfservicegroup.gridpackages.header.columns[7].text
+msgctxt "tvisselfservicegroup.gridpackages.header.columns[7].text"
+msgid "signature"
+msgstr ""
+
+#: tvisselfservicegroup.gridpackages.header.columns[8].text
+msgctxt "tvisselfservicegroup.gridpackages.header.columns[8].text"
+msgid "sources"
+msgstr ""
+
+#: tvisselfservicegroup.gridpackages.header.columns[9].text
+msgctxt "tvisselfservicegroup.gridpackages.header.columns[9].text"
+msgid "audit_schedule"
 msgstr ""
 
 #: tvisselfservicegroup.label3.caption
@@ -2593,6 +2836,7 @@ msgid "Search in host_info field"
 msgstr ""
 
 #: tviswaptgui.cbsearchpackages.caption
+msgctxt "tviswaptgui.cbsearchpackages.caption"
 msgid "Packages"
 msgstr ""
 
@@ -4581,6 +4825,7 @@ msgid "Arch"
 msgstr ""
 
 #: tviswaptgui.gridwuupdates.header.columns[0].text
+msgctxt "tviswaptgui.gridwuupdates.header.columns[0].text"
 msgid "Update Id"
 msgstr ""
 
@@ -4600,10 +4845,12 @@ msgid "is_mandatory"
 msgstr ""
 
 #: tviswaptgui.gridwuupdates.header.columns[13].text
+msgctxt "tviswaptgui.gridwuupdates.header.columns[13].text"
 msgid "superseded_update_ids"
 msgstr ""
 
 #: tviswaptgui.gridwuupdates.header.columns[14].text
+msgctxt "tviswaptgui.gridwuupdates.header.columns[14].text"
 msgid "requires_network_connectivity"
 msgstr ""
 
@@ -4623,6 +4870,7 @@ msgid "min_download_size"
 msgstr ""
 
 #: tviswaptgui.gridwuupdates.header.columns[18].text
+msgctxt "tviswaptgui.gridwuupdates.header.columns[18].text"
 msgid "reboot_behaviour"
 msgstr ""
 
@@ -4647,6 +4895,7 @@ msgid "updated_by"
 msgstr ""
 
 #: tviswaptgui.gridwuupdates.header.columns[22].text
+msgctxt "tviswaptgui.gridwuupdates.header.columns[22].text"
 msgid "update_type"
 msgstr ""
 
@@ -4683,6 +4932,7 @@ msgid "languages"
 msgstr ""
 
 #: tviswaptgui.gridwuupdates.header.columns[2].text
+msgctxt "tviswaptgui.gridwuupdates.header.columns[2].text"
 msgid "Reported on"
 msgstr ""
 
@@ -4692,6 +4942,7 @@ msgid "Release notes"
 msgstr ""
 
 #: tviswaptgui.gridwuupdates.header.columns[3].text
+msgctxt "tviswaptgui.gridwuupdates.header.columns[3].text"
 msgid "KBs"
 msgstr ""
 
@@ -4716,10 +4967,12 @@ msgid "Severity"
 msgstr ""
 
 #: tviswaptgui.gridwuupdates.header.columns[8].text
+msgctxt "tviswaptgui.gridwuupdates.header.columns[8].text"
 msgid "CVE"
 msgstr ""
 
 #: tviswaptgui.gridwuupdates.header.columns[9].text
+msgctxt "tviswaptgui.gridwuupdates.header.columns[9].text"
 msgid "Max download size"
 msgstr ""
 
@@ -5177,6 +5430,376 @@ msgstr ""
 #: tviswuagroup.edpackageversion.text
 msgctxt "tviswuagroup.edpackageversion.text"
 msgid "0"
+msgstr ""
+
+#: tviswuagroup.gridallowedwu.header.columns[0].text
+msgctxt "tviswuagroup.gridallowedwu.header.columns[0].text"
+msgid "Update Id"
+msgstr ""
+
+#: tviswuagroup.gridallowedwu.header.columns[10].text
+msgctxt "tviswuagroup.gridallowedwu.header.columns[10].text"
+msgid "security_bulletin_ids"
+msgstr ""
+
+#: tviswuagroup.gridallowedwu.header.columns[11].text
+msgctxt "tviswuagroup.gridallowedwu.header.columns[11].text"
+msgid "can_request_user_input"
+msgstr ""
+
+#: tviswuagroup.gridallowedwu.header.columns[12].text
+msgctxt "tviswuagroup.gridallowedwu.header.columns[12].text"
+msgid "is_mandatory"
+msgstr ""
+
+#: tviswuagroup.gridallowedwu.header.columns[13].text
+msgctxt "tviswuagroup.gridallowedwu.header.columns[13].text"
+msgid "superseded_update_ids"
+msgstr ""
+
+#: tviswuagroup.gridallowedwu.header.columns[14].text
+msgctxt "tviswuagroup.gridallowedwu.header.columns[14].text"
+msgid "requires_network_connectivity"
+msgstr ""
+
+#: tviswuagroup.gridallowedwu.header.columns[15].text
+msgctxt "tviswuagroup.gridallowedwu.header.columns[15].text"
+msgid "created_on"
+msgstr ""
+
+#: tviswuagroup.gridallowedwu.header.columns[16].text
+msgctxt "tviswuagroup.gridallowedwu.header.columns[16].text"
+msgid "created_by"
+msgstr ""
+
+#: tviswuagroup.gridallowedwu.header.columns[17].text
+msgctxt "tviswuagroup.gridallowedwu.header.columns[17].text"
+msgid "min_download_size"
+msgstr ""
+
+#: tviswuagroup.gridallowedwu.header.columns[18].text
+msgctxt "tviswuagroup.gridallowedwu.header.columns[18].text"
+msgid "reboot_behaviour"
+msgstr ""
+
+#: tviswuagroup.gridallowedwu.header.columns[19].text
+msgctxt "tviswuagroup.gridallowedwu.header.columns[19].text"
+msgid "download_urls"
+msgstr ""
+
+#: tviswuagroup.gridallowedwu.header.columns[1].text
+msgctxt "tviswuagroup.gridallowedwu.header.columns[1].text"
+msgid "Published on"
+msgstr ""
+
+#: tviswuagroup.gridallowedwu.header.columns[20].text
+msgctxt "tviswuagroup.gridallowedwu.header.columns[20].text"
+msgid "updated_on"
+msgstr ""
+
+#: tviswuagroup.gridallowedwu.header.columns[21].text
+msgctxt "tviswuagroup.gridallowedwu.header.columns[21].text"
+msgid "updated_by"
+msgstr ""
+
+#: tviswuagroup.gridallowedwu.header.columns[22].text
+msgctxt "tviswuagroup.gridallowedwu.header.columns[22].text"
+msgid "update_type"
+msgstr ""
+
+#: tviswuagroup.gridallowedwu.header.columns[23].text
+msgctxt "tviswuagroup.gridallowedwu.header.columns[23].text"
+msgid "Downloaded on"
+msgstr ""
+
+#: tviswuagroup.gridallowedwu.header.columns[2].text
+msgctxt "tviswuagroup.gridallowedwu.header.columns[2].text"
+msgid "Reported on"
+msgstr ""
+
+#: tviswuagroup.gridallowedwu.header.columns[3].text
+msgctxt "tviswuagroup.gridallowedwu.header.columns[3].text"
+msgid "KBs"
+msgstr ""
+
+#: tviswuagroup.gridallowedwu.header.columns[4].text
+msgctxt "tviswuagroup.gridallowedwu.header.columns[4].text"
+msgid "Product"
+msgstr ""
+
+#: tviswuagroup.gridallowedwu.header.columns[5].text
+msgctxt "tviswuagroup.gridallowedwu.header.columns[5].text"
+msgid "Classification"
+msgstr ""
+
+#: tviswuagroup.gridallowedwu.header.columns[6].text
+msgctxt "tviswuagroup.gridallowedwu.header.columns[6].text"
+msgid "Title"
+msgstr ""
+
+#: tviswuagroup.gridallowedwu.header.columns[7].text
+msgctxt "tviswuagroup.gridallowedwu.header.columns[7].text"
+msgid "Severity"
+msgstr ""
+
+#: tviswuagroup.gridallowedwu.header.columns[8].text
+msgctxt "tviswuagroup.gridallowedwu.header.columns[8].text"
+msgid "CVE"
+msgstr ""
+
+#: tviswuagroup.gridallowedwu.header.columns[9].text
+msgctxt "tviswuagroup.gridallowedwu.header.columns[9].text"
+msgid "Max download size"
+msgstr ""
+
+#: tviswuagroup.gridforbiddenwu.header.columns[0].text
+msgctxt "tviswuagroup.gridforbiddenwu.header.columns[0].text"
+msgid "Update Id"
+msgstr ""
+
+#: tviswuagroup.gridforbiddenwu.header.columns[10].text
+msgctxt "tviswuagroup.gridforbiddenwu.header.columns[10].text"
+msgid "security_bulletin_ids"
+msgstr ""
+
+#: tviswuagroup.gridforbiddenwu.header.columns[11].text
+msgctxt "tviswuagroup.gridforbiddenwu.header.columns[11].text"
+msgid "can_request_user_input"
+msgstr ""
+
+#: tviswuagroup.gridforbiddenwu.header.columns[12].text
+msgctxt "tviswuagroup.gridforbiddenwu.header.columns[12].text"
+msgid "is_mandatory"
+msgstr ""
+
+#: tviswuagroup.gridforbiddenwu.header.columns[13].text
+msgctxt "tviswuagroup.gridforbiddenwu.header.columns[13].text"
+msgid "superseded_update_ids"
+msgstr ""
+
+#: tviswuagroup.gridforbiddenwu.header.columns[14].text
+msgctxt "tviswuagroup.gridforbiddenwu.header.columns[14].text"
+msgid "requires_network_connectivity"
+msgstr ""
+
+#: tviswuagroup.gridforbiddenwu.header.columns[15].text
+msgctxt "tviswuagroup.gridforbiddenwu.header.columns[15].text"
+msgid "created_on"
+msgstr ""
+
+#: tviswuagroup.gridforbiddenwu.header.columns[16].text
+msgctxt "tviswuagroup.gridforbiddenwu.header.columns[16].text"
+msgid "created_by"
+msgstr ""
+
+#: tviswuagroup.gridforbiddenwu.header.columns[17].text
+msgctxt "tviswuagroup.gridforbiddenwu.header.columns[17].text"
+msgid "min_download_size"
+msgstr ""
+
+#: tviswuagroup.gridforbiddenwu.header.columns[18].text
+msgctxt "tviswuagroup.gridforbiddenwu.header.columns[18].text"
+msgid "reboot_behaviour"
+msgstr ""
+
+#: tviswuagroup.gridforbiddenwu.header.columns[19].text
+msgctxt "tviswuagroup.gridforbiddenwu.header.columns[19].text"
+msgid "download_urls"
+msgstr ""
+
+#: tviswuagroup.gridforbiddenwu.header.columns[1].text
+msgctxt "tviswuagroup.gridforbiddenwu.header.columns[1].text"
+msgid "Published on"
+msgstr ""
+
+#: tviswuagroup.gridforbiddenwu.header.columns[20].text
+msgctxt "tviswuagroup.gridforbiddenwu.header.columns[20].text"
+msgid "updated_on"
+msgstr ""
+
+#: tviswuagroup.gridforbiddenwu.header.columns[21].text
+msgctxt "tviswuagroup.gridforbiddenwu.header.columns[21].text"
+msgid "updated_by"
+msgstr ""
+
+#: tviswuagroup.gridforbiddenwu.header.columns[22].text
+msgctxt "tviswuagroup.gridforbiddenwu.header.columns[22].text"
+msgid "update_type"
+msgstr ""
+
+#: tviswuagroup.gridforbiddenwu.header.columns[23].text
+msgctxt "tviswuagroup.gridforbiddenwu.header.columns[23].text"
+msgid "Downloaded on"
+msgstr ""
+
+#: tviswuagroup.gridforbiddenwu.header.columns[2].text
+msgctxt "tviswuagroup.gridforbiddenwu.header.columns[2].text"
+msgid "Reported on"
+msgstr ""
+
+#: tviswuagroup.gridforbiddenwu.header.columns[3].text
+msgctxt "tviswuagroup.gridforbiddenwu.header.columns[3].text"
+msgid "KBs"
+msgstr ""
+
+#: tviswuagroup.gridforbiddenwu.header.columns[4].text
+msgctxt "tviswuagroup.gridforbiddenwu.header.columns[4].text"
+msgid "Product"
+msgstr ""
+
+#: tviswuagroup.gridforbiddenwu.header.columns[5].text
+msgctxt "tviswuagroup.gridforbiddenwu.header.columns[5].text"
+msgid "Classification"
+msgstr ""
+
+#: tviswuagroup.gridforbiddenwu.header.columns[6].text
+msgctxt "tviswuagroup.gridforbiddenwu.header.columns[6].text"
+msgid "Title"
+msgstr ""
+
+#: tviswuagroup.gridforbiddenwu.header.columns[7].text
+msgctxt "tviswuagroup.gridforbiddenwu.header.columns[7].text"
+msgid "Severity"
+msgstr ""
+
+#: tviswuagroup.gridforbiddenwu.header.columns[8].text
+msgctxt "tviswuagroup.gridforbiddenwu.header.columns[8].text"
+msgid "CVE"
+msgstr ""
+
+#: tviswuagroup.gridforbiddenwu.header.columns[9].text
+msgctxt "tviswuagroup.gridforbiddenwu.header.columns[9].text"
+msgid "Max download size"
+msgstr ""
+
+#: tviswuagroup.gridwinproducts.header.columns[0].text
+msgctxt "tviswuagroup.gridwinproducts.header.columns[0].text"
+msgid "Product"
+msgstr ""
+
+#: tviswuagroup.gridwuupdates.header.columns[0].text
+msgctxt "tviswuagroup.gridwuupdates.header.columns[0].text"
+msgid "Update Id"
+msgstr ""
+
+#: tviswuagroup.gridwuupdates.header.columns[10].text
+msgctxt "tviswuagroup.gridwuupdates.header.columns[10].text"
+msgid "security_bulletin_ids"
+msgstr ""
+
+#: tviswuagroup.gridwuupdates.header.columns[11].text
+msgctxt "tviswuagroup.gridwuupdates.header.columns[11].text"
+msgid "can_request_user_input"
+msgstr ""
+
+#: tviswuagroup.gridwuupdates.header.columns[12].text
+msgctxt "tviswuagroup.gridwuupdates.header.columns[12].text"
+msgid "is_mandatory"
+msgstr ""
+
+#: tviswuagroup.gridwuupdates.header.columns[13].text
+msgctxt "tviswuagroup.gridwuupdates.header.columns[13].text"
+msgid "superseded_update_ids"
+msgstr ""
+
+#: tviswuagroup.gridwuupdates.header.columns[14].text
+msgctxt "tviswuagroup.gridwuupdates.header.columns[14].text"
+msgid "requires_network_connectivity"
+msgstr ""
+
+#: tviswuagroup.gridwuupdates.header.columns[15].text
+msgctxt "tviswuagroup.gridwuupdates.header.columns[15].text"
+msgid "Reported on"
+msgstr ""
+
+#: tviswuagroup.gridwuupdates.header.columns[16].text
+msgctxt "tviswuagroup.gridwuupdates.header.columns[16].text"
+msgid "created_on"
+msgstr ""
+
+#: tviswuagroup.gridwuupdates.header.columns[17].text
+msgctxt "tviswuagroup.gridwuupdates.header.columns[17].text"
+msgid "created_by"
+msgstr ""
+
+#: tviswuagroup.gridwuupdates.header.columns[18].text
+msgctxt "tviswuagroup.gridwuupdates.header.columns[18].text"
+msgid "min_download_size"
+msgstr ""
+
+#: tviswuagroup.gridwuupdates.header.columns[19].text
+msgctxt "tviswuagroup.gridwuupdates.header.columns[19].text"
+msgid "reboot_behaviour"
+msgstr ""
+
+#: tviswuagroup.gridwuupdates.header.columns[1].text
+msgctxt "tviswuagroup.gridwuupdates.header.columns[1].text"
+msgid "Status"
+msgstr ""
+
+#: tviswuagroup.gridwuupdates.header.columns[20].text
+msgctxt "tviswuagroup.gridwuupdates.header.columns[20].text"
+msgid "download_urls"
+msgstr ""
+
+#: tviswuagroup.gridwuupdates.header.columns[21].text
+msgctxt "tviswuagroup.gridwuupdates.header.columns[21].text"
+msgid "updated_on"
+msgstr ""
+
+#: tviswuagroup.gridwuupdates.header.columns[22].text
+msgctxt "tviswuagroup.gridwuupdates.header.columns[22].text"
+msgid "updated_by"
+msgstr ""
+
+#: tviswuagroup.gridwuupdates.header.columns[23].text
+msgctxt "tviswuagroup.gridwuupdates.header.columns[23].text"
+msgid "update_type"
+msgstr ""
+
+#: tviswuagroup.gridwuupdates.header.columns[24].text
+msgctxt "tviswuagroup.gridwuupdates.header.columns[24].text"
+msgid "Downloaded on"
+msgstr ""
+
+#: tviswuagroup.gridwuupdates.header.columns[2].text
+msgctxt "tviswuagroup.gridwuupdates.header.columns[2].text"
+msgid "Published on"
+msgstr ""
+
+#: tviswuagroup.gridwuupdates.header.columns[3].text
+msgctxt "tviswuagroup.gridwuupdates.header.columns[3].text"
+msgid "KBs"
+msgstr ""
+
+#: tviswuagroup.gridwuupdates.header.columns[4].text
+msgctxt "tviswuagroup.gridwuupdates.header.columns[4].text"
+msgid "Product"
+msgstr ""
+
+#: tviswuagroup.gridwuupdates.header.columns[5].text
+msgctxt "tviswuagroup.gridwuupdates.header.columns[5].text"
+msgid "Classification"
+msgstr ""
+
+#: tviswuagroup.gridwuupdates.header.columns[6].text
+msgctxt "tviswuagroup.gridwuupdates.header.columns[6].text"
+msgid "Title"
+msgstr ""
+
+#: tviswuagroup.gridwuupdates.header.columns[7].text
+msgctxt "tviswuagroup.gridwuupdates.header.columns[7].text"
+msgid "Severity"
+msgstr ""
+
+#: tviswuagroup.gridwuupdates.header.columns[8].text
+msgctxt "tviswuagroup.gridwuupdates.header.columns[8].text"
+msgid "CVE"
+msgstr ""
+
+#: tviswuagroup.gridwuupdates.header.columns[9].text
+msgctxt "tviswuagroup.gridwuupdates.header.columns[9].text"
+msgid "Max download size"
 msgstr ""
 
 #: tviswuagroup.label1.caption

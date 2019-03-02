@@ -2095,50 +2095,48 @@ var
   DevRoot,Devpath : String;
 begin
   DevRoot:=IniReadString(AppIniFilename,'global','default_sources_root');
-  if DevRoot<>'' then
-  begin
+  try
+    with TVisLoading.Create(Self) do
     try
-      with TVisLoading.Create(Self) do
+      ProgressTitle(rsDownloading);
+      Application.ProcessMessages;
       try
-        ProgressTitle(rsDownloading);
-        Application.ProcessMessages;
-        try
-          filePath := AppLocalDir + 'cache\' + filename;
-          if not DirectoryExists(AppLocalDir + 'cache') then
-            mkdir(AppLocalDir + 'cache');
+        filePath := AppLocalDir + 'cache\' + filename;
+        if not DirectoryExists(AppLocalDir + 'cache') then
+          mkdir(AppLocalDir + 'cache');
 
-          Proxy := DMPython.MainWaptRepo.http_proxy;
-          cabundle:= VarPyth.None;
-          // if check package signature...
-          //cabundle:=DMPython.PackagesAuthorizedCA;
-          IdWget(UTF8Encode(RepoUrl+'/'+filename), filePath,
-              ProgressForm, @updateprogress, Proxy);
-          vFilePath := PyUTF8Decode(filePath);
-          Result := DMPython.waptpackage.PackageEntry(waptfile := vFilePath);
-          DevPath := AppendPathDelim(DevRoot)+VarPythonAsString(Result.make_package_edit_directory('--noarg--'));
-          vDevPath:= PyUTF8Decode(DevPath);
-          Result.unzip_package(cabundle := cabundle, target_dir := vDevPath);
-          //DMPython.WAPT.add_pyscripter_project(vDevPath);
-          //DMPython.common.wapt_sources_edit( wapt_sources_dir := vDevPath);
-        except
-          ShowMessage(rsDlCanceled);
-          if FileExistsUTF8(filePath) then
-            DeleteFileUTF8(filePath);
-          raise;
-        end;
-      finally
-        Free;
+        Proxy := DMPython.MainWaptRepo.http_proxy;
+        cabundle:= VarPyth.None;
+        // if check package signature...
+        //cabundle:=DMPython.PackagesAuthorizedCA;
+        IdWget(UTF8Encode(RepoUrl+'/'+filename), filePath,
+            ProgressForm, @updateprogress, Proxy);
+        vFilePath := PyUTF8Decode(filePath);
+        Result := DMPython.waptpackage.PackageEntry(waptfile := vFilePath);
+        if devroot <> '' then
+          DevPath := AppendPathDelim(DevRoot)+VarPythonAsString(Result.make_package_edit_directory('--noarg--'))
+        else
+          DevPath := GetTempFileNameUTF8('',VarPythonAsString(Result.package));
+        vDevPath:= PyUTF8Decode(DevPath);
+        Result.unzip_package(cabundle := cabundle, target_dir := vDevPath);
+        //DMPython.WAPT.add_pyscripter_project(vDevPath);
+        //DMPython.common.wapt_sources_edit( wapt_sources_dir := vDevPath);
+      except
+        ShowMessage(rsDlCanceled);
+        if FileExistsUTF8(filePath) then
+          DeleteFileUTF8(filePath);
+        raise;
       end;
-    except
-      on E:Exception do
-      begin
-        ShowMessageFmt(rsErrorWithMessage,[e.Message]);
-        exit;
-      end;
+    finally
+      Free;
     end;
-  end
-  else
-    ShowMessage(rsDefineWaptdevPath);
+  except
+    on E:Exception do
+    begin
+      ShowMessageFmt(rsErrorWithMessage,[e.Message]);
+      exit;
+    end;
+  end;
 end;
 
 procedure TVisWaptGUI.ActEditPackageExecute(Sender: TObject);
