@@ -2145,6 +2145,14 @@ var
   cabundle,vDevPath,PackageEdited: Variant;
   Devpath : String;
 begin
+  if DefaultSourcesRoot='' then
+  begin
+    ShowMessage(rsDefineWaptdevPath);
+    if not EditIniFile or (DefaultSourcesRoot='') then
+      Exit;
+  end;
+
+
   if GridPackages.FocusedNode <> nil then
   begin
     Filename := UTF8Encode(GridPackages.FocusedRow.S['filename']);
@@ -4246,6 +4254,13 @@ end;
 
 procedure TVisWaptGUI.MakePackageTemplate(AInstallerFileName: String);
 begin
+  if DefaultSourcesRoot='' then
+  begin
+    ShowMessage(rsDefineWaptdevPath);
+    if not EditIniFile or (DefaultSourcesRoot='') then
+      Exit;
+  end;
+
   With TVisPackageWizard.Create(self) do
   try
     InstallerFilename:=AInstallerFileName;
@@ -5113,7 +5128,9 @@ end;
 
 procedure TVisWaptGUI.GridPackagesColumnDblClick(Sender: TBaseVirtualTree;
   Column: TColumnIndex; Shift: TShiftState);
+
 begin
+
   if ActEditpackage.Enabled and (GridPackages.FocusedRow<>Nil) and (MessageDlg(rsConfirmCaption, Format(rsConfirmPackageEdit,[GridPackages.FocusedRow.S['package']]),mtConfirmation,mbYesNoCancel ,'') = mrYes) then
     ActEditpackage.Execute;
 end;
