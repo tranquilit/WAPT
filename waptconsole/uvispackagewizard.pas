@@ -102,6 +102,8 @@ begin
   else
     SilentFlags := None();
 
+  EdPackageName.Text := MakeValidPackageName(EdPackageName.Text);
+
   try
     wapt := dmpython.WAPT;
     Version := EdVersion.Text;
@@ -162,7 +164,7 @@ begin
   begin
     VInstallerPath:=UTF8Decode(AValue);
     installInfos := PyVarToSuperObject(DMPython.setuphelpers.get_installer_defaults(VInstallerPath));
-    EdPackageName.text := DefaultPackagePrefix+'-'+installInfos.S['simplename'];
+    EdPackageName.text := MakeValidPackageName(DefaultPackagePrefix+'-'+installInfos.S['simplename']);
     EdDescription.Text := UTF8Encode(installInfos.S['description']);
     EdVersion.Text := installInfos.S['version'];
     EdSilentFlags.Text := installInfos.S['silentflags'];

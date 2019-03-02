@@ -22,7 +22,10 @@ Source: "..\python27.dll"; DestDir: "{app}";
 ;Source: "..\sqlite3.dll"; DestDir: "{app}"; 
 
 ; additional python modules
-Source: "..\lib\*"; DestDir: "{app}\lib"; Flags: createallsubdirs recursesubdirs ; Excludes: "*.dist-info,*.pyc,*.pyo,test,*.~*,bson,*.chm,testsuite,Demos,tests,examples,HTML,pip,lxml,scintilla,idle,pywin32.chm,ensurepip,idlelib,pylint,isort,mccabe*,*.whl,pydoc_data"
+Source: "..\lib\*"; DestDir: "{app}\lib"; Flags: createallsubdirs recursesubdirs ; Excludes: "*.dist-info,*.pyc,*.pyo,test,*.~*,bson,*.chm,testsuite,Demos,tests,examples,HTML,scintilla,idle,idlelib,pylint,isort,mccabe*,*.whl,pydoc_data"
+
+; workaround for Windows XP openssl
+Source: "{app}\lib\site-packages\cryptography\hazmat\bindings242\*"; DestDir: "{app}\lib\site-packages\cryptography\hazmat\bindings"; OnlyBelowVersion: 6.0; Flags: external createallsubdirs recursesubdirs ; 
 
 ; wapt sources
 Source: "..\waptutils.py"; DestDir: "{app}"; 

@@ -765,6 +765,270 @@ msgctxt "TVISEDITPACKAGE.EDVERSION.TEXT"
 msgid " "
 msgstr " "
 
+#: tviseditpackage.gridconflicts.header.columns[0].text
+msgctxt "tviseditpackage.gridconflicts.header.columns[0].text"
+msgid "Package"
+msgstr "Paquet"
+
+#: tviseditpackage.gridconflicts.header.columns[1].text
+msgctxt "tviseditpackage.gridconflicts.header.columns[1].text"
+msgid "Version"
+msgstr "Version"
+
+#: tviseditpackage.gridconflicts.header.columns[2].text
+msgctxt "tviseditpackage.gridconflicts.header.columns[2].text"
+msgid "Description"
+msgstr "Description"
+
+#: tviseditpackage.gridconflicts.header.columns[3].text
+msgctxt "tviseditpackage.gridconflicts.header.columns[3].text"
+msgid "Dependencies"
+msgstr "Dépendances"
+
+#: tviseditpackage.griddepends.header.columns[0].text
+msgctxt "tviseditpackage.griddepends.header.columns[0].text"
+msgid "Package"
+msgstr "Paquet"
+
+#: tviseditpackage.griddepends.header.columns[1].text
+msgctxt "tviseditpackage.griddepends.header.columns[1].text"
+msgid "Version"
+msgstr "Version"
+
+#: tviseditpackage.griddepends.header.columns[2].text
+msgctxt "tviseditpackage.griddepends.header.columns[2].text"
+msgid "Description"
+msgstr "Description"
+
+#: tviseditpackage.griddepends.header.columns[3].text
+
+msgctxt "tviseditpackage.griddepends.header.columns[3].text"
+msgid "Dependencies"
+msgstr "Dépendances"
+
+#: tviseditpackage.gridpackages.header.columns[0].text
+
+msgctxt "tviseditpackage.gridpackages.header.columns[0].text"
+msgid "package"
+msgstr "Paquet"
+
+#: tviseditpackage.gridpackages.header.columns[10].text
+msgid "min_wapt_version"
+msgstr "Version Wapt min"
+
+#: tviseditpackage.gridpackages.header.columns[11].text
+
+msgctxt "tviseditpackage.gridpackages.header.columns[11].text"
+msgid "signed_attributes"
+msgstr "Attributs signés"
+
+#: tviseditpackage.gridpackages.header.columns[12].text
+msgctxt "tviseditpackage.gridpackages.header.columns[12].text"
+msgid "md5sum"
+msgstr ""
+
+#: tviseditpackage.gridpackages.header.columns[13].text
+msgctxt "tviseditpackage.gridpackages.header.columns[13].text"
+msgid "description_pl"
+msgstr ""
+
+#: tviseditpackage.gridpackages.header.columns[14].text
+msgctxt "tviseditpackage.gridpackages.header.columns[14].text"
+msgid "description_fr"
+msgstr ""
+
+#: tviseditpackage.gridpackages.header.columns[15].text
+msgctxt "tviseditpackage.gridpackages.header.columns[15].text"
+msgid "description_es"
+msgstr ""
+
+#: tviseditpackage.gridpackages.header.columns[16].text
+msgctxt "tviseditpackage.gridpackages.header.columns[16].text"
+msgid "description_de"
+msgstr ""
+
+#: tviseditpackage.gridpackages.header.columns[17].text
+msgid "min_os_version"
+msgstr "Version OS min"
+
+#: tviseditpackage.gridpackages.header.columns[18].text
+msgid "filename"
+msgstr "Nom de fichier"
+
+#: tviseditpackage.gridpackages.header.columns[19].text
+
+msgctxt "tviseditpackage.gridpackages.header.columns[19].text"
+msgid "maintainer"
+msgstr "Mainteneur"
+
+#: tviseditpackage.gridpackages.header.columns[1].text
+
+msgctxt "tviseditpackage.gridpackages.header.columns[1].text"
+msgid "Version"
+msgstr "Version"
+
+#: tviseditpackage.gridpackages.header.columns[20].text
+msgid "signature_date"
+msgstr "Date de signature"
+
+#: tviseditpackage.gridpackages.header.columns[21].text
+
+msgctxt "tviseditpackage.gridpackages.header.columns[21].text"
+msgid "package_uuid"
+msgstr "UUID du paquet"
+
+#: tviseditpackage.gridpackages.header.columns[22].text
+
+msgctxt "tviseditpackage.gridpackages.header.columns[22].text"
+msgid "impacted_process"
+msgstr "Process impactés"
+
+#: tviseditpackage.gridpackages.header.columns[23].text
+
+msgctxt "tviseditpackage.gridpackages.header.columns[23].text"
+msgid "conflicts"
+msgstr "Conflits"
+
+#: tviseditpackage.gridpackages.header.columns[24].text
+msgid "max_os_version"
+msgstr "Version OS max"
+
+#: tviseditpackage.gridpackages.header.columns[25].text
+
+msgctxt "tviseditpackage.gridpackages.header.columns[25].text"
+msgid "installed_size"
+msgstr "Taille installé"
+
+#: tviseditpackage.gridpackages.header.columns[26].text
+
+msgctxt "tviseditpackage.gridpackages.header.columns[26].text"
+msgid "signer_fingerprint"
+msgstr "Empreinte du signataire"
+
+#: tviseditpackage.gridpackages.header.columns[27].text
+
+msgctxt "tviseditpackage.gridpackages.header.columns[27].text"
+msgid "editor"
+msgstr "Editeur"
+
+#: tviseditpackage.gridpackages.header.columns[28].text
+msgid "repo_url"
+msgstr "URL du dépôt"
+
+#: tviseditpackage.gridpackages.header.columns[29].text
+
+msgctxt "tviseditpackage.gridpackages.header.columns[29].text"
+msgid "licence"
+msgstr "Licence"
+
+#: tviseditpackage.gridpackages.header.columns[2].text
+
+msgctxt "tviseditpackage.gridpackages.header.columns[2].text"
+msgid "Description"
+msgstr "Description"
+
+#: tviseditpackage.gridpackages.header.columns[30].text
+
+msgctxt "tviseditpackage.gridpackages.header.columns[30].text"
+msgid "keywords"
+msgstr "Mots clés"
+
+#: tviseditpackage.gridpackages.header.columns[31].text
+msgid "locale"
+msgstr "Langue"
+
+#: tviseditpackage.gridpackages.header.columns[32].text
+
+msgctxt "tviseditpackage.gridpackages.header.columns[32].text"
+msgid "size"
+msgstr "Taille"
+
+#: tviseditpackage.gridpackages.header.columns[33].text
+
+msgctxt "tviseditpackage.gridpackages.header.columns[33].text"
+msgid "repo"
+msgstr "Dépôt"
+
+#: tviseditpackage.gridpackages.header.columns[34].text
+
+msgctxt "tviseditpackage.gridpackages.header.columns[34].text"
+msgid "target_os"
+msgstr "OS cible"
+
+#: tviseditpackage.gridpackages.header.columns[35].text
+
+msgctxt "tviseditpackage.gridpackages.header.columns[35].text"
+msgid "localpath"
+msgstr "Chemin local"
+
+#: tviseditpackage.gridpackages.header.columns[36].text
+msgid "maturity"
+msgstr "Maturité"
+
+#: tviseditpackage.gridpackages.header.columns[37].text
+msgid "architecture"
+msgstr "Architecture"
+
+#: tviseditpackage.gridpackages.header.columns[38].text
+
+msgctxt "tviseditpackage.gridpackages.header.columns[38].text"
+msgid "homepage"
+msgstr "Page d'accueil"
+
+#: tviseditpackage.gridpackages.header.columns[39].text
+
+msgctxt "tviseditpackage.gridpackages.header.columns[39].text"
+msgid "sourcespath"
+msgstr "Chemin des sources"
+
+#: tviseditpackage.gridpackages.header.columns[3].text
+
+msgctxt "tviseditpackage.gridpackages.header.columns[3].text"
+msgid "Dependencies"
+msgstr "Dépendances"
+
+#: tviseditpackage.gridpackages.header.columns[40].text
+
+msgctxt "tviseditpackage.gridpackages.header.columns[40].text"
+msgid "signer"
+msgstr "Signataire"
+
+#: tviseditpackage.gridpackages.header.columns[4].text
+
+msgctxt "tviseditpackage.gridpackages.header.columns[4].text"
+msgid "Installed by"
+msgstr "Installé par"
+
+#: tviseditpackage.gridpackages.header.columns[5].text
+
+msgctxt "tviseditpackage.gridpackages.header.columns[5].text"
+msgid "Section"
+msgstr "Section"
+
+#: tviseditpackage.gridpackages.header.columns[6].text
+
+msgctxt "tviseditpackage.gridpackages.header.columns[6].text"
+msgid "priority"
+msgstr "Priorité"
+
+#: tviseditpackage.gridpackages.header.columns[7].text
+
+msgctxt "tviseditpackage.gridpackages.header.columns[7].text"
+msgid "signature"
+msgstr "Signature"
+
+#: tviseditpackage.gridpackages.header.columns[8].text
+
+msgctxt "tviseditpackage.gridpackages.header.columns[8].text"
+msgid "sources"
+msgstr "Sources"
+
+#: tviseditpackage.gridpackages.header.columns[9].text
+
+msgctxt "tviseditpackage.gridpackages.header.columns[9].text"
+msgid "audit_schedule"
+msgstr "Planification de l'audit"
+
 #: tviseditpackage.labdescription.caption
 msgctxt "tviseditpackage.labdescription.caption"
 msgid "Description"
@@ -3105,6 +3369,7 @@ msgid "signer"
 msgstr "Signataire"
 
 #: tviswaptgui.gridhostsforpackage.header.columns[34].text
+msgctxt "tviswaptgui.gridhostsforpackage.header.columns[34].text"
 msgid "package"
 msgstr "Paquet"
 
@@ -5561,6 +5826,11 @@ msgid ""
 "\n"
 "Are you sure to continue ?\n"
 msgstr ""
+"Cette action va lire le nom des groupes AD de chaque machine sélectionnée et \n"
+"ajouter le paquet Wapt correspondant aux dependencies de la machine\n"
+"si ce paquet existe.\n"
+"\n"
+"Êtes vous sûr de vouloir continuer ?\n"
 
 #: uwaptconsoleres.rsbuildinprogress
 msgctxt "uwaptconsoleres.rsbuildinprogress"

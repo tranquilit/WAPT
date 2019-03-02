@@ -23,7 +23,8 @@ site_packages = os.path.join(base, 'Lib', 'site-packages')
 
 binaries_cache = os.path.abspath(os.path.join(wapt_base_dir,'..','binaries_cache'))
 
-proxies = {'http':'http://proxy.ad.tranquil.it:3128','https':'http://proxy.ad.tranquil.it:3128'}
+proxies = None
+#proxies = {'http':'http://proxy.ad.tranquil.it:3128','https':'http://proxy.ad.tranquil.it:3128'}
 
 prev_sys_path = list(sys.path)
 import site
@@ -167,6 +168,16 @@ tmpdir = tempfile.mktemp('rockettmp')
 try:
     unzip(fn,target=tmpdir)
     copytree2(makepath(tmpdir,'Rocket-53313677768159d13e6c2b7c69ad69ca59bb8c79','rocket'),makepath(site_packages,'rocket'))
+finally:
+    if os.path.isdir(tmpdir):
+        shutil.rmtree(tmpdir)
+
+print('Get Cryptography 2.4.2 for Windows XP')
+fn = wget('https://files.pythonhosted.org/packages/f2/fe/0877f63affd2ad8c3390d21f76342ef5229fd932f9f9e7388feaf705b040/cryptography-2.4.2-cp27-cp27m-win32.whl',sha256='5ecaf9e7db3ca582c6de6229525d35db8a4e59dc3e8a40a331674ed90e658cbf',resume=False,cache_dir=binaries_cache,proxies=proxies)
+tmpdir = tempfile.mktemp('cryptographytmp')
+try:
+    unzip(fn,target=tmpdir)
+    copytree2(makepath(tmpdir,'cryptography','hazmat','bindings'),makepath(site_packages,'cryptography','hazmat','bindings242'))
 finally:
     if os.path.isdir(tmpdir):
         shutil.rmtree(tmpdir)

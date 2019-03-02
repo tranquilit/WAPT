@@ -595,6 +595,7 @@ begin
   {$ifndef enterprise}
   EdLicencesDirectory.Visible := False;
   LabLicencesDirectory.Visible := False;
+  ImgStatusLicences.Visible := False;
   {$endif}
 end;
 

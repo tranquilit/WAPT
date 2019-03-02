@@ -2048,13 +2048,8 @@ end;
 
 procedure TVisWaptGUI.ActAddGroupExecute(Sender: TObject);
 begin
-  if DefaultSourcesRoot <> '' then
-  begin
-    if Assigned(CreateGroup('agroup', AdvancedMode, 'group')) then
-      ActPackagesUpdate.Execute;
-  end
-  else
-    ShowMessage(rsDefineWaptdevPath);
+  if Assigned(CreateGroup('agroup', AdvancedMode, 'group')) then
+    ActPackagesUpdate.Execute;
 end;
 
 procedure TVisWaptGUI.actQuitExecute(Sender: TObject);
@@ -2495,13 +2490,8 @@ end;
 
 procedure TVisWaptGUI.ActAddProfileExecute(Sender: TObject);
 begin
-  if DefaultSourcesRoot <> '' then
-  begin
-    if Assigned(CreateGroup('agroup', AdvancedMode, 'profile')) then
-      ActPackagesUpdate.Execute;
-  end
-  else
-    ShowMessage(rsDefineWaptdevPath);
+  if Assigned(CreateGroup('agroup', AdvancedMode, 'profile')) then
+    ActPackagesUpdate.Execute;
 end;
 
 procedure TVisWaptGUI.ActCancelRunningTaskExecute(Sender: TObject);

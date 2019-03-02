@@ -154,6 +154,10 @@ Function RegisteredExePath(ExeName:String):String;
 // Get the registered install location for an application from registry given its executable name
 function RegisteredAppInstallLocation(UninstallKey:String): String;
 
+
+function MakeValidPackageName(st:String):String;
+
+
 type
 
   { TWaptRepo }
@@ -2230,6 +2234,16 @@ begin
   end;
 end;
 
+function MakeValidPackageName(st: String): String;
+var
+  i:integer;
+begin
+  result :='';
+  for i := 1 to length(st) do
+    case st[i] of '0'..'9', 'A'..'Z', 'a'..'z', '-':
+      result := Result+st[i]
+    end;
+end;
 
 initialization
 //  if not Succeeded(CoInitializeEx(nil, COINIT_MULTITHREADED)) then;
