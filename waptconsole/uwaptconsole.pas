@@ -2148,10 +2148,10 @@ begin
   if DefaultSourcesRoot='' then
   begin
     ShowMessage(rsDefineWaptdevPath);
-    if not EditIniFile or (DefaultSourcesRoot='') then
+    ActWAPTConsoleConfig.Execute;
+    if (DefaultSourcesRoot='') then
       Exit;
   end;
-
 
   if GridPackages.FocusedNode <> nil then
   begin
@@ -4257,7 +4257,8 @@ begin
   if DefaultSourcesRoot='' then
   begin
     ShowMessage(rsDefineWaptdevPath);
-    if not EditIniFile or (DefaultSourcesRoot='') then
+    ActWAPTConsoleConfig.Execute;
+    if (DefaultSourcesRoot='') then
       Exit;
   end;
 
