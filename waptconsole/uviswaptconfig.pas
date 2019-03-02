@@ -7,8 +7,8 @@ interface
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ButtonPanel, StdCtrls,
   ExtCtrls, EditBtn, DefaultTranslator, ComCtrls, ActnList, Grids, DBGrids,
-  Menus, Buttons, AsyncProcess, RTTIGrids, sogrid, types, inifiles,
-  VirtualTrees, superobject, PropEdits, ObjectInspector;
+  Menus, Buttons, sogrid, types, inifiles,
+  VirtualTrees, superobject;
 
 type
 
@@ -25,7 +25,6 @@ type
     ActSaveConfig: TAction;
     ActOpenCertDir: TAction;
     ActionList1: TActionList;
-    AsyncProcess1: TAsyncProcess;
     BitBtn1: TBitBtn;
     BitBtn2: TBitBtn;
     Button1: TButton;
