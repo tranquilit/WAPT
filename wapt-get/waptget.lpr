@@ -49,6 +49,7 @@ type
     function Getwaptpackage: Variant;
     function Getwaptdevutils: Variant;
     procedure HTTPLogin(Sender: TObject; Authentication: TIdAuthentication; var Handled: Boolean);
+    function ScanLocalWaptrepo(RepoPath: String): Variant;
     procedure SetRepoURL(AValue: String);
   protected
     FPythonEngine: TPythonEngine;
@@ -74,6 +75,7 @@ type
     function GetCommonNameFromCmdLine(): String;
 
     function BuildWaptUpgrade(SetupFilename: String): String;
+    function BuildUploadWaptUpgrade(SetupFilename: String): String;
     function CreateWaptAgent(TargetDir: String; Edition: String='waptagent'
       ): String;
 
@@ -358,7 +360,7 @@ end;
 procedure PWaptGet.DoRun;
 var
   MainModule : TStringList;
-  WaptAgentTargetDir, WaptAgentFilename, logleveloption : String;
+  WaptAgentTargetDir, WaptAgentFilename, WaptUpgradeFilename, logleveloption : String;
   Res,task:ISuperobject;
   package,sopackages:ISuperObject;
 
@@ -458,15 +460,31 @@ begin
     Writeln(rsBuildWaptAgent);
     WaptAgentTargetDir := WaptBaseDir+'\waptupgrade';
     WaptAgentFilename := CreateWaptagent(WaptAgentTargetDir);
-    if FindCmdLineSwitch('DeployWaptAgentLocally') and DirectoryExistsUTF8(GetLocalWaptserverRepositoryPath) then
+    WaptAgentFilename := WaptAgentTargetDir+'\waptagent.exe';
+    WaptUpgradeFilename := BuildWaptUpgrade(WaptAgentFilename);
+    if FindCmdLineSwitch('DeployWaptAgentLocally') then
     begin
+      if not DirectoryExistsUTF8(GetLocalWaptserverRepositoryPath) then
+        Raise Exception.CreateFmt('Local repository %s does not exist',[GetLocalWaptserverRepositoryPath]);
+
       if CopyFileW(
-        PWideChar(UTF8Decode(WaptAgentFilename)),
-        PWideChar(UTF8Decode(AppendPathDelim(GetLocalWaptserverRepositoryPath)+'waptagent.exe')),
-        False) then
+          PWideChar(UTF8Decode(WaptAgentFilename)),
+          PWideChar(UTF8Decode(AppendPathDelim(GetLocalWaptserverRepositoryPath)+'waptagent.exe')),
+          False) then
+        Writeln('waptagent copied to: '+AppendPathDelim(GetLocalWaptserverRepositoryPath)+'waptagent.exe')
+      else
       begin
-        Writeln('waptagent copied to: '+AppendPathDelim(GetLocalWaptserverRepositoryPath)+'waptagent.exe');
-        ExitProcess(0);
+        Writeln('Fails to copy waptagent to repository location');
+        ExitProcess(3);
+      end;
+      if CopyFileW(
+          PWideChar(UTF8Decode(WaptUpgradeFilename)),
+          PWideChar(UTF8Decode(AppendPathDelim(GetLocalWaptserverRepositoryPath)+ExtractFileName(WaptUpgradeFilename))),
+          False) then
+      begin
+        Writeln('waptupgrade package copied to repository: '+WaptUpgradeFilename);
+        ScanLocalWaptrepo(GetLocalWaptserverRepositoryPath);
+        Writeln('local repository packages scan: OK');
       end
       else
       begin
@@ -479,7 +497,7 @@ begin
       Writeln(rsBuildWaptUpgradePackage);
       GetWaptServerUser;
       GetWaptServerPassword;
-      BuildWaptUpgrade(WaptAgentFilename);
+      BuildUploadWaptUpgrade(WaptAgentFilename);
       Writeln(rsUploadWaptAgent);
       Res := WAPTServerJsonMultipartFilePost(
         GetWaptServerURL, 'upload_waptsetup', [], 'file', WaptAgentFilename,
@@ -965,7 +983,44 @@ begin
     WriteLn('New private key password: '+keypassword);
 end;
 
+
+function PWaptGet.ScanLocalWaptrepo(RepoPath:String):Variant;
+var
+  LocalRepo:Variant;
+begin
+  LocalRepo := waptpackage.WaptLocalRepo(RepoPath);
+  Result := LocalRepo.update_packages_index('--noarg--');
+end;
+
 function PWaptGet.BuildWaptUpgrade(SetupFilename: String): String;
+var
+  BuildDir: String;
+  KeyPassword, SourcesDir, UpgradePackage,BuildResult,Certificate,PrivateKey: Variant;
+begin
+  // create waptupgrade package (after waptagent as we need the updated waptagent.sha1 file)
+  BuildResult := Nil;
+  BuildDir := GetTempDir(False);
+
+  if RightStr(buildDir,1) = '\' then
+    buildDir := copy(buildDir,1,length(buildDir)-1);
+  KeyPassword := GetPrivateKeyPassword;
+
+  //BuildResult is a PackageEntry instance
+  SourcesDir := PyUTF8Decode(WaptBaseDir+'waptupgrade');
+
+  UpgradePackage := waptpackage.PackageEntry(waptfile := SourcesDir);
+  BuildResult := UpgradePackage.build_package(target_directory := BuildDir);
+  Certificate := waptcrypto.SSLCertificate(WaptPersonalCertificatePath);
+  PrivateKey := Certificate.matching_key_in_dirs(private_key_password := KeyPassword);
+  UpgradePackage.sign_package(certificate := Certificate, private_key := PrivateKey);
+
+  if not VarPyth.VarIsNone(BuildResult) and FileExistsUTF8(VarPythonAsString(BuildResult)) then
+    Result := VarPythonAsString(BuildResult)
+  else
+    Result := '';
+end;
+
+function PWaptGet.BuildUploadWaptUpgrade(SetupFilename: String): String;
 var
   BuildDir: String;
   BuildResult: Variant;

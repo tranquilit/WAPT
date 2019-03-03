@@ -1748,6 +1748,9 @@ class PackageEntry(BaseObjectClass):
         if private_key is None:
             private_key = signer_cert.matching_key_in_dirs(password_callback = password_callback,private_key_password=private_key_password)
 
+        if private_key is None:
+            raise EWaptPackageSignError('No matching private key found for signing using certificate %s' % signer_cert)
+
         start_time = time.time()
         package_fn = self.localpath
         logger.debug(u'Signing %s with key %s, and certificate CN "%s"' % (package_fn,private_key,signer_cert.cn))
