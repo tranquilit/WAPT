@@ -74,6 +74,7 @@ type
 
     function GetCommonNameFromCmdLine(): String;
 
+    function CheckPersonalCertificateIsCodeSigning(PersonalCertificatePath,PrivateKeyPassword:String): Boolean;
     function BuildWaptUpgrade(SetupFilename: String): String;
     function BuildUploadWaptUpgrade(SetupFilename: String): String;
     function CreateWaptAgent(TargetDir: String; Edition: String='waptagent'
@@ -272,6 +273,32 @@ begin
     result := GetCmdParams('CommonName','');
 end;
 
+function PWaptGet.CheckPersonalCertificateIsCodeSigning(
+  PersonalCertificatePath, PrivateKeyPassword: String): Boolean;
+var
+  Certificate,PrivateKey: Variant;
+begin
+  try
+    Certificate := waptcrypto.SSLCertificate(PyUTF8Decode(PersonalCertificatePath));
+    // as boolean raises a invalid variant op... to
+    if not VarIsTrue(Certificate.is_code_signing) then
+        Raise Exception.CreateFmt('ERROR Personal Certificate is not a code signing certificate: %s',[PersonalCertificatePath]);
+
+    PrivateKey := Certificate.matching_key_in_dirs(private_key_password := PrivateKeyPassword);
+    if VarIsNull(PrivateKey) or VarIsNone(PrivateKey) then
+      Raise Exception.CreateFmt('ERROR No matching private key found with supplied password for : %s',[PersonalCertificatePath]);
+
+    Writeln('OK cert is codeSigning and found a matching private key path: '+VarPythonAsString(PrivateKey.private_key_filename));
+    Result := True;
+  except
+    on E: Exception do
+      begin
+        Writeln('ERROR CheckPersonalCertificateIsCodeSigning: '+E.Message);
+        Result := False;
+      end;
+  end;
+end;
+
 function PWaptGet.GetCAKeyPassword(crtname:String): String;
 begin
   result := GetCmdParams('CAKeyPassword','');
@@ -454,13 +481,19 @@ begin
     end;
   end
   else
+  if (action = 'check-valid-codesigning-cert') then
+  begin
+    ReadWaptConfig(AppIniFilename('waptconsole'));
+    writeln(CheckPersonalCertificateIsCodeSigning(WaptPersonalCertificatePath,GetPrivateKeyPassword(WaptPersonalCertificatePath)));
+  end
+  else
   if (action = 'build-waptagent') then
   begin
     ReadWaptConfig(AppIniFilename('waptconsole'));
     Writeln(rsBuildWaptAgent);
     WaptAgentTargetDir := WaptBaseDir+'\waptupgrade';
     WaptAgentFilename := CreateWaptagent(WaptAgentTargetDir);
-    WaptAgentFilename := WaptAgentTargetDir+'\waptagent.exe';
+    //WaptAgentFilename := WaptAgentTargetDir+'\waptagent.exe';
     WaptUpgradeFilename := BuildWaptUpgrade(WaptAgentFilename);
     if FindCmdLineSwitch('DeployWaptAgentLocally') then
     begin
@@ -491,6 +524,8 @@ begin
         Writeln('Fails to copy waptagent to repository location');
         ExitProcess(3);
       end;
+      Terminate;
+      Exit;
     end
     else
     begin
@@ -1009,9 +1044,16 @@ begin
   SourcesDir := PyUTF8Decode(WaptBaseDir+'waptupgrade');
 
   UpgradePackage := waptpackage.PackageEntry(waptfile := SourcesDir);
+  UpgradePackage.version := GetApplicationVersion(SetupFilename)+'-0';
   BuildResult := UpgradePackage.build_package(target_directory := BuildDir);
-  Certificate := waptcrypto.SSLCertificate(WaptPersonalCertificatePath);
+  Certificate := waptcrypto.SSLCertificate(PyUTF8Decode(WaptPersonalCertificatePath));
+  if VarPythonAsString(Certificate.is_code_signing)<>'True' then
+      Raise Exception.CreateFmt('ERROR Personal Certificate is not a code signing certificate: %s',[WaptPersonalCertificatePath]);
+
   PrivateKey := Certificate.matching_key_in_dirs(private_key_password := KeyPassword);
+  if VarIsNull(PrivateKey) or VarIsNone(PrivateKey) then
+    Raise Exception.CreateFmt('ERROR No matching private key found with supplied password for : %s',[WaptPersonalCertificatePath]);
+
   UpgradePackage.sign_package(certificate := Certificate, private_key := PrivateKey);
 
   if not VarPyth.VarIsNone(BuildResult) and FileExistsUTF8(VarPythonAsString(BuildResult)) then
