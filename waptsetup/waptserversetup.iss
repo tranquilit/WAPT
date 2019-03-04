@@ -427,8 +427,8 @@ end;
 
 function GetPrivateKeyPassword64(Param: String):String;
 begin
-  if (pgPackagesParams.Values[1]<>'') then
-    Result := Encode64(pgPackagesParams.Values[1])
+  if (pgPackagesParams.Values[2]<>'') then
+    Result := Encode64(pgPackagesParams.Values[2])
   else 
   if (pgPersonalKeyParams.Values[2]<>'') then
     Result := Encode64(pgPersonalKeyParams.Values[2])
@@ -588,7 +588,7 @@ function OnPackagesParamsNextButtonClick(Sender: TWizardPage): Boolean;
 begin
   if pgPackagesParams.Values[0] = '' then 
     RaiseException(ExpandConstant('{cm:MustSpecifyPackagePrefix}'));
-  if pgPackagesParams.Values[1] = '' then 
+  if pgPackagesParams.Values[2] = '' then 
     RaiseException(ExpandConstant('{cm:MustSpecifyPrivateKeyPassword}'));
   //MsgBox('Lancement vérification de la clé pour le certificat '+GetPersonalCertificatePath('')+' and prefix '+pgPackagesParams.Values[0], mbInformation, MB_OK);  
   Result := True;
@@ -615,10 +615,12 @@ end;
 procedure OnPackagesParamsActivate(Sender: TWizardPage);
 begin
   // read key password
-  if pgPackagesParams.Values[1] = '' then
-    pgPackagesParams.Values[1] := pgPersonalKeyParams.Values[2];
-end;
+  if pgPackagesParams.Values[2] = '' then
+    pgPackagesParams.Values[2] := pgPersonalKeyParams.Values[2];
 
+  // Set cert filename for reference
+  pgPackagesParams.Values[1] := pgPersonalKeyChoose.Values[0];
+end;
 
 procedure OnBuildWaptAgentOptionsActivate(Sender: TWizardPage);
 begin
@@ -680,6 +682,7 @@ begin
     ExpandConstant('{cm:PackageDesignParamsDesc}'),
     ExpandConstant('{cm:PackageDesignParamsRequest}'));
   pgPackagesParams.Add(ExpandConstant('{cm:PackagesPrefix}'),False);
+  pgPackagesParams.Add(ExpandConstant('{cm:PersonalCertificateLocation}'),False);
   pgPackagesParams.Add(ExpandConstant('{cm:PersonalKeyPassword}'),True);
   pgPackagesParams.OnActivate := @OnPackagesParamsActivate;
   pgPackagesParams.OnShouldSkipPage := @OnPackagesParamsShouldSkipPage;
@@ -719,6 +722,9 @@ begin
           pgBuildWaptAgentOptions.SelectedValueIndex := 1;
 
         pgPackagesParams.Values[0] := GetIniString('global','default_package_prefix','test',ExpandConstant('{app}\wapt-get.ini'));
+        pgPackagesParams.Values[1] := pgPersonalKeyChoose.Values[0];
+        pgPackagesParams.Edits[1].ReadOnly := True;
+        pgPackagesParams.Edits[1].ParentColor := True;
       end;
   else
     Result := True;

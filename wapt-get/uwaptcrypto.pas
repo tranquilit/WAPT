@@ -221,7 +221,7 @@ function CreateSignedCert(pywaptcrypto:Variant;
 
     ):String;
 var
-  vCAKeyFilename,vdestpem,vdestcrt,vkeypassword,vCAKeyPassword : Variant;
+  vCAKeyFilename,vdestpem,vdestcrt,vCAKeyPassword : Variant;
   key,cert,cakey,cacert:Variant;
   ca_pem: String;
 
