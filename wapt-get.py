@@ -848,7 +848,7 @@ def main():
                 if len(args) < 2:
                     print(u"You must provide the directory")
                     sys.exit(1)
-                result = update_packages(args[1],force=options.force)
+                result = update_packages(args[1],force=options.force,proxies=mywapt.proxies)
 
                 if options.json_output:
                     jsonresult['result'] = result
@@ -1191,7 +1191,7 @@ def main():
                     if not options.json_output:
                         logger.debug(u"Registering host info against server: %s", result)
                         if not result['register']['success']:
-                            print(u"Error when registering host against server %s: %s" % (mywapt.waptserver.server_url,result['msg']))
+                            print(u"Error when registering host against server %s: %s" % (mywapt.waptserver.server_url,result['register']['msg']))
                             sys.exit(1)
                         else:
                             print(u"Host correctly registered against server %s." % (mywapt.waptserver.server_url,))

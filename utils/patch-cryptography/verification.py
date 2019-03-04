@@ -5,6 +5,7 @@
 from __future__ import absolute_import, division, print_function
 
 from cryptography.hazmat.primitives.asymmetric import ec, padding, rsa
+from cryptography.hazmat.primitives import hashes
 from cryptography.x509 import Certificate,CertificateRevocationList
 from cryptography.x509.oid import ExtensionOID
 from cryptography.x509.extensions import ExtensionNotFound
@@ -82,20 +83,21 @@ class CertificateVerificationContext(object):
         signature_hash_algorithm = self._signed_cert.signature_hash_algorithm
         signature_bytes = self._signed_cert.signature
         signer_public_key = self._signing_cert.public_key()
+        message = self._signed_cert.tbs_certificate_bytes
 
         if isinstance(signer_public_key, rsa.RSAPublicKey):
-            verifier = signer_public_key.verifier(
-                signature_bytes, padding.PKCS1v15(), signature_hash_algorithm)
+            signer_public_key.verify(
+                signature_bytes,
+                message,
+                padding.PKCS1v15(),
+                signature_hash_algorithm
+            )
         elif isinstance(signer_public_key, ec.EllipticCurvePublicKey):
-            verifier = signer_public_key.verifier(
-                signature_bytes, ec.ECDSA(signature_hash_algorithm))
-        else:
-            verifier = signer_public_key.verifier(
-                signature_bytes, signature_hash_algorithm)
-
-        verifier.update(self._signed_cert.tbs_certificate_bytes)
-        verifier.verify()
-
+            signer_public_key.verify(
+                signature_bytes,
+                message,
+                ec.ECDSA(signature_hash_algorithm)
+            )
 
 class CertificateRevocationListVerificationContext(object):
     def __init__(self, certificate):
@@ -134,16 +136,18 @@ class CertificateRevocationListVerificationContext(object):
         signature_hash_algorithm = self._signed_crl.signature_hash_algorithm
         signature_bytes = self._signed_crl.signature
         signer_public_key = self._signing_cert.public_key()
+        message = self._signed_crl.tbs_certlist_bytes
 
         if isinstance(signer_public_key, rsa.RSAPublicKey):
-            verifier = signer_public_key.verifier(
-                signature_bytes, padding.PKCS1v15(), signature_hash_algorithm)
+            signer_public_key.verify(
+                signature_bytes,
+                message,
+                padding.PKCS1v15(),
+                signature_hash_algorithm
+            )
         elif isinstance(signer_public_key, ec.EllipticCurvePublicKey):
-            verifier = signer_public_key.verifier(
-                signature_bytes, ec.ECDSA(signature_hash_algorithm))
-        else:
-            verifier = signer_public_key.verifier(
-                signature_bytes, signature_hash_algorithm)
-
-        verifier.update(self._signed_crl.tbs_certlist_bytes)
-        verifier.verify()
+            signer_public_key.verify(
+                signature_bytes,
+                message,
+                ec.ECDSA(signature_hash_algorithm)
+            )
