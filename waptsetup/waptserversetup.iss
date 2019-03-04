@@ -140,7 +140,7 @@ Filename: "net"; Parameters: "start wapttasks"; Flags: runhidden; StatusMsg: "St
 
 Filename: "{app}\wapt-get.exe"; Parameters: "register --wapt-server-url={code:GetWaptServerURL} --wapt-repo-url={code:GetWaptRepoURL} --use-gui --update "; Flags: runhidden skipifsilent; Description: {cm:SetupRegisterThisComputer}; Check: CheckRegisterUpdate(); Tasks: RegisterComputerOnLocalServer; BeforeInstall: SetMarqueeProgress(True); AfterInstall: SetMarqueeProgress(False)
 Filename: "{app}\wapt-get.exe"; Flags: skipifsilent; Parameters: "create-keycert --use-gui /EnrollNewCert /BaseDir=c:\private /ConfigFilename={app}\wapt-get.ini /CommonName={code:GetCertificateCommonName} /Email={code:GetCertificateEmail} /PrivateKeyPassword64={code:GetPrivateKeyPassword64}"; Description: {cm:CreatePackageRSAKeyCert}; Check: CheckCreatePersonalcertificate();
-Filename: "{app}\wapt-get.exe"; Flags: skipifsilent; Parameters: "build-waptagent --use-gui /DeployWaptAgentLocally /ConfigFilename={app}\wapt-get.ini /WaptServerPassword64={code:GetWaptServerPassword64} /PrivateKeyPassword64={code:GetPrivateKeyPassword64}"; Description: {cm:CreateWaptAgentInstaller}; StatusMsg: {cm:CreateWaptAgentInstaller}; Check: CheckCreateWaptAgent(); BeforeInstall: SetMarqueeProgress(True); AfterInstall: SetMarqueeProgress(False)
+Filename: "{app}\wapt-get.exe"; Flags: skipifsilent; Parameters: "build-waptagent --use-gui /DeployWaptAgentLocally /ConfigFilename={app}\wapt-get.ini /PrivateKeyPassword64={code:GetPrivateKeyPassword64}"; Description: {cm:CreateWaptAgentInstaller}; StatusMsg: {cm:CreateWaptAgentInstaller}; Check: CheckCreateWaptAgent(); BeforeInstall: SetMarqueeProgress(True); AfterInstall: SetMarqueeProgress(False)
 
 Filename: "{app}\waptconsole.exe"; Parameters: "--lang {language}"; Flags: postinstall skipifsilent shellexec; StatusMsg: {cm:StartWaptconsole}; Description: "{cm:StartWaptconsole}"
 Filename: {code:GetWaptServerURL}; Flags: postinstall skipifsilent shellexec; StatusMsg: {cm:ShowWaptServerHomePage}; Description: "{cm:ShowWaptServerHomePage}"
@@ -183,7 +183,7 @@ fr.InstallWaptServer=Installer le serveur Wapt
 fr.ScanPackages=Scan des paquets actuels
 fr.InstallingServerServices=Installation des services Serveur
 fr.SpecifyServerPassword=Choisissez un mot de passe pour le compte admin Wapt
-fr.BothPasswordsDontMatch=Les mots de passe saisis ne correpondent pas
+fr.BothPasswordsDontMatch=Les mots de passe saisis ne correspondent pas
 fr.WaptAdminPassword=Mot de passe Admin du serveur WAPT
 fr.ConfirmPassword=Confirmer le mot de passe
 fr.OpenWaptDocumentation=Afficher la documentation d'installation
@@ -216,13 +216,15 @@ fr.PersonalCertificateLocation=Emplacement de votre certificat existant
 fr.PersonalKeyCertParams=Paramètres de Clé / certificat personnel
 fr.PersonalKeyCertParamsRequest=merci de préciser les paramètres pour la génération des Clé / Certificat personnel.
 fr.PackageDesignParams=Paramètres de création des paquets
-fr.PackageDesignParamsDesc=Paramètres utilsiés lors de la création et l'import de paquets.
+fr.PackageDesignParamsDesc=Paramètres utilisés lors de la création et l'import de paquets.
 ; fr.PackageDesignParamsRequest=Le préfixe de paquet est une chaîne simple (comme test) qui est présente au début de vos noms de paquets pour les identifier visuellement%nLe mot de passe de la clé sera utilisé pour signer un paquet de mises à jour Wapt
 fr.PackageDesignParamsRequest=Le préfixe de paquet est une chaîne simple (comme test) qui est présente au début de vos noms de paquets pour les identifier visuellement
 fr.WaptAgentBuild=Compilation de Waptagent
 fr.WaptAgentBuildChoice=Spécifier si vous voulez (re)créer un installeur personnalisé waptagent pour cette version de Wapt
 fr.WaptAgentDoBuild=Compiler un nouveau waptagent.exe
 fr.ShowWaptServerHomePage=Ouvre la page d'accueil du serveur Wapt dans votre navigateur (Vous devrez vraisemblement accepter le certificat https auto-signé)
+fr.MustSpecifyPackagePrefix=Vous devez spécifier un préfixe de paquet
+fr.MustSpecifyPrivateKeyPassword=Vous devez fournir le mot de passe de la clé privée pour signer le paquet waptupgrade
 
 en.RegisteringService=Setup WaptServer Service
 en.InstallMSVC2013=Installing MSVC++ 2013 Redistribuable
@@ -273,6 +275,8 @@ en.WaptAgentBuild=Waptagent build
 en.WaptAgentBuildChoice=Choose weither you want to (re)create the waptagent installer for this version of Wapt
 en.WaptAgentDoBuild=Compile a customized waptagent installer and waptupgrade package
 en.ShowWaptServerHomePage=Open WaptServer homepage in Web browser (You may need to accept self signed https certificate)
+en.MustSpecifyPackagePrefix=You must specify a packages prefix
+en.MustSpecifyPrivateKeyPassword=You must specify the private key's password to sign the waptupgrade package
 
 
 de.RegisteringService=Setup WaptServer Service
@@ -423,9 +427,9 @@ end;
 
 function GetPrivateKeyPassword64(Param: String):String;
 begin
-  //if (pgPackagesParams.Values[1]<>'') then
-  //  Result := Encode64(pgPackagesParams.Values[1])
-  //else 
+  if (pgPackagesParams.Values[1]<>'') then
+    Result := Encode64(pgPackagesParams.Values[1])
+  else 
   if (pgPersonalKeyParams.Values[2]<>'') then
     Result := Encode64(pgPersonalKeyParams.Values[2])
   else
@@ -583,9 +587,9 @@ end;
 function OnPackagesParamsNextButtonClick(Sender: TWizardPage): Boolean;
 begin
   if pgPackagesParams.Values[0] = '' then 
-    RaiseException('You must specify a packages prefix');
-  //if pgPackagesParams.Values[1] = '' then 
-  //  RaiseException('You must specify the private key password to check and build Agent');
+    RaiseException(ExpandConstant('{cm:MustSpecifyPackagePrefix}'));
+  if pgPackagesParams.Values[1] = '' then 
+    RaiseException(ExpandConstant('{cm:MustSpecifyPrivateKeyPassword}'));
   //MsgBox('Lancement vérification de la clé pour le certificat '+GetPersonalCertificatePath('')+' and prefix '+pgPackagesParams.Values[0], mbInformation, MB_OK);  
   Result := True;
 end;
@@ -611,8 +615,8 @@ end;
 procedure OnPackagesParamsActivate(Sender: TWizardPage);
 begin
   // read key password
-  //if pgPackagesParams.Values[1] = '' then
-  //  pgPackagesParams.Values[1] := pgPersonalKeyParams.Values[2];
+  if pgPackagesParams.Values[1] = '' then
+    pgPackagesParams.Values[1] := pgPersonalKeyParams.Values[2];
 end;
 
 
@@ -665,21 +669,21 @@ begin
   pgPersonalKeyParams.OnShouldSkipPage := @OnPersonalKeyParamsShouldSkipPage;
   pgPersonalKeyParams.OnNextButtonClick := @OnPersonalKeyParamsNextButtonClick;
 
+  pgBuildWaptAgentOptions := CreateInputOptionPage(pgPersonalKeyParams.ID,ExpandConstant('{cm:WaptAgentBuild}'),'',
+      ExpandConstant('{cm:WaptAgentBuildChoice}'),True,False);
+  pgBuildWaptAgentOptions.Add(ExpandConstant('{cm:Skip}'));
+  pgBuildWaptAgentOptions.Add(ExpandConstant('{cm:WaptAgentDoBuild}'));
+  pgBuildWaptAgentOptions.OnActivate := @OnBuildWaptAgentOptionsActivate;
+
   // package prefix and password to check key
   pgPackagesParams := CreateInputQueryPage(pgPersonalKeyParams.ID,ExpandConstant('{cm:PackageDesignParams}'),
     ExpandConstant('{cm:PackageDesignParamsDesc}'),
     ExpandConstant('{cm:PackageDesignParamsRequest}'));
   pgPackagesParams.Add(ExpandConstant('{cm:PackagesPrefix}'),False);
-  //pgPackagesParams.Add(ExpandConstant('{cm:PersonalKeyPassword}'),True);
+  pgPackagesParams.Add(ExpandConstant('{cm:PersonalKeyPassword}'),True);
   pgPackagesParams.OnActivate := @OnPackagesParamsActivate;
   pgPackagesParams.OnShouldSkipPage := @OnPackagesParamsShouldSkipPage;
   pgPackagesParams.OnNextButtonClick := @OnPackagesParamsNextButtonClick;
-
-  pgBuildWaptAgentOptions := CreateInputOptionPage(pgPackagesParams.ID,ExpandConstant('{cm:WaptAgentBuild}'),'',
-      ExpandConstant('{cm:WaptAgentBuildChoice}'),True,False);
-  pgBuildWaptAgentOptions.Add(ExpandConstant('{cm:Skip}'));
-  pgBuildWaptAgentOptions.Add(ExpandConstant('{cm:WaptAgentDoBuild}'));
-  pgBuildWaptAgentOptions.OnActivate := @OnBuildWaptAgentOptionsActivate;
 
 end;
 
