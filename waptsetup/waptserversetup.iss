@@ -609,7 +609,7 @@ end;
 function OnPackagesParamsShouldSkipPage(Sender: TWizardPage): Boolean;
 begin
   // todo skip if no install
-  Result := False; 
+  Result := pgBuildWaptAgentOptions.SelectedValueIndex=0 ; 
 end;
 
 procedure OnPackagesParamsActivate(Sender: TWizardPage);
@@ -676,7 +676,7 @@ begin
   pgBuildWaptAgentOptions.OnActivate := @OnBuildWaptAgentOptionsActivate;
 
   // package prefix and password to check key
-  pgPackagesParams := CreateInputQueryPage(pgPersonalKeyParams.ID,ExpandConstant('{cm:PackageDesignParams}'),
+  pgPackagesParams := CreateInputQueryPage(pgBuildWaptAgentOptions.ID,ExpandConstant('{cm:PackageDesignParams}'),
     ExpandConstant('{cm:PackageDesignParamsDesc}'),
     ExpandConstant('{cm:PackageDesignParamsRequest}'));
   pgPackagesParams.Add(ExpandConstant('{cm:PackagesPrefix}'),False);
