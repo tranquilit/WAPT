@@ -961,19 +961,25 @@ begin
     Raise Exception.Create('No common name for certificate');
 
   printPwd := False;
-  if GetCmdParams('PrivateKeyPassword64')<>'' then
-    keypassword := DecodeStringBase64(GetCmdParams('PrivateKeyPassword64'));
-  if keypassword='' then
-    keypassword := GetCmdParams('PrivateKeyPassword','');
 
-  if (keypassword='') and not FileExistsUTF8(keyfilename) then
+  if not FindCmdLineSwitch('NoPrivateKeyPassword') then
   begin
-    printPwd := True;
-    keypassword := RandomPassword(12);
-  end;
+    if GetCmdParams('PrivateKeyPassword64')<>'' then
+      keypassword := DecodeStringBase64(GetCmdParams('PrivateKeyPassword64'));
+    if keypassword='' then
+      keypassword := GetCmdParams('PrivateKeyPassword','');
 
-  if keypassword='' then
-    keypassword:=GetPrivateKeyPassword(keyfilename);
+    if (keypassword='') and not FileExistsUTF8(keyfilename) then
+    begin
+      printPwd := True;
+      keypassword := RandomPassword(12);
+    end;
+
+    if keypassword='' then
+      keypassword := GetPrivateKeyPassword(keyfilename);
+  end
+  else
+    keypassword := '';
 
   crtbasename := commonname;
 
@@ -992,7 +998,10 @@ begin
     else
       Raise Exception.Create('No CA Certificate to issue the new certificate');
 
-    CAKeyPassword := GetCmdParams('CAKeyPassword',GetCAKeyPassword(CAKeyFilename));
+    if not FindCmdLineSwitch('NoCAKeyPassword') then
+      CAKeyPassword := GetCAKeyPassword(CAKeyFilename)
+    else
+      CAKeyPassword := '';
   end;
 
   result := CreateSignedCert(waptcrypto,
@@ -1013,6 +1022,7 @@ begin
         CAKeyFilename,
         CAKeyPassword);
 
+  WriteLn('Private Key Filename: '+keyfilename);
   WriteLn('Certificate Filename: '+Result);
   if PrintPwd then
     WriteLn('New private key password: '+keypassword);
@@ -1107,6 +1117,7 @@ end;
 {$R *.res}
 
 begin
+  IsAdmin;
   Application:=PWaptGet.Create(nil);
   Application.Title:='wapt-get';
   Application.Run;

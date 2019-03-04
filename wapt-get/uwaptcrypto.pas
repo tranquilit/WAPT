@@ -221,7 +221,7 @@ function CreateSignedCert(pywaptcrypto:Variant;
 
     ):String;
 var
-  vCAKeyFilename,vdestpem,vdestcrt,vCAKeyPassword : Variant;
+  vCAKeyFilename,vdestpem,vdestcrt,vCAKeyPassword,vKeyPassword: Variant;
   key,cert,cakey,cacert:Variant;
   ca_pem: String;
 
@@ -242,13 +242,11 @@ begin
     else
     begin
       if CAKeyPassword <> '' then
-      begin
-        vCAKeyFilename := UTF8Decode(CAKeyFilename);
-        vCAKeyPassword := UTF8Decode(CAKeyPassword);
-        cakey:= pywaptcrypto.SSLPrivateKey(filename := vCAKeyFilename, password := vCAKeyPassword);
-      end
+        vCAKeyPassword := UTF8Decode(CAKeyPassword)
       else
-        raise Exception.CreateFmt('No password for decryption of %s',[CAKeyFilename]);
+        vCAKeyPassword := None();
+      vCAKeyFilename := UTF8Decode(CAKeyFilename);
+      cakey:= pywaptcrypto.SSLPrivateKey(filename := vCAKeyFilename, password := vCAKeyPassword);
     end;
 
   if FileExists(keyfilename) then
@@ -268,13 +266,17 @@ begin
   if not DirectoryExists(destdir) then
     ForceDirectories(destdir);
 
-  key := pywaptcrypto.SSLPrivateKey(filename := vdestpem,password := keypassword);
+  if keypassword<>'' then
+    vKeyPassword := keypassword
+  else
+    vKeyPassword := None();
+  key := pywaptcrypto.SSLPrivateKey(filename := vdestpem,password := vKeyPassword);
 
   // Create private key  if not already exist
   if not FileExistsUTF8(keyfilename) then
   begin
     key.create(bits := 2048);
-    key.save_as_pem(password := keypassword)
+    key.save_as_pem(password := vKeyPassword)
   end;
 
   // None can not be passed... not accepted : invalid Variant type
