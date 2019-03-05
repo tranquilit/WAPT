@@ -620,7 +620,7 @@ end;
 procedure OnPackagesParamsActivate(Sender: TWizardPage);
 begin
   // read key password
-  pgPackagesParams.Values[2] := GetPersonalCertificatePath();
+  pgPackagesParams.Values[2] := GetPersonalCertificatePath('');
 
   // Set cert filename for reference
   pgPackagesParams.Values[1] := pgPersonalKeyChoose.Values[0];
