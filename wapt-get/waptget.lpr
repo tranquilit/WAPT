@@ -80,7 +80,11 @@ type
     function CreateWaptAgent(TargetDir: String; Edition: String='waptagent'
       ): String;
 
-    function CreateKeycert(commonname: String; basedir: String='';keypassword: String='';CodeSigning:Boolean=True; CA:Boolean=False; ClientAuth:Boolean=True): String;
+    function CreateKeycert(commonname: String; basedir: String='';keypassword: String='';
+        CodeSigning:Boolean=True;
+        CA:Boolean=False;
+        ClientAuth:Boolean=True;
+        Overwrite:Boolean=False): String;
 
     function GetCAKeyPassword(crtname:String): String;
     function GetPrivateKeyPassword(crtname:String=''): String;
@@ -461,7 +465,12 @@ begin
   if (action = 'create-keycert') then
   begin
     ReadWaptConfig(AppIniFilename('waptconsole'));
-    NewCertificateFilename := CreateKeycert(GetCommonNameFromCmdLine,'','',GetCmdParams('CodeSigning','1')='1',GetCmdParams('CA','1')='1',GetCmdParams('ClientAuth','1')='1');
+    NewCertificateFilename := CreateKeycert(GetCommonNameFromCmdLine,'','',
+        GetCmdParams('CodeSigning','1')='1',
+        GetCmdParams('CA','1')='1',
+        GetCmdParams('ClientAuth','1')='1',
+        FindCmdLineSwitch('Force',['/','-'],True) or FindCmdLineSwitch('F',['/','-'],True));
+
     if FindCmdLineSwitch('EnrollNewCert') then
     begin
       DestCertPath := AppendPathDelim(WaptBaseDir)+'ssl\'+ExtractFileName(NewCertificateFilename);
@@ -927,7 +936,8 @@ begin
 end;
 
 function PWaptGet.CreateKeycert(commonname: String; basedir: String;
-  keypassword: String; CodeSigning: Boolean; CA: Boolean; ClientAuth:Boolean=True): String;
+  keypassword: String; CodeSigning: Boolean; CA: Boolean; ClientAuth:Boolean=True;
+  Overwrite:Boolean=False): String;
 var
     keyfilename,
     crtbasename,
@@ -960,8 +970,13 @@ begin
   if commonname='' then
     Raise Exception.Create('No common name for certificate');
 
-  printPwd := False;
+  if not Overwrite and FileExistsUTF8(AppendPathDelim(basedir)+commonname+'.crt') then
+    Raise Exception.CreateFmt('Certificate %s already exists',[AppendPathDelim(basedir)+commonname+'.crt']);
 
+  if not Overwrite and FileExistsUTF8(keyfilename) then
+    Raise Exception.CreateFmt('Key %s already exists',[keyfilename]);
+
+  printPwd := False;
   if not FindCmdLineSwitch('NoPrivateKeyPassword') then
   begin
     if GetCmdParams('PrivateKeyPassword64')<>'' then

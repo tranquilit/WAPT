@@ -27,9 +27,9 @@ object VisWaptGUI: TVisWaptGUI
     Height = 651
     Top = 0
     Width = 1387
-    ActivePage = pgInventory
+    ActivePage = pgPrivateRepo
     Align = alClient
-    TabIndex = 0
+    TabIndex = 2
     TabOrder = 0
     OnChange = MainPagesChange
     object pgInventory: TTabSheet
@@ -8586,8 +8586,8 @@ object VisWaptGUI: TVisWaptGUI
   object PopupMenuHosts: TPopupMenu
     Images = ActionsImages24
     OnPopup = PopupMenuHostsPopup
-    left = 168
-    top = 200
+    left = 104
+    top = 240
     object MenuItem18: TMenuItem
       Action = ActEditHostPackage
     end

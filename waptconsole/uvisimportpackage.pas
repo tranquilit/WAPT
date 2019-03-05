@@ -500,8 +500,12 @@ begin
         try
           if not FileExistsUTF8(target) or (MD5Print(MD5File(target)) <> UTF8Encode(Filename.AsArray[1].AsString)) then
           begin
-            IdWget(Waptrepo.RepoURL + '/' + UTF8Encode(Filename.AsArray[0].AsString),
-              target, ProgressForm, @updateprogress, http_proxy);
+            if not IdWget(Waptrepo.RepoURL + '/' + UTF8Encode(Filename.AsArray[0].AsString),
+              target, ProgressForm, @updateprogress, http_proxy,
+              DefaultUserAgent,GetWaptServerCertificateFilename(),Nil,
+              WaptClientCertFilename,WaptClientKeyFilename) then
+                Raise Exception.CreateFmt('Unable to download %s',[Waptrepo.RepoURL + '/' + UTF8Encode(Filename.AsArray[0].AsString)]);
+
             if (MD5Print(MD5File(target)) <> Filename.AsArray[1].AsString) then
               raise Exception.CreateFmt(rsDownloadCurrupted,[UTF8Encode(Filename.AsArray[0].AsString)]);
           end;
@@ -627,8 +631,12 @@ begin
         try
           if not FileExistsUTF8(target) or (MD5Print(MD5File(target)) <> Filename.AsArray[1].AsString) then
           begin
-            IdWget(Waptrepo.RepoURL + '/' + UTF8Encode(Filename.AsArray[0].AsString),
-              target, ProgressForm, @updateprogress, http_proxy);
+            if not IdWget(Waptrepo.RepoURL + '/' + UTF8Encode(Filename.AsArray[0].AsString),
+              target, ProgressForm, @updateprogress, http_proxy,
+              DefaultUserAgent,GetWaptServerCertificateFilename(),Nil,
+              WaptClientCertFilename,WaptClientKeyFilename) then
+                Raise Exception.CreateFmt('Unable to download %s',[Waptrepo.RepoURL + '/' + UTF8Encode(Filename.AsArray[0].AsString)]);
+
             if (MD5Print(MD5File(target)) <> UTF8Encode(Filename.AsArray[1].AsString)) then
               raise Exception.CreateFmt(rsDownloadCurrupted,[UTF8Encode(Filename.AsArray[0].AsString)]);
           end;

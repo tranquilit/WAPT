@@ -937,8 +937,11 @@ begin
           if not DirectoryExists(AppLocalDir + 'cache') then
             mkdir(AppLocalDir + 'cache');
 
-          IdWget(VarPythonAsString(PackageEdited.download_url), filePath,
-              ProgressForm, @updateprogress, Proxy);
+          if not IdWget(VarPythonAsString(PackageEdited.download_url), filePath,
+              ProgressForm, @updateprogress, Proxy,
+              DefaultUserAgent,GetWaptServerCertificateFilename(),Nil,
+              WaptClientCertFilename,WaptClientKeyFilename) then
+            Raise Exception.CreateFmt('Unable to download %s',[PackageEdited.download_url]);
 
           vFilePath := PyUTF8Decode(filePath);
           PackageEdited := DMPython.waptpackage.PackageEntry(waptfile := vFilePath);

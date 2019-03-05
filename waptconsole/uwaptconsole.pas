@@ -2109,8 +2109,12 @@ begin
         cabundle:= VarPyth.None;
         // if check package signature...
         //cabundle:=DMPython.PackagesAuthorizedCA;
-        IdWget(UTF8Encode(RepoUrl+'/'+filename), filePath,
-            ProgressForm, @updateprogress, Proxy);
+        if not IdWget(UTF8Encode(RepoUrl+'/'+filename), filePath,
+            ProgressForm, @updateprogress, Proxy,
+              DefaultUserAgent,GetWaptServerCertificateFilename(),Nil,
+              WaptClientCertFilename,WaptClientKeyFilename) then
+            Raise Exception.CreateFmt('Unable to download %s',[UTF8Encode(RepoUrl+'/'+filename)]);
+
         vFilePath := PyUTF8Decode(filePath);
         Result := DMPython.waptpackage.PackageEntry(waptfile := vFilePath);
         if devroot <> '' then
