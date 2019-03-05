@@ -619,11 +619,11 @@ end;
 
 procedure OnPackagesParamsActivate(Sender: TWizardPage);
 begin
-  // read key password
-  pgPackagesParams.Values[2] := GetPersonalCertificatePath('');
-
   // Set cert filename for reference
-  pgPackagesParams.Values[1] := pgPersonalKeyChoose.Values[0];
+  pgPackagesParams.Values[1] := GetPersonalCertificatePath('');
+
+  // read key password
+  pgPackagesParams.Values[2] := pgPersonalKeyParams.Values[2];
 end;
 
 procedure OnBuildWaptAgentOptionsActivate(Sender: TWizardPage);
