@@ -459,7 +459,8 @@ begin
         else
           proxy :='';
 
-        serverRes := SO(IdhttpGetString(edwapt_server.Text+'/ping',proxy,200,60000,60000,'','','GET','',EdServerCertificate.Text));
+        serverRes := SO(IdhttpGetString(edwapt_server.Text+'/ping',proxy,200,60000,60000,'','','GET','',EdServerCertificate.Text,
+          'application/json',Nil,WaptClientCertFilename,WaptClientKeyFilename));
         if serverRes = Nil then
           raise Exception.CreateFmt(rsWaptServerError,['Bad answer']);
         if not serverRes.B['success'] then
@@ -481,7 +482,8 @@ begin
         proxy :='';
 
       try
-        packages := IdHttpGetString(edrepo_url.Text+'/Packages',Proxy,200,60000,60000,'','','GET','',EdServerCertificate.Text);
+        packages := IdHttpGetString(edrepo_url.Text+'/Packages',Proxy,200,60000,60000,'','','GET','',EdServerCertificate.Text,
+            'application/binary',Nil,WaptClientCertFilename,WaptClientKeyFilename);
         if length(packages)<=0 then
           Raise Exception.Create('Packages file empty or not found');
         labStatusRepo.Caption:=Format('Repository access OK', []);
