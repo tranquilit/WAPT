@@ -24,7 +24,7 @@ site_packages = os.path.join(base, 'Lib', 'site-packages')
 binaries_cache = os.path.abspath(os.path.join(wapt_base_dir,'..','binaries_cache'))
 
 proxies = None
-#proxies = {'http':'http://proxy.ad.tranquil.it:3128','https':'http://proxy.ad.tranquil.it:3128'}
+proxies = {'http':'http://proxy.ad.tranquil.it:3128','https':'http://proxy.ad.tranquil.it:3128'}
 
 prev_sys_path = list(sys.path)
 import site
@@ -152,7 +152,7 @@ if os.path.exists(makepath(wapt_base_dir,'dmidecode.exe')):
 os.renames(dmidecode,makepath(wapt_base_dir,'dmidecode.exe'))
 
 print('Get OpenSSL binaries from Fulgan')
-ssl_zip = wget('https://indy.fulgan.com/SSL/openssl-1.0.2q-i386-win32.zip',resume=True,md5='d70784852bfe1861403c0657ef30ff9c',cache_dir=binaries_cache,proxies=proxies)
+ssl_zip = wget('https://indy.fulgan.com/SSL/openssl-1.0.2r-i386-win32.zip',resume=True,md5='397c5e70b17cf6ab7bc9be8d15c457b9',cache_dir=binaries_cache,proxies=proxies)
 ssl_file = unzip(ssl_zip,target=makepath(wapt_base_dir),filenames=['ssleay32.dll','openssl.exe','libeay32.dll'])
 
 
