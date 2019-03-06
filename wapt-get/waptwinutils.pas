@@ -934,12 +934,12 @@ begin
         UniqueString(user);
         UniqueString(password);
         UniqueString(domain);
-        if not CreateProcessWithLogonW(PWidechar(user),pwidechar(domain),pwidechar(password),0, Nil,PWideChar(wparams), CREATE_NEW_CONSOLE,nil,nil,@myStartupInfo, @myProcessInfo) then
+        if not CreateProcessWithLogonW(PWidechar(user),pwidechar(domain),pwidechar(password),0, Nil,PWideChar(wparams), 0,nil,nil,@myStartupInfo, @myProcessInfo) then
           RaiseLastOSError;
       end
       else
       begin
-        if not CreateProcessW(Nil,PWideChar(wparams),  Nil,Nil, True, CREATE_NEW_CONSOLE,nil,nil,myStartupInfo,myProcessInfo) then
+        if not CreateProcessW(Nil,PWideChar(wparams),  Nil,Nil, True, 0 ,nil,nil,myStartupInfo,myProcessInfo) then
           RaiseLastOSError();
       end;
 

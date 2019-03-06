@@ -93,7 +93,9 @@ interface
       VerifyCertificateFilename:String='';AcceptType:String='application/json';
       CookieManager:TIdCookieManager=Nil;
       ClientCertFilename:String='';
-      ClientKeyFilename:String=''):RawByteString;
+      ClientKeyFilename:String='';
+      OnHTTPWork:TWorkEvent=Nil;
+      DataStream:TStream=Nil):RawByteString;
 
   function GetReachableIP(IPS:ISuperObject;port:word;Timeout:Integer=200):String;
 
@@ -901,10 +903,11 @@ end;
 
 function IdHttpPostData(const url: Ansistring; const Data: RawByteString; const Method: String='POST'; const HttpProxy: String='';
    ConnectTimeout:integer=4000;SendTimeOut:integer=60000;ReceiveTimeOut:integer=60000;user:AnsiString='';password:AnsiString='';userAgent:String='';ContentType:String='application/json';VerifyCertificateFilename:String='';
-   AcceptType:String='application/json';CookieManager:TIdCookieManager=Nil;ClientCertFilename:String='';ClientKeyFilename:String=''):RawByteString;
+   AcceptType:String='application/json';CookieManager:TIdCookieManager=Nil;ClientCertFilename:String='';ClientKeyFilename:String='';OnHTTPWork:TWorkEvent=Nil;DataStream:TStream=Nil):RawByteString;
 var
   http:TIdHTTP;
-  DataStream:TStringStream;
+  //DataStream:TStringStream;
+  tmpDataStream: Boolean;
   ssl_handler: TIdSSLIOHandlerSocketOpenSSL;
   sslCheck:TSSLVerifyCert;
 begin
@@ -936,10 +939,18 @@ begin
     http.Request.Password:=password;
   end;
 
-  DataStream :=TStringStream.Create(Data);
   {progress :=  TIdProgressProxy.Create(Nil);
   progress.progressCallback:=progressCallback;
   progress.CBReceiver:=CBReceiver;}
+
+  if not Assigned(DataStream) then
+  begin
+    DataStream:= TStringStream.Create(Data);
+    tmpDataStream := True;
+  end
+  else
+    tmpDataStream := False;
+
   try
     // init ssl stack
     ssl_handler := TIdSSLIOHandlerSocketOpenSSL.Create;
@@ -986,11 +997,16 @@ begin
       http.ConnectTimeout := ConnectTimeout;
       if HttpProxy<>'' then
         IdConfigureProxy(http,HttpProxy);
+
+      if Assigned(OnHTTPWork) then
+        http.OnWork:=OnHTTPWork;
+
       {if Assigned(progressCallback) then
       begin
         http.OnWorkBegin:=@progress.OnWorkBegin;
         http.OnWork:=@progress.OnWork;
       end;}
+
       if Method = 'POST' then
         Result := http.Post(url,DataStream)
       else if Method = 'PUT' then
@@ -1004,7 +1020,7 @@ begin
     end;
   finally
     //FreeAndNil(progress);
-    if Assigned(DataStream) then
+    if tmpDataStream and Assigned(DataStream) then
       FreeAndNil(DataStream);
     if Assigned(http.Compressor) then
     begin
@@ -1435,7 +1451,10 @@ begin
   begin
     if AApplicationName='' then
       AApplicationName:=ApplicationName;
-    FAppIniFilename := GetCmdParams('ConfigFilename',AApplicationName+'.ini');
+    FAppIniFilename := GetCmdParams('ConfigFilename',GetCmdParams('config',GetCmdLineArg('c',['-'])));
+    if FAppIniFilename = '' then
+      FAppIniFilename := AApplicationName+'.ini';
+
     if ExtractFileDir(FAppIniFilename)='' then
       FAppIniFilename := IncludeTrailingPathDelimiter(IncludeTrailingPathDelimiter(GetWindowsSpecialDir(CSIDL_LOCAL_APPDATA))+AApplicationName)+FAppIniFilename;
     if ExtractFileExt(FAppIniFilename)='' then

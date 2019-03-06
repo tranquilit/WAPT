@@ -32,7 +32,7 @@ uses
   Interfaces, Windows, PythonEngine, VarPyth, superobject, soutils, tislogging, uWaptRes,
   waptcommon, waptwinutils, tiscommon, tisstrings, LazFileUtils,
   IdAuthentication, IdExceptionCore, Variants, IniFiles,uwaptcrypto,uWaptPythonUtils,
-  tisinifiles,base64;
+  tisinifiles,base64,IdComponent;
 
 type
   { PWaptGet }
@@ -41,6 +41,11 @@ type
   private
     localuser,localpassword:AnsiString;
     FRepoURL: String;
+    FLastProgressMs:DWORD;
+    procedure DoOnProgress(Sender: TObject);
+    procedure DoOnHttpWork(ASender: TObject; AWorkMode: TWorkMode; AWorkCount: Int64);
+
+
     function GetIsEnterpriseEdition: Boolean;
     function GetLocalWaptserverRepositoryPath: String;
     function GetPythonEngine: TPythonEngine;
@@ -76,7 +81,9 @@ type
 
     function CheckPersonalCertificateIsCodeSigning(PersonalCertificatePath,PrivateKeyPassword:String): Boolean;
     function BuildWaptUpgrade(SetupFilename: String): String;
-    function BuildUploadWaptUpgrade(SetupFilename: String): String;
+    function UploadWaptAgentUpgrade(SetupFilename, WaptUpgradeFilename: String
+      ): Boolean;
+
     function CreateWaptAgent(TargetDir: String; Edition: String='waptagent'
       ): String;
 
@@ -541,15 +548,8 @@ begin
       Writeln(rsBuildWaptUpgradePackage);
       GetWaptServerUser;
       GetWaptServerPassword;
-      BuildUploadWaptUpgrade(WaptAgentFilename);
       Writeln(rsUploadWaptAgent);
-      Res := WAPTServerJsonMultipartFilePost(
-        GetWaptServerURL, 'upload_waptsetup', [], 'file', WaptAgentFilename,
-        WaptServerUser, WaptServerPassword, Nil,GetWaptServerCertificateFilename);
-      if Res.S['status'] = 'OK' then
-        Writeln('OK')
-      else
-        Writeln('ERROR: '+Res.S['message']);
+      UploadWaptAgentUpgrade(WaptAgentFilename,WaptUpgradeFilename);
       Terminate;
       Exit;
     end;
@@ -909,17 +909,37 @@ begin
         Result.AsArray.Add(task);
 end;
 
+procedure PWaptGet.DoOnProgress(Sender: TObject);
+begin
+  if (GetTickCount-FLastProgressMs)  > 1000 then
+  begin
+    Write('.');
+    FLastProgressMs := GetTickCount;
+  end;
+end;
+
+procedure PWaptGet.DoOnHttpWork(ASender: TObject; AWorkMode: TWorkMode;
+  AWorkCount: Int64);
+begin
+  if (GetTickCount-FLastProgressMs)  > 1000 then
+  begin
+    Write('.');
+    FLastProgressMs := GetTickCount;
+  end;
+end;
+
 function PWaptGet.CreateWaptAgent(TargetDir:String;Edition:String='waptagent'): String;
 var
   Ini:TInifile;
 begin
   try
+
     ini := TIniFile.Create(AppIniFilename('waptconsole'));
     Result := CreateWaptSetup(UTF8Encode(AuthorizedCertsDir),
       ini.ReadString('global', 'repo_url', ''),
       ini.ReadString('global', 'wapt_server', ''),
       TargetDir,
-      'Wapt', Nil, Edition,
+      'Wapt', @DoOnProgress, Edition,
       ini.ReadString('global', 'verify_cert', '0'),
       ini.ReadBool('global', 'use_kerberos', False ),
       ini.ReadBool('global', 'check_certificates_validity',True ),
@@ -929,7 +949,8 @@ begin
       ini.ReadBool('global', 'use_fqdn_as_uuid',False),
       ''
       );
-
+    Writeln('');
+    Writeln('Built '+Result);
   finally
     ini.Free;
   end;
@@ -1069,6 +1090,7 @@ begin
   SourcesDir := PyUTF8Decode(WaptBaseDir+'waptupgrade');
 
   UpgradePackage := waptpackage.PackageEntry(waptfile := SourcesDir);
+  UpgradePackage.package := DefaultPackagePrefix+'-waptupgrade';
   UpgradePackage.version := GetApplicationVersion(SetupFilename)+'-0';
   BuildResult := UpgradePackage.build_package(target_directory := BuildDir);
   Certificate := waptcrypto.SSLCertificate(PyUTF8Decode(WaptPersonalCertificatePath));
@@ -1087,36 +1109,30 @@ begin
     Result := '';
 end;
 
-function PWaptGet.BuildUploadWaptUpgrade(SetupFilename: String): String;
+function PWaptGet.UploadWaptAgentUpgrade(SetupFilename,WaptUpgradeFilename: String): Boolean;
 var
-  BuildDir: String;
-  BuildResult: Variant;
-  KeyPassword:String;
+  Res:ISuperObject;
 begin
-  // create waptupgrade package (after waptagent as we need the updated waptagent.sha1 file)
-  BuildResult := Nil;
-  BuildDir := GetTempDir(False);
+  Writeln('Uploading '+SetupFilename+' to waptserver '+GetWaptServerURL);
 
-  if RightStr(buildDir,1) = '\' then
-    buildDir := copy(buildDir,1,length(buildDir)-1);
-  KeyPassword := GetPrivateKeyPassword;
-
-  //BuildResult is a PackageEntry instance
-  BuildResult := waptdevutils.build_waptupgrade_package(
-      waptconfigfile := AppIniFilename('waptconsole'),
-      wapt_server_user := WaptServerUser,
-      wapt_server_passwd := WaptServerPassword,
-      key_password := KeyPassword,
-      sign_digests := 'sha256'
-      );
-
-  if not VarPyth.VarIsNone(BuildResult) and FileExistsUTF8(VarPythonAsString(BuildResult.get('localpath'))) then
-  begin
-    Result := BuildResult.get('filename');
-    DeleteFileUTF8(VarPythonAsString(BuildResult.get('localpath')));
-  end
+  Res := WAPTServerJsonMultipartFilePost(
+    GetWaptServerURL, 'upload_waptsetup', [], 'file', SetupFilename,
+    WaptServerUser, WaptServerPassword, @DoOnHttpWork,GetWaptServerCertificateFilename);
+  if Res.S['status'] = 'OK' then
+    Writeln('OK')
   else
-    Result := '';
+    raise Exception.CreateFmt('ERROR uploading %s: %s',[SetupFilename,Res.S['message']]);
+
+  Writeln('Uploading '+WaptUpgradeFilename+' to waptserver '+GetWaptServerURL);
+
+  Res := WAPTServerJsonMultipartFilePost(
+    GetWaptServerURL, 'api/v3/upload_packages', [], ExtractFileName(WaptUpgradeFilename), WaptUpgradeFilename,
+    WaptServerUser, WaptServerPassword, @DoOnHttpWork,GetWaptServerCertificateFilename);
+  if Res.B['success'] then
+    Writeln('OK : '+UTF8Encode(Res.S['msg']))
+  else
+    raise Exception.CreateFmt('ERROR uploading %s: %s',[WaptUpgradeFilename,Res.S['msg']]);
+
 end;
 
 
@@ -1132,7 +1148,7 @@ end;
 {$R *.res}
 
 begin
-  IsAdmin;
+  //IsAdmin;
   Application:=PWaptGet.Create(nil);
   Application.Title:='wapt-get';
   Application.Run;
