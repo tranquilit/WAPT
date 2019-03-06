@@ -2158,7 +2158,7 @@ class SSLCertificate(BaseObjectClass):
                 certificate = issuer
                 issuer = cabundle.issuer_cert_for(certificate)
             except Exception as e:
-                logger.critical(u"Certificate validation error for certificate %s : %s" % (issuer.subject,e))
+                logger.critical(u"Certificate validation error for issuer %s when validating chain for %s : %s" % (repr(issuer),repr(self),e))
                 raise
 
         return chain

@@ -223,6 +223,10 @@ class WaptBaseDB(BaseObjectClass):
     def commit(self):
         if self.transaction_depth > 0:
             self.transaction_depth -= 1
+        else:
+            logger.critical('Unexpected commit of an already committed transaction...')
+            if logger.level == logging.DEBUG:
+                raise
         if self.transaction_depth == 0:
             logger.debug(u'DB commit')
             try:
@@ -265,11 +269,14 @@ class WaptBaseDB(BaseObjectClass):
                 self.upgradedb()
 
     def __enter__(self):
+        self.start_timestamp = time.time()
         self.begin()
         #logger.debug(u'DB enter %i' % self.transaction_depth)
         return self
 
     def __exit__(self, type, value, tb):
+        if time.time()-self.start_timestamp>1.0:
+            logger.debug('Transaction took too much time : %s' % (time.time()-self.start_timestamp,))
         if not value:
             #logger.debug(u'DB exit %i' % self.transaction_depth)
             self.commit()
@@ -3366,33 +3373,34 @@ class Wapt(BaseObjectClass):
                 pass
 
         # reset install_status
+        logger.debug(u'reset stalled install_status in database')
+        init_run_pids = self.waptdb.query("""\
+           select process_id from wapt_localstatus
+              where install_status in ('INIT','RUNNING')
+           """ )
+
+        all_pids = psutil.pids()
+        reset_error = []
+        result = []
+        for rec in init_run_pids:
+            # check if process is no more running
+            if not rec['process_id'] in all_pids or rec['process_id'] in killed:
+                reset_error.append(rec['process_id'])
+            else:
+                # install in progress
+                result.append(rec['process_id'])
+
         with self.waptdb:
-            logger.debug(u'reset stalled install_status in database')
-            init_run_pids = self.waptdb.query("""\
-               select process_id from wapt_localstatus
-                  where install_status in ('INIT','RUNNING')
-               """ )
+            cur = self.waptdb.db.execute("""\
+                  update wapt_localstatus
+                    set install_status=coalesce('ERROR',install_status) where process_id in (?)
+                """,( ','.join([p for p in reset_error]),))
 
-            all_pids = psutil.pids()
-            reset_error = []
-            result = []
-            for rec in init_run_pids:
-                # check if process is no more running
-                if not rec['process_id'] in all_pids or rec['process_id'] in killed:
-                    reset_error.append(rec['process_id'])
-                else:
-                    # install in progress
-                    result.append(rec['process_id'])
-
-            for pid in reset_error:
-                self.waptdb.update_install_status_pid(pid,'ERROR')
-
-            if reset_error or not init_run_pids:
-                self.runstatus = ''
+        if reset_error or not init_run_pids:
+            self.runstatus = ''
 
         # return pids of install in progress
         return result
-
 
     @property
     def pre_shutdown_timeout(self):
@@ -4175,15 +4183,27 @@ class Wapt(BaseObjectClass):
         >>> res = wapt._update_repos_list()
         {'wapt': '2018-02-13T11:22:00', 'wapt-host': u'2018-02-09T10:55:04'}
         """
+        # load packages indexes out of db scope
+        for repo in self.repositories:
+            # if auto discover, repo_url can be None if no network.
+            if repo.repo_url:
+                try:
+                    logger.info(u'Getting packages from %s: %s packages' % (repo.repo_url,len(repo.packages())))
+                except Exception as e:
+                    logger.critical(u'Error getting Packages index from %s : %s' % (repo.repo_url,ensure_unicode(e)))
+            else:
+                logger.info('No location found for repository %s, skipping' % (repo.name))
+
+        if filter_on_host_cap:
+            # force update if host capabilities have changed and requires a new filering of packages
+            new_capa = self.host_capabilities_fingerprint()
+            old_capa = self.read_param('host_capabilities_fingerprint')
+            if not force and old_capa != new_capa:
+                logger.info('Host capabilities have changed since last update, forcing update')
+                force = True
+
         with self.waptdb:
             result = {}
-            if filter_on_host_cap:
-                # force update if host capabilities have changed and requires a new filering of packages
-                new_capa = self.host_capabilities_fingerprint()
-                old_capa = self.read_param('host_capabilities_fingerprint')
-                if not force and old_capa != new_capa:
-                    logger.info('Host capabilities have changed since last update, forcing update')
-                    force = True
             logger.debug(u'Remove unknown repositories from packages table and params (%s)' %(','.join('"%s"'% r.name for r in self.repositories),)  )
             self.waptdb.db.execute('delete from wapt_package where repo not in (%s)' % (','.join('"%s"'% r.name for r in self.repositories)))
             self.waptdb.db.execute('delete from wapt_params where name like "last-http%%" and name not in (%s)' % (','.join('"last-%s"'% r.repo_url for r in self.repositories)))
@@ -4193,10 +4213,9 @@ class Wapt(BaseObjectClass):
                 # if auto discover, repo_url can be None if no network.
                 if repo.repo_url:
                     try:
-                        logger.info(u'Getting packages from %s' % repo.repo_url)
                         result[repo.name] = self._update_db(repo,force=force,filter_on_host_cap=filter_on_host_cap)
                     except Exception as e:
-                        logger.critical(u'Error getting Packages index from %s : %s' % (repo.repo_url,ensure_unicode(e)))
+                        logger.critical(u'Error merging Packages from %s into db: %s' % (repo.repo_url,ensure_unicode(e)))
                 else:
                     logger.info('No location found for repository %s, skipping' % (repo.name))
             if filter_on_host_cap:
