@@ -752,11 +752,14 @@ def get_requests_client_cert_session(url=None,cert=None, verify=True, proxies = 
         requests.packages.urllib3.disable_warnings(InsecureRequestWarning) # pylint: disable=no-member
 
     if url is not None and cert is not None:
-        # no client cert auth
-        if len(cert)<3:
-            # append empty password
-            cert = (cert[0],cert[1],None)
-        result.mount(url, SSLAdapter(cert[0],cert[1],cert[2],**kwargs))
+        cert_path = cert[0]
+        key_path = cert[1]
+        if cert_path is not None and key_path is not None and os.path.isfile(cert_path) and os.path.isfile(key_path):
+            # no client cert auth
+            if len(cert)<3:
+                # append empty password
+                cert = (cert[0],cert[1],None)
+            result.mount(url, SSLAdapter(cert[0],cert[1],cert[2],**kwargs))
     return result
 
 def wget(url,target=None,printhook=None,proxies=None,connect_timeout=10,download_timeout=None,verify_cert=None,referer=None,
