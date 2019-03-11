@@ -51,6 +51,9 @@ import traceback
 import imp
 import shutil
 import threading
+from requests.adapters import HTTPAdapter
+from urllib3.util.ssl_ import create_urllib3_context
+from urllib3.exceptions import InsecureRequestWarning
 
 if hasattr(sys.stdout,'name') and sys.stdout.name == '<stdout>':
     # not in pyscripter debugger
@@ -700,7 +703,64 @@ def _check_hash_for_file(fname, block_size=2**20,md5=None,sha1=None,sha256=None)
     else:
         raise Exception('No hash to check file')
 
-def wget(url,target=None,printhook=None,proxies=None,connect_timeout=10,download_timeout=None,verify_cert=False,referer=None,user_agent=None,cert=None,resume=False,md5=None,sha1=None,sha256=None,cache_dir=None):
+# from https://github.com/kennethreitz/requests/issues/1573
+class SSLAdapter(HTTPAdapter):
+    def __init__(self, certfile, keyfile, password = None, password_callback=None, *args, **kwargs):
+        self._certfile = certfile
+        self._keyfile = keyfile
+        self._password_callback = password_callback
+        self._password = password
+        return super(self.__class__, self).__init__(*args, **kwargs)
+
+    def init_poolmanager(self, *args, **kwargs):
+        self._add_ssl_context(kwargs)
+        return super(self.__class__, self).init_poolmanager(*args, **kwargs)
+
+    def proxy_manager_for(self, *args, **kwargs):
+        self._add_ssl_context(kwargs)
+        return super(self.__class__, self).proxy_manager_for(*args, **kwargs)
+
+    def _add_ssl_context(self, kwargs):
+        logger.debug('Loading ssl context with cert %s and key %s' % (self._certfile,self._keyfile,))
+        context = create_urllib3_context()
+        if self._password is None and not self._password_callback is None:
+            self._password = self._password_callback(self._certfile)
+        context.load_cert_chain(certfile=self._certfile,
+                                keyfile=self._keyfile,
+                                password=str(self._password))
+        kwargs['ssl_context'] = context
+
+def get_requests_client_cert_session(url=None,cert=None, verify=True, proxies = {'http':None,'https':None},**kwargs):
+    """Returns a requests Session which is aware of client cert auth with password protected key
+    Disable use of environ.
+
+    Args:
+        url (str): base prefix url for which the session is created
+        cert (tuple) : (certfilename,pem encoded key filename, key password)
+        verify (bool or str) : verify server certificate. Id str, path to trusted CA bundle
+
+    Returns:
+        Session
+    """
+    result = requests.Session()
+    # be sure to not use HTTP_PROXY or HTTPS_PROXY environ variable
+    result.trust_env = False
+    result.headers = default_http_headers()
+    result.verify = verify
+    result.proxies = proxies
+    if not verify:
+        requests.packages.urllib3.disable_warnings(InsecureRequestWarning) # pylint: disable=no-member
+
+    if url is not None and cert is not None:
+        # no client cert auth
+        if len(cert)<3:
+            # append empty password
+            cert = (cert[0],cert[1],None)
+        result.mount(url, SSLAdapter(cert[0],cert[1],cert[2],**kwargs))
+    return result
+
+def wget(url,target=None,printhook=None,proxies=None,connect_timeout=10,download_timeout=None,verify_cert=None,referer=None,
+            user_agent=None,cert=None,resume=False,md5=None,sha1=None,sha256=None,cache_dir=None,requests_session=None):
     r"""Copy the contents of a file from a given URL to a local file.
 
     Args:
@@ -708,10 +768,10 @@ def wget(url,target=None,printhook=None,proxies=None,connect_timeout=10,download
         target (str) : full file path of downloaded file. If None, put in a temporary dir with supplied url filename (final part of url)
         proxies (dict) : proxies to use. eg {'http':'http://wpad:3128','https':'http://wpad:3128'}
         timeout (int)  : seconds to wait for answer before giving up
-        auth (list)    : (user,password) to authenticate wirh basic auth
+        auth (list)    : (user,password) to authenticate with basic auth
         verify_cert (bool or str) : either False, True (verify with embedded CA list), or path to a directory or PEM encoded CA bundle file
                                     to check https certificate signature against.
-        cert (list) : pair of (x509certfilename,pemkeyfilename) for authenticating the client
+        cert (list) : tuple/list of (x509certfilename,pemkeyfilename,key password) for authenticating the client. If key is not encrypted, password must be None
         referer (str):
         user_agent:
         resume (bool):
@@ -719,6 +779,8 @@ def wget(url,target=None,printhook=None,proxies=None,connect_timeout=10,download
         sha1 (str) :
         sha256 (str) :
         cache_dir (str) : if file exists here, and md5 matches, copy from here instead of downloading. If not, put a copy of the file here after downloading.
+
+        requests_session (request.Session) : predefined request session to use instead of building one from scratch from proxies, cert, verfify_cert
 
     Returns:
         str : path to downloaded file
@@ -775,157 +837,159 @@ def wget(url,target=None,printhook=None,proxies=None,connect_timeout=10,download
     if not os.path.isdir(dir):
         os.makedirs(dir)
 
-    if verify_cert == False:
-        requests.packages.urllib3.disable_warnings() # pylint: disable=no-member
-    header=default_http_headers()
-    if referer != None:
-        header.update({'referer': '%s' % referer})
-    if user_agent != None:
-        header.update({'user-agent': '%s' % user_agent})
+    if requests_session is None:
+        if verify_cert is None:
+            verify_cert = False
+        requests_session = get_requests_client_cert_session(url,cert=cert,verify=verify_cert,proxies=proxies)
+    elif proxies is not None or verify_cert is not None or cert is not None:
+        raise Exception('wget: requests_session and proxies,verify_cert,cert are mutually exclusive')
 
-    target_fn = os.path.join(dir,filename)
+    with requests_session as session:
+        target_fn = os.path.join(dir,filename)
 
-    # return cached file if md5 matches.
-    if (md5 is not None or sha1 is not None or sha256 is not None) and cache_dir is not None and os.path.isdir(cache_dir):
-        cached_filename = os.path.join(cache_dir,filename)
-        if os.path.isfile(cached_filename):
-            if _check_hash_for_file(cached_filename,md5=md5,sha1=sha1,sha256=sha256):
-                resume = False
-                if cached_filename != target_fn:
-                    shutil.copy2(cached_filename,target_fn)
-                return target_fn
-    else:
-        cached_filename = None
+        # return cached file if md5 matches.
+        if (md5 is not None or sha1 is not None or sha256 is not None) and cache_dir is not None and os.path.isdir(cache_dir):
+            cached_filename = os.path.join(cache_dir,filename)
+            if os.path.isfile(cached_filename):
+                if _check_hash_for_file(cached_filename,md5=md5,sha1=sha1,sha256=sha256):
+                    resume = False
+                    if cached_filename != target_fn:
+                        shutil.copy2(cached_filename,target_fn)
+                    return target_fn
+        else:
+            cached_filename = None
 
-    if os.path.isfile(target_fn) and resume:
-        try:
-            actual_size = os.stat(target_fn).st_size
-            size_req = requests.head(url,
-                proxies=proxies,
-                timeout=connect_timeout,
-                verify=verify_cert,
-                headers=header,
-                cert = cert,
-                allow_redirects=True)
+        headers = copy.copy(session.headers)
+        if referer != None:
+            headers.update({'referer': '%s' % referer})
+        if user_agent != None:
+            headers.header.update({'user-agent': '%s' % user_agent})
 
-            target_size = int(size_req.headers['content-length'])
-            file_date = size_req.headers.get('last-modified',None)
 
-            if target_size > actual_size:
-                header.update({'Range':'bytes=%s-' % (actual_size,)})
-                write_mode = 'ab'
-            elif target_size < actual_size:
+        if os.path.isfile(target_fn) and resume:
+            try:
+                actual_size = os.stat(target_fn).st_size
+                size_req = session.head(url,
+                    timeout=connect_timeout,
+                    headers=headers,
+                    allow_redirects=True)
+
+                target_size = int(size_req.headers['content-length'])
+                file_date = size_req.headers.get('last-modified',None)
+
+                if target_size > actual_size:
+                    headers.update({'Range':'bytes=%s-' % (actual_size,)})
+                    write_mode = 'ab'
+                elif target_size < actual_size:
+                    target_size = None
+                    write_mode = 'wb'
+            except Exception as e:
                 target_size = None
                 write_mode = 'wb'
-        except Exception as e:
+
+        else:
+            file_date = None
+            actual_size = 0
             target_size = None
             write_mode = 'wb'
 
-    else:
-        file_date = None
-        actual_size = 0
-        target_size = None
-        write_mode = 'wb'
-
-    # check hashes if size equal
-    if resume and (md5 is not None or sha1 is not None or sha256 is not None) and target_size is not None and (target_size <= actual_size):
-        if not _check_hash_for_file(target_fn,md5=md5,sha1=sha1,sha256=sha256):
-            # restart download...
-            target_size = None
-            write_mode = 'wb'
+        # check hashes if size equal
+        if resume and (md5 is not None or sha1 is not None or sha256 is not None) and target_size is not None and (target_size <= actual_size):
+            if not _check_hash_for_file(target_fn,md5=md5,sha1=sha1,sha256=sha256):
+                # restart download...
+                target_size = None
+                write_mode = 'wb'
 
 
-    if not resume or target_size is None or (target_size - actual_size) > 0:
-        httpreq = requests.get(url,stream=True,
-            proxies=proxies,
-            timeout=connect_timeout,
-            verify=verify_cert,
-            headers=header,
-            cert = cert,
-            allow_redirects=True)
+        if not resume or target_size is None or (target_size - actual_size) > 0:
+            httpreq = session.get(url,
+                stream=True,
+                timeout=connect_timeout,
+                headers=headers,
+                allow_redirects=True)
 
-        httpreq.raise_for_status()
+            httpreq.raise_for_status()
 
-        total_bytes = None
-        if 'content-length' in httpreq.headers:
-            total_bytes = int(httpreq.headers['content-length'])
-            target_free_bytes = get_disk_free_space(os.path.dirname(os.path.abspath(target)))
-            if total_bytes > target_free_bytes:
-                raise Exception('wget : not enough free space on target drive to get %s MB. Total size: %s MB. Free space: %s MB' % (url,total_bytes // (1024*1024),target_free_bytes // (1024*1024)))
+            total_bytes = None
+            if 'content-length' in httpreq.headers:
+                total_bytes = int(httpreq.headers['content-length'])
+                target_free_bytes = get_disk_free_space(os.path.dirname(os.path.abspath(target)))
+                if total_bytes > target_free_bytes:
+                    raise Exception('wget : not enough free space on target drive to get %s MB. Total size: %s MB. Free space: %s MB' % (url,total_bytes // (1024*1024),target_free_bytes // (1024*1024)))
 
-            # 1Mb max, 1kb min
-            chunk_size = min([1024*1024,max([total_bytes/100,2048])])
-        else:
-            chunk_size = 1024*1024
+                # 1Mb max, 1kb min
+                chunk_size = min([1024*1024,max([total_bytes/100,2048])])
+            else:
+                chunk_size = 1024*1024
 
-        cnt = 0
-        if printhook is None and ProgressBar is not None and total_bytes:
-            progress_bar = ProgressBar(label=filename,expected_size=target_size or total_bytes, filled_char='=')
-            progress_bar.show(actual_size)
-        else:
-            progress_bar = None
+            cnt = 0
+            if printhook is None and ProgressBar is not None and total_bytes:
+                progress_bar = ProgressBar(label=filename,expected_size=target_size or total_bytes, filled_char='=')
+                progress_bar.show(actual_size)
+            else:
+                progress_bar = None
 
-        with open(target_fn,write_mode) as output_file:
-            last_time_display = time.time()
-            last_downloaded = 0
-            if httpreq.ok:
-                for chunk in httpreq.iter_content(chunk_size=chunk_size):
-                    output_file.write(chunk)
-                    output_file.flush()
-                    cnt +=1
-                    if download_timeout is not None and (time.time()-start_time>download_timeout):
-                        raise requests.Timeout(r'Download of %s takes more than the requested %ss'%(url,download_timeout))
+            with open(target_fn,write_mode) as output_file:
+                last_time_display = time.time()
+                last_downloaded = 0
+                if httpreq.ok:
+                    for chunk in httpreq.iter_content(chunk_size=chunk_size):
+                        output_file.write(chunk)
+                        output_file.flush()
+                        cnt +=1
+                        if download_timeout is not None and (time.time()-start_time>download_timeout):
+                            raise requests.Timeout(r'Download of %s takes more than the requested %ss'%(url,download_timeout))
+                        if printhook is None and ProgressBar is not None and progress_bar:
+                            if (time.time()-start_time>0.2) and (time.time()-last_time_display>=0.2):
+                                progress_bar.show(actual_size + cnt*len(chunk))
+                                last_time_display = time.time()
+                        else:
+                            if reporthook(cnt*len(chunk),total_bytes):
+                                last_time_display = time.time()
+                        last_downloaded += len(chunk)
                     if printhook is None and ProgressBar is not None and progress_bar:
-                        if (time.time()-start_time>0.2) and (time.time()-last_time_display>=0.2):
-                            progress_bar.show(actual_size + cnt*len(chunk))
-                            last_time_display = time.time()
-                    else:
-                        if reporthook(cnt*len(chunk),total_bytes):
-                            last_time_display = time.time()
-                    last_downloaded += len(chunk)
-                if printhook is None and ProgressBar is not None and progress_bar:
-                    progress_bar.show(total_bytes or last_downloaded)
-                    progress_bar.done()
-                    last_time_display = time.time()
-                elif reporthook(last_downloaded,total_bytes or last_downloaded):
-                    last_time_display = time.time()
+                        progress_bar.show(total_bytes or last_downloaded)
+                        progress_bar.done()
+                        last_time_display = time.time()
+                    elif reporthook(last_downloaded,total_bytes or last_downloaded):
+                        last_time_display = time.time()
 
-        # check hashes
-        if sha256 is not None:
-            file_hash =  _hash_file(target_fn,hash_func=hashlib.sha256)
-            if file_hash != sha256:
-                raise Exception(u'Downloaded file %s sha256 %s does not match expected %s' % (url,file_hash,sha256))
-        elif sha1 is not None:
-            file_hash = _hash_file(target_fn,hash_func=hashlib.sha1)
-            if file_hash != sha1:
-                raise Exception(u'Downloaded file %s sha1 %s does not match expected %s' % (url,file_hash,sha1))
-        elif md5 is not None:
-            file_hash = _hash_file(target_fn,hash_func=hashlib.md5)
-            if file_hash != md5:
-                raise Exception(u'Downloaded file %s md5 %s does not match expected %s' % (url,file_hash,md5))
+            # check hashes
+            if sha256 is not None:
+                file_hash =  _hash_file(target_fn,hash_func=hashlib.sha256)
+                if file_hash != sha256:
+                    raise Exception(u'Downloaded file %s sha256 %s does not match expected %s' % (url,file_hash,sha256))
+            elif sha1 is not None:
+                file_hash = _hash_file(target_fn,hash_func=hashlib.sha1)
+                if file_hash != sha1:
+                    raise Exception(u'Downloaded file %s sha1 %s does not match expected %s' % (url,file_hash,sha1))
+            elif md5 is not None:
+                file_hash = _hash_file(target_fn,hash_func=hashlib.md5)
+                if file_hash != md5:
+                    raise Exception(u'Downloaded file %s md5 %s does not match expected %s' % (url,file_hash,md5))
 
-        file_date = httpreq.headers.get('last-modified',None)
+            file_date = httpreq.headers.get('last-modified',None)
 
-    if file_date:
-        file_datetime_utc = httpdatetime2time(file_date)
-        if time.daylight:
-            file_datetime_local = file_datetime_utc - time.altzone
-        else:
-            file_datetime_local = file_datetime_utc - time.timezone
-        os.utime(target_fn,(file_datetime_local,file_datetime_local))
+        if file_date:
+            file_datetime_utc = httpdatetime2time(file_date)
+            if time.daylight:
+                file_datetime_local = file_datetime_utc - time.altzone
+            else:
+                file_datetime_local = file_datetime_utc - time.timezone
+            os.utime(target_fn,(file_datetime_local,file_datetime_local))
 
-    # cache result
-    if cache_dir:
-        if not os.path.isdir(cache_dir):
-            os.makedirs(cache_dir)
-        cached_filename = os.path.join(cache_dir,filename)
-        if target_fn != cached_filename:
-            shutil.copy2(target_fn,cached_filename)
+        # cache result
+        if cache_dir:
+            if not os.path.isdir(cache_dir):
+                os.makedirs(cache_dir)
+            cached_filename = os.path.join(cache_dir,filename)
+            if target_fn != cached_filename:
+                shutil.copy2(target_fn,cached_filename)
 
     return target_fn
 
 
-def wgets(url,proxies=None,verify_cert=False,referer=None,user_agent=None,timeout=None):
+def wgets(url,proxies=None,verify_cert=None,referer=None,user_agent=None,timeout=None,cert=None,requests_session=None):
     """Return the content of a remote resource as a String with a http get request.
 
     Raise an exception if remote data can't be retrieved.
@@ -933,6 +997,11 @@ def wgets(url,proxies=None,verify_cert=False,referer=None,user_agent=None,timeou
     Args:
         url (str): http(s) url
         proxies (dict): proxy configuration as requests requires it {'http': url, 'https':url}
+        verify_cert (bool or str) : verfiy server certificate, path to trusted CA bundle
+        cert (tuple of 3 str) : (cert_path, key_path, key password) client side authentication.
+
+        requests_session (request.Session) : predefined request session to use instead of building one from scratch
+
     Returns:
         str : content of remote resource
 
@@ -940,19 +1009,23 @@ def wgets(url,proxies=None,verify_cert=False,referer=None,user_agent=None,timeou
     >>> "msg" in data
     True
     """
-    if verify_cert == False:
-        requests.packages.urllib3.disable_warnings() # pylint: disable=no-member
-    header=default_http_headers()
-    if referer != None:
-        header.update({'referer': '%s' % referer})
-    if user_agent != None:
-        header.update({'user-agent': '%s' % user_agent})
+    if requests_session is None:
+        if verify_cert is None:
+            verify_cert = False
+        requests_session = get_requests_client_cert_session(url,cert=cert,verify=verify_cert,proxies=proxies)
+    elif proxies is not None or verify_cert is not None or cert is not None:
+        raise Exception('wgets: requests_session and proxies,verify_cert,cert are mutually exclusive')
 
-    r = requests.get(url,proxies=proxies,verify=verify_cert,headers=header,timeout=timeout,allow_redirects=True)
-    if r.ok:
-        return r.content
-    else:
-        r.raise_for_status()
+    with requests_session as session:
+        if referer != None:
+            session.headers.update({'referer': '%s' % referer})
+        if user_agent != None:
+            session.headers.update({'user-agent': '%s' % user_agent})
+        r = session.get(url,timeout=timeout,allow_redirects=True)
+        if r.ok:
+            return r.content
+        else:
+            r.raise_for_status()
 
 class FileChunks(object):
     def __init__(self, filename, chunk_size=2*1024*1024,progress_hook=None):

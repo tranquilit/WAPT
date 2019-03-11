@@ -453,6 +453,8 @@ def main():
                 else:
                     return private_key_password_cache
 
+        mywapt.private_key_password_callback = get_private_key_passwd
+
         if options.language:
             mywapt.language = options.language
 
@@ -988,12 +990,12 @@ def main():
 
                 certificates = mywapt.personal_certificate()
                 print('Personal certificate is %s' % certificates[0].cn)
-                key = mywapt.private_key(passwd_callback=get_private_key_passwd)
+                key = mywapt.private_key()
                 print('Private key is %s' % key)
 
                 certificate = mywapt.personal_certificate()
                 print('Personal certificate is %s' % certificate[0])
-                key = mywapt.private_key(passwd_callback=get_private_key_passwd)
+                key = mywapt.private_key()
                 print('Private key is %s' % key)
 
                 for source_dir in all_args:
@@ -1069,7 +1071,7 @@ def main():
 
                 certificate = mywapt.personal_certificate()
                 print('Personal certificate is %s' % certificate[0])
-                key = mywapt.private_key(passwd_callback=get_private_key_passwd)
+                key = mywapt.private_key()
                 print('Private key is %s' % key)
 
                 for waptfile in all_args:

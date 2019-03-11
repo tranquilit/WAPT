@@ -94,10 +94,12 @@ from waptutils import create_recursive_zip,ensure_list,all_files,list_intersecti
 from waptutils import datetime2isodate,httpdatetime2isodate,httpdatetime2datetime,fileutcdate,fileisoutcdate,isodate2datetime
 from waptutils import default_http_headers,wget,get_language,import_setup,import_code
 from waptutils import _disable_file_system_redirection
+from waptutils import get_requests_client_cert_session
 
 from waptcrypto import EWaptMissingCertificate,EWaptBadCertificate
 from waptcrypto import SSLCABundle,SSLCertificate,SSLPrivateKey,SSLCRL
 from waptcrypto import SSLVerifyException,hexdigest_for_data,hexdigest_for_file,serialize_content_for_signature
+from waptcrypto import is_pem_key_encrypted
 
 logger = logging.getLogger()
 
@@ -3088,6 +3090,7 @@ class WaptRemoteRepo(WaptBaseRepo):
 
         self.client_certificate = None
         self.client_private_key = None
+        self.private_key_password_callback = None
 
         self.timeout = None
 
@@ -3108,6 +3111,23 @@ class WaptRemoteRepo(WaptBaseRepo):
             self.timeout = timeout
         if http_proxy is not None:
             self.http_proxy = http_proxy
+
+    def get_private_key_password(self,location,identity):
+        if self.private_key_password_callback is not None:
+            return self.private_key_password_callback(location,identity)
+        else:
+            return None
+
+    def get_requests_session(self,url=None):
+        if url is None:
+            url = self.repo_url
+        if self.client_private_key and is_pem_key_encrypted(self.client_private_key):
+            password = self.get_private_key_password(self.repo_url,self.client_private_key)
+        else:
+            password = None
+        cert = (self.client_certificate,self.client_private_key,password)
+        session = get_requests_client_cert_session(url=self.repo_url,cert=cert,verify=self.verify_cert,proxies=self.proxies)
+        return session
 
     @property
     def repo_url(self):
@@ -3199,8 +3219,12 @@ class WaptRemoteRepo(WaptBaseRepo):
     def client_auth(self):
         """Return SSL pair (cert,key) filenames for client side SSL auth
         """
-        if self.client_certificate and os.path.isfile(self.client_certificate) and os.path.isfile(self.client_private_key):
-            return (self.client_certificate,self.client_private_key)
+        if self.client_certificate and os.path.isfile(self.client_certificate):
+            if self.client_private_key is None:
+                cert = SSLCertificate(self.client_certificate)
+                key = cert.matching_key_in_dirs(password_callback=self.get_private_key_password)
+                self.client_private_key = key.private_key_filename
+            return (self.client_certificate,self.client_private_key,self.get_private_key_password(self.repo_url,self.client_certificate))
         else:
             return None
 
@@ -3220,19 +3244,16 @@ class WaptRemoteRepo(WaptBaseRepo):
         True
         """
         try:
-            logger.debug(u'Checking availability of %s' % (self.packages_url,))
-            req = requests.head(
-                self.packages_url,
-                timeout=self.timeout,
-                proxies=self.proxies,
-                verify=self.verify_cert,
-                headers=default_http_headers(),
-                cert = self.client_auth(),
-                allow_redirects=True,
-                )
-            req.raise_for_status()
-            packages_last_modified = req.headers.get('last-modified')
-            return httpdatetime2isodate(packages_last_modified)
+            with self.get_requests_session() as session:
+                logger.debug(u'Checking availability of %s' % (self.packages_url,))
+                req = session.head(
+                    self.packages_url,
+                    timeout=self.timeout,
+                    allow_redirects=True,
+                    )
+                req.raise_for_status()
+                packages_last_modified = req.headers.get('last-modified')
+                return httpdatetime2isodate(packages_last_modified)
         except requests.exceptions.SSLError as e:
             print(u'Certificate check failed for %s and verify_cert %s'%(self.packages_url,self.verify_cert))
             raise
@@ -3322,19 +3343,16 @@ class WaptRemoteRepo(WaptBaseRepo):
         Returns:
             (str,datetime.datetime): Packages data (local or remote) and last update date
         """
-        packages_answer = requests.get(
-            self.packages_url,
-            proxies=self.proxies,
-            timeout=self.timeout,
-            verify=self.verify_cert,
-            headers=default_http_headers(),
-            cert = self.client_auth(),
-            allow_redirects=True,
-            )
-        packages_answer.raise_for_status()
-        packages_last_modified = packages_answer.headers.get('last-modified')
-        _packages_index_date = httpdatetime2datetime(packages_last_modified)
-        return (str(packages_answer.content),_packages_index_date)
+        with self.get_requests_session() as session:
+            packages_answer = session.get(
+                self.packages_url,
+                timeout=self.timeout,
+                allow_redirects=True,
+                )
+            packages_answer.raise_for_status()
+            packages_last_modified = packages_answer.headers.get('last-modified')
+            _packages_index_date = httpdatetime2datetime(packages_last_modified)
+            return (str(packages_answer.content),_packages_index_date)
 
     def packages(self):
         if self._packages is None:
@@ -3388,61 +3406,60 @@ class WaptRemoteRepo(WaptBaseRepo):
             else:
                 raise Exception('Invalid package request %s' % p)
 
-        for entry in packages:
-            download_url = entry.download_url
-            fullpackagepath = os.path.join(target_dir,entry.filename)
-            skip = False
-            if usecache and os.path.isfile(fullpackagepath) and os.path.getsize(fullpackagepath) == entry.size :
-                # check version
-                try:
-                    cached = PackageEntry()
-                    cached.load_control_from_wapt(fullpackagepath,calc_md5=True)
-                    if entry == cached:
-                        if entry.md5sum == cached.md5sum:
-                            entry.localpath = cached.localpath
-                            skipped.append(fullpackagepath)
-                            logger.info(u"  Use cached package file from " + fullpackagepath)
-                            skip = True
-                        else:
-                            logger.critical(u"Cached file MD5 doesn't match MD5 found in packages index. Discarding cached file")
-                            os.remove(fullpackagepath)
-                except Exception as e:
-                    # error : reload
-                    logger.debug(u'Cache file %s is corrupted, reloading it. Error : %s' % (fullpackagepath,e) )
-
-            if not skip:
-                logger.info(u"  Downloading package from %s" % download_url)
-                try:
-                    def report(received,total,speed,url):
-                        try:
-                            if total>1:
-                                stat = u'%s : %i / %i (%.0f%%) (%.0f KB/s)\r' % (url,received,total,100.0*received/total, speed)
-                                print(stat)
+        with self.get_requests_session() as session:
+            for entry in packages:
+                download_url = entry.download_url
+                fullpackagepath = os.path.join(target_dir,entry.filename)
+                skip = False
+                if usecache and os.path.isfile(fullpackagepath) and os.path.getsize(fullpackagepath) == entry.size :
+                    # check version
+                    try:
+                        cached = PackageEntry()
+                        cached.load_control_from_wapt(fullpackagepath,calc_md5=True)
+                        if entry == cached:
+                            if entry.md5sum == cached.md5sum:
+                                entry.localpath = cached.localpath
+                                skipped.append(fullpackagepath)
+                                logger.info(u"  Use cached package file from " + fullpackagepath)
+                                skip = True
                             else:
-                                stat = ''
-                        except:
-                            pass
-                    """
-                    if not printhook:
-                        printhook = report
-                    """
-                    wget(download_url,
-                        target_dir,
-                        proxies=self.proxies,
-                        printhook = printhook,
-                        connect_timeout=self.timeout,
-                        verify_cert = self.verify_cert,
-                        cert = self.client_auth(),
-                        resume= usecache,
-                        md5 = entry.md5sum,
-                        )
-                    entry.localpath = fullpackagepath
-                    downloaded.append(fullpackagepath)
-                except Exception as e:
-                    if os.path.isfile(fullpackagepath):
-                        os.remove(fullpackagepath)
-                    logger.critical(u"Error downloading package from http repository, please update... error : %s" % e)
-                    errors.append((download_url,"%s" % e))
+                                logger.critical(u"Cached file MD5 doesn't match MD5 found in packages index. Discarding cached file")
+                                os.remove(fullpackagepath)
+                    except Exception as e:
+                        # error : reload
+                        logger.debug(u'Cache file %s is corrupted, reloading it. Error : %s' % (fullpackagepath,e) )
+
+                if not skip:
+                    logger.info(u"  Downloading package from %s" % download_url)
+                    try:
+                        def report(received,total,speed,url):
+                            try:
+                                if total>1:
+                                    stat = u'%s : %i / %i (%.0f%%) (%.0f KB/s)\r' % (url,received,total,100.0*received/total, speed)
+                                    print(stat)
+                                else:
+                                    stat = ''
+                            except:
+                                pass
+                        """
+                        if not printhook:
+                            printhook = report
+                        """
+                        wget(download_url,
+                            target_dir,
+                            printhook = printhook,
+                            connect_timeout=self.timeout,
+                            resume= usecache,
+                            md5 = entry.md5sum,
+                            requests_session=session,
+                            )
+                        entry.localpath = fullpackagepath
+                        downloaded.append(fullpackagepath)
+                    except Exception as e:
+                        if os.path.isfile(fullpackagepath):
+                            os.remove(fullpackagepath)
+                        logger.critical(u"Error downloading package from http repository, please update... error : %s" % e)
+                        errors.append((download_url,"%s" % e))
         return {"downloaded":downloaded,"skipped":skipped,"errors":errors,"packages":packages}
 
 def update_packages(adir,force=False,proxies=None):

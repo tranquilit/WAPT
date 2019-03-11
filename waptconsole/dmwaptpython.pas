@@ -461,7 +461,7 @@ begin
     if PrivateKeyPath ='' then
       while RetryCount>0 do
       begin
-        with TvisPrivateKeyAuth.Create(Application.MainForm) do
+        with TVisPrivateKeyAuth.Create(Application.MainForm) do
         try
           laKeyPath.Caption := WaptPersonalCertificatePath;
           if ShowModal = mrOk then
@@ -472,7 +472,6 @@ begin
             begin
               FCachedPrivateKeyPassword:=edPasswordKey.Text;
               break;
-
             end;
           end
           else
@@ -518,6 +517,7 @@ begin
       // declare WaptConsole feedback module
       st.Append('import waptconsole');
       st.Append('WAPT.progress_hook = waptconsole.UpdateProgress');
+      st.Append('WAPT.private_key_password_callback = waptconsole.GetPrivateKeyPassword');
       st.Append('common.default_pwd_callback = waptconsole.GetPrivateKeyPassword');
       PythonEng.ExecStrings(St);
       FWAPT := MainModule.WAPT;

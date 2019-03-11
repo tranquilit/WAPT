@@ -1937,7 +1937,7 @@ class SSLCertificate(BaseObjectClass):
             key = SSLPrivateKey(key)
         return self.modulus == key.modulus
 
-    def matching_key_in_dirs(self,directories=None,password_callback=None,private_key_password=None,fpcall=False):
+    def matching_key_in_dirs(self,directories=None,password_callback=None,private_key_password=None):
         """Return the first SSLPrivateKey matching this certificate
 
         Args:

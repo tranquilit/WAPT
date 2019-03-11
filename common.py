@@ -45,7 +45,8 @@ try:
     # pylint: disable=no-member
     # no error
     import requests.packages.urllib3
-    requests.packages.urllib3.disable_warnings()
+    from requests.packages.urllib3.exceptions import InsecureRequestWarning
+    requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 except:
     pass
 
@@ -111,10 +112,12 @@ from waptutils import BaseObjectClass,ensure_list,ensure_unicode,default_http_he
 from waptutils import httpdatetime2isodate,datetime2isodate,FileChunks,jsondump,ZipFile,LogOutput,isodate2datetime
 from waptutils import import_code,import_setup,force_utf8_no_bom,format_bytes,wget,merge_dict,remove_encoding_declaration,list_intersection
 from waptutils import _disable_file_system_redirection
+from waptutils import get_requests_client_cert_session
 
 from waptcrypto import SSLCABundle,SSLCertificate,SSLPrivateKey,SSLCRL,SSLVerifyException,SSLCertificateSigningRequest
 from waptcrypto import get_peer_cert_chain_from_server,default_pwd_callback,hexdigest_for_data,get_cert_chain_as_pem
 from waptcrypto import sha256_for_data,EWaptMissingPrivateKey,EWaptMissingCertificate
+from waptcrypto import is_pem_key_encrypted
 
 from waptpackage import EWaptException,EWaptMissingLocalWaptFile,EWaptNotAPackage,EWaptNotSigned
 from waptpackage import EWaptBadTargetOS,EWaptNeedsNewerAgent,EWaptDiskSpace
@@ -162,25 +165,22 @@ def host_ipv4():
 def tryurl(url,proxies=None,timeout=5.0,auth=None,verify_cert=False,cert=None):
     # try to get header for the supplied URL, returns None if no answer within the specified timeout
     # else return time to get he answer.
-    try:
-        logger.debug(u'  trying %s' % url)
-        starttime = time.time()
-        headers = requests.head(url=url,
-            proxies=proxies,
-            timeout=timeout,
-            auth=auth,
-            verify=verify_cert,
-            headers=default_http_headers(),
-            cert=cert,
-            allow_redirects=True)
-        if headers.ok:
-            logger.debug(u'  OK')
-            return time.time() - starttime
-        else:
-            headers.raise_for_status()
-    except Exception as e:
-        logger.debug(u'  Not available : %s' % ensure_unicode(e))
-        return None
+    with get_requests_client_cert_session(url=url,cert=cert,verify=verify_cert,proxies=proxies) as session:
+        try:
+            logger.debug(u'  trying %s' % url)
+            starttime = time.time()
+            headers = session.head(url=url,
+                timeout=timeout,
+                auth=auth,
+                allow_redirects=True)
+            if headers.ok:
+                logger.debug(u'  OK')
+                return time.time() - starttime
+            else:
+                headers.raise_for_status()
+        except Exception as e:
+            logger.debug(u'  Not available : %s' % ensure_unicode(e))
+            return None
 
 class EWaptCancelled(Exception):
     pass
@@ -226,7 +226,7 @@ class WaptBaseDB(BaseObjectClass):
         else:
             logger.critical('Unexpected commit of an already committed transaction...')
             if logger.level == logging.DEBUG:
-                raise
+                raise Exception('Unexpected commit of an already committed transaction...')
         if self.transaction_depth == 0:
             logger.debug(u'DB commit')
             try:
@@ -1463,11 +1463,13 @@ class WaptDB(WaptBaseDB):
 class WaptServer(BaseObjectClass):
     """Manage connection to waptserver"""
 
-    def __init__(self,url=None,proxies={'http':None,'https':None},timeout = 5.0,dnsdomain=None):
+    def __init__(self,url=None,proxies={'http':None,'https':None},timeout = 5.0,dnsdomain=None,name='waptserver'):
         if url and url[-1]=='/':
             url = url.rstrip('/')
         self._server_url = url
         self._cached_dns_server_url = None
+
+        self.name = name
 
         self.proxies=proxies
         self.timeout = timeout
@@ -1479,6 +1481,8 @@ class WaptServer(BaseObjectClass):
 
         self.interactive_session = False
         self.ask_user_password_hook = None
+
+        self.private_key_password_callback=None
 
         if dnsdomain:
             self.dnsdomain = dnsdomain
@@ -1510,6 +1514,24 @@ class WaptServer(BaseObjectClass):
                 return self.ask_user_password(action)
         else:
             return None
+
+    def get_private_key_password(self,location,identity):
+        if self.private_key_password_callback is not None:
+            return self.private_key_password_callback(location,identity)
+        else:
+            return None
+
+    def get_requests_session(self,url=None):
+        if url is None:
+            url = self.server_url
+        if self.client_private_key and is_pem_key_encrypted(self.client_private_key):
+            password = self.get_private_key_password(url,self.client_private_key)
+        else:
+            password = None
+        cert = (self.client_certificate,self.client_private_key,password)
+        session = get_requests_client_cert_session(url=url,cert=cert,verify=self.verify_cert,proxies=self.proxies)
+        return session
+
 
     def save_server_certificate(self,server_ssl_dir=None,overwrite=False):
         """Retrieve certificate of https server for further checks
@@ -1644,6 +1666,7 @@ class WaptServer(BaseObjectClass):
         if not section:
             section = 'global'
         if config.has_section(section):
+            self.name = section
             if config.has_option(section,'wapt_server'):
                 # if defined but empty, look in dns srv
                 url = config.get(section,'wapt_server')
@@ -1710,21 +1733,19 @@ class WaptServer(BaseObjectClass):
         """ """
         surl = self.server_url
         if surl:
-            req = requests.get("%s/%s" % (surl,action),
-                proxies=self.proxies,verify=self.verify_cert,
-                timeout=timeout or self.timeout,auth=auth,
-                cert=self.client_auth(),
-                headers=default_http_headers(),
-                allow_redirects=True)
-            if req.status_code == 401:
-                req = requests.get("%s/%s" % (surl,action),
-                    proxies=self.proxies,verify=self.verify_cert,
-                    timeout=timeout or self.timeout,auth=self.auth(action=action),
-                    headers=default_http_headers(),
+            with self.get_requests_session(surl) as session:
+                req = session.get("%s/%s" % (surl,action),
+                    timeout=timeout or self.timeout,
+                    auth=auth,
                     allow_redirects=True)
+                if req.status_code == 401:
+                    req = session.get("%s/%s" % (surl,action),
+                        timeout=timeout or self.timeout,
+                        auth=self.auth(action=action),
+                        allow_redirects=True)
 
-            req.raise_for_status()
-            return ujson.loads(req.content)
+                req.raise_for_status()
+                return ujson.loads(req.content)
         else:
             raise Exception(u'Wapt server url not defined or not found in DNS')
 
@@ -1743,116 +1764,107 @@ class WaptServer(BaseObjectClass):
         """
         surl = self.server_url
         if surl:
-            headers = default_http_headers()
-            if data:
-                headers.update({
-                    'Content-type': 'binary/octet-stream',
-                    'Content-transfer-encoding': 'binary',
-                    })
-                if isinstance(data,str):
-                    headers['Content-Encoding'] = 'gzip'
-                    data = zlib.compress(data)
+            with self.get_requests_session(surl) as session:
+                if data:
+                    session.headers.update({
+                        'Content-type': 'binary/octet-stream',
+                        'Content-transfer-encoding': 'binary',
+                        })
+                    if isinstance(data,str):
+                        session.headers['Content-Encoding'] = 'gzip'
+                        data = zlib.compress(data)
 
-            if signature:
-                headers.update({
-                    'X-Signature': base64.b64encode(signature),
-                    })
-            if signer:
-                headers.update({
-                    'X-Signer': signer,
-                    })
+                if signature:
+                    session.headers.update({
+                        'X-Signature': base64.b64encode(signature),
+                        })
+                if signer:
+                    session.headers.update({
+                        'X-Signer': signer,
+                        })
 
-            if content_length is not None:
-                headers['Content-Length'] = "%s" % content_length
+                if content_length is not None:
+                    session.headers['Content-Length'] = "%s" % content_length
 
-            if isinstance(files,list):
-                files_dict = {}
-                for fn in files:
-                    with open(fn,'rb') as f:
-                        files_dict[os.path.basename(fn)] = f.read()
-            elif isinstance(files,dict):
-                files_dict = files
-            else:
-                files_dict = None
+                if isinstance(files,list):
+                    files_dict = {}
+                    for fn in files:
+                        with open(fn,'rb') as f:
+                            files_dict[os.path.basename(fn)] = f.read()
+                elif isinstance(files,dict):
+                    files_dict = files
+                else:
+                    files_dict = None
 
-            # check if auth is required before sending data in chunk
-            retry_count=0
-            if files_dict:
+                # check if auth is required before sending data in chunk
+                retry_count=0
+                if files_dict:
+                    while True:
+                        req = session.head("%s/%s" % (surl,action),
+                                timeout=timeout or self.timeout,
+                                auth=auth,
+                                allow_redirects=True)
+                        if req.status_code == 401:
+                            retry_count += 1
+                            if retry_count >= 3:
+                                raise EWaptBadServerAuthentication('Authentication failed on server %s for action %s' % (self.server_url,action))
+                            auth = self.auth(action=action)
+                        else:
+                            break
+
                 while True:
-                    req = requests.head("%s/%s" % (surl,action),
-                            proxies=self.proxies,
-                            verify=self.verify_cert,
-                            timeout=timeout or self.timeout,
-                            headers=headers,
-                            auth=auth,
-                            cert=self.client_auth(),
-                            allow_redirects=True)
-                    if req.status_code == 401:
+                    req = session.post("%s/%s" % (surl,action),
+                        data=data,
+                        files=files_dict,
+                        timeout=timeout or self.timeout,
+                        auth=auth,
+                        allow_redirects=True)
+
+                    if (req.status_code == 401) and (retry_count < 3):
                         retry_count += 1
                         if retry_count >= 3:
                             raise EWaptBadServerAuthentication('Authentication failed on server %s for action %s' % (self.server_url,action))
                         auth = self.auth(action=action)
                     else:
                         break
-
-            while True:
-                req = requests.post("%s/%s" % (surl,action),
-                    data=data,
-                    files=files_dict,
-                    proxies=self.proxies,
-                    verify=self.verify_cert,
-                    timeout=timeout or self.timeout,
-                    auth=auth,
-                    cert=self.client_auth(),
-                    headers=headers,
-                    allow_redirects=True)
-
-                if (req.status_code == 401) and (retry_count < 3):
-                    retry_count += 1
-                    if retry_count >= 3:
-                        raise EWaptBadServerAuthentication('Authentication failed on server %s for action %s' % (self.server_url,action))
-                    auth = self.auth(action=action)
-                else:
-                    break
-            req.raise_for_status()
-            return ujson.loads(req.content)
+                req.raise_for_status()
+                return ujson.loads(req.content)
         else:
             raise Exception(u'Wapt server url not defined or not found in DNS')
 
     def client_auth(self):
         """Return SSL pair (cert,key) filenames for client side SSL auth
         """
-        if self.client_certificate and os.path.isfile(self.client_certificate) and os.path.isfile(self.client_private_key):
-            return (self.client_certificate,self.client_private_key)
+        if self.client_certificate and os.path.isfile(self.client_certificate):
+            if self.client_private_key is None:
+                cert = SSLCertificate(self.client_certificate)
+                key = cert.matching_key_in_dirs(password_callback=self.get_private_key_password)
+                self.client_private_key = key.private_key_filename
+            return (self.client_certificate,self.client_private_key,self.get_private_key_password(self.server_url,self.client_certificate))
         else:
             return None
 
 
     def available(self):
-        try:
-            if self.server_url:
-                req = requests.head("%s/ping" % (self.server_url),proxies=self.proxies,
-                    verify=self.verify_cert,
-                    timeout=self.timeout,
-                    auth=None,
-                    cert=self.client_auth(),
-                    headers=default_http_headers(),
-                    allow_redirects=True)
-                if req.status_code == 401:
-                    req = requests.head("%s/ping" % (self.server_url),proxies=self.proxies,
-                        verify=self.verify_cert,
+        if self.server_url:
+            with self.get_requests_session() as session:
+                try:
+                    req = session.head("%s/ping" % (self.server_url),
                         timeout=self.timeout,
-                        auth=self.auth(action='ping'),
-                        cert=self.client_auth(),
-                        headers=default_http_headers(),
+                        auth=None,
                         allow_redirects=True)
-                req.raise_for_status()
-                return True
-            else:
-                logger.debug(u'Wapt server is unavailable because no URL is defined')
-                return False
-        except Exception as e:
-            logger.debug(u'Wapt server %s unavailable because %s'%(self._server_url,ensure_unicode(e)))
+                    if req.status_code == 401:
+                        req = session.head("%s/ping" % (self.server_url),
+                            timeout=self.timeout,
+                            auth=self.auth(action='ping'),
+                            allow_redirects=True)
+                    req.raise_for_status()
+                    return True
+                except Exception as e:
+                    logger.debug(u'Wapt server %s unavailable because %s'%(self._server_url,ensure_unicode(e)))
+                    return False
+        else:
+            logger.debug(u'Wapt server is unavailable because no URL is defined')
             return False
 
     def as_dict(self):
@@ -2254,14 +2266,15 @@ class WaptHostRepo(WaptRepo):
         logger.debug(u'Checking availability of %s' % (self.name))
         try:
             host_package_url = self.host_package_url()
-            logger.debug(u'Trying to get  host package for %s at %s' % (self.host_id,host_package_url))
-            req = requests.head(host_package_url,proxies=self.proxies,verify=self.verify_cert,timeout=self.timeout,
-                headers=default_http_headers(),cert = self.client_auth(),
-                allow_redirects=True)
-            req.raise_for_status()
-            packages_last_modified = req.headers.get('last-modified')
+            with self.get_requests_session() as session:
+                logger.debug(u'Trying to get  host package for %s at %s' % (self.host_id,host_package_url))
+                req = session.head(host_package_url,
+                    timeout=self.timeout,
+                    allow_redirects=True)
+                req.raise_for_status()
+                packages_last_modified = req.headers.get('last-modified')
 
-            return httpdatetime2isodate(packages_last_modified)
+                return httpdatetime2isodate(packages_last_modified)
         except requests.HTTPError as e:
             logger.info(u'No host package available at this time for %s on %s' % (self.host_id,self.name))
             return None
@@ -2316,82 +2329,80 @@ class WaptHostRepo(WaptRepo):
         else:
             host_ids = self.host_id
 
-        for host_id in host_ids:
-            host_package_url = self.host_package_url(host_id)
-            logger.debug(u'Trying to get  host package for %s at %s' % (host_id,host_package_url))
-            host_package = requests.get(host_package_url,
-                proxies=self.proxies,verify=self.verify_cert,
-                timeout=self.timeout,
-                headers=default_http_headers(),
-                allow_redirects=True,
-                cert = self.client_auth(),
-                )
+        with self.get_requests_session() as session:
+            for host_id in host_ids:
+                host_package_url = self.host_package_url(host_id)
+                logger.debug(u'Trying to get  host package for %s at %s' % (host_id,host_package_url))
+                host_package = session.get(host_package_url,
+                    timeout=self.timeout,
+                    allow_redirects=True,
+                    )
 
-            # prepare a package entry for further check
-            package = PackageEntry()
-            package.package = host_id
-            package.repo = self.name
-            package.repo_url = self.repo_url
+                # prepare a package entry for further check
+                package = PackageEntry()
+                package.package = host_id
+                package.repo = self.name
+                package.repo_url = self.repo_url
 
-            if host_package.status_code == 404:
-                # host package not found
-                logger.info('No host package found for %s' % host_id)
-            else:
-                # for other than not found error, add to the discarded list.
-                # this can be consulted for mass changes to not recreate host packages because of temporary failures
-                try:
-                    host_package.raise_for_status()
-                except requests.HTTPError as e:
-                    logger.info(u'Discarding package for %s: error %s' % (package.package,e))
-                    self.discarded.append(package)
-                    continue
-
-                content = host_package.content
-
-                if not content.startswith(zipfile.stringFileHeader):
-                    # try to decrypt package data
-                    if self.host_key:
-                        _host_package_content = self.host_key.decrypt_fernet(content)
-                    else:
-                        raise EWaptNotAPackage(u'Package for %s does not look like a Zip file and no key is available to try to decrypt it'% host_id)
+                if host_package.status_code == 404:
+                    # host package not found
+                    logger.info('No host package found for %s' % host_id)
                 else:
-                    _host_package_content = content
-
-                # Packages file is a zipfile with one Packages file inside
-                with ZipFile(StringIO.StringIO(_host_package_content)) as zip:
-                    control_data = codecs.decode(zip.read(name='WAPT/control'),'UTF-8')
-                    package._load_control(control_data)
-                    package.filename = package.make_package_filename()
-
+                    # for other than not found error, add to the discarded list.
+                    # this can be consulted for mass changes to not recreate host packages because of temporary failures
                     try:
-                        cert_data = zip.read(name='WAPT/certificate.crt')
-                        signers_bundle = SSLCABundle()
-                        signers_bundle.add_certificates_from_pem(cert_data)
-                    except Exception as e:
-                        logger.warning('Error reading host package certificate: %s'%repr(e))
-                        signers_bundle = None
-
-                if self.is_locally_allowed_package(package):
-                    try:
-                        if self.cabundle is not None:
-                            package.check_control_signature(self.cabundle,signers_bundle = signers_bundle)
-                        self._packages.append(package)
-                        if package.package not in self._index or self._index[package.package] < package:
-                            self._index[package.package] = package
-
-                        # keep content with index as it should be small
-                        package._package_content = _host_package_content
-                        package._packages_date = httpdatetime2isodate(host_package.headers.get('last-modified',None))
-
-                        # TODO better
-                        self._packages_date = package._packages_date
-
-                    except (SSLVerifyException,EWaptNotSigned) as e:
-                        logger.critical("Control data of package %s on repository %s is either corrupted or doesn't match any of the expected certificates %s" % (package.asrequirement(),self.name,self.cabundle))
+                        host_package.raise_for_status()
+                    except requests.HTTPError as e:
+                        logger.info(u'Discarding package for %s: error %s' % (package.package,e))
                         self.discarded.append(package)
-                else:
-                    logger.info('Discarding %s on repo "%s" because of local whitelist/blacklist rules' % (package.asrequirement(),self.name))
-                    self.discarded.append(package)
+                        continue
+
+                    content = host_package.content
+
+                    if not content.startswith(zipfile.stringFileHeader):
+                        # try to decrypt package data
+                        if self.host_key:
+                            _host_package_content = self.host_key.decrypt_fernet(content)
+                        else:
+                            raise EWaptNotAPackage(u'Package for %s does not look like a Zip file and no key is available to try to decrypt it'% host_id)
+                    else:
+                        _host_package_content = content
+
+                    # Packages file is a zipfile with one Packages file inside
+                    with ZipFile(StringIO.StringIO(_host_package_content)) as zip:
+                        control_data = codecs.decode(zip.read(name='WAPT/control'),'UTF-8')
+                        package._load_control(control_data)
+                        package.filename = package.make_package_filename()
+
+                        try:
+                            cert_data = zip.read(name='WAPT/certificate.crt')
+                            signers_bundle = SSLCABundle()
+                            signers_bundle.add_certificates_from_pem(cert_data)
+                        except Exception as e:
+                            logger.warning('Error reading host package certificate: %s'%repr(e))
+                            signers_bundle = None
+
+                    if self.is_locally_allowed_package(package):
+                        try:
+                            if self.cabundle is not None:
+                                package.check_control_signature(self.cabundle,signers_bundle = signers_bundle)
+                            self._packages.append(package)
+                            if package.package not in self._index or self._index[package.package] < package:
+                                self._index[package.package] = package
+
+                            # keep content with index as it should be small
+                            package._package_content = _host_package_content
+                            package._packages_date = httpdatetime2isodate(host_package.headers.get('last-modified',None))
+
+                            # TODO better
+                            self._packages_date = package._packages_date
+
+                        except (SSLVerifyException,EWaptNotSigned) as e:
+                            logger.critical("Control data of package %s on repository %s is either corrupted or doesn't match any of the expected certificates %s" % (package.asrequirement(),self.name,self.cabundle))
+                            self.discarded.append(package)
+                    else:
+                        logger.info('Discarding %s on repo "%s" because of local whitelist/blacklist rules' % (package.asrequirement(),self.name))
+                        self.discarded.append(package)
 
 
     def download_packages(self,package_requests,target_dir=None,usecache=True,printhook=None):
@@ -2636,7 +2647,8 @@ class Wapt(BaseObjectClass):
         self._host_certificate = None
         self._host_certificate_timestamp = None
 
-        #self.key_passwd_callback = None
+        # for private key password dialog tales (location,indentity) parameters
+        self.private_key_password_callback = None
 
         # keep private key in cache
         self._private_key_cache = None
@@ -2743,6 +2755,31 @@ class Wapt(BaseObjectClass):
 
                 return host_ad_groups
 
+
+    def set_client_cert_auth(self,connection):
+        """Set client side ssl authentication for a waptserver or a waptrepo using
+        host_certificate if client_certificate is not yet set in config and host certificate is able to do client_auth
+
+        Args:
+            connection: object with client_certificate, client_private_key and client_auth
+
+        """
+        try:
+            # use implicit host client certificate if not already set by config
+            if connection.client_certificate is None:
+                if os.path.isfile(self.get_host_certificate_filename()) and os.path.isfile(self.get_host_key_filename()):
+                    crt = self.get_host_certificate()
+                    if crt.is_client_auth:
+                        logger.debug('Using host certificate %s for repo %s auth' % (self.get_host_key_filename(),connection.name))
+                        connection.client_certificate = self.get_host_certificate_filename()
+                        connection.client_private_key = self.get_host_key_filename()
+                        connection.private_key_password_callback = self.private_key_password_callback
+                else:
+                    logger.debug('Warning : Host certificate %s not found, not using it for auth on repo %s' % (self.get_host_key_filename(),connection.name))
+        except Exception as e:
+            logger.debug(u'Unable to use client certificate auth: %s' % ensure_unicode(e))
+
+
     def load_config(self,config_filename=None):
         """Load configuration parameters from supplied inifilename
         """
@@ -2840,17 +2877,7 @@ class Wapt(BaseObjectClass):
 
         if self.config.has_option('global','wapt_server'):
             self.waptserver = WaptServer().load_config(self.config)
-            # implicit auth
-            try:
-                if self.waptserver.client_auth() is None and os.path.isfile(self.get_host_certificate_filename()) and os.path.isfile(self.get_host_key_filename()):
-                    crt = self.get_host_certificate()
-                    if crt.is_client_auth:
-                        logger.debug('Using host certificate %s for auth on waptserver' % (self.get_host_key_filename(),))
-                        self.waptserver.client_certificate = self.get_host_certificate_filename()
-                        self.waptserver.client_private_key = self.get_host_key_filename()
-            except Exception as e:
-                logger.debug(u'Unable to use client certificate auth: %s' % ensure_unicode(e))
-
+            self.set_client_cert_auth(self.waptserver)
         else:
             # force reset to None if config file is changed at runtime
             self.waptserver = None
@@ -2924,17 +2951,7 @@ class Wapt(BaseObjectClass):
                     w = WaptRepo(name=name).load_config(self.config,section=name)
                     if w.cabundle is None:
                         w.cabundle = self.cabundle
-
-                    # implicit auth
-                    try:
-                        if w.client_auth() is None and os.path.isfile(self.get_host_certificate_filename()) and os.path.isfile(self.get_host_key_filename()):
-                            crt = self.get_host_certificate()
-                            if crt.is_client_auth:
-                                logger.debug('Using host certificate %s for repo %s auth' % (self.get_host_key_filename(),w.name))
-                                w.client_certificate = self.get_host_certificate_filename()
-                                w.client_private_key = self.get_host_key_filename()
-                    except Exception as e:
-                        logger.debug(u'Unable to use client certificate auth: %s' % ensure_unicode(e))
+                    self.set_client_cert_auth(w)
 
                     self.repositories.append(w)
                     logger.debug(u'    %s:%s' % (w.name,w._repo_url))
@@ -2947,16 +2964,7 @@ class Wapt(BaseObjectClass):
             self.repositories.append(w)
             if w.cabundle is None:
                 w.cabundle = self.cabundle
-            # implicit auth
-            try:
-                if w.client_auth() is None and os.path.isfile(self.get_host_certificate_filename()) and os.path.isfile(self.get_host_key_filename()):
-                    crt = self.get_host_certificate()
-                    if crt.is_client_auth:
-                        logger.debug('Using host certificate %s for repo %s auth' % (self.get_host_key_filename(),w.name))
-                        w.client_certificate = self.get_host_certificate_filename()
-                        w.client_private_key = self.get_host_key_filename()
-            except Exception as e:
-                logger.debug(u'Unable to use client certificate auth: %s' % ensure_unicode(e))
+            self.set_client_cert_auth(w)
 
         # True if we want to use automatic host package based on host fqdn
         #   privacy problem as there is a request to wapt repo to get
@@ -3038,17 +3046,12 @@ class Wapt(BaseObjectClass):
             if host_repo.cabundle is None:
                 host_repo.cabundle = self.cabundle
 
-            # implicit auth
-            if host_repo.client_auth() is None and os.path.isfile(self.get_host_certificate_filename()) and os.path.isfile(self.get_host_key_filename()):
-                crt = self.get_host_certificate()
-                if crt.is_client_auth:
-                    logger.debug('Using host certificate %s for %s auth' % (self.get_host_key_filename(),host_repo.name))
-                    host_repo.client_certificate = self.get_host_certificate_filename()
-                    host_repo.client_private_key = self.get_host_key_filename()
-
             # in case host repo is guessed from main repo (no specific section) ans main repor_url is set
             if section is None and main and main._repo_url:
                 host_repo.repo_url = main._repo_url+'-host'
+
+            self.set_client_cert_auth(host_repo)
+
         else:
             host_repo = None
 
@@ -5820,12 +5823,11 @@ class Wapt(BaseObjectClass):
         cert_chain.add_certificates_from_pem(pem_filename = self.personal_certificate_path)
         return cert_chain.certificates()
 
-    def private_key(self,passwd_callback=None,private_key_password = None):
+    def private_key(self,private_key_password = None):
         """SSLPrivateKey matching the personal_certificate
         When key has been found, it is kept in memory for later use.
 
         Args:
-            passwd_callback : func to call to get a password from user (must return str when called)
             private_key_password : password to use to decrypt key. If None, passwd_callback is called.
 
         Returns:
@@ -5834,18 +5836,20 @@ class Wapt(BaseObjectClass):
         Raises:
             EWaptMissingPrivateKey if ket can not be decrypted or found.
         """
-        if passwd_callback is None and private_key_password is None:
-            passwd_callback = default_pwd_callback
+        if private_key_password is None:
+            password_callback = self.private_key_password_callback
+        else:
+            password_callback = None
 
         certs = self.personal_certificate()
         cert = certs[0]
         if not self._private_key_cache or not cert.match_key(self._private_key_cache):
-            self._private_key_cache = cert.matching_key_in_dirs(password_callback=passwd_callback,private_key_password=private_key_password)
+            self._private_key_cache = cert.matching_key_in_dirs(password_callback=password_callback,private_key_password=private_key_password)
         if self._private_key_cache is None:
             raise EWaptMissingPrivateKey(u'The key matching the certificate %s can not be found or decrypted' % (cert.public_cert_filename or cert.subject))
         return self._private_key_cache
 
-    def sign_package(self,zip_or_directoryname,certificate=None,callback=None,private_key_password=None,private_key = None,set_maturity=None,inc_package_release=False,keep_signature_date=False):
+    def sign_package(self,zip_or_directoryname,certificate=None,private_key_password=None,private_key = None,set_maturity=None,inc_package_release=False,keep_signature_date=False):
         """Calc the signature of the WAPT/manifest.sha256 file and put/replace it in ZIP or directory.
             if directory, creates WAPT/manifest.sha256 and add it to the content of package
             create a WAPT/signature file and it to directory or zip file.
@@ -5856,8 +5860,8 @@ class Wapt(BaseObjectClass):
         Args:
             zip_or_directoryname: filename or path for the wapt package's content
             certificate (list): certificates chain of signer.
-            callback: ref to the function to call if a password is required for opening the private key.
             private_key (SSLPrivateKey): the private key to use
+            private_key_password (str) : passphrase to decrypt the private key. If None provided, use self.private_key_password_callback
 
         Returns:
             str: base64 encoded signature of manifest.sha256 file (content
@@ -5873,8 +5877,13 @@ class Wapt(BaseObjectClass):
         else:
             signer_cert = certificate
 
+        if private_key_password is None:
+            password_callback = self.private_key_password_callback
+        else:
+            password_callback = None
+
         if private_key is None:
-            private_key = signer_cert.matching_key_in_dirs(password_callback=callback,private_key_password=private_key_password)
+            private_key = signer_cert.matching_key_in_dirs(password_callback=password_callback,private_key_password=private_key_password)
 
         logger.info(u'Using identity : %s' % signer_cert.cn)
         pe =  PackageEntry().load_control_from_wapt(zip_or_directoryname)
@@ -5884,7 +5893,7 @@ class Wapt(BaseObjectClass):
             pe.inc_build()
         pe.save_control_to_wapt()
         return pe.sign_package(private_key=private_key,
-                certificate = certificate,password_callback=callback,
+                certificate = certificate,password_callback=password_callback,
                 private_key_password=private_key_password,
                 mds = self.sign_digests,
                 keep_signature_date=keep_signature_date)
