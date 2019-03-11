@@ -325,6 +325,7 @@ begin
       end;
     end;
   finally
+    MakeFullyVisible;
     ini.Free;
   end;
 end;
