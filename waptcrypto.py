@@ -110,6 +110,14 @@ def check_key_password(key_filename,password=None):
     return True
 
 
+def is_pem_key_encrypted(pem_filename):
+    if pem_filename and os.path.isfile(pem_filename):
+        pem_content = open(pem_filename,'r').read()
+        return 'PRIVATE KEY' in pem_content and 'ENCRYPTED' in pem_content
+    else:
+        return False
+
+
 def read_in_chunks(f, chunk_size=1024*128):
     """Lazy function (generator) to read a file piece by piece.
     Default chunk size: 128k."""
