@@ -1,9 +1,9 @@
 #user  nobody;
 worker_processes  1;
 
-error_log  "{{ wapt_root_dir}}/waptserver/nginx/logs/error.log";
+error_log  "{{ wapt_root_dir}}/log/nginx-errors.log";
 
-pid         "{{ wapt_root_dir}}/waptserver/nginx/logs/nginx.pid";
+pid        "{{ wapt_root_dir}}/log/nginx.pid";
 
 events {
     worker_connections  1024;
@@ -15,9 +15,10 @@ http {
 
     log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
                       '$status $body_bytes_sent "$http_referer" '
-                      '"$http_user_agent" "$http_x_forwarded_for"';
+                      '"$http_user_agent" "$http_x_forwarded_for"'
+                      '"$ssl_client_s_dn"';
 
-    access_log  "{{ wapt_root_dir}}/waptserver/nginx/logs/access.log";
+    access_log  "{{ wapt_root_dir}}/log/nginx-access.log";
 
     sendfile        on;
     #tcp_nopush     on;
@@ -53,6 +54,11 @@ http {
         ssl_session_cache           none;
         ssl_session_tickets         off;
 
+    {% if use_ssl_client_auth %}
+        ssl_client_certificate "{{ clients_signing_certificate }}";
+        ssl_verify_client optional;
+    {% endif %}
+
         gzip_min_length     1000;
         gzip_buffers        4 8k;
         gzip_http_version   1.0;
@@ -75,13 +81,18 @@ http {
                 alias "{{ wapt_root_dir}}/waptserver/static";
             }
 
+            location ~ ^/(wapt/waptsetup-tis.exe|wapt/waptagent.exe|wapt/waptdeploy.exe)$ {
+                root "{{ wapt_repository_path }}";
+            }
 
-            location ~ ^/(wapt|wapt-host|waptwua)/(.*)$ {
-                proxy_set_header Cache-Control "store, no-cache, must-revalidate, post-check=0, pre-check=0";
-                proxy_set_header Pragma "no-cache";
-                proxy_set_header Expires "Sun, 19 Nov 1978 05:00:00 GMT";
-
-                rewrite ^/(wapt|wapt-host|waptwua)/(.*)$ /$1/$2 break;
+            location ~ ^/(wapt/.*|wapt-host/.*|waptwua/.*)$ {
+    {% if use_ssl_client_auth %}
+                proxy_set_header X-Ssl-Authenticated $ssl_client_verify;
+                proxy_set_header X-Ssl-Client-DN $ssl_client_s_dn;
+                if ($ssl_client_verify != SUCCESS) {
+                   return 401;
+                }
+    {% endif %}                
                 root "{{ wapt_repository_path }}";
             }
 
@@ -97,11 +108,22 @@ http {
             }
         {% endif %} {# if use_kerberos #}
 
+            location /add_host {
+                proxy_pass http://127.0.0.1:{{waptserver_port}};
+            }
+
             location /wapt-host/Packages {
                     return 403;
             }
 
             location / {
+    {% if use_ssl_client_auth %}
+                proxy_set_header X-Ssl-Authenticated $ssl_client_verify;
+                proxy_set_header X-Ssl-Client-DN $ssl_client_s_dn;
+                if ($ssl_client_verify != SUCCESS) {
+                   return 401;
+                }
+    {% endif %}
                 proxy_pass http://127.0.0.1:{{waptserver_port}};
             }
 
