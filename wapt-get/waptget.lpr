@@ -637,7 +637,7 @@ begin
         if action='update' then
         begin
           Logger('Call update URL...',DEBUG);
-          if HasOption('f','force') then
+          if FindCmdLineSwitch('Force',['/','-'],True) or FindCmdLineSwitch('F',['/','-'],True) then
             res := WAPTLocalJsonGet('update.json?notify_user=0&force=1')
           else
             res := WAPTLocalJsonGet('update.json?notify_user=0');
