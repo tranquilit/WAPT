@@ -2648,7 +2648,7 @@ class Wapt(BaseObjectClass):
         self._host_certificate_timestamp = None
 
         # for private key password dialog tales (location,indentity) parameters
-        self.private_key_password_callback = None
+        self._private_key_password_callback = None
 
         # keep private key in cache
         self._private_key_cache = None
@@ -2678,6 +2678,19 @@ class Wapt(BaseObjectClass):
 
         import pythoncom
         pythoncom.CoInitialize()
+
+
+    @property
+    def private_key_password_callback(self):
+        return self._private_key_password_callback
+
+    @private_key_password_callback.setter
+    def private_key_password_callback(self,value):
+        self._private_key_password_callback = value
+        if self.waptserver:
+            self.waptserver.private_key_password_callback = value
+        for repo in self.repositories:
+            repo.private_key_password_callback = value
 
     def __enter__(self):
         return self
@@ -2773,9 +2786,9 @@ class Wapt(BaseObjectClass):
                         logger.debug('Using host certificate %s for repo %s auth' % (self.get_host_key_filename(),connection.name))
                         connection.client_certificate = self.get_host_certificate_filename()
                         connection.client_private_key = self.get_host_key_filename()
-                        connection.private_key_password_callback = self.private_key_password_callback
                 else:
                     logger.debug('Warning : Host certificate %s not found, not using it for auth on repo %s' % (self.get_host_key_filename(),connection.name))
+            connection.private_key_password_callback = self.private_key_password_callback
         except Exception as e:
             logger.debug(u'Unable to use client certificate auth: %s' % ensure_unicode(e))
 

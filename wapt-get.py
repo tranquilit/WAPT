@@ -439,7 +439,7 @@ def main():
             global options
             global private_key_password_cache
             if options.private_key_passwd and os.path.isfile(options.private_key_passwd):
-                return open(options.private_key_passwd,'r').read().splitlines()[0].strip()
+                private_key_password_cache = open(options.private_key_passwd,'r').read().splitlines()[0].strip()
             else:
                 if private_key_password_cache is None:
                     if (options.use_gui_helper or sys.stdin is not sys.__stdin__) and waptguihelper:
@@ -450,8 +450,7 @@ def main():
                             private_key_password_cache = None
                     else:
                         private_key_password_cache = default_pwd_callback(*args)
-                else:
-                    return private_key_password_cache
+            return private_key_password_cache
 
         mywapt.private_key_password_callback = get_private_key_passwd
 

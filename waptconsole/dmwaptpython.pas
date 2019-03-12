@@ -38,6 +38,7 @@ type
     Fwaptpackage: Variant;
     Fwaptdevutils: Variant;
     Flicencing: Variant;
+    FWaptconsoleFacade: Variant;
     jsondata:TJSONData;
     {$ifdef ENTERPRISE}
     FMaxHostsCount:Integer;
@@ -49,6 +50,7 @@ type
     function GetMainWaptRepo: Variant;
     function GetPackagesAuthorizedCA: Variant;
     function GetPersonalCertificate: Variant;
+    function GetWaptconsoleFacade: Variant;
     function GetWaptHostRepo: Variant;
     function getprivateKeyPassword: RawByteString;
     function Getsetuphelpers: Variant;
@@ -98,6 +100,8 @@ type
     property waptpackage:Variant read Getwaptpackage;
     property waptdevutils:Variant read Getwaptdevutils;
     property IsEnterpriseEdition:Boolean read GetIsEnterpriseEdition write SetIsEnterpriseEdition;
+
+    property WaptconsoleFacade:Variant read GetWaptconsoleFacade;
 
     property PersonalCertificate:Variant read GetPersonalCertificate write SetPersonalCertificate;
     function PersonalCertificateIsCodeSigning:Boolean;
@@ -510,15 +514,16 @@ begin
       st.Append('logger = logging.getLogger()');
       st.Append('logging.basicConfig(level=logging.WARNING)');
       st.Append('import common');
+      st.Append('import waptconsole');
+      st.Append('common.default_pwd_callback = waptconsole.GetPrivateKeyPassword');
       st.Append(format('WAPT = common.Wapt(config_filename=r"%s".decode(''utf8''),disable_update_server_status=True)',[WaptConfigFileName]));
       st.Append('WAPT.dbpath=r":memory:"');
       st.Append('WAPT.use_hostpackages = False');
 
       // declare WaptConsole feedback module
-      st.Append('import waptconsole');
       st.Append('WAPT.progress_hook = waptconsole.UpdateProgress');
       st.Append('WAPT.private_key_password_callback = waptconsole.GetPrivateKeyPassword');
-      st.Append('common.default_pwd_callback = waptconsole.GetPrivateKeyPassword');
+
       PythonEng.ExecStrings(St);
       FWAPT := MainModule.WAPT;
     finally
@@ -569,6 +574,7 @@ begin
       FMainWaptRepo := dmpython.waptpackage.WaptRemoteRepo(name := section {, cabundle := cabundle});
       VWaptConfigFileName:=PyUTF8Decode(WaptConfigFileName);
       FMainWaptRepo.load_config_from_file(VWaptConfigFileName);
+      FMainWaptRepo.private_key_password_callback := WaptconsoleFacade.GetPrivateKeyPassword;
       //todo : load client cert and key
     finally
       Free;
@@ -610,6 +616,7 @@ begin
       FWaptHostRepo := dmpython.common.WaptHostRepo(name := section, cabundle := cabundle );
       VWaptConfigFileName := PyUTF8Decode(WaptConfigFileName);
       FWaptHostRepo.load_config_from_file(VWaptConfigFileName);
+      FWaptHostRepo.private_key_password_callback := WaptconsoleFacade.GetPrivateKeyPassword;
       //todo : load client cert and key
     finally
       Free;
@@ -622,7 +629,10 @@ end;
 function TDMPython.Getcommon: Variant;
 begin
   if VarIsEmpty(Fcommon) or VarIsNull(Fcommon) then
+  begin
     Fcommon:= VarPyth.Import('common');
+    Fcommon.default_pwd_callback := WaptconsoleFacade.GetPrivateKeyPassword;
+  end;
   Result := Fcommon;
 end;
 
@@ -697,6 +707,14 @@ begin
     end;
   end;
   Result := FPersonalCertificate;
+end;
+
+function TDMPython.GetWaptconsoleFacade: Variant;
+begin
+  if VarIsEmpty(FWaptconsoleFacade) or VarIsNull(FWaptconsoleFacade) then
+    FWaptconsoleFacade := VarPyth.Import('waptconsole');
+  Result := FWaptconsoleFacade;
+
 end;
 
 
