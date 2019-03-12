@@ -3410,7 +3410,7 @@ class Wapt(BaseObjectClass):
             cur = self.waptdb.db.execute("""\
                   update wapt_localstatus
                     set install_status=coalesce('ERROR',install_status) where process_id in (?)
-                """,( ','.join([p for p in reset_error]),))
+                """,( ','.join([str(p) for p in reset_error]),))
 
         if reset_error or not init_run_pids:
             self.runstatus = ''
