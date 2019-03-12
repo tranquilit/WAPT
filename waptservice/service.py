@@ -236,7 +236,7 @@ def before_first_request():
 def close_connection(exception):
     try:
         local_wapt = getattr(g, 'wapt', None)
-        if local_wapt is not None and local_wapt._waptdb:
+        if local_wapt is not None and local_wapt._waptdb and local_wapt._waptdb.transaction_depth > 0:
             try:
                 local_wapt._waptdb.commit()
                 local_wapt._waptdb = None
@@ -1456,17 +1456,16 @@ class WaptTaskManager(threading.Thread):
                 # check wapt configuration, reload ini file if changed
                 # reload wapt config
                 self.check_configuration()
-                with self.wapt.waptdb:
-                    # force update if host capabilities have changed
-                    new_capa = self.wapt.host_capabilities_fingerprint()
-                    old_capa = self.wapt.read_param('host_capabilities_fingerprint')
-                    if old_capa != new_capa:
-                        logger.info('Host capabilities have changed since last update, forcing update')
-                        task = WaptUpdate()
-                        task.created_by = 'TASK MANAGER'
-                        task.force = True
-                        task.notify_server_on_finish = True
-                        self.add_task(task).as_dict()
+                # force update if host capabilities have changed
+                new_capa = self.wapt.host_capabilities_fingerprint()
+                old_capa = self.wapt.read_param('host_capabilities_fingerprint')
+                if old_capa != new_capa:
+                    logger.info('Host capabilities have changed since last update, forcing update')
+                    task = WaptUpdate()
+                    task.created_by = 'TASK MANAGER'
+                    task.force = True
+                    task.notify_server_on_finish = True
+                    self.add_task(task).as_dict()
 
                 # check tasks queue
                 self.running_task = self.tasks_queue.get(timeout=waptconfig.waptservice_poll_timeout)
@@ -1516,7 +1515,10 @@ class WaptTaskManager(threading.Thread):
                             print("Traceback error")
                 finally:
                     self.tasks_queue.task_done()
-                    self.update_runstatus('')
+                    try:
+                        self.update_runstatus('')
+               	    except Exception as e:
+                        logger.warning(u'Error reset runstatus : %s' % ensure_unicode(traceback.format_exc()))
 
                     self.running_task = None
                     # trim history lists
@@ -1528,12 +1530,20 @@ class WaptTaskManager(threading.Thread):
                         del self.tasks_error[:len(self.tasks_error)-waptconfig.MAX_HISTORY]
 
             except Queue.Empty:
-                self.update_runstatus('')
+                try:
+                    self.update_runstatus('')
+                except Exception as e:
+                    logger.warning(u'Error reset runstatus : %s' % ensure_unicode(traceback.format_exc()))
+
                 try:
                     self.check_scheduled_tasks()
                 except Exception as e:
                     logger.warning(u'Error checking scheduled tasks : %s' % ensure_unicode(traceback.format_exc()))
                 logger.debug(u"{} i'm still alive... but nothing to do".format(datetime.datetime.now()))
+
+            except Exception as e:
+                logger.critical(u'Unhandled error in task manager loop: %s' % ensure_unicode(e))
+
 
     def current_task_counter(self):
         with self.status_lock:
