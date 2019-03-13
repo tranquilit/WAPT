@@ -1308,7 +1308,7 @@ class SSLPrivateKey(BaseObjectClass):
             is_ca=False,
             is_code_signing=None,
             is_client_auth=None,
-            key_usages=['digital_signature','content_commitment','key_cert_sign','data_encipherment']
+            key_usages=['digital_signature','content_commitment','key_cert_sign','data_encipherment'],
             ):
         """Build a certificate signing request with self public key and supplied attributes,
 
@@ -1367,8 +1367,10 @@ class SSLPrivateKey(BaseObjectClass):
 
 
         if dnsname is not None:
+            if isinstance(dnsname,(str,unicode)):
+                dnsname = [dnsname]
             extensions.append(dict(
-                    extension=x509.SubjectAlternativeName([x509.DNSName(ensure_unicode(dnsname))]),
+                    extension=x509.SubjectAlternativeName([x509.DNSName(ensure_unicode(name)) for name in dnsname]),
                     critical=False))
 
         for key_usage in key_usages:
