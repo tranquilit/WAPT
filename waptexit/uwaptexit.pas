@@ -697,8 +697,8 @@ begin
         'OK': ImageIndex := 4;
         'NEED-UPGRADE': ImageIndex := 5;
         'ERROR-UPGRADE','ERROR','ERROR-INSTALL': ImageIndex := 6;
-        'MISSING','NEED-INSTALL': ImageIndex := 7;
-        'NEED-REMOVE': ImageIndex := 8;
+        'MISSING','INSTALL': ImageIndex := 7;
+        'REMOVE': ImageIndex := 8;
         'RUNNING': ImageIndex := 9;
       end;
     end;
