@@ -1010,6 +1010,7 @@ def remove():
     mergegroup = common.merge_self_service_rules(listgroup)
     mergerules = common.merge_self_service_rules(listrules)
     grpuser = []
+
     if request.authorization:
         auth = request.authorization
         if check_auth(auth.username,auth.password):
@@ -1019,6 +1020,8 @@ def remove():
                 grpuser = common.get_user_self_service_groups(mergegroup,auth.username,auth.password)
             except:
                 return authenticate()
+    else:
+        raise Exception('No authorization')
 
     packages = request.args.get('package')
     if not isinstance(packages,list):
@@ -1030,7 +1033,7 @@ def remove():
     for package in packages:
         if not common.check_user_authorisation_for_self_service(mergerules,package,grpuser):
             return authenticate()
-        data.append(app.task_manager.add_task(WaptPackageRemove(package,force = force),notify_user=notify_user).as_dict())
+        data.append(app.task_manager.add_task(WaptPackageRemove(package,force = force,created_by=auth.username),notify_user=notify_user).as_dict())
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
     else:
@@ -1246,7 +1249,6 @@ class WaptTaskManager(threading.Thread):
         threading.Thread.__init__(self)
         self.name = 'WaptTaskManager'
         self.status_lock = threading.RLock()
-
         self.wapt = None
         self.tasks = []
 
@@ -1303,6 +1305,13 @@ class WaptTaskManager(threading.Thread):
     def add_task(self,task,notify_user=None):
         """Adds a new WaptTask for processing"""
         with self.status_lock:
+            if not self.wapt:
+                start_wait = time.time()
+                while not self.wapt:
+                    time.sleep(1)
+                    if time.time() - start_wait>15:
+                        raise Exception('WapttaskManager.add_task : No wapt instance available in Task manager')
+
             same = [pending for pending in self.tasks_queue.queue if pending.same_action(task)]
             if self.running_task and self.running_task.same_action(task):
                 same.append(self.running_task)
