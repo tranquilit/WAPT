@@ -2179,6 +2179,7 @@ class PackageEntry(BaseObjectClass):
             setattr(setup,'persistent_source_dir',persistent_source_dir)
 
             if wapt_context:
+                # run and run_not_fatal are replaced by pids aware versions
                 setattr(setup,'run',wapt_context.run)
                 setattr(setup,'run_notfatal',wapt_context.run_notfatal)
                 setattr(setup,'WAPT',wapt_context)
@@ -2192,12 +2193,11 @@ class PackageEntry(BaseObjectClass):
                 # todo
                 setattr(setup,'user',None)
                 setattr(setup,'usergroups',[])
-                setattr(setup,'persistent_dir',None)
 
             if hasattr(self,'persistent_dir') and self.persistent_dir:
                 persistent_dir = self.persistent_dir
             elif self.package_uuid and wapt_context:
-                    persistent_dir = os.path.join(wapt_context.wapt_base_dir,'private',self.package_uuid)
+                persistent_dir = os.path.join(wapt_context.wapt_base_dir,'private','persistent',self.package_uuid)
 
             setattr(setup,'persistent_dir',persistent_dir)
 

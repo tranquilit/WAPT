@@ -3266,7 +3266,7 @@ def adjust_current_privileges(priv, enable = 1):
     else:
         new_privileges = [(id, 0)]
     # and make the adjustment.
-    win32security.AdjustTokenPrivileges(htoken, False, new_privileges)
+    return win32security.AdjustTokenPrivileges(htoken, False, new_privileges)
 
 def reboot_machine(message="Machine Rebooting", timeout=30, force=0, reboot=1):
     r"""Reboot the current host within specified timeout, display a message to the user
