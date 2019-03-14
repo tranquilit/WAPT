@@ -242,6 +242,7 @@ __all__ = \
  'win_startup_info',
  'WindowsVersions',
  'get_profiles_users',
+ 'get_local_profiles',
  'get_last_logged_on_user',
  'get_user_from_sid',
  'get_profile_path',
@@ -2886,6 +2887,7 @@ def host_info():
     info['cpu_identifier'] = registry_readstring(HKEY_LOCAL_MACHINE,r'HARDWARE\DESCRIPTION\System\CentralProcessor\0','Identifier','').strip()
 
     info['profiles_users'] = get_profiles_users()
+    info['local_profiles'] = get_local_profiles()
     info['local_administrators'] = local_admins()
     info['local_groups'] =  {g:local_group_members(g) for g in local_groups()}
     info['local_users'] =  local_users()
@@ -2948,6 +2950,15 @@ def get_profiles_users(domain_sid=None):
     for profsid in reg_enum_subkeys(reg_openkey_noredir(HKEY_LOCAL_MACHINE,profiles_path)):
         if not domain_sid or (profsid.startswith('S-') and profsid.rsplit('-',1)[0] == domain_sid) and isdir(get_profile_path(profsid)):
             result.append(get_user_from_sid(profsid))
+    return result
+
+def get_local_profiles(domain_sid=None):
+    """Return list of locally created profiles usernames"""
+    result = []
+    profiles_path = r'SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList'
+    for profsid in reg_enum_subkeys(reg_openkey_noredir(HKEY_LOCAL_MACHINE,profiles_path)):
+        if not domain_sid or (profsid.startswith('S-') and profsid.rsplit('-',1)[0] == domain_sid) and isdir(get_profile_path(profsid)):
+            result.append({'sid':profsid,'user':get_user_from_sid(profsid),'profile_path':get_profile_path(profsid)})
     return result
 
 def get_last_logged_on_user():
