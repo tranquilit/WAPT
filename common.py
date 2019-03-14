@@ -5585,6 +5585,7 @@ class Wapt(BaseObjectClass):
         >>>
         """
         result = None
+        sys.stdout.flush()
         if self.waptserver_available():
             # avoid sending data to the server if it has not been updated.
             try:
