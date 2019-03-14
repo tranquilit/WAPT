@@ -29,6 +29,98 @@ msgstr "Ne pas installer les mises à jour Windows"
 msgid "some upgrades are pending, launch upgrades after timeout expired or manual action"
 msgstr "Des mises à jour sont en attente, lancement après l'expiration du délai ou une action manuelle"
 
+#: tviswaptexit.gridpending.header.columns[0].text
+msgid "id"
+msgstr ""
+
+#: tviswaptexit.gridpending.header.columns[10].text
+msgid "classname"
+msgstr ""
+
+#: tviswaptexit.gridpending.header.columns[11].text
+msgid "logs"
+msgstr ""
+
+#: tviswaptexit.gridpending.header.columns[12].text
+msgid "pidlist"
+msgstr ""
+
+#: tviswaptexit.gridpending.header.columns[13].text
+msgid "notify_user"
+msgstr ""
+
+#: tviswaptexit.gridpending.header.columns[14].text
+msgid "notify_server_on_finish"
+msgstr ""
+
+#: tviswaptexit.gridpending.header.columns[15].text
+msgid "notify_server_on_start"
+msgstr ""
+
+#: tviswaptexit.gridpending.header.columns[16].text
+msgid "runstatus"
+msgstr "Status exécution"
+
+#: tviswaptexit.gridpending.header.columns[17].text
+msgid "created_by"
+msgstr "Créé par"
+
+#: tviswaptexit.gridpending.header.columns[18].text
+msgid "usecache"
+msgstr "Utiliser le cache"
+
+#: tviswaptexit.gridpending.header.columns[19].text
+msgid "packagenames"
+msgstr "Noms de paquets"
+
+#: tviswaptexit.gridpending.header.columns[1].text
+msgid "priority"
+msgstr "Priorité"
+
+#: tviswaptexit.gridpending.header.columns[2].text
+msgid "order"
+msgstr "Ordre"
+
+#: tviswaptexit.gridpending.header.columns[3].text
+msgid "description"
+msgstr "Description"
+
+#: tviswaptexit.gridpending.header.columns[4].text
+msgid "start_date"
+msgstr "Heure de début"
+
+#: tviswaptexit.gridpending.header.columns[5].text
+msgid "summary"
+msgstr "Résumé"
+
+#: tviswaptexit.gridpending.header.columns[6].text
+msgid "create_date"
+msgstr "Date de création"
+
+#: tviswaptexit.gridpending.header.columns[7].text
+msgid "result"
+msgstr "Résultat"
+
+#: tviswaptexit.gridpending.header.columns[8].text
+msgid "progress"
+msgstr "Avancement"
+
+#: tviswaptexit.gridpending.header.columns[9].text
+msgid "finish_date"
+msgstr "Heure de fin"
+
+#: tviswaptexit.gridpendingupgrades.header.columns[0].text
+msgid "Id"
+msgstr ""
+
+#: tviswaptexit.gridpendingupgrades.header.columns[1].text
+msgid "Status"
+msgstr "Status"
+
+#: tviswaptexit.gridpendingupgrades.header.columns[2].text
+msgid "Package"
+msgstr "Paquet"
+
 #: tviswaptexit.labdontshutdown.caption
 msgid ""
 "Upgrades in progress...\n"

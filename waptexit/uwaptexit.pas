@@ -8,7 +8,7 @@ uses
   Classes, SysUtils, FileUtil, LazFileUtils, Forms,
   Controls, Graphics, Dialogs, StdCtrls, ExtCtrls, ActnList, Buttons,
   superobject, DefaultTranslator, ComCtrls, uWaptExitRes, sogrid,uWAPTPollThreads,
-  IdAntiFreeze;
+  IdAntiFreeze, VirtualTrees, ImgList;
 
 type
 
@@ -64,6 +64,10 @@ type
     procedure FormMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure FormShow(Sender: TObject);
+    procedure GridPendingUpgradesGetImageIndexEx(Sender: TBaseVirtualTree;
+      Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
+      var Ghosted: Boolean; var ImageIndex: Integer;
+      var ImageList: TCustomImageList);
     procedure Timer1Timer(Sender: TObject);
   private
     { private declarations }
@@ -156,7 +160,7 @@ begin
 
   GridPending.Data := pending;
 
-  if (pending<>Nil) then
+  {if (pending<>Nil) then
   begin
     if ProgressBar.Max=0 then
     begin
@@ -165,7 +169,7 @@ begin
     end
     else
       ProgressBar.Position := ProgressBar.Max - pending.AsArray.Length;
-  end;
+  end;}
   Application.ProcessMessages;
 end;
 
@@ -174,21 +178,23 @@ var
   Description: String;
 begin
   if FRunning=AValue then Exit;
-  FRunning:=AValue;
 
-  if (running<>Nil) then
+  if (AValue<>Nil) and ((FRunning=Nil) or (FRunning.I['id']<>AValue.I['id']))  then
   begin
-    description := UTF8Encode(running.S['description']);
+    description := UTF8Encode(AValue.S['description']);
     if Length(description)>100 then
       EdRunning.Text := copy(description,1,100)+'...'
     else
       EdRunning.Text := description;
 
-    if running['runstatus']<>Nil then
-      MemoLog.Items.Text := UTF8Encode(running.S['runstatus']);
-  end;
-  Application.ProcessMessages;
+    if AValue['runstatus']<>Nil then
+      MemoLog.Items.Text := UTF8Encode(AValue.S['runstatus']);
+  end
+  else if (AValue=Nil) and (FRunning<>Nil) then
+    EdRunning.Text := '';
 
+  FRunning:=AValue;
+  Application.ProcessMessages;
 end;
 
 function GetWaptLocalURL: String;
@@ -263,6 +269,7 @@ procedure TVisWaptExit.OnUpgradeTriggered(Sender: TObject);
 var
   aso: ISuperObject;
 begin
+  ProgressBar.Style:=pbstNormal;
   WaitingForUpgradeTasks := False;
   aso := (Sender as TTriggerWaptserviceAction).Tasks;
   if aso <> Nil then
@@ -309,6 +316,8 @@ begin
     if InstallWUAUpdates and not CBSkipWindowsUpdates.Checked then
       args.AsArray.Add(Format('install_wua_updates=1',[]));
     {$endif}
+    ProgressBar.Style:=pbstMarquee;
+    EdRunning.Text:=rsLaunchSoftwareUpdate;
     TTriggerWaptserviceAction.Create(@OnUpgradeTriggered,'upgrade.json?'+Join('&',args));
   end
   else
@@ -532,7 +541,8 @@ begin
       // service has been stopped
       if WAPTServiceRunning and not (Sender as TCheckTasksThread).WaptServiceRunning then
       begin
-        MemoLog.Items.Add((Sender as TCheckTasksThread).Message);
+        //MemoLog.Items.Add((Sender as TCheckTasksThread).Message);
+        MemoLog.Items.Text := (Sender as TCheckTasksThread).Message;
         WAPTServiceRunning:=False;
         Close;
       end;
@@ -552,13 +562,21 @@ begin
     if events <> Nil then
     begin
       if (events.AsArray<>Nil) and (events.AsArray.Length>0) then
+      for lastEvent in events do
       begin
-        lastEvent := events.AsArray[events.AsArray.Length-1];
         case lastEvent.S['event_type'] of
-          'PRINT': MemoLog.Items.Add(lastEvent.S['data']);
-          'TASK_START','TASKS_STATUS','TASK_FINISH': EdRunning.Text:=lastEvent.S['data.runstatus'];
+          'PRINT': MemoLog.Items.Text := lastEvent.S['data'];
+          'TASK_START','TASK_STATUS','TASK_FINISH':
+            begin
+              ProgressBar.max:=100;
+              if Assigned(running) then
+                EdRunning.Text:= UTF8Encode(running.S['description']+': '+lastEvent.S['data.runstatus'])
+              else
+                EdRunning.Text:= UTF8Encode(lastEvent.S['data.runstatus']);
+              ProgressBar.Position:=lastevent.I['data.progress'];
+            end;
+          'STATUS': GridPendingUpgrades.Data := GetPackageStatus(lastEvent['data']);
         end;
-
       end;
     end
     else
@@ -566,7 +584,8 @@ begin
       // service has been stopped
       if WAPTServiceRunning and not (Sender as TCheckEventsThread).WaptServiceRunning then
       begin
-        MemoLog.Items.Add((Sender as TCheckEventsThread).Message);
+        //MemoLog.Items.Add((Sender as TCheckEventsThread).Message);
+        MemoLog.Items.Text := (Sender as TCheckEventsThread).Message;
         WAPTServiceRunning:=False;
         CheckEventsThread.Terminate;
         CheckTasksThread.Terminate;
@@ -655,6 +674,37 @@ begin
   CheckTasksThread := TCheckTasksThread.Create(@OnCheckTasksThreadNotify);
   CheckEventsThread := TCheckEventsThread.Create(@OnCheckEventsThreadNotify);
 end;
+
+
+procedure TVisWaptExit.GridPendingUpgradesGetImageIndexEx(
+  Sender: TBaseVirtualTree; Node: PVirtualNode; Kind: TVTImageKind;
+  Column: TColumnIndex; var Ghosted: Boolean; var ImageIndex: Integer;
+  var ImageList: TCustomImageList);
+var
+  reachable,install_status: ISuperObject;
+  propname: String;
+  aGrid:TSOGrid;
+begin
+  aGrid := (Sender as TSOGrid);
+  propName:=TSOGridColumn(aGrid.Header.Columns[Column]).PropertyName;
+
+  if propName='install_status' then
+  begin
+    install_status := aGrid.GetCellData(Node, 'install_status', nil);
+    if (install_status <> nil) then
+    begin
+      case install_status.AsString of
+        'OK': ImageIndex := 4;
+        'NEED-UPGRADE': ImageIndex := 5;
+        'ERROR-UPGRADE','ERROR','ERROR-INSTALL': ImageIndex := 6;
+        'MISSING','NEED-INSTALL': ImageIndex := 7;
+        'NEED-REMOVE': ImageIndex := 8;
+        'RUNNING': ImageIndex := 9;
+      end;
+    end;
+  end
+end;
+
 
 function TVisWaptExit.WorkInProgress: Boolean;
 begin
