@@ -1406,11 +1406,8 @@ class WaptDB(WaptBaseDB):
         return result
 
     def query_package_entry(self,query, args=(), one=False, package_request=None):
-        """Execute la requete query sur la db et renvoie un tableau de PackageEntry
-
-        Le matching est fait sur le nom de champs.
-        Les champs qui ne matchent pas un attribut de PackageEntry
-        sont également mis en attributs !
+        """Execute the query on the db try to map result on PackageEntry attributes
+        Fields which don't match attributes are added as attributes (and listed in _calc_attributes list)
 
         >>> waptdb = WaptDB(':memory:')
         >>> waptdb.add_package_entry(PackageEntry('toto','0',repo='main'))
@@ -3727,6 +3724,9 @@ class Wapt(BaseObjectClass):
 
                         setattr(setup,'user',self.user)
                         setattr(setup,'usergroups',self.usergroups)
+
+                        setattr(setup,'persistent_source_dir',persistent_source_dir)
+                        setattr(setup,'persistent_dir',persistent_dir)
 
                         # get definitions of required parameters from setup module
                         if hasattr(setup,'required_params'):
