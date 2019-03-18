@@ -579,7 +579,9 @@ msgctxt "uwaptres.rsupdatesavailablefor"
 msgid ""
 "Available updates for :\n"
 "-%s\n"
-msgstr "Mises à jour disponibles pour :"
+msgstr ""
+"Mises à jour disponibles pour :\n"
+"-%s\n"
 
 #: uwaptres.rsupdatinglocalpackages
 msgid "Updating local packages"
@@ -813,7 +815,9 @@ msgctxt "uwapttrayres.rsupdatesavailablefor"
 msgid ""
 "Available updates for :\n"
 "-%s\n"
-msgstr "Mises à jour disponibles pour :"
+msgstr ""
+"Mises à jour disponibles pour :\n"
+"-%s\n"
 
 #: uwapttrayres.rswaptservicestarted
 msgid "WAPTService started"
