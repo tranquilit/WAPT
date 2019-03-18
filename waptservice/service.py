@@ -694,6 +694,8 @@ def reload_config():
 def upgrade():
     force = int(request.args.get('force','0')) != 0
     notify_user = int(request.args.get('notify_user','1')) != 0
+    update_packages = int(request.args.get('update','1')) != 0
+
     only_priorities = None
     if 'only_priorities' in request.args:
         only_priorities = ensure_list(request.args.get('only_priorities',None),allow_none=True)
@@ -705,7 +707,9 @@ def upgrade():
         install_wua_updates = False
 
     all_tasks = []
-    wapt().update()
+    if update_packages:
+        all_tasks.append(app.task_manager.add_task(WaptUpdate(force=force,notify_user=notify_user)).as_dict())
+
     actions = wapt().list_upgrade()
     to_install = actions['upgrade']+actions['additional']+actions['install']
     to_remove = actions['remove']
@@ -1233,7 +1237,7 @@ def events():
     max_count = int(request.args.get('max_count','0')) or None
     if app.task_manager.events:
         data = app.task_manager.events.get_missed(last_read=last_read,max_count=max_count)
-        if timeout>0:
+        if not data and timeout>0:
             start_time = time.time()
             while not data and time.time() - start_time <= timeout:
                 time.sleep(1.0)

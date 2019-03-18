@@ -261,8 +261,12 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
                     force = action.get('force',False)
                     only_priorities = action.get('only_priorities',None)
                     only_if_not_process_running = action.get('only_if_not_process_running',False)
+                    update_packages = action.get('update',True)
 
-                    self.wapt.update(force=False)
+                    if update_packages:
+                        result.append(self.task_manager.add_task(WaptUpdate(force=force,notify_user=notify_user,
+                            )).as_dict())
+
                     upgrades = self.wapt.list_upgrade()
                     to_install = upgrades['upgrade']+upgrades['additional']+upgrades['install']
                     to_remove = upgrades['remove']
@@ -495,7 +499,7 @@ class WaptSocketIOClient(threading.Thread):
                             self.socketio_client = None
                     finally:
                         logger.debug(u'Exception %s, Socket IO Stopped, waiting %ss before retrying' %
-                            (e,self.config.websockets_retry_delay))
+                            (repr(e),self.config.websockets_retry_delay))
                         time.sleep(self.config.websockets_retry_delay)
 
 if __name__ == "__main__":
