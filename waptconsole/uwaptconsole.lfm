@@ -392,6 +392,8 @@ object VisWaptGUI: TVisWaptGUI
               Top = 0
               Width = 564
               Align = alClient
+              Font.Pitch = fpFixed
+              ParentFont = False
               ScrollBars = ssAutoBoth
               TabOrder = 0
             end
@@ -1961,6 +1963,8 @@ object VisWaptGUI: TVisWaptGUI
               Width = 564
               Align = alClient
               Color = clForm
+              Font.Pitch = fpFixed
+              ParentFont = False
               ScrollBars = ssAutoBoth
               TabOrder = 0
             end
@@ -1972,6 +1976,8 @@ object VisWaptGUI: TVisWaptGUI
             Width = 288
             Anchors = [akTop, akLeft, akRight]
             Color = clForm
+            Font.Pitch = fpFixed
+            ParentFont = False
             ScrollBars = ssAutoBoth
             TabOrder = 4
           end
@@ -4402,6 +4408,8 @@ object VisWaptGUI: TVisWaptGUI
           Top = 32
           Width = 385
           Align = alRight
+          Font.Pitch = fpFixed
+          ParentFont = False
           ScrollBars = ssAutoBoth
           TabOrder = 1
         end
@@ -4616,7 +4624,7 @@ object VisWaptGUI: TVisWaptGUI
             OnClick = cbHostsHasErrorsClick
             TabOrder = 2
           end
-          object EdSearchHosts: TSearchEdit
+          object EdSearchHostsForPackage: TSearchEdit
             AnchorSideLeft.Control = cbHostsReachable
             AnchorSideLeft.Side = asrBottom
             AnchorSideTop.Control = PanFilterHosts
@@ -4633,9 +4641,21 @@ object VisWaptGUI: TVisWaptGUI
             Constraints.MaxHeight = 21
             Constraints.MinWidth = 180
             Font.Color = clGray
-            OnKeyPress = EdSearchHostsKeyPress
+            OnKeyPress = EdSearchHostsForPackageKeyPress
             ParentFont = False
             TabOrder = 3
+          end
+          object ButRefreshHostsForPackage: TButton
+            AnchorSideLeft.Control = EdSearchHostsForPackage
+            AnchorSideLeft.Side = asrBottom
+            AnchorSideTop.Control = PanFilterHosts
+            AnchorSideTop.Side = asrCenter
+            Left = 538
+            Height = 25
+            Top = 4
+            Width = 75
+            Action = ActRefreshHostsForPackage
+            TabOrder = 4
           end
         end
         object Splitter1: TSplitter
@@ -7859,9 +7879,11 @@ object VisWaptGUI: TVisWaptGUI
         Top = 0
         Width = 774
         Align = alClient
+        Font.Pitch = fpFixed
         Lines.Strings = (
           ''
         )
+        ParentFont = False
         TabOrder = 0
       end
       object jsonlog: TVirtualJSONInspector
@@ -8452,6 +8474,12 @@ object VisWaptGUI: TVisWaptGUI
       Caption = 'New host AD profile'
       ImageIndex = 9
       OnExecute = ActAddProfileExecute
+    end
+    object ActRefreshHostsForPackage: TAction
+      Category = 'hosts'
+      Caption = 'Refresh'
+      OnExecute = ActRefreshHostsForPackageExecute
+      ShortCut = 116
     end
   end
   object PopupMenuPackages: TPopupMenu
@@ -9430,6 +9458,9 @@ object VisWaptGUI: TVisWaptGUI
     end
     object MenuItem94: TMenuItem
       Action = ActPackagesAudit
+    end
+    object MenuItem115: TMenuItem
+      Action = ActRefreshHostsForPackage
     end
   end
   object OpenDialogWapt: TOpenDialog
@@ -14838,7 +14869,7 @@ object VisWaptGUI: TVisWaptGUI
     end
   end
   object PopupMenuReportingQueries: TPopupMenu
-    left = 200
+    left = 192
     top = 480
     object MenuItem105: TMenuItem
       Action = ActReportingQueryExecute

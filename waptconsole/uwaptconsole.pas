@@ -31,6 +31,7 @@ type
     ActDeleteNetwork: TAction;
     ActInstallLicence: TAction;
     ActAddProfile: TAction;
+    ActRefreshHostsForPackage: TAction;
     ActTriggerWaptwua_uninstall: TAction;
     ActSoftwaresNormalization: TAction;
     ActReportingQueryExport: TAction;
@@ -42,13 +43,14 @@ type
     btAddGroup1: TBitBtn;
     ButPackagesUpdate1: TBitBtn;
     ButShowDownloadTasks: TBitBtn;
+    ButRefreshHostsForPackage: TButton;
     cbHostsHasErrors: TCheckBox;
     cbHostsNeedUpgrade: TCheckBox;
     cbHostsReachable: TCheckBox;
     cbNewestOnlyGroups: TCheckBox;
     cbNewestOnlyWUA: TCheckBox;
     cbNewestOnlySelfService: TCheckBox;
-    EdSearchHosts: TSearchEdit;
+    EdSearchHostsForPackage: TSearchEdit;
     EdWUASearchWindowsUpdate: TSearchEdit;
     GridHostsForPackage: TSOGrid;
     ImgHostsConnected: TImage;
@@ -64,6 +66,7 @@ type
     MenuItem112: TMenuItem;
     MenuItem113: TMenuItem;
     MenuItem114: TMenuItem;
+    MenuItem115: TMenuItem;
     MenuItem4: TMenuItem;
     MenuItem76: TMenuItem;
     PanFilterHosts: TPanel;
@@ -589,6 +592,7 @@ type
     procedure ActGermanUpdate(Sender: TObject);
     procedure ActHostsDeletePackageUpdate(Sender: TObject);
     procedure ActHostsDeleteUpdate(Sender: TObject);
+    procedure ActRefreshHostsForPackageExecute(Sender: TObject);
     procedure ActReportingQueryExportExecute(Sender: TObject);
     procedure ActReportingQueryImportExecute(Sender: TObject);
     procedure ActReportingQueryImportUpdate(Sender: TObject);
@@ -734,7 +738,7 @@ type
     procedure EdDescriptionKeyPress(Sender: TObject; var Key: char);
     procedure EdHardwareFilterChange(Sender: TObject);
     procedure EdRunKeyPress(Sender: TObject; var Key: char);
-    procedure EdSearchHostsKeyPress(Sender: TObject; var Key: char);
+    procedure EdSearchHostsForPackageKeyPress(Sender: TObject; var Key: char);
     procedure EdSearchOrgUnitsChange(Sender: TObject);
     procedure EdSearchOrgUnitsKeyPress(Sender: TObject; var Key: char);
     procedure EdSearchPackageExecute(Sender: TObject);
@@ -885,6 +889,7 @@ type
   private
     { private declarations }
     CurrentVisLoading: TVisLoading;
+    FCurrentPackageForGridHostsForPackage: String;
     FReportingEditMode: Boolean;
     FWUAClassifications: ISuperObject;
     FWUAProducts: ISuperObject;
@@ -918,6 +923,7 @@ type
     function ReportingQueryAppend(AName: String='New query'; sql: String='SELEC'
       +'T 1'): ISuperObject;
     procedure SelectOrgUnits(Search: String);
+    procedure SetCurrentPackageForGridHostsForPackage(AValue: String);
     procedure SetGridHostsPlugins(AValue: ISuperObject);
     procedure SetIsEnterpriseEdition(AValue: Boolean);
     function GetIsEnterpriseEdition: Boolean;
@@ -956,8 +962,6 @@ type
     OrgUnitsSelectionHash:Integer;
     FilteredOrgUnits:TDynStringArray;
 
-    CurrentPackageForGridHostsForPackage: String;
-
     WUAPreferredProducts,
     WUAPreferredClassifications : TDynStringArray;
 
@@ -986,6 +990,8 @@ type
 
     function EditPackageEntry(Entry: ISuperObject): Variant;
     procedure ImportPackageFromFiles(Filenames: TStrings);
+
+    property CurrentPackageForGridHostsForPackage:String read FCurrentPackageForGridHostsForPackage write SetCurrentPackageForGridHostsForPackage;
 
 
   end;
@@ -1326,7 +1332,7 @@ begin
     ActEvaluate.Execute;
 end;
 
-procedure TVisWaptGUI.EdSearchHostsKeyPress(Sender: TObject; var Key: char);
+procedure TVisWaptGUI.EdSearchHostsForPackageKeyPress(Sender: TObject; var Key: char);
 begin
   if key = #13 then
     GridHostsForPackage.Data := FilterHostsForPackage(HostsForPackageData)
@@ -1337,7 +1343,7 @@ end;
 
 procedure TVisWaptGUI.EdSearchOrgUnitsChange(Sender: TObject);
 begin
-  if EdSearchOrgUnits.Modified and DBOrgUnits.Active then
+  if EdSearchOrgUnits.Modified and DBOrgUnits.Active and not inSearchHosts then
   try
     inSearchHosts:=True;
     FilterDBOrgUnits;
@@ -1634,7 +1640,7 @@ begin
 end;
 
 //Cache inventory data into host row
-Function TVisWaptGUI.LoadHostInventory(host:ISUperObject):ISuperObject;
+function TVisWaptGUI.LoadHostInventory(host: ISuperObject): ISuperObject;
 var
   key,inventory_keys: ISuperObject;
 begin
@@ -2903,6 +2909,7 @@ begin
 
 end;
 
+
 procedure TVisWaptGUI.ActmakePackageTemplateExecute(Sender: TObject);
 begin
   MakePackageTemplate('');
@@ -3045,7 +3052,7 @@ begin
   end;
 end;
 
-Function TVisWaptGUI.EditHostPackageEntry(host: ISuperObject): Variant;
+function TVisWaptGUI.EditHostPackageEntry(host: ISuperObject): Variant;
 var
   hostname,uuid,HostPackageVersion: String;
   uuids: ISuperObject;
@@ -4116,7 +4123,7 @@ end;
 
 procedure TVisWaptGUI.cbHostsHasErrorsClick(Sender: TObject);
 begin
-  GridHostsForPackage.Data := FilterHostsForPackage(HostsForPackageData);
+  ActRefreshHostsForPackage.Execute;
 end;
 
 procedure TVisWaptGUI.CBIncludeSubOUClick(Sender: TObject);
@@ -5346,38 +5353,22 @@ end;
 
 procedure TVisWaptGUI.GridPackagesChange(Sender: TBaseVirtualTree;
   Node: PVirtualNode);
-var
-  PackageName: String;
 begin
-  if MainPages.ActivePage = pgPrivateRepo then
-    if GridPackages.FocusedRow <> Nil then
-    begin
-      PackageName := UTF8Encode(GridPackages.FocusedRow.S['package']);
-      if CBShowHostsForPackages.Checked then
-        LoadHostsForPackage(PackageName)
-      else
-        GridHostsForPackage.Data := Nil;
-    end
+  if (MainPages.ActivePage = pgPrivateRepo) and CBShowHostsForPackages.Checked then
+    if (GridPackages.FocusedRow <> Nil) then
+      CurrentPackageForGridHostsForPackage := UTF8Encode(GridPackages.FocusedRow.S['package'])
     else
-      GridHostsForPackage.Data := Nil;
+      CurrentPackageForGridHostsForPackage := '';
 end;
 
 procedure TVisWaptGUI.GridGroupsChange(Sender: TBaseVirtualTree;
   Node: PVirtualNode);
-var
-  PackageName: String;
 begin
-  if MainPages.ActivePage = pgGroups then
-    if GridGroups.FocusedRow <> Nil then
-    begin
-      PackageName := UTF8Encode(GridGroups.FocusedRow.S['package']);
-      if CBShowHostsForGroups.Checked then
-        LoadHostsForPackage(PackageName)
-      else
-        GridHostsForPackage.Data := Nil;
-    end
+  if (MainPages.ActivePage = pgGroups) and CBShowHostsForGroups.Checked then
+    if (GridGroups.FocusedRow <> Nil) then
+      CurrentPackageForGridHostsForPackage := UTF8Encode(GridGroups.FocusedRow.S['package'])
     else
-      GridHostsForPackage.Data := Nil;
+      CurrentPackageForGridHostsForPackage := '';
 end;
 
 function TVisWaptGUI.IsUpdated(const datasets: array of ISuperObject): Boolean;
@@ -6164,6 +6155,17 @@ procedure TVisWaptGUI.ActTriggerWaptwua_uninstallExecute(Sender: TObject);
 begin
 ;;
 end;
+
+procedure TVisWaptGUI.ActRefreshHostsForPackageExecute(Sender: TObject);
+begin
+;;
+end;
+
+procedure TVisWaptGUI.SetCurrentPackageForGridHostsForPackage(AValue: String);
+begin
+;;
+end;
+
 
 {$endif}
 

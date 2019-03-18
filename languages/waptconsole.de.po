@@ -443,6 +443,12 @@ msgid "Manage Windows Updates with WAPT"
 msgstr ""
 
 #: tviscreatewaptsetup.edappendhostprofiles.hint
+msgctxt "tviscreatewaptsetup.edappendhostprofiles.hint"
+msgid "E.g. : socle,accounting"
+msgstr ""
+
+#: tviscreatewaptsetup.edappendhostprofiles1.hint
+msgctxt "tviscreatewaptsetup.edappendhostprofiles1.hint"
 msgid "E.g. : socle,accounting"
 msgstr ""
 
@@ -567,10 +573,22 @@ msgid "Authorized packages Certificates which will be bundled with the Wapt Agen
 msgstr ""
 
 #: tviscreatewaptsetup.label8.caption
+msgctxt "tviscreatewaptsetup.label8.caption"
 msgid "Append host's profiles"
 msgstr ""
 
 #: tviscreatewaptsetup.label8.hint
+msgctxt "tviscreatewaptsetup.label8.hint"
+msgid "Comma separated list of profile packages to add for hosts. Host will belongs to these additional profiles"
+msgstr ""
+
+#: tviscreatewaptsetup.label9.caption
+msgctxt "tviscreatewaptsetup.label9.caption"
+msgid "Append host's profiles"
+msgstr ""
+
+#: tviscreatewaptsetup.label9.hint
+msgctxt "tviscreatewaptsetup.label9.hint"
 msgid "Comma separated list of profile packages to add for hosts. Host will belongs to these additional profiles"
 msgstr ""
 
@@ -2486,6 +2504,12 @@ msgctxt "tviswaptgui.actrefreshhostinventory.caption"
 msgid "Refresh host inventory"
 msgstr "Hostbestand aktualisieren"
 
+#: tviswaptgui.actrefreshhostsforpackage.caption
+#, fuzzy
+msgctxt "tviswaptgui.actrefreshhostsforpackage.caption"
+msgid "Refresh"
+msgstr "Aktualisieren"
+
 #: tviswaptgui.actreloadconfig.caption
 #, fuzzy
 #| msgid "Reload wapt-get.ini"
@@ -3064,8 +3088,8 @@ msgctxt "tviswaptgui.edsearchhost.hint"
 msgid "Regular expressions allowed"
 msgstr ""
 
-#: tviswaptgui.edsearchhosts.hint
-msgctxt "tviswaptgui.edsearchhosts.hint"
+#: tviswaptgui.edsearchhostsforpackage.hint
+msgctxt "tviswaptgui.edsearchhostsforpackage.hint"
 msgid "Regular expressions allowed"
 msgstr ""
 
