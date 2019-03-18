@@ -220,9 +220,12 @@ begin
       LastReadEventId:=Tasks.I['last_event_id'];
     WaptServiceRunning:=True;
     Synchronize(@NotifyListener);
+    if not Terminated then
+      Sleep(200);
   except
     on E: EIdSocketError do
       begin
+        // if we can't connect to the waptservice http port, waptservice is not running (properly).
         if e.LastError=10061 then // connection refused
         begin
           if WaptServiceRunning then
@@ -235,10 +238,11 @@ begin
           end;
         end
         else
-        if not Terminated then
-          Sleep(200);
+          // we stop..
+          break;
       end;
 
+    // long polling on waptservice raises a timeout when no event release the connection
     on E: EIdReadTimeout do
       begin
         if not Terminated then
@@ -253,8 +257,9 @@ begin
           WaptServiceRunning:=False;
           Tasks := Nil;
           Synchronize(@NotifyListener);
-          break;
         end;
+        // we stop
+        break;
       end;
   end;
 end;
@@ -304,6 +309,8 @@ begin
 
     WaptServiceRunning:=True;
     Synchronize(@NotifyListener);
+    if not Terminated then
+      Sleep(200);
 
   except
     on E: EIdSocketError do
@@ -338,8 +345,8 @@ begin
           WaptServiceRunning:=False;
           Events := Nil;
           Synchronize(@NotifyListener);
-          break;
         end;
+        break;
       end;
   end;
 end;

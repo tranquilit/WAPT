@@ -67,7 +67,7 @@ interface
   //call url action on waptserver. action can contains formatting chars like %s which will be replaced by args with the Format function.
   function WAPTServerJsonGet(action: String;args:Array of const;method:AnsiString='GET';ConnectTimeout:integer=4000;SendTimeout:integer=60000;ReceiveTimeout:integer=60000): ISuperObject; //use global credentials and proxy settings
   function WAPTServerJsonPost(action: String;args:Array of const;data: ISuperObject;method:AnsiString='POST';ConnectTimeout:integer=4000;SendTimeout:integer=60000;ReceiveTimeout:integer=60000): ISuperObject; //use global credentials and proxy settings
-  function WAPTLocalJsonGet(action:String;user:AnsiString='';password:AnsiString='';timeout:integer=-1;OnAuthorization:TIdOnAuthorization=Nil;RetryCount:Integer=3):ISuperObject;
+  function WAPTLocalJsonGet(action:String;user:AnsiString='';password:AnsiString='';timeout:integer=-1;OnAuthorization:TIdOnAuthorization=Nil;RetryCount:Integer=1):ISuperObject;
 
   Function IdWget(const fileURL, DestFileName: Utf8String; CBReceiver:TObject=Nil;progressCallback:TProgressCallback=Nil;HttpProxy: String='';userAgent:String='';
               VerifyCertificateFilename:String='';CookieManage:TIdCookieManager=Nil;ClientCertFilename:String='';ClientKeyFilename:String=''): boolean;
@@ -205,7 +205,7 @@ const
   waptservice_port:integer = 8088;
   waptserver_port:integer = 80;
   waptserver_sslport:integer = 443;
-  waptservice_timeout:integer = 4;
+  waptservice_timeout:integer = 10;
 
   WaptServerUser: String ='admin';
   WaptServerPassword: String ='';
@@ -1103,11 +1103,12 @@ begin
 end;
 
 function WAPTLocalJsonGet(action: String; user: AnsiString;
-  password: AnsiString; timeout: integer=-1;OnAuthorization:TIdOnAuthorization=Nil;RetryCount:Integer=3): ISuperObject;
+  password: AnsiString; timeout: integer=-1;OnAuthorization:TIdOnAuthorization=Nil;RetryCount:Integer=1): ISuperObject;
 var
   url,strresult : String;
   http:TIdHTTP;
   ssl_handler: TIdSSLIOHandlerSocketOpenSSL;
+  StartTime: DWord;
 begin
   ssl_handler := Nil;
   http := TIdHTTP.Create;
@@ -1137,6 +1138,9 @@ begin
     ssl_handler := TIdSSLIOHandlerSocketOpenSSL.Create;
     ssl_handler.SSLOptions.Method:=sslvSSLv23;
 
+    StartTime:=GetTickCount;
+    Logger(Format('url: %s timeout: %d',[url,timeout]));
+
     HTTP.IOHandler := ssl_handler;
     strresult := '';
     repeat
@@ -1151,6 +1155,7 @@ begin
       end;
     until (strresult<>'') or (RetryCount<=0);
     Result := SO(strresult);
+    Logger(Format('url: %s : OK Duration: %d',[url,(GetTickCount-StartTime)]));
 
   finally
     http.Free;
@@ -1521,7 +1526,7 @@ begin
     if (waptservice_port<=0) then
       waptservice_port := 8088;
 
-    waptservice_timeout := ReadInteger('global','waptservice_timeout',2);
+    waptservice_timeout := ReadInteger('global','waptservice_timeout',10);
 
     GetLanguageIDs(LanguageFull,Language);
     // override lang setting

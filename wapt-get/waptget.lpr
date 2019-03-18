@@ -703,7 +703,8 @@ begin
         else if action='upgrade' then
         begin
           Logger('Call upgrade URL...',DEBUG);
-          res := WAPTLocalJsonGet('upgrade.json?notify_user=0');
+          res := WAPTLocalJsonGet('upgrade.json?notify_user=1');
+          Logger('Upgrade triggered...',DEBUG);
           if res.S['result']<>'OK' then
             WriteLn(utf8decode(format(rsErrorLaunchingUpgrade, [res.S['message']])))
           else
