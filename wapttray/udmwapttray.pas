@@ -90,6 +90,7 @@ type
     FLastUpdateStatus: ISuperObject;
     FtrayMode: TTrayMode;
     FWaptServiceRunning: Boolean;
+    TaskInProgress: Boolean;
     function GetrayHint: String;
     procedure SetLastUpdateStatus(AValue: ISuperObject);
     procedure SettrayHint(AValue: String);
@@ -514,7 +515,7 @@ begin
       lastServiceMessage := Now;
       EventType := Event.S['event_type'];
       EventData := Event['data'];
-      if EventType='STATUS' then
+      if (EventType='STATUS') and not TaskInProgress then
       begin
         runstatus := UTF8Encode(EventData.S['runstatus']);
         running := EventData['running_tasks'];
@@ -565,20 +566,17 @@ begin
 
         if taskresult<>Nil then
         begin
-          trayHint:= UTF8Encode(taskresult.S['runstatus']);
           if taskresult.B['notify_user'] then
             task_notify_user:=True
           else
             task_notify_user:=False;
         end
         else
-        begin
           task_notify_user:=False;
-          trayHint := '';
-        end;
 
         if Step='ERROR' then
         begin
+          TaskInProgress:=False;
           trayMode:= tmErrors;
           if taskresult<>Nil then
             TrayIcon1.BalloonHint := format(rsErrorFor, [desc])
@@ -591,6 +589,7 @@ begin
         else
         if Step='START' then
         begin
+          TaskInProgress:=True;
           CurrentTask:=desc;
           trayMode:= tmRunning;
           if taskresult<>Nil then
@@ -605,6 +604,7 @@ begin
         else
         if (Step='PROGRESS') or (Step='STATUS') then
         begin
+          TaskInProgress:=True;
           trayMode:= tmRunning;
           trayHint := desc+#13#10+Format('%.0f%%',[taskresult.D['progress']]);
           TrayIcon1.BalloonFlags:=bfInfo;
@@ -614,6 +614,7 @@ begin
         else
         if Step='FINISH' then
         begin
+          TaskInProgress:=False;
           trayMode:= tmOK;
           trayHint := format(rsTaskDone, [desc, summary]);
           TrayIcon1.BalloonFlags:=bfInfo;
@@ -736,29 +737,34 @@ begin
   //  "upgrades": [], "date": "2019-02-07T18:09:44.044000",
   //  "pending":
   //           {"upgrade": [], "additional": [], "install": [], "remove": ["compta2"]}}
-  Msg := '';
   if Assigned(FLastUpdateStatus) then
   begin
+    Msg := '';
     UpgradesCount := FLastUpdateStatus.A['upgrades'].Length;
     if UpgradesCount>0 then
       Msg := Msg + Format(rsPendingInstalls,[ Join(',',FLastUpdateStatus['upgrades']) ]);
     RemovesCount := FLastUpdateStatus.A['pending.remove'].Length;
     if RemovesCount>0 then
       Msg := Msg + Format(rsPendingRemoves,[ Join(',',FLastUpdateStatus['pending.remove']) ]);
-    if UpgradesCount+RemovesCount>0 then
-      trayMode:=tmUpgrades;
+    if not TaskInProgress  then
+    begin
+      if (UpgradesCount+RemovesCount>0) then
+        trayMode:=tmUpgrades
+      else
+        trayMode:=tmOK;
+      trayHint:=msg;
+    end;
   end;
-  trayHint:=msg;
 end;
 
 procedure TDMWaptTray.SettrayHint(AValue: String);
 begin
   if TrayIcon1.Hint<>AValue then
   begin
+    if notify_user then
+      TrayIcon1.ShowBalloonHint;
     TrayIcon1.Hint := AValue;
     TrayIcon1.BalloonHint := AValue;
-    {if not popupvisible and (AValue<>'') and notify_user then
-      TrayIcon1.ShowBalloonHint;}
   end;
 end;
 
@@ -768,20 +774,17 @@ begin
   FtrayMode:=AValue;
   if FTraymode = tmOK then
     SetTrayIcon(0)
-  else
-  if FTraymode = tmRunning then
+  else if FTraymode = tmRunning then
   begin
     TrayIcon1.Icons := TrayRunning;
     TrayIcon1.Animate:=True;
   end
-  else
-  if FTraymode = tmUpgrades then
+  else if FTraymode = tmUpgrades then
   begin
     TrayIcon1.Icons := TrayUpdate;
     TrayIcon1.Animate:=True;
   end
-  else
-  if FTraymode = tmErrors then
+  else if FTraymode = tmErrors then
   begin
     TrayIcon1.Icons := TrayUpdate;
     TrayIcon1.Animate:=False;
@@ -798,8 +801,9 @@ begin
   end;
   if (FWaptServiceRunning<>AValue) and AValue then
   begin
-    trayMode:=tmOK;
-    trayHint:='';
+    if not TaskInProgress then
+      trayMode := tmOK;
+    trayHint:=rsWaptServiceStarted;
   end;
   FWaptServiceRunning:=AValue;
 end;
