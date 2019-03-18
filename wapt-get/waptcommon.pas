@@ -1139,7 +1139,7 @@ begin
     ssl_handler.SSLOptions.Method:=sslvSSLv23;
 
     StartTime:=GetTickCount;
-    Logger(Format('url: %s timeout: %d',[url,timeout]));
+    Logger(Format('url: %s timeout: %d',[url,timeout]),DEBUG);
 
     HTTP.IOHandler := ssl_handler;
     strresult := '';
@@ -1155,7 +1155,7 @@ begin
       end;
     until (strresult<>'') or (RetryCount<=0);
     Result := SO(strresult);
-    Logger(Format('url: %s : OK Duration: %d',[url,(GetTickCount-StartTime)]));
+    Logger(Format('url: %s : OK Duration: %d',[url,(GetTickCount-StartTime)]),DEBUG);
 
   finally
     http.Free;
