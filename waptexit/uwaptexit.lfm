@@ -200,6 +200,7 @@ object VisWaptExit: TVisWaptExit
         Top = 28
         Width = 494
         Anchors = [akTop, akLeft, akRight]
+        AutoSize = False
         BorderSpacing.Left = 3
         BorderSpacing.Top = 5
         BorderSpacing.Right = 3
@@ -444,8 +445,8 @@ object VisWaptExit: TVisWaptExit
         Images = ImageList1
         ScrollBarOptions.ScrollBars = ssAutoVertical
         TabOrder = 0
-        TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes]
-        TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
+        TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes, toAutoChangeScale]
+        TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toFullRowDrag, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
         TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages, toAlwaysHideSelection]
         TreeOptions.SelectionOptions = [toDisableDrawSelection, toExtendedFocus, toMultiSelect, toRightClickSelect]
         WantTabs = True
@@ -532,6 +533,7 @@ object VisWaptExit: TVisWaptExit
     Width = 500
     Action = ActShowDetails
     Align = alTop
+    AutoSize = False
     TabOrder = 2
   end
   object Timer1: TTimer
