@@ -14,6 +14,7 @@ resourcestring
   rsErrorFor = 'Error for %s';
   rsError = 'Error';
   rsTaskStarted = '%s started';
+  rsTaskInProgress = '%s in progress';
   rsTaskDone = '%s done'#13#10'%s';
   rsCanceling = 'Canceling %s';
   rsNoTaskCanceled = 'No task canceled';

@@ -447,9 +447,9 @@ msgctxt "tviscreatewaptsetup.edappendhostprofiles.hint"
 msgid "E.g. : socle,accounting"
 msgstr ""
 
-#: tviscreatewaptsetup.edappendhostprofiles1.hint
-msgctxt "tviscreatewaptsetup.edappendhostprofiles1.hint"
-msgid "E.g. : socle,accounting"
+#: tviscreatewaptsetup.edauditscheduling.hint
+msgctxt "tviscreatewaptsetup.edauditscheduling.hint"
+msgid "eg 2h or 120m or 1d"
 msgstr ""
 
 #: tviscreatewaptsetup.edorgname.hint
@@ -472,6 +472,11 @@ msgstr ""
 #| msgid "E.g. : http://wapt:8080."
 msgid "E.g. : https://wapt.mydomain.lan"
 msgstr "z. B. : http://wapt:8080."
+
+#: tviscreatewaptsetup.edwuadownloadscheduling.hint
+msgctxt "tviscreatewaptsetup.edwuadownloadscheduling.hint"
+msgid "eg 2h or 120m or 1d"
+msgstr ""
 
 #: tviscreatewaptsetup.fnpubliccert.hint
 msgid "X509 PEM encoded file with CA certificates which are trusted"
@@ -584,7 +589,7 @@ msgstr ""
 
 #: tviscreatewaptsetup.label9.caption
 msgctxt "tviscreatewaptsetup.label9.caption"
-msgid "Append host's profiles"
+msgid "Automatic periodic packages audit scheduling"
 msgstr ""
 
 #: tviscreatewaptsetup.label9.hint

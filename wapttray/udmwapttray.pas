@@ -606,7 +606,7 @@ begin
         begin
           TaskInProgress:=True;
           trayMode:= tmRunning;
-          trayHint := desc+#13#10+Format('%.0f%%',[taskresult.D['progress']]);
+          trayHint := Format(rsTaskInProgress,[desc])+#13#10+taskresult.S['runstatus']+#13#10+Format('%.0f%%',[taskresult.D['progress']]);
           TrayIcon1.BalloonFlags:=bfInfo;
           if not popupvisible and notify_user and task_notify_user then
             TrayIcon1.ShowBalloonHint;

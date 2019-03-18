@@ -430,9 +430,9 @@ msgctxt "tviscreatewaptsetup.edappendhostprofiles.hint"
 msgid "E.g. : socle,accounting"
 msgstr ""
 
-#: tviscreatewaptsetup.edappendhostprofiles1.hint
-msgctxt "tviscreatewaptsetup.edappendhostprofiles1.hint"
-msgid "E.g. : socle,accounting"
+#: tviscreatewaptsetup.edauditscheduling.hint
+msgctxt "tviscreatewaptsetup.edauditscheduling.hint"
+msgid "eg 2h or 120m or 1d"
 msgstr ""
 
 #: tviscreatewaptsetup.edorgname.hint
@@ -450,6 +450,11 @@ msgstr ""
 
 #: tviscreatewaptsetup.edwaptserverurl.hint
 msgid "E.g. : https://wapt.mydomain.lan"
+msgstr ""
+
+#: tviscreatewaptsetup.edwuadownloadscheduling.hint
+msgctxt "tviscreatewaptsetup.edwuadownloadscheduling.hint"
+msgid "eg 2h or 120m or 1d"
 msgstr ""
 
 #: tviscreatewaptsetup.fnpubliccert.hint
@@ -559,7 +564,7 @@ msgstr ""
 
 #: tviscreatewaptsetup.label9.caption
 msgctxt "tviscreatewaptsetup.label9.caption"
-msgid "Append host's profiles"
+msgid "Automatic periodic packages audit scheduling"
 msgstr ""
 
 #: tviscreatewaptsetup.label9.hint

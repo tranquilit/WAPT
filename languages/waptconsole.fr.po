@@ -432,10 +432,10 @@ msgctxt "tviscreatewaptsetup.edappendhostprofiles.hint"
 msgid "E.g. : socle,accounting"
 msgstr "Par exemple : socle,compta"
 
-#: tviscreatewaptsetup.edappendhostprofiles1.hint
-msgctxt "tviscreatewaptsetup.edappendhostprofiles1.hint"
-msgid "E.g. : socle,accounting"
-msgstr "Par exemple : socle,compta"
+#: tviscreatewaptsetup.edauditscheduling.hint
+msgctxt "tviscreatewaptsetup.edauditscheduling.hint"
+msgid "eg 2h or 120m or 1d"
+msgstr "Par exemple 2h ou 120m ou 1d"
 
 #: tviscreatewaptsetup.edorgname.hint
 msgid "E.g. : Tranquil IT Systems."
@@ -455,6 +455,11 @@ msgstr "Par ex. c:\\private\\tranquilit.crt"
 #| msgid "E.g. : http://wapt:8080."
 msgid "E.g. : https://wapt.mydomain.lan"
 msgstr "Par exemple : https://wapt.mondomaine.lan"
+
+#: tviscreatewaptsetup.edwuadownloadscheduling.hint
+msgctxt "tviscreatewaptsetup.edwuadownloadscheduling.hint"
+msgid "eg 2h or 120m or 1d"
+msgstr "Par exemple 2h ou 120m ou 1d"
 
 #: tviscreatewaptsetup.fnpubliccert.hint
 msgid "X509 PEM encoded file with CA certificates which are trusted"
@@ -565,8 +570,8 @@ msgstr "Liste (séparée par des virgules) de paquets profils à ajouter aux mac
 
 #: tviscreatewaptsetup.label9.caption
 msgctxt "tviscreatewaptsetup.label9.caption"
-msgid "Append host's profiles"
-msgstr "Ajouter les profils de poste"
+msgid "Automatic periodic packages audit scheduling"
+msgstr "Planification des audits périodiques de paquets"
 
 #: tviscreatewaptsetup.label9.hint
 msgctxt "tviscreatewaptsetup.label9.hint"

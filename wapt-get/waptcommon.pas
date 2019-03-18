@@ -112,7 +112,9 @@ interface
             EnterpriseEdition:Boolean=False; OverwriteRepoURL:Boolean=True;OverwriteWaptServerURL:Boolean=True;
             UseFQDNAsUUID:Boolean=False;
             AppendHostProfiles:String='';
-            WUAParams:ISuperObject=Nil):Utf8String;
+            WUAParams:ISuperObject=Nil;
+            WaptauditTaskPeriod:String=''
+            ):Utf8String;
 
   function pyformat(template:String;params:ISuperobject):String;
   function pyformat(template:Utf8String;params:ISuperobject):Utf8String; overload;
@@ -1912,7 +1914,8 @@ function CreateWaptSetup(default_public_cert: Utf8String;
   CheckCertificatesValidity: Boolean; EnterpriseEdition: Boolean;
   OverwriteRepoURL: Boolean; OverwriteWaptServerURL: Boolean;
   UseFQDNAsUUID:Boolean=False; AppendHostProfiles:String='';
-  WUAParams:ISuperObject=Nil): Utf8String;
+  WUAParams:ISuperObject=Nil;
+  WaptauditTaskPeriod:String=''): Utf8String;
 var
   iss_template,custom_iss : utf8String;
   iss,new_iss,line : ISuperObject;
@@ -1958,6 +1961,8 @@ begin
           new_iss.AsArray.Add(format('#define set_install_certs "1"' ,[]))
       else if startswith(line,'#define append_host_profiles') and (AppendHostProfiles<>'') then
           new_iss.AsArray.Add(format('#define append_host_profiles "%s"' ,[AppendHostProfiles]))
+      else if startswith(line,'#define set_waptaudit_task_period') and (WaptauditTaskPeriod<>'') then
+          new_iss.AsArray.Add(format('#define waptaudit_task_period "%s"' ,[WaptauditTaskPeriod]))
       else if startswith(line,'#define use_fqdn_as_uuid') then
       begin
           if UseFQDNAsUUID then

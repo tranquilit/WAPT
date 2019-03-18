@@ -773,6 +773,10 @@ msgstr ""
 "%s fertig\n"
 "%s\n"
 
+#: uwapttrayres.rstaskinprogress
+msgid "%s in progress"
+msgstr ""
+
 #: uwapttrayres.rstaskstarted
 msgctxt "uwapttrayres.rstaskstarted"
 msgid "%s started"

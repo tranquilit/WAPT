@@ -15,29 +15,30 @@ type
   TVisCreateWaptSetup = class(TForm)
     ActGetServerCertificate: TAction;
     ActionList1: TActionList;
-    BitBtn1: TBitBtn;
-    BitBtn2: TBitBtn;
+    ButOK: TBitBtn;
+    ButCancel: TBitBtn;
     CBCheckCertificatesValidity: TCheckBox;
     CBDualSign: TCheckBox;
+    CBInstallWUAUpdatesAtShutdown: TCheckBox;
     CBUseFQDNAsUUID: TCheckBox;
     CBForceWaptServerURL: TCheckBox;
     CBVerifyCert: TCheckBox;
     CBUseKerberos: TCheckBox;
     CBForceRepoURL: TCheckBox;
-    CBInstallWUAUpdatesAtShutdown: TCheckBox;
     CBWUADefaultAllow: TCheckBox;
     CBWUAEnabled: TCheckBox;
+    EdAuditScheduling: TComboBox;
     edAppendHostProfiles: TEdit;
+    EdWUADownloadScheduling: TComboBox;
     EdServerCertificate: TFileNameEdit;
     edWaptServerUrl: TEdit;
     EdWUAInstallDelay: TEdit;
-    EdWUADownloadScheduling: TEdit;
     fnWaptDirectory: TDirectoryEdit;
     edRepoUrl: TEdit;
     edOrgName: TEdit;
     fnPublicCert: TFileNameEdit;
-    GridCertificates: TSOGrid;
     GBWUA: TGroupBox;
+    GridCertificates: TSOGrid;
     Label1: TLabel;
     Label2: TLabel;
     Label3: TLabel;
@@ -46,11 +47,13 @@ type
     Label6: TLabel;
     Label7: TLabel;
     Label8: TLabel;
+    Label9: TLabel;
     LabWUAInstallDelay: TLabel;
     LabWUAScanDownloadPeriod: TLabel;
     MenuItem1: TMenuItem;
-    Panel1: TPanel;
-    Panel2: TPanel;
+    PanBottom: TPanel;
+    PanClient: TPanel;
+    PanAgentEnterprise: TPanel;
     PopupMenu1: TPopupMenu;
     procedure ActGetServerCertificateExecute(Sender: TObject);
     procedure CBVerifyCertClick(Sender: TObject);
@@ -280,12 +283,15 @@ begin
     if not CBCheckCertificatesValidity.Checked then
       CBCheckCertificatesValidity.Visible := True;
 
-    CBWUAEnabled.Visible:=DMPython.IsEnterpriseEdition;
-    GBWUA.Visible:=DMPython.IsEnterpriseEdition;
+    PanAgentEnterprise.Visible := DMPython.IsEnterpriseEdition;
+
     if not DMPython.IsEnterpriseEdition then
       CBWUAEnabled.State := cbGrayed
     else
     begin
+      if ini.ValueExists('global','waptaudit_task_period') then
+        EdAuditScheduling.Text:= ini.ReadString('global','waptaudit_task_period','');
+
       if ini.SectionExists('waptwua') then
       begin
         // no key -> don't change anything -> grayed
@@ -342,8 +348,11 @@ begin
     ini.WriteBool('global', 'use_kerberos', CBUseKerberos.Checked);
     ini.WriteBool('global', 'use_fqdn_as_uuid',CBUseFQDNAsUUID.Checked);
 
-    if GBWUA.Visible and (CBWUAEnabled.State in [cbChecked,cbGrayed]) then
+    if DMPython.IsEnterpriseEdition then
     begin
+      ini.WriteString('global','waptaudit_task_period',EdAuditScheduling.Text);
+      if (CBWUAEnabled.State in [cbChecked,cbGrayed]) then
+      begin
         // no key -> don't change anything -> grayed
         if CBWUAEnabled.State <> cbGrayed then
           ini.WriteBool('waptwua','enabled',CBWUAEnabled.Checked);
@@ -360,7 +369,9 @@ begin
         ini.WriteString('waptwua','install_delay',EdWUAInstallDelay.Text);
         ini.WriteString('waptwua','download_scheduling',EdWUADownloadScheduling.Text);
         ini.WriteBool('waptwua','install_at_shutdown',CBInstallWUAUpdatesAtShutdown.Checked);
+      end;
     end;
+
   finally
     ini.Free;
   end;
@@ -396,7 +407,8 @@ begin
       CBForceWaptServerURL.Checked,
       CBUseFQDNAsUUID.Checked,
       edAppendHostProfiles.Text,
-      GetWUAParams()
+      GetWUAParams(),
+      EdAuditScheduling.Text
       );
     Result := WAPTSetupPath;
   finally

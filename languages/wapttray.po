@@ -734,6 +734,10 @@ msgid ""
 "%s\n"
 msgstr ""
 
+#: uwapttrayres.rstaskinprogress
+msgid "%s in progress"
+msgstr ""
+
 #: uwapttrayres.rstaskstarted
 msgctxt "uwapttrayres.rstaskstarted"
 msgid "%s started"

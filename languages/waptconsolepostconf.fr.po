@@ -113,6 +113,7 @@ msgid "Form1"
 msgstr ""
 
 #: tvisapropos.button1.caption
+msgctxt "tvisapropos.button1.caption"
 msgid "Close"
 msgstr ""
 
@@ -188,6 +189,10 @@ msgstr ""
 
 #: tviscreatekey.cbisca.caption
 msgid "Tag as CA Certificate"
+msgstr ""
+
+#: tviscreatekey.cbisclientauth.caption
+msgid "Tag as Client Side Authentication"
 msgstr ""
 
 #: tviscreatekey.edcertbasename.hint
@@ -404,7 +409,13 @@ msgid "Manage Windows Updates with WAPT"
 msgstr ""
 
 #: tviscreatewaptsetup.edappendhostprofiles.hint
+msgctxt "tviscreatewaptsetup.edappendhostprofiles.hint"
 msgid "E.g. : socle,accounting"
+msgstr ""
+
+#: tviscreatewaptsetup.edauditscheduling.hint
+msgctxt "tviscreatewaptsetup.edauditscheduling.hint"
+msgid "eg 2h or 120m or 1d"
 msgstr ""
 
 #: tviscreatewaptsetup.edorgname.hint
@@ -423,12 +434,59 @@ msgstr ""
 msgid "E.g. : https://wapt.mydomain.lan"
 msgstr ""
 
+#: tviscreatewaptsetup.edwuadownloadscheduling.hint
+msgctxt "tviscreatewaptsetup.edwuadownloadscheduling.hint"
+msgid "eg 2h or 120m or 1d"
+msgstr ""
+
 #: tviscreatewaptsetup.fnpubliccert.hint
 msgid "X509 PEM encoded file with CA certificates which are trusted"
 msgstr ""
 
 #: tviscreatewaptsetup.gbwua.caption
 msgid "WAPTWUA Windows Updates "
+msgstr ""
+
+#: tviscreatewaptsetup.gridcertificates.header.columns[0].text
+msgctxt "tviscreatewaptsetup.gridcertificates.header.columns[0].text"
+msgid "id"
+msgstr ""
+
+#: tviscreatewaptsetup.gridcertificates.header.columns[1].text
+msgid "Certificate Name"
+msgstr ""
+
+#: tviscreatewaptsetup.gridcertificates.header.columns[2].text
+msgid "Issuer"
+msgstr ""
+
+#: tviscreatewaptsetup.gridcertificates.header.columns[3].text
+msgid "Valid until"
+msgstr ""
+
+#: tviscreatewaptsetup.gridcertificates.header.columns[4].text
+msgctxt "tviscreatewaptsetup.gridcertificates.header.columns[4].text"
+msgid "Serial number"
+msgstr ""
+
+#: tviscreatewaptsetup.gridcertificates.header.columns[5].text
+msgid "Fingerprint (sha256)"
+msgstr ""
+
+#: tviscreatewaptsetup.gridcertificates.header.columns[6].text
+msgid "Code signing"
+msgstr ""
+
+#: tviscreatewaptsetup.gridcertificates.header.columns[7].text
+msgid "CA"
+msgstr ""
+
+#: tviscreatewaptsetup.gridcertificates.header.columns[8].text
+msgid "subject_dn"
+msgstr ""
+
+#: tviscreatewaptsetup.gridcertificates.header.columns[9].text
+msgid "issuer_dn"
 msgstr ""
 
 #: tviscreatewaptsetup.label1.caption
@@ -476,10 +534,22 @@ msgid "Authorized packages Certificates which will be bundled with the Wapt Agen
 msgstr ""
 
 #: tviscreatewaptsetup.label8.caption
+msgctxt "tviscreatewaptsetup.label8.caption"
 msgid "Append host's profiles"
 msgstr ""
 
 #: tviscreatewaptsetup.label8.hint
+msgctxt "tviscreatewaptsetup.label8.hint"
+msgid "Comma separated list of profile packages to add for hosts. Host will belongs to these additional profiles"
+msgstr ""
+
+#: tviscreatewaptsetup.label9.caption
+msgctxt "tviscreatewaptsetup.label9.caption"
+msgid "Automatic periodic packages audit scheduling"
+msgstr ""
+
+#: tviscreatewaptsetup.label9.hint
+msgctxt "tviscreatewaptsetup.label9.hint"
 msgid "Comma separated list of profile packages to add for hosts. Host will belongs to these additional profiles"
 msgstr ""
 
@@ -684,6 +754,251 @@ msgctxt "tviseditpackage.edversion.text"
 msgid " "
 msgstr ""
 
+#: tviseditpackage.gridconflicts.header.columns[0].text
+msgctxt "tviseditpackage.gridconflicts.header.columns[0].text"
+msgid "Package"
+msgstr ""
+
+#: tviseditpackage.gridconflicts.header.columns[1].text
+msgctxt "tviseditpackage.gridconflicts.header.columns[1].text"
+msgid "Version"
+msgstr ""
+
+#: tviseditpackage.gridconflicts.header.columns[2].text
+msgctxt "tviseditpackage.gridconflicts.header.columns[2].text"
+msgid "Description"
+msgstr ""
+
+#: tviseditpackage.gridconflicts.header.columns[3].text
+msgctxt "tviseditpackage.gridconflicts.header.columns[3].text"
+msgid "Dependencies"
+msgstr ""
+
+#: tviseditpackage.griddepends.header.columns[0].text
+msgctxt "tviseditpackage.griddepends.header.columns[0].text"
+msgid "Package"
+msgstr ""
+
+#: tviseditpackage.griddepends.header.columns[1].text
+msgctxt "tviseditpackage.griddepends.header.columns[1].text"
+msgid "Version"
+msgstr ""
+
+#: tviseditpackage.griddepends.header.columns[2].text
+msgctxt "tviseditpackage.griddepends.header.columns[2].text"
+msgid "Description"
+msgstr ""
+
+#: tviseditpackage.griddepends.header.columns[3].text
+msgctxt "tviseditpackage.griddepends.header.columns[3].text"
+msgid "Dependencies"
+msgstr ""
+
+#: tviseditpackage.gridpackages.header.columns[0].text
+msgctxt "tviseditpackage.gridpackages.header.columns[0].text"
+msgid "package"
+msgstr ""
+
+#: tviseditpackage.gridpackages.header.columns[10].text
+msgctxt "tviseditpackage.gridpackages.header.columns[10].text"
+msgid "min_wapt_version"
+msgstr ""
+
+#: tviseditpackage.gridpackages.header.columns[11].text
+msgctxt "tviseditpackage.gridpackages.header.columns[11].text"
+msgid "signed_attributes"
+msgstr ""
+
+#: tviseditpackage.gridpackages.header.columns[12].text
+msgctxt "tviseditpackage.gridpackages.header.columns[12].text"
+msgid "md5sum"
+msgstr ""
+
+#: tviseditpackage.gridpackages.header.columns[13].text
+msgctxt "tviseditpackage.gridpackages.header.columns[13].text"
+msgid "description_pl"
+msgstr ""
+
+#: tviseditpackage.gridpackages.header.columns[14].text
+msgctxt "tviseditpackage.gridpackages.header.columns[14].text"
+msgid "description_fr"
+msgstr ""
+
+#: tviseditpackage.gridpackages.header.columns[15].text
+msgctxt "tviseditpackage.gridpackages.header.columns[15].text"
+msgid "description_es"
+msgstr ""
+
+#: tviseditpackage.gridpackages.header.columns[16].text
+msgctxt "tviseditpackage.gridpackages.header.columns[16].text"
+msgid "description_de"
+msgstr ""
+
+#: tviseditpackage.gridpackages.header.columns[17].text
+msgctxt "tviseditpackage.gridpackages.header.columns[17].text"
+msgid "min_os_version"
+msgstr ""
+
+#: tviseditpackage.gridpackages.header.columns[18].text
+msgctxt "tviseditpackage.gridpackages.header.columns[18].text"
+msgid "filename"
+msgstr ""
+
+#: tviseditpackage.gridpackages.header.columns[19].text
+msgctxt "tviseditpackage.gridpackages.header.columns[19].text"
+msgid "maintainer"
+msgstr ""
+
+#: tviseditpackage.gridpackages.header.columns[1].text
+msgctxt "tviseditpackage.gridpackages.header.columns[1].text"
+msgid "Version"
+msgstr ""
+
+#: tviseditpackage.gridpackages.header.columns[20].text
+msgctxt "tviseditpackage.gridpackages.header.columns[20].text"
+msgid "signature_date"
+msgstr ""
+
+#: tviseditpackage.gridpackages.header.columns[21].text
+msgctxt "tviseditpackage.gridpackages.header.columns[21].text"
+msgid "package_uuid"
+msgstr ""
+
+#: tviseditpackage.gridpackages.header.columns[22].text
+msgctxt "tviseditpackage.gridpackages.header.columns[22].text"
+msgid "impacted_process"
+msgstr ""
+
+#: tviseditpackage.gridpackages.header.columns[23].text
+msgctxt "tviseditpackage.gridpackages.header.columns[23].text"
+msgid "conflicts"
+msgstr ""
+
+#: tviseditpackage.gridpackages.header.columns[24].text
+msgctxt "tviseditpackage.gridpackages.header.columns[24].text"
+msgid "max_os_version"
+msgstr ""
+
+#: tviseditpackage.gridpackages.header.columns[25].text
+msgctxt "tviseditpackage.gridpackages.header.columns[25].text"
+msgid "installed_size"
+msgstr ""
+
+#: tviseditpackage.gridpackages.header.columns[26].text
+msgctxt "tviseditpackage.gridpackages.header.columns[26].text"
+msgid "signer_fingerprint"
+msgstr ""
+
+#: tviseditpackage.gridpackages.header.columns[27].text
+msgctxt "tviseditpackage.gridpackages.header.columns[27].text"
+msgid "editor"
+msgstr ""
+
+#: tviseditpackage.gridpackages.header.columns[28].text
+msgctxt "tviseditpackage.gridpackages.header.columns[28].text"
+msgid "repo_url"
+msgstr ""
+
+#: tviseditpackage.gridpackages.header.columns[29].text
+msgctxt "tviseditpackage.gridpackages.header.columns[29].text"
+msgid "licence"
+msgstr ""
+
+#: tviseditpackage.gridpackages.header.columns[2].text
+msgctxt "tviseditpackage.gridpackages.header.columns[2].text"
+msgid "Description"
+msgstr ""
+
+#: tviseditpackage.gridpackages.header.columns[30].text
+msgctxt "tviseditpackage.gridpackages.header.columns[30].text"
+msgid "keywords"
+msgstr ""
+
+#: tviseditpackage.gridpackages.header.columns[31].text
+msgctxt "tviseditpackage.gridpackages.header.columns[31].text"
+msgid "locale"
+msgstr ""
+
+#: tviseditpackage.gridpackages.header.columns[32].text
+msgctxt "tviseditpackage.gridpackages.header.columns[32].text"
+msgid "size"
+msgstr ""
+
+#: tviseditpackage.gridpackages.header.columns[33].text
+msgctxt "tviseditpackage.gridpackages.header.columns[33].text"
+msgid "repo"
+msgstr ""
+
+#: tviseditpackage.gridpackages.header.columns[34].text
+msgctxt "tviseditpackage.gridpackages.header.columns[34].text"
+msgid "target_os"
+msgstr ""
+
+#: tviseditpackage.gridpackages.header.columns[35].text
+msgctxt "tviseditpackage.gridpackages.header.columns[35].text"
+msgid "localpath"
+msgstr ""
+
+#: tviseditpackage.gridpackages.header.columns[36].text
+msgctxt "tviseditpackage.gridpackages.header.columns[36].text"
+msgid "maturity"
+msgstr ""
+
+#: tviseditpackage.gridpackages.header.columns[37].text
+msgctxt "tviseditpackage.gridpackages.header.columns[37].text"
+msgid "architecture"
+msgstr ""
+
+#: tviseditpackage.gridpackages.header.columns[38].text
+msgctxt "tviseditpackage.gridpackages.header.columns[38].text"
+msgid "homepage"
+msgstr ""
+
+#: tviseditpackage.gridpackages.header.columns[39].text
+msgctxt "tviseditpackage.gridpackages.header.columns[39].text"
+msgid "sourcespath"
+msgstr ""
+
+#: tviseditpackage.gridpackages.header.columns[3].text
+msgctxt "tviseditpackage.gridpackages.header.columns[3].text"
+msgid "Dependencies"
+msgstr ""
+
+#: tviseditpackage.gridpackages.header.columns[40].text
+msgctxt "tviseditpackage.gridpackages.header.columns[40].text"
+msgid "signer"
+msgstr ""
+
+#: tviseditpackage.gridpackages.header.columns[4].text
+msgctxt "tviseditpackage.gridpackages.header.columns[4].text"
+msgid "Installed by"
+msgstr ""
+
+#: tviseditpackage.gridpackages.header.columns[5].text
+msgctxt "tviseditpackage.gridpackages.header.columns[5].text"
+msgid "Section"
+msgstr ""
+
+#: tviseditpackage.gridpackages.header.columns[6].text
+msgctxt "tviseditpackage.gridpackages.header.columns[6].text"
+msgid "priority"
+msgstr ""
+
+#: tviseditpackage.gridpackages.header.columns[7].text
+msgctxt "tviseditpackage.gridpackages.header.columns[7].text"
+msgid "signature"
+msgstr ""
+
+#: tviseditpackage.gridpackages.header.columns[8].text
+msgctxt "tviseditpackage.gridpackages.header.columns[8].text"
+msgid "sources"
+msgstr ""
+
+#: tviseditpackage.gridpackages.header.columns[9].text
+msgctxt "tviseditpackage.gridpackages.header.columns[9].text"
+msgid "audit_schedule"
+msgstr ""
+
 #: tviseditpackage.labdescription.caption
 msgctxt "tviseditpackage.labdescription.caption"
 msgid "Description"
@@ -695,6 +1010,7 @@ msgid "Available packages : "
 msgstr ""
 
 #: tviseditpackage.labpackage.caption
+msgctxt "tviseditpackage.labpackage.caption"
 msgid "Package"
 msgstr ""
 
@@ -911,6 +1227,7 @@ msgid "Description"
 msgstr ""
 
 #: tvispackagewizard.edpackagename.editlabel.caption
+msgctxt "tvispackagewizard.edpackagename.editlabel.caption"
 msgid "Package name"
 msgstr ""
 
@@ -923,6 +1240,7 @@ msgid "Silent flags"
 msgstr ""
 
 #: tvispackagewizard.eduninstallkey.editlabel.caption
+msgctxt "tvispackagewizard.eduninstallkey.editlabel.caption"
 msgid "Uninstall key"
 msgstr ""
 
@@ -1135,6 +1453,240 @@ msgctxt "tvisselfservicegroup.edpackageversion.text"
 msgid "0"
 msgstr ""
 
+#: tvisselfservicegroup.gridenabledpackages.header.columns[0].text
+msgctxt "tvisselfservicegroup.gridenabledpackages.header.columns[0].text"
+msgid "Package"
+msgstr ""
+
+#: tvisselfservicegroup.gridenabledpackages.header.columns[1].text
+msgctxt "tvisselfservicegroup.gridenabledpackages.header.columns[1].text"
+msgid "Version"
+msgstr ""
+
+#: tvisselfservicegroup.gridenabledpackages.header.columns[2].text
+msgctxt "tvisselfservicegroup.gridenabledpackages.header.columns[2].text"
+msgid "Description"
+msgstr ""
+
+#: tvisselfservicegroup.gridenabledpackages.header.columns[3].text
+msgctxt "tvisselfservicegroup.gridenabledpackages.header.columns[3].text"
+msgid "Dependencies"
+msgstr ""
+
+#: tvisselfservicegroup.gridgroups.header.columns[0].text
+msgid "Users Group"
+msgstr ""
+
+#: tvisselfservicegroup.gridgroups.header.columns[1].text
+msgctxt "tvisselfservicegroup.gridgroups.header.columns[1].text"
+msgid "Packages"
+msgstr ""
+
+#: tvisselfservicegroup.gridpackages.header.columns[0].text
+msgctxt "tvisselfservicegroup.gridpackages.header.columns[0].text"
+msgid "package"
+msgstr ""
+
+#: tvisselfservicegroup.gridpackages.header.columns[10].text
+msgctxt "tvisselfservicegroup.gridpackages.header.columns[10].text"
+msgid "min_wapt_version"
+msgstr ""
+
+#: tvisselfservicegroup.gridpackages.header.columns[11].text
+msgctxt "tvisselfservicegroup.gridpackages.header.columns[11].text"
+msgid "signed_attributes"
+msgstr ""
+
+#: tvisselfservicegroup.gridpackages.header.columns[12].text
+msgctxt "tvisselfservicegroup.gridpackages.header.columns[12].text"
+msgid "md5sum"
+msgstr ""
+
+#: tvisselfservicegroup.gridpackages.header.columns[13].text
+msgctxt "tvisselfservicegroup.gridpackages.header.columns[13].text"
+msgid "description_pl"
+msgstr ""
+
+#: tvisselfservicegroup.gridpackages.header.columns[14].text
+msgctxt "tvisselfservicegroup.gridpackages.header.columns[14].text"
+msgid "description_fr"
+msgstr ""
+
+#: tvisselfservicegroup.gridpackages.header.columns[15].text
+msgctxt "tvisselfservicegroup.gridpackages.header.columns[15].text"
+msgid "description_es"
+msgstr ""
+
+#: tvisselfservicegroup.gridpackages.header.columns[16].text
+msgctxt "tvisselfservicegroup.gridpackages.header.columns[16].text"
+msgid "description_de"
+msgstr ""
+
+#: tvisselfservicegroup.gridpackages.header.columns[17].text
+msgctxt "tvisselfservicegroup.gridpackages.header.columns[17].text"
+msgid "min_os_version"
+msgstr ""
+
+#: tvisselfservicegroup.gridpackages.header.columns[18].text
+msgctxt "tvisselfservicegroup.gridpackages.header.columns[18].text"
+msgid "filename"
+msgstr ""
+
+#: tvisselfservicegroup.gridpackages.header.columns[19].text
+msgctxt "tvisselfservicegroup.gridpackages.header.columns[19].text"
+msgid "maintainer"
+msgstr ""
+
+#: tvisselfservicegroup.gridpackages.header.columns[1].text
+msgctxt "tvisselfservicegroup.gridpackages.header.columns[1].text"
+msgid "Version"
+msgstr ""
+
+#: tvisselfservicegroup.gridpackages.header.columns[20].text
+msgctxt "tvisselfservicegroup.gridpackages.header.columns[20].text"
+msgid "signature_date"
+msgstr ""
+
+#: tvisselfservicegroup.gridpackages.header.columns[21].text
+msgctxt "tvisselfservicegroup.gridpackages.header.columns[21].text"
+msgid "package_uuid"
+msgstr ""
+
+#: tvisselfservicegroup.gridpackages.header.columns[22].text
+msgctxt "tvisselfservicegroup.gridpackages.header.columns[22].text"
+msgid "impacted_process"
+msgstr ""
+
+#: tvisselfservicegroup.gridpackages.header.columns[23].text
+msgctxt "tvisselfservicegroup.gridpackages.header.columns[23].text"
+msgid "conflicts"
+msgstr ""
+
+#: tvisselfservicegroup.gridpackages.header.columns[24].text
+msgctxt "tvisselfservicegroup.gridpackages.header.columns[24].text"
+msgid "max_os_version"
+msgstr ""
+
+#: tvisselfservicegroup.gridpackages.header.columns[25].text
+msgctxt "tvisselfservicegroup.gridpackages.header.columns[25].text"
+msgid "installed_size"
+msgstr ""
+
+#: tvisselfservicegroup.gridpackages.header.columns[26].text
+msgctxt "tvisselfservicegroup.gridpackages.header.columns[26].text"
+msgid "signer_fingerprint"
+msgstr ""
+
+#: tvisselfservicegroup.gridpackages.header.columns[27].text
+msgctxt "tvisselfservicegroup.gridpackages.header.columns[27].text"
+msgid "editor"
+msgstr ""
+
+#: tvisselfservicegroup.gridpackages.header.columns[28].text
+msgctxt "tvisselfservicegroup.gridpackages.header.columns[28].text"
+msgid "repo_url"
+msgstr ""
+
+#: tvisselfservicegroup.gridpackages.header.columns[29].text
+msgctxt "tvisselfservicegroup.gridpackages.header.columns[29].text"
+msgid "licence"
+msgstr ""
+
+#: tvisselfservicegroup.gridpackages.header.columns[2].text
+msgctxt "tvisselfservicegroup.gridpackages.header.columns[2].text"
+msgid "Description"
+msgstr ""
+
+#: tvisselfservicegroup.gridpackages.header.columns[30].text
+msgctxt "tvisselfservicegroup.gridpackages.header.columns[30].text"
+msgid "keywords"
+msgstr ""
+
+#: tvisselfservicegroup.gridpackages.header.columns[31].text
+msgctxt "tvisselfservicegroup.gridpackages.header.columns[31].text"
+msgid "locale"
+msgstr ""
+
+#: tvisselfservicegroup.gridpackages.header.columns[32].text
+msgctxt "tvisselfservicegroup.gridpackages.header.columns[32].text"
+msgid "size"
+msgstr ""
+
+#: tvisselfservicegroup.gridpackages.header.columns[33].text
+msgctxt "tvisselfservicegroup.gridpackages.header.columns[33].text"
+msgid "repo"
+msgstr ""
+
+#: tvisselfservicegroup.gridpackages.header.columns[34].text
+msgctxt "tvisselfservicegroup.gridpackages.header.columns[34].text"
+msgid "target_os"
+msgstr ""
+
+#: tvisselfservicegroup.gridpackages.header.columns[35].text
+msgctxt "tvisselfservicegroup.gridpackages.header.columns[35].text"
+msgid "localpath"
+msgstr ""
+
+#: tvisselfservicegroup.gridpackages.header.columns[36].text
+msgctxt "tvisselfservicegroup.gridpackages.header.columns[36].text"
+msgid "maturity"
+msgstr ""
+
+#: tvisselfservicegroup.gridpackages.header.columns[37].text
+msgctxt "tvisselfservicegroup.gridpackages.header.columns[37].text"
+msgid "architecture"
+msgstr ""
+
+#: tvisselfservicegroup.gridpackages.header.columns[38].text
+msgctxt "tvisselfservicegroup.gridpackages.header.columns[38].text"
+msgid "homepage"
+msgstr ""
+
+#: tvisselfservicegroup.gridpackages.header.columns[39].text
+msgctxt "tvisselfservicegroup.gridpackages.header.columns[39].text"
+msgid "sourcespath"
+msgstr ""
+
+#: tvisselfservicegroup.gridpackages.header.columns[3].text
+msgctxt "tvisselfservicegroup.gridpackages.header.columns[3].text"
+msgid "Dependencies"
+msgstr ""
+
+#: tvisselfservicegroup.gridpackages.header.columns[40].text
+msgctxt "tvisselfservicegroup.gridpackages.header.columns[40].text"
+msgid "signer"
+msgstr ""
+
+#: tvisselfservicegroup.gridpackages.header.columns[4].text
+msgctxt "tvisselfservicegroup.gridpackages.header.columns[4].text"
+msgid "Installed by"
+msgstr ""
+
+#: tvisselfservicegroup.gridpackages.header.columns[5].text
+msgctxt "tvisselfservicegroup.gridpackages.header.columns[5].text"
+msgid "Section"
+msgstr ""
+
+#: tvisselfservicegroup.gridpackages.header.columns[6].text
+msgctxt "tvisselfservicegroup.gridpackages.header.columns[6].text"
+msgid "priority"
+msgstr ""
+
+#: tvisselfservicegroup.gridpackages.header.columns[7].text
+msgctxt "tvisselfservicegroup.gridpackages.header.columns[7].text"
+msgid "signature"
+msgstr ""
+
+#: tvisselfservicegroup.gridpackages.header.columns[8].text
+msgctxt "tvisselfservicegroup.gridpackages.header.columns[8].text"
+msgid "sources"
+msgstr ""
+
+#: tvisselfservicegroup.gridpackages.header.columns[9].text
+msgctxt "tvisselfservicegroup.gridpackages.header.columns[9].text"
+msgid "audit_schedule"
+msgstr ""
+
 #: tvisselfservicegroup.label3.caption
 msgctxt "tvisselfservicegroup.label3.caption"
 msgid "Description"
@@ -1182,9 +1734,18 @@ msgctxt "tvissoftwaresnormalization.actnormalizationimportsoftwares.caption"
 msgid "Import"
 msgstr ""
 
+#: tvissoftwaresnormalization.actnormalizationimportsoftwares.hint
+msgid "Append all the software descriptions gathered from hosts inventory"
+msgstr ""
+
 #: tvissoftwaresnormalization.actnormalizationwritetable.caption
 msgctxt "tvissoftwaresnormalization.actnormalizationwritetable.caption"
 msgid "Write"
+msgstr ""
+
+#: tvissoftwaresnormalization.butok.caption
+msgctxt "tvissoftwaresnormalization.butok.caption"
+msgid "Close"
 msgstr ""
 
 #: tvissoftwaresnormalization.caption
@@ -1319,11 +1880,13 @@ msgid ""
 "(Main repository access and wapt server)\n"
 msgstr ""
 
-#: tviswaptconfig.eddefault_package_prefix.editlabel.caption
+#: tviswaptconfig.eddefaultpackageprefix.editlabel.caption
+msgctxt "tviswaptconfig.eddefaultpackageprefix.editlabel.caption"
 msgid "WAPT packages prefix"
 msgstr ""
 
-#: tviswaptconfig.eddefault_package_prefix.hint
+#: tviswaptconfig.eddefaultpackageprefix.hint
+msgctxt "tviswaptconfig.eddefaultpackageprefix.hint"
 msgid ""
 "E.g. : tis\n"
 "Which prefix to use when naming created or duplicated packages\n"
@@ -1344,6 +1907,10 @@ msgstr ""
 msgid ""
 "E.g. : http://proxy.tranquilit.local:3128\n"
 "Only required if a proxy is needed for waptserver and main waptrepo\n"
+msgstr ""
+
+#: tviswaptconfig.edlicencesdirectory.hint
+msgid "c:\\wapt\\licences"
 msgstr ""
 
 #: tviswaptconfig.edpersonalcertificatepath.hint
@@ -1396,6 +1963,19 @@ msgid ""
 "Leave empty if you don't want a central management server.\n"
 msgstr ""
 
+#: tviswaptconfig.gridplugins.header.columns[0].text
+msgctxt "tviswaptconfig.gridplugins.header.columns[0].text"
+msgid "Name"
+msgstr ""
+
+#: tviswaptconfig.gridplugins.header.columns[1].text
+msgid "Executable"
+msgstr ""
+
+#: tviswaptconfig.gridplugins.header.columns[2].text
+msgid "Arguments"
+msgstr ""
+
 #: tviswaptconfig.label1.caption
 msgid "Base directory for package development"
 msgstr ""
@@ -1427,6 +2007,10 @@ msgstr ""
 msgid "Send anonymous usage statistics to Tranquil IT"
 msgstr ""
 
+#: tviswaptconfig.lablicencesdirectory.caption
+msgid "Licences directory"
+msgstr ""
+
 #: tviswaptconfig.labstatusrepo.caption
 msgctxt "tviswaptconfig.labstatusrepo.caption"
 msgid "Status"
@@ -1451,203 +2035,6 @@ msgctxt "tviswaptconfig.pgplugins.caption"
 msgid "Plugins"
 msgstr ""
 
-#: tviswaptconsolepostconf.actbuildwaptagent.caption
-msgid "Build WAPT Agent Setup"
-msgstr "Générer l'installeur de l'agent WAPT"
-
-#: tviswaptconsolepostconf.actcancel.caption
-msgctxt "tviswaptconsolepostconf.actcancel.caption"
-msgid "Cancel"
-msgstr "Annuler"
-
-#: tviswaptconsolepostconf.actcheckdns.caption
-msgid "Check DNS"
-msgstr "Vérifier le DNS"
-
-#: tviswaptconsolepostconf.actcheckserverpassword.caption
-msgctxt "tviswaptconsolepostconf.actcheckserverpassword.caption"
-msgid "Check password"
-msgstr "Vérifier le mot de passe"
-
-#: tviswaptconsolepostconf.actcheckwapthostname.caption
-msgctxt "tviswaptconsolepostconf.actcheckwapthostname.caption"
-msgid "Check Server Access"
-msgstr "Vérifier l'accès serveur"
-
-#: tviswaptconsolepostconf.actcreatekeys.caption
-msgid "Create keys pair"
-msgstr "Créer une paire de clés"
-
-#: tviswaptconsolepostconf.actfindprivatekey.caption
-msgid "Find private key"
-msgstr "Trouver la clé privée"
-
-#: tviswaptconsolepostconf.actnext.caption
-msgid "Next"
-msgstr "Suivant"
-
-#: tviswaptconsolepostconf.actprevious.caption
-msgid "Previous"
-msgstr "Précédent"
-
-#: tviswaptconsolepostconf.actuseexistingkey.caption
-msgid "Take certificate in account"
-msgstr "Prendre en compte le certificat"
-
-#: tviswaptconsolepostconf.caption
-msgid "Configuration of WAPT console for Windows"
-msgstr "Configuration de l'agent local et de la console WAPT"
-
-#: tviswaptconsolepostconf.cblaunchwaptconsoleonexit.caption
-msgid "Run WAPT console after setup"
-msgstr "Lancer la console WAPT après la configuration"
-
-#: tviswaptconsolepostconf.cb_create_new_key_show_password.caption
-msgctxt "tviswaptconsolepostconf.cb_create_new_key_show_password.caption"
-msgid "Show password"
-msgstr "Montrer le mot de passe"
-
-#: tviswaptconsolepostconf.cb_manual_wapt_server.caption
-msgid "Manual override"
-msgstr "Spécifier manuellement"
-
-#: tviswaptconsolepostconf.cb_use_existing_key_show_password.caption
-msgctxt "tviswaptconsolepostconf.cb_use_existing_key_show_password.caption"
-msgid "Show password"
-msgstr "Montrer le mot de passe"
-
-#: tviswaptconsolepostconf.cb_wapt_server_show_password.caption
-msgctxt "tviswaptconsolepostconf.cb_wapt_server_show_password.caption"
-msgid "Show password"
-msgstr "Montrer le mot de passe"
-
-#: tviswaptconsolepostconf.edwaptserverhostname.hint
-msgctxt "tviswaptconsolepostconf.edwaptserverhostname.hint"
-msgid ""
-"WAPT clients make requests to the server. In order to connect to the WAPT server,\n"
-"it is advisable that a DNS name be used, as long as it has been correctly\n"
-"configured in your network's DNS environment. We suggest naming your WAPT server\n"
-"'srvwapt.mydomain.local' (A record type), then binding an alias\n"
-"(CNAME record type, e.g. 'wapt.mondomain.local') to srvwapt.\n"
-"In case you don't trust your DNS, or you are just setting up a testing environment,\n"
-"you can fall back to the server IP address. For further information :\n"
-"'http://dev.tranquil.it/scenari/guide_admin/co/wapt_server_configuration_champDNS.html'\n"
-msgstr ""
-
-#: tviswaptconsolepostconf.edwaptserverip.hint
-msgctxt "tviswaptconsolepostconf.edwaptserverip.hint"
-msgid ""
-"WAPT clients make requests to the server. In order to connect to the WAPT server,\n"
-"it is advisable that a DNS name be used, as long as it has been correctly\n"
-"configured in your network's DNS environment. We suggest naming your WAPT server\n"
-"'srvwapt.mydomain.local' (A record type), then binding an alias\n"
-"(CNAME record type, e.g. 'wapt.mondomain.local') to srvwapt.\n"
-"In case you don't trust your DNS, or you are just setting up a testing environment,\n"
-"you can fall back to the server IP address. For further information :\n"
-"'http://dev.tranquil.it/scenari/guide_admin/co/wapt_server_configuration_champDNS.html'\n"
-msgstr ""
-
-#: tviswaptconsolepostconf.ed_package_prefix.text
-msgid "ed_package_prefix"
-msgstr ""
-
-#: tviswaptconsolepostconf.labwaptserverip.caption
-msgid "WAPT ServerIP :"
-msgstr "Adresse IP du serveur WAPT"
-
-#: tviswaptconsolepostconf.lbl_ed_create_new_key_directory.caption
-msgid "Secret directory :"
-msgstr "Répertoire privé"
-
-#: tviswaptconsolepostconf.lbl_ed_create_new_key_key_name.caption
-msgid "Key name :"
-msgstr "Nom de la clé :"
-
-#: tviswaptconsolepostconf.lbl_ed_create_new_key_password_1.caption
-msgid "Password :"
-msgstr "Mot de passe :"
-
-#: tviswaptconsolepostconf.lbl_ed_create_new_key_password_2.caption
-msgid "Password confirm :"
-msgstr "Confirmer le mot de passe :"
-
-#: tviswaptconsolepostconf.lbl_ed_existing_key_cert_filename.caption
-msgid "Certificat filename :"
-msgstr "Nom de fichier du certificat :"
-
-#: tviswaptconsolepostconf.lbl_ed_existing_key_key_filename.caption
-msgctxt "tviswaptconsolepostconf.lbl_ed_existing_key_key_filename.caption"
-msgid "Key filename :"
-msgstr "Nom de fichier de la clé:"
-
-#: tviswaptconsolepostconf.lbl_ed_existing_key_password.caption
-msgid "Private key Password :"
-msgstr "Mot de passe de la clé privée :"
-
-#: tviswaptconsolepostconf.lbl_ed_package_prefix.caption
-msgid "Package prefix :"
-msgstr "Préfixe de paquets :"
-
-#: tviswaptconsolepostconf.lbl_manual_repo_url.caption
-msgid "Repository URL :"
-msgstr "URL du dépôt :"
-
-#: tviswaptconsolepostconf.lbl_manual_wapt_server_url.caption
-msgid "Server URL :"
-msgstr "URL du serveur :"
-
-#: tviswaptconsolepostconf.lbl_wapt_server_hostname.caption
-msgid "WAPT server hostname :"
-msgstr "Nom DNS du serveur WAPT"
-
-#: tviswaptconsolepostconf.lbl_wapt_server_password.caption
-msgid "WAPT server password :"
-msgstr "Mot de passe du serveur WAPT"
-
-#: tviswaptconsolepostconf.panel15.caption
-msgid "Panel15"
-msgstr ""
-
-#: tviswaptconsolepostconf.pgbuildagent.caption
-msgid "Agent"
-msgstr "Agent"
-
-#: tviswaptconsolepostconf.pgfinish.caption
-msgid "Fin"
-msgstr "Fin"
-
-#: tviswaptconsolepostconf.pgkey.caption
-msgid "Package key"
-msgstr "Clés de paquet"
-
-#: tviswaptconsolepostconf.pgkey_ts_create_new_key.caption
-msgid "pgkey_ts_create_new_key"
-msgstr ""
-
-#: tviswaptconsolepostconf.pgkey_ts_use_existing_key.caption
-msgid "pgkey_ts_use_existing_key"
-msgstr ""
-
-#: tviswaptconsolepostconf.pgpackage.caption
-msgid "Package prefix"
-msgstr ""
-
-#: tviswaptconsolepostconf.pgparameters.caption
-msgid "Parameters"
-msgstr ""
-
-#: tviswaptconsolepostconf.p_right.caption
-msgid "p_right"
-msgstr ""
-
-#: tviswaptconsolepostconf.rb_createkey.caption
-msgid "Create a new key"
-msgstr "Créer une nouvelle clé"
-
-#: tviswaptconsolepostconf.rb_usekey.caption
-msgid "Use existing key"
-msgstr "Utiliser une clé existante"
-
 #: tviswaptdeploy.actdeploywapt.caption
 msgid "Deploy"
 msgstr ""
@@ -1661,6 +2048,7 @@ msgid "Déployer WAPT"
 msgstr ""
 
 #: tviswaptdeploy.eddomaine.editlabel.caption
+msgctxt "tviswaptdeploy.eddomaine.editlabel.caption"
 msgid "Domaine"
 msgstr ""
 
@@ -1717,6 +2105,10 @@ msgstr ""
 
 #: tviswaptgui.actaddnewnetwork.caption
 msgid "Add new network"
+msgstr ""
+
+#: tviswaptgui.actaddprofile.caption
+msgid "New host AD profile"
 msgstr ""
 
 #: tviswaptgui.actcancelrunningtask.caption
@@ -1947,6 +2339,11 @@ msgctxt "tviswaptgui.actrefreshhostinventory.caption"
 msgid "Refresh host inventory"
 msgstr ""
 
+#: tviswaptgui.actrefreshhostsforpackage.caption
+msgctxt "tviswaptgui.actrefreshhostsforpackage.caption"
+msgid "Refresh"
+msgstr ""
+
 #: tviswaptgui.actreloadconfig.caption
 msgid "Reload preferences"
 msgstr ""
@@ -1992,7 +2389,7 @@ msgid "Export to Excel"
 msgstr ""
 
 #: tviswaptgui.actreportingqueryimport.caption
-msgid "Import queries from file..."
+msgid "Import queries..."
 msgstr ""
 
 #: tviswaptgui.actreportingquerynew.caption
@@ -2123,6 +2520,10 @@ msgstr ""
 #: tviswaptgui.acttriggerwaptwua_scan.caption
 msgctxt "tviswaptgui.acttriggerwaptwua_scan.caption"
 msgid "Trigger the scan of missing Windows Updates"
+msgstr ""
+
+#: tviswaptgui.acttriggerwaptwua_uninstall.caption
+msgid "Trigger the Uninstall of selected Windows Updates"
 msgstr ""
 
 #: tviswaptgui.actveyon.caption
@@ -2364,6 +2765,11 @@ msgctxt "tviswaptgui.cbnewestonly.caption"
 msgid "Last version only"
 msgstr ""
 
+#: tviswaptgui.cbnewestonlygroups.caption
+msgctxt "tviswaptgui.cbnewestonlygroups.caption"
+msgid "Last version only"
+msgstr ""
+
 #: tviswaptgui.cbnewestonlyselfservice.caption
 msgctxt "tviswaptgui.cbnewestonlyselfservice.caption"
 msgid "Last version only"
@@ -2392,6 +2798,7 @@ msgid "Search in DMI/WMI infos"
 msgstr ""
 
 #: tviswaptgui.cbsearchhost.caption
+msgctxt "tviswaptgui.cbsearchhost.caption"
 msgid "Host"
 msgstr ""
 
@@ -2400,6 +2807,7 @@ msgid "Search in host_info field"
 msgstr ""
 
 #: tviswaptgui.cbsearchpackages.caption
+msgctxt "tviswaptgui.cbsearchpackages.caption"
 msgid "Packages"
 msgstr ""
 
@@ -2447,10 +2855,12 @@ msgid "Critical only"
 msgstr ""
 
 #: tviswaptgui.cbwuadiscarded.caption
+msgctxt "tviswaptgui.cbwuadiscarded.caption"
 msgid "Discarded"
 msgstr ""
 
 #: tviswaptgui.cbwuainstalled.caption
+msgctxt "tviswaptgui.cbwuainstalled.caption"
 msgid "Installed"
 msgstr ""
 
@@ -2473,14 +2883,2068 @@ msgctxt "tviswaptgui.edsearchhost.hint"
 msgid "Regular expressions allowed"
 msgstr ""
 
-#: tviswaptgui.edsearchhosts.hint
-msgctxt "tviswaptgui.edsearchhosts.hint"
+#: tviswaptgui.edsearchhostsforpackage.hint
+msgctxt "tviswaptgui.edsearchhostsforpackage.hint"
 msgid "Regular expressions allowed"
 msgstr ""
 
 #: tviswaptgui.edsearchorgunits.hint
 msgctxt "tviswaptgui.edsearchorgunits.hint"
 msgid "Regular expressions allowed"
+msgstr ""
+
+#: tviswaptgui.gridgroups.header.columns[0].text
+msgctxt "tviswaptgui.gridgroups.header.columns[0].text"
+msgid "Section"
+msgstr ""
+
+#: tviswaptgui.gridgroups.header.columns[10].text
+msgctxt "tviswaptgui.gridgroups.header.columns[10].text"
+msgid "Maturity"
+msgstr ""
+
+#: tviswaptgui.gridgroups.header.columns[11].text
+msgctxt "tviswaptgui.gridgroups.header.columns[11].text"
+msgid "Min OS version"
+msgstr ""
+
+#: tviswaptgui.gridgroups.header.columns[12].text
+msgctxt "tviswaptgui.gridgroups.header.columns[12].text"
+msgid "Max OS version"
+msgstr ""
+
+#: tviswaptgui.gridgroups.header.columns[13].text
+msgctxt "tviswaptgui.gridgroups.header.columns[13].text"
+msgid "Min Wapt version"
+msgstr ""
+
+#: tviswaptgui.gridgroups.header.columns[14].text
+msgctxt "tviswaptgui.gridgroups.header.columns[14].text"
+msgid "Repository"
+msgstr ""
+
+#: tviswaptgui.gridgroups.header.columns[15].text
+msgctxt "tviswaptgui.gridgroups.header.columns[15].text"
+msgid "Filename"
+msgstr ""
+
+#: tviswaptgui.gridgroups.header.columns[16].text
+msgctxt "tviswaptgui.gridgroups.header.columns[16].text"
+msgid "priority"
+msgstr ""
+
+#: tviswaptgui.gridgroups.header.columns[17].text
+msgctxt "tviswaptgui.gridgroups.header.columns[17].text"
+msgid "signature"
+msgstr ""
+
+#: tviswaptgui.gridgroups.header.columns[18].text
+msgctxt "tviswaptgui.gridgroups.header.columns[18].text"
+msgid "sources"
+msgstr ""
+
+#: tviswaptgui.gridgroups.header.columns[19].text
+msgctxt "tviswaptgui.gridgroups.header.columns[19].text"
+msgid "audit_schedule"
+msgstr ""
+
+#: tviswaptgui.gridgroups.header.columns[1].text
+msgctxt "tviswaptgui.gridgroups.header.columns[1].text"
+msgid "Package"
+msgstr ""
+
+#: tviswaptgui.gridgroups.header.columns[20].text
+msgctxt "tviswaptgui.gridgroups.header.columns[20].text"
+msgid "signed_attributes"
+msgstr ""
+
+#: tviswaptgui.gridgroups.header.columns[21].text
+msgctxt "tviswaptgui.gridgroups.header.columns[21].text"
+msgid "md5sum"
+msgstr ""
+
+#: tviswaptgui.gridgroups.header.columns[22].text
+msgctxt "tviswaptgui.gridgroups.header.columns[22].text"
+msgid "description_pl"
+msgstr ""
+
+#: tviswaptgui.gridgroups.header.columns[23].text
+msgctxt "tviswaptgui.gridgroups.header.columns[23].text"
+msgid "description_fr"
+msgstr ""
+
+#: tviswaptgui.gridgroups.header.columns[24].text
+msgctxt "tviswaptgui.gridgroups.header.columns[24].text"
+msgid "description_es"
+msgstr ""
+
+#: tviswaptgui.gridgroups.header.columns[25].text
+msgctxt "tviswaptgui.gridgroups.header.columns[25].text"
+msgid "description_de"
+msgstr ""
+
+#: tviswaptgui.gridgroups.header.columns[26].text
+msgctxt "tviswaptgui.gridgroups.header.columns[26].text"
+msgid "maintainer"
+msgstr ""
+
+#: tviswaptgui.gridgroups.header.columns[27].text
+msgctxt "tviswaptgui.gridgroups.header.columns[27].text"
+msgid "package_uuid"
+msgstr ""
+
+#: tviswaptgui.gridgroups.header.columns[28].text
+msgctxt "tviswaptgui.gridgroups.header.columns[28].text"
+msgid "description"
+msgstr ""
+
+#: tviswaptgui.gridgroups.header.columns[29].text
+msgctxt "tviswaptgui.gridgroups.header.columns[29].text"
+msgid "impacted_process"
+msgstr ""
+
+#: tviswaptgui.gridgroups.header.columns[2].text
+msgctxt "tviswaptgui.gridgroups.header.columns[2].text"
+msgid "Version"
+msgstr ""
+
+#: tviswaptgui.gridgroups.header.columns[30].text
+msgctxt "tviswaptgui.gridgroups.header.columns[30].text"
+msgid "installed_size"
+msgstr ""
+
+#: tviswaptgui.gridgroups.header.columns[31].text
+msgctxt "tviswaptgui.gridgroups.header.columns[31].text"
+msgid "signer_fingerprint"
+msgstr ""
+
+#: tviswaptgui.gridgroups.header.columns[32].text
+msgctxt "tviswaptgui.gridgroups.header.columns[32].text"
+msgid "editor"
+msgstr ""
+
+#: tviswaptgui.gridgroups.header.columns[33].text
+msgctxt "tviswaptgui.gridgroups.header.columns[33].text"
+msgid "licence"
+msgstr ""
+
+#: tviswaptgui.gridgroups.header.columns[34].text
+msgctxt "tviswaptgui.gridgroups.header.columns[34].text"
+msgid "keywords"
+msgstr ""
+
+#: tviswaptgui.gridgroups.header.columns[35].text
+msgctxt "tviswaptgui.gridgroups.header.columns[35].text"
+msgid "size"
+msgstr ""
+
+#: tviswaptgui.gridgroups.header.columns[36].text
+msgctxt "tviswaptgui.gridgroups.header.columns[36].text"
+msgid "repo"
+msgstr ""
+
+#: tviswaptgui.gridgroups.header.columns[37].text
+msgctxt "tviswaptgui.gridgroups.header.columns[37].text"
+msgid "target_os"
+msgstr ""
+
+#: tviswaptgui.gridgroups.header.columns[38].text
+msgctxt "tviswaptgui.gridgroups.header.columns[38].text"
+msgid "localpath"
+msgstr ""
+
+#: tviswaptgui.gridgroups.header.columns[39].text
+msgctxt "tviswaptgui.gridgroups.header.columns[39].text"
+msgid "homepage"
+msgstr ""
+
+#: tviswaptgui.gridgroups.header.columns[3].text
+msgctxt "tviswaptgui.gridgroups.header.columns[3].text"
+msgid "Description"
+msgstr ""
+
+#: tviswaptgui.gridgroups.header.columns[40].text
+msgctxt "tviswaptgui.gridgroups.header.columns[40].text"
+msgid "sourcespath"
+msgstr ""
+
+#: tviswaptgui.gridgroups.header.columns[4].text
+msgctxt "tviswaptgui.gridgroups.header.columns[4].text"
+msgid "Dependencies"
+msgstr ""
+
+#: tviswaptgui.gridgroups.header.columns[5].text
+msgctxt "tviswaptgui.gridgroups.header.columns[5].text"
+msgid "Conflicts"
+msgstr ""
+
+#: tviswaptgui.gridgroups.header.columns[6].text
+msgctxt "tviswaptgui.gridgroups.header.columns[6].text"
+msgid "Signer"
+msgstr ""
+
+#: tviswaptgui.gridgroups.header.columns[7].text
+msgctxt "tviswaptgui.gridgroups.header.columns[7].text"
+msgid "Signed on"
+msgstr ""
+
+#: tviswaptgui.gridgroups.header.columns[8].text
+msgctxt "tviswaptgui.gridgroups.header.columns[8].text"
+msgid "Arch"
+msgstr ""
+
+#: tviswaptgui.gridgroups.header.columns[9].text
+msgctxt "tviswaptgui.gridgroups.header.columns[9].text"
+msgid "Locale"
+msgstr ""
+
+#: tviswaptgui.gridhostpackages.header.columns[0].text
+msgctxt "tviswaptgui.gridhostpackages.header.columns[0].text"
+msgid "Status"
+msgstr ""
+
+#: tviswaptgui.gridhostpackages.header.columns[10].text
+msgctxt "tviswaptgui.gridhostpackages.header.columns[10].text"
+msgid "Section"
+msgstr ""
+
+#: tviswaptgui.gridhostpackages.header.columns[11].text
+msgctxt "tviswaptgui.gridhostpackages.header.columns[11].text"
+msgid "Arch"
+msgstr ""
+
+#: tviswaptgui.gridhostpackages.header.columns[12].text
+msgctxt "tviswaptgui.gridhostpackages.header.columns[12].text"
+msgid "Locale"
+msgstr ""
+
+#: tviswaptgui.gridhostpackages.header.columns[13].text
+msgctxt "tviswaptgui.gridhostpackages.header.columns[13].text"
+msgid "md5sum"
+msgstr ""
+
+#: tviswaptgui.gridhostpackages.header.columns[14].text
+msgctxt "tviswaptgui.gridhostpackages.header.columns[14].text"
+msgid "File name"
+msgstr ""
+
+#: tviswaptgui.gridhostpackages.header.columns[15].text
+msgctxt "tviswaptgui.gridhostpackages.header.columns[15].text"
+msgid "Parameters"
+msgstr ""
+
+#: tviswaptgui.gridhostpackages.header.columns[16].text
+msgctxt "tviswaptgui.gridhostpackages.header.columns[16].text"
+msgid "Log install"
+msgstr ""
+
+#: tviswaptgui.gridhostpackages.header.columns[17].text
+msgctxt "tviswaptgui.gridhostpackages.header.columns[17].text"
+msgid "maintainer"
+msgstr ""
+
+#: tviswaptgui.gridhostpackages.header.columns[18].text
+msgctxt "tviswaptgui.gridhostpackages.header.columns[18].text"
+msgid "conflicts"
+msgstr ""
+
+#: tviswaptgui.gridhostpackages.header.columns[19].text
+msgctxt "tviswaptgui.gridhostpackages.header.columns[19].text"
+msgid "Size after install"
+msgstr ""
+
+#: tviswaptgui.gridhostpackages.header.columns[1].text
+msgctxt "tviswaptgui.gridhostpackages.header.columns[1].text"
+msgid "Audit status"
+msgstr ""
+
+#: tviswaptgui.gridhostpackages.header.columns[20].text
+msgctxt "tviswaptgui.gridhostpackages.header.columns[20].text"
+msgid "URL of repository"
+msgstr ""
+
+#: tviswaptgui.gridhostpackages.header.columns[21].text
+msgctxt "tviswaptgui.gridhostpackages.header.columns[21].text"
+msgid "Size"
+msgstr ""
+
+#: tviswaptgui.gridhostpackages.header.columns[22].text
+msgctxt "tviswaptgui.gridhostpackages.header.columns[22].text"
+msgid "Name of repository"
+msgstr ""
+
+#: tviswaptgui.gridhostpackages.header.columns[23].text
+msgctxt "tviswaptgui.gridhostpackages.header.columns[23].text"
+msgid "localpath"
+msgstr ""
+
+#: tviswaptgui.gridhostpackages.header.columns[24].text
+msgctxt "tviswaptgui.gridhostpackages.header.columns[24].text"
+msgid "Maturity"
+msgstr ""
+
+#: tviswaptgui.gridhostpackages.header.columns[25].text
+msgctxt "tviswaptgui.gridhostpackages.header.columns[25].text"
+msgid "Audited on"
+msgstr ""
+
+#: tviswaptgui.gridhostpackages.header.columns[26].text
+msgctxt "tviswaptgui.gridhostpackages.header.columns[26].text"
+msgid "Next audit"
+msgstr ""
+
+#: tviswaptgui.gridhostpackages.header.columns[27].text
+msgctxt "tviswaptgui.gridhostpackages.header.columns[27].text"
+msgid "uninstall_key"
+msgstr ""
+
+#: tviswaptgui.gridhostpackages.header.columns[28].text
+msgctxt "tviswaptgui.gridhostpackages.header.columns[28].text"
+msgid "updated_on"
+msgstr ""
+
+#: tviswaptgui.gridhostpackages.header.columns[29].text
+msgctxt "tviswaptgui.gridhostpackages.header.columns[29].text"
+msgid "updated_by"
+msgstr ""
+
+#: tviswaptgui.gridhostpackages.header.columns[2].text
+msgctxt "tviswaptgui.gridhostpackages.header.columns[2].text"
+msgid "Package name"
+msgstr ""
+
+#: tviswaptgui.gridhostpackages.header.columns[30].text
+msgctxt "tviswaptgui.gridhostpackages.header.columns[30].text"
+msgid "created_on"
+msgstr ""
+
+#: tviswaptgui.gridhostpackages.header.columns[31].text
+msgctxt "tviswaptgui.gridhostpackages.header.columns[31].text"
+msgid "created_by"
+msgstr ""
+
+#: tviswaptgui.gridhostpackages.header.columns[32].text
+msgctxt "tviswaptgui.gridhostpackages.header.columns[32].text"
+msgid "last_audit_output"
+msgstr ""
+
+#: tviswaptgui.gridhostpackages.header.columns[33].text
+msgctxt "tviswaptgui.gridhostpackages.header.columns[33].text"
+msgid "id"
+msgstr ""
+
+#: tviswaptgui.gridhostpackages.header.columns[34].text
+msgctxt "tviswaptgui.gridhostpackages.header.columns[34].text"
+msgid "signer_fingerprint"
+msgstr ""
+
+#: tviswaptgui.gridhostpackages.header.columns[35].text
+msgid "host"
+msgstr ""
+
+#: tviswaptgui.gridhostpackages.header.columns[36].text
+msgctxt "tviswaptgui.gridhostpackages.header.columns[36].text"
+msgid "signer"
+msgstr ""
+
+#: tviswaptgui.gridhostpackages.header.columns[37].text
+msgid "Package UUID"
+msgstr ""
+
+#: tviswaptgui.gridhostpackages.header.columns[3].text
+msgctxt "tviswaptgui.gridhostpackages.header.columns[3].text"
+msgid "Version"
+msgstr ""
+
+#: tviswaptgui.gridhostpackages.header.columns[4].text
+msgctxt "tviswaptgui.gridhostpackages.header.columns[4].text"
+msgid "Description"
+msgstr ""
+
+#: tviswaptgui.gridhostpackages.header.columns[5].text
+msgctxt "tviswaptgui.gridhostpackages.header.columns[5].text"
+msgid "Dependencies"
+msgstr ""
+
+#: tviswaptgui.gridhostpackages.header.columns[6].text
+msgctxt "tviswaptgui.gridhostpackages.header.columns[6].text"
+msgid "Install date"
+msgstr ""
+
+#: tviswaptgui.gridhostpackages.header.columns[7].text
+msgctxt "tviswaptgui.gridhostpackages.header.columns[7].text"
+msgid "priority"
+msgstr ""
+
+#: tviswaptgui.gridhostpackages.header.columns[8].text
+msgctxt "tviswaptgui.gridhostpackages.header.columns[8].text"
+msgid "sources"
+msgstr ""
+
+#: tviswaptgui.gridhostpackages.header.columns[9].text
+msgctxt "tviswaptgui.gridhostpackages.header.columns[9].text"
+msgid "Installed by"
+msgstr ""
+
+#: tviswaptgui.gridhosts.header.columns[0].text
+msgctxt "tviswaptgui.gridhosts.header.columns[0].text"
+msgid "Status"
+msgstr ""
+
+#: tviswaptgui.gridhosts.header.columns[10].text
+msgctxt "tviswaptgui.gridhosts.header.columns[10].text"
+msgid "Serial number"
+msgstr ""
+
+#: tviswaptgui.gridhosts.header.columns[11].text
+msgid "Last seen on"
+msgstr ""
+
+#: tviswaptgui.gridhosts.header.columns[12].text
+msgid "Logged in users"
+msgstr ""
+
+#: tviswaptgui.gridhosts.header.columns[13].text
+msgid "MAC address"
+msgstr ""
+
+#: tviswaptgui.gridhosts.header.columns[14].text
+msgid "WAPT version"
+msgstr ""
+
+#: tviswaptgui.gridhosts.header.columns[15].text
+msgctxt "tviswaptgui.gridhosts.header.columns[15].text"
+msgid "uuid"
+msgstr ""
+
+#: tviswaptgui.gridhosts.header.columns[16].text
+msgid "purchase_order"
+msgstr ""
+
+#: tviswaptgui.gridhosts.header.columns[17].text
+msgid "purchase_date"
+msgstr ""
+
+#: tviswaptgui.gridhosts.header.columns[18].text
+msgid "attributes"
+msgstr ""
+
+#: tviswaptgui.gridhosts.header.columns[19].text
+msgid "Domain controller"
+msgstr ""
+
+#: tviswaptgui.gridhosts.header.columns[1].text
+msgid "Reachable"
+msgstr ""
+
+#: tviswaptgui.gridhosts.header.columns[20].text
+msgctxt "tviswaptgui.gridhosts.header.columns[20].text"
+msgid "Groups"
+msgstr ""
+
+#: tviswaptgui.gridhosts.header.columns[21].text
+msgctxt "tviswaptgui.gridhosts.header.columns[21].text"
+msgid "Domaine"
+msgstr ""
+
+#: tviswaptgui.gridhosts.header.columns[22].text
+msgid "Listening address"
+msgstr ""
+
+#: tviswaptgui.gridhosts.header.columns[23].text
+msgid "Domain controller address"
+msgstr ""
+
+#: tviswaptgui.gridhosts.header.columns[24].text
+msgid "AD DN"
+msgstr ""
+
+#: tviswaptgui.gridhosts.header.columns[25].text
+msgid "Last logged on user"
+msgstr ""
+
+#: tviswaptgui.gridhosts.header.columns[26].text
+msgid "Registration Method"
+msgstr ""
+
+#: tviswaptgui.gridhosts.header.columns[2].text
+msgctxt "tviswaptgui.gridhosts.header.columns[2].text"
+msgid "Audit status"
+msgstr ""
+
+#: tviswaptgui.gridhosts.header.columns[3].text
+msgid "WUA"
+msgstr ""
+
+#: tviswaptgui.gridhosts.header.columns[4].text
+msgctxt "tviswaptgui.gridhosts.header.columns[4].text"
+msgid "Host"
+msgstr ""
+
+#: tviswaptgui.gridhosts.header.columns[5].text
+msgctxt "tviswaptgui.gridhosts.header.columns[5].text"
+msgid "Description"
+msgstr ""
+
+#: tviswaptgui.gridhosts.header.columns[6].text
+msgctxt "tviswaptgui.gridhosts.header.columns[6].text"
+msgid "Manufacturer"
+msgstr ""
+
+#: tviswaptgui.gridhosts.header.columns[7].text
+msgid "IP addresses"
+msgstr ""
+
+#: tviswaptgui.gridhosts.header.columns[8].text
+msgid "Windows version"
+msgstr ""
+
+#: tviswaptgui.gridhosts.header.columns[9].text
+msgctxt "tviswaptgui.gridhosts.header.columns[9].text"
+msgid "Model"
+msgstr ""
+
+#: tviswaptgui.gridhostsforpackage.header.columns[0].text
+msgid "Host reachable"
+msgstr ""
+
+#: tviswaptgui.gridhostsforpackage.header.columns[10].text
+msgctxt "tviswaptgui.gridhostsforpackage.header.columns[10].text"
+msgid "sources"
+msgstr ""
+
+#: tviswaptgui.gridhostsforpackage.header.columns[11].text
+msgctxt "tviswaptgui.gridhostsforpackage.header.columns[11].text"
+msgid "Installed by"
+msgstr ""
+
+#: tviswaptgui.gridhostsforpackage.header.columns[12].text
+msgctxt "tviswaptgui.gridhostsforpackage.header.columns[12].text"
+msgid "Section"
+msgstr ""
+
+#: tviswaptgui.gridhostsforpackage.header.columns[13].text
+msgctxt "tviswaptgui.gridhostsforpackage.header.columns[13].text"
+msgid "Arch"
+msgstr ""
+
+#: tviswaptgui.gridhostsforpackage.header.columns[14].text
+msgctxt "tviswaptgui.gridhostsforpackage.header.columns[14].text"
+msgid "Locale"
+msgstr ""
+
+#: tviswaptgui.gridhostsforpackage.header.columns[15].text
+msgctxt "tviswaptgui.gridhostsforpackage.header.columns[15].text"
+msgid "md5sum"
+msgstr ""
+
+#: tviswaptgui.gridhostsforpackage.header.columns[16].text
+msgctxt "tviswaptgui.gridhostsforpackage.header.columns[16].text"
+msgid "File name"
+msgstr ""
+
+#: tviswaptgui.gridhostsforpackage.header.columns[17].text
+msgctxt "tviswaptgui.gridhostsforpackage.header.columns[17].text"
+msgid "Parameters"
+msgstr ""
+
+#: tviswaptgui.gridhostsforpackage.header.columns[18].text
+msgctxt "tviswaptgui.gridhostsforpackage.header.columns[18].text"
+msgid "Log install"
+msgstr ""
+
+#: tviswaptgui.gridhostsforpackage.header.columns[19].text
+msgctxt "tviswaptgui.gridhostsforpackage.header.columns[19].text"
+msgid "maintainer"
+msgstr ""
+
+#: tviswaptgui.gridhostsforpackage.header.columns[1].text
+msgid "Computer name"
+msgstr ""
+
+#: tviswaptgui.gridhostsforpackage.header.columns[20].text
+msgctxt "tviswaptgui.gridhostsforpackage.header.columns[20].text"
+msgid "conflicts"
+msgstr ""
+
+#: tviswaptgui.gridhostsforpackage.header.columns[21].text
+msgctxt "tviswaptgui.gridhostsforpackage.header.columns[21].text"
+msgid "Size after install"
+msgstr ""
+
+#: tviswaptgui.gridhostsforpackage.header.columns[22].text
+msgctxt "tviswaptgui.gridhostsforpackage.header.columns[22].text"
+msgid "URL of repository"
+msgstr ""
+
+#: tviswaptgui.gridhostsforpackage.header.columns[23].text
+msgctxt "tviswaptgui.gridhostsforpackage.header.columns[23].text"
+msgid "Size"
+msgstr ""
+
+#: tviswaptgui.gridhostsforpackage.header.columns[24].text
+msgctxt "tviswaptgui.gridhostsforpackage.header.columns[24].text"
+msgid "Name of repository"
+msgstr ""
+
+#: tviswaptgui.gridhostsforpackage.header.columns[25].text
+msgctxt "tviswaptgui.gridhostsforpackage.header.columns[25].text"
+msgid "localpath"
+msgstr ""
+
+#: tviswaptgui.gridhostsforpackage.header.columns[26].text
+msgctxt "tviswaptgui.gridhostsforpackage.header.columns[26].text"
+msgid "Maturity"
+msgstr ""
+
+#: tviswaptgui.gridhostsforpackage.header.columns[27].text
+msgid "Connected IPs"
+msgstr ""
+
+#: tviswaptgui.gridhostsforpackage.header.columns[28].text
+msgctxt "tviswaptgui.gridhostsforpackage.header.columns[28].text"
+msgid "Audited on"
+msgstr ""
+
+#: tviswaptgui.gridhostsforpackage.header.columns[29].text
+msgctxt "tviswaptgui.gridhostsforpackage.header.columns[29].text"
+msgid "Next audit"
+msgstr ""
+
+#: tviswaptgui.gridhostsforpackage.header.columns[2].text
+msgctxt "tviswaptgui.gridhostsforpackage.header.columns[2].text"
+msgid "Status"
+msgstr ""
+
+#: tviswaptgui.gridhostsforpackage.header.columns[30].text
+msgctxt "tviswaptgui.gridhostsforpackage.header.columns[30].text"
+msgid "uninstall_key"
+msgstr ""
+
+#: tviswaptgui.gridhostsforpackage.header.columns[31].text
+msgctxt "tviswaptgui.gridhostsforpackage.header.columns[31].text"
+msgid "updated_on"
+msgstr ""
+
+#: tviswaptgui.gridhostsforpackage.header.columns[32].text
+msgctxt "tviswaptgui.gridhostsforpackage.header.columns[32].text"
+msgid "updated_by"
+msgstr ""
+
+#: tviswaptgui.gridhostsforpackage.header.columns[33].text
+msgctxt "tviswaptgui.gridhostsforpackage.header.columns[33].text"
+msgid "signer"
+msgstr ""
+
+#: tviswaptgui.gridhostsforpackage.header.columns[34].text
+msgctxt "tviswaptgui.gridhostsforpackage.header.columns[34].text"
+msgid "package"
+msgstr ""
+
+#: tviswaptgui.gridhostsforpackage.header.columns[35].text
+msgctxt "tviswaptgui.gridhostsforpackage.header.columns[35].text"
+msgid "created_on"
+msgstr ""
+
+#: tviswaptgui.gridhostsforpackage.header.columns[36].text
+msgctxt "tviswaptgui.gridhostsforpackage.header.columns[36].text"
+msgid "created_by"
+msgstr ""
+
+#: tviswaptgui.gridhostsforpackage.header.columns[37].text
+msgctxt "tviswaptgui.gridhostsforpackage.header.columns[37].text"
+msgid "last_audit_output"
+msgstr ""
+
+#: tviswaptgui.gridhostsforpackage.header.columns[38].text
+msgctxt "tviswaptgui.gridhostsforpackage.header.columns[38].text"
+msgid "id"
+msgstr ""
+
+#: tviswaptgui.gridhostsforpackage.header.columns[39].text
+msgctxt "tviswaptgui.gridhostsforpackage.header.columns[39].text"
+msgid "signer_fingerprint"
+msgstr ""
+
+#: tviswaptgui.gridhostsforpackage.header.columns[3].text
+msgctxt "tviswaptgui.gridhostsforpackage.header.columns[3].text"
+msgid "Audit status"
+msgstr ""
+
+#: tviswaptgui.gridhostsforpackage.header.columns[4].text
+msgid "Host UUID"
+msgstr ""
+
+#: tviswaptgui.gridhostsforpackage.header.columns[5].text
+msgctxt "tviswaptgui.gridhostsforpackage.header.columns[5].text"
+msgid "Version"
+msgstr ""
+
+#: tviswaptgui.gridhostsforpackage.header.columns[6].text
+msgctxt "tviswaptgui.gridhostsforpackage.header.columns[6].text"
+msgid "Description"
+msgstr ""
+
+#: tviswaptgui.gridhostsforpackage.header.columns[7].text
+msgctxt "tviswaptgui.gridhostsforpackage.header.columns[7].text"
+msgid "Dependencies"
+msgstr ""
+
+#: tviswaptgui.gridhostsforpackage.header.columns[8].text
+msgctxt "tviswaptgui.gridhostsforpackage.header.columns[8].text"
+msgid "Install date"
+msgstr ""
+
+#: tviswaptgui.gridhostsforpackage.header.columns[9].text
+msgctxt "tviswaptgui.gridhostsforpackage.header.columns[9].text"
+msgid "priority"
+msgstr ""
+
+#: tviswaptgui.gridhostsoftwares.header.columns[0].text
+msgid "Software name"
+msgstr ""
+
+#: tviswaptgui.gridhostsoftwares.header.columns[1].text
+msgctxt "tviswaptgui.gridhostsoftwares.header.columns[1].text"
+msgid "Version"
+msgstr ""
+
+#: tviswaptgui.gridhostsoftwares.header.columns[2].text
+msgctxt "tviswaptgui.gridhostsoftwares.header.columns[2].text"
+msgid "Install date"
+msgstr ""
+
+#: tviswaptgui.gridhostsoftwares.header.columns[3].text
+msgid "Publisher"
+msgstr ""
+
+#: tviswaptgui.gridhostsoftwares.header.columns[4].text
+msgctxt "tviswaptgui.gridhostsoftwares.header.columns[4].text"
+msgid "Serial number"
+msgstr ""
+
+#: tviswaptgui.gridhostsoftwares.header.columns[5].text
+msgid "Install location"
+msgstr ""
+
+#: tviswaptgui.gridhostsoftwares.header.columns[6].text
+msgctxt "tviswaptgui.gridhostsoftwares.header.columns[6].text"
+msgid "Uninstall key"
+msgstr ""
+
+#: tviswaptgui.gridhostsoftwares.header.columns[7].text
+msgid "Uninstall string"
+msgstr ""
+
+#: tviswaptgui.gridhostsoftwares.header.columns[8].text
+msgid "System component"
+msgstr ""
+
+#: tviswaptgui.gridhosttasksdone.header.columns[0].text
+msgctxt "tviswaptgui.gridhosttasksdone.header.columns[0].text"
+msgid "id"
+msgstr ""
+
+#: tviswaptgui.gridhosttasksdone.header.columns[10].text
+msgctxt "tviswaptgui.gridhosttasksdone.header.columns[10].text"
+msgid "classname"
+msgstr ""
+
+#: tviswaptgui.gridhosttasksdone.header.columns[11].text
+msgctxt "tviswaptgui.gridhosttasksdone.header.columns[11].text"
+msgid "logs"
+msgstr ""
+
+#: tviswaptgui.gridhosttasksdone.header.columns[12].text
+msgctxt "tviswaptgui.gridhosttasksdone.header.columns[12].text"
+msgid "pidlist"
+msgstr ""
+
+#: tviswaptgui.gridhosttasksdone.header.columns[13].text
+msgctxt "tviswaptgui.gridhosttasksdone.header.columns[13].text"
+msgid "Created by"
+msgstr ""
+
+#: tviswaptgui.gridhosttasksdone.header.columns[1].text
+msgctxt "tviswaptgui.gridhosttasksdone.header.columns[1].text"
+msgid "priority"
+msgstr ""
+
+#: tviswaptgui.gridhosttasksdone.header.columns[2].text
+msgctxt "tviswaptgui.gridhosttasksdone.header.columns[2].text"
+msgid "order"
+msgstr ""
+
+#: tviswaptgui.gridhosttasksdone.header.columns[3].text
+msgctxt "tviswaptgui.gridhosttasksdone.header.columns[3].text"
+msgid "description"
+msgstr ""
+
+#: tviswaptgui.gridhosttasksdone.header.columns[4].text
+msgctxt "tviswaptgui.gridhosttasksdone.header.columns[4].text"
+msgid "start_date"
+msgstr ""
+
+#: tviswaptgui.gridhosttasksdone.header.columns[5].text
+msgctxt "tviswaptgui.gridhosttasksdone.header.columns[5].text"
+msgid "create_date"
+msgstr ""
+
+#: tviswaptgui.gridhosttasksdone.header.columns[6].text
+msgctxt "tviswaptgui.gridhosttasksdone.header.columns[6].text"
+msgid "result"
+msgstr ""
+
+#: tviswaptgui.gridhosttasksdone.header.columns[7].text
+msgctxt "tviswaptgui.gridhosttasksdone.header.columns[7].text"
+msgid "progress"
+msgstr ""
+
+#: tviswaptgui.gridhosttasksdone.header.columns[8].text
+msgctxt "tviswaptgui.gridhosttasksdone.header.columns[8].text"
+msgid "summary"
+msgstr ""
+
+#: tviswaptgui.gridhosttasksdone.header.columns[9].text
+msgid "Finished on"
+msgstr ""
+
+#: tviswaptgui.gridhosttaskserrors.header.columns[0].text
+msgctxt "tviswaptgui.gridhosttaskserrors.header.columns[0].text"
+msgid "id"
+msgstr ""
+
+#: tviswaptgui.gridhosttaskserrors.header.columns[10].text
+msgctxt "tviswaptgui.gridhosttaskserrors.header.columns[10].text"
+msgid "finish_date"
+msgstr ""
+
+#: tviswaptgui.gridhosttaskserrors.header.columns[11].text
+msgctxt "tviswaptgui.gridhosttaskserrors.header.columns[11].text"
+msgid "classname"
+msgstr ""
+
+#: tviswaptgui.gridhosttaskserrors.header.columns[12].text
+msgctxt "tviswaptgui.gridhosttaskserrors.header.columns[12].text"
+msgid "pidlist"
+msgstr ""
+
+#: tviswaptgui.gridhosttaskserrors.header.columns[13].text
+msgctxt "tviswaptgui.gridhosttaskserrors.header.columns[13].text"
+msgid "Created by"
+msgstr ""
+
+#: tviswaptgui.gridhosttaskserrors.header.columns[1].text
+msgctxt "tviswaptgui.gridhosttaskserrors.header.columns[1].text"
+msgid "priority"
+msgstr ""
+
+#: tviswaptgui.gridhosttaskserrors.header.columns[2].text
+msgctxt "tviswaptgui.gridhosttaskserrors.header.columns[2].text"
+msgid "order"
+msgstr ""
+
+#: tviswaptgui.gridhosttaskserrors.header.columns[3].text
+msgctxt "tviswaptgui.gridhosttaskserrors.header.columns[3].text"
+msgid "description"
+msgstr ""
+
+#: tviswaptgui.gridhosttaskserrors.header.columns[4].text
+msgctxt "tviswaptgui.gridhosttaskserrors.header.columns[4].text"
+msgid "summary"
+msgstr ""
+
+#: tviswaptgui.gridhosttaskserrors.header.columns[5].text
+msgctxt "tviswaptgui.gridhosttaskserrors.header.columns[5].text"
+msgid "start_date"
+msgstr ""
+
+#: tviswaptgui.gridhosttaskserrors.header.columns[6].text
+msgctxt "tviswaptgui.gridhosttaskserrors.header.columns[6].text"
+msgid "logs"
+msgstr ""
+
+#: tviswaptgui.gridhosttaskserrors.header.columns[7].text
+msgctxt "tviswaptgui.gridhosttaskserrors.header.columns[7].text"
+msgid "create_date"
+msgstr ""
+
+#: tviswaptgui.gridhosttaskserrors.header.columns[8].text
+msgctxt "tviswaptgui.gridhosttaskserrors.header.columns[8].text"
+msgid "result"
+msgstr ""
+
+#: tviswaptgui.gridhosttaskserrors.header.columns[9].text
+msgctxt "tviswaptgui.gridhosttaskserrors.header.columns[9].text"
+msgid "progress"
+msgstr ""
+
+#: tviswaptgui.gridhosttaskspending.header.columns[0].text
+msgctxt "tviswaptgui.gridhosttaskspending.header.columns[0].text"
+msgid "id"
+msgstr ""
+
+#: tviswaptgui.gridhosttaskspending.header.columns[10].text
+msgctxt "tviswaptgui.gridhosttaskspending.header.columns[10].text"
+msgid "classname"
+msgstr ""
+
+#: tviswaptgui.gridhosttaskspending.header.columns[11].text
+msgctxt "tviswaptgui.gridhosttaskspending.header.columns[11].text"
+msgid "logs"
+msgstr ""
+
+#: tviswaptgui.gridhosttaskspending.header.columns[12].text
+msgctxt "tviswaptgui.gridhosttaskspending.header.columns[12].text"
+msgid "pidlist"
+msgstr ""
+
+#: tviswaptgui.gridhosttaskspending.header.columns[13].text
+msgctxt "tviswaptgui.gridhosttaskspending.header.columns[13].text"
+msgid "Created by"
+msgstr ""
+
+#: tviswaptgui.gridhosttaskspending.header.columns[1].text
+msgctxt "tviswaptgui.gridhosttaskspending.header.columns[1].text"
+msgid "priority"
+msgstr ""
+
+#: tviswaptgui.gridhosttaskspending.header.columns[2].text
+msgctxt "tviswaptgui.gridhosttaskspending.header.columns[2].text"
+msgid "order"
+msgstr ""
+
+#: tviswaptgui.gridhosttaskspending.header.columns[3].text
+msgctxt "tviswaptgui.gridhosttaskspending.header.columns[3].text"
+msgid "description"
+msgstr ""
+
+#: tviswaptgui.gridhosttaskspending.header.columns[4].text
+msgctxt "tviswaptgui.gridhosttaskspending.header.columns[4].text"
+msgid "start_date"
+msgstr ""
+
+#: tviswaptgui.gridhosttaskspending.header.columns[5].text
+msgctxt "tviswaptgui.gridhosttaskspending.header.columns[5].text"
+msgid "summary"
+msgstr ""
+
+#: tviswaptgui.gridhosttaskspending.header.columns[6].text
+msgctxt "tviswaptgui.gridhosttaskspending.header.columns[6].text"
+msgid "Created on"
+msgstr ""
+
+#: tviswaptgui.gridhosttaskspending.header.columns[7].text
+msgctxt "tviswaptgui.gridhosttaskspending.header.columns[7].text"
+msgid "result"
+msgstr ""
+
+#: tviswaptgui.gridhosttaskspending.header.columns[8].text
+msgctxt "tviswaptgui.gridhosttaskspending.header.columns[8].text"
+msgid "progress"
+msgstr ""
+
+#: tviswaptgui.gridhosttaskspending.header.columns[9].text
+msgctxt "tviswaptgui.gridhosttaskspending.header.columns[9].text"
+msgid "finish_date"
+msgstr ""
+
+#: tviswaptgui.gridhostwinupdates.header.columns[0].text
+msgctxt "tviswaptgui.gridhostwinupdates.header.columns[0].text"
+msgid "download_urls"
+msgstr ""
+
+#: tviswaptgui.gridhostwinupdates.header.columns[10].text
+msgid "cve_ids"
+msgstr ""
+
+#: tviswaptgui.gridhostwinupdates.header.columns[11].text
+msgctxt "tviswaptgui.gridhostwinupdates.header.columns[11].text"
+msgid "can_request_user_input"
+msgstr ""
+
+#: tviswaptgui.gridhostwinupdates.header.columns[12].text
+msgctxt "tviswaptgui.gridhostwinupdates.header.columns[12].text"
+msgid "security_bulletin_ids"
+msgstr ""
+
+#: tviswaptgui.gridhostwinupdates.header.columns[13].text
+msgid "Download size"
+msgstr ""
+
+#: tviswaptgui.gridhostwinupdates.header.columns[14].text
+msgctxt "tviswaptgui.gridhostwinupdates.header.columns[14].text"
+msgid "is_mandatory"
+msgstr ""
+
+#: tviswaptgui.gridhostwinupdates.header.columns[15].text
+msgid "Superseded update ids"
+msgstr ""
+
+#: tviswaptgui.gridhostwinupdates.header.columns[16].text
+msgid "Requires network"
+msgstr ""
+
+#: tviswaptgui.gridhostwinupdates.header.columns[17].text
+msgctxt "tviswaptgui.gridhostwinupdates.header.columns[17].text"
+msgid "min_download_size"
+msgstr ""
+
+#: tviswaptgui.gridhostwinupdates.header.columns[18].text
+msgid "Reboot behaviour"
+msgstr ""
+
+#: tviswaptgui.gridhostwinupdates.header.columns[19].text
+msgctxt "tviswaptgui.gridhostwinupdates.header.columns[19].text"
+msgid "Discarded"
+msgstr ""
+
+#: tviswaptgui.gridhostwinupdates.header.columns[1].text
+msgctxt "tviswaptgui.gridhostwinupdates.header.columns[1].text"
+msgid "Status"
+msgstr ""
+
+#: tviswaptgui.gridhostwinupdates.header.columns[20].text
+msgctxt "tviswaptgui.gridhostwinupdates.header.columns[20].text"
+msgid "Installed"
+msgstr ""
+
+#: tviswaptgui.gridhostwinupdates.header.columns[21].text
+msgid "Dowloaded"
+msgstr ""
+
+#: tviswaptgui.gridhostwinupdates.header.columns[22].text
+msgid "Present"
+msgstr ""
+
+#: tviswaptgui.gridhostwinupdates.header.columns[23].text
+msgid "Update type"
+msgstr ""
+
+#: tviswaptgui.gridhostwinupdates.header.columns[24].text
+msgid "Allowed"
+msgstr ""
+
+#: tviswaptgui.gridhostwinupdates.header.columns[25].text
+msgid "local_status_id"
+msgstr ""
+
+#: tviswaptgui.gridhostwinupdates.header.columns[26].text
+msgid "Delayed"
+msgstr ""
+
+#: tviswaptgui.gridhostwinupdates.header.columns[27].text
+msgid "local_status_history"
+msgstr ""
+
+#: tviswaptgui.gridhostwinupdates.header.columns[28].text
+msgid "Updated on"
+msgstr ""
+
+#: tviswaptgui.gridhostwinupdates.header.columns[29].text
+msgctxt "tviswaptgui.gridhostwinupdates.header.columns[29].text"
+msgid "Uninstallable"
+msgstr ""
+
+#: tviswaptgui.gridhostwinupdates.header.columns[2].text
+msgctxt "tviswaptgui.gridhostwinupdates.header.columns[2].text"
+msgid "Product"
+msgstr ""
+
+#: tviswaptgui.gridhostwinupdates.header.columns[30].text
+msgctxt "tviswaptgui.gridhostwinupdates.header.columns[30].text"
+msgid "Downloaded on"
+msgstr ""
+
+#: tviswaptgui.gridhostwinupdates.header.columns[31].text
+msgctxt "tviswaptgui.gridhostwinupdates.header.columns[31].text"
+msgid "Created on"
+msgstr ""
+
+#: tviswaptgui.gridhostwinupdates.header.columns[32].text
+msgctxt "tviswaptgui.gridhostwinupdates.header.columns[32].text"
+msgid "Uninstallation impact"
+msgstr ""
+
+#: tviswaptgui.gridhostwinupdates.header.columns[33].text
+msgid "Beta"
+msgstr ""
+
+#: tviswaptgui.gridhostwinupdates.header.columns[34].text
+msgid "Installation impact"
+msgstr ""
+
+#: tviswaptgui.gridhostwinupdates.header.columns[35].text
+msgctxt "tviswaptgui.gridhostwinupdates.header.columns[35].text"
+msgid "languages"
+msgstr ""
+
+#: tviswaptgui.gridhostwinupdates.header.columns[36].text
+msgctxt "tviswaptgui.gridhostwinupdates.header.columns[36].text"
+msgid "Release notes"
+msgstr ""
+
+#: tviswaptgui.gridhostwinupdates.header.columns[3].text
+msgid "Update ID"
+msgstr ""
+
+#: tviswaptgui.gridhostwinupdates.header.columns[4].text
+msgid "kbids"
+msgstr ""
+
+#: tviswaptgui.gridhostwinupdates.header.columns[5].text
+msgctxt "tviswaptgui.gridhostwinupdates.header.columns[5].text"
+msgid "Published on"
+msgstr ""
+
+#: tviswaptgui.gridhostwinupdates.header.columns[6].text
+msgid "Installed on"
+msgstr ""
+
+#: tviswaptgui.gridhostwinupdates.header.columns[7].text
+msgctxt "tviswaptgui.gridhostwinupdates.header.columns[7].text"
+msgid "Severity"
+msgstr ""
+
+#: tviswaptgui.gridhostwinupdates.header.columns[8].text
+msgctxt "tviswaptgui.gridhostwinupdates.header.columns[8].text"
+msgid "Classification"
+msgstr ""
+
+#: tviswaptgui.gridhostwinupdates.header.columns[9].text
+msgctxt "tviswaptgui.gridhostwinupdates.header.columns[9].text"
+msgid "Title"
+msgstr ""
+
+#: tviswaptgui.gridhostwinupdateshistory.header.columns[0].text
+msgctxt "tviswaptgui.gridhostwinupdateshistory.header.columns[0].text"
+msgid "Date"
+msgstr ""
+
+#: tviswaptgui.gridhostwinupdateshistory.header.columns[1].text
+msgid "Operation"
+msgstr ""
+
+#: tviswaptgui.gridhostwinupdateshistory.header.columns[2].text
+msgctxt "tviswaptgui.gridhostwinupdateshistory.header.columns[2].text"
+msgid "Result"
+msgstr ""
+
+#: tviswaptgui.gridhostwinupdateshistory.header.columns[3].text
+msgid "Categories"
+msgstr ""
+
+#: tviswaptgui.gridhostwinupdateshistory.header.columns[4].text
+msgid "Application"
+msgstr ""
+
+#: tviswaptgui.gridhostwinupdateshistory.header.columns[5].text
+msgctxt "tviswaptgui.gridhostwinupdateshistory.header.columns[5].text"
+msgid "Title"
+msgstr ""
+
+#: tviswaptgui.gridhostwinupdateshistory.header.columns[6].text
+msgctxt "tviswaptgui.gridhostwinupdateshistory.header.columns[6].text"
+msgid "Description"
+msgstr ""
+
+#: tviswaptgui.gridhostwinupdateshistory.header.columns[7].text
+msgid "update_id"
+msgstr ""
+
+#: tviswaptgui.gridnetworks.header.columns[0].text
+msgctxt "tviswaptgui.gridnetworks.header.columns[0].text"
+msgid "Repository"
+msgstr ""
+
+#: tviswaptgui.gridnetworks.header.columns[1].text
+msgid "Network name"
+msgstr ""
+
+#: tviswaptgui.gridnetworks.header.columns[2].text
+msgid "Network prefix"
+msgstr ""
+
+#: tviswaptgui.gridnetworks.header.columns[3].text
+msgid "Network mask"
+msgstr ""
+
+#: tviswaptgui.gridnetworks.header.columns[4].text
+msgid "DNS Domain"
+msgstr ""
+
+#: tviswaptgui.gridnetworks.header.columns[5].text
+msgid "Repository URL"
+msgstr ""
+
+#: tviswaptgui.gridnetworks.header.columns[6].text
+msgid "WAPT Server URL"
+msgstr ""
+
+#: tviswaptgui.gridnetworks.header.columns[7].text
+msgid "Preference"
+msgstr ""
+
+#: tviswaptgui.gridpackages.header.columns[0].text
+msgctxt "tviswaptgui.gridpackages.header.columns[0].text"
+msgid "Section"
+msgstr ""
+
+#: tviswaptgui.gridpackages.header.columns[10].text
+msgid "Installed size"
+msgstr ""
+
+#: tviswaptgui.gridpackages.header.columns[11].text
+msgctxt "tviswaptgui.gridpackages.header.columns[11].text"
+msgid "Signer"
+msgstr ""
+
+#: tviswaptgui.gridpackages.header.columns[12].text
+msgctxt "tviswaptgui.gridpackages.header.columns[12].text"
+msgid "Signed on"
+msgstr ""
+
+#: tviswaptgui.gridpackages.header.columns[13].text
+msgid "Editor"
+msgstr ""
+
+#: tviswaptgui.gridpackages.header.columns[14].text
+msgctxt "tviswaptgui.gridpackages.header.columns[14].text"
+msgid "Maturity"
+msgstr ""
+
+#: tviswaptgui.gridpackages.header.columns[15].text
+msgctxt "tviswaptgui.gridpackages.header.columns[15].text"
+msgid "Min OS version"
+msgstr ""
+
+#: tviswaptgui.gridpackages.header.columns[16].text
+msgctxt "tviswaptgui.gridpackages.header.columns[16].text"
+msgid "Max OS version"
+msgstr ""
+
+#: tviswaptgui.gridpackages.header.columns[17].text
+msgctxt "tviswaptgui.gridpackages.header.columns[17].text"
+msgid "Min Wapt version"
+msgstr ""
+
+#: tviswaptgui.gridpackages.header.columns[18].text
+msgctxt "tviswaptgui.gridpackages.header.columns[18].text"
+msgid "Filename"
+msgstr ""
+
+#: tviswaptgui.gridpackages.header.columns[19].text
+msgctxt "tviswaptgui.gridpackages.header.columns[19].text"
+msgid "md5sum"
+msgstr ""
+
+#: tviswaptgui.gridpackages.header.columns[1].text
+msgctxt "tviswaptgui.gridpackages.header.columns[1].text"
+msgid "Package"
+msgstr ""
+
+#: tviswaptgui.gridpackages.header.columns[20].text
+msgctxt "tviswaptgui.gridpackages.header.columns[20].text"
+msgid "Repository"
+msgstr ""
+
+#: tviswaptgui.gridpackages.header.columns[21].text
+msgctxt "tviswaptgui.gridpackages.header.columns[21].text"
+msgid "priority"
+msgstr ""
+
+#: tviswaptgui.gridpackages.header.columns[22].text
+msgctxt "tviswaptgui.gridpackages.header.columns[22].text"
+msgid "signature"
+msgstr ""
+
+#: tviswaptgui.gridpackages.header.columns[23].text
+msgctxt "tviswaptgui.gridpackages.header.columns[23].text"
+msgid "sources"
+msgstr ""
+
+#: tviswaptgui.gridpackages.header.columns[24].text
+msgctxt "tviswaptgui.gridpackages.header.columns[24].text"
+msgid "audit_schedule"
+msgstr ""
+
+#: tviswaptgui.gridpackages.header.columns[25].text
+msgctxt "tviswaptgui.gridpackages.header.columns[25].text"
+msgid "signed_attributes"
+msgstr ""
+
+#: tviswaptgui.gridpackages.header.columns[26].text
+msgctxt "tviswaptgui.gridpackages.header.columns[26].text"
+msgid "description_pl"
+msgstr ""
+
+#: tviswaptgui.gridpackages.header.columns[27].text
+msgctxt "tviswaptgui.gridpackages.header.columns[27].text"
+msgid "description_fr"
+msgstr ""
+
+#: tviswaptgui.gridpackages.header.columns[28].text
+msgctxt "tviswaptgui.gridpackages.header.columns[28].text"
+msgid "description_es"
+msgstr ""
+
+#: tviswaptgui.gridpackages.header.columns[29].text
+msgctxt "tviswaptgui.gridpackages.header.columns[29].text"
+msgid "description_de"
+msgstr ""
+
+#: tviswaptgui.gridpackages.header.columns[2].text
+msgctxt "tviswaptgui.gridpackages.header.columns[2].text"
+msgid "Version"
+msgstr ""
+
+#: tviswaptgui.gridpackages.header.columns[30].text
+msgctxt "tviswaptgui.gridpackages.header.columns[30].text"
+msgid "maintainer"
+msgstr ""
+
+#: tviswaptgui.gridpackages.header.columns[31].text
+msgctxt "tviswaptgui.gridpackages.header.columns[31].text"
+msgid "package_uuid"
+msgstr ""
+
+#: tviswaptgui.gridpackages.header.columns[32].text
+msgctxt "tviswaptgui.gridpackages.header.columns[32].text"
+msgid "description"
+msgstr ""
+
+#: tviswaptgui.gridpackages.header.columns[33].text
+msgctxt "tviswaptgui.gridpackages.header.columns[33].text"
+msgid "impacted_process"
+msgstr ""
+
+#: tviswaptgui.gridpackages.header.columns[34].text
+msgctxt "tviswaptgui.gridpackages.header.columns[34].text"
+msgid "signer_fingerprint"
+msgstr ""
+
+#: tviswaptgui.gridpackages.header.columns[35].text
+msgctxt "tviswaptgui.gridpackages.header.columns[35].text"
+msgid "keywords"
+msgstr ""
+
+#: tviswaptgui.gridpackages.header.columns[36].text
+msgctxt "tviswaptgui.gridpackages.header.columns[36].text"
+msgid "repo"
+msgstr ""
+
+#: tviswaptgui.gridpackages.header.columns[37].text
+msgctxt "tviswaptgui.gridpackages.header.columns[37].text"
+msgid "target_os"
+msgstr ""
+
+#: tviswaptgui.gridpackages.header.columns[38].text
+msgctxt "tviswaptgui.gridpackages.header.columns[38].text"
+msgid "localpath"
+msgstr ""
+
+#: tviswaptgui.gridpackages.header.columns[39].text
+msgctxt "tviswaptgui.gridpackages.header.columns[39].text"
+msgid "homepage"
+msgstr ""
+
+#: tviswaptgui.gridpackages.header.columns[3].text
+msgctxt "tviswaptgui.gridpackages.header.columns[3].text"
+msgid "Arch"
+msgstr ""
+
+#: tviswaptgui.gridpackages.header.columns[40].text
+msgctxt "tviswaptgui.gridpackages.header.columns[40].text"
+msgid "sourcespath"
+msgstr ""
+
+#: tviswaptgui.gridpackages.header.columns[4].text
+msgctxt "tviswaptgui.gridpackages.header.columns[4].text"
+msgid "Locale"
+msgstr ""
+
+#: tviswaptgui.gridpackages.header.columns[5].text
+msgctxt "tviswaptgui.gridpackages.header.columns[5].text"
+msgid "Description"
+msgstr ""
+
+#: tviswaptgui.gridpackages.header.columns[6].text
+msgctxt "tviswaptgui.gridpackages.header.columns[6].text"
+msgid "Dependencies"
+msgstr ""
+
+#: tviswaptgui.gridpackages.header.columns[7].text
+msgctxt "tviswaptgui.gridpackages.header.columns[7].text"
+msgid "Conflicts"
+msgstr ""
+
+#: tviswaptgui.gridpackages.header.columns[8].text
+msgid "Licence"
+msgstr ""
+
+#: tviswaptgui.gridpackages.header.columns[9].text
+msgctxt "tviswaptgui.gridpackages.header.columns[9].text"
+msgid "Size"
+msgstr ""
+
+#: tviswaptgui.gridreportingqueries.header.columns[0].text
+msgctxt "tviswaptgui.gridreportingqueries.header.columns[0].text"
+msgid "id"
+msgstr ""
+
+#: tviswaptgui.gridreportingqueries.header.columns[1].text
+msgid "name"
+msgstr ""
+
+#: tviswaptgui.gridreportingqueries.header.columns[2].text
+msgid "query"
+msgstr ""
+
+#: tviswaptgui.gridreportingqueries.header.columns[3].text
+msgid "settings"
+msgstr ""
+
+#: tviswaptgui.gridselfservicepackages.header.columns[0].text
+msgctxt "tviswaptgui.gridselfservicepackages.header.columns[0].text"
+msgid "Section"
+msgstr ""
+
+#: tviswaptgui.gridselfservicepackages.header.columns[10].text
+msgctxt "tviswaptgui.gridselfservicepackages.header.columns[10].text"
+msgid "Locale"
+msgstr ""
+
+#: tviswaptgui.gridselfservicepackages.header.columns[11].text
+msgctxt "tviswaptgui.gridselfservicepackages.header.columns[11].text"
+msgid "Min OS version"
+msgstr ""
+
+#: tviswaptgui.gridselfservicepackages.header.columns[12].text
+msgctxt "tviswaptgui.gridselfservicepackages.header.columns[12].text"
+msgid "Max OS version"
+msgstr ""
+
+#: tviswaptgui.gridselfservicepackages.header.columns[13].text
+msgctxt "tviswaptgui.gridselfservicepackages.header.columns[13].text"
+msgid "Min Wapt version"
+msgstr ""
+
+#: tviswaptgui.gridselfservicepackages.header.columns[14].text
+msgctxt "tviswaptgui.gridselfservicepackages.header.columns[14].text"
+msgid "Repository"
+msgstr ""
+
+#: tviswaptgui.gridselfservicepackages.header.columns[15].text
+msgctxt "tviswaptgui.gridselfservicepackages.header.columns[15].text"
+msgid "Filename"
+msgstr ""
+
+#: tviswaptgui.gridselfservicepackages.header.columns[16].text
+msgctxt "tviswaptgui.gridselfservicepackages.header.columns[16].text"
+msgid "priority"
+msgstr ""
+
+#: tviswaptgui.gridselfservicepackages.header.columns[17].text
+msgctxt "tviswaptgui.gridselfservicepackages.header.columns[17].text"
+msgid "signature"
+msgstr ""
+
+#: tviswaptgui.gridselfservicepackages.header.columns[18].text
+msgctxt "tviswaptgui.gridselfservicepackages.header.columns[18].text"
+msgid "sources"
+msgstr ""
+
+#: tviswaptgui.gridselfservicepackages.header.columns[19].text
+msgctxt "tviswaptgui.gridselfservicepackages.header.columns[19].text"
+msgid "audit_schedule"
+msgstr ""
+
+#: tviswaptgui.gridselfservicepackages.header.columns[1].text
+msgctxt "tviswaptgui.gridselfservicepackages.header.columns[1].text"
+msgid "Package"
+msgstr ""
+
+#: tviswaptgui.gridselfservicepackages.header.columns[20].text
+msgctxt "tviswaptgui.gridselfservicepackages.header.columns[20].text"
+msgid "signed_attributes"
+msgstr ""
+
+#: tviswaptgui.gridselfservicepackages.header.columns[21].text
+msgctxt "tviswaptgui.gridselfservicepackages.header.columns[21].text"
+msgid "md5sum"
+msgstr ""
+
+#: tviswaptgui.gridselfservicepackages.header.columns[22].text
+msgctxt "tviswaptgui.gridselfservicepackages.header.columns[22].text"
+msgid "description_pl"
+msgstr ""
+
+#: tviswaptgui.gridselfservicepackages.header.columns[23].text
+msgctxt "tviswaptgui.gridselfservicepackages.header.columns[23].text"
+msgid "description_fr"
+msgstr ""
+
+#: tviswaptgui.gridselfservicepackages.header.columns[24].text
+msgctxt "tviswaptgui.gridselfservicepackages.header.columns[24].text"
+msgid "description_es"
+msgstr ""
+
+#: tviswaptgui.gridselfservicepackages.header.columns[25].text
+msgctxt "tviswaptgui.gridselfservicepackages.header.columns[25].text"
+msgid "description_de"
+msgstr ""
+
+#: tviswaptgui.gridselfservicepackages.header.columns[26].text
+msgctxt "tviswaptgui.gridselfservicepackages.header.columns[26].text"
+msgid "maintainer"
+msgstr ""
+
+#: tviswaptgui.gridselfservicepackages.header.columns[27].text
+msgctxt "tviswaptgui.gridselfservicepackages.header.columns[27].text"
+msgid "package_uuid"
+msgstr ""
+
+#: tviswaptgui.gridselfservicepackages.header.columns[28].text
+msgctxt "tviswaptgui.gridselfservicepackages.header.columns[28].text"
+msgid "description"
+msgstr ""
+
+#: tviswaptgui.gridselfservicepackages.header.columns[29].text
+msgctxt "tviswaptgui.gridselfservicepackages.header.columns[29].text"
+msgid "impacted_process"
+msgstr ""
+
+#: tviswaptgui.gridselfservicepackages.header.columns[2].text
+msgctxt "tviswaptgui.gridselfservicepackages.header.columns[2].text"
+msgid "Version"
+msgstr ""
+
+#: tviswaptgui.gridselfservicepackages.header.columns[30].text
+msgctxt "tviswaptgui.gridselfservicepackages.header.columns[30].text"
+msgid "installed_size"
+msgstr ""
+
+#: tviswaptgui.gridselfservicepackages.header.columns[31].text
+msgctxt "tviswaptgui.gridselfservicepackages.header.columns[31].text"
+msgid "signer_fingerprint"
+msgstr ""
+
+#: tviswaptgui.gridselfservicepackages.header.columns[32].text
+msgctxt "tviswaptgui.gridselfservicepackages.header.columns[32].text"
+msgid "editor"
+msgstr ""
+
+#: tviswaptgui.gridselfservicepackages.header.columns[33].text
+msgctxt "tviswaptgui.gridselfservicepackages.header.columns[33].text"
+msgid "licence"
+msgstr ""
+
+#: tviswaptgui.gridselfservicepackages.header.columns[34].text
+msgctxt "tviswaptgui.gridselfservicepackages.header.columns[34].text"
+msgid "keywords"
+msgstr ""
+
+#: tviswaptgui.gridselfservicepackages.header.columns[35].text
+msgctxt "tviswaptgui.gridselfservicepackages.header.columns[35].text"
+msgid "size"
+msgstr ""
+
+#: tviswaptgui.gridselfservicepackages.header.columns[36].text
+msgctxt "tviswaptgui.gridselfservicepackages.header.columns[36].text"
+msgid "repo"
+msgstr ""
+
+#: tviswaptgui.gridselfservicepackages.header.columns[37].text
+msgctxt "tviswaptgui.gridselfservicepackages.header.columns[37].text"
+msgid "target_os"
+msgstr ""
+
+#: tviswaptgui.gridselfservicepackages.header.columns[38].text
+msgctxt "tviswaptgui.gridselfservicepackages.header.columns[38].text"
+msgid "localpath"
+msgstr ""
+
+#: tviswaptgui.gridselfservicepackages.header.columns[39].text
+msgctxt "tviswaptgui.gridselfservicepackages.header.columns[39].text"
+msgid "homepage"
+msgstr ""
+
+#: tviswaptgui.gridselfservicepackages.header.columns[3].text
+msgctxt "tviswaptgui.gridselfservicepackages.header.columns[3].text"
+msgid "Maturity"
+msgstr ""
+
+#: tviswaptgui.gridselfservicepackages.header.columns[40].text
+msgctxt "tviswaptgui.gridselfservicepackages.header.columns[40].text"
+msgid "sourcespath"
+msgstr ""
+
+#: tviswaptgui.gridselfservicepackages.header.columns[4].text
+msgctxt "tviswaptgui.gridselfservicepackages.header.columns[4].text"
+msgid "Description"
+msgstr ""
+
+#: tviswaptgui.gridselfservicepackages.header.columns[5].text
+msgctxt "tviswaptgui.gridselfservicepackages.header.columns[5].text"
+msgid "Dependencies"
+msgstr ""
+
+#: tviswaptgui.gridselfservicepackages.header.columns[6].text
+msgctxt "tviswaptgui.gridselfservicepackages.header.columns[6].text"
+msgid "Conflicts"
+msgstr ""
+
+#: tviswaptgui.gridselfservicepackages.header.columns[7].text
+msgctxt "tviswaptgui.gridselfservicepackages.header.columns[7].text"
+msgid "Signer"
+msgstr ""
+
+#: tviswaptgui.gridselfservicepackages.header.columns[8].text
+msgctxt "tviswaptgui.gridselfservicepackages.header.columns[8].text"
+msgid "Signed on"
+msgstr ""
+
+#: tviswaptgui.gridselfservicepackages.header.columns[9].text
+msgctxt "tviswaptgui.gridselfservicepackages.header.columns[9].text"
+msgid "Arch"
+msgstr ""
+
+#: tviswaptgui.gridwsusscan.header.columns[0].text
+msgid "_id"
+msgstr ""
+
+#: tviswaptgui.gridwsusscan.header.columns[10].text
+msgid "Reason"
+msgstr ""
+
+#: tviswaptgui.gridwsusscan.header.columns[11].text
+msgctxt "tviswaptgui.gridwsusscan.header.columns[11].text"
+msgid "uuid"
+msgstr ""
+
+#: tviswaptgui.gridwsusscan.header.columns[12].text
+msgid "Expected File size"
+msgstr ""
+
+#: tviswaptgui.gridwsusscan.header.columns[13].text
+msgid "file_timestamp"
+msgstr ""
+
+#: tviswaptgui.gridwsusscan.header.columns[14].text
+msgctxt "tviswaptgui.gridwsusscan.header.columns[14].text"
+msgid "updated_on"
+msgstr ""
+
+#: tviswaptgui.gridwsusscan.header.columns[15].text
+msgctxt "tviswaptgui.gridwsusscan.header.columns[15].text"
+msgid "updated_by"
+msgstr ""
+
+#: tviswaptgui.gridwsusscan.header.columns[16].text
+msgctxt "tviswaptgui.gridwsusscan.header.columns[16].text"
+msgid "created_by"
+msgstr ""
+
+#: tviswaptgui.gridwsusscan.header.columns[17].text
+msgctxt "tviswaptgui.gridwsusscan.header.columns[17].text"
+msgid "id"
+msgstr ""
+
+#: tviswaptgui.gridwsusscan.header.columns[1].text
+msgctxt "tviswaptgui.gridwsusscan.header.columns[1].text"
+msgid "Date"
+msgstr ""
+
+#: tviswaptgui.gridwsusscan.header.columns[2].text
+msgid "WSUS Cab Date"
+msgstr ""
+
+#: tviswaptgui.gridwsusscan.header.columns[3].text
+msgctxt "tviswaptgui.gridwsusscan.header.columns[3].text"
+msgid "Status"
+msgstr ""
+
+#: tviswaptgui.gridwsusscan.header.columns[4].text
+msgctxt "tviswaptgui.gridwsusscan.header.columns[4].text"
+msgid "Result"
+msgstr ""
+
+#: tviswaptgui.gridwsusscan.header.columns[5].text
+msgid "WSUS Cab Size"
+msgstr ""
+
+#: tviswaptgui.gridwsusscan.header.columns[6].text
+msgctxt "tviswaptgui.gridwsusscan.header.columns[6].text"
+msgid "Error"
+msgstr ""
+
+#: tviswaptgui.gridwsusscan.header.columns[7].text
+msgid "Forced"
+msgstr ""
+
+#: tviswaptgui.gridwsusscan.header.columns[8].text
+msgid "Skipped"
+msgstr ""
+
+#: tviswaptgui.gridwsusscan.header.columns[9].text
+msgid "cablist"
+msgstr ""
+
+#: tviswaptgui.gridwuapackages.header.columns[0].text
+msgctxt "tviswaptgui.gridwuapackages.header.columns[0].text"
+msgid "Section"
+msgstr ""
+
+#: tviswaptgui.gridwuapackages.header.columns[10].text
+msgctxt "tviswaptgui.gridwuapackages.header.columns[10].text"
+msgid "Locale"
+msgstr ""
+
+#: tviswaptgui.gridwuapackages.header.columns[11].text
+msgctxt "tviswaptgui.gridwuapackages.header.columns[11].text"
+msgid "Min OS version"
+msgstr ""
+
+#: tviswaptgui.gridwuapackages.header.columns[12].text
+msgctxt "tviswaptgui.gridwuapackages.header.columns[12].text"
+msgid "Max OS version"
+msgstr ""
+
+#: tviswaptgui.gridwuapackages.header.columns[13].text
+msgctxt "tviswaptgui.gridwuapackages.header.columns[13].text"
+msgid "Min Wapt version"
+msgstr ""
+
+#: tviswaptgui.gridwuapackages.header.columns[14].text
+msgctxt "tviswaptgui.gridwuapackages.header.columns[14].text"
+msgid "Repository"
+msgstr ""
+
+#: tviswaptgui.gridwuapackages.header.columns[15].text
+msgctxt "tviswaptgui.gridwuapackages.header.columns[15].text"
+msgid "Filename"
+msgstr ""
+
+#: tviswaptgui.gridwuapackages.header.columns[16].text
+msgctxt "tviswaptgui.gridwuapackages.header.columns[16].text"
+msgid "priority"
+msgstr ""
+
+#: tviswaptgui.gridwuapackages.header.columns[17].text
+msgctxt "tviswaptgui.gridwuapackages.header.columns[17].text"
+msgid "signature"
+msgstr ""
+
+#: tviswaptgui.gridwuapackages.header.columns[18].text
+msgctxt "tviswaptgui.gridwuapackages.header.columns[18].text"
+msgid "sources"
+msgstr ""
+
+#: tviswaptgui.gridwuapackages.header.columns[19].text
+msgctxt "tviswaptgui.gridwuapackages.header.columns[19].text"
+msgid "audit_schedule"
+msgstr ""
+
+#: tviswaptgui.gridwuapackages.header.columns[1].text
+msgctxt "tviswaptgui.gridwuapackages.header.columns[1].text"
+msgid "Package"
+msgstr ""
+
+#: tviswaptgui.gridwuapackages.header.columns[20].text
+msgctxt "tviswaptgui.gridwuapackages.header.columns[20].text"
+msgid "signed_attributes"
+msgstr ""
+
+#: tviswaptgui.gridwuapackages.header.columns[21].text
+msgctxt "tviswaptgui.gridwuapackages.header.columns[21].text"
+msgid "md5sum"
+msgstr ""
+
+#: tviswaptgui.gridwuapackages.header.columns[22].text
+msgctxt "tviswaptgui.gridwuapackages.header.columns[22].text"
+msgid "description_pl"
+msgstr ""
+
+#: tviswaptgui.gridwuapackages.header.columns[23].text
+msgctxt "tviswaptgui.gridwuapackages.header.columns[23].text"
+msgid "description_fr"
+msgstr ""
+
+#: tviswaptgui.gridwuapackages.header.columns[24].text
+msgctxt "tviswaptgui.gridwuapackages.header.columns[24].text"
+msgid "description_es"
+msgstr ""
+
+#: tviswaptgui.gridwuapackages.header.columns[25].text
+msgctxt "tviswaptgui.gridwuapackages.header.columns[25].text"
+msgid "description_de"
+msgstr ""
+
+#: tviswaptgui.gridwuapackages.header.columns[26].text
+msgctxt "tviswaptgui.gridwuapackages.header.columns[26].text"
+msgid "maintainer"
+msgstr ""
+
+#: tviswaptgui.gridwuapackages.header.columns[27].text
+msgctxt "tviswaptgui.gridwuapackages.header.columns[27].text"
+msgid "package_uuid"
+msgstr ""
+
+#: tviswaptgui.gridwuapackages.header.columns[28].text
+msgctxt "tviswaptgui.gridwuapackages.header.columns[28].text"
+msgid "description"
+msgstr ""
+
+#: tviswaptgui.gridwuapackages.header.columns[29].text
+msgctxt "tviswaptgui.gridwuapackages.header.columns[29].text"
+msgid "impacted_process"
+msgstr ""
+
+#: tviswaptgui.gridwuapackages.header.columns[2].text
+msgctxt "tviswaptgui.gridwuapackages.header.columns[2].text"
+msgid "Version"
+msgstr ""
+
+#: tviswaptgui.gridwuapackages.header.columns[30].text
+msgctxt "tviswaptgui.gridwuapackages.header.columns[30].text"
+msgid "installed_size"
+msgstr ""
+
+#: tviswaptgui.gridwuapackages.header.columns[31].text
+msgctxt "tviswaptgui.gridwuapackages.header.columns[31].text"
+msgid "signer_fingerprint"
+msgstr ""
+
+#: tviswaptgui.gridwuapackages.header.columns[32].text
+msgctxt "tviswaptgui.gridwuapackages.header.columns[32].text"
+msgid "editor"
+msgstr ""
+
+#: tviswaptgui.gridwuapackages.header.columns[33].text
+msgctxt "tviswaptgui.gridwuapackages.header.columns[33].text"
+msgid "licence"
+msgstr ""
+
+#: tviswaptgui.gridwuapackages.header.columns[34].text
+msgctxt "tviswaptgui.gridwuapackages.header.columns[34].text"
+msgid "keywords"
+msgstr ""
+
+#: tviswaptgui.gridwuapackages.header.columns[35].text
+msgctxt "tviswaptgui.gridwuapackages.header.columns[35].text"
+msgid "size"
+msgstr ""
+
+#: tviswaptgui.gridwuapackages.header.columns[36].text
+msgctxt "tviswaptgui.gridwuapackages.header.columns[36].text"
+msgid "repo"
+msgstr ""
+
+#: tviswaptgui.gridwuapackages.header.columns[37].text
+msgctxt "tviswaptgui.gridwuapackages.header.columns[37].text"
+msgid "target_os"
+msgstr ""
+
+#: tviswaptgui.gridwuapackages.header.columns[38].text
+msgctxt "tviswaptgui.gridwuapackages.header.columns[38].text"
+msgid "localpath"
+msgstr ""
+
+#: tviswaptgui.gridwuapackages.header.columns[39].text
+msgctxt "tviswaptgui.gridwuapackages.header.columns[39].text"
+msgid "homepage"
+msgstr ""
+
+#: tviswaptgui.gridwuapackages.header.columns[3].text
+msgctxt "tviswaptgui.gridwuapackages.header.columns[3].text"
+msgid "Maturity"
+msgstr ""
+
+#: tviswaptgui.gridwuapackages.header.columns[40].text
+msgctxt "tviswaptgui.gridwuapackages.header.columns[40].text"
+msgid "sourcespath"
+msgstr ""
+
+#: tviswaptgui.gridwuapackages.header.columns[4].text
+msgctxt "tviswaptgui.gridwuapackages.header.columns[4].text"
+msgid "Description"
+msgstr ""
+
+#: tviswaptgui.gridwuapackages.header.columns[5].text
+msgctxt "tviswaptgui.gridwuapackages.header.columns[5].text"
+msgid "Dependencies"
+msgstr ""
+
+#: tviswaptgui.gridwuapackages.header.columns[6].text
+msgctxt "tviswaptgui.gridwuapackages.header.columns[6].text"
+msgid "Conflicts"
+msgstr ""
+
+#: tviswaptgui.gridwuapackages.header.columns[7].text
+msgctxt "tviswaptgui.gridwuapackages.header.columns[7].text"
+msgid "Signer"
+msgstr ""
+
+#: tviswaptgui.gridwuapackages.header.columns[8].text
+msgctxt "tviswaptgui.gridwuapackages.header.columns[8].text"
+msgid "Signed on"
+msgstr ""
+
+#: tviswaptgui.gridwuapackages.header.columns[9].text
+msgctxt "tviswaptgui.gridwuapackages.header.columns[9].text"
+msgid "Arch"
+msgstr ""
+
+#: tviswaptgui.gridwuupdates.header.columns[0].text
+msgctxt "tviswaptgui.gridwuupdates.header.columns[0].text"
+msgid "Update Id"
+msgstr ""
+
+#: tviswaptgui.gridwuupdates.header.columns[10].text
+msgctxt "tviswaptgui.gridwuupdates.header.columns[10].text"
+msgid "security_bulletin_ids"
+msgstr ""
+
+#: tviswaptgui.gridwuupdates.header.columns[11].text
+msgctxt "tviswaptgui.gridwuupdates.header.columns[11].text"
+msgid "can_request_user_input"
+msgstr ""
+
+#: tviswaptgui.gridwuupdates.header.columns[12].text
+msgctxt "tviswaptgui.gridwuupdates.header.columns[12].text"
+msgid "is_mandatory"
+msgstr ""
+
+#: tviswaptgui.gridwuupdates.header.columns[13].text
+msgctxt "tviswaptgui.gridwuupdates.header.columns[13].text"
+msgid "superseded_update_ids"
+msgstr ""
+
+#: tviswaptgui.gridwuupdates.header.columns[14].text
+msgctxt "tviswaptgui.gridwuupdates.header.columns[14].text"
+msgid "requires_network_connectivity"
+msgstr ""
+
+#: tviswaptgui.gridwuupdates.header.columns[15].text
+msgctxt "tviswaptgui.gridwuupdates.header.columns[15].text"
+msgid "created_on"
+msgstr ""
+
+#: tviswaptgui.gridwuupdates.header.columns[16].text
+msgctxt "tviswaptgui.gridwuupdates.header.columns[16].text"
+msgid "created_by"
+msgstr ""
+
+#: tviswaptgui.gridwuupdates.header.columns[17].text
+msgctxt "tviswaptgui.gridwuupdates.header.columns[17].text"
+msgid "min_download_size"
+msgstr ""
+
+#: tviswaptgui.gridwuupdates.header.columns[18].text
+msgctxt "tviswaptgui.gridwuupdates.header.columns[18].text"
+msgid "reboot_behaviour"
+msgstr ""
+
+#: tviswaptgui.gridwuupdates.header.columns[19].text
+msgctxt "tviswaptgui.gridwuupdates.header.columns[19].text"
+msgid "download_urls"
+msgstr ""
+
+#: tviswaptgui.gridwuupdates.header.columns[1].text
+msgctxt "tviswaptgui.gridwuupdates.header.columns[1].text"
+msgid "Published on"
+msgstr ""
+
+#: tviswaptgui.gridwuupdates.header.columns[20].text
+msgctxt "tviswaptgui.gridwuupdates.header.columns[20].text"
+msgid "updated_on"
+msgstr ""
+
+#: tviswaptgui.gridwuupdates.header.columns[21].text
+msgctxt "tviswaptgui.gridwuupdates.header.columns[21].text"
+msgid "updated_by"
+msgstr ""
+
+#: tviswaptgui.gridwuupdates.header.columns[22].text
+msgctxt "tviswaptgui.gridwuupdates.header.columns[22].text"
+msgid "update_type"
+msgstr ""
+
+#: tviswaptgui.gridwuupdates.header.columns[23].text
+msgctxt "tviswaptgui.gridwuupdates.header.columns[23].text"
+msgid "Downloaded on"
+msgstr ""
+
+#: tviswaptgui.gridwuupdates.header.columns[24].text
+msgid "Uninstallation notes"
+msgstr ""
+
+#: tviswaptgui.gridwuupdates.header.columns[25].text
+msgctxt "tviswaptgui.gridwuupdates.header.columns[25].text"
+msgid "Uninstallable"
+msgstr ""
+
+#: tviswaptgui.gridwuupdates.header.columns[26].text
+msgid "Support url"
+msgstr ""
+
+#: tviswaptgui.gridwuupdates.header.columns[27].text
+msgid "Is beta ?"
+msgstr ""
+
+#: tviswaptgui.gridwuupdates.header.columns[28].text
+msgctxt "tviswaptgui.gridwuupdates.header.columns[28].text"
+msgid "Uninstallation impact"
+msgstr ""
+
+#: tviswaptgui.gridwuupdates.header.columns[29].text
+msgctxt "tviswaptgui.gridwuupdates.header.columns[29].text"
+msgid "languages"
+msgstr ""
+
+#: tviswaptgui.gridwuupdates.header.columns[2].text
+msgctxt "tviswaptgui.gridwuupdates.header.columns[2].text"
+msgid "Reported on"
+msgstr ""
+
+#: tviswaptgui.gridwuupdates.header.columns[30].text
+msgctxt "tviswaptgui.gridwuupdates.header.columns[30].text"
+msgid "Release notes"
+msgstr ""
+
+#: tviswaptgui.gridwuupdates.header.columns[3].text
+msgctxt "tviswaptgui.gridwuupdates.header.columns[3].text"
+msgid "KBs"
+msgstr ""
+
+#: tviswaptgui.gridwuupdates.header.columns[4].text
+msgctxt "tviswaptgui.gridwuupdates.header.columns[4].text"
+msgid "Product"
+msgstr ""
+
+#: tviswaptgui.gridwuupdates.header.columns[5].text
+msgctxt "tviswaptgui.gridwuupdates.header.columns[5].text"
+msgid "Classification"
+msgstr ""
+
+#: tviswaptgui.gridwuupdates.header.columns[6].text
+msgctxt "tviswaptgui.gridwuupdates.header.columns[6].text"
+msgid "Title"
+msgstr ""
+
+#: tviswaptgui.gridwuupdates.header.columns[7].text
+msgctxt "tviswaptgui.gridwuupdates.header.columns[7].text"
+msgid "Severity"
+msgstr ""
+
+#: tviswaptgui.gridwuupdates.header.columns[8].text
+msgctxt "tviswaptgui.gridwuupdates.header.columns[8].text"
+msgid "CVE"
+msgstr ""
+
+#: tviswaptgui.gridwuupdates.header.columns[9].text
+msgctxt "tviswaptgui.gridwuupdates.header.columns[9].text"
+msgid "Max download size"
 msgstr ""
 
 #: tviswaptgui.hostrunningtask.editlabel.caption
@@ -2509,6 +4973,7 @@ msgid "Filter : "
 msgstr ""
 
 #: tviswaptgui.label15.caption
+msgctxt "tviswaptgui.label15.caption"
 msgid "Groups"
 msgstr ""
 
@@ -2521,6 +4986,7 @@ msgid "Last scan date"
 msgstr ""
 
 #: tviswaptgui.label2.caption
+msgctxt "tviswaptgui.label2.caption"
 msgid "Manufacturer"
 msgstr ""
 
@@ -2534,6 +5000,7 @@ msgid "Filter : "
 msgstr ""
 
 #: tviswaptgui.label3.caption
+msgctxt "tviswaptgui.label3.caption"
 msgid "Model"
 msgstr ""
 
@@ -2546,6 +5013,7 @@ msgid "Search in"
 msgstr ""
 
 #: tviswaptgui.label6.caption
+msgctxt "tviswaptgui.label6.caption"
 msgid "Name"
 msgstr ""
 
@@ -2708,6 +5176,10 @@ msgstr ""
 msgid "PanHostsForPackage"
 msgstr ""
 
+#: tviswaptgui.panleftreporting.caption
+msgid "PanLeftReporting"
+msgstr ""
+
 #: tviswaptgui.pggroups.caption
 msgid "Bundles"
 msgstr ""
@@ -2764,7 +5236,8 @@ msgstr ""
 msgid "Wapt WUA packages"
 msgstr ""
 
-#: tviswaptgui.pgwindowsupdates2.caption
+#: tviswaptgui.pgwindowsupdates.caption
+msgctxt "tviswaptgui.pgwindowsupdates.caption"
 msgid "Windows Updates list"
 msgstr ""
 
@@ -2910,6 +5383,376 @@ msgstr ""
 #: tviswuagroup.edpackageversion.text
 msgctxt "tviswuagroup.edpackageversion.text"
 msgid "0"
+msgstr ""
+
+#: tviswuagroup.gridallowedwu.header.columns[0].text
+msgctxt "tviswuagroup.gridallowedwu.header.columns[0].text"
+msgid "Update Id"
+msgstr ""
+
+#: tviswuagroup.gridallowedwu.header.columns[10].text
+msgctxt "tviswuagroup.gridallowedwu.header.columns[10].text"
+msgid "security_bulletin_ids"
+msgstr ""
+
+#: tviswuagroup.gridallowedwu.header.columns[11].text
+msgctxt "tviswuagroup.gridallowedwu.header.columns[11].text"
+msgid "can_request_user_input"
+msgstr ""
+
+#: tviswuagroup.gridallowedwu.header.columns[12].text
+msgctxt "tviswuagroup.gridallowedwu.header.columns[12].text"
+msgid "is_mandatory"
+msgstr ""
+
+#: tviswuagroup.gridallowedwu.header.columns[13].text
+msgctxt "tviswuagroup.gridallowedwu.header.columns[13].text"
+msgid "superseded_update_ids"
+msgstr ""
+
+#: tviswuagroup.gridallowedwu.header.columns[14].text
+msgctxt "tviswuagroup.gridallowedwu.header.columns[14].text"
+msgid "requires_network_connectivity"
+msgstr ""
+
+#: tviswuagroup.gridallowedwu.header.columns[15].text
+msgctxt "tviswuagroup.gridallowedwu.header.columns[15].text"
+msgid "created_on"
+msgstr ""
+
+#: tviswuagroup.gridallowedwu.header.columns[16].text
+msgctxt "tviswuagroup.gridallowedwu.header.columns[16].text"
+msgid "created_by"
+msgstr ""
+
+#: tviswuagroup.gridallowedwu.header.columns[17].text
+msgctxt "tviswuagroup.gridallowedwu.header.columns[17].text"
+msgid "min_download_size"
+msgstr ""
+
+#: tviswuagroup.gridallowedwu.header.columns[18].text
+msgctxt "tviswuagroup.gridallowedwu.header.columns[18].text"
+msgid "reboot_behaviour"
+msgstr ""
+
+#: tviswuagroup.gridallowedwu.header.columns[19].text
+msgctxt "tviswuagroup.gridallowedwu.header.columns[19].text"
+msgid "download_urls"
+msgstr ""
+
+#: tviswuagroup.gridallowedwu.header.columns[1].text
+msgctxt "tviswuagroup.gridallowedwu.header.columns[1].text"
+msgid "Published on"
+msgstr ""
+
+#: tviswuagroup.gridallowedwu.header.columns[20].text
+msgctxt "tviswuagroup.gridallowedwu.header.columns[20].text"
+msgid "updated_on"
+msgstr ""
+
+#: tviswuagroup.gridallowedwu.header.columns[21].text
+msgctxt "tviswuagroup.gridallowedwu.header.columns[21].text"
+msgid "updated_by"
+msgstr ""
+
+#: tviswuagroup.gridallowedwu.header.columns[22].text
+msgctxt "tviswuagroup.gridallowedwu.header.columns[22].text"
+msgid "update_type"
+msgstr ""
+
+#: tviswuagroup.gridallowedwu.header.columns[23].text
+msgctxt "tviswuagroup.gridallowedwu.header.columns[23].text"
+msgid "Downloaded on"
+msgstr ""
+
+#: tviswuagroup.gridallowedwu.header.columns[2].text
+msgctxt "tviswuagroup.gridallowedwu.header.columns[2].text"
+msgid "Reported on"
+msgstr ""
+
+#: tviswuagroup.gridallowedwu.header.columns[3].text
+msgctxt "tviswuagroup.gridallowedwu.header.columns[3].text"
+msgid "KBs"
+msgstr ""
+
+#: tviswuagroup.gridallowedwu.header.columns[4].text
+msgctxt "tviswuagroup.gridallowedwu.header.columns[4].text"
+msgid "Product"
+msgstr ""
+
+#: tviswuagroup.gridallowedwu.header.columns[5].text
+msgctxt "tviswuagroup.gridallowedwu.header.columns[5].text"
+msgid "Classification"
+msgstr ""
+
+#: tviswuagroup.gridallowedwu.header.columns[6].text
+msgctxt "tviswuagroup.gridallowedwu.header.columns[6].text"
+msgid "Title"
+msgstr ""
+
+#: tviswuagroup.gridallowedwu.header.columns[7].text
+msgctxt "tviswuagroup.gridallowedwu.header.columns[7].text"
+msgid "Severity"
+msgstr ""
+
+#: tviswuagroup.gridallowedwu.header.columns[8].text
+msgctxt "tviswuagroup.gridallowedwu.header.columns[8].text"
+msgid "CVE"
+msgstr ""
+
+#: tviswuagroup.gridallowedwu.header.columns[9].text
+msgctxt "tviswuagroup.gridallowedwu.header.columns[9].text"
+msgid "Max download size"
+msgstr ""
+
+#: tviswuagroup.gridforbiddenwu.header.columns[0].text
+msgctxt "tviswuagroup.gridforbiddenwu.header.columns[0].text"
+msgid "Update Id"
+msgstr ""
+
+#: tviswuagroup.gridforbiddenwu.header.columns[10].text
+msgctxt "tviswuagroup.gridforbiddenwu.header.columns[10].text"
+msgid "security_bulletin_ids"
+msgstr ""
+
+#: tviswuagroup.gridforbiddenwu.header.columns[11].text
+msgctxt "tviswuagroup.gridforbiddenwu.header.columns[11].text"
+msgid "can_request_user_input"
+msgstr ""
+
+#: tviswuagroup.gridforbiddenwu.header.columns[12].text
+msgctxt "tviswuagroup.gridforbiddenwu.header.columns[12].text"
+msgid "is_mandatory"
+msgstr ""
+
+#: tviswuagroup.gridforbiddenwu.header.columns[13].text
+msgctxt "tviswuagroup.gridforbiddenwu.header.columns[13].text"
+msgid "superseded_update_ids"
+msgstr ""
+
+#: tviswuagroup.gridforbiddenwu.header.columns[14].text
+msgctxt "tviswuagroup.gridforbiddenwu.header.columns[14].text"
+msgid "requires_network_connectivity"
+msgstr ""
+
+#: tviswuagroup.gridforbiddenwu.header.columns[15].text
+msgctxt "tviswuagroup.gridforbiddenwu.header.columns[15].text"
+msgid "created_on"
+msgstr ""
+
+#: tviswuagroup.gridforbiddenwu.header.columns[16].text
+msgctxt "tviswuagroup.gridforbiddenwu.header.columns[16].text"
+msgid "created_by"
+msgstr ""
+
+#: tviswuagroup.gridforbiddenwu.header.columns[17].text
+msgctxt "tviswuagroup.gridforbiddenwu.header.columns[17].text"
+msgid "min_download_size"
+msgstr ""
+
+#: tviswuagroup.gridforbiddenwu.header.columns[18].text
+msgctxt "tviswuagroup.gridforbiddenwu.header.columns[18].text"
+msgid "reboot_behaviour"
+msgstr ""
+
+#: tviswuagroup.gridforbiddenwu.header.columns[19].text
+msgctxt "tviswuagroup.gridforbiddenwu.header.columns[19].text"
+msgid "download_urls"
+msgstr ""
+
+#: tviswuagroup.gridforbiddenwu.header.columns[1].text
+msgctxt "tviswuagroup.gridforbiddenwu.header.columns[1].text"
+msgid "Published on"
+msgstr ""
+
+#: tviswuagroup.gridforbiddenwu.header.columns[20].text
+msgctxt "tviswuagroup.gridforbiddenwu.header.columns[20].text"
+msgid "updated_on"
+msgstr ""
+
+#: tviswuagroup.gridforbiddenwu.header.columns[21].text
+msgctxt "tviswuagroup.gridforbiddenwu.header.columns[21].text"
+msgid "updated_by"
+msgstr ""
+
+#: tviswuagroup.gridforbiddenwu.header.columns[22].text
+msgctxt "tviswuagroup.gridforbiddenwu.header.columns[22].text"
+msgid "update_type"
+msgstr ""
+
+#: tviswuagroup.gridforbiddenwu.header.columns[23].text
+msgctxt "tviswuagroup.gridforbiddenwu.header.columns[23].text"
+msgid "Downloaded on"
+msgstr ""
+
+#: tviswuagroup.gridforbiddenwu.header.columns[2].text
+msgctxt "tviswuagroup.gridforbiddenwu.header.columns[2].text"
+msgid "Reported on"
+msgstr ""
+
+#: tviswuagroup.gridforbiddenwu.header.columns[3].text
+msgctxt "tviswuagroup.gridforbiddenwu.header.columns[3].text"
+msgid "KBs"
+msgstr ""
+
+#: tviswuagroup.gridforbiddenwu.header.columns[4].text
+msgctxt "tviswuagroup.gridforbiddenwu.header.columns[4].text"
+msgid "Product"
+msgstr ""
+
+#: tviswuagroup.gridforbiddenwu.header.columns[5].text
+msgctxt "tviswuagroup.gridforbiddenwu.header.columns[5].text"
+msgid "Classification"
+msgstr ""
+
+#: tviswuagroup.gridforbiddenwu.header.columns[6].text
+msgctxt "tviswuagroup.gridforbiddenwu.header.columns[6].text"
+msgid "Title"
+msgstr ""
+
+#: tviswuagroup.gridforbiddenwu.header.columns[7].text
+msgctxt "tviswuagroup.gridforbiddenwu.header.columns[7].text"
+msgid "Severity"
+msgstr ""
+
+#: tviswuagroup.gridforbiddenwu.header.columns[8].text
+msgctxt "tviswuagroup.gridforbiddenwu.header.columns[8].text"
+msgid "CVE"
+msgstr ""
+
+#: tviswuagroup.gridforbiddenwu.header.columns[9].text
+msgctxt "tviswuagroup.gridforbiddenwu.header.columns[9].text"
+msgid "Max download size"
+msgstr ""
+
+#: tviswuagroup.gridwinproducts.header.columns[0].text
+msgctxt "tviswuagroup.gridwinproducts.header.columns[0].text"
+msgid "Product"
+msgstr ""
+
+#: tviswuagroup.gridwuupdates.header.columns[0].text
+msgctxt "tviswuagroup.gridwuupdates.header.columns[0].text"
+msgid "Update Id"
+msgstr ""
+
+#: tviswuagroup.gridwuupdates.header.columns[10].text
+msgctxt "tviswuagroup.gridwuupdates.header.columns[10].text"
+msgid "security_bulletin_ids"
+msgstr ""
+
+#: tviswuagroup.gridwuupdates.header.columns[11].text
+msgctxt "tviswuagroup.gridwuupdates.header.columns[11].text"
+msgid "can_request_user_input"
+msgstr ""
+
+#: tviswuagroup.gridwuupdates.header.columns[12].text
+msgctxt "tviswuagroup.gridwuupdates.header.columns[12].text"
+msgid "is_mandatory"
+msgstr ""
+
+#: tviswuagroup.gridwuupdates.header.columns[13].text
+msgctxt "tviswuagroup.gridwuupdates.header.columns[13].text"
+msgid "superseded_update_ids"
+msgstr ""
+
+#: tviswuagroup.gridwuupdates.header.columns[14].text
+msgctxt "tviswuagroup.gridwuupdates.header.columns[14].text"
+msgid "requires_network_connectivity"
+msgstr ""
+
+#: tviswuagroup.gridwuupdates.header.columns[15].text
+msgctxt "tviswuagroup.gridwuupdates.header.columns[15].text"
+msgid "Reported on"
+msgstr ""
+
+#: tviswuagroup.gridwuupdates.header.columns[16].text
+msgctxt "tviswuagroup.gridwuupdates.header.columns[16].text"
+msgid "created_on"
+msgstr ""
+
+#: tviswuagroup.gridwuupdates.header.columns[17].text
+msgctxt "tviswuagroup.gridwuupdates.header.columns[17].text"
+msgid "created_by"
+msgstr ""
+
+#: tviswuagroup.gridwuupdates.header.columns[18].text
+msgctxt "tviswuagroup.gridwuupdates.header.columns[18].text"
+msgid "min_download_size"
+msgstr ""
+
+#: tviswuagroup.gridwuupdates.header.columns[19].text
+msgctxt "tviswuagroup.gridwuupdates.header.columns[19].text"
+msgid "reboot_behaviour"
+msgstr ""
+
+#: tviswuagroup.gridwuupdates.header.columns[1].text
+msgctxt "tviswuagroup.gridwuupdates.header.columns[1].text"
+msgid "Status"
+msgstr ""
+
+#: tviswuagroup.gridwuupdates.header.columns[20].text
+msgctxt "tviswuagroup.gridwuupdates.header.columns[20].text"
+msgid "download_urls"
+msgstr ""
+
+#: tviswuagroup.gridwuupdates.header.columns[21].text
+msgctxt "tviswuagroup.gridwuupdates.header.columns[21].text"
+msgid "updated_on"
+msgstr ""
+
+#: tviswuagroup.gridwuupdates.header.columns[22].text
+msgctxt "tviswuagroup.gridwuupdates.header.columns[22].text"
+msgid "updated_by"
+msgstr ""
+
+#: tviswuagroup.gridwuupdates.header.columns[23].text
+msgctxt "tviswuagroup.gridwuupdates.header.columns[23].text"
+msgid "update_type"
+msgstr ""
+
+#: tviswuagroup.gridwuupdates.header.columns[24].text
+msgctxt "tviswuagroup.gridwuupdates.header.columns[24].text"
+msgid "Downloaded on"
+msgstr ""
+
+#: tviswuagroup.gridwuupdates.header.columns[2].text
+msgctxt "tviswuagroup.gridwuupdates.header.columns[2].text"
+msgid "Published on"
+msgstr ""
+
+#: tviswuagroup.gridwuupdates.header.columns[3].text
+msgctxt "tviswuagroup.gridwuupdates.header.columns[3].text"
+msgid "KBs"
+msgstr ""
+
+#: tviswuagroup.gridwuupdates.header.columns[4].text
+msgctxt "tviswuagroup.gridwuupdates.header.columns[4].text"
+msgid "Product"
+msgstr ""
+
+#: tviswuagroup.gridwuupdates.header.columns[5].text
+msgctxt "tviswuagroup.gridwuupdates.header.columns[5].text"
+msgid "Classification"
+msgstr ""
+
+#: tviswuagroup.gridwuupdates.header.columns[6].text
+msgctxt "tviswuagroup.gridwuupdates.header.columns[6].text"
+msgid "Title"
+msgstr ""
+
+#: tviswuagroup.gridwuupdates.header.columns[7].text
+msgctxt "tviswuagroup.gridwuupdates.header.columns[7].text"
+msgid "Severity"
+msgstr ""
+
+#: tviswuagroup.gridwuupdates.header.columns[8].text
+msgctxt "tviswuagroup.gridwuupdates.header.columns[8].text"
+msgid "CVE"
+msgstr ""
+
+#: tviswuagroup.gridwuupdates.header.columns[9].text
+msgctxt "tviswuagroup.gridwuupdates.header.columns[9].text"
+msgid "Max download size"
 msgstr ""
 
 #: tviswuagroup.label1.caption
@@ -3596,6 +6439,10 @@ msgstr ""
 msgid "Are you sure you want to scan pending Windows updates on %d hosts ?"
 msgstr ""
 
+#: uwaptconsoleres.rsconfirmhostswaptwuauninstall
+msgid "Are you sure you want to Uninstall %d Windows updates on %d hosts ?"
+msgstr ""
+
 #: uwaptconsoleres.rsconfirmimport
 msgctxt "uwaptconsoleres.rsconfirmimport"
 msgid ""
@@ -3967,6 +6814,17 @@ msgstr ""
 msgid "Message to send"
 msgstr ""
 
+#: uwaptconsoleres.rsmissingpersonalcertificate
+msgid "Missing personal certificate"
+msgstr ""
+
+#: uwaptconsoleres.rsmissingpersonalcertificatequestion
+msgid ""
+"No personal certificate defined.\n"
+"You need one certificate and matching private key to be able to sign actions and configurations\n"
+"Do you want to pick or create one now in preferences ?\n"
+msgstr ""
+
 #: uwaptconsoleres.rsnbmodifiedhosts
 msgid "%d hosts affected. %d hosts discarded (errors). %d hosts unchanged"
 msgstr ""
@@ -4072,11 +6930,6 @@ msgstr ""
 #: uwaptconsoleres.rsprivatekeydoesntexist
 msgctxt "uwaptconsoleres.rsprivatekeydoesntexist"
 msgid "Private key doesn't exist : %s"
-msgstr ""
-
-#: uwaptconsoleres.rsprogresstitle
-msgctxt "uwaptconsoleres.rsprogresstitle"
-msgid "Started uploading to WAPT server..."
 msgstr ""
 
 #: uwaptconsoleres.rspublickeygenerror
@@ -4239,6 +7092,11 @@ msgctxt "uwaptconsoleres.rsuploadingpackagestowaptsrv"
 msgid "Uploading %s packages to WAPT server..."
 msgstr ""
 
+#: uwaptconsoleres.rsuploadinprogresstitle
+msgctxt "uwaptconsoleres.rsuploadinprogresstitle"
+msgid "Started uploading to WAPT server..."
+msgstr ""
+
 #: uwaptconsoleres.rsurl
 msgctxt "uwaptconsoleres.rsurl"
 msgid "Url : %s"
@@ -4256,15 +7114,24 @@ msgid ""
 "Wapt-get version: %s\n"
 msgstr ""
 
+#: uwaptconsoleres.rswaptagentcheck
+msgid "WaptAgent version check"
+msgstr ""
+
 #: uwaptconsoleres.rswaptagentnotpresent
-msgid "Warning, waptagent.exe installer is not present on server, please build waptagent.exe installer for the deployment of Wapt on client hosts."
+msgid ""
+"waptagent.exe installer is not present on server\n"
+"\n"
+"Do you want to build waptagent.exe installer for the deployment of Wapt on client hosts ?\n"
 msgstr ""
 
 #: uwaptconsoleres.rswaptagentoldversion
 msgid ""
-"Warning, the version of the waptagent.exe installer is too old.\n"
+"waptagent.exe needs to be upgraded\n"
 "Current waptagent.exe version: %s\n"
-"waptsetup-tis.exe version: %s\n"
+"Required version: %s\n"
+"\n"
+"Do you want to rebuild a waptagent.exe installer now ?\n"
 msgstr ""
 
 #: uwaptconsoleres.rswaptagentsetuperror
@@ -4274,6 +7141,12 @@ msgstr ""
 
 #: uwaptconsoleres.rswaptagentsetupsuccess
 msgid "waptagent.exe successfully built : %s"
+msgstr ""
+
+#: uwaptconsoleres.rswaptagentunabletocheck
+msgid ""
+"Warning, unable to check waptagent.exe installer on server\n"
+"Error: %s\n"
 msgstr ""
 
 #: uwaptconsoleres.rswaptagentuploaderror
@@ -4296,8 +7169,18 @@ msgctxt "uwaptconsoleres.rswaptgetupgrade"
 msgid "WAPT-GET Upgrade using repository at %s"
 msgstr ""
 
+#: uwaptconsoleres.rswaptpackageprefix
+msgid "Package prefix"
+msgstr ""
+
 #: uwaptconsoleres.rswaptpackageprefixmissing
 msgid "You must first define the Package prefix in preferences"
+msgstr ""
+
+#: uwaptconsoleres.rswaptpackageprefixmissingquestion
+msgid ""
+"A Package prefix is needed to visually identify your packages.\n"
+"Do you want to define one now ?\n"
 msgstr ""
 
 #: uwaptconsoleres.rswaptservererror
@@ -4567,6 +7450,7 @@ msgid "Old password must not be empty."
 msgstr ""
 
 #: uwaptres.rserror
+msgctxt "uwaptres.rserror"
 msgid "Error"
 msgstr ""
 
@@ -5009,182 +7893,4 @@ msgstr ""
 msgctxt "uwaptres.rswaptuploaderror"
 msgid "Error while uploading WAPT agent to the repository : %s"
 msgstr ""
-
-#: waptconsolepostconfres.rsbuildingkeycert
-msgid "Building a key pairs and certificate"
-msgstr "Génération d'une paire de clé et certificat"
-
-#: waptconsolepostconfres.rsinvaliddns
-msgctxt "waptconsolepostconfres.rsinvaliddns"
-msgid "Invalid DNS"
-msgstr "DNS Invalide"
-
-#: waptconsolepostconfres.rsinvaliddnsfallback
-msgctxt "waptconsolepostconfres.rsinvaliddnsfallback"
-msgid "This DNS name is not valid, would you like to use the IP address instead ?"
-msgstr "Ce nom DNS est invalide, voulez-vous utiliser l'adresse IP à la place ?"
-
-#: waptconsolepostconfres.rsregisteringcomputer
-msgid "Registering current computer on the server."
-msgstr "Inscription de cet ordinateur sur le serveur WAPT."
-
-#: waptconsolepostconfres.rsstartingwaptservice
-msgid "Starting WaptService"
-msgstr "Lancement de WaptService"
-
-#: waptconsolepostconfres.rsstoppingwaptservice
-msgid "Stopping WaptService"
-msgstr "Arrêt de WaptService"
-
-#: waptconsolepostconfres.rs_an_error_has_occured_while_to_validate_key_password
-msgid "An unexpected error has occured while validating key password"
-msgstr "Une erreur non attendue est apparue lors de la validation du mot de passe de la clé"
-
-#: waptconsolepostconfres.rs_a_problem_has_occured_while_trying_to_login_server
-msgid "A problem has occured when trying to login to server"
-msgstr "Un problème est apparu en essayant de se connecter sur le serveur"
-
-#: waptconsolepostconfres.rs_bad_login_password
-msgid "Bad login password"
-msgstr "Mauvais mot de passe de connection"
-
-#: waptconsolepostconfres.rs_certificate_filename_cannot_be_empty
-msgid "Certificate filename cannot be empty"
-msgstr "Le nom de fichier de certificat ne doit pas être vide"
-
-#: waptconsolepostconfres.rs_certificate_filename_is_invalid
-msgid "Certificate filename '%s' is invalid"
-msgstr "Le nom de certificat %s n'est pas valide"
-
-#: waptconsolepostconfres.rs_compilation_failed
-msgid "Compilation Failed"
-msgstr "La compilation a échoué"
-
-#: waptconsolepostconfres.rs_confirm
-msgctxt "waptconsolepostconfres.rs_confirm"
-msgid "Confirm"
-msgstr "Confirmer"
-
-#: waptconsolepostconfres.rs_confirm_cancel_post_config
-msgid "Are you sure you want to abort wapt console post configuration ?"
-msgstr "Êtes-vous sûr de vouloir interrompre la configuration de la console Wapt"
-
-#: waptconsolepostconfres.rs_create_key_a_certificat_this_key_name_exist
-msgid "A certificate with this key name already exists, change key name and click next again"
-msgstr "Un certificat avec ce nom existe déjà, veuillez changer le nom de la clé"
-
-#: waptconsolepostconfres.rs_create_key_a_key_with_this_name_exist
-msgid "A key with this name has been found, change key name and click next again"
-msgstr "Un clé avec ce nom a été trouvée, changer le nom de la clé"
-
-#: waptconsolepostconfres.rs_create_key_dir_cannot_be_created
-msgid "Cannot create directory %s"
-msgstr "On ne peut pas trouver le répertoire %s"
-
-#: waptconsolepostconfres.rs_create_key_dir_not_exist
-msgid "Create directory %s ?"
-msgstr "Créer le répertoire %s ?"
-
-#: waptconsolepostconfres.rs_create_key_select_a_valide_private_key_directory
-msgid "A valid private key directory must be selected"
-msgstr "Un répertoire de clé privée doit être précisé"
-
-#: waptconsolepostconfres.rs_finished
-msgid "Finished"
-msgstr "Terminé"
-
-#: waptconsolepostconfres.rs_iscc_instance_found
-msgid "A instance of ISCC as been found, cannot continue."
-msgstr "Une instance de ISCC a été trouvée, ne peut continuer"
-
-#: waptconsolepostconfres.rs_key_filename_cannot_be_empty
-msgid "Key filename can not be empty"
-msgstr "Le nom de fichier de la clé ne peut pas être vide"
-
-#: waptconsolepostconfres.rs_key_filename_is_invalid
-msgid "Key filename '%s' is invalid"
-msgstr "Le nom de fichier de clé %s est invalide"
-
-#: waptconsolepostconfres.rs_key_name_cannot_be_empty
-msgid "Key name cannot be empty"
-msgstr "Le nom de la clé ne peut pas être vide"
-
-#: waptconsolepostconfres.rs_no_key_password
-msgid "Please provide the private key password first"
-msgstr "Merci de préciser le mot de passe de la clé privée"
-
-#: waptconsolepostconfres.rs_no_matching_key
-msgid "No private key has been found in certificate directory using this password"
-msgstr "Aucune clé privée n'a pu être trouvée dans le répertoire du certificat avec ce mot de passe"
-
-#: waptconsolepostconfres.rs_other_process_has_been_found
-msgid ""
-"An instance of %s has been found.\n"
-"The program cannot continue until this process has terminated.\n"
-"\n"
-"Click on Yes to kill all the process named %s\n"
-"Click on Retry to recheck processes status\n"
-"Click on Cancel to abort\n"
-msgstr ""
-
-#: waptconsolepostconfres.rs_package_prefix_cannot_be_empty
-msgid "Package prefix cannot be empty"
-msgstr ""
-
-#: waptconsolepostconfres.rs_package_prefix_must_be_alphanum
-msgid "Package prefix must be alphanum"
-msgstr "Le préfixe de paquet doit être alpha-numérique"
-
-#: waptconsolepostconfres.rs_post_conf_will_now_exit
-msgid "Post configuration tool will now exit"
-msgstr ""
-
-#: waptconsolepostconfres.rs_supplied_passwords_differs
-msgid "Supplied passwords differs"
-msgstr "Les mots de passe fournis sont différents"
-
-#: waptconsolepostconfres.rs_supplied_passwords_must_be_at_least_six_chars_length
-msgid "Supplied passwords must be at least 6 characters length"
-msgstr "Les mots de passe doivent avoir une longueur minimale de 6 caractères"
-
-#: waptconsolepostconfres.rs_upload_to_server
-msgid "Upload to server %d%%"
-msgstr "Téléversement vers le serveur %d%%"
-
-#: waptconsolepostconfres.rs_waptserver_not_found_or_down
-msgid "Wapt server not found or down"
-msgstr "Le serveur Wapt n'a pas été trouvé ou est arrêté"
-
-#: waptconsolepostconfres.rs_wapt_agent_has_been_found_on_server_confirm_create_package_key
-msgid ""
-"Wapt agent has been found on the server\n"
-"Are you sure you want to recreate a new pair of private key / personal certificate and build a new waptagent installer?\n"
-msgstr ""
-"Un installeur d'agent Wapt a été trouvé sur le serveur\n"
-"Êtes-vous sûr de vouloir en recréer un nouveau avec la nouvelle paire de clés ?\n"
-
-#: waptconsolepostconfres.rs_wapt_agent_has_been_found_on_server_overwrite_agent
-msgid ""
-"Wapt agent has been found on the server\n"
-"Build and overwrite the waptagent.exe installer ?\n"
-msgstr ""
-"Un installeur d'agent Wapt a été trouvé sur le serveur\n"
-"Êtes-vous sûr de vouloir en recréer un nouveau avec la nouvelle paire de clés ?\n"
-
-#: waptconsolepostconfres.rs_wapt_server_installation_may_be_broken
-msgid "Wapt server installation may be broken"
-msgstr "L'installation du serveur Wapt est peut-être corrompue"
-
-#: waptconsolepostconfres.rs_wapt_sever_url_is_invalid
-msgid "Wapt server url is invalid"
-msgstr "l'URL de serveur WAPT est invalide"
-
-#: waptconsolepostconfres.rs_wrong_key_password
-msgid "Wrong key password"
-msgstr "Le mot de passe de la clé privée est erroné"
-
-#: waptconsolepostconfres.rs_you_wapt_agent_version_mismatch
-#| msgid "Wapt agent version exception (%s) Post configuration tool cannot continue, please follow tutorial at : https://www.wapt.fr/en/doc"
-msgid "Wapt agent version exception (%s) Post configuration tool cannot continue, please follow tutorial at : http://wapt.fr"
-msgstr "Errur de version de l'agent WAPT (%s). La configuration ne peut pas continuer. Vérifier la documentation d'installation : https://www.wapt.fr/fr/do"
 
