@@ -253,7 +253,7 @@ def index():
     return render_template('index.html', data=data)
 
 def sign_host_csr(host_certificate_csr):
-    """Sign the CSR with server key and retirn a certificate for further host auth on nginx server
+    """Sign the CSR with server key and return a certificate for further host auth on nginx server
 
     Args:
         host_certificate_csr ()
@@ -557,7 +557,7 @@ def get_websocket_auth_token():
             raise EWaptAuthenticationFailure('No signature in request')
 
         existing_host = Hosts.select(Hosts.uuid, Hosts.host_certificate, Hosts.computer_fqdn).where(Hosts.uuid == uuid).first()
-        if not existing_host or not existing_host.host_certificate or existing_host.computer_fqdn != data.get('computer_fqdn',''):
+        if not existing_host or not existing_host.host_certificate:
             raise EWaptAuthenticationFailure('Unknown host UUID %s. Please register first.' % (uuid, ))
 
         host_cert = SSLCertificate(crt_string=existing_host.host_certificate)
@@ -570,13 +570,23 @@ def get_websocket_auth_token():
         result = {
             'authorization_token': token_gen.dumps({'uuid':uuid,'server_uuid':get_server_uuid()}),
             }
-        with wapt_db.atomic() as trans:
-            # stores sid in database
-            hostcount = Hosts.update(
-                server_uuid=get_server_uuid(),
-                listening_timestamp=datetime2isodate(),
-                last_seen_on=datetime2isodate()
-            ).where(Hosts.uuid == uuid).execute()
+
+        def update_listening(uuid,server_uuid,listening_timestamp,last_seen_on):
+            with wapt_db.atomic() as trans:
+                # stores sid in database
+                Hosts.update(
+                    server_uuid=server_uuid,
+                    listening_timestamp=listening_timestamp,
+                    last_seen_on=last_seen_on
+                ).where(Hosts.uuid == uuid).execute()
+
+        socketio.start_background_task(target=update_listening,
+                    uuid=uuid,
+                    server_uuid=get_server_uuid(),
+                    listening_timestamp=datetime2isodate(),
+                    last_seen_on=datetime2isodate()
+                    )
+
         message = 'Authorization token'
         return make_response(result=result, msg=message, request_time=time.time() - starttime)
 
