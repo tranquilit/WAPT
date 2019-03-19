@@ -109,8 +109,8 @@ type
     Function WorkInProgress:Boolean;
 
     // running task
-    property running: ISuperObject read FRunning write SetRunning;
-    property pending: ISuperObject read FPending write SetPending;
+    property Running: ISuperObject read FRunning write SetRunning;
+    property Pending: ISuperObject read FPending write SetPending;
 
     property AllowCancelUpgrade:Boolean read FAllowCancelUpgrade write FAllowCancelUpgrade;
     property InitialCountDown:Integer read FInitialCountDown write SetInitialCountDown;
@@ -138,7 +138,7 @@ uses soutils,IniFiles,waptcommon,tiscommon,typinfo,IdException,IdExceptionCore;
 
 function  TVisWaptExit.CheckAllowCancelUpgrade:Boolean;
 begin
-  Result := AllowCancelUpgrade and ((running=Nil) or (Running.datatype=stNull));
+  Result := AllowCancelUpgrade and ((Running=Nil) or (Running.datatype=stNull));
 end;
 
 procedure TVisWaptExit.SetInitialCountDown(AValue: Integer);
@@ -438,10 +438,10 @@ end;
 
 procedure TVisWaptExit.OnCheckWaptserviceNotify(Sender: TObject);
 var
-  aso: ISuperObject;
+  aso,RunningTasks: ISuperObject;
 begin
   aso := Nil;
-  upgrades := Nil;
+  Upgrades := Nil;
   Removes := Nil;
 
   //Check if pending upgrades
@@ -457,8 +457,11 @@ begin
     aso := (Sender as TCheckWaptservice).LastUpdateStatus;
     if aso<>Nil then
     begin
-      upgrades := aso['upgrades'];
+      Upgrades := aso['upgrades'];
       Removes := aso['pending.remove'];
+      RunningTasks := aso['running_tasks'];
+      if Assigned(RunningTasks) and Assigned(RunningTasks.AsArray) and (RunningTasks.AsArray.Length>0) then
+        Running := RunningTasks.AsArray[0];
       {$ifdef enterprise}
       wua_status := aso['wua_status'];
       wua_pending_count := aso['wua_pending_count'];

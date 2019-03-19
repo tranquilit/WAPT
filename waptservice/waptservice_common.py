@@ -683,7 +683,7 @@ class WaptUpdate(WaptTask):
 
     def _run(self):
         self.wapt.check_install_running()
-        self.progress = 50
+        self.progress = 0
         print(_(u'Get packages index'))
         self.result = self.wapt.update(force=self.force,register=self.notify_server_on_finish)
         """result: {
