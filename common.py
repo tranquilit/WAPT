@@ -786,6 +786,9 @@ class WaptDB(WaptBaseDB):
 
     def add_package_entry(self,package_entry,locale_code=None):
         with self:
+            # for backward compatibility with packages signed without package_uuid attribute
+            if not package_entry.package_uuid:
+                package_entry.package_uuid = package_entry.make_fallback_uuid()
             cur = self.db.execute("""delete from wapt_package where package=? and version=? and architecture=? and maturity=? and locale=?""" ,
                 (package_entry.package,package_entry.version,package_entry.architecture,package_entry.maturity,package_entry.locale))
             cur = self.db.execute("""\
@@ -1053,11 +1056,15 @@ class WaptDB(WaptBaseDB):
             return cur.rowcount
 
     def known_packages(self):
-        """return a list of all (package,version)"""
+        """Return a dict of all known packages PackageKey(s) indexed by package_uuid
+
+        Returns:
+            dict  {'package_uuid':PackageKey(package)}
+        """
         q = self.db.execute("""\
-              select distinct wapt_package.package,wapt_package.version,architecture,locale,maturity from wapt_package
+              select distinct wapt_package.package_uuid,wapt_package.package,wapt_package.version,architecture,locale,maturity from wapt_package
            """)
-        return [PackageKey(e[0],Version(e[1]),*e[2:]) for e in q.fetchall()]
+        return {e[0] : PackageKey(e[0],e[1],Version(e[2]),*e[3:]) for e in q.fetchall()}
 
     def packages_matching(self,package_cond):
         """Return an ordered list of available packages entries which match
@@ -3403,13 +3410,13 @@ class Wapt(BaseObjectClass):
                 # install in progress
                 result.append(rec['process_id'])
 
-        with self.waptdb:
-            cur = self.waptdb.db.execute("""\
-                  update wapt_localstatus
-                    set install_status=coalesce('ERROR',install_status) where process_id in (?)
-                """,( ','.join([str(p) for p in reset_error]),))
+        if reset_error:
+            with self.waptdb:
+                cur = self.waptdb.db.execute("""\
+                      update wapt_localstatus
+                        set install_status=coalesce('ERROR',install_status) where process_id in (?)
+                    """,( ','.join([str(p) for p in reset_error]),))
 
-        if reset_error or not init_run_pids:
             self.runstatus = ''
 
         # return pids of install in progress
@@ -4199,17 +4206,6 @@ class Wapt(BaseObjectClass):
         >>> res = wapt._update_repos_list()
         {'wapt': '2018-02-13T11:22:00', 'wapt-host': u'2018-02-09T10:55:04'}
         """
-        # load packages indexes out of db scope
-        for repo in self.repositories:
-            # if auto discover, repo_url can be None if no network.
-            if repo.repo_url:
-                try:
-                    logger.info(u'Getting packages from %s: %s packages' % (repo.repo_url,len(repo.packages())))
-                except Exception as e:
-                    logger.critical(u'Error getting Packages index from %s : %s' % (repo.repo_url,ensure_unicode(e)))
-            else:
-                logger.info('No location found for repository %s, skipping' % (repo.name))
-
         if filter_on_host_cap:
             # force update if host capabilities have changed and requires a new filering of packages
             new_capa = self.host_capabilities_fingerprint()
@@ -4269,8 +4265,8 @@ class Wapt(BaseObjectClass):
 
         current = self.waptdb.known_packages()
         result = {
-            "added":   [ p for p in current if not p in previous],
-            "removed": [ p for p in previous if not p in current],
+            "added":   [ current[package_uuid] for package_uuid in current if not package_uuid in previous],
+            "removed": [ previous[package_uuid] for package_uuid in previous if not package_uuid in current],
             "discarded_count": len(self.read_param('last-discarded-wapt',[],'json')),
             "count" : len(current),
             "repos" : [r.repo_url for r in self.repositories],

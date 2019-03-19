@@ -337,7 +337,8 @@ class HostCapabilities(BaseObjectClass):
         return repr(self.as_dict())
 
 class PackageKey(object):
-    def __init__(self,package=None,version=None,architecture=None,locale=None,maturity=None,**kwargs):
+    def __init__(self,package_uuid=None,package=None,version=None,architecture=None,locale=None,maturity=None,**kwargs):
+        self.package_uuid=package_uuid
         self.package = package
         self.version = version
         self.architecture = architecture
@@ -381,7 +382,9 @@ class PackageKey(object):
         return repr(self.as_dict())
 
     def __cmp__(self,other):
-        return cmp(list(self),list(other))
+        if self.package_uuid and other.package_uuid and self.package_uuid == other.package_uuid:
+            return 0
+        return cmp((self.package,self.version,self.architecture,self.locale,self.maturity),(other.package,other.version,other.architecture,other.locale,other.maturity))
 
 
 def PackageVersion(package_or_versionstr):
@@ -918,6 +921,9 @@ class PackageEntry(BaseObjectClass):
             locale=self.locale if (self.locale is not None and self.locale != '' and self.locale != 'all') else '',
             maturity=self.maturity if (self.maturity is not None and self.maturity != '' and self.maturity != 'all') else '',
             )
+
+    def make_fallback_uuid(self):
+        return 'fb-%s' % (hashlib.sha256('-'.join([(self.package or '').encode('utf8'),str(self.architecture or ''),str(self.locale or ''),str(self.maturity or '')])).hexdigest(),)
 
     def make_uuid(self):
         self.package_uuid = str(uuid.uuid4())
