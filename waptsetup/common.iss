@@ -633,7 +633,7 @@ end;
 
 function GetWaptauditTaskPeriod(param:String):String;
 begin
-  Result :=  := ExpandConstant('{param:waptaudit_task_period|{#set_waptaudit_task_period}}');
+  Result := ExpandConstant('{param:waptaudit_task_period|{#set_waptaudit_task_period}}');
 end;
 
 procedure PostClickNext();
