@@ -1962,7 +1962,7 @@ begin
       else if startswith(line,'#define append_host_profiles') and (AppendHostProfiles<>'') then
           new_iss.AsArray.Add(format('#define append_host_profiles "%s"' ,[AppendHostProfiles]))
       else if startswith(line,'#define set_waptaudit_task_period') and (WaptauditTaskPeriod<>'') then
-          new_iss.AsArray.Add(format('#define waptaudit_task_period "%s"' ,[WaptauditTaskPeriod]))
+          new_iss.AsArray.Add(format('#define set_waptaudit_task_period "%s"' ,[WaptauditTaskPeriod]))
       else if startswith(line,'#define use_fqdn_as_uuid') then
       begin
           if UseFQDNAsUUID then
