@@ -135,7 +135,7 @@ def load_config(cfgfile=DEFAULT_CONFIG_FILE):
         conf['server_uuid'] = server_uuid
 
     if _config.has_option('options', 'wapt_folder'):
-        conf['wapt_folder'] = _config.get('options', 'wapt_folder').rstrip('/')
+        conf['wapt_folder'] = _config.get('options', 'wapt_folder').rstrip('/').rstrip('\\')
 
     if _config.has_option('options', 'wapt_huey_db'):
         conf['wapt_huey_db'] = _config.get('options', 'wapt_huey_db')
@@ -154,7 +154,7 @@ def load_config(cfgfile=DEFAULT_CONFIG_FILE):
 
     # XXX must be processed after conf['wapt_folder']
     if _config.has_option('options', 'waptwua_folder'):
-        conf['waptwua_folder'] = _config.get('options', 'waptwua_folder').rstrip('/')
+        conf['waptwua_folder'] = _config.get('options', 'waptwua_folder').rstrip('/').rstrip('\\')
     if not conf['waptwua_folder']:
         conf['waptwua_folder'] = conf['wapt_folder'] + 'wua'
 

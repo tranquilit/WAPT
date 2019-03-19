@@ -92,10 +92,7 @@ def mkdir(path):
     if not os.path.isdir(path):
         os.makedirs(path)
 
-def make_httpd_config(wapt_folder, waptserver_root_dir, fqdn, use_kerberos,force_https, waptserver_port):
-    if wapt_folder.endswith('\\') or wapt_folder.endswith('/'):
-        wapt_folder = wapt_folder[:-1]
-
+def make_httpd_config(waptserver_root_dir, fqdn, force_https, server_config):
     ssl_dir = os.path.join(waptserver_root_dir, 'ssl')
     scripts_dir = os.path.join(waptserver_root_dir, 'scripts')
     wapt_ssl_key_file = os.path.join(ssl_dir,'key.pem')
@@ -108,9 +105,8 @@ def make_httpd_config(wapt_folder, waptserver_root_dir, fqdn, use_kerberos,force
     krb5_realm = '.'.join(fqdn.split('.')[1:]).upper()
 
     template_vars = {
-        'waptserver_port': waptserver_port,
-        'wapt_repository_path': os.path.dirname(wapt_folder),
-        'apache_root_folder': '/not/used',
+        'waptserver_port': server_config['waptserver_port'],
+        'wapt_repository_path': os.path.dirname(server_config['wapt_folder']),
         'windows': False,
         'debian': type_debian(),
         'redhat': type_redhat(),
@@ -118,12 +114,14 @@ def make_httpd_config(wapt_folder, waptserver_root_dir, fqdn, use_kerberos,force
         'wapt_ssl_key_file': wapt_ssl_key_file,
         'wapt_ssl_cert_file': wapt_ssl_cert_file,
         'fqdn': fqdn,
-        'use_kerberos': use_kerberos,
+        'use_kerberos': server_config.get('use_kerberos',False),
         'KRB5_REALM': krb5_realm,
         'wapt_root_dir': wapt_root_dir,
+        'clients_signing_certificate' : server_config.get('clients_signing_certificate'),
+        'use_ssl_client_auth' : server_config.get('clients_signing_certificate','') <> ''
         }
 
-    if quiet: 
+    if quiet:
         print('[*] Nginx - creating wapt.conf virtualhost')
 
     config_string = template.render(template_vars)
@@ -172,7 +170,7 @@ def make_httpd_config(wapt_folder, waptserver_root_dir, fqdn, use_kerberos,force
 
 def ensure_postgresql_db(db_name='wapt',db_owner='wapt',db_password=''):
     """ create postgresql wapt db and user if it does not exists """
-    
+
     def postgresql_running():
         return [p for p in psutil.process_iter() if p.name().lower() in (PGSQL_SVC)]
 
@@ -273,7 +271,7 @@ def generate_dhparam():
             run('openssl dhparam -out %s  2048' % dh_filename)
     os.chown(dh_filename, 0, NGINX_GID) #pylint: disable=no-member
     os.chmod(dh_filename, 0o640)        #pylint: disable=no-member
-    
+
 def selinux_rules():
     """ SELinux httpd security rules """
     run('setsebool -P httpd_can_network_connect 1')
@@ -283,7 +281,7 @@ def selinux_rules():
         run('restorecon -R -v /var/www/html/%s' %sepath)
 
 def setup_firewall():
-    """ Add permanent rules for firewalld """ 
+    """ Add permanent rules for firewalld """
     if type_redhat():
         output = run('firewall-cmd --list-ports')
         if '443/tcp' in output and '80/tcp' in output:
@@ -385,7 +383,7 @@ def main():
     else:
         print('WAPT silent post-configuration')
 
-    # SELinux rules for CentOS/RedHat 
+    # SELinux rules for CentOS/RedHat
     if type_redhat():
         if re.match('^SELinux status:.*enabled', run('sestatus')):
             if not quiet:
@@ -395,7 +393,7 @@ def main():
             else:
                 print('[*] Redhat/Centos detected, tweaking SELinux rules')
                 selinux_rules()
-                print('[*] Nginx - SELinux correctly configured for Nginx reverse proxy')                
+                print('[*] Nginx - SELinux correctly configured for Nginx reverse proxy')
 
     # Load existing config file
     server_config = waptserver.config.load_config(options.configfile)
@@ -508,7 +506,7 @@ def main():
         try:
             generate_dhparam()
             nginx_cleanup()
-            make_httpd_config(wapt_folder, '/opt/wapt/waptserver', fqdn, server_config['use_kerberos'], options.force_https,server_config['waptserver_port'])
+            make_httpd_config('/opt/wapt/waptserver', fqdn, options.force_https,server_config)
             enable_nginx()
             restart_nginx()
             setup_firewall()
@@ -543,7 +541,7 @@ def main():
                             print('[*] Nginx - Missing dependency libnginx-mod-http-auth-spnego, please install first before configuring kerberos')
                             sys.exit(1)
 
-                make_httpd_config(wapt_folder, '/opt/wapt/waptserver', fqdn, server_config['use_kerberos'], options.force_https,server_config['waptserver_port'])
+                make_httpd_config('/opt/wapt/waptserver', fqdn, options.force_https, server_config)
                 final_msg.append('Please connect to https://' + fqdn + '/ to access the server.')
                 postconf.msgbox("The Nginx config is done. We need to restart Nginx?")
                 run_verbose('systemctl enable nginx')
@@ -561,7 +559,7 @@ def main():
                 'Error while trying to configure Nginx!',
                 traceback.format_exc()
                 ]
-    
+
     final_msg.append('Please connect to https://' + fqdn + '/ to access the server.')
 
     # Check if Mongodb > PostgreSQL migration is necessary
