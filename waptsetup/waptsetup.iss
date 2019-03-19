@@ -44,6 +44,11 @@
 ; if *, append the profiles from command line
 #define append_host_profiles "*"
 
+; period of audit scheduling
+#ifndef set_waptaudit_task_period
+#define set_waptaudit_task_period  ""
+#endif
+
 ;#define signtool "kSign /d $qWAPT Client$q /du $qhttp://www.tranquil-it-systems.fr$q $f"
 
 #ifdef waptenterprise
@@ -53,7 +58,7 @@
   #define set_waptwua_allow_direct_download ""
   #define set_waptwua_install_delay ""
   #define set_waptwua_download_scheduling ""
-  #define set_waptwua_install_at_shutdown ""   
+  #define set_waptwua_install_at_shutdown "" 
 #endif
 
 ; for fast compile in developent mode

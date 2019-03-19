@@ -33,6 +33,8 @@
 ; if not empty, the host will inherit these (comma separated) list of profile packages.
 #define append_host_profiles ""
 
+; leave empty to not set / change audit scheduling
+#define set_waptaudit_task_period ""
 
 ;#define signtool "kSign /d $qWAPT Client$q /du $qhttp://www.tranquil-it-systems.fr$q $f"
 

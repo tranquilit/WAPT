@@ -142,6 +142,10 @@ Filename: {app}\wapt-get.ini; Section: global; Key: hiberboot_enabled; String: {
 Filename: {app}\wapt-get.ini; Section: global; Key: host_profiles; String: {code:GetHostProfiles};
   #endif
 
+  #if set_waptaudit_task_period != ""
+Filename: {app}\wapt-get.ini; Section: global; Key: waptaudit_task_period; String: {code:GetWaptauditTaskPeriod};
+  #endif
+
   ; WaptWUA specific settings
   #ifdef waptwua
     #if set_waptwua_enabled != ""
@@ -627,6 +631,10 @@ begin
   end;
 end;
 
+function GetWaptauditTaskPeriod(param:String):String;
+begin
+  Result :=  := ExpandConstant('{param:waptaudit_task_period|{#set_waptaudit_task_period}}');
+end;
 
 procedure PostClickNext();
 begin
