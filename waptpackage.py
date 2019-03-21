@@ -2203,11 +2203,11 @@ class PackageEntry(BaseObjectClass):
             if hasattr(self,'persistent_dir') and self.persistent_dir:
                 persistent_dir = self.persistent_dir
             elif self.package_uuid and wapt_context:
-                persistent_dir = os.path.join(wapt_context.wapt_base_dir,'private','persistent',self.package_uuid)
+                persistent_dir = os.path.join(wapt_context.persistent_root_dir,self.package_uuid)
 
             setattr(setup,'persistent_dir',persistent_dir)
 
-            # set params dictionary
+            s# set params dictionary
             if not hasattr(setup,'params'):
                 # create a params variable for the setup.install func call
                 setattr(setup,'params',required_params)

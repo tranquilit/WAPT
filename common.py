@@ -2815,6 +2815,7 @@ class Wapt(BaseObjectClass):
             'default_maturity':'',
             'http_proxy':'',
             'public_certs_dir':os.path.join(self.wapt_base_dir,'ssl'),
+            'private_dir': os.path.join(self.wapt_base_dir,'private'),
             'persistent_root_dir':os.path.join(self.wapt_base_dir,'private','persistent'),
 
             # optional...
@@ -2952,10 +2953,15 @@ class Wapt(BaseObjectClass):
         if self.config.has_option('global','default_maturity'):
             self.default_maturity = self.config.get('global','default_maturity')
 
+        if self.config.has_option('global','private_dir'):
+            self.private_dir = self.config.get('global','private_dir').decode('utf8')
+        else:
+            self.private_dir = os.path.join(self.wapt_base_dir,'private')
+
         if self.config.has_option('global','persistent_root_dir'):
             self.persistent_root_dir = self.config.get('global','persistent_root_dir').decode('utf8')
         else:
-            self.persistent_root_dir = os.path.join(self.wapt_base_dir,'private','persistent')
+            self.persistent_root_dir = os.path.join(self.private_dir,'persistent')
 
         # Get the configuration of all repositories (url, ...)
         self.repositories = []
@@ -5318,20 +5324,17 @@ class Wapt(BaseObjectClass):
                 )
 
     def get_host_key_filename(self):
-        # check ACL.
-        private_dir = os.path.join(self.wapt_base_dir,'private')
-        if not os.path.isdir(private_dir):
-            os.makedirs(private_dir)
-
-        return os.path.join(private_dir,self.host_uuid+'.pem')
+        # TODO: check ACL
+        if not os.path.isdir(self.private_dir):
+            os.makedirs(self.private_dir)
+        return os.path.join(self.private_dir,self.host_uuid+'.pem')
 
 
     def get_host_certificate_filename(self):
-        # check ACL.
-        private_dir = os.path.join(self.wapt_base_dir,'private')
-        if not os.path.isdir(private_dir):
-            os.makedirs(private_dir)
-        return os.path.join(private_dir,self.host_uuid+'.crt')
+        # TODO: check ACL.
+        if not os.path.isdir(self.private_dir):
+            os.makedirs(self.private_dir)
+        return os.path.join(self.private_dir,self.host_uuid+'.crt')
 
 
     def get_host_certificate(self):
@@ -5379,11 +5382,6 @@ class Wapt(BaseObjectClass):
 
         """
         key_filename = self.get_host_key_filename()
-        private_dir = os.path.dirname(key_filename)
-        # check ACL ?
-        if not os.path.isdir(private_dir):
-            os.makedirs(private_dir)
-
         crt_filename = self.get_host_certificate_filename()
 
         if force_recreate or not os.path.isfile(crt_filename):
