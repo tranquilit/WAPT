@@ -9,6 +9,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
   ClientHeight = 752
   ClientWidth = 573
   OnCloseQuery = FormCloseQuery
+  OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
   ParentFont = True
@@ -375,7 +376,6 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
     ClientHeight = 248
     ClientWidth = 573
     TabOrder = 1
-    Visible = False
     object CBWUAEnabled: TCheckBox
       Left = 13
       Height = 17

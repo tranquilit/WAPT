@@ -61,6 +61,7 @@ type
     procedure fnPublicCertEditingDone(Sender: TObject);
     procedure fnPublicCertExit(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
+    procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
   private
@@ -139,6 +140,11 @@ begin
       end;
     end;
   end;
+end;
+
+procedure TVisCreateWaptSetup.FormCreate(Sender: TObject);
+begin
+  PanAgentEnterprise.Visible := DMPython.IsEnterpriseEdition;
 end;
 
 procedure TVisCreateWaptSetup.fnPublicCertEditingDone(Sender: TObject);
@@ -282,8 +288,6 @@ begin
 
     if not CBCheckCertificatesValidity.Checked then
       CBCheckCertificatesValidity.Visible := True;
-
-    PanAgentEnterprise.Visible := DMPython.IsEnterpriseEdition;
 
     if not DMPython.IsEnterpriseEdition then
       CBWUAEnabled.State := cbGrayed
