@@ -2048,23 +2048,32 @@ def on_waptclient_connect():
         else:
             logger.info(u'Unauthenticated Socket.IO connection from wapt client sid %s (uuid: %s)' % (request.sid,uuid))
 
-        with wapt_db.atomic() as trans:
-            # stores sid in database
-            hostcount = Hosts.update(
-                server_uuid=get_server_uuid(),
-                listening_timestamp=datetime2isodate(),
-                listening_protocol='websockets',
-                listening_address=request.sid,
-                last_seen_on=datetime2isodate(),
-                reachable='OK',
-            ).where(Hosts.uuid == uuid).execute()
-            session['uuid'] = uuid
+        # background update of db (we have already authenticated with the token)
 
-            # if not known, reject the connection
-            if hostcount == 0:
-                raise EWaptForbiddden('Host is not registered')
+        def update_listening(uuid,sid,server_uuid,listening_timestamp,last_seen_on):
+            with wapt_db.atomic() as trans:
+                # stores sid in database
+                hostcount = Hosts.update(
+                    server_uuid=server_uuid,
+                    listening_protocol='websockets',
+                    listening_address=sid,
+                    listening_timestamp=listening_timestamp,
+                    last_seen_on=last_seen_on
+                ).where(Hosts.uuid == uuid).execute()
+                # if not known, reject the connection
+                #if hostcount == 0:
+                #    raise EWaptForbiddden('Host is not registered')
 
-            return True
+                #return True
+
+        session['uuid'] = uuid
+        socketio.start_background_task(target=update_listening,
+                    uuid=uuid,
+                    sid=request.sid,
+                    server_uuid=get_server_uuid(),
+                    listening_timestamp=datetime2isodate(),
+                    last_seen_on=datetime2isodate()
+                    )
 
     except Exception as e:
         if 'uuid' in session:
