@@ -28,7 +28,7 @@ server {
     ssl_session_cache           none;
     ssl_session_tickets         off;
 
-{% if use_ssl_client_auth %}
+{% if clients_signing_certificate %}
     ssl_client_certificate "{{ clients_signing_certificate }}";
     ssl_verify_client optional;
 {% endif %}
@@ -51,7 +51,7 @@ server {
 
         client_max_body_size 4096m;
         client_body_timeout 1800;
-            
+
         location /static {
             alias "{{ wapt_root_dir}}/waptserver/static";
         }
@@ -67,7 +67,7 @@ server {
             if ($ssl_client_verify != SUCCESS) {
                return 401;
             }
-    {% endif %}                
+    {% endif %}
             root "{{ wapt_repository_path }}";
         }
 

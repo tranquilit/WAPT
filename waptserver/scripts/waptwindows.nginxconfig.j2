@@ -54,7 +54,7 @@ http {
         ssl_session_cache           none;
         ssl_session_tickets         off;
 
-    {% if use_ssl_client_auth %}
+    {% if clients_signing_certificate %}
         ssl_client_certificate "{{ clients_signing_certificate }}";
         ssl_verify_client optional;
     {% endif %}
@@ -92,7 +92,7 @@ http {
                 if ($ssl_client_verify != SUCCESS) {
                    return 401;
                 }
-    {% endif %}                
+    {% endif %}
                 root "{{ wapt_repository_path }}";
             }
 

@@ -219,6 +219,26 @@ def make_nginx_config(wapt_root_dir, wapt_folder, force = False):
         print('Create X509 cert %s' % cert_fn)
         crt.save_as_pem(cert_fn)
 
+    clients_signing_certificate =  conf.get('clients_signing_certificate')
+    clients_signing_key = conf.get('clients_signing_key')
+
+    if not clients_signing_certificate or not clients_signing_key:
+        clients_signing_certificate = os.path.join(wapt_root_dir,'conf','ca-%s.crt' % fqdn())
+        clients_signing_key = os.path.join(wapt_root_dir,'conf','ca-%s.pem' % fqdn())
+
+    if clients_signing_certificate is not None and clients_signing_key is not None and not os.path.isfile(clients_signing_certificate):
+        print('Create a certificate and key for clients certificate signing')
+
+        key = SSLPrivateKey(clients_signing_key)
+        if not os.path.isfile(clients_signing_key):
+            print('Create SSL RSA Key %s' % clients_signing_key)
+            key.create()
+            key.save_as_pem()
+
+            crt = key.build_sign_certificate(cn=fqdn(),is_code_signing=False,is_ca=True)
+            print('Create X509 cert %s' % cert_fn)
+            crt.save_as_pem(clients_signing_certificate)
+
     # write config file
     jinja_env = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.join(wapt_root_dir,'waptserver','scripts')))
     template = jinja_env.get_template('waptwindows.nginxconfig.j2')
@@ -236,7 +256,7 @@ def make_nginx_config(wapt_root_dir, wapt_folder, force = False):
         'nginx_http'  : conf['nginx_http'],
         'nginx_https' : conf['nginx_https'],
         'clients_signing_certificate' : conf.get('clients_signing_certificate'),
-        'use_ssl_client_auth' : conf.get('clients_signing_certificate','') <> ''
+        'use_ssl_client_auth' : conf.get('use_ssl_client_auth',False)
     }
 
     config_string = template.render(template_variables)
