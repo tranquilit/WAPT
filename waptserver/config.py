@@ -83,6 +83,7 @@ _defaults = {
     'clients_signing_key':None,
     'clients_signing_certificate':None,
     'client_certificate_lifetime':3650,
+    'use_ssl_client_auth':False,
     'signature_clockskew':5*60,
     'application_root':'',
     'wapt_admin_group_dn':None,
@@ -165,6 +166,9 @@ def load_config(cfgfile=DEFAULT_CONFIG_FILE):
     for param in ('db_port', 'db_max_connections', 'db_stale_timeout', 'db_connect_timeout', 'max_clients'):
         if _config.has_option('options', param):
             conf[param] = _config.getint('options', param)
+
+    if _config.has_option('options', 'use_ssl_client_auth'):
+        conf['use_ssl_client_auth'] = _config.getboolean('options', 'use_ssl_client_auth')
 
     if _config.has_option('options', 'use_kerberos'):
         conf['use_kerberos'] = _config.getboolean('options', 'use_kerberos')

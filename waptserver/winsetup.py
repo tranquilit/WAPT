@@ -219,26 +219,6 @@ def make_nginx_config(wapt_root_dir, wapt_folder, force = False):
         print('Create X509 cert %s' % cert_fn)
         crt.save_as_pem(cert_fn)
 
-    clients_signing_certificate =  conf.get('clients_signing_certificate')
-    clients_signing_key = conf.get('clients_signing_key')
-
-    if not clients_signing_certificate or not clients_signing_key:
-        clients_signing_certificate = os.path.join(wapt_root_dir,'conf','ca-%s.crt' % fqdn())
-        clients_signing_key = os.path.join(wapt_root_dir,'conf','ca-%s.pem' % fqdn())
-
-    if clients_signing_certificate is not None and clients_signing_key is not None and not os.path.isfile(clients_signing_certificate):
-        print('Create a certificate and key for clients certificate signing')
-
-        key = SSLPrivateKey(clients_signing_key)
-        if not os.path.isfile(clients_signing_key):
-            print('Create SSL RSA Key %s' % clients_signing_key)
-            key.create()
-            key.save_as_pem()
-
-            crt = key.build_sign_certificate(cn=fqdn(),is_code_signing=False,is_ca=True)
-            print('Create X509 cert %s' % cert_fn)
-            crt.save_as_pem(clients_signing_certificate)
-
     # write config file
     jinja_env = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.join(wapt_root_dir,'waptserver','scripts')))
     template = jinja_env.get_template('waptwindows.nginxconfig.j2')
@@ -447,6 +427,30 @@ def install_waptserver_service(options,conf=None):
     if options.setpassword:
         conf['wapt_password'] = pbkdf2_sha256.hash(base64.b64decode(options.setpassword).encode('utf8'))
         waptserver.config.write_config_file(options.configfile,conf)
+
+    clients_signing_certificate =  conf.get('clients_signing_certificate')
+    clients_signing_key = conf.get('clients_signing_key')
+
+    if not clients_signing_certificate or not clients_signing_key:
+        clients_signing_certificate = os.path.join(wapt_root_dir,'conf','ca-%s.crt' % fqdn())
+        clients_signing_key = os.path.join(wapt_root_dir,'conf','ca-%s.pem' % fqdn())
+
+        conf['clients_signing_certificate'] = clients_signing_certificate
+        conf['clients_signing_key'] = clients_signing_key
+        waptserver.config.write_config_file(options.configfile,conf)
+
+    if clients_signing_certificate is not None and clients_signing_key is not None and not os.path.isfile(clients_signing_certificate):
+        print('Create a certificate and key for clients certificate signing')
+
+        key = SSLPrivateKey(clients_signing_key)
+        if not os.path.isfile(clients_signing_key):
+            print('Create SSL RSA Key %s' % clients_signing_key)
+            key.create()
+            key.save_as_pem()
+
+            crt = key.build_sign_certificate(cn=fqdn(),is_code_signing=False,is_ca=True)
+            print('Create X509 cert %s' % cert_fn)
+            crt.save_as_pem(clients_signing_certificate)
 
     # ensure Packages index
     repo = WaptLocalRepo(conf['wapt_folder'])
