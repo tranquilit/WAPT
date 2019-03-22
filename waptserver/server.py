@@ -571,21 +571,13 @@ def get_websocket_auth_token():
             'authorization_token': token_gen.dumps({'uuid':uuid,'server_uuid':get_server_uuid()}),
             }
 
-        def update_listening(uuid,server_uuid,listening_timestamp,last_seen_on):
-            with wapt_db.atomic() as trans:
-                # stores sid in database
-                Hosts.update(
-                    server_uuid=server_uuid,
-                    listening_timestamp=listening_timestamp,
-                    last_seen_on=last_seen_on
-                ).where(Hosts.uuid == uuid).execute()
-
-        socketio.start_background_task(target=update_listening,
-                    uuid=uuid,
-                    server_uuid=get_server_uuid(),
-                    listening_timestamp=datetime2isodate(),
-                    last_seen_on=datetime2isodate()
-                    )
+        with wapt_db.atomic() as trans:
+            # stores sid in database
+            Hosts.update(
+                server_uuid=get_server_uuid(),
+                listening_timestamp=datetime2isodate(),
+                last_seen_on=datetime2isodate()
+            ).where(Hosts.uuid == uuid).execute()
 
         message = 'Authorization token'
         return make_response(result=result, msg=message, request_time=time.time() - starttime)
@@ -2049,31 +2041,21 @@ def on_waptclient_connect():
             logger.info(u'Unauthenticated Socket.IO connection from wapt client sid %s (uuid: %s)' % (request.sid,uuid))
 
         # background update of db (we have already authenticated with the token)
-
-        def update_listening(uuid,sid,server_uuid,listening_timestamp,last_seen_on):
-            with wapt_db.atomic() as trans:
-                # stores sid in database
-                hostcount = Hosts.update(
-                    server_uuid=server_uuid,
-                    listening_protocol='websockets',
-                    listening_address=sid,
-                    listening_timestamp=listening_timestamp,
-                    last_seen_on=last_seen_on
-                ).where(Hosts.uuid == uuid).execute()
-                # if not known, reject the connection
-                #if hostcount == 0:
-                #    raise EWaptForbiddden('Host is not registered')
-
-                #return True
+        with wapt_db.atomic() as trans:
+            # stores sid in database
+            hostcount = Hosts.update(
+                server_uuid=get_server_uuid(),
+                listening_protocol='websockets',
+                listening_address=request.sid,
+                listening_timestamp=datetime2isodate(),
+                last_seen_on=datetime2isodate()
+            ).where(Hosts.uuid == uuid).execute()
+            # if not known, reject the connection
+            if hostcount == 0:
+                raise EWaptForbiddden('Host is not registered')
 
         session['uuid'] = uuid
-        socketio.start_background_task(target=update_listening,
-                    uuid=uuid,
-                    sid=request.sid,
-                    server_uuid=get_server_uuid(),
-                    listening_timestamp=datetime2isodate(),
-                    last_seen_on=datetime2isodate()
-                    )
+        return True
 
     except Exception as e:
         if 'uuid' in session:
