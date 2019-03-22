@@ -2207,7 +2207,7 @@ class PackageEntry(BaseObjectClass):
 
             setattr(setup,'persistent_dir',persistent_dir)
 
-            s# set params dictionary
+            # set params dictionary
             if not hasattr(setup,'params'):
                 # create a params variable for the setup.install func call
                 setattr(setup,'params',required_params)
