@@ -118,7 +118,7 @@ def make_httpd_config(waptserver_root_dir, fqdn, force_https, server_config):
         'KRB5_REALM': krb5_realm,
         'wapt_root_dir': wapt_root_dir,
         'clients_signing_certificate' : server_config.get('clients_signing_certificate'),
-        'use_ssl_client_auth' : server_config.get('clients_signing_certificate','') <> ''
+        'use_ssl_client_auth' : server_config.get('use_ssl_client_auth',False)
         }
 
     if quiet:
@@ -478,6 +478,29 @@ def main():
         print('[*] Set default registration method to : Allow anyone to register + Kerberos disabled')
         server_config['allow_unauthenticated_registration'] = True
         server_config['use_kerberos'] = False
+
+    clients_signing_certificate =  server_config.get('clients_signing_certificate')
+    clients_signing_key = server_config.get('clients_signing_key')
+
+    if not clients_signing_certificate or not clients_signing_key:
+        clients_signing_certificate = os.path.join(wapt_root_dir,'conf','ca-%s.crt' % fqdn())
+        clients_signing_key = os.path.join(wapt_root_dir,'conf','ca-%s.pem' % fqdn())
+
+        server_config['clients_signing_certificate'] = clients_signing_certificate
+        server_config['clients_signing_key'] = clients_signing_key
+
+    if clients_signing_certificate is not None and clients_signing_key is not None and not os.path.isfile(clients_signing_certificate):
+        print('Create a certificate and key for clients certificate signing')
+
+        key = SSLPrivateKey(clients_signing_key)
+        if not os.path.isfile(clients_signing_key):
+            print('Create SSL RSA Key %s' % clients_signing_key)
+            key.create()
+            key.save_as_pem()
+
+        crt = key.build_sign_certificate(cn=fqdn(),is_code_signing=False,is_ca=True)
+        print('Create X509 cert %s' % clients_signing_certificate)
+        crt.save_as_pem(clients_signing_certificate)
 
     waptserver.config.write_config_file(cfgfile=options.configfile,server_config=server_config,non_default_values_only=True)
 

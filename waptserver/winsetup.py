@@ -448,9 +448,9 @@ def install_waptserver_service(options,conf=None):
             key.create()
             key.save_as_pem()
 
-            crt = key.build_sign_certificate(cn=fqdn(),is_code_signing=False,is_ca=True)
-            print('Create X509 cert %s' % cert_fn)
-            crt.save_as_pem(clients_signing_certificate)
+        crt = key.build_sign_certificate(cn=fqdn(),is_code_signing=False,is_ca=True)
+        print('Create X509 cert %s' % clients_signing_certificate)
+        crt.save_as_pem(clients_signing_certificate)
 
     # ensure Packages index
     repo = WaptLocalRepo(conf['wapt_folder'])
