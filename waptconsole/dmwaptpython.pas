@@ -515,11 +515,12 @@ begin
       st.Append('logging.basicConfig(level=logging.WARNING)');
       st.Append('import common');
       st.Append('import waptconsole');
+      st.Append('import setuphelpers');
       st.Append('common.default_pwd_callback = waptconsole.GetPrivateKeyPassword');
       st.Append(format('WAPT = common.Wapt(config_filename=r"%s".decode(''utf8''),disable_update_server_status=True)',[WaptConfigFileName]));
       st.Append('WAPT.dbpath=r":memory:"');
       st.Append('WAPT.use_hostpackages = False');
-      st.Append('WAPT.private_dir = os.path.join(setuphelpers.user_appdata(),''wapt'',''private'')');
+      st.Append('WAPT.private_dir = setuphelpers.makepath(setuphelpers.user_appdata(),''wapt'',''private'')');
 
       // declare WaptConsole feedback module
       st.Append('WAPT.progress_hook = waptconsole.UpdateProgress');
