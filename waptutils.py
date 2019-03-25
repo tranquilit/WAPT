@@ -710,7 +710,7 @@ class SSLAdapter(HTTPAdapter):
         self._keyfile = keyfile
         self._password_callback = password_callback
         self._password = password
-        return super(self.__class__, self).__init__(*args, **kwargs)
+        super(self.__class__, self).__init__(*args, **kwargs)
 
     def init_poolmanager(self, *args, **kwargs):
         self._add_ssl_context(kwargs)
