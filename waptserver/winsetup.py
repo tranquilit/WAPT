@@ -235,7 +235,7 @@ def make_nginx_config(wapt_root_dir, wapt_folder, force = False):
         'wapt_root_dir' : wapt_root_dir.replace('\\','/'),
         'nginx_http'  : conf['nginx_http'],
         'nginx_https' : conf['nginx_https'],
-        'clients_signing_certificate' : conf.get('clients_signing_certificate').replace('\\','/'),
+        'clients_signing_certificate' : conf.get('clients_signing_certificate') and conf.get('clients_signing_certificate').replace('\\','/'),
         'use_ssl_client_auth' : conf.get('use_ssl_client_auth',False)
     }
 
