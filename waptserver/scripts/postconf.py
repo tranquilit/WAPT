@@ -503,7 +503,7 @@ def main():
             key.create()
             key.save_as_pem()
 
-        crt = key.build_sign_certificate(cn=fqdn(),is_code_signing=False,is_ca=True)
+        crt = key.build_sign_certificate(cn=fqdn,is_code_signing=False,is_ca=True)
         print('Create X509 cert %s' % clients_signing_certificate)
         crt.save_as_pem(clients_signing_certificate)
 
