@@ -167,6 +167,8 @@ type
   { TWaptRepo }
   TWaptRepo = class(TPersistent)
   private
+    FClientCertificatePath: String;
+    FClientPrivateKeyPath: String;
     FDNSDomain: String;
     FHttpProxy: String;
     FIsUpdated: Boolean;
@@ -177,6 +179,8 @@ type
     FSignersCABundle: String;
     FTimeOut: Double;
     function GetRepoURL: String;
+    procedure SetClientCertificatePath(AValue: String);
+    procedure SetClientPrivateKeyPath(AValue: String);
     procedure SetDNSDomain(AValue: String);
     procedure SetHttpProxy(AValue: String);
     procedure SetIsUpdated(AValue: Boolean);
@@ -191,6 +195,7 @@ type
     procedure LoadFromInifile(IniFilename:String;Section:String;Reset:Boolean=True);
     procedure SaveToInifile(IniFilename:String;Section:String);
     property Packages:ISuperObject read FPackages write SetPackages;
+
   published
     property IsUpdated:Boolean read FIsUpdated write SetIsUpdated;
     property Name:String read FName write SetName;
@@ -198,6 +203,8 @@ type
     property DNSDomain:String read FDNSDomain write SetDNSDomain;
     property SignersCABundle:String read FSignersCABundle write SetSignersCABundle;
     property ServerCABundle:String read FServerCABundle write SetServerCABundle;
+    property ClientCertificatePath:String read FClientCertificatePath write SetClientCertificatePath;
+    property ClientPrivateKeyPath:String read FClientPrivateKeyPath write SetClientPrivateKeyPath;
     property HttpProxy:String read FHttpProxy write SetHttpProxy;
     property TimeOut:Double read FTimeOut write SetTimeOut;
   end;
@@ -397,6 +404,20 @@ begin
   Result := FRepoURL;
 end;
 
+procedure TWaptRepo.SetClientCertificatePath(AValue: String);
+begin
+  if FClientCertificatePath=AValue then Exit;
+  FClientCertificatePath:=AValue;
+  FIsUpdated:=True;
+end;
+
+procedure TWaptRepo.SetClientPrivateKeyPath(AValue: String);
+begin
+  if FClientPrivateKeyPath=AValue then Exit;
+  FClientPrivateKeyPath:=AValue;
+  FIsUpdated:=True;
+end;
+
 procedure TWaptRepo.SetName(AValue: String);
 begin
   if FName=AValue then Exit;
@@ -432,7 +453,7 @@ end;
     FIsUpdated:=True;
   end;
 
-procedure TWaptRepo.SetTimeOut(AValue: DOuble);
+procedure TWaptRepo.SetTimeOut(AValue: Double);
 begin
   if FTimeOut=AValue then Exit;
   FTimeOut:=AValue;
@@ -472,6 +493,8 @@ end;
           ServerCABundle:=ReadString(Section,'verify_cert',ReadString('global','verify_cert',ServerCABundle));
           SignersCABundle:=ReadString(Section,'public_certs_dir',ReadString('global','public_certs_dir',SignersCABundle));
           TimeOut:=ReadFloat(Section,'timeout',ReadFloat('global','timeout',TimeOut));
+          ClientCertificatePath :=ReadString(Section,'client_certificate',ReadString('global','client_certificate',ClientCertificatePath));
+          ClientPrivateKeyPath :=ReadString(Section,'client_private_key',ReadString('global','client_private_key',ClientPrivateKeyPath));
           FIsUpdated:=False;
         end;
       finally
@@ -494,6 +517,8 @@ end;
       WriteString(Section,'http_proxy',HttpProxy);
       WriteString(Section,'verify_cert',ServerCABundle);
       WriteString(Section,'public_certs_dir',SignersCABundle);
+      WriteString(Section,'client_certificate',ClientCertificatePath);
+      WriteString(Section,'client_private_key',ClientPrivateKeyPath);
       WriteFloat(Section,'timeout',TimeOut);
       FIsUpdated:=False;
     finally

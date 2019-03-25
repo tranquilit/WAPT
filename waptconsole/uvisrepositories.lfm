@@ -1,13 +1,13 @@
 object VisRepositories: TVisRepositories
   Left = 507
-  Height = 226
+  Height = 321
   Top = 284
   Width = 751
   AutoSize = True
   BorderStyle = bsDialog
   Caption = 'Repositories settings'
   ChildSizing.Layout = cclLeftToRightThenTopToBottom
-  ClientHeight = 226
+  ClientHeight = 321
   ClientWidth = 751
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
@@ -200,7 +200,7 @@ object VisRepositories: TVisRepositories
   end
   object PanAdvanced: TPanel
     Left = 0
-    Height = 84
+    Height = 148
     Top = 108
     Width = 734
     AutoSize = True
@@ -212,7 +212,7 @@ object VisRepositories: TVisRepositories
     ChildSizing.VerticalSpacing = 6
     ChildSizing.Layout = cclLeftToRightThenTopToBottom
     ChildSizing.ControlsPerLine = 3
-    ClientHeight = 84
+    ClientHeight = 148
     ClientWidth = 734
     TabOrder = 1
     object Label6: TLabel
@@ -356,11 +356,133 @@ object VisRepositories: TVisRepositories
         TabOrder = 1
       end
     end
+    object labClientCertificatePath: TLabel
+      Left = 6
+      Height = 26
+      Top = 87
+      Width = 140
+      Alignment = taRightJustify
+      Caption = 'Client auth certificate path'
+      Layout = tlCenter
+      ParentColor = False
+    end
+    object EdClientCertificatePath: TTIEdit
+      Left = 152
+      Height = 26
+      Hint = 'If remote repository is using Client side SSL Authentication'
+      Top = 87
+      Width = 150
+      AutoSize = False
+      Constraints.MinWidth = 150
+      Link.TIPropertyName = 'ClientCertificatePath'
+      TabOrder = 7
+    end
+    object panCertActions1: TPanel
+      Left = 308
+      Height = 26
+      Top = 87
+      Width = 420
+      AutoSize = True
+      BevelOuter = bvNone
+      ChildSizing.HorizontalSpacing = 4
+      ClientHeight = 26
+      ClientWidth = 420
+      TabOrder = 8
+      object BitBtn4: TBitBtn
+        Left = 0
+        Height = 26
+        Top = 0
+        Width = 126
+        Action = ActSelectClientCertificate
+        Align = alLeft
+        AutoSize = True
+        TabOrder = 0
+      end
+    end
+    object labCertsDir2: TLabel
+      Left = 6
+      Height = 26
+      Top = 119
+      Width = 140
+      Alignment = taRightJustify
+      Caption = 'Client auth key path'
+      Layout = tlCenter
+      ParentColor = False
+    end
+    object EdClientPrivateKeyPath: TTIEdit
+      Left = 152
+      Height = 26
+      Hint = 'If remote repository is using Client side SSL Authentication'
+      Top = 119
+      Width = 150
+      AutoSize = False
+      Constraints.MinWidth = 150
+      Link.TIPropertyName = 'ClientPrivateKeyPath'
+      TabOrder = 9
+    end
+    object panCertActions2: TPanel
+      Left = 308
+      Height = 26
+      Top = 119
+      Width = 420
+      AutoSize = True
+      BevelOuter = bvNone
+      ChildSizing.HorizontalSpacing = 4
+      ClientHeight = 26
+      ClientWidth = 420
+      TabOrder = 10
+      object BitBtn5: TBitBtn
+        Left = 0
+        Height = 26
+        Top = 0
+        Width = 132
+        Action = ActSelectClientPrivateKey
+        Align = alLeft
+        AutoSize = True
+        Glyph.Data = {
+          36040000424D3604000000000000360000002800000010000000100000000100
+          2000000000000004000064000000640000000000000000000000FFFFFF00FFFF
+          FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+          FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00000000000000
+          27000000590000005E0000006000000060000000600000006000000058000000
+          5F0000005100000060000047ACEF0044A2D60317749000005D0000001D000000
+          5F0000005E0000005E0000006000000060000000600000006000000055000000
+          6100001B78970051B1E400D3FFFF0CCFFFFF11338ABC0000560000005C000000
+          5B0000005D0000005E0000005A00000059000000590000005600000562000048
+          A3DE00CCFFFF03CBFDFF1CE8FEFF2DA1DBFF0809650000005600000057000000
+          5B000000580000005800002883A000338EC2003F99CA0069BBF100B6F2FF00C2
+          FBFF0DDDF9FF29E2FAFF2A78B8EF0B0A64000000590000005800000057000000
+          560000227A990084C9F900C6FEFF00CEFFFF00E6FFFF20BAD0FF1CA9C2FF11E2
+          F9FF2DC4EBFF1C3C8EBB0100560000005A0000005B0000004F00000053000228
+          80A403BFF5FF00D5FFFF00D5FFFF00E8FFFF00E5FCFF3E91A8FFB77672FF5F96
+          B2FE0D1056800000440000005D000000620000005E0000000600062B83AE0AB7
+          F1FF03DBFFFF02E5FFFF00EEFFFF02FBFFFF1BEEF9FF32CCDEFFC9D1DCFFE29B
+          82FF9D1E00BA01000000000013000000330000004D00000000000A3D91CC12D7
+          FFFF08A1DBF4247FBEE618F2FDFF2CFFFFFF61FFFFFF66F0FAFFB7A9A7FFFFAB
+          77FFFF5D12FF7116009600000000000000000000010000000000000055001768
+          B3E20C59ABDC0600609A47D9F4FF73FFFFFF9BFFFFFF6BD2F0FF563753BBF3BA
+          9DF6FFBC88FFF66E30FF3A0A0300000000000000000000000000000057000202
+          5D00217AC4FF41C8EDFF7CFFFFFF95FBFFFF74C0DFFF13246B9E27001200B133
+          2400FDE6C9FFFFC890FFD77144EE120000000000000000000000000057000000
+          560007126F0056B5E2FF5895C2F72A4180B608074F00000045002D0017008D00
+          0000C36451BAFFF3D1FFFFD298FFA45B40C6000000000000000000005B000000
+          5800000059000502590000004C00000045000000490000004B002D0017008E00
+          00008A000000DE9A80E8FFEDC5FFFFC98EFF663123890000000000003D000000
+          5A0000005B00000054000000540000004E0000004B0000004B00300018008E00
+          00008600000097110A00F3C8A8FFFFE4B4FFF2AE7AFE3D181000000000000000
+          510000005B00000056000000540000004E0000004E0000004C00400005009000
+          00008700000085000000AC352687FBD8AEFFFBAC58FF8F3918C5000000000000
+          090000005B00000056000000540000004E0000003100000018000A0000007800
+          0000870000008700000088000000B9431CCC8F360AC817020000
+        }
+        TabOrder = 0
+      end
+    end
   end
   object PanBottom: TPanel
     Left = 0
     Height = 26
-    Top = 192
+    Top = 256
     Width = 734
     AutoSize = True
     BevelOuter = bvNone
@@ -447,6 +569,7 @@ object VisRepositories: TVisRepositories
     object ActSelectCertDir: TAction
       Caption = 'Select bundle path'
       ImageIndex = 3
+      OnExecute = ActSelectCertDirExecute
     end
     object ActGetServerCertificate: TAction
       Caption = 'Get Server certificates chain'
@@ -474,6 +597,15 @@ object VisRepositories: TVisRepositories
       Caption = 'OK'
       OnExecute = ActSaveSettingsExecute
       ShortCut = 16467
+    end
+    object ActSelectClientCertificate: TAction
+      Caption = 'Select certificate'
+      ImageIndex = 3
+      OnExecute = ActSelectClientCertificateExecute
+    end
+    object ActSelectClientPrivateKey: TAction
+      Caption = 'Select private key'
+      OnExecute = ActSelectClientPrivateKeyExecute
     end
   end
   object ImageList1: TImageList
@@ -613,11 +745,33 @@ object VisRepositories: TVisRepositories
   end
   object DlgOpenCrt: TOpenDialog
     Title = 'Select CA Bundle'
-    FileName = 'C:\private\acatl.crt'
     Filter = 'Certificates bundles|*.crt;*.pem|All files|*.*'
     InitialDir = 'C:\private\'
     Options = [ofExtensionDifferent, ofEnableSizing, ofViewDetail]
     left = 659
     top = 151
+  end
+  object DlgSelectPackagesCertsBundlePath: TSelectDirectoryDialog
+    Title = 'Select directory of Authorized packages certificates'
+    InitialDir = 'C:\tranquilit\'
+    Options = [ofFileMustExist, ofEnableSizing, ofViewDetail]
+    left = 552
+    top = 64
+  end
+  object DlgSelectClientCertificate: TOpenDialog
+    Title = 'Select client auth certificate file'
+    Filter = 'X509 Certificate|*.crt|All files|*.*'
+    InitialDir = 'C:\private\'
+    Options = [ofExtensionDifferent, ofEnableSizing, ofViewDetail]
+    left = 568
+    top = 208
+  end
+  object DlgSelectClientPrivateKey: TOpenDialog
+    Title = 'Select client auth private key file'
+    Filter = 'RSA Private key|*.pem|All files|*.*'
+    InitialDir = 'C:\private\'
+    Options = [ofExtensionDifferent, ofEnableSizing, ofViewDetail]
+    left = 704
+    top = 208
   end
 end

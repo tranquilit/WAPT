@@ -1350,6 +1350,14 @@ msgstr ""
 msgid "Select bundle path"
 msgstr ""
 
+#: tvisrepositories.actselectclientcertificate.caption
+msgid "Select certificate"
+msgstr ""
+
+#: tvisrepositories.actselectclientprivatekey.caption
+msgid "Select private key"
+msgstr ""
+
 #: tvisrepositories.actselecthttpsbundle.caption
 msgctxt "tvisrepositories.actselecthttpsbundle.caption"
 msgid "Select CA Bundle"
@@ -1380,6 +1388,28 @@ msgstr ""
 #: tvisrepositories.dlgopencrt.title
 msgctxt "tvisrepositories.dlgopencrt.title"
 msgid "Select CA Bundle"
+msgstr ""
+
+#: tvisrepositories.dlgselectclientcertificate.title
+msgid "Select client auth certificate file"
+msgstr ""
+
+#: tvisrepositories.dlgselectclientprivatekey.title
+msgid "Select client auth private key file"
+msgstr ""
+
+#: tvisrepositories.dlgselectpackagescertsbundlepath.title
+msgid "Select directory of Authorized packages certificates"
+msgstr ""
+
+#: tvisrepositories.edclientcertificatepath.hint
+msgctxt "tvisrepositories.edclientcertificatepath.hint"
+msgid "If remote repository is using Client side SSL Authentication"
+msgstr ""
+
+#: tvisrepositories.edclientprivatekeypath.hint
+msgctxt "tvisrepositories.edclientprivatekeypath.hint"
+msgid "If remote repository is using Client side SSL Authentication"
 msgstr ""
 
 #: tvisrepositories.edhttpproxy.hint
@@ -1422,6 +1452,14 @@ msgstr ""
 #: tvisrepositories.labcertsdir.caption
 msgctxt "tvisrepositories.labcertsdir.caption"
 msgid "Authorized external keys dir"
+msgstr ""
+
+#: tvisrepositories.labcertsdir2.caption
+msgid "Client auth key path"
+msgstr ""
+
+#: tvisrepositories.labclientcertificatepath.caption
+msgid "Client auth certificate path"
 msgstr ""
 
 #: tvisrepositories.label6.caption

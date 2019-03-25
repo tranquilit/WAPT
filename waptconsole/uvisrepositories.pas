@@ -17,6 +17,8 @@ type
     ActDownloadCertificate: TAction;
     ActGetServerCertificate: TAction;
     ActCertifiCACert: TAction;
+    ActSelectClientPrivateKey: TAction;
+    ActSelectClientCertificate: TAction;
     ActSaveSettings: TAction;
     ActUnregisterRepo: TAction;
     ActRegisterRepo: TAction;
@@ -27,6 +29,8 @@ type
     BitBtn1: TBitBtn;
     BitBtn2: TBitBtn;
     BitBtn3: TBitBtn;
+    BitBtn4: TBitBtn;
+    BitBtn5: TBitBtn;
     butBrowseCerts: TButton;
     ButDefaultWaptBundle: TButton;
     ButExploreDir: TButton;
@@ -37,12 +41,18 @@ type
     cbCheckHTTPS: TCheckBox;
     cbAdvanced2: TCheckBox;
     CBCheckSignature: TCheckBox;
+    DlgSelectClientCertificate: TOpenDialog;
+    DlgSelectClientPrivateKey: TOpenDialog;
     EdHttpProxy: TTIEdit;
     EdName: TTIComboBox;
     EdServerCABundle: TTIEdit;
     EdSignersCABundle: TTIEdit;
+    EdClientCertificatePath: TTIEdit;
+    EdClientPrivateKeyPath: TTIEdit;
     ImageList1: TImageList;
     labCertsDir: TLabel;
+    labClientCertificatePath: TLabel;
+    labCertsDir2: TLabel;
     Label6: TLabel;
     labRepoURL: TLabel;
     labProxy: TLabel;
@@ -52,6 +62,8 @@ type
     PanAdvanced: TPanel;
     panCertActions: TPanel;
     PanBottom: TPanel;
+    panCertActions1: TPanel;
+    panCertActions2: TPanel;
     Panel2: TPanel;
     panDir: TPanel;
     panHttps1: TPanel;
@@ -63,6 +75,7 @@ type
     panServerCAAction: TPanel;
     panURLActions: TPanel;
     EdRepoURL: TTIEdit;
+    DlgSelectPackagesCertsBundlePath: TSelectDirectoryDialog;
     procedure ActCertifiCACertExecute(Sender: TObject);
     procedure ActDownloadCertificateExecute(Sender: TObject);
     procedure ActDownloadCertificateUpdate(Sender: TObject);
@@ -72,6 +85,9 @@ type
     procedure ActRegisterRepoUpdate(Sender: TObject);
     procedure ActSaveSettingsExecute(Sender: TObject);
     procedure ActSaveSettingsUpdate(Sender: TObject);
+    procedure ActSelectCertDirExecute(Sender: TObject);
+    procedure ActSelectClientCertificateExecute(Sender: TObject);
+    procedure ActSelectClientPrivateKeyExecute(Sender: TObject);
     procedure ActSelectHttpsBundleExecute(Sender: TObject);
     procedure ActUnregisterRepoExecute(Sender: TObject);
     procedure ActUnregisterRepoUpdate(Sender: TObject);
@@ -134,6 +150,9 @@ begin
   EdHttpProxy.Link.TIObject := FWaptRepo;
   EdServerCABundle.Link.TIObject := FWaptRepo;
   EdSignersCABundle.Link.TIObject := FWaptRepo;
+  EdClientCertificatePath.Link.TIObject := FWaptRepo;
+  EdClientPrivateKeyPath.Link.TIObject := FWaptRepo;
+
 
 end;
 
@@ -241,6 +260,28 @@ end;
 procedure TVisRepositories.ActSaveSettingsUpdate(Sender: TObject);
 begin
   ActSaveSettings.Enabled := (WaptRepo.Name<>'') and WaptRepo.IsUpdated;
+end;
+
+procedure TVisRepositories.ActSelectCertDirExecute(Sender: TObject);
+begin
+  DlgSelectPackagesCertsBundlePath.InitialDir:=WaptRepo.SignersCABundle;
+  if DlgSelectPackagesCertsBundlePath.Execute then
+    WaptRepo.SignersCABundle := DlgSelectPackagesCertsBundlePath.FileName;
+
+end;
+
+procedure TVisRepositories.ActSelectClientCertificateExecute(Sender: TObject);
+begin
+  DlgSelectClientCertificate.InitialDir:=ExtractFileDir(WaptRepo.ClientCertificatePath);
+  if DlgSelectClientCertificate.Execute then
+    WaptRepo.ClientCertificatePath:= DlgSelectClientCertificate.FileName;
+end;
+
+procedure TVisRepositories.ActSelectClientPrivateKeyExecute(Sender: TObject);
+begin
+  DlgSelectClientPrivateKey.InitialDir:=ExtractFileDir(WaptRepo.ClientCertificatePath);
+  if DlgSelectClientPrivateKey.Execute then
+    WaptRepo.ClientPrivateKeyPath := DlgSelectClientPrivateKey.FileName;
 end;
 
 procedure TVisRepositories.ActSelectHttpsBundleExecute(Sender: TObject);

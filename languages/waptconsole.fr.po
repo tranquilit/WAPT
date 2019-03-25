@@ -1357,6 +1357,14 @@ msgstr "OK"
 msgid "Select bundle path"
 msgstr "Sélectionner le fichier de certificat"
 
+#: tvisrepositories.actselectclientcertificate.caption
+msgid "Select certificate"
+msgstr "Choisir un certificat"
+
+#: tvisrepositories.actselectclientprivatekey.caption
+msgid "Select private key"
+msgstr "Choisir une clé privée"
+
 #: tvisrepositories.actselecthttpsbundle.caption
 msgctxt "tvisrepositories.actselecthttpsbundle.caption"
 msgid "Select CA Bundle"
@@ -1388,6 +1396,28 @@ msgstr "Vérifier la signature de paquet"
 msgctxt "tvisrepositories.dlgopencrt.title"
 msgid "Select CA Bundle"
 msgstr "Sélectionner le groupe de certificat CA"
+
+#: tvisrepositories.dlgselectclientcertificate.title
+msgid "Select client auth certificate file"
+msgstr "Sélectionner un certificat pour l'authentification ssl cliente"
+
+#: tvisrepositories.dlgselectclientprivatekey.title
+msgid "Select client auth private key file"
+msgstr "Sélectionner une clé privée pour l'authentification ssl cliente"
+
+#: tvisrepositories.dlgselectpackagescertsbundlepath.title
+msgid "Select directory of Authorized packages certificates"
+msgstr "Sélectionner le répertoire des certificats autorisés pour les paquets "
+
+#: tvisrepositories.edclientcertificatepath.hint
+msgctxt "tvisrepositories.edclientcertificatepath.hint"
+msgid "If remote repository is using Client side SSL Authentication"
+msgstr "Si le dépôt distant utilise l'authentification SSL des clients"
+
+#: tvisrepositories.edclientprivatekeypath.hint
+msgctxt "tvisrepositories.edclientprivatekeypath.hint"
+msgid "If remote repository is using Client side SSL Authentication"
+msgstr "Si le dépôt distant utilise l'authentification SSL des clients"
 
 #: tvisrepositories.edhttpproxy.hint
 msgctxt "tvisrepositories.edhttpproxy.hint"
@@ -1430,6 +1460,14 @@ msgstr "Lors de l'import de paquets, vérifier la signature en utilisant les cer
 msgctxt "tvisrepositories.labcertsdir.caption"
 msgid "Authorized external keys dir"
 msgstr "Certificats externes autorisés"
+
+#: tvisrepositories.labcertsdir2.caption
+msgid "Client auth key path"
+msgstr "Chemin clé SSL client"
+
+#: tvisrepositories.labclientcertificatepath.caption
+msgid "Client auth certificate path"
+msgstr "Chemin certificat SSL client"
 
 #: tvisrepositories.label6.caption
 msgctxt "tvisrepositories.label6.caption"
