@@ -60,6 +60,7 @@ from waptpackage import WaptLocalRepo
 import waptserver.config
 from waptserver.config import type_debian,type_redhat
 from waptserver.model import init_db,upgrade_db_structure,load_db_config
+from waptcrypto import SSLCertificate,SSLPrivateKey
 
 def run(*args, **kwargs):
     return subprocess.check_output(*args, shell=True, **kwargs)
@@ -479,12 +480,16 @@ def main():
         server_config['allow_unauthenticated_registration'] = True
         server_config['use_kerberos'] = False
 
+
+    # Guess fqdn using socket
+    fqdn = guess_fqdn()
+
     clients_signing_certificate =  server_config.get('clients_signing_certificate')
     clients_signing_key = server_config.get('clients_signing_key')
 
     if not clients_signing_certificate or not clients_signing_key:
-        clients_signing_certificate = os.path.join(wapt_root_dir,'conf','ca-%s.crt' % fqdn())
-        clients_signing_key = os.path.join(wapt_root_dir,'conf','ca-%s.pem' % fqdn())
+        clients_signing_certificate = os.path.join(wapt_root_dir,'conf','ca-%s.crt' % fqdn)
+        clients_signing_key = os.path.join(wapt_root_dir,'conf','ca-%s.pem' % fqdn)
 
         server_config['clients_signing_certificate'] = clients_signing_certificate
         server_config['clients_signing_key'] = clients_signing_key
@@ -520,9 +525,6 @@ def main():
 
     # In this new version Apache is replaced with Nginx? Proceed to disable Apache. After migration one can remove Apache install altogether
     stop_disable_httpd()
-
-    # Guess fqdn using socket
-    fqdn = guess_fqdn()
 
     # Nginx configuration
     if quiet:
