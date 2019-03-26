@@ -20,6 +20,7 @@ type
     CBCodeSigning: TCheckBox;
     CBIsCA: TCheckBox;
     CBIsClientAuth: TCheckBox;
+    CBExportPKCS12: TCheckBox;
     DirectoryCert: TDirectoryEdit;
     EdCACertificate: TFileNameEdit;
     EdCAKeyFilename: TFileNameEdit;
@@ -192,7 +193,8 @@ begin
       CBIsClientAuth.Checked,
       EdCACertificate.Text,
       EdCAKeyFilename.Text,
-      CAKeyPassword);
+      CAKeyPassword,
+      CBExportPKCS12.Checked);
 
     FPrivateKeyFilename:=pemfn;
 

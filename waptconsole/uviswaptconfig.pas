@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ButtonPanel, StdCtrls,
   ExtCtrls, EditBtn, DefaultTranslator, ComCtrls, ActnList, Grids, DBGrids,
-  Menus, Buttons, sogrid, types, inifiles,
+  Menus, Buttons, RTTICtrls, sogrid, types, inifiles,
   VirtualTrees, superobject;
 
 type
@@ -38,8 +38,12 @@ type
     cbUseProxyForRepo: TCheckBox;
     cbUseProxyForServer: TCheckBox;
     CBVerifyCert: TCheckBox;
+    DlgSelectClientCertificate: TOpenDialog;
+    DlgSelectClientPrivateKey: TOpenDialog;
+    EdClientPrivateKeyPath: TFileNameEdit;
     EdLicencesDirectory: TDirectoryEdit;
     EdMaturity: TComboBox;
+    EdClientCertificatePath: TFileNameEdit;
     EdServerCertificate: TFileNameEdit;
     edDefaultPackagePrefix: TLabeledEdit;
     eddefault_sources_root: TDirectoryEdit;
@@ -54,6 +58,8 @@ type
     ImgStatusRepo: TImage;
     ImgStatusServer: TImage;
     ImgStatusPackagePrefix: TImage;
+    labCertsDir2: TLabel;
+    labClientCertificatePath: TLabel;
     Label1: TLabel;
     Label2: TLabel;
     LabLicencesDirectory: TLabel;
@@ -316,6 +322,9 @@ begin
 
   inifile.WriteString('global','grid_hosts_plugins', EncodeStringBase64(GridPlugins.Data.AsJSon()));
 
+  inifile.WriteString('global','client_certificate',EdClientCertificatePath.FileName);
+  inifile.WriteString('global','client_private_key',EdClientPrivateKeyPath.FileName);
+
   if EdLicencesDirectory.Directory<>'' then
     inifile.WriteString('global', 'licences_directory', EdLicencesDirectory.Directory);
 
@@ -460,7 +469,8 @@ begin
           proxy :='';
 
         serverRes := SO(IdhttpGetString(edwapt_server.Text+'/ping',proxy,200,60000,60000,'','','GET','',EdServerCertificate.Text,
-          'application/json',Nil,WaptClientCertFilename,WaptClientKeyFilename));
+          'application/json',Nil,
+          EdClientCertificatePath.FileName,EdClientPrivateKeyPath.FileName));
         if serverRes = Nil then
           raise Exception.CreateFmt(rsWaptServerError,['Bad answer']);
         if not serverRes.B['success'] then
@@ -483,7 +493,7 @@ begin
 
       try
         packages := IdHttpGetString(edrepo_url.Text+'/Packages',Proxy,200,60000,60000,'','','GET','',EdServerCertificate.Text,
-            'application/binary',Nil,WaptClientCertFilename,WaptClientKeyFilename);
+            'application/binary',Nil,EdClientCertificatePath.FileName,EdClientPrivateKeyPath.FileName);
         if length(packages)<=0 then
           Raise Exception.Create('Packages file empty or not found');
         labStatusRepo.Caption:=Format('Repository access OK', []);
@@ -548,6 +558,9 @@ begin
 
   cbSendStats.Checked :=
     inifile.ReadBool('global', 'send_usage_report', True);
+
+  EdClientCertificatePath.FileName := inifile.ReadString('global','client_certificate','');
+  EdClientPrivateKeyPath.FileName := inifile.ReadString('global','client_private_key','');
 
   GridPlugins.Data := GetGridHostsPluginsFromIni;
 end;

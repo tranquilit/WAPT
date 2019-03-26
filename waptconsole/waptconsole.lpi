@@ -27,7 +27,7 @@
       <MajorVersionNr Value="1"/>
       <MinorVersionNr Value="7"/>
       <RevisionNr Value="3"/>
-      <BuildNr Value="9"/>
+      <BuildNr Value="12"/>
       <StringTable LegalCopyright="Tranquil IT Systems 2012-2019" ProductName="WAPT Enterprise Edition" ProductVersion="1.7.3"/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -45,22 +45,22 @@
     </RunParams>
     <RequiredPackages Count="12">
       <Item1>
-        <PackageName Value="pltis_sogrid"/>
+        <PackageName Value="RunTimeTypeInfoControls"/>
       </Item1>
       <Item2>
-        <PackageName Value="pltis_virtualtreesextra"/>
+        <PackageName Value="pltis_sogrid"/>
       </Item2>
       <Item3>
-        <PackageName Value="python4lazarus_package"/>
+        <PackageName Value="pltis_virtualtreesextra"/>
       </Item3>
       <Item4>
-        <PackageName Value="luicontrols"/>
+        <PackageName Value="python4lazarus_package"/>
       </Item4>
       <Item5>
-        <PackageName Value="MemDSLaz"/>
+        <PackageName Value="luicontrols"/>
       </Item5>
       <Item6>
-        <PackageName Value="RunTimeTypeInfoControls"/>
+        <PackageName Value="MemDSLaz"/>
       </Item6>
       <Item7>
         <PackageName Value="pltis_wapt"/>

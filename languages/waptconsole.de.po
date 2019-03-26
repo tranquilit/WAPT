@@ -194,6 +194,10 @@ msgstr "Den privaten Key und das selbstsignierte Zertifikat generieren"
 msgid "Tag as code signing"
 msgstr ""
 
+#: tviscreatekey.cbexportpkcs12.caption
+msgid "Export PKCS12 too"
+msgstr ""
+
 #: tviscreatekey.cbisca.caption
 msgid "Tag as CA Certificate"
 msgstr ""
@@ -1447,10 +1451,12 @@ msgid "Select CA Bundle"
 msgstr ""
 
 #: tvisrepositories.dlgselectclientcertificate.title
+msgctxt "tvisrepositories.dlgselectclientcertificate.title"
 msgid "Select client auth certificate file"
 msgstr ""
 
 #: tvisrepositories.dlgselectclientprivatekey.title
+msgctxt "tvisrepositories.dlgselectclientprivatekey.title"
 msgid "Select client auth private key file"
 msgstr ""
 
@@ -1517,10 +1523,12 @@ msgid "Authorized external keys dir"
 msgstr ""
 
 #: tvisrepositories.labcertsdir2.caption
+msgctxt "tvisrepositories.labcertsdir2.caption"
 msgid "Client auth key path"
 msgstr ""
 
 #: tvisrepositories.labclientcertificatepath.caption
+msgctxt "tvisrepositories.labclientcertificatepath.caption"
 msgid "Client auth certificate path"
 msgstr ""
 
@@ -2042,6 +2050,26 @@ msgid ""
 "(Main repository access and wapt server)\n"
 msgstr ""
 
+#: tviswaptconfig.dlgselectclientcertificate.title
+msgctxt "tviswaptconfig.dlgselectclientcertificate.title"
+msgid "Select client auth certificate file"
+msgstr ""
+
+#: tviswaptconfig.dlgselectclientprivatekey.title
+msgctxt "tviswaptconfig.dlgselectclientprivatekey.title"
+msgid "Select client auth private key file"
+msgstr ""
+
+#: tviswaptconfig.edclientcertificatepath.hint
+msgctxt "tviswaptconfig.edclientcertificatepath.hint"
+msgid "If remote repository is using Client side SSL Authentication"
+msgstr ""
+
+#: tviswaptconfig.edclientprivatekeypath.hint
+msgctxt "tviswaptconfig.edclientprivatekeypath.hint"
+msgid "If remote repository is using Client side SSL Authentication"
+msgstr ""
+
 #: tviswaptconfig.eddefaultpackageprefix.editlabel.caption
 #, fuzzy
 #| msgid "Prefix for naming created WAPT packages"
@@ -2153,6 +2181,16 @@ msgstr ""
 
 #: tviswaptconfig.gridplugins.header.columns[2].text
 msgid "Arguments"
+msgstr ""
+
+#: tviswaptconfig.labcertsdir2.caption
+msgctxt "tviswaptconfig.labcertsdir2.caption"
+msgid "Client auth key path"
+msgstr ""
+
+#: tviswaptconfig.labclientcertificatepath.caption
+msgctxt "tviswaptconfig.labclientcertificatepath.caption"
+msgid "Client auth certificate path"
 msgstr ""
 
 #: tviswaptconfig.label1.caption

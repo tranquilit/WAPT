@@ -76,7 +76,7 @@ object VisWAPTConfig: TVisWAPTConfig
         Hint = 'E.g. : c:\private\tranquilit.crt'#13#10'Path to certificate for signing new packages.'#13#10'Only suitable for development hosts.'
         Top = 188
         Width = 220
-        Filter = 'Fichiers certificats crt|*.crt|Tous les fichiers|*.*'
+        Filter = 'X509 Certificates|*.crt|All files|*.*'
         FilterIndex = 0
         HideDirectories = False
         ButtonWidth = 23
@@ -393,10 +393,10 @@ object VisWAPTConfig: TVisWAPTConfig
       ClientHeight = 296
       ClientWidth = 606
       object eddefault_sources_root: TDirectoryEdit
-        Left = 315
+        Left = 296
         Height = 21
         Hint = 'E.g. : c:\waptdev'#13#10'Local directory for saving package development projects'
-        Top = 8
+        Top = 16
         Width = 172
         ShowHidden = False
         ButtonWidth = 23
@@ -410,8 +410,8 @@ object VisWAPTConfig: TVisWAPTConfig
         AnchorSideRight.Control = eddefault_sources_root
         Left = 8
         Height = 13
-        Top = 12
-        Width = 302
+        Top = 20
+        Width = 283
         Alignment = taRightJustify
         Anchors = [akTop, akLeft, akRight]
         BorderSpacing.Right = 5
@@ -421,12 +421,12 @@ object VisWAPTConfig: TVisWAPTConfig
       object Label4: TLabel
         AnchorSideTop.Control = cbUseProxyForRepo
         AnchorSideRight.Control = eddefault_sources_root
-        Left = -12
+        Left = 43
         Height = 13
-        Top = 72
-        Width = 324
+        Top = 70
+        Width = 250
         Alignment = taRightJustify
-        Anchors = [akTop, akLeft, akRight]
+        Anchors = [akTop, akRight]
         BorderSpacing.Right = 3
         Caption = 'Activates proxy when accessing the main repository'
         ParentColor = False
@@ -434,49 +434,58 @@ object VisWAPTConfig: TVisWAPTConfig
       object Label5: TLabel
         AnchorSideTop.Control = cbUseProxyForServer
         AnchorSideRight.Control = eddefault_sources_root
-        Left = -12
+        Left = 59
         Height = 13
-        Top = 97
-        Width = 324
+        Top = 93
+        Width = 234
         Alignment = taRightJustify
-        Anchors = [akTop, akLeft, akRight]
+        Anchors = [akTop, akRight]
         BorderSpacing.Right = 3
         Caption = 'Activate proxy when accessing the WAPT server'
         ParentColor = False
       end
       object cbUseProxyForRepo: TCheckBox
         AnchorSideLeft.Control = eddefault_sources_root
-        Left = 315
+        AnchorSideTop.Control = edhttp_proxy
+        AnchorSideTop.Side = asrBottom
+        Left = 296
         Height = 17
         Hint = 'Activates proxy when accessing the main repository'
-        Top = 72
+        Top = 70
         Width = 20
+        BorderSpacing.Top = 6
         TabOrder = 2
       end
       object cbUseProxyForServer: TCheckBox
         AnchorSideLeft.Control = eddefault_sources_root
-        Left = 315
+        AnchorSideTop.Control = cbUseProxyForRepo
+        AnchorSideTop.Side = asrBottom
+        Left = 296
         Height = 17
         Hint = 'Activate proxy when accessing the WAPT server'
-        Top = 97
+        Top = 93
         Width = 20
+        BorderSpacing.Top = 6
         TabOrder = 3
       end
       object edhttp_proxy: TLabeledEdit
         AnchorSideLeft.Control = eddefault_sources_root
-        Left = 315
+        AnchorSideTop.Control = eddefault_sources_root
+        AnchorSideTop.Side = asrBottom
+        Left = 296
         Height = 21
         Hint = 'E.g. : http://proxy.tranquilit.local:3128'#13#10'Only required if a proxy is needed for waptserver and main waptrepo'
-        Top = 42
+        Top = 43
         Width = 220
+        BorderSpacing.Top = 6
         EditLabel.AnchorSideTop.Control = edhttp_proxy
         EditLabel.AnchorSideTop.Side = asrCenter
         EditLabel.AnchorSideRight.Control = edhttp_proxy
         EditLabel.AnchorSideBottom.Control = edhttp_proxy
         EditLabel.AnchorSideBottom.Side = asrBottom
-        EditLabel.Left = 172
+        EditLabel.Left = 153
         EditLabel.Height = 13
-        EditLabel.Top = 46
+        EditLabel.Top = 47
         EditLabel.Width = 140
         EditLabel.Caption = 'http proxy to use (if needed)'
         EditLabel.ParentColor = False
@@ -484,10 +493,16 @@ object VisWAPTConfig: TVisWAPTConfig
         TabOrder = 1
       end
       object Button1: TButton
-        Left = 344
-        Height = 28
-        Top = 117
-        Width = 143
+        AnchorSideLeft.Control = cbSendStats
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = cbSendStats
+        AnchorSideTop.Side = asrCenter
+        Left = 323
+        Height = 23
+        Top = 113
+        Width = 97
+        AutoSize = True
+        BorderSpacing.Left = 7
         Caption = 'Show statistics'
         OnClick = Button1Click
         TabOrder = 4
@@ -495,10 +510,13 @@ object VisWAPTConfig: TVisWAPTConfig
       end
       object cbSendStats: TCheckBox
         AnchorSideLeft.Control = eddefault_sources_root
-        Left = 315
+        AnchorSideTop.Control = cbUseProxyForServer
+        AnchorSideTop.Side = asrBottom
+        Left = 296
         Height = 17
-        Top = 121
+        Top = 116
         Width = 20
+        BorderSpacing.Top = 6
         Checked = True
         State = cbChecked
         TabOrder = 5
@@ -507,12 +525,12 @@ object VisWAPTConfig: TVisWAPTConfig
       object Label8: TLabel
         AnchorSideTop.Control = cbSendStats
         AnchorSideRight.Control = eddefault_sources_root
-        Left = 0
+        Left = 67
         Height = 13
-        Top = 121
-        Width = 312
+        Top = 116
+        Width = 226
         Alignment = taRightJustify
-        Anchors = [akTop, akLeft, akRight]
+        Anchors = [akTop, akRight]
         BorderSpacing.Right = 3
         Caption = 'Send anonymous usage statistics to Tranquil IT'
         ParentColor = False
@@ -522,9 +540,9 @@ object VisWAPTConfig: TVisWAPTConfig
         AnchorSideTop.Control = EdMaturity
         AnchorSideTop.Side = asrCenter
         AnchorSideRight.Control = EdMaturity
-        Left = 191
+        Left = 172
         Height = 13
-        Top = 156
+        Top = 149
         Width = 121
         Alignment = taRightJustify
         Anchors = [akTop, akRight]
@@ -533,10 +551,14 @@ object VisWAPTConfig: TVisWAPTConfig
         ParentColor = False
       end
       object EdMaturity: TComboBox
-        Left = 315
+        AnchorSideLeft.Control = cbSendStats
+        AnchorSideTop.Control = cbSendStats
+        AnchorSideTop.Side = asrBottom
+        Left = 296
         Height = 21
-        Top = 152
+        Top = 145
         Width = 120
+        BorderSpacing.Top = 12
         ItemHeight = 13
         ItemIndex = 0
         Items.Strings = (
@@ -546,6 +568,74 @@ object VisWAPTConfig: TVisWAPTConfig
           'PROD'
         )
         TabOrder = 6
+      end
+      object labClientCertificatePath: TLabel
+        AnchorSideTop.Control = EdClientCertificatePath
+        AnchorSideTop.Side = asrCenter
+        AnchorSideRight.Control = EdClientCertificatePath
+        Left = 165
+        Height = 13
+        Top = 174
+        Width = 128
+        Alignment = taRightJustify
+        Anchors = [akTop, akRight]
+        BorderSpacing.Right = 3
+        Caption = 'Client auth certificate path'
+        Layout = tlCenter
+        ParentColor = False
+      end
+      object labCertsDir2: TLabel
+        AnchorSideTop.Control = EdClientPrivateKeyPath
+        AnchorSideTop.Side = asrCenter
+        AnchorSideRight.Control = EdClientPrivateKeyPath
+        Left = 196
+        Height = 13
+        Top = 199
+        Width = 97
+        Alignment = taRightJustify
+        Anchors = [akTop, akRight]
+        BorderSpacing.Right = 3
+        Caption = 'Client auth key path'
+        Layout = tlCenter
+        ParentColor = False
+      end
+      object EdClientCertificatePath: TFileNameEdit
+        AnchorSideLeft.Control = EdMaturity
+        AnchorSideTop.Control = EdMaturity
+        AnchorSideTop.Side = asrBottom
+        Left = 296
+        Height = 21
+        Hint = 'If remote repository is using Client side SSL Authentication'
+        Top = 170
+        Width = 220
+        Filter = 'X509 Certificates|*.crt|All files|*.*'
+        FilterIndex = 0
+        HideDirectories = False
+        ButtonWidth = 23
+        NumGlyphs = 1
+        Flat = True
+        BorderSpacing.Top = 4
+        MaxLength = 0
+        TabOrder = 7
+      end
+      object EdClientPrivateKeyPath: TFileNameEdit
+        AnchorSideLeft.Control = EdClientCertificatePath
+        AnchorSideTop.Control = EdClientCertificatePath
+        AnchorSideTop.Side = asrBottom
+        Left = 296
+        Height = 21
+        Hint = 'If remote repository is using Client side SSL Authentication'
+        Top = 195
+        Width = 220
+        Filter = 'RSA pem encoded key|*.pem|All files|*.*'
+        FilterIndex = 0
+        HideDirectories = False
+        ButtonWidth = 23
+        NumGlyphs = 1
+        Flat = True
+        BorderSpacing.Top = 4
+        MaxLength = 0
+        TabOrder = 8
       end
     end
     object pgPlugins: TTabSheet
@@ -618,8 +708,8 @@ object VisWAPTConfig: TVisWAPTConfig
     top = 71
   end
   object ImageList1: TImageList
-    left = 488
-    top = 216
+    left = 25
+    top = 272
     Bitmap = {
       4C6905000000100000001000000000000000000000000000000000000000594E
       3600594E369F594E36DF594E36FF594E36FF594E36DF594E369F594E36000000
@@ -785,8 +875,8 @@ object VisWAPTConfig: TVisWAPTConfig
     }
   end
   object ActionList1: TActionList
-    left = 560
-    top = 216
+    left = 97
+    top = 272
     object ActCheckAndSetwaptserver: TAction
       Caption = 'Check and set'
       Hint = 'Try to connect to waptserver and wapt_repo'
@@ -832,5 +922,21 @@ object VisWAPTConfig: TVisWAPTConfig
   object MainMenu1: TMainMenu
     left = 28
     top = 152
+  end
+  object DlgSelectClientCertificate: TOpenDialog
+    Title = 'Select client auth certificate file'
+    Filter = 'X509 Certificate|*.crt|All files|*.*'
+    InitialDir = 'C:\private\'
+    Options = [ofExtensionDifferent, ofEnableSizing, ofViewDetail]
+    left = 748
+    top = 343
+  end
+  object DlgSelectClientPrivateKey: TOpenDialog
+    Title = 'Select client auth private key file'
+    Filter = 'RSA Private key|*.pem|All files|*.*'
+    InitialDir = 'C:\private\'
+    Options = [ofExtensionDifferent, ofEnableSizing, ofViewDetail]
+    left = 748
+    top = 343
   end
 end

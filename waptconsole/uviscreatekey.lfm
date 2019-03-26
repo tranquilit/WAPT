@@ -1,12 +1,12 @@
 object VisCreateKey: TVisCreateKey
   Left = 630
-  Height = 472
+  Height = 501
   Top = 311
   Width = 412
   AutoSize = True
   BorderStyle = bsDialog
   Caption = 'Generate private key and self signed certificate'
-  ClientHeight = 472
+  ClientHeight = 501
   ClientWidth = 412
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
@@ -17,7 +17,7 @@ object VisCreateKey: TVisCreateKey
   object Panel1: TPanel
     Left = 0
     Height = 35
-    Top = 437
+    Top = 466
     Width = 412
     Align = alBottom
     AutoSize = True
@@ -61,15 +61,27 @@ object VisCreateKey: TVisCreateKey
       ModalResult = 2
       TabOrder = 1
     end
+    object CBExportPKCS12: TCheckBox
+      AnchorSideLeft.Control = Panel1
+      AnchorSideTop.Control = Panel1
+      AnchorSideTop.Side = asrCenter
+      Left = 5
+      Height = 17
+      Top = 9
+      Width = 111
+      BorderSpacing.Left = 5
+      Caption = 'Export PKCS12 too'
+      TabOrder = 2
+    end
   end
   object Panel2: TPanel
     Left = 0
-    Height = 437
+    Height = 466
     Top = 0
     Width = 412
     Align = alClient
     BevelOuter = bvNone
-    ClientHeight = 437
+    ClientHeight = 466
     ClientWidth = 412
     TabOrder = 0
     object PanCA: TPanel
@@ -149,8 +161,9 @@ object VisCreateKey: TVisCreateKey
           Height = 21
           Top = 3
           Width = 169
+          DialogTitle = 'Select a private CA key to sign the certificate'
           DialogOptions = [ofNoTestFileCreate, ofEnableSizing, ofViewDetail]
-          Filter = 'X509 private key files (*.pem)|*.pem|All files (*.*)|*.*'
+          Filter = 'PEM encoded RSA private key files (*.pem)|*.pem|All files (*.*)|*.*'
           FilterIndex = 0
           HideDirectories = False
           ButtonWidth = 23
@@ -173,6 +186,7 @@ object VisCreateKey: TVisCreateKey
           Height = 21
           Top = 27
           Width = 169
+          DialogTitle = 'Select a CA certificate to sign the new certificate'
           DialogOptions = [ofNoTestFileCreate, ofEnableSizing, ofViewDetail]
           Filter = 'X509 certificate files (*.crt)|*.crt|All files (*.*)|*.*'
           FilterIndex = 0

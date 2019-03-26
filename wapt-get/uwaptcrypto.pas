@@ -29,7 +29,8 @@ function CreateSignedCert(pywaptcrypto:Variant;
         IsClientAuth:Boolean;
         CACertificateFilename:String='';
         CAKeyFilename:String='';
-        CAKeyPassword:String=''
+        CAKeyPassword:String='';
+        ExportPKCS12:Boolean=False
     ):String;
 
 function RandomPassword(PLen: Integer): string;
@@ -217,12 +218,13 @@ function CreateSignedCert(pywaptcrypto:Variant;
         IsClientAuth:Boolean;
         CACertificateFilename:String='';
         CAKeyFilename:String='';
-        CAKeyPassword:String=''
+        CAKeyPassword:String='';
+        ExportPKCS12:Boolean=False
 
     ):String;
 var
-  vCAKeyFilename,vdestpem,vdestcrt,vCAKeyPassword,vKeyPassword: Variant;
-  key,cert,cakey,cacert:Variant;
+  vCAKeyFilename,vdestpem,vdestcrt,vdestp12,vCAKeyPassword,vKeyPassword: Variant;
+  key,cert,cakey,cacert,vPKCS12,vCommonName:Variant;
   ca_pem: String;
 
 begin
@@ -279,13 +281,15 @@ begin
     key.save_as_pem(password := vKeyPassword)
   end;
 
+  vCommonName:=UTF8Decode(commonname);
+
   // None can not be passed... not accepted : invalid Variant type
   // using default None on the python side to workaround this...
   // python call
   if  VarIsNull(cacert) or VarIsNull(cakey) or VarIsEmpty(cacert) or VarIsEmpty(cakey) then
     // self signed
     cert := key.build_sign_certificate(
-      cn :=  commonname,
+      cn :=  vCommonName,
       organization := organization,
       locality := locality,
       country := country,
@@ -320,6 +324,17 @@ begin
     finally
       Free;
     end;
+
+  if ExportPKCS12 then
+  begin
+    vPKCS12 := pywaptcrypto.SSLPKCS12('--noarg--');
+    vPKCS12.certificate := cert;
+    vPKCS12.private_key := key;
+    vdestp12 := UTF8Decode(AppendPathDelim(destdir)+crtbasename+'.p12');
+    vPKCS12.save_as_p12(vdestcrt,vKeyPassword,vcommonname);
+
+
+  end;
 
   result := VarPythonAsString(vdestcrt);
 end;
