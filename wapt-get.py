@@ -471,6 +471,8 @@ def main():
         if config_file == default_waptconsole_ini:
             mywapt.dbpath = r':memory:'
             mywapt.use_hostpackages = False
+            mywapt.filter_on_host_cap = False
+
             mywapt.private_dir = os.path.join(setuphelpers.user_appdata(),'wapt','private')
             logger.info('Updating in-memory packages index from repositories...')
             logger.info('Configuration file : %s' % config_file)
@@ -478,7 +480,7 @@ def main():
             logger.info('  repositories   : %s' % mywapt.repositories)
             for r in mywapt.repositories:
                 r.cabundle = None
-            update_result = mywapt._update_repos_list(filter_on_host_cap=False)
+            update_result = mywapt._update_repos_list()
 
         logger.debug(u'WAPT base directory : %s' % mywapt.wapt_base_dir)
         logger.debug(u'Package cache dir : %s' % mywapt.package_cache_dir)

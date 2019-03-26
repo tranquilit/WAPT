@@ -693,8 +693,9 @@ def create_waptwua_package(waptconfigfile,wuagroup='default',wapt_server_user=No
     wapt = common.Wapt(config_filename=waptconfigfile,disable_update_server_status=True)
     wapt.dbpath = r':memory:'
     wapt.use_hostpackages = False
+    wapt.filter_on_host_cap = False
     # be sure to be up to date
-    wapt.update(register=False,filter_on_host_cap=False)
+    wapt.update(register=False)
     packagename = '{}-waptwua-{}'.format(wapt.config.get('global','default_package_prefix'),wuagroup)
     """
     packages = wapt.is_available(packagename)

@@ -2615,6 +2615,8 @@ class Wapt(BaseObjectClass):
         # default maturity when importing or creating new package
         self.default_maturity = ''
 
+        self.filter_on_host_cap=True
+
         self.use_http_proxy_for_repo = False
         self.use_http_proxy_for_server = False
 
@@ -4037,7 +4039,7 @@ class Wapt(BaseObjectClass):
                         logger.warning(u'Unable to remove %s : %s' % (f,ensure_unicode(e)))
         return result
 
-    def _update_db(self,repo,force=False,filter_on_host_cap=True):
+    def _update_db(self,repo,force=False):
         """Get Packages from http repo and update local package database
         return last-update header
 
@@ -4072,7 +4074,7 @@ class Wapt(BaseObjectClass):
 
             self._packages_filter_for_host = None
 
-            if filter_on_host_cap:
+            if self.filter_on_host_cap:
                 host_capabilities = self.host_capabilities()
             else:
                 host_capabilities = None
@@ -4086,7 +4088,7 @@ class Wapt(BaseObjectClass):
                     repo_packages =  repo.packages()
                     discarded.extend(repo.discarded)
                     for package in repo_packages:
-                        if filter_on_host_cap:
+                        if self.filter_on_host_cap:
                             if not host_capabilities.is_matching_package(package):
                                 discarded.append(package)
                                 continue
@@ -4196,7 +4198,7 @@ class Wapt(BaseObjectClass):
                     return True
         return False
 
-    def _update_repos_list(self,force=False,filter_on_host_cap=True):
+    def _update_repos_list(self,force=False):
         """update the packages database with Packages files from the Wapt repos list
         removes obsolete records for repositories which are no more referenced
 
@@ -4212,7 +4214,7 @@ class Wapt(BaseObjectClass):
         >>> res = wapt._update_repos_list()
         {'wapt': '2018-02-13T11:22:00', 'wapt-host': u'2018-02-09T10:55:04'}
         """
-        if filter_on_host_cap:
+        if self.filter_on_host_cap:
             # force update if host capabilities have changed and requires a new filering of packages
             new_capa = self.host_capabilities_fingerprint()
             old_capa = self.read_param('host_capabilities_fingerprint')
@@ -4231,17 +4233,17 @@ class Wapt(BaseObjectClass):
                 # if auto discover, repo_url can be None if no network.
                 if repo.repo_url:
                     try:
-                        result[repo.name] = self._update_db(repo,force=force,filter_on_host_cap=filter_on_host_cap)
+                        result[repo.name] = self._update_db(repo,force=force)
                     except Exception as e:
                         logger.critical(u'Error merging Packages from %s into db: %s' % (repo.repo_url,ensure_unicode(e)))
                 else:
                     logger.info('No location found for repository %s, skipping' % (repo.name))
-            if filter_on_host_cap:
+            if self.filter_on_host_cap:
                 self.write_param('host_capabilities_fingerprint',new_capa)
         return result
 
 
-    def update(self,force=False,register=True,filter_on_host_cap=True):
+    def update(self,force=False,register=True):
         """Update local database with packages definition from repositories
 
         Args:
@@ -4267,7 +4269,7 @@ class Wapt(BaseObjectClass):
         self.write_param('host_ad_groups_ttl',0.0)
         previous = self.waptdb.known_packages()
         # (main repo is at the end so that it will used in priority)
-        self._update_repos_list(force=force,filter_on_host_cap=filter_on_host_cap)
+        self._update_repos_list(force=force)
 
         current = self.waptdb.known_packages()
         result = {
@@ -4595,7 +4597,7 @@ class Wapt(BaseObjectClass):
         Returns:
             list of PackageEntry
         """
-        if package_request_filter is None:
+        if package_request_filter is None and self.filter_on_host_cap:
             package_request_filter = self.packages_filter_for_host()
 
         package_requests = []

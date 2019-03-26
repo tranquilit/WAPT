@@ -520,6 +520,7 @@ begin
       st.Append(format('WAPT = common.Wapt(config_filename=r"%s".decode(''utf8''),disable_update_server_status=True)',[WaptConfigFileName]));
       st.Append('WAPT.dbpath=r":memory:"');
       st.Append('WAPT.use_hostpackages = False');
+      st.Append('WAPT.filter_on_host_cap = False');
       st.Append('WAPT.private_dir = setuphelpers.makepath(setuphelpers.user_appdata(),''wapt'',''private'')');
 
       // declare WaptConsole feedback module

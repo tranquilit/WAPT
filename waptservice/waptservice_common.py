@@ -322,17 +322,17 @@ class WaptServiceConfig(object):
                 self.waptservice_poll_timeout = 10
 
             if config.has_option('global','waptupgrade_task_period'):
-                self.waptupgrade_task_period = config.get('global','waptupgrade_task_period')
+                self.waptupgrade_task_period = config.get('global','waptupgrade_task_period') or None
             else:
                 self.waptupgrade_task_period = None
 
             if config.has_option('global','waptupdate_task_period'):
-                self.waptupdate_task_period = config.get('global','waptupdate_task_period')
+                self.waptupdate_task_period = config.get('global','waptupdate_task_period') or None
             else:
                 self.waptupdate_task_period = '120'
 
             if config.has_option('global','waptaudit_task_period'):
-                self.waptaudit_task_period = config.get('global','waptaudit_task_period')
+                self.waptaudit_task_period = config.get('global','waptaudit_task_period') or None
 
             if config.has_option('global','dbpath'):
                 self.dbpath =  config.get('global','dbpath')
