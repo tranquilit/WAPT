@@ -474,6 +474,7 @@ class WaptTask(object):
     def __init__(self,**args):
         self.id = -1
         self.wapt = None
+        self.task_manager = None
         self.priority = 100
         self.order = 0
         self.external_pids = []
@@ -732,52 +733,51 @@ class WaptUpgrade(WaptTask):
         self.notify_server_on_finish = True
         self.only_priorities = only_priorities
         self.only_if_not_process_running = only_if_not_process_running
+        self.force = False
 
         for k in args:
             setattr(self,k,args[k])
 
     def _run(self):
         def cjoin(l):
-            return u','.join([u"%s" % (p[1].asrequirement(),) for p in l])
+            return u','.join([u'%s' % ensure_unicode(p) for p in l])
 
-        # TODO : create parent/child tasks
-        # currently, only a place holder for report
-        self.result = self.wapt.check_install(force=True,forceupgrade=True)
-        self.progress = 50
-        #self.result = self.wapt.upgrade()
-        """result: {
-            unavailable: [ ],
-            skipped: [ ],
-            errors: [ ],
-            downloads: {
-                downloaded: [ ],
-                skipped: [ ],
-                errors: [ ]
-            },
-            upgrade: [ ],
-            install: [ ],
-            additional: [ ]
-            }"""
+        all_tasks = []
+        actions = self.wapt.list_upgrade()
+        self.result = actions
+        to_install = actions['upgrade']+actions['additional']+actions['install']
+        to_remove = actions['remove']
+
+        for req in to_remove:
+            all_tasks.append(self.task_manager.add_task(WaptPackageRemove(req,force=self.force,notify_user=self.notify_user,
+                only_priorities=self.only_priorities,
+                only_if_not_process_running=self.only_if_not_process_running)).as_dict())
+
+        for req in to_install:
+            all_tasks.append(self.task_manager.add_task(WaptPackageInstall(req,force=self.force,notify_user=self.notify_user,
+                only_priorities=self.only_priorities,
+                only_if_not_process_running=self.only_if_not_process_running,
+                # we don't reprocess depends
+                process_dependencies=True)).as_dict())
+
+        if to_install:
+            all_tasks.append(self.task_manager.add_task(WaptAuditPackage(to_install,force=self.force,notify_user=self.notify_user)).as_dict())
+
         all_install = self.result.get('install',[])
         if self.result.get('additional',[]):
             all_install.extend(self.result['additional'])
         install = cjoin(all_install)
         upgrade = cjoin(self.result.get('upgrade',[]))
-        #skipped = cjoin(self.result['skipped'])
-        errors = ','.join([p.asrequirement() for p in  self.wapt.error_packages()])
         unavailable = u','.join([p[0] for p in self.result.get('unavailable',[])])
         s = []
         if install:
             s.append(_(u'Installed : {}').format(install))
         if upgrade:
             s.append(_(u'Updated : {}').format(upgrade))
-        if errors:
-            s.append(_(u'Errors : {}').format(errors))
         if unavailable:
             s.append(_(u'Unavailable : {}').format(unavailable))
-        if not errors and not unavailable and not install and not upgrade:
+        if not unavailable and not install and not upgrade:
             s.append(_(u'System up-to-date'))
-
         self.summary = u"\n".join(s)
 
     def __unicode__(self):
@@ -1086,13 +1086,15 @@ class WaptAuditPackage(WaptTask):
     def _run(self):
         self.result = []
         self.progress = 0.0
-        astep = 100.0 / len(self.packagenames)
-        for package in self.packagenames:
-            self.update_status(_(u'Auditing %s') % package)
-            self.result.append(u'%s: %s' % (package,self.wapt.audit(package,force = self.force)))
-            self.progress += astep
+        if self.packagenames:
+            astep = 100.0 / len(self.packagenames)
+            for package in self.packagenames:
+                self.update_status(_(u'Auditing %s') % package)
+                self.result.append(u'%s: %s' % (package,self.wapt.audit(package,force = self.force)))
+                self.progress += astep
 
         self.progress = 100.0
+        self.update_status(_(u'Audit finished'))
         if self.result:
             self.summary = _(u"Audit result : %s") % ('\n'.join(self.result))
         else:

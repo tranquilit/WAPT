@@ -267,33 +267,13 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
                         result.append(self.task_manager.add_task(WaptUpdate(force=force,notify_user=notify_user,
                             )).as_dict())
 
-                    upgrades = self.wapt.list_upgrade()
-                    to_install = upgrades['upgrade']+upgrades['additional']+upgrades['install']
-                    to_remove = upgrades['remove']
-                    for req in to_remove:
-                        result.append(self.task_manager.add_task(WaptPackageRemove(req,force=force,notify_user=notify_user,
-                            only_priorities=only_priorities,
-                            only_if_not_process_running=only_if_not_process_running)).as_dict())
-                    for req in to_install:
-                        result.append(self.task_manager.add_task(WaptPackageInstall(packagenames=req,force=force,
-                            notify_user=notify_user,
-                            created_by=verified_by,
-                            only_priorities=only_priorities,
-                            only_if_not_process_running=only_if_not_process_running,
-                            process_dependencies=True,
-                            )).as_dict())
-                    if to_install:
-                        self.task_manager.add_task(WaptAuditPackage(packagenames=to_install,force=False,
-                            notify_user=notify_user,
-                            notify_server_on_finish=False,
-                            priority=200,
-                            created_by=verified_by)).as_dict()
                     result.append(self.task_manager.add_task(WaptUpgrade(notify_user=notify_user,
                             created_by=verified_by,
-                            priority=200,
                             only_priorities=only_priorities,
                             only_if_not_process_running=only_if_not_process_running,
+                            force=force
                             )).as_dict())
+
                     result.append(self.task_manager.add_task(WaptCleanup(notify_user=False,created_by=verified_by,priority=200)).as_dict())
 
                 elif name in  ['trigger_install_packages','trigger_remove_packages','trigger_forget_packages']:

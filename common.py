@@ -126,6 +126,8 @@ from waptpackage import EWaptDownloadError,EWaptMissingPackageHook
 
 from waptpackage import REGEX_PACKAGE_CONDITION,WaptRemoteRepo,PackageEntry,PackageRequest,HostCapabilities,PackageKey
 
+from itsdangerous import TimedJSONWebSignatureSerializer
+
 import setuphelpers
 import netifaces
 
@@ -1838,6 +1840,9 @@ class WaptServer(BaseObjectClass):
 
     def client_auth(self):
         """Return SSL pair (cert,key) filenames for client side SSL auth
+
+        Returns:
+            tuple: (cert path,key path,strkeypassword)
         """
         if self.client_certificate and os.path.isfile(self.client_certificate):
             if self.client_private_key is None:
@@ -1880,6 +1885,7 @@ class WaptServer(BaseObjectClass):
 
     def upload_packages(self,packages,auth=None,timeout=None,progress_hook=None):
         """Upload a list of PackageEntry with local wapt build/signed files
+
         Returns:
             dict: {'ok','errors'} list of http post upload results
         """
@@ -2630,6 +2636,11 @@ class Wapt(BaseObjectClass):
         except NameError:
             self.wapt_base_dir = os.getcwdu()
 
+        self.private_dir = os.path.join(self.wapt_base_dir,'private')
+        self.persistent_root_dir = os.path.join(self.wapt_base_dir,'private','persistent')
+        self.token_lifetime = 24*60*60
+
+
         self.disable_update_server_status = disable_update_server_status
 
         self.config = config
@@ -2819,6 +2830,7 @@ class Wapt(BaseObjectClass):
             'public_certs_dir':os.path.join(self.wapt_base_dir,'ssl'),
             'private_dir': os.path.join(self.wapt_base_dir,'private'),
             'persistent_root_dir':os.path.join(self.wapt_base_dir,'private','persistent'),
+            'token_lifetime': 24*60*60,  # 24 hours
 
             # optional...
             'default_sources_root':'c:\\waptdev',
@@ -2957,13 +2969,12 @@ class Wapt(BaseObjectClass):
 
         if self.config.has_option('global','private_dir'):
             self.private_dir = self.config.get('global','private_dir').decode('utf8')
-        else:
-            self.private_dir = os.path.join(self.wapt_base_dir,'private')
 
         if self.config.has_option('global','persistent_root_dir'):
             self.persistent_root_dir = self.config.get('global','persistent_root_dir').decode('utf8')
-        else:
-            self.persistent_root_dir = os.path.join(self.private_dir,'persistent')
+
+        if self.config.has_option('global','token_lifetime'):
+            self.token_lifetime = self.config.getint('global','token_lifetime')
 
         # Get the configuration of all repositories (url, ...)
         self.repositories = []
@@ -3043,6 +3054,17 @@ class Wapt(BaseObjectClass):
         self.use_fqdn_as_uuid = fqdn
         logger.debug('Host uuid is now: %s'%self.host_uuid)
         logger.debug('Host computer_name is now: %s'%setuphelpers.get_computername())
+
+    @property
+    def token_secret_key(self):
+        kfn = os.path.join(self.private_dir,'secret_key')
+        if not os.path.isfile(kfn):
+            result = ''.join(random.SystemRandom().choice(string.letters + string.digits) for _ in range(64))
+            open(kfn,'w').write(result)
+            return result
+        else:
+            return open(kfn,'r').read()
+
 
     def add_hosts_repo(self):
         """Add an automatic host repository, remove existing WaptHostRepo last one before"""
@@ -5758,12 +5780,28 @@ class Wapt(BaseObjectClass):
         result['packages_whitelist'] = self.packages_whitelist
         result['packages_blacklist'] = self.packages_blacklist
 
-        listrules = []
-        for rules in glob.glob(setuphelpers.makepath(self.persistent_root_dir,'*','selfservice.json')):
-            with open(rules) as f:
-                listrules.append(json.loads(f.read()))
-        result['self_service_rules'] = merge_self_service_rules(listrules)
+        result['self_service_rules'] = self.self_service_rules()
 
+        return result
+
+    def self_service_rules(self):
+        """Returns dict of allowed packages for users and groups
+        """
+        cur = self.waptdb.db.execute("""select package,persistent_dir from wapt_localstatus s where s.section='selfservice'""")
+        result = {}
+        for (package,persistent_dir) in cur.fetchall():
+            rules_fn = setuphelpers.makepath(persistent_dir,'selfservice.json')
+            if os.path.isfile(rules_fn):
+                with open(rules_fn,'r') as f:
+                    rules = json.load(f)
+                for group,packages in rules.iteritems():
+                    if not group in result:
+                        result[group] = packages
+                    else:
+                        group_packages = result[group]
+                        for package in packages:
+                            if not package in group_packages:
+                                group_packages.append(package)
         return result
 
     def reachable_ip(self):
@@ -7143,19 +7181,64 @@ class Wapt(BaseObjectClass):
         else:
             logger.debug('%s : %s / %s' % (msg,progress,progress_max))
 
-    def is_authorized_package(self,package,username=None):
+    def get_secured_token_generator(self):
+        return TimedJSONWebSignatureSerializer(self.token_secret_key,expires_in=self.token_lifetime)
+
+    def is_authorized_package_action(self,action,package,user_groups=[],rules=None):
         package_request = PackageRequest(package=package)
-        if package_request.package in self.waptdb.installed_package_names():
+        if package_request.package in self.waptdb.installed_package_names() and action in ('install','upgrade','list'):
             return True
 
-        upgrades_and_pending = [PackageRequest(package=pr).package for pr in self.get_last_update_status().get('upgrades',[])]
-        if package_request.package in upgrades_and_pending:
+        upgrades_and_pending = [PackageRequest(pr).package for pr in self.get_last_update_status().get('upgrades',[])]
+        if package_request.package in upgrades_and_pending and action in ('install','upgrade','list'):
             return True
 
-        if not username:
+        if not user_groups:
             return False
 
-        return True
+        if 'waptselfservice' in user_groups:
+            return True
+
+        if rules is None:
+            rules = self.self_service_rules()
+
+        for group in user_groups:
+            if package_request.package in rules.get(group,[]):
+                return True
+
+        return False
+
+    def authorized_packages_for_token(self,token,package_requests=None):
+        token_gen = self.get_secured_token_generator()
+        user_pac = token_gen.loads(token)
+        user_groups = user_pac.get('groups',[])
+
+        rules = self.self_service_rules()
+
+        result = []
+        if package_requests is None:
+            for group in user_groups:
+                for package in rules.get(group,[]):
+                    if not package in result:
+                        result.append(package)
+        else:
+            for package_request in package_requests:
+                if isinstance(package_request,PackageRequest):
+                    pr = package_request
+                elif isinstance(package_request,(str,unicode)):
+                    pr = PackageRequest(pr)
+                elif isinstance(package_request,PackageEntry):
+                    pr = package_request.as_package_request()
+                else:
+                    continue
+
+                for group in user_groups:
+                    if pr.package in rules.get(group,[]):
+                        result.append(pr)
+                        break
+
+        return result
+
 
 def check_user_authorisation_for_self_service(rules,packagename,user_groups):
     """Returns True if the user is allowed to install software based on their group and selfservice rules
@@ -7179,10 +7262,10 @@ def check_user_authorisation_for_self_service(rules,packagename,user_groups):
     return False
 
 def get_user_self_service_groups(self_service_groups,logon_name,password):
-    """Returns the self-service groups for a given user
+    """Authenticate a user and returns the self-service groups membership
 
     Args:
-        self_service_groups (dict): dict rules with group allowed
+        self_service_groups (list): self service groups
         logon_name(str): Username of user
         password(str): Password of user
 
@@ -7203,7 +7286,8 @@ def get_user_self_service_groups(self_service_groups,logon_name,password):
         domain = logon_name.split('@')[1]
     else:
         username = logon_name
-    huser = win32security.LogonUser (username,domain,password,win32security.LOGON32_LOGON_NETWORK_CLEARTEXT,win32security.LOGON32_PROVIDER_DEFAULT)
+
+    huser = win32security.LogonUser(username,domain,password,win32security.LOGON32_LOGON_NETWORK_CLEARTEXT,win32security.LOGON32_PROVIDER_DEFAULT)
 
     listgroupuser =  [username]
     for group in self_service_groups :
@@ -7212,51 +7296,6 @@ def get_user_self_service_groups(self_service_groups,logon_name,password):
         if check_is_member_of(huser,group) :
             listgroupuser.append(group)
     return listgroupuser
-
-def merge_self_service_rules(all_rules):
-    """Returns a map of all authorized groups for a package
-
-    Args:
-        all_rules (dict): list of dicts.
-                          Each dict map a package with the list of
-
-
-    Returns:
-        list: {'tis-7zip':['waptadmins'],'tis-firefox':['testgrp','waptadmins']}
-    """
-    rulesselfservice = {}
-    for rules in all_rules :
-        for package in rules:
-            if package in rulesselfservice:
-                for user in rules[package]:
-                    if not user.lower() in rulesselfservice[package]:
-                        rulesselfservice[package].append(user.lower())
-            else:
-                rulesselfservice[package]=rules[package]
-
-    return rulesselfservice
-
-def reversed_self_service_rules(dict_group_packages):
-    """Returns a map of authorized packages for a group
-    given the map from authorized groups for a list of package
-
-    Args:
-        dict_group_packages (dict): map from group to package
-
-    Returns:
-        dict : map from package to group
-
-    """
-    dict_package_groups = {}
-    for group in dict_group_packages:
-        for package in dict_group_packages[group]:
-            if not package in dict_package_groups:
-                dict_package_groups[package] = [group]
-            else:
-                if not group in dict_package_groups[package]:
-                    dict_package_groups[package].append(group)
-
-    return dict_package_groups
 
 def wapt_sources_edit(wapt_sources_dir):
     """Utility to open Pyscripter with package source if it is installed

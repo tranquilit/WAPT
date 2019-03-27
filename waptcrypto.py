@@ -1446,6 +1446,9 @@ class SSLCertificateSigningRequest(BaseObjectClass):
         with open(filename, "wb") as f:
             f.write(self.as_pem())
 
+    def is_signature_valid(self):
+        return self.csr.is_signature_valid
+
     @property
     def rsa(self):
         """Return public RSA key"""

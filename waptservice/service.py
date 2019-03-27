@@ -85,7 +85,7 @@ import common
 from common import Wapt
 import setuphelpers
 from setuphelpers import Version
-from waptpackage import PackageEntry,WaptLocalRepo,WaptPackage,EWaptException
+from waptpackage import PackageEntry,WaptLocalRepo,WaptPackage,EWaptException,PackageRequest
 from waptcrypto import SSLVerifyException,SSLCABundle,SSLCertificate,SSLPrivateKey
 
 from waptservice.waptservice_common import waptconfig
@@ -258,10 +258,14 @@ def close_connection(exception):
 
 def check_auth(logon_name, password):
     """This function is called to check if a username /
-        password combination is valid against local waptservice admin configuration
-        or Local Admins.
-        If NOPASSWORD is set for wapt admin in wapt-get.ini, any user/password match
-        (for waptstarter standalone usage)
+    password combination is valid against local waptservice admin configuration
+    or Local Admins.
+
+    If NOPASSWORD is set for wapt admin in wapt-get.ini, any user/password match
+    (for waptstarter standalone usage)
+
+    Returns:
+        Handle : handle of user or
     """
     if app.waptconfig.waptservice_password != 'NOPASSWORD':
         if len(logon_name) ==0 or len(password)==0:
@@ -293,23 +297,34 @@ def check_auth(logon_name, password):
             try:
                 domain_admins_group_name = common.get_domain_admins_group_name()
                 if common.check_is_member_of(huser,domain_admins_group_name):
-                    return True
+                    return huser
                 if common.check_is_member_of(huser,'waptselfservice'):
-                    return True
+                    return huser
             except:
                 pass
+
             local_admins_group_name = common.get_local_admins_group_name()
             if common.check_is_member_of(huser,local_admins_group_name):
-                return True
+                return huser
+
+            if app.waptconfig.waptservice_password:
+                logger.debug('auth using wapt local account')
+                if app.waptconfig.waptservice_user == username and app.waptconfig.waptservice_password == hashlib.sha256(password).hexdigest():
+                    return username
+
+            return None
 
         except win32security.error:
             if app.waptconfig.waptservice_password:
                 logger.debug('auth using wapt local account')
-                return app.waptconfig.waptservice_user == username and app.waptconfig.waptservice_password == hashlib.sha256(password).hexdigest()
+                if app.waptconfig.waptservice_user == username and app.waptconfig.waptservice_password == hashlib.sha256(password).hexdigest():
+                    return username
+                else:
+                    return None
         else:
-            return False
+            return None
     else:
-        return True
+        return logon_name
 
 def allow_local_auth(f):
     """Restrict access to localhost authenticated"""
@@ -433,27 +448,23 @@ def all_packages(page=1):
         if not request.authorization:
             return authenticate()
 
-    listgroup = []
-    listrules = []
-    for rules in glob.glob(setuphelpers.makepath(wapt_root_dir,'private','persistent','*','selfservice.json')):
-        with open(rules) as f:
-            data = json.loads(f.read())
-            listgroup.append(data)
-            listrules.append(common.reversed_self_service_rules(data))
+    username = None
+    grpuser = []
+    rules = wapt().self_service_rules()
 
-    merged_groups = common.merge_self_service_rules(listgroup)
-    merged_rules = common.merge_self_service_rules(listrules)
-    user_self_service_groups = ['waptselfservice']
     if request.authorization:
         auth = request.authorization
         if check_auth(auth.username,auth.password):
-            user_self_service_groups = ['waptselfservice']
+            grpuser.append('waptselfservice')
+            username = auth.username
         else:
             try:
-                user_self_service_groups = common.get_user_self_service_groups(merged_groups,auth.username,auth.password)
+                grpuser = common.get_user_self_service_groups(rules.keys(),auth.username,auth.password)
+                username = auth.username
             except:
                 return authenticate()
-
+    else:
+        return authenticate()
 
     with sqlite3.connect(app.waptconfig.dbpath) as con:
         try:
@@ -475,7 +486,7 @@ def all_packages(page=1):
                 pe = PackageEntry().load_control_from_dict(
                     dict((cur.description[idx][0], value) for idx, value in enumerate(row)))
                 if not search or pe.match_search(search):
-                    if common.check_user_authorisation_for_self_service(merged_rules,pe.package,user_self_service_groups):
+                    if wapt().is_authorized_package_action('list',pe.package,grpuser,rules):
                         rows.append(pe)
 
             if request.args.get('latest','0') == '1':
@@ -710,21 +721,8 @@ def upgrade():
     if update_packages:
         all_tasks.append(app.task_manager.add_task(WaptUpdate(force=force,notify_user=notify_user)).as_dict())
 
-    actions = wapt().list_upgrade()
-    to_install = actions['upgrade']+actions['additional']+actions['install']
-    to_remove = actions['remove']
-    for req in to_remove:
-        all_tasks.append(app.task_manager.add_task(WaptPackageRemove(req,force=force,notify_user=notify_user,
-            only_priorities=only_priorities,
-            only_if_not_process_running=only_if_not_process_running)).as_dict())
-    for req in to_install:
-        all_tasks.append(app.task_manager.add_task(WaptPackageInstall(req,force=force,notify_user=notify_user,
-            only_priorities=only_priorities,
-            only_if_not_process_running=only_if_not_process_running,
-            # we don't reprocess depends
-            process_dependencies=True)).as_dict())
     all_tasks.append(app.task_manager.add_task(WaptUpgrade(notify_user=notify_user,only_priorities=only_priorities,
-            only_if_not_process_running=only_if_not_process_running)).as_dict())
+            only_if_not_process_running=only_if_not_process_running,force=force)).as_dict())
     all_tasks.append(app.task_manager.add_task(WaptCleanup(notify_user=False)))
 
     # append install wua tasks only if last scan reported to something to install
@@ -907,31 +905,11 @@ def inventory():
 @app.route('/install', methods=['GET'])
 @app.route('/install.json', methods=['GET'])
 @app.route('/install.html', methods=['GET'])
+@allow_local
 def install():
     package_requests = request.args.get('package')
     if not isinstance(package_requests,list):
         package_requests = [package_requests]
-
-    listgroup = []
-    listrules = []
-    for rules in glob.glob(setuphelpers.makepath(wapt_root_dir,'private','persistent','*','selfservice.json')):
-        with open(rules) as f:
-            data = json.loads(f.read())
-            listgroup.append(data)
-            listrules.append(common.reversed_self_service_rules(data))
-    mergegroup = common.merge_self_service_rules(listgroup)
-    mergerules = common.merge_self_service_rules(listrules)
-
-    grpuser = []
-    if request.authorization:
-        auth = request.authorization
-        if check_auth(auth.username,auth.password):
-            grpuser = ['waptselfservice']
-        else:
-            try:
-                grpuser = common.get_user_self_service_groups(mergegroup,auth.username,auth.password)
-            except:
-                return authenticate()
 
     force = int(request.args.get('force','0')) == 1
     notify_user = int(request.args.get('notify_user','0')) == 1
@@ -941,40 +919,34 @@ def install():
     only_if_not_process_running = int(request.args.get('only_if_not_process_running','0')) != 0
 
     username = None
+    grpuser = []
+    rules = wapt().self_service_rules()
 
-    for apackage in package_requests:
-        if request.remote_addr in ['127.0.0.1']:
-            auth = request.authorization
-            valid_auth = auth is not None and check_auth(auth.username, auth.password)
-
-            # check with current credentials
-            if valid_auth:
-                username = auth.username
-
-            is_authorized = wapt().is_authorized_package(apackage,username)
-            if not is_authorized:
-                is_authorized = common.check_user_authorisation_for_self_service(mergerules,apackage.split('(=')[0],grpuser)
-
-            if not is_authorized:
-                if not auth:
-                    logging.info('no credential given')
-                    return authenticate()
-
-                if not username:
-                    return authenticate()
-
-                is_authorized = wapt().is_authorized_package(apackage,username)
-                if not is_authorized:
-                    is_authorized = common.check_user_authorisation_for_self_service(mergerules,apackage.split('(=')[0],grpuser)
-                logging.info("user %s authenticated" % username)
-                logging.info("package %s authorization : %s" % (apackage,is_authorized))
+    if request.authorization:
+        auth = request.authorization
+        if check_auth(auth.username,auth.password):
+            grpuser.append('waptselfservice')
+            username = auth.username
         else:
-            return authenticate()
+            try:
+                grpuser = common.get_user_self_service_groups(rules.keys(),auth.username,auth.password)
+                username = auth.username
+            except:
+                return authenticate()
 
-    if package_requests:
-        data = app.task_manager.add_task(WaptPackageInstall(package_requests,force=force,installed_by=username,
+    authorized_packages = []
+    for apackage in package_requests:
+        if wapt().is_authorized_package_action('install',apackage,grpuser,rules):
+            authorized_packages.append(apackage)
+
+    logging.info("user %s authenticated" % username)
+
+    if authorized_packages:
+        data = app.task_manager.add_task(WaptPackageInstall(authorized_packages,force=force,installed_by=username,
             only_priorities = only_priorities,only_if_not_process_running=only_if_not_process_running,notify_user=notify_user)).as_dict()
-        app.task_manager.add_task(WaptAuditPackage(packagenames=package_requests,force=force,notify_user=notify_user,priority=100)).as_dict()
+        app.task_manager.add_task(WaptAuditPackage(packagenames=authorized_packages,force=force,notify_user=notify_user,priority=100)).as_dict()
+    else:
+        data = []
 
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
@@ -1001,43 +973,45 @@ def package_download():
 @app.route('/remove', methods=['GET'])
 @app.route('/remove.json', methods=['GET'])
 def remove():
-    if not request.authorization:
-            return authenticate()
+    package_requests = request.args.get('package')
+    if not isinstance(package_requests,list):
+        package_requests = [package_requests]
 
-    listgroup = []
-    listrules = []
-    for rules in glob.glob(setuphelpers.makepath(wapt_root_dir,'private','persistent','*','selfservice.json')):
-        with open(rules) as f:
-            data = json.loads(f.read())
-            listgroup.append(data)
-            listrules.append(common.reversed_self_service_rules(data))
-    mergegroup = common.merge_self_service_rules(listgroup)
-    mergerules = common.merge_self_service_rules(listrules)
+    force = int(request.args.get('force','0')) == 1
+    notify_user = int(request.args.get('notify_user','0')) == 1
+    only_priorities = None
+    if 'only_priorities' in request.args:
+        only_priorities = ensure_list(request.args.get('only_priorities',None),allow_none=True)
+    only_if_not_process_running = int(request.args.get('only_if_not_process_running','0')) != 0
+
+    username = None
     grpuser = []
+    rules = wapt().self_service_rules()
 
     if request.authorization:
         auth = request.authorization
         if check_auth(auth.username,auth.password):
-            grpuser = ['waptselfservice']
+            grpuser.append('waptselfservice')
+            username = auth.username
         else:
             try:
-                grpuser = common.get_user_self_service_groups(mergegroup,auth.username,auth.password)
+                grpuser = common.get_user_self_service_groups(rules.keys(),auth.username,auth.password)
+                username = auth.username
             except:
                 return authenticate()
-    else:
-        raise Exception('No authorization')
 
-    packages = request.args.get('package')
-    if not isinstance(packages,list):
-        packages = [packages]
-    logger.info(u"Remove package(s) %s" % packages)
-    force=int(request.args.get('force','0')) == 1
-    notify_user = int(request.args.get('notify_user','0')) == 1
+    authorized_packages = []
+    for apackage in package_requests:
+        if wapt().is_authorized_package_action('remove',apackage,grpuser,rules):
+            authorized_packages.append(apackage)
+
+    logging.info("user %s authenticated" % username)
+
     data = []
-    for package in packages:
-        if not common.check_user_authorisation_for_self_service(mergerules,package,grpuser):
-            return authenticate()
-        data.append(app.task_manager.add_task(WaptPackageRemove(package,force = force,created_by=auth.username),notify_user=notify_user).as_dict())
+    if authorized_packages:
+        for package in authorized_packages:
+            data.append(app.task_manager.add_task(WaptPackageRemove(package,force=force,created_by=username),notify_user=notify_user).as_dict())
+
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
     else:
@@ -1329,6 +1303,7 @@ class WaptTaskManager(threading.Thread):
             # not already in pending  actions...
             if not same:
                 task.wapt = self.wapt
+                task.task_manager = self
 
                 self.tasks_counter += 1
                 task.id = self.tasks_counter

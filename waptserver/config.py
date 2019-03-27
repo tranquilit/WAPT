@@ -85,6 +85,7 @@ _defaults = {
     'client_certificate_lifetime':3650,
     'use_ssl_client_auth':False,
     'signature_clockskew':5*60,
+    'token_lifetime': 12*60*60,
     'application_root':'',
     'wapt_admin_group_dn':None,
     'ldap_auth_server':None,
@@ -204,6 +205,9 @@ def load_config(cfgfile=DEFAULT_CONFIG_FILE):
 
     if _config.has_option('options', 'signature_clockskew'):
         conf['signature_clockskew'] = _config.getint('options', 'signature_clockskew')
+
+    if _config.has_option('options', 'token_lifetime'):
+        conf['token_lifetime'] = _config.getint('options', 'token_lifetime')
 
     if _config.has_option('options', 'application_root'):
         conf['application_root'] = _config.get('options', 'application_root')
