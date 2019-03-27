@@ -730,7 +730,7 @@ class WaptUpgrade(WaptTask):
         super(WaptUpgrade,self).__init__()
         #self.priority = 10
         self.notify_server_on_start = False
-        self.notify_server_on_finish = True
+        self.notify_server_on_finish = False
         self.only_priorities = only_priorities
         self.only_if_not_process_running = only_if_not_process_running
         self.force = False
@@ -761,7 +761,11 @@ class WaptUpgrade(WaptTask):
                 process_dependencies=True)).as_dict())
 
         if to_install:
-            all_tasks.append(self.task_manager.add_task(WaptAuditPackage(to_install,force=self.force,notify_user=self.notify_user)).as_dict())
+            all_tasks.append(self.task_manager.add_task(
+                WaptAuditPackage(to_install,
+                    force=self.force,
+                    notify_user=self.notify_user,
+                    notify_server_on_finish=True)).as_dict())
 
         all_install = self.result.get('install',[])
         if self.result.get('additional',[]):
