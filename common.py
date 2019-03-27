@@ -6111,7 +6111,7 @@ class Wapt(BaseObjectClass):
                     audit_period = None
 
                 if audit_period is not None:
-                    timedelta = get_time_delta(audit_period)
+                    timedelta = get_time_delta(audit_period,'m')
                     next_audit = datetime.datetime.now()+timedelta
 
                 # skip audit entirely if no uninstall_key and no audit hook
