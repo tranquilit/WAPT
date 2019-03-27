@@ -603,9 +603,9 @@ def main():
         postconf.msgbox('\n'.join(final_msg), height=height, width=width)
     else:
         if wapt_password:
-    	    final_msg.append('[*] WAPT admin password : %s\n' % wapt_password)
+            final_msg.append('[*] WAPT admin password : %s\n' % wapt_password)
         for line in final_msg:
-    	    print(line)
+            print(line)
 
 
 if __name__ == "__main__":
