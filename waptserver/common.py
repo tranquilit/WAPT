@@ -94,7 +94,7 @@ def get_server_uuid():
     return server_uuid
 
 def get_secured_token_generator():
-    return TimedJSONWebSignatureSerializer(app.conf['secret_key'], expires_in = app.conf['signature_clockskew'])
+    return TimedJSONWebSignatureSerializer(app.conf['secret_key'], expires_in = app.conf['token_lifetime'])
 
 
 def proxy_host_request(request, action):
