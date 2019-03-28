@@ -41,6 +41,7 @@ type
     ActSelfServiceSearchPackage: TAction;
     btAddGroup: TBitBtn;
     btAddGroup1: TBitBtn;
+    ButCancelHostTask: TBitBtn;
     ButPackagesUpdate1: TBitBtn;
     ButShowDownloadTasks: TBitBtn;
     ButRefreshHostsForPackage: TButton;
@@ -53,6 +54,9 @@ type
     EdSearchHostsForPackage: TSearchEdit;
     EdWUASearchWindowsUpdate: TSearchEdit;
     GridHostsForPackage: TSOGrid;
+    HostRunningTask: TLabeledEdit;
+    HostRunningTaskLog: TMemo;
+    HostTaskRunningProgress: TProgressBar;
     ImgHostsConnected: TImage;
     ImgHostsHasErrors: TImage;
     ImgHostsNeedUpgrade: TImage;
@@ -69,6 +73,7 @@ type
     MenuItem115: TMenuItem;
     MenuItem4: TMenuItem;
     MenuItem76: TMenuItem;
+    PanTaskTop: TPanel;
     PanFilterHosts: TPanel;
     PanHostsForPackage: TPanel;
     PanLeftReporting: TPanel;
@@ -79,6 +84,7 @@ type
     Splitter1: TSplitter;
     Splitter12: TSplitter;
     Splitter13: TSplitter;
+    SplitTopTaskTaskGrid: TSplitter;
     TbLeftTopreporting: TToolBar;
     tbSoftwaresNormalization: TToolButton;
     ToolButton11: TToolButton;
@@ -432,7 +438,6 @@ type
     butInitWapt: TBitBtn;
     butRun: TBitBtn;
     butSearchPackages: TBitBtn;
-    ButCancelHostTask: TBitBtn;
     cbShowHostPackagesSoft: TCheckBox;
     cbShowHostPackagesGroup: TCheckBox;
     cbShowLog: TCheckBox;
@@ -441,8 +446,6 @@ type
     GridHostTasksPending: TSOGrid;
     GridHostTasksDone: TSOGrid;
     GridHostTasksErrors: TSOGrid;
-    HostRunningTaskLog: TMemo;
-    HostRunningTask: TLabeledEdit;
     Label14: TLabel;
     MemoTaskLog: TMemo;
     MemoInstallOutput: TMemo;
@@ -483,13 +486,13 @@ type
     MenuItem68: TMenuItem;
     MenuItem69: TMenuItem;
     OpenDialogWapt: TOpenDialog;
-    PageControl1: TPageControl;
+    PagesTasks: TPageControl;
     PanTopGroups: TPanel;
     Panel12: TPanel;
     PopupWUAProducts: TPopupMenu;
     Panel3: TPanel;
     Panel5: TPanel;
-    Panel6: TPanel;
+    PanLog: TPanel;
     plStatusBar1: TPanel;
     PopupHostPackages: TPopupMenu;
     PopupWUAUpdates: TPopupMenu;
@@ -499,7 +502,6 @@ type
     EdSearchPackage: TSearchEdit;
     ImageList1: TImageList;
     pgGroups: TTabSheet;
-    HostTaskRunningProgress: TProgressBar;
     Splitter3: TSplitter;
     pgTasks: TTabSheet;
     SplitHostTaskLog: TSplitter;

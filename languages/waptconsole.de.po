@@ -5505,10 +5505,6 @@ msgstr ""
 msgid "Select WAPT file"
 msgstr "WAPT Datei auswählen"
 
-#: tviswaptgui.panel6.caption
-msgid "Panel6"
-msgstr "Forum6"
-
 #: tviswaptgui.panel7.caption
 msgctxt "tviswaptgui.panel7.caption"
 msgid "Panel7"
@@ -5529,6 +5525,10 @@ msgstr ""
 
 #: tviswaptgui.panleftreporting.caption
 msgid "PanLeftReporting"
+msgstr ""
+
+#: tviswaptgui.panlog.caption
+msgid "PanLog"
 msgstr ""
 
 #: tviswaptgui.pggroups.caption
