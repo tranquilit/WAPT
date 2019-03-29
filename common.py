@@ -5787,21 +5787,22 @@ class Wapt(BaseObjectClass):
     def self_service_rules(self):
         """Returns dict of allowed packages for users and groups
         """
-        cur = self.waptdb.db.execute("""select package,persistent_dir from wapt_localstatus s where s.section='selfservice'""")
+        cur = self.waptdb.db.execute("""select package,persistent_dir from wapt_localstatus s where s.section='selfservice' and s.persistent_dir is not null""")
         result = {}
         for (package,persistent_dir) in cur.fetchall():
-            rules_fn = setuphelpers.makepath(persistent_dir,'selfservice.json')
-            if os.path.isfile(rules_fn):
-                with open(rules_fn,'r') as f:
-                    rules = json.load(f)
-                for group,packages in rules.iteritems():
-                    if not group in result:
-                        result[group] = packages
-                    else:
-                        group_packages = result[group]
-                        for package in packages:
-                            if not package in group_packages:
-                                group_packages.append(package)
+            if persistent_dir:
+                rules_fn = setuphelpers.makepath(persistent_dir,'selfservice.json')
+                if os.path.isfile(rules_fn):
+                    with open(rules_fn,'r') as f:
+                        rules = json.load(f)
+                    for group,packages in rules.iteritems():
+                        if not group in result:
+                            result[group] = packages
+                        else:
+                            group_packages = result[group]
+                            for package in packages:
+                                if not package in group_packages:
+                                    group_packages.append(package)
         return result
 
     def reachable_ip(self):
