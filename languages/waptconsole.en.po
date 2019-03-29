@@ -2277,6 +2277,10 @@ msgctxt "tviswaptgui.actcreatewaptsetup.caption"
 msgid "Build WAPT Agent"
 msgstr ""
 
+#: tviswaptgui.actdeleteaccount.caption
+msgid "Delete account"
+msgstr ""
+
 #: tviswaptgui.actdeletegroup.caption
 msgctxt "tviswaptgui.actdeletegroup.caption"
 msgid "Delete bundle"
@@ -2403,6 +2407,10 @@ msgstr ""
 msgid "Make package template from setup file"
 msgstr ""
 
+#: tviswaptgui.actnewaccount.caption
+msgid "New account"
+msgstr ""
+
 #: tviswaptgui.actpackagesaudit.caption
 msgid "Audit package"
 msgstr ""
@@ -2468,6 +2476,10 @@ msgstr ""
 #: tviswaptgui.actrefreshhostsforpackage.caption
 msgctxt "tviswaptgui.actrefreshhostsforpackage.caption"
 msgid "Refresh"
+msgstr ""
+
+#: tviswaptgui.actreloadaccounts.caption
+msgid "Reload accounts"
 msgstr ""
 
 #: tviswaptgui.actreloadconfig.caption
@@ -2555,6 +2567,10 @@ msgstr ""
 
 #: tviswaptgui.actruncleanmgr.caption
 msgid "Run CleanMgr on host"
+msgstr ""
+
+#: tviswaptgui.actsaveaccounts.caption
+msgid "Save accounts"
 msgstr ""
 
 #: tviswaptgui.actsearchgroups.caption
@@ -5363,6 +5379,10 @@ msgstr ""
 msgid "Reports"
 msgstr ""
 
+#: tviswaptgui.pgrights.caption
+msgid "Rights management"
+msgstr ""
+
 #: tviswaptgui.pgselfservice.caption
 msgctxt "tviswaptgui.pgselfservice.caption"
 msgid "Self-service rules packages"
@@ -5395,6 +5415,68 @@ msgctxt "tviswaptgui.pgwindowsupdates.caption"
 msgid "Windows Updates list"
 msgstr ""
 
+#: tviswaptgui.sogrid1.header.columns[0].text
+msgid "Username"
+msgstr ""
+
+#: tviswaptgui.sogrid1.header.columns[10].text
+msgid "Edit WUA"
+msgstr ""
+
+#: tviswaptgui.sogrid1.header.columns[11].text
+msgid "Edit Reports"
+msgstr ""
+
+#: tviswaptgui.sogrid1.header.columns[12].text
+msgctxt "tviswaptgui.sogrid1.header.columns[12].text"
+msgid "Signed by"
+msgstr ""
+
+#: tviswaptgui.sogrid1.header.columns[13].text
+msgid "Signed on"
+msgstr ""
+
+#: tviswaptgui.sogrid1.header.columns[14].text
+msgctxt "tviswaptgui.sogrid1.header.columns[14].text"
+msgid "Remote hosts actions"
+msgstr ""
+
+#: tviswaptgui.sogrid1.header.columns[1].text
+msgid "Certificate"
+msgstr ""
+
+#: tviswaptgui.sogrid1.header.columns[2].text
+msgid "Issued by"
+msgstr ""
+
+#: tviswaptgui.sogrid1.header.columns[3].text
+msgid "Admin"
+msgstr ""
+
+#: tviswaptgui.sogrid1.header.columns[4].text
+msgid "Register hosts"
+msgstr ""
+
+#: tviswaptgui.sogrid1.header.columns[5].text
+msgid "Edit hosts"
+msgstr ""
+
+#: tviswaptgui.sogrid1.header.columns[6].text
+msgid "Edit groups"
+msgstr ""
+
+#: tviswaptgui.sogrid1.header.columns[7].text
+msgid "Edit packages"
+msgstr ""
+
+#: tviswaptgui.sogrid1.header.columns[8].text
+msgid "Apply upgrades"
+msgstr ""
+
+#: tviswaptgui.sogrid1.header.columns[9].text
+msgid "Edit self-service"
+msgstr ""
+
 #: tviswaptgui.tabsheet1.caption
 msgctxt "tviswaptgui.tabsheet1.caption"
 msgid "Pending"
@@ -5410,6 +5492,10 @@ msgstr ""
 
 #: tviswaptgui.tbreport.caption
 msgid "TbReport"
+msgstr ""
+
+#: tviswaptgui.tbreport1.caption
+msgid "TbReport1"
 msgstr ""
 
 #: tviswaptgui.toolbar1.caption
