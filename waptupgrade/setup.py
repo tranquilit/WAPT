@@ -265,8 +265,11 @@ def install():
     if installed_softwares('WAPT Server_is1'):
         error('Wapt server installed on this host. Aborting')
 
-    status = WAPT.wapt_status()
-    installed_wapt_version = status['wapt-exe-version']
+    waptexe = os.path.join(WAPT.wapt_base_dir,'wapt-get.exe')
+    if os.path.isfile(waptexe):
+        installed_wapt_version = get_file_properties(waptexe)['FileVersion']
+    else:
+        installed_wapt_version = '0.0.0'
 
     # get upgrade package informations
     (package_wapt_version,package_packaging) = control.version.split('-')
