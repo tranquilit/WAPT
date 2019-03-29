@@ -2556,14 +2556,14 @@ class SSLPKCS12(object):
         pkcs12.set_privatekey(crypto.PKey().from_cryptography_key(self._private_key.rsa))
         pkcs12.set_certificate(self._certificate.as_X509())
         if friendly_name:
-            pkcs12.set_friendlyname(friendly_name)
+            pkcs12.set_friendlyname(friendly_name.encode('utf8'))
         pkcs12.set_ca_certificates([certificate.as_X509() for certificate in self.ca_certificates])
         if filename is None:
             filename = self._filename
         if filename is not None:
-            open(filename,'wb').write(pkcs12.export(password))
+            open(filename,'wb').write(pkcs12.export(password.encode('utf8')))
         else:
-            raise Exception('No filename supplied for pkcs12 export')
+            raise Exception(u'No filename supplied for pkcs12 export')
 
 
 if __name__ == '__main__':

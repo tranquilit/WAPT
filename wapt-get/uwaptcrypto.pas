@@ -331,9 +331,7 @@ begin
     vPKCS12.certificate := cert;
     vPKCS12.private_key := key;
     vdestp12 := UTF8Decode(AppendPathDelim(destdir)+crtbasename+'.p12');
-    vPKCS12.save_as_p12(vdestcrt,vKeyPassword,vcommonname);
-
-
+    vPKCS12.save_as_p12(vdestp12,vKeyPassword,vcommonname);
   end;
 
   result := VarPythonAsString(vdestcrt);
