@@ -2294,7 +2294,7 @@ var
 begin
   result :='';
   for i := 1 to length(st) do
-    case st[i] of '0'..'9', 'A'..'Z', 'a'..'z', '-':
+    case st[i] of '0'..'9', 'A'..'Z', 'a'..'z', '-','_','=':
       result := Result+st[i]
     end;
 end;

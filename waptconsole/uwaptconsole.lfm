@@ -27,9 +27,9 @@ object VisWaptGUI: TVisWaptGUI
     Height = 652
     Top = 0
     Width = 1387
-    ActivePage = pgInventory
+    ActivePage = PgRights
     Align = alClient
-    TabIndex = 0
+    TabIndex = 8
     TabOrder = 0
     OnChange = MainPagesChange
     object pgInventory: TTabSheet
@@ -7886,7 +7886,7 @@ object VisWaptGUI: TVisWaptGUI
       ClientHeight = 626
       ClientWidth = 1379
       TabVisible = False
-      object SOGrid1: TSOGrid
+      object GridUsers: TSOGrid
         Left = 0
         Height = 576
         Top = 50

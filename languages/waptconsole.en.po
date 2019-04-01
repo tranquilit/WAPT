@@ -4661,6 +4661,81 @@ msgctxt "tviswaptgui.gridselfservicepackages.header.columns[9].text"
 msgid "Arch"
 msgstr ""
 
+#: tviswaptgui.gridusers.header.columns[0].text
+msgctxt "tviswaptgui.gridusers.header.columns[0].text"
+msgid "Username"
+msgstr ""
+
+#: tviswaptgui.gridusers.header.columns[10].text
+msgctxt "tviswaptgui.gridusers.header.columns[10].text"
+msgid "Edit WUA"
+msgstr ""
+
+#: tviswaptgui.gridusers.header.columns[11].text
+msgctxt "tviswaptgui.gridusers.header.columns[11].text"
+msgid "Edit Reports"
+msgstr ""
+
+#: tviswaptgui.gridusers.header.columns[12].text
+msgctxt "tviswaptgui.gridusers.header.columns[12].text"
+msgid "Signed by"
+msgstr ""
+
+#: tviswaptgui.gridusers.header.columns[13].text
+msgctxt "tviswaptgui.gridusers.header.columns[13].text"
+msgid "Signed on"
+msgstr ""
+
+#: tviswaptgui.gridusers.header.columns[14].text
+msgctxt "tviswaptgui.gridusers.header.columns[14].text"
+msgid "Remote hosts actions"
+msgstr ""
+
+#: tviswaptgui.gridusers.header.columns[1].text
+msgctxt "tviswaptgui.gridusers.header.columns[1].text"
+msgid "Certificate"
+msgstr ""
+
+#: tviswaptgui.gridusers.header.columns[2].text
+msgctxt "tviswaptgui.gridusers.header.columns[2].text"
+msgid "Issued by"
+msgstr ""
+
+#: tviswaptgui.gridusers.header.columns[3].text
+msgctxt "tviswaptgui.gridusers.header.columns[3].text"
+msgid "Admin"
+msgstr ""
+
+#: tviswaptgui.gridusers.header.columns[4].text
+msgctxt "tviswaptgui.gridusers.header.columns[4].text"
+msgid "Register hosts"
+msgstr ""
+
+#: tviswaptgui.gridusers.header.columns[5].text
+msgctxt "tviswaptgui.gridusers.header.columns[5].text"
+msgid "Edit hosts"
+msgstr ""
+
+#: tviswaptgui.gridusers.header.columns[6].text
+msgctxt "tviswaptgui.gridusers.header.columns[6].text"
+msgid "Edit groups"
+msgstr ""
+
+#: tviswaptgui.gridusers.header.columns[7].text
+msgctxt "tviswaptgui.gridusers.header.columns[7].text"
+msgid "Edit packages"
+msgstr ""
+
+#: tviswaptgui.gridusers.header.columns[8].text
+msgctxt "tviswaptgui.gridusers.header.columns[8].text"
+msgid "Apply upgrades"
+msgstr ""
+
+#: tviswaptgui.gridusers.header.columns[9].text
+msgctxt "tviswaptgui.gridusers.header.columns[9].text"
+msgid "Edit self-service"
+msgstr ""
+
 #: tviswaptgui.gridwsusscan.header.columns[0].text
 msgid "_id"
 msgstr ""
@@ -5413,68 +5488,6 @@ msgstr ""
 #: tviswaptgui.pgwindowsupdates.caption
 msgctxt "tviswaptgui.pgwindowsupdates.caption"
 msgid "Windows Updates list"
-msgstr ""
-
-#: tviswaptgui.sogrid1.header.columns[0].text
-msgid "Username"
-msgstr ""
-
-#: tviswaptgui.sogrid1.header.columns[10].text
-msgid "Edit WUA"
-msgstr ""
-
-#: tviswaptgui.sogrid1.header.columns[11].text
-msgid "Edit Reports"
-msgstr ""
-
-#: tviswaptgui.sogrid1.header.columns[12].text
-msgctxt "tviswaptgui.sogrid1.header.columns[12].text"
-msgid "Signed by"
-msgstr ""
-
-#: tviswaptgui.sogrid1.header.columns[13].text
-msgid "Signed on"
-msgstr ""
-
-#: tviswaptgui.sogrid1.header.columns[14].text
-msgctxt "tviswaptgui.sogrid1.header.columns[14].text"
-msgid "Remote hosts actions"
-msgstr ""
-
-#: tviswaptgui.sogrid1.header.columns[1].text
-msgid "Certificate"
-msgstr ""
-
-#: tviswaptgui.sogrid1.header.columns[2].text
-msgid "Issued by"
-msgstr ""
-
-#: tviswaptgui.sogrid1.header.columns[3].text
-msgid "Admin"
-msgstr ""
-
-#: tviswaptgui.sogrid1.header.columns[4].text
-msgid "Register hosts"
-msgstr ""
-
-#: tviswaptgui.sogrid1.header.columns[5].text
-msgid "Edit hosts"
-msgstr ""
-
-#: tviswaptgui.sogrid1.header.columns[6].text
-msgid "Edit groups"
-msgstr ""
-
-#: tviswaptgui.sogrid1.header.columns[7].text
-msgid "Edit packages"
-msgstr ""
-
-#: tviswaptgui.sogrid1.header.columns[8].text
-msgid "Apply upgrades"
-msgstr ""
-
-#: tviswaptgui.sogrid1.header.columns[9].text
-msgid "Edit self-service"
 msgstr ""
 
 #: tviswaptgui.tabsheet1.caption

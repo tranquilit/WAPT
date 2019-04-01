@@ -84,7 +84,7 @@ type
     PanLeftReporting: TPanel;
     PanWUASearchClassifications: TPanel;
     PopupMenuReportingQueries: TPopupMenu;
-    SOGrid1: TSOGrid;
+    GridUsers: TSOGrid;
     SplitGridUnitsHosts1: TSplitter;
     SplitHostsForPackage: TSplitter;
     Splitter1: TSplitter;
