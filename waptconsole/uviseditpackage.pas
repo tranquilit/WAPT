@@ -104,6 +104,7 @@ type
     procedure GridConflictsDragDrop(Sender: TBaseVirtualTree; Source: TObject;
       DataObject: IDataObject; Formats: TFormatArray; Shift: TShiftState;
       const Pt: TPoint; var Effect: DWORD; Mode: TDropMode);
+    procedure GridConflictsNodesDelete(Sender: TSOGrid; Rows: ISuperObject);
     function GridDependsBeforePaste(Sender: TSOGrid; Row: ISuperObject
       ): boolean;
     procedure GridDependsDragDrop(Sender: TBaseVirtualTree; Source: TObject;
@@ -112,6 +113,7 @@ type
     procedure GridDependsDragOver(Sender: TBaseVirtualTree; Source: TObject;
       Shift: TShiftState; State: TDragState; const Pt: TPoint;
       Mode: TDropMode; var Effect: DWORD; var Accept: boolean);
+    procedure GridDependsNodesDelete(Sender: TSOGrid; Rows: ISuperObject);
     procedure GridPackagesGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
       RowData, CellData: ISuperObject; Column: TColumnIndex;
       TextType: TVSTTextType; var CellText: string);
@@ -374,7 +376,7 @@ end;
 
 procedure TVisEditPackage.EdPackageExit(Sender: TObject);
 begin
-  EdPackage.Text:=Trim(EdPackage.Text);
+  EdPackage.Text:=MakeValidPackageName(EdPackage.Text);
 end;
 
 procedure TVisEditPackage.EdPackageKeyPress(Sender: TObject; var Key: char);
@@ -566,6 +568,12 @@ begin
   Accept := Source = GridPackages;
 end;
 
+procedure TVisEditPackage.GridDependsNodesDelete(Sender: TSOGrid;
+  Rows: ISuperObject);
+begin
+  GridDependsUpdated := True;
+end;
+
 procedure TVisEditPackage.GridPackagesGetText(Sender: TBaseVirtualTree;
   Node: PVirtualNode; RowData, CellData: ISuperObject; Column: TColumnIndex;
   TextType: TVSTTextType; var CellText: string);
@@ -626,7 +634,7 @@ var
 begin
   Screen.Cursor := crHourGlass;
   try
-    vpackagename:=PyUTF8Decode(Trim(EdPackage.Text));
+    vpackagename:=PyUTF8Decode(MakeValidPackageName(EdPackage.Text));
     vversion:=PyUTF8Decode(Trim(EdVersion.Text));
     vdepends:=PyUTF8Decode(Depends);
     vconflicts:=PyUTF8Decode(Conflicts);
@@ -821,6 +829,7 @@ function TVisEditPackage.GridConflictsBeforePaste(Sender: TSOGrid;
   Row: ISuperObject): boolean;
 begin
   Result := SOArrayFindFirst(Row,GridConflicts.data,['package']) = Nil;
+  GridConflictsUpdated := True;
 end;
 
 procedure TVisEditPackage.GridConflictsDragDrop(Sender: TBaseVirtualTree;
@@ -830,10 +839,17 @@ begin
   AddConflicts(Sender);
 end;
 
+procedure TVisEditPackage.GridConflictsNodesDelete(Sender: TSOGrid;
+  Rows: ISuperObject);
+begin
+  GridConflictsUpdated := True;
+end;
+
 function TVisEditPackage.GridDependsBeforePaste(Sender: TSOGrid;
   Row: ISuperObject): boolean;
 begin
   Result := SOArrayFindFirst(Row,GridDepends.data,['package']) = Nil;
+  GridDependsUpdated := True;
 end;
 
 procedure TVisEditPackage.AddConflicts(Sender: TObject);
