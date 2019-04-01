@@ -543,38 +543,13 @@ def all_packages(page=1):
 @allow_local
 def package_icon():
     """Return png icon for the required 'package' parameter
-        get it from local cache if or from package's remote repositiory
+    get it from local cache
     """
     package = request.args.get('package')
     icon_local_cache = os.path.join(wapt_root_dir,'cache','icons')
-    if not os.path.isdir(icon_local_cache):
-        os.makedirs(icon_local_cache)
-    #wapt=[]
-
-    def get_icon(package):
-        """Get icon from local cache or remote wapt directory, returns local filename"""
-        icon_local_filename = os.path.join(icon_local_cache,package+'.png')
-        if (not os.path.isfile(icon_local_filename) or os.path.getsize(icon_local_filename)<10):
-            if wapt().repositories[0].repo_url:
-                proxies = wapt().repositories[0].proxies
-                repo_url = wapt().repositories[0].repo_url
-                timeout = wapt().repositories[0].timeout
-
-                remote_icon_path = u"{repo}/icons/{package}.png".format(repo=repo_url,package=package)
-                icon = requests.get(remote_icon_path,proxies=proxies,timeout=timeout,verify=False)
-                icon.raise_for_status()
-                open(icon_local_filename,'wb').write(icon.content)
-                return StringIO.StringIO(icon.content)
-            else:
-                raise requests.HTTPError(u'Unavailable icon')
-        else:
-            return open(icon_local_filename,'rb')
-
-    try:
-        icon = get_icon(package)
-        return send_file(icon,'image/png',as_attachment=True,attachment_filename=u'{}.png'.format(package).encode('utf8'),cache_timeout=43200)
-    except requests.RequestException as e:
-        return send_from_directory(app.static_folder+'/images','unknown.png',mimetype='image/png',as_attachment=True,attachment_filename=u'{}.png'.format(package),cache_timeout=43200)
+    if not os.path.isfile(os.path.join(icon_local_cache,package)):
+        package = 'unknown'
+    return send_from_directory(icon_local_cache,package+'.png',mimetype='image/png',as_attachment=True,attachment_filename=u'{}.png'.format(package),cache_timeout=43200)
 
 @app.route('/package_details')
 @app.route('/package_details.json')
