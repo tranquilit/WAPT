@@ -151,19 +151,9 @@ def make_httpd_config(waptserver_root_dir, fqdn, force_https, server_config):
             shutil.copyfile(old_apache_key,wapt_ssl_key_file)
 
         else:
-            void = subprocess.check_output([
-                    'openssl',
-                    'req',
-                    '-new',                # create a request
-                    '-x509',               # no, actually, create a self-signed certificate!
-                    '-newkey', 'rsa:2048', # and the key that goes along, RSA, 2048 bits
-                    '-nodes',              # don't put a passphrase on the key
-                    '-days', '3650',       # the cert is valid for ten years
-                    '-out', wapt_ssl_cert_file,
-                    '-keyout', wapt_ssl_key_file,
-                    # fill in the minimum amount of information needed; to be revisited
-                    '-subj', '/C=FR/ST=Wapt/L=Wapt/O=Wapt/CN=' + fqdn + '/'
-                    ], stderr=subprocess.STDOUT)
+            void = subprocess.check_output(r"""\
+openssl req -new -x509 -newkey rsa:2048 -nodes -days 3650 -out "%s" -keyout "%s" -subj /C=FR/ST=Wapt/L=Wapt/O=Wapt/CN=%s/ -reqexts SAN -extensions SAN -config <(cat /etc/ssl/openssl.cnf <(printf \"[SAN]\nsubjectAltName=DNS:%s\"))\
+""" % (wapt_ssl_cert_file,wapt_ssl_key_file,fqdn,fqdn),stderr=subprocess.STDOUT,shell=True)
     else:
         if quiet:
 	        print('[*] Nginx - self-signed certs already exists, skipping...')
