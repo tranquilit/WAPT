@@ -1256,12 +1256,20 @@ class WaptDB(WaptBaseDB):
             status = '"OK","UNKNOWN"'
 
         q = self.query_package_entry(u"""\
-              select l.rowid,l.package,l.version,l.architecture,l.install_date,l.install_status,l.install_output,l.install_params,l.setuppy,
+              select l.rowid,l.package_uuid,
+                l.package,l.version,l.architecture,
+                coalesce(l.locale,r.locale) as locale,
+                coalesce(l.maturity,r.maturity) as maturity,
+                l.install_date,l.install_status,l.install_output,l.install_params,
+                l.setuppy,l.persistent_dir,
                 l.uninstall_key,l.explicit_by,
-                l.last_audit_status,l.last_audit_on,l.last_audit_output,l.next_audit_on,l.package_uuid,
-                coalesce(l.depends,r.depends) as depends,coalesce(l.conflicts,r.conflicts) as conflicts,coalesce(l.section,r.section) as section,coalesce(l.priority,r.priority) as priority,
+                l.last_audit_status,l.last_audit_on,l.last_audit_output,l.next_audit_on,
+                coalesce(l.depends,r.depends) as depends,
+                coalesce(l.conflicts,r.conflicts) as conflicts,
+                coalesce(l.section,r.section) as section,
+                coalesce(l.priority,r.priority) as priority,
                 r.maintainer,r.description,r.sources,r.filename,r.size,r.signer,r.signature_date,r.signer_fingerprint,
-                r.repo_url,r.md5sum,r.repo,l.persistent_dir
+                r.repo_url,r.md5sum,r.repo
                 from wapt_localstatus l
                 left join wapt_package r on r.package=l.package and l.version=r.version and (l.architecture is null or l.architecture=r.architecture)
               where l.package=? and l.install_status in (%s)
