@@ -376,17 +376,6 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
     ClientHeight = 248
     ClientWidth = 573
     TabOrder = 1
-    object CBWUAEnabled: TCheckBox
-      Left = 13
-      Height = 17
-      Top = 72
-      Width = 202
-      AllowGrayed = True
-      Caption = 'Manage Windows Updates with WAPT'
-      OnClick = CBWUAEnabledClick
-      State = cbGrayed
-      TabOrder = 2
-    end
     object GBWUA: TGroupBox
       Left = 5
       Height = 144
@@ -395,7 +384,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       Caption = 'WAPTWUA Windows Updates '
       ClientHeight = 126
       ClientWidth = 563
-      TabOrder = 3
+      TabOrder = 2
       object CBWUADefaultAllow: TCheckBox
         Left = 8
         Height = 17
@@ -499,6 +488,49 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
         '7d'
       )
       TabOrder = 1
+    end
+    object CBWUAEnabled: TRadioButton
+      AnchorSideLeft.Control = Label9
+      AnchorSideTop.Control = EdAuditScheduling
+      AnchorSideTop.Side = asrBottom
+      Left = 8
+      Height = 17
+      Top = 67
+      Width = 202
+      BorderSpacing.Top = 10
+      Caption = 'Manage Windows Updates with WAPT'
+      OnClick = CBWUAEnabledClick
+      TabOrder = 3
+    end
+    object CBWUADontchange: TRadioButton
+      AnchorSideLeft.Control = CBWUADisable
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = CBWUADisable
+      AnchorSideTop.Side = asrCenter
+      Left = 355
+      Height = 17
+      Top = 67
+      Width = 108
+      BorderSpacing.Left = 16
+      Caption = 'Dont'' set anything'
+      Checked = True
+      OnClick = CBWUADontchangeClick
+      TabOrder = 4
+      TabStop = True
+    end
+    object CBWUADisable: TRadioButton
+      AnchorSideLeft.Control = CBWUAEnabled
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = CBWUAEnabled
+      AnchorSideTop.Side = asrCenter
+      Left = 226
+      Height = 17
+      Top = 67
+      Width = 113
+      BorderSpacing.Left = 16
+      Caption = 'Disable WAPT WUA'
+      OnClick = CBWUADisableClick
+      TabOrder = 5
     end
   end
   object PanBottom: TPanel

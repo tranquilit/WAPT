@@ -26,7 +26,8 @@ type
     CBUseKerberos: TCheckBox;
     CBForceRepoURL: TCheckBox;
     CBWUADefaultAllow: TCheckBox;
-    CBWUAEnabled: TCheckBox;
+    CBWUADisable: TRadioButton;
+    CBWUADontchange: TRadioButton;
     EdAuditScheduling: TComboBox;
     edAppendHostProfiles: TEdit;
     EdWUADownloadScheduling: TComboBox;
@@ -55,8 +56,11 @@ type
     PanClient: TPanel;
     PanAgentEnterprise: TPanel;
     PopupMenu1: TPopupMenu;
+    CBWUAEnabled: TRadioButton;
     procedure ActGetServerCertificateExecute(Sender: TObject);
     procedure CBVerifyCertClick(Sender: TObject);
+    procedure CBWUADisableClick(Sender: TObject);
+    procedure CBWUADontchangeClick(Sender: TObject);
     procedure CBWUAEnabledClick(Sender: TObject);
     procedure fnPublicCertEditingDone(Sender: TObject);
     procedure fnPublicCertExit(Sender: TObject);
@@ -210,9 +214,36 @@ begin
   EdServerCertificate.Enabled:=CBVerifyCert.Checked;
 end;
 
+procedure TVisCreateWaptSetup.CBWUADisableClick(Sender: TObject);
+begin
+  if CBWUADisable.Checked then
+  begin
+    GBWUA.Enabled := False;
+    CBWUAEnabled.Checked:=False;
+    CBWUADontchange.Checked:=False;
+  end
+end;
+
+procedure TVisCreateWaptSetup.CBWUADontchangeClick(Sender: TObject);
+begin
+  if CBWUADontchange.Checked then
+  begin
+    GBWUA.Enabled := False;
+    CBWUAEnabled.Checked:=False;
+    CBWUADisable.Checked:=False;
+  end
+end;
+
 procedure TVisCreateWaptSetup.CBWUAEnabledClick(Sender: TObject);
 begin
-  GBWUA.Enabled:=CBWUAEnabled.State = cbChecked;
+  if CBWUAEnabled.Checked then
+  begin
+    GBWUA.Enabled := True;
+    CBWUADisable.Checked:=False;
+    CBWUADontchange.Checked:=False;
+  end
+  else
+    GBWUA.Enabled := False;
 end;
 
 procedure TVisCreateWaptSetup.ActGetServerCertificateExecute(Sender: TObject);
@@ -290,7 +321,7 @@ begin
       CBCheckCertificatesValidity.Visible := True;
 
     if not DMPython.IsEnterpriseEdition then
-      CBWUAEnabled.State := cbGrayed
+      CBWUADontchange.Checked := True
     else
     begin
       if ini.ValueExists('global','waptaudit_task_period') then
@@ -300,7 +331,7 @@ begin
       begin
         // no key -> don't change anything -> grayed
         if not ini.ValueExists('waptwua','enabled') then
-          CBWUAEnabled.State:=cbGrayed
+          CBWUADontchange.Checked:=True
         else
           CBWUAEnabled.Checked:=ini.ReadBool('waptwua','enabled',False);
 

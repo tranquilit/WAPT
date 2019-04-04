@@ -427,6 +427,14 @@ msgstr "Vérifier le certificat https serveur"
 msgid "Allow all Updates by default unless explicitely forbidden by rules"
 msgstr "Autoriser toutes les MAJ par défaut."
 
+#: tviscreatewaptsetup.cbwuadisable.caption
+msgid "Disable WAPT WUA"
+msgstr "Désactiver WAPT WUA"
+
+#: tviscreatewaptsetup.cbwuadontchange.caption
+msgid "Dont' set anything"
+msgstr "Ne rien changer"
+
 #: tviscreatewaptsetup.cbwuaenabled.caption
 msgid "Manage Windows Updates with WAPT"
 msgstr "Gérer les MAJ Windows avec WAPT"
@@ -4678,91 +4686,76 @@ msgid "Arch"
 msgstr "Arch"
 
 #: tviswaptgui.gridusers.header.columns[0].text
-
 msgctxt "tviswaptgui.gridusers.header.columns[0].text"
 msgid "Username"
 msgstr "Nom d'utilisateur"
 
 #: tviswaptgui.gridusers.header.columns[10].text
-
 msgctxt "tviswaptgui.gridusers.header.columns[10].text"
 msgid "Edit WUA"
 msgstr "Editer les requêtes"
 
 #: tviswaptgui.gridusers.header.columns[11].text
-
 msgctxt "tviswaptgui.gridusers.header.columns[11].text"
 msgid "Edit Reports"
 msgstr "Actions distantes"
 
 #: tviswaptgui.gridusers.header.columns[12].text
-
 msgctxt "tviswaptgui.gridusers.header.columns[12].text"
 msgid "Signed by"
 msgstr "Lancer les installations"
 
 #: tviswaptgui.gridusers.header.columns[13].text
-
 msgctxt "tviswaptgui.gridusers.header.columns[13].text"
 msgid "Signed on"
 msgstr "Signé le"
 
 #: tviswaptgui.gridusers.header.columns[14].text
-
 msgctxt "tviswaptgui.gridusers.header.columns[14].text"
 msgid "Remote hosts actions"
 msgstr "Signé le"
 
 #: tviswaptgui.gridusers.header.columns[1].text
-
 msgctxt "tviswaptgui.gridusers.header.columns[1].text"
 msgid "Certificate"
 msgstr "Certificat"
 
 #: tviswaptgui.gridusers.header.columns[2].text
-
 msgctxt "tviswaptgui.gridusers.header.columns[2].text"
 msgid "Issued by"
 msgstr "Emis par"
 
 #: tviswaptgui.gridusers.header.columns[3].text
-
 msgctxt "tviswaptgui.gridusers.header.columns[3].text"
 msgid "Admin"
 msgstr "Admin"
 
 #: tviswaptgui.gridusers.header.columns[4].text
-
 msgctxt "tviswaptgui.gridusers.header.columns[4].text"
 msgid "Register hosts"
 msgstr "Enregistrer client"
 
 #: tviswaptgui.gridusers.header.columns[5].text
-
 msgctxt "tviswaptgui.gridusers.header.columns[5].text"
 msgid "Edit hosts"
 msgstr "Modifier client"
 
 #: tviswaptgui.gridusers.header.columns[6].text
-
 msgctxt "tviswaptgui.gridusers.header.columns[6].text"
 msgid "Edit groups"
 msgstr "Modifier groupe"
 
 #: tviswaptgui.gridusers.header.columns[7].text
-
 msgctxt "tviswaptgui.gridusers.header.columns[7].text"
 msgid "Edit packages"
 msgstr "Modifier paquet"
 
 #: tviswaptgui.gridusers.header.columns[8].text
-
 msgctxt "tviswaptgui.gridusers.header.columns[8].text"
 msgid "Apply upgrades"
 msgstr "Enregistrer"
 
 #: tviswaptgui.gridusers.header.columns[9].text
-
 msgctxt "tviswaptgui.gridusers.header.columns[9].text"
 msgid "Edit self-service"
 msgstr "Modifier self-service"

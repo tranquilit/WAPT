@@ -442,6 +442,14 @@ msgstr ""
 msgid "Allow all Updates by default unless explicitely forbidden by rules"
 msgstr ""
 
+#: tviscreatewaptsetup.cbwuadisable.caption
+msgid "Disable WAPT WUA"
+msgstr ""
+
+#: tviscreatewaptsetup.cbwuadontchange.caption
+msgid "Dont' set anything"
+msgstr ""
+
 #: tviscreatewaptsetup.cbwuaenabled.caption
 msgid "Manage Windows Updates with WAPT"
 msgstr ""
