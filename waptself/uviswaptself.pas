@@ -1,4 +1,4 @@
-unit VisWaptSelf;
+unit uviswaptself;
 
 {$mode objfpc}{$H+}
 
@@ -11,16 +11,17 @@ uses
 
 type
 
-  { TForm1 }
+  { TVisWaptSelf }
 
-  TForm1 = class(TForm)
+  TVisWaptSelf = class(TForm)
     BCLabel1: TBCLabel;
     EdSearch: TEditButton;
     FlowPackages: TFlowPanel;
     Panel1: TPanel;
-    Panel2: TPanel;
+    PanCategories: TPanel;
     Panel7: TPanel;
     ScrollBox1: TScrollBox;
+    Splitter1: TSplitter;
     procedure EdSearchButtonClick(Sender: TObject);
     procedure EdSearchKeyPress(Sender: TObject; var Key: char);
     procedure FormCreate(Sender: TObject);
@@ -31,15 +32,15 @@ type
   end;
 
 var
-  Form1: TForm1;
+  VisWaptSelf: TVisWaptSelf;
 
 implementation
 uses uFrmPackage,waptcommon,superobject;
 {$R *.lfm}
 
-{ TForm1 }
+{ TVisWaptSelf }
 
-procedure TForm1.EdSearchButtonClick(Sender: TObject);
+procedure TVisWaptSelf.EdSearchButtonClick(Sender: TObject);
 var
   packages,package:ISuperObject;
   AFrmPackage:TFrmPackage;
@@ -53,6 +54,7 @@ begin
     for idx := FlowPackages.ControlCount-1 downto 0 do
       FlowPackages.Controls[Idx].Free;
     FlowPackages.ControlList.Clear;
+    // TODO : do this asynchronously in a Thread
     packages := WAPTLocalJsonGet(Format('packages.json?q=%s&latest=1',[EdSearch.Text]),'admin','calimero');
     idx := 0;
     for package in packages do
@@ -104,7 +106,7 @@ begin
   end;
 end;
 
-procedure TForm1.EdSearchKeyPress(Sender: TObject; var Key: char);
+procedure TVisWaptSelf.EdSearchKeyPress(Sender: TObject; var Key: char);
 begin
   if Key = #13 then
   begin
@@ -113,11 +115,13 @@ begin
   end;
 end;
 
-procedure TForm1.FormCreate(Sender: TObject);
+procedure TVisWaptSelf.FormCreate(Sender: TObject);
 var
   i:integer;
   g:TPicture;
 begin
+  //TODO : relative path
+  //TODO : get icons pack from server on demand
   LstIcons := FindAllFiles('c:\wapt\cache\icons','*.png',False);
   for i := 0 to LstIcons.Count-1 do
     try
@@ -130,7 +134,7 @@ begin
     end;
 end;
 
-{ TForm1 }
+{ TVisWaptSelf }
 
 end.
 

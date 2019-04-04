@@ -8,8 +8,14 @@
       <MainUnit Value="0"/>
       <Title Value="waptself"/>
       <Scaled Value="True"/>
+      <UseAppBundle Value="False"/>
       <ResourceType Value="res"/>
       <UseXPManifest Value="True"/>
+      <XPManifest>
+        <DpiAware Value="True"/>
+        <TextName Value="WAPT Self Service"/>
+        <TextDesc Value=""/>
+      </XPManifest>
       <Icon Value="0"/>
     </General>
     <BuildModes Count="1">
@@ -49,12 +55,11 @@
         <IsPartOfProject Value="True"/>
       </Unit0>
       <Unit1>
-        <Filename Value="viswaptself.pas"/>
+        <Filename Value="uviswaptself.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="Form1"/>
+        <ComponentName Value="VisWaptSelf"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="VisWaptSelf"/>
       </Unit1>
       <Unit2>
         <Filename Value="ufrmpackage.pas"/>

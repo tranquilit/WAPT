@@ -111,3 +111,5 @@ Makefile
 waptsetup/waptsetuputil/lib
 /vc_redist
 /waptserver/pgsql*
+/waptself/*.exe
+/waptself/lib

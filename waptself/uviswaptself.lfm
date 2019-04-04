@@ -1,12 +1,13 @@
-object Form1: TForm1
+object VisWaptSelf: TVisWaptSelf
   Left = 995
   Height = 910
   Top = 82
   Width = 681
-  Caption = 'Form1'
+  Caption = 'WAPT softwares Self-service'
   ClientHeight = 910
   ClientWidth = 681
   OnCreate = FormCreate
+  ParentBiDiMode = False
   Position = poDefaultPosOnly
   LCLVersion = '1.8.4.0'
   object Panel1: TPanel
@@ -249,10 +250,10 @@ object Form1: TForm1
     end
   end
   object ScrollBox1: TScrollBox
-    Left = 170
+    Left = 175
     Height = 858
     Top = 52
-    Width = 511
+    Width = 506
     HorzScrollBar.Page = 1
     VertScrollBar.Increment = 1
     VertScrollBar.Page = 1
@@ -261,7 +262,7 @@ object Form1: TForm1
     Align = alClient
     BorderStyle = bsNone
     ClientHeight = 858
-    ClientWidth = 511
+    ClientWidth = 506
     Color = clWindow
     ParentColor = False
     TabOrder = 1
@@ -269,7 +270,7 @@ object Form1: TForm1
       Left = 0
       Height = 0
       Top = 0
-      Width = 511
+      Width = 506
       Align = alTop
       AutoSize = True
       BevelOuter = bvNone
@@ -284,16 +285,22 @@ object Form1: TForm1
       TabOrder = 0
     end
   end
-  object Panel2: TPanel
+  object PanCategories: TPanel
     Left = 0
     Height = 858
     Top = 52
     Width = 170
     Align = alLeft
     BevelOuter = bvNone
-    Caption = 'Panel2'
     Color = clWindow
     ParentColor = False
     TabOrder = 2
+  end
+  object Splitter1: TSplitter
+    Left = 170
+    Height = 858
+    Top = 52
+    Width = 5
+    Beveled = True
   end
 end

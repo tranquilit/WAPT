@@ -7,7 +7,7 @@ uses
   cthreads,
   {$ENDIF}{$ENDIF}
   Interfaces, // this includes the LCL widgetset
-  Forms, VisWaptSelf, uFrmPackage
+  Forms, uviswaptself, uFrmPackage
   { you can add units after this };
 
 {$R *.res}
@@ -16,7 +16,7 @@ begin
   Application.Scaled:=True;
   RequireDerivedFormResource:=True;
   Application.Initialize;
-  Application.CreateForm(TForm1, Form1);
+  Application.CreateForm(TVisWaptSelf, VisWaptSelf);
   Application.Run;
 end.
 
