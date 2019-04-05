@@ -7249,6 +7249,10 @@ class Wapt(BaseObjectClass):
         return result
 
 
+    def available_categories(self):
+        return list(set([k.get('keywords').capitalize().split(',')[0] for k in self.waptdb.query('select distinct keywords from wapt_package where keywords is not null')]))
+
+
 def check_user_authorisation_for_self_service(rules,packagename,user_groups):
     """Returns True if the user is allowed to install software based on their group and selfservice rules
 

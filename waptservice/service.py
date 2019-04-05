@@ -437,6 +437,28 @@ def latest_only(packages):
 
     return index.values()
 
+@app.route('/keywords.json')
+def keywords():
+    with sqlite3.connect(app.waptconfig.dbpath) as con:
+        try:
+            con.row_factory=sqlite3.Row
+            cur = con.cursor()
+            rows = []
+            query = "select distinct trim(keywords) from wapt_package where keywords is not null and trim(keywords)<>''"
+            rows = cur.execute(query)
+            result = {}
+            for k in rows:
+                kws = k[0].lower().split(',')
+                for kw in kws:
+                    kwt = kw.strip().capitalize()
+                    if not kwt in result:
+                        result[kwt] = 1
+                    else:
+                        result[kwt] = result[kwt] +1
+            return Response(common.jsondump(sorted(result.keys())), mimetype='application/json')
+        except Exception as e:
+            logger.critical(u'Error: %s' % e)
+            return Response(common.jsondump([]), mimetype='application/json')
 
 @app.route('/list/pg<int:page>')
 @app.route('/packages.json')
@@ -482,9 +504,22 @@ def all_packages(page=1):
             rows = []
 
             search = request.args.get('q','').encode('utf8').replace('\\', '')
+            keywords = ensure_list(request.args.get('keywords','').lower().encode('utf8'))
+
             for row in cur.fetchall():
                 pe = PackageEntry().load_control_from_dict(
                     dict((cur.description[idx][0], value) for idx, value in enumerate(row)))
+
+                if len(keywords)>0:
+                    match_kw = False
+                    package_keywords = ensure_list(pe.keywords.lower())
+                    for kw in package_keywords:
+                        if kw in keywords:
+                            match_kw = True
+                            break
+                    if not match_kw:
+                        continue
+
                 if not search or pe.match_search(search):
                     if wapt().is_authorized_package_action('list',pe.package,grpuser,rules):
                         rows.append(pe)
