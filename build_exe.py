@@ -19,6 +19,7 @@ parser=OptionParser()
 parser.add_option("-c","--config", dest="config", default=os.path.join(wapt_root_dir,'wapt-get.ini') , help="Config file full path (default: %default)")
 parser.add_option("-l","--loglevel", dest="loglevel", default=None, type='choice',  choices=['debug','warning','info','error','critical'], metavar='LOGLEVEL',help="Loglevel (default: warning)")
 parser.add_option("-f","--force", dest="force", default=False,action='store_true', help="Force build all exe)")
+parser.add_option("-b","--build-nr", dest="buildnr", default=None, help="Wapt compile build  to put in exe metadata. (default: %default)")
 (options,args)=parser.parse_args()
 
 force = options.force
@@ -31,6 +32,11 @@ try:
     ISCCBUILD = r'waptpython.exe waptsetup\create_setup_simple.py -k C:\Users\buildbot\Documents\tranquilit2.p12 -w C:\Users\buildbot\Documents\tmpkeypwd'
 
     def compile_exes(edition='enterprise',force=False):
+        if options.buildnr is not None:
+            option_buildnr = '-b '+options.buildnr
+        else:
+            option_buildnr = ''
+
         for lpi in ["wapt-get\\waptget.lpi","wapt-get\\waptguihelper.lpi","waptdeploy\\waptdeploy.lpi",
                     "wapttray\\wapttray.lpi","waptconsole\\waptconsole.lpi","waptexit\\waptexit.lpi",
                     #"waptserver\\postconf\\waptserverpostconf.lpi",
@@ -50,7 +56,7 @@ try:
                 exe = ''
             if force or not isfile(exe):
                 print('Compiling %s...' % lpi)
-                print(run(LAZBUILD+ r' -e {edition} {lpi}'.format(**locals())))
+                print(run(LAZBUILD+ r' -e {edition} {lpi} {option_buildnr}'.format(**locals())))
             else:
                 print('Skipped %s ' % lpi)
 

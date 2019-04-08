@@ -33,7 +33,7 @@ __doc__ = """\
 Configure and Build a Lazarus app
 """
 
-def set_lpi_options(lpi_fn,waptedition,waptversion):
+def set_lpi_options(lpi_fn,waptedition,waptversion,buildnr=None):
     """Change the product name and product version of lazarus lpi project"""
     lpi = etree.parse(lpi_fn)
     vi = lpi.find('ProjectOptions/VersionInfo')
@@ -46,7 +46,10 @@ def set_lpi_options(lpi_fn,waptedition,waptversion):
     et_build = lpi.find('ProjectOptions/VersionInfo/BuildNr')
     if et_build is None:
         et_build = etree.SubElement(vi,'BuildNr')
-    build = et_build.attrib['Value'] = waptversion.members[3]
+    if buildnr is None:
+        build = et_build.attrib['Value'] = waptversion.members[3]
+    else:
+        build = et_build.attrib['Value'] = buildnr
     st = lpi.find('ProjectOptions/VersionInfo/StringTable')
     st.attrib['ProductName'] = 'WAPT %s Edition' % waptedition.capitalize()
     st.attrib['ProductVersion'] = '%s.%s.%s' % (major,minor,revision)
@@ -118,6 +121,7 @@ def main():
     parser.add_option("-l","--laz-build-path", dest="lazbuildpath", default=r'C:\lazarus\lazbuild.exe', help="Path to lazbuild or lazbuild.exe (default: %default)")
     parser.add_option("-p","--primary-config-path", dest="primary_config_path", default='%LOCALAPPDATA%\\lazarus', help="Path to lazbuild primary config dir. (default: %default)")
     parser.add_option("-v","--wapt-version", dest="waptversion", default=waptutils.__version__, help="Wapt version to put in exe metadata. (default: %default)")
+    parser.add_option("-b","--build-nr", dest="buildnr", default=None, help="Wapt compile build  to put in exe metadata. (default: %default)")
     parser.add_option("-e","--wapt-edition", dest="waptedition", default='community', help="Wapt edition to build (community, enterprise...).  (default: %default)")
     parser.add_option("-u","--update-hash-file", dest="update_hash_filepath", default=r'{lpi_dirname}\\..\\{lpi_name}.sha256',help="Hash file to update vars (lpi_rootname,lpi_name,lpi_path,lpi_dirname,lpi_basename) (default: <lpi-base-name>.sha256")
     parser.add_option("-c","--compress", action='store_true', dest="compress", default=False, help="Compress with UPX.  (default: %default)")
@@ -137,7 +141,7 @@ def main():
         lpi_basename = os.path.basename(lpi_path)
         (lpi_name,lpi_ext) = os.path.splitext(os.path.basename(lpi_path))
         print('Configure %s' % lpi_path)
-        set_lpi_options(lpi_path,options.waptedition,waptutils.Version(options.waptversion,4))
+        set_lpi_options(lpi_path,options.waptedition,waptutils.Version(options.waptversion,4),options.buildnr)
         set_app_ico(lpi_path,options.waptedition)
 
         update_hash_file(os.path.abspath(options.update_hash_filepath.format(**locals())))
