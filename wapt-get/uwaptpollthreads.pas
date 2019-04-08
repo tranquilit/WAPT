@@ -215,7 +215,7 @@ procedure TCheckTasksThread.Execute;
 begin
   while not Terminated do
   try
-    Tasks := WAPTLocalJsonGet(Format('tasks.json?last_event_id=%d&timeout=%d',[LastReadEventId,3]),'','',PollTimeout,Nil,0);
+    Tasks := WAPTLocalJsonGet(Format('tasks.json?last_event_id=%d&timeout=%d',[LastReadEventId,3]),'','',PollTimeout);
     if Assigned(Tasks) then
       LastReadEventId:=Tasks.I['last_event_id'];
     WaptServiceRunning:=True;
@@ -298,9 +298,9 @@ begin
     Message := 'Waiting for events';
     if LastReadEventId<0 then
       // first time, get just last event
-      Events := WAPTLocalJsonGet(Format('events?max_count=1',[]),'','',PollTimeout,Nil,0)
+      Events := WAPTLocalJsonGet(Format('events?max_count=1',[]),'','',PollTimeout)
     else
-      Events := WAPTLocalJsonGet(Format('events?last_read=%d',[LastReadEventId]),'','',PollTimeout,Nil,0);
+      Events := WAPTLocalJsonGet(Format('events?last_read=%d',[LastReadEventId]),'','',PollTimeout);
     if (Events <> Nil) and (Events.DataType=stArray) then
     begin
       If Events.AsArray.Length>0 then

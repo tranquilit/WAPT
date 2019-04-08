@@ -479,10 +479,12 @@ def all_packages(page=1):
         if check_auth(auth.username,auth.password):
             grpuser.append('waptselfservice')
             username = auth.username
+            logger.debug(u'User %s authenticated against local admins (waptselfservice)' % auth.username)
         else:
             try:
                 grpuser = common.get_user_self_service_groups(rules.keys(),auth.username,auth.password)
                 username = auth.username
+                logger.debug(u'User %s authenticated against self-service groups %s' % (auth.username,grpuser))
             except:
                 return authenticate()
     else:
@@ -917,6 +919,7 @@ def inventory():
 @app.route('/install.html', methods=['GET'])
 @allow_local
 def install():
+    print('trying install')
     package_requests = request.args.get('package')
     if not isinstance(package_requests,list):
         package_requests = [package_requests]
@@ -937,17 +940,22 @@ def install():
         if check_auth(auth.username,auth.password):
             grpuser.append('waptselfservice')
             username = auth.username
+            logger.debug(u'User %s authenticated against local admins or waptselfservice)' % auth.username)
         else:
             try:
                 grpuser = common.get_user_self_service_groups(rules.keys(),auth.username,auth.password)
                 username = auth.username
+                logger.debug(u'User %s authenticated against self-service groups %s' % (auth.username,grpuser))
             except:
+                logger.debug(u'User %s not allowed' % (auth.username))
                 return authenticate()
 
     authorized_packages = []
     for apackage in package_requests:
         if wapt().is_authorized_package_action('install',apackage,grpuser,rules):
             authorized_packages.append(apackage)
+        else:
+            return authenticate()
 
     logging.info("user %s authenticated" % username)
 
@@ -1001,12 +1009,14 @@ def remove():
     if request.authorization:
         auth = request.authorization
         if check_auth(auth.username,auth.password):
+            logger.debug(u'User %s authenticated against local admins (waptselfservice)' % auth.username)
             grpuser.append('waptselfservice')
             username = auth.username
         else:
             try:
                 grpuser = common.get_user_self_service_groups(rules.keys(),auth.username,auth.password)
                 username = auth.username
+                logger.debug(u'User %s authenticated against self-service groups %s' % (auth.username,grpuser))
             except:
                 return authenticate()
 

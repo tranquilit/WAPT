@@ -25,7 +25,7 @@ unit waptcommon;
 interface
   uses
      Classes, SysUtils, Windows,
-     SuperObject,IdComponent,IdHttp,IdCookieManager,IdSSLOpenSSL,DefaultTranslator;
+     SuperObject,IdComponent,IdHttp,IdCookieManager,IdSSLOpenSSL,DefaultTranslator,httpsend;
 
   type
       TProgressCallback=function(Receiver:TObject;current,total:Integer):Boolean of object;
@@ -67,7 +67,11 @@ interface
   //call url action on waptserver. action can contains formatting chars like %s which will be replaced by args with the Format function.
   function WAPTServerJsonGet(action: String;args:Array of const;method:AnsiString='GET';ConnectTimeout:integer=4000;SendTimeout:integer=60000;ReceiveTimeout:integer=60000): ISuperObject; //use global credentials and proxy settings
   function WAPTServerJsonPost(action: String;args:Array of const;data: ISuperObject;method:AnsiString='POST';ConnectTimeout:integer=4000;SendTimeout:integer=60000;ReceiveTimeout:integer=60000): ISuperObject; //use global credentials and proxy settings
-  function WAPTLocalJsonGet(action:String;user:AnsiString='';password:AnsiString='';timeout:integer=-1;OnAuthorization:TIdOnAuthorization=Nil;RetryCount:Integer=1):ISuperObject;
+
+
+  type THTTPSendAuthorization=procedure(Sender: THttpSend; var ShouldRetry: Boolean) of object;
+  function WAPTLocalJsonGet(action:String;user:AnsiString='';password:AnsiString='';timeout:integer=-1;
+              OnAuthorization:THTTPSendAuthorization=Nil;RetryCount:Integer=0):ISuperObject;
 
   Function IdWget(const fileURL, DestFileName: Utf8String; CBReceiver:TObject=Nil;progressCallback:TProgressCallback=Nil;HttpProxy: String='';userAgent:String='';
               VerifyCertificateFilename:String='';CookieManage:TIdCookieManager=Nil;ClientCertFilename:String='';ClientKeyFilename:String=''): boolean;
@@ -160,7 +164,6 @@ function RegisteredAppInstallLocation(UninstallKey:String): String;
 
 
 function MakeValidPackageName(st:String):String;
-
 
 type
 
@@ -266,8 +269,8 @@ implementation
 
 uses LazFileUtils, LazUTF8, soutils, Variants,uwaptres,waptwinutils,uwaptcrypto,tisinifiles,tislogging,
   NetworkAdapterInfo, JwaWinsock2, windirs,
-  IdMultipartFormData,IdExceptionCore,IdException,IdURI,
-  gettext,IdStack,IdCompressorZLib,IdAuthentication,shfolder,IniFiles,tiscommon,strutils,tisstrings,registry;
+  IdMultipartFormData,IdExceptionCore,IdException,IdURI,IdHeaderList,
+  gettext,IdStack,IdCompressorZLib,IdAuthentication,shfolder,IniFiles,tiscommon,strutils,tisstrings,registry,ssl_openssl;
 
 const
   CacheWaptServerUrl: String = 'None';
@@ -1130,64 +1133,70 @@ begin
 end;
 
 function WAPTLocalJsonGet(action: String; user: AnsiString;
-  password: AnsiString; timeout: integer=-1;OnAuthorization:TIdOnAuthorization=Nil;RetryCount:Integer=1): ISuperObject;
+  password: AnsiString; timeout: integer=-1;OnAuthorization:THTTPSendAuthorization=Nil;RetryCount:Integer=0): ISuperObject;
+
 var
   url,strresult : String;
-  http:TIdHTTP;
-  ssl_handler: TIdSSLIOHandlerSocketOpenSSL;
+  http:THTTPSend;
   StartTime: DWord;
+  ShouldRetry:Boolean;
+
 begin
-  ssl_handler := Nil;
-  http := TIdHTTP.Create;
+  http := THTTPSend.Create;
   try
-    http.Request.AcceptLanguage := Language;
-    http.Request.UserAgent := DefaultUserAgent;
+    http.Headers.Add('Accept-Language: '+Language);
+    http.UserAgent := DefaultUserAgent;
 
     if timeout<=0 then
       timeout := waptservice_timeout * 1000;
 
-    http.ConnectTimeout := timeout;
-    http.ReadTimeout:=timeout;
-
-    if (user<>'') or (OnAuthorization <> Nil) then
-    begin
-      http.Request.Authentication := TIdBasicAuthentication.Create;
-      http.Request.Authentication.Username:=user;
-      http.Request.Authentication.Password:=password;
-      http.MaxAuthRetries := 2;
-      http.OnAuthorization:=OnAuthorization;
-    end;
+    http.Timeout := timeout;
 
     if copy(action,length(action),1)<>'/' then
       action := '/'+action;
 
     url := GetWaptLocalURL+action;
-    ssl_handler := TIdSSLIOHandlerSocketOpenSSL.Create;
-    ssl_handler.SSLOptions.Method:=sslvSSLv23;
+    {if pos('https',url)>0 then
+      http.Sock.CreateWithSSL(TSSLOpenSSL);}
 
     StartTime:=GetTickCount;
     Logger(Format('url: %s timeout: %d',[url,timeout]),DEBUG);
 
-    HTTP.IOHandler := ssl_handler;
+    if (user<>'') or (OnAuthorization <> Nil) then
+    begin
+      http.Username:=user;
+      http.Password:=password;
+    end;
+
     strresult := '';
-    repeat
-      try
-        strresult := http.Get(url);
-      except
+    While True do
+    begin
+      if http.HTTPMethod('GET',url) then
+        SetString(strresult, PAnsiChar(http.Document.Memory), http.Document.Size)
+      else
+        Raise EIdSocketError.CreateError(http.Sock.LastError,http.Sock.LastErrorDesc);
+
+      if (http.ResultCode=200) then
+        break
+      else
+      if (http.ResultCode=401) then
+      begin
+        ShouldRetry:=False;
+        if Assigned(OnAuthorization) and (RetryCount>0) then
+          OnAuthorization(http,ShouldRetry);
         Dec(RetryCount);
-        if (RetryCount<=0) then
-          raise
-        else
-          Sleep(1000);
-      end;
-    until (strresult<>'') or (RetryCount<=0);
+        if not ShouldRetry then
+          Raise EIdHTTPProtocolException.CreateError(http.ResultCode,strresult,http.ResultString);
+      end
+      else
+        Raise EIdHTTPProtocolException.CreateError(http.ResultCode,strresult,http.ResultString);
+
+    End;
     Result := SO(strresult);
     Logger(Format('url: %s : OK Duration: %d',[url,(GetTickCount-StartTime)]),DEBUG);
 
   finally
     http.Free;
-    if Assigned(ssl_handler) then
-      FreeAndNil(ssl_handler);
   end;
 end;
 

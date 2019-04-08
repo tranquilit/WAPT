@@ -2025,7 +2025,9 @@ class SSLCertificate(BaseObjectClass):
             raise ValueError(u'Can not compare SSLCertificate with %s'%(type(crt)))
 
     def encrypt(self,content):
-        """Encrypt a (small) message will can be decrypted with the public key"""
+        """Encrypt a (small) message will can be decrypted with the private key
+
+        """
         apadding = padding.OAEP(
             mgf=padding.MGF1(algorithm=hashes.SHA1()),
             algorithm=hashes.SHA1(),

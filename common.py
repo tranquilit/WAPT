@@ -7195,11 +7195,11 @@ class Wapt(BaseObjectClass):
 
     def is_authorized_package_action(self,action,package,user_groups=[],rules=None):
         package_request = PackageRequest(package=package)
-        if package_request.package in self.waptdb.installed_package_names() and action in ('install','upgrade','list'):
+        if package_request.package in self.waptdb.installed_package_names() and action in ('install','upgrade'):
             return True
 
         upgrades_and_pending = [PackageRequest(pr).package for pr in self.get_last_update_status().get('upgrades',[])]
-        if package_request.package in upgrades_and_pending and action in ('install','upgrade','list'):
+        if package_request.package in upgrades_and_pending and action in ('install','upgrade'):
             return True
 
         if not user_groups:

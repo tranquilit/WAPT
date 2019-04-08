@@ -47,22 +47,25 @@
         <UnitName Value="uWAPTPollThreads"/>
       </Item8>
     </Files>
-    <RequiredPkgs Count="5">
+    <RequiredPkgs Count="6">
       <Item1>
-        <PackageName Value="dcpcrypt"/>
+        <PackageName Value="laz_synapse"/>
       </Item1>
       <Item2>
-        <PackageName Value="indylaz"/>
+        <PackageName Value="dcpcrypt"/>
       </Item2>
       <Item3>
-        <PackageName Value="python4lazarus_package"/>
+        <PackageName Value="indylaz"/>
       </Item3>
       <Item4>
-        <PackageName Value="pltis_superobject"/>
+        <PackageName Value="python4lazarus_package"/>
       </Item4>
       <Item5>
-        <PackageName Value="pltis_utils"/>
+        <PackageName Value="pltis_superobject"/>
       </Item5>
+      <Item6>
+        <PackageName Value="pltis_utils"/>
+      </Item6>
     </RequiredPkgs>
     <UsageOptions>
       <UnitPath Value="$(PkgOutDir)"/>

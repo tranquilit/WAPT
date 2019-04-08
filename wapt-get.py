@@ -171,6 +171,7 @@ parser.add_option("-g","--usergroups", dest="usergroups", default='[]', help="Gr
 parser.add_option("-t","--maxttl", type='int',  dest="max_ttl", default=60, help="Max run time in minutes of wapt-get process before being killed by subsequent wapt-get (default: %default minutes)")
 parser.add_option("-L","--language",    dest="language",    default=setuphelpers.get_language(), help="Override language for install (example : fr) (default: %default)")
 parser.add_option("-m","--message-digest", dest="md", default=None, help="Message digest type for signatures.  (default: sha256)")
+parser.add_option("--locales", dest="locales", default=None, help="Override packages locales filter. (default: None)")
 parser.add_option("--maturity", dest="maturity", default=None, help="Set/change package maturity when building package.  (default: None)")
 parser.add_option("--pin-server-cert", dest="set_verify_cert", default=None, action='store_true', help="When registering, pin the server certificate. (default: %default)")
 parser.add_option("--wapt-server-url", dest="set_waptserver_url", default=None, help="When registering, set wapt-get.ini wapt_server setting. (default: %default)")
@@ -404,12 +405,23 @@ def main():
 
         logger.debug(u'Config file: %s' % config_file)
 
+        print('Using config file: %s' % config_file)
         mywapt = Wapt(config_filename=config_file)
         if options.wapt_url:
+            print('Using repo_url: %s' % options.wapt_url)
             mywapt.config.set('global','repo_url',options.wapt_url)
 
         if options.md is not None:
             mywapt.sign_digests = ensure_list(options.md)
+
+        if options.maturity:
+            print('Using maturities: %s' % options.maturity)
+            mywapt.maturities = ensure_list(options.maturity)
+
+        if options.locales:
+            print('Using locales: %s' % options.locales)
+            mywapt.locales = ensure_list(options.locales)
+
 
         global loglevel
         if not loglevel and mywapt.config.has_option('global','loglevel'):

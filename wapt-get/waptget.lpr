@@ -32,7 +32,7 @@ uses
   Interfaces, Windows, PythonEngine, VarPyth, superobject, soutils, tislogging, uWaptRes,
   waptcommon, waptwinutils, tiscommon, tisstrings, LazFileUtils,
   IdAuthentication, IdExceptionCore, Variants, IniFiles,uwaptcrypto,uWaptPythonUtils,
-  tisinifiles,base64,IdComponent;
+  tisinifiles,base64,IdComponent,httpsend;
 
 type
   { PWaptGet }
@@ -53,7 +53,7 @@ type
     function Getwaptcrypto: Variant;
     function Getwaptpackage: Variant;
     function Getwaptdevutils: Variant;
-    procedure HTTPLogin(Sender: TObject; Authentication: TIdAuthentication; var Handled: Boolean);
+    procedure HTTPLogin(Sender: THttpSend; var ShouldRetry: Boolean);
     function ScanLocalWaptrepo(RepoPath: String): Variant;
     procedure SetRepoURL(AValue: String);
   protected
@@ -143,7 +143,7 @@ type
     while not Terminated do
     try
       try
-        Events := WAPTLocalJsonGet(Format('events?last_read=%d',[LastReadEventId]),'','',-1,Nil,0);
+        Events := WAPTLocalJsonGet(Format('events?last_read=%d',[LastReadEventId]),'','',-1);
         If (Events.AsArray <> Nil) and (Events.AsArray.Length>0) then
           LastReadEventId := Events.AsArray.O[Events.AsArray.Length-1].I['id'];
       except
@@ -200,31 +200,26 @@ var
     end;
   end;
 
-procedure PWaptGet.HTTPLogin(Sender: TObject; Authentication: TIdAuthentication; var Handled: Boolean);
+procedure PWaptGet.HTTPLogin(Sender: THttpSend; var ShouldRetry: Boolean);
 var
   newuser:AnsiString;
 begin
-  if (localuser<>'') and (localpassword<>'') then
-  begin
-    Authentication.Username:=localuser;
-    Authentication.Password:=localpassword;
-  end
+  Write('Waptservice User ('+localuser+') :');
+  readln(newuser);
+  if newuser<>'' then
+    Sender.Username:=newuser
   else
-  begin
-    Write('Waptservice User ('+localuser+') :');
-    readln(newuser);
-    if newuser<>'' then
-      Authentication.Username:=newuser;
-    if Authentication.Username='' then
-      raise Exception.Create('Empty user');
-    Write('Password: ');
-    Authentication.Password := GetPassword;
-    WriteLn;
-    Handled := (Authentication.Password='');
-    // cache for next use
-    localuser := Authentication.Username;
-    localpassword := Authentication.Password;
-  end;
+    Sender.Username:=localuser;
+  if (Sender.Username='') then
+    raise Exception.Create('Empty user');
+  Write('Password: ');
+  Sender.Password := GetPassword;
+  WriteLn;
+  ShouldRetry := (Sender.Password <> '') and (Sender.Password <> '');
+
+  // cache for next use
+  localuser := Sender.Username;
+  localpassword := Sender.Password;
 end;
 
 function PWaptGet.GetWaptServerUser: String;
@@ -595,7 +590,7 @@ begin
         if action='longtask' then
         begin
           Logger('Call longtask URL...',DEBUG);
-          res := WAPTLocalJsonGet('longtask.json?notify_user=1','admin','',-1,@HTTPLogin);
+          res := WAPTLocalJsonGet('longtask.json?notify_user=1','admin','',-1,@HTTPLogin,3);
           tasks.AsArray.Add(res);
           Logger('Task '+res.S['id']+' added to queue',DEBUG);
         end
@@ -663,7 +658,7 @@ begin
         if action='register' then
         begin
           Logger('Call register URL...',DEBUG);
-          res := WAPTLocalJsonGet('register.json?notify_user=0&notify_server=1','admin','',-1,@HTTPLogin);
+          res := WAPTLocalJsonGet('register.json?notify_user=0&notify_server=1','admin','',-1,@HTTPLogin,3);
           tasks.AsArray.Add(res);
           Logger('Task '+res.S['id']+' added to queue',DEBUG);
         end
@@ -674,9 +669,9 @@ begin
           begin
             Logger('Call '+action+'?package='+package.AsString,DEBUG);
             if HasOption('f','force') then
-              res := WAPTLocalJsonGet(Action+'.json?package='+package.AsString+'&force=1&notify_user=0','admin','',-1,@HTTPLogin)
+              res := WAPTLocalJsonGet(Action+'.json?package='+package.AsString+'&force=1&notify_user=0','admin','',-1,@HTTPLogin,3)
             else
-              res := WAPTLocalJsonGet(Action+'.json?package='+package.AsString+'&notify_user=0','admin','',-1,@HTTPLogin);
+              res := WAPTLocalJsonGet(Action+'.json?package='+package.AsString+'&notify_user=0','admin','',-1,@HTTPLogin,3);
             if (action='install') or (action='forget')  then
             begin
               // single action
