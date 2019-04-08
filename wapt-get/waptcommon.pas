@@ -69,7 +69,7 @@ interface
   function WAPTServerJsonPost(action: String;args:Array of const;data: ISuperObject;method:AnsiString='POST';ConnectTimeout:integer=4000;SendTimeout:integer=60000;ReceiveTimeout:integer=60000): ISuperObject; //use global credentials and proxy settings
 
 
-  type THTTPSendAuthorization=procedure(Sender: THttpSend; var ShouldRetry: Boolean) of object;
+  type THTTPSendAuthorization=procedure(Sender: THttpSend; var ShouldRetry: Boolean;RetryCount:integer) of object;
   function WAPTLocalJsonGet(action:String;user:AnsiString='';password:AnsiString='';timeout:integer=-1;
               OnAuthorization:THTTPSendAuthorization=Nil;RetryCount:Integer=0):ISuperObject;
 
@@ -1140,7 +1140,7 @@ var
   http:THTTPSend;
   StartTime: DWord;
   ShouldRetry:Boolean;
-
+  Retries:Integer;
 begin
   http := THTTPSend.Create;
   try
@@ -1169,6 +1169,7 @@ begin
     end;
 
     strresult := '';
+    Retries := 0;
     While True do
     begin
       if http.HTTPMethod('GET',url) then
@@ -1181,10 +1182,10 @@ begin
       else
       if (http.ResultCode=401) then
       begin
+        inc(Retries);
         ShouldRetry:=False;
         if Assigned(OnAuthorization) and (RetryCount>0) then
-          OnAuthorization(http,ShouldRetry);
-        Dec(RetryCount);
+          OnAuthorization(http,ShouldRetry,Retries);
         if not ShouldRetry then
           Raise EIdHTTPProtocolException.CreateError(http.ResultCode,strresult,http.ResultString);
       end

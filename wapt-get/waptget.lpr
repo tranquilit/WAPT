@@ -53,7 +53,7 @@ type
     function Getwaptcrypto: Variant;
     function Getwaptpackage: Variant;
     function Getwaptdevutils: Variant;
-    procedure HTTPLogin(Sender: THttpSend; var ShouldRetry: Boolean);
+    procedure HTTPLogin(Sender: THttpSend; var ShouldRetry: Boolean;RetryCount:integer);
     function ScanLocalWaptrepo(RepoPath: String): Variant;
     procedure SetRepoURL(AValue: String);
   protected
@@ -97,6 +97,10 @@ type
     function GetPrivateKeyPassword(crtname:String=''): String;
     function GetWaptServerPassword: String;
     function GetWaptServerUser: String;
+
+    function GetWaptServicePassword: String;
+    function GetWaptServiceUser: String;
+
 
     property PythonEngine:TPythonEngine read GetPythonEngine;
     property waptdevutils:Variant read Getwaptdevutils;
@@ -200,26 +204,33 @@ var
     end;
   end;
 
-procedure PWaptGet.HTTPLogin(Sender: THttpSend; var ShouldRetry: Boolean);
+procedure PWaptGet.HTTPLogin(Sender: THttpSend; var ShouldRetry: Boolean; RetryCount:integer);
 var
   newuser:AnsiString;
 begin
-  Write('Waptservice User ('+localuser+') :');
-  readln(newuser);
-  if newuser<>'' then
-    Sender.Username:=newuser
+  if (RetryCount<=1) then
+  begin
+    Sender.Username := GetWaptServiceUser;
+    Sender.Password := GetWaptServicePassword;
+  end
   else
-    Sender.Username:=localuser;
-  if (Sender.Username='') then
-    raise Exception.Create('Empty user');
-  Write('Password: ');
-  Sender.Password := GetPassword;
-  WriteLn;
-  ShouldRetry := (Sender.Password <> '') and (Sender.Password <> '');
-
+  begin
+    Write('Waptservice User ('+localuser+') :');
+    readln(newuser);
+    if newuser<>'' then
+      Sender.Username:=newuser
+    else
+      Sender.Username:=localuser;
+    if (Sender.Username='') then
+      raise Exception.Create('Empty user');
+    Write('Password: ');
+    Sender.Password := GetPassword;
+    WriteLn;
+  end;
   // cache for next use
   localuser := Sender.Username;
   localpassword := Sender.Password;
+  ShouldRetry := (Sender.Password <> '') and (Sender.Password <> '');
 end;
 
 function PWaptGet.GetWaptServerUser: String;
@@ -251,6 +262,31 @@ begin
     WriteLn;
   end;
   Result := WaptServerPassword;
+end;
+
+function PWaptGet.GetWaptServiceUser: String;
+begin
+  Result := GetCmdParams('WaptServiceUser','');
+  if Result='' then
+  begin
+    Write('Waptservice User :');
+    readln(Result);
+  end;
+end;
+
+function PWaptGet.GetWaptServicePassword: String;
+begin
+  Result := '';
+  if (GetCmdParams('WaptServicePassword64')<>'') then
+    result := DecodeStringBase64(GetCmdParams('WaptServicePassword64',''));
+  if result='' then
+    result := GetCmdParams('WaptServicePassword','');
+  if result='' then
+  begin
+    Write('Password: ');
+    Result := GetPassword;
+    WriteLn;
+  end;
 end;
 
 function PWaptGet.GetPrivateKeyPassword(crtname:String=''): String;
@@ -570,12 +606,12 @@ begin
     Exit;
   end
   else
-  // use http service mode if --service or not --direct or not (--service and isadmin
+  // use http service mode if --service or not --direct or not (--service) and isadmin
   if  ((not IsAdminLoggedOn or HasOption('S','service')) and not HasOption('D','direct')) and
       StrIsOneOf(action,['update','upgrade','register','install','remove','forget',
                         'longtask','cancel','cancel-all','tasks',
                         'wuascan','wuadownload','wuainstall','audit']) and
-      CheckOpenPort(waptservice_port,'127.0.0.1',waptservice_timeout) then
+      CheckOpenPort(waptservice_port,'127.0.0.1',waptservice_timeout*1000) then
   begin
     writeln('About to speak to waptservice...');
     // launch task in waptservice, waits for its termination
