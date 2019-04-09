@@ -25,10 +25,6 @@ msgstr "WAPT - Mises à jour de logiciels "
 msgid "Skip the installation of Windows Updates"
 msgstr "Ne pas installer les mises à jour Windows"
 
-#: tviswaptexit.edrunning.text
-msgid "some upgrades are pending, launch upgrades after timeout expired or manual action"
-msgstr "Des mises à jour sont en attente, lancement après l'expiration du délai ou une action manuelle"
-
 #: tviswaptexit.gridpending.header.columns[0].text
 msgid "id"
 msgstr ""
@@ -138,12 +134,18 @@ msgid "Pending upgrades"
 msgstr "Mises à jour en attente"
 
 #: tviswaptexit.labwaptupgrades.caption
+msgctxt "tviswaptexit.labwaptupgrades.caption"
 msgid "Checking if WAPT Packages installs or updates are pending."
 msgstr "Vérification des installations WAPT en attente"
 
 #: tviswaptexit.labwuaupgrades.caption
 msgid "Windows Updates pending."
 msgstr "Mises à jour Windows en attente"
+
+#: uwaptexitres.rscheckingupgrades
+msgctxt "uwaptexitres.rscheckingupgrades"
+msgid "Checking if WAPT Packages installs or updates are pending."
+msgstr "Vérification des installations WAPT en attente"
 
 #: uwaptexitres.rsclosing
 msgid "Closing..."
@@ -185,6 +187,14 @@ msgstr "Mise à jour des logiciels"
 #: uwaptexitres.rsupgraderunning
 msgid "Upgrade running..."
 msgstr "Mises à jour en cours..."
+
+#: uwaptexitres.rswaptservicenotrunning
+msgid "WAPTService is not running"
+msgstr "Le service WAPT ne fonctionne pas"
+
+#: uwaptexitres.rswaptupgradespending
+msgid "Some upgrades are pending, launch upgrades after timeout expired or manual action"
+msgstr "Des mises à jour sont en attente, lancement après le délai ou sur action manuelle"
 
 #: uwaptexitres.rswuaupdatesavailable
 msgid "%d Windows Updates pending"

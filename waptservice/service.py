@@ -1082,7 +1082,7 @@ def tasks():
         actual_last_event_id = app.task_manager.events.last_event_id()
         if actual_last_event_id is not None and actual_last_event_id <= last_received_event_id:
             data = {'last_event_id':app.task_manager.events.last_event_id()}
-            if time.time() - start_time > timeout:
+            if (time.time() - start_time) * 1000 > timeout:
                 break
         elif actual_last_event_id is None or actual_last_event_id > last_received_event_id:
             data = app.task_manager.tasks_status()
@@ -1114,7 +1114,7 @@ def tasks_status():
         actual_last_event_id = app.task_manager.events.last_event_id()
         if actual_last_event_id is not None and actual_last_event_id <= last_received_event_id:
             data = {'last_event_id':app.task_manager.events.last_event_id()}
-            if time.time() - start_time > timeout:
+            if (time.time() - start_time) * 1000 > timeout:
                 break
         elif actual_last_event_id is None or actual_last_event_id > last_received_event_id:
             data = app.task_manager.tasks_status()
@@ -1224,16 +1224,16 @@ def events():
 
     Args:
         last_read (int): id of last read event.
-        timeout (int): time to wait until new events come in
+        timeout (float): time to wait until new events come in
     """
     last_read = int(request.args.get('last_read',session.get('last_read_event_id','0')))
-    timeout = int(request.args.get('timeout','10'))
+    timeout = int(request.args.get('timeout','10000'))
     max_count = int(request.args.get('max_count','0')) or None
     if app.task_manager.events:
         data = app.task_manager.events.get_missed(last_read=last_read,max_count=max_count)
-        if not data and timeout>0:
+        if not data and timeout > 0.0:
             start_time = time.time()
-            while not data and time.time() - start_time <= timeout:
+            while not data and (time.time() - start_time) * 1000 <= timeout:
                 time.sleep(1.0)
                 data = app.task_manager.events.get_missed(last_read=last_read,max_count=max_count)
             if app.task_manager.events.events:

@@ -12,7 +12,7 @@ type
   { TCheckWaptservice }
   TCheckWaptservice = Class(TThread)
   private
-    PollTimeout:Integer;
+    CheckTimeout:Integer;
     FOnNotifyEvent: TNotifyEvent;
     procedure NotifyListener; Virtual;
     procedure SetOnNotifyEvent(AValue: TNotifyEvent);
@@ -20,7 +20,7 @@ type
     IsWaptServiceRunning:Boolean;
     LastUpdateStatus : ISuperObject;
     Message: String;
-    constructor Create(aNotifyEvent:TNotifyEvent;aPollTimeout:Integer=3000);
+    constructor Create(aNotifyEvent:TNotifyEvent;aCheckTimeout:Integer=-1);
     procedure Execute; override;
     property OnNotifyEvent: TNotifyEvent read FOnNotifyEvent write SetOnNotifyEvent;
   end;
@@ -35,6 +35,7 @@ type
     procedure NotifyListener; Virtual;
   public
     PollTimeout:Integer;
+    CheckTimeout:Integer;
 
     Tasks: ISuperObject;
     LastReadEventId: Integer;
@@ -43,7 +44,7 @@ type
 
     property OnNotifyEvent: TNotifyEvent read FOnNotifyEvent write SetOnNotifyEvent;
 
-    constructor Create(aNotifyEvent:TNotifyEvent;aPollTimeout:Integer=10000);
+    constructor Create(aNotifyEvent:TNotifyEvent;aCheckTimeout: Integer = -1; aPollTimeout:Integer = 2000);
     destructor Destroy; override;
     procedure Execute; override;
   end;
@@ -56,7 +57,8 @@ type
     procedure SetOnNotifyEvent(AValue: TNotifyEvent);
     procedure NotifyListener; Virtual;
   public
-    PollTimeout:Integer;
+    PollTimeOut:Integer;  // Log polling Time in seconds to wait for new events
+    CheckTimeout:Integer; // Global timeout in ms to get an answer from service. Must be greater than PollTimeout
 
     Events: ISuperObject;
     LastReadEventId: Integer;
@@ -65,7 +67,7 @@ type
 
     property OnNotifyEvent: TNotifyEvent read FOnNotifyEvent write SetOnNotifyEvent;
 
-    constructor Create(aNotifyEvent:TNotifyEvent;aPollTimeout:Integer=3000);
+    constructor Create(aNotifyEvent:TNotifyEvent;aCheckTimeout: Integer = -1; aPollTimeout:Integer = 2000);
     destructor Destroy; override;
     procedure Execute; override;
   end;
@@ -160,18 +162,18 @@ begin
   FOnNotifyEvent:=AValue;
 end;
 
-constructor TCheckWaptservice.Create(aNotifyEvent:TNotifyEvent;aPollTimeout:Integer=3000);
+constructor TCheckWaptservice.Create(aNotifyEvent:TNotifyEvent;aCheckTimeout:Integer=-1);
 begin
   inherited Create(False);
   OnNotifyEvent:=aNotifyEvent;
-  PollTimeout:=aPollTimeout;
+  CheckTimeout:=aCheckTimeout;
   FreeOnTerminate:=True;
 end;
 
 procedure TCheckWaptservice.Execute;
 begin
   try
-    LastUpdateStatus := WAPTLocalJsonGet('checkupgrades.json','','',PollTimeout);
+    LastUpdateStatus := WAPTLocalJsonGet('checkupgrades.json','','',CheckTimeout);
     IsWaptServiceRunning:=True;
   except
     on E:EIdException do
@@ -198,12 +200,18 @@ begin
   FOnNotifyEvent:=AValue;
 end;
 
-constructor TCheckTasksThread.Create(aNotifyEvent: TNotifyEvent; aPollTimeout: Integer = 10000);
+constructor TCheckTasksThread.Create(aNotifyEvent: TNotifyEvent; aCheckTimeout: Integer = -1; aPollTimeout:Integer = 2000);
 begin
   inherited Create(True);
   OnNotifyEvent:=aNotifyEvent;
   LastReadEventId:=-1;
-  PollTimeout:=aPollTimeout;
+  PollTimeout:=aPollTimeout; // time to wait for new tasks
+  CheckTimeout:=aCheckTimeout; // timeout waiting for the service to answer (must be greater than PollTimeout)
+  if CheckTimeout<0 then
+    CheckTimeout:=waptservice_timeout*1000;
+  if CheckTimeout <= PollTimeout + 1000 then
+    CheckTimeout := PollTimeout + 1000;
+
 end;
 
 destructor TCheckTasksThread.Destroy;
@@ -215,7 +223,7 @@ procedure TCheckTasksThread.Execute;
 begin
   while not Terminated do
   try
-    Tasks := WAPTLocalJsonGet(Format('tasks.json?last_event_id=%d&timeout=%d',[LastReadEventId,3]),'','',PollTimeout);
+    Tasks := WAPTLocalJsonGet(Format('tasks.json?last_event_id=%d&timeout=%d',[LastReadEventId,PollTimeout]),'','',CheckTimeout);
     if Assigned(Tasks) then
       LastReadEventId:=Tasks.I['last_event_id'];
     WaptServiceRunning:=True;
@@ -236,6 +244,11 @@ begin
             Synchronize(@NotifyListener);
             break;
           end;
+        end
+        else if e.LastError=10060 then // Global Timeout
+        begin
+          if not Terminated then
+            Sleep(200);
         end
         else
           // we stop..
@@ -278,12 +291,17 @@ begin
   FOnNotifyEvent:=AValue;
 end;
 
-constructor TCheckEventsThread.Create(aNotifyEvent: TNotifyEvent; aPollTimeout: Integer = 3000);
+constructor TCheckEventsThread.Create(aNotifyEvent: TNotifyEvent; aCheckTimeout: Integer = -1; aPollTimeout:Integer = 2000);
 begin
   inherited Create(True);
   OnNotifyEvent:=aNotifyEvent;
   LastReadEventId:=-1;
-  PollTimeout:=aPollTimeout;
+  PollTimeOut:=3;
+  CheckTimeout:=aCheckTimeout;
+  if CheckTimeout<0 then
+    CheckTimeout:=waptservice_timeout*1000;
+  if CheckTimeout <= PollTimeout + 1000 then
+    CheckTimeout := PollTimeout + 1000;
 end;
 
 destructor TCheckEventsThread.Destroy;
@@ -298,9 +316,9 @@ begin
     Message := 'Waiting for events';
     if LastReadEventId<0 then
       // first time, get just last event
-      Events := WAPTLocalJsonGet(Format('events?max_count=1',[]),'','',PollTimeout)
+      Events := WAPTLocalJsonGet(Format('events?max_count=1',[]),'','',CheckTimeout)
     else
-      Events := WAPTLocalJsonGet(Format('events?last_read=%d',[LastReadEventId]),'','',PollTimeout);
+      Events := WAPTLocalJsonGet(Format('events?last_read=%d&timeout=%d',[LastReadEventId,PollTimeOut]),'','',CheckTimeout);
     if (Events <> Nil) and (Events.DataType=stArray) then
     begin
       If Events.AsArray.Length>0 then
@@ -326,8 +344,12 @@ begin
             break;
           end;
         end
-        else
-        if not Terminated then
+        else if e.LastError=10060 then // Timeout
+        begin
+          if not Terminated then
+            Sleep(200);
+        end
+        else if not Terminated then
           Sleep(200);
       end;
 

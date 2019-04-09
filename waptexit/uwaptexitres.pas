@@ -10,6 +10,9 @@ uses
 resourcestring
 
   { --- MESSAGES DANS WAPTEXIT --- }
+  rsCheckingUpgrades = 'Checking if WAPT Packages installs or updates are pending.';
+  rsWaptServiceNotRunning = 'WAPTService is not running';
+  rsWaptUpgradespending = 'Some upgrades are pending, launch upgrades after timeout expired or manual action';
   rsUpdatingSoftware = 'Updating software';
   rsInterruptUpdate = 'Interrupt software update';
   rsClosing = 'Closing...';

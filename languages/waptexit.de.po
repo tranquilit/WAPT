@@ -61,10 +61,6 @@ msgstr "Start der Updates..."
 msgid "Skip the installation of Windows Updates"
 msgstr ""
 
-#: tviswaptexit.edrunning.text
-msgid "some upgrades are pending, launch upgrades after timeout expired or manual action"
-msgstr ""
-
 #: tviswaptexit.gridpending.header.columns[0].text
 msgid "id"
 msgstr ""
@@ -172,11 +168,17 @@ msgid "Pending upgrades"
 msgstr ""
 
 #: tviswaptexit.labwaptupgrades.caption
+msgctxt "tviswaptexit.labwaptupgrades.caption"
 msgid "Checking if WAPT Packages installs or updates are pending."
 msgstr ""
 
 #: tviswaptexit.labwuaupgrades.caption
 msgid "Windows Updates pending."
+msgstr ""
+
+#: uwaptexitres.rscheckingupgrades
+msgctxt "uwaptexitres.rscheckingupgrades"
+msgid "Checking if WAPT Packages installs or updates are pending."
 msgstr ""
 
 #: uwaptexitres.rsclosing
@@ -220,6 +222,14 @@ msgstr "Software aktualisieren"
 
 #: uwaptexitres.rsupgraderunning
 msgid "Upgrade running..."
+msgstr ""
+
+#: uwaptexitres.rswaptservicenotrunning
+msgid "WAPTService is not running"
+msgstr ""
+
+#: uwaptexitres.rswaptupgradespending
+msgid "Some upgrades are pending, launch upgrades after timeout expired or manual action"
 msgstr ""
 
 #: uwaptexitres.rswuaupdatesavailable

@@ -61,8 +61,6 @@ type
     procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
-    procedure FormMouseDown(Sender: TObject; Button: TMouseButton;
-      Shift: TShiftState; X, Y: Integer);
     procedure FormShow(Sender: TObject);
     procedure GridPendingUpgradesGetImageIndexEx(Sender: TBaseVirtualTree;
       Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
@@ -96,6 +94,7 @@ type
     UpgradeTasks: ISuperObject;
 
     WaitingForUpgradeTasks: Boolean;
+    WaitingCountDown: Boolean;
 
     WAPTServiceRunning:Boolean;
     AutoUpgradeTime: TDateTime;
@@ -398,6 +397,8 @@ begin
     ini.Free;
   end;
 
+  WaitingCountDown:=True;
+
 end;
 
 procedure TVisWaptExit.FormDestroy(Sender: TObject);
@@ -452,6 +453,12 @@ begin
     begin
       CheckTasksThread.Start;
       CheckEventsThread.Start;
+    end
+    else
+    begin
+      EdRunning.Text := rsWaptServiceNotRunning;
+      Application.ProcessMessages;
+      Sleep(1000);
     end;
 
     aso := (Sender as TCheckWaptservice).LastUpdateStatus;
@@ -469,6 +476,12 @@ begin
       wua_status := Nil;
       wua_pending_count := Nil;
       {$endif}
+
+      if ShouldBeUpgraded then
+      begin
+        EdRunning.Text := rsWaptServiceNotRunning;
+        Application.ProcessMessages;
+      end;
     end;
   except
     on E:Exception do
@@ -477,6 +490,9 @@ begin
       Removes := Nil;
       wua_status := Nil;
       wua_pending_count := Nil;
+      EdRunning.Text:=E.Message;
+      Application.ProcessMessages;
+      Sleep(1000);
     end;
   end;
 
@@ -505,6 +521,7 @@ begin
     begin
       CountDown:=InitialCountDown;
       AutoUpgradeTime := Now + InitialCountDown / 3600.0 /24.0;
+      WaitingCountDown:=True;
     end;
   end
   else
@@ -517,22 +534,22 @@ end;
 
 procedure TVisWaptExit.OnCheckTasksThreadNotify(Sender: TObject);
 var
-  aso:ISuperObject;
+  Tasks:ISuperObject;
 begin
   try
-    aso := (Sender as TCheckTasksThread).Tasks;
-    if aso <> Nil then
+    Tasks := (Sender as TCheckTasksThread).Tasks;
+    if Tasks <> Nil then
     begin
-      if aso.AsObject.Exists('running') then
+      if Tasks.AsObject.Exists('running') then
       begin
-        running := aso['running'];
+        running := Tasks['running'];
         if (running<>Nil) and (running.DataType=stNull) then
           running := Nil;
       end;
 
-      if aso.AsObject.Exists('pending') then
+      if Tasks.AsObject.Exists('pending') then
       begin
-        pending := aso['pending'];
+        pending := Tasks['pending'];
         if (pending<>Nil) and (pending.DataType=stArray) and (pending.AsArray.Length=0) then
           pending := Nil;
       end;
@@ -541,15 +558,17 @@ begin
     begin
       running := Nil;
       pending := Nil;
-      // service has been stopped
-      if WAPTServiceRunning and not (Sender as TCheckTasksThread).WaptServiceRunning then
-      begin
-        //MemoLog.Items.Add((Sender as TCheckTasksThread).Message);
-        MemoLog.Items.Text := (Sender as TCheckTasksThread).Message;
-        WAPTServiceRunning:=False;
-        Close;
-      end;
-    end
+    end;
+
+    WAPTServiceRunning := (Sender as TCheckTasksThread).WaptServiceRunning;
+
+    if not WorkInProgress and not WaitingCountDown then
+    begin
+      //MemoLog.Items.Add((Sender as TCheckTasksThread).Message);
+      MemoLog.Items.Text := (Sender as TCheckTasksThread).Message;
+      Close;
+    end;
+
   except
     running := Nil;
     pending := Nil;
@@ -601,12 +620,6 @@ begin
   end
 end;
 
-procedure TVisWaptExit.FormMouseDown(Sender: TObject; Button: TMouseButton;
-  Shift: TShiftState; X, Y: Integer);
-begin
-  ActStopCountDown.execute;
-end;
-
 procedure TVisWaptExit.actSkipExecute(Sender: TObject);
 begin
   ActUpgrade.Enabled:=False;
@@ -629,6 +642,7 @@ begin
   begin
     DisableAutoUpgrade:=True;
     CountDown:=0;
+    WaitingCountDown:=False;
   end;
 end;
 
@@ -671,7 +685,9 @@ begin
   UpgradeTasks := Nil;
 
   // Check service is running and list of upgrades in background at startup
-  TCheckWaptservice.Create(@OnCheckWaptserviceNotify,3000);
+  TCheckWaptservice.Create(@OnCheckWaptserviceNotify);
+  EdRunning.Text := rsCheckingUpgrades;
+
 
   // Check running / pending tasks
   CheckTasksThread := TCheckTasksThread.Create(@OnCheckTasksThreadNotify);
