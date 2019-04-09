@@ -178,7 +178,7 @@ if new_umask != old_umask:
 
 for line in open('%s/config.py' % source_dir):
     if line.strip().startswith('__version__'):
-        wapt_version = Version(line.split('=')[1].strip().replace('"', '').replace("'", ''),3)
+        wapt_version = str(Version(line.split('=')[1].strip().replace('"', '').replace("'", ''),3))
 
 if not wapt_version:
     eprint(u'version not found in %s/config.py' %
