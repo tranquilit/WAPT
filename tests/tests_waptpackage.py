@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.7.2.0"
+__version__ = "1.7.3.11"
 import logging
 import sys
 import tempfile
@@ -695,8 +695,10 @@ def test_hook_action():
     print('Done')
 
 def test_update_crl():
-    cabundle = SSLCABundle('c:/private')
-    cabundle.update_crl(force=True)
+    cabundle = SSLCABundle('c:/wapt/ssl')
+    w = Wapt(config_filename='c:/wapt/wapt-get.ini')
+    proxies = w.proxies
+    cabundle.update_crl(force=True,proxies=proxies)
     print cabundle.crls
     crl = cabundle.crls[0]
     print cabundle.crl_for_authority_key_identifier(crl.authority_key_identifier)
@@ -1319,7 +1321,90 @@ def test_capabilities():
     print('not matching: %s' % len(res[False]))
     print('matching: %s' % len(res[True]))
 
+def test_sorted_packages():
+    r = WaptRemoteRepo('http://wapt/wapt')
+    q = PackageRequest('tis-firefox(<=65.0)',locales=['it','en','fr'],architectures=['x64'])
+    l = r.packages_matching(q)
+    l = (sorted(l,cmp=lambda p1,p2: q.compare_packages(p1,p2)))
+    print('\n'.join([p.filename for p in l]))
+
+def test_installed():
+    w = Wapt()
+    i = w.installed()
+    print(i[0].as_dict())
+
+def test_list_upgrades():
+    w = Wapt()
+    l = w.list_upgrade()
+    w.upgrade()
+    print(l)
+
+
+def test_check_remove():
+    w = Wapt()
+    print(w.check_remove('tis-7zip'))
+
+
+def test_localurl():
+    l = WaptLocalRepo('C:\\tranquilit\\wapt\\cache')
+    l.update_packages_index()
+    print([p.download_url for p in l.packages()])
+
+def test_wua_uninstall():
+    from waptenterprise.waptwua import client
+    w = Wapt()
+    with client.WaptWUA(w) as c:
+        c.uninstall_updates(uuids=['e6d0d744-94c8-41ef-be48-18e24ac5f89f_200'])
+
+
+def test_client_auth_cert():
+    cak = SSLPrivateKey(u'c:/private/CA-Developpeurs.pem',password='calimero')
+    cac = SSLCertificate(u'c:/private/CA-Developpeurs.crt')
+    k = SSLPrivateKey(u'c:/private/htouvet-dev2.pem',password='calimero')
+    c = k.build_sign_certificate(cak,cac,'htouvet-dev2','Dev','Tranquil IT',is_client_auth=True,is_ca=False)
+    c.save_as_pem(u'c:/private/htouvet-dev2.crt')
+
+    w = Wapt()
+    w.waptserver.client_certificate = u'c:/private/htouvet-dev2.crt'
+    w.waptserver.client_private_key = u'c:/private/htouvet-dev2.pem'
+
+    print(w.waptserver.get('ping'))
+
+def test_client_auth_download():
+    w = Wapt(config_filename='c:/wapt/wapt-get.ini')
+    print(w.waptserver.get('ping'))
+    print(w.download_packages('ht-7zip',usecache=False))
+
+def test_register():
+    w = Wapt(config_filename='c:/wapt/wapt-get.ini')
+    w.register_computer()
+
+
+def test_update_perf():
+    w = Wapt()
+    print(len(w.repositories[0].packages()))
+    previous = w.waptdb.known_packages()
+    current_uuid = [p.package_uuid for p in w.waptdb.known_packages()]
+    previous_uuid = [p.package_uuid for p in w.waptdb.known_packages()]
+    print([ p for p in previous if not p in current])
+    print(len(current))
+    print([r.repo_url for r in self.repositories])
+    print(self.list_upgrade())
+
+
 if __name__ == '__main__':
+    test_update_perf()
+    #test_register()
+    #test_client_auth_download()
+    #test_update_crl()
+    #test_crl()
+    #test_client_auth_cert()
+    #test_wua_uninstall()
+    #test_localurl()
+    #test_check_remove()
+    #test_list_upgrades()
+    #test_installed()
+    #test_sorted_packages()
     #gen_perso('htouvet',email='htouvet@tranquil.it')
     #test_discarded()
     #test_wuarules()
@@ -1328,7 +1413,7 @@ if __name__ == '__main__':
     #test_fix_wmi()
     #test_processes_for_file()
     #test_status_hashes()
-    test_capabilities()
+    #test_capabilities()
     #test_wuaprogress()
     #test_certificate_expire()
     #test_install_only_not_running()

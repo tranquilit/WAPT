@@ -1,5 +1,5 @@
 ﻿[PyScripter]
-Version=3.2.2.0
+Version=3.6.0.0
 
 [Project]
 ClassName=TProjectRootNode
@@ -55,7 +55,7 @@ Name=update
 ScriptName=$[Project-Path]wapt-get.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
-Parameters=update -L en
+Parameters=update -L en -j
 WorkingDir=$[ActiveScript-Dir]
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log
@@ -67,8 +67,6 @@ Description=Run script using an external Python Interpreter
 ApplicationName=$[PythonExe-Short]
 Parameters=$[ActiveScript-Short]
 WorkingDirectory=$[ActiveScript-Dir]
-ShortCut=0
-MessagesFormat=$[FileName] $[LineNumber]
 
 [Project\ChildNodes\Node1\ChildNodes\Node1]
 ClassName=TProjectRunConfiguationNode
@@ -90,11 +88,30 @@ Description=Run script using an external Python Interpreter
 ApplicationName=$[PythonExe-Short]
 Parameters=$[ActiveScript-Short]
 WorkingDirectory=$[ActiveScript-Dir]
-ShortCut=0
-MessagesFormat=$[FileName] $[LineNumber]
+
+[Project\ChildNodes\Node1\ChildNodes\Node2]
+ClassName=TProjectRunConfiguationNode
+Name=register srvwapt.ad.tranquil.it
+
+[Project\ChildNodes\Node1\ChildNodes\Node2\RunConfig]
+ScriptName=C:\tranquilit\wapt\wapt-get.py
+EngineType=peRemote
+ReinitializeBeforeRun=TRUE
+Parameters=register --wapt-server-url=srvwapt.ad.tranquil.it --wapt-repo-url=srvwapt.ad.tranquil.it --use-gui --update --pin-server-cert -ldebug
+WorkingDir=$[ActiveScript-Dir]
+WriteOutputToFile=FALSE
+OutputFileName=$[ActiveScript-NoExt].log
+AppendToFile=FALSE
+
+[Project\ChildNodes\Node1\ChildNodes\Node2\RunConfig\ExternalRun]
+Caption=External Run
+Description=Run script using an external Python Interpreter
+ApplicationName=$[PythonExe-Short]
+Parameters=$[ActiveScript-Short]
+WorkingDirectory=$[ActiveScript-Dir]
 
 [Project\ChildNodes\Node1\ChildNodes]
-Count=2
+Count=3
 
 [Project\ChildNodes]
 Count=2

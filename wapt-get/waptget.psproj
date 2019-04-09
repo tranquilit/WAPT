@@ -1,5 +1,5 @@
 ﻿[PyScripter]
-Version=3.5.2.0
+Version=3.6.0.0
 
 [Project]
 ClassName=TProjectRootNode
@@ -108,7 +108,7 @@ ScriptName=C:\tranquilit\wapt\wapt-get.py
 Description=wapt-get update
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
-Parameters=-f -D update
+Parameters=-D update -l debug
 WorkingDir=$[ActiveScript-Dir]
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log
@@ -1456,8 +1456,71 @@ ApplicationName=$[PythonExe-Short]
 Parameters=$[ActiveScript-Short]
 WorkingDirectory=$[ActiveScript-Dir]
 
+[Project\ChildNodes\Node1\ChildNodes\Node64]
+ClassName=TProjectRunConfiguationNode
+Name=audto tis-chrome
+
+[Project\ChildNodes\Node1\ChildNodes\Node64\RunConfig]
+ScriptName=C:\tranquilit\wapt\wapt-get.py
+EngineType=peRemote
+ReinitializeBeforeRun=TRUE
+Parameters=audit tis-chrome
+WorkingDir=$[ActiveScript-Dir]
+WriteOutputToFile=FALSE
+OutputFileName=$[ActiveScript-NoExt].log
+AppendToFile=FALSE
+
+[Project\ChildNodes\Node1\ChildNodes\Node64\RunConfig\ExternalRun]
+Caption=External Run
+Description=Run script using an external Python Interpreter
+ApplicationName=$[PythonExe-Short]
+Parameters=$[ActiveScript-Short]
+WorkingDirectory=$[ActiveScript-Dir]
+
+[Project\ChildNodes\Node1\ChildNodes\Node65]
+ClassName=TProjectRunConfiguationNode
+Name=upload-package ssl
+
+[Project\ChildNodes\Node1\ChildNodes\Node65\RunConfig]
+ScriptName=C:\tranquilit\wapt\wapt-get.py
+EngineType=peRemote
+ReinitializeBeforeRun=TRUE
+Parameters=upload-package c:\waptdev\ht-putty_0.70-7_all.wapt -c locale
+WorkingDir=$[ActiveScript-Dir]
+WriteOutputToFile=FALSE
+OutputFileName=$[ActiveScript-NoExt].log
+AppendToFile=FALSE
+
+[Project\ChildNodes\Node1\ChildNodes\Node65\RunConfig\ExternalRun]
+Caption=External Run
+Description=Run script using an external Python Interpreter
+ApplicationName=$[PythonExe-Short]
+Parameters=$[ActiveScript-Short]
+WorkingDirectory=$[ActiveScript-Dir]
+
+[Project\ChildNodes\Node1\ChildNodes\Node66]
+ClassName=TProjectRunConfiguationNode
+Name=build test
+
+[Project\ChildNodes\Node1\ChildNodes\Node66\RunConfig]
+ScriptName=C:\tranquilit\wapt\wapt-get.py
+EngineType=peRemote
+ReinitializeBeforeRun=TRUE
+Parameters=make-template test
+WorkingDir=$[ActiveScript-Dir]
+WriteOutputToFile=FALSE
+OutputFileName=$[ActiveScript-NoExt].log
+AppendToFile=FALSE
+
+[Project\ChildNodes\Node1\ChildNodes\Node66\RunConfig\ExternalRun]
+Caption=External Run
+Description=Run script using an external Python Interpreter
+ApplicationName=$[PythonExe-Short]
+Parameters=$[ActiveScript-Short]
+WorkingDirectory=$[ActiveScript-Dir]
+
 [Project\ChildNodes\Node1\ChildNodes]
-Count=64
+Count=67
 
 [Project\ChildNodes]
 Count=2

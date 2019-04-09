@@ -86,6 +86,8 @@ def check_auth_is_provided(f):
             auth = request.authorization
         if not auth:
             auth = request.headers.get('X-Signature', None)
+        if not auth:
+            auth = request.headers.get('X-Ssl-Authenticated', None)
         if not auth and not app.conf['allow_unauthenticated_registration']:
             return authenticate()
         return f(*args, **kwargs)
@@ -131,10 +133,10 @@ def wapt_db_readonly(f):
         b = cnx.readonly;
         if not b:
             cnx.set_session( readonly=True );
-        try:            
+        try:
             r = f(*args,**kwargs);
             return r;
-        finally:            
+        finally:
             if not b:
                 cnx.set_session( readonly=False );
     return decorated;

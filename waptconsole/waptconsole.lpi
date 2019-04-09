@@ -26,9 +26,9 @@
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="1"/>
       <MinorVersionNr Value="7"/>
-      <RevisionNr Value="3"/>
-      <BuildNr Value="12"/>
-      <StringTable LegalCopyright="Tranquil IT Systems 2012-2019" ProductName="WAPT Enterprise Edition" ProductVersion="1.7.3"/>
+      <RevisionNr Value="4"/>
+      <BuildNr Value="6009"/>
+      <StringTable LegalCopyright="Tranquil IT Systems 2012-2019" ProductName="WAPT Enterprise Edition" ProductVersion="1.7.4"/>
     </VersionInfo>
     <BuildModes Count="1">
       <Item1 Name="Default" Default="True"/>
@@ -299,6 +299,11 @@
         <ShowHints Value="False"/>
       </Verbosity>
       <CustomOptions Value="-dUseCThreads -dENTERPRISE"/>
+      <OtherDefines Count="3">
+        <Define0 Value="UseCThreads"/>
+        <Define1 Value="ENTERPRISE"/>
+        <Define2 Value="DEVMODE"/>
+      </OtherDefines>
     </Other>
   </CompilerOptions>
 </CONFIG>
