@@ -7,9 +7,10 @@ import re
 
 import getpass
 from optparse import OptionParser
+from git import Repo
 
 try:
-    wapt_root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__),'..'))
+    wapt_root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__)))
 except NameError:
     wapt_root_dir = 'c:/tranquilit/wapt'
 
@@ -23,6 +24,10 @@ parser.add_option("-b","--build-nr", dest="buildnr", default=None, help="Wapt co
 (options,args)=parser.parse_args()
 
 force = options.force
+
+if options.buildnr is None:
+    r = Repo(wapt_root_dir,search_parent_directories = True)
+    options.buildnr = str(r.active_branch.commit.count())
 
 pwd = getpass.getpass('Key password ?')
 open(r'C:\Users\buildbot\Documents\tmpkeypwd','wb').write(pwd.encode('utf8'))

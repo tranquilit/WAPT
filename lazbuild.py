@@ -26,6 +26,8 @@ import waptutils
 import waptcrypto
 import setuphelpers
 import subprocess
+from git import Repo
+
 
 __doc__ = """\
 %prog <lazarus_lpi_filepath>
@@ -133,6 +135,12 @@ def main():
     if len(args) != 1:
         parser.usage
         sys.exit(1)
+
+
+    if options.buildnr is None:
+        r = Repo(wapt_root_dir,search_parent_directories = True)
+        options.buildnr = str(r.active_branch.commit.count())
+
 
     for lpi_path in args:
         lpi_path = os.path.abspath(lpi_path)
