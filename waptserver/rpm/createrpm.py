@@ -30,6 +30,10 @@ import fileinput
 import subprocess
 import platform
 import errno
+import types
+import re
+
+from git import Repo
 
 def run(*args, **kwargs):
     return subprocess.check_output(*args, shell=True, **kwargs)
@@ -69,6 +73,85 @@ def rsync(src, dst, excludes=[]):
     eprint(rsync_command)
     os.system(rsync_command)
 
+class Version(object):
+    """Version object of form 0.0.0
+    can compare with respect to natural numbering and not alphabetical
+
+    Args:
+        version (str) : version string
+        member_count (int) : number of version memebers to take in account.
+                             If actual members in version is less, add missing memeber with 0 value
+                             If actual members count is higher, removes last ones.
+
+    >>> Version('0.10.2') > Version('0.2.5')
+    True
+    >>> Version('0.1.2') < Version('0.2.5')
+    True
+    >>> Version('0.1.2') == Version('0.1.2')
+    True
+    >>> Version('7') < Version('7.1')
+    True
+
+    .. versionchanged:: 1.6.2.5
+        truncate version members list to members_count if provided.
+    """
+
+    def __init__(self,version,members_count=None):
+        if version is None:
+            version = ''
+        assert isinstance(version,types.ModuleType) or isinstance(version,str) or isinstance(version,unicode) or isinstance(version,Version)
+        if isinstance(version,types.ModuleType):
+            self.versionstring =  getattr(version,'__version__',None)
+        elif isinstance(version,Version):
+            self.versionstring = getattr(version,'versionstring',None)
+        else:
+            self.versionstring = version
+        self.members = [ v.strip() for v in self.versionstring.split('.')]
+        self.members_count = members_count
+        if members_count is not None:
+            if len(self.members)<members_count:
+                self.members.extend(['0'] * (members_count-len(self.members)))
+            else:
+                self.members = self.members[0:members_count]
+
+    def __cmp__(self,aversion):
+        def nat_cmp(a, b):
+            a = a or ''
+            b = b or ''
+
+            def convert(text):
+                if text.isdigit():
+                    return int(text)
+                else:
+                    return text.lower()
+
+            def alphanum_key(key):
+                return [convert(c) for c in re.split('([0-9]+)', key)]
+
+            return cmp(alphanum_key(a), alphanum_key(b))
+
+        if not isinstance(aversion,Version):
+            aversion = Version(aversion,self.members_count)
+        for i in range(0,max([len(self.members),len(aversion.members)])):
+            if i<len(self.members):
+                i1 = self.members[i]
+            else:
+                i1 = ''
+            if i<len(aversion.members):
+                i2 = aversion.members[i]
+            else:
+                i2=''
+            v = nat_cmp(i1,i2)
+            if v:
+                return v
+        return 0
+
+    def __str__(self):
+        return '.'.join(self.members)
+
+    def __repr__(self):
+        return "Version('{}')".format('.'.join(self.members))
+
 
 makepath = os.path.join
 from shutil import copyfile
@@ -95,14 +178,17 @@ if new_umask != old_umask:
 
 for line in open('%s/config.py' % source_dir):
     if line.strip().startswith('__version__'):
-        wapt_version = line.split('=')[
-            1].strip().replace('"', '').replace("'", '')
+        wapt_version = Version(line.split('=')[1].strip().replace('"', '').replace("'", ''),3)
 
 if not wapt_version:
     eprint(u'version not found in %s/config.py' %
           os.path.abspath('..'))
     sys.exit(1)
 
+r = Repo('.',search_parent_directories=True)
+rev_count = '%04d' % (r.active_branch.commit.count(),)
+
+wapt_version = wapt_version +'.'+rev_count
 
 def check_if_package_is_installed(package_name):
     # issue with yum module in buildbot, using dirty subprocess way...
