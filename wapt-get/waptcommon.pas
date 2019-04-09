@@ -25,7 +25,7 @@ unit waptcommon;
 interface
   uses
      Classes, SysUtils, Windows,
-     SuperObject,IdComponent,IdHttp,IdCookieManager,IdSSLOpenSSL,DefaultTranslator,httpsend;
+     SuperObject,IdComponent,IdCookieManager,IdSSLOpenSSL,DefaultTranslator,httpsend;
 
   type
       TProgressCallback=function(Receiver:TObject;current,total:Integer):Boolean of object;
@@ -269,7 +269,7 @@ implementation
 
 uses LazFileUtils, LazUTF8, soutils, Variants,uwaptres,waptwinutils,uwaptcrypto,tisinifiles,tislogging,
   NetworkAdapterInfo, JwaWinsock2, windirs,
-  IdMultipartFormData,IdExceptionCore,IdException,IdURI,IdHeaderList,
+  IdHttp,IdMultipartFormData,IdExceptionCore,IdException,IdURI,IdHeaderList,
   gettext,IdStack,IdCompressorZLib,IdAuthentication,shfolder,IniFiles,tiscommon,strutils,tisstrings,registry,ssl_openssl;
 
 const

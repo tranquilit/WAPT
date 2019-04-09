@@ -8,7 +8,7 @@ uses
   Classes, SysUtils, FileUtil, LazFileUtils, Forms,
   Controls, Graphics, Dialogs, StdCtrls, ExtCtrls, ActnList, Buttons,
   superobject, DefaultTranslator, ComCtrls, uWaptExitRes, sogrid,uWAPTPollThreads,
-  IdAntiFreeze, VirtualTrees, ImgList;
+  VirtualTrees, ImgList;
 
 type
 

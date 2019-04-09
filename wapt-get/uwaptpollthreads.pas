@@ -86,6 +86,7 @@ type
   public
     State: TWaptServiceState;
     MustStartService:Boolean;
+    StatusMessage: String;
 
     property OnNotifyEvent:TNotifyEvent read FOnNotifyEvent write SetOnNotifyEvent;
 
@@ -98,7 +99,7 @@ implementation
 
 uses LCLIntf,tiscommon,
     waptcommon,waptwinutils,soutils,tisstrings,IdException,IdTCPConnection, IdStack,
-    IdExceptionCore;
+    IdExceptionCore,uWaptRes;
 
 { TRunWaptService }
 
@@ -127,22 +128,27 @@ begin
   try
     if MustStartService then
     begin
+      StatusMessage:=rsWssStarting;
       State:=wssStarting;
       Synchronize(@NotifyListener);
       run('net start waptservice');
       State:=wssRunning;
+      StatusMessage:=rsWssRunning;
     end
     else
     begin
+      StatusMessage:=rsWssStopping;
       State:=wssStopping;
       Synchronize(@NotifyListener);
       run('net stop waptservice');
       State:=wssStopped;
+      StatusMessage:=rsWssStopped;
     end;
   except
     on E:Exception do
     begin
       WAPTLocalJsonGet('waptservicerestart.json');
+      StatusMessage:='ERROR: '+ e.Message;
     end;
   end;
   Synchronize(@NotifyListener);

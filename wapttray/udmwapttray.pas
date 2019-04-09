@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, LazFileUtils, ExtCtrls, Menus, ActnList, Controls,
-  superobject, DefaultTranslator, IdAntiFreeze, uWaptTrayRes;
+  superobject, DefaultTranslator, uWaptTrayRes;
 
 type
 
@@ -91,6 +91,7 @@ type
     FtrayMode: TTrayMode;
     FWaptServiceRunning: Boolean;
     TaskInProgress: Boolean;
+    InTrayDblClick: Boolean;
     function GetrayHint: String;
     procedure SetLastUpdateStatus(AValue: ISuperObject);
     procedure SettrayHint(AValue: String);
@@ -98,12 +99,13 @@ type
     procedure SettrayMode(AValue: TTrayMode);
     procedure SetWaptServiceRunning(AValue: Boolean);
     function  WaptConsoleFileName: String;
-    procedure pollerEvent(Events:ISuperObject);
+    procedure OnCheckEventsThreadNotify(Sender: TObject);
+    procedure OnRunWaptServiceThreadNotify(Sender: TObject);
     { private declarations }
   public
     { public declarations }
-    check_thread:TThread;
-    check_waptservice:TThread;
+    CheckEventsThread:TThread;
+    CheckUpgradesThead:TThread;
 
     lastServiceMessage:TDateTime;
     LastEventId:Integer;
@@ -128,15 +130,15 @@ var
 
 implementation
 uses LCLIntf,Forms,dialogs,windows,graphics,tiscommon,tisinifiles,
-    waptcommon,waptwinutils,soutils,tisstrings,IdException;
+    waptcommon,waptwinutils,soutils,tisstrings,IdException,uWAPTPollThreads;
 
 {$R *.lfm}
 
 type
 
-  { TCheckWaptservice }
+  { TCheckUpgradesThread }
 
-  TCheckWaptservice = Class(TThread)
+  TCheckUpgradesThread = Class(TThread)
   private
     IsWaptServiceRunning:Boolean;
     LastUpdateStatus : ISuperObject;
@@ -149,91 +151,15 @@ type
   end;
 
 
-  { TPollThread }
-
-  TPollThread = Class(TThread)
-    procedure HandleMessage;
-
-  public
-    PollTimeout:Integer;
-
-    DMTray:TDMWaptTray;
-    Events: ISuperObject;
-    LastReadEventId: Integer;
-
-    constructor Create(aDMWaptTray:TDMWaptTray);
-    destructor Destroy; override;
-    procedure Execute; override;
-  end;
-
-  { TRunWaptService }
-
-  TRunWaptService = Class(TThread)
-  private
-    procedure UpdateTray;
-  public
-    DMTray:TDMWaptTray;
-    MustStartService:Boolean;
-    TrayMessage: String;
-    constructor Create(aDMWaptTray:TDMWaptTray;StartService:Boolean);
-    procedure Execute; override;
-  end;
-
-{ TRunWaptService }
-
-procedure TRunWaptService.UpdateTray;
-begin
-  if TrayMessage.StartsWith('ERROR') then
-    DMTray.ShowBalloon(TrayMessage,bfError)
-  else
-    DMTray.ShowBalloon(TrayMessage,bfInfo);
-end;
-
-constructor TRunWaptService.Create(aDMWaptTray: TDMWaptTray;StartService:Boolean);
-begin
-  inherited Create(False);
-  DMTray := aDMWaptTray;
-  MustStartService:=StartService;
-  TrayMessage := '';
-  FreeOnTerminate:=True;
-end;
-
-procedure TRunWaptService.Execute;
-begin
-  try
-    if MustStartService then
-    begin
-      TrayMessage:=rsStartingWaptService;
-      Synchronize(@UpdateTray);
-      run('net start waptservice');
-      TrayMessage:=rsWaptServiceStarted;
-    end
-    else
-    begin
-      TrayMessage:=rsStoppingWaptService;
-      Synchronize(@UpdateTray);
-      run('net stop waptservice');
-      TrayMessage:=rsWaptServiceStopped;
-    end;
-  except
-    on E:Exception do
-    begin
-      WAPTLocalJsonGet('waptservicerestart.json');
-      TrayMessage := 'ERROR: ' + E.Message;
-    end;
-  end;
-  Synchronize(@UpdateTray);
-end;
-
 { TCheckWaptservice }
 
-procedure TCheckWaptservice.UpdateTasks;
+procedure TCheckUpgradesThread.UpdateTasks;
 begin
   DMTray.WaptServiceRunning := IsWaptServiceRunning;
   DMTray.LastUpdateStatus := LastUpdateStatus;
 end;
 
-constructor TCheckWaptservice.Create(aDMWaptTray: TDMWaptTray);
+constructor TCheckUpgradesThread.Create(aDMWaptTray: TDMWaptTray);
 begin
   inherited Create(True);
   DMTray := aDMWaptTray;
@@ -241,7 +167,7 @@ begin
 
 end;
 
-procedure TCheckWaptservice.Execute;
+procedure TCheckUpgradesThread.Execute;
 begin
   While not Terminated do
   begin
@@ -257,48 +183,6 @@ begin
     end;
     Synchronize(@UpdateTasks);
     Sleep(PollTimeout);
-  end;
-end;
-
-{ TPollThread }
-
-procedure TPollThread.HandleMessage;
-begin
-  if Assigned(DMTray) then
-    DMTray.pollerEvent(Events);
-end;
-
-constructor TPollThread.Create(aDMWaptTray:TDMWaptTray);
-begin
-  inherited Create(True);
-  DMTray := aDMWaptTray;
-  LastReadEventId:=-1;
-  PollTimeout:=1000;
-end;
-
-destructor TPollThread.Destroy;
-begin
-  inherited Destroy;
-end;
-
-procedure TPollThread.Execute;
-begin
-  while not Terminated do
-  try
-    if LastReadEventId<0 then
-      // first time, get just last event
-      Events := WAPTLocalJsonGet(Format('events?max_count=1',[]),'','',10000,Nil,0)
-    else
-      Events := WAPTLocalJsonGet(Format('events?last_read=%d',[LastReadEventId]),'','',10000,Nil,0);
-    if (Events <> Nil) and (Events.DataType=stArray) then
-    begin
-      If Events.AsArray.Length>0 then
-        LastReadEventId := Events.AsArray.O[Events.AsArray.Length-1].I['id'];
-    end;
-    Synchronize(@HandleMessage);
-  except
-    if not Terminated then
-      Sleep(PollTimeout);
   end;
 end;
 
@@ -369,11 +253,11 @@ begin
 
   //UniqueInstance1.Enabled:=True;
   if lowercase(GetUserName)='system' then exit;
-  check_thread :=TPollThread.Create(Self);
-  check_thread.Start;
+  CheckEventsThread :=TCheckEventsThread.Create(@OnCheckEventsThreadNotify);
+  CheckEventsThread.Start;
 
-  check_waptservice := TCheckWaptservice.Create(Self);
-  check_waptservice.Start;
+  CheckUpgradesThead := TCheckUpgradesThread.Create(Self);
+  CheckUpgradesThead.Start;
 
   notify_user:= IniReadBool(WaptIniFilename,'global','notify_user',False );
 
@@ -403,15 +287,15 @@ end;
 
 procedure TDMWaptTray.DataModuleDestroy(Sender: TObject);
 begin
-  if Assigned(check_thread) then
+  if Assigned(CheckEventsThread) then
   begin
-    TerminateThread(check_thread.Handle,0);
-    FreeAndNil(check_thread);
+    TerminateThread(CheckEventsThread.Handle,0);
+    FreeAndNil(CheckEventsThread);
   end;
-  if Assigned(check_waptservice) then
+  if Assigned(CheckUpgradesThead) then
   begin
-    TerminateThread(check_waptservice.Handle,0);
-    FreeAndNil(check_waptservice);
+    TerminateThread(CheckUpgradesThead.Handle,0);
+    FreeAndNil(CheckUpgradesThead);
   end;
 end;
 
@@ -433,12 +317,18 @@ end;
 procedure TDMWaptTray.Timer1Timer(Sender: TObject);
 begin
   Timer1.Enabled:=False;
-  TrayIcon1.ShowBalloonHint;
+  if not InTrayDblClick then
+    TrayIcon1.ShowBalloonHint;
 end;
 
 procedure TDMWaptTray.TrayIcon1Click(Sender: TObject);
 begin
-  Timer1.Enabled:=True;
+  if not InTrayDblClick then
+  begin
+    Timer1.Interval:=GetDoubleClickTime+700;
+    Timer1.Enabled := False;
+    //Timer1.Enabled := True;
+  end;
 end;
 
 procedure TDMWaptTray.ActConfigureExecute(Sender: TObject);
@@ -500,14 +390,16 @@ begin
   result:=AppendPathDelim(ExtractFileDir(ParamStr(0)))+'waptconsole.exe';
 end;
 
-procedure TDMWaptTray.pollerEvent(Events:ISuperObject);
+procedure TDMWaptTray.OnCheckEventsThreadNotify(Sender: TObject);
 var
   Step,EventType,msg,desc,summary:String;
   runstatus:String;
   running,upgrades,errors,taskresult : ISuperObject;
   task_notify_user:Boolean;
-  Event,EventData:ISuperObject;
+  Events, Event,EventData:ISuperObject;
 begin
+  Events :=  (Sender as TCheckEventsThread).Events;
+
   If Events <> Nil then
     for Event in Events do
     try
@@ -614,13 +506,13 @@ begin
         else
         if Step='FINISH' then
         begin
-          TaskInProgress:=False;
           trayMode:= tmOK;
           trayHint := format(rsTaskDone, [desc, summary]);
           TrayIcon1.BalloonFlags:=bfInfo;
           if not popupvisible and notify_user and task_notify_user then
             TrayIcon1.ShowBalloonHint;
           CurrentTask:='';;
+          TaskInProgress:=False;
         end
         else
         if Step='CANCEL' then
@@ -647,6 +539,17 @@ begin
     end;
 end;
 
+procedure TDMWaptTray.OnRunWaptServiceThreadNotify(Sender: TObject);
+begin
+  with (Sender as TRunWaptService) do
+  begin
+    if StatusMessage.StartsWith('ERROR') then
+      Self.ShowBalloon(StatusMessage,bfError)
+    else
+      Self.ShowBalloon(StatusMessage,bfInfo);
+  end;
+end;
+
 procedure TDMWaptTray.ShowBalloon(Msg: String; BalloonFlags: TBalloonFlags);
 begin
   if TrayIcon1.BalloonHint<>msg then
@@ -665,8 +568,8 @@ end;
 
 procedure TDMWaptTray.ActQuitExecute(Sender: TObject);
 begin
-  if Assigned(check_thread) then
-    check_thread.Terminate;
+  if Assigned(CheckEventsThread) then
+    CheckEventsThread.Terminate;
   Application.Terminate;
 end;
 
@@ -685,7 +588,7 @@ end;
 procedure TDMWaptTray.ActServiceEnableExecute(Sender: TObject);
 begin
   ActServiceEnable.Checked:=not ActServiceEnable.Checked;
-  TRunWaptService.Create(Self,ActServiceEnable.Checked);
+  TRunWaptService.Create(@OnRunWaptServiceThreadNotify,ActServiceEnable.Checked);
 end;
 
 procedure TDMWaptTray.ActServiceEnableUpdate(Sender: TObject);
@@ -812,22 +715,27 @@ procedure TDMWaptTray.TrayIcon1DblClick(Sender: TObject);
 var
   res:ISuperObject;
 begin
-  if lastButton=mbLeft then
   try
     Timer1.Enabled:=False;
-    res := WAPTLocalJsonGet('update.json?notify_user=1');
-    if (res<>Nil) and  (pos('ERROR',uppercase(res.AsJSon ))<=0) then
-      TrayIcon1.BalloonHint:=rsChecking
-    else
-      TrayIcon1.BalloonHint:=rsErrorWhileChecking;
-    //if notify_user then
-    TrayIcon1.ShowBalloonHint;
-  except
-    on E:Exception do
-      begin
-        trayHint := E.Message;
-        trayMode:=tmErrors;
-      end;
+    InTrayDblClick:=True;
+    if lastButton=mbLeft then
+    try
+        res := WAPTLocalJsonGet('update.json?notify_user=1');
+        if (res<>Nil) and  (pos('ERROR',uppercase(res.AsJSon ))<=0) then
+          TrayIcon1.BalloonHint:=rsChecking
+        else
+          TrayIcon1.BalloonHint:=rsErrorWhileChecking;
+        //if notify_user then
+        TrayIcon1.ShowBalloonHint;
+    except
+      on E:Exception do
+        begin
+          trayHint := E.Message;
+          trayMode:=tmErrors;
+        end;
+    end;
+  finally
+    InTrayDblClick:=False;
   end;
 end;
 

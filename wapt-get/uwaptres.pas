@@ -56,6 +56,11 @@ resourcestring
   rsWAPTLicenceDuplicated = 'Duplicated Licence nr %s';
   rsWAPTNoValidLicenceFound = 'No valid licence found in %, switching to Community features only';
 
+  { waptservice states }
+  rsWssStopped = 'WAPTService stopped';
+  rsWssStarting  = 'WAPTService is starting';
+  rsWssRunning =  'WAPTService is running';
+  rsWssStopping = 'WAPTService is stopping';
 
 
 implementation
