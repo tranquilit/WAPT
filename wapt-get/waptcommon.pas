@@ -78,6 +78,7 @@ interface
   Function IdWget_Try(const fileURL: Utf8String;HttpProxy: String='';userAgent:String='';VerifyCertificateFilename:String='';CookieManage:TIdCookieManager=Nil;
               ClientCertFilename:String='';
               ClientKeyFilename:String=''): boolean;
+
   function IdHttpGetString(const url: ansistring; HttpProxy: String='';
       ConnectTimeout:integer=4000;
       SendTimeOut:integer=60000;
@@ -270,7 +271,9 @@ implementation
 uses LazFileUtils, LazUTF8, soutils, Variants,uwaptres,waptwinutils,uwaptcrypto,tisinifiles,tislogging,
   NetworkAdapterInfo, JwaWinsock2, windirs,
   IdHttp,IdMultipartFormData,IdExceptionCore,IdException,IdURI,IdHeaderList,
-  gettext,IdStack,IdCompressorZLib,IdAuthentication,shfolder,IniFiles,tiscommon,strutils,tisstrings,registry,ssl_openssl;
+  gettext,IdStack,IdCompressorZLib,IdAuthentication,
+  IdSSLOpenSSLHeaders,IdCTypes,
+  shfolder,IniFiles,tiscommon,strutils,tisstrings,registry,ssl_openssl;
 
 const
   CacheWaptServerUrl: String = 'None';
@@ -572,96 +575,198 @@ begin
   end;
 end;
 
+// From https://stackoverflow.com/questions/30441377/how-to-verify-server-hostname
 type
-  TSSLVerifyCert = class(TObject)
-    hostname:AnsiString;
-    constructor Create(ahostname:AnsiString);
-    function VerifypeerCertificate(Certificate: TIdX509; AOk: Boolean; ADepth, AError: Integer): Boolean;
-  end;
+  THostnameValidationResult = (hvrMatchNotFound, hvrNoSANPresent, hvrMatchFound);
+  TX509_get_ext_d2i = function(a: PX509; nid: TIdC_INT; var pcrit: PIdC_INT; var pidx: PIdC_INT): PSTACK_OF_GENERAL_NAME cdecl;
+var
+  X509_get_ext_d2i: Pointer = nil;
 
-constructor TSSLVerifyCert.Create(ahostname:AnsiString);
+
+function ExtendIndyCryptoLibrary(): Boolean;
+var
+  hIdCrypto: HMODULE;
 begin
-  hostname:=ahostname;
+  Result := False;
+
+  // Try to get handle to Indy used crypto library
+  if not IdSSLOpenSSL.LoadOpenSSLLibrary() then
+    Exit;
+  hIdCrypto := IdSSLOpenSSLHeaders.GetCryptLibHandle();
+  if hIdCrypto = 0 then
+    Exit();
+
+  // Try to get exported methods that are needed additionally
+  X509_get_ext_d2i := GetProcAddress(hIdCrypto, PChar('X509_get_ext_d2i'));
+
+  Result := Assigned(X509_get_ext_d2i);
 end;
 
-function TSSLVerifyCert.VerifypeerCertificate(Certificate: TIdX509; AOk: Boolean; ADepth, AError: Integer): Boolean;
-var
-  Subject:String;
-  CNPart,token,att,value:String;
+type
+  TSSLVerifyCert = class(TObject)
+    Hostname:AnsiString;
+  protected
+    function Hostmatch(Pattern: String): Boolean;
+    function ValidateHostname(Certificate: TIdX509): THostnameValidationResult;
+    function MatchesSAN(Certificate: TIdX509): THostnameValidationResult;
+    function MatchesCN(Certificate: TIdX509): THostnameValidationResult;
+  public
+    constructor Create(AHostname:AnsiString);
+    function VerifyPeerCertificate(Certificate: TIdX509; AOk: Boolean; ADepth, AError: Integer): Boolean;
+  end;
+
+constructor TSSLVerifyCert.Create(AHostname:AnsiString);
 begin
-  Subject := Certificate.Subject.OneLine;
-  CNPart := '';
-  if ADepth = 0 then
+  Hostname:=AHostname;
+end;
+
+function TSSLVerifyCert.Hostmatch(Pattern: String): Boolean;
+begin
+  Result := IsWild(Hostname,Pattern,True);
+end;
+
+function TSSLVerifyCert.MatchesSAN(Certificate: TIdX509): THostnameValidationResult;
+var
+  pcrit, pidx: PIdC_INT;
+  psan_names: PSTACK_OF_GENERAL_NAME;
+  san_names_nb: Integer;
+  pcurrent_name: PGENERAL_NAME;
+  i: Integer;
+  DnsName: String;
+  FX509_get_ext_d2i: TX509_get_ext_d2i;
+begin
+  Result := hvrMatchNotFound;
+
+  // Try to extract the names within the SAN extension from the certificate
+  pcrit := nil;
+  pidx := nil;
+  // if not transtyped from pointer to TX509_get_ext_d2i, it raises AV ...
+  FX509_get_ext_d2i := TX509_get_ext_d2i(X509_get_ext_d2i);
+  psan_names := FX509_get_ext_d2i(Certificate.Certificate, NID_subject_alt_name, pcrit, pidx);
+  // Check if SAN is present
+  if psan_names <> nil then
   begin
-    while Subject<>'' do
+    san_names_nb := sk_num(PSTACK(psan_names));
+    // Check each name within the extension
+    for i := 0 to san_names_nb-1 do
     begin
-      token := StrToken(Subject,'/');
-      att := Copy(token,1,pos('=',token)-1);
-      value := Copy(token,pos('=',token)+1,255);
-      if LowerCase(att) = 'cn' then
+      pcurrent_name := PGENERAL_NAME( sk_value(PSTACK(psan_names), i) );
+      if pcurrent_name^._type = GEN_DNS then
       begin
-        CNPart := value;
-        break;
+        // Current name is a DNS name, let's check it
+        DnsName := String(pcurrent_name^.d.dNSName^.data);
+        // Compare expected Hostname with the DNS name
+        if Hostmatch(DnsName) then
+        begin
+          Result := hvrMatchFound;
+          Break;
+        end;
       end;
     end;
-    {TODO: get SubjectAlternativeName parse and check them
-    SubjectAlternativeName := Certificate.SubjectAlternativeName ;
-    }
-
-    //check subject is hostname
-    Result := AOk and (CNPart<>'') and IsWild(hostname,CNPart,True);
-
   end
+  else
+    Result := hvrNoSANPresent;
+  // Clean up
+  sk_free(PSTACK(psan_names));
+end;
+
+function TSSLVerifyCert.MatchesCN(Certificate: TIdX509): THostnameValidationResult;
+var
+  TempList: TStringList;
+  Cn: String;
+begin
+  Result := hvrMatchNotFound;
+
+  // Extract CN from Subject
+  TempList := TStringList.Create();
+  try
+    TempList.Delimiter := '/';
+    TempList.DelimitedText := Certificate.Subject.OneLine;
+    Cn := Trim(TempList.Values['CN']);
+  finally
+    FreeAndNil(TempList);
+  end;
+
+  // Compare expected Hostname with the CN
+  if Hostmatch(Cn) then
+    Result := hvrMatchFound;
+end;
+
+function TSSLVerifyCert.ValidateHostname(Certificate: TIdX509): THostnameValidationResult;
+begin
+  // First try the Subject Alternative Names extension
+  Result := MatchesSAN(Certificate);
+  if Result = hvrNoSANPresent then
+  begin
+    // Extension was not found: try the Common Name
+    Result := MatchesCN(Certificate);
+  end;
+end;
+
+function TSSLVerifyCert.VerifyPeerCertificate(Certificate: TIdX509; AOk: Boolean; ADepth, AError: Integer): Boolean;
+begin
+  if ADepth = 0 then
+    Result := AOk and (ValidateHostname(Certificate)=hvrMatchFound)
   else
     Result := AOk;
 end;
 
-function GetSSLIOHandler(ForUrl:String;CAPath:String = 'C:\tranquilit\wapt\lib\site-packages\certifi\cacert.pem';ServerCert:String=''):TIdSSLIOHandlerSocketOpenSSL;
+function GetSSLIOHandler(ForUrl:String;
+      CAPath:String = 'C:\tranquilit\wapt\lib\site-packages\certifi\cacert.pem';
+      ServerCert:String='';
+      ClientCertFilename:String='';
+      ClientKeyFilename:String=''):TIdSSLIOHandlerSocketOpenSSL;
 var
-  sslCheck:TSSLVerifyCert;
+  SSLCheckCert:TSSLVerifyCert;
 begin
   Result := TIdSSLIOHandlerSocketOpenSSL.Create;
   Result.SSLOptions.Method:=sslvSSLv23;
+  Result.SSLOptions.Mode:=sslmClient;
   Result.SSLOptions.VerifyDirs:=CAPath;
 
-  sslCheck := TSSLVerifyCert.Create(GetHostFromURL(ForUrl));
+  SSLCheckCert := TSSLVerifyCert.Create(GetHostFromURL(ForUrl));
+  Result.OnVerifyPeer := @SSLCheckCert.VerifyPeerCertificate;
 
-  // init check of https server certificate
+  if (ClientCertFilename<>'') and (ClientKeyFilename<>'') then
+  begin
+    Result.SSLOptions.CertFile:=ClientCertFilename;
+    Result.SSLOptions.KeyFile:=ClientKeyFilename;
+    Result.OnGetPassword:=OnWaptGetKeyPassword;
+  end;
+
   if (ServerCert<>'') and (ServerCert <>'0') then
   begin
     Result.SSLOptions.VerifyMode:=[sslvrfPeer];
-    Result.OnVerifyPeer:=@sslCheck.VerifypeerCertificate;
+    Result.OnVerifyPeer:=@SSLCheckCert.VerifyPeerCertificate;
     //Self signed
     if (CAPath='') or (ServerCert<>'1') then
-    begin
-      Result.SSLOptions.RootCertFile := ServerCert;
-      //Result.SSLOptions.CertFile := ServerCert;
-    end
+      Result.SSLOptions.RootCertFile := ServerCert
     else
     begin
       if DirectoryExists(CAPath) then
         Result.SSLOptions.VerifyDirs := CAPath
       else
         Result.SSLOptions.RootCertFile := CAPath;
-      //Result.SSLOptions.CertFile := ServerCert;
       Result.SSLOptions.VerifyDepth := 20;
     end
   end;
 end;
 
 function IdWget(const fileURL, DestFileName: Utf8String; CBReceiver: TObject;
-  progressCallback: TProgressCallback; HttpProxy: String='';userAgent:String='';  VerifyCertificateFilename:String='';CookieManage:TIdCookieManager=Nil;
+  progressCallback: TProgressCallback; HttpProxy: String='';userAgent:String='';
+  VerifyCertificateFilename:String='';
+  CookieManage:TIdCookieManager=Nil;
   ClientCertFilename:String='';ClientKeyFilename:String=''): boolean;
 var
   http:TIdHTTP;
   OutputFile:TFileStream;
   progress : TIdProgressProxy;
-  ssl_handler: TIdSSLIOHandlerSocketOpenSSL;
-  sslCheck:TSSLVerifyCert;
+  SSLHandler: TIdSSLIOHandlerSocketOpenSSL;
+  SSLCheckCert:TSSLVerifyCert;
 
 begin
-  sslCheck:=Nil;
-  ssl_handler:=Nil;
+  SSLCheckCert:=Nil;
+  SSLHandler:=Nil;
 
   http := TIdHTTP.Create;
   http.HandleRedirects:=True;
@@ -680,38 +785,34 @@ begin
   progress.CBReceiver:=CBReceiver;
   try
     // init ssl stack
-    ssl_handler := TIdSSLIOHandlerSocketOpenSSL.Create;
-    ssl_handler.SSLOptions.Method:=sslvSSLv23;
-    ssl_handler.SSLOptions.Mode:=sslmClient;
+    SSLHandler := TIdSSLIOHandlerSocketOpenSSL.Create;
+    SSLHandler.SSLOptions.Method:=sslvSSLv23;
+    SSLHandler.SSLOptions.Mode:=sslmClient;
     if (ClientCertFilename<>'') and (ClientKeyFilename<>'') then
     begin
-      ssl_handler.SSLOptions.CertFile:=ClientCertFilename;
-      ssl_handler.SSLOptions.KeyFile:=ClientKeyFilename;
-      ssl_handler.OnGetPassword:=OnWaptGetKeyPassword;
+      SSLHandler.SSLOptions.CertFile:=ClientCertFilename;
+      SSLHandler.SSLOptions.KeyFile:=ClientKeyFilename;
+      SSLHandler.OnGetPassword:=OnWaptGetKeyPassword;
     end;
 
-  	HTTP.IOHandler := ssl_handler;
-    sslCheck := TSSLVerifyCert.Create(GetHostFromURL(fileurl));
+  	HTTP.IOHandler := SSLHandler;
+    SSLCheckCert := TSSLVerifyCert.Create(GetHostFromURL(fileurl));
 
 
     if (VerifyCertificateFilename<>'') and (VerifyCertificateFilename <>'0') then
     begin
-      ssl_handler.SSLOptions.VerifyDepth:=20;
-      ssl_handler.SSLOptions.VerifyMode:=[sslvrfPeer];
-      ssl_handler.OnVerifyPeer:=@sslCheck.VerifypeerCertificate;
+      SSLHandler.SSLOptions.VerifyDepth:=20;
+      SSLHandler.SSLOptions.VerifyMode:=[sslvrfPeer];
+      SSLHandler.OnVerifyPeer:=@SSLCheckCert.VerifyPeerCertificate;
       //Self signed
       if VerifyCertificateFilename<>'1' then
-      begin
-        ssl_handler.SSLOptions.RootCertFile :=VerifyCertificateFilename;
-        //ssl_handler.SSLOptions.CertFile := VerifyCertificateFilename;
-      end
+        SSLHandler.SSLOptions.RootCertFile :=VerifyCertificateFilename
       else
       begin
         if DirectoryExists(CARoot) then
-          ssl_handler.SSLOptions.VerifyDirs := CARoot
+          SSLHandler.SSLOptions.VerifyDirs := CARoot
         else
-          ssl_handler.SSLOptions.RootCertFile := CARoot;
-        //ssl_handler.SSLOptions.CertFile := '';
+          SSLHandler.SSLOptions.RootCertFile := CARoot;
       end
     end;
 
@@ -749,23 +850,24 @@ begin
     if Assigned(OutputFile) then
       FreeAndNil(OutputFile);
     http.Free;
-    if Assigned(ssl_handler) then
-      FreeAndNil(ssl_handler);
-    if Assigned(sslCheck) then
-      FreeAndNil(sslCheck);
+    if Assigned(SSLHandler) then
+      FreeAndNil(SSLHandler);
+    if Assigned(SSLCheckCert) then
+      FreeAndNil(SSLCheckCert);
   end;
 end;
 
-function IdWget_Try(const fileURL: Utf8String; HttpProxy: String='';userAgent:String='';VerifyCertificateFilename:String='';CookieManage:TIdCookieManager=Nil;
+function IdWget_Try(const fileURL: Utf8String; HttpProxy: String='';userAgent:String='';
+      VerifyCertificateFilename:String='';CookieManage:TIdCookieManager=Nil;
       ClientCertFilename:String='';
       ClientKeyFilename:String=''): boolean;
 var
   http:TIdHTTP;
-  ssl_handler: TIdSSLIOHandlerSocketOpenSSL;
-  sslCheck:TSSLVerifyCert;
+  SSLHandler: TIdSSLIOHandlerSocketOpenSSL;
+  SSLCheckCert:TSSLVerifyCert;
 begin
-  sslCheck:=Nil;
-  ssl_handler:=Nil;
+  SSLCheckCert:=Nil;
+  SSLHandler:=Nil;
 
   http := TIdHTTP.Create;
   http.HandleRedirects:=True;
@@ -777,36 +879,36 @@ begin
 
   try
     // init ssl stack
-    ssl_handler := TIdSSLIOHandlerSocketOpenSSL.Create;
-    ssl_handler.SSLOptions.Method:=sslvSSLv23;
+    SSLHandler := TIdSSLIOHandlerSocketOpenSSL.Create;
+    SSLHandler.SSLOptions.Method:=sslvSSLv23;
     if (ClientCertFilename<>'') and (ClientKeyFilename<>'') then
     begin
-      ssl_handler.SSLOptions.CertFile:=ClientCertFilename;
-      ssl_handler.SSLOptions.KeyFile:=ClientKeyFilename;
-      ssl_handler.OnGetPassword:=OnWaptGetKeyPassword;
+      SSLHandler.SSLOptions.CertFile:=ClientCertFilename;
+      SSLHandler.SSLOptions.KeyFile:=ClientKeyFilename;
+      SSLHandler.OnGetPassword:=OnWaptGetKeyPassword;
     end;
 
-  	HTTP.IOHandler := ssl_handler;
-    sslCheck := TSSLVerifyCert.Create(GetHostFromURL(fileurl));
+  	HTTP.IOHandler := SSLHandler;
+    SSLCheckCert := TSSLVerifyCert.Create(GetHostFromURL(fileurl));
 
     if (VerifyCertificateFilename<>'') and (VerifyCertificateFilename <>'0') then
     begin
-      ssl_handler.SSLOptions.VerifyDepth:=20;
-      ssl_handler.SSLOptions.VerifyMode:=[sslvrfPeer];
-      ssl_handler.OnVerifyPeer:=@sslCheck.VerifypeerCertificate;
+      SSLHandler.SSLOptions.VerifyDepth:=20;
+      SSLHandler.SSLOptions.VerifyMode:=[sslvrfPeer];
+      SSLHandler.OnVerifyPeer:=@SSLCheckCert.VerifyPeerCertificate;
       //Self signed
       if VerifyCertificateFilename<>'1' then
       begin
-        ssl_handler.SSLOptions.RootCertFile :=VerifyCertificateFilename;
-        //ssl_handler.SSLOptions.CertFile := VerifyCertificateFilename;
+        SSLHandler.SSLOptions.RootCertFile :=VerifyCertificateFilename;
+        //SSLHandler.SSLOptions.CertFile := VerifyCertificateFilename;
       end
       else
       begin
         if DirectoryExists(CARoot) then
-          ssl_handler.SSLOptions.VerifyDirs := CARoot
+          SSLHandler.SSLOptions.VerifyDirs := CARoot
         else
-          ssl_handler.SSLOptions.RootCertFile := CARoot;
-        //ssl_handler.SSLOptions.CertFile := '';
+          SSLHandler.SSLOptions.RootCertFile := CARoot;
+        //SSLHandler.SSLOptions.CertFile := '';
       end
     end;
 
@@ -824,10 +926,10 @@ begin
     end;
   finally
     http.Free;
-    if Assigned(ssl_handler) then
-      FreeAndNil(ssl_handler);
-    if Assigned(sslCheck) then
-      FreeAndNil(sslCheck);
+    if Assigned(SSLHandler) then
+      FreeAndNil(SSLHandler);
+    if Assigned(SSLCheckCert) then
+      FreeAndNil(SSLCheckCert);
   end;
 end;
 
@@ -839,11 +941,11 @@ function IdHttpGetString(const url: ansistring; HttpProxy:String='';
     ClientKeyFilename:String=''):RawByteString;
 var
   http:TIdHTTP;
-  ssl_handler: TIdSSLIOHandlerSocketOpenSSL;
-  sslCheck:TSSLVerifyCert;
+  SSLHandler: TIdSSLIOHandlerSocketOpenSSL;
+  SSLCheckCert:TSSLVerifyCert;
 begin
-  sslCheck:=Nil;
-  ssl_handler:=Nil;
+  SSLCheckCert:=Nil;
+  SSLHandler:=Nil;
 
   http := TIdHTTP.Create;
   http.HandleRedirects:=True;
@@ -860,38 +962,34 @@ begin
 
   try
     // init ssl stack
-    ssl_handler := TIdSSLIOHandlerSocketOpenSSL.Create;
-    ssl_handler.SSLOptions.Method:=sslvSSLv23;
+    SSLHandler := TIdSSLIOHandlerSocketOpenSSL.Create;
+    SSLHandler.SSLOptions.Method:=sslvSSLv23;
     if (ClientCertFilename<>'') and (ClientKeyFilename<>'') then
     begin
-      ssl_handler.SSLOptions.CertFile:=ClientCertFilename;
-      ssl_handler.SSLOptions.KeyFile:=ClientKeyFilename;
-      ssl_handler.OnGetPassword:=OnWaptGetKeyPassword;
+      SSLHandler.SSLOptions.CertFile:=ClientCertFilename;
+      SSLHandler.SSLOptions.KeyFile:=ClientKeyFilename;
+      SSLHandler.OnGetPassword:=OnWaptGetKeyPassword;
     end;
 
-    http.IOHandler := ssl_handler;
-    sslCheck := TSSLVerifyCert.Create(GetHostFromURL(url));
+    http.IOHandler := SSLHandler;
+    SSLCheckCert := TSSLVerifyCert.Create(GetHostFromURL(url));
 
     http.Request.Accept := AcceptType;
 
     if (VerifyCertificateFilename<>'') and (VerifyCertificateFilename <>'0') then
     begin
-      ssl_handler.SSLOptions.VerifyDepth:=20;
-      ssl_handler.SSLOptions.VerifyMode:=[sslvrfPeer];
-      ssl_handler.OnVerifyPeer:=@sslCheck.VerifypeerCertificate;
+      SSLHandler.SSLOptions.VerifyDepth:=20;
+      SSLHandler.SSLOptions.VerifyMode:=[sslvrfPeer];
+      SSLHandler.OnVerifyPeer:=@SSLCheckCert.VerifyPeerCertificate;
       //Self signed
       if VerifyCertificateFilename<>'1' then
-      begin
-        ssl_handler.SSLOptions.RootCertFile :=VerifyCertificateFilename;
-        //ssl_handler.SSLOptions.CertFile := VerifyCertificateFilename;
-      end
+        SSLHandler.SSLOptions.RootCertFile :=VerifyCertificateFilename
       else
       begin
         if DirectoryExists(CARoot) then
-          ssl_handler.SSLOptions.VerifyDirs := CARoot
+          SSLHandler.SSLOptions.VerifyDirs := CARoot
         else
-          ssl_handler.SSLOptions.RootCertFile := CARoot;
-        //ssl_handler.SSLOptions.CertFile := '';
+          SSLHandler.SSLOptions.RootCertFile := CARoot;
       end
     end;
 
@@ -924,10 +1022,10 @@ begin
       http.Compressor := Nil;
     end;
     http.Free;
-    if Assigned(ssl_handler) then
-      FreeAndNil(ssl_handler);
-    if Assigned(sslCheck) then
-      FreeAndNil(sslCheck);
+    if Assigned(SSLHandler) then
+      FreeAndNil(SSLHandler);
+    if Assigned(SSLCheckCert) then
+      FreeAndNil(SSLCheckCert);
   end;
 end;
 
@@ -1006,7 +1104,7 @@ begin
       end;
 
       ssl_handler.SSLOptions.VerifyMode:=[sslvrfPeer];
-      ssl_handler.OnVerifyPeer:=@sslCheck.VerifypeerCertificate;
+      ssl_handler.OnVerifyPeer:=@sslCheck.VerifyPeerCertificate;
       //Self signed
       if VerifyCertificateFilename<>'1' then
       begin
@@ -1900,7 +1998,7 @@ begin
   begin
     ssl_handler.SSLOptions.VerifyDepth:=20;
     ssl_handler.SSLOptions.VerifyMode:=[sslvrfPeer];
-    ssl_handler.OnVerifyPeer:=@sslCheck.VerifypeerCertificate;
+    ssl_handler.OnVerifyPeer:=@sslCheck.VerifyPeerCertificate;
     //Self signed
     if VerifyCertificateFilename<>'1' then
     begin
@@ -2313,6 +2411,7 @@ initialization
 //  if not Succeeded(CoInitializeEx(nil, COINIT_MULTITHREADED)) then;
     //Raise Exception.Create('Unable to initialize ActiveX layer');
    GetLanguageIDs(LanguageFull,Language);
+   ExtendIndyCryptoLibrary();
 
 finalization
 //  CoUninitialize();
