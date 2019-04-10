@@ -866,7 +866,7 @@ def wget(url,target=None,printhook=None,proxies=None,connect_timeout=10,download
         if referer != None:
             headers.update({'referer': '%s' % referer})
         if user_agent != None:
-            headers.header.update({'user-agent': '%s' % user_agent})
+            headers.update({'user-agent': '%s' % user_agent})
 
 
         if os.path.isfile(target_fn) and resume:
