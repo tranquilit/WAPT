@@ -125,6 +125,7 @@ from waptpackage import EWaptUnavailablePackage,EWaptConflictingPackage
 from waptpackage import EWaptDownloadError,EWaptMissingPackageHook
 
 from waptpackage import REGEX_PACKAGE_CONDITION,WaptRemoteRepo,PackageEntry,PackageRequest,HostCapabilities,PackageKey
+from waptpackage import make_valid_package_name
 
 from itsdangerous import TimedJSONWebSignatureSerializer
 
@@ -5024,7 +5025,7 @@ class Wapt(BaseObjectClass):
 
         # ini configured profiles
         if self.host_profiles:
-            result.extend(self.host_profiles)
+            result.extend(make_valid_package_name(self.host_profiles))
 
         previous_dn_part_type = ''
         host_dn = self.host_dn
@@ -5036,7 +5037,8 @@ class Wapt(BaseObjectClass):
                 if dn_part_type.lower() == 'dc' and  dn_part_type == previous_dn_part_type:
                     break
                 level_dn = ','.join(dn_parts[i:])
-                result.append(level_dn.replace(',','_'))
+                # spaces and
+                result.append(make_valid_package_name(level_dn))
                 previous_dn_part_type = dn_part_type
         return result
 

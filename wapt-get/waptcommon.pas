@@ -2396,14 +2396,17 @@ begin
   end;
 end;
 
+// should match what is written in python waptpackage.make_valid_package_name()
 function MakeValidPackageName(st: String): String;
 var
   i:integer;
 begin
   result :='';
   for i := 1 to length(st) do
-    case st[i] of '0'..'9', 'A'..'Z', 'a'..'z', '-','_','=':
-      result := Result+st[i]
+    case st[i] of
+      ' ': result := Result+'~';
+      ',': result := Result+'_';
+      '0'..'9', 'A'..'Z', 'a'..'z', '-','_','=','~','.': result := Result+st[i];
     end;
 end;
 

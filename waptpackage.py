@@ -749,6 +749,20 @@ def control_to_dict(control,int_params=('size','installed_size')):
     return result
 
 
+def make_valid_package_name(name):
+    """Return a valid package name from a proposed name.
+
+    """
+    result = ''
+    for c in name:
+        if c.isalnum() or c in ['-','_','=','~','.']:
+            result += c
+        elif c == ',':
+            result += '_'
+        elif c == ' ':
+            result += '~'
+
+    return result
 
 class PackageEntry(BaseObjectClass):
     """Manage package attributes coming from either control files in WAPT package, local DB, or developement dir.
