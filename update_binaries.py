@@ -138,12 +138,14 @@ sdkcab1 = wget('https://download.microsoft.com/download/A/6/A/A6AC035D-DA3F-4F0C
 sdkutils = wget('https://download.microsoft.com/download/A/6/A/A6AC035D-DA3F-4F0C-ADA4-37C8E5D34E3D/setup/WinSDK_amd64/WinSDK_amd64.msi',resume=True,md5='5f8dfd64e0c503c300ca23d306cdea5b',cache_dir=makepath(binaries_cache,'winsdk_amd64'),proxies=proxies)
 install_msi_if_needed(sdkutils)
 
+"""
 print('Get and unzip libzmq.dll')
 zmq_exe = wget('http://miru.hk/archive/ZeroMQ-4.0.4~miru1.0-x86.exe',resume=True,md5='699b63085408cd7bfcde5d3d62077f4e',cache_dir=binaries_cache,proxies=proxies)
 run([p7zip,'e',zmq_exe,'*/libzmq-v90-mt-4_0_4.dll','-o'+wapt_base_dir,'-y'])
 if os.path.isfile(makepath(wapt_base_dir,'libzmq.dll')):
     os.remove(makepath(wapt_base_dir,'libzmq.dll'))
 os.renames(makepath(wapt_base_dir,'libzmq-v90-mt-4_0_4.dll'),makepath(wapt_base_dir,'libzmq.dll'))
+"""
 
 print('Get DMIDecode')
 dmidecode = wget('https://github.com/tabad/fusioninventory-agent-windows-installer/blob/master/Tools/dmidecode/x86/dmidecode.exe?raw=true',resume=True,md5='3945000726804e836cfff999e3b330ec',cache_dir=binaries_cache,proxies=proxies)
