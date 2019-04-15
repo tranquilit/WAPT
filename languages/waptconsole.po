@@ -2034,11 +2034,13 @@ msgid ""
 "Only suitable for development hosts.\n"
 msgstr ""
 
-#: tviswaptconfig.edrepo_url.editlabel.caption
+#: tviswaptconfig.edrepourl.editlabel.caption
+msgctxt "tviswaptconfig.edrepourl.editlabel.caption"
 msgid "URL to the main repository"
 msgstr ""
 
-#: tviswaptconfig.edrepo_url.hint
+#: tviswaptconfig.edrepourl.hint
+msgctxt "tviswaptconfig.edrepourl.hint"
 msgid ""
 "E.g. : https://wapt.tranquilit.local/wapt\n"
 "Leave empty for auto DNS discovery\n"
@@ -2067,11 +2069,13 @@ msgid ""
 "If 1 : use default wapt cacert.pem bundle\n"
 msgstr ""
 
-#: tviswaptconfig.edwapt_server.editlabel.caption
-msgid "URL du serveur WAPT"
+#: tviswaptconfig.edwaptserver.editlabel.caption
+msgctxt "tviswaptconfig.edwaptserver.editlabel.caption"
+msgid "WAPT Server URL"
 msgstr ""
 
-#: tviswaptconfig.edwapt_server.hint
+#: tviswaptconfig.edwaptserver.hint
+msgctxt "tviswaptconfig.edwaptserver.hint"
 msgid ""
 "E.g. : https://wapt.tranquilit.local\n"
 "Leave empty if you don't want a central management server.\n"
@@ -4236,6 +4240,7 @@ msgid "Repository URL"
 msgstr ""
 
 #: tviswaptgui.gridnetworks.header.columns[6].text
+msgctxt "tviswaptgui.gridnetworks.header.columns[6].text"
 msgid "WAPT Server URL"
 msgstr ""
 

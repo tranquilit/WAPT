@@ -165,16 +165,16 @@ object VisWAPTConfig: TVisWAPTConfig
         Caption = 'Status'
         ParentColor = False
       end
-      object edrepo_url: TLabeledEdit
+      object EdRepoURL: TLabeledEdit
         Left = 167
         Height = 21
         Hint = 'E.g. : https://wapt.tranquilit.local/wapt'#13#10'Leave empty for auto DNS discovery'#13#10#13#10'Don''t forget the path to packages (/wapt) in the URL !'
         Top = 53
         Width = 220
-        EditLabel.AnchorSideTop.Control = edrepo_url
+        EditLabel.AnchorSideTop.Control = EdRepoURL
         EditLabel.AnchorSideTop.Side = asrCenter
-        EditLabel.AnchorSideRight.Control = edrepo_url
-        EditLabel.AnchorSideBottom.Control = edrepo_url
+        EditLabel.AnchorSideRight.Control = EdRepoURL
+        EditLabel.AnchorSideBottom.Control = EdRepoURL
         EditLabel.AnchorSideBottom.Side = asrBottom
         EditLabel.Left = 36
         EditLabel.Height = 13
@@ -185,29 +185,29 @@ object VisWAPTConfig: TVisWAPTConfig
         Enabled = False
         LabelPosition = lpLeft
         TabOrder = 3
-        OnExit = edrepo_urlExit
+        OnExit = EdRepoURLExit
       end
-      object edwapt_server: TLabeledEdit
+      object EdWaptServer: TLabeledEdit
         Left = 167
         Height = 21
         Hint = 'E.g. : https://wapt.tranquilit.local'#13#10'Leave empty if you don''t want a central management server.'
         Top = 77
         Width = 220
-        EditLabel.AnchorSideTop.Control = edwapt_server
+        EditLabel.AnchorSideTop.Control = EdWaptServer
         EditLabel.AnchorSideTop.Side = asrCenter
-        EditLabel.AnchorSideRight.Control = edwapt_server
-        EditLabel.AnchorSideBottom.Control = edwapt_server
+        EditLabel.AnchorSideRight.Control = EdWaptServer
+        EditLabel.AnchorSideBottom.Control = EdWaptServer
         EditLabel.AnchorSideBottom.Side = asrBottom
-        EditLabel.Left = 58
+        EditLabel.Left = 78
         EditLabel.Height = 13
         EditLabel.Top = 81
-        EditLabel.Width = 106
-        EditLabel.Caption = 'URL du serveur WAPT'
+        EditLabel.Width = 86
+        EditLabel.Caption = 'WAPT Server URL'
         EditLabel.ParentColor = False
         Enabled = False
         LabelPosition = lpLeft
         TabOrder = 4
-        OnExit = edrepo_urlExit
+        OnExit = EdRepoURLExit
       end
       object cbManual: TCheckBox
         Left = 18
@@ -219,9 +219,9 @@ object VisWAPTConfig: TVisWAPTConfig
         TabOrder = 2
       end
       object ImgStatusRepo: TImage
-        AnchorSideLeft.Control = edrepo_url
+        AnchorSideLeft.Control = EdRepoURL
         AnchorSideLeft.Side = asrBottom
-        AnchorSideTop.Control = edrepo_url
+        AnchorSideTop.Control = EdRepoURL
         AnchorSideTop.Side = asrCenter
         Left = 391
         Height = 21
@@ -230,9 +230,9 @@ object VisWAPTConfig: TVisWAPTConfig
         BorderSpacing.Left = 4
       end
       object ImgStatusServer: TImage
-        AnchorSideLeft.Control = edwapt_server
+        AnchorSideLeft.Control = EdWaptServer
         AnchorSideLeft.Side = asrBottom
-        AnchorSideTop.Control = edwapt_server
+        AnchorSideTop.Control = EdWaptServer
         AnchorSideTop.Side = asrCenter
         Left = 391
         Height = 21

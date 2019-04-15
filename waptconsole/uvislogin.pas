@@ -151,9 +151,17 @@ begin
   {$ifdef ENTERPRISE}
   if key = #13 then
   begin
+    Key := #0;
+    CBConfigurationSelect(CBConfiguration);
+    if (edWaptServerName.Text = '') then
+      if VisWaptGUI.EditIniFile then
+      begin
+        VisWaptGUI.ActReloadConfig.Execute;
+        edWaptServerName.Text:=waptcommon.GetWaptServerURL;
+      end;
+
     if (edWaptServerName.Text <>'') and  (EdUser.Text <>'') then
       edPassword.SetFocus;
-    Key := #0;
   end;
   {$endif}
 end;

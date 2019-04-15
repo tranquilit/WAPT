@@ -49,9 +49,9 @@ type
     eddefault_sources_root: TDirectoryEdit;
     edhttp_proxy: TLabeledEdit;
     edPersonalCertificatePath: TFileNameEdit;
-    edrepo_url: TLabeledEdit;
+    EdRepoURL: TLabeledEdit;
     edServerAddress: TLabeledEdit;
-    edwapt_server: TLabeledEdit;
+    EdWaptServer: TLabeledEdit;
     ImageList1: TImageList;
     ImgStatusPersonalCertificate: TImage;
     ImgStatusLicences: TImage;
@@ -91,7 +91,7 @@ type
     procedure cbManualClick(Sender: TObject);
     procedure CBVerifyCertClick(Sender: TObject);
     procedure edDefaultPackagePrefixExit(Sender: TObject);
-    procedure edrepo_urlExit(Sender: TObject);
+    procedure EdRepoUrlExit(Sender: TObject);
     procedure edServerAddressChange(Sender: TObject);
     procedure edServerAddressEnter(Sender: TObject);
     procedure edServerAddressExit(Sender: TObject);
@@ -266,7 +266,7 @@ var
   url,certchain,pem_data,cert:Variant;
   i: LongWord;
 begin
-  url := edwapt_server.Text;
+  url := EdWaptServer.Text;
   With TIdURI.Create(url) do
   try
     try
@@ -297,18 +297,18 @@ end;
 
 procedure TVisWAPTConfig.ActGetServerCertificateUpdate(Sender: TObject);
 begin
-  ActGetServerCertificate.Enabled := CBVerifyCert.Checked and (edwapt_server.Text <> '');
+  ActGetServerCertificate.Enabled := CBVerifyCert.Checked and (EdWaptServer.Text <> '');
 end;
 
 procedure TVisWAPTConfig.ActSaveConfigExecute(Sender: TObject);
 begin
-  inifile.WriteString('global', 'repo_url', edrepo_url.Text);
+  inifile.WriteString('global', 'repo_url', EdRepoURL.Text);
   inifile.WriteString('global','verify_cert',EdServerCertificate.Text);
 
   inifile.WriteString('global', 'http_proxy', edhttp_proxy.Text);
   inifile.WriteString('global', 'default_package_prefix',
     LowerCase(edDefaultPackagePrefix.Text));
-  inifile.WriteString('global', 'wapt_server', edwapt_server.Text);
+  inifile.WriteString('global', 'wapt_server', EdWaptServer.Text);
   inifile.WriteString('global', 'default_sources_root',
     eddefault_sources_root.Text);
   inifile.WriteString('global', 'personal_certificate_path', edPersonalCertificatePath.Text);
@@ -350,20 +350,20 @@ end;
 
 procedure TVisWAPTConfig.cbManualClick(Sender: TObject);
 begin
-  edrepo_url.Enabled:=cbManual.Checked;
-  edwapt_server.Enabled:=cbManual.Checked;
+  EdRepoURL.Enabled:=cbManual.Checked;
+  EdWaptServer.Enabled:=cbManual.Checked;
 
   if not cbManual.Checked then
   begin
     if edServerAddress.Text <> '' then
     begin
-      edrepo_url.Text := 'https://'+edServerAddress.Text+'/wapt';
-      edwapt_server.Text := 'https://'+edServerAddress.Text;
+      EdRepoURL.Text := 'https://'+edServerAddress.Text+'/wapt';
+      EdWaptServer.Text := 'https://'+edServerAddress.Text;
     end
     else
     begin
-      edrepo_url.Text := GetMainWaptRepoURL;
-      edwapt_server.Text := GetWaptServerURL;
+      EdRepoURL.Text := GetMainWaptRepoURL;
+      EdWaptServer.Text := GetWaptServerURL;
     end;
   end;
 end;
@@ -403,11 +403,11 @@ begin
   edDefaultPackagePrefix.Text:=LowerCase(MakeIdent(edDefaultPackagePrefix.Text));
 end;
 
-procedure TVisWAPTConfig.edrepo_urlExit(Sender: TObject);
+procedure TVisWAPTConfig.EdRepoUrlExit(Sender: TObject);
 var
   servername1,servername2:String;
 begin
-  with TIdURI.Create(edrepo_url.Text) do
+  with TIdURI.Create(EdRepoURL.Text) do
   try
     servername1:=Host;
     if (Document<>'wapt') and (RightStr(Document,length('/wapt'))='/wapt') then
@@ -415,7 +415,7 @@ begin
   finally
     Free;
   end;
-  with TIdURI.Create(edwapt_server.Text) do
+  with TIdURI.Create(EdWaptServer.Text) do
   try
     servername2:=Host;
     if Document<>'' then
@@ -424,7 +424,7 @@ begin
     Free;
   end;
 
-  if servername1=servername2 then
+  if (servername1=servername2) then
   begin
     edServerAddress.Text:=servername1;
     edServerAddress.Font.Color := clDefault;
@@ -432,7 +432,8 @@ begin
   else
   begin
     edServerAddress.Text:='';
-    edServerAddress.Font.Color := clInactiveCaptionText;
+    if (servername1<>'') or (servername2<>'') then
+      edServerAddress.Font.Color := clInactiveCaptionText;
   end;
 end;
 
@@ -454,13 +455,13 @@ begin
         if not cbManual.Checked then
         if edServerAddress.Text <> '' then
         begin
-          edrepo_url.Text := 'https://'+edServerAddress.Text+'/wapt';
-          edwapt_server.Text := 'https://'+edServerAddress.Text;
+          EdRepoURL.Text := 'https://'+edServerAddress.Text+'/wapt';
+          EdWaptServer.Text := 'https://'+edServerAddress.Text;
         end
         else
         begin
-          edrepo_url.Text := GetMainWaptRepoURL;
-          edwapt_server.Text := GetWaptServerURL;
+          EdRepoURL.Text := GetMainWaptRepoURL;
+          EdWaptServer.Text := GetWaptServerURL;
         end;
 
         if cbUseProxyForServer.Checked then
@@ -468,16 +469,21 @@ begin
         else
           proxy :='';
 
-        serverRes := SO(IdhttpGetString(edwapt_server.Text+'/ping',proxy,200,60000,60000,'','','GET','',EdServerCertificate.Text,
-          'application/json',Nil,
-          EdClientCertificatePath.FileName,EdClientPrivateKeyPath.FileName));
-        if serverRes = Nil then
-          raise Exception.CreateFmt(rsWaptServerError,['Bad answer']);
-        if not serverRes.B['success'] then
-          raise Exception.CreateFmt(rsWaptServerError,[serverRes.S['msg']]);
+        if EdWaptServer.Text<>'' then
+        begin
+          serverRes := SO(IdhttpGetString(EdWaptServer.Text+'/ping',proxy,200,60000,60000,'','','GET','',EdServerCertificate.Text,
+            'application/json',Nil,
+            EdClientCertificatePath.FileName,EdClientPrivateKeyPath.FileName));
+          if serverRes = Nil then
+            raise Exception.CreateFmt(rsWaptServerError,['Bad answer']);
+          if not serverRes.B['success'] then
+            raise Exception.CreateFmt(rsWaptServerError,[serverRes.S['msg']]);
 
-        labStatusServer.Caption:= Format('Server access: %s. %s', [serverRes.S['success'],UTF8Encode(serverRes.S['msg'])]);
-        SetStatus(ImgStatusServer,ssOK);
+          labStatusServer.Caption:= Format('Server access: %s. %s', [serverRes.S['success'],UTF8Encode(serverRes.S['msg'])]);
+          SetStatus(ImgStatusServer,ssOK)
+        end
+        else
+          SetStatus(ImgStatusServer,ssWarning);
       except
         on E:Exception do
         begin
@@ -492,7 +498,7 @@ begin
         proxy :='';
 
       try
-        packages := IdHttpGetString(edrepo_url.Text+'/Packages',Proxy,200,60000,60000,'','','GET','',EdServerCertificate.Text,
+        packages := IdHttpGetString(EdRepoURL.Text+'/Packages',Proxy,200,60000,60000,'','','GET','',EdServerCertificate.Text,
             'application/binary',Nil,EdClientCertificatePath.FileName,EdClientPrivateKeyPath.FileName);
         if length(packages)<=0 then
           Raise Exception.Create('Packages file empty or not found');
@@ -529,7 +535,7 @@ begin
   if Assigned(FIniFile) then
     FreeAndNil(Finifile);
 
-  edrepo_url.Text := inifile.ReadString('global', 'repo_url', '');
+  EdRepoURL.Text := inifile.ReadString('global', 'repo_url', '');
 
   EdServerCertificate.FileName:=inifile.ReadString('global','verify_cert','');
 
@@ -541,7 +547,7 @@ begin
 
   edDefaultPackagePrefix.Text :=
     inifile.ReadString('global', 'default_package_prefix', '');
-  edwapt_server.Text := inifile.ReadString('global', 'wapt_server', '');
+  EdWaptServer.Text := inifile.ReadString('global', 'wapt_server', '');
 
   eddefault_sources_root.Text :=
     inifile.ReadString('global', 'default_sources_root', 'c:\waptdev');
@@ -628,19 +634,21 @@ begin
   ImageList1.GetBitmap(ssUnknown, ImgStatusLicences.Picture.Bitmap);
 
   cbManualClick(cbManual);
-  edrepo_urlExit(Sender);
+  EdRepoURLExit(Sender);
   CBVerifyCert.Checked:=(EdServerCertificate.Text<>'') and (EdServerCertificate.Text<>'0');
   CBVerifyCertClick(Sender);
 
-  if edwapt_server.Text<>'' then
-    ActCheckAndSetwaptserver.Execute;
-
-  if edwapt_server.Text='' then
-      edwapt_server.SetFocus
-  else if (edPersonalCertificatePath.Text='') then
+  ActCheckAndSetwaptserver.Execute;
+  if (edServerAddress.Text='') and (edServerAddress.Enabled)  then
+    edServerAddress.SetFocus
+  else if (EdRepoURL.Text='') and (EdRepoURL.Enabled)  then
+      EdRepoURL.SetFocus
+  else if (EdWaptServer.Text='') and (EdWaptServer.Enabled)  then
+      EdWaptServer.SetFocus
+  else if (edPersonalCertificatePath.Visible) and edPersonalCertificatePath.Enabled then
     edPersonalCertificatePath.SetFocus
-  else if (edDefaultPackagePrefix.Text='') then
-    edDefaultPackagePrefix.Text:='';
+  else if (edDefaultPackagePrefix.Text='') and edDefaultPackagePrefix.Enabled then
+    edDefaultPackagePrefix.SetFocus;
 
 
 end;
