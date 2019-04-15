@@ -4172,7 +4172,7 @@ class Wapt(BaseObjectClass):
             dn=self.host_dn,
             fqdn=setuphelpers.get_hostname(),
             site=self.get_host_site(),
-            wapt_version=Version(setuphelpers.__version__,4),
+            wapt_version=Version(setuphelpers.__version__,3),
             wapt_edition=self.get_wapt_edition(),
             packages_trusted_ca_fingerprints=[c.fingerprint for c in self.authorized_certificates()],
             packages_blacklist=self.packages_blacklist,
