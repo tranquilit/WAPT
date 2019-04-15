@@ -432,7 +432,7 @@ begin
   else
   begin
     edServerAddress.Text:='';
-    if (servername1<>'') or (servername2<>'') then
+    if (servername1<>'') and (servername2<>'') and cbManual.Enabled then
       edServerAddress.Font.Color := clInactiveCaptionText;
   end;
 end;
@@ -595,11 +595,14 @@ end;
 
 procedure TVisWAPTConfig.edServerAddressEnter(Sender: TObject);
 begin
+  edServerAddress.Font.Color := clDefault;
   ButtonPanel1.OKButton.Default:=False;
 end;
 
 procedure TVisWAPTConfig.edServerAddressExit(Sender: TObject);
 begin
+  if cbManual.Checked and (pos(lowercase(EdWaptServer.Text),lowercase(EdRepoURL.Text))<=0) then
+    edServerAddress.Font.Color := clInactiveCaptionText;
   ButtonPanel1.OKButton.Default:=True;
 end;
 
