@@ -132,11 +132,6 @@ from itsdangerous import TimedJSONWebSignatureSerializer
 import setuphelpers
 import netifaces
 
-try:
-    import waptguihelper
-except:
-    waptguihelper = None
-
 class EWaptBadServerAuthentication(EWaptException):
     pass
 
@@ -193,33 +188,6 @@ def tryurl(url,proxies=None,timeout=5.0,auth=None,verify_cert=False,cert=None):
 class EWaptCancelled(Exception):
     pass
 
-
-def ask_user_password(title=''):
-    """Help to ask for user and password in waptserver using waptguihelper if available
-
-    Returns:
-        tuple: (iser,password)
-    """
-    user = 'admin'
-    password = ''
-    if waptguihelper:
-        if isinstance(title,unicode):
-            title = title.encode('utf8')
-        res = waptguihelper.login_password_dialog('Credentials for wapt server',title.encode('utf8') or '',user or 'admin',password or '')
-        if res:
-            user = res['user']
-            password = res['password']
-    else:
-        if not user:
-            if title:
-                user = raw_input('Please get login for %s:' % title)
-            else:
-                user = raw_input('Please get login:')
-        if user == '':
-            user = 'admin'
-        if password is None or password == '':
-            password = getpass.getpass('Password:')
-    return (user,password)
 
 class WaptBaseDB(BaseObjectClass):
     _dbpath = ''
