@@ -151,10 +151,25 @@ def make_httpd_config(waptserver_root_dir, fqdn, force_https, server_config):
             shutil.copyfile(old_apache_key,wapt_ssl_key_file)
 
         else:
-            cmd= """\
-/bin/bash -c "openssl req -new -x509 -newkey rsa:2048 -nodes -days 3650 -out %s -keyout %s -subj /C=FR/ST=Wapt/L=Wapt/O=Wapt/CN=%s/ -reqexts SAN -extensions SAN -config <(cat /etc/ssl/openssl.cnf <(printf \\"[SAN]\\nsubjectAltName=DNS:%s\\n\\"))"\
-""" % (wapt_ssl_cert_file,wapt_ssl_key_file,fqdn,fqdn)
-            print(subprocess.check_output(cmd,stderr=subprocess.STDOUT,shell=True))
+            key = SSLPrivateKey(wapt_ssl_key_file)
+            if not os.path.isfile(wapt_ssl_key_file):
+                print('Create SSL RSA Key %s' % wapt_ssl_key_file)
+                key.create()
+                key.save_as_pem()
+
+            if os.path.isfile(wapt_ssl_cert_file):
+                crt = SSLCertificate(wapt_ssl_cert_file)
+                if crt.cn != fqdn:
+                    os.rename(wapt_ssl_cert_file,"%s-%s.old" % (wapt_ssl_cert_file,'{:%Y%m%d-%Hh%Mm%Ss}'.format(datetime.datetime.now())))
+                    crt = key.build_sign_certificate(cn=fqdn,dnsname=fqdn,is_code_signing=False)
+                    print('Create X509 cert %s' % wapt_ssl_cert_file)
+                    crt.save_as_pem(wapt_ssl_cert_file)
+            else:
+                crt = key.build_sign_certificate(cn=fqdn,dnsname=fqdn,is_code_signing=False)
+                print('Create X509 cert %s' % wapt_ssl_cert_file)
+                crt.save_as_pem(wapt_ssl_cert_file)
+                
+
     else:
         if quiet:
 	        print('[*] Nginx - self-signed certs already exists, skipping...')
