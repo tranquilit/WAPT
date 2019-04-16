@@ -132,6 +132,11 @@ from itsdangerous import TimedJSONWebSignatureSerializer
 import setuphelpers
 import netifaces
 
+try:
+    import waptguihelper
+except:
+    waptguihelper = None
+
 class EWaptBadServerAuthentication(EWaptException):
     pass
 
@@ -188,6 +193,33 @@ def tryurl(url,proxies=None,timeout=5.0,auth=None,verify_cert=False,cert=None):
 class EWaptCancelled(Exception):
     pass
 
+
+def ask_user_password(title=''):
+    """Help to ask for user and password in waptserver using waptguihelper if available
+
+    Returns:
+        tuple: (iser,password)
+    """
+    user = 'admin'
+    password = ''
+    if waptguihelper:
+        if isinstance(title,unicode):
+            title = title.encode('utf8')
+        res = waptguihelper.login_password_dialog('Credentials for wapt server',title.encode('utf8') or '',user or 'admin',password or '')
+        if res:
+            user = res['user']
+            password = res['password']
+    else:
+        if not user:
+            if title:
+                user = raw_input('Please get login for %s:' % title)
+            else:
+                user = raw_input('Please get login:')
+        if user == '':
+            user = 'admin'
+        if password is None or password == '':
+            password = getpass.getpass('Password:')
+    return (user,password)
 
 class WaptBaseDB(BaseObjectClass):
     _dbpath = ''
@@ -1953,7 +1985,7 @@ class WaptServer(BaseObjectClass):
         if self.ask_user_password_hook is not None:
             return self.ask_user_password_hook(action) # pylint: disable=not-callable
         elif self.interactive_session:
-            user = raw_input('Please get login for action "%s" on server %s: ' % (action,self.server_url))
+            user = raw_input(u'Please provide username for action "%s" on server %s: ' % (action,self.server_url))
             if user:
                 password = getpass.getpass('Password: ')
                 if user and password:
@@ -3064,10 +3096,11 @@ class Wapt(BaseObjectClass):
         logger.debug('Host uuid is now: %s'%self.host_uuid)
         logger.debug('Host computer_name is now: %s'%setuphelpers.get_computername())
 
-    @property
-    def token_secret_key(self):
+    def get_token_secret_key(self):
         kfn = os.path.join(self.private_dir,'secret_key')
         if not os.path.isfile(kfn):
+            if not os.path.isdir(self.private_dir):
+                os.makedirs(self.private_dir)
             result = ''.join(random.SystemRandom().choice(string.letters + string.digits) for _ in range(64))
             open(kfn,'w').write(result)
             return result
@@ -4155,8 +4188,22 @@ class Wapt(BaseObjectClass):
     def get_host_site(self):
         return setuphelpers.registry_readstring(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows\CurrentVersion\Group Policy\State\Machine','Site-Name')
 
+    def get_host_certificate_fingerprint(self):
+        result = self.read_param('host_certificate_fingerprint')
+        if result is None:
+            result = self.get_host_certificate().fingerprint
+            self.write_param('host_certificate_fingerprint',result)
+        return result
+
+    def get_host_certificate_authority_key_identifier(self):
+        result = self.read_param('host_certificate_authority_key_identifier')
+        if result is None:
+            result = (self.get_host_certificate().authority_key_identifier or '').encode('hex')
+            self.write_param('host_certificate_authority_key_identifier',result)
+        return result
+
     def host_capabilities(self):
-        """Return the current capabilities of host taken in account to dtermine packages list and whether update should be forced (when filter criteria are updated)
+        """Return the current capabilities of host taken in account to determine packages list and whether update should be forced (when filter criteria are updated)
         This includes host certificate,architecture,locale,authorized certificates
 
         Returns:
@@ -4181,8 +4228,8 @@ class Wapt(BaseObjectClass):
             packages_maturities=self.maturities,
             use_host_packages=self.use_hostpackages,
             host_profiles=self.host_profiles,
-            host_certificate_fingerprint=self.get_host_certificate().fingerprint,
-            host_certificate_authority_key_identifier = (self.get_host_certificate().authority_key_identifier or '').encode('hex'),
+            host_certificate_fingerprint=self.get_host_certificate_fingerprint(),
+            host_certificate_authority_key_identifier = self.get_host_certificate_authority_key_identifier(),
             host_packages_names=self.get_host_packages_names(),
             #authorized_maturities=self.get_host_maturities(),
         )
@@ -5347,6 +5394,9 @@ class Wapt(BaseObjectClass):
                         new_host_cert.save_as_pem(self.get_host_certificate_filename())
                         self._host_certificate = None
                         self._host_certificate_timestamp = None
+                        self.write_param('host_certificate_fingerprint',new_host_cert.fingerprint)
+                        self.write_param('host_certificate_authority_key_identifier',(new_host_cert.authority_key_identifier or '').encode('hex'))
+
 
             return result
 
@@ -5358,16 +5408,10 @@ class Wapt(BaseObjectClass):
                 )
 
     def get_host_key_filename(self):
-        # TODO: check ACL
-        if not os.path.isdir(self.private_dir):
-            os.makedirs(self.private_dir)
         return os.path.join(self.private_dir,self.host_uuid+'.pem')
 
 
     def get_host_certificate_filename(self):
-        # TODO: check ACL.
-        if not os.path.isdir(self.private_dir):
-            os.makedirs(self.private_dir)
         return os.path.join(self.private_dir,self.host_uuid+'.crt')
 
 
@@ -5421,6 +5465,8 @@ class Wapt(BaseObjectClass):
         if force_recreate or not os.path.isfile(crt_filename):
             logger.info(u'Creates host keys pair and x509 certificate %s' % crt_filename)
             self._host_key = self.get_host_key()
+            if not os.path.isdir(self.private_dir):
+                os.makedirs(self.private_dir)
 
             crt = self._host_key.build_sign_certificate(
                 ca_signing_key=None,
@@ -5431,7 +5477,8 @@ class Wapt(BaseObjectClass):
                 is_ca=True,
                 is_code_signing=False)
             crt.save_as_pem(crt_filename)
-
+            self.write_param('host_certificate_fingerprint',crt.fingerprint)
+            self.write_param('host_certificate_authority_key_identifier',(crt.authority_key_identifier or '').encode('hex'))
         # check validity
         return open(crt_filename,'rb').read()
 
@@ -5448,6 +5495,8 @@ class Wapt(BaseObjectClass):
             if create and not os.path.isfile(key_filename):
                 self._host_key = SSLPrivateKey(key_filename)
                 self._host_key.create()
+                if not os.path.isdir(os.path.dirname(key_filename)):
+                    os.makedirs(os.path.dirname(key_filename))
                 self._host_key.save_as_pem()
             elif os.path.isfile(key_filename):
                 self._host_key = SSLPrivateKey(key_filename)
@@ -7193,7 +7242,7 @@ class Wapt(BaseObjectClass):
             logger.debug('%s : %s / %s' % (msg,progress,progress_max))
 
     def get_secured_token_generator(self):
-        return TimedJSONWebSignatureSerializer(self.token_secret_key,expires_in=self.token_lifetime)
+        return TimedJSONWebSignatureSerializer(self.get_token_secret_key(),expires_in=self.token_lifetime)
 
     def is_authorized_package_action(self,action,package,user_groups=[],rules=None):
         package_request = PackageRequest(package=package)
