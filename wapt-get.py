@@ -217,8 +217,9 @@ private_key_password_cache = None
 
 class JsonOutput(object):
     """file like to print output to json"""
-    def __init__(self,output,logger):
-        self.output = output
+    def __init__(self,console,outputlist,logger):
+        self.console = console
+        self.output = outputlist
         self.logger = logger
 
     def write(self,txt):
@@ -227,11 +228,11 @@ class JsonOutput(object):
             logger.info(txt)
             self.output.append(txt)
 
-    def __getattrib__(self, name):
-        if hasattr(self.output,'__getattrib__'):
-            return self.output.__getattrib__(name)
+    def __getattr__(self, name):
+        if hasattr(self.console,'__getattr__'):
+            return self.console.__getattr__(name)
         else:
-            return self.output.__getattribute__(name)
+            return self.console.__getattribute__(name)
 
 def guess_waptserver_url(host):
     result = host.lower()
@@ -307,8 +308,7 @@ def do_update(mywapt,options):
     running_install = mywapt.check_install_running(max_ttl=options.max_ttl)
     if running_install:
         raise Exception('Running wapt processes (%s) in progress, please wait...' % (running_install,))
-    if not options.json_output:
-        print(u"Update package list")
+    print(u"Update package list from %s" % ', ' .join([r.repo_url for r in mywapt.repositories]))
     result = mywapt.update(force=options.force)
     if not options.json_output:
         print(u"Total packages : %i" % result['count'])
@@ -343,9 +343,8 @@ def do_enable_check_certificate(mywapt,options):
                 if cert.cn != repo_host_name:
                     raise Exception(u'Common name of certificate (%s) does not match repository hostname (%s), aborting' % (cert.cn,repo_host_name) )
 
-            if not options.json_output:
-                print('Certificate CN: %s' % cert.cn)
-                print('Pining certificate %s' % cert_filename)
+            print('Certificate CN: %s' % cert.cn)
+            print('Pining certificate %s' % cert_filename)
 
             mywapt.config.set('global','verify_cert',cert_filename)
             mywapt.write_config()
@@ -365,9 +364,7 @@ def main():
         # redirect output to json list
         old_stdout = sys.stdout
         old_stderr = sys.stderr
-        sys.stderr = sys.stdout = JsonOutput(
-            jsonresult['output'],logger)
-
+        sys.stderr = sys.stdout = JsonOutput(sys.stdout,jsonresult['output'],logger)
 
     try:
         if len(args) == 0:
@@ -1200,11 +1197,11 @@ def main():
                     if mywapt.waptserver.use_kerberos and not setuphelpers.running_as_system():
                         raise Exception('Kerberos is enabled, "register" must be launched under system account. Use --service switch or "psexec -s wapt-get register"')
 
+                    print(u"Registering host against server: %s" % mywapt.waptserver.server_url)
                     result['register'] = mywapt.register_computer(
                         description=(" ".join(args[1:])).decode(sys.getfilesystemencoding()),
                         )
                     if not options.json_output:
-                        logger.debug(u"Registering host info against server: %s", result)
                         if not result['register']['success']:
                             print(u"Error when registering host against server %s: %s" % (mywapt.waptserver.server_url,result['register']['msg']))
                             sys.exit(1)
@@ -1273,7 +1270,7 @@ def main():
                         else:
                             logger.debug(u"Inventory sent to server: %s", result)
                             if result['success']:
-                                print(u"Updated host status correctly sent to server %s." % (mywapt.waptserver.server_url,))
+                                print(u"Updated host status correctly sent to server %s. %s" % (mywapt.waptserver.server_url,result))
                             else:
                                 print(u"Failed to store properly inventory to server %s: %s" % (mywapt.waptserver.server_url,result['msg']))
 

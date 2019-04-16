@@ -2282,7 +2282,10 @@ class WaptRepo(WaptRemoteRepo):
 
     def __repr__(self):
         try:
-            return '<WaptRepo %s for domain %s>' % (self.repo_url,self.dnsdomain)
+            if self.dnsdomain:
+                return '<WaptRepo %s for domain %s>' % (self.repo_url,self.dnsdomain)
+            else:
+                return '<WaptRepo %s>' % (self.repo_url,)
         except:
             return '<WaptRepo %s for domain %s>' % ('unknown',self.dnsdomain)
 
@@ -2531,7 +2534,10 @@ class WaptHostRepo(WaptRepo):
 
     def __repr__(self):
         try:
-            return '<WaptHostRepo %s for domain %s and host_id %s >' % (self.repo_url,self.dnsdomain,self.host_id)
+            if self.dnsdomain:
+                return '<WaptHostRepo %s for domain %s and host_id %s >' % (self.repo_url,self.dnsdomain,self.host_id)
+            else:
+                return '<WaptHostRepo %s for host_id %s >' % (self.repo_url,self.host_id)
         except:
             return '<WaptHostRepo %s for domain %s and host id %s >' % ('unknown',self.dnsdomain,self.host_id)
 
@@ -5390,6 +5396,7 @@ class Wapt(BaseObjectClass):
                 if 'host_certificate' in result_data:
                     # server has signed the certificate, we replace our self signed one.
                     new_host_cert = SSLCertificate(crt_string=result_data['host_certificate'])
+                    logger.info('Got signed certificate from server. Issuer: %s. CN: %s' % (new_host_cert.issuer_cn,new_host_cert.cn))
                     if new_host_cert.cn == self.host_uuid and new_host_cert.match_key(self.get_host_key()):
                         new_host_cert.save_as_pem(self.get_host_certificate_filename())
                         self._host_certificate = None
