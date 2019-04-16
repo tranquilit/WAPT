@@ -362,8 +362,8 @@ begin
     end
     else
     begin
-      EdRepoURL.Text := GetMainWaptRepoURL;
-      EdWaptServer.Text := GetWaptServerURL;
+      EdRepoURL.Text := GetRepoURLFromIni();
+      EdWaptServer.Text := GetWaptServerURLFromIni();
     end;
   end;
 end;
@@ -460,8 +460,8 @@ begin
         end
         else
         begin
-          EdRepoURL.Text := GetMainWaptRepoURL;
-          EdWaptServer.Text := GetWaptServerURL;
+          EdRepoURL.Text := GetRepoURLFromIni();
+          EdWaptServer.Text := GetWaptServerURLFromIni();
         end;
 
         if cbUseProxyForServer.Checked then

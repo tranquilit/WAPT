@@ -49,8 +49,9 @@ interface
   function WaptDBPath: String;
 
   function GetRepoURLFromDNS(RepoName:String;dnsdomain:String='';http_proxy:String=''):String;
-  function GetWaptRepoURLFromIni(RepoName:String='wapt'): String; // from wapt-get.ini, can be empty
+  function GetRepoURLFromIni(RepoName:String='wapt'): String; // from wapt-get.ini, can be empty
   Function GetMainWaptRepoURL:String;   // read from ini, if empty, do a discovery using dns
+  Function GetWaptServerURLFromIni:String;  // read ini. if no wapt_server key -> return '', return value in inifile or perform a DNS discovery
   Function GetWaptServerURL:String;  // read ini. if no wapt_server key -> return '', return value in inifile or perform a DNS discovery
 
   function GetWaptServerCertificateFilename(inifilename:String=''):String;
@@ -257,7 +258,7 @@ const
   WaptCAKeyFilename: String ='';
   WaptCACertFilename: String ='';
 
-  WAPTServerMinVersion='1.7.3.8';
+  WAPTServerMinVersion='1.7.4';
 
   FAppIniFilename:String = '';
 
@@ -1345,6 +1346,16 @@ begin
   end;
 end;
 
+function GetWaptServerURLFromIni: String;
+begin
+  if IniHasKey(WaptIniFilename,'global','wapt_server') then
+    result := IniReadString(WaptIniFilename,'global','wapt_server');
+    if (Result <> '') then
+      exit
+  else
+    Result := '';
+end;
+
 
 function GetWaptServerURL: String;
 var
@@ -1479,7 +1490,7 @@ begin
   end;
 end;
 
-function GetWaptRepoURLFromIni(RepoName:String='wapt'): String;
+function GetRepoURLFromIni(RepoName:String='wapt'): String;
 var
   section:String;
   repositories:TDynStringArray;
@@ -1534,7 +1545,7 @@ function GetMainWaptRepoURL: String;
 var
   dnsdomain,Proxy:AnsiString;
 begin
-  result := GetWaptRepoURLFromIni('wapt');
+  result := GetRepoURLFromIni('wapt');
   if (Result <> '') then
     exit;
 
