@@ -330,8 +330,10 @@ begin
     vPKCS12 := pywaptcrypto.SSLPKCS12('--noarg--');
     vPKCS12.certificate := cert;
     vPKCS12.private_key := key;
+    if not VarIsNull(cacert) and not VarIsEmpty(cacert) then
+      vPKCS12.add_ca_certificate(certificate := cacert);
     vdestp12 := UTF8Decode(AppendPathDelim(destdir)+crtbasename+'.p12');
-    vPKCS12.save_as_p12(vdestp12,vKeyPassword,vcommonname);
+    vPKCS12.save_as_p12(filename:=vdestp12,password:=vKeyPassword,friendly_name:=vcommonname);
   end;
 
   result := VarPythonAsString(vdestcrt);

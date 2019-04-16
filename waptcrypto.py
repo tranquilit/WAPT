@@ -2563,7 +2563,8 @@ class SSLPKCS12(object):
         if filename is None:
             filename = self._filename
         if filename is not None:
-            open(filename,'wb').write(pkcs12.export(password.encode('utf8')))
+            with open(filename,'wb') as p12file:
+                p12file.write(pkcs12.export(password.encode('utf8')))
         else:
             raise Exception(u'No filename supplied for pkcs12 export')
 
