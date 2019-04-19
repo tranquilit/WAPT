@@ -227,6 +227,7 @@ Type: files; Name: "{app}\waptservice\*.pyc"
 Type: files; Name: "{app}\waptservice\waptservice.py*"
 
 [UninstallRun]
+Filename: "taskkill"; Parameters: "/t /im ""waptself.exe"" /f"; Flags: runhidden; StatusMsg: "Arrêt de waptself"
 Filename: "taskkill"; Parameters: "/t /im ""waptconsole.exe"" /f"; Flags: runhidden; StatusMsg: "Arrêt de waptconsole"
 Filename: "taskkill"; Parameters: "/t /im ""wapttray.exe"" /f"; Flags: runhidden; StatusMsg: "Arrêt de l'icône de notification"
 Filename: "net"; Parameters: "stop waptservice"; Flags: runhidden; StatusMsg: "Arrêt du service WAPT"

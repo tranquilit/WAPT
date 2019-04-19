@@ -30,14 +30,12 @@ Source: "..\wapt.ico"; DestDir: "{app}";
 Source: "..\waptupgrade\setup.py"; DestDir: "{app}\waptupgrade"; Flags: ignoreversion;
 Source: "..\waptupgrade\WAPT\*"; DestDir: "{app}\waptupgrade\WAPT"; Flags: createallsubdirs recursesubdirs ignoreversion;
 
-#if edition != "waptagent"
-;Source: "..\waptconsolepostconf.exe"; DestDir: "{app}"; Flags: ignoreversion
-;Source: "..\waptconsolepostconf.exe.manifest"; DestDir: "{app}";
-#endif
-
 ; global management console
 Source: "..\waptconsole.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\waptconsole.exe.manifest"; DestDir: "{app}";
+
+; local management console wapt selfservice
+Source: "..\waptself.exe"; DestDir: "{app}"; Flags: ignoreversion
 
 Source: "..\waptdevutils.py"; DestDir: "{app}";
 #endif
@@ -198,8 +196,8 @@ Filename: "{app}\wapt-get.exe"; Parameters: "--direct update"; Flags: runhidden;
 
 [Icons]
 Name: "{commonstartup}\WAPT session setup"; Filename: "{app}\wapt-get.exe"; Parameters: "session-setup ALL"; Flags: runminimized excludefromshowinnewinstall;
-Name: "{group}\Console WAPT"; Filename: "{app}\waptconsole.exe"; WorkingDir: "{app}" ; Check: Not IsWaptAgent();
-Name: "{group}\Logiciels installés avec WAPT"; Filename: "http://localhost:8088/status"; Check: Not IsWaptAgent();
+Name: "{group}\{cm:WAPTConsole}"; Filename: "{app}\waptconsole.exe"; WorkingDir: "{app}"; Check: Not IsWaptAgent();
+Name: "{group}\{cm:WAPTSelf}"; Filename: "{app}\waptself.exe"; WorkingDir: "{app}"
 
 [CustomMessages]
 ;English translations here
@@ -221,6 +219,8 @@ en.DNSDetect=Detect WAPT Info with DNS records
 en.DNSDomainLookup=DNS Domain to lookup
 en.StaticURLS=Static WAPT Informations
 en.RunConfigTool=Run congifuration tool
+en.WAPTConsole=WAPT Management console
+en.WAPTSelf=WAPT Softwares self service
 
 ;French translations here
 fr.StartAfterSetup=Lancer WAPT session setup à l'ouverture de session
@@ -241,6 +241,8 @@ fr.DNSDetect=Détecter les URLS WAPT avec des requêtes DNS
 fr.DNSDomainLookup=Domaine DNS à  interroger
 fr.StaticURLS=URLS WAPT statiques
 fr.RunConfigTool=Exécuter l'assistant de configuration
+fr.WAPTConsole=Console WAPT
+fr.WAPTSelf=Self service logiciels WAPT
 
 ;German translation here
 de.StartAfterSetup=WAPT Setup-Sitzung bei Sitzungseröffnung starten

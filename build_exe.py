@@ -44,6 +44,7 @@ try:
 
         for lpi in ["wapt-get\\waptget.lpi","wapt-get\\waptguihelper.lpi","waptdeploy\\waptdeploy.lpi",
                     "wapttray\\wapttray.lpi","waptconsole\\waptconsole.lpi","waptexit\\waptexit.lpi",
+					"waptself\\waptself.lpi",
                     #"waptserver\\postconf\\waptserverpostconf.lpi",
                     #"waptconsolepostconf\\waptconsolepostconf.lpi",
                     "waptsetup\\waptsetuputil\\waptsetuputil.lpi",
