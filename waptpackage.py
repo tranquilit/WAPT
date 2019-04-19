@@ -937,7 +937,7 @@ class PackageEntry(BaseObjectClass):
             )
 
     def make_fallback_uuid(self):
-        return 'fb-%s' % (hashlib.sha256('-'.join([(self.package or '').encode('utf8'),str(self.architecture or ''),str(self.locale or ''),str(self.maturity or '')])).hexdigest(),)
+        return 'fb-%s' % (hashlib.sha256('-'.join([(self.package or '').encode('utf8'),str(self.version or ''),str(self.architecture or ''),str(self.locale or ''),str(self.maturity or '')])).hexdigest(),)
 
     def make_uuid(self):
         self.package_uuid = str(uuid.uuid4())
