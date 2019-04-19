@@ -5,7 +5,6 @@ object FrmPackage: TFrmPackage
   Width = 445
   ClientHeight = 224
   ClientWidth = 445
-  Scaled = False
   TabOrder = 0
   DesignLeft = 624
   DesignTop = 311

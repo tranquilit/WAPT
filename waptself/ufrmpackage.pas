@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, StdCtrls, ExtCtrls, BCListBox,
-  BCLabel,BCMaterialDesignButton,FXProgressBar,superobject,waptcommon;
+  BCLabel,BCMaterialDesignButton,FXProgressBar,superobject,waptcommon, Types;
 
 type
 
