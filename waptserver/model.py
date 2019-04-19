@@ -1250,11 +1250,14 @@ def init_db(drop=False):
     except:
         wapt_db.rollback()
     if drop:
-        for table in reversed([ServerAttribs, Hosts, HostPackagesStatus, HostSoftwares, HostGroups,WsusUpdates,HostWsus,WsusDownloadTasks,Packages, ReportingQueries, Normalization]):
+        for table in reversed([ServerAttribs, Hosts, HostPackagesStatus, HostSoftwares, HostGroups,WsusUpdates,
+            HostWsus,WsusDownloadTasks,Packages, ReportingQueries, Normalization, StoreDownload]):
             table.drop_table(fail_silently=True)
 
     try:
-        wapt_db.create_tables([ServerAttribs, Hosts, HostPackagesStatus, HostSoftwares, HostGroups,WsusUpdates,HostWsus,WsusDownloadTasks,Packages, ReportingQueries, Normalization], safe=True)
+        wapt_db.create_tables([ServerAttribs, Hosts, HostPackagesStatus, HostSoftwares, HostGroups,WsusUpdates,
+            HostWsus,WsusDownloadTasks,Packages, ReportingQueries, Normalization, StoreDownload)
+            ], safe=True)
     except Exception as e:
         wapt_db.rollback()
         print(u'Unable to create tables, will try to upgrade step by step instead... : %s' % (repr(e),))
@@ -1690,7 +1693,7 @@ def upgrade_db_structure():
             v.save()
 
     next_version = '1.7.3.6'
-    if get_db_version() <= next_version:
+    if get_db_version() < next_version:
         with wapt_db.atomic():
             logger.info("Migrating from %s to %s" % (get_db_version(), next_version))
             opes = []
@@ -1709,6 +1712,16 @@ def upgrade_db_structure():
             v.value = next_version
             v.save()
 
+    next_version = '1.7.4'
+    if get_db_version() <= next_version:
+        with wapt_db.atomic():
+            logger.info("Migrating from %s to %s" % (get_db_version(), next_version))
+            opes = []
+
+            migrate(*opes)
+            (v, created) = ServerAttribs.get_or_create(key='db_version')
+            v.value = next_version
+            v.save()
 
 if __name__ == '__main__':
     if platform.system() != 'Windows' and getpass.getuser() != 'wapt':
