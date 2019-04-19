@@ -1,0 +1,51 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8"
+
+#: tfrmpackage.bcmaterialdesignbutton1.caption
+msgid ""
+msgstr ""
+
+#: tfrmpackage.labdescription.caption
+msgid ""
+msgstr ""
+
+#: tfrmpackage.label2.caption
+msgid "0%"
+msgstr ""
+
+#: tfrmpackage.labinstallversion.caption
+msgid "1.5.1-0"
+msgstr ""
+
+#: tfrmpackage.labmaintainer.caption
+msgid "by Tranquil IT"
+msgstr ""
+
+#: tfrmpackage.labpackagename.caption
+msgid "tis-adobeair"
+msgstr ""
+
+#: tfrmpackage.labversion.caption
+msgid "1.5.2-0"
+msgstr ""
+
+#: tviswaptself.bclabel1.caption
+msgid "Available packages"
+msgstr "Paquets disponibles"
+
+#: tviswaptself.caption
+msgid "WAPT softwares Self-service"
+msgstr "Self service logiciels WAPT"
+
+#: tviswaptself.cbcategories.caption
+msgid "Categories"
+msgstr "Catégories"
+
+#: tviswaptself.edsearch.texthint
+msgid "Search..."
+msgstr "Rechercher..."
+
+#: tviswaptself.panel1.caption
+msgid "Panel1"
+msgstr ""
+

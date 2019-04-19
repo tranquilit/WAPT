@@ -49,7 +49,33 @@ type
     procedure Execute; override;
   end;
 
-  { TCheckTasksThread }
+  { TCheckAllTasksThread }
+
+  TCheckAllTasksThread = Class(TThread)
+  private
+    FOnNotifyEvent: TNotifyEvent;
+    procedure SetOnNotifyEvent(AValue: TNotifyEvent);
+    procedure NotifyListener; Virtual;
+  public
+    PollTimeout:Integer;
+    CheckTimeout:Integer;
+
+    LastReadEventId: Integer;
+    LastTaskIDOnLaunch: Integer;
+
+    Tasks: ISuperObject;
+    WaptServiceRunning:Boolean;
+    Message: String;
+
+    property OnNotifyEvent: TNotifyEvent read FOnNotifyEvent write SetOnNotifyEvent;
+
+    constructor Create(aNotifyEvent:TNotifyEvent;aCheckTimeout: Integer = -1; aPollTimeout:Integer = 10000);
+    destructor Destroy; override;
+    procedure Execute; override;
+  end;
+
+
+  { TCheckEventsThread }
 
   TCheckEventsThread = Class(TThread)
   private
@@ -229,9 +255,103 @@ procedure TCheckTasksThread.Execute;
 begin
   while not Terminated do
   try
-    Tasks := WAPTLocalJsonGet(Format('tasks.json?last_event_id=%d&timeout=%d',[LastReadEventId,PollTimeout]),'','',CheckTimeout);
+    Tasks:=WAPTLocalJsonGet(Format('tasks.json?last_event_id=%d&timeout=%d',[LastReadEventId,PollTimeout]),'','',CheckTimeout);
     if Assigned(Tasks) then
       LastReadEventId:=Tasks.I['last_event_id'];
+    WaptServiceRunning:=True;
+    Synchronize(@NotifyListener);
+    if not Terminated then
+      Sleep(200);
+  except
+    on E: EIdSocketError do
+      begin
+        // if we can't connect to the waptservice http port, waptservice is not running (properly).
+        if e.LastError=10061 then // connection refused
+        begin
+          if WaptServiceRunning then
+          begin
+            Message := E.Message;
+            WaptServiceRunning:=False;
+            Tasks := Nil;
+            Synchronize(@NotifyListener);
+            break;
+          end;
+        end
+        else if e.LastError=10060 then // Global Timeout
+        begin
+          if not Terminated then
+            Sleep(200);
+        end
+        else
+          // we stop..
+          break;
+      end;
+
+    // long polling on waptservice raises a timeout when no event release the connection
+    on E: EIdReadTimeout do
+      begin
+        if not Terminated then
+          Sleep(200);
+      end;
+
+    on E: Exception do
+      begin
+        if WaptServiceRunning then
+        begin
+          Message := E.ClassName+' '+E.Message;
+          WaptServiceRunning:=False;
+          Tasks := Nil;
+          Synchronize(@NotifyListener);
+        end;
+        // we stop
+        break;
+      end;
+  end;
+end;
+
+
+{ TCheckAllTasksThread }
+
+procedure TCheckAllTasksThread.NotifyListener;
+begin
+  if Assigned(FOnNotifyEvent) then
+    FOnNotifyEvent(Self);
+end;
+
+procedure TCheckAllTasksThread.SetOnNotifyEvent(AValue: TNotifyEvent);
+begin
+  if FOnNotifyEvent=AValue then Exit;
+  FOnNotifyEvent:=AValue;
+end;
+
+constructor TCheckAllTasksThread.Create(aNotifyEvent: TNotifyEvent; aCheckTimeout: Integer = -1; aPollTimeout:Integer = 10000);
+begin
+  inherited Create(True);
+  OnNotifyEvent:=aNotifyEvent;
+  LastReadEventId:=-1;
+  PollTimeout:=aPollTimeout; // time to wait for new tasks
+  CheckTimeout:=aCheckTimeout; // timeout waiting for the service to answer (must be greater than PollTimeout)
+  if CheckTimeout<0 then
+    CheckTimeout:=waptservice_timeout*1000;
+  if CheckTimeout <= PollTimeout + 1000 then
+    CheckTimeout := PollTimeout + 1000;
+
+end;
+
+destructor TCheckAllTasksThread.Destroy;
+begin
+  inherited Destroy;
+end;
+
+procedure TCheckAllTasksThread.Execute;
+begin
+  while not Terminated do
+  try
+    Tasks := WAPTLocalJsonGet(format('tasks_status.json?timeout=%d&last_event_id=%d',[PollTimeout,LastReadEventId]),'','',CheckTimeout);
+    if Assigned(Tasks) then
+      LastReadEventId:=Tasks.I['last_event_id'];
+    if LastTaskIDOnLaunch=-1 then
+      LastTaskIDOnLaunch:=Tasks.O['tasks'].AsArray[0].I['id'];
     WaptServiceRunning:=True;
     Synchronize(@NotifyListener);
     if not Terminated then
@@ -302,7 +422,7 @@ begin
   inherited Create(True);
   OnNotifyEvent:=aNotifyEvent;
   LastReadEventId:=-1;
-  PollTimeOut:=3;
+  PollTimeOut:=aPollTimeOut;
   CheckTimeout:=aCheckTimeout;
   if CheckTimeout<0 then
     CheckTimeout:=waptservice_timeout*1000;

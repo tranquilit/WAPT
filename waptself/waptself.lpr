@@ -1,4 +1,4 @@
-program waptself;
+program WaptSelf;
 
 {$mode objfpc}{$H+}
 
@@ -7,8 +7,7 @@ uses
   cthreads,
   {$ENDIF}{$ENDIF}
   Interfaces, // this includes the LCL widgetset
-  Forms, uviswaptself, uFrmPackage
-  { you can add units after this };
+  Forms, uviswaptself, uFrmPackage, uVisLogin;
 
 {$R *.res}
 

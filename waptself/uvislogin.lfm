@@ -1,0 +1,49 @@
+object VisLogin: TVisLogin
+  Left = 953
+  Height = 240
+  Top = 266
+  Width = 320
+  Caption = 'VisLogin'
+  ClientHeight = 240
+  ClientWidth = 320
+  LCLVersion = '1.8.4.0'
+  object EdUsername: TEdit
+    Left = 98
+    Height = 23
+    Top = 35
+    Width = 136
+    TabOrder = 0
+    Text = 'admin'
+  end
+  object EdPassword: TEdit
+    Left = 98
+    Height = 23
+    Top = 64
+    Width = 136
+    EchoMode = emPassword
+    PasswordChar = '*'
+    TabOrder = 1
+  end
+  object BitBtn1: TBitBtn
+    Left = 144
+    Height = 30
+    Top = 192
+    Width = 75
+    Default = True
+    DefaultCaption = True
+    Kind = bkOK
+    ModalResult = 1
+    TabOrder = 2
+  end
+  object BitBtn2: TBitBtn
+    Left = 228
+    Height = 30
+    Top = 192
+    Width = 75
+    Cancel = True
+    DefaultCaption = True
+    Kind = bkCancel
+    ModalResult = 2
+    TabOrder = 3
+  end
+end

@@ -29,30 +29,34 @@
         <FormatVersion Value="1"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="6">
+    <RequiredPackages Count="7">
       <Item1>
-        <PackageName Value="pltis_wapt"/>
+        <PackageName Value="pltis_sogrid"/>
       </Item1>
       <Item2>
-        <PackageName Value="RunTimeTypeInfoControls"/>
+        <PackageName Value="pltis_wapt"/>
       </Item2>
       <Item3>
-        <PackageName Value="BGRAControlsFX"/>
+        <PackageName Value="RunTimeTypeInfoControls"/>
       </Item3>
       <Item4>
-        <PackageName Value="bgracontrols"/>
+        <PackageName Value="BGRAControlsFX"/>
       </Item4>
       <Item5>
-        <PackageName Value="luicontrols"/>
+        <PackageName Value="bgracontrols"/>
       </Item5>
       <Item6>
-        <PackageName Value="LCL"/>
+        <PackageName Value="luicontrols"/>
       </Item6>
+      <Item7>
+        <PackageName Value="LCL"/>
+      </Item7>
     </RequiredPackages>
-    <Units Count="3">
+    <Units Count="4">
       <Unit0>
         <Filename Value="waptself.lpr"/>
         <IsPartOfProject Value="True"/>
+        <UnitName Value="WaptSelf"/>
       </Unit0>
       <Unit1>
         <Filename Value="uviswaptself.pas"/>
@@ -60,22 +64,31 @@
         <ComponentName Value="VisWaptSelf"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
+        <UnitName Value="uVisWaptSelf"/>
       </Unit1>
       <Unit2>
+        <Filename Value="uvislogin.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="VisLogin"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="uVisLogin"/>
+      </Unit2>
+      <Unit3>
         <Filename Value="ufrmpackage.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FrmPackage"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Frame"/>
         <UnitName Value="uFrmPackage"/>
-      </Unit2>
+      </Unit3>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="11"/>
     <PathDelim Value="\"/>
     <Target>
-      <Filename Value="waptself"/>
+      <Filename Value="..\waptself"/>
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
@@ -93,7 +106,7 @@
     </Linking>
   </CompilerOptions>
   <Debugging>
-    <Exceptions Count="3">
+    <Exceptions Count="10">
       <Item1>
         <Name Value="EAbort"/>
       </Item1>
@@ -103,6 +116,27 @@
       <Item3>
         <Name Value="EFOpenError"/>
       </Item3>
+      <Item4>
+        <Name Value="EStringListError"/>
+      </Item4>
+      <Item5>
+        <Name Value="FPImageException"/>
+      </Item5>
+      <Item6>
+        <Name Value="EIdHTTPProtocolException"/>
+      </Item6>
+      <Item7>
+        <Name Value="EResNotFound"/>
+      </Item7>
+      <Item8>
+        <Name Value="EIdSocketError"/>
+      </Item8>
+      <Item9>
+        <Name Value="EComponentError"/>
+      </Item9>
+      <Item10>
+        <Name Value="EInvalidOperation"/>
+      </Item10>
     </Exceptions>
   </Debugging>
 </CONFIG>

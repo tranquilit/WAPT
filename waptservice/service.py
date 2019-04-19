@@ -438,6 +438,7 @@ def latest_only(packages):
     return index.values()
 
 @app.route('/keywords.json')
+@allow_local
 def keywords():
     with sqlite3.connect(app.waptconfig.dbpath) as con:
         try:
@@ -454,7 +455,7 @@ def keywords():
                     if not kwt in result:
                         result[kwt] = 1
                     else:
-                        result[kwt] = result[kwt] +1
+                        result[kwt] += 1
             return Response(common.jsondump(sorted(result.keys())), mimetype='application/json')
         except Exception as e:
             logger.critical(u'Error: %s' % e)
@@ -575,6 +576,62 @@ def all_packages(page=1):
             Version=setuphelpers.Version,
             pagination=pagination,
         )
+
+@app.route('/local_package_details.json')
+@app.route('/local_package_details')
+@allow_local
+def local_package_details():
+    if not (request.args.get('format','html')=='json' or request.path.endswith('.json')):
+        if not request.authorization:
+            return authenticate()
+
+    username = None
+    grpuser = []
+    rules = wapt().self_service_rules()
+
+    if request.authorization:
+        auth = request.authorization
+        if check_auth(auth.username,auth.password):
+            grpuser.append('waptselfservice')
+            username = auth.username
+            logger.debug(u'User %s authenticated against local admins (waptselfservice)' % auth.username)
+        else:
+            try:
+                grpuser = common.get_user_self_service_groups(rules.keys(),auth.username,auth.password)
+                username = auth.username
+                logger.debug(u'User %s authenticated against self-service groups %s' % (auth.username,grpuser))
+            except:
+                return authenticate()
+    else:
+        return authenticate()
+
+    with sqlite3.connect(app.waptconfig.dbpath) as con:
+        try:
+            con.row_factory=sqlite3.Row
+            query = '''\
+                select r.*,s.version as install_version,s.install_status,s.install_date,s.explicit_by
+                from wapt_package r
+                left join wapt_localstatus s on s.package=r.package
+                where r.package like "'''+request.args.get('package','')+'''" and not r.section in ("host","unit","profile")
+                order by r.package,r.version'''
+            cur = con.cursor()
+            cur.execute(query)
+            rows = []
+
+            search = request.args.get('q','').encode('utf8').replace('\\', '')
+
+            for row in cur.fetchall():
+                pe = PackageEntry().load_control_from_dict(
+                    dict((cur.description[idx][0], value) for idx, value in enumerate(row)))
+                if wapt().is_authorized_package_action('list',pe.package,grpuser,rules):
+                    rows.append(pe)
+
+            rows = sorted(latest_only(rows))
+
+            return Response(common.jsondump(rows), mimetype='application/json')
+        except sqlite3.Error as e:
+            logger.critical(u"*********** Error %s:" % e.args[0])
+            return Response(common.jsondump([]), mimetype='application/json')
 
 @app.route('/package_icon')
 @allow_local
@@ -990,6 +1047,7 @@ def package_download():
 
 @app.route('/remove', methods=['GET'])
 @app.route('/remove.json', methods=['GET'])
+@allow_local_auth
 def remove():
     package_requests = request.args.get('package')
     if not isinstance(package_requests,list):
@@ -1079,14 +1137,14 @@ def tasks():
     start_time = time.time()
 
     while True:
-        actual_last_event_id = app.task_manager.events.last_event_id()
-        if actual_last_event_id is not None and actual_last_event_id <= last_received_event_id:
-            data = {'last_event_id':app.task_manager.events.last_event_id()}
-            if (time.time() - start_time) * 1000 > timeout:
+        if app.task_manager.events:
+            actual_last_event_id = app.task_manager.events.last_event_id()
+            if actual_last_event_id is not None and actual_last_event_id <= last_received_event_id:
+                if (time.time() - start_time) * 1000 > timeout:
+                    break
+            elif actual_last_event_id is None or actual_last_event_id > last_received_event_id:
+                data = app.task_manager.tasks_status()
                 break
-        elif actual_last_event_id is None or actual_last_event_id > last_received_event_id:
-            data = app.task_manager.tasks_status()
-            break
 
         if time.time() - start_time > timeout:
             break
@@ -1107,18 +1165,20 @@ def tasks_status():
     last_received_event_id = int(request.args.get('last_event_id','-1'))
     timeout = int(request.args.get('timeout','-1'))
 
-    data = None
+    result = {}
     start_time = time.time()
+    data = None
 
     while True:
-        actual_last_event_id = app.task_manager.events.last_event_id()
-        if actual_last_event_id is not None and actual_last_event_id <= last_received_event_id:
-            data = {'last_event_id':app.task_manager.events.last_event_id()}
-            if (time.time() - start_time) * 1000 > timeout:
+        if app.task_manager.events:
+            actual_last_event_id = app.task_manager.events.last_event_id()
+            result['last_event_id'] = actual_last_event_id
+            if actual_last_event_id is not None and actual_last_event_id <= last_received_event_id:
+                if (time.time() - start_time) * 1000 > timeout:
+                    break
+            elif actual_last_event_id is None or actual_last_event_id > last_received_event_id:
+                data = app.task_manager.tasks_status()
                 break
-        elif actual_last_event_id is None or actual_last_event_id > last_received_event_id:
-            data = app.task_manager.tasks_status()
-            break
 
         if time.time() - start_time > timeout:
             break
@@ -1126,12 +1186,15 @@ def tasks_status():
         # avoid eating cpu
         time.sleep(0.1)
 
-    result = []
-    result.extend(data['pending'])
-    if data['running']:
-        result.append(data['running'])
-    result.extend(data['done'])
-    result.extend(data['errors'])
+    if data:
+        tasks = []
+        tasks.extend(data['pending'])
+        if data['running']:
+            tasks.append(data['running'])
+        tasks.extend(data['done'])
+        tasks.extend(data['errors'])
+        tasks.extend(data['cancelled'])
+        result['tasks'] = tasks
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(result), mimetype='application/json')
     else:
