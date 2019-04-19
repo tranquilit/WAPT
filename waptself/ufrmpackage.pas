@@ -6,17 +6,18 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, StdCtrls, ExtCtrls, BCListBox,
-  BCLabel,BCMaterialDesignButton,FXProgressBar,superobject,waptcommon, Types;
+  BCLabel, BCMaterialDesignButton, BGRAFlashProgressBar, superobject,
+  waptcommon, Types;
 
 type
 
   { TFrmPackage }
 
   TFrmPackage = class(TFrame)
+    FXProgressBarInstall: TBGRAFlashProgressBar;
     BtnInstallUpgrade: TBCMaterialDesignButton;
     BtnRemove: TBCMaterialDesignButton;
     BCPaperPanel1: TBCPaperPanel;
-    FXProgressBarInstall: TFXProgressBar;
     ImgPackage: TImage;
     LabDescription: TBCLabel;
     LabelProgressionInstall: TBCLabel;

@@ -117,6 +117,10 @@ function CheckTokenMembership(TokenHandle: THandle; SidToCheck: PSID; IsMember: 
 
 function IsWindowsAdminLoggedIn: Boolean;
 
+function AGetComputerName: ansistring;
+function AGetUserName: ansistring;
+
+
 implementation
 
 uses Variants, registry, sysconst, JwaIpHlpApi,
@@ -649,13 +653,25 @@ begin
   until (Result <> 0) or (tok1 = '') or (tok2 = '');
 end;
 
-function GetComputerName: ansistring;
+function AGetComputerName: ansistring;
 var
   buffer: array[0..255] of ansichar;
   size: dword;
 begin
   size := 256;
   if Windows.GetComputerName(@buffer, size) then
+    Result := buffer
+  else
+    Result := '';
+end;
+
+function AGetUserName: ansistring;
+var
+  buffer: array[0..255] of ansichar;
+  size: dword;
+begin
+  size := 256;
+  if Windows.GetUserName(@buffer, size) then
     Result := buffer
   else
     Result := '';
@@ -679,7 +695,7 @@ begin
 
   Data.S['uuid'] := uuid;
   Data.S['wapt_status.wapt-exe-version'] := LocalWaptVersion;
-  Data.S['host_info.computer_name'] := GetComputerName;
+  Data.S['host_info.computer_name'] := AGetComputerName;
   Data.S['host_info.system_productname'] := computer.S['name'];
   Data.S['host_info.system_manufacturer'] := computer.S['vendor'];
   Data.S['host_info.system_serialnr'] := computer.S['identifyingnumber'];

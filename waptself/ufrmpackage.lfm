@@ -107,16 +107,6 @@ object FrmPackage: TFrmPackage
       Rounding.RoundY = 1
       Rounding.RoundOptions = []
     end
-    object FXProgressBarInstall: TFXProgressBar
-      Left = 16
-      Height = 9
-      Top = 176
-      Width = 314
-      MinValue = 0
-      MaxValue = 100
-      Value = 0
-      Color = 9852960
-    end
     object LabVersion: TBCLabel
       Left = 88
       Height = 32
@@ -383,9 +373,9 @@ object FrmPackage: TFrmPackage
     end
     object ImgPackage: TImage
       Left = 16
-      Height = 80
-      Top = 21
-      Width = 73
+      Height = 48
+      Top = 16
+      Width = 48
       AntialiasingMode = amOn
       Anchors = []
       Picture.Data = {
@@ -1461,13 +1451,23 @@ object FrmPackage: TFrmPackage
       Rounding.RoundOptions = []
     end
     object TextWaitInstall: TStaticText
-      Left = 16
+      Left = 8
       Height = 20
-      Top = 176
-      Width = 352
+      Top = 168
+      Width = 264
       Caption = 'Waiting for install...'
       TabOrder = 0
       Visible = False
+    end
+    object FXProgressBarInstall: TBGRAFlashProgressBar
+      Left = 8
+      Height = 14
+      Top = 170
+      Width = 347
+      MinValue = 0
+      MaxValue = 100
+      Value = 30
+      Color = 14852966
     end
   end
   object TimerInstallRemoveFinished: TTimer

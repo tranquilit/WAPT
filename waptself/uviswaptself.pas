@@ -70,6 +70,8 @@ type
     procedure FormDestroy(Sender: TObject);
     procedure FormClose(Sender: TObject);
   private
+    function GetAllPackages: ISuperObject;
+  private
     ShowOnlyUpgradable: Boolean;
     ShowOnlyInstalled: Boolean;
     ShowOnlyNotInstalled: Boolean;
@@ -78,7 +80,7 @@ type
     LastTaskIDOnLaunch:integer;
 
     LstIcons: TStringList;
-    AllPackages: ISuperObject;
+    FAllPackages: ISuperObject;
 
     login: String;
     password: String;
@@ -93,6 +95,7 @@ type
     function SelectedAreOnlyPending: Boolean;
     procedure OnCheckEventsThreadNotify(Sender: TObject);
     procedure UpdatePackage(NamePackage:String);
+    property AllPackages:ISuperObject read GetAllPackages write FAllPackages;
   public
     CheckTasksThread: TCheckAllTasksThread;
     CheckEventsThread: TCheckEventsThread;
@@ -102,7 +105,7 @@ var
   VisWaptSelf: TVisWaptSelf;
 
 implementation
-uses uFrmPackage,LCLIntf, LCLType;
+uses uFrmPackage,LCLIntf, LCLType,waptwinutils;
 {$R *.lfm}
 
 { TVisWaptSelf }
@@ -187,7 +190,7 @@ var
           AFrmPackage.OnLocalServiceAuth:=@OnLocalServiceAuth;
 
           inc(idx);
-          if idx>150 then
+          if idx>100 then
             break;
         end;
       end;
@@ -285,7 +288,7 @@ end;
 
 procedure TVisWaptSelf.ActUpdatePackagesListExecute(Sender: TObject);
 begin
-  AllPackages:=WAPTLocalJsonGet('packages.json?latest=1',login,password,-1,@OnLocalServiceAuth,2);
+  FAllPackages:=Nil;
   ActSearchPackages.Execute;
 end;
 
@@ -318,8 +321,9 @@ begin
   SortByDate:=false;
 
   //TODO : remove login/password
-  login:='admin';
-  password:='calimero';
+
+  login:=waptwinutils.AGetUserName;
+  password:='';
 
   LstIcons := FindAllFiles('C:\Program Files (x86)\wapt\cache\icons','*.png',False);
   LstIcons.OwnsObjects:=True;
@@ -344,16 +348,16 @@ begin
     for keyword in keywords do
       CBKeywords.Items.Add(UTF8Encode(keyword.AsString));
 
-    AllPackages:=WAPTLocalJsonGet('packages.json?latest=1',login,password,-1,@OnLocalServiceAuth,2);
-
-    ActSearchPackages.Execute;
-
     // Check running / pending tasks
     CheckTasksThread := TCheckAllTasksThread.Create(@OnCheckTasksThreadNotify);
     CheckEventsThread := TCheckEventsThread.Create(@OnCheckEventsThreadNotify);
     CheckTasksThread.Start;
     CheckEventsThread.Start;
     LastTaskIDOnLaunch:=-1;
+
+    TimerSearch.Enabled:=False;
+    TimerSearch.Enabled:=True;
+
   finally
     Screen.Cursor := crDefault;
   end;
@@ -402,6 +406,13 @@ procedure TVisWaptSelf.FormClose(Sender: TObject);
 begin
   CheckTasksThread.Terminate;
   CheckEventsThread.Terminate;
+end;
+
+function TVisWaptSelf.GetAllPackages: ISuperObject;
+begin
+  if FAllPackages = Nil then
+    FAllPackages := WAPTLocalJsonGet('packages.json?latest=1',login,password,-1,@OnLocalServiceAuth,2);
+  Result := FAllPackages;
 end;
 
 procedure TVisWaptSelf.OnLocalServiceAuth(Sender: THttpSend; var ShouldRetry: Boolean;RetryCount:integer);

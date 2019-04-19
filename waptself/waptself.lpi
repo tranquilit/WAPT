@@ -37,7 +37,7 @@
         <FormatVersion Value="1"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="7">
+    <RequiredPackages Count="6">
       <Item1>
         <PackageName Value="pltis_sogrid"/>
       </Item1>
@@ -48,17 +48,14 @@
         <PackageName Value="RunTimeTypeInfoControls"/>
       </Item3>
       <Item4>
-        <PackageName Value="BGRAControlsFX"/>
+        <PackageName Value="bgracontrols"/>
       </Item4>
       <Item5>
-        <PackageName Value="bgracontrols"/>
+        <PackageName Value="luicontrols"/>
       </Item5>
       <Item6>
-        <PackageName Value="luicontrols"/>
-      </Item6>
-      <Item7>
         <PackageName Value="LCL"/>
-      </Item7>
+      </Item6>
     </RequiredPackages>
     <Units Count="4">
       <Unit0>
