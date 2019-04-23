@@ -1,120 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
   <ProjectOptions>
-    <Version Value="10" />
-    <PathDelim Value="\" />
+    <Version Value="10"/>
+    <PathDelim Value="\"/>
     <General>
-      <SessionStorage Value="InProjectDir" />
-      <MainUnit Value="0" />
-      <Title Value="waptself" />
-      <Scaled Value="True" />
-      <UseAppBundle Value="False" />
-      <ResourceType Value="res" />
-      <UseXPManifest Value="True" />
+      <SessionStorage Value="InProjectDir"/>
+      <MainUnit Value="0"/>
+      <Title Value="waptself"/>
+      <Scaled Value="True"/>
+      <UseAppBundle Value="False"/>
+      <ResourceType Value="res"/>
+      <UseXPManifest Value="True"/>
       <XPManifest>
-        <DpiAware Value="True" />
-        <TextName Value="WAPT Self Service" />
-        <TextDesc Value="" />
+        <DpiAware Value="True"/>
+        <TextName Value="WAPT Self Service"/>
+        <TextDesc Value=""/>
       </XPManifest>
-      <Icon Value="0" />
+      <Icon Value="0"/>
     </General>
     <VersionInfo>
-      <UseVersionInfo Value="True" />
-      <MajorVersionNr Value="1" />
-      <MinorVersionNr Value="7" />
-      <RevisionNr Value="4" />
-      <StringTable CompanyName="Tranquil IT Systems" LegalCopyright="Tranquil IT Systems 2012-2019" ProductName="WAPT Enterprise Edition" ProductVersion="1.7.4" />
-    <BuildNr Value="6040" /></VersionInfo>
+      <UseVersionInfo Value="True"/>
+      <MajorVersionNr Value="1"/>
+      <MinorVersionNr Value="7"/>
+      <RevisionNr Value="4"/>
+      <BuildNr Value="6040"/>
+      <StringTable CompanyName="Tranquil IT Systems" LegalCopyright="Tranquil IT Systems 2012-2019" ProductName="WAPT Enterprise Edition" ProductVersion="1.7.4"/>
+    </VersionInfo>
     <BuildModes Count="1">
-      <Item1 Default="True" Name="Default" />
+      <Item1 Name="Default" Default="True"/>
     </BuildModes>
     <PublishOptions>
-      <Version Value="2" />
+      <Version Value="2"/>
     </PublishOptions>
     <RunParams>
       <local>
-        <FormatVersion Value="1" />
+        <FormatVersion Value="1"/>
       </local>
     </RunParams>
     <RequiredPackages Count="7">
       <Item1>
-        <PackageName Value="pltis_sogrid" />
+        <PackageName Value="pltis_sogrid"/>
       </Item1>
       <Item2>
-        <PackageName Value="pltis_wapt" />
+        <PackageName Value="pltis_wapt"/>
       </Item2>
       <Item3>
-        <PackageName Value="RunTimeTypeInfoControls" />
+        <PackageName Value="RunTimeTypeInfoControls"/>
       </Item3>
       <Item4>
-        <PackageName Value="BGRAControlsFX" />
+        <PackageName Value="BGRAControlsFX"/>
       </Item4>
       <Item5>
-        <PackageName Value="bgracontrols" />
+        <PackageName Value="bgracontrols"/>
       </Item5>
       <Item6>
-        <PackageName Value="luicontrols" />
+        <PackageName Value="luicontrols"/>
       </Item6>
       <Item7>
-        <PackageName Value="LCL" />
+        <PackageName Value="LCL"/>
       </Item7>
     </RequiredPackages>
     <Units Count="5">
       <Unit0>
-        <Filename Value="waptself.lpr" />
-        <IsPartOfProject Value="True" />
-        <UnitName Value="WaptSelf" />
+        <Filename Value="waptself.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="WaptSelf"/>
       </Unit0>
       <Unit1>
-        <Filename Value="uviswaptself.pas" />
-        <IsPartOfProject Value="True" />
-        <ComponentName Value="VisWaptSelf" />
-        <HasResources Value="True" />
-        <ResourceBaseClass Value="Form" />
-        <UnitName Value="uVisWaptSelf" />
+        <Filename Value="uviswaptself.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="VisWaptSelf"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="uVisWaptSelf"/>
       </Unit1>
       <Unit2>
-        <Filename Value="uvislogin.pas" />
-        <IsPartOfProject Value="True" />
-        <ComponentName Value="VisLogin" />
-        <HasResources Value="True" />
-        <ResourceBaseClass Value="Form" />
-        <UnitName Value="uVisLogin" />
+        <Filename Value="uvislogin.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="VisLogin"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="uVisLogin"/>
       </Unit2>
       <Unit3>
-        <Filename Value="ufrmpackage.pas" />
-        <IsPartOfProject Value="True" />
-        <ComponentName Value="FrmPackage" />
-        <HasResources Value="True" />
-        <ResourceBaseClass Value="Frame" />
-        <UnitName Value="uFrmPackage" />
+        <Filename Value="ufrmpackage.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FrmPackage"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Frame"/>
+        <UnitName Value="uFrmPackage"/>
       </Unit3>
       <Unit4>
-        <Filename Value="uvisimpactedprocess.pas" />
-        <IsPartOfProject Value="True" />
-        <ComponentName Value="ImpactedProcess" />
-        <HasResources Value="True" />
-        <ResourceBaseClass Value="Form" />
-        <UnitName Value="uVisImpactedProcess" />
+        <Filename Value="uvisimpactedprocess.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="ImpactedProcess"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="uVisImpactedProcess"/>
       </Unit4>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
-    <Version Value="11" />
-    <PathDelim Value="\" />
+    <Version Value="11"/>
+    <PathDelim Value="\"/>
     <Target>
-      <Filename Value="..\waptself" />
+      <Filename Value="..\waptself"/>
     </Target>
     <SearchPaths>
-      <IncludeFiles Value="$(ProjOutDir)" />
-      <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)" />
+      <IncludeFiles Value="$(ProjOutDir)"/>
+      <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Linking>
       <Debugging>
-        <UseExternalDbgSyms Value="True" />
+        <UseExternalDbgSyms Value="True"/>
       </Debugging>
       <Options>
         <Win32>
-          <GraphicApplication Value="True" />
+          <GraphicApplication Value="True"/>
         </Win32>
       </Options>
     </Linking>
@@ -122,34 +124,34 @@
   <Debugging>
     <Exceptions Count="10">
       <Item1>
-        <Name Value="EAbort" />
+        <Name Value="EAbort"/>
       </Item1>
       <Item2>
-        <Name Value="ECodetoolError" />
+        <Name Value="ECodetoolError"/>
       </Item2>
       <Item3>
-        <Name Value="EFOpenError" />
+        <Name Value="EFOpenError"/>
       </Item3>
       <Item4>
-        <Name Value="EStringListError" />
+        <Name Value="EStringListError"/>
       </Item4>
       <Item5>
-        <Name Value="FPImageException" />
+        <Name Value="FPImageException"/>
       </Item5>
       <Item6>
-        <Name Value="EIdHTTPProtocolException" />
+        <Name Value="EIdHTTPProtocolException"/>
       </Item6>
       <Item7>
-        <Name Value="EResNotFound" />
+        <Name Value="EResNotFound"/>
       </Item7>
       <Item8>
-        <Name Value="EIdSocketError" />
+        <Name Value="EIdSocketError"/>
       </Item8>
       <Item9>
-        <Name Value="EComponentError" />
+        <Name Value="EComponentError"/>
       </Item9>
       <Item10>
-        <Name Value="EInvalidOperation" />
+        <Name Value="EInvalidOperation"/>
       </Item10>
     </Exceptions>
   </Debugging>

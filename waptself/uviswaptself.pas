@@ -327,7 +327,7 @@ begin
   password:='';
 
 
-  LstIcons := FindAllFiles('C:\Program Files (x86)\wapt\cache\icons','*.png',False);
+  LstIcons := FindAllFiles(WaptBaseDir+'\cache\icons','*.png',False);
   LstIcons.OwnsObjects:=True;
   for i := 0 to LstIcons.Count-1 do
     try
