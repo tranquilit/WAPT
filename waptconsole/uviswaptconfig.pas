@@ -123,9 +123,10 @@ var
   VisWAPTConfig: TVisWAPTConfig;
 
 implementation
-uses base64, tiscommon,waptcommon,LCLIntf,IDURI,uWaptConsoleRes,
+uses Windows, base64, tiscommon,waptcommon,LCLIntf,IDURI,uWaptConsoleRes,
     tisstrings,dmwaptpython,variants,VarPyth,uvisprivatekeyauth,tisinifiles,
-    LazFileUtils,FileUtil,strutils,Windows,uWaptPythonUtils,uVisCreateKey;
+    LazFileUtils,FileUtil, strutils,uWaptPythonUtils,uVisCreateKey,
+    waptwinutils,uvisloading;
 {$R *.lfm}
 
 { TVisWAPTConfig }
@@ -185,6 +186,8 @@ begin
 end;
 
 procedure TVisWAPTConfig.ActCreateKeyCertExecute(Sender: TObject);
+var
+  CurrentVisLoading: TVisLoading;
 begin
   With TVisCreateKey.Create(Self) do
   try
@@ -193,6 +196,37 @@ begin
       edPersonalCertificatePath.FileName:=CertificateFilename;
       //TODO propose to copy to trusted certs if no certificate exists at the moment
     end;
+
+    // If this a CA cert, we should perhaps take it in account right now...
+    if not IsWindowsAdminLoggedIn then
+      ShowMessageFmt(rsNotRunningAsAdminCanNotSSL,[AppendPathDelim(WaptBaseDir)+'ssl']);
+
+    if CBIsCA.Checked and (MessageDlg(Format(rsWriteCertOnLocalMachine,[AppendPathDelim(WaptBaseDir)+'ssl']), mtConfirmation, [mbYes, mbNo],0) = mrYes) then
+    begin
+      if FileUtil.CopyFile(CertificateFilename,
+        WaptBaseDir() + '\ssl\' + ExtractFileName(CertificateFilename), True) then
+      begin
+        CurrentVisLoading := TVisLoading.Create(Self);
+        with CurrentVisLoading do
+        try
+          ProgressTitle(rsReloadWaptserviceConfig);
+          try
+            ProgressStep(1,3);
+            Run('cmd /C net stop waptservice');
+            ProgressStep(2,3);
+            Run('cmd /C net start waptservice');
+            ProgressStep(3,3);
+          except
+          end;
+
+        finally
+          Finish;
+          FreeAndNil(CurrentVisLoading);
+        end;
+      end
+    end
+
+
   finally
     Free;
   end;
