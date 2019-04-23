@@ -1256,7 +1256,7 @@ def init_db(drop=False):
 
     try:
         wapt_db.create_tables([ServerAttribs, Hosts, HostPackagesStatus, HostSoftwares, HostGroups,WsusUpdates,
-            HostWsus,WsusDownloadTasks,Packages, ReportingQueries, Normalization, StoreDownload)
+            HostWsus,WsusDownloadTasks,Packages, ReportingQueries, Normalization, StoreDownload
             ], safe=True)
     except Exception as e:
         wapt_db.rollback()
