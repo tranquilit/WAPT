@@ -3,6 +3,7 @@ object VisLogin: TVisLogin
   Height = 240
   Top = 266
   Width = 320
+  BorderStyle = bsDialog
   Caption = 'VisLogin'
   ClientHeight = 240
   ClientWidth = 320

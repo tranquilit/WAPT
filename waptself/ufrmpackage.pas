@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, StdCtrls, ExtCtrls, BCListBox,
   BCLabel, BCMaterialDesignButton, BGRAFlashProgressBar, superobject,
-  waptcommon, Types;
+  waptcommon;
 
 type
 
@@ -32,6 +32,8 @@ type
     procedure ActTimerInstallRemoveFinished(Sender: TObject);
   private
     function LaunchActionPackage(ActionPackage:String;Package:ISuperObject):ISuperObject;
+    function Impacted_process():boolean;
+    function Accept_Impacted_process():boolean;
   public
     Package : ISuperObject;
     Task : ISuperObject;
@@ -44,28 +46,34 @@ type
   end;
 
 implementation
-uses Graphics,BCTools;
+uses Graphics,BCTools,JwaTlHelp32, Windows,uVisImpactedProcess;
 {$R *.lfm}
 
 { TFrmPackage }
 
 procedure TFrmPackage.ActInstallUpgradePackage(Sender: TObject);
 begin
-  Task:=LaunchActionPackage(ActionPackage,Package);
-  BtnInstallUpgrade.Enabled:=false;
-  BtnInstallUpgrade.NormalColor:=$00C4C4C4;
-  TextWaitInstall.Caption:='Waiting for install...';
-  TextWaitInstall.Show;
+  if Accept_Impacted_process() then
+  begin
+    Task:=LaunchActionPackage(ActionPackage,Package);
+    BtnInstallUpgrade.Enabled:=false;
+    BtnInstallUpgrade.NormalColor:=$00C4C4C4;
+    TextWaitInstall.Caption:='Waiting for install...';
+    TextWaitInstall.Show;
+  end;
 end;
 
 procedure TFrmPackage.ActRemovePackage(Sender: TObject);
 begin
-  Task:=LaunchActionPackage('remove',Package).O['0'];
-  ActionPackage:='remove';
-  BtnRemove.Enabled:=false;
-  BtnRemove.NormalColor:=$00C4C4C4;
-  TextWaitInstall.Caption:='Waiting for uninstall...';
-  TextWaitInstall.Show;
+  if Accept_Impacted_process() then
+  begin
+    Task:=LaunchActionPackage('remove',Package).O['0'];
+    ActionPackage:='remove';
+    BtnRemove.Enabled:=false;
+    BtnRemove.NormalColor:=$00C4C4C4;
+    TextWaitInstall.Caption:='Waiting for uninstall...';
+    TextWaitInstall.Show;
+  end;
 end;
 
 procedure TFrmPackage.ActTimerInstallRemoveFinished(Sender: TObject);
@@ -94,6 +102,60 @@ end;
 function TFrmPackage.LaunchActionPackage(ActionPackage:String;Package: ISuperObject): ISuperObject;
 begin
   Result:=WAPTLocalJsonGet(format('%s.json?package=%s',[ActionPackage,Package.S['package']]),login,password,-1,OnLocalServiceAuth,2);
+end;
+
+function TFrmPackage.Impacted_process(): boolean;
+var
+  ContinueLoop: boolean;
+  FSnapshotHandle: THandle;
+  FProcessEntry32: TProcessEntry32;
+  ExeFileName:String;
+  ListExe:TStringList;
+begin
+  FSnapshotHandle := CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+  FProcessEntry32.dwSize := SizeOf(FProcessEntry32);
+  ContinueLoop := Process32First(FSnapshotHandle, FProcessEntry32);
+  Result:=False;
+  ListExe:=TStringList.Create;
+  ListExe.Delimiter:=',';
+  ListExe.DelimitedText:=UTF8Encode(Package.S['impacted_process']);
+
+  while ContinueLoop do
+  begin
+    for ExeFileName in ListExe do
+      if ((UpperCase(ExtractFileName(FProcessEntry32.szExeFile)) = UpperCase(Trim(ExeFileName))) or (UpperCase(FProcessEntry32.szExeFile) = UpperCase(Trim(ExeFileName)))) then
+      begin
+        ListExe.Free;
+        CloseHandle(FSnapshotHandle);
+        Exit(True);
+      end;
+    ContinueLoop:=Process32Next(FSnapshotHandle,FProcessEntry32);
+  end;
+  ListExe.Free;
+  CloseHandle(FSnapshotHandle);
+end;
+
+function TFrmPackage.Accept_Impacted_process(): boolean;
+var
+  VisImpactedProcess : TImpactedProcess;
+begin
+  if Impacted_process()=false then
+    Exit(True)
+  else
+  begin
+    VisImpactedProcess:=TImpactedProcess.Create(Self);
+    VisImpactedProcess.ShowListProcesses(UTF8Encode(Package.S['impacted_process']));
+    if VisImpactedProcess.ShowModal=mrOk then
+    begin
+      VisImpactedProcess.Free;
+      Exit(true);
+    end
+    else
+    begin
+      VisImpactedProcess.Free;
+      Exit(False);
+    end;
+  end;
 end;
 
 constructor TFrmPackage.Create(TheOwner: TComponent);

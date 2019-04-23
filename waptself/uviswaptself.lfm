@@ -1,11 +1,11 @@
 object VisWaptSelf: TVisWaptSelf
-  Left = 358
-  Height = 813
-  Top = 116
-  Width = 1362
+  Left = 1912
+  Height = 1017
+  Top = -8
+  Width = 1920
   Caption = 'WAPT softwares Self-service'
-  ClientHeight = 813
-  ClientWidth = 1362
+  ClientHeight = 1017
+  ClientWidth = 1920
   OnCreate = FormCreate
   OnShow = FormShow
   ParentBiDiMode = False
@@ -15,22 +15,22 @@ object VisWaptSelf: TVisWaptSelf
     Left = 0
     Height = 52
     Top = 0
-    Width = 1362
+    Width = 1920
     Align = alTop
     AutoSize = True
     Caption = 'Panel1'
     ClientHeight = 52
-    ClientWidth = 1362
+    ClientWidth = 1920
     TabOrder = 0
     object Panel7: TPanel
       Left = 1
       Height = 50
       Top = 1
-      Width = 1360
+      Width = 1918
       Align = alTop
       BevelOuter = bvNone
       ClientHeight = 50
-      ClientWidth = 1360
+      ClientWidth = 1918
       Color = clWindow
       ParentColor = False
       TabOrder = 0
@@ -195,7 +195,7 @@ object VisWaptSelf: TVisWaptSelf
         AnchorSideLeft.Side = asrCenter
         AnchorSideTop.Control = Panel7
         AnchorSideTop.Side = asrCenter
-        Left = 583
+        Left = 862
         Height = 26
         Top = 12
         Width = 195
@@ -259,19 +259,19 @@ object VisWaptSelf: TVisWaptSelf
   end
   object PanCategories: TPanel
     Left = 0
-    Height = 761
+    Height = 965
     Top = 52
     Width = 170
     Align = alLeft
     BevelOuter = bvNone
-    ClientHeight = 761
+    ClientHeight = 965
     ClientWidth = 170
     Color = clForm
     ParentColor = False
     TabOrder = 1
     object CBKeywords: TCheckListBox
       Left = 0
-      Height = 417
+      Height = 621
       Top = 344
       Width = 170
       Align = alClient
@@ -391,9 +391,9 @@ object VisWaptSelf: TVisWaptSelf
   end
   object ScrollBoxPackages: TScrollBox
     Left = 170
-    Height = 761
+    Height = 965
     Top = 52
-    Width = 816
+    Width = 1374
     HorzScrollBar.Page = 1
     VertScrollBar.Increment = 1
     VertScrollBar.Page = 1
@@ -401,8 +401,8 @@ object VisWaptSelf: TVisWaptSelf
     VertScrollBar.Tracking = True
     Align = alClient
     BorderStyle = bsNone
-    ClientHeight = 761
-    ClientWidth = 816
+    ClientHeight = 965
+    ClientWidth = 1374
     Color = clWindow
     ParentColor = False
     TabOrder = 2
@@ -410,12 +410,11 @@ object VisWaptSelf: TVisWaptSelf
       Left = 0
       Height = 0
       Top = 0
-      Width = 816
+      Width = 1374
       Align = alTop
       AutoSize = True
       BevelOuter = bvNone
       Color = clWindow
-      Constraints.MaxHeight = 30000
       ControlList = <>
       UseDockManager = False
       DoubleBuffered = True
@@ -427,13 +426,13 @@ object VisWaptSelf: TVisWaptSelf
     end
   end
   object Panel3: TPanel
-    Left = 986
-    Height = 761
+    Left = 1544
+    Height = 965
     Top = 52
     Width = 376
     Align = alRight
     Caption = 'Panel3'
-    ClientHeight = 761
+    ClientHeight = 965
     ClientWidth = 376
     Color = clForm
     ParentColor = False

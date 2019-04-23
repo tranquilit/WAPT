@@ -7,7 +7,7 @@ uses
   cthreads,
   {$ENDIF}{$ENDIF}
   Interfaces, // this includes the LCL widgetset
-  Forms, uviswaptself, uFrmPackage, uVisLogin;
+  Forms, uviswaptself, uFrmPackage, uVisLogin, uVisImpactedProcess;
 
 {$R *.res}
 
@@ -16,6 +16,7 @@ begin
   RequireDerivedFormResource:=True;
   Application.Initialize;
   Application.CreateForm(TVisWaptSelf, VisWaptSelf);
+  Application.CreateForm(TImpactedProcess, ImpactedProcess);
   Application.Run;
 end.
 

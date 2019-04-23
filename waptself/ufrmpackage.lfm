@@ -1,21 +1,21 @@
 object FrmPackage: TFrmPackage
   Left = 0
-  Height = 224
+  Height = 209
   Top = 0
-  Width = 445
-  ClientHeight = 224
-  ClientWidth = 445
+  Width = 387
+  ClientHeight = 209
+  ClientWidth = 387
   TabOrder = 0
-  DesignLeft = 624
-  DesignTop = 311
+  DesignLeft = 600
+  DesignTop = 296
   object BCPaperPanel1: TBCPaperPanel
     AnchorSideLeft.Control = Owner
     AnchorSideLeft.Side = asrCenter
     AnchorSideTop.Control = Owner
     AnchorSideTop.Side = asrCenter
-    Left = 34
+    Left = 5
     Height = 200
-    Top = 12
+    Top = 4
     Width = 377
     Alignment = taLeftJustify
     BorderSpacing.Around = 4
@@ -29,7 +29,7 @@ object FrmPackage: TFrmPackage
     object BtnInstallUpgrade: TBCMaterialDesignButton
       Left = 264
       Height = 24
-      Top = 32
+      Top = 24
       Width = 104
       RoundBorders = 3
       NormalColor = 12895428
@@ -170,8 +170,8 @@ object FrmPackage: TFrmPackage
     end
     object LabInstallVersion: TBCLabel
       Left = 264
-      Height = 32
-      Top = 80
+      Height = 24
+      Top = 72
       Width = 104
       AutoSize = False
       Background.Color = clBlack
@@ -231,10 +231,10 @@ object FrmPackage: TFrmPackage
       Visible = False
     end
     object LabDescription: TBCLabel
-      Left = 16
-      Height = 72
-      Top = 104
-      Width = 352
+      Left = 8
+      Height = 80
+      Top = 96
+      Width = 360
       AutoSize = False
       Background.Color = clBlack
       Background.ColorOpacity = 255
@@ -292,7 +292,7 @@ object FrmPackage: TFrmPackage
       Rounding.RoundOptions = []
     end
     object LabelProgressionInstall: TBCLabel
-      Left = 336
+      Left = 344
       Height = 14
       Top = 170
       Width = 19
@@ -355,7 +355,7 @@ object FrmPackage: TFrmPackage
     object BtnRemove: TBCMaterialDesignButton
       Left = 264
       Height = 24
-      Top = 56
+      Top = 48
       Width = 104
       RoundBorders = 3
       NormalColor = 12895428
@@ -1390,10 +1390,10 @@ object FrmPackage: TFrmPackage
       Transparent = True
     end
     object LabMaintainer: TBCLabel
-      Left = 16
-      Height = 32
+      Left = 8
+      Height = 24
       Top = 72
-      Width = 248
+      Width = 256
       AutoSize = False
       Background.Color = clBlack
       Background.ColorOpacity = 255
@@ -1463,10 +1463,10 @@ object FrmPackage: TFrmPackage
       Left = 8
       Height = 14
       Top = 170
-      Width = 347
+      Width = 328
       MinValue = 0
       MaxValue = 100
-      Value = 30
+      Value = 0
       Color = 14852966
     end
   end

@@ -119,7 +119,7 @@ procedure TVisWaptSelf.ActSearchPackagesExecute(Sender: TObject);
 var
   package:ISuperObject;
   AFrmPackage:TFrmPackage;
-  idx,IconIdx:Integer;
+  idx,IconIdx,maxidx:Integer;
   begin
   try
     TimerSearch.Enabled:=False;
@@ -130,7 +130,8 @@ var
       FlowPackages.Controls[idx].Free;
     FlowPackages.ControlList.Clear;
 
-    idx := 1;
+    idx:=1;
+    maxidx:=((maxSmallint div 188) div 3);
 
     for package in AllPackages do
     begin
@@ -190,7 +191,7 @@ var
           AFrmPackage.OnLocalServiceAuth:=@OnLocalServiceAuth;
 
           inc(idx);
-          if idx>100 then
+          if idx>maxidx then
             break;
         end;
       end;
@@ -324,6 +325,7 @@ begin
 
   login:=waptwinutils.AGetUserName;
   password:='';
+
 
   LstIcons := FindAllFiles('C:\Program Files (x86)\wapt\cache\icons','*.png',False);
   LstIcons.OwnsObjects:=True;
@@ -586,11 +588,6 @@ begin
   finally
   end;
 end;
-
-
-
-
-
 
 end.
 
