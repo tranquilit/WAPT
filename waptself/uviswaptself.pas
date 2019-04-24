@@ -30,6 +30,7 @@ type
     BtnShowUpgradable: TButton;
     BtnShowAll: TButton;
     BtnUnselectAllKeywords: TButton;
+    BtnSortByDate: TButton;
     CBKeywords: TCheckListBox;
     EdSearch: TEditButton;
     FlowPackages: TFlowPanel;
@@ -54,6 +55,7 @@ type
     procedure ActShowInstalled(Sender: TObject);
     procedure ActShowNotInstalled(Sender: TObject);
     procedure ActShowUpgradable(Sender: TObject);
+    procedure ActSortByDate(Sender: TObject);
     procedure ActTriggerSearchExecute(Sender: TObject);
     procedure ActUnselectAllKeywordsExecute(Sender: TObject);
     procedure ActUpdatePackagesListExecute(Sender: TObject);
@@ -75,7 +77,7 @@ type
     ShowOnlyUpgradable: Boolean;
     ShowOnlyInstalled: Boolean;
     ShowOnlyNotInstalled: Boolean;
-    SortByDate:Boolean;
+    SortByDateAsc:Boolean;
     WAPTServiceRunning:Boolean;
     LastTaskIDOnLaunch:integer;
 
@@ -96,6 +98,7 @@ type
     procedure OnCheckEventsThreadNotify(Sender: TObject);
     procedure UpdatePackage(NamePackage:String);
     property AllPackages:ISuperObject read GetAllPackages write FAllPackages;
+
   public
     CheckTasksThread: TCheckAllTasksThread;
     CheckEventsThread: TCheckEventsThread;
@@ -104,8 +107,12 @@ type
 var
   VisWaptSelf: TVisWaptSelf;
 
+resourcestring
+ rsLogin = 'Login';
+ rsPassword = 'Password';
+
 implementation
-uses uFrmPackage,LCLIntf, LCLType,waptwinutils;
+uses uFrmPackage,LCLIntf, LCLType,waptwinutils,soutils,strutils;
 {$R *.lfm}
 
 { TVisWaptSelf }
@@ -133,6 +140,8 @@ var
     idx:=1;
     maxidx:=((maxSmallint div 188) div 3);
 
+    SortByFields(AllPackages,['signature_date'],not(SortByDateAsc));
+
     for package in AllPackages do
     begin
       if IsValidPackage(package) and IsValidKeyword(package) and IsValidFilter(package) then
@@ -148,6 +157,7 @@ var
           AFrmPackage.LabMaintainer.Caption:='by '+UTF8Encode(package.S['maintainer']);
           AFrmPackage.AdjustFont(AFrmPackage.LabMaintainer);
           AFrmPackage.Package:=package;
+          AFrmPackage.StaticText1.Caption:=UTF8Encode(package.S['signature_date']);
 
           IconIdx := LstIcons.IndexOf(UTF8Encode(package.S['package']+'.png'));
           if IconIdx<0 then
@@ -219,9 +229,40 @@ end;
 procedure TVisWaptSelf.ActCancelTaskExecute(Sender: TObject);
 var
  Task : ISuperObject;
+ i : integer;
+ AFrmPackage: TFrmPackage;
 begin
   for Task in SOGridTasks.SelectedRows do
+  begin
     WAPTLocalJsonGet(Format('cancel_task.json?id=%d',[Task.I['id']]),login,password,-1,@OnLocalServiceAuth,2);
+    for i:=0 to FlowPackages.ControlCount-1 do
+    begin
+      AFrmPackage:=FlowPackages.Controls[i] as TFrmPackage;
+      if Assigned(AFrmPackage.Task) and (AFrmPackage.Task.I['id']=Task.I['id']) then
+      begin
+        if (AFrmPackage.ActionPackage='install') then
+        begin
+          AFrmPackage.BtnInstallUpgrade.Caption:='Install';
+          AFrmPackage.BtnInstallUpgrade.NormalColor:=clGreen;
+          AFrmPackage.BtnInstallUpgrade.Enabled:=true;
+          AFrmPackage.ActionPackage:='install';
+        end
+        else
+        begin
+          AFrmPackage.BtnRemove.NormalColor:=clRed;
+          AFrmPackage.BtnRemove.Enabled:=true;
+          AFrmPackage.ActionPackage:='remove';
+          AFrmPackage.BtnInstallUpgrade.Caption:='Installed';
+        end;
+        AFrmPackage.FXProgressBarInstall.Value:=0;
+        AFrmPackage.FXProgressBarInstall.Hide;
+        AFrmPackage.LabelProgressionInstall.Caption:='0%';
+        AFrmPackage.LabelProgressionInstall.Hide;
+        AFrmPackage.TextWaitInstall.Hide;
+        Exit();
+      end;
+    end;
+  end;
 end;
 
 procedure TVisWaptSelf.ActShowAllClearFilters(Sender: TObject);
@@ -229,9 +270,8 @@ begin
   ShowOnlyNotInstalled:=false;
   ShowOnlyUpgradable:=false;
   ShowOnlyInstalled:=false;
-  SortByDate:=false;
+  SortByDateAsc:=false;
   CBKeywords.CheckAll(cbUnchecked);
-  EdSearch.Text:='';
   ActSearchPackages.Execute;
   BtnShowInstalled.Enabled:=true;
   BtnShowAll.Enabled:=false;
@@ -270,9 +310,19 @@ begin
   ShowOnlyInstalled:=false;
   ActSearchPackages.Execute;
   BtnShowInstalled.Enabled:=true;
-   BtnShowAll.Enabled:=true;
-   BtnShowNotInstalled.Enabled:=true;
-   BtnShowUpgradable.Enabled:=false;
+  BtnShowAll.Enabled:=true;
+  BtnShowNotInstalled.Enabled:=true;
+  BtnShowUpgradable.Enabled:=false;
+end;
+
+procedure TVisWaptSelf.ActSortByDate(Sender: TObject);
+begin
+  if not(SortByDateAsc) then
+    BtnSortByDate.Caption:='Sort by date : asc'
+  else
+    BtnSortByDate.Caption:='Sort by date : desc';
+  SortByDateAsc:=not(SortByDateAsc);
+  ActSearchPackages.Execute;
 end;
 
 procedure TVisWaptSelf.ActTriggerSearchExecute(Sender: TObject);
@@ -319,13 +369,10 @@ begin
   ShowOnlyInstalled:=false;
   ShowOnlyNotInstalled:=false;
   ShowOnlyUpgradable:=false;
-  SortByDate:=false;
-
-  //TODO : remove login/password
+  SortByDateAsc:=false;
 
   login:=waptwinutils.AGetUserName;
   password:='';
-
 
   LstIcons := FindAllFiles(WaptBaseDir+'\cache\icons','*.png',False);
   LstIcons.OwnsObjects:=True;
@@ -359,6 +406,8 @@ begin
 
     TimerSearch.Enabled:=False;
     TimerSearch.Enabled:=True;
+
+    MakeFullyVisible();
 
   finally
     Screen.Cursor := crDefault;
@@ -411,9 +460,24 @@ begin
 end;
 
 function TVisWaptSelf.GetAllPackages: ISuperObject;
+var
+  Package: ISuperObject;
+  tmp:String;
 begin
   if FAllPackages = Nil then
     FAllPackages := WAPTLocalJsonGet('packages.json?latest=1',login,password,-1,@OnLocalServiceAuth,2);
+  for Package in FAllPackages do
+  begin
+    if pos('T',Package.S['signature_date'])<>0 then
+    begin
+       tmp:=UTF8Encode(Package.S['signature_date']);
+       tmp:=copy(tmp,0,19);
+       tmp:=ReplaceStr(tmp,'-','');
+       tmp:=ReplaceStr(tmp,':','');
+       tmp:=ReplaceStr(tmp,'T','-');
+       Package.S['signature_date']:=UTF8Decode(tmp);
+    end;
+  end;
   Result := FAllPackages;
 end;
 
@@ -421,15 +485,16 @@ procedure TVisWaptSelf.OnLocalServiceAuth(Sender: THttpSend; var ShouldRetry: Bo
 var
   LoginDlg: TVisLogin;
 begin
-  LoginDlg := TVisLogin.Create(Self);
+  LoginDlg:=TVisLogin.Create(Self);
+  LoginDlg.EdUsername.text:=login;
   try
     if LoginDlg.ShowModal=mrOk then
     begin
-      Sender.UserName:= LoginDlg.EdUsername.text;
-      Sender.Password:= LoginDlg.EdPassword.text;
-      login:= LoginDlg.EdUsername.text;
-      password:= LoginDlg.EdPassword.text;
-      ShouldRetry := (Sender.UserName<>'') and (Sender.Password<>'');
+      Sender.UserName:=LoginDlg.EdUsername.text;
+      Sender.Password:=LoginDlg.EdPassword.text;
+      login:=LoginDlg.EdUsername.text;
+      password:=LoginDlg.EdPassword.text;
+      ShouldRetry:=(Sender.UserName<>'') and (Sender.Password<>'');
     end
   finally
     LoginDlg.Free;
@@ -509,6 +574,7 @@ begin
     begin
       if (LastEvent.S['event_type']='TASK_START') then
       begin
+        AFrmPackage.BtnCancel.Hide;
         AFrmPackage.FXProgressBarInstall.Show;
         AFrmPackage.LabelProgressionInstall.Show;
         AFrmPackage.TextWaitInstall.Hide;
@@ -523,6 +589,8 @@ begin
           AFrmPackage.FXProgressBarInstall.Value:=LastEvent.I['data.progress'];
           AFrmPackage.LabelProgressionInstall.Caption:=IntToStr(LastEvent.I['data.progress'])+'%';
           UpdatePackage(UTF8Encode(LastEvent.O['data'].O['packagenames'].S['0']));//UPDATE PACKAGE ISUPEROBJECT DELETE OLD ENTRY ADD NEW
+          if (ShowOnlyInstalled or ShowOnlyNotInstalled or ShowOnlyUpgradable) then
+          AFrmPackage.Autoremove:=true;
           AFrmPackage.TimerInstallRemoveFinished.Enabled:=true;
         end;
     Exit();

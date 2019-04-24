@@ -369,6 +369,7 @@ object VisWaptSelf: TVisWaptSelf
         Width = 153
         BorderSpacing.Top = 20
         Caption = 'Show all / clear filtrer'
+        Enabled = False
         OnClick = ActShowAllClearFilters
         TabOrder = 4
       end
@@ -386,6 +387,22 @@ object VisWaptSelf: TVisWaptSelf
         Caption = 'Unselect all keywords'
         OnClick = ActUnselectAllKeywordsExecute
         TabOrder = 5
+      end
+      object BtnSortByDate: TButton
+        AnchorSideLeft.Control = Panel2
+        AnchorSideLeft.Side = asrCenter
+        AnchorSideTop.Control = BtnUpdateList
+        AnchorSideTop.Side = asrBottom
+        AnchorSideRight.Control = Panel2
+        AnchorSideRight.Side = asrCenter
+        Left = 9
+        Height = 25
+        Top = 206
+        Width = 153
+        BorderSpacing.Top = 20
+        Caption = 'Sort by date : desc'
+        OnClick = ActSortByDate
+        TabOrder = 6
       end
     end
   end

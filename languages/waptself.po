@@ -1,15 +1,24 @@
 msgid ""
 msgstr "Content-Type: text/plain; charset=UTF-8"
 
-#: tfrmpackage.bcmaterialdesignbutton1.caption
-msgid ""
+#: tfrmpackage.btncancel.caption
+msgid "Cancel"
+msgstr ""
+
+#: tfrmpackage.btninstallupgrade.caption
+msgid "Install"
+msgstr ""
+
+#: tfrmpackage.btnremove.caption
+msgid "Remove"
 msgstr ""
 
 #: tfrmpackage.labdescription.caption
-msgid ""
+msgid "Adobe AIR is a runtime for software created with Adobe Flash and ActionScript without using a web browser."
 msgstr ""
 
-#: tfrmpackage.label2.caption
+#: tfrmpackage.labelprogressioninstall.caption
+msgctxt "tfrmpackage.labelprogressioninstall.caption"
 msgid "0%"
 msgstr ""
 
@@ -18,7 +27,7 @@ msgid "1.5.1-0"
 msgstr ""
 
 #: tfrmpackage.labmaintainer.caption
-msgid "by Tranquil IT"
+msgid "By"
 msgstr ""
 
 #: tfrmpackage.labpackagename.caption
@@ -29,17 +38,86 @@ msgstr ""
 msgid "1.5.2-0"
 msgstr ""
 
+#: tfrmpackage.statictext1.caption
+msgctxt "tfrmpackage.statictext1.caption"
+msgid "StaticText1"
+msgstr ""
+
+#: tfrmpackage.textwaitinstall.caption
+msgid "Waiting for install..."
+msgstr ""
+
+#: tvislogin.caption
+msgid "VisLogin"
+msgstr ""
+
+#: tvislogin.statictext1.caption
+msgid "Login :"
+msgstr ""
+
+#: tvislogin.statictext2.caption
+msgid "Password : "
+msgstr ""
+
+#: tviswaptself.actcanceltask.caption
+msgid "Cancel task"
+msgstr ""
+
+#: tviswaptself.actsearchpackages.caption
+msgid "Search"
+msgstr ""
+
+#: tviswaptself.acttriggersearch.caption
+msgid "Trigger Search"
+msgstr ""
+
+#: tviswaptself.actunselectallkeywords.caption
+msgid "Uncheck all"
+msgstr ""
+
+#: tviswaptself.actupdatepackageslist.caption
+msgid "ActUpdatePackagesList"
+msgstr ""
+
 #: tviswaptself.bclabel1.caption
 msgid "Available packages"
 msgstr "Paquets disponibles"
 
+#: tviswaptself.btncanceltasks.caption
+msgid "Cancel task(s)"
+msgstr ""
+
+#: tviswaptself.btnshowall.caption
+msgid "Show all / clear filtrer"
+msgstr ""
+
+#: tviswaptself.btnshowinstalled.caption
+msgid "Show installed"
+msgstr ""
+
+#: tviswaptself.btnshownotinstalled.caption
+msgid "Show not installed"
+msgstr ""
+
+#: tviswaptself.btnshowupgradable.caption
+msgid "Show upgradable"
+msgstr ""
+
+#: tviswaptself.btnsortbydate.caption
+msgid "Sort by date : desc"
+msgstr ""
+
+#: tviswaptself.btnunselectallkeywords.caption
+msgid "Unselect all keywords"
+msgstr ""
+
+#: tviswaptself.btnupdatelist.caption
+msgid "Update list"
+msgstr ""
+
 #: tviswaptself.caption
 msgid "WAPT softwares Self-service"
 msgstr "Self service logiciels WAPT"
-
-#: tviswaptself.cbcategories.caption
-msgid "Categories"
-msgstr "Catégories"
 
 #: tviswaptself.edsearch.texthint
 msgid "Search..."
@@ -47,5 +125,121 @@ msgstr "Rechercher..."
 
 #: tviswaptself.panel1.caption
 msgid "Panel1"
+msgstr ""
+
+#: tviswaptself.panel3.caption
+msgid "Panel3"
+msgstr ""
+
+#: tviswaptself.sogridtasks.header.columns[0].text
+msgid "ID"
+msgstr ""
+
+#: tviswaptself.sogridtasks.header.columns[10].text
+msgid "result"
+msgstr ""
+
+#: tviswaptself.sogridtasks.header.columns[11].text
+msgid "runstatus"
+msgstr ""
+
+#: tviswaptself.sogridtasks.header.columns[12].text
+msgid "created_by"
+msgstr ""
+
+#: tviswaptself.sogridtasks.header.columns[13].text
+msgid "progress"
+msgstr ""
+
+#: tviswaptself.sogridtasks.header.columns[14].text
+msgid "summary"
+msgstr ""
+
+#: tviswaptself.sogridtasks.header.columns[15].text
+msgid "finish_date"
+msgstr ""
+
+#: tviswaptself.sogridtasks.header.columns[16].text
+msgid "classname"
+msgstr ""
+
+#: tviswaptself.sogridtasks.header.columns[17].text
+msgid "logs"
+msgstr ""
+
+#: tviswaptself.sogridtasks.header.columns[18].text
+msgid "pidlist"
+msgstr ""
+
+#: tviswaptself.sogridtasks.header.columns[19].text
+msgid "usecache"
+msgstr ""
+
+#: tviswaptself.sogridtasks.header.columns[1].text
+msgid "Status"
+msgstr ""
+
+#: tviswaptself.sogridtasks.header.columns[20].text
+msgid "packagenames"
+msgstr ""
+
+#: tviswaptself.sogridtasks.header.columns[21].text
+msgid "force"
+msgstr ""
+
+#: tviswaptself.sogridtasks.header.columns[2].text
+msgid "order"
+msgstr ""
+
+#: tviswaptself.sogridtasks.header.columns[3].text
+msgid "Description"
+msgstr ""
+
+#: tviswaptself.sogridtasks.header.columns[4].text
+msgid "priority"
+msgstr ""
+
+#: tviswaptself.sogridtasks.header.columns[5].text
+msgid "notify_user"
+msgstr ""
+
+#: tviswaptself.sogridtasks.header.columns[6].text
+msgid "start_date"
+msgstr ""
+
+#: tviswaptself.sogridtasks.header.columns[7].text
+msgid "create_date"
+msgstr ""
+
+#: tviswaptself.sogridtasks.header.columns[8].text
+msgid "notify_server_on_finish"
+msgstr ""
+
+#: tviswaptself.sogridtasks.header.columns[9].text
+msgid "notify_server_on_start"
+msgstr ""
+
+#: tviswaptself.statictext1.caption
+msgctxt "tviswaptself.statictext1.caption"
+msgid "StaticText1"
+msgstr ""
+
+#: tviswaptself.statictext2.caption
+msgid "StaticText2"
+msgstr ""
+
+#: ufrmpackage.rsimpacted_processes
+msgid ""
+"Some processes (see list below) may be closed during installation/removal.\n"
+"Do you want to continue ?\n"
+"Impacted processes : %s\n"
+msgstr ""
+
+#: uviswaptself.rslogin
+msgid "Login"
+msgstr ""
+
+#: uviswaptself.rspassword
+msgid "Password"
 msgstr ""
 

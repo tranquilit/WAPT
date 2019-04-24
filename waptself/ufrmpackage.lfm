@@ -6,8 +6,8 @@ object FrmPackage: TFrmPackage
   ClientHeight = 209
   ClientWidth = 387
   TabOrder = 0
-  DesignLeft = 600
-  DesignTop = 296
+  DesignLeft = 711
+  DesignTop = 208
   object BCPaperPanel1: TBCPaperPanel
     AnchorSideLeft.Control = Owner
     AnchorSideLeft.Side = asrCenter
@@ -539,11 +539,47 @@ object FrmPackage: TFrmPackage
       Value = 0
       Color = 14852966
     end
+    object BtnCancel: TBCMaterialDesignButton
+      Left = 264
+      Height = 24
+      Top = 168
+      Width = 104
+      RoundBorders = 3
+      NormalColor = clBlue
+      NormalColorEffect = clGray
+      ShadowSize = 4
+      TextColor = clWhite
+      TextSize = 13
+      TextShadow = False
+      TextShadowSize = 0
+      TextFont = 'Tahoma'
+      TextQuality = fqSystemClearType
+      Caption = 'Cancel'
+      OnClick = ActCancelTask
+      ParentFont = False
+      Visible = False
+    end
+    object StaticText1: TStaticText
+      Left = 232
+      Height = 18
+      Top = 6
+      Width = 132
+      Caption = 'StaticText1'
+      TabOrder = 1
+    end
   end
   object TimerInstallRemoveFinished: TTimer
+    Enabled = False
     Interval = 4000
     OnTimer = ActTimerInstallRemoveFinished
     left = 8
+    top = 8
+  end
+  object TimerAutoremove: TTimer
+    Enabled = False
+    Interval = 3000
+    OnTimer = TimerAutoremoveTimer
+    left = 40
     top = 8
   end
 end

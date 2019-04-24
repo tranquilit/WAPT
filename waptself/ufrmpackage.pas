@@ -14,6 +14,7 @@ type
   { TFrmPackage }
 
   TFrmPackage = class(TFrame)
+    BtnCancel: TBCMaterialDesignButton;
     FXProgressBarInstall: TBGRAFlashProgressBar;
     BtnInstallUpgrade: TBCMaterialDesignButton;
     BtnRemove: TBCMaterialDesignButton;
@@ -25,11 +26,15 @@ type
     LabPackageName: TBCLabel;
     LabVersion: TBCLabel;
     LabMaintainer: TBCLabel;
+    StaticText1: TStaticText;
     TextWaitInstall: TStaticText;
+    TimerAutoremove: TTimer;
     TimerInstallRemoveFinished: TTimer;
+    procedure ActCancelTask(Sender: TObject);
     procedure ActInstallUpgradePackage(Sender: TObject);
     procedure ActRemovePackage(Sender: TObject);
     procedure ActTimerInstallRemoveFinished(Sender: TObject);
+    procedure TimerAutoremoveTimer(Sender: TObject);
   private
     function LaunchActionPackage(ActionPackage:String;Package:ISuperObject):ISuperObject;
     function Impacted_process():boolean;
@@ -41,12 +46,16 @@ type
     password : String;
     OnLocalServiceAuth : THTTPSendAuthorization;
     ActionPackage : String;
+    Autoremove : Boolean;
     constructor Create(TheOwner: TComponent); override;
     procedure AdjustFont(ALabel:TBCLabel);
   end;
 
+resourcestring
+  rsImpacted_processes = 'Some processes (see list below) may be closed during installation/removal.'+Chr(13)+'Do you want to continue ?'+Chr(13)+'Impacted processes : %s';
+
 implementation
-uses Graphics,BCTools,JwaTlHelp32, Windows,uVisImpactedProcess;
+uses Graphics,BCTools,JwaTlHelp32, Windows,Dialogs;
 {$R *.lfm}
 
 { TFrmPackage }
@@ -60,6 +69,35 @@ begin
     BtnInstallUpgrade.NormalColor:=$00C4C4C4;
     TextWaitInstall.Caption:='Waiting for install...';
     TextWaitInstall.Show;
+    BtnCancel.Show;
+  end;
+end;
+
+procedure TFrmPackage.ActCancelTask(Sender: TObject);
+begin
+  WAPTLocalJsonGet(Format('cancel_task.json?id=%d',[Task.I['id']]),login,password,-1,OnLocalServiceAuth,2);
+  if Assigned(Task) then
+  begin
+    if (ActionPackage='install') then
+    begin
+      BtnInstallUpgrade.Caption:='Install';
+      BtnInstallUpgrade.NormalColor:=clGreen;
+      BtnInstallUpgrade.Enabled:=true;
+      ActionPackage:='install';
+    end
+    else
+    begin
+      BtnRemove.NormalColor:=clRed;
+      BtnRemove.Enabled:=true;
+      ActionPackage:='remove';
+      BtnInstallUpgrade.Caption:='Installed';
+    end;
+    FXProgressBarInstall.Value:=0;
+    FXProgressBarInstall.Hide;
+    LabelProgressionInstall.Caption:='0%';
+    LabelProgressionInstall.Hide;
+    TextWaitInstall.Hide;
+    BtnCancel.Hide;
   end;
 end;
 
@@ -73,6 +111,7 @@ begin
     BtnRemove.NormalColor:=$00C4C4C4;
     TextWaitInstall.Caption:='Waiting for uninstall...';
     TextWaitInstall.Show;
+    BtnCancel.Show;
   end;
 end;
 
@@ -97,6 +136,14 @@ begin
   LabelProgressionInstall.Caption:='0%';
   LabelProgressionInstall.Hide;
   TimerInstallRemoveFinished.Enabled:=false;
+  if (Autoremove) then
+    TimerAutoremove.Enabled:=true;
+end;
+
+procedure TFrmPackage.TimerAutoremoveTimer(Sender: TObject);
+begin
+  TimerAutoremove.Enabled:=false;
+  Self.Destroy;
 end;
 
 function TFrmPackage.LaunchActionPackage(ActionPackage:String;Package: ISuperObject): ISuperObject;
@@ -136,25 +183,12 @@ begin
 end;
 
 function TFrmPackage.Accept_Impacted_process(): boolean;
-var
-  VisImpactedProcess : TImpactedProcess;
 begin
   if Impacted_process()=false then
     Exit(True)
   else
   begin
-    VisImpactedProcess:=TImpactedProcess.Create(Self);
-    VisImpactedProcess.ShowListProcesses(UTF8Encode(Package.S['impacted_process']));
-    if VisImpactedProcess.ShowModal=mrOk then
-    begin
-      VisImpactedProcess.Free;
-      Exit(true);
-    end
-    else
-    begin
-      VisImpactedProcess.Free;
-      Exit(False);
-    end;
+    Result:=(MessageDlg(Format(rsImpacted_processes,[Package.S['impacted_process']]),mtWarning,mbYesNo,0)= mrYes);
   end;
 end;
 
@@ -162,7 +196,7 @@ constructor TFrmPackage.Create(TheOwner: TComponent);
 begin
   inherited Create(TheOwner);
   FXProgressBarInstall.Hide;
-  TimerInstallRemoveFinished.Enabled:=false;
+  Autoremove:=false;
 end;
 
 procedure TFrmPackage.AdjustFont(ALabel: TBCLabel);

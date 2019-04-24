@@ -18,6 +18,10 @@
       </XPManifest>
       <Icon Value="0"/>
     </General>
+    <i18n>
+      <EnableI18N Value="True"/>
+      <OutDir Value="..\languages"/>
+    </i18n>
     <VersionInfo>
       <UseVersionInfo Value="True"/>
       <MajorVersionNr Value="1"/>
@@ -60,7 +64,7 @@
         <PackageName Value="LCL"/>
       </Item7>
     </RequiredPackages>
-    <Units Count="5">
+    <Units Count="4">
       <Unit0>
         <Filename Value="waptself.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -90,14 +94,6 @@
         <ResourceBaseClass Value="Frame"/>
         <UnitName Value="uFrmPackage"/>
       </Unit3>
-      <Unit4>
-        <Filename Value="uvisimpactedprocess.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="ImpactedProcess"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="uVisImpactedProcess"/>
-      </Unit4>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

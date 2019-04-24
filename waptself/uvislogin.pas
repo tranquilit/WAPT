@@ -17,6 +17,9 @@ type
     BitBtn2: TBitBtn;
     EdUsername: TEdit;
     EdPassword: TEdit;
+    StaticText1: TStaticText;
+    StaticText2: TStaticText;
+    procedure FormCreate(Sender: TObject);
   private
 
   public
@@ -26,9 +29,17 @@ type
 var
   VisLogin: TVisLogin;
 
+
 implementation
 
 {$R *.lfm}
+
+{ TVisLogin }
+
+procedure TVisLogin.FormCreate(Sender: TObject);
+begin
+  MakeFullyVisible();
+end;
 
 end.
 
