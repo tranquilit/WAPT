@@ -1,4 +1,4 @@
-msgid ""
+ï»¿msgid ""
 msgstr "Content-Type: text/plain; charset=UTF-8"
 
 #: tfrmpackage.btncancel.caption
@@ -11,7 +11,7 @@ msgstr "Installer"
 
 #: tfrmpackage.btnremove.caption
 msgid "Remove"
-msgstr "Désinstaller"
+msgstr "DÃ©sinstaller"
 
 #: tfrmpackage.labdescription.caption
 msgid "Adobe AIR is a runtime for software created with Adobe Flash and ActionScript without using a web browser."
@@ -61,7 +61,7 @@ msgstr "Mot de passe :"
 
 #: tviswaptself.actcanceltask.caption
 msgid "Cancel task"
-msgstr "Annuler la tâche"
+msgstr "Annuler la tÃ¢che"
 
 #: tviswaptself.actsearchpackages.caption
 msgid "Search"
@@ -69,11 +69,11 @@ msgstr "Rechercher"
 
 #: tviswaptself.acttriggersearch.caption
 msgid "Trigger Search"
-msgstr "déclencher la recherche"
+msgstr "dÃ©clencher la recherche"
 
 #: tviswaptself.actunselectallkeywords.caption
 msgid "Uncheck all"
-msgstr "Désélectionner tout"
+msgstr "DÃ©sÃ©lectionner tout"
 
 #: tviswaptself.actupdatepackageslist.caption
 msgid "ActUpdatePackagesList"
@@ -85,7 +85,7 @@ msgstr "Paquets disponibles"
 
 #: tviswaptself.btncanceltasks.caption
 msgid "Cancel task(s)"
-msgstr "Annuler les tâches"
+msgstr "Annuler les tÃ¢ches"
 
 #: tviswaptself.btnshowall.caption
 msgid "Show all / clear filtrer"
@@ -93,15 +93,15 @@ msgstr "Voir tout / effacer le filtre"
 
 #: tviswaptself.btnshowinstalled.caption
 msgid "Show installed"
-msgstr "Voir installés"
+msgstr "Voir installÃ©s"
 
 #: tviswaptself.btnshownotinstalled.caption
 msgid "Show not installed"
-msgstr "Voir non installés"
+msgstr "Voir non installÃ©s"
 
 #: tviswaptself.btnshowupgradable.caption
 msgid "Show upgradable"
-msgstr "Voir mises à jour"
+msgstr "Voir mises Ã  jour"
 
 #: tviswaptself.btnsortbydate.caption
 msgid "Sort by date : desc"
@@ -109,11 +109,11 @@ msgstr "Trier par date : desc"
 
 #: tviswaptself.btnunselectallkeywords.caption
 msgid "Unselect all keywords"
-msgstr "Déselectionner tous les mots clés"
+msgstr "DÃ©selectionner tous les mots clÃ©s"
 
 #: tviswaptself.btnupdatelist.caption
 msgid "Update list"
-msgstr "Mise à jour de la liste"
+msgstr "Mise Ã  jour de la liste"
 
 #: tviswaptself.caption
 msgid "WAPT softwares Self-service"
@@ -234,9 +234,9 @@ msgid ""
 "Do you want to continue ?\n"
 "Impacted processes : %s\n"
 msgstr ""
-"Certains processus (voir liste ci-dessous) pourraient être arrêtés pendant l'installation.\n
+"Certains processus (voir liste ci-dessous) pourraient Ãªtre arrÃªtÃ©s pendant l'installation.\n
 "Voulez-vous continuer ?\n"
-"Processus impactés : %s\n"
+"Processus impactÃ©s : %s\n"
 
 #: uviswaptself.rslogin
 msgid "Login"
