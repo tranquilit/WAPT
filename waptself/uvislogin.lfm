@@ -1,18 +1,18 @@
 object VisLogin: TVisLogin
-  Left = 858
+  Left = 2071
   Height = 119
-  Top = 602
+  Top = 500
   Width = 253
   BorderStyle = bsDialog
   Caption = 'VisLogin'
   ClientHeight = 119
   ClientWidth = 253
   OnShow = FormShow
-  Position = poMainFormCenter
+  Position = poOwnerFormCenter
   LCLVersion = '1.8.4.0'
   object EdUsername: TEdit
     Left = 98
-    Height = 21
+    Height = 23
     Top = 18
     Width = 136
     AutoSelect = False
@@ -20,7 +20,7 @@ object VisLogin: TVisLogin
   end
   object EdPassword: TEdit
     Left = 98
-    Height = 21
+    Height = 23
     Top = 45
     Width = 136
     EchoMode = emPassword

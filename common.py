@@ -132,6 +132,12 @@ from itsdangerous import TimedJSONWebSignatureSerializer
 import setuphelpers
 import netifaces
 
+try:
+    from waptenterprise import enterprise_common
+except ImportError:
+    enterprise_common = None
+
+
 class EWaptBadServerAuthentication(EWaptException):
     pass
 
@@ -5814,29 +5820,9 @@ class Wapt(BaseObjectClass):
         result['packages_whitelist'] = self.packages_whitelist
         result['packages_blacklist'] = self.packages_blacklist
 
-        result['self_service_rules'] = self.self_service_rules()
+        if enterprise_common:
+            result['self_service_rules'] = enterprise_common.self_service_rules(self)
 
-        return result
-
-    def self_service_rules(self):
-        """Returns dict of allowed packages for users and groups
-        """
-        cur = self.waptdb.db.execute("""select package,persistent_dir from wapt_localstatus s where s.section='selfservice' and s.persistent_dir is not null""")
-        result = {}
-        for (package,persistent_dir) in cur.fetchall():
-            if persistent_dir:
-                rules_fn = setuphelpers.makepath(persistent_dir,'selfservice.json')
-                if os.path.isfile(rules_fn):
-                    with open(rules_fn,'r') as f:
-                        rules = json.load(f)
-                    for group,packages in rules.iteritems():
-                        if not group in result:
-                            result[group] = packages
-                        else:
-                            group_packages = result[group]
-                            for package in packages:
-                                if not package in group_packages:
-                                    group_packages.append(package)
         return result
 
     def reachable_ip(self):
@@ -7231,49 +7217,19 @@ class Wapt(BaseObjectClass):
         if not user_groups:
             return False
 
+        if enterprise_common:
+            if rules is None:
+                rules = enterprise_common.self_service_rules(self)
+
+            for group in user_groups:
+                if package_request.package in rules.get(group,[]):
+                    return True
+
         if 'waptselfservice' in user_groups:
             return True
-
-        if rules is None:
-            rules = self.self_service_rules()
-
-        for group in user_groups:
-            if package_request.package in rules.get(group,[]):
-                return True
+            # return package_request.section not in ('restricted','wsus','unit','profile')
 
         return False
-
-    def authorized_packages_for_token(self,token,package_requests=None):
-        token_gen = self.get_secured_token_generator()
-        user_pac = token_gen.loads(token)
-        user_groups = user_pac.get('groups',[])
-
-        rules = self.self_service_rules()
-
-        result = []
-        if package_requests is None:
-            for group in user_groups:
-                for package in rules.get(group,[]):
-                    if not package in result:
-                        result.append(package)
-        else:
-            for package_request in package_requests:
-                if isinstance(package_request,PackageRequest):
-                    pr = package_request
-                elif isinstance(package_request,(str,unicode)):
-                    pr = PackageRequest(pr)
-                elif isinstance(package_request,PackageEntry):
-                    pr = package_request.as_package_request()
-                else:
-                    continue
-
-                for group in user_groups:
-                    if pr.package in rules.get(group,[]):
-                        result.append(pr)
-                        break
-
-        return result
-
 
     def available_categories(self):
         return list(set([k.get('keywords').capitalize().split(',')[0] for k in self.waptdb.query('select distinct keywords from wapt_package where keywords is not null')]))

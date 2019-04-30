@@ -84,9 +84,10 @@ type
     SortByDateAsc:Boolean;
     WAPTServiceRunning:Boolean;
     LastTaskIDOnLaunch:integer;
+    CurrentTaskID:integer;
 
     LstIcons: TStringList;
-    LstTask: TStringList;
+    LstTasks: TStringList;
     FAllPackages: ISuperObject;
 
     login: String;
@@ -211,6 +212,40 @@ var
           AFrmPackage.password:=password;
           AFrmPackage.OnLocalServiceAuth:=@OnLocalServiceAuth;
 
+          AFrmPackage.LstTasks:=LstTasks;
+          if (LstTasks.IndexOf(UTF8Encode(AFrmPackage.Package.S['package'])))<>-1 then
+          begin
+            AFrmPackage.TaskID:=Integer(LstTasks.Objects[LstTasks.IndexOf(UTF8Encode(AFrmPackage.Package.S['package']))]);
+            with AFrmPackage do
+            begin
+              if (ActionPackage='install') then
+                begin
+                  BtnInstallUpgrade.Enabled:=false;
+                  BtnInstallUpgrade.NormalColor:=$00C4C4C4;
+                  TextWaitInstall.Caption:='Waiting for install...';
+                  ActionPackage:='install';
+                end
+              else
+                begin
+                  ActionPackage:='remove';
+                  BtnRemove.Enabled:=false;
+                  BtnRemove.NormalColor:=$00C4C4C4;
+                  TextWaitInstall.Caption:='Waiting for uninstall...';
+                  TextWaitInstall.Show;
+                end;
+              TextWaitInstall.Show;
+              LabDescription.Hide;
+              BtnCancel.Show;
+              if (TaskID=CurrentTaskID) then
+              begin
+                BtnCancel.Hide;
+                ProgressBarInstall.Show;
+                LabelProgressionInstall.Show;
+                TextWaitInstall.Hide;
+              end;
+            end;
+          end;
+
           inc(idx);
           if idx>maxidx then
             break;
@@ -238,7 +273,7 @@ begin
     for i:=0 to FlowPackages.ControlCount-1 do
     begin
       AFrmPackage:=FlowPackages.Controls[i] as TFrmPackage;
-      if (AFrmPackage.Task<>0) and (AFrmPackage.Task=Task.I['id']) then
+      if (AFrmPackage.TaskID<>0) and (AFrmPackage.TaskID=Task.I['id']) then
       begin
         AFrmPackage.CancelTask();
         Exit();
@@ -397,6 +432,11 @@ begin
   login:=waptwinutils.AGetUserName;
   password:='';
 
+  LstTasks:=TStringList.Create;
+  LstTasks.Sorted:=true;
+  LstTasks.Duplicates:=dupIgnore;
+  CurrentTaskID:=0;
+
   LstIcons := FindAllFiles(WaptBaseDir+'\cache\icons','*.png',False);
   LstIcons.OwnsObjects:=True;
   for i := 0 to LstIcons.Count-1 do
@@ -414,7 +454,7 @@ var
   keyword,keywords: ISuperObject;
 begin
   try
-    MakeFullyVisible;
+    MakeFullyVisible();
     Screen.Cursor := crHourGlass;
     keywords:=WAPTLocalJsonGet('keywords.json?latest=1',login,password,-1,@OnLocalServiceAuth,2);
     CBKeywords.Clear;
@@ -440,7 +480,8 @@ procedure TVisWaptSelf.FormDestroy(Sender: TObject);
 begin
   FreeAndNil(CheckTasksThread);
   FreeAndNil(CheckEventsThread);
-  LstIcons.free;
+  FreeAndNil(LstIcons);
+  FreeAndNil(LstTasks);
 end;
 
 procedure TVisWaptSelf.FormClose(Sender: TObject);
@@ -518,38 +559,42 @@ begin
   for i:=0 to FlowPackages.ControlCount-1 do
   begin
     AFrmPackage:=FlowPackages.Controls[i] as TFrmPackage;
-    if (AFrmPackage.Task<>0) and (AFrmPackage.Task=LastEvent.I['data.id']) then
+    if (AFrmPackage.TaskID<>0) and (AFrmPackage.TaskID=LastEvent.I['data.id']) then
     begin
+      CurrentTaskID:=LastEvent.I['data.id'];
       case LastEvent.S['event_type'] of
         'TASK_START':
         begin
           AFrmPackage.BtnCancel.Hide;
-          AFrmPackage.FXProgressBarInstall.Show;
+          AFrmPackage.ProgressBarInstall.Show;
           AFrmPackage.LabelProgressionInstall.Show;
           AFrmPackage.TextWaitInstall.Hide;
         end;
         'TASK_STATUS':
         begin
-          AFrmPackage.FXProgressBarInstall.Value:=LastEvent.I['data.progress'];
+          AFrmPackage.ProgressBarInstall.Position:=LastEvent.I['data.progress'];
           AFrmPackage.LabelProgressionInstall.Caption:=IntToStr(LastEvent.I['data.progress'])+'%';
         end;
         'TASK_FINISH':
         begin
-          AFrmPackage.FXProgressBarInstall.Value:=LastEvent.I['data.progress'];
+          AFrmPackage.ProgressBarInstall.Position:=LastEvent.I['data.progress'];
+          AFrmPackage.ProgressBarInstall.Style:=pbstNormal;
           AFrmPackage.LabelProgressionInstall.Caption:=IntToStr(LastEvent.I['data.progress'])+'%';
           if (ShowOnlyInstalled or ShowOnlyNotInstalled or ShowOnlyUpgradable) then
             AFrmPackage.Autoremove:=true;
-          AFrmPackage.Task:=0;
+          LstTasks.Delete(LstTasks.IndexOf(UTF8Encode(AFrmPackage.Package.S['package'])));
+          AFrmPackage.TaskID:=0;
           AFrmPackage.TimerInstallRemoveFinished.Enabled:=true;
+          CurrentTaskID:=0;
         end;
         'TASK_ERROR':
         begin
           if (MessageDlg(Format(rsForce,[LastEvent.O['data'].S['description']]),mtWarning,mbYesNo,0)= mrYes) then
           begin
-            if (AFrmPackage.ActionPackage='remove') then
+              LstTasks.Delete(LstTasks.IndexOf(UTF8Encode(AFrmPackage.Package.S['package'])));
+              AFrmPackage.TaskID:=0;
+              CurrentTaskID:=0;
               AFrmPackage.LaunchActionPackage(AFrmPackage.ActionPackage,AFrmPackage.Package,true)
-            else
-              AFrmPackage.LaunchActionPackage(AFrmPackage.ActionPackage,AFrmPackage.Package,true);
           end
           else
           begin
@@ -567,13 +612,14 @@ begin
               AFrmPackage.ActionPackage:='remove';
               AFrmPackage.BtnInstallUpgrade.Caption:='Installed';
             end;
-            AFrmPackage.FXProgressBarInstall.Value:=0;
-            AFrmPackage.FXProgressBarInstall.Hide;
+            AFrmPackage.ProgressBarInstall.Position:=0;
+            AFrmPackage.ProgressBarInstall.Hide;
             AFrmPackage.LabelProgressionInstall.Caption:='0%';
             AFrmPackage.LabelProgressionInstall.Hide;
             AFrmPackage.TextWaitInstall.Hide;
             AFrmPackage.BtnCancel.Hide;
-            AFrmPackage.Task:=0;
+            LstTasks.Delete(LstTasks.IndexOf(UTF8Encode(AFrmPackage.Package.S['package'])));
+            AFrmPackage.TaskID:=0;
           end;
         end;
       end;
@@ -597,17 +643,19 @@ begin
           'PRINT': StaticText2.Caption:=UTF8Encode(lastEvent.S['data']);
           'TASK_START','TASK_STATUS','TASK_FINISH','TASK_ERROR':
           begin
-            //StaticText1.Caption:= UTF8Encode(running.S['description']+': '+lastEvent.S['data.runstatus']);
+            ProgressBarTaskRunning.Style:=pbstMarquee;
             ChangeProgressionFrmPackageOnEvent(LastEvent);
-            StaticText1.Caption:= UTF8Encode(LastEvent.S['data.runstatus']);
+            StaticText1.Caption:= UTF8Encode(lastEvent.S['data.runstatus']);  //UTF8Encode(running.S['description']+': '+
             ProgressBarTaskRunning.Position:=Lastevent.I['data.progress'];
             if LastEvent.S['event_type']='TASK_FINISH' then
+            begin
               TTriggerWaptserviceAction.Create('packages.json?latest=1',@OnUpgradeTriggeredAllPackages,login,password,@OnLocalServiceAuth);
+              ProgressBarTaskRunning.Style:=pbstNormal;
+            end;
           end;
-          'STATUS': //GridPendingUpgrades.Data := GetPackageStatus(lastEvent['data']);
-          begin
-
-          end;
+          //'STATUS':
+          //begin
+          //end;
         end;
       end;
     end

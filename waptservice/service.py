@@ -103,8 +103,10 @@ if os.path.isdir(os.path.join(wapt_root_dir,'waptenterprise')):
     from waptenterprise.waptservice.enterprise import run_cleanmgr,WaptRunCleanMgr # pylint: disable=import-error
     from waptenterprise.waptservice.enterprise import run_scheduled_wua_scan,run_scheduled_wua_downloads,run_scheduled_wua_installs # pylint: disable=import-error
     from waptenterprise.waptservice.enterprise import waptwua_api
+    from waptenterprise import enterprise_common
 else:
     waptwua_api = None
+    enterprise_common = None
 
 from waptservice.plugins import *
 
@@ -272,7 +274,7 @@ def check_auth(logon_name, password):
             return False
         domain = ''
         if logon_name.count('\\') > 1 or logon_name.count('@') > 1  or (logon_name.count('\\') == 1 and logon_name.count('@')==1)  :
-            logger.debug("malformed logon credential : %s "% logon_name)
+            logger.debug(u"malformed logon credential : %s "% logon_name)
             return False
 
         if '\\' in logon_name:
@@ -283,7 +285,7 @@ def check_auth(logon_name, password):
             domain = logon_name.split('@')[1]
         else:
             username = logon_name
-        logger.debug("Checking authentification for domain: %s user: %s" % (domain,username))
+        logger.debug(u"Checking authentification for domain: %s user: %s" % (domain,username))
 
         try:
             huser = win32security.LogonUser (
@@ -461,6 +463,18 @@ def keywords():
             logger.critical(u'Error: %s' % e)
             return Response(common.jsondump([]), mimetype='application/json')
 
+@app.route('/check_install')
+@app.route('/check_install.json')
+@allow_local
+def check_install():
+    try:
+        package = request.args.get('package')
+        data = wapt().check_install(package)
+        return Response(common.jsondump(data), mimetype='application/json')
+    except Exception as e:
+        logger.critical(u"*********** Error %s:" % e.args[0])
+        return Response(common.jsondump(e), mimetype='application/json')
+
 @app.route('/list/pg<int:page>')
 @app.route('/packages.json')
 @app.route('/packages')
@@ -473,7 +487,10 @@ def all_packages(page=1):
 
     username = None
     grpuser = []
-    rules = wapt().self_service_rules()
+
+    rules = None
+    if enterprise_common:
+        rules = enterprise_common.self_service_rules(wapt())
 
     if request.authorization:
         auth = request.authorization
@@ -587,7 +604,10 @@ def local_package_details():
 
     username = None
     grpuser = []
-    rules = wapt().self_service_rules()
+    rules = None
+    if enterprise_common:
+        rules = enterprise_common.self_service_rules(wapt())
+
 
     if request.authorization:
         auth = request.authorization
@@ -990,7 +1010,10 @@ def install():
 
     username = None
     grpuser = []
-    rules = wapt().self_service_rules()
+    rules = None
+    if enterprise_common:
+        rules = enterprise_common.self_service_rules(wapt())
+
 
     if request.authorization:
         auth = request.authorization
@@ -1064,7 +1087,10 @@ def remove():
 
     username = None
     grpuser = []
-    rules = wapt().self_service_rules()
+    rules = None
+    if enterprise_common:
+        rules = enterprise_common.self_service_rules(wapt())
+
 
     if request.authorization:
         auth = request.authorization

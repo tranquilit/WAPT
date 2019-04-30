@@ -2,18 +2,18 @@ object FrmPackage: TFrmPackage
   Left = 0
   Height = 169
   Top = 0
-  Width = 386
+  Width = 397
   ClientHeight = 169
-  ClientWidth = 386
+  ClientWidth = 397
   TabOrder = 0
-  DesignLeft = 784
-  DesignTop = 376
+  DesignLeft = 2049
+  DesignTop = 274
   object BCPaperPanel1: TBCPaperPanel
     AnchorSideLeft.Control = Owner
     AnchorSideLeft.Side = asrCenter
     AnchorSideTop.Control = Owner
     AnchorSideTop.Side = asrCenter
-    Left = 5
+    Left = 10
     Height = 155
     Top = 7
     Width = 377
@@ -294,9 +294,9 @@ object FrmPackage: TFrmPackage
     end
     object LabelProgressionInstall: TBCLabel
       Left = 336
-      Height = 14
-      Top = 106
-      Width = 19
+      Height = 15
+      Top = 105
+      Width = 16
       Background.Color = clBlack
       Background.ColorOpacity = 255
       Background.Gradient1.StartColor = clWhite
@@ -530,22 +530,8 @@ object FrmPackage: TFrmPackage
       TabOrder = 0
       Visible = False
     end
-    object FXProgressBarInstall: TBGRAFlashProgressBar
-      Left = 16
-      Height = 16
-      Top = 106
-      Width = 320
-      MinValue = 0
-      MaxValue = 100
-      Value = 0
-      Color = 14852966
-      BackgroundColor = 3092271
-      BackgroundRandomizeMinIntensity = 4000
-      BackgroundRandomizeMaxIntensity = 5000
-      BackgroundRandomize = True
-    end
     object BtnCancel: TBCMaterialDesignButton
-      Left = 304
+      Left = 312
       Height = 24
       Top = 104
       Width = 56
@@ -624,6 +610,16 @@ object FrmPackage: TFrmPackage
       Rounding.RoundX = 1
       Rounding.RoundY = 1
       Rounding.RoundOptions = []
+    end
+    object ProgressBarInstall: TProgressBar
+      Left = 16
+      Height = 16
+      Top = 106
+      Width = 312
+      Color = 14852966
+      ParentColor = False
+      Style = pbstMarquee
+      TabOrder = 1
     end
   end
   object TimerInstallRemoveFinished: TTimer

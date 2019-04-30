@@ -6,8 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, StdCtrls, ExtCtrls, Menus,
-  ActnList, BCListBox, BCLabel, BCMaterialDesignButton, BGRAFlashProgressBar,
-  superobject, waptcommon;
+  ActnList, ComCtrls, BCListBox, BCLabel, BCMaterialDesignButton, superobject, waptcommon;
 
 type
 
@@ -17,10 +16,10 @@ type
     Action1: TAction;
     ActionList1: TActionList;
     BtnCancel: TBCMaterialDesignButton;
-    FXProgressBarInstall: TBGRAFlashProgressBar;
     BtnInstallUpgrade: TBCMaterialDesignButton;
     BtnRemove: TBCMaterialDesignButton;
     BCPaperPanel1: TBCPaperPanel;
+    ProgressBarInstall: TProgressBar;
     ImgPackage: TImage;
     LabDescription: TBCLabel;
     LabelProgressionInstall: TBCLabel;
@@ -43,12 +42,13 @@ type
     function Accept_Impacted_process():boolean;
   public
     Package : ISuperObject;
-    Task : Integer;
+    TaskID : Integer;
     login : String;
     password : String;
     OnLocalServiceAuth : THTTPSendAuthorization;
     ActionPackage : String;
     Autoremove : Boolean;
+    LstTasks: TStringList;
     constructor Create(TheOwner: TComponent); override;
     procedure AdjustFont(ALabel:TBCLabel);
     procedure LaunchActionPackage(ActPack:String;Pack:ISuperObject;Force:Boolean);
@@ -109,8 +109,8 @@ begin
     ActionPackage:='remove';
     BtnInstallUpgrade.Caption:='Installed';
   end;
-  FXProgressBarInstall.Value:=0;
-  FXProgressBarInstall.Hide;
+  ProgressBarInstall.Position:=0;
+  ProgressBarInstall.Hide;
   LabelProgressionInstall.Caption:='0%';
   LabelProgressionInstall.Hide;
   TimerInstallRemoveFinished.Enabled:=false;
@@ -169,9 +169,9 @@ end;
 constructor TFrmPackage.Create(TheOwner: TComponent);
 begin
   inherited Create(TheOwner);
-  FXProgressBarInstall.Hide;
+  ProgressBarInstall.Hide;
   Autoremove:=false;
-  Task:=0;
+  TaskID:=0;
 end;
 
 procedure TFrmPackage.AdjustFont(ALabel: TBCLabel);
@@ -208,14 +208,17 @@ var
 begin
   StrForce:='';
   if Force then StrForce:='&force=1';
+  ProgressBarInstall.Style:=pbstMarquee;
   TTriggerWaptserviceAction.Create(format('%s.json?package=%s%s',[ActPack,Pack.S['package'],StrForce]),@OnUpgradeTriggeredTask,login,password,OnLocalServiceAuth);
 end;
 
 procedure TFrmPackage.CancelTask();
 begin
-  if Task<>0 then
+  if TaskID<>0 then
   begin
-    WAPTLocalJsonGet(Format('cancel_task.json?id=%d',[Task]),login,password,-1,OnLocalServiceAuth,2);
+    WAPTLocalJsonGet(Format('cancel_task.json?id=%d',[TaskID]),login,password,-1,OnLocalServiceAuth,2);
+    LstTasks.Delete(LstTasks.IndexOf(UTF8Encode(Package.S['package'])));
+    TaskID:=0;
     if (ActionPackage='install') then
     begin
       BtnInstallUpgrade.Caption:='Install';
@@ -230,8 +233,9 @@ begin
       ActionPackage:='remove';
       BtnInstallUpgrade.Caption:='Installed';
     end;
-    FXProgressBarInstall.Value:=0;
-    FXProgressBarInstall.Hide;
+    ProgressBarInstall.Position:=0;
+    ProgressBarInstall.Style:=pbstMarquee;
+    ProgressBarInstall.Hide;
     LabelProgressionInstall.Caption:='0%';
     LabelProgressionInstall.Hide;
     TextWaitInstall.Hide;
@@ -243,9 +247,10 @@ end;
 procedure TFrmPackage.OnUpgradeTriggeredTask(Sender: TObject);
 begin
   if (ActionPackage='remove') then
-    Task:=(Sender as TTriggerWaptserviceAction).Res.O['0'].I['id']
+    TaskID:=(Sender as TTriggerWaptserviceAction).Res.O['0'].I['id']
   else
-    Task:=(Sender as TTriggerWaptserviceAction).Res.I['id'];
+    TaskID:=(Sender as TTriggerWaptserviceAction).Res.I['id'];
+  LstTasks.AddObject(UTF8Encode(Package.S['package']),TObject(Pointer(TaskID)));
   BtnCancel.Show;
 end;
 

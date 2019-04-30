@@ -1,11 +1,11 @@
 object VisWaptSelf: TVisWaptSelf
-  Left = 353
-  Height = 821
-  Top = 81
-  Width = 1387
+  Left = 1912
+  Height = 1017
+  Top = -8
+  Width = 1920
   Caption = 'WAPT softwares Self-service'
-  ClientHeight = 821
-  ClientWidth = 1387
+  ClientHeight = 1017
+  ClientWidth = 1920
   OnCreate = FormCreate
   OnShow = FormShow
   ParentBiDiMode = False
@@ -15,22 +15,22 @@ object VisWaptSelf: TVisWaptSelf
     Left = 0
     Height = 52
     Top = 0
-    Width = 1387
+    Width = 1920
     Align = alTop
     AutoSize = True
     Caption = 'Panel1'
     ClientHeight = 52
-    ClientWidth = 1387
+    ClientWidth = 1920
     TabOrder = 0
     object Panel7: TPanel
       Left = 1
       Height = 50
       Top = 1
-      Width = 1385
+      Width = 1918
       Align = alTop
       BevelOuter = bvNone
       ClientHeight = 50
-      ClientWidth = 1385
+      ClientWidth = 1918
       Color = clWindow
       ParentColor = False
       TabOrder = 0
@@ -195,7 +195,7 @@ object VisWaptSelf: TVisWaptSelf
         AnchorSideLeft.Side = asrCenter
         AnchorSideTop.Control = Panel7
         AnchorSideTop.Side = asrCenter
-        Left = 595
+        Left = 862
         Height = 26
         Top = 12
         Width = 195
@@ -259,19 +259,19 @@ object VisWaptSelf: TVisWaptSelf
   end
   object PanCategories: TPanel
     Left = 0
-    Height = 769
+    Height = 965
     Top = 52
     Width = 170
     Align = alLeft
     BevelOuter = bvNone
-    ClientHeight = 769
+    ClientHeight = 965
     ClientWidth = 170
     Color = clForm
     ParentColor = False
     TabOrder = 1
     object CBKeywords: TCheckListBox
       Left = 0
-      Height = 481
+      Height = 677
       Top = 288
       Width = 170
       Align = alClient
@@ -408,9 +408,9 @@ object VisWaptSelf: TVisWaptSelf
   end
   object ScrollBoxPackages: TScrollBox
     Left = 170
-    Height = 769
+    Height = 965
     Top = 52
-    Width = 841
+    Width = 1374
     HorzScrollBar.Page = 1
     VertScrollBar.Increment = 1
     VertScrollBar.Page = 1
@@ -418,8 +418,8 @@ object VisWaptSelf: TVisWaptSelf
     VertScrollBar.Tracking = True
     Align = alClient
     BorderStyle = bsNone
-    ClientHeight = 769
-    ClientWidth = 841
+    ClientHeight = 965
+    ClientWidth = 1374
     Color = clWindow
     ParentColor = False
     TabOrder = 2
@@ -427,7 +427,7 @@ object VisWaptSelf: TVisWaptSelf
       Left = 0
       Height = 0
       Top = 0
-      Width = 841
+      Width = 1374
       Align = alTop
       AutoSize = True
       BevelOuter = bvNone
@@ -443,23 +443,23 @@ object VisWaptSelf: TVisWaptSelf
     end
   end
   object Panel3: TPanel
-    Left = 1011
-    Height = 769
+    Left = 1544
+    Height = 965
     Top = 52
     Width = 376
     Align = alRight
     Caption = 'Panel3'
     ChildSizing.LeftRightSpacing = 10
     ChildSizing.TopBottomSpacing = 10
-    ClientHeight = 769
+    ClientHeight = 965
     ClientWidth = 376
     Color = clForm
     ParentColor = False
     TabOrder = 3
     object SOGridTasks: TSOGrid
       Left = 11
-      Height = 512
-      Top = 54
+      Height = 706
+      Top = 56
       Width = 354
       ShowAdvancedColumnsCustomize = False
       KeyFieldsNames = 'id'
@@ -660,7 +660,7 @@ object VisWaptSelf: TVisWaptSelf
     object ImageLogo: TImage
       Left = 11
       Height = 71
-      Top = 687
+      Top = 883
       Width = 354
       Align = alBottom
       AutoSize = True
@@ -823,7 +823,7 @@ object VisWaptSelf: TVisWaptSelf
     object Panel4: TPanel
       Left = 11
       Height = 121
-      Top = 566
+      Top = 762
       Width = 354
       Align = alBottom
       BevelOuter = bvNone
@@ -833,45 +833,53 @@ object VisWaptSelf: TVisWaptSelf
       ClientWidth = 354
       TabOrder = 1
       object ProgressBarTaskRunning: TProgressBar
+        AnchorSideLeft.Control = Panel4
+        AnchorSideRight.Control = Panel4
+        AnchorSideRight.Side = asrBottom
         Left = 10
-        Height = 20
+        Height = 18
         Top = 8
-        Width = 336
+        Width = 334
+        Anchors = [akLeft, akRight]
         TabOrder = 0
       end
       object StaticText1: TStaticText
-        Left = 8
-        Height = 76
+        AnchorSideLeft.Control = Panel4
+        Left = 10
+        Height = 72
         Top = 32
-        Width = 168
+        Width = 160
         TabOrder = 1
       end
       object StaticText2: TStaticText
-        Left = 176
-        Height = 76
+        AnchorSideRight.Control = Panel4
+        AnchorSideRight.Side = asrBottom
+        Left = 184
+        Height = 72
         Top = 32
-        Width = 164
+        Width = 160
+        Anchors = [akTop, akLeft, akRight]
         TabOrder = 2
       end
     end
     object Panel5: TPanel
       Left = 11
-      Height = 43
+      Height = 45
       Top = 11
       Width = 354
       Align = alTop
       AutoSize = True
       BevelOuter = bvNone
       ChildSizing.TopBottomSpacing = 10
-      ClientHeight = 43
+      ClientHeight = 45
       ClientWidth = 354
       TabOrder = 2
       object BtnCancelTasks: TBitBtn
         AnchorSideLeft.Side = asrCenter
         Left = 0
-        Height = 23
+        Height = 25
         Top = 10
-        Width = 81
+        Width = 86
         Action = ActCancelTask
         AutoSize = True
         TabOrder = 0
