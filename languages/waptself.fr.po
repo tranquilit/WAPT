@@ -1,6 +1,10 @@
 ﻿msgid ""
 msgstr "Content-Type: text/plain; charset=UTF-8"
 
+#: tfrmpackage.action1.caption
+msgid "ActCancelTask"
+msgstr ""
+
 #: tfrmpackage.btncancel.caption
 msgid "Cancel"
 msgstr "Annuler"
@@ -12,6 +16,10 @@ msgstr "Installer"
 #: tfrmpackage.btnremove.caption
 msgid "Remove"
 msgstr "Désinstaller"
+
+#: tfrmpackage.labdate.caption
+msgid "19/12/2024"
+msgstr ""
 
 #: tfrmpackage.labdescription.caption
 msgid "Adobe AIR is a runtime for software created with Adobe Flash and ActionScript without using a web browser."
@@ -36,11 +44,6 @@ msgstr ""
 
 #: tfrmpackage.labversion.caption
 msgid "1.5.2-0"
-msgstr ""
-
-#: tfrmpackage.statictext1.caption
-msgctxt "tfrmpackage.statictext1.caption"
-msgid "StaticText1"
 msgstr ""
 
 #: tfrmpackage.textwaitinstall.caption
@@ -79,14 +82,6 @@ msgstr "Désélectionner tout"
 msgid "ActUpdatePackagesList"
 msgstr ""
 
-#: tviswaptself.bclabel1.caption
-msgid "Available packages"
-msgstr "Paquets disponibles"
-
-#: tviswaptself.btncanceltasks.caption
-msgid "Cancel task(s)"
-msgstr "Annuler les tâches"
-
 #: tviswaptself.btnshowall.caption
 msgid "Show all / clear filtrer"
 msgstr "Voir tout / effacer le filtre"
@@ -123,6 +118,12 @@ msgstr "Self-service WAPT"
 msgid "Search..."
 msgstr "Rechercher..."
 
+#: tviswaptself.labpackagelist.caption
+#, fuzzy
+msgctxt "tviswaptself.labpackagelist.caption"
+msgid "Available packages"
+msgstr "Paquets disponibles"
+
 #: tviswaptself.panel1.caption
 msgid "Panel1"
 msgstr ""
@@ -133,31 +134,31 @@ msgstr ""
 
 #: tviswaptself.sogridtasks.header.columns[0].text
 msgid "ID"
-msgstr ""
+msgstr "ID"
 
 #: tviswaptself.sogridtasks.header.columns[10].text
 msgid "result"
-msgstr ""
+msgstr "Résultat"
 
 #: tviswaptself.sogridtasks.header.columns[11].text
 msgid "runstatus"
-msgstr ""
+msgstr "Etape"
 
 #: tviswaptself.sogridtasks.header.columns[12].text
 msgid "created_by"
-msgstr ""
+msgstr "Créé par"
 
 #: tviswaptself.sogridtasks.header.columns[13].text
 msgid "progress"
-msgstr ""
+msgstr "Progression"
 
 #: tviswaptself.sogridtasks.header.columns[14].text
 msgid "summary"
-msgstr ""
+msgstr "Résumé"
 
 #: tviswaptself.sogridtasks.header.columns[15].text
 msgid "finish_date"
-msgstr ""
+msgstr "Heure de fin"
 
 #: tviswaptself.sogridtasks.header.columns[16].text
 msgid "classname"
@@ -219,14 +220,9 @@ msgstr ""
 msgid "notify_server_on_start"
 msgstr ""
 
-#: tviswaptself.statictext1.caption
-msgctxt "tviswaptself.statictext1.caption"
-msgid "StaticText1"
-msgstr ""
-
-#: tviswaptself.statictext2.caption
-msgid "StaticText2"
-msgstr ""
+#: ufrmpackage.rserrortriggeringtask
+msgid "Error triggering action: %s"
+msgstr "Erreur au lancement de l'action: %s"
 
 #: ufrmpackage.rsimpacted_processes
 msgid ""
@@ -234,15 +230,41 @@ msgid ""
 "Do you want to continue ?\n"
 "Impacted processes : %s\n"
 msgstr ""
-"Certains processus (voir liste ci-dessous) pourraient être arrêtés pendant l'installation.\n
+"Certains processus (voir liste ci-dessous) pourraient être arrêtés pendant l'installation.\n"
 "Voulez-vous continuer ?\n"
 "Processus impactés : %s\n"
+
+#: uviswaptself.rsavailablepackages
+#, fuzzy
+msgctxt "uviswaptself.rsavailablepackages"
+msgid "Available packages"
+msgstr "Paquets disponibles"
+
+#: uviswaptself.rsforce
+msgid ""
+"An operation has failed do you want to force the installation/removal?\n"
+"Operation : %s\n"
+msgstr ""
+"Une opération a échoué, voulez vous forcer l'installation/désinstallation?\n"
+"Opération : %s\n"
+
+#: uviswaptself.rsinstalledpackages
+msgid "Installed packages"
+msgstr "Paquets installés"
 
 #: uviswaptself.rslogin
 msgid "Login"
 msgstr "Login"
 
+#: uviswaptself.rsnotinstalledpackages
+msgid "Not installed packages"
+msgstr "Paquets non installés"
+
 #: uviswaptself.rspassword
 msgid "Password"
 msgstr "Mot de passe"
+
+#: uviswaptself.rsupgradablepackages
+msgid "Available updates for installed packages"
+msgstr "Mises à jour disponibles pour les paquets installés"
 

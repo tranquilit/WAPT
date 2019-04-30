@@ -1,36 +1,36 @@
 object FrmPackage: TFrmPackage
   Left = 0
-  Height = 209
+  Height = 169
   Top = 0
-  Width = 387
-  ClientHeight = 209
-  ClientWidth = 387
+  Width = 386
+  ClientHeight = 169
+  ClientWidth = 386
   TabOrder = 0
-  DesignLeft = 711
-  DesignTop = 208
+  DesignLeft = 784
+  DesignTop = 376
   object BCPaperPanel1: TBCPaperPanel
     AnchorSideLeft.Control = Owner
     AnchorSideLeft.Side = asrCenter
     AnchorSideTop.Control = Owner
     AnchorSideTop.Side = asrCenter
     Left = 5
-    Height = 200
-    Top = 4
+    Height = 155
+    Top = 7
     Width = 377
     Alignment = taLeftJustify
     BorderSpacing.Around = 4
     Caption = 'BCPaperPanel1'
-    ClientHeight = 200
+    ClientHeight = 155
     ClientWidth = 377
     Color = clWhite
     FullRepaint = False
     ParentColor = False
     TabOrder = 0
     object BtnInstallUpgrade: TBCMaterialDesignButton
-      Left = 264
+      Left = 280
       Height = 24
-      Top = 24
-      Width = 104
+      Top = 16
+      Width = 88
       RoundBorders = 3
       NormalColor = 12895428
       NormalColorEffect = clGray
@@ -46,10 +46,10 @@ object FrmPackage: TFrmPackage
       ParentFont = False
     end
     object LabPackageName: TBCLabel
-      Left = 88
-      Height = 44
-      Top = 8
-      Width = 176
+      Left = 72
+      Height = 32
+      Top = 16
+      Width = 208
       AutoSize = False
       Background.Color = clBlack
       Background.ColorOpacity = 255
@@ -108,10 +108,10 @@ object FrmPackage: TFrmPackage
       Rounding.RoundOptions = []
     end
     object LabVersion: TBCLabel
-      Left = 88
-      Height = 32
-      Top = 40
-      Width = 192
+      Left = 72
+      Height = 16
+      Top = 48
+      Width = 144
       AutoSize = False
       Background.Color = clBlack
       Background.ColorOpacity = 255
@@ -152,7 +152,7 @@ object FrmPackage: TFrmPackage
       FontEx.Color = 7566195
       FontEx.EndEllipsis = False
       FontEx.FontQuality = fqSystemClearType
-      FontEx.Height = 18
+      FontEx.Height = 12
       FontEx.SingleLine = True
       FontEx.Shadow = False
       FontEx.ShadowColor = clBlack
@@ -169,10 +169,10 @@ object FrmPackage: TFrmPackage
       Rounding.RoundOptions = []
     end
     object LabInstallVersion: TBCLabel
-      Left = 264
-      Height = 24
-      Top = 72
-      Width = 104
+      Left = 280
+      Height = 16
+      Top = 64
+      Width = 88
       AutoSize = False
       Background.Color = clBlack
       Background.ColorOpacity = 255
@@ -231,10 +231,11 @@ object FrmPackage: TFrmPackage
       Visible = False
     end
     object LabDescription: TBCLabel
-      Left = 8
-      Height = 80
-      Top = 96
-      Width = 360
+      Left = 16
+      Height = 63
+      Top = 80
+      Width = 344
+      Anchors = []
       AutoSize = False
       Background.Color = clBlack
       Background.ColorOpacity = 255
@@ -292,9 +293,9 @@ object FrmPackage: TFrmPackage
       Rounding.RoundOptions = []
     end
     object LabelProgressionInstall: TBCLabel
-      Left = 344
+      Left = 336
       Height = 14
-      Top = 170
+      Top = 106
       Width = 19
       Background.Color = clBlack
       Background.ColorOpacity = 255
@@ -353,10 +354,10 @@ object FrmPackage: TFrmPackage
       Visible = False
     end
     object BtnRemove: TBCMaterialDesignButton
-      Left = 264
+      Left = 280
       Height = 24
-      Top = 48
-      Width = 104
+      Top = 40
+      Width = 88
       RoundBorders = 3
       NormalColor = 12895428
       NormalColorEffect = clGray
@@ -460,10 +461,10 @@ object FrmPackage: TFrmPackage
       Transparent = True
     end
     object LabMaintainer: TBCLabel
-      Left = 8
-      Height = 24
-      Top = 72
-      Width = 256
+      Left = 16
+      Height = 16
+      Top = 64
+      Width = 264
       AutoSize = False
       Background.Color = clBlack
       Background.ColorOpacity = 255
@@ -521,29 +522,33 @@ object FrmPackage: TFrmPackage
       Rounding.RoundOptions = []
     end
     object TextWaitInstall: TStaticText
-      Left = 8
-      Height = 20
-      Top = 168
-      Width = 264
+      Left = 16
+      Height = 14
+      Top = 106
+      Width = 216
       Caption = 'Waiting for install...'
       TabOrder = 0
       Visible = False
     end
     object FXProgressBarInstall: TBGRAFlashProgressBar
-      Left = 8
-      Height = 14
-      Top = 170
-      Width = 328
+      Left = 16
+      Height = 16
+      Top = 106
+      Width = 320
       MinValue = 0
       MaxValue = 100
       Value = 0
       Color = 14852966
+      BackgroundColor = 3092271
+      BackgroundRandomizeMinIntensity = 4000
+      BackgroundRandomizeMaxIntensity = 5000
+      BackgroundRandomize = True
     end
     object BtnCancel: TBCMaterialDesignButton
-      Left = 264
+      Left = 304
       Height = 24
-      Top = 168
-      Width = 104
+      Top = 104
+      Width = 56
       RoundBorders = 3
       NormalColor = clBlue
       NormalColorEffect = clGray
@@ -555,31 +560,92 @@ object FrmPackage: TFrmPackage
       TextFont = 'Tahoma'
       TextQuality = fqSystemClearType
       Caption = 'Cancel'
-      OnClick = ActCancelTask
+      OnClick = ActCancelTaskExecute
       ParentFont = False
       Visible = False
     end
-    object StaticText1: TStaticText
-      Left = 232
-      Height = 18
-      Top = 6
-      Width = 132
-      Caption = 'StaticText1'
-      TabOrder = 1
+    object LabDate: TBCLabel
+      Left = 216
+      Height = 16
+      Top = 48
+      Width = 64
+      AutoSize = False
+      Background.Color = clBlack
+      Background.ColorOpacity = 255
+      Background.Gradient1.StartColor = clWhite
+      Background.Gradient1.StartColorOpacity = 255
+      Background.Gradient1.DrawMode = dmSet
+      Background.Gradient1.EndColor = clBlack
+      Background.Gradient1.EndColorOpacity = 255
+      Background.Gradient1.ColorCorrection = True
+      Background.Gradient1.GradientType = gtLinear
+      Background.Gradient1.Point1XPercent = 0
+      Background.Gradient1.Point1YPercent = 0
+      Background.Gradient1.Point2XPercent = 0
+      Background.Gradient1.Point2YPercent = 100
+      Background.Gradient1.Sinus = False
+      Background.Gradient2.StartColor = clWhite
+      Background.Gradient2.StartColorOpacity = 255
+      Background.Gradient2.DrawMode = dmSet
+      Background.Gradient2.EndColor = clBlack
+      Background.Gradient2.EndColorOpacity = 255
+      Background.Gradient2.ColorCorrection = True
+      Background.Gradient2.GradientType = gtLinear
+      Background.Gradient2.Point1XPercent = 0
+      Background.Gradient2.Point1YPercent = 0
+      Background.Gradient2.Point2XPercent = 0
+      Background.Gradient2.Point2YPercent = 100
+      Background.Gradient2.Sinus = False
+      Background.Gradient1EndPercent = 35
+      Background.Style = bbsClear
+      Border.Color = clBlack
+      Border.ColorOpacity = 255
+      Border.LightColor = clWhite
+      Border.LightOpacity = 255
+      Border.LightWidth = 0
+      Border.Style = bboNone
+      Border.Width = 1
+      Caption = '19/12/2024'
+      FontEx.Color = 7566195
+      FontEx.EndEllipsis = False
+      FontEx.FontQuality = fqSystemClearType
+      FontEx.Height = 12
+      FontEx.SingleLine = True
+      FontEx.Shadow = False
+      FontEx.ShadowColor = clBlack
+      FontEx.ShadowColorOpacity = 255
+      FontEx.ShadowRadius = 5
+      FontEx.ShadowOffsetX = 5
+      FontEx.ShadowOffsetY = 5
+      FontEx.Style = []
+      FontEx.TextAlignment = bcaLeftCenter
+      FontEx.WordBreak = False
+      InnerMargin = 0
+      Rounding.RoundX = 1
+      Rounding.RoundY = 1
+      Rounding.RoundOptions = []
     end
   end
   object TimerInstallRemoveFinished: TTimer
     Enabled = False
     Interval = 4000
     OnTimer = ActTimerInstallRemoveFinished
-    left = 8
-    top = 8
+    left = 272
+    top = 141
   end
   object TimerAutoremove: TTimer
     Enabled = False
     Interval = 3000
     OnTimer = TimerAutoremoveTimer
-    left = 40
+    left = 304
+    top = 141
+  end
+  object ActionList1: TActionList
+    left = 8
     top = 8
+    object Action1: TAction
+      Caption = 'ActCancelTask'
+      OnExecute = ActCancelTaskExecute
+    end
   end
 end

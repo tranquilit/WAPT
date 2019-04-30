@@ -120,7 +120,7 @@ def main():
                         waptfile.remove('setup.py')
                     sign_needed=True
 
-            if options.if_needed:
+            if not sign_needed and options.if_needed:
                 try:
                     pe.check_control_signature(trusted_bundle=signers_bundle,signers_bundle=signers_bundle)
                     for md in ensure_list(options.md):

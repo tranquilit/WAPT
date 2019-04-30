@@ -1,34 +1,36 @@
 object VisLogin: TVisLogin
-  Left = 816
-  Height = 108
-  Top = 301
-  Width = 252
+  Left = 858
+  Height = 119
+  Top = 602
+  Width = 253
   BorderStyle = bsDialog
   Caption = 'VisLogin'
-  ClientHeight = 108
-  ClientWidth = 252
-  OnCreate = FormCreate
+  ClientHeight = 119
+  ClientWidth = 253
+  OnShow = FormShow
+  Position = poMainFormCenter
   LCLVersion = '1.8.4.0'
   object EdUsername: TEdit
     Left = 98
     Height = 21
-    Top = 8
+    Top = 18
     Width = 136
+    AutoSelect = False
     TabOrder = 0
   end
   object EdPassword: TEdit
     Left = 98
     Height = 21
-    Top = 37
+    Top = 45
     Width = 136
     EchoMode = emPassword
     PasswordChar = '*'
     TabOrder = 1
   end
   object BitBtn1: TBitBtn
-    Left = 75
+    Left = 80
     Height = 30
-    Top = 69
+    Top = 80
     Width = 75
     Default = True
     DefaultCaption = True
@@ -37,9 +39,9 @@ object VisLogin: TVisLogin
     TabOrder = 2
   end
   object BitBtn2: TBitBtn
-    Left = 159
+    Left = 164
     Height = 30
-    Top = 69
+    Top = 80
     Width = 75
     Cancel = True
     DefaultCaption = True
@@ -50,7 +52,7 @@ object VisLogin: TVisLogin
   object StaticText1: TStaticText
     Left = 16
     Height = 23
-    Top = 8
+    Top = 16
     Width = 73
     Caption = 'Login :'
     TabOrder = 4
@@ -58,7 +60,7 @@ object VisLogin: TVisLogin
   object StaticText2: TStaticText
     Left = 16
     Height = 23
-    Top = 37
+    Top = 45
     Width = 73
     Caption = 'Password : '
     TabOrder = 5

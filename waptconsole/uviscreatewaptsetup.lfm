@@ -1,12 +1,12 @@
 object VisCreateWaptSetup: TVisCreateWaptSetup
   Left = 554
-  Height = 752
+  Height = 712
   Top = 103
   Width = 573
   AutoSize = True
   BorderStyle = bsDialog
   Caption = 'Create WAPT agent'
-  ClientHeight = 752
+  ClientHeight = 712
   ClientWidth = 573
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
@@ -18,14 +18,14 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
   LCLVersion = '1.8.4.0'
   object PanClient: TPanel
     Left = 4
-    Height = 461
+    Height = 460
     Top = 4
     Width = 565
     Align = alClient
     AutoSize = True
     BorderSpacing.Around = 4
     BevelOuter = bvNone
-    ClientHeight = 461
+    ClientHeight = 460
     ClientWidth = 565
     Constraints.MinHeight = 460
     Constraints.MinWidth = 560
@@ -62,7 +62,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       Left = 255
       Height = 21
       Hint = 'E.g. : https://wapt.mydomain.lan/wapt If empty, use dnsdomain setting'
-      Top = 244
+      Top = 241
       Width = 225
       AutoSize = False
       TabOrder = 3
@@ -71,7 +71,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       Left = 0
       Height = 13
       Hint = 'Your WAPT repository address (http://wapt/wapt).'
-      Top = 250
+      Top = 247
       Width = 154
       Alignment = taRightJustify
       Caption = 'Main WAPT repository address :'
@@ -84,7 +84,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       Left = 255
       Height = 21
       Hint = 'E.g. : Tranquil IT Systems.'
-      Top = 389
+      Top = 380
       Width = 305
       Anchors = [akTop, akLeft, akRight]
       TabOrder = 11
@@ -93,7 +93,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       Left = 0
       Height = 13
       Hint = 'Your company name.'
-      Top = 392
+      Top = 383
       Width = 68
       Alignment = taRightJustify
       Caption = 'Organization :'
@@ -134,7 +134,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       Left = 255
       Height = 21
       Hint = 'E.g. : https://wapt.mydomain.lan'
-      Top = 272
+      Top = 266
       Width = 226
       TabOrder = 5
     end
@@ -142,7 +142,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       Left = 0
       Height = 13
       Hint = 'Your WAPT server address (http://wapt:8080).'
-      Top = 277
+      Top = 271
       Width = 111
       Alignment = taRightJustify
       Caption = 'WAPT server address :'
@@ -151,7 +151,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
     object Label6: TLabel
       Left = 0
       Height = 13
-      Top = 322
+      Top = 316
       Width = 211
       Alignment = taRightJustify
       Caption = 'Path to https Servers CA certificates bundle'
@@ -164,7 +164,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       Left = 255
       Height = 21
       Hint = 'E.g. : c:\wapt\ssl\server\tranquilit.crt  Path to trusted certificates bundle for https connections'
-      Top = 315
+      Top = 309
       Width = 305
       Filter = 'CA Certificates bundles PEM|*.crt;*.pem|Tous les fichiers|*.*'
       FilterIndex = 0
@@ -181,7 +181,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       AnchorSideLeft.Control = fnPublicCert
       Left = 255
       Height = 17
-      Top = 296
+      Top = 290
       Width = 318
       AutoSize = False
       Caption = 'Verify https server certificate'
@@ -194,7 +194,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       Left = 255
       Height = 17
       Hint = 'When first registering to waptserver, host will try to authenticate using their kerberos account'
-      Top = 343
+      Top = 337
       Width = 186
       Caption = 'Use Kerberos for initial registration'
       TabOrder = 9
@@ -204,7 +204,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       Left = 255
       Height = 17
       Hint = 'Check that certificate dates are valid and  issuer is a know one.'
-      Top = 363
+      Top = 357
       Width = 190
       Caption = 'Check packages certificates validity'
       TabOrder = 10
@@ -215,7 +215,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       Left = 255
       Height = 17
       Hint = 'Check that certificate dates are valid and  issuer is a know one.'
-      Top = 416
+      Top = 410
       Width = 240
       Caption = 'Sign waptupgrade with both sha256 and sha1'
       TabOrder = 12
@@ -331,7 +331,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       Left = 480
       Height = 17
       Hint = 'Overwrite the URL when installing on the client even if there is a diffrent current setting in wapt-get.ini'
-      Top = 246
+      Top = 242
       Width = 80
       Anchors = [akTop, akLeft, akRight]
       Caption = 'Overwrite'
@@ -347,7 +347,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       Left = 481
       Height = 17
       Hint = 'Overwrite the URL when installing on the client even if there is a diffrent current setting in wapt-get.ini'
-      Top = 273
+      Top = 269
       Width = 79
       Anchors = [akTop, akLeft, akRight]
       Caption = 'Overwrite'
@@ -360,7 +360,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       Left = 255
       Height = 17
       Hint = 'Ask Wapt agent to use the computer Fully Qualified Domain Name (name.domaine.lan) instead of BIOD unique ID.'#13#10'This can be useful if Wapt is not used as asset management, but only as a deployment solutioN.'
-      Top = 440
+      Top = 434
       Width = 164
       Caption = 'Use Computer FQDN for UUID'
       TabOrder = 13
@@ -368,21 +368,22 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
   end
   object PanAgentEnterprise: TPanel
     Left = 0
-    Height = 248
-    Top = 469
+    Height = 216
+    Top = 461
     Width = 573
     Align = alBottom
+    AutoSize = True
     BevelOuter = bvNone
-    ClientHeight = 248
+    ClientHeight = 216
     ClientWidth = 573
     TabOrder = 1
     object GBWUA: TGroupBox
-      Left = 5
-      Height = 144
-      Top = 96
+      Left = 0
+      Height = 128
+      Top = 88
       Width = 567
       Caption = 'WAPTWUA Windows Updates '
-      ClientHeight = 126
+      ClientHeight = 110
       ClientWidth = 563
       TabOrder = 2
       object CBWUADefaultAllow: TCheckBox
@@ -396,14 +397,14 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       object EdWUAInstallDelay: TEdit
         Left = 208
         Height = 21
-        Top = 64
+        Top = 56
         Width = 80
         TabOrder = 1
       end
       object LabWUAInstallDelay: TLabel
         Left = 8
-        Height = 32
-        Top = 64
+        Height = 30
+        Top = 56
         Width = 192
         AutoSize = False
         Caption = 'Minimum delay before installation (days after publish date)'
@@ -423,7 +424,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
         Left = 8
         Height = 17
         Hint = 'If some Windows updates are pending, waptexit will append a task to install all pending Windows updates'
-        Top = 96
+        Top = 88
         Width = 200
         Caption = 'Install Pending Windows at Shutdown'
         TabOrder = 2
@@ -446,39 +447,39 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       end
     end
     object Label8: TLabel
-      Left = 8
+      Left = 3
       Height = 13
       Hint = 'Comma separated list of profile packages to add for hosts. Host will belongs to these additional profiles'
-      Top = 11
+      Top = 3
       Width = 106
       Alignment = taRightJustify
       Caption = 'Append host''s profiles'
       ParentColor = False
     end
     object Label9: TLabel
-      Left = 8
+      Left = 3
       Height = 13
       Hint = 'Comma separated list of profile packages to add for hosts. Host will belongs to these additional profiles'
-      Top = 40
+      Top = 32
       Width = 216
       Caption = 'Automatic periodic packages audit scheduling'
       ParentColor = False
     end
     object edAppendHostProfiles: TEdit
       AnchorSideRight.Side = asrBottom
-      Left = 256
+      Left = 251
       Height = 21
       Hint = 'E.g. : socle,accounting'
-      Top = 8
-      Width = 309
+      Top = 0
+      Width = 314
       Anchors = [akTop, akLeft, akRight]
       TabOrder = 0
     end
     object EdAuditScheduling: TComboBox
-      Left = 256
+      Left = 251
       Height = 21
       Hint = 'eg 2h or 120m or 1d'
-      Top = 36
+      Top = 28
       Width = 100
       ItemHeight = 13
       Items.Strings = (
@@ -493,9 +494,9 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       AnchorSideLeft.Control = Label9
       AnchorSideTop.Control = EdAuditScheduling
       AnchorSideTop.Side = asrBottom
-      Left = 8
+      Left = 3
       Height = 17
-      Top = 67
+      Top = 59
       Width = 202
       BorderSpacing.Top = 10
       Caption = 'Manage Windows Updates with WAPT'
@@ -507,9 +508,9 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       AnchorSideLeft.Side = asrBottom
       AnchorSideTop.Control = CBWUADisable
       AnchorSideTop.Side = asrCenter
-      Left = 355
+      Left = 350
       Height = 17
-      Top = 67
+      Top = 59
       Width = 108
       BorderSpacing.Left = 16
       Caption = 'Dont'' set anything'
@@ -523,9 +524,9 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       AnchorSideLeft.Side = asrBottom
       AnchorSideTop.Control = CBWUAEnabled
       AnchorSideTop.Side = asrCenter
-      Left = 226
+      Left = 221
       Height = 17
-      Top = 67
+      Top = 59
       Width = 113
       BorderSpacing.Left = 16
       Caption = 'Disable WAPT WUA'
@@ -536,7 +537,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
   object PanBottom: TPanel
     Left = 0
     Height = 35
-    Top = 717
+    Top = 677
     Width = 573
     Align = alBottom
     AutoSize = True
@@ -583,7 +584,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
   end
   object ActionList1: TActionList
     left = 16
-    top = 389
+    top = 386
     object ActGetServerCertificate: TAction
       Caption = 'Get Server https Certificate'
       OnExecute = ActGetServerCertificateExecute
@@ -591,7 +592,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
   end
   object PopupMenu1: TPopupMenu
     left = 96
-    top = 389
+    top = 383
     object MenuItem1: TMenuItem
       Action = ActGetServerCertificate
     end

@@ -19,7 +19,7 @@ type
     EdPassword: TEdit;
     StaticText1: TStaticText;
     StaticText2: TStaticText;
-    procedure FormCreate(Sender: TObject);
+    procedure FormShow(Sender: TObject);
   private
 
   public
@@ -29,16 +29,16 @@ type
 var
   VisLogin: TVisLogin;
 
-
 implementation
 
 {$R *.lfm}
 
 { TVisLogin }
 
-procedure TVisLogin.FormCreate(Sender: TObject);
+procedure TVisLogin.FormShow(Sender: TObject);
 begin
   MakeFullyVisible();
+  EdPassword.SetFocus;
 end;
 
 end.

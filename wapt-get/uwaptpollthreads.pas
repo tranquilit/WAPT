@@ -5,7 +5,7 @@ unit uWAPTPollThreads;
 interface
 
 uses
-  Classes, SysUtils, SuperObject,Forms,IdAntiFreeze;
+  Classes, SysUtils, SuperObject,Forms,IdAntiFreeze,waptcommon;
 
 type
 
@@ -120,11 +120,29 @@ type
     procedure Execute; override;
   end;
 
+  { TTriggerWaptserviceAction }
+
+  TTriggerWaptserviceAction = Class(TThread)
+  private
+    FOnNotifyEvent: TNotifyEvent;
+    procedure NotifyListener; Virtual;
+    procedure SetOnNotifyEvent(AValue: TNotifyEvent);
+  public
+    Action:String;
+    Res : ISuperObject;
+    Login : String;
+    Password : String;
+    OnLocalServiceAuth : THTTPSendAuthorization;
+    constructor Create(aAction: String;aNotifyEvent: TNotifyEvent;aLogin : String; aPassword : String; aOnLocalServiceAuth : THTTPSendAuthorization);
+    procedure Execute; override;
+    property OnNotifyEvent: TNotifyEvent read FOnNotifyEvent write SetOnNotifyEvent;
+  end;
+
 
 implementation
 
 uses LCLIntf,tiscommon,
-    waptcommon,waptwinutils,soutils,tisstrings,IdException,IdTCPConnection, IdStack,
+    waptwinutils,soutils,tisstrings,IdException,IdTCPConnection, IdStack,
     IdExceptionCore,uWaptRes;
 
 { TRunWaptService }
@@ -497,6 +515,43 @@ begin
         break;
       end;
   end;
+end;
+
+{ TTriggerWaptserviceAction }
+
+procedure TTriggerWaptserviceAction.NotifyListener;
+begin
+  if Assigned(FOnNotifyEvent) then
+    FOnNotifyEvent(Self);
+end;
+
+procedure TTriggerWaptserviceAction.SetOnNotifyEvent(AValue: TNotifyEvent);
+begin
+  FOnNotifyEvent:=AValue;
+end;
+
+constructor TTriggerWaptserviceAction.Create(aAction: String;aNotifyEvent: TNotifyEvent;aLogin : String; aPassword : String; aOnLocalServiceAuth : THTTPSendAuthorization);
+begin
+  inherited Create(False);
+  Action := aAction;
+  OnNotifyEvent:=aNotifyEvent;
+  Login := aLogin;
+  Password := aPassword;
+  OnLocalServiceAuth:=aOnLocalServiceAuth;
+  FreeOnTerminate:=True;
+end;
+
+procedure TTriggerWaptserviceAction.Execute;
+begin
+  try
+    Res:=WAPTLocalJsonGet(Action,Login,Password,-1,OnLocalServiceAuth,2);
+  except
+    on E:EIdException do
+    begin
+      Res:=Nil;
+    end;
+  end;
+  Synchronize(@NotifyListener);
 end;
 
 end.

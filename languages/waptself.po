@@ -1,6 +1,10 @@
 msgid ""
 msgstr "Content-Type: text/plain; charset=UTF-8"
 
+#: tfrmpackage.action1.caption
+msgid "ActCancelTask"
+msgstr ""
+
 #: tfrmpackage.btncancel.caption
 msgid "Cancel"
 msgstr ""
@@ -11,6 +15,10 @@ msgstr ""
 
 #: tfrmpackage.btnremove.caption
 msgid "Remove"
+msgstr ""
+
+#: tfrmpackage.labdate.caption
+msgid "19/12/2024"
 msgstr ""
 
 #: tfrmpackage.labdescription.caption
@@ -36,11 +44,6 @@ msgstr ""
 
 #: tfrmpackage.labversion.caption
 msgid "1.5.2-0"
-msgstr ""
-
-#: tfrmpackage.statictext1.caption
-msgctxt "tfrmpackage.statictext1.caption"
-msgid "StaticText1"
 msgstr ""
 
 #: tfrmpackage.textwaitinstall.caption
@@ -79,14 +82,6 @@ msgstr ""
 msgid "ActUpdatePackagesList"
 msgstr ""
 
-#: tviswaptself.bclabel1.caption
-msgid "Available packages"
-msgstr "Paquets disponibles"
-
-#: tviswaptself.btncanceltasks.caption
-msgid "Cancel task(s)"
-msgstr ""
-
 #: tviswaptself.btnshowall.caption
 msgid "Show all / clear filtrer"
 msgstr ""
@@ -122,6 +117,12 @@ msgstr "Self service logiciels WAPT"
 #: tviswaptself.edsearch.texthint
 msgid "Search..."
 msgstr "Rechercher..."
+
+#: tviswaptself.labpackagelist.caption
+#, fuzzy
+msgctxt "tviswaptself.labpackagelist.caption"
+msgid "Available packages"
+msgstr "Paquets disponibles"
 
 #: tviswaptself.panel1.caption
 msgid "Panel1"
@@ -219,13 +220,8 @@ msgstr ""
 msgid "notify_server_on_start"
 msgstr ""
 
-#: tviswaptself.statictext1.caption
-msgctxt "tviswaptself.statictext1.caption"
-msgid "StaticText1"
-msgstr ""
-
-#: tviswaptself.statictext2.caption
-msgid "StaticText2"
+#: ufrmpackage.rserrortriggeringtask
+msgid "Error triggering action: %s"
 msgstr ""
 
 #: ufrmpackage.rsimpacted_processes
@@ -235,11 +231,35 @@ msgid ""
 "Impacted processes : %s\n"
 msgstr ""
 
+#: uviswaptself.rsavailablepackages
+#, fuzzy
+msgctxt "uviswaptself.rsavailablepackages"
+msgid "Available packages"
+msgstr "Paquets disponibles"
+
+#: uviswaptself.rsforce
+msgid ""
+"An operation has failed do you want to force the installation/removal?\n"
+"Operation : %s\n"
+msgstr ""
+
+#: uviswaptself.rsinstalledpackages
+msgid "Installed packages"
+msgstr ""
+
 #: uviswaptself.rslogin
 msgid "Login"
 msgstr ""
 
+#: uviswaptself.rsnotinstalledpackages
+msgid "Not installed packages"
+msgstr ""
+
 #: uviswaptself.rspassword
 msgid "Password"
+msgstr ""
+
+#: uviswaptself.rsupgradablepackages
+msgid "Available updates for installed packages"
 msgstr ""
 

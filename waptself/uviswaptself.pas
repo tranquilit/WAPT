@@ -9,7 +9,7 @@ uses
   EditBtn, StdCtrls, Buttons, CheckLst, ActnList, uvislogin, BCListBox,
   BCMaterialDesignButton, BCLabel, IdAuthentication, superobject,
   waptcommon, httpsend, sogrid, uWAPTPollThreads, VirtualTrees, ImgList,
-  ComCtrls;
+  ComCtrls, uFrmPackage;
 
 type
 
@@ -22,8 +22,8 @@ type
     ActUnselectAllKeywords: TAction;
     ActSearchPackages: TAction;
     ActionList1: TActionList;
-    BCLabel1: TBCLabel;
     BtnCancelTasks: TBitBtn;
+    LabPackageList: TBCLabel;
     BtnUpdateList: TButton;
     BtnShowInstalled: TButton;
     BtnShowNotInstalled: TButton;
@@ -40,6 +40,8 @@ type
     PanCategories: TPanel;
     Panel2: TPanel;
     Panel3: TPanel;
+    Panel4: TPanel;
+    Panel5: TPanel;
     Panel7: TPanel;
     ProgressBarTaskRunning: TProgressBar;
     ScrollBoxPackages: TScrollBox;
@@ -48,6 +50,7 @@ type
     StaticText1: TStaticText;
     StaticText2: TStaticText;
     TimerSearch: TTimer;
+
     procedure ActCancelTaskExecute(Sender: TObject);
     procedure ActCancelTaskUpdate(Sender: TObject);
     procedure ActSearchPackagesExecute(Sender: TObject);
@@ -73,6 +76,7 @@ type
     procedure FormClose(Sender: TObject);
   private
     function GetAllPackages: ISuperObject;
+    procedure OnUpgradeTriggeredAllPackages(Sender : TObject);
   private
     ShowOnlyUpgradable: Boolean;
     ShowOnlyInstalled: Boolean;
@@ -82,21 +86,26 @@ type
     LastTaskIDOnLaunch:integer;
 
     LstIcons: TStringList;
+    LstTask: TStringList;
     FAllPackages: ISuperObject;
 
     login: String;
     password: String;
 
+    //Authentification
     procedure OnLocalServiceAuth(Sender: THttpSend; var ShouldRetry: Boolean;RetryCount:integer);
+
+    //Polling thread
+    procedure OnCheckTasksThreadNotify(Sender: TObject);
+    procedure OnCheckEventsThreadNotify(Sender: TObject);
+    procedure ChangeProgressionFrmPackageOnEvent(LastEvent: ISuperObject);
+
+    //Functions for generate frames
     function IsValidPackage(package : ISuperObject):Boolean;
     function IsValidKeyword(package : ISuperObject):Boolean;
     function IsValidFilter(package : ISuperObject):Boolean;
-
-    procedure OnCheckTasksThreadNotify(Sender: TObject);
-    procedure ChangeProgressionFrmPackageOnEvent(LastEvent: ISuperObject);
     function SelectedAreOnlyPending: Boolean;
-    procedure OnCheckEventsThreadNotify(Sender: TObject);
-    procedure UpdatePackage(NamePackage:String);
+
     property AllPackages:ISuperObject read GetAllPackages write FAllPackages;
 
   public
@@ -110,23 +119,24 @@ var
 resourcestring
  rsLogin = 'Login';
  rsPassword = 'Password';
+ rsForce = 'An operation has failed do you want to force the installation/removal?'+chr(13)+'Operation : %s';
+ rsAvailablePackages = 'Available packages';
+ rsInstalledPackages = 'Installed packages';
+ rsNotInstalledPackages = 'Not installed packages';
+ rsUpgradablePackages = 'Available updates for installed packages';
 
 implementation
-uses uFrmPackage,LCLIntf, LCLType,waptwinutils,soutils,strutils;
+uses LCLIntf, LCLType, waptwinutils, soutils, strutils;
 {$R *.lfm}
 
 { TVisWaptSelf }
-
-procedure TVisWaptSelf.EdSearchButtonClick(Sender: TObject);
-begin
-  ActSearchPackages.Execute;
-end;
 
 procedure TVisWaptSelf.ActSearchPackagesExecute(Sender: TObject);
 var
   package:ISuperObject;
   AFrmPackage:TFrmPackage;
   idx,IconIdx,maxidx:Integer;
+  strtmp:String;
   begin
   try
     TimerSearch.Enabled:=False;
@@ -157,7 +167,8 @@ var
           AFrmPackage.LabMaintainer.Caption:='by '+UTF8Encode(package.S['maintainer']);
           AFrmPackage.AdjustFont(AFrmPackage.LabMaintainer);
           AFrmPackage.Package:=package;
-          AFrmPackage.StaticText1.Caption:=UTF8Encode(package.S['signature_date']);
+          strtmp:=UTF8Encode(package.S['signature_date']);
+          AFrmPackage.LabDate.Caption:=Copy(strtmp,7,2)+'/'+Copy(strtmp,5,2)+'/'+Copy(strtmp,1,4);
 
           IconIdx := LstIcons.IndexOf(UTF8Encode(package.S['package']+'.png'));
           if IconIdx<0 then
@@ -211,16 +222,6 @@ var
   end;
 end;
 
-function TVisWaptSelf.SelectedAreOnlyPending:Boolean;
-var
-  task: ISuperObject;
-begin
-  Result:=True;
-  for task in SOGridTasks.SelectedRows do
-    If task.S['install_status'] <> 'PENDING' then
-      Exit(False);
-end;
-
 procedure TVisWaptSelf.ActCancelTaskUpdate(Sender: TObject);
 begin
   ActCancelTask.Enabled := (SOGridTasks.SelectedCount>0 ) and (SelectedAreOnlyPending);
@@ -234,31 +235,12 @@ var
 begin
   for Task in SOGridTasks.SelectedRows do
   begin
-    WAPTLocalJsonGet(Format('cancel_task.json?id=%d',[Task.I['id']]),login,password,-1,@OnLocalServiceAuth,2);
     for i:=0 to FlowPackages.ControlCount-1 do
     begin
       AFrmPackage:=FlowPackages.Controls[i] as TFrmPackage;
-      if Assigned(AFrmPackage.Task) and (AFrmPackage.Task.I['id']=Task.I['id']) then
+      if (AFrmPackage.Task<>0) and (AFrmPackage.Task=Task.I['id']) then
       begin
-        if (AFrmPackage.ActionPackage='install') then
-        begin
-          AFrmPackage.BtnInstallUpgrade.Caption:='Install';
-          AFrmPackage.BtnInstallUpgrade.NormalColor:=clGreen;
-          AFrmPackage.BtnInstallUpgrade.Enabled:=true;
-          AFrmPackage.ActionPackage:='install';
-        end
-        else
-        begin
-          AFrmPackage.BtnRemove.NormalColor:=clRed;
-          AFrmPackage.BtnRemove.Enabled:=true;
-          AFrmPackage.ActionPackage:='remove';
-          AFrmPackage.BtnInstallUpgrade.Caption:='Installed';
-        end;
-        AFrmPackage.FXProgressBarInstall.Value:=0;
-        AFrmPackage.FXProgressBarInstall.Hide;
-        AFrmPackage.LabelProgressionInstall.Caption:='0%';
-        AFrmPackage.LabelProgressionInstall.Hide;
-        AFrmPackage.TextWaitInstall.Hide;
+        AFrmPackage.CancelTask();
         Exit();
       end;
     end;
@@ -277,6 +259,7 @@ begin
   BtnShowAll.Enabled:=false;
   BtnShowNotInstalled.Enabled:=true;
   BtnShowUpgradable.Enabled:=true;
+  LabPackageList.Caption := rsAvailablePackages;
 end;
 
 procedure TVisWaptSelf.ActShowInstalled(Sender: TObject);
@@ -289,6 +272,7 @@ begin
    BtnShowNotInstalled.Enabled:=true;
    BtnShowUpgradable.Enabled:=true;
    ActSearchPackages.Execute;
+   LabPackageList.Caption := rsInstalledPackages;
 end;
 
 procedure TVisWaptSelf.ActShowNotInstalled(Sender: TObject);
@@ -301,6 +285,7 @@ begin
    BtnShowAll.Enabled:=true;
    BtnShowNotInstalled.Enabled:=false;
    BtnShowUpgradable.Enabled:=true;
+   LabPackageList.Caption := rsNotInstalledPackages;
 end;
 
 procedure TVisWaptSelf.ActShowUpgradable(Sender: TObject);
@@ -313,6 +298,7 @@ begin
   BtnShowAll.Enabled:=true;
   BtnShowNotInstalled.Enabled:=true;
   BtnShowUpgradable.Enabled:=false;
+  LabPackageList.Caption := rsUpgradablePackages;
 end;
 
 procedure TVisWaptSelf.ActSortByDate(Sender: TObject);
@@ -349,68 +335,17 @@ begin
   TimerSearch.Enabled:=True;
 end;
 
+procedure TVisWaptSelf.EdSearchButtonClick(Sender: TObject);
+begin
+  ActSearchPackages.Execute;
+end;
+
 procedure TVisWaptSelf.EdSearchKeyPress(Sender: TObject; var Key: char);
 begin
   if Key = #13 then
   begin
     EdSearch.SelectAll;
     ActSearchPackages.Execute;
-  end;
-end;
-
-procedure TVisWaptSelf.FormCreate(Sender: TObject);
-var
-  i:integer;
-  g:TPicture;
-begin
-  ReadWaptConfig();
-  //TODO : relative path
-  //TODO : get icons pack from server on demand
-  ShowOnlyInstalled:=false;
-  ShowOnlyNotInstalled:=false;
-  ShowOnlyUpgradable:=false;
-  SortByDateAsc:=false;
-
-  login:=waptwinutils.AGetUserName;
-  password:='';
-
-  LstIcons := FindAllFiles(WaptBaseDir+'\cache\icons','*.png',False);
-  LstIcons.OwnsObjects:=True;
-  for i := 0 to LstIcons.Count-1 do
-    try
-      g := TPicture.Create;
-      g.LoadFromFile(LstIcons[i]);
-      LstIcons.Objects[i] := g;
-      LstIcons[i] := ExtractFileName(LstIcons[i]);
-    except
-    end;
-end;
-
-procedure TVisWaptSelf.FormShow(Sender: TObject);
-var
-  keyword,keywords: ISuperObject;
-begin
-  try
-    Screen.Cursor := crHourGlass;
-    keywords:=WAPTLocalJsonGet('keywords.json?latest=1',login,password,-1,@OnLocalServiceAuth,2);
-    CBKeywords.Clear;
-    for keyword in keywords do
-      CBKeywords.Items.Add(UTF8Encode(keyword.AsString));
-
-    // Check running / pending tasks
-    CheckTasksThread := TCheckAllTasksThread.Create(@OnCheckTasksThreadNotify);
-    CheckEventsThread := TCheckEventsThread.Create(@OnCheckEventsThreadNotify);
-    CheckTasksThread.Start;
-    CheckEventsThread.Start;
-    LastTaskIDOnLaunch:=-1;
-
-    TimerSearch.Enabled:=False;
-    TimerSearch.Enabled:=True;
-
-    MakeFullyVisible();
-
-  finally
-    Screen.Cursor := crDefault;
   end;
 end;
 
@@ -446,6 +381,61 @@ begin
   ActSearchPackages.Execute;
 end;
 
+procedure TVisWaptSelf.FormCreate(Sender: TObject);
+var
+  i:integer;
+  g:TPicture;
+begin
+  ReadWaptConfig();
+  //TODO : relative path
+  //TODO : get icons pack from server on demand
+  ShowOnlyInstalled:=false;
+  ShowOnlyNotInstalled:=false;
+  ShowOnlyUpgradable:=false;
+  SortByDateAsc:=false;
+
+  login:=waptwinutils.AGetUserName;
+  password:='';
+
+  LstIcons := FindAllFiles(WaptBaseDir+'\cache\icons','*.png',False);
+  LstIcons.OwnsObjects:=True;
+  for i := 0 to LstIcons.Count-1 do
+    try
+      g := TPicture.Create;
+      g.LoadFromFile(LstIcons[i]);
+      LstIcons.Objects[i] := g;
+      LstIcons[i] := ExtractFileName(LstIcons[i]);
+    except
+    end;
+end;
+
+procedure TVisWaptSelf.FormShow(Sender: TObject);
+var
+  keyword,keywords: ISuperObject;
+begin
+  try
+    MakeFullyVisible;
+    Screen.Cursor := crHourGlass;
+    keywords:=WAPTLocalJsonGet('keywords.json?latest=1',login,password,-1,@OnLocalServiceAuth,2);
+    CBKeywords.Clear;
+    for keyword in keywords do
+      CBKeywords.Items.Add(UTF8Encode(keyword.AsString));
+
+    // Check running / pending tasks
+    CheckTasksThread := TCheckAllTasksThread.Create(@OnCheckTasksThreadNotify);
+    CheckEventsThread := TCheckEventsThread.Create(@OnCheckEventsThreadNotify);
+    CheckTasksThread.Start;
+    CheckEventsThread.Start;
+    LastTaskIDOnLaunch:=-1;
+
+    TimerSearch.Enabled:=False;
+    TimerSearch.Enabled:=True;
+
+  finally
+    Screen.Cursor := crDefault;
+  end;
+end;
+
 procedure TVisWaptSelf.FormDestroy(Sender: TObject);
 begin
   FreeAndNil(CheckTasksThread);
@@ -457,28 +447,6 @@ procedure TVisWaptSelf.FormClose(Sender: TObject);
 begin
   CheckTasksThread.Terminate;
   CheckEventsThread.Terminate;
-end;
-
-function TVisWaptSelf.GetAllPackages: ISuperObject;
-var
-  Package: ISuperObject;
-  tmp:String;
-begin
-  if FAllPackages = Nil then
-    FAllPackages := WAPTLocalJsonGet('packages.json?latest=1',login,password,-1,@OnLocalServiceAuth,2);
-  for Package in FAllPackages do
-  begin
-    if pos('T',Package.S['signature_date'])<>0 then
-    begin
-       tmp:=UTF8Encode(Package.S['signature_date']);
-       tmp:=copy(tmp,0,19);
-       tmp:=ReplaceStr(tmp,'-','');
-       tmp:=ReplaceStr(tmp,':','');
-       tmp:=ReplaceStr(tmp,'T','-');
-       Package.S['signature_date']:=UTF8Decode(tmp);
-    end;
-  end;
-  Result := FAllPackages;
 end;
 
 procedure TVisWaptSelf.OnLocalServiceAuth(Sender: THttpSend; var ShouldRetry: Boolean;RetryCount:integer);
@@ -499,26 +467,6 @@ begin
   finally
     LoginDlg.Free;
   end;
-end;
-
-function TVisWaptSelf.IsValidPackage(package: ISuperObject): Boolean;
-begin
-  Result:=(pos(lowercase(EdSearch.Text),lowercase(Package.S['package']))>0) or (EdSearch.Text='');
-end;
-
-function TVisWaptSelf.IsValidKeyword(package: ISuperObject): Boolean;
-var
-  i:integer;
-begin
-  Result:=true;
-  for i:=0 to CBKeywords.Items.Count-1 do
-    if (CBKeywords.Checked[i]) and (pos(lowercase(CBKeywords.Items[i]),lowercase(package.S['keywords']))=0) then
-      exit(false);
-end;
-
-function TVisWaptSelf.IsValidFilter(package: ISuperObject): Boolean;
-begin
-  Result:=((ShowOnlyInstalled and (package.S['install_status'] = 'OK')) or (ShowOnlyNotInstalled and not(package.S['install_status'] = 'OK')) or (ShowOnlyUpgradable and (package.S['install_status'] = 'OK') and not(package.S['install_version'] = package.S['version'])) or (ShowOnlyNotInstalled=ShowOnlyUpgradable=ShowOnlyInstalled=false))
 end;
 
 procedure TVisWaptSelf.OnCheckTasksThreadNotify(Sender: TObject);
@@ -570,30 +518,66 @@ begin
   for i:=0 to FlowPackages.ControlCount-1 do
   begin
     AFrmPackage:=FlowPackages.Controls[i] as TFrmPackage;
-    if Assigned(AFrmPackage.Task) and (AFrmPackage.Task.I['id']=LastEvent.I['data.id']) then
+    if (AFrmPackage.Task<>0) and (AFrmPackage.Task=LastEvent.I['data.id']) then
     begin
-      if (LastEvent.S['event_type']='TASK_START') then
-      begin
-        AFrmPackage.BtnCancel.Hide;
-        AFrmPackage.FXProgressBarInstall.Show;
-        AFrmPackage.LabelProgressionInstall.Show;
-        AFrmPackage.TextWaitInstall.Hide;
-      end
-      else if (LastEvent.S['event_type']='TASK_STATUS') then
+      case LastEvent.S['event_type'] of
+        'TASK_START':
+        begin
+          AFrmPackage.BtnCancel.Hide;
+          AFrmPackage.FXProgressBarInstall.Show;
+          AFrmPackage.LabelProgressionInstall.Show;
+          AFrmPackage.TextWaitInstall.Hide;
+        end;
+        'TASK_STATUS':
         begin
           AFrmPackage.FXProgressBarInstall.Value:=LastEvent.I['data.progress'];
           AFrmPackage.LabelProgressionInstall.Caption:=IntToStr(LastEvent.I['data.progress'])+'%';
-        end
-        else
+        end;
+        'TASK_FINISH':
         begin
           AFrmPackage.FXProgressBarInstall.Value:=LastEvent.I['data.progress'];
           AFrmPackage.LabelProgressionInstall.Caption:=IntToStr(LastEvent.I['data.progress'])+'%';
-          UpdatePackage(UTF8Encode(LastEvent.O['data'].O['packagenames'].S['0']));//UPDATE PACKAGE ISUPEROBJECT DELETE OLD ENTRY ADD NEW
           if (ShowOnlyInstalled or ShowOnlyNotInstalled or ShowOnlyUpgradable) then
-          AFrmPackage.Autoremove:=true;
+            AFrmPackage.Autoremove:=true;
+          AFrmPackage.Task:=0;
           AFrmPackage.TimerInstallRemoveFinished.Enabled:=true;
         end;
-    Exit();
+        'TASK_ERROR':
+        begin
+          if (MessageDlg(Format(rsForce,[LastEvent.O['data'].S['description']]),mtWarning,mbYesNo,0)= mrYes) then
+          begin
+            if (AFrmPackage.ActionPackage='remove') then
+              AFrmPackage.LaunchActionPackage(AFrmPackage.ActionPackage,AFrmPackage.Package,true)
+            else
+              AFrmPackage.LaunchActionPackage(AFrmPackage.ActionPackage,AFrmPackage.Package,true);
+          end
+          else
+          begin
+            if (AFrmPackage.ActionPackage='install') then
+            begin
+              AFrmPackage.BtnInstallUpgrade.Caption:='Install';
+              AFrmPackage.BtnInstallUpgrade.NormalColor:=clGreen;
+              AFrmPackage.BtnInstallUpgrade.Enabled:=true;
+              AFrmPackage.ActionPackage:='install';
+            end
+            else
+            begin
+              AFrmPackage.BtnRemove.NormalColor:=clRed;
+              AFrmPackage.BtnRemove.Enabled:=true;
+              AFrmPackage.ActionPackage:='remove';
+              AFrmPackage.BtnInstallUpgrade.Caption:='Installed';
+            end;
+            AFrmPackage.FXProgressBarInstall.Value:=0;
+            AFrmPackage.FXProgressBarInstall.Hide;
+            AFrmPackage.LabelProgressionInstall.Caption:='0%';
+            AFrmPackage.LabelProgressionInstall.Hide;
+            AFrmPackage.TextWaitInstall.Hide;
+            AFrmPackage.BtnCancel.Hide;
+            AFrmPackage.Task:=0;
+          end;
+        end;
+      end;
+      Exit();
     end;
   end;
 end;
@@ -611,14 +595,19 @@ begin
       begin
         case LastEvent.S['event_type'] of
           'PRINT': StaticText2.Caption:=UTF8Encode(lastEvent.S['data']);
-          'TASK_START','TASK_STATUS','TASK_FINISH':
+          'TASK_START','TASK_STATUS','TASK_FINISH','TASK_ERROR':
           begin
             //StaticText1.Caption:= UTF8Encode(running.S['description']+': '+lastEvent.S['data.runstatus']);
             ChangeProgressionFrmPackageOnEvent(LastEvent);
             StaticText1.Caption:= UTF8Encode(LastEvent.S['data.runstatus']);
             ProgressBarTaskRunning.Position:=Lastevent.I['data.progress'];
+            if LastEvent.S['event_type']='TASK_FINISH' then
+              TTriggerWaptserviceAction.Create('packages.json?latest=1',@OnUpgradeTriggeredAllPackages,login,password,@OnLocalServiceAuth);
           end;
           'STATUS': //GridPendingUpgrades.Data := GetPackageStatus(lastEvent['data']);
+          begin
+
+          end;
         end;
       end;
     end
@@ -637,24 +626,77 @@ begin
   end
 end;
 
-procedure TVisWaptSelf.UpdatePackage(NamePackage: String);
+function TVisWaptSelf.SelectedAreOnlyPending:Boolean;
 var
-  NewEntry: ISuperObject;
+  Task: ISuperObject;
+begin
+  Result:=True;
+  for Task in SOGridTasks.SelectedRows do
+    If Task.S['install_status'] <> 'PENDING' then
+      Exit(False);
+end;
+
+function TVisWaptSelf.GetAllPackages: ISuperObject;
+var
+  Package: ISuperObject;
+  tmp:String;
+begin
+  if FAllPackages = Nil then
+    FAllPackages := WAPTLocalJsonGet('packages.json?latest=1',login,password,-1,@OnLocalServiceAuth,2);
+  for Package in FAllPackages do
+  begin
+    if pos('T',Package.S['signature_date'])<>0 then
+    begin
+       tmp:=UTF8Encode(Package.S['signature_date']);
+       tmp:=copy(tmp,1,19);
+       tmp:=ReplaceStr(tmp,'-','');
+       tmp:=ReplaceStr(tmp,':','');
+       tmp:=ReplaceStr(tmp,'T','-');
+       Package.S['signature_date']:=UTF8Decode(tmp);
+    end;
+  end;
+  Result := FAllPackages;
+end;
+
+procedure TVisWaptSelf.OnUpgradeTriggeredAllPackages(Sender: TObject);
+var
+  tmp: String;
+  Package : ISuperObject;
+begin
+  FAllPackages:=(Sender as TTriggerWaptserviceAction).Res;
+  if Assigned(FAllPackages) then
+    for Package in FAllPackages do
+      begin
+        if pos('T',Package.S['signature_date'])<>0 then
+        begin
+           tmp:=UTF8Encode(Package.S['signature_date']);
+           tmp:=copy(tmp,1,19);
+           tmp:=ReplaceStr(tmp,'-','');
+           tmp:=ReplaceStr(tmp,':','');
+           tmp:=ReplaceStr(tmp,'T','-');
+           Package.S['signature_date']:=UTF8Decode(tmp);
+        end;
+      end;
+end;
+
+function TVisWaptSelf.IsValidFilter(package: ISuperObject): Boolean;
+begin
+  Result:=((ShowOnlyInstalled and (package.S['install_status'] = 'OK')) or (ShowOnlyNotInstalled and not(package.S['install_status'] = 'OK')) or (ShowOnlyUpgradable and (package.S['install_status'] = 'OK') and not(package.S['install_version'] = package.S['version'])) or (ShowOnlyNotInstalled=ShowOnlyUpgradable=ShowOnlyInstalled=false))
+end;
+
+function TVisWaptSelf.IsValidPackage(package: ISuperObject): Boolean;
+begin
+  Result:=(pos(lowercase(EdSearch.Text),lowercase(Package.S['package']))>0) or (EdSearch.Text='');
+end;
+
+function TVisWaptSelf.IsValidKeyword(package: ISuperObject): Boolean;
+var
   i:integer;
 begin
-  try
-    NewEntry:=WAPTLocalJsonGet(Format('local_package_details.json?package=%s',[NamePackage]),login,password,-1,@OnLocalServiceAuth,2);
-    StaticText1.Caption:=IntToStr(AllPackages.AsArray.Length-1);
-    for i:=0 to AllPackages.AsArray.Length-1 do
-    begin
-      if (UTF8Encode(AllPackages.AsArray[i].S['package'])=NamePackage) then
-      begin
-        AllPackages.AsArray[i]:=NewEntry.AsArray[0];
-        Exit();
-      end;
-    end;
-  finally
-  end;
+  Result:=true;
+  for i:=0 to CBKeywords.Items.Count-1 do
+    if (CBKeywords.Checked[i]) and (pos(lowercase(CBKeywords.Items[i]),lowercase(package.S['keywords']))=0) then
+      exit(false);
 end;
 
 end.
