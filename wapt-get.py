@@ -334,14 +334,18 @@ def do_enable_check_certificate(mywapt,options):
             sha1_fingerprint = cert.digest('sha1')
 
             server_host_name = urlparse.urlparse(mywapt.waptserver.server_url).netloc
-            if cert.cn != server_host_name:
-                raise Exception(u'Common name of certificate (%s) does not match server hostname (%s), aborting' % (cert.cn,server_host_name) )
+            if cert.cn.lower() != server_host_name.lower() :
+                logger.critical(u'Common name of certificate (%s) does not match server hostname (%s)' % (cert.cn,server_host_name) )
+            if not server_host_name.lower() in cert.subject_alt_names:
+                logger.critical(u'Server hostname (%s) is not in certificate subjectAltNames extension %s' % (server_host_name,cert.subject_alt_names) )
 
             # check if certificate match repo_url defined in global too
             if mywapt.config.has_option('global','repo_url'):
                 repo_host_name = urlparse.urlparse(mywapt.config.get('global','repo_url')).netloc
-                if cert.cn != repo_host_name:
-                    raise Exception(u'Common name of certificate (%s) does not match repository hostname (%s), aborting' % (cert.cn,repo_host_name) )
+                if cert.cn.lower() != repo_host_name.lower() :
+                    logger.critical(u'Common name of certificate (%s) does not match server hostname (%s)' % (cert.cn,repo_host_name) )
+                if not repo_host_name.lower() in cert.subject_alt_names:
+                    logger.critical(u'Server hostname (%s) is not in certificate subjectAltNames extension %s' % (repo_host_name,cert.subject_alt_names) )
 
             print('Certificate CN: %s' % cert.cn)
             print('Pining certificate %s' % cert_filename)
