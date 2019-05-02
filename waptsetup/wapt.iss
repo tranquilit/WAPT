@@ -70,6 +70,7 @@ Source: "..\waptenterprise\waptconsole\*"; DestDir: "{app}\waptenterprise\waptco
 Source: "..\waptenterprise\waptwua\*"; DestDir: "{app}\waptenterprise\waptwua\";  Flags: createallsubdirs recursesubdirs;
 Source: "..\waptenterprise\__init__.py"; DestDir: "{app}\waptenterprise\";
 Source: "..\waptenterprise\licencing.py"; DestDir: "{app}\waptenterprise\";
+Source: "..\waptenterprise\enterprise_common.py"; DestDir: "{app}\waptenterprise\";
 #endif
 
 
