@@ -1487,18 +1487,6 @@ class WaptTaskManager(threading.Thread):
             self.start_time = datetime.datetime.now()
             self.add_task(WaptServiceRestart(created_by='DAILY RESTART'))
 
-        if waptconfig.waptupgrade_task_period is not None and setuphelpers.running_on_ac():
-            if self.last_upgrade is None or (datetime.datetime.now() - self.last_upgrade) > get_time_delta(waptconfig.waptupgrade_task_period,'m'):
-                try:
-                    actions = self.wapt.list_upgrade()
-                    to_install = actions['upgrade']+actions['additional']+actions['install']
-                    for req in to_install:
-                        self.add_task(WaptPackageInstall(req,notify_user=True,created_by='SCHEDULER',only_if_no_process_running=True))
-                    self.add_task(WaptUpgrade(notifyuser=False,created_by='SCHEDULER',only_if_no_process_running=True))
-                except Exception as e:
-                    logger.debug(u'Error for upgrade in check_scheduled_tasks: %s'%e)
-                self.add_task(WaptCleanup(notifyuser=False,created_by='SCHEDULER'))
-
         if waptconfig.waptupdate_task_period is not None:
             if self.last_update is None or (datetime.datetime.now() - self.last_update) > get_time_delta(waptconfig.waptupdate_task_period,'m'):
                 try:
@@ -1509,6 +1497,14 @@ class WaptTaskManager(threading.Thread):
                     self.add_task(WaptUpdate(notify_user=False,notify_server_on_finish=True,created_by='SCHEDULER'))
                 except Exception as e:
                     logger.debug(u'Error for update in check_scheduled_tasks: %s'%e)
+
+        if waptconfig.waptupgrade_task_period is not None and setuphelpers.running_on_ac():
+            if self.last_upgrade is None or (datetime.datetime.now() - self.last_upgrade) > get_time_delta(waptconfig.waptupgrade_task_period,'m'):
+                try:
+                    self.add_task(WaptUpgrade(notifyuser=False,created_by='SCHEDULER',only_if_no_process_running=True))
+                except Exception as e:
+                    logger.debug(u'Error for upgrade in check_scheduled_tasks: %s'%e)
+                self.add_task(WaptCleanup(notifyuser=False,created_by='SCHEDULER'))
 
         if waptconfig.waptaudit_task_period:
             if self.last_audit is None or (datetime.datetime.now() - self.last_audit > get_time_delta(waptconfig.waptaudit_task_period,'m')):
