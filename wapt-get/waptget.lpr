@@ -31,8 +31,8 @@ uses
   { you can add units after this }
   Interfaces, Windows, PythonEngine, VarPyth, superobject, soutils, tislogging, uWaptRes,
   waptcommon, waptwinutils, tiscommon, tisstrings, LazFileUtils,
-  IdAuthentication, IdExceptionCore, Variants, IniFiles,uwaptcrypto,uWaptPythonUtils,
-  tisinifiles,base64,IdComponent,httpsend;
+  IdAuthentication, Variants, IniFiles,uwaptcrypto,uWaptPythonUtils,
+  tisinifiles,base64,IdComponent,httpsend,uWAPTPollThreads;
 
 type
   { PWaptGet }
@@ -65,24 +65,27 @@ type
   public
     Action : String;
     RegWaptBaseDir:String;
-    check_thread:TThread;
+    CheckEventsThread: TCheckEventsThread;
+
     lock:TRTLCriticalSection;
     tasks:ISuperObject;
     lastMessageTime : TDateTime;
+
 
     constructor Create(TheOwner: TComponent); override;
     destructor Destroy; override;
     procedure WriteHelp; virtual;
     property RepoURL:String read GetRepoURL write SetRepoURL;
-    procedure pollerEvent(Events:ISuperObject);
+
+    procedure OnCheckEventsThreadNotify(Sender: TObject);
+
     function remainingtasks:ISuperObject;
 
     function GetCommonNameFromCmdLine(): String;
 
     function CheckPersonalCertificateIsCodeSigning(PersonalCertificatePath,PrivateKeyPassword:String): Boolean;
     function BuildWaptUpgrade(SetupFilename: String): String;
-    function UploadWaptAgentUpgrade(SetupFilename, WaptUpgradeFilename: String
-      ): Boolean;
+    procedure UploadWaptAgentUpgrade(SetupFilename, WaptUpgradeFilename: String);
 
     function CreateWaptAgent(TargetDir: String; Edition: String='waptagent'
       ): String;
@@ -109,62 +112,6 @@ type
 
     property IsEnterpriseEdition:Boolean read GetIsEnterpriseEdition;
   end;
-
-  { TPollThread }
-
-  TPollThread = Class(TThread)
-    procedure HandleMessage;
-
-  public
-    PollTimeout:Integer;
-
-    App:PWaptGet;
-    Events: ISuperObject;
-    LastReadEventId: Integer;
-
-    constructor Create(anapp:PWaptGet);
-    procedure Execute; override;
-  end;
-
-  { TPollThread }
-
-  procedure TPollThread.HandleMessage;
-  begin
-    if Assigned(app) then
-      app.pollerEvent(Events);
-  end;
-
-  constructor TPollThread.Create(anapp:PWaptGet);
-  begin
-    inherited Create(True);
-    app := anapp;
-    PollTimeout:=1000;
-    LastReadEventId := MaxInt;
-  end;
-
-  procedure TPollThread.Execute;
-  begin
-    while not Terminated do
-    try
-      try
-        Events := WAPTLocalJsonGet(Format('events?last_read=%d',[LastReadEventId]),'','',-1);
-        If (Events.AsArray <> Nil) and (Events.AsArray.Length>0) then
-          LastReadEventId := Events.AsArray.O[Events.AsArray.Length-1].I['id'];
-      except
-        on e:EIdReadTimeout do
-          Events := Nil;
-      end;
-      Synchronize(@HandleMessage);
-    except
-      on e:Exception do
-      begin
-        WriteLn('exception '+e.Message );
-        if not Terminated then
-          Sleep(PollTimeout);
-      end;
-    end;
-  end;
-
 
 { PWaptGet }
 
@@ -615,8 +562,8 @@ begin
   begin
     writeln('About to speak to waptservice...');
     // launch task in waptservice, waits for its termination
-    check_thread :=TPollThread.Create(Self);
-    check_thread.Start;
+    CheckEventsThread :=TCheckEventsThread.Create(@Self.OnCheckEventsThreadNotify);
+    CheckEventsThread.Start;
     lastMessageTime := Now;
     tasks := TSuperObject.create(stArray);
     try
@@ -634,14 +581,19 @@ begin
         if action='tasks' then
         begin
           res := WAPTLocalJsonGet('tasks.json');
-          if res['running'].DataType<>stNull then
-            writeln(utf8decode(format(rsRunningTask,[ res['running'].I['id'],res['running'].S['description'],res['running'].S['runstatus']])))
-          else
-            writeln(utf8decode(rsNoRunningTask));
-          if res['pending'].AsArray.length>0 then
-            writeln(utf8decode(rsPending));
-            for task in res['pending'] do
-              writeln(utf8decode('  '+task.S['id']+' '+task.S['description']));
+          if (res<>Nil) then
+          begin
+            if (res['running'].DataType<>stNull) then
+              writeln(utf8decode(format(rsRunningTask,[ res['running'].I['id'],res['running'].S['description'],res['running'].S['runstatus']])))
+            else
+              writeln(utf8decode(rsNoRunningTask));
+            if res['pending'].AsArray.length>0 then
+            begin
+              writeln(utf8decode(rsPending));
+              for task in res['pending'] do
+                writeln(utf8decode('  '+task.S['id']+' '+task.S['description']));
+            end;
+          end;
         end
         else
         if action='cancel' then
@@ -767,23 +719,26 @@ begin
           Logger('Task '+res.S['id']+' added to queue',DEBUG);
         end;
 
-        while (remainingtasks.AsArray.Length>0)  and  not check_thread.Finished do
-        try
-          //if no message from service since more that 1 min, check if remaining tasks in queue...
-          if (now-lastMessageTime>1*1/24/60) then
-            raise Exception.create('Timeout waiting for events')
-          else
-          begin
-            While CheckSynchronize(100) do;
-            sleep(1000)
-          end;
-        except
-          on E:Exception do
+        if (tasks<>Nil) and (tasks.AsArray.Length>0) then
+        begin
+          while ((remainingtasks=Nil) or (remainingtasks.AsArray.Length>0)) and not CheckEventsThread.Finished do
+          try
+            //if no message from service since more that 1 min, check if remaining tasks in queue...
+            if (now-lastMessageTime>1*1/24/60) then
+              raise Exception.create('Timeout waiting for events')
+            else
             begin
-              writeln(Format(rsCanceledTask,[E.Message]));
-              for task in tasks do
-                WAPTLocalJsonGet('cancel_task.json?id='+task.S['id']);
+              While CheckSynchronize(100) do;
+              sleep(1000)
             end;
+          except
+            on E:Exception do
+              begin
+                writeln(Format(rsCanceledTask,[E.Message]));
+                for task in tasks do
+                  WAPTLocalJsonGet('cancel_task.json?id='+task.S['id']);
+              end;
+          end;
         end;
 
         while CheckSynchronize(1000) do;
@@ -824,8 +779,11 @@ end;
 destructor PWaptGet.Destroy;
 begin
   Fwaptdevutils := Nil;
-  if Assigned(check_thread) then
-    check_thread.Free;
+  if Assigned(CheckEventsThread) and (not CheckEventsThread.Suspended) then
+    CheckEventsThread.Terminate;
+
+  FreeAndNil(CheckEventsThread);
+
   if Assigned(FPythonEngine) then
     FPythonEngine.Free;
   DeleteCriticalSection(lock);
@@ -839,11 +797,11 @@ begin
   writeln(rsInstallOn);
 end;
 
-procedure PWaptGet.pollerEvent(Events:ISuperObject);
+procedure PWaptGet.OnCheckEventsThreadNotify(Sender: TObject);
 var
   Step,EventType:String;
   taskresult : ISuperObject;
-  Event,EventData:ISuperObject;
+  Events,Event,EventData:ISuperObject;
 
   //check if task with id id is in tasks list
   function isInTasksList(id:integer):boolean;
@@ -877,46 +835,42 @@ begin
   EnterCriticalSection(lock);
   try
     lastMessageTime := Now;
+    events := (Sender as TCheckEventsThread).Events;
     If Events <> Nil then
     begin
-      //if Event.AsArray.Length>0 then
-      begin
-        for Event in Events do
-        try
-          EventType := Event.S['event_type'];
-          EventData := Event['data'];
-          if EventType.StartsWith('TASK_') then
+      for Event in Events do
+      try
+        EventType := Event.S['event_type'];
+        EventData := Event['data'];
+        if EventType.StartsWith('TASK_') then
+        begin
+          Step := EventType.Substring(5);
+          taskresult := EventData;
+          //Writeln(EventType,' ',taskresult.S['id'],' ',taskresult.S['summary']);
+          if isInTasksList(taskresult.I['id']) then
           begin
-            Step := EventType.Substring(5);
-            taskresult := EventData;
-            //Writeln(EventType,' ',taskresult.S['id'],' ',taskresult.S['summary']);
-            if isInTasksList(taskresult.I['id']) then
+            //writeln(taskresult.AsString);
+            if (Step = 'START') then
+              writeln(#13+UTF8Encode(taskresult.S['description']));
+            if (Step = 'PROGRESS') then
+              write(#13+utf8Encode(format(rsCompletionProgress,[taskresult.S['runstatus'], taskresult.D['progress']])+#13));
+            if (Step = 'STATUS') then
+              write(#13+utf8Encode(format(rsCompletionProgress,[taskresult.S['runstatus'], taskresult.D['progress']])+#13));
+            //catch finish of task
+            if (Step = 'FINISH') or (Step = 'ERROR') or (Step = 'CANCEL') then
             begin
-              //writeln(taskresult.AsString);
-              if (Step = 'START') then
-                writeln(#13+UTF8Encode(taskresult.S['description']));
-              if (Step = 'PROGRESS') then
-                write(#13+utf8Encode(format(rsCompletionProgress,[taskresult.S['runstatus'], taskresult.D['progress']])+#13));
-              if (Step = 'STATUS') then
-                write(#13+utf8Encode(format(rsCompletionProgress,[taskresult.S['runstatus'], taskresult.D['progress']])+#13));
-              //catch finish of task
-              if (Step = 'FINISH') or (Step = 'ERROR') or (Step = 'CANCEL') then
-              begin
-                WriteLn(UTF8Encode(taskresult.S['summary']));
-                if (Step = 'ERROR') or (Step = 'CANCEL') then
-                  ExitCode:=3;
-                removeTask(taskresult.I['id']);
-              end;
+              WriteLn(UTF8Encode(taskresult.S['summary']));
+              if (Step = 'ERROR') or (Step = 'CANCEL') then
+                ExitCode:=3;
+              removeTask(taskresult.I['id']);
             end;
-          end
-          else if (EventType = 'PRINT') then
-            Writeln(#13+UTF8Encode(EventData.AsString));
-        except
-          on E:Exception do WriteLn(#13+Format('Error listening to events: %s',[e.Message]));
-        end;
-      end
-      //else
-      //  Write('.');
+          end;
+        end
+        else if (EventType = 'PRINT') then
+          Writeln(#13+UTF8Encode(EventData.AsString));
+      except
+        on E:Exception do WriteLn(#13+Format('Error listening to events: %s',[e.Message]));
+      end;
     end
     else
       Write('.');
@@ -925,20 +879,26 @@ begin
   end;
 end;
 
+
 function PWaptGet.remainingtasks: ISuperObject;
 var
   task,pending,res:ISuperObject;
 begin
   res := WAPTLocalJsonGet('tasks.json');
-  pending := res['pending'];
-  if res['running'] <> Nil then
-    pending.AsArray.Add(res['running']);
+  if res<>Nil then
+  begin
+    pending := res['pending'];
+    if res['running'] <> Nil then
+      pending.AsArray.Add(res['running']);
 
-  Result := TSuperObject.Create(stArray);
-  if pending.AsArray.Length > 0 then
-    for task in Self.tasks do
-      if SOArrayFindFirst(task,pending,['id']) <> Nil then
-        Result.AsArray.Add(task);
+    Result := TSuperObject.Create(stArray);
+    if pending.AsArray.Length > 0 then
+      for task in Self.tasks do
+        if SOArrayFindFirst(task,pending,['id']) <> Nil then
+          Result.AsArray.Add(task);
+  end
+  else
+    Result := Nil;
 end;
 
 procedure PWaptGet.DoOnProgress(Sender: TObject);
@@ -1141,7 +1101,7 @@ begin
     Result := '';
 end;
 
-function PWaptGet.UploadWaptAgentUpgrade(SetupFilename,WaptUpgradeFilename: String): Boolean;
+procedure PWaptGet.UploadWaptAgentUpgrade(SetupFilename,WaptUpgradeFilename: String);
 var
   Res:ISuperObject;
 begin
