@@ -10,10 +10,12 @@ msgid "Cancel"
 msgstr "Annuler"
 
 #: tfrmpackage.btninstallupgrade.caption
+msgctxt "tfrmpackage.btninstallupgrade.caption"
 msgid "Install"
 msgstr "Installer"
 
 #: tfrmpackage.btnremove.caption
+msgctxt "tfrmpackage.btnremove.caption"
 msgid "Remove"
 msgstr "Désinstaller"
 
@@ -36,7 +38,7 @@ msgstr ""
 
 #: tfrmpackage.labmaintainer.caption
 msgid "By"
-msgstr ""
+msgstr "Par"
 
 #: tfrmpackage.labpackagename.caption
 msgid "tis-adobeair"
@@ -47,20 +49,22 @@ msgid "1.5.2-0"
 msgstr ""
 
 #: tfrmpackage.textwaitinstall.caption
+msgctxt "tfrmpackage.textwaitinstall.caption"
 msgid "Waiting for install..."
 msgstr "En attente d'installation..."
 
 #: tvislogin.caption
-msgid "VisLogin"
-msgstr ""
+msgid "Sign in to WAPT Self-service"
+msgstr "Se connecter à WAPT self service"
 
 #: tvislogin.statictext1.caption
+#| msgid "Login : "
 msgid "Login :"
-msgstr "Login :"
+msgstr "Identifiant : "
 
 #: tvislogin.statictext2.caption
 msgid "Password : "
-msgstr "Mot de passe :"
+msgstr "Mot de passe : "
 
 #: tviswaptself.actcanceltask.caption
 msgid "Cancel task"
@@ -70,9 +74,14 @@ msgstr "Annuler la tâche"
 msgid "Search"
 msgstr "Rechercher"
 
+#: tviswaptself.actshowtaskbar.caption
+msgctxt "tviswaptself.actshowtaskbar.caption"
+msgid "Show task bar"
+msgstr "Montrer la barre de tâche"
+
 #: tviswaptself.acttriggersearch.caption
 msgid "Trigger Search"
-msgstr "déclencher la recherche"
+msgstr "Déclencher la recherche"
 
 #: tviswaptself.actunselectallkeywords.caption
 msgid "Uncheck all"
@@ -99,6 +108,7 @@ msgid "Show upgradable"
 msgstr "Voir mises à jour"
 
 #: tviswaptself.btnsortbydate.caption
+msgctxt "tviswaptself.btnsortbydate.caption"
 msgid "Sort by date : desc"
 msgstr "Trier par date : desc"
 
@@ -111,15 +121,19 @@ msgid "Update list"
 msgstr "Mise à jour de la liste"
 
 #: tviswaptself.caption
-msgid "WAPT softwares Self-service"
-msgstr "Self-service WAPT"
+#| msgid "WAPT softwares Self-service"
+msgid "WAPT Self-service"
+msgstr "WAPT Self-service"
 
 #: tviswaptself.edsearch.texthint
 msgid "Search..."
 msgstr "Rechercher..."
 
+#: tviswaptself.labelnoresult.caption
+msgid "Sorry there is no result found."
+msgstr "Désolé, aucun résultat trouvé."
+
 #: tviswaptself.labpackagelist.caption
-#, fuzzy
 msgctxt "tviswaptself.labpackagelist.caption"
 msgid "Available packages"
 msgstr "Paquets disponibles"
@@ -221,10 +235,12 @@ msgid "notify_server_on_start"
 msgstr ""
 
 #: ufrmpackage.rserrortriggeringtask
+msgctxt "ufrmpackage.rserrortriggeringtask"
 msgid "Error triggering action: %s"
 msgstr "Erreur au lancement de l'action: %s"
 
 #: ufrmpackage.rsimpacted_processes
+msgctxt "ufrmpackage.rsimpacted_processes"
 msgid ""
 "Some processes (see list below) may be closed during installation/removal.\n"
 "Do you want to continue ?\n"
@@ -235,12 +251,12 @@ msgstr ""
 "Processus impactés : %s\n"
 
 #: uviswaptself.rsavailablepackages
-#, fuzzy
 msgctxt "uviswaptself.rsavailablepackages"
 msgid "Available packages"
 msgstr "Paquets disponibles"
 
 #: uviswaptself.rsforce
+msgctxt "uviswaptself.rsforce"
 msgid ""
 "An operation has failed do you want to force the installation/removal?\n"
 "Operation : %s\n"
@@ -248,23 +264,150 @@ msgstr ""
 "Une opération a échoué, voulez vous forcer l'installation/désinstallation?\n"
 "Opération : %s\n"
 
+#: uviswaptself.rshidetaskbar
+msgctxt "uviswaptself.rshidetaskbar"
+msgid "Hide task bar"
+msgstr "Cacher la barre de tâche"
+
 #: uviswaptself.rsinstalledpackages
+msgctxt "uviswaptself.rsinstalledpackages"
 msgid "Installed packages"
 msgstr "Paquets installés"
 
 #: uviswaptself.rslogin
+msgctxt "uviswaptself.rslogin"
 msgid "Login"
-msgstr "Login"
+msgstr "Identifiant"
 
 #: uviswaptself.rsnotinstalledpackages
+msgctxt "uviswaptself.rsnotinstalledpackages"
 msgid "Not installed packages"
 msgstr "Paquets non installés"
 
 #: uviswaptself.rspassword
+msgctxt "uviswaptself.rspassword"
 msgid "Password"
 msgstr "Mot de passe"
 
+#: uviswaptself.rsshowtaskbar
+msgctxt "uviswaptself.rsshowtaskbar"
+msgid "Show task bar"
+msgstr "Montrer la barre de tâche"
+
+#: uviswaptself.rssortbydateasc
+msgctxt "uviswaptself.rssortbydateasc"
+msgid "Sort by date : asc"
+msgstr "Trier par date : asc"
+
+#: uviswaptself.rssortbydatedesc
+msgctxt "uviswaptself.rssortbydatedesc"
+msgid "Sort by date : desc"
+msgstr "Trier par date : desc"
+
 #: uviswaptself.rsupgradablepackages
+msgctxt "uviswaptself.rsupgradablepackages"
 msgid "Available updates for installed packages"
 msgstr "Mises à jour disponibles pour les paquets installés"
+
+#: uwaptselfres.rsactioninstall
+msgctxt "uwaptselfres.rsactioninstall"
+msgid "Install"
+msgstr "Installer"
+
+#: uwaptselfres.rsactionremove
+msgctxt "uwaptselfres.rsactionremove"
+msgid "Remove"
+msgstr "Désinstaller"
+
+#: uwaptselfres.rsactionupgradable
+msgid "Upgrade"
+msgstr "Mettre à jour"
+
+#: uwaptselfres.rsavailablepackages
+msgctxt "uwaptselfres.rsavailablepackages"
+msgid "Available packages"
+msgstr "Paquets disponibles"
+
+#: uwaptselfres.rserrortriggeringtask
+msgctxt "uwaptselfres.rserrortriggeringtask"
+msgid "Error triggering action: %s"
+msgstr "Erreur au lancement de l'action: %s"
+
+#: uwaptselfres.rsforce
+msgctxt "uwaptselfres.rsforce"
+msgid ""
+"An operation has failed do you want to force the installation/removal?\n"
+"Operation : %s\n"
+msgstr ""
+"Une opération a échoué, voulez vous forcer l'installation/désinstallation?\n"
+"Opération : %s\n"
+
+#: uwaptselfres.rshidetaskbar
+msgctxt "uwaptselfres.rshidetaskbar"
+msgid "Hide task bar"
+msgstr "Cacher la barre de tâche"
+
+#: uwaptselfres.rsimpacted_processes
+msgctxt "uwaptselfres.rsimpacted_processes"
+msgid ""
+"Some processes (see list below) may be closed during installation/removal.\n"
+"Do you want to continue ?\n"
+"Impacted processes : %s\n"
+msgstr ""
+"Certains processus (voir liste ci-dessous) pourraient être arrêtés pendant l'installation.\n"
+"Voulez-vous continuer ?\n"
+"Processus impactés : %s\n"
+
+#: uwaptselfres.rsinstalledpackages
+msgctxt "uwaptselfres.rsinstalledpackages"
+msgid "Installed packages"
+msgstr "Paquets installés"
+
+#: uwaptselfres.rslogin
+msgctxt "uwaptselfres.rslogin"
+msgid "Login"
+msgstr "Identifiant"
+
+#: uwaptselfres.rsnotinstalledpackages
+msgctxt "uwaptselfres.rsnotinstalledpackages"
+msgid "Not installed packages"
+msgstr "Paquets non installés"
+
+#: uwaptselfres.rspassword
+msgctxt "uwaptselfres.rspassword"
+msgid "Password"
+msgstr "Mot de passe"
+
+#: uwaptselfres.rsshowtaskbar
+msgctxt "uwaptselfres.rsshowtaskbar"
+msgid "Show task bar"
+msgstr "Montrer la barre de tâche"
+
+#: uwaptselfres.rssortbydateasc
+msgctxt "uwaptselfres.rssortbydateasc"
+msgid "Sort by date : asc"
+msgstr ""
+
+#: uwaptselfres.rssortbydatedesc
+msgctxt "uwaptselfres.rssortbydatedesc"
+msgid "Sort by date : desc"
+msgstr "Trier par date : desc"
+
+#: uwaptselfres.rsstatusinstalled
+msgid "Installed"
+msgstr "Installé"
+
+#: uwaptselfres.rsupgradablepackages
+msgctxt "uwaptselfres.rsupgradablepackages"
+msgid "Available updates for installed packages"
+msgstr "Mises à jour disponibles pour les paquets installés"
+
+#: uwaptselfres.rswaitinginstall
+msgctxt "uwaptselfres.rswaitinginstall"
+msgid "Waiting for install..."
+msgstr "En attente d'installation..."
+
+#: uwaptselfres.rswaitingremove
+msgid "Waiting for uninstall..."
+msgstr "En attente de suppression"
 

@@ -27,7 +27,7 @@
       <MajorVersionNr Value="1"/>
       <MinorVersionNr Value="7"/>
       <RevisionNr Value="4"/>
-      <BuildNr Value="6040"/>
+      <BuildNr Value="9000"/>
       <StringTable CompanyName="Tranquil IT Systems" LegalCopyright="Tranquil IT Systems 2012-2019" ProductName="WAPT Enterprise Edition" ProductVersion="1.7.4"/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -64,7 +64,7 @@
         <PackageName Value="LCL"/>
       </Item7>
     </RequiredPackages>
-    <Units Count="4">
+    <Units Count="5">
       <Unit0>
         <Filename Value="waptself.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -94,6 +94,11 @@
         <ResourceBaseClass Value="Frame"/>
         <UnitName Value="uFrmPackage"/>
       </Unit3>
+      <Unit4>
+        <Filename Value="uwaptselfres.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="uWaptSelfRes"/>
+      </Unit4>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -118,7 +123,7 @@
     </Linking>
   </CompilerOptions>
   <Debugging>
-    <Exceptions Count="10">
+    <Exceptions Count="11">
       <Item1>
         <Name Value="EAbort"/>
       </Item1>
@@ -149,6 +154,9 @@
       <Item10>
         <Name Value="EInvalidOperation"/>
       </Item10>
+      <Item11>
+        <Name Value="EThread"/>
+      </Item11>
     </Exceptions>
   </Debugging>
 </CONFIG>

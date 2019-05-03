@@ -10,10 +10,12 @@ msgid "Cancel"
 msgstr ""
 
 #: tfrmpackage.btninstallupgrade.caption
+msgctxt "tfrmpackage.btninstallupgrade.caption"
 msgid "Install"
 msgstr ""
 
 #: tfrmpackage.btnremove.caption
+msgctxt "tfrmpackage.btnremove.caption"
 msgid "Remove"
 msgstr ""
 
@@ -47,11 +49,12 @@ msgid "1.5.2-0"
 msgstr ""
 
 #: tfrmpackage.textwaitinstall.caption
+msgctxt "tfrmpackage.textwaitinstall.caption"
 msgid "Waiting for install..."
 msgstr ""
 
 #: tvislogin.caption
-msgid "VisLogin"
+msgid "Sign in to WAPT Self-service"
 msgstr ""
 
 #: tvislogin.statictext1.caption
@@ -68,6 +71,11 @@ msgstr ""
 
 #: tviswaptself.actsearchpackages.caption
 msgid "Search"
+msgstr ""
+
+#: tviswaptself.actshowtaskbar.caption
+msgctxt "tviswaptself.actshowtaskbar.caption"
+msgid "Show task bar"
 msgstr ""
 
 #: tviswaptself.acttriggersearch.caption
@@ -99,6 +107,7 @@ msgid "Show upgradable"
 msgstr ""
 
 #: tviswaptself.btnsortbydate.caption
+msgctxt "tviswaptself.btnsortbydate.caption"
 msgid "Sort by date : desc"
 msgstr ""
 
@@ -111,12 +120,18 @@ msgid "Update list"
 msgstr ""
 
 #: tviswaptself.caption
-msgid "WAPT softwares Self-service"
+#, fuzzy
+#| msgid "WAPT softwares Self-service"
+msgid "WAPT Self-service"
 msgstr "Self service logiciels WAPT"
 
 #: tviswaptself.edsearch.texthint
 msgid "Search..."
 msgstr "Rechercher..."
+
+#: tviswaptself.labelnoresult.caption
+msgid "Sorry there is no result found."
+msgstr ""
 
 #: tviswaptself.labpackagelist.caption
 #, fuzzy
@@ -221,10 +236,12 @@ msgid "notify_server_on_start"
 msgstr ""
 
 #: ufrmpackage.rserrortriggeringtask
+msgctxt "ufrmpackage.rserrortriggeringtask"
 msgid "Error triggering action: %s"
 msgstr ""
 
 #: ufrmpackage.rsimpacted_processes
+msgctxt "ufrmpackage.rsimpacted_processes"
 msgid ""
 "Some processes (see list below) may be closed during installation/removal.\n"
 "Do you want to continue ?\n"
@@ -238,28 +255,152 @@ msgid "Available packages"
 msgstr "Paquets disponibles"
 
 #: uviswaptself.rsforce
+msgctxt "uviswaptself.rsforce"
 msgid ""
 "An operation has failed do you want to force the installation/removal?\n"
 "Operation : %s\n"
 msgstr ""
 
+#: uviswaptself.rshidetaskbar
+msgctxt "uviswaptself.rshidetaskbar"
+msgid "Hide task bar"
+msgstr ""
+
 #: uviswaptself.rsinstalledpackages
+msgctxt "uviswaptself.rsinstalledpackages"
 msgid "Installed packages"
 msgstr ""
 
 #: uviswaptself.rslogin
+msgctxt "uviswaptself.rslogin"
 msgid "Login"
 msgstr ""
 
 #: uviswaptself.rsnotinstalledpackages
+msgctxt "uviswaptself.rsnotinstalledpackages"
 msgid "Not installed packages"
 msgstr ""
 
 #: uviswaptself.rspassword
+msgctxt "uviswaptself.rspassword"
 msgid "Password"
 msgstr ""
 
+#: uviswaptself.rsshowtaskbar
+msgctxt "uviswaptself.rsshowtaskbar"
+msgid "Show task bar"
+msgstr ""
+
+#: uviswaptself.rssortbydateasc
+msgctxt "uviswaptself.rssortbydateasc"
+msgid "Sort by date : asc"
+msgstr ""
+
+#: uviswaptself.rssortbydatedesc
+msgctxt "uviswaptself.rssortbydatedesc"
+msgid "Sort by date : desc"
+msgstr ""
+
 #: uviswaptself.rsupgradablepackages
+msgctxt "uviswaptself.rsupgradablepackages"
 msgid "Available updates for installed packages"
+msgstr ""
+
+#: uwaptselfres.rsactioninstall
+msgctxt "uwaptselfres.rsactioninstall"
+msgid "Install"
+msgstr ""
+
+#: uwaptselfres.rsactionremove
+msgctxt "uwaptselfres.rsactionremove"
+msgid "Remove"
+msgstr ""
+
+#: uwaptselfres.rsactionupgradable
+msgid "Upgrade"
+msgstr ""
+
+#: uwaptselfres.rsavailablepackages
+#, fuzzy
+msgctxt "uwaptselfres.rsavailablepackages"
+msgid "Available packages"
+msgstr "Paquets disponibles"
+
+#: uwaptselfres.rserrortriggeringtask
+msgctxt "uwaptselfres.rserrortriggeringtask"
+msgid "Error triggering action: %s"
+msgstr ""
+
+#: uwaptselfres.rsforce
+msgctxt "uwaptselfres.rsforce"
+msgid ""
+"An operation has failed do you want to force the installation/removal?\n"
+"Operation : %s\n"
+msgstr ""
+
+#: uwaptselfres.rshidetaskbar
+msgctxt "uwaptselfres.rshidetaskbar"
+msgid "Hide task bar"
+msgstr ""
+
+#: uwaptselfres.rsimpacted_processes
+msgctxt "uwaptselfres.rsimpacted_processes"
+msgid ""
+"Some processes (see list below) may be closed during installation/removal.\n"
+"Do you want to continue ?\n"
+"Impacted processes : %s\n"
+msgstr ""
+
+#: uwaptselfres.rsinstalledpackages
+msgctxt "uwaptselfres.rsinstalledpackages"
+msgid "Installed packages"
+msgstr ""
+
+#: uwaptselfres.rslogin
+msgctxt "uwaptselfres.rslogin"
+msgid "Login"
+msgstr ""
+
+#: uwaptselfres.rsnotinstalledpackages
+msgctxt "uwaptselfres.rsnotinstalledpackages"
+msgid "Not installed packages"
+msgstr ""
+
+#: uwaptselfres.rspassword
+msgctxt "uwaptselfres.rspassword"
+msgid "Password"
+msgstr ""
+
+#: uwaptselfres.rsshowtaskbar
+msgctxt "uwaptselfres.rsshowtaskbar"
+msgid "Show task bar"
+msgstr ""
+
+#: uwaptselfres.rssortbydateasc
+msgctxt "uwaptselfres.rssortbydateasc"
+msgid "Sort by date : asc"
+msgstr ""
+
+#: uwaptselfres.rssortbydatedesc
+msgctxt "uwaptselfres.rssortbydatedesc"
+msgid "Sort by date : desc"
+msgstr ""
+
+#: uwaptselfres.rsstatusinstalled
+msgid "Installed"
+msgstr ""
+
+#: uwaptselfres.rsupgradablepackages
+msgctxt "uwaptselfres.rsupgradablepackages"
+msgid "Available updates for installed packages"
+msgstr ""
+
+#: uwaptselfres.rswaitinginstall
+msgctxt "uwaptselfres.rswaitinginstall"
+msgid "Waiting for install..."
+msgstr ""
+
+#: uwaptselfres.rswaitingremove
+msgid "Waiting for uninstall..."
 msgstr ""
 
