@@ -112,17 +112,16 @@ msgstr ""
 msgid "Form1"
 msgstr ""
 
-#: tvisapropos.button1.caption
-msgctxt "tvisapropos.button1.caption"
-msgid "Close"
-msgstr ""
-
 #: tvisapropos.caption
 msgid "About WAPTConsole"
 msgstr ""
 
 #: tvisapropos.labinfos.caption
 msgid "LabInfos"
+msgstr ""
+
+#: tvisapropos.lablicencedto.caption
+msgid "Licensedto"
 msgstr ""
 
 #: tvischangekeypassword.caption

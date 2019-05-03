@@ -9,7 +9,7 @@ object VisApropos: TVisApropos
   ClientHeight = 324
   ClientWidth = 316
   OnCreate = FormCreate
-  LCLVersion = '1.3'
+  LCLVersion = '1.8.4.0'
   object Image1: TImage
     Left = 0
     Height = 146

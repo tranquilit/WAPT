@@ -4497,7 +4497,7 @@ begin
         DeleteFileUTF8(Appuserinipath);
 
     plStatusBar1.Caption := WaptServerUser+' on '+ApplicationName+' '+
-      GetApplicationVersion+' WAPT '+WaptEdition+' Edition, (c) 2012-2017 Tranquil IT. (Conf:'+
+      GetApplicationVersion+' WAPT '+WaptEdition+' Edition, (c) 2012-2019 Tranquil IT. (Conf:'+
       AppIniFilename+')';
     {$ifdef ENTERPRISE}
     plStatusBar1.Caption := plStatusBar1.Caption + ' ' + Format(rsLicencedTo,[dmPython.LicensedTo]);

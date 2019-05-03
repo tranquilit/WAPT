@@ -112,11 +112,6 @@ msgstr "&Voir le fichier de configuration"
 msgid "Form1"
 msgstr ""
 
-#: tvisapropos.button1.caption
-msgctxt "tvisapropos.button1.caption"
-msgid "Close"
-msgstr "Fermer"
-
 #: tvisapropos.caption
 msgid "About WAPTConsole"
 msgstr "Apropos de WAPTConsole"
@@ -124,6 +119,10 @@ msgstr "Apropos de WAPTConsole"
 #: tvisapropos.labinfos.caption
 msgid "LabInfos"
 msgstr "LabInfos"
+
+#: tvisapropos.lablicencedto.caption
+msgid "Licensedto"
+msgstr ""
 
 #: tvischangekeypassword.caption
 msgid "Change private key password"
