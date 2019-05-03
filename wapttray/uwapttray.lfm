@@ -114,14 +114,14 @@ object VisWAPTTray: TVisWAPTTray
     0000000000000000000000000000000000000000000000000000000000000000
     000000000000
   }
-  LCLVersion = '1.3'
+  ShowInTaskBar = stNever
+  LCLVersion = '1.8.4.0'
   Visible = True
-  WindowState = wsMinimized
   object pages: TPageControl
-    Left = 64
-    Height = 280
-    Top = 96
-    Width = 376
+    Left = 0
+    Height = 449
+    Top = 0
+    Width = 553
     ActivePage = pgStatus
     Align = alClient
     TabIndex = 0

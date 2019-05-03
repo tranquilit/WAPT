@@ -30,7 +30,7 @@
       <MinorVersionNr Value="7" />
       <RevisionNr Value="4" />
       <StringTable FileDescription="WAPT GUI Helper for python dialogs" LegalCopyright="Tranquil IT Systems 2012-2019" ProductName="WAPT Enterprise Edition" ProductVersion="1.7.4" />
-    <BuildNr Value="6008" /></VersionInfo>
+    <BuildNr Value="6040" /></VersionInfo>
     <BuildModes Count="1">
       <Item1 Default="True" Name="Default" />
     </BuildModes>

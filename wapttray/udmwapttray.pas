@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, LazFileUtils, ExtCtrls, Menus, ActnList, Controls,
-  superobject, DefaultTranslator, uWaptTrayRes;
+  superobject, DefaultTranslator, Forms, uWaptTrayRes, LCLType;
 
 type
 
@@ -31,6 +31,7 @@ type
     ActShowStatus: TAction;
     ActUpdate: TAction;
     ActUpgrade: TAction;
+    ApplicationProperties1: TApplicationProperties;
     MenuItem10: TMenuItem;
     MenuItem12: TMenuItem;
     MenuItem13: TMenuItem;
@@ -77,6 +78,8 @@ type
     procedure ActUpdateUpdate(Sender: TObject);
     procedure ActUpgradeExecute(Sender: TObject);
     procedure ActWaptUpgradeExecute(Sender: TObject);
+    procedure ApplicationProperties1EndSession(Sender: TObject);
+    procedure ApplicationProperties1QueryEndSession(var Cancel: Boolean);
     procedure DataModuleCreate(Sender: TObject);
     procedure DataModuleDestroy(Sender: TObject);
     procedure PopupMenu1Close(Sender: TObject);
@@ -129,8 +132,12 @@ var
   DMWaptTray: TDMWaptTray;
 
 implementation
-uses LCLIntf,Forms,dialogs,windows,graphics,tiscommon,tisinifiles,
-    waptcommon,waptwinutils,soutils,tisstrings,IdException,uWAPTPollThreads;
+uses LCLIntf,dialogs,windows,graphics,tiscommon,tisinifiles,
+    waptcommon,waptwinutils,soutils,tisstrings,IdException,uWAPTPollThreads,
+    Win32Int;
+
+//Function ShutdownBlockReasonCreate(Handle: hWnd;pwszReason: LPCWSTR): Bool; StdCall; External 'user32';
+//Function ShutdownBlockReasonDestroy(Handle: hWnd): Bool; StdCall; External 'user32';
 
 {$R *.lfm}
 
@@ -190,7 +197,8 @@ end;
 
 procedure TDMWaptTray.ActShowStatusExecute(Sender: TObject);
 begin
-  OpenURL(GetWaptLocalURL+'/status');
+  //OpenDocument(IncludeTrailingPathDelimiter(WaptBaseDir)+'waptself.exe');
+  OpenDocument(GetWaptLocalURL+'/status');
 end;
 
 procedure TDMWaptTray.ActShowTasksExecute(Sender: TObject);
@@ -238,6 +246,23 @@ begin
     on E:EIdException do
       WaptServiceRunning:=False;
   end;
+end;
+
+procedure TDMWaptTray.ApplicationProperties1EndSession(Sender: TObject);
+begin
+  //MessageBox(0,'Test end session: mises à jour','WAPT exit',0);
+  //ShutdownBlockReasonDestroy(Application.MainFormHandle);
+end;
+
+procedure TDMWaptTray.ApplicationProperties1QueryEndSession(var Cancel: Boolean
+  );
+begin
+  {Cancel := True;
+  Application.MainForm.WindowState:=wsMaximized;
+  ShutdownBlockReasonCreate(Application.MainFormHandle,'Mises a jour a faire');
+
+  ShowMessage(IntToStr(GetLastError()));
+  MessageBox(0,'Test query end session: mises à jour','WAPT exit',0);}
 end;
 
 procedure TDMWaptTray.DataModuleCreate(Sender: TObject);

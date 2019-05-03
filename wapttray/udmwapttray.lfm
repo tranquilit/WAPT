@@ -214,8 +214,8 @@ object DMWaptTray: TDMWaptTray
     end
   end
   object TrayUpdate: TImageList
-    left = 345
-    top = 52
+    left = 352
+    top = 48
     Bitmap = {
       4C6902000000100000001000000000000000000000000000000000000000935B
       222D95582091AF8055DDF3ECE6FEF0E8E0FDA77445DA975920909757232C0000
@@ -285,8 +285,8 @@ object DMWaptTray: TDMWaptTray
     }
   end
   object TrayRunning: TImageList
-    left = 345
-    top = 112
+    left = 352
+    top = 120
     Bitmap = {
       4C6905000000100000001000000000000000000000000000000000000000935B
       222D95582091AF8055DDF3ECE6FEF0E8E0FDA77445DA975920909757232C0000
@@ -454,7 +454,16 @@ object DMWaptTray: TDMWaptTray
   object Timer1: TTimer
     Interval = 700
     OnTimer = Timer1Timer
-    left = 120
+    left = 112
+    top = 120
+  end
+  object ApplicationProperties1: TApplicationProperties
+    CaptureExceptions = False
+    ShowMainForm = False
+    Title = 'WAPT Updates manager'
+    OnEndSession = ApplicationProperties1EndSession
+    OnQueryEndSession = ApplicationProperties1QueryEndSession
+    left = 236
     top = 120
   end
 end

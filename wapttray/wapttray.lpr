@@ -29,7 +29,7 @@ uses
   cthreads,
   {$ENDIF}{$ENDIF}
   Translations, Forms,Interfaces,
-  uDMWAPTTray, uwapttray, uwapttrayres,
+  uDMWAPTTray, uwapttrayres,
   LCLTranslator,waptcommon;
 
 {$R *.res}
@@ -40,8 +40,8 @@ begin
   Application.Initialize;
   ReadWaptConfig;
   SetDefaultLang(Language);
-
   Application.CreateForm(TDMWaptTray, DMWaptTray);
+  //Application.CreateForm(TVisWAPTTray, VisWAPTTray);
   Application.Run;
 end.
 

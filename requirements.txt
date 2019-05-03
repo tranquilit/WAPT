@@ -52,6 +52,7 @@ python-engineio==2.1.1
 python-socketio==1.9.0
 pytz==2017.2
 requests==2.20.0
+rpyc==4.0.2
 Rocket==1.2.8
 singledispatch==3.4.0.3
 six==1.11.0

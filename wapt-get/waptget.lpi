@@ -23,7 +23,7 @@
       <MajorVersionNr Value="1"/>
       <MinorVersionNr Value="7"/>
       <RevisionNr Value="4"/>
-      <BuildNr Value="6009"/>
+      <BuildNr Value="6041"/>
       <StringTable CompanyName="Tranquil IT Systems" LegalCopyright="Tranquil IT Systems 2012-2019" ProductName="WAPT Enterprise Edition" ProductVersion="1.7.4"/>
     </VersionInfo>
     <BuildModes Count="1" Active="Default">
@@ -37,7 +37,7 @@
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
-        <CommandLineParams Value="-S install tis-getty"/>
+        <CommandLineParams Value="-S tasks"/>
       </local>
     </RunParams>
     <RequiredPackages Count="4">
@@ -54,19 +54,174 @@
         <PackageName Value="pltis_superobject"/>
       </Item4>
     </RequiredPackages>
-    <Units Count="1">
+    <Units Count="5">
       <Unit0>
         <Filename Value="waptget.lpr"/>
         <IsPartOfProject Value="True"/>
         <IsVisibleTab Value="True"/>
-        <TopLine Value="85"/>
-        <CursorPos X="20" Y="93"/>
+        <TopLine Value="22"/>
+        <CursorPos X="43" Y="35"/>
         <UsageCount Value="222"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit0>
+      <Unit1>
+        <Filename Value="..\..\pltis_superobject\source\superobject.pas"/>
+        <EditorIndex Value="4"/>
+        <TopLine Value="2118"/>
+        <CursorPos Y="2133"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="waptcommon.pas"/>
+        <EditorIndex Value="3"/>
+        <TopLine Value="1264"/>
+        <CursorPos X="22" Y="1273"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="uwaptpollthreads.pas"/>
+        <UnitName Value="uWAPTPollThreads"/>
+        <EditorIndex Value="2"/>
+        <TopLine Value="455"/>
+        <CursorPos Y="457"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="..\waptexit\uwaptexit.pas"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="577"/>
+        <CursorPos X="54" Y="599"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit4>
     </Units>
-    <JumpHistory HistoryIndex="-1"/>
+    <JumpHistory Count="30" HistoryIndex="29">
+      <Position1>
+        <Filename Value="..\waptexit\uwaptexit.pas"/>
+        <Caret Line="346" Column="60" TopLine="324"/>
+      </Position1>
+      <Position2>
+        <Filename Value="..\waptexit\uwaptexit.pas"/>
+        <Caret Line="347" Column="22" TopLine="325"/>
+      </Position2>
+      <Position3>
+        <Filename Value="..\waptexit\uwaptexit.pas"/>
+        <Caret Line="414" TopLine="392"/>
+      </Position3>
+      <Position4>
+        <Filename Value="..\waptexit\uwaptexit.pas"/>
+      </Position4>
+      <Position5>
+        <Filename Value="..\waptexit\uwaptexit.pas"/>
+        <Caret Line="82" Column="34" TopLine="61"/>
+      </Position5>
+      <Position6>
+        <Filename Value="..\waptexit\uwaptexit.pas"/>
+        <Caret Line="105" Column="42" TopLine="84"/>
+      </Position6>
+      <Position7>
+        <Filename Value="..\waptexit\uwaptexit.pas"/>
+        <Caret Line="346" Column="60" TopLine="324"/>
+      </Position7>
+      <Position8>
+        <Filename Value="..\waptexit\uwaptexit.pas"/>
+        <Caret Line="347" Column="22" TopLine="325"/>
+      </Position8>
+      <Position9>
+        <Filename Value="..\waptexit\uwaptexit.pas"/>
+        <Caret Line="416" TopLine="392"/>
+      </Position9>
+      <Position10>
+        <Filename Value="..\waptexit\uwaptexit.pas"/>
+        <Caret Line="462" Column="24" TopLine="440"/>
+      </Position10>
+      <Position11>
+        <Filename Value="..\waptexit\uwaptexit.pas"/>
+        <Caret Line="580" Column="43" TopLine="558"/>
+      </Position11>
+      <Position12>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="784" Column="3" TopLine="780"/>
+      </Position12>
+      <Position13>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="567" TopLine="554"/>
+      </Position13>
+      <Position14>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="566" TopLine="553"/>
+      </Position14>
+      <Position15>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="726" Column="102" TopLine="712"/>
+      </Position15>
+      <Position16>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="840" Column="11" TopLine="829"/>
+      </Position16>
+      <Position17>
+        <Filename Value="..\waptexit\uwaptexit.pas"/>
+        <Caret Line="582" Column="12" TopLine="563"/>
+      </Position17>
+      <Position18>
+        <Filename Value="..\waptexit\uwaptexit.pas"/>
+        <Caret Line="589" Column="20" TopLine="567"/>
+      </Position18>
+      <Position19>
+        <Filename Value="..\waptexit\uwaptexit.pas"/>
+        <Caret Line="591" Column="23" TopLine="569"/>
+      </Position19>
+      <Position20>
+        <Filename Value="..\waptexit\uwaptexit.pas"/>
+        <Caret Line="592" Column="51" TopLine="570"/>
+      </Position20>
+      <Position21>
+        <Filename Value="..\waptexit\uwaptexit.pas"/>
+        <Caret Line="597" Column="84" TopLine="575"/>
+      </Position21>
+      <Position22>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="805" Column="21" TopLine="791"/>
+      </Position22>
+      <Position23>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="842" Column="28" TopLine="830"/>
+      </Position23>
+      <Position24>
+        <Filename Value="waptget.lpr"/>
+      </Position24>
+      <Position25>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="46" Column="28" TopLine="33"/>
+      </Position25>
+      <Position26>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="1111" Column="6" TopLine="1101"/>
+      </Position26>
+      <Position27>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="86" Column="13" TopLine="77"/>
+      </Position27>
+      <Position28>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="271" Column="3" TopLine="266"/>
+      </Position28>
+      <Position29>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="1105" Column="85" TopLine="1092"/>
+      </Position29>
+      <Position30>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="92" Column="81" TopLine="87"/>
+      </Position30>
+    </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="11"/>
@@ -102,4 +257,15 @@
       <CustomOptions Value="-dUseCThreads -dENTERPRISE"/>
     </Other>
   </CompilerOptions>
+  <Debugging>
+    <BreakPoints Count="1">
+      <Item1>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="waptget.lpr"/>
+        <Line Value="116"/>
+      </Item1>
+    </BreakPoints>
+  </Debugging>
 </CONFIG>
