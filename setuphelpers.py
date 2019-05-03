@@ -2330,7 +2330,7 @@ def installed_softwares(keywords='',uninstallkey=None,name=None):
                         system_component = 1
                     else:
                         system_component = 0
-                    if (uninstallkey is None and display_name and check_words(subkey+' '+display_name+' '+publisher,mykeywords)) or\
+                    if (uninstallkey is None and name_re is None and display_name and check_words(subkey+' '+display_name+' '+publisher,mykeywords)) or\
                             (uninstallkey is not None and (subkey == uninstallkey)) or\
                             (name_re is not None and name_re.match(display_name)):
                         result.append({'key':subkey,
