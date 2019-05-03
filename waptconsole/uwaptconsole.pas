@@ -1138,8 +1138,8 @@ end;
 
 function GetVeyonPath:String;
 const
-  veyonpathes: Array[0..1] of String = ('C:\Program Files\Veyon\veyon-ctl.exe',
-  'C:\Program Files (x86)\Veyon\veyon-ctl.exe');
+  veyonpathes: Array[0..1] of String = ('C:\Program Files\Veyon\veyon-cli.exe',
+  'C:\Program Files (x86)\Veyon\veyon-cli.exe');
 var
   p:String;
 begin
