@@ -351,20 +351,26 @@ procedure TVisWaptExit.FormCloseQuery(Sender: TObject; var CanClose: boolean);
 begin
   if WAPTServiceRunning then
   begin
-    if Not CheckAllowCancelUpgrade and WorkInProgress then
+    if Not AllowCancelUpgrade and WorkInProgress then
     begin
-      CanClose:= MessageDlg(rsConfirmCancelTask,Format(rsConfirmCancelRunningTask,[Running.S['description']]),
-          mtConfirmation, [mbYes, mbNo, mbCancel],0) = mrYes;
+      CanClose:=False;
       Exit;
     end;
 
     if WorkInProgress then
-      if CheckAllowCancelUpgrade then
+    begin
+      CanClose:= AllowCancelUpgrade and ((Running=Nil) or (MessageDlg(rsConfirmCancelTask,Format(rsConfirmCancelRunningTask,[Running.S['description']]),
+          mtConfirmation, [mbYes, mbNo, mbCancel],0) = mrYes));
+
+      if CanClose then
+      begin
+        if Running<>Nil then
+          WAPTLocalJsonGet('cancel_running_task.json');
         WAPTLocalJsonGet('cancel_all_tasks.json')
-      else
-        Canclose := False
+      end
+    end
     else
-        CanClose := True;
+      CanClose := True;
   end
   else
     CanClose:=True;
