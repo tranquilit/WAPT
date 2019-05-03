@@ -24,10 +24,10 @@ type
     ActSearchPackages: TAction;
     ActionList1: TActionList;
     BtnCancelTasks: TBitBtn;
-    BtnShowTaskBar: TButton;
-    LabPackageList: TLabel;
-    PicLogo: TImage;
+    BtnShowTaskBar: TBCMaterialDesignButton;
+    ImgWaptLogoNoResult: TImage;
     LabelNoResult: TLabel;
+    LabPackageList: TBCLabel;
     BtnUpdateList: TButton;
     BtnShowInstalled: TButton;
     BtnShowNotInstalled: TButton;
@@ -97,7 +97,6 @@ type
     LstTasks: TStringList;
     FAllPackages: ISuperObject;
 
-
     login: String;
     password: String;
 
@@ -125,8 +124,17 @@ type
 var
   VisWaptSelf: TVisWaptSelf;
 
+resourcestring
+ rsLogin = 'Login';
+ rsPassword = 'Password';
+ rsForce = 'An operation has failed do you want to force the installation/removal?'+chr(13)+'Operation : %s';
+ rsAvailablePackages = 'Available packages';
+ rsInstalledPackages = 'Installed packages';
+ rsNotInstalledPackages = 'Not installed packages';
+ rsUpgradablePackages = 'Available updates for installed packages';
+
 implementation
-uses LCLIntf, LCLType, waptwinutils, soutils, strutils, uWaptSelfRes;
+uses LCLIntf, LCLType, waptwinutils, soutils, strutils;
 {$R *.lfm}
 
 { TVisWaptSelf }
@@ -182,14 +190,14 @@ var
             if (package.S['install_version'] = package.S['version']) then //Package installed and updated
               with AFrmPackage do
               begin
-                BtnInstallUpgrade.Caption:=rsStatusInstalled;
+                BtnInstallUpgrade.Caption:='Installed';
                 BtnInstallUpgrade.Enabled:=false;
                 BtnRemove.NormalColor:=clRed;
               end
             else                       //Package installed but not updated
               with AFrmPackage do
               begin
-                BtnInstallUpgrade.Caption:=rsActionUpgradable;
+                BtnInstallUpgrade.Caption:='Upgrade';
                 BtnInstallUpgrade.NormalColor:=$004080FF;
                 LabInstallVersion.Caption:='(over '+UTF8Encode(package.S['install_version'])+')';
                 AdjustFont(AFrmPackage.LabInstallVersion);
@@ -221,7 +229,7 @@ var
                 begin
                   BtnInstallUpgrade.Enabled:=false;
                   BtnInstallUpgrade.NormalColor:=$00C4C4C4;
-                  TextWaitInstall.Caption:=rsWaitingInstall;
+                  TextWaitInstall.Caption:='Waiting for install...';
                   ActionPackage:='install';
                 end
               else
@@ -229,7 +237,7 @@ var
                   ActionPackage:='remove';
                   BtnRemove.Enabled:=false;
                   BtnRemove.NormalColor:=$00C4C4C4;
-                  TextWaitInstall.Caption:=rsWaitingRemove;
+                  TextWaitInstall.Caption:='Waiting for uninstall...';
                   TextWaitInstall.Show;
                 end;
               TextWaitInstall.Show;
@@ -252,15 +260,9 @@ var
       end;
 
     if (idx=1) then
-    begin
-      LabelNoResult.Show;
-      PicLogo.Show;
-    end
+      LabelNoResult.Show
     else
-    begin
       LabelNoResult.Hide;
-      PicLogo.Hide;
-    end;
 
   finally
     FlowPackages.EnableAlign;
@@ -339,12 +341,12 @@ begin
   if ShowTaskBar then
   begin
     Panel3.Hide;
-    BtnShowTaskBar.Caption:=rsShowTaskBar;
+    BtnShowTaskBar.Caption:='Show task bar';
   end
   else
   begin
     Panel3.Show;
-    BtnShowTaskBar.Caption:=rsHideTaskBar;
+    BtnShowTaskBar.Caption:='Hide task bar';
   end;
   ShowTaskBar:=not ShowTaskBar;
 end;
@@ -365,9 +367,9 @@ end;
 procedure TVisWaptSelf.ActSortByDate(Sender: TObject);
 begin
   if not(SortByDateAsc) then
-    BtnSortByDate.Caption:=rsSortByDateAsc
+    BtnSortByDate.Caption:='Sort by date : asc'
   else
-    BtnSortByDate.Caption:=rsSortByDateDesc;
+    BtnSortByDate.Caption:='Sort by date : desc';
   SortByDateAsc:=not(SortByDateAsc);
   ActSearchPackages.Execute;
 end;
@@ -462,9 +464,6 @@ begin
   LstTasks.Sorted:=true;
   LstTasks.Duplicates:=dupIgnore;
   CurrentTaskID:=0;
-
-  if FileExists(WaptBaseDir+'\templates\waptself-logo.png') then
-  PicLogo.Picture.LoadFromFile(WaptBaseDir+'\templates\waptself-logo.png');
 
   LstIcons := FindAllFiles(WaptBaseDir+'\cache\icons','*.png',False);
   LstIcons.OwnsObjects:=True;
@@ -641,7 +640,7 @@ begin
               AFrmPackage.BtnRemove.NormalColor:=clRed;
               AFrmPackage.BtnRemove.Enabled:=true;
               AFrmPackage.ActionPackage:='remove';
-              AFrmPackage.BtnInstallUpgrade.Caption:=rsStatusInstalled;
+              AFrmPackage.BtnInstallUpgrade.Caption:='Installed';
             end;
             AFrmPackage.ProgressBarInstall.Position:=0;
             AFrmPackage.ProgressBarInstall.Hide;
