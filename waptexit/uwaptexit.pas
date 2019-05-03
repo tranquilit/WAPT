@@ -137,7 +137,7 @@ uses soutils,IniFiles,waptcommon,tiscommon,typinfo,IdException,IdExceptionCore;
 
 function  TVisWaptExit.CheckAllowCancelUpgrade:Boolean;
 begin
-  Result := AllowCancelUpgrade and ((Running=Nil) or (Running.datatype=stNull));
+  Result := AllowCancelUpgrade and (Running=Nil);
 end;
 
 procedure TVisWaptExit.SetInitialCountDown(AValue: Integer);
@@ -353,7 +353,8 @@ begin
   begin
     if Not CheckAllowCancelUpgrade and WorkInProgress then
     begin
-      CanClose:=False;
+      CanClose:= MessageDlg(rsConfirmCancelTask,Format(rsConfirmCancelRunningTask,[Running.S['description']]),
+          mtConfirmation, [mbYes, mbNo, mbCancel],0) = mrYes;
       Exit;
     end;
 
@@ -538,7 +539,7 @@ var
 begin
   try
     Tasks := (Sender as TCheckTasksThread).Tasks;
-    if Tasks <> Nil then
+    if (Tasks <> Nil) and (Tasks.AsObject<>Nil) then
     begin
       if Tasks.AsObject.Exists('running') then
       begin
@@ -553,11 +554,6 @@ begin
         if (pending<>Nil) and (pending.DataType=stArray) and (pending.AsArray.Length=0) then
           pending := Nil;
       end;
-    end
-    else
-    begin
-      running := Nil;
-      pending := Nil;
     end;
 
     WAPTServiceRunning := (Sender as TCheckTasksThread).WaptServiceRunning;
@@ -595,7 +591,13 @@ begin
                 EdRunning.Text:= UTF8Encode(running.S['description']+': '+lastEvent.S['data.runstatus'])
               else
                 EdRunning.Text:= UTF8Encode(lastEvent.S['data.runstatus']);
-              ProgressBar.Position:=lastevent.I['data.progress'];
+              if lastevent.I['data.progress']>0 then
+              begin
+                ProgressBar.Style:=pbstNormal;
+                ProgressBar.Position:=lastevent.I['data.progress']
+              end
+              else
+                ProgressBar.Style:=pbstMarquee;
             end;
           'STATUS': GridPendingUpgrades.Data := GetPackageStatus(lastEvent['data']);
         end;

@@ -24,6 +24,8 @@ resourcestring
   rsWUAUpdatesAvailable = '%d Windows Updates pending';
   rsUpgradeRunning = 'Upgrade running...';
   rsErrorTriggeringTask = 'Error triggering action: %s';
+  rsConfirmCancelTask = 'Confirm the cancellation of current task';
+  rsConfirmCancelRunningTask = 'There is a running job %s. Are you sure you want to cancel it ? This may corrupt the current installation.';
 
 implementation
 

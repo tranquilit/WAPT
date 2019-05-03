@@ -7198,9 +7198,10 @@ class Wapt(BaseObjectClass):
 
         """
         if self.progress_hook:
-            self.progress_hook(show_box,msg,progress,progress_max)  # pylint: disable=not-callable
+            return self.progress_hook(show_box,msg,progress,progress_max)  # pylint: disable=not-callable
         else:
-            logger.debug('%s : %s / %s' % (msg,progress,progress_max))
+            print(u'%s : %s / %s' % (msg,progress,progress_max))
+            return False
 
     def get_secured_token_generator(self):
         return TimedJSONWebSignatureSerializer(self.get_token_secret_key(),expires_in=self.token_lifetime)

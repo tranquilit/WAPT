@@ -149,6 +149,14 @@ msgstr ""
 msgid "Closing..."
 msgstr ""
 
+#: uwaptexitres.rsconfirmcancelrunningtask
+msgid "There is a running job %s. Are you sure you want to cancel it ? This may corrupt the current installation."
+msgstr ""
+
+#: uwaptexitres.rsconfirmcanceltask
+msgid "Confirm the cancellation of current task"
+msgstr ""
+
 #: uwaptexitres.rserrortriggeringtask
 msgid "Error triggering action: %s"
 msgstr ""

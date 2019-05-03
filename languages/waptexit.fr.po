@@ -151,6 +151,14 @@ msgstr "Vérification des installations WAPT en attente"
 msgid "Closing..."
 msgstr "Fermeture..."
 
+#: uwaptexitres.rsconfirmcancelrunningtask
+msgid "There is a running job %s. Are you sure you want to cancel it ? This may corrupt the current installation."
+msgstr "Il y a une tâche en cours %s. Êtes-vous sûr de vouloir l'arrêter ? Cela pourrait corrompre votre installation."
+
+#: uwaptexitres.rsconfirmcanceltask
+msgid "Confirm the cancellation of current task"
+msgstr "Confirmer l'arrêt de la tâche en cours"
+
 #: uwaptexitres.rserrortriggeringtask
 msgid "Error triggering action: %s"
 msgstr "Erreur lors du lanacement de l'action: %s"
