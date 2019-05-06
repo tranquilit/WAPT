@@ -57,12 +57,8 @@ type
     procedure CancelTask();
   end;
 
-resourcestring
-  rsImpacted_processes = 'Some processes (see list below) may be closed during installation/removal.'+Chr(13)+'Do you want to continue ?'+Chr(13)+'Impacted processes : %s';
-  rsErrorTriggeringTask = 'Error triggering action: %s';
-
 implementation
-uses Graphics,BCTools,JwaTlHelp32,Windows,Dialogs, uWAPTPollThreads;
+uses Graphics,BCTools,JwaTlHelp32,Windows,Dialogs, uWAPTPollThreads, uWaptSelfRes;
 {$R *.lfm}
 
 { TFrmPackage }
@@ -74,7 +70,7 @@ begin
     LaunchActionPackage(ActionPackage,Package,false);
     BtnInstallUpgrade.Enabled:=false;
     BtnInstallUpgrade.NormalColor:=$00C4C4C4;
-    TextWaitInstall.Caption:='Waiting for install...';
+    TextWaitInstall.Caption:=rsWaitingInstall;
     TextWaitInstall.Show;
     ActionPackage:='install';
     LabDescription.Hide;
@@ -90,7 +86,7 @@ begin
     LaunchActionPackage('remove',Package,false);
     BtnRemove.Enabled:=false;
     BtnRemove.NormalColor:=$00C4C4C4;
-    TextWaitInstall.Caption:='Waiting for uninstall...';
+    TextWaitInstall.Caption:=rsWaitingRemove;
     TextWaitInstall.Show;
     LabDescription.Hide;
   end;
@@ -100,7 +96,7 @@ procedure TFrmPackage.ActTimerInstallRemoveFinished(Sender: TObject);
 begin
   if (ActionPackage='remove') then
   begin
-    BtnInstallUpgrade.Caption:='Install';
+    BtnInstallUpgrade.Caption:=rsActionInstall;
     BtnInstallUpgrade.NormalColor:=clGreen;
     BtnInstallUpgrade.Enabled:=true;
     ActionPackage:='install';
@@ -110,7 +106,7 @@ begin
     BtnRemove.NormalColor:=clRed;
     BtnRemove.Enabled:=true;
     ActionPackage:='remove';
-    BtnInstallUpgrade.Caption:='Installed';
+    BtnInstallUpgrade.Caption:=rsStatusInstalled;
   end;
   ProgressBarInstall.Position:=0;
   ProgressBarInstall.Hide;
@@ -224,7 +220,7 @@ begin
     TaskID:=0;
     if (ActionPackage='install') then
     begin
-      BtnInstallUpgrade.Caption:='Install';
+      BtnInstallUpgrade.Caption:=rsActionInstall;
       BtnInstallUpgrade.NormalColor:=clGreen;
       BtnInstallUpgrade.Enabled:=true;
       ActionPackage:='install';
@@ -234,7 +230,7 @@ begin
       BtnRemove.NormalColor:=clRed;
       BtnRemove.Enabled:=true;
       ActionPackage:='remove';
-      BtnInstallUpgrade.Caption:='Installed';
+      BtnInstallUpgrade.Caption:=rsStatusInstalled;
     end;
     ProgressBarInstall.Position:=0;
     ProgressBarInstall.Style:=pbstMarquee;

@@ -438,10 +438,10 @@ object VisWaptSelf: TVisWaptSelf
         AnchorSideLeft.Control = Panel6
         AnchorSideLeft.Side = asrCenter
         AnchorSideBottom.Control = PicLogo
-        Left = 396
+        Left = 425
         Height = 50
         Top = 344
-        Width = 545
+        Width = 486
         Alignment = taCenter
         Anchors = [akLeft, akBottom]
         BorderSpacing.Top = 20
@@ -966,8 +966,8 @@ object VisWaptSelf: TVisWaptSelf
     Visible = False
     object SOGridTasks: TSOGrid
       Left = 11
-      Height = 708
-      Top = 54
+      Height = 706
+      Top = 56
       Width = 354
       ShowAdvancedColumnsCustomize = False
       KeyFieldsNames = 'id'
@@ -1372,22 +1372,22 @@ object VisWaptSelf: TVisWaptSelf
     end
     object Panel5: TPanel
       Left = 11
-      Height = 43
+      Height = 45
       Top = 11
       Width = 354
       Align = alTop
       AutoSize = True
       BevelOuter = bvNone
       ChildSizing.TopBottomSpacing = 10
-      ClientHeight = 43
+      ClientHeight = 45
       ClientWidth = 354
       TabOrder = 2
       object BtnCancelTasks: TBitBtn
         AnchorSideLeft.Side = asrCenter
         Left = 0
-        Height = 23
+        Height = 25
         Top = 10
-        Width = 81
+        Width = 86
         Action = ActCancelTask
         AutoSize = True
         TabOrder = 0
