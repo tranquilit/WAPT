@@ -1399,7 +1399,7 @@ def reg_closekey(hkey):
     """
     _winreg.CloseKey(hkey)
 
-def reg_openkey_noredir(rootkey, subkeypath, sam=_winreg.KEY_READ,create_if_missing=False):
+def reg_openkey_noredir(rootkey, subkeypath, sam=_winreg.KEY_READ,create_if_missing=False,noredir=True):
     """Open the registry key\subkey with access rights sam
 
     The Wow6432Node redirector is disabled. So one can access 32 and 64 part or the registry
@@ -1410,6 +1410,7 @@ def reg_openkey_noredir(rootkey, subkeypath, sam=_winreg.KEY_READ,create_if_miss
        subkeypath : string like "software\\microsoft\\windows\\currentversion"
        sam        : a boolean combination of KEY_READ | KEY_WRITE
        create_if_missing : True to create the subkeypath if not exists, access rights will include KEY_WRITE
+       noredir (boolean): True by default. disable the redirection to the 32 bits view of registry.
 
     Returns:
         keyhandle :   a key handle for reg_getvalue and reg_set_value
@@ -1417,10 +1418,16 @@ def reg_openkey_noredir(rootkey, subkeypath, sam=_winreg.KEY_READ,create_if_miss
     >>>
 
     """
+
+    # for backward compatibility. wapt is 32bits. If we try to access this vurtual node, reenable redirection
+    if platform.machine() == 'AMD64' and '\\Wow6432Node\\' in subkeypath:
+        subkeypath = subkeypath.replace('\\Wow6432Node\\','\\')
+        noredir = False
+
     if isinstance(subkeypath,unicode):
         subkeypath = subkeypath.encode(locale.getpreferredencoding())
     try:
-        if platform.machine() == 'AMD64':
+        if platform.machine() == 'AMD64' and noredir:
             result = _winreg.OpenKey(rootkey,subkeypath,0, sam | _winreg.KEY_WOW64_64KEY)
         else:
             result = _winreg.OpenKey(rootkey,subkeypath,0,sam)
@@ -1428,7 +1435,7 @@ def reg_openkey_noredir(rootkey, subkeypath, sam=_winreg.KEY_READ,create_if_miss
     except WindowsError as e:
         if e.errno == 2:
             if create_if_missing:
-                if platform.machine() == 'AMD64':
+                if platform.machine() == 'AMD64' and noredir:
                     return _winreg.CreateKeyEx(rootkey,subkeypath,0, sam | _winreg.KEY_READ| _winreg.KEY_WOW64_64KEY | _winreg.KEY_WRITE )
                 else:
                     return _winreg.CreateKeyEx(rootkey,subkeypath,0,sam | _winreg.KEY_READ | _winreg.KEY_WRITE )
@@ -2189,8 +2196,8 @@ def uninstall_cmd(guid):
     ...     print uninstall_cmd(soft['key'])
     [u'C:\\Program Files (x86)\\Notepad++\\uninstall.exe', '/S']
     """
-    def get_fromkey(uninstall):
-        with reg_openkey_noredir(HKEY_LOCAL_MACHINE,"%s\\%s" % (uninstall,guid)) as key:
+    def get_fromkey(uninstall,noredir=True):
+        with reg_openkey_noredir(HKEY_LOCAL_MACHINE,"%s\\%s" % (uninstall,guid),noredir=noredir) as key:
             try:
                 cmd = _winreg.QueryValueEx(key,'QuietUninstallString')[0]
                 # fix silent arg for innosetup
@@ -2248,7 +2255,7 @@ def uninstall_cmd(guid):
         return get_fromkey("Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall")
     except:
         if platform.machine() == 'AMD64':
-            return get_fromkey("Software\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall")
+            return get_fromkey("Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall",noredir=False)
         else:
             raise
 
@@ -2265,7 +2272,7 @@ def uninstall_key_exists(uninstallkey):
 
     if platform.machine() == 'AMD64':
         try:
-            with reg_openkey_noredir(HKEY_LOCAL_MACHINE,"Software\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\%s" % uninstallkey.encode(locale.getpreferredencoding())) as key:
+            with reg_openkey_noredir(HKEY_LOCAL_MACHINE,"Software\Microsoft\\Windows\\CurrentVersion\\Uninstall\\%s" % uninstallkey.encode(locale.getpreferredencoding()),noredir=False) as key:
                 pass
             return True
         except:
@@ -2306,10 +2313,10 @@ def installed_softwares(keywords='',uninstallkey=None,name=None):
             result = result and w in mywords
         return result
 
-    def list_fromkey(uninstall):
+    def list_fromkey(uninstall,noredir=True):
         result = []
         os_encoding=locale.getpreferredencoding()
-        with reg_openkey_noredir(_winreg.HKEY_LOCAL_MACHINE,uninstall) as key:
+        with reg_openkey_noredir(_winreg.HKEY_LOCAL_MACHINE,uninstall,noredir=noredir) as key:
             if isinstance(keywords,str) or isinstance(keywords,unicode):
                 mykeywords = keywords.lower().split()
             else:
@@ -2319,7 +2326,7 @@ def installed_softwares(keywords='',uninstallkey=None,name=None):
             while True:
                 try:
                     subkey = _winreg.EnumKey(key, i).decode(os_encoding)
-                    appkey = reg_openkey_noredir(_winreg.HKEY_LOCAL_MACHINE,"%s\\%s" % (uninstall,subkey.encode(os_encoding)))
+                    appkey = reg_openkey_noredir(_winreg.HKEY_LOCAL_MACHINE,"%s\\%s" % (uninstall,subkey.encode(os_encoding)),noredir=noredir)
                     display_name = reg_getvalue(appkey,'DisplayName','')
                     display_version = reg_getvalue(appkey,'DisplayVersion','')
                     install_date = reg_getvalue(appkey,'InstallDate','')
@@ -2340,7 +2347,8 @@ def installed_softwares(keywords='',uninstallkey=None,name=None):
                             'install_location':install_location.replace('\x00',''),
                             'uninstall_string':uninstallstring.strip('\x00'),
                             'publisher':publisher.replace('\x00',''),
-                            'system_component':system_component,})
+                            'system_component':system_component,
+                            'win64':iswin64() and noredir})
                     i += 1
                 except WindowsError as e:
                     # WindowsError: [Errno 259] No more data is available
@@ -2351,7 +2359,7 @@ def installed_softwares(keywords='',uninstallkey=None,name=None):
         return result
     result = list_fromkey("Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall")
     if iswin64():
-        result.extend(list_fromkey("Software\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall"))
+        result.extend(list_fromkey("Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall",noredir=False))
     return result
 
 def install_location(uninstallkey):
@@ -2396,12 +2404,10 @@ def register_uninstall(uninstallkey,uninstallstring,win64app=False,
         raise Exception('No uninstall key provided')
     if not uninstallstring:
         raise Exception('No uninstallstring provided')
-    if iswin64() and not win64app:
-        root = "Software\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall"
-    else:
-        root = "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall"
+
+    root = "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall"
     with reg_openkey_noredir(_winreg.HKEY_LOCAL_MACHINE,"%s\\%s" % (root,uninstallkey.encode(locale.getpreferredencoding())),
-           sam=_winreg.KEY_ALL_ACCESS,create_if_missing=True) as appkey:
+           sam=_winreg.KEY_ALL_ACCESS,create_if_missing=True,noredir=iswin64() and win64app) as appkey:
         reg_setvalue(appkey,'UninstallString',uninstallstring)
         reg_setvalue(appkey,'InstallDate',currentdate())
         if quiet_uninstall_string:
@@ -3821,7 +3827,7 @@ def get_app_path(exename):
             raise
     if iswin64() and not result:
         try:
-            with reg_openkey_noredir(HKEY_LOCAL_MACHINE,r'SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\App Paths\%s' % exename) as key:
+            with reg_openkey_noredir(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\%s' % exename,noredir=False) as key:
                 result = reg_getvalue(key,None)
         except WindowsError as e:
             if e.winerror == 2:
@@ -3851,7 +3857,7 @@ def get_app_install_location(uninstallkey):
             raise
     if iswin64() and not result:
         try:
-            with reg_openkey_noredir(HKEY_LOCAL_MACHINE,r'SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\%s' % uninstallkey) as key:
+            with reg_openkey_noredir(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\%s' % uninstallkey,noredir=False) as key:
                 result = reg_getvalue(key,'InstallLocation')
         except WindowsError as e:
             if e.winerror == 2:
