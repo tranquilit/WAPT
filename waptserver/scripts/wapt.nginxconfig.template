@@ -29,8 +29,8 @@ server {
     ssl_session_tickets         off;
 
 {% if clients_signing_certificate %}
-    ssl_client_certificate "{{ clients_signing_certificate }}";
-    ssl_verify_client optional;
+    #ssl_client_certificate "{{ clients_signing_certificate }}";
+    #ssl_verify_client optional;
 {% endif %}
 
     gzip_min_length     1000;
