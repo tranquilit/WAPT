@@ -168,7 +168,7 @@ def make_httpd_config(waptserver_root_dir, fqdn, force_https, server_config):
                 crt = key.build_sign_certificate(cn=fqdn,dnsname=fqdn,is_code_signing=False)
                 print('Create X509 cert %s' % wapt_ssl_cert_file)
                 crt.save_as_pem(wapt_ssl_cert_file)
-                
+
 
     else:
         if quiet:
@@ -283,7 +283,7 @@ def selinux_rules():
     """ SELinux httpd security rules """
     run('setsebool -P httpd_can_network_connect 1')
     run('setsebool -P httpd_setrlimit on')
-    for sepath in ('wapt','wapt-host'):
+    for sepath in ('wapt','wapt-host','waptwua'):
         run('semanage fcontext -a -t httpd_sys_content_t "/var/www/html/%s(/.*)?"' %sepath)
         run('restorecon -R -v /var/www/html/%s' %sepath)
 
