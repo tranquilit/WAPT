@@ -38,3 +38,6 @@ if not check_user_exists('wapt'):
     print(subprocess.check_output(cmd,shell=True))
 else:
     print "User wapt already existing, skipping user creation"
+    cmd = "/usr/sbin/usermod -g 33 wapt"
+    print "EXECUTING : %s " %cmd
+    print(subprocess.check_output(cmd,shell=True))
