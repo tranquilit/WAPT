@@ -138,7 +138,7 @@ Filename: "{app}\wapt-get.exe"; Parameters: " update-packages {app}\waptserver\r
 Filename: "{app}\waptpython.exe"; Parameters: "{app}\waptserver\winsetup.py all -c {app}\conf\waptserver.ini -f --setpassword={code:GetWaptServerPassword64}"; StatusMsg: {cm:InstallingServerServices}; Description: "{cm:InstallingServerServices}"; BeforeInstall: SetMarqueeProgress(True); AfterInstall: SetMarqueeProgress(False)
 
 Filename: "{sys}\netsh.exe"; Parameters: "advfirewall firewall del rule name=""WaptServer"""; StatusMsg: {cm:OpenFirewallPort443}; Description: "{cm:OpenFirewallPort443}"; Flags: runhidden;
-Filename: "{sys}\netsh.exe"; Parameters: "advfirewall firewall add rule name=""WaptServer"" protocol=tcp localport=443 dir=in action=allow"; StatusMsg: {cm:OpenFirewallPort443}; Description: "{cm:OpenFirewallPort443}"; Flags: runhidden;
+Filename: "{sys}\netsh.exe"; Parameters: "advfirewall firewall add rule name=""WaptServer"" protocol=tcp localport=443,80 dir=in action=allow"; StatusMsg: {cm:OpenFirewallPort443}; Description: "{cm:OpenFirewallPort443}"; Flags: runhidden;
 
 Filename: "net"; Parameters: "start waptpostgresql"; Flags: runhidden; StatusMsg: "Starting service waptpostgresql"
 Filename: "net"; Parameters: "start waptnginx"; Flags: runhidden; StatusMsg: "Starting service waptnginx"
@@ -234,7 +234,7 @@ fr.WaptAgentDoBuild=Compiler un nouveau waptagent.exe
 fr.ShowWaptServerHomePage=Ouvre la page d'accueil du serveur Wapt dans votre navigateur (Vous devrez vraisemblement accepter le certificat https auto-signé)
 fr.MustSpecifyPackagePrefix=Vous devez spécifier un préfixe de paquet
 fr.MustSpecifyPrivateKeyPassword=Vous devez fournir le mot de passe de la clé privée pour signer le paquet waptupgrade
-fr.OpenFirewallPort443=Autorise les connections TCP sur port 443 pour https
+fr.OpenFirewallPort443=Autorise les connections TCP sur les port 80 et 443
 
 en.RegisteringService=Setup WaptServer Service
 en.InstallMSVC2013=Installing MSVC++ 2013 Redistribuable
@@ -287,7 +287,7 @@ en.WaptAgentDoBuild=Compile a customized waptagent installer and waptupgrade pac
 en.ShowWaptServerHomePage=Open WaptServer homepage in Web browser (You may need to accept self signed https certificate)
 en.MustSpecifyPackagePrefix=You must specify a packages prefix
 en.MustSpecifyPrivateKeyPassword=You must specify the private key's password to sign the waptupgrade package
-en.OpenFirewallPort443=Enable TCP inbound on port 443 for https connections
+en.OpenFirewallPort443=Enable TCP inbound on port 443 and 80 for https connections
 
 de.RegisteringService=Setup WaptServer Service
 de.InstallMSVC2013=MSVC++ 2013 Redistribuable installieren
