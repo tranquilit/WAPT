@@ -214,14 +214,14 @@ object VisWaptSelf: TVisWaptSelf
         AnchorSideTop.Side = asrCenter
         AnchorSideRight.Control = BtnShowTaskBar
         Left = 208
-        Height = 40
-        Top = 5
+        Height = 25
+        Top = 13
         Width = 732
         Alignment = taCenter
         Anchors = [akTop, akLeft, akRight]
         BorderSpacing.Right = 250
         Caption = 'Available packages'
-        Font.Height = 40
+        Font.Height = 25
         ParentColor = False
         ParentFont = False
       end
@@ -439,16 +439,16 @@ object VisWaptSelf: TVisWaptSelf
         AnchorSideLeft.Control = Panel6
         AnchorSideLeft.Side = asrCenter
         AnchorSideBottom.Control = PicLogo
-        Left = 140
-        Height = 50
-        Top = 210
-        Width = 486
+        Left = 217
+        Height = 30
+        Top = 230
+        Width = 333
         Alignment = taCenter
         Anchors = [akLeft, akBottom]
         BorderSpacing.Top = 20
         BorderSpacing.Bottom = 20
         Caption = 'Sorry there is no result found.'
-        Font.Height = 50
+        Font.Height = 30
         Layout = tlCenter
         ParentColor = False
         ParentFont = False
@@ -1146,8 +1146,8 @@ object VisWaptSelf: TVisWaptSelf
     Visible = False
     object SOGridTasks: TSOGrid
       Left = 11
-      Height = 492
-      Top = 56
+      Height = 494
+      Top = 54
       Width = 354
       ShowAdvancedColumnsCustomize = False
       KeyFieldsNames = 'id'
@@ -1553,22 +1553,22 @@ object VisWaptSelf: TVisWaptSelf
     end
     object Panel5: TPanel
       Left = 11
-      Height = 45
+      Height = 43
       Top = 11
       Width = 354
       Align = alTop
       AutoSize = True
       BevelOuter = bvNone
       ChildSizing.TopBottomSpacing = 10
-      ClientHeight = 45
+      ClientHeight = 43
       ClientWidth = 354
       TabOrder = 2
       object BtnCancelTasks: TBitBtn
         AnchorSideLeft.Side = asrCenter
         Left = 0
-        Height = 25
+        Height = 23
         Top = 10
-        Width = 86
+        Width = 81
         Action = ActCancelTask
         AutoSize = True
         TabOrder = 0
