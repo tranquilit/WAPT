@@ -17,6 +17,10 @@
         <TextDesc Value=""/>
       </XPManifest>
       <Icon Value="0"/>
+      <Resources Count="2">
+        <Resource_0 FileName="..\arts\icon_wapt_enterprise.ico" Type="ICON" ResourceName="ICON_WAPT_ENTERPRISE"/>
+        <Resource_1 FileName="..\arts\wapt_enterprise.png" Type="RCDATA" ResourceName="WAPT_ENTERPRISE"/>
+      </Resources>
     </General>
     <i18n>
       <EnableI18N Value="True"/>
@@ -121,42 +125,15 @@
         </Win32>
       </Options>
     </Linking>
+    <Other>
+      <CustomOptions Value="-dENTERPRISE"/>
+    </Other>
   </CompilerOptions>
   <Debugging>
-    <Exceptions Count="11">
+    <Exceptions Count="1">
       <Item1>
-        <Name Value="EAbort"/>
-      </Item1>
-      <Item2>
-        <Name Value="ECodetoolError"/>
-      </Item2>
-      <Item3>
-        <Name Value="EFOpenError"/>
-      </Item3>
-      <Item4>
-        <Name Value="EStringListError"/>
-      </Item4>
-      <Item5>
         <Name Value="FPImageException"/>
-      </Item5>
-      <Item6>
-        <Name Value="EIdHTTPProtocolException"/>
-      </Item6>
-      <Item7>
-        <Name Value="EResNotFound"/>
-      </Item7>
-      <Item8>
-        <Name Value="EIdSocketError"/>
-      </Item8>
-      <Item9>
-        <Name Value="EComponentError"/>
-      </Item9>
-      <Item10>
-        <Name Value="EInvalidOperation"/>
-      </Item10>
-      <Item11>
-        <Name Value="EThread"/>
-      </Item11>
+      </Item1>
     </Exceptions>
   </Debugging>
 </CONFIG>

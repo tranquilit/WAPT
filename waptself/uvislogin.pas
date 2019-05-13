@@ -21,6 +21,7 @@ type
     PanelLogin: TPanel;
     StaticText1: TStaticText;
     StaticText2: TStaticText;
+    procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
   private
 
@@ -43,8 +44,16 @@ procedure TVisLogin.FormShow(Sender: TObject);
 begin
   MakeFullyVisible();
   EdPassword.SetFocus;
+end;
+
+procedure TVisLogin.FormCreate(Sender: TObject);
+begin
+  {$ifdef ENTERPRISE }
   if FileExists(WaptBaseDir+'\templates\waptself-logo.png') then
-    LogoLogin.Picture.LoadFromFile(WaptBaseDir+'\templates\waptself-logo.png');
+    LogoLogin.Picture.LoadFromFile(WaptBaseDir+'\templates\waptself-logo.png')
+  else
+    LogoLogin.Picture.LoadFromResourceName(HINSTANCE,'WAPT_ENTERPRISE');
+  {$endif}
 end;
 
 end.

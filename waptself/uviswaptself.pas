@@ -73,6 +73,7 @@ type
     procedure EdSearchKeyPress(Sender: TObject; var Key: char);
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure ImageLogoClick(Sender: TObject);
     procedure SOGridTasksGetImageIndexEx(Sender: TBaseVirtualTree;
       Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
       var Ghosted: Boolean; var ImageIndex: Integer;
@@ -80,9 +81,6 @@ type
     procedure TimerSearchTimer(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormClose(Sender: TObject);
-  private
-    function GetAllPackages: ISuperObject;
-    procedure OnUpgradeTriggeredAllPackages(Sender : TObject);
   private
     ShowOnlyUpgradable: Boolean;
     ShowOnlyInstalled: Boolean;
@@ -100,6 +98,11 @@ type
 
     login: String;
     password: String;
+
+    function GetAllPackages: ISuperObject;
+    procedure OnUpgradeTriggeredAllPackages(Sender : TObject);
+
+    procedure OnUpgradeAllIcons(Sender : TObject);
 
     //Authentification
     procedure OnLocalServiceAuth(Sender: THttpSend; var ShouldRetry: Boolean;RetryCount:integer);
@@ -122,11 +125,26 @@ type
     CheckEventsThread: TCheckEventsThread;
   end;
 
+  { ThreadGetAllIcons }
+  ThreadGetAllIcons = class(TThread)
+  private
+    FOnNotifyEvent: TNotifyEvent;
+    procedure NotifyListener; Virtual;
+    procedure SetOnNotifyEvent(AValue: TNotifyEvent);
+  public
+    LstIcons : TStringList;
+    ListPackages : ISuperObject;
+    FlowPanel : TFlowPanel;
+    property OnNotifyEvent:TNotifyEvent read FOnNotifyEvent write SetOnNotifyEvent;
+    constructor Create(aNotifyEvent:TNotifyEvent;AllPackages:ISuperObject; aFlowPanel:TFlowPanel);
+    procedure Execute; override;
+  end;
 var
   VisWaptSelf: TVisWaptSelf;
 
+
 implementation
-uses LCLIntf, LCLType, waptwinutils, soutils, strutils, uWaptSelfRes;
+uses LCLIntf, LCLType, waptwinutils, soutils, strutils, uWaptSelfRes, openssl,fphttpclient, IniFiles;
 {$R *.lfm}
 
 { TVisWaptSelf }
@@ -148,9 +166,7 @@ var
     FlowPackages.ControlList.Clear;
 
     idx:=1;
-    maxidx:=((maxSmallint div 188) div 3);
-
-    SortByFields(AllPackages,['signature_date'],not(SortByDateAsc));
+    maxidx:=((maxSmallint div 188) div 2);
 
     for package in AllPackages do
     begin
@@ -170,12 +186,12 @@ var
           strtmp:=UTF8Encode(package.S['signature_date']);
           AFrmPackage.LabDate.Caption:=Copy(strtmp,7,2)+'/'+Copy(strtmp,5,2)+'/'+Copy(strtmp,1,4);
 
+          if (LstIcons<>Nil) then
+          begin
           IconIdx := LstIcons.IndexOf(UTF8Encode(package.S['package']+'.png'));
-          if IconIdx<0 then
-            IconIdx:=LstIcons.IndexOf('unknown.png');
-
           if IconIdx>=0 then
             AFrmPackage.ImgPackage.Picture.Assign(LstIcons.Objects[IconIdx] as TPicture);
+          end;
 
           if (package.S['install_status'] = 'OK') then //Package installed
           begin
@@ -444,12 +460,9 @@ end;
 
 procedure TVisWaptSelf.FormCreate(Sender: TObject);
 var
-  i:integer;
-  g:TPicture;
+  ini : TIniFile;
 begin
   ReadWaptConfig();
-  //TODO : relative path
-  //TODO : get icons pack from server on demand
   ShowOnlyInstalled:=false;
   ShowOnlyNotInstalled:=false;
   ShowOnlyUpgradable:=false;
@@ -463,19 +476,36 @@ begin
   LstTasks.Duplicates:=dupIgnore;
   CurrentTaskID:=0;
 
+  {$ifdef ENTERPRISE }
   if FileExists(WaptBaseDir+'\templates\waptself-logo.png') then
-  PicLogo.Picture.LoadFromFile(WaptBaseDir+'\templates\waptself-logo.png');
+    PicLogo.Picture.LoadFromFile(WaptBaseDir+'\templates\waptself-logo.png')
+  else
+    PicLogo.Picture.LoadFromResourceName(HINSTANCE,'WAPT_ENTERPRISE');
+  {$endif}
 
-  LstIcons := FindAllFiles(WaptBaseDir+'\cache\icons','*.png',False);
-  LstIcons.OwnsObjects:=True;
-  for i := 0 to LstIcons.Count-1 do
-    try
-      g := TPicture.Create;
-      g.LoadFromFile(LstIcons[i]);
-      LstIcons.Objects[i] := g;
-      LstIcons[i] := ExtractFileName(LstIcons[i]);
-    except
-    end;
+  //Create AppLocal/Waptself
+  if not(DirectoryExists(AppLocalDir)) then
+    CreateDir(AppLocalDir);
+  //Create ini
+  if not(FileExists(AppIniFilename)) then
+  begin
+    ini:=TIniFile.Create(AppIniFilename);
+    ini.UpdateFile;
+    FreeAndNil(ini);
+  end;
+end;
+
+procedure TVisWaptSelf.FormDestroy(Sender: TObject);
+begin
+  FreeAndNil(CheckTasksThread);
+  FreeAndNil(CheckEventsThread);
+  FreeAndNil(LstIcons);
+  FreeAndNil(LstTasks);
+end;
+
+procedure TVisWaptSelf.OnUpgradeAllIcons(Sender: TObject);
+begin
+  LstIcons:=(Sender as ThreadGetAllIcons).LstIcons;
 end;
 
 procedure TVisWaptSelf.FormShow(Sender: TObject);
@@ -497,21 +527,18 @@ begin
     CheckEventsThread.Start;
     LastTaskIDOnLaunch:=-1;
     ShowTaskBar:=false;
-
+    GetAllPackages();
+    ThreadGetAllIcons.Create(@OnUpgradeAllIcons,AllPackages,FlowPackages);
     TimerSearch.Enabled:=False;
     TimerSearch.Enabled:=True;
-
   finally
     Screen.Cursor := crDefault;
   end;
 end;
 
-procedure TVisWaptSelf.FormDestroy(Sender: TObject);
+procedure TVisWaptSelf.ImageLogoClick(Sender: TObject);
 begin
-  FreeAndNil(CheckTasksThread);
-  FreeAndNil(CheckEventsThread);
-  FreeAndNil(LstIcons);
-  FreeAndNil(LstTasks);
+  OpenDocument('https://www.tranquil.it');
 end;
 
 procedure TVisWaptSelf.FormClose(Sender: TObject);
@@ -682,7 +709,6 @@ begin
             begin
               TTriggerWaptserviceAction.Create('packages.json?latest=1',@OnUpgradeTriggeredAllPackages,login,password,@OnLocalServiceAuth);
               ProgressBarTaskRunning.Style:=pbstNormal;
-
             end;
           end;
           'STATUS':
@@ -735,7 +761,8 @@ begin
        Package.S['signature_date']:=UTF8Decode(tmp);
     end;
   end;
-  Result := FAllPackages;
+  SortByFields(FAllPackages,['signature_date'],not(SortByDateAsc));
+  Result:=FAllPackages;
 end;
 
 procedure TVisWaptSelf.OnUpgradeTriggeredAllPackages(Sender: TObject);
@@ -745,8 +772,8 @@ var
 begin
   FAllPackages:=(Sender as TTriggerWaptserviceAction).Res;
   if Assigned(FAllPackages) then
+  begin
     for Package in FAllPackages do
-      begin
         if pos('T',Package.S['signature_date'])<>0 then
         begin
            tmp:=UTF8Encode(Package.S['signature_date']);
@@ -756,7 +783,8 @@ begin
            tmp:=ReplaceStr(tmp,'T','-');
            Package.S['signature_date']:=UTF8Decode(tmp);
         end;
-      end;
+    SortByFields(FAllPackages,['signature_date'],not(SortByDateAsc));
+  end;
 end;
 
 function TVisWaptSelf.IsValidFilter(package: ISuperObject): Boolean;
@@ -777,6 +805,97 @@ begin
   for i:=0 to CBKeywords.Items.Count-1 do
     if (CBKeywords.Checked[i]) and (pos(lowercase(CBKeywords.Items[i]),lowercase(package.S['keywords']))=0) then
       exit(false);
+end;
+
+{ ThreadGetAllIcons }
+
+procedure ThreadGetAllIcons.NotifyListener;
+begin
+  If Assigned(FOnNotifyEvent) then
+    FOnNotifyEvent(Self);
+end;
+
+procedure ThreadGetAllIcons.SetOnNotifyEvent(AValue: TNotifyEvent);
+begin
+  if FOnNotifyEvent=AValue then Exit;
+  FOnNotifyEvent:=AValue;
+end;
+
+constructor ThreadGetAllIcons.Create(aNotifyEvent:TNotifyEvent;AllPackages:ISuperObject;aFlowPanel:TFlowPanel);
+begin
+  inherited Create(False);
+  OnNotifyEvent:=aNotifyEvent;
+  LstIcons:=Nil;
+  ListPackages:=AllPackages;
+  FlowPanel:=aFlowPanel;
+  FreeOnTerminate:=True;
+end;
+
+procedure ThreadGetAllIcons.Execute;
+var
+  IconsDir:String;
+  Package : ISuperObject;
+  FS: TStream;
+  Client: TFPHTTPClient;
+  i,IconIdx:integer;
+  g:TPicture;
+  ini:TIniFile;
+  AFrmPackage: TFrmPackage;
+begin
+  IconsDir:=AppLocalDir+'\icons\';
+  ini:=TIniFile.Create(AppIniFilename);
+  if (ini.ReadString('global','LastPackageDate','None') = 'None') or (ini.ReadString('global','LastPackageDate','None') = '') or (ini.ReadString('global','LastPackageDate','None') < (UTF8Encode(ListPackages.O['0'].S['signature_date']))) then
+  begin
+    if not(DirectoryExists(IconsDir)) then
+      CreateDir(IconsDir);
+    InitSSLInterface;
+    Client:=TFPHttpClient.Create(nil);
+    Client.AllowRedirect := true;
+    for Package in ListPackages do
+    begin
+      if (((UTF8Encode(Package.S['signature_date']))<=(ini.ReadString('global','LastPackageDate','None'))) and not((ini.ReadString('global','LastPackageDate','None') = 'None'))) then
+        break;
+      if FileExists(IconsDir+UTF8Encode(Package.S['package'])+'.png') then
+        DeleteFile(IconsDir+UTF8Encode(Package.S['package'])+'.png');
+      FS:=TFileStream.Create(IconsDir+UTF8Encode(Package.S['package'])+'.png',fmCreate or fmOpenWrite);
+      try
+        Client.Get(UTF8Encode(Package.S['repo_url'])+'/icons/'+UTF8Encode(Package.S['package'])+'.png',FS);
+      except
+        On EHTTPClient do
+        begin
+          FreeAndNil(FS);
+          DeleteFile(IconsDir+UTF8Encode(Package.S['package'])+'.png');
+        end;
+      end;
+      FreeAndNil(FS);
+    end;
+    FreeAndNil(Client);
+
+    ini.WriteString('global','LastPackageDate',UTF8Encode(ListPackages.O['0'].S['signature_date']));
+    ini.UpdateFile;
+  end;
+  FreeAndNil(ini);
+
+  LstIcons:=FindAllFiles(IconsDir,'*.png',False);
+  LstIcons.OwnsObjects:=True;
+  for i:=0 to LstIcons.Count-1 do
+    try
+      g:=TPicture.Create;
+      g.LoadFromFile(LstIcons[i]);
+      LstIcons.Objects[i]:=g;
+      LstIcons[i]:=ExtractFileName(LstIcons[i]);
+    except
+    end;
+
+  Synchronize(@NotifyListener);
+
+  for i:=0 to FlowPanel.ControlCount-1 do
+  begin
+    AFrmPackage:=FlowPanel.Controls[i] as TFrmPackage;
+    IconIdx := LstIcons.IndexOf(UTF8Encode(AFrmPackage.Package.S['package'])+'.png');
+    if IconIdx>=0 then
+      AFrmPackage.ImgPackage.Picture.Assign(LstIcons.Objects[IconIdx] as TPicture);
+    end;
 end;
 
 end.

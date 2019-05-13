@@ -9,9 +9,12 @@ uses
   Interfaces, // this includes the LCL widgetset
   Forms, uviswaptself, uFrmPackage, uVisLogin, uWaptSelfRes;
 
-{$R *.res}
+
 
 begin
+  {$ifdef ENTERPRISE }
+  {$R waptself.res}
+  {$endif}
   Application.Scaled:=True;
   RequireDerivedFormResource:=True;
   Application.Initialize;
