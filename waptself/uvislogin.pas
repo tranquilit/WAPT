@@ -13,8 +13,8 @@ type
   { TVisLogin }
 
   TVisLogin = class(TForm)
-    BitBtn1: TBitBtn;
-    BitBtn2: TBitBtn;
+    ButOk: TBitBtn;
+    ButCancel: TBitBtn;
     EdUsername: TEdit;
     EdPassword: TEdit;
     LogoLogin: TImage;
