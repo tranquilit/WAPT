@@ -6,6 +6,7 @@ msgid "ActCancelTask"
 msgstr ""
 
 #: tfrmpackage.btncancel.caption
+msgctxt "tfrmpackage.btncancel.caption"
 msgid "Cancel"
 msgstr ""
 
@@ -53,8 +54,13 @@ msgctxt "tfrmpackage.textwaitinstall.caption"
 msgid "Waiting for install..."
 msgstr ""
 
+#: tvislogin.butcancel.caption
+msgctxt "tvislogin.butcancel.caption"
+msgid "Cancel"
+msgstr ""
+
 #: tvislogin.caption
-msgid "Sign in to WAPT Self-service"
+msgid "Sign in"
 msgstr ""
 
 #: tvislogin.statictext1.caption
@@ -62,7 +68,7 @@ msgid "Login :"
 msgstr ""
 
 #: tvislogin.statictext2.caption
-msgid "Password : "
+msgid "Password :"
 msgstr ""
 
 #: tviswaptself.actcanceltask.caption

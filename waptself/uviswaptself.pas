@@ -490,7 +490,7 @@ begin
   if FileExists(WaptBaseDir+'\templates\waptself-logo.png') then
     PicLogo.Picture.LoadFromFile(WaptBaseDir+'\templates\waptself-logo.png')
   else
-    PicLogo.Picture.LoadFromResourceName(HINSTANCE,'WAPT_ENTERPRISE');
+    PicLogo.Picture.LoadFromResourceName(HINSTANCE,'ENTERPRISE-400PX');
   {$endif}
 
   //Create AppLocal/Waptself

@@ -6,6 +6,7 @@ msgid "ActCancelTask"
 msgstr ""
 
 #: tfrmpackage.btncancel.caption
+msgctxt "tfrmpackage.btncancel.caption"
 msgid "Cancel"
 msgstr "Annuler"
 
@@ -53,9 +54,14 @@ msgctxt "tfrmpackage.textwaitinstall.caption"
 msgid "Waiting for install..."
 msgstr "En attente d'installation..."
 
+#: tvislogin.butcancel.caption
+msgctxt "tvislogin.butcancel.caption"
+msgid "Cancel"
+msgstr "Annuler"
+
 #: tvislogin.caption
-msgid "Sign in to WAPT Self-service"
-msgstr "Se connecter à WAPT self service"
+msgid "Sign in"
+msgstr "Identification"
 
 #: tvislogin.statictext1.caption
 #| msgid "Login : "
@@ -63,7 +69,8 @@ msgid "Login :"
 msgstr "Identifiant : "
 
 #: tvislogin.statictext2.caption
-msgid "Password : "
+#| msgid "Password : "
+msgid "Password :"
 msgstr "Mot de passe : "
 
 #: tviswaptself.actcanceltask.caption
@@ -386,7 +393,7 @@ msgstr "Montrer la barre de tâche"
 #: uwaptselfres.rssortbydateasc
 msgctxt "uwaptselfres.rssortbydateasc"
 msgid "Sort by date : asc"
-msgstr ""
+msgstr "Trier par date : asc"
 
 #: uwaptselfres.rssortbydatedesc
 msgctxt "uwaptselfres.rssortbydatedesc"

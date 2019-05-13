@@ -17,8 +17,9 @@
         <TextDesc Value=""/>
       </XPManifest>
       <Icon Value="0"/>
-      <Resources Count="1">
-        <Resource_0 FileName="..\arts\wapt_enterprise.png" Type="RCDATA" ResourceName="WAPT_ENTERPRISE"/>
+      <Resources Count="2">
+        <Resource_0 FileName="..\arts\enterprise-200px.png" Type="RCDATA" ResourceName="ENTERPRISE-200PX"/>
+        <Resource_1 FileName="..\arts\enterprise-400px.png" Type="RCDATA" ResourceName="ENTERPRISE-400PX"/>
       </Resources>
     </General>
     <i18n>
@@ -126,6 +127,9 @@
     </Linking>
     <Other>
       <CustomOptions Value="-dENTERPRISE"/>
+      <OtherDefines Count="1">
+        <Define0 Value="ENTERPRISE"/>
+      </OtherDefines>
     </Other>
   </CompilerOptions>
   <Debugging>

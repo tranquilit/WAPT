@@ -53,7 +53,7 @@ begin
   if FileExists(WaptBaseDir+'\templates\waptself-logo.png') then
     LogoLogin.Picture.LoadFromFile(WaptBaseDir+'\templates\waptself-logo.png')
   else
-    LogoLogin.Picture.LoadFromResourceName(HINSTANCE,'WAPT_ENTERPRISE');
+    LogoLogin.Picture.LoadFromResourceName(HINSTANCE,'ENTERPRISE-200PX');
   {$endif}
 end;
 
