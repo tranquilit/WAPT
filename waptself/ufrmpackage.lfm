@@ -294,9 +294,9 @@ object FrmPackage: TFrmPackage
     end
     object LabelProgressionInstall: TBCLabel
       Left = 336
-      Height = 15
+      Height = 14
       Top = 105
-      Width = 16
+      Width = 19
       Background.Color = clBlack
       Background.ColorOpacity = 255
       Background.Gradient1.StartColor = clWhite
@@ -551,11 +551,12 @@ object FrmPackage: TFrmPackage
       Visible = False
     end
     object LabDate: TBCLabel
-      Left = 216
-      Height = 16
+      AnchorSideRight.Control = BtnRemove
+      Left = 209
+      Height = 14
       Top = 48
-      Width = 64
-      AutoSize = False
+      Width = 66
+      Anchors = [akTop, akRight]
       Background.Color = clBlack
       Background.ColorOpacity = 255
       Background.Gradient1.StartColor = clWhite
@@ -591,6 +592,7 @@ object FrmPackage: TFrmPackage
       Border.LightWidth = 0
       Border.Style = bboNone
       Border.Width = 1
+      BorderSpacing.Right = 5
       Caption = '19/12/2024'
       FontEx.Color = 7566195
       FontEx.EndEllipsis = False

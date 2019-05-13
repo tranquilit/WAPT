@@ -17,9 +17,8 @@
         <TextDesc Value=""/>
       </XPManifest>
       <Icon Value="0"/>
-      <Resources Count="2">
-        <Resource_0 FileName="..\arts\icon_wapt_enterprise.ico" Type="ICON" ResourceName="ICON_WAPT_ENTERPRISE"/>
-        <Resource_1 FileName="..\arts\wapt_enterprise.png" Type="RCDATA" ResourceName="WAPT_ENTERPRISE"/>
+      <Resources Count="1">
+        <Resource_0 FileName="..\arts\wapt_enterprise.png" Type="RCDATA" ResourceName="WAPT_ENTERPRISE"/>
       </Resources>
     </General>
     <i18n>
@@ -130,10 +129,13 @@
     </Other>
   </CompilerOptions>
   <Debugging>
-    <Exceptions Count="1">
+    <Exceptions Count="2">
       <Item1>
         <Name Value="FPImageException"/>
       </Item1>
+      <Item2>
+        <Name Value="EHTTPClient"/>
+      </Item2>
     </Exceptions>
   </Debugging>
 </CONFIG>

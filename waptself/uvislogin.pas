@@ -18,6 +18,7 @@ type
     EdUsername: TEdit;
     EdPassword: TEdit;
     LogoLogin: TImage;
+    Panel1: TPanel;
     PanelLogin: TPanel;
     StaticText1: TStaticText;
     StaticText2: TStaticText;

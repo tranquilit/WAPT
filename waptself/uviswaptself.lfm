@@ -6,6 +6,7 @@ object VisWaptSelf: TVisWaptSelf
   Caption = 'WAPT Self-service'
   ClientHeight = 803
   ClientWidth = 1351
+  OnClose = FormClose
   OnCreate = FormCreate
   OnShow = FormShow
   ParentBiDiMode = False
@@ -397,7 +398,7 @@ object VisWaptSelf: TVisWaptSelf
     Width = 767
     HorzScrollBar.Page = 1
     VertScrollBar.Increment = 44
-    VertScrollBar.Page = 445
+    VertScrollBar.Page = 443
     VertScrollBar.Smooth = True
     VertScrollBar.Tracking = True
     Align = alClient
@@ -440,7 +441,7 @@ object VisWaptSelf: TVisWaptSelf
         AnchorSideBottom.Control = PicLogo
         Left = 111
         Height = 50
-        Top = 237
+        Top = 238
         Width = 545
         Alignment = taCenter
         Anchors = [akLeft, akBottom]
@@ -459,10 +460,11 @@ object VisWaptSelf: TVisWaptSelf
         AnchorSideTop.Control = Panel6
         AnchorSideTop.Side = asrCenter
         AnchorSideBottom.Side = asrBottom
-        Left = 208
-        Height = 137
-        Top = 307
-        Width = 350
+        Left = 203
+        Height = 134
+        Top = 308
+        Width = 360
+        AutoSize = True
         Center = True
         ParentShowHint = False
         Picture.Data = {

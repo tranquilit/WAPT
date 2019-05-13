@@ -13,6 +13,21 @@ uses
 
 type
 
+  { TThreadGetAllIcons }
+  TThreadGetAllIcons = class(TThread)
+  private
+    FOnNotifyEvent: TNotifyEvent;
+    procedure NotifyListener; Virtual;
+    procedure SetOnNotifyEvent(AValue: TNotifyEvent);
+  public
+    LstIcons : TStringList;
+    ListPackages : ISuperObject;
+    FlowPanel : TFlowPanel;
+    property OnNotifyEvent:TNotifyEvent read FOnNotifyEvent write SetOnNotifyEvent;
+    constructor Create(aNotifyEvent:TNotifyEvent;AllPackages:ISuperObject; aFlowPanel:TFlowPanel);
+    procedure Execute; override;
+  end;
+
   { TVisWaptSelf }
 
   TVisWaptSelf = class(TForm)
@@ -71,6 +86,7 @@ type
     procedure EdSearchButtonClick(Sender: TObject);
     procedure EdSearchChange(Sender: TObject);
     procedure EdSearchKeyPress(Sender: TObject; var Key: char);
+    procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure ImageLogoClick(Sender: TObject);
@@ -95,6 +111,7 @@ type
     LstTasks: TStringList;
     FAllPackages: ISuperObject;
 
+    FThreadGetAllIcons: TThreadGetAllIcons;
 
     login: String;
     password: String;
@@ -125,20 +142,6 @@ type
     CheckEventsThread: TCheckEventsThread;
   end;
 
-  { ThreadGetAllIcons }
-  ThreadGetAllIcons = class(TThread)
-  private
-    FOnNotifyEvent: TNotifyEvent;
-    procedure NotifyListener; Virtual;
-    procedure SetOnNotifyEvent(AValue: TNotifyEvent);
-  public
-    LstIcons : TStringList;
-    ListPackages : ISuperObject;
-    FlowPanel : TFlowPanel;
-    property OnNotifyEvent:TNotifyEvent read FOnNotifyEvent write SetOnNotifyEvent;
-    constructor Create(aNotifyEvent:TNotifyEvent;AllPackages:ISuperObject; aFlowPanel:TFlowPanel);
-    procedure Execute; override;
-  end;
 var
   VisWaptSelf: TVisWaptSelf;
 
@@ -426,6 +429,13 @@ begin
   end;
 end;
 
+procedure TVisWaptSelf.FormClose(Sender: TObject; var CloseAction: TCloseAction
+  );
+begin
+  if Assigned(FThreadGetAllIcons) then
+    FThreadGetAllIcons.Terminate;
+end;
+
 procedure TVisWaptSelf.SOGridTasksGetImageIndexEx(Sender: TBaseVirtualTree;
   Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
   var Ghosted: Boolean; var ImageIndex: Integer; var ImageList: TCustomImageList
@@ -505,7 +515,7 @@ end;
 
 procedure TVisWaptSelf.OnUpgradeAllIcons(Sender: TObject);
 begin
-  LstIcons:=(Sender as ThreadGetAllIcons).LstIcons;
+  LstIcons:=(Sender as TThreadGetAllIcons).LstIcons;
 end;
 
 procedure TVisWaptSelf.FormShow(Sender: TObject);
@@ -528,7 +538,7 @@ begin
     LastTaskIDOnLaunch:=-1;
     ShowTaskBar:=false;
     GetAllPackages();
-    ThreadGetAllIcons.Create(@OnUpgradeAllIcons,AllPackages,FlowPackages);
+    FThreadGetAllIcons := TThreadGetAllIcons.Create(@OnUpgradeAllIcons,AllPackages,FlowPackages);
     TimerSearch.Enabled:=False;
     TimerSearch.Enabled:=True;
   finally
@@ -807,21 +817,21 @@ begin
       exit(false);
 end;
 
-{ ThreadGetAllIcons }
+{ TThreadGetAllIcons }
 
-procedure ThreadGetAllIcons.NotifyListener;
+procedure TThreadGetAllIcons.NotifyListener;
 begin
   If Assigned(FOnNotifyEvent) then
     FOnNotifyEvent(Self);
 end;
 
-procedure ThreadGetAllIcons.SetOnNotifyEvent(AValue: TNotifyEvent);
+procedure TThreadGetAllIcons.SetOnNotifyEvent(AValue: TNotifyEvent);
 begin
   if FOnNotifyEvent=AValue then Exit;
   FOnNotifyEvent:=AValue;
 end;
 
-constructor ThreadGetAllIcons.Create(aNotifyEvent:TNotifyEvent;AllPackages:ISuperObject;aFlowPanel:TFlowPanel);
+constructor TThreadGetAllIcons.Create(aNotifyEvent:TNotifyEvent;AllPackages:ISuperObject;aFlowPanel:TFlowPanel);
 begin
   inherited Create(False);
   OnNotifyEvent:=aNotifyEvent;
@@ -831,7 +841,7 @@ begin
   FreeOnTerminate:=True;
 end;
 
-procedure ThreadGetAllIcons.Execute;
+procedure TThreadGetAllIcons.Execute;
 var
   IconsDir:String;
   Package : ISuperObject;
@@ -853,6 +863,8 @@ begin
     Client.AllowRedirect := true;
     for Package in ListPackages do
     begin
+      if Terminated then
+        Exit;
       if (((UTF8Encode(Package.S['signature_date']))<=(ini.ReadString('global','LastPackageDate','None'))) and not((ini.ReadString('global','LastPackageDate','None') = 'None'))) then
         break;
       if FileExists(IconsDir+UTF8Encode(Package.S['package'])+'.png') then
