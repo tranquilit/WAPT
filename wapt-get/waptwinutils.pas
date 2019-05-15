@@ -586,10 +586,16 @@ begin
     except
       try
         local_version := ReadRegEntry(
-          'SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\WAPT Server_is1',
+          'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\WAPT Server_is1',
           'DisplayVersion');
       except
-        local_version := '';
+        try
+          local_version := ReadRegEntry(
+            'SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\WAPT Server_is1',
+            'DisplayVersion');
+        except
+          local_version := '';
+        end;
       end;
     end;
     // check if looks like actual version string.
@@ -753,12 +759,18 @@ var
   subkey: PAnsiChar;
   Buffer: array[0..255] of ansichar;
   Size: cardinal;
+  Error: Longint;
 begin
   Key := 0;
   Result := '';
   Size := SizeOf(Buffer);
   subkey := PAnsiChar(strSubKey);
-  if RegOpenKeyEx(HKEY_LOCAL_MACHINE, subkey, 0, KEY_READ and KEY_WOW64_64KEY, Key) = ERROR_SUCCESS then
+  Error := RegOpenKeyEx(HKEY_LOCAL_MACHINE, subkey, 0, KEY_READ or KEY_QUERY_VALUE or KEY_WOW64_64KEY, Key);
+
+  //if (Error <> ERROR_SUCCESS) then
+  // Error := RegOpenKeyEx(HKEY_LOCAL_MACHINE, subkey, 0, KEY_READ or KEY_WOW64_32KEY, Key);
+
+  if Error = ERROR_SUCCESS then
     try
       if RegQueryValueEx(Key, PAnsiChar(strValueName), nil, nil, @Buffer, @Size) =
         ERROR_SUCCESS then
