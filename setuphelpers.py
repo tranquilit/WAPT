@@ -2734,37 +2734,39 @@ class EnsureWUAUServRunning(object):
 
     def __enter__(self):
         print ("Ensure wuauserv Auto Update option is disabled")
-        self.old_au_options = registry_readstring(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update','AUOptions',0)
-        c = wmi.WMI()
-        for service in c.Win32_Service (Name='wuauserv'):
-            self.wuaserv_start_mode = service.StartMode
-            self.wuaserv_started = service.Started
-            service.ChangeStartMode(StartMode="manual")
-            service.StartService()
+        if wmi:
+            self.old_au_options = registry_readstring(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update','AUOptions',0)
+            c = wmi.WMI()
+            for service in c.Win32_Service (Name='wuauserv'):
+                self.wuaserv_start_mode = service.StartMode
+                self.wuaserv_started = service.Started
+                service.ChangeStartMode(StartMode="manual")
+                service.StartService()
 
-        start = time.time()
-        for service in c.Win32_Service (Name='wuauserv'):
-            while not service.Started and time.time() - start < 10:
-                time.sleep(1)
-            if not service.Started:
-                raise Exception('Unable to start wuauserv')
+            start = time.time()
+            for service in c.Win32_Service (Name='wuauserv'):
+                while not service.Started and time.time() - start < 10:
+                    time.sleep(1)
+                if not service.Started:
+                    raise Exception('Unable to start wuauserv')
 
         return self
 
     def __exit__(self,type, value, tb):
-        print ("re-enabling wuauserv previous state: %s" % self.old_au_options)
-        registry_set(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update','AUOptions',self.old_au_options)
-        self.old_au_options = None
-        c = wmi.WMI()
-        for service in c.Win32_Service (Name='wuauserv'):
-            if not self.wuaserv_started:
-                service.StopService()
-            service.ChangeStartMode(StartMode=self.wuaserv_start_mode)
+        if wmi:
+            print ("re-enabling wuauserv previous state: %s" % self.old_au_options)
+            registry_set(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update','AUOptions',self.old_au_options)
+            self.old_au_options = None
+            c = wmi.WMI()
+            for service in c.Win32_Service (Name='wuauserv'):
+                if not self.wuaserv_started:
+                    service.StopService()
+                service.ChangeStartMode(StartMode=self.wuaserv_start_mode)
 
-        start = time.time()
-        for service in c.Win32_Service (Name='wuauserv'):
-            while service.Started and time.time() - start < 10:
-                time.sleep(1)
+            start = time.time()
+            for service in c.Win32_Service (Name='wuauserv'):
+                while service.Started and time.time() - start < 10:
+                    time.sleep(1)
 
 
 def critical_system_pending_updates(severities = ['Critical']):
