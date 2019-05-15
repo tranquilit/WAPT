@@ -765,7 +765,7 @@ begin
   Result := '';
   Size := SizeOf(Buffer);
   subkey := PAnsiChar(strSubKey);
-  Error := RegOpenKeyEx(HKEY_LOCAL_MACHINE, subkey, 0, KEY_READ or KEY_QUERY_VALUE or KEY_WOW64_64KEY, Key);
+  Error := RegOpenKeyEx(HKEY_LOCAL_MACHINE, subkey, 0, KEY_READ or KEY_WOW64_64KEY, Key);
 
   //if (Error <> ERROR_SUCCESS) then
   // Error := RegOpenKeyEx(HKEY_LOCAL_MACHINE, subkey, 0, KEY_READ or KEY_WOW64_32KEY, Key);
