@@ -133,13 +133,10 @@
     </Other>
   </CompilerOptions>
   <Debugging>
-    <Exceptions Count="2">
+    <Exceptions Count="1">
       <Item1>
-        <Name Value="FPImageException"/>
+        <Name Value="EIdHTTPProtocolException"/>
       </Item1>
-      <Item2>
-        <Name Value="EHTTPClient"/>
-      </Item2>
     </Exceptions>
   </Debugging>
 </CONFIG>

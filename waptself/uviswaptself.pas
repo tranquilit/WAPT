@@ -20,7 +20,7 @@ type
     procedure NotifyListener; Virtual;
     procedure SetOnNotifyEvent(AValue: TNotifyEvent);
   public
-    LstIcons : TStringList;
+    tmpLstIcons : TStringList;
     ListPackages : ISuperObject;
     FlowPanel : TFlowPanel;
     property OnNotifyEvent:TNotifyEvent read FOnNotifyEvent write SetOnNotifyEvent;
@@ -90,6 +90,8 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure ImageLogoClick(Sender: TObject);
+    procedure ImageLogoOnMouseEnter(Sender: TObject);
+    procedure ImageLogoOnMouseLeave(Sender: TObject);
     procedure SOGridTasksGetImageIndexEx(Sender: TBaseVirtualTree;
       Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
       var Ghosted: Boolean; var ImageIndex: Integer;
@@ -147,14 +149,14 @@ var
 
 
 implementation
-uses LCLIntf, LCLType, waptwinutils, soutils, strutils, uWaptSelfRes, openssl,fphttpclient, IniFiles;
+uses LCLIntf, LCLType, waptwinutils, soutils, strutils, uWaptSelfRes, IniFiles, IdHTTP;
 {$R *.lfm}
 
 { TVisWaptSelf }
 
 procedure TVisWaptSelf.ActSearchPackagesExecute(Sender: TObject);
 var
-  package:ISuperObject;
+  Pck:ISuperObject;
   AFrmPackage:TFrmPackage;
   idx,IconIdx,maxidx:Integer;
   strtmp:String;
@@ -171,71 +173,71 @@ var
     idx:=1;
     maxidx:=((maxSmallint div 188) div 2);
 
-    for package in AllPackages do
+    for Pck in AllPackages do
     begin
-      if IsValidPackage(package) and IsValidKeyword(package) and IsValidFilter(package) then
+      if IsValidPackage(Pck) and IsValidKeyword(Pck) and IsValidFilter(Pck) then
       begin
-          AFrmPackage := TFrmPackage.Create(FlowPackages);
-          AFrmPackage.Parent := FlowPackages;
-          AFrmPackage.Name:='package'+IntToStr(idx);
-          AFrmPackage.LabPackageName.Caption:=UTF8Encode(package.S['package']);
-          AFrmPackage.AdjustFont(AFrmPackage.LabPackageName);
-          AFrmPackage.LabVersion.Caption:=UTF8Encode(package.S['version']);
-          AFrmPackage.AdjustFont(AFrmPackage.LabVersion);
-          AFrmPackage.LabDescription.Caption:=UTF8Encode(package.S['description']);
-          AFrmPackage.LabMaintainer.Caption:='by '+UTF8Encode(package.S['maintainer']);
-          AFrmPackage.AdjustFont(AFrmPackage.LabMaintainer);
-          AFrmPackage.Package:=package;
-          strtmp:=UTF8Encode(package.S['signature_date']);
-          AFrmPackage.LabDate.Caption:=Copy(strtmp,7,2)+'/'+Copy(strtmp,5,2)+'/'+Copy(strtmp,1,4);
+        AFrmPackage:=TFrmPackage.Create(FlowPackages);
+        AFrmPackage.Package:=Pck;
+        with AFrmPackage do
+        begin
+            Parent := FlowPackages;
+            Name:='package'+IntToStr(idx);
+            LabPackageName.Caption:=UTF8Encode(package.S['package']);
+            AdjustFont(LabPackageName);
+            AdjustFont(LabVersion);
+            LabDescription.Caption:=UTF8Encode(package.S['description']);
+            LabMaintainer.Caption:='by '+UTF8Encode(package.S['maintainer']);
+            AdjustFont(LabMaintainer);
 
-          if (LstIcons<>Nil) then
-          begin
-          IconIdx := LstIcons.IndexOf(UTF8Encode(package.S['package']+'.png'));
-          if IconIdx>=0 then
-            AFrmPackage.ImgPackage.Picture.Assign(LstIcons.Objects[IconIdx] as TPicture);
-          end;
+            strtmp:=UTF8Encode(package.S['signature_date']);
+            LabDate.Caption:=Copy(strtmp,7,2)+'/'+Copy(strtmp,5,2)+'/'+Copy(strtmp,1,4);
 
-          if (package.S['install_status'] = 'OK') then //Package installed
-          begin
-            if (package.S['install_version'] = package.S['version']) then //Package installed and updated
-              with AFrmPackage do
-              begin
-                BtnInstallUpgrade.Caption:=rsStatusInstalled;
-                BtnInstallUpgrade.Enabled:=false;
-                BtnRemove.NormalColor:=clRed;
-              end
-            else                       //Package installed but not updated
-              with AFrmPackage do
-              begin
-                BtnInstallUpgrade.Caption:=rsActionUpgradable;
-                BtnInstallUpgrade.NormalColor:=$004080FF;
-                LabInstallVersion.Caption:='(over '+UTF8Encode(package.S['install_version'])+')';
-                AdjustFont(AFrmPackage.LabInstallVersion);
-                LabInstallVersion.Visible:=True;
-                BtnRemove.NormalColor:=clRed;
-                ActionPackage:='install';
-              end;
-          end
-          else         //Package not installed
-            with AFrmPackage do
+            if (LstIcons<>Nil) then
             begin
-              ActionPackage:='install';
-              BtnInstallUpgrade.NormalColor:=clGreen;
-              BtnRemove.Enabled:=false;
+            IconIdx := LstIcons.IndexOf(UTF8Encode(package.S['package']+'.png'));
+            if IconIdx>=0 then
+              ImgPackage.Picture.Assign(LstIcons.Objects[IconIdx] as TPicture);
             end;
 
-          //Identification
-          AFrmPackage.login:=login;
-          AFrmPackage.password:=password;
-          AFrmPackage.OnLocalServiceAuth:=@OnLocalServiceAuth;
-
-          AFrmPackage.LstTasks:=LstTasks;
-          if (LstTasks.IndexOf(UTF8Encode(AFrmPackage.Package.S['package'])))<>-1 then
-          begin
-            AFrmPackage.TaskID:=Integer(LstTasks.Objects[LstTasks.IndexOf(UTF8Encode(AFrmPackage.Package.S['package']))]);
-            with AFrmPackage do
+            if (package.S['install_status'] = 'OK') then //Package installed
             begin
+              LabVersion.Caption:=UTF8Encode(package.S['install_version']);
+              if (package.S['install_version'] >= package.S['version']) then //Package installed and updated
+                begin
+                  BtnInstallUpgrade.Caption:=rsStatusInstalled;
+                  BtnInstallUpgrade.Enabled:=false;
+                  BtnRemove.NormalColor:=clRed;
+                end
+              else                       //Package installed but not updated
+                begin
+                  BtnInstallUpgrade.Caption:=rsActionUpgradable;
+                  BtnInstallUpgrade.NormalColor:=$004080FF;
+                  LabInstallVersion.Caption:='(over '+UTF8Encode(package.S['install_version'])+')';
+                  AdjustFont(LabInstallVersion);
+                  LabInstallVersion.Visible:=True;
+                  BtnRemove.NormalColor:=clRed;
+                  ActionPackage:='install';
+                  LabVersion.Caption:=UTF8Encode(package.S['version']);
+                end;
+            end
+            else         //Package not installed
+              begin
+                ActionPackage:='install';
+                BtnInstallUpgrade.NormalColor:=clGreen;
+                BtnRemove.Enabled:=false;
+                LabVersion.Caption:=UTF8Encode(package.S['version']);
+              end;
+
+            //Identification
+            login:=Self.login;
+            password:=Self.password;
+            OnLocalServiceAuth:=@(Self.OnLocalServiceAuth);
+
+            LstTasks:=Self.LstTasks;
+            if (LstTasks.IndexOf(UTF8Encode(Package.S['package'])))<>-1 then
+            begin
+              TaskID:=Integer(LstTasks.Objects[LstTasks.IndexOf(UTF8Encode(Package.S['package']))]);
               if (ActionPackage='install') then
                 begin
                   BtnInstallUpgrade.Enabled:=false;
@@ -261,7 +263,6 @@ var
                 LabelProgressionInstall.Show;
                 TextWaitInstall.Hide;
               end;
-            end;
           end;
 
           inc(idx);
@@ -269,6 +270,7 @@ var
             break;
         end;
       end;
+    end;
 
     if (idx=1) then
     begin
@@ -471,6 +473,9 @@ end;
 procedure TVisWaptSelf.FormCreate(Sender: TObject);
 var
   ini : TIniFile;
+  IconsDir : String;
+  g : TPicture;
+  i : integer;
 begin
   ReadWaptConfig();
   ShowOnlyInstalled:=false;
@@ -485,6 +490,22 @@ begin
   LstTasks.Sorted:=true;
   LstTasks.Duplicates:=dupIgnore;
   CurrentTaskID:=0;
+
+  IconsDir:=AppLocalDir+'\icons\';
+  LstIcons:=FindAllFiles(IconsDir,'*.png',False);
+  LstIcons.OwnsObjects:=True;
+
+  for i:=0 to LstIcons.Count-1 do
+    try
+      g:=TPicture.Create;
+      g.LoadFromFile(LstIcons[i]);
+      LstIcons.Objects[i]:=g;
+      LstIcons[i]:=ExtractFileName(LstIcons[i]);
+    except
+      //FreeAndNil(g);
+      //DeleteFile(IconsDir+LstIcons[i]);
+      //LstIcons.Delete(LstIcons.IndexOf(LstIcons[i]));
+    end;
 
   {$ifdef ENTERPRISE }
   if FileExists(WaptBaseDir+'\templates\waptself-logo.png') then
@@ -509,13 +530,9 @@ procedure TVisWaptSelf.FormDestroy(Sender: TObject);
 begin
   FreeAndNil(CheckTasksThread);
   FreeAndNil(CheckEventsThread);
+  FreeAndNil(FThreadGetAllIcons);
   FreeAndNil(LstIcons);
   FreeAndNil(LstTasks);
-end;
-
-procedure TVisWaptSelf.OnUpgradeAllIcons(Sender: TObject);
-begin
-  LstIcons:=(Sender as TThreadGetAllIcons).LstIcons;
 end;
 
 procedure TVisWaptSelf.FormShow(Sender: TObject);
@@ -551,10 +568,21 @@ begin
   OpenDocument('https://www.tranquil.it');
 end;
 
+procedure TVisWaptSelf.ImageLogoOnMouseEnter(Sender: TObject);
+begin
+  Screen.Cursor := crHandPoint;
+end;
+
+procedure TVisWaptSelf.ImageLogoOnMouseLeave(Sender: TObject);
+begin
+  Screen.Cursor := crDefault;
+end;
+
 procedure TVisWaptSelf.FormClose(Sender: TObject);
 begin
   CheckTasksThread.Terminate;
   CheckEventsThread.Terminate;
+  FThreadGetAllIcons.Terminate;
 end;
 
 procedure TVisWaptSelf.OnLocalServiceAuth(Sender: THttpSend; var ShouldRetry: Boolean;RetryCount:integer);
@@ -835,7 +863,6 @@ constructor TThreadGetAllIcons.Create(aNotifyEvent:TNotifyEvent;AllPackages:ISup
 begin
   inherited Create(False);
   OnNotifyEvent:=aNotifyEvent;
-  LstIcons:=Nil;
   ListPackages:=AllPackages;
   FlowPanel:=aFlowPanel;
   FreeOnTerminate:=True;
@@ -845,69 +872,95 @@ procedure TThreadGetAllIcons.Execute;
 var
   IconsDir:String;
   Package : ISuperObject;
-  FS: TStream;
-  Client: TFPHTTPClient;
   i,IconIdx:integer;
-  g:TPicture;
-  ini:TIniFile;
+  ini, iniWaptGet:TIniFile;
   AFrmPackage: TFrmPackage;
+  LstRepo: TStringList;
+  Repo : TWaptRepo;
+  Sep : TSysCharSet;
+  g:TPicture;
 begin
-  IconsDir:=AppLocalDir+'\icons\';
+  IconsDir:=AppLocalDir+'icons\';
   ini:=TIniFile.Create(AppIniFilename);
-  if (ini.ReadString('global','LastPackageDate','None') = 'None') or (ini.ReadString('global','LastPackageDate','None') = '') or (ini.ReadString('global','LastPackageDate','None') < (UTF8Encode(ListPackages.O['0'].S['signature_date']))) then
+
+  LstRepo:=TStringList.Create;
+  LstRepo.Sorted:=true;
+  LstRepo.Duplicates:=dupIgnore;
+
+  Repo:=TWaptRepo.Create();
+  Repo.LoadFromInifile(WaptIniFilename,'global');
+  LstRepo.AddObject('wapt',Repo);
+
+  iniWaptGet:=TIniFile.Create(WaptIniFilename);
+  Sep:=[','];
+  if not (iniWaptGet.ReadString('global','repositories','') = '') then
+  begin
+    i:=1;
+    while (ExtractWord(i,iniWaptGet.ReadString('global','repositories',''),Sep) <> '') do
+    begin
+      Repo:=TWaptRepo.Create();
+      Repo.LoadFromInifile(WaptIniFilename,ExtractWord(i,iniWaptGet.ReadString('global','repositories',''),Sep));
+      LstRepo.AddObject(ExtractWord(i,iniWaptGet.ReadString('global','repositories',''),Sep),Repo);
+      inc(i);
+    end;
+  end;
+
+  if (ini.ReadString('global','LastPackageDate','') = '') or (ini.ReadString('global','LastPackageDate','') < (UTF8Encode(ListPackages.O['0'].S['signature_date']))) then
   begin
     if not(DirectoryExists(IconsDir)) then
       CreateDir(IconsDir);
-    InitSSLInterface;
-    Client:=TFPHttpClient.Create(nil);
-    Client.AllowRedirect := true;
     for Package in ListPackages do
     begin
+      tmpLstIcons:=TStringList.Create;
+      tmpLstIcons.OwnsObjects:=True;
       if Terminated then
-        Exit;
+        break;
       if (((UTF8Encode(Package.S['signature_date']))<=(ini.ReadString('global','LastPackageDate','None'))) and not((ini.ReadString('global','LastPackageDate','None') = 'None'))) then
         break;
       if FileExists(IconsDir+UTF8Encode(Package.S['package'])+'.png') then
         DeleteFile(IconsDir+UTF8Encode(Package.S['package'])+'.png');
-      FS:=TFileStream.Create(IconsDir+UTF8Encode(Package.S['package'])+'.png',fmCreate or fmOpenWrite);
       try
-        Client.Get(UTF8Encode(Package.S['repo_url'])+'/icons/'+UTF8Encode(Package.S['package'])+'.png',FS);
-      except
-        On EHTTPClient do
-        begin
-          FreeAndNil(FS);
+        TWaptRepo(LstRepo.Objects[LstRepo.IndexOf(UTF8Encode(Package.S['repo']))]).IdWgetFromRepo(UTF8Encode(Package.S['repo_url'])+'/icons/'+UTF8Encode(Package.S['package'])+'.png',IconsDir+UTF8Encode(Package.S['package'])+'.png',Nil,Nil,Nil);
+        try
+          tmpLstIcons.Add(IconsDir+UTF8Encode(Package.S['package'])+'.png');
+          g:=TPicture.Create;
+          g.LoadFromFile(tmpLstIcons[tmpLstIcons.IndexOf(IconsDir+UTF8Encode(Package.S['package'])+'.png')]);
+          tmpLstIcons.Objects[tmpLstIcons.IndexOf(IconsDir+UTF8Encode(Package.S['package'])+'.png')]:=g;
+          tmpLstIcons[tmpLstIcons.IndexOf(IconsDir+UTF8Encode(Package.S['package'])+'.png')]:=ExtractFileName(tmpLstIcons[tmpLstIcons.IndexOf(IconsDir+UTF8Encode(Package.S['package'])+'.png')]);
+        except
+          FreeAndNil(g);
           DeleteFile(IconsDir+UTF8Encode(Package.S['package'])+'.png');
+          tmpLstIcons.Delete(tmpLstIcons.IndexOf(IconsDir+UTF8Encode(Package.S['package'])+'.png'));
+        end;
+      except
+        On EIdHttpProtocolException do
+          DeleteFile(IconsDir+UTF8Encode(Package.S['package'])+'.png');
+      end;
+      for i:=0 to FlowPanel.ControlCount-1 do
+      begin
+        AFrmPackage:=FlowPanel.Controls[i] as TFrmPackage;
+        if (UTF8Encode(AFrmPackage.Package.S['package'])=UTF8Encode(Package.S['package'])) then
+        begin
+          IconIdx := tmpLstIcons.IndexOf(UTF8Encode(AFrmPackage.Package.S['package'])+'.png');
+          if IconIdx>=0 then
+            AFrmPackage.ImgPackage.Picture.Assign(tmpLstIcons.Objects[IconIdx] as TPicture);
         end;
       end;
-      FreeAndNil(FS);
+      Synchronize(@NotifyListener);
     end;
-    FreeAndNil(Client);
-
-    ini.WriteString('global','LastPackageDate',UTF8Encode(ListPackages.O['0'].S['signature_date']));
-    ini.UpdateFile;
   end;
+  ini.WriteString('global','LastPackageDate',UTF8Encode(ListPackages.O['0'].S['signature_date']));
+  ini.UpdateFile;
+  FreeAndNil(g);
   FreeAndNil(ini);
+  FreeAndNil(iniWaptGet);
+  FreeAndNil(Repo);
+  FreeAndNil(LstRepo);
+end;
 
-  LstIcons:=FindAllFiles(IconsDir,'*.png',False);
-  LstIcons.OwnsObjects:=True;
-  for i:=0 to LstIcons.Count-1 do
-    try
-      g:=TPicture.Create;
-      g.LoadFromFile(LstIcons[i]);
-      LstIcons.Objects[i]:=g;
-      LstIcons[i]:=ExtractFileName(LstIcons[i]);
-    except
-    end;
-
-  Synchronize(@NotifyListener);
-
-  for i:=0 to FlowPanel.ControlCount-1 do
-  begin
-    AFrmPackage:=FlowPanel.Controls[i] as TFrmPackage;
-    IconIdx := LstIcons.IndexOf(UTF8Encode(AFrmPackage.Package.S['package'])+'.png');
-    if IconIdx>=0 then
-      AFrmPackage.ImgPackage.Picture.Assign(LstIcons.Objects[IconIdx] as TPicture);
-    end;
+procedure TVisWaptSelf.OnUpgradeAllIcons(Sender: TObject);
+begin
+  LstIcons.AddStrings((Sender as TThreadGetAllIcons).tmpLstIcons);
 end;
 
 end.

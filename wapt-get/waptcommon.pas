@@ -197,8 +197,9 @@ type
     procedure SetTimeOut(AValue: Double);
   public
     constructor Create(AName:String='';ARepoURL:String='');
-    procedure LoadFromInifile(IniFilename:String;Section:String;Reset:Boolean=True);
+    procedure LoadFromInifile(IniFilename:String;Section:String;Reset:Boolean=False);
     procedure SaveToInifile(IniFilename:String;Section:String);
+    function IdWgetFromRepo(const fileURL, DestFileName: Utf8String; CBReceiver:TObject=Nil;progressCallback:TProgressCallback=Nil;CookieManage:TIdCookieManager=Nil): boolean;
     property Packages:ISuperObject read FPackages write SetPackages;
 
   published
@@ -476,7 +477,7 @@ end;
     FIsUpdated := False;
   end;
 
-  procedure TWaptRepo.LoadFromInifile(IniFilename: String; Section: String;Reset:Boolean=True);
+  procedure TWaptRepo.LoadFromInifile(IniFilename: String; Section: String;Reset:Boolean=False);
   begin
     if Section ='' then
       Section := Name;
@@ -531,6 +532,11 @@ end;
     finally
       Free;
     end;
+  end;
+
+  function TWaptRepo.IdWgetFromRepo(const fileURL, DestFileName: Utf8String; CBReceiver:TObject=Nil;progressCallback:TProgressCallback=Nil;CookieManage:TIdCookieManager=Nil): boolean;
+  begin
+     Result:=IdWget(fileURL,DestFileName,CBReceiver,progressCallback,HttpProxy,'',ServerCABundle,Nil,ClientCertificatePath,ClientPrivateKeyPath);
   end;
 
   { HTTPException }

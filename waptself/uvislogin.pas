@@ -55,6 +55,12 @@ begin
   else
     LogoLogin.Picture.LoadFromResourceName(HINSTANCE,'ENTERPRISE-200PX');
   {$endif}
+  if Screen.PixelsPerInch <> 96 then
+  begin
+     LogoLogin.AutoSize:=false;
+     LogoLogin.AntialiasingMode:=amOn;
+  end;
+
 end;
 
 end.
