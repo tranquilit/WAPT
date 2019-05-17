@@ -303,6 +303,9 @@ class Packages(WaptBaseModel):
     depends = ArrayField(CharField,null=True)
     conflicts = ArrayField(CharField,null=True)
     audit_schedule = CharField(null=True)
+    valid_from = CharField(null=True)
+    valid_until = CharField(null=True)
+    forced_install_on = CharField(null=True)
     installed_size = BigIntegerField(null=True)
     target_os = CharField(null=True)
     min_os_version = CharField(null=True)
@@ -310,6 +313,7 @@ class Packages(WaptBaseModel):
     min_wapt_version = CharField(null=True)
     impacted_process = ArrayField(CharField,null=True)
     keywords = ArrayField(CharField,null=True)
+    name = CharField(null=True)
     licence = CharField(null=True)
     editor = CharField(null=True)
     homepage = CharField(null=True)
@@ -1717,6 +1721,16 @@ def upgrade_db_structure():
         with wapt_db.atomic():
             logger.info("Migrating from %s to %s" % (get_db_version(), next_version))
             opes = []
+
+            columns = [c.name for c in wapt_db.get_columns('packages')]
+            if not 'name' in columns:
+                opes.append(migrator.add_column(Packages._meta.name, 'name',Packages.name))
+            if not 'valid_from' in columns:
+                opes.append(migrator.add_column(Packages._meta.name, 'valid_from',Packages.valid_from))
+            if not 'valid_until' in columns:
+                opes.append(migrator.add_column(Packages._meta.name, 'valid_until',Packages.valid_until))
+            if not 'forced_install_on' in columns:
+                opes.append(migrator.add_column(Packages._meta.name, 'forced_install_on',Packages.forced_install_on))
 
             migrate(*opes)
             (v, created) = ServerAttribs.get_or_create(key='db_version')

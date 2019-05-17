@@ -246,7 +246,7 @@ class HostCapabilities(BaseObjectClass):
             'site', 'wapt_version', 'wapt_edition', 'packages_trusted_ca_fingerprints',
             'packages_blacklist', 'packages_whitelist', 'packages_locales',
             'packages_maturities', 'use_host_packages','host_packages_names',
-            'host_profiles', 'host_certificate_fingerprint','host_certificate_authority_key_identifier']
+            'host_profiles', 'host_certificate_fingerprint','host_certificate_authority_key_identifier','on_date']
     def __init__(self,**kwargs):
         self.uuid = None
         self.language = None
@@ -268,6 +268,8 @@ class HostCapabilities(BaseObjectClass):
         self.host_packages_names = None
         self.host_certificate_fingerprint = None
         self.host_certificate_authority_key_identifier = None
+        self.on_date = None
+
         for (k,v) in kwargs.iteritems():
             if hasattr(self,k):
                 setattr(self,k,v)
@@ -311,6 +313,13 @@ class HostCapabilities(BaseObjectClass):
         """Check if package_entry is matching the current capabilities and restrictions
 
         """
+        if self.on_date is not None:
+            if package_entry.valid_from and package_entry.valid_from > self.on_date:
+                return False
+
+            if package_entry.valid_until and self.on_date >= package_entry.valid_until:
+                return False
+
         if self.packages_blacklist is not None:
             for bl in self.packages_blacklist:  # pylint: disable=not-an-iterable
                 if glob.fnmatch.fnmatch(package_entry.package,bl):
@@ -800,10 +809,10 @@ class PackageEntry(BaseObjectClass):
     """
     # minim attributes for a valid control file
     required_attributes = ['package','version','architecture','section','priority']
-    optional_attributes = ['maintainer','description','depends','conflicts','maturity',
+    optional_attributes = ['name','maintainer','description','depends','conflicts','maturity',
         'locale','target_os','min_os_version','max_os_version','min_wapt_version',
         'sources','installed_size','impacted_process','description_fr','description_pl','description_de','description_es','audit_schedule',
-        'editor','keywords','licence','homepage','package_uuid']
+        'editor','keywords','licence','homepage','package_uuid','valid_from','valid_until','forced_install_on']
     # attributes which are added by _sign_control
     signature_attributes = ['signer','signer_fingerprint','signature','signature_date','signed_attributes']
 
@@ -867,6 +876,7 @@ class PackageEntry(BaseObjectClass):
         self.section=section
         self.priority='optional'
 
+        self.name=''
         self.maintainer=''
         self.description=''
         self.depends=''
@@ -890,11 +900,14 @@ class PackageEntry(BaseObjectClass):
         self.installed_size=''
 
         self.audit_schedule=''
-
         self.impacted_process=''
         self.keywords=''
         self.editor=''
         self.licence=''
+
+        self.valid_from=''
+        self.valid_until=''
+        self.forced_install_on=''
 
         self.homepage = ''
         self.package_uuid = ''
