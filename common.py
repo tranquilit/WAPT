@@ -5052,7 +5052,7 @@ class Wapt(BaseObjectClass):
 
         # ini configured profiles
         if self.host_profiles:
-            result.extend(make_valid_package_name(self.host_profiles))
+            result.extend([make_valid_package_name(p) for p in self.host_profiles])
 
         previous_dn_part_type = ''
         host_dn = self.host_dn
