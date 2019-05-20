@@ -309,15 +309,15 @@ class HostCapabilities(BaseObjectClass):
             max_os_version=self.os_version,
             )
 
-    def is_matching_package(self,package_entry):
+    def is_matching_package(self,package_entry,for_datetime=None):
         """Check if package_entry is matching the current capabilities and restrictions
 
         """
-        if self.on_date is not None:
-            if package_entry.valid_from and package_entry.valid_from > self.on_date:
+        if for_datetime is not None:
+            if package_entry.valid_from and package_entry.valid_from > for_datetime:
                 return False
 
-            if package_entry.valid_until and self.on_date >= package_entry.valid_until:
+            if package_entry.valid_until and for_datetime >= package_entry.valid_until:
                 return False
 
         if self.packages_blacklist is not None:

@@ -690,6 +690,17 @@ class WaptDB(WaptBaseDB):
           persistent_dir varchar(255)
           )
           """)
+
+          # in a separate table :
+          # upgrade_action -> 'INSTALL, UPGRADE, REMOVE'
+          # related_package_uuid  -> package which will replace
+          # upgrade_planned_on
+          # upgrade_deadline
+          # upgrade_allowed_schedules
+          # retry_count
+          # max_retry_count
+
+
         self.db.execute("""
         create index if not exists idx_localstatus_name on wapt_localstatus(package);
         """)
@@ -4135,9 +4146,20 @@ class Wapt(BaseObjectClass):
                     self.waptdb.purge_repo(repo.name)
                     repo_packages =  repo.packages()
                     discarded.extend(repo.discarded)
+
+                    next_update_on = '9999-12-31'
+
                     for package in repo_packages:
+                        # if there are time related restriction, we should check again at that time in the future.
+                        if package.valid_from:
+                            next_update_on = min(next_update_on,package.valid_from)
+                        if package.valid_until:
+                            next_update_on = min(next_update_on,package.valid_until)
+                        if package.forced_install_on:
+                            next_update_on = min(next_update_on,package.forced_install_on)
+
                         if self.filter_on_host_cap:
-                            if not host_capabilities.is_matching_package(package):
+                            if not host_capabilities.is_matching_package(package,datetime2isodate()):
                                 discarded.append(package)
                                 continue
                         try:
@@ -4150,7 +4172,8 @@ class Wapt(BaseObjectClass):
                     self.waptdb.set_param('last-%s' % repo.repo_url[:59],repo.packages_date())
                     self.waptdb.set_param('last-url-%s' % repo.name, repo.repo_url)
                     self.waptdb.set_param('last-discarded-%s' % repo.name, [p.as_key() for p in discarded])
-                    return last_modified
+                    self.waptdb.set_param('next-update-%s' % repo.name,next_update_on)
+                    return (last_modified,next_update_on)
                 except Exception as e:
                     logger.info(u'Unable to update repository status of %s, error %s'%(repo._repo_url,e))
                     # put back cached status data
@@ -4158,7 +4181,7 @@ class Wapt(BaseObjectClass):
                         setattr(repo,k,v)
                     raise
         else:
-            return self.waptdb.get_param('last-%s' % repo.repo_url[:59])
+            return (self.waptdb.get_param('last-%s' % repo.repo_url[:59]),self.waptdb.get_param('next-update-%s' % repo.name,'9999-12-31'))
 
     def get_host_architecture(self):
         if setuphelpers.iswin64():
@@ -4291,17 +4314,23 @@ class Wapt(BaseObjectClass):
             self.waptdb.db.execute('delete from wapt_params where name like "last-http%%" and name not in (%s)' % (','.join('"last-%s"'% r.repo_url for r in self.repositories)))
             self.waptdb.db.execute('delete from wapt_params where name like "last-url-%%" and name not in (%s)' % (','.join('"last-url-%s"'% r.name for r in self.repositories)))
             self.waptdb.db.execute('delete from wapt_params where name like "last-discarded-%%-" and name not in (%s)' % (','.join('"last-discarded-%s"'% r.name for r in self.repositories)))
+
+            # to check the next time we should update the local repositories
+            next_update_on='9999-12-31'
+
             for repo in self.repositories:
                 # if auto discover, repo_url can be None if no network.
                 if repo.repo_url:
                     try:
-                        result[repo.name] = self._update_db(repo,force=force)
+                        (result[repo.name],repo_next_update_on) = self._update_db(repo,force=force)
+                        next_update_on = min(next_update_on,repo_next_update_on)
                     except Exception as e:
                         logger.critical(u'Error merging Packages from %s into db: %s' % (repo.repo_url,ensure_unicode(e)))
                 else:
                     logger.info('No location found for repository %s, skipping' % (repo.name))
             if self.filter_on_host_cap:
                 self.write_param('host_capabilities_fingerprint',new_capa)
+            self.write_param('next_update_on',next_update_on)
         return result
 
 
@@ -4331,7 +4360,7 @@ class Wapt(BaseObjectClass):
         self.write_param('host_ad_groups_ttl',0.0)
         previous = self.waptdb.known_packages()
         # (main repo is at the end so that it will used in priority)
-        self._update_repos_list(force=force)
+        next_update_on = self._update_repos_list(force=force)
 
         current = self.waptdb.known_packages()
         result = {
@@ -4342,6 +4371,7 @@ class Wapt(BaseObjectClass):
             "repos" : [r.repo_url for r in self.repositories],
             "upgrades": self.list_upgrade(),
             "date":datetime2isodate(),
+            "next_update_on": next_update_on,
             }
 
         self.store_upgrade_status(result['upgrades'])

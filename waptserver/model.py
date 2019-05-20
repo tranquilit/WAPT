@@ -1732,6 +1732,9 @@ def upgrade_db_structure():
             if not 'forced_install_on' in columns:
                 opes.append(migrator.add_column(Packages._meta.name, 'forced_install_on',Packages.forced_install_on))
 
+            if not 'hosts_server_uuid_listening' in [i.name for i in wapt_db.get_indexes('hosts')]:
+                wapt_db.execute_sql('create index hosts_server_uuid_listening on hosts(server_uuid,listening_address)')
+
             migrate(*opes)
             (v, created) = ServerAttribs.get_or_create(key='db_version')
             v.value = next_version
