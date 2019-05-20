@@ -411,7 +411,7 @@ begin
     ini.Free;
   end;
 
-  WaitingCountDown:=True;
+  WaitingCountDown:=False;
 
 end;
 

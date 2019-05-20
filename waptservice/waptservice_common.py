@@ -505,8 +505,8 @@ class WaptTask(object):
     def progress(self,value):
         self._progress = value
         if time.time() - self._last_status_time >= 1:
-            if self.wapt.events:
-                self.wapt.events.post_event('TASK_STATUS',self.as_dict())
+            if self.task_manager.events:
+                self.task_manager.events.post_event('TASK_STATUS',self.as_dict())
                 self._last_status_time = time.time()
 
     @property
@@ -520,8 +520,8 @@ class WaptTask(object):
         if self.wapt:
             self.wapt.runstatus = value
             if time.time() - self._last_status_time >= 1.0:
-                if self.wapt.events:
-                    self.wapt.events.post_event('TASK_STATUS',self.as_dict())
+                if self.task_manager.events:
+                    self.task_manager.events.post_event('TASK_STATUS',self.as_dict())
                     self._last_status_time = time.time()
 
     def update_status(self,status):
@@ -552,8 +552,8 @@ class WaptTask(object):
             self._progress=100.0
         finally:
             self.finish_date = datetime.datetime.now()
-            if self.wapt and self.wapt.events:
-                self.wapt.events.post_event('TASK_STATUS',self.as_dict())
+            if self.wapt and self.task_manager.events:
+                self.task_manager.events.post_event('TASK_STATUS',self.as_dict())
 
     def kill(self):
         """if task has been started, kill the task (ex: kill the external processes"""
