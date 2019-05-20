@@ -57,3 +57,12 @@
 
 
 #include "common.iss"
+
+
+[RUN]
+Filename: "{app}\waptself.exe"; Flags: postinstall runascurrentuser skipifsilent shellexec; StatusMsg: {cm:RunWaptSelfService}; Description: "{cm:RunWaptSelfService}"
+
+[CustomMessages]
+fr.RunWaptSelfService=Lancer le Self service applicatif WAPT
+en.RunWaptSelfService=Start WAPT Self service
+de.RunWaptSelfService=WAPT Self Service Konsole starten
