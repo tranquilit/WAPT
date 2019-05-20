@@ -1498,7 +1498,7 @@ class WaptTaskManager(threading.Thread):
         if waptconfig.waptupdate_task_period is not None:
             if self.last_update is None or \
                     (datetime.datetime.now() - self.last_update) > get_time_delta(waptconfig.waptupdate_task_period,'m') or \
-                    (datetime.datetime.now() > self.wapt.read_param('next_update_on','9999-12-31')):
+                    (setuphelpers.datetime2isodate() > self.wapt.read_param('next_update_on','9999-12-31')):
                 try:
                     self.wapt.update()
                     reqs = self.wapt.check_downloads()
