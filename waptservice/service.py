@@ -718,6 +718,14 @@ def get_checkupgrades():
             row = cur.fetchone()
             if row:
                 data = json.loads(row['value'])
+                # update runing_tasks.
+                if app.task_manager:
+                    with app.task_manager.status_lock:
+                        if app.task_manager.running_task:
+                            data['running_tasks'] = [app.task_manager.running_task.as_dict()]
+                        else:
+                            data['running_tasks'] = []
+                        data['pending_tasks'] = [task.as_dict() for task in sorted(app.task_manager.tasks_queue.queue)]
 
                 # if enterprise, add waptwua status
                 query = u"""select * from wapt_params where name="waptwua.status" limit 1"""
@@ -1168,6 +1176,7 @@ def tasks():
     start_time = time.time()
 
     while True:
+        # wait for events manager initialisation
         if app.task_manager.events:
             actual_last_event_id = app.task_manager.events.last_event_id()
             if actual_last_event_id is not None and actual_last_event_id <= last_received_event_id:
@@ -1176,7 +1185,6 @@ def tasks():
             elif actual_last_event_id is None or actual_last_event_id > last_received_event_id:
                 data = app.task_manager.tasks_status()
                 break
-
         if time.time() - start_time > timeout:
             break
 

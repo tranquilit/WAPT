@@ -99,6 +99,10 @@ type
     WAPTServiceRunning:Boolean;
     AutoUpgradeTime: TDateTime;
 
+    // If True, waptexit will wait for any pending tasks but will not trigger additional upgrade tasks
+    DisableUpgrade: Boolean;
+
+    // Prevent the count down timed auto upgrade
     DisableAutoUpgrade: Boolean;
 
     CheckTasksThread: TCheckTasksThread;
@@ -298,6 +302,8 @@ procedure TVisWaptExit.ActUpgradeExecute(Sender: TObject);
 var
   args: ISuperObject;
 begin
+  if DisableUpgrade then
+    Exit;
   DisableAutoUpgrade:=True;
   CountDown := 0;
   ActUpgrade.Caption:=rsLaunchSoftwareUpdate;
@@ -325,7 +331,7 @@ end;
 
 procedure TVisWaptExit.ActUpgradeUpdate(Sender: TObject);
 begin
-  ActUpgrade.Enabled:= (upgrades <> Nil) and (UpgradeTasks=Nil) and (not WaitingForUpgradeTasks);
+  ActUpgrade.Enabled:= not DisableUpgrade and (upgrades <> Nil) and (UpgradeTasks=Nil) and (not WaitingForUpgradeTasks);
 end;
 
 procedure TVisWaptExit.ButUpgradeNowMouseDown(Sender: TObject;
@@ -391,6 +397,7 @@ begin
   ini := TIniFile.Create(WaptIniFilename);
   try
     AllowCancelUpgrade := FindCmdLineSwitch('allow_cancel_upgrade') or ini.ReadBool('global','allow_cancel_upgrade',True);
+    DisableUpgrade := StrToBool(GetCmdParams('waptexit_disable_upgrade',ini.ReadString('global','waptexit_disable_upgrade','0')));
     InitialCountDown := StrToInt(GetCmdParams('waptexit_countdown',ini.ReadString('global','waptexit_countdown','10')));
     Priorities := GetCmdParams('priorities',ini.ReadString('global','upgrade_priorities',''));
     OnlyIfNotProcessRunning :=  StrToBool(GetCmdParams('only_if_not_process_running',ini.ReadString('global','upgrade_only_if_not_process_running','0')));
@@ -473,9 +480,13 @@ begin
     begin
       Upgrades := aso['upgrades'];
       Removes := aso['pending.remove'];
+
+      // running is not safe here
       RunningTasks := aso['running_tasks'];
       if Assigned(RunningTasks) and Assigned(RunningTasks.AsArray) and (RunningTasks.AsArray.Length>0) then
         Running := RunningTasks.AsArray[0];
+
+
       {$ifdef enterprise}
       wua_status := aso['wua_status'];
       wua_pending_count := aso['wua_pending_count'];
@@ -486,7 +497,7 @@ begin
 
       if ShouldBeUpgraded then
       begin
-        EdRunning.Text := rsWaptServiceNotRunning;
+        EdRunning.Text := rsWaptUpgradespending;
         Application.ProcessMessages;
       end;
     end;
@@ -536,7 +547,14 @@ begin
     CountDown:=0;
     AutoUpgradeTime := Now;
   end;
-  Timer1.Enabled:=True;
+
+  // waptservice is running so start the count down
+  if not DisableUpgrade then
+    Timer1.Enabled:=True
+  else
+    // wa have disable the start of upgrade so close now.
+    if not WorkInProgress then
+      Application.Terminate;
 end;
 
 procedure TVisWaptExit.OnCheckTasksThreadNotify(Sender: TObject);
@@ -749,8 +767,8 @@ begin
       Close;
 
     //some upgrades are pending, launch upgrades after timeout expired or manual action
-    if not DisableAutoUpgrade and ShouldBeUpgraded and (AutoUpgradeTime>1) and (Now >= AutoUpgradeTime) then
-      ActUpgrade.Execute;
+    if not DisableUpgrade and ShouldBeUpgraded and (AutoUpgradeTime>1) and (Now >= AutoUpgradeTime) then
+      ActUpgrade.Execute
 
   finally
     if CountDown>0 then;

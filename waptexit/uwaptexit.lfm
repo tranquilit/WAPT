@@ -998,12 +998,14 @@ object VisWaptExit: TVisWaptExit
     top = 32
     object ActUpgrade: TAction
       Caption = 'Install / Upgrade packages'
+      Enabled = False
       ImageIndex = 1
       OnExecute = ActUpgradeExecute
       OnUpdate = ActUpgradeUpdate
     end
     object actSkip: TAction
       Caption = 'Not now'
+      Enabled = False
       ImageIndex = 3
       OnExecute = actSkipExecute
       OnUpdate = actSkipUpdate
