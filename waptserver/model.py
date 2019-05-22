@@ -314,6 +314,7 @@ class Packages(WaptBaseModel):
     impacted_process = ArrayField(CharField,null=True)
     keywords = ArrayField(CharField,null=True)
     name = CharField(null=True)
+    categories = ArrayField(CharField,null=True)
     licence = CharField(null=True)
     editor = CharField(null=True)
     homepage = CharField(null=True)
@@ -321,7 +322,7 @@ class Packages(WaptBaseModel):
 
     @classmethod
     def _as_attribute(cls,k,v):
-        if k in ['depends','conflicts','impacted_process','keywords']:
+        if k in ['depends','conflicts','impacted_process','keywords','categories']:
             return ensure_list(v or None)
         else:
             return v or None
@@ -1731,7 +1732,8 @@ def upgrade_db_structure():
                 opes.append(migrator.add_column(Packages._meta.name, 'valid_until',Packages.valid_until))
             if not 'forced_install_on' in columns:
                 opes.append(migrator.add_column(Packages._meta.name, 'forced_install_on',Packages.forced_install_on))
-
+            if not 'categories' in columns:
+                opes.append(migrator.add_column(Packages._meta.name, 'categories',Packages.categories))
             if not 'hosts_server_uuid_listening' in [i.name for i in wapt_db.get_indexes('hosts')]:
                 wapt_db.execute_sql('create index hosts_server_uuid_listening on hosts(server_uuid,listening_address)')
 

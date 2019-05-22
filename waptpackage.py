@@ -809,7 +809,7 @@ class PackageEntry(BaseObjectClass):
     """
     # minim attributes for a valid control file
     required_attributes = ['package','version','architecture','section','priority']
-    optional_attributes = ['name','maintainer','description','depends','conflicts','maturity',
+    optional_attributes = ['name','categories','maintainer','description','depends','conflicts','maturity',
         'locale','target_os','min_os_version','max_os_version','min_wapt_version',
         'sources','installed_size','impacted_process','description_fr','description_pl','description_de','description_es','audit_schedule',
         'editor','keywords','licence','homepage','package_uuid','valid_from','valid_until','forced_install_on']
@@ -877,6 +877,7 @@ class PackageEntry(BaseObjectClass):
         self.priority='optional'
 
         self.name=''
+        self.category=''
         self.maintainer=''
         self.description=''
         self.depends=''
