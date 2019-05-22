@@ -267,7 +267,7 @@ def check_auth(logon_name, password):
     (for waptstarter standalone usage)
 
     Returns:
-        Handle : handle of user or
+        Handle : handle of user or logon_name
     """
     if app.waptconfig.waptservice_password != 'NOPASSWORD':
         if len(logon_name) ==0 or len(password)==0:
@@ -286,6 +286,17 @@ def check_auth(logon_name, password):
         else:
             username = logon_name
         logger.debug(u"Checking authentification for domain: %s user: %s" % (domain,username))
+
+        token_gen = wapt().get_secured_token_generator()
+        try:
+            token_content = token_gen.loads(password)
+            if token_content['username'] != logon_name:
+                raise Exception('token does not match username')
+            logging.info("authenticated with token : %s. groups: %s" % (logon_name,token_content.get('groups')))
+            return logon_name
+        except:
+            # password is not a token or token is invalid
+            pass
 
         try:
             huser = win32security.LogonUser (
@@ -339,14 +350,6 @@ def allow_local_auth(f):
                 return authenticate()
 
             logging.info("authenticating : %s" % auth.username)
-            token_gen = wapt().get_secured_token_generator()
-            try:
-                token_content = token_gen.loads(auth.password)
-                return f(*args, **kwargs)
-            except:
-                # password is not a token or token is invalid
-                pass
-
             huser = check_auth(auth.username, auth.password)
             if huser is None:
                 return authenticate()
