@@ -923,6 +923,8 @@ class PackageEntry(BaseObjectClass):
         self.localpath=None
         self._control_updated = False
 
+        self.persistent_dir=None
+
         if waptfile:
             if os.path.isfile(waptfile):
                 self.load_control_from_wapt(waptfile)

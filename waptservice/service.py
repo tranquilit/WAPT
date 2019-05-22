@@ -339,7 +339,16 @@ def allow_local_auth(f):
                 return authenticate()
 
             logging.info("authenticating : %s" % auth.username)
-            if not check_auth(auth.username, auth.password):
+            token_gen = wapt().get_secured_token_generator()
+            try:
+                token_content = token_gen.loads(auth.password)
+                return f(*args, **kwargs)
+            except:
+                # password is not a token or token is invalid
+                pass
+
+            huser = check_auth(auth.username, auth.password)
+            if huser is None:
                 return authenticate()
             logging.info("user %s authenticated" % auth.username)
         else:
@@ -382,6 +391,15 @@ def ping():
             version=__version__,
             )
     return Response(common.jsondump(data), mimetype='application/json')
+
+@app.route('/login')
+@allow_local_auth
+def login():
+    w = wapt()
+    token_gen = w.get_secured_token_generator()
+    data = token_gen.dumps({'username':request.authorization.username})
+    return Response(common.jsondump(data), mimetype='application/json')
+
 
 @app.route('/status')
 @app.route('/status.json')

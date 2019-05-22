@@ -2641,9 +2641,9 @@ class Wapt(BaseObjectClass):
         self._dbpath = None
         # cached runstatus to avoid setting in db if not changed.
         self._runstatus = None
-        self._use_hostpackages = None
+        self.use_hostpackages = False
 
-        self.repositories = []
+        self._repositories = None
 
         self.dry_run = False
 
@@ -2785,18 +2785,6 @@ class Wapt(BaseObjectClass):
         self._waptdb = None
         self._dbpath = value
 
-    @property
-    def use_hostpackages(self):
-        return self._use_hostpackages
-
-    @use_hostpackages.setter
-    def use_hostpackages(self,value):
-        if value and not self._use_hostpackages == True:
-            self.add_hosts_repo()
-        elif not value and self._use_hostpackages:
-            if self.repositories and isinstance(self.repositories[-1],WaptHostRepo):
-                del self.repositories[-1]
-        self._use_hostpackages = value
 
     @property
     def host_profiles(self):
@@ -2891,6 +2879,10 @@ class Wapt(BaseObjectClass):
             self.config_filename = config_filename
 
         self.config.read(self.config_filename)
+
+        # lazzy loading
+        self._repositories = None
+
         # keep the timestamp of last read config file to reload it if it is changed
         if os.path.isfile(self.config_filename):
             self.config_filedate = os.stat(self.config_filename).st_mtime
@@ -3012,36 +3004,6 @@ class Wapt(BaseObjectClass):
         if self.config.has_option('global','token_lifetime'):
             self.token_lifetime = self.config.getint('global','token_lifetime')
 
-        # Get the configuration of all repositories (url, ...)
-        self.repositories = []
-        # secondary
-        if self.config.has_option('global','repositories'):
-            repository_names = ensure_list(self.config.get('global','repositories'))
-            logger.info(u'Other repositories : %s' % (repository_names,))
-            for name in repository_names:
-                if name:
-                    w = WaptRepo(name=name).load_config(self.config,section=name)
-                    if w.cabundle is None:
-                        w.cabundle = self.cabundle
-                    self.set_client_cert_auth(w)
-
-                    self.repositories.append(w)
-                    logger.debug(u'    %s:%s' % (w.name,w._repo_url))
-        else:
-            repository_names = []
-
-        # last is main repository so it overrides the secondary repositories
-        if self.config.has_option('global','repo_url') and not 'wapt' in repository_names:
-            w = WaptRepo(name='wapt').load_config(self.config)
-            self.repositories.append(w)
-            if w.cabundle is None:
-                w.cabundle = self.cabundle
-            self.set_client_cert_auth(w)
-
-        # True if we want to use automatic host package based on host fqdn
-        #   privacy problem as there is a request to wapt repo to get
-        #   host package update at each update/upgrade
-        self._use_hostpackages = None
         if self.config.has_option('global','use_hostpackages'):
             self.use_hostpackages = self.config.getboolean('global','use_hostpackages')
 
@@ -3056,7 +3018,43 @@ class Wapt(BaseObjectClass):
         # clear host filter for packages
         self._packages_filter_for_host = None
 
+
         return self
+
+    @property
+    def repositories(self):
+        if self._repositories is None:
+            # Get the configuration of all repositories (url, ...)
+            # TODO : make this lazzy...
+            self._repositories = []
+            # secondary
+            if self.config.has_option('global','repositories'):
+                repository_names = ensure_list(self.config.get('global','repositories'))
+                logger.info(u'Other repositories : %s' % (repository_names,))
+                for name in repository_names:
+                    if name:
+                        w = WaptRepo(name=name).load_config(self.config,section=name)
+                        if w.cabundle is None:
+                            w.cabundle = self.cabundle
+                        self.set_client_cert_auth(w)
+
+                        self._repositories.append(w)
+                        logger.debug(u'    %s:%s' % (w.name,w._repo_url))
+            else:
+                repository_names = []
+
+            # last is main repository so it overrides the secondary repositories
+            if self.config.has_option('global','repo_url') and not 'wapt' in repository_names:
+                w = WaptRepo(name='wapt').load_config(self.config)
+                self._repositories.append(w)
+                if w.cabundle is None:
+                    w.cabundle = self.cabundle
+                self.set_client_cert_auth(w)
+
+            if self.use_hostpackages:
+                self.add_hosts_repo()
+
+        return self._repositories
 
     def write_config(self,config_filename=None):
         """Update configuration parameters to supplied inifilename
