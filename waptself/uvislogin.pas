@@ -17,11 +17,14 @@ type
     ButCancel: TBitBtn;
     EdUsername: TEdit;
     EdPassword: TEdit;
+    ImageWarning: TImage;
+    ImgWarning: TImage;
     LogoLogin: TImage;
     Panel1: TPanel;
     PanelLogin: TPanel;
     StaticText1: TStaticText;
     StaticText2: TStaticText;
+    WarningText: TStaticText;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
   private
@@ -59,8 +62,9 @@ begin
   begin
      LogoLogin.AutoSize:=false;
      LogoLogin.AntialiasingMode:=amOn;
+     ImageWarning.AutoSize:=false;
+     ImageWarning.AntialiasingMode:=amOn;
   end;
-
 end;
 
 end.

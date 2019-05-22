@@ -70,11 +70,13 @@ begin
     LaunchActionPackage(ActionPackage,Package,false);
     BtnInstallUpgrade.Enabled:=false;
     BtnInstallUpgrade.NormalColor:=$00C4C4C4;
+    if (TextWaitInstall.Caption = rsActionUpgrade) then
+      ActionPackage:='upgrade'
+    else
+      ActionPackage:='install';
     TextWaitInstall.Caption:=rsWaitingInstall;
     TextWaitInstall.Show;
-    ActionPackage:='install';
     LabDescription.Hide;
-
   end;
 end;
 
@@ -226,12 +228,20 @@ begin
       ActionPackage:='install';
     end
     else
-    begin
-      BtnRemove.NormalColor:=clRed;
-      BtnRemove.Enabled:=true;
-      ActionPackage:='remove';
-      BtnInstallUpgrade.Caption:=rsStatusInstalled;
-    end;
+      if (ActionPackage='upgrade') then
+      begin
+        BtnInstallUpgrade.Caption:=rsActionUpgrade;
+        BtnInstallUpgrade.NormalColor:=clGreen;
+        BtnInstallUpgrade.Enabled:=true;
+        ActionPackage:='install';
+      end
+      else
+      begin
+        BtnRemove.NormalColor:=clRed;
+        BtnRemove.Enabled:=true;
+        ActionPackage:='remove';
+        BtnInstallUpgrade.Caption:=rsStatusInstalled;
+      end;
     ProgressBarInstall.Position:=0;
     ProgressBarInstall.Style:=pbstMarquee;
     ProgressBarInstall.Hide;

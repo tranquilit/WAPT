@@ -64,11 +64,15 @@ msgid "Sign in"
 msgstr ""
 
 #: tvislogin.statictext1.caption
-msgid "Login :"
+msgid "Login : "
 msgstr ""
 
 #: tvislogin.statictext2.caption
 msgid "Password :"
+msgstr ""
+
+#: tvislogin.warningtext.caption
+msgid "Wrong password or login !"
 msgstr ""
 
 #: tviswaptself.actcanceltask.caption
@@ -126,7 +130,6 @@ msgid "Update list"
 msgstr ""
 
 #: tviswaptself.caption
-#, fuzzy
 #| msgid "WAPT softwares Self-service"
 msgid "WAPT Self-service"
 msgstr "Self service logiciels WAPT"
@@ -140,18 +143,9 @@ msgid "Sorry there is no result found."
 msgstr ""
 
 #: tviswaptself.labpackagelist.caption
-#, fuzzy
 msgctxt "tviswaptself.labpackagelist.caption"
 msgid "Available packages"
 msgstr "Paquets disponibles"
-
-#: tviswaptself.panel1.caption
-msgid "Panel1"
-msgstr ""
-
-#: tviswaptself.panel3.caption
-msgid "Panel3"
-msgstr ""
 
 #: tviswaptself.sogridtasks.header.columns[0].text
 msgid "ID"
@@ -255,7 +249,6 @@ msgid ""
 msgstr ""
 
 #: uviswaptself.rsavailablepackages
-#, fuzzy
 msgctxt "uviswaptself.rsavailablepackages"
 msgid "Available packages"
 msgstr "Paquets disponibles"
@@ -322,12 +315,12 @@ msgctxt "uwaptselfres.rsactionremove"
 msgid "Remove"
 msgstr ""
 
-#: uwaptselfres.rsactionupgradable
+#: uwaptselfres.rsactionupgrade
+msgctxt "uwaptselfres.rsactionupgrade"
 msgid "Upgrade"
 msgstr ""
 
 #: uwaptselfres.rsavailablepackages
-#, fuzzy
 msgctxt "uwaptselfres.rsavailablepackages"
 msgid "Available packages"
 msgstr "Paquets disponibles"
@@ -398,7 +391,7 @@ msgstr ""
 
 #: uwaptselfres.rsupgradablepackages
 msgctxt "uwaptselfres.rsupgradablepackages"
-msgid "Available updates for installed packages"
+msgid "Packages to update"
 msgstr ""
 
 #: uwaptselfres.rswaitinginstall
@@ -408,5 +401,9 @@ msgstr ""
 
 #: uwaptselfres.rswaitingremove
 msgid "Waiting for uninstall..."
+msgstr ""
+
+#: uwaptselfres.rswarningnologinorpassword
+msgid "Please enter a login/password"
 msgstr ""
 

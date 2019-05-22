@@ -17,9 +17,10 @@
         <TextDesc Value=""/>
       </XPManifest>
       <Icon Value="0"/>
-      <Resources Count="2">
+      <Resources Count="3">
         <Resource_0 FileName="..\arts\enterprise-200px.png" Type="RCDATA" ResourceName="ENTERPRISE-200PX"/>
         <Resource_1 FileName="..\arts\enterprise-400px.png" Type="RCDATA" ResourceName="ENTERPRISE-400PX"/>
+        <Resource_2 FileName="..\arts\wapt-enterprise-200px.png" Type="RCDATA" ResourceName="WAPT-ENTERPRISE-200PX"/>
       </Resources>
     </General>
     <i18n>
@@ -133,10 +134,16 @@
     </Other>
   </CompilerOptions>
   <Debugging>
-    <Exceptions Count="1">
+    <Exceptions Count="3">
       <Item1>
         <Name Value="EIdHTTPProtocolException"/>
       </Item1>
+      <Item2>
+        <Name Value="EIdSocketError"/>
+      </Item2>
+      <Item3>
+        <Name Value="FPImageException"/>
+      </Item3>
     </Exceptions>
   </Debugging>
 </CONFIG>

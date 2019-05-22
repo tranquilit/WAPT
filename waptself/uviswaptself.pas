@@ -32,6 +32,7 @@ type
 
   TVisWaptSelf = class(TForm)
     ActCancelTask: TAction;
+    ActResizeFlowPackages: TAction;
     ActShowTaskBar: TAction;
     ActUpdatePackagesList: TAction;
     ActTriggerSearch: TAction;
@@ -40,6 +41,7 @@ type
     ActionList1: TActionList;
     BtnCancelTasks: TBitBtn;
     BtnShowTaskBar: TButton;
+    ImageWAPT: TImage;
     LabPackageList: TLabel;
     PicLogo: TImage;
     LabelNoResult: TLabel;
@@ -58,7 +60,7 @@ type
     Panel1: TPanel;
     PanCategories: TPanel;
     Panel2: TPanel;
-    Panel3: TPanel;
+    TaskBarPanel: TPanel;
     Panel4: TPanel;
     Panel5: TPanel;
     Panel6: TPanel;
@@ -73,6 +75,7 @@ type
 
     procedure ActCancelTaskExecute(Sender: TObject);
     procedure ActCancelTaskUpdate(Sender: TObject);
+    procedure ActResizeFlowPackagesExecute(Sender: TObject);
     procedure ActSearchPackagesExecute(Sender: TObject);
     procedure ActShowAllClearFilters(Sender: TObject);
     procedure ActShowInstalled(Sender: TObject);
@@ -86,12 +89,17 @@ type
     procedure EdSearchButtonClick(Sender: TObject);
     procedure EdSearchChange(Sender: TObject);
     procedure EdSearchKeyPress(Sender: TObject; var Key: char);
+    procedure FlowPackagesResize(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
+    procedure FormResize(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure ImageWAPTClick(Sender: TObject);
     procedure ImageLogoClick(Sender: TObject);
     procedure ImageLogoOnMouseEnter(Sender: TObject);
     procedure ImageLogoOnMouseLeave(Sender: TObject);
+    procedure ImageWAPTMouseEnter(Sender: TObject);
+    procedure ImageWAPTMouseLeave(Sender: TObject);
     procedure SOGridTasksGetImageIndexEx(Sender: TBaseVirtualTree;
       Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
       var Ghosted: Boolean; var ImageIndex: Integer;
@@ -100,11 +108,11 @@ type
     procedure FormDestroy(Sender: TObject);
     procedure FormClose(Sender: TObject);
   private
+
     ShowOnlyUpgradable: Boolean;
     ShowOnlyInstalled: Boolean;
     ShowOnlyNotInstalled: Boolean;
     SortByDateAsc:Boolean;
-    ShowTaskBar: Boolean;
     WAPTServiceRunning:Boolean;
     LastTaskIDOnLaunch:integer;
     CurrentTaskID:integer;
@@ -149,7 +157,7 @@ var
 
 
 implementation
-uses LCLIntf, LCLType, waptwinutils, soutils, strutils, uWaptSelfRes, IniFiles, IdHTTP;
+uses LCLIntf, LCLType, waptwinutils, soutils, strutils, uWaptSelfRes, IniFiles, IdHTTP,LConvEncoding;
 {$R *.lfm}
 
 { TVisWaptSelf }
@@ -171,7 +179,7 @@ var
     FlowPackages.ControlList.Clear;
 
     idx:=1;
-    maxidx:=((maxSmallint div 188) div 2);
+    maxidx:=50;
 
     for Pck in AllPackages do
     begin
@@ -211,7 +219,7 @@ var
                 end
               else                       //Package installed but not updated
                 begin
-                  BtnInstallUpgrade.Caption:=rsActionUpgradable;
+                  BtnInstallUpgrade.Caption:=rsActionUpgrade;
                   BtnInstallUpgrade.NormalColor:=$004080FF;
                   LabInstallVersion.Caption:='(over '+UTF8Encode(package.S['install_version'])+')';
                   AdjustFont(LabInstallVersion);
@@ -294,6 +302,33 @@ begin
   ActCancelTask.Enabled := (SOGridTasks.SelectedCount>0 ) and (SelectedAreOnlyPending);
 end;
 
+procedure TVisWaptSelf.ActResizeFlowPackagesExecute(Sender: TObject);
+var
+  i,WidthPref: integer;
+  AFrmPackage:TFrmPackage;
+begin
+  if (FlowPackages.Width>=350) then
+  begin
+    WidthPref:=trunc(FlowPackages.Width / (FlowPackages.Width div 350))-1;
+    for i:=0 to FlowPackages.ControlCount-1 do
+    begin
+      AFrmPackage:=FlowPackages.Controls[i] as TFrmPackage;
+      AFrmPackage.Width:=WidthPref;
+    end;
+  end
+  else
+  begin
+    if TaskBarPanel.Showing then
+    begin
+      TaskBarPanel.Hide;
+      BtnShowTaskBar.Caption:=rsShowTaskBar;
+      LabPackageList.Alignment:=taCenter;
+      LabPackageList.BorderSpacing.Left:=0;
+      LabPackageList.AdjustFontForOptimalFill;
+    end;
+  end;
+end;
+
 procedure TVisWaptSelf.ActCancelTaskExecute(Sender: TObject);
 var
  Task : ISuperObject;
@@ -327,6 +362,8 @@ begin
   BtnShowNotInstalled.Enabled:=true;
   BtnShowUpgradable.Enabled:=true;
   LabPackageList.Caption := rsAvailablePackages;
+  BtnSortByDate.Caption:= rsSortByDateDesc;
+  LabPackageList.AdjustFontForOptimalFill;
 end;
 
 procedure TVisWaptSelf.ActShowInstalled(Sender: TObject);
@@ -340,6 +377,7 @@ begin
    BtnShowUpgradable.Enabled:=true;
    ActSearchPackages.Execute;
    LabPackageList.Caption := rsInstalledPackages;
+   LabPackageList.AdjustFontForOptimalFill;
 end;
 
 procedure TVisWaptSelf.ActShowNotInstalled(Sender: TObject);
@@ -353,21 +391,37 @@ begin
    BtnShowNotInstalled.Enabled:=false;
    BtnShowUpgradable.Enabled:=true;
    LabPackageList.Caption := rsNotInstalledPackages;
+   LabPackageList.AdjustFontForOptimalFill;
 end;
 
 procedure TVisWaptSelf.ActShowTaskBarExecute(Sender: TObject);
 begin
-  if ShowTaskBar then
+  if TaskBarPanel.Showing then
   begin
-    Panel3.Hide;
+    TaskBarPanel.Hide;
     BtnShowTaskBar.Caption:=rsShowTaskBar;
+    LabPackageList.Alignment:=taCenter;
+    LabPackageList.BorderSpacing.Left:=0;
   end
   else
   begin
-    Panel3.Show;
+    TaskBarPanel.Show;
     BtnShowTaskBar.Caption:=rsHideTaskBar;
+    LabPackageList.Alignment:=taLeftJustify;
+    LabPackageList.BorderSpacing.Left:=20;
   end;
-  ShowTaskBar:=not ShowTaskBar;
+
+  if (FlowPackages.Showing) and (FlowPackages.Width<350) then
+  begin
+    LabPackageList.Hide;
+    FlowPackages.Hide;
+  end;
+  if not(FlowPackages.Showing) and (ScrollBoxPackages.Width>=350) then
+  begin
+    LabPackageList.Show;
+    FlowPackages.Show;
+  end;
+  LabPackageList.AdjustFontForOptimalFill;
 end;
 
 procedure TVisWaptSelf.ActShowUpgradable(Sender: TObject);
@@ -381,6 +435,7 @@ begin
   BtnShowNotInstalled.Enabled:=true;
   BtnShowUpgradable.Enabled:=false;
   LabPackageList.Caption := rsUpgradablePackages;
+  LabPackageList.AdjustFontForOptimalFill;
 end;
 
 procedure TVisWaptSelf.ActSortByDate(Sender: TObject);
@@ -429,6 +484,11 @@ begin
     EdSearch.SelectAll;
     ActSearchPackages.Execute;
   end;
+end;
+
+procedure TVisWaptSelf.FlowPackagesResize(Sender: TObject);
+begin
+
 end;
 
 procedure TVisWaptSelf.FormClose(Sender: TObject; var CloseAction: TCloseAction
@@ -502,9 +562,6 @@ begin
       LstIcons.Objects[i]:=g;
       LstIcons[i]:=ExtractFileName(LstIcons[i]);
     except
-      //FreeAndNil(g);
-      //DeleteFile(IconsDir+LstIcons[i]);
-      //LstIcons.Delete(LstIcons.IndexOf(LstIcons[i]));
     end;
 
   {$ifdef ENTERPRISE }
@@ -512,6 +569,7 @@ begin
     PicLogo.Picture.LoadFromFile(WaptBaseDir+'\templates\waptself-logo.png')
   else
     PicLogo.Picture.LoadFromResourceName(HINSTANCE,'ENTERPRISE-400PX');
+  ImageWAPT.Picture.LoadFromResourceName(HINSTANCE,'WAPT-ENTERPRISE-200PX');
   {$endif}
 
   //Create AppLocal/Waptself
@@ -524,6 +582,39 @@ begin
     ini.UpdateFile;
     FreeAndNil(ini);
   end;
+
+  if Screen.PixelsPerInch <> 96 then
+  begin
+    ImageWAPT.AutoSize:=false;
+    ImageWAPT.AntialiasingMode:=amOn;
+    ImageLogo.AutoSize:=false;
+    ImageLogo.AntialiasingMode:=amOn;
+    PicLogo.AutoSize:=false;
+    PicLogo.AntialiasingMode:=amOn;
+  end;
+end;
+
+procedure TVisWaptSelf.FormResize(Sender: TObject);
+begin
+  if (FlowPackages.Showing) and (FlowPackages.Width<=350) then
+  begin
+    LabPackageList.Hide;
+    FlowPackages.Hide;
+  end;
+  if not(FlowPackages.Showing) and (ScrollBoxPackages.Width>350) then
+  begin
+    LabPackageList.Show;
+    FlowPackages.Show;
+  end;
+  if not(FlowPackages.Showing) and (TaskBarPanel.Showing) and (ScrollBoxPackages.Width<=350) then
+  begin
+    TaskBarPanel.Hide;
+    BtnShowTaskBar.Caption:=rsShowTaskBar;
+    LabPackageList.Alignment:=taCenter;
+    LabPackageList.BorderSpacing.Left:=0;
+    LabPackageList.AdjustFontForOptimalFill;
+  end;
+  LabPackageList.AdjustFontForOptimalFill;
 end;
 
 procedure TVisWaptSelf.FormDestroy(Sender: TObject);
@@ -541,26 +632,33 @@ var
 begin
   try
     MakeFullyVisible();
+
     Screen.Cursor := crHourGlass;
     keywords:=WAPTLocalJsonGet('keywords.json?latest=1',login,password,-1,@OnLocalServiceAuth,2);
     CBKeywords.Clear;
     for keyword in keywords do
       CBKeywords.Items.Add(UTF8Encode(keyword.AsString));
 
+    LastTaskIDOnLaunch:=-1;
+    GetAllPackages();
+    FThreadGetAllIcons := TThreadGetAllIcons.Create(@OnUpgradeAllIcons,AllPackages,FlowPackages);
+    TimerSearch.Enabled:=False;
+    TimerSearch.Enabled:=True;
+
     // Check running / pending tasks
     CheckTasksThread := TCheckAllTasksThread.Create(@OnCheckTasksThreadNotify);
     CheckEventsThread := TCheckEventsThread.Create(@OnCheckEventsThreadNotify);
     CheckTasksThread.Start;
     CheckEventsThread.Start;
-    LastTaskIDOnLaunch:=-1;
-    ShowTaskBar:=false;
-    GetAllPackages();
-    FThreadGetAllIcons := TThreadGetAllIcons.Create(@OnUpgradeAllIcons,AllPackages,FlowPackages);
-    TimerSearch.Enabled:=False;
-    TimerSearch.Enabled:=True;
+
   finally
     Screen.Cursor := crDefault;
   end;
+end;
+
+procedure TVisWaptSelf.ImageWAPTClick(Sender: TObject);
+begin
+  OpenDocument('https://www.tranquil.it/solutions/wapt-deploiement-d-applications/');
 end;
 
 procedure TVisWaptSelf.ImageLogoClick(Sender: TObject);
@@ -574,6 +672,16 @@ begin
 end;
 
 procedure TVisWaptSelf.ImageLogoOnMouseLeave(Sender: TObject);
+begin
+  Screen.Cursor := crDefault;
+end;
+
+procedure TVisWaptSelf.ImageWAPTMouseEnter(Sender: TObject);
+begin
+  Screen.Cursor := crHandPoint;
+end;
+
+procedure TVisWaptSelf.ImageWAPTMouseLeave(Sender: TObject);
 begin
   Screen.Cursor := crDefault;
 end;
@@ -592,18 +700,29 @@ var
 begin
   LoginDlg:=TVisLogin.Create(Self);
   LoginDlg.EdUsername.text:=login;
-  try
+  if (RetryCount>1) then
+  begin
+    LoginDlg.ImageWarning.Show;
+    LoginDlg.WarningText.Show;
+  end
+  else
+    LoginDlg.Height:=LoginDlg.Height-5-16;
     if LoginDlg.ShowModal=mrOk then
-    begin
-      Sender.UserName:=LoginDlg.EdUsername.text;
-      Sender.Password:=LoginDlg.EdPassword.text;
-      login:=LoginDlg.EdUsername.text;
-      password:=LoginDlg.EdPassword.text;
-      ShouldRetry:=(Sender.UserName<>'') and (Sender.Password<>'');
-    end
-  finally
-    LoginDlg.Free;
-  end;
+      if (LoginDlg.EdPassword.text<>'') and (LoginDlg.EdPassword.text<>'') then
+      begin
+        Sender.UserName:=LoginDlg.EdUsername.text;
+        Sender.Password:=LoginDlg.EdPassword.text;
+        login:=LoginDlg.EdUsername.text;
+        password:=LoginDlg.EdPassword.text;
+        ShouldRetry:=(Sender.UserName<>'') and (Sender.Password<>'');
+        LoginDlg.Free;
+      end
+      else
+      begin
+        LoginDlg.ImageWarning.Show;
+        LoginDlg.WarningText.Caption:=rsWarningNoLoginOrPassword;
+        LoginDlg.WarningText.Show;
+      end;
 end;
 
 procedure TVisWaptSelf.OnCheckTasksThreadNotify(Sender: TObject);
@@ -905,7 +1024,7 @@ begin
     end;
   end;
 
-  if (ini.ReadString('global','LastPackageDate','') = '') or (ini.ReadString('global','LastPackageDate','') < (UTF8Encode(ListPackages.O['0'].S['signature_date']))) then
+  if (ini.ReadString('global','LastPackageDate','') = '') or (ini.ReadString('global','LastPackageDate','') < (UTF8Encode(ListPackages.O['0'].S['signature_date']))) or (ini.ReadString('global','repositories','')<>iniWaptGet.ReadString('global','repositories','')) then
   begin
     if not(DirectoryExists(IconsDir)) then
       CreateDir(IconsDir);
@@ -915,7 +1034,7 @@ begin
       tmpLstIcons.OwnsObjects:=True;
       if Terminated then
         break;
-      if (((UTF8Encode(Package.S['signature_date']))<=(ini.ReadString('global','LastPackageDate','None'))) and not((ini.ReadString('global','LastPackageDate','None') = 'None'))) then
+      if (((UTF8Encode(Package.S['signature_date']))<=(ini.ReadString('global','LastPackageDate','None'))) and not((ini.ReadString('global','LastPackageDate','None') = 'None')) and not((ini.ReadString('global','repositories','')<>iniWaptGet.ReadString('global','repositories','')))) then
         break;
       if FileExists(IconsDir+UTF8Encode(Package.S['package'])+'.png') then
         DeleteFile(IconsDir+UTF8Encode(Package.S['package'])+'.png');
@@ -950,6 +1069,7 @@ begin
     end;
   end;
   ini.WriteString('global','LastPackageDate',UTF8Encode(ListPackages.O['0'].S['signature_date']));
+  ini.WriteString('global','repositories',iniWaptGet.ReadString('global','repositories',''));
   ini.UpdateFile;
   FreeAndNil(g);
   FreeAndNil(ini);

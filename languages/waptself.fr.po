@@ -64,14 +64,17 @@ msgid "Sign in"
 msgstr "Identification"
 
 #: tvislogin.statictext1.caption
-#| msgid "Login : "
-msgid "Login :"
+msgid "Login : "
 msgstr "Identifiant : "
 
 #: tvislogin.statictext2.caption
 #| msgid "Password : "
 msgid "Password :"
 msgstr "Mot de passe : "
+
+#: tvislogin.warningtext.caption
+msgid "Wrong password or login !"
+msgstr "Mauvais mot de passe"
 
 #: tviswaptself.actcanceltask.caption
 msgid "Cancel task"
@@ -121,7 +124,7 @@ msgstr "Trier par date : desc"
 
 #: tviswaptself.btnunselectallkeywords.caption
 msgid "Unselect all keywords"
-msgstr "Déselectionner tous les mots clés"
+msgstr "Désélectionner tous les mots clés"
 
 #: tviswaptself.btnupdatelist.caption
 msgid "Update list"
@@ -144,14 +147,6 @@ msgstr "Désolé, aucun résultat trouvé."
 msgctxt "tviswaptself.labpackagelist.caption"
 msgid "Available packages"
 msgstr "Paquets disponibles"
-
-#: tviswaptself.panel1.caption
-msgid "Panel1"
-msgstr ""
-
-#: tviswaptself.panel3.caption
-msgid "Panel3"
-msgstr ""
 
 #: tviswaptself.sogridtasks.header.columns[0].text
 msgid "ID"
@@ -312,7 +307,6 @@ msgid "Sort by date : desc"
 msgstr "Trier par date : desc"
 
 #: uviswaptself.rsupgradablepackages
-msgctxt "uviswaptself.rsupgradablepackages"
 msgid "Available updates for installed packages"
 msgstr "Mises à jour disponibles pour les paquets installés"
 
@@ -326,7 +320,8 @@ msgctxt "uwaptselfres.rsactionremove"
 msgid "Remove"
 msgstr "Désinstaller"
 
-#: uwaptselfres.rsactionupgradable
+#: uwaptselfres.rsactionupgrade
+msgctxt "uwaptselfres.rsactionupgrade"
 msgid "Upgrade"
 msgstr "Mettre à jour"
 
@@ -406,8 +401,8 @@ msgstr "Installé"
 
 #: uwaptselfres.rsupgradablepackages
 msgctxt "uwaptselfres.rsupgradablepackages"
-msgid "Available updates for installed packages"
-msgstr "Mises à jour disponibles pour les paquets installés"
+msgid "Packages to update"
+msgstr "Paquets à mettre à jour"
 
 #: uwaptselfres.rswaitinginstall
 msgctxt "uwaptselfres.rswaitinginstall"
@@ -416,5 +411,11 @@ msgstr "En attente d'installation..."
 
 #: uwaptselfres.rswaitingremove
 msgid "Waiting for uninstall..."
-msgstr "En attente de suppression"
+msgstr "En attente de suppression..."
+
+#: uwaptselfres.rswarningnologinorpassword
+#, fuzzy
+#| msgid "Please enter a password/login"
+msgid "Please enter a login/password"
+msgstr "Entrez un login/mot de passe"
 
