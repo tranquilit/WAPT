@@ -258,7 +258,7 @@ def close_connection(exception):
 #       response.cache_control.max_age = 300
 #    return response
 
-def check_auth(logon_name, password):
+def check_auth(logon_name, password,check_token_in_password=True,for_group='waptselfservice'):
     """This function is called to check if a username /
     password combination is valid against local waptservice admin configuration
     or Local Admins.
@@ -287,16 +287,19 @@ def check_auth(logon_name, password):
             username = logon_name
         logger.debug(u"Checking authentification for domain: %s user: %s" % (domain,username))
 
-        token_gen = wapt().get_secured_token_generator()
-        try:
-            token_content = token_gen.loads(password)
-            if token_content['username'] != logon_name:
-                raise Exception('token does not match username')
-            logging.info("authenticated with token : %s. groups: %s" % (logon_name,token_content.get('groups')))
-            return logon_name
-        except:
-            # password is not a token or token is invalid
-            pass
+        if check_token_in_password:
+            token_gen = wapt().get_secured_token_generator()
+            try:
+                token_content = token_gen.loads(password)
+                if token_content['username'] != logon_name:
+                    raise Exception(u'token username does not match authorization username')
+                if not for_group in token_content.get('groups',[]):
+                    raise Exception(u'token does not authorize "%s" group' % for_group)
+                logging.info("authenticated with token : %s. groups: %s" % (logon_name,token_content.get('groups')))
+                return logon_name
+            except:
+                # password is not a token or token is invalid
+                pass
 
         try:
             huser = win32security.LogonUser (
@@ -311,7 +314,7 @@ def check_auth(logon_name, password):
                 domain_admins_group_name = common.get_domain_admins_group_name()
                 if common.check_is_member_of(huser,domain_admins_group_name):
                     return huser
-                if common.check_is_member_of(huser,'waptselfservice'):
+                if common.check_is_member_of(huser,for_group):
                     return huser
             except:
                 pass
@@ -348,7 +351,6 @@ def allow_local_auth(f):
             if not auth:
                 logging.info('no credential given')
                 return authenticate()
-
             logging.info("authenticating : %s" % auth.username)
             huser = check_auth(auth.username, auth.password)
             if huser is None:
@@ -396,12 +398,39 @@ def ping():
     return Response(common.jsondump(data), mimetype='application/json')
 
 @app.route('/login')
-@allow_local_auth
+@allow_local
 def login():
+    username = None
+    groups = []
     w = wapt()
+
+    rules = None
+    if enterprise_common:
+        rules = enterprise_common.self_service_rules(w)
+
+    if request.authorization:
+        auth = request.authorization
+        token_gen = w.get_secured_token_generator()
+        wapt_admin_group = 'waptselfservice'
+        if check_auth(auth.username,auth.password,for_group=wapt_admin_group):
+            username = auth.username
+            groups = [wapt_admin_group]
+            logger.debug(u'User %s authenticated against local wapt admins (%s)' % (auth.username,wapt_admin_group))
+        elif rules:
+            try:
+                groups = common.get_user_self_service_groups(rules.keys(),auth.username,auth.password)
+                username = auth.username
+                logger.debug(u'User %s authenticated against self-service groups %s' % (auth.username,groups))
+            except:
+                return authenticate()
+        else:
+            return authenticate()
+    else:
+        return authenticate()
+
     token_gen = w.get_secured_token_generator()
-    data = token_gen.dumps({'username':request.authorization.username})
-    return Response(common.jsondump(data), mimetype='application/json')
+    token = token_gen.dumps({'username':request.authorization.username,'groups':groups})
+    return Response(common.jsondump({'token':token,'username':username,'groups':groups}),mimetype='application/json')
 
 
 @app.route('/status')
