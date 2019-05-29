@@ -1,7 +1,107 @@
 msgid ""
 msgstr "Content-Type: text/plain; charset=UTF-8"
 
-#: tfrmpackage.action1.caption
+#: tfrmdetailspackage.categories.caption
+msgctxt "tfrmdetailspackage.categories.caption"
+msgid "Categories :"
+msgstr ""
+
+#: tfrmdetailspackage.conflicts.caption
+msgctxt "tfrmdetailspackage.conflicts.caption"
+msgid "Conflicts :"
+msgstr ""
+
+#: tfrmdetailspackage.dependency.caption
+msgctxt "tfrmdetailspackage.dependency.caption"
+msgid "Dependency : "
+msgstr ""
+
+#: tfrmdetailspackage.description.caption
+msgctxt "tfrmdetailspackage.description.caption"
+msgid "Description"
+msgstr ""
+
+#: tfrmdetailspackage.editor.caption
+msgctxt "tfrmdetailspackage.editor.caption"
+msgid "Editor :"
+msgstr ""
+
+#: tfrmdetailspackage.impactedprocess.caption
+msgctxt "tfrmdetailspackage.impactedprocess.caption"
+msgid "Impacted process :"
+msgstr ""
+
+#: tfrmdetailspackage.labdescription.caption
+msgctxt "tfrmdetailspackage.labdescription.caption"
+msgid ""
+"fezfezfezokfezkofez\n"
+"\n"
+"fezkofezjofezjofez\n"
+"\n"
+"ezfjofezofez\n"
+"fezjifezjfez\n"
+"\n"
+"ez\n"
+"fezjofezjofez\n"
+msgstr ""
+
+#: tfrmdetailspackage.lastversion.caption
+msgctxt "tfrmdetailspackage.lastversion.caption"
+msgid "Last version : "
+msgstr ""
+
+#: tfrmdetailspackage.licence.caption
+msgctxt "tfrmdetailspackage.licence.caption"
+msgid "Licence : "
+msgstr ""
+
+#: tfrmdetailspackage.maintainer.caption
+msgctxt "tfrmdetailspackage.maintainer.caption"
+msgid "Maintainer : "
+msgstr ""
+
+#: tfrmdetailspackage.officialwebsite.caption
+msgctxt "tfrmdetailspackage.officialwebsite.caption"
+msgid "Official website : "
+msgstr ""
+
+#: tfrmdetailspackage.packagename.caption
+msgctxt "tfrmdetailspackage.packagename.caption"
+msgid "Package name : "
+msgstr ""
+
+#: tfrmdetailspackage.repository.caption
+msgctxt "tfrmdetailspackage.repository.caption"
+msgid "Repository :"
+msgstr ""
+
+#: tfrmdetailspackage.section.caption
+msgctxt "tfrmdetailspackage.section.caption"
+msgid "Section : "
+msgstr ""
+
+#: tfrmdetailspackage.signaturedate.caption
+msgctxt "tfrmdetailspackage.signaturedate.caption"
+msgid "Signature date :"
+msgstr ""
+
+#: tfrmdetailspackage.signer.caption
+msgctxt "tfrmdetailspackage.signer.caption"
+msgid "Signer :"
+msgstr ""
+
+#: tfrmdetailspackage.size.caption
+msgctxt "tfrmdetailspackage.size.caption"
+msgid "Package size : "
+msgstr ""
+
+#: tfrmdetailspackage.sizeinstalled.caption
+msgctxt "tfrmdetailspackage.sizeinstalled.caption"
+msgid "Size installed : "
+msgstr ""
+
+#: tfrmpackage.actcanceltask.caption
+msgctxt "tfrmpackage.actcanceltask.caption"
 msgid "ActCancelTask"
 msgstr ""
 
@@ -25,7 +125,7 @@ msgid "19/12/2024"
 msgstr ""
 
 #: tfrmpackage.labdescription.caption
-msgid "Adobe AIR is a runtime for software created with Adobe Flash and ActionScript without using a web browser."
+msgid "Adobe AIR is a runtime for software created with Adobe Flash and ActionScript without using a web browser. oezkoezfezkofezkfezofezkfezofezkfezofezkfez"
 msgstr ""
 
 #: tfrmpackage.labelprogressioninstall.caption
@@ -100,6 +200,10 @@ msgstr ""
 msgid "ActUpdatePackagesList"
 msgstr ""
 
+#: tviswaptself.btnhidedetails.caption
+msgid "Hide"
+msgstr ""
+
 #: tviswaptself.btnshowall.caption
 msgid "Show all / clear filtrer"
 msgstr ""
@@ -148,90 +252,112 @@ msgid "Available packages"
 msgstr "Paquets disponibles"
 
 #: tviswaptself.sogridtasks.header.columns[0].text
+msgctxt "tviswaptself.sogridtasks.header.columns[0].text"
 msgid "ID"
 msgstr ""
 
 #: tviswaptself.sogridtasks.header.columns[10].text
+msgctxt "tviswaptself.sogridtasks.header.columns[10].text"
 msgid "result"
 msgstr ""
 
 #: tviswaptself.sogridtasks.header.columns[11].text
+msgctxt "tviswaptself.sogridtasks.header.columns[11].text"
 msgid "runstatus"
 msgstr ""
 
 #: tviswaptself.sogridtasks.header.columns[12].text
+msgctxt "tviswaptself.sogridtasks.header.columns[12].text"
 msgid "created_by"
 msgstr ""
 
 #: tviswaptself.sogridtasks.header.columns[13].text
+msgctxt "tviswaptself.sogridtasks.header.columns[13].text"
 msgid "progress"
 msgstr ""
 
 #: tviswaptself.sogridtasks.header.columns[14].text
+msgctxt "tviswaptself.sogridtasks.header.columns[14].text"
 msgid "summary"
 msgstr ""
 
 #: tviswaptself.sogridtasks.header.columns[15].text
+msgctxt "tviswaptself.sogridtasks.header.columns[15].text"
 msgid "finish_date"
 msgstr ""
 
 #: tviswaptself.sogridtasks.header.columns[16].text
+msgctxt "tviswaptself.sogridtasks.header.columns[16].text"
 msgid "classname"
 msgstr ""
 
 #: tviswaptself.sogridtasks.header.columns[17].text
+msgctxt "tviswaptself.sogridtasks.header.columns[17].text"
 msgid "logs"
 msgstr ""
 
 #: tviswaptself.sogridtasks.header.columns[18].text
+msgctxt "tviswaptself.sogridtasks.header.columns[18].text"
 msgid "pidlist"
 msgstr ""
 
 #: tviswaptself.sogridtasks.header.columns[19].text
+msgctxt "tviswaptself.sogridtasks.header.columns[19].text"
 msgid "usecache"
 msgstr ""
 
 #: tviswaptself.sogridtasks.header.columns[1].text
+msgctxt "tviswaptself.sogridtasks.header.columns[1].text"
 msgid "Status"
 msgstr ""
 
 #: tviswaptself.sogridtasks.header.columns[20].text
+msgctxt "tviswaptself.sogridtasks.header.columns[20].text"
 msgid "packagenames"
 msgstr ""
 
 #: tviswaptself.sogridtasks.header.columns[21].text
+msgctxt "tviswaptself.sogridtasks.header.columns[21].text"
 msgid "force"
 msgstr ""
 
 #: tviswaptself.sogridtasks.header.columns[2].text
+msgctxt "tviswaptself.sogridtasks.header.columns[2].text"
 msgid "order"
 msgstr ""
 
 #: tviswaptself.sogridtasks.header.columns[3].text
+msgctxt "tviswaptself.sogridtasks.header.columns[3].text"
 msgid "Description"
 msgstr ""
 
 #: tviswaptself.sogridtasks.header.columns[4].text
+msgctxt "tviswaptself.sogridtasks.header.columns[4].text"
 msgid "priority"
 msgstr ""
 
 #: tviswaptself.sogridtasks.header.columns[5].text
+msgctxt "tviswaptself.sogridtasks.header.columns[5].text"
 msgid "notify_user"
 msgstr ""
 
 #: tviswaptself.sogridtasks.header.columns[6].text
+msgctxt "tviswaptself.sogridtasks.header.columns[6].text"
 msgid "start_date"
 msgstr ""
 
 #: tviswaptself.sogridtasks.header.columns[7].text
+msgctxt "tviswaptself.sogridtasks.header.columns[7].text"
 msgid "create_date"
 msgstr ""
 
 #: tviswaptself.sogridtasks.header.columns[8].text
+msgctxt "tviswaptself.sogridtasks.header.columns[8].text"
 msgid "notify_server_on_finish"
 msgstr ""
 
 #: tviswaptself.sogridtasks.header.columns[9].text
+msgctxt "tviswaptself.sogridtasks.header.columns[9].text"
 msgid "notify_server_on_start"
 msgstr ""
 

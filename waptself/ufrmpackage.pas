@@ -7,19 +7,21 @@ interface
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, StdCtrls, ExtCtrls, Menus,
   ActnList, ComCtrls, Buttons, BCListBox, BCLabel, BCMaterialDesignButton,
-  superobject, waptcommon;
+  superobject, waptcommon, uFrmDetailsPackage;
 
 type
 
   { TFrmPackage }
 
   TFrmPackage = class(TFrame)
-    Action1: TAction;
+    ActCancelTask: TAction;
     ActionList1: TActionList;
     BtnCancel: TBCMaterialDesignButton;
     BtnInstallUpgrade: TBCMaterialDesignButton;
     BtnRemove: TBCMaterialDesignButton;
     BCPaperPanel1: TBCPaperPanel;
+    ImageDetails: TImage;
+    TextWaitInstall: TBCLabel;
     ProgressBarInstall: TProgressBar;
     ImgPackage: TImage;
     LabDescription: TBCLabel;
@@ -29,13 +31,15 @@ type
     LabVersion: TBCLabel;
     LabMaintainer: TBCLabel;
     LabDate: TBCLabel;
-    TextWaitInstall: TStaticText;
     TimerAutoremove: TTimer;
     TimerInstallRemoveFinished: TTimer;
     procedure ActCancelTaskExecute(Sender: TObject);
     procedure ActInstallUpgradePackage(Sender: TObject);
     procedure ActRemovePackage(Sender: TObject);
     procedure ActTimerInstallRemoveFinished(Sender: TObject);
+    procedure ImageDetailsClick(Sender: TObject);
+    procedure ImageDetailsMouseEnter(Sender: TObject);
+    procedure ImageDetailsMouseLeave(Sender: TObject);
     procedure TimerAutoremoveTimer(Sender: TObject);
   private
     procedure OnUpgradeTriggeredTask(Sender: TObject);
@@ -46,6 +50,8 @@ type
     TaskID : Integer;
     login : String;
     password : String;
+    FrmDetailsPackageInPanel : TFrmDetailsPackage;
+    PanelDetails : TPanel;
 
     OnLocalServiceAuth : THTTPSendAuthorization;
     ActionPackage : String;
@@ -76,7 +82,6 @@ begin
       ActionPackage:='install';
     TextWaitInstall.Caption:=rsWaitingInstall;
     TextWaitInstall.Show;
-    LabDescription.Hide;
   end;
 end;
 
@@ -90,7 +95,6 @@ begin
     BtnRemove.NormalColor:=$00C4C4C4;
     TextWaitInstall.Caption:=rsWaitingRemove;
     TextWaitInstall.Show;
-    LabDescription.Hide;
   end;
 end;
 
@@ -115,9 +119,44 @@ begin
   LabelProgressionInstall.Caption:='0%';
   LabelProgressionInstall.Hide;
   TimerInstallRemoveFinished.Enabled:=false;
-  LabDescription.Show;
   if (Autoremove) then
     TimerAutoremove.Enabled:=true;
+end;
+
+procedure TFrmPackage.ImageDetailsClick(Sender: TObject);
+begin
+  PanelDetails.Show;
+  FrmDetailsPackageInPanel.ImgPackage.Picture.Assign(ImgPackage.Picture);
+  FrmDetailsPackageInPanel.LabName.Caption:=LabPackageName.Caption;
+  FrmDetailsPackageInPanel.LabEditor.Caption:=UTF8Encode(Package.S['editor']);
+  FrmDetailsPackageInPanel.LabLastVersion.Caption:=UTF8Encode(Package.S['version']);
+  FrmDetailsPackageInPanel.LabOfficialWebsite.Caption:=UTF8Encode(Package.S['homepage']);
+  FrmDetailsPackageInPanel.LabDescription.Caption:=UTF8Encode(Package.S['description']);
+  FrmDetailsPackageInPanel.LabLicence.Caption:=UTF8Encode(Package.S['licence']);
+  FrmDetailsPackageInPanel.LabImpactedProcess.Caption:=UTF8Encode(Package.S['impacted_process']);
+  if (Package.I['installed_size']<>0) then
+    FrmDetailsPackageInPanel.LabSizeInstalled.Caption:=IntToStr(Round(Package.I['installed_size']/1024))+' kB ( '+IntToStr(Package.I['installed_size'])+' bytes )';
+  if (Package.I['size']<>0) then
+    FrmDetailsPackageInPanel.LabSize.Caption:=IntToStr(Round(Package.I['size']/1024))+' kB ( '+IntToStr(Package.I['size'])+' bytes )';
+  FrmDetailsPackageInPanel.LabMaintainer.Caption:=UTF8Encode(Package.S['maintainer']);
+  FrmDetailsPackageInPanel.LabPackageName.Caption:=UTF8Encode(Package.S['package']);
+  FrmDetailsPackageInPanel.LabRepository.Caption:=UTF8Encode(Package.S['repo']);
+  FrmDetailsPackageInPanel.LabSigner.Caption:=UTF8Encode(Package.S['signer']);
+  FrmDetailsPackageInPanel.LabDependency.Caption:=UTF8Encode(Package.S['depends']);
+  FrmDetailsPackageInPanel.LabConflicts.Caption:=UTF8Encode(Package.S['conflicts']);
+  FrmDetailsPackageInPanel.LabSection.Caption:=UTF8Encode(Package.S['section']);
+  FrmDetailsPackageInPanel.LabSignatureDate.Caption:=LabDate.Caption;
+  FrmDetailsPackageInPanel.LabCategories.Caption:=UTF8Encode(Package.S['categories']);
+end;
+
+procedure TFrmPackage.ImageDetailsMouseEnter(Sender: TObject);
+begin
+  ImageDetails.Picture.LoadFromResourceName(HINSTANCE,'PLUS2');
+end;
+
+procedure TFrmPackage.ImageDetailsMouseLeave(Sender: TObject);
+begin
+  ImageDetails.Picture.LoadFromResourceName(HINSTANCE,'PLUS-BLEU-FONCE');
 end;
 
 procedure TFrmPackage.TimerAutoremoveTimer(Sender: TObject);
@@ -249,7 +288,6 @@ begin
     LabelProgressionInstall.Hide;
     TextWaitInstall.Hide;
     BtnCancel.Hide;
-    LabDescription.Show;
   end;
 end;
 

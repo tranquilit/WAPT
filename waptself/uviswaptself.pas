@@ -9,7 +9,7 @@ uses
   EditBtn, StdCtrls, Buttons, CheckLst, ActnList, uvislogin, BCListBox,
   BCMaterialDesignButton, BCLabel, IdAuthentication, superobject,
   waptcommon, httpsend, sogrid, uWAPTPollThreads, VirtualTrees, ImgList,
-  ComCtrls, uFrmPackage;
+  ComCtrls, uFrmPackage, uFrmDetailsPackage;
 
 type
 
@@ -40,9 +40,16 @@ type
     ActSearchPackages: TAction;
     ActionList1: TActionList;
     BtnCancelTasks: TBitBtn;
+    BtnHideDetails: TBitBtn;
     BtnShowTaskBar: TButton;
+    FrmDetailsPackageInPanel: TFrmDetailsPackage;
+    ImageCrossSearch: TImage;
+    ImageLogoDetails: TImage;
     ImageWAPT: TImage;
     LabPackageList: TLabel;
+    Panel3: TPanel;
+    Panel9: TPanel;
+    PanelImageCrossSearch: TPanel;
     PicLogo: TImage;
     LabelNoResult: TLabel;
     BtnUpdateList: TButton;
@@ -56,10 +63,11 @@ type
     EdSearch: TEditButton;
     FlowPackages: TFlowPanel;
     ImageListTaskStatus: TImageList;
-    ImageLogo: TImage;
+    ImageLogoTaskBar: TImage;
     Panel1: TPanel;
     PanCategories: TPanel;
     Panel2: TPanel;
+    ScrollBoxDetails: TScrollBox;
     TaskBarPanel: TPanel;
     Panel4: TPanel;
     Panel5: TPanel;
@@ -71,6 +79,7 @@ type
     Splitter1: TSplitter;
     StaticText1: TStaticText;
     StaticText2: TStaticText;
+    DetailsBarPanel: TPanel;
     TimerSearch: TTimer;
 
     procedure ActCancelTaskExecute(Sender: TObject);
@@ -86,24 +95,31 @@ type
     procedure ActTriggerSearchExecute(Sender: TObject);
     procedure ActUnselectAllKeywordsExecute(Sender: TObject);
     procedure ActUpdatePackagesListExecute(Sender: TObject);
+    procedure BtnHideDetailsClick(Sender: TObject);
+    procedure DetailsBarPanelPaint(Sender: TObject);
     procedure EdSearchButtonClick(Sender: TObject);
     procedure EdSearchChange(Sender: TObject);
     procedure EdSearchKeyPress(Sender: TObject; var Key: char);
-    procedure FlowPackagesResize(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure FormResize(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure ImageCrossSearchClick(Sender: TObject);
     procedure ImageWAPTClick(Sender: TObject);
-    procedure ImageLogoClick(Sender: TObject);
+    procedure ImageLogoTaskBarClick(Sender: TObject);
     procedure ImageLogoOnMouseEnter(Sender: TObject);
     procedure ImageLogoOnMouseLeave(Sender: TObject);
     procedure ImageWAPTMouseEnter(Sender: TObject);
     procedure ImageWAPTMouseLeave(Sender: TObject);
+    procedure LabOfficialWebsiteClick(Sender: TObject);
+    procedure LabOfficialWebsiteMouseEnter(Sender: TObject);
+    procedure LabOfficialWebsiteMouseLeave(Sender: TObject);
+    procedure Panel6Resize(Sender: TObject);
     procedure SOGridTasksGetImageIndexEx(Sender: TBaseVirtualTree;
       Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
       var Ghosted: Boolean; var ImageIndex: Integer;
       var ImageList: TCustomImageList);
+    procedure TaskBarPanelPaint(Sender: TObject);
     procedure TimerSearchTimer(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormClose(Sender: TObject);
@@ -191,7 +207,10 @@ var
         begin
             Parent := FlowPackages;
             Name:='package'+IntToStr(idx);
-            LabPackageName.Caption:=UTF8Encode(package.S['package']);
+            if (package.S['name']<>'') then
+              LabPackageName.Caption:=UTF8Encode(package.S['name'])
+            else
+              LabPackageName.Caption:=UTF8Encode(package.S['package']);
             AdjustFont(LabPackageName);
             AdjustFont(LabVersion);
             LabDescription.Caption:=UTF8Encode(package.S['description']);
@@ -242,6 +261,11 @@ var
             password:=Self.password;
             OnLocalServiceAuth:=@(Self.OnLocalServiceAuth);
 
+            //PanelDetails
+
+            FrmDetailsPackageInPanel:=Self.FrmDetailsPackageInPanel;
+            PanelDetails:=Self.DetailsBarPanel;
+
             LstTasks:=Self.LstTasks;
             if (LstTasks.IndexOf(UTF8Encode(Package.S['package'])))<>-1 then
             begin
@@ -262,7 +286,6 @@ var
                   TextWaitInstall.Show;
                 end;
               TextWaitInstall.Show;
-              LabDescription.Hide;
               BtnCancel.Show;
               if (TaskID=CurrentTaskID) then
               begin
@@ -318,15 +341,130 @@ begin
   end
   else
   begin
-    if TaskBarPanel.Showing then
+    if TaskBarPanel.Showing or DetailsBarPanel.Showing then
     begin
       TaskBarPanel.Hide;
-      BtnShowTaskBar.Caption:=rsShowTaskBar;
+      DetailsBarPanel.Hide;
       LabPackageList.Alignment:=taCenter;
       LabPackageList.BorderSpacing.Left:=0;
       LabPackageList.AdjustFontForOptimalFill;
     end;
   end;
+end;
+
+procedure TVisWaptSelf.FormResize(Sender: TObject);
+begin
+  if (FlowPackages.Showing) and (FlowPackages.Width<=350) then
+  begin
+    LabPackageList.Hide;
+    FlowPackages.Hide;
+  end;
+  if not(FlowPackages.Showing) and (ScrollBoxPackages.Width>350) then
+  begin
+    LabPackageList.Show;
+    FlowPackages.Show;
+  end;
+  if not(FlowPackages.Showing) and (TaskBarPanel.Showing or DetailsBarPanel.Showing) and (ScrollBoxPackages.Width<=350) then
+  begin
+    TaskBarPanel.Hide;
+    DetailsBarPanel.Hide;
+    BtnShowTaskBar.Caption:=rsShowTaskBar;
+    LabPackageList.Alignment:=taCenter;
+    LabPackageList.BorderSpacing.Left:=0;
+    LabPackageList.AdjustFontForOptimalFill;
+  end;
+  LabPackageList.AdjustFontForOptimalFill;
+
+  if (VisWaptSelf.Height<450) then
+    ImageLogoTaskBar.Hide
+  else
+    ImageLogoTaskBar.Show;
+
+  if (VisWaptSelf.Height<750) then
+    Panel3.Hide
+  else
+    Panel3.Show;
+end;
+
+procedure TVisWaptSelf.Panel6Resize(Sender: TObject);
+var
+  Ratio: Real;
+begin
+  if (Panel6.Width>0) then
+    if (Panel6.Width>650) then
+    begin
+      PicLogo.AutoSize:=true;
+      LabelNoResult.AutoSize:=true;
+      LabelNoResult.Width:=486;
+      LabelNoResult.Height:=50;
+      LabelNoResult.AdjustFontForOptimalFill;
+      PicLogo.Width:=400;
+      PicLogo.Height:=190;
+    end
+    else
+    begin
+      Ratio:=Panel6.Width / 650;
+      PicLogo.AutoSize:=false;
+      LabelNoResult.AutoSize:=false;
+      LabelNoResult.Width:=trunc(486*Ratio);
+      LabelNoResult.Height:=trunc(50*Ratio);
+      LabelNoResult.AdjustFontForOptimalFill;
+      PicLogo.Width:=trunc(400*Ratio);
+      PicLogo.Height:=trunc(190*Ratio);
+    end
+end;
+
+procedure TVisWaptSelf.ActShowTaskBarExecute(Sender: TObject);
+begin
+  if (TaskBarPanel.Showing) then
+  begin
+    TaskBarPanel.Hide;
+    LabPackageList.Alignment:=taCenter;
+    LabPackageList.BorderSpacing.Left:=0;
+    BtnShowTaskBar.Caption:=rsShowTaskBar;
+    LabPackageList.AdjustFontForOptimalFill;
+  end
+  else
+    TaskBarPanel.Show;
+  if (FlowPackages.Showing) and (FlowPackages.Width<350) then
+  begin
+    LabPackageList.Hide;
+    FlowPackages.Hide;
+    Panel6.Hide;
+  end;
+  if not(FlowPackages.Showing) and (ScrollBoxPackages.Width>=350) then
+  begin
+    LabPackageList.Show;
+    FlowPackages.Show;
+    Panel6.Show;
+  end;
+end;
+
+procedure TVisWaptSelf.DetailsBarPanelPaint(Sender: TObject);
+begin
+  if (TaskBarPanel.Showing) then
+  begin
+    TaskBarPanel.Hide;
+    BtnShowTaskBar.Caption:=rsShowTaskBar;
+  end;
+  LabPackageList.Alignment:=taLeftJustify;
+  LabPackageList.BorderSpacing.Left:=40;
+  if (FlowPackages.Showing) and (FlowPackages.Width<350) then
+  begin
+    LabPackageList.Hide;
+    FlowPackages.Hide;
+    Panel6.Hide;
+  end;
+  LabPackageList.AdjustFontForOptimalFill;
+end;
+
+procedure TVisWaptSelf.TaskBarPanelPaint(Sender: TObject);
+begin
+  DetailsBarPanel.Hide;
+  BtnShowTaskBar.Caption:=rsHideTaskBar;
+  LabPackageList.Alignment:=taLeftJustify;
+  LabPackageList.BorderSpacing.Left:=40;
+  LabPackageList.AdjustFontForOptimalFill;
 end;
 
 procedure TVisWaptSelf.ActCancelTaskExecute(Sender: TObject);
@@ -394,36 +532,6 @@ begin
    LabPackageList.AdjustFontForOptimalFill;
 end;
 
-procedure TVisWaptSelf.ActShowTaskBarExecute(Sender: TObject);
-begin
-  if TaskBarPanel.Showing then
-  begin
-    TaskBarPanel.Hide;
-    BtnShowTaskBar.Caption:=rsShowTaskBar;
-    LabPackageList.Alignment:=taCenter;
-    LabPackageList.BorderSpacing.Left:=0;
-  end
-  else
-  begin
-    TaskBarPanel.Show;
-    BtnShowTaskBar.Caption:=rsHideTaskBar;
-    LabPackageList.Alignment:=taLeftJustify;
-    LabPackageList.BorderSpacing.Left:=20;
-  end;
-
-  if (FlowPackages.Showing) and (FlowPackages.Width<350) then
-  begin
-    LabPackageList.Hide;
-    FlowPackages.Hide;
-  end;
-  if not(FlowPackages.Showing) and (ScrollBoxPackages.Width>=350) then
-  begin
-    LabPackageList.Show;
-    FlowPackages.Show;
-  end;
-  LabPackageList.AdjustFontForOptimalFill;
-end;
-
 procedure TVisWaptSelf.ActShowUpgradable(Sender: TObject);
 begin
   ShowOnlyNotInstalled:=false;
@@ -466,29 +574,42 @@ begin
   ActSearchPackages.Execute;
 end;
 
+procedure TVisWaptSelf.BtnHideDetailsClick(Sender: TObject);
+begin
+  DetailsBarPanel.Hide;
+  LabPackageList.Show;
+  FlowPackages.Show;
+  Panel6.Show;
+  LabPackageList.Alignment:=taCenter;
+  LabPackageList.BorderSpacing.Left:=0;
+  LabPackageList.AdjustFontForOptimalFill;
+end;
+
 procedure TVisWaptSelf.EdSearchChange(Sender: TObject);
 begin
-  TimerSearch.Enabled:=False;
-  TimerSearch.Enabled:=True;
+  if (EdSearch.Text='') then
+    ImageCrossSearch.Hide
+  else
+  begin
+    ImageCrossSearch.Show;
+    TimerSearch.Enabled:=False;
+    TimerSearch.Enabled:=True;
+  end;
 end;
 
 procedure TVisWaptSelf.EdSearchButtonClick(Sender: TObject);
 begin
-  ActSearchPackages.Execute;
+  if (EdSearch.Text<>'') then
+    ActSearchPackages.Execute;
 end;
 
 procedure TVisWaptSelf.EdSearchKeyPress(Sender: TObject; var Key: char);
 begin
-  if Key = #13 then
+  if (Key = #13) and (EdSearch.Text<>'')then
   begin
     EdSearch.SelectAll;
     ActSearchPackages.Execute;
   end;
-end;
-
-procedure TVisWaptSelf.FlowPackagesResize(Sender: TObject);
-begin
-
 end;
 
 procedure TVisWaptSelf.FormClose(Sender: TObject; var CloseAction: TCloseAction
@@ -537,7 +658,8 @@ var
   g : TPicture;
   i : integer;
 begin
-  ReadWaptConfig();
+  if (not ReadWaptConfig(IncludeTrailingPathDelimiter(GetCurrentDir)+'wapt-get.ini')) then
+    ReadWaptConfig();
   ShowOnlyInstalled:=false;
   ShowOnlyNotInstalled:=false;
   ShowOnlyUpgradable:=false;
@@ -587,34 +709,14 @@ begin
   begin
     ImageWAPT.AutoSize:=false;
     ImageWAPT.AntialiasingMode:=amOn;
-    ImageLogo.AutoSize:=false;
-    ImageLogo.AntialiasingMode:=amOn;
+    ImageLogoTaskBar.AutoSize:=false;
+    ImageLogoTaskBar.AntialiasingMode:=amOn;
     PicLogo.AutoSize:=false;
     PicLogo.AntialiasingMode:=amOn;
-  end;
-end;
-
-procedure TVisWaptSelf.FormResize(Sender: TObject);
-begin
-  if (FlowPackages.Showing) and (FlowPackages.Width<=350) then
-  begin
-    LabPackageList.Hide;
-    FlowPackages.Hide;
-  end;
-  if not(FlowPackages.Showing) and (ScrollBoxPackages.Width>350) then
-  begin
-    LabPackageList.Show;
-    FlowPackages.Show;
-  end;
-  if not(FlowPackages.Showing) and (TaskBarPanel.Showing) and (ScrollBoxPackages.Width<=350) then
-  begin
-    TaskBarPanel.Hide;
-    BtnShowTaskBar.Caption:=rsShowTaskBar;
-    LabPackageList.Alignment:=taCenter;
-    LabPackageList.BorderSpacing.Left:=0;
-    LabPackageList.AdjustFontForOptimalFill;
-  end;
-  LabPackageList.AdjustFontForOptimalFill;
+    ImageLogoDetails.AutoSize:=false;
+    ImageLogoDetails.AntialiasingMode:=amOn;
+    ImageCrossSearch.AutoSize:=false;
+    ImageCrossSearch.AntialiasingMode:=amOn;  end;
 end;
 
 procedure TVisWaptSelf.FormDestroy(Sender: TObject);
@@ -651,9 +753,16 @@ begin
     CheckTasksThread.Start;
     CheckEventsThread.Start;
 
+    EdSearch.Button.Enabled:=False;
   finally
     Screen.Cursor := crDefault;
   end;
+end;
+
+procedure TVisWaptSelf.ImageCrossSearchClick(Sender: TObject);
+begin
+  EdSearch.Text:='';
+  ActSearchPackages.Execute;
 end;
 
 procedure TVisWaptSelf.ImageWAPTClick(Sender: TObject);
@@ -661,7 +770,7 @@ begin
   OpenDocument('https://www.tranquil.it/solutions/wapt-deploiement-d-applications/');
 end;
 
-procedure TVisWaptSelf.ImageLogoClick(Sender: TObject);
+procedure TVisWaptSelf.ImageLogoTaskBarClick(Sender: TObject);
 begin
   OpenDocument('https://www.tranquil.it');
 end;
@@ -683,6 +792,23 @@ end;
 
 procedure TVisWaptSelf.ImageWAPTMouseLeave(Sender: TObject);
 begin
+  Screen.Cursor := crDefault;
+end;
+
+procedure TVisWaptSelf.LabOfficialWebsiteClick(Sender: TObject);
+begin
+  OpenDocument(FrmDetailsPackageInPanel.LabOfficialWebsite.Caption);
+end;
+
+procedure TVisWaptSelf.LabOfficialWebsiteMouseEnter(Sender: TObject);
+begin
+  FrmDetailsPackageInPanel.LabOfficialWebsite.Font.Color:=clHighlight;
+  Screen.Cursor := crHandPoint;
+end;
+
+procedure TVisWaptSelf.LabOfficialWebsiteMouseLeave(Sender: TObject);
+begin
+  FrmDetailsPackageInPanel.LabOfficialWebsite.Font.Color:=clDefault;
   Screen.Cursor := crDefault;
 end;
 
@@ -708,7 +834,6 @@ begin
   else
     LoginDlg.Height:=LoginDlg.Height-5-16;
     if LoginDlg.ShowModal=mrOk then
-      if (LoginDlg.EdPassword.text<>'') and (LoginDlg.EdPassword.text<>'') then
       begin
         Sender.UserName:=LoginDlg.EdUsername.text;
         Sender.Password:=LoginDlg.EdPassword.text;
@@ -717,12 +842,6 @@ begin
         ShouldRetry:=(Sender.UserName<>'') and (Sender.Password<>'');
         LoginDlg.Free;
       end
-      else
-      begin
-        LoginDlg.ImageWarning.Show;
-        LoginDlg.WarningText.Caption:=rsWarningNoLoginOrPassword;
-        LoginDlg.WarningText.Show;
-      end;
 end;
 
 procedure TVisWaptSelf.OnCheckTasksThreadNotify(Sender: TObject);

@@ -1,7 +1,107 @@
 ﻿msgid ""
 msgstr "Content-Type: text/plain; charset=UTF-8"
 
-#: tfrmpackage.action1.caption
+#: tfrmdetailspackage.categories.caption
+msgctxt "tfrmdetailspackage.categories.caption"
+msgid "Categories :"
+msgstr "Catégories :"
+
+#: tfrmdetailspackage.conflicts.caption
+msgctxt "tfrmdetailspackage.conflicts.caption"
+msgid "Conflicts :"
+msgstr "Conflits :"
+
+#: tfrmdetailspackage.dependency.caption
+msgctxt "tfrmdetailspackage.dependency.caption"
+msgid "Dependency : "
+msgstr "Dépendances :"
+
+#: tfrmdetailspackage.description.caption
+msgctxt "tfrmdetailspackage.description.caption"
+msgid "Description"
+msgstr "Description"
+
+#: tfrmdetailspackage.editor.caption
+msgctxt "tfrmdetailspackage.editor.caption"
+msgid "Editor :"
+msgstr "Editeur :"
+
+#: tfrmdetailspackage.impactedprocess.caption
+msgctxt "tfrmdetailspackage.impactedprocess.caption"
+msgid "Impacted process :"
+msgstr "Processus impactés :"
+
+#: tfrmdetailspackage.labdescription.caption
+msgctxt "tfrmdetailspackage.labdescription.caption"
+msgid ""
+"fezfezfezokfezkofez\n"
+"\n"
+"fezkofezjofezjofez\n"
+"\n"
+"ezfjofezofez\n"
+"fezjifezjfez\n"
+"\n"
+"ez\n"
+"fezjofezjofez\n"
+msgstr ""
+
+#: tfrmdetailspackage.lastversion.caption
+msgctxt "tfrmdetailspackage.lastversion.caption"
+msgid "Last version : "
+msgstr "Dernière version : "
+
+#: tfrmdetailspackage.licence.caption
+msgctxt "tfrmdetailspackage.licence.caption"
+msgid "Licence : "
+msgstr "Licence : "
+
+#: tfrmdetailspackage.maintainer.caption
+msgctxt "tfrmdetailspackage.maintainer.caption"
+msgid "Maintainer : "
+msgstr "Mainteneur : "
+
+#: tfrmdetailspackage.officialwebsite.caption
+msgctxt "tfrmdetailspackage.officialwebsite.caption"
+msgid "Official website : "
+msgstr "Site officiel : "
+
+#: tfrmdetailspackage.packagename.caption
+msgctxt "tfrmdetailspackage.packagename.caption"
+msgid "Package name : "
+msgstr "Nom du package : "
+
+#: tfrmdetailspackage.repository.caption
+msgctxt "tfrmdetailspackage.repository.caption"
+msgid "Repository :"
+msgstr "Dépôt : "
+
+#: tfrmdetailspackage.section.caption
+msgctxt "tfrmdetailspackage.section.caption"
+msgid "Section : "
+msgstr "Section :"
+
+#: tfrmdetailspackage.signaturedate.caption
+msgctxt "tfrmdetailspackage.signaturedate.caption"
+msgid "Signature date :"
+msgstr "Signé le :"
+
+#: tfrmdetailspackage.signer.caption
+msgctxt "tfrmdetailspackage.signer.caption"
+msgid "Signer :"
+msgstr "Signataire : "
+
+#: tfrmdetailspackage.size.caption
+msgctxt "tfrmdetailspackage.size.caption"
+msgid "Package size : "
+msgstr "Taille : "
+
+#: tfrmdetailspackage.sizeinstalled.caption
+msgctxt "tfrmdetailspackage.sizeinstalled.caption"
+msgid "Size installed : "
+msgstr "Taille installé : "
+
+#: tfrmpackage.actcanceltask.caption
+msgctxt "tfrmpackage.actcanceltask.caption"
 msgid "ActCancelTask"
 msgstr ""
 
@@ -25,7 +125,7 @@ msgid "19/12/2024"
 msgstr ""
 
 #: tfrmpackage.labdescription.caption
-msgid "Adobe AIR is a runtime for software created with Adobe Flash and ActionScript without using a web browser."
+msgid "Adobe AIR is a runtime for software created with Adobe Flash and ActionScript without using a web browser. oezkoezfezkofezkfezofezkfezofezkfezofezkfez"
 msgstr ""
 
 #: tfrmpackage.labelprogressioninstall.caption
@@ -74,7 +174,7 @@ msgstr "Mot de passe : "
 
 #: tvislogin.warningtext.caption
 msgid "Wrong password or login !"
-msgstr "Mauvais mot de passe"
+msgstr "Mauvais mot de passe ou login!"
 
 #: tviswaptself.actcanceltask.caption
 msgid "Cancel task"
@@ -100,6 +200,10 @@ msgstr "Désélectionner tout"
 #: tviswaptself.actupdatepackageslist.caption
 msgid "ActUpdatePackagesList"
 msgstr ""
+
+#: tviswaptself.btnhidedetails.caption
+msgid "Hide"
+msgstr "Cacher"
 
 #: tviswaptself.btnshowall.caption
 msgid "Show all / clear filtrer"
@@ -149,90 +253,112 @@ msgid "Available packages"
 msgstr "Paquets disponibles"
 
 #: tviswaptself.sogridtasks.header.columns[0].text
+msgctxt "tviswaptself.sogridtasks.header.columns[0].text"
 msgid "ID"
 msgstr "ID"
 
 #: tviswaptself.sogridtasks.header.columns[10].text
+msgctxt "tviswaptself.sogridtasks.header.columns[10].text"
 msgid "result"
 msgstr "Résultat"
 
 #: tviswaptself.sogridtasks.header.columns[11].text
+msgctxt "tviswaptself.sogridtasks.header.columns[11].text"
 msgid "runstatus"
 msgstr "Etape"
 
 #: tviswaptself.sogridtasks.header.columns[12].text
+msgctxt "tviswaptself.sogridtasks.header.columns[12].text"
 msgid "created_by"
 msgstr "Créé par"
 
 #: tviswaptself.sogridtasks.header.columns[13].text
+msgctxt "tviswaptself.sogridtasks.header.columns[13].text"
 msgid "progress"
 msgstr "Progression"
 
 #: tviswaptself.sogridtasks.header.columns[14].text
+msgctxt "tviswaptself.sogridtasks.header.columns[14].text"
 msgid "summary"
 msgstr "Résumé"
 
 #: tviswaptself.sogridtasks.header.columns[15].text
+msgctxt "tviswaptself.sogridtasks.header.columns[15].text"
 msgid "finish_date"
 msgstr "Heure de fin"
 
 #: tviswaptself.sogridtasks.header.columns[16].text
+msgctxt "tviswaptself.sogridtasks.header.columns[16].text"
 msgid "classname"
 msgstr ""
 
 #: tviswaptself.sogridtasks.header.columns[17].text
+msgctxt "tviswaptself.sogridtasks.header.columns[17].text"
 msgid "logs"
 msgstr ""
 
 #: tviswaptself.sogridtasks.header.columns[18].text
+msgctxt "tviswaptself.sogridtasks.header.columns[18].text"
 msgid "pidlist"
 msgstr ""
 
 #: tviswaptself.sogridtasks.header.columns[19].text
+msgctxt "tviswaptself.sogridtasks.header.columns[19].text"
 msgid "usecache"
 msgstr ""
 
 #: tviswaptself.sogridtasks.header.columns[1].text
+msgctxt "tviswaptself.sogridtasks.header.columns[1].text"
 msgid "Status"
 msgstr ""
 
 #: tviswaptself.sogridtasks.header.columns[20].text
+msgctxt "tviswaptself.sogridtasks.header.columns[20].text"
 msgid "packagenames"
 msgstr ""
 
 #: tviswaptself.sogridtasks.header.columns[21].text
+msgctxt "tviswaptself.sogridtasks.header.columns[21].text"
 msgid "force"
 msgstr ""
 
 #: tviswaptself.sogridtasks.header.columns[2].text
+msgctxt "tviswaptself.sogridtasks.header.columns[2].text"
 msgid "order"
 msgstr ""
 
 #: tviswaptself.sogridtasks.header.columns[3].text
+msgctxt "tviswaptself.sogridtasks.header.columns[3].text"
 msgid "Description"
-msgstr ""
+msgstr "Description"
 
 #: tviswaptself.sogridtasks.header.columns[4].text
+msgctxt "tviswaptself.sogridtasks.header.columns[4].text"
 msgid "priority"
 msgstr ""
 
 #: tviswaptself.sogridtasks.header.columns[5].text
+msgctxt "tviswaptself.sogridtasks.header.columns[5].text"
 msgid "notify_user"
 msgstr ""
 
 #: tviswaptself.sogridtasks.header.columns[6].text
+msgctxt "tviswaptself.sogridtasks.header.columns[6].text"
 msgid "start_date"
 msgstr ""
 
 #: tviswaptself.sogridtasks.header.columns[7].text
+msgctxt "tviswaptself.sogridtasks.header.columns[7].text"
 msgid "create_date"
 msgstr ""
 
 #: tviswaptself.sogridtasks.header.columns[8].text
+msgctxt "tviswaptself.sogridtasks.header.columns[8].text"
 msgid "notify_server_on_finish"
 msgstr ""
 
 #: tviswaptself.sogridtasks.header.columns[9].text
+msgctxt "tviswaptself.sogridtasks.header.columns[9].text"
 msgid "notify_server_on_start"
 msgstr ""
 
@@ -308,7 +434,7 @@ msgstr "Trier par date : desc"
 
 #: uviswaptself.rsupgradablepackages
 msgid "Available updates for installed packages"
-msgstr "Mises à jour disponibles pour les paquets installés"
+msgstr ""
 
 #: uwaptselfres.rsactioninstall
 msgctxt "uwaptselfres.rsactioninstall"
@@ -414,8 +540,6 @@ msgid "Waiting for uninstall..."
 msgstr "En attente de suppression..."
 
 #: uwaptselfres.rswarningnologinorpassword
-#, fuzzy
-#| msgid "Please enter a password/login"
 msgid "Please enter a login/password"
 msgstr "Entrez un login/mot de passe"
 

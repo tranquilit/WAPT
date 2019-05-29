@@ -7290,42 +7290,6 @@ def check_user_authorisation_for_self_service(rules,packagename,user_groups):
                 return True
     return False
 
-def get_user_self_service_groups(self_service_groups,logon_name,password):
-    """Authenticate a user and returns the self-service groups membership
-
-    Args:
-        self_service_groups (list): self service groups
-        logon_name(str): Username of user
-        password(str): Password of user
-
-    Returns:
-        list: of user's self service groups memberships ex: ['compta','tech']
-    """
-
-    domain = ''
-    if logon_name.count('\\') > 1 or logon_name.count('@') > 1  or (logon_name.count('\\') == 1 and logon_name.count('@')==1)  :
-        logger.debug(u"malformed logon credential : %s "% logon_name)
-        return False
-
-    if '\\' in logon_name:
-        domain = logon_name.split('\\')[0]
-        username = logon_name.split('\\')[1]
-    elif '@' in logon_name:
-        username = logon_name.split('@')[0]
-        domain = logon_name.split('@')[1]
-    else:
-        username = logon_name
-
-    huser = win32security.LogonUser(username,domain,password,win32security.LOGON32_LOGON_NETWORK_CLEARTEXT,win32security.LOGON32_PROVIDER_DEFAULT)
-
-    listgroupuser =  [username]
-    for group in self_service_groups :
-        if group in listgroupuser:
-            continue
-        if check_is_member_of(huser,group) :
-            listgroupuser.append(group)
-    return listgroupuser
-
 def wapt_sources_edit(wapt_sources_dir):
     """Utility to open Pyscripter with package source if it is installed
         else open the development directory in Shell Explorer.

@@ -1,0 +1,802 @@
+object FrmDetailsPackage: TFrmDetailsPackage
+  Left = 0
+  Height = 714
+  Top = 0
+  Width = 345
+  AutoSize = True
+  ClientHeight = 714
+  ClientWidth = 345
+  Color = clWhite
+  Constraints.MaxWidth = 345
+  ParentColor = False
+  TabOrder = 0
+  DesignLeft = 2570
+  DesignTop = 104
+  object PanelDetails: TPanel
+    AnchorSideLeft.Control = Owner
+    AnchorSideTop.Control = Owner
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    Left = 0
+    Height = 692
+    Top = 0
+    Width = 345
+    Align = alCustom
+    Anchors = [akTop, akLeft, akRight]
+    AutoSize = True
+    BevelOuter = bvNone
+    ClientHeight = 692
+    ClientWidth = 345
+    Color = clWhite
+    ParentColor = False
+    TabOrder = 0
+    object ImgPackage: TImage
+      AnchorSideLeft.Control = PanelDetails
+      AnchorSideTop.Control = PanelDetails
+      Left = 5
+      Height = 48
+      Top = 5
+      Width = 48
+      AntialiasingMode = amOn
+      BorderSpacing.Left = 5
+      BorderSpacing.Top = 5
+      Picture.Data = {
+        1754506F727461626C654E6574776F726B477261706869631D09000089504E47
+        0D0A1A0A0000000D49484452000000300000003008060000005702F987000000
+        0473424954080808087C086488000000097048597300000EC400000EC401952B
+        0E1B0000001974455874536F667477617265007777772E696E6B73636170652E
+        6F72679BEE3C1A0000089A494441546881CD9A6B6C5CD511C77F33D7593B09C1
+        4DE284E601081592283648484028A581A4948AAAB6BA7B7D09A605592A0D5F5A
+        125069F301A92028A522853642949A4A502522A0EBEB059B3E5454421A10100A
+        1444BC0E84D234E111080E6020F6DAF74C3FF86ED83AB6B36BAF69FFD27E9873
+        CFCCF9CF9EC79D3373850A2093C92C005689C80A6029700A300F989974F90478
+        0F7803D80D3CA3AADBC2307C67B263CB44155B5A5AEAF2F9FCE5C095C099C04B
+        22F2A4991D70CE0DA9EA27C000E099D93460BA884C03BE089C0F9C013C6F669B
+        ABABABB76EDDBAF5E0E7E2402693592C22D70357012F3AE7BA80FDAAFA918858
+        1CC7FB6A6B6B77DF7FFFFDFDC57AADADAD357D7D7D4B44E4243313E7DCF1C062
+        556D04CE1491B67C3E7F7B6767E75B53E240100429E7DC75C00DC063C01FCDEC
+        A088EC8BA2E8EFE50C5A80EFFB6799D9892252077C13B8C8CC6EAEABABBBB3AD
+        AD6DB0620E0441B0D439F710E0019BCCEC90E779DBC3307C6F22C447229D4ECF
+        F73CEF02E75CAD88AC07069D736BB2D9ECABC7D23DA603BEEFFBC07DC07D22B2
+        53449E0DC3704F05788F36D669C08AE477A599B576747464C7D3F1C67BD8DCDC
+        7C3570B7996D0072AADA1E86E1FB15633C02B95CAEB7A1A16197736EBA993DAB
+        AA772F5FBEFC602E977B7E2C9D3167A0B9B9F96A33BB2D59F77BB3D9ECE353C2
+        7A0C64329995C01211D908FC388AA2B6D1FA8D3A03C9B2B9DB39B7BEAAAAAA27
+        8AA21D53C87554E472B9BD0D0D0DD566F602F0ABFAFAFA5DDDDDDDBB47F63B6A
+        06920DFB9C996D50D5EEF6F6F62726422093C99C0C2C1091E3800F060707F775
+        76761E28D74E3A9D5EED795EBD99DD029C1545D16B633A901C953B45643BF078
+        7B7BFB2365925E90BC2332C0C9A374D903B43BE7EECC66B3EF966AD7F7FD4B81
+        95C07973E7CE5D517CC46A71C764BD7BC0CE868686AE72C8FBBEBF56445E07AE
+        1D833CC0A9C00655DD93C9649A4AB5ADAA11F00C50DDDBDBBBAEF8D991190882
+        609173AE0758E79C7BB29433B888FC6DC04F46341F02FE011C14915966763AB0
+        A8E8B913914CA9B31C04C1A9CEB9D5C046335BDAD1D1F13614CD8073EE7A1179
+        4C44FACA219FC964BE37827C0E6852D5795114AD8EA2E8D2F6F6F64BA2285AAC
+        AA1702DD493F35B3DFB7B4B4D495324E18867BCCAC5744B689C88F0AED0AC381
+        19F07D11F9731CC7DB4B259F4EA7E78AC8ED454D7F51D573A228EA0AC3301E85
+        C4F6388EBFC2F05E00A81D1818B8A6D4F186868676A8EAA3C0D5E9747AEE1107
+        92A8F2C5388EDF2B6773799E7715303B11F7AAAA1F86E1C7E3E93CFCF0C31F98
+        D90D0559444ADE0B9D9D9D078686860E9AD9CBAA7AD91107802B54F511606FA9
+        C6009C739922F1D663912FC0F3BC278BC4FA1B6FBC51C7EC7CB4EE9B40177005
+        8026979133878686DEEAE8E878A15443808848434150D5CE5215C3307C0B281C
+        8555BB76ED9A5586EE4E603F70763A9D9E5F05AC62F832D257AA11802008A639
+        E7AE05101157CEED2A08823AE7DCB4448C819266AE081F02AF88C8AA2A115921
+        224F99D9519B6E3C84619807468D4F8E85388E2F13397282BF34DA861F0FAAEA
+        CC6C87AA9EABC032333BE079DEBF2742A65C0441304F55371464337BA05C1B22
+        B2DFCCDE31B3A50A7C09C8F3D9D136654842952D66B63069FAD7E0E0E06FCAB5
+        D3DFDFFFAA880C00A72AC3C7603E0CC3C395243B12ADADAD3566D6015C9C347D
+        AAAA977775757D5AAEAD44276F66B3AB80E3CCACFF584A93411004A9BEBEBE0E
+        E092A4A9DF39F7ED288A9E9EA8CD388E0F7B9E374B61F814A904D1D1100481E7
+        9CDB42117911C964B3D9C72663575505865F641F9B59CD24798E09E7DC0F8020
+        11079200EE4F93B5ABAAD3CDAC4F815E33AB098260FA648D8E445353D342E0E6
+        A2A61F56827C6363E30CE75C4A440E29F0BAAAA69C73A74DD6F048A452A956A0
+        F0967D268AA27B2B61B7A6A6664992ED7B4D81DD227282999D5809E3C530B3A0
+        48BCA7827617ABEA02117955CDEC59333B5F444A0EA8CAC0915955D5A72A65D4
+        39A7C04A337BBA0AD8066C066A2B3500C0DAB56BA7F5F6F61E59FF3367CEDC5F
+        21D362665F10917AE7DC1302E0FBFE7322128AC85FC3301C3389F4FF00DFF757
+        98D9D744A4318AA22F1796CD66336B8AE3F8A4FF29BB1260660B45A411D80250
+        05904AA51EC8E7F33F179179E9747A7E39B7B2B1D0D8D83863D6AC59D5057970
+        70B07FB2E14A5353D3094926FB74E7DC8390DCC892E2C2BDC02522B272328314
+        904AA57E313030D05BF839E77E56019B2B8126E0B7D96CF67D28CA4AA8EAEDC0
+        4522727C3A9D5E32D9C12A0DDFF79739E7E6001798D9C642FB1107C2307C5344
+        6E01AE53D5738220183773FD792208022F8EE3B344649D99DD54C809C188CCDC
+        9C3973EE00065575451CC725670BA61A711C377B9E771E70B8AEAE6E53F1B3FF
+        72A0ADAD6DD039B7C63977A5882C4AA7D3AB273AA8AADE057CBDF073CE4DE84D
+        9C70980F5CAEAA6B46969E46AD0F643299B4886C76CE5D535555950BC370C271
+        FB64D0DCDC7C9E992D0336012D51141D95AF1D759DE772B99EE5CB971F14918D
+        66F6C2B265CB66F7F4F4BC31D5848BD1DCDC7C21C335E75F8AC87551143D385A
+        BF716B64BEEFAF05EE003698D93B9EE765CBCD20948B20083C33CBC471BC4055
+        6F1591F5EDEDEDBF1BABFFB8274D2E977BBEBEBE7E177097887C6466B31B1A1A
+        06BABBBBA7A44EE6FBFEB2A1A1A16F88C84A11B906F8CE58FF7C0125955993EA
+        E1434035F06B113994CFE7FF36918ACB68686A6A3A21954AAD34B3D9C07AE0B0
+        AAAE29A51A5A72A13B892ED799D94F816D22F207E7DCBBC0FE8E8E8EE726423C
+        09CC167A9E37CF39F72DE04233BBA9AEAE6E53450BDDC5282A23AD35B3978147
+        817DC087AAEA44643FB07B64DCD3D8D83823954A2D159145493C5F0B2C061A45
+        E40C11B947443696FB01C8843FF648A7D37355B505F82E7036F00AB003783BF9
+        D8E3B0732E9F38551DC7F10C55AD4AA2C9AF02F5C04E608BAA6E0DC3B077223C
+        26ECC00867E68BC82A553D97E154E529401D9FDD87FB8083C03F811E3EFBDC66
+        D29F2AFC075A99C80D7F96C7C90000000049454E44AE426082
+      }
+      Proportional = True
+      Stretch = True
+      Transparent = True
+    end
+    object LabName: TLabel
+      AnchorSideLeft.Control = ImgPackage
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = PanelDetails
+      AnchorSideRight.Control = PanelDetails
+      AnchorSideRight.Side = asrBottom
+      Left = 58
+      Height = 48
+      Top = 5
+      Width = 282
+      Alignment = taCenter
+      Anchors = [akTop, akLeft, akRight]
+      AutoSize = False
+      BorderSpacing.Left = 5
+      BorderSpacing.Top = 5
+      BorderSpacing.Right = 5
+      Layout = tlCenter
+      ParentColor = False
+      OptimalFill = True
+    end
+    object Editor: TLabel
+      AnchorSideLeft.Control = PanelDetails
+      AnchorSideTop.Control = ImgPackage
+      AnchorSideTop.Side = asrBottom
+      Left = 5
+      Height = 20
+      Top = 58
+      Width = 50
+      BorderSpacing.Left = 5
+      BorderSpacing.Top = 5
+      Caption = 'Editor :'
+      Constraints.MinHeight = 20
+      Font.Height = 20
+      Font.Style = [fsBold]
+      Layout = tlCenter
+      ParentColor = False
+      ParentFont = False
+    end
+    object LastVersion: TLabel
+      AnchorSideLeft.Control = PanelDetails
+      AnchorSideTop.Control = Editor
+      AnchorSideTop.Side = asrBottom
+      Left = 5
+      Height = 20
+      Top = 83
+      Width = 96
+      BorderSpacing.Left = 5
+      BorderSpacing.Top = 5
+      Caption = 'Last version : '
+      Constraints.MinHeight = 20
+      Font.Height = 20
+      Font.Style = [fsBold]
+      Layout = tlCenter
+      ParentColor = False
+      ParentFont = False
+    end
+    object OfficialWebsite: TLabel
+      AnchorSideLeft.Control = PanelDetails
+      AnchorSideTop.Control = LastVersion
+      AnchorSideTop.Side = asrBottom
+      Left = 5
+      Height = 20
+      Top = 108
+      Width = 120
+      BorderSpacing.Left = 5
+      BorderSpacing.Top = 5
+      Caption = 'Official website : '
+      Constraints.MinHeight = 20
+      Font.Height = 20
+      Font.Style = [fsBold]
+      Layout = tlCenter
+      ParentColor = False
+      ParentFont = False
+    end
+    object Description: TLabel
+      AnchorSideLeft.Control = PanelDetails
+      AnchorSideTop.Control = Categories
+      AnchorSideTop.Side = asrBottom
+      AnchorSideRight.Control = PanelDetails
+      AnchorSideRight.Side = asrBottom
+      Left = 5
+      Height = 30
+      Top = 463
+      Width = 335
+      Alignment = taCenter
+      Anchors = [akTop, akLeft, akRight]
+      AutoSize = False
+      BorderSpacing.Left = 5
+      BorderSpacing.Top = 10
+      BorderSpacing.Right = 5
+      Caption = 'Description'
+      Color = 9710339
+      Font.Color = clWhite
+      Font.Height = 25
+      Font.Style = [fsBold]
+      Layout = tlCenter
+      ParentColor = False
+      ParentFont = False
+      Transparent = False
+    end
+    object LabEditor: TLabel
+      AnchorSideLeft.Control = Editor
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = LabName
+      AnchorSideTop.Side = asrBottom
+      AnchorSideRight.Control = PanelDetails
+      AnchorSideRight.Side = asrBottom
+      Left = 59
+      Height = 20
+      Top = 58
+      Width = 281
+      Anchors = [akTop, akLeft, akRight]
+      AutoSize = False
+      BorderSpacing.Left = 4
+      BorderSpacing.Top = 5
+      BorderSpacing.Right = 5
+      Layout = tlCenter
+      ParentColor = False
+      OptimalFill = True
+    end
+    object LabLastVersion: TLabel
+      AnchorSideLeft.Control = LastVersion
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = LabEditor
+      AnchorSideTop.Side = asrBottom
+      AnchorSideRight.Control = PanelDetails
+      AnchorSideRight.Side = asrBottom
+      Left = 105
+      Height = 20
+      Top = 83
+      Width = 235
+      Anchors = [akTop, akLeft, akRight]
+      AutoSize = False
+      BorderSpacing.Left = 4
+      BorderSpacing.Top = 5
+      BorderSpacing.Right = 5
+      Layout = tlCenter
+      ParentColor = False
+      OptimalFill = True
+    end
+    object LabOfficialWebsite: TLabel
+      AnchorSideLeft.Control = OfficialWebsite
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = LabLastVersion
+      AnchorSideTop.Side = asrBottom
+      AnchorSideRight.Control = PanelDetails
+      AnchorSideRight.Side = asrBottom
+      Left = 129
+      Height = 20
+      Top = 108
+      Width = 211
+      Anchors = [akTop, akLeft, akRight]
+      AutoSize = False
+      BorderSpacing.Left = 4
+      BorderSpacing.Top = 5
+      BorderSpacing.Right = 5
+      Layout = tlCenter
+      ParentColor = False
+      ParentFont = False
+      OnClick = LabOfficialWebsiteClick
+      OnMouseEnter = LabOfficialWebsiteMouseEnter
+      OnMouseLeave = LabOfficialWebsiteMouseLeave
+      OptimalFill = True
+    end
+    object LabDescription: TLabel
+      AnchorSideLeft.Control = PanelDetails
+      AnchorSideTop.Control = Description
+      AnchorSideTop.Side = asrBottom
+      AnchorSideRight.Control = PanelDetails
+      AnchorSideRight.Side = asrBottom
+      Left = 5
+      Height = 189
+      Top = 503
+      Width = 335
+      Anchors = [akTop, akLeft, akRight]
+      BorderSpacing.Left = 5
+      BorderSpacing.Top = 10
+      BorderSpacing.Right = 5
+      Caption = 'fezfezfezokfezkofez'#13#10#13#10'fezkofezjofezjofez'#13#10#13#10'ezfjofezofez'#13#10'fezjifezjfez'#13#10#13#10'ez'#13#10'fezjofezjofez'
+      Font.Height = -16
+      ParentColor = False
+      ParentFont = False
+      WordWrap = True
+    end
+    object Licence: TLabel
+      AnchorSideLeft.Control = PanelDetails
+      AnchorSideTop.Control = OfficialWebsite
+      AnchorSideTop.Side = asrBottom
+      Left = 5
+      Height = 20
+      Top = 133
+      Width = 63
+      BorderSpacing.Left = 5
+      BorderSpacing.Top = 5
+      Caption = 'Licence : '
+      Constraints.MinHeight = 20
+      Font.Height = 20
+      Font.Style = [fsBold]
+      Layout = tlCenter
+      ParentColor = False
+      ParentFont = False
+    end
+    object LabLicence: TLabel
+      AnchorSideLeft.Control = Licence
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = LabOfficialWebsite
+      AnchorSideTop.Side = asrBottom
+      AnchorSideRight.Control = PanelDetails
+      AnchorSideRight.Side = asrBottom
+      Left = 72
+      Height = 20
+      Top = 133
+      Width = 268
+      Anchors = [akTop, akLeft, akRight]
+      AutoSize = False
+      BorderSpacing.Left = 4
+      BorderSpacing.Top = 5
+      BorderSpacing.Right = 5
+      Layout = tlCenter
+      ParentColor = False
+      OptimalFill = True
+    end
+    object ImpactedProcess: TLabel
+      AnchorSideLeft.Control = PanelDetails
+      AnchorSideTop.Control = Licence
+      AnchorSideTop.Side = asrBottom
+      Left = 5
+      Height = 20
+      Top = 158
+      Width = 131
+      BorderSpacing.Left = 5
+      BorderSpacing.Top = 5
+      Caption = 'Impacted process :'
+      Constraints.MinHeight = 20
+      Font.Height = 20
+      Font.Style = [fsBold]
+      Layout = tlCenter
+      ParentColor = False
+      ParentFont = False
+    end
+    object LabImpactedProcess: TLabel
+      AnchorSideLeft.Control = ImpactedProcess
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = LabLicence
+      AnchorSideTop.Side = asrBottom
+      AnchorSideRight.Control = PanelDetails
+      AnchorSideRight.Side = asrBottom
+      Left = 140
+      Height = 20
+      Top = 158
+      Width = 200
+      Anchors = [akTop, akLeft, akRight]
+      AutoSize = False
+      BorderSpacing.Left = 4
+      BorderSpacing.Top = 5
+      BorderSpacing.Right = 5
+      Layout = tlCenter
+      ParentColor = False
+      OptimalFill = True
+    end
+    object Maintainer: TLabel
+      AnchorSideLeft.Control = PanelDetails
+      AnchorSideTop.Control = ImpactedProcess
+      AnchorSideTop.Side = asrBottom
+      Left = 5
+      Height = 20
+      Top = 183
+      Width = 88
+      BorderSpacing.Left = 5
+      BorderSpacing.Top = 5
+      Caption = 'Maintainer : '
+      Constraints.MinHeight = 20
+      Font.Height = 20
+      Font.Style = [fsBold]
+      Layout = tlCenter
+      ParentColor = False
+      ParentFont = False
+    end
+    object LabMaintainer: TLabel
+      AnchorSideLeft.Control = Maintainer
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = LabImpactedProcess
+      AnchorSideTop.Side = asrBottom
+      AnchorSideRight.Control = PanelDetails
+      AnchorSideRight.Side = asrBottom
+      Left = 97
+      Height = 20
+      Top = 183
+      Width = 243
+      Anchors = [akTop, akLeft, akRight]
+      AutoSize = False
+      BorderSpacing.Left = 4
+      BorderSpacing.Top = 5
+      BorderSpacing.Right = 5
+      Layout = tlCenter
+      ParentColor = False
+      OptimalFill = True
+    end
+    object Size: TLabel
+      AnchorSideLeft.Control = PanelDetails
+      AnchorSideTop.Control = Maintainer
+      AnchorSideTop.Side = asrBottom
+      Left = 5
+      Height = 20
+      Top = 208
+      Width = 99
+      BorderSpacing.Left = 5
+      BorderSpacing.Top = 5
+      Caption = 'Package size : '
+      Constraints.MinHeight = 20
+      Font.Height = 20
+      Font.Style = [fsBold]
+      Layout = tlCenter
+      ParentColor = False
+      ParentFont = False
+    end
+    object LabSize: TLabel
+      AnchorSideLeft.Control = Size
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = LabMaintainer
+      AnchorSideTop.Side = asrBottom
+      AnchorSideRight.Control = PanelDetails
+      AnchorSideRight.Side = asrBottom
+      Left = 108
+      Height = 20
+      Top = 208
+      Width = 232
+      Anchors = [akTop, akLeft, akRight]
+      AutoSize = False
+      BorderSpacing.Left = 4
+      BorderSpacing.Top = 5
+      BorderSpacing.Right = 5
+      Layout = tlCenter
+      ParentColor = False
+      OptimalFill = True
+    end
+    object SizeInstalled: TLabel
+      AnchorSideLeft.Control = PanelDetails
+      AnchorSideTop.Control = Size
+      AnchorSideTop.Side = asrBottom
+      Left = 5
+      Height = 20
+      Top = 233
+      Width = 102
+      BorderSpacing.Left = 5
+      BorderSpacing.Top = 5
+      Caption = 'Size installed : '
+      Constraints.MinHeight = 20
+      Font.Height = 20
+      Font.Style = [fsBold]
+      Layout = tlCenter
+      ParentColor = False
+      ParentFont = False
+    end
+    object LabSizeInstalled: TLabel
+      AnchorSideLeft.Control = SizeInstalled
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = LabSize
+      AnchorSideTop.Side = asrBottom
+      AnchorSideRight.Control = PanelDetails
+      AnchorSideRight.Side = asrBottom
+      Left = 111
+      Height = 20
+      Top = 233
+      Width = 229
+      Anchors = [akTop, akLeft, akRight]
+      AutoSize = False
+      BorderSpacing.Left = 4
+      BorderSpacing.Top = 5
+      BorderSpacing.Right = 5
+      Layout = tlCenter
+      ParentColor = False
+      OptimalFill = True
+    end
+    object Repository: TLabel
+      AnchorSideLeft.Control = PanelDetails
+      AnchorSideTop.Control = SizeInstalled
+      AnchorSideTop.Side = asrBottom
+      Left = 5
+      Height = 20
+      Top = 258
+      Width = 85
+      BorderSpacing.Left = 5
+      BorderSpacing.Top = 5
+      Caption = 'Repository :'
+      Constraints.MinHeight = 20
+      Font.Height = 20
+      Font.Style = [fsBold]
+      Layout = tlCenter
+      ParentColor = False
+      ParentFont = False
+    end
+    object LabRepository: TLabel
+      AnchorSideLeft.Control = Repository
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = LabSizeInstalled
+      AnchorSideTop.Side = asrBottom
+      AnchorSideRight.Control = PanelDetails
+      AnchorSideRight.Side = asrBottom
+      Left = 94
+      Height = 20
+      Top = 258
+      Width = 246
+      Anchors = [akTop, akLeft, akRight]
+      AutoSize = False
+      BorderSpacing.Left = 4
+      BorderSpacing.Top = 5
+      BorderSpacing.Right = 5
+      Layout = tlCenter
+      ParentColor = False
+      OptimalFill = True
+    end
+    object Signer: TLabel
+      AnchorSideLeft.Control = PanelDetails
+      AnchorSideTop.Control = Repository
+      AnchorSideTop.Side = asrBottom
+      Left = 5
+      Height = 20
+      Top = 283
+      Width = 52
+      BorderSpacing.Left = 5
+      BorderSpacing.Top = 5
+      Caption = 'Signer :'
+      Constraints.MinHeight = 20
+      Font.Height = 20
+      Font.Style = [fsBold]
+      Layout = tlCenter
+      ParentColor = False
+      ParentFont = False
+    end
+    object LabSigner: TLabel
+      AnchorSideLeft.Control = Signer
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = LabRepository
+      AnchorSideTop.Side = asrBottom
+      AnchorSideRight.Control = PanelDetails
+      AnchorSideRight.Side = asrBottom
+      Left = 61
+      Height = 20
+      Top = 283
+      Width = 279
+      Anchors = [akTop, akLeft, akRight]
+      AutoSize = False
+      BorderSpacing.Left = 4
+      BorderSpacing.Top = 5
+      BorderSpacing.Right = 5
+      Layout = tlCenter
+      ParentColor = False
+      OptimalFill = True
+    end
+    object PackageName: TLabel
+      AnchorSideLeft.Control = PanelDetails
+      AnchorSideTop.Control = Signer
+      AnchorSideTop.Side = asrBottom
+      Left = 5
+      Height = 20
+      Top = 308
+      Width = 112
+      BorderSpacing.Left = 5
+      BorderSpacing.Top = 5
+      Caption = 'Package name : '
+      Constraints.MinHeight = 20
+      Font.Height = 20
+      Font.Style = [fsBold]
+      Layout = tlCenter
+      ParentColor = False
+      ParentFont = False
+    end
+    object LabPackageName: TLabel
+      AnchorSideLeft.Control = PackageName
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = LabSigner
+      AnchorSideTop.Side = asrBottom
+      AnchorSideRight.Control = PanelDetails
+      AnchorSideRight.Side = asrBottom
+      Left = 121
+      Height = 20
+      Top = 308
+      Width = 219
+      Anchors = [akTop, akLeft, akRight]
+      AutoSize = False
+      BorderSpacing.Left = 4
+      BorderSpacing.Top = 5
+      BorderSpacing.Right = 5
+      Layout = tlCenter
+      ParentColor = False
+      OptimalFill = True
+    end
+    object Dependency: TLabel
+      AnchorSideLeft.Control = PanelDetails
+      AnchorSideTop.Control = PackageName
+      AnchorSideTop.Side = asrBottom
+      Left = 5
+      Height = 20
+      Top = 333
+      Width = 98
+      BorderSpacing.Left = 5
+      BorderSpacing.Top = 5
+      Caption = 'Dependency : '
+      Constraints.MinHeight = 20
+      Font.Height = 20
+      Font.Style = [fsBold]
+      Layout = tlCenter
+      ParentColor = False
+      ParentFont = False
+    end
+    object Conflicts: TLabel
+      AnchorSideLeft.Control = PanelDetails
+      AnchorSideTop.Control = Dependency
+      AnchorSideTop.Side = asrBottom
+      Left = 5
+      Height = 20
+      Top = 358
+      Width = 69
+      BorderSpacing.Left = 5
+      BorderSpacing.Top = 5
+      Caption = 'Conflicts :'
+      Constraints.MinHeight = 20
+      Font.Height = 20
+      Font.Style = [fsBold]
+      Layout = tlCenter
+      ParentColor = False
+      ParentFont = False
+    end
+    object Section: TLabel
+      AnchorSideLeft.Control = PanelDetails
+      AnchorSideTop.Control = Conflicts
+      AnchorSideTop.Side = asrBottom
+      Left = 5
+      Height = 20
+      Top = 383
+      Width = 63
+      BorderSpacing.Left = 5
+      BorderSpacing.Top = 5
+      Caption = 'Section : '
+      Constraints.MinHeight = 20
+      Font.Height = 20
+      Font.Style = [fsBold]
+      Layout = tlCenter
+      ParentColor = False
+      ParentFont = False
+    end
+    object SignatureDate: TLabel
+      AnchorSideLeft.Control = PanelDetails
+      AnchorSideTop.Control = Section
+      AnchorSideTop.Side = asrBottom
+      Left = 5
+      Height = 20
+      Top = 408
+      Width = 110
+      BorderSpacing.Left = 5
+      BorderSpacing.Top = 5
+      Caption = 'Signature date :'
+      Constraints.MinHeight = 20
+      Font.Height = 20
+      Font.Style = [fsBold]
+      Layout = tlCenter
+      ParentColor = False
+      ParentFont = False
+    end
+    object LabDependency: TLabel
+      AnchorSideLeft.Control = Dependency
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = LabPackageName
+      AnchorSideTop.Side = asrBottom
+      AnchorSideRight.Control = PanelDetails
+      AnchorSideRight.Side = asrBottom
+      Left = 107
+      Height = 20
+      Top = 333
+      Width = 233
+      Anchors = [akTop, akLeft, akRight]
+      AutoSize = False
+      BorderSpacing.Left = 4
+      BorderSpacing.Top = 5
+      BorderSpacing.Right = 5
+      Layout = tlCenter
+      ParentColor = False
+      OptimalFill = True
+    end
+    object LabConflicts: TLabel
+      AnchorSideLeft.Control = Conflicts
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = LabDependency
+      AnchorSideTop.Side = asrBottom
+      AnchorSideRight.Control = PanelDetails
+      AnchorSideRight.Side = asrBottom
+      Left = 78
+      Height = 20
+      Top = 358
+      Width = 262
+      Anchors = [akTop, akLeft, akRight]
+      AutoSize = False
+      BorderSpacing.Left = 4
+      BorderSpacing.Top = 5
+      BorderSpacing.Right = 5
+      Layout = tlCenter
+      ParentColor = False
+      OptimalFill = True
+    end
+    object LabSection: TLabel
+      AnchorSideLeft.Control = Section
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = LabConflicts
+      AnchorSideTop.Side = asrBottom
+      AnchorSideRight.Control = PanelDetails
+      AnchorSideRight.Side = asrBottom
+      Left = 72
+      Height = 20
+      Top = 383
+      Width = 268
+      Anchors = [akTop, akLeft, akRight]
+      AutoSize = False
+      BorderSpacing.Left = 4
+      BorderSpacing.Top = 5
+      BorderSpacing.Right = 5
+      Layout = tlCenter
+      ParentColor = False
+      OptimalFill = True
+    end
+    object LabSignatureDate: TLabel
+      AnchorSideLeft.Control = SignatureDate
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = LabSection
+      AnchorSideTop.Side = asrBottom
+      AnchorSideRight.Control = PanelDetails
+      AnchorSideRight.Side = asrBottom
+      Left = 119
+      Height = 20
+      Top = 408
+      Width = 221
+      Anchors = [akTop, akLeft, akRight]
+      AutoSize = False
+      BorderSpacing.Left = 4
+      BorderSpacing.Top = 5
+      BorderSpacing.Right = 5
+      Layout = tlCenter
+      ParentColor = False
+      OptimalFill = True
+    end
+    object Categories: TLabel
+      AnchorSideLeft.Control = PanelDetails
+      AnchorSideTop.Control = SignatureDate
+      AnchorSideTop.Side = asrBottom
+      Left = 5
+      Height = 20
+      Top = 433
+      Width = 82
+      BorderSpacing.Left = 5
+      BorderSpacing.Top = 5
+      Caption = 'Categories :'
+      Constraints.MinHeight = 20
+      Font.Height = 20
+      Font.Style = [fsBold]
+      Layout = tlCenter
+      ParentColor = False
+      ParentFont = False
+    end
+    object LabCategories: TLabel
+      AnchorSideLeft.Control = Categories
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = LabSignatureDate
+      AnchorSideTop.Side = asrBottom
+      AnchorSideRight.Control = PanelDetails
+      AnchorSideRight.Side = asrBottom
+      Left = 91
+      Height = 20
+      Top = 433
+      Width = 249
+      Anchors = [akTop, akLeft, akRight]
+      AutoSize = False
+      BorderSpacing.Left = 4
+      BorderSpacing.Top = 5
+      BorderSpacing.Right = 5
+      Layout = tlCenter
+      ParentColor = False
+      OptimalFill = True
+    end
+  end
+end

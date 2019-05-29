@@ -17,10 +17,12 @@
         <TextDesc Value=""/>
       </XPManifest>
       <Icon Value="0"/>
-      <Resources Count="3">
+      <Resources Count="5">
         <Resource_0 FileName="..\arts\enterprise-200px.png" Type="RCDATA" ResourceName="ENTERPRISE-200PX"/>
         <Resource_1 FileName="..\arts\enterprise-400px.png" Type="RCDATA" ResourceName="ENTERPRISE-400PX"/>
         <Resource_2 FileName="..\arts\wapt-enterprise-200px.png" Type="RCDATA" ResourceName="WAPT-ENTERPRISE-200PX"/>
+        <Resource_3 FileName="..\arts\iconsself\plus2.png" Type="RCDATA" ResourceName="PLUS2"/>
+        <Resource_4 FileName="..\arts\iconsself\plus-bleu-fonce.png" Type="RCDATA" ResourceName="PLUS-BLEU-FONCE"/>
       </Resources>
     </General>
     <i18n>
@@ -69,7 +71,7 @@
         <PackageName Value="LCL"/>
       </Item7>
     </RequiredPackages>
-    <Units Count="5">
+    <Units Count="6">
       <Unit0>
         <Filename Value="waptself.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -104,6 +106,14 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="uWaptSelfRes"/>
       </Unit4>
+      <Unit5>
+        <Filename Value="ufrmdetailspackage.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FrmDetailsPackage"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Frame"/>
+        <UnitName Value="uFrmDetailsPackage"/>
+      </Unit5>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -134,16 +144,13 @@
     </Other>
   </CompilerOptions>
   <Debugging>
-    <Exceptions Count="3">
+    <Exceptions Count="2">
       <Item1>
         <Name Value="EIdHTTPProtocolException"/>
       </Item1>
       <Item2>
         <Name Value="EIdSocketError"/>
       </Item2>
-      <Item3>
-        <Name Value="FPImageException"/>
-      </Item3>
     </Exceptions>
   </Debugging>
 </CONFIG>

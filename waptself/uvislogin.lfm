@@ -515,12 +515,11 @@ object VisLogin: TVisLogin
   object WarningText: TStaticText
     AnchorSideTop.Control = LogoLogin
     AnchorSideTop.Side = asrBottom
-    Left = 32
+    Left = 40
     Height = 16
     Top = 110
-    Width = 144
+    Width = 175
     Align = alCustom
-    Alignment = taCenter
     BorderSpacing.Top = 5
     Caption = 'Wrong password or login !'
     Color = clNone

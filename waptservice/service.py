@@ -342,6 +342,42 @@ def check_auth(logon_name, password,check_token_in_password=True,for_group='wapt
     else:
         return logon_name
 
+def get_user_self_service_groups(self_service_groups,logon_name,password):
+    """Authenticate a user and returns the self-service groups membership
+
+    Args:
+        self_service_groups (list): self service groups
+        logon_name(str): Username of user
+        password(str): Password of user
+
+    Returns:
+        list: of user's self service groups memberships ex: ['compta','tech']
+    """
+
+    domain = ''
+    if logon_name.count('\\') > 1 or logon_name.count('@') > 1  or (logon_name.count('\\') == 1 and logon_name.count('@')==1)  :
+        logger.debug(u"malformed logon credential : %s "% logon_name)
+        return False
+
+    if '\\' in logon_name:
+        domain = logon_name.split('\\')[0]
+        username = logon_name.split('\\')[1]
+    elif '@' in logon_name:
+        username = logon_name.split('@')[0]
+        domain = logon_name.split('@')[1]
+    else:
+        username = logon_name
+
+    huser = win32security.LogonUser(username.decode('utf-8'),domain.decode('utf-8'),password.decode('utf-8'),win32security.LOGON32_LOGON_NETWORK_CLEARTEXT,win32security.LOGON32_PROVIDER_DEFAULT)
+
+    listgroupuser =  [username]
+    for group in self_service_groups :
+        if group in listgroupuser:
+            continue
+        if check_is_member_of(huser,group) :
+            listgroupuser.append(group)
+    return listgroupuser
+
 def allow_local_auth(f):
     """Restrict access to localhost authenticated"""
     @wraps(f)

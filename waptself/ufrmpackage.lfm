@@ -6,21 +6,23 @@ object FrmPackage: TFrmPackage
   ClientHeight = 164
   ClientWidth = 400
   TabOrder = 0
-  DesignLeft = 2234
-  DesignTop = 365
+  DesignLeft = 2494
+  DesignTop = 133
   object BCPaperPanel1: TBCPaperPanel
     AnchorSideLeft.Control = Owner
     AnchorSideLeft.Side = asrCenter
     AnchorSideTop.Control = Owner
     AnchorSideTop.Side = asrCenter
+    AnchorSideBottom.Side = asrBottom
     Left = 25
-    Height = 155
-    Top = 5
+    Height = 156
+    Top = 4
     Width = 350
     Alignment = taLeftJustify
-    BorderSpacing.Around = 4
+    Anchors = [akBottom]
+    BorderSpacing.Bottom = 16
     Caption = 'BCPaperPanel1'
-    ClientHeight = 155
+    ClientHeight = 156
     ClientWidth = 350
     Color = clWhite
     FullRepaint = False
@@ -172,7 +174,7 @@ object FrmPackage: TFrmPackage
       Left = 256
       Height = 16
       Top = 64
-      Width = 88
+      Width = 83
       AutoSize = False
       Background.Color = clBlack
       Background.ColorOpacity = 255
@@ -232,8 +234,8 @@ object FrmPackage: TFrmPackage
     end
     object LabDescription: TBCLabel
       Left = 12
-      Height = 63
-      Top = 80
+      Height = 32
+      Top = 88
       Width = 327
       Anchors = []
       AutoSize = False
@@ -272,7 +274,7 @@ object FrmPackage: TFrmPackage
       Border.LightWidth = 0
       Border.Style = bboNone
       Border.Width = 1
-      Caption = 'Adobe AIR is a runtime for software created with Adobe Flash and ActionScript without using a web browser.'
+      Caption = 'Adobe AIR is a runtime for software created with Adobe Flash and ActionScript without using a web browser. oezkoezfezkofezkfezofezkfezofezkfezofezkfez'
       FontEx.Color = 4868682
       FontEx.EndEllipsis = True
       FontEx.FontQuality = fqSystemClearType
@@ -285,7 +287,7 @@ object FrmPackage: TFrmPackage
       FontEx.ShadowOffsetX = 5
       FontEx.ShadowOffsetY = 5
       FontEx.Style = []
-      FontEx.TextAlignment = bcaLeftCenter
+      FontEx.TextAlignment = bcaLeftTop
       FontEx.WordBreak = True
       InnerMargin = 0
       Rounding.RoundX = 1
@@ -293,10 +295,13 @@ object FrmPackage: TFrmPackage
       Rounding.RoundOptions = []
     end
     object LabelProgressionInstall: TBCLabel
-      Left = 304
-      Height = 15
-      Top = 106
-      Width = 16
+      AnchorSideBottom.Control = BCPaperPanel1
+      AnchorSideBottom.Side = asrBottom
+      Left = 286
+      Height = 20
+      Top = 122
+      Width = 20
+      Anchors = [akBottom]
       Background.Color = clBlack
       Background.ColorOpacity = 255
       Background.Gradient1.StartColor = clWhite
@@ -332,11 +337,12 @@ object FrmPackage: TFrmPackage
       Border.LightWidth = 0
       Border.Style = bboNone
       Border.Width = 1
+      BorderSpacing.Bottom = 14
       Caption = '0%'
       FontEx.Color = 7566195
       FontEx.EndEllipsis = False
       FontEx.FontQuality = fqSystemClearType
-      FontEx.Height = 12
+      FontEx.Height = 15
       FontEx.SingleLine = False
       FontEx.Shadow = False
       FontEx.ShadowColor = clBlack
@@ -345,7 +351,7 @@ object FrmPackage: TFrmPackage
       FontEx.ShadowOffsetX = 5
       FontEx.ShadowOffsetY = 5
       FontEx.Style = []
-      FontEx.TextAlignment = bcaCenter
+      FontEx.TextAlignment = bcaRightCenter
       FontEx.WordBreak = False
       InnerMargin = 0
       Rounding.RoundX = 1
@@ -457,7 +463,6 @@ object FrmPackage: TFrmPackage
       }
       Proportional = True
       Stretch = True
-      StretchOutEnabled = False
       Transparent = True
     end
     object LabMaintainer: TBCLabel
@@ -521,20 +526,13 @@ object FrmPackage: TFrmPackage
       Rounding.RoundY = 1
       Rounding.RoundOptions = []
     end
-    object TextWaitInstall: TStaticText
-      Left = 16
-      Height = 14
-      Top = 106
-      Width = 216
-      Caption = 'Waiting for install...'
-      TabOrder = 0
-      Visible = False
-    end
     object BtnCancel: TBCMaterialDesignButton
-      Left = 288
-      Height = 24
-      Top = 104
-      Width = 56
+      AnchorSideBottom.Control = BCPaperPanel1
+      AnchorSideBottom.Side = asrBottom
+      Left = 232
+      Height = 25
+      Top = 122
+      Width = 72
       RoundBorders = 3
       NormalColor = clBlue
       NormalColorEffect = clGray
@@ -545,6 +543,9 @@ object FrmPackage: TFrmPackage
       TextShadowSize = 0
       TextFont = 'Tahoma'
       TextQuality = fqSystemClearType
+      Anchors = [akTop, akLeft, akBottom]
+      AutoSize = True
+      BorderSpacing.Bottom = 9
       Caption = 'Cancel'
       OnClick = ActCancelTaskExecute
       ParentFont = False
@@ -614,34 +615,150 @@ object FrmPackage: TFrmPackage
       Rounding.RoundOptions = []
     end
     object ProgressBarInstall: TProgressBar
-      Left = 16
-      Height = 16
-      Top = 106
-      Width = 280
+      AnchorSideBottom.Control = BCPaperPanel1
+      AnchorSideBottom.Side = asrBottom
+      Left = 12
+      Height = 22
+      Top = 122
+      Width = 260
+      Anchors = [akTop, akLeft, akBottom]
+      BorderSpacing.Bottom = 12
       Color = 14852966
       ParentColor = False
       Style = pbstMarquee
-      TabOrder = 1
+      TabOrder = 0
+    end
+    object ImageDetails: TImage
+      AnchorSideLeft.Side = asrCenter
+      AnchorSideBottom.Control = BCPaperPanel1
+      AnchorSideBottom.Side = asrBottom
+      Left = 317
+      Height = 22
+      Top = 122
+      Width = 22
+      Anchors = [akLeft, akBottom]
+      AutoSize = True
+      BorderSpacing.Bottom = 12
+      OnClick = ImageDetailsClick
+      OnMouseEnter = ImageDetailsMouseEnter
+      OnMouseLeave = ImageDetailsMouseLeave
+      Picture.Data = {
+        1754506F727461626C654E6574776F726B477261706869637E03000089504E47
+        0D0A1A0A0000000D4948445200000016000000160806000000C4B46C3B000000
+        0473424954080808087C0864880000000970485973000000D0000000D0017963
+        CF940000001974455874536F667477617265007777772E696E6B73636170652E
+        6F72679BEE3C1A000002FB49444154388DA5954F4C5C5514C67FDF7DC3048329
+        D88DB51843DA90580B9DB12BC734BA7545F9D367139356A6C55659A861A10BF6
+        34DD18DDB48C69045D3486819461A3894B8DCCC2941988363184B268811D90D0
+        F0A79D7B5CC0E008F3886DCFEE9D73BEDFFDCEBBB9F78A883819DE3A1CF3BEDD
+        449BB0D78157774A0F10F7309BF0713F3E73BB77B99A5E7B13A9F0AB17D6A9EB
+        33E30BE0103025236F4E4B00F276C4440A4802AB86AED769EDEBC96CDF7A2438
+        11DE6C94B99C4112D3B0E7C9C0CC58EF5C35472DE733C78312FDC0458329C9B7
+        17B39F3CDC074E84371B3197076A843A0BA3577E8FFA4DFF3593398331066C21
+        FF5619EECAE3CB5C0EA831B9D4FF850214B3577FF3564A017170779ABA876A77
+        C1EBD4F51924853AA7B31FDDAF0608C391200C47826AB599B1DE394417C6E9FA
+        B5CDCF007432BC753866A5394CA3C5B12B3D51CE92E7BEFDDE63363D7AB53BAA
+        27712EF31DD0E1E3A5632EE67D3B50EF793270D0C826FFB264470EEA09140C00
+        0DC1E3D85967A20D2844EDFED3C4DD6CCFAC60DACCB739999D00E59F175A0E83
+        49D01B31C451F00F2B8B613812FCED9787CCF1CAAEC07813E05498F9A59C73A6
+        8566355CCA66DF2FED8AA505CC1ADDF687737B579664CFE4D84C808F612CC0BF
+        CE00761C7C58994B84833F0314B31FBF57992FEC35B4CD5A8CE1F80B2CF52CEE
+        22E26DE04F87D90446A2E57CE6F8F312935D83CD40AB8C09E7E37E1C58DDB950
+        22C34C4B78160FEAF1523FB042299E7333B77B970D5D072E26C2CC9928D174CB
+        E2A562EBD2E5A87A6BE7E03B820B826B85F1F48A009ABA876A0FAD6DFD2A78CD
+        5B29F5B487A5B5EBC631A7200FBABFFA62CDBBF3C3E90D07303F9CDE907C3BB0
+        E5144C1EE4BC9A53A7208FB1E16241C7FC707A03AA5CF4E0EE609C067E08140C
+        DCCDF6CC560326BB069BBDD42FB800FAC3C5828EA91F2F2F94EBFB9EA6A6EEA1
+        DAFA475B9F637C0934208A1879A46D91D95141CAE014B022B8B6F668F39BD99F
+        3EDDACE4EC03EF8EF8C18D9782C7B1B366BE0D7482CAC714BB27538E523C5718
+        4FAF54D3FF032F432F1D3AAE7F2D0000000049454E44AE426082
+      }
+    end
+    object TextWaitInstall: TBCLabel
+      AnchorSideBottom.Control = BCPaperPanel1
+      AnchorSideBottom.Side = asrBottom
+      Left = 12
+      Height = 15
+      Top = 129
+      Width = 178
+      Anchors = [akBottom]
+      AutoSize = False
+      Background.Color = clBlack
+      Background.ColorOpacity = 255
+      Background.Gradient1.StartColor = clWhite
+      Background.Gradient1.StartColorOpacity = 255
+      Background.Gradient1.DrawMode = dmSet
+      Background.Gradient1.EndColor = clBlack
+      Background.Gradient1.EndColorOpacity = 255
+      Background.Gradient1.ColorCorrection = True
+      Background.Gradient1.GradientType = gtLinear
+      Background.Gradient1.Point1XPercent = 0
+      Background.Gradient1.Point1YPercent = 0
+      Background.Gradient1.Point2XPercent = 0
+      Background.Gradient1.Point2YPercent = 100
+      Background.Gradient1.Sinus = False
+      Background.Gradient2.StartColor = clWhite
+      Background.Gradient2.StartColorOpacity = 255
+      Background.Gradient2.DrawMode = dmSet
+      Background.Gradient2.EndColor = clBlack
+      Background.Gradient2.EndColorOpacity = 255
+      Background.Gradient2.ColorCorrection = True
+      Background.Gradient2.GradientType = gtLinear
+      Background.Gradient2.Point1XPercent = 0
+      Background.Gradient2.Point1YPercent = 0
+      Background.Gradient2.Point2XPercent = 0
+      Background.Gradient2.Point2YPercent = 100
+      Background.Gradient2.Sinus = False
+      Background.Gradient1EndPercent = 35
+      Background.Style = bbsClear
+      Border.Color = clBlack
+      Border.ColorOpacity = 255
+      Border.LightColor = clWhite
+      Border.LightOpacity = 255
+      Border.LightWidth = 0
+      Border.Style = bboNone
+      Border.Width = 1
+      BorderSpacing.Bottom = 12
+      Caption = 'Waiting for install...'
+      FontEx.Color = 7566195
+      FontEx.EndEllipsis = False
+      FontEx.FontQuality = fqSystemClearType
+      FontEx.Height = 12
+      FontEx.SingleLine = False
+      FontEx.Shadow = False
+      FontEx.ShadowColor = clBlack
+      FontEx.ShadowColorOpacity = 255
+      FontEx.ShadowRadius = 5
+      FontEx.ShadowOffsetX = 5
+      FontEx.ShadowOffsetY = 5
+      FontEx.Style = []
+      FontEx.TextAlignment = bcaLeftCenter
+      FontEx.WordBreak = False
+      InnerMargin = 0
+      Rounding.RoundX = 1
+      Rounding.RoundY = 1
+      Rounding.RoundOptions = []
+      Visible = False
     end
   end
   object TimerInstallRemoveFinished: TTimer
     Enabled = False
     Interval = 4000
     OnTimer = ActTimerInstallRemoveFinished
-    left = 272
-    top = 141
+    left = 40
+    top = 8
   end
   object TimerAutoremove: TTimer
     Enabled = False
     Interval = 3000
     OnTimer = TimerAutoremoveTimer
-    left = 304
-    top = 141
+    left = 72
+    top = 8
   end
   object ActionList1: TActionList
     left = 8
     top = 8
-    object Action1: TAction
+    object ActCancelTask: TAction
       Caption = 'ActCancelTask'
       OnExecute = ActCancelTaskExecute
     end
