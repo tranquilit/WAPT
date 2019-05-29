@@ -303,9 +303,9 @@ def check_auth(logon_name, password,check_token_in_password=True,for_group='wapt
 
         try:
             huser = win32security.LogonUser (
-                username,
-                domain,
-                password,
+                username.decode("utf-8"),
+                domain.decode('utf-8'),
+                password.decode("utf-8"),
                 win32security.LOGON32_LOGON_NETWORK_CLEARTEXT,
                 win32security.LOGON32_PROVIDER_DEFAULT
             )
