@@ -31,6 +31,21 @@ msgctxt "tfrmdetailspackage.impactedprocess.caption"
 msgid "Impacted process :"
 msgstr ""
 
+#: tfrmdetailspackage.labcategories.caption
+msgctxt "tfrmdetailspackage.labcategories.caption"
+msgid "dddd"
+msgstr ""
+
+#: tfrmdetailspackage.labconflicts.caption
+msgctxt "tfrmdetailspackage.labconflicts.caption"
+msgid "dddd"
+msgstr ""
+
+#: tfrmdetailspackage.labdependency.caption
+msgctxt "tfrmdetailspackage.labdependency.caption"
+msgid "dddd"
+msgstr ""
+
 #: tfrmdetailspackage.labdescription.caption
 msgctxt "tfrmdetailspackage.labdescription.caption"
 msgid ""
@@ -43,6 +58,68 @@ msgid ""
 "\n"
 "ez\n"
 "fezjofezjofez\n"
+msgstr ""
+
+#: tfrmdetailspackage.labeditor.caption
+msgid "dddddddddddddddddddddddd"
+msgstr ""
+
+#: tfrmdetailspackage.labimpactedprocess.caption
+msgid "d"
+msgstr ""
+
+#: tfrmdetailspackage.lablastversion.caption
+msgid "dddddddddddddd"
+msgstr ""
+
+#: tfrmdetailspackage.lablicence.caption
+msgid "dddddddddddd"
+msgstr ""
+
+#: tfrmdetailspackage.labmaintainer.caption
+msgctxt "tfrmdetailspackage.labmaintainer.caption"
+msgid "ddddd"
+msgstr ""
+
+#: tfrmdetailspackage.labname.caption
+msgid "tis-waptself"
+msgstr ""
+
+#: tfrmdetailspackage.labofficialwebsite.caption
+msgid "ddddddddddddddddddd"
+msgstr ""
+
+#: tfrmdetailspackage.labpackagename.caption
+msgctxt "tfrmdetailspackage.labpackagename.caption"
+msgid "ddddd"
+msgstr ""
+
+#: tfrmdetailspackage.labrepository.caption
+msgid "ddddddddddd"
+msgstr ""
+
+#: tfrmdetailspackage.labsection.caption
+msgctxt "tfrmdetailspackage.labsection.caption"
+msgid "dddddd"
+msgstr ""
+
+#: tfrmdetailspackage.labsignaturedate.caption
+msgctxt "tfrmdetailspackage.labsignaturedate.caption"
+msgid "ddddd"
+msgstr ""
+
+#: tfrmdetailspackage.labsigner.caption
+msgctxt "tfrmdetailspackage.labsigner.caption"
+msgid "ddddd"
+msgstr ""
+
+#: tfrmdetailspackage.labsize.caption
+msgctxt "tfrmdetailspackage.labsize.caption"
+msgid "dddddd"
+msgstr ""
+
+#: tfrmdetailspackage.labsizeinstalled.caption
+msgid "ddddddddd"
 msgstr ""
 
 #: tfrmdetailspackage.lastversion.caption
@@ -135,10 +212,6 @@ msgstr ""
 
 #: tfrmpackage.labinstallversion.caption
 msgid "1.5.1-0"
-msgstr ""
-
-#: tfrmpackage.labmaintainer.caption
-msgid "By"
 msgstr ""
 
 #: tfrmpackage.labpackagename.caption

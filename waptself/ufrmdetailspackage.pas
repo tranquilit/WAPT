@@ -5,7 +5,7 @@ unit uFrmDetailsPackage;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, Forms, Controls, ExtCtrls, StdCtrls,LCLIntf, Graphics;
+  Classes, SysUtils, FileUtil, Forms, Controls, ExtCtrls, StdCtrls, LCLIntf, Graphics;
 
 type
 
@@ -52,10 +52,10 @@ type
     procedure LabOfficialWebsiteClick(Sender: TObject);
     procedure LabOfficialWebsiteMouseEnter(Sender: TObject);
     procedure LabOfficialWebsiteMouseLeave(Sender: TObject);
+    procedure PanelDetailsPaint(Sender: TObject);
   private
 
   public
-
   end;
 
 implementation
@@ -82,6 +82,11 @@ procedure TFrmDetailsPackage.LabOfficialWebsiteMouseLeave(Sender: TObject);
 begin
   LabOfficialWebsite.Font.Color:=clDefault;
   Screen.Cursor:=crDefault;
+end;
+
+procedure TFrmDetailsPackage.PanelDetailsPaint(Sender: TObject);
+begin
+  LabName.AdjustFontForOptimalFill;
 end;
 
 end.

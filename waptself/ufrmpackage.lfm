@@ -6,8 +6,8 @@ object FrmPackage: TFrmPackage
   ClientHeight = 164
   ClientWidth = 400
   TabOrder = 0
-  DesignLeft = 2494
-  DesignTop = 133
+  DesignLeft = 2156
+  DesignTop = 160
   object BCPaperPanel1: TBCPaperPanel
     AnchorSideLeft.Control = Owner
     AnchorSideLeft.Side = asrCenter
@@ -113,7 +113,7 @@ object FrmPackage: TFrmPackage
       Left = 72
       Height = 16
       Top = 48
-      Width = 128
+      Width = 184
       AutoSize = False
       Background.Color = clBlack
       Background.ColorOpacity = 255
@@ -465,71 +465,10 @@ object FrmPackage: TFrmPackage
       Stretch = True
       Transparent = True
     end
-    object LabMaintainer: TBCLabel
-      Left = 12
-      Height = 16
-      Top = 64
-      Width = 244
-      AutoSize = False
-      Background.Color = clBlack
-      Background.ColorOpacity = 255
-      Background.Gradient1.StartColor = clWhite
-      Background.Gradient1.StartColorOpacity = 255
-      Background.Gradient1.DrawMode = dmSet
-      Background.Gradient1.EndColor = clBlack
-      Background.Gradient1.EndColorOpacity = 255
-      Background.Gradient1.ColorCorrection = True
-      Background.Gradient1.GradientType = gtLinear
-      Background.Gradient1.Point1XPercent = 0
-      Background.Gradient1.Point1YPercent = 0
-      Background.Gradient1.Point2XPercent = 0
-      Background.Gradient1.Point2YPercent = 100
-      Background.Gradient1.Sinus = False
-      Background.Gradient2.StartColor = clWhite
-      Background.Gradient2.StartColorOpacity = 255
-      Background.Gradient2.DrawMode = dmSet
-      Background.Gradient2.EndColor = clBlack
-      Background.Gradient2.EndColorOpacity = 255
-      Background.Gradient2.ColorCorrection = True
-      Background.Gradient2.GradientType = gtLinear
-      Background.Gradient2.Point1XPercent = 0
-      Background.Gradient2.Point1YPercent = 0
-      Background.Gradient2.Point2XPercent = 0
-      Background.Gradient2.Point2YPercent = 100
-      Background.Gradient2.Sinus = False
-      Background.Gradient1EndPercent = 35
-      Background.Style = bbsClear
-      Border.Color = clBlack
-      Border.ColorOpacity = 255
-      Border.LightColor = clWhite
-      Border.LightOpacity = 255
-      Border.LightWidth = 0
-      Border.Style = bboNone
-      Border.Width = 1
-      Caption = 'By'
-      FontEx.Color = 7566195
-      FontEx.EndEllipsis = False
-      FontEx.FontQuality = fqSystemClearType
-      FontEx.Height = 12
-      FontEx.SingleLine = True
-      FontEx.Shadow = False
-      FontEx.ShadowColor = clBlack
-      FontEx.ShadowColorOpacity = 255
-      FontEx.ShadowRadius = 5
-      FontEx.ShadowOffsetX = 5
-      FontEx.ShadowOffsetY = 5
-      FontEx.Style = []
-      FontEx.TextAlignment = bcaLeftCenter
-      FontEx.WordBreak = False
-      InnerMargin = 0
-      Rounding.RoundX = 1
-      Rounding.RoundY = 1
-      Rounding.RoundOptions = []
-    end
     object BtnCancel: TBCMaterialDesignButton
       AnchorSideBottom.Control = BCPaperPanel1
       AnchorSideBottom.Side = asrBottom
-      Left = 232
+      Left = 240
       Height = 25
       Top = 122
       Width = 72
@@ -553,11 +492,11 @@ object FrmPackage: TFrmPackage
     end
     object LabDate: TBCLabel
       AnchorSideRight.Control = BtnRemove
-      Left = 193
+      Left = 12
       Height = 15
-      Top = 48
+      Top = 65
       Width = 58
-      Anchors = [akTop, akRight]
+      Anchors = [akTop]
       Background.Color = clBlack
       Background.ColorOpacity = 255
       Background.Gradient1.StartColor = clWhite

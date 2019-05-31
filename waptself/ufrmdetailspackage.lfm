@@ -1,35 +1,37 @@
 object FrmDetailsPackage: TFrmDetailsPackage
   Left = 0
-  Height = 714
+  Height = 748
   Top = 0
   Width = 345
   AutoSize = True
-  ClientHeight = 714
+  ClientHeight = 748
   ClientWidth = 345
   Color = clWhite
   Constraints.MaxWidth = 345
   ParentColor = False
   TabOrder = 0
   DesignLeft = 2570
-  DesignTop = 104
+  DesignTop = 70
   object PanelDetails: TPanel
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = Owner
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
     Left = 0
-    Height = 692
+    Height = 701
     Top = 0
     Width = 345
     Align = alCustom
     Anchors = [akTop, akLeft, akRight]
     AutoSize = True
     BevelOuter = bvNone
-    ClientHeight = 692
-    ClientWidth = 345
+    BorderStyle = bsSingle
+    ClientHeight = 697
+    ClientWidth = 341
     Color = clWhite
     ParentColor = False
     TabOrder = 0
+    OnPaint = PanelDetailsPaint
     object ImgPackage: TImage
       AnchorSideLeft.Control = PanelDetails
       AnchorSideTop.Control = PanelDetails
@@ -129,15 +131,22 @@ object FrmDetailsPackage: TFrmDetailsPackage
       Left = 58
       Height = 48
       Top = 5
-      Width = 282
+      Width = 278
       Alignment = taCenter
       Anchors = [akTop, akLeft, akRight]
       AutoSize = False
       BorderSpacing.Left = 5
       BorderSpacing.Top = 5
       BorderSpacing.Right = 5
+      Caption = 'tis-waptself'
+      Font.Color = 9852960
+      Font.Height = 48
+      Font.Name = 'Calibri'
+      Font.Quality = fqCleartype
+      Font.Style = [fsBold]
       Layout = tlCenter
       ParentColor = False
+      ParentFont = False
       OptimalFill = True
     end
     object Editor: TLabel
@@ -201,12 +210,11 @@ object FrmDetailsPackage: TFrmDetailsPackage
       AnchorSideRight.Control = PanelDetails
       AnchorSideRight.Side = asrBottom
       Left = 5
-      Height = 30
+      Height = 25
       Top = 463
-      Width = 335
+      Width = 331
       Alignment = taCenter
       Anchors = [akTop, akLeft, akRight]
-      AutoSize = False
       BorderSpacing.Left = 5
       BorderSpacing.Top = 10
       BorderSpacing.Right = 5
@@ -230,14 +238,17 @@ object FrmDetailsPackage: TFrmDetailsPackage
       Left = 59
       Height = 20
       Top = 58
-      Width = 281
+      Width = 277
       Anchors = [akTop, akLeft, akRight]
       AutoSize = False
       BorderSpacing.Left = 4
       BorderSpacing.Top = 5
       BorderSpacing.Right = 5
+      Caption = 'dddddddddddddddddddddddd'
+      Font.Height = 20
       Layout = tlCenter
       ParentColor = False
+      ParentFont = False
       OptimalFill = True
     end
     object LabLastVersion: TLabel
@@ -250,14 +261,17 @@ object FrmDetailsPackage: TFrmDetailsPackage
       Left = 105
       Height = 20
       Top = 83
-      Width = 235
+      Width = 231
       Anchors = [akTop, akLeft, akRight]
       AutoSize = False
       BorderSpacing.Left = 4
       BorderSpacing.Top = 5
       BorderSpacing.Right = 5
+      Caption = 'dddddddddddddd'
+      Font.Height = 20
       Layout = tlCenter
       ParentColor = False
+      ParentFont = False
       OptimalFill = True
     end
     object LabOfficialWebsite: TLabel
@@ -270,12 +284,14 @@ object FrmDetailsPackage: TFrmDetailsPackage
       Left = 129
       Height = 20
       Top = 108
-      Width = 211
+      Width = 207
       Anchors = [akTop, akLeft, akRight]
       AutoSize = False
       BorderSpacing.Left = 4
       BorderSpacing.Top = 5
       BorderSpacing.Right = 5
+      Caption = 'ddddddddddddddddddd'
+      Font.Height = 20
       Layout = tlCenter
       ParentColor = False
       ParentFont = False
@@ -290,14 +306,17 @@ object FrmDetailsPackage: TFrmDetailsPackage
       AnchorSideTop.Side = asrBottom
       AnchorSideRight.Control = PanelDetails
       AnchorSideRight.Side = asrBottom
+      AnchorSideBottom.Control = PanelDetails
+      AnchorSideBottom.Side = asrBottom
       Left = 5
       Height = 189
-      Top = 503
-      Width = 335
-      Anchors = [akTop, akLeft, akRight]
+      Top = 498
+      Width = 331
+      Anchors = [akTop, akLeft, akRight, akBottom]
       BorderSpacing.Left = 5
       BorderSpacing.Top = 10
       BorderSpacing.Right = 5
+      BorderSpacing.Bottom = 10
       Caption = 'fezfezfezokfezkofez'#13#10#13#10'fezkofezjofezjofez'#13#10#13#10'ezfjofezofez'#13#10'fezjifezjfez'#13#10#13#10'ez'#13#10'fezjofezjofez'
       Font.Height = -16
       ParentColor = False
@@ -332,14 +351,17 @@ object FrmDetailsPackage: TFrmDetailsPackage
       Left = 72
       Height = 20
       Top = 133
-      Width = 268
+      Width = 264
       Anchors = [akTop, akLeft, akRight]
       AutoSize = False
       BorderSpacing.Left = 4
       BorderSpacing.Top = 5
       BorderSpacing.Right = 5
+      Caption = 'dddddddddddd'
+      Font.Height = 20
       Layout = tlCenter
       ParentColor = False
+      ParentFont = False
       OptimalFill = True
     end
     object ImpactedProcess: TLabel
@@ -370,14 +392,17 @@ object FrmDetailsPackage: TFrmDetailsPackage
       Left = 140
       Height = 20
       Top = 158
-      Width = 200
+      Width = 196
       Anchors = [akTop, akLeft, akRight]
       AutoSize = False
       BorderSpacing.Left = 4
       BorderSpacing.Top = 5
       BorderSpacing.Right = 5
+      Caption = 'd'
+      Font.Height = 20
       Layout = tlCenter
       ParentColor = False
+      ParentFont = False
       OptimalFill = True
     end
     object Maintainer: TLabel
@@ -408,14 +433,17 @@ object FrmDetailsPackage: TFrmDetailsPackage
       Left = 97
       Height = 20
       Top = 183
-      Width = 243
+      Width = 239
       Anchors = [akTop, akLeft, akRight]
       AutoSize = False
       BorderSpacing.Left = 4
       BorderSpacing.Top = 5
       BorderSpacing.Right = 5
+      Caption = 'ddddd'
+      Font.Height = 20
       Layout = tlCenter
       ParentColor = False
+      ParentFont = False
       OptimalFill = True
     end
     object Size: TLabel
@@ -446,14 +474,17 @@ object FrmDetailsPackage: TFrmDetailsPackage
       Left = 108
       Height = 20
       Top = 208
-      Width = 232
+      Width = 228
       Anchors = [akTop, akLeft, akRight]
       AutoSize = False
       BorderSpacing.Left = 4
       BorderSpacing.Top = 5
       BorderSpacing.Right = 5
+      Caption = 'dddddd'
+      Font.Height = 20
       Layout = tlCenter
       ParentColor = False
+      ParentFont = False
       OptimalFill = True
     end
     object SizeInstalled: TLabel
@@ -484,14 +515,17 @@ object FrmDetailsPackage: TFrmDetailsPackage
       Left = 111
       Height = 20
       Top = 233
-      Width = 229
+      Width = 225
       Anchors = [akTop, akLeft, akRight]
       AutoSize = False
       BorderSpacing.Left = 4
       BorderSpacing.Top = 5
       BorderSpacing.Right = 5
+      Caption = 'ddddddddd'
+      Font.Height = 20
       Layout = tlCenter
       ParentColor = False
+      ParentFont = False
       OptimalFill = True
     end
     object Repository: TLabel
@@ -522,14 +556,17 @@ object FrmDetailsPackage: TFrmDetailsPackage
       Left = 94
       Height = 20
       Top = 258
-      Width = 246
+      Width = 242
       Anchors = [akTop, akLeft, akRight]
       AutoSize = False
       BorderSpacing.Left = 4
       BorderSpacing.Top = 5
       BorderSpacing.Right = 5
+      Caption = 'ddddddddddd'
+      Font.Height = 20
       Layout = tlCenter
       ParentColor = False
+      ParentFont = False
       OptimalFill = True
     end
     object Signer: TLabel
@@ -560,14 +597,17 @@ object FrmDetailsPackage: TFrmDetailsPackage
       Left = 61
       Height = 20
       Top = 283
-      Width = 279
+      Width = 275
       Anchors = [akTop, akLeft, akRight]
       AutoSize = False
       BorderSpacing.Left = 4
       BorderSpacing.Top = 5
       BorderSpacing.Right = 5
+      Caption = 'ddddd'
+      Font.Height = 20
       Layout = tlCenter
       ParentColor = False
+      ParentFont = False
       OptimalFill = True
     end
     object PackageName: TLabel
@@ -598,14 +638,17 @@ object FrmDetailsPackage: TFrmDetailsPackage
       Left = 121
       Height = 20
       Top = 308
-      Width = 219
+      Width = 215
       Anchors = [akTop, akLeft, akRight]
       AutoSize = False
       BorderSpacing.Left = 4
       BorderSpacing.Top = 5
       BorderSpacing.Right = 5
+      Caption = 'ddddd'
+      Font.Height = 20
       Layout = tlCenter
       ParentColor = False
+      ParentFont = False
       OptimalFill = True
     end
     object Dependency: TLabel
@@ -690,14 +733,17 @@ object FrmDetailsPackage: TFrmDetailsPackage
       Left = 107
       Height = 20
       Top = 333
-      Width = 233
+      Width = 229
       Anchors = [akTop, akLeft, akRight]
       AutoSize = False
       BorderSpacing.Left = 4
       BorderSpacing.Top = 5
       BorderSpacing.Right = 5
+      Caption = 'dddd'
+      Font.Height = 20
       Layout = tlCenter
       ParentColor = False
+      ParentFont = False
       OptimalFill = True
     end
     object LabConflicts: TLabel
@@ -710,14 +756,17 @@ object FrmDetailsPackage: TFrmDetailsPackage
       Left = 78
       Height = 20
       Top = 358
-      Width = 262
+      Width = 258
       Anchors = [akTop, akLeft, akRight]
       AutoSize = False
       BorderSpacing.Left = 4
       BorderSpacing.Top = 5
       BorderSpacing.Right = 5
+      Caption = 'dddd'
+      Font.Height = 20
       Layout = tlCenter
       ParentColor = False
+      ParentFont = False
       OptimalFill = True
     end
     object LabSection: TLabel
@@ -730,14 +779,17 @@ object FrmDetailsPackage: TFrmDetailsPackage
       Left = 72
       Height = 20
       Top = 383
-      Width = 268
+      Width = 264
       Anchors = [akTop, akLeft, akRight]
       AutoSize = False
       BorderSpacing.Left = 4
       BorderSpacing.Top = 5
       BorderSpacing.Right = 5
+      Caption = 'dddddd'
+      Font.Height = 20
       Layout = tlCenter
       ParentColor = False
+      ParentFont = False
       OptimalFill = True
     end
     object LabSignatureDate: TLabel
@@ -750,14 +802,17 @@ object FrmDetailsPackage: TFrmDetailsPackage
       Left = 119
       Height = 20
       Top = 408
-      Width = 221
+      Width = 217
       Anchors = [akTop, akLeft, akRight]
       AutoSize = False
       BorderSpacing.Left = 4
       BorderSpacing.Top = 5
       BorderSpacing.Right = 5
+      Caption = 'ddddd'
+      Font.Height = 20
       Layout = tlCenter
       ParentColor = False
+      ParentFont = False
       OptimalFill = True
     end
     object Categories: TLabel
@@ -788,14 +843,17 @@ object FrmDetailsPackage: TFrmDetailsPackage
       Left = 91
       Height = 20
       Top = 433
-      Width = 249
+      Width = 245
       Anchors = [akTop, akLeft, akRight]
       AutoSize = False
       BorderSpacing.Left = 4
       BorderSpacing.Top = 5
       BorderSpacing.Right = 5
+      Caption = 'dddd'
+      Font.Height = 20
       Layout = tlCenter
       ParentColor = False
+      ParentFont = False
       OptimalFill = True
     end
   end

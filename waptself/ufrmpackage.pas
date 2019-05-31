@@ -29,7 +29,6 @@ type
     LabInstallVersion: TBCLabel;
     LabPackageName: TBCLabel;
     LabVersion: TBCLabel;
-    LabMaintainer: TBCLabel;
     LabDate: TBCLabel;
     TimerAutoremove: TTimer;
     TimerInstallRemoveFinished: TTimer;
@@ -42,6 +41,7 @@ type
     procedure ImageDetailsMouseLeave(Sender: TObject);
     procedure TimerAutoremoveTimer(Sender: TObject);
   private
+
     procedure OnUpgradeTriggeredTask(Sender: TObject);
     function Impacted_process():boolean;
     function Accept_Impacted_process():boolean;
@@ -52,7 +52,8 @@ type
     password : String;
     FrmDetailsPackageInPanel : TFrmDetailsPackage;
     PanelDetails : TPanel;
-
+    BtnHideDetails : TBitBtn;
+    DetailsClicked : boolean;
     OnLocalServiceAuth : THTTPSendAuthorization;
     ActionPackage : String;
     Autoremove : Boolean;
@@ -64,7 +65,7 @@ type
   end;
 
 implementation
-uses Graphics,BCTools,JwaTlHelp32,Windows,Dialogs, uWAPTPollThreads, uWaptSelfRes;
+uses Graphics,BCTools,JwaTlHelp32,Windows,Dialogs, uWAPTPollThreads, uWaptSelfRes, uVisWaptSelf;
 {$R *.lfm}
 
 { TFrmPackage }
@@ -125,38 +126,59 @@ end;
 
 procedure TFrmPackage.ImageDetailsClick(Sender: TObject);
 begin
-  PanelDetails.Show;
-  FrmDetailsPackageInPanel.ImgPackage.Picture.Assign(ImgPackage.Picture);
-  FrmDetailsPackageInPanel.LabName.Caption:=LabPackageName.Caption;
-  FrmDetailsPackageInPanel.LabEditor.Caption:=UTF8Encode(Package.S['editor']);
-  FrmDetailsPackageInPanel.LabLastVersion.Caption:=UTF8Encode(Package.S['version']);
-  FrmDetailsPackageInPanel.LabOfficialWebsite.Caption:=UTF8Encode(Package.S['homepage']);
-  FrmDetailsPackageInPanel.LabDescription.Caption:=UTF8Encode(Package.S['description']);
-  FrmDetailsPackageInPanel.LabLicence.Caption:=UTF8Encode(Package.S['licence']);
-  FrmDetailsPackageInPanel.LabImpactedProcess.Caption:=UTF8Encode(Package.S['impacted_process']);
-  if (Package.I['installed_size']<>0) then
-    FrmDetailsPackageInPanel.LabSizeInstalled.Caption:=IntToStr(Round(Package.I['installed_size']/1024))+' kB ( '+IntToStr(Package.I['installed_size'])+' bytes )';
-  if (Package.I['size']<>0) then
-    FrmDetailsPackageInPanel.LabSize.Caption:=IntToStr(Round(Package.I['size']/1024))+' kB ( '+IntToStr(Package.I['size'])+' bytes )';
-  FrmDetailsPackageInPanel.LabMaintainer.Caption:=UTF8Encode(Package.S['maintainer']);
-  FrmDetailsPackageInPanel.LabPackageName.Caption:=UTF8Encode(Package.S['package']);
-  FrmDetailsPackageInPanel.LabRepository.Caption:=UTF8Encode(Package.S['repo']);
-  FrmDetailsPackageInPanel.LabSigner.Caption:=UTF8Encode(Package.S['signer']);
-  FrmDetailsPackageInPanel.LabDependency.Caption:=UTF8Encode(Package.S['depends']);
-  FrmDetailsPackageInPanel.LabConflicts.Caption:=UTF8Encode(Package.S['conflicts']);
-  FrmDetailsPackageInPanel.LabSection.Caption:=UTF8Encode(Package.S['section']);
-  FrmDetailsPackageInPanel.LabSignatureDate.Caption:=LabDate.Caption;
-  FrmDetailsPackageInPanel.LabCategories.Caption:=UTF8Encode(Package.S['categories']);
+  if (not DetailsClicked) then
+  begin
+    ImageDetails.Picture.LoadFromResourceName(HINSTANCE,'MOINS-BLEU');
+    PanelDetails.Show;
+    FrmDetailsPackageInPanel.ImgPackage.Picture.Assign(ImgPackage.Picture);
+    FrmDetailsPackageInPanel.LabName.Caption:=LabPackageName.Caption;
+    FrmDetailsPackageInPanel.LabEditor.Caption:=UTF8Encode(Package.S['editor']);
+    FrmDetailsPackageInPanel.LabLastVersion.Caption:=UTF8Encode(Package.S['version']);
+    FrmDetailsPackageInPanel.LabOfficialWebsite.Caption:=UTF8Encode(Package.S['homepage']);
+    FrmDetailsPackageInPanel.LabDescription.Caption:=UTF8Encode(Package.S['description']);
+    FrmDetailsPackageInPanel.LabLicence.Caption:=UTF8Encode(Package.S['licence']);
+    FrmDetailsPackageInPanel.LabImpactedProcess.Caption:=UTF8Encode(Package.S['impacted_process']);
+    if (Package.I['installed_size']<>0) then
+      FrmDetailsPackageInPanel.LabSizeInstalled.Caption:=IntToStr(Round(Package.I['installed_size']/1024))+' kB ( '+IntToStr(Package.I['installed_size'])+' bytes )'
+    else
+      FrmDetailsPackageInPanel.LabSizeInstalled.Caption:='';
+    if (Package.I['size']<>0) then
+      FrmDetailsPackageInPanel.LabSize.Caption:=IntToStr(Round(Package.I['size']/1024))+' kB ( '+IntToStr(Package.I['size'])+' bytes )'
+    else
+      FrmDetailsPackageInPanel.LabSize.Caption:='';
+    FrmDetailsPackageInPanel.LabMaintainer.Caption:=UTF8Encode(Package.S['maintainer']);
+    FrmDetailsPackageInPanel.LabPackageName.Caption:=UTF8Encode(Package.S['package']);
+    FrmDetailsPackageInPanel.LabRepository.Caption:=UTF8Encode(Package.S['repo']);
+    FrmDetailsPackageInPanel.LabSigner.Caption:=UTF8Encode(Package.S['signer']);
+    FrmDetailsPackageInPanel.LabDependency.Caption:=UTF8Encode(Package.S['depends']);
+    FrmDetailsPackageInPanel.LabConflicts.Caption:=UTF8Encode(Package.S['conflicts']);
+    FrmDetailsPackageInPanel.LabSection.Caption:=UTF8Encode(Package.S['section']);
+    FrmDetailsPackageInPanel.LabSignatureDate.Caption:=LabDate.Caption;
+    FrmDetailsPackageInPanel.LabCategories.Caption:=UTF8Encode(Package.S['categories']);
+    VisWaptSelf.ChangeIconMinusByPlusOnFrames();
+    DetailsClicked:=not(DetailsClicked);
+  end
+  else
+  begin
+    BtnHideDetails.Click;
+    ImageDetails.Picture.LoadFromResourceName(HINSTANCE,'PLUS2');
+  end;
 end;
 
 procedure TFrmPackage.ImageDetailsMouseEnter(Sender: TObject);
 begin
-  ImageDetails.Picture.LoadFromResourceName(HINSTANCE,'PLUS2');
+  if (DetailsClicked) then
+    ImageDetails.Picture.LoadFromResourceName(HINSTANCE,'MOINS-BLEU')
+  else
+    ImageDetails.Picture.LoadFromResourceName(HINSTANCE,'PLUS2');
 end;
 
 procedure TFrmPackage.ImageDetailsMouseLeave(Sender: TObject);
 begin
-  ImageDetails.Picture.LoadFromResourceName(HINSTANCE,'PLUS-BLEU-FONCE');
+  if (DetailsClicked) then
+    ImageDetails.Picture.LoadFromResourceName(HINSTANCE,'MOINS-BLANC')
+  else
+    ImageDetails.Picture.LoadFromResourceName(HINSTANCE,'PLUS-BLEU-FONCE');
 end;
 
 procedure TFrmPackage.TimerAutoremoveTimer(Sender: TObject);
@@ -212,6 +234,7 @@ begin
   ProgressBarInstall.Hide;
   Autoremove:=false;
   TaskID:=0;
+  DetailsClicked:=false;
 end;
 
 procedure TFrmPackage.AdjustFont(ALabel: TBCLabel);

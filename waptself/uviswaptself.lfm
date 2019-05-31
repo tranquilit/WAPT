@@ -1,11 +1,11 @@
 object VisWaptSelf: TVisWaptSelf
-  Left = 2066
-  Height = 925
-  Top = 43
-  Width = 1539
+  Left = 1913
+  Height = 1008
+  Top = 0
+  Width = 1918
   Caption = 'WAPT Self-service'
-  ClientHeight = 925
-  ClientWidth = 1539
+  ClientHeight = 1008
+  ClientWidth = 1918
   Constraints.MinHeight = 380
   Constraints.MinWidth = 608
   OnClose = FormClose
@@ -19,22 +19,22 @@ object VisWaptSelf: TVisWaptSelf
     Left = 0
     Height = 52
     Top = 0
-    Width = 1539
+    Width = 1918
     Align = alTop
     AutoSize = True
     BevelOuter = bvSpace
     ClientHeight = 52
-    ClientWidth = 1539
+    ClientWidth = 1918
     TabOrder = 0
     object Panel7: TPanel
       Left = 1
       Height = 50
       Top = 1
-      Width = 1537
+      Width = 1916
       Align = alTop
       BevelOuter = bvNone
       ClientHeight = 50
-      ClientWidth = 1537
+      ClientWidth = 1916
       Color = clWindow
       ParentColor = False
       TabOrder = 0
@@ -44,77 +44,12 @@ object VisWaptSelf: TVisWaptSelf
         Left = 8
         Height = 24
         Top = 13
-        Width = 224
-        ButtonWidth = 35
+        Width = 213
+        ButtonWidth = 0
         Flat = True
         Font.Height = 16
         Font.Name = 'Tahoma'
         Font.Quality = fqCleartypeNatural
-        Glyph.Data = {
-          C6070000424DC607000000000000360000002800000016000000160000000100
-          2000000000009007000064000000640000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          000097552F1B99542FD499543076000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000097552F1B99542FDA9954
-          2F8299542FD898542F7700000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000097552F1B99542FDA99542F730000000099532E849955
-          2FD3000000000000000000000000000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000009555
-          2B1899532ED699542E7A0000000098552F7299542FDA97552F1B000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          00000000000000000000000000000000000095552B1899532ED699542E7A0000
-          000098552F7299532FD997552F1B000000000000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          00000000000095552B1899532ED699542E7A0000000098552F7299532FD99755
-          2F1B000000000000000000000000000000000000000000000000000000000000
-          000000000000000000000000000000000000000000000000000097552F1B9954
-          2FDA99553075000000009954307699532FD99D58311A00000000000000000000
-          000000000000000000000000000000000000804040049A55313F9953306B9955
-          307598532F5C9B522E1C000000000000000098552E5499542FE99D58311A9954
-          307699542FD89D58311A00000000000000000000000000000000000000000000
-          0000FF00000199552E6999542FE599542FC599542F91985430869A5430A69954
-          2FEA9A542EB096532D229754304099542FF199542FEA99542FD89D58311A0000
-          00000000000000000000000000000000000000000000996633059A5430AB9955
-          30C19A532F2B00000000000000000000000000000000AA552B0699542F739954
-          2FE999542FE998522D3E98542F52995233190000000000000000000000000000
-          000000000000000000000000000098542E9599542FAD99663305000000000000
-          0000000000000000000000000000000000000000000098522D3E99542FE99B55
-          2E21000000000000000000000000000000000000000000000000000000000000
-          00009B552D3399542FE0A25D2E0B000000000000000000000000000000000000
-          00000000000000000000000000000000000099542F7399552FAF000000000000
-          00000000000000000000000000000000000000000000000000009954309B9854
-          2F6D000000000000000000000000000000000000000000000000000000000000
-          000000000000000000009249240799542FEA97552F1B00000000000000000000
-          00000000000000000000000000000000000099542FDE96532D22000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          00000000000099542FA79955305A000000000000000000000000000000000000
-          0000000000000000000099542FF7996633050000000000000000000000000000
-          0000000000000000000000000000000000000000000000000000000000009953
-          2F87995530750000000000000000000000000000000000000000000000000000
-          000099542FEE9D4E270D00000000000000000000000000000000000000000000
-          000000000000000000000000000000000000000000009A542F929A54306A0000
-          000000000000000000000000000000000000000000000000000099542FC39B55
-          2E42000000000000000000000000000000000000000000000000000000000000
-          000000000000000000000000000099542EC69A55313F00000000000000000000
-          0000000000000000000000000000000000009A552E6F99542FA3000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          00009A532F2B99542FE580404004000000000000000000000000000000000000
-          00000000000000000000994D330A99542EE198542E4300000000000000000000
-          000000000000000000000000000000000000000000009966330598542FC29853
-          2F68000000000000000000000000000000000000000000000000000000000000
-          0000000000009855313999542FE798542E430000000000000000000000000000
-          00000000000000000000A25D2E0B99542FAD99542FAAFF000001000000000000
-          0000000000000000000000000000000000000000000000000000000000000000
-          00009855313999542EE199542FA39B552E42925B370E8040400496532D229953
-          2E6E99542FE099542F9499663305000000000000000000000000000000000000
-          000000000000000000000000000000000000000000000000000000000000994D
-          330A9A552E6F99542FC399542EEC99542FF899542FDE9954309B9B552D330000
-          0000000000000000000000000000000000000000000000000000000000000000
-          00000000000000000000
-        }
         MaxLength = 0
         NumGlyphs = 1
         OnButtonClick = EdSearchButtonClick
@@ -132,7 +67,7 @@ object VisWaptSelf: TVisWaptSelf
         AnchorSideTop.Side = asrCenter
         AnchorSideRight.Control = Panel7
         AnchorSideRight.Side = asrBottom
-        Left = 1378
+        Left = 1757
         Height = 25
         Top = 13
         Width = 144
@@ -149,10 +84,10 @@ object VisWaptSelf: TVisWaptSelf
         AnchorSideRight.Control = BtnShowTaskBar
         AnchorSideBottom.Control = Panel7
         AnchorSideBottom.Side = asrBottom
-        Left = 232
+        Left = 221
         Height = 36
         Top = 7
-        Width = 1146
+        Width = 1536
         Align = alCustom
         Alignment = taCenter
         Anchors = [akTop, akLeft, akRight, akBottom]
@@ -165,7 +100,7 @@ object VisWaptSelf: TVisWaptSelf
         ParentFont = False
       end
       object PanelImageCrossSearch: TPanel
-        Left = 168
+        Left = 192
         Height = 16
         Top = 16
         Width = 24
@@ -188,45 +123,44 @@ object VisWaptSelf: TVisWaptSelf
           Align = alCustom
           OnClick = ImageCrossSearchClick
           Picture.Data = {
-            1754506F727461626C654E6574776F726B47726170686963C401000089504E47
+            1754506F727461626C654E6574776F726B47726170686963BB01000089504E47
             0D0A1A0A0000000D494844520000000F0000000F08060000003BD6954A000000
-            0473424954080808087C086488000000097048597300000EC400000EC401952B
-            0E1B0000001974455874536F667477617265007777772E696E6B73636170652E
-            6F72679BEE3C1A0000014149444154289195923D4E04310C859F7D22404A6602
-            48C001000916281020FA150D050D25251527404CC18FB6017A7E1A324E56EC8D
-            6C9A19691906B1B88BF3BE67BD381091718CB1C03F2AC65888C89889E8849947
-            B31AC4181798794444A7ECBDFF20A2BD590C1AF051550FBCF7EFD45EE49C9754
-            F58E99B79D73A90BE69CE755F549550F42086F00401D41AF410B9AD9615996AF
-            6DFF1B0C00755D2F13D12D116D79EF734A69CECC9E011C1545F132ADFD013706
-            6B447403E01CC04577E29F25226722622272F69B86FB9A31C6550043223A0630
-            6CCE7FC339E72566AE9ACCD744B4CECC555DD76B5DEDBF5E7B7A4DDF26A79416
-            55F54E5507DD3D3BE726CCBCC1CCD574046E4133BB57D5410841FAF239E726AA
-            BAC9CC554A690500484402800733DB29CBB2EE03A7ABFDA244B4CF00AE00ECCE
-            02024008E1D3CC76CCECF20BCFFABFD9150307200000000049454E44AE426082
+            0473424954080808087C0864880000000970485973000002840000028401A4B0
+            D8620000001974455874536F667477617265007777772E696E6B73636170652E
+            6F72679BEE3C1A0000013849444154289195903F4E02511087BF19601BB9818D
+            311EC150E83D28482C246117E84CD4C4588836D810B4581FEF45CFE0092C6CEC
+            BC8389955259C332369050BC35F86B67BE6FFE08CB84109A40CBCCE680006666
+            AEDBEDBE501259822333FB02C65996CD00F23CAF57ABD51BE033CBB271940E21
+            34BDF7E76576EFFD8373AE11AB29D002E26660B1580C54B51F85CD6CBE5A3596
+            5EAFF70DD4CB264B19B896688F0296E779D40CE09CDB01A651D8CC5CAD56BB8E
+            15CD4C547508DC95AEE3BD3F31B3BD244906ED767BBA9AA8AA4311D915910BE0
+            A7D3E9BC476F71CE3554B52F225B6626223235B37B33DB169131F02122B7699A
+            BEFDF988F54C26937DE02A4992F66C367B5A176CF269420807C0655114C7AAFA
+            2822A3344D5F3782CB041BC300CEB9C34AA572A6AAA745513CFF0B5E09547522
+            2247BFF3BA8086C4B947760000000049454E44AE426082
           }
           Proportional = True
           Stretch = True
           Transparent = True
-          Visible = False
         end
       end
     end
   end
   object PanCategories: TPanel
     Left = 0
-    Height = 873
+    Height = 956
     Top = 52
     Width = 232
     Align = alLeft
     BevelOuter = bvNone
-    ClientHeight = 873
+    ClientHeight = 956
     ClientWidth = 232
     Color = clForm
     ParentColor = False
     TabOrder = 1
     object CBKeywords: TCheckListBox
       Left = 0
-      Height = 497
+      Height = 580
       Top = 376
       Width = 232
       Align = alClient
@@ -640,18 +574,18 @@ object VisWaptSelf: TVisWaptSelf
   end
   object ScrollBoxPackages: TScrollBox
     Left = 232
-    Height = 873
+    Height = 956
     Top = 52
-    Width = 557
+    Width = 936
     HorzScrollBar.Page = 1
-    VertScrollBar.Increment = 53
-    VertScrollBar.Page = 531
+    VertScrollBar.Increment = 57
+    VertScrollBar.Page = 573
     VertScrollBar.Smooth = True
     VertScrollBar.Tracking = True
     Align = alClient
     BorderStyle = bsNone
-    ClientHeight = 873
-    ClientWidth = 557
+    ClientHeight = 956
+    ClientWidth = 936
     Color = clWindow
     ParentColor = False
     TabOrder = 2
@@ -659,7 +593,7 @@ object VisWaptSelf: TVisWaptSelf
       Left = 0
       Height = 0
       Top = 0
-      Width = 557
+      Width = 936
       Align = alTop
       AutoSize = True
       BevelOuter = bvNone
@@ -678,23 +612,24 @@ object VisWaptSelf: TVisWaptSelf
     end
     object Panel6: TPanel
       Left = 0
-      Height = 873
+      Height = 956
       Top = 0
-      Width = 557
+      Width = 936
       Align = alClient
       BevelOuter = bvNone
-      ClientHeight = 873
-      ClientWidth = 557
+      ClientHeight = 956
+      ClientWidth = 936
+      ParentFont = False
       TabOrder = 1
       OnResize = Panel6Resize
       object LabelNoResult: TLabel
         AnchorSideLeft.Control = Panel6
         AnchorSideLeft.Side = asrCenter
         AnchorSideBottom.Control = PicLogo
-        Left = 6
+        Left = 225
         Height = 50
-        Top = 271
-        Width = 545
+        Top = 313
+        Width = 486
         Alignment = taCenter
         Anchors = [akLeft, akBottom]
         BorderSpacing.Top = 20
@@ -712,9 +647,9 @@ object VisWaptSelf: TVisWaptSelf
         AnchorSideTop.Control = Panel6
         AnchorSideTop.Side = asrCenter
         AnchorSideBottom.Side = asrBottom
-        Left = 78
+        Left = 268
         Height = 190
-        Top = 341
+        Top = 383
         Width = 400
         AutoSize = True
         Center = True
@@ -1384,15 +1319,15 @@ object VisWaptSelf: TVisWaptSelf
     end
   end
   object TaskBarPanel: TPanel
-    Left = 1163
-    Height = 873
+    Left = 1542
+    Height = 956
     Top = 52
     Width = 376
     Align = alRight
     BevelOuter = bvNone
     ChildSizing.LeftRightSpacing = 10
     ChildSizing.TopBottomSpacing = 10
-    ClientHeight = 873
+    ClientHeight = 956
     ClientWidth = 376
     Color = clForm
     ParentColor = False
@@ -1401,8 +1336,8 @@ object VisWaptSelf: TVisWaptSelf
     OnPaint = TaskBarPanelPaint
     object SOGridTasks: TSOGrid
       Left = 10
-      Height = 618
-      Top = 53
+      Height = 699
+      Top = 55
       Width = 356
       ShowAdvancedColumnsCustomize = False
       KeyFieldsNames = 'id'
@@ -1603,7 +1538,7 @@ object VisWaptSelf: TVisWaptSelf
     object ImageLogoTaskBar: TImage
       Left = 12
       Height = 71
-      Top = 792
+      Top = 875
       Width = 354
       Align = alBottom
       AutoSize = True
@@ -1772,7 +1707,7 @@ object VisWaptSelf: TVisWaptSelf
     object Panel4: TPanel
       Left = 10
       Height = 121
-      Top = 671
+      Top = 754
       Width = 356
       Align = alBottom
       BevelOuter = bvNone
@@ -1826,22 +1761,22 @@ object VisWaptSelf: TVisWaptSelf
     end
     object Panel5: TPanel
       Left = 10
-      Height = 43
+      Height = 45
       Top = 10
       Width = 356
       Align = alTop
       AutoSize = True
       BevelOuter = bvNone
       ChildSizing.TopBottomSpacing = 10
-      ClientHeight = 43
+      ClientHeight = 45
       ClientWidth = 356
       TabOrder = 2
       object BtnCancelTasks: TBitBtn
         AnchorSideLeft.Side = asrCenter
         Left = 0
-        Height = 23
+        Height = 25
         Top = 10
-        Width = 81
+        Width = 86
         Action = ActCancelTask
         AutoSize = True
         TabOrder = 0
@@ -1849,8 +1784,8 @@ object VisWaptSelf: TVisWaptSelf
     end
   end
   object DetailsBarPanel: TPanel
-    Left = 789
-    Height = 873
+    Left = 1168
+    Height = 956
     Top = 52
     Width = 374
     Align = alRight
@@ -1858,7 +1793,7 @@ object VisWaptSelf: TVisWaptSelf
     BevelOuter = bvNone
     ChildSizing.LeftRightSpacing = 10
     ChildSizing.TopBottomSpacing = 10
-    ClientHeight = 873
+    ClientHeight = 956
     ClientWidth = 374
     Color = clForm
     ParentColor = False
@@ -1867,22 +1802,22 @@ object VisWaptSelf: TVisWaptSelf
     OnPaint = DetailsBarPanelPaint
     object Panel9: TPanel
       Left = 10
-      Height = 43
+      Height = 45
       Top = 10
       Width = 354
       Align = alTop
       AutoSize = True
       BevelOuter = bvNone
       ChildSizing.TopBottomSpacing = 10
-      ClientHeight = 43
+      ClientHeight = 45
       ClientWidth = 354
       TabOrder = 0
       object BtnHideDetails: TBitBtn
         AnchorSideLeft.Side = asrCenter
         Left = 0
-        Height = 23
+        Height = 25
         Top = 10
-        Width = 47
+        Width = 51
         AutoSize = True
         Caption = 'Hide'
         OnClick = BtnHideDetailsClick
@@ -1891,158 +1826,94 @@ object VisWaptSelf: TVisWaptSelf
     end
     object ScrollBoxDetails: TScrollBox
       Left = 10
-      Height = 739
-      Top = 53
+      Height = 820
+      Top = 55
       Width = 354
-      HorzScrollBar.Page = 173
-      VertScrollBar.Page = 678
+      HorzScrollBar.Page = 309
+      VertScrollBar.Page = 706
       Align = alClient
       AutoSize = True
       BorderStyle = bsNone
-      ClientHeight = 739
+      ClientHeight = 820
       ClientWidth = 354
       Color = clForm
       ParentColor = False
       TabOrder = 1
       inline FrmDetailsPackageInPanel: TFrmDetailsPackage
-        Height = 678
-        Width = 350
-        Align = alTop
-        ClientHeight = 678
-        ClientWidth = 350
-        Constraints.MaxWidth = 350
+        Height = 820
+        Width = 340
+        Align = alClient
+        ClientHeight = 820
+        ClientWidth = 340
+        Constraints.MaxWidth = 340
         inherited PanelDetails: TPanel
-          AnchorSideLeft.Control = nil
-          AnchorSideTop.Control = nil
-          AnchorSideRight.Control = nil
-          AnchorSideRight.Side = asrTop
-          Height = 678
-          Width = 350
-          Align = alClient
-          BorderStyle = bsSingle
-          ClientHeight = 674
-          ClientWidth = 346
+          AnchorSideLeft.Control = FrmDetailsPackageInPanel
+          AnchorSideTop.Control = FrmDetailsPackageInPanel
+          AnchorSideRight.Control = FrmDetailsPackageInPanel
+          Height = 706
+          Width = 340
+          ClientHeight = 702
+          ClientWidth = 336
+          OnPaint = nil
           inherited LabName: TLabel
-            Width = 283
-          end
-          inherited Editor: TLabel
-            Width = 60
-          end
-          inherited LastVersion: TLabel
-            Width = 114
-          end
-          inherited OfficialWebsite: TLabel
-            Width = 142
+            Width = 273
           end
           inherited Description: TLabel
-            Width = 336
+            Height = 30
+            Width = 326
+            AutoSize = False
           end
           inherited LabEditor: TLabel
-            Left = 69
             Width = 272
           end
           inherited LabLastVersion: TLabel
-            Left = 123
-            Width = 218
+            Width = 226
           end
           inherited LabOfficialWebsite: TLabel
-            Left = 151
-            Width = 190
+            Width = 202
           end
           inherited LabDescription: TLabel
-            Height = 171
-            Width = 336
-          end
-          inherited Licence: TLabel
-            Width = 76
+            Top = 503
+            Width = 326
           end
           inherited LabLicence: TLabel
-            Left = 85
-            Width = 256
-          end
-          inherited ImpactedProcess: TLabel
-            Width = 154
+            Width = 259
           end
           inherited LabImpactedProcess: TLabel
-            Left = 163
-            Width = 178
-          end
-          inherited Maintainer: TLabel
-            Width = 104
+            Width = 191
           end
           inherited LabMaintainer: TLabel
-            Left = 113
-            Width = 228
-          end
-          inherited Size: TLabel
-            Width = 122
+            Width = 234
           end
           inherited LabSize: TLabel
-            Left = 131
-            Width = 210
-          end
-          inherited SizeInstalled: TLabel
-            Width = 125
+            Width = 223
           end
           inherited LabSizeInstalled: TLabel
-            Left = 134
-            Width = 207
-          end
-          inherited Repository: TLabel
-            Width = 99
+            Width = 220
           end
           inherited LabRepository: TLabel
-            Left = 108
-            Width = 233
-          end
-          inherited Signer: TLabel
-            Width = 63
+            Width = 237
           end
           inherited LabSigner: TLabel
-            Left = 72
-            Width = 269
-          end
-          inherited PackageName: TLabel
-            Width = 135
+            Width = 270
           end
           inherited LabPackageName: TLabel
-            Left = 144
-            Width = 197
-          end
-          inherited Dependency: TLabel
-            Width = 115
-          end
-          inherited Conflicts: TLabel
-            Width = 81
-          end
-          inherited Section: TLabel
-            Width = 76
-          end
-          inherited SignatureDate: TLabel
-            Width = 132
+            Width = 210
           end
           inherited LabDependency: TLabel
-            Left = 124
-            Width = 217
+            Width = 224
           end
           inherited LabConflicts: TLabel
-            Left = 90
-            Width = 251
+            Width = 253
           end
           inherited LabSection: TLabel
-            Left = 85
-            Width = 256
+            Width = 259
           end
           inherited LabSignatureDate: TLabel
-            Left = 141
-            Width = 200
-          end
-          inherited Categories: TLabel
-            Width = 99
+            Width = 212
           end
           inherited LabCategories: TLabel
-            Left = 108
-            Width = 233
+            Width = 240
           end
         end
       end
@@ -2050,7 +1921,7 @@ object VisWaptSelf: TVisWaptSelf
     object Panel3: TPanel
       Left = 10
       Height = 71
-      Top = 792
+      Top = 875
       Width = 354
       Align = alBottom
       AutoSize = True

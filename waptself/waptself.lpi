@@ -17,12 +17,16 @@
         <TextDesc Value=""/>
       </XPManifest>
       <Icon Value="0"/>
-      <Resources Count="5">
+      <Resources Count="9">
         <Resource_0 FileName="..\arts\enterprise-200px.png" Type="RCDATA" ResourceName="ENTERPRISE-200PX"/>
         <Resource_1 FileName="..\arts\enterprise-400px.png" Type="RCDATA" ResourceName="ENTERPRISE-400PX"/>
         <Resource_2 FileName="..\arts\wapt-enterprise-200px.png" Type="RCDATA" ResourceName="WAPT-ENTERPRISE-200PX"/>
         <Resource_3 FileName="..\arts\iconsself\plus2.png" Type="RCDATA" ResourceName="PLUS2"/>
         <Resource_4 FileName="..\arts\iconsself\plus-bleu-fonce.png" Type="RCDATA" ResourceName="PLUS-BLEU-FONCE"/>
+        <Resource_5 FileName="..\arts\iconsself\moins-bleu.png" Type="RCDATA" ResourceName="MOINS-BLEU"/>
+        <Resource_6 FileName="..\arts\iconsself\moins-blanc.png" Type="RCDATA" ResourceName="MOINS-BLANC"/>
+        <Resource_7 FileName="..\arts\iconsself\cross_15_px.png" Type="RCDATA" ResourceName="CROSS_15_PX"/>
+        <Resource_8 FileName="..\arts\iconsself\loupe-15px.png" Type="RCDATA" ResourceName="LOUPE-15PX"/>
       </Resources>
     </General>
     <i18n>

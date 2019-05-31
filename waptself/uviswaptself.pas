@@ -166,6 +166,7 @@ type
   public
     CheckTasksThread: TCheckAllTasksThread;
     CheckEventsThread: TCheckEventsThread;
+    procedure ChangeIconMinusByPlusOnFrames();
   end;
 
 var
@@ -214,8 +215,6 @@ var
             AdjustFont(LabPackageName);
             AdjustFont(LabVersion);
             LabDescription.Caption:=UTF8Encode(package.S['description']);
-            LabMaintainer.Caption:='by '+UTF8Encode(package.S['maintainer']);
-            AdjustFont(LabMaintainer);
 
             strtmp:=UTF8Encode(package.S['signature_date']);
             LabDate.Caption:=Copy(strtmp,7,2)+'/'+Copy(strtmp,5,2)+'/'+Copy(strtmp,1,4);
@@ -265,6 +264,7 @@ var
 
             FrmDetailsPackageInPanel:=Self.FrmDetailsPackageInPanel;
             PanelDetails:=Self.DetailsBarPanel;
+            BtnHideDetails:=Self.BtnHideDetails;
 
             LstTasks:=Self.LstTasks;
             if (LstTasks.IndexOf(UTF8Encode(Package.S['package'])))<>-1 then
@@ -583,15 +583,16 @@ begin
   LabPackageList.Alignment:=taCenter;
   LabPackageList.BorderSpacing.Left:=0;
   LabPackageList.AdjustFontForOptimalFill;
+  ChangeIconMinusByPlusOnFrames();
 end;
 
 procedure TVisWaptSelf.EdSearchChange(Sender: TObject);
 begin
   if (EdSearch.Text='') then
-    ImageCrossSearch.Hide
+    ImageCrossSearch.Picture.LoadFromResourceName(HINSTANCE,'LOUPE-15PX')
   else
   begin
-    ImageCrossSearch.Show;
+    ImageCrossSearch.Picture.LoadFromResourceName(HINSTANCE,'CROSS_15_PX');
     TimerSearch.Enabled:=False;
     TimerSearch.Enabled:=True;
   end;
@@ -761,8 +762,11 @@ end;
 
 procedure TVisWaptSelf.ImageCrossSearchClick(Sender: TObject);
 begin
-  EdSearch.Text:='';
-  ActSearchPackages.Execute;
+  if (EdSearch.Text<>'') then
+  begin
+    EdSearch.Text:='';
+    ActSearchPackages.Execute;
+  end;
 end;
 
 procedure TVisWaptSelf.ImageWAPTClick(Sender: TObject);
@@ -1016,6 +1020,23 @@ begin
   for Task in SOGridTasks.SelectedRows do
     If Task.S['install_status'] <> 'PENDING' then
       Exit(False);
+end;
+
+procedure TVisWaptSelf.ChangeIconMinusByPlusOnFrames();
+var
+  i : integer;
+  AFrmPackage : TFrmPackage;
+begin
+  for i:=0 to FlowPackages.ControlCount-1 do
+  begin
+    AFrmPackage:=FlowPackages.Controls[i] as TFrmPackage;
+    if (AFrmPackage.DetailsClicked) then
+    begin
+      AFrmPackage.DetailsClicked:=not(AFrmPackage.DetailsClicked);
+      AFrmPackage.ImageDetails.Picture.LoadFromResourceName(HINSTANCE,'PLUS-BLEU-FONCE');
+      break;
+    end;
+  end;
 end;
 
 function TVisWaptSelf.GetAllPackages: ISuperObject;

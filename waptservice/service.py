@@ -374,7 +374,7 @@ def get_user_self_service_groups(self_service_groups,logon_name,password):
     for group in self_service_groups :
         if group in listgroupuser:
             continue
-        if check_is_member_of(huser,group) :
+        if common.check_is_member_of(huser,group) :
             listgroupuser.append(group)
     return listgroupuser
 
@@ -454,7 +454,7 @@ def login():
             logger.debug(u'User %s authenticated against local wapt admins (%s)' % (auth.username,wapt_admin_group))
         elif rules:
             try:
-                groups = common.get_user_self_service_groups(rules.keys(),auth.username,auth.password)
+                groups = get_user_self_service_groups(rules.keys(),auth.username,auth.password)
                 username = auth.username
                 logger.debug(u'User %s authenticated against self-service groups %s' % (auth.username,groups))
             except:
@@ -586,7 +586,7 @@ def all_packages(page=1):
             logger.debug(u'User %s authenticated against local admins (waptselfservice)' % auth.username)
         else:
             try:
-                grpuser = common.get_user_self_service_groups(rules.keys(),auth.username,auth.password)
+                grpuser = get_user_self_service_groups(rules.keys(),auth.username,auth.password)
                 username = auth.username
                 logger.debug(u'User %s authenticated against self-service groups %s' % (auth.username,grpuser))
             except:
@@ -703,7 +703,7 @@ def local_package_details():
             logger.debug(u'User %s authenticated against local admins (waptselfservice)' % auth.username)
         else:
             try:
-                grpuser = common.get_user_self_service_groups(rules.keys(),auth.username,auth.password)
+                grpuser = get_user_self_service_groups(rules.keys(),auth.username,auth.password)
                 username = auth.username
                 logger.debug(u'User %s authenticated against self-service groups %s' % (auth.username,grpuser))
             except:
@@ -1117,7 +1117,7 @@ def install():
             logger.debug(u'User %s authenticated against local admins or waptselfservice)' % auth.username)
         else:
             try:
-                grpuser = common.get_user_self_service_groups(rules.keys(),auth.username,auth.password)
+                grpuser = get_user_self_service_groups(rules.keys(),auth.username,auth.password)
                 username = auth.username
                 logger.debug(u'User %s authenticated against self-service groups %s' % (auth.username,grpuser))
             except:
@@ -1194,7 +1194,7 @@ def remove():
             logger.debug(u'User %s authenticated against local admins (waptselfservice)' % auth.username)
         else:
             try:
-                grpuser = common.get_user_self_service_groups(rules.keys(),auth.username,auth.password)
+                grpuser = get_user_self_service_groups(rules.keys(),auth.username,auth.password)
                 username = auth.username
                 logger.debug(u'User %s authenticated against self-service groups %s' % (auth.username,grpuser))
             except:
