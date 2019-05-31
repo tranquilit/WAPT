@@ -139,7 +139,7 @@ object FrmDetailsPackage: TFrmDetailsPackage
       BorderSpacing.Top = 5
       BorderSpacing.Right = 5
       Caption = 'tis-waptself'
-      Font.Color = 9852960
+      Font.Color = 10048559
       Font.Height = 48
       Font.Name = 'Calibri'
       Font.Quality = fqCleartype
@@ -219,7 +219,7 @@ object FrmDetailsPackage: TFrmDetailsPackage
       BorderSpacing.Top = 10
       BorderSpacing.Right = 5
       Caption = 'Description'
-      Color = 9710339
+      Color = 10048559
       Font.Color = clWhite
       Font.Height = 25
       Font.Style = [fsBold]

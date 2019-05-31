@@ -5,11 +5,11 @@ unit uVisWaptSelf;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ExtCtrls,
-  EditBtn, StdCtrls, Buttons, CheckLst, ActnList, uvislogin, BCListBox,
-  BCMaterialDesignButton, BCLabel, IdAuthentication, superobject,
-  waptcommon, httpsend, sogrid, uWAPTPollThreads, VirtualTrees, ImgList,
-  ComCtrls, uFrmPackage, uFrmDetailsPackage;
+  Classes, SysUtils, FileUtil, RTTICtrls, Forms, Controls, Graphics, Dialogs,
+  ExtCtrls, EditBtn, StdCtrls, Buttons, ActnList, uvislogin, BCListBox,
+  BCMaterialDesignButton, BCLabel, FXMaterialButton, IdAuthentication,
+  superobject, waptcommon, httpsend, sogrid, uWAPTPollThreads, VirtualTrees,
+  ImgList, ComCtrls, Menus, uFrmPackage, uFrmDetailsPackage;
 
 type
 
@@ -32,6 +32,7 @@ type
 
   TVisWaptSelf = class(TForm)
     ActCancelTask: TAction;
+    ActHideDetailsClick: TAction;
     ActResizeFlowPackages: TAction;
     ActShowTaskBar: TAction;
     ActUpdatePackagesList: TAction;
@@ -39,38 +40,40 @@ type
     ActUnselectAllKeywords: TAction;
     ActSearchPackages: TAction;
     ActionList1: TActionList;
-    BtnCancelTasks: TBitBtn;
-    BtnHideDetails: TBitBtn;
-    BtnShowTaskBar: TButton;
+    BtnCancelTasks: TFXMaterialButton;
+    BtnHideDetails: TFXMaterialButton;
+    BtnShowTaskBar: TFXMaterialButton;
     FrmDetailsPackageInPanel: TFrmDetailsPackage;
     ImageCrossSearch: TImage;
     ImageLogoDetails: TImage;
-    ImageWAPT: TImage;
+    ImageLogoTaskBar: TImage;
     LabPackageList: TLabel;
+    RadioSortByNameAZ: TRadioButton;
+    RadioSortByNameZA: TRadioButton;
+    SortBy: TRadioGroup;
     Panel3: TPanel;
+    Panel5: TPanel;
+    Panel8: TPanel;
     Panel9: TPanel;
     PanelImageCrossSearch: TPanel;
     PicLogo: TImage;
     LabelNoResult: TLabel;
-    BtnUpdateList: TButton;
-    BtnShowInstalled: TButton;
-    BtnShowNotInstalled: TButton;
-    BtnShowUpgradable: TButton;
-    BtnShowAll: TButton;
-    BtnUnselectAllKeywords: TButton;
-    BtnSortByDate: TButton;
-    CBKeywords: TCheckListBox;
     EdSearch: TEditButton;
     FlowPackages: TFlowPanel;
     ImageListTaskStatus: TImageList;
-    ImageLogoTaskBar: TImage;
     Panel1: TPanel;
     PanCategories: TPanel;
     Panel2: TPanel;
+    Packages: TRadioGroup;
+    RadioShowInstalled: TRadioButton;
+    RadioShowAll: TRadioButton;
+    RadioSortByDateDescending: TRadioButton;
+    RadioShowUpgradable: TRadioButton;
+    RadioShowNotInstalled: TRadioButton;
+    RadioSortByDateAscending: TRadioButton;
     ScrollBoxDetails: TScrollBox;
     TaskBarPanel: TPanel;
     Panel4: TPanel;
-    Panel5: TPanel;
     Panel6: TPanel;
     Panel7: TPanel;
     ProgressBarTaskRunning: TProgressBar;
@@ -91,11 +94,8 @@ type
     procedure ActShowNotInstalled(Sender: TObject);
     procedure ActShowTaskBarExecute(Sender: TObject);
     procedure ActShowUpgradable(Sender: TObject);
-    procedure ActSortByDate(Sender: TObject);
     procedure ActTriggerSearchExecute(Sender: TObject);
-    procedure ActUnselectAllKeywordsExecute(Sender: TObject);
     procedure ActUpdatePackagesListExecute(Sender: TObject);
-    procedure BtnHideDetailsClick(Sender: TObject);
     procedure DetailsBarPanelPaint(Sender: TObject);
     procedure EdSearchButtonClick(Sender: TObject);
     procedure EdSearchChange(Sender: TObject);
@@ -104,6 +104,7 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormResize(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure ActHideDetailsClickExecute(Sender: TObject);
     procedure ImageCrossSearchClick(Sender: TObject);
     procedure ImageWAPTClick(Sender: TObject);
     procedure ImageLogoTaskBarClick(Sender: TObject);
@@ -115,6 +116,10 @@ type
     procedure LabOfficialWebsiteMouseEnter(Sender: TObject);
     procedure LabOfficialWebsiteMouseLeave(Sender: TObject);
     procedure Panel6Resize(Sender: TObject);
+    procedure RadioSortByDateAscendingClick(Sender: TObject);
+    procedure RadioSortByDateDescendingClick(Sender: TObject);
+    procedure RadioSortByNameAZClick(Sender: TObject);
+    procedure RadioSortByNameZAClick(Sender: TObject);
     procedure SOGridTasksGetImageIndexEx(Sender: TBaseVirtualTree;
       Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
       var Ghosted: Boolean; var ImageIndex: Integer;
@@ -129,6 +134,8 @@ type
     ShowOnlyInstalled: Boolean;
     ShowOnlyNotInstalled: Boolean;
     SortByDateAsc:Boolean;
+    SortByName:Boolean;
+    SortByNameAZ:Boolean;
     WAPTServiceRunning:Boolean;
     LastTaskIDOnLaunch:integer;
     CurrentTaskID:integer;
@@ -157,7 +164,6 @@ type
 
     //Functions for generate frames
     function IsValidPackage(package : ISuperObject):Boolean;
-    function IsValidKeyword(package : ISuperObject):Boolean;
     function IsValidFilter(package : ISuperObject):Boolean;
     function SelectedAreOnlyPending: Boolean;
 
@@ -200,7 +206,7 @@ var
 
     for Pck in AllPackages do
     begin
-      if IsValidPackage(Pck) and IsValidKeyword(Pck) and IsValidFilter(Pck) then
+      if IsValidPackage(Pck) and IsValidFilter(Pck) then
       begin
         AFrmPackage:=TFrmPackage.Create(FlowPackages);
         AFrmPackage.Package:=Pck;
@@ -233,7 +239,7 @@ var
                 begin
                   BtnInstallUpgrade.Caption:=rsStatusInstalled;
                   BtnInstallUpgrade.Enabled:=false;
-                  BtnRemove.NormalColor:=clRed;
+                  BtnRemove.NormalColor:=$0099542F;
                 end
               else                       //Package installed but not updated
                 begin
@@ -242,7 +248,7 @@ var
                   LabInstallVersion.Caption:='(over '+UTF8Encode(package.S['install_version'])+')';
                   AdjustFont(LabInstallVersion);
                   LabInstallVersion.Visible:=True;
-                  BtnRemove.NormalColor:=clRed;
+                  BtnRemove.NormalColor:=$0099542F;
                   ActionPackage:='install';
                   LabVersion.Caption:=UTF8Encode(package.S['version']);
                 end;
@@ -264,7 +270,6 @@ var
 
             FrmDetailsPackageInPanel:=Self.FrmDetailsPackageInPanel;
             PanelDetails:=Self.DetailsBarPanel;
-            BtnHideDetails:=Self.BtnHideDetails;
 
             LstTasks:=Self.LstTasks;
             if (LstTasks.IndexOf(UTF8Encode(Package.S['package'])))<>-1 then
@@ -323,6 +328,10 @@ end;
 procedure TVisWaptSelf.ActCancelTaskUpdate(Sender: TObject);
 begin
   ActCancelTask.Enabled := (SOGridTasks.SelectedCount>0 ) and (SelectedAreOnlyPending);
+  if (ActCancelTask.Enabled) then
+    BtnCancelTasks.NormalColor:=$0099542F
+  else
+    BtnCancelTasks.NormalColor:=clSilver;
 end;
 
 procedure TVisWaptSelf.ActResizeFlowPackagesExecute(Sender: TObject);
@@ -414,6 +423,34 @@ begin
     end
 end;
 
+procedure TVisWaptSelf.RadioSortByDateAscendingClick(Sender: TObject);
+begin
+  SortByDateAsc:=true;
+  SortByName:=false;
+  ActSearchPackages.Execute;
+end;
+
+procedure TVisWaptSelf.RadioSortByDateDescendingClick(Sender: TObject);
+begin
+  SortByDateAsc:=false;
+  SortByName:=false;
+  ActSearchPackages.Execute;
+end;
+
+procedure TVisWaptSelf.RadioSortByNameAZClick(Sender: TObject);
+begin
+  SortByName:=true;
+  SortByNameAZ:=true;
+  ActSearchPackages.Execute;
+end;
+
+procedure TVisWaptSelf.RadioSortByNameZAClick(Sender: TObject);
+begin
+  SortByName:=true;
+  SortByNameAZ:=false;
+  ActSearchPackages.Execute;
+end;
+
 procedure TVisWaptSelf.ActShowTaskBarExecute(Sender: TObject);
 begin
   if (TaskBarPanel.Showing) then
@@ -492,15 +529,11 @@ begin
   ShowOnlyNotInstalled:=false;
   ShowOnlyUpgradable:=false;
   ShowOnlyInstalled:=false;
-  SortByDateAsc:=false;
-  CBKeywords.CheckAll(cbUnchecked);
   ActSearchPackages.Execute;
-  BtnShowInstalled.Enabled:=true;
-  BtnShowAll.Enabled:=false;
-  BtnShowNotInstalled.Enabled:=true;
-  BtnShowUpgradable.Enabled:=true;
+  RadioShowUpgradable.Checked:=false;
+  RadioShowInstalled.Checked:=false;
+  RadioShowNotInstalled.Checked:=false;
   LabPackageList.Caption := rsAvailablePackages;
-  BtnSortByDate.Caption:= rsSortByDateDesc;
   LabPackageList.AdjustFontForOptimalFill;
 end;
 
@@ -509,10 +542,9 @@ begin
    ShowOnlyNotInstalled:=false;
    ShowOnlyUpgradable:=false;
    ShowOnlyInstalled:=true;
-   BtnShowInstalled.Enabled:=false;
-   BtnShowAll.Enabled:=true;
-   BtnShowNotInstalled.Enabled:=true;
-   BtnShowUpgradable.Enabled:=true;
+   RadioShowUpgradable.Checked:=false;
+   RadioShowAll.Checked:=false;
+   RadioShowNotInstalled.Checked:=false;
    ActSearchPackages.Execute;
    LabPackageList.Caption := rsInstalledPackages;
    LabPackageList.AdjustFontForOptimalFill;
@@ -524,10 +556,9 @@ begin
    ShowOnlyUpgradable:=false;
    ShowOnlyInstalled:=false;
    ActSearchPackages.Execute;
-   BtnShowInstalled.Enabled:=true;
-   BtnShowAll.Enabled:=true;
-   BtnShowNotInstalled.Enabled:=false;
-   BtnShowUpgradable.Enabled:=true;
+   RadioShowUpgradable.Checked:=false;
+   RadioShowAll.Checked:=false;
+   RadioShowInstalled.Checked:=false;
    LabPackageList.Caption := rsNotInstalledPackages;
    LabPackageList.AdjustFontForOptimalFill;
 end;
@@ -538,22 +569,11 @@ begin
   ShowOnlyUpgradable:=true;
   ShowOnlyInstalled:=false;
   ActSearchPackages.Execute;
-  BtnShowInstalled.Enabled:=true;
-  BtnShowAll.Enabled:=true;
-  BtnShowNotInstalled.Enabled:=true;
-  BtnShowUpgradable.Enabled:=false;
+  RadioShowInstalled.Checked:=false;
+  RadioShowAll.Checked:=false;
+  RadioShowNotInstalled.Checked:=false;
   LabPackageList.Caption := rsUpgradablePackages;
   LabPackageList.AdjustFontForOptimalFill;
-end;
-
-procedure TVisWaptSelf.ActSortByDate(Sender: TObject);
-begin
-  if not(SortByDateAsc) then
-    BtnSortByDate.Caption:=rsSortByDateAsc
-  else
-    BtnSortByDate.Caption:=rsSortByDateDesc;
-  SortByDateAsc:=not(SortByDateAsc);
-  ActSearchPackages.Execute;
 end;
 
 procedure TVisWaptSelf.ActTriggerSearchExecute(Sender: TObject);
@@ -562,28 +582,10 @@ begin
   TimerSearch.Enabled:=True;
 end;
 
-procedure TVisWaptSelf.ActUnselectAllKeywordsExecute(Sender: TObject);
-begin
-  CBKeywords.CheckAll(cbUnchecked);
-  ActSearchPackages.Execute;
-end;
-
 procedure TVisWaptSelf.ActUpdatePackagesListExecute(Sender: TObject);
 begin
   FAllPackages:=Nil;
   ActSearchPackages.Execute;
-end;
-
-procedure TVisWaptSelf.BtnHideDetailsClick(Sender: TObject);
-begin
-  DetailsBarPanel.Hide;
-  LabPackageList.Show;
-  FlowPackages.Show;
-  Panel6.Show;
-  LabPackageList.Alignment:=taCenter;
-  LabPackageList.BorderSpacing.Left:=0;
-  LabPackageList.AdjustFontForOptimalFill;
-  ChangeIconMinusByPlusOnFrames();
 end;
 
 procedure TVisWaptSelf.EdSearchChange(Sender: TObject);
@@ -665,6 +667,7 @@ begin
   ShowOnlyNotInstalled:=false;
   ShowOnlyUpgradable:=false;
   SortByDateAsc:=false;
+  SortByName:=false;
 
   login:=waptwinutils.AGetUserName;
   password:='';
@@ -692,7 +695,6 @@ begin
     PicLogo.Picture.LoadFromFile(WaptBaseDir+'\templates\waptself-logo.png')
   else
     PicLogo.Picture.LoadFromResourceName(HINSTANCE,'ENTERPRISE-400PX');
-  ImageWAPT.Picture.LoadFromResourceName(HINSTANCE,'WAPT-ENTERPRISE-200PX');
   {$endif}
 
   //Create AppLocal/Waptself
@@ -708,8 +710,6 @@ begin
 
   if Screen.PixelsPerInch <> 96 then
   begin
-    ImageWAPT.AutoSize:=false;
-    ImageWAPT.AntialiasingMode:=amOn;
     ImageLogoTaskBar.AutoSize:=false;
     ImageLogoTaskBar.AntialiasingMode:=amOn;
     PicLogo.AutoSize:=false;
@@ -717,7 +717,8 @@ begin
     ImageLogoDetails.AutoSize:=false;
     ImageLogoDetails.AntialiasingMode:=amOn;
     ImageCrossSearch.AutoSize:=false;
-    ImageCrossSearch.AntialiasingMode:=amOn;  end;
+    ImageCrossSearch.AntialiasingMode:=amOn;
+  end;
 end;
 
 procedure TVisWaptSelf.FormDestroy(Sender: TObject);
@@ -730,17 +731,9 @@ begin
 end;
 
 procedure TVisWaptSelf.FormShow(Sender: TObject);
-var
-  keyword,keywords: ISuperObject;
 begin
   try
     MakeFullyVisible();
-
-    Screen.Cursor := crHourGlass;
-    keywords:=WAPTLocalJsonGet('keywords.json?latest=1',login,password,-1,@OnLocalServiceAuth,2);
-    CBKeywords.Clear;
-    for keyword in keywords do
-      CBKeywords.Items.Add(UTF8Encode(keyword.AsString));
 
     LastTaskIDOnLaunch:=-1;
     GetAllPackages();
@@ -758,6 +751,18 @@ begin
   finally
     Screen.Cursor := crDefault;
   end;
+end;
+
+procedure TVisWaptSelf.ActHideDetailsClickExecute(Sender: TObject);
+begin
+  DetailsBarPanel.Hide;
+  LabPackageList.Show;
+  FlowPackages.Show;
+  Panel6.Show;
+  LabPackageList.Alignment:=taCenter;
+  LabPackageList.BorderSpacing.Left:=0;
+  LabPackageList.AdjustFontForOptimalFill;
+  ChangeIconMinusByPlusOnFrames();
 end;
 
 procedure TVisWaptSelf.ImageCrossSearchClick(Sender: TObject);
@@ -1045,20 +1050,36 @@ var
   tmp:String;
 begin
   if FAllPackages = Nil then
-    FAllPackages := WAPTLocalJsonGet('packages.json?latest=1',login,password,-1,@OnLocalServiceAuth,2);
-  for Package in FAllPackages do
   begin
-    if pos('T',Package.S['signature_date'])<>0 then
+    FAllPackages := WAPTLocalJsonGet('packages.json?latest=1',login,password,-1,@OnLocalServiceAuth,2);
+    for Package in FAllPackages do
     begin
-       tmp:=UTF8Encode(Package.S['signature_date']);
-       tmp:=copy(tmp,1,19);
-       tmp:=ReplaceStr(tmp,'-','');
-       tmp:=ReplaceStr(tmp,':','');
-       tmp:=ReplaceStr(tmp,'T','-');
-       Package.S['signature_date']:=UTF8Decode(tmp);
+      if pos('T',Package.S['signature_date'])<>0 then
+      begin
+         tmp:=UTF8Encode(Package.S['signature_date']);
+         tmp:=copy(tmp,1,19);
+         tmp:=ReplaceStr(tmp,'-','');
+         tmp:=ReplaceStr(tmp,':','');
+         tmp:=ReplaceStr(tmp,'T','-');
+         Package.S['signature_date']:=UTF8Decode(tmp);
+      end;
+      if (UTF8Encode(Package.S['section'])='base') then
+      begin
+        if (UTF8Encode(Package.S['name'])='') then
+        begin
+          tmp:=UTF8Encode(Package.S['package']);
+          tmp:=Copy(tmp,pos('-',tmp)+1,tmp.Length);
+          Package.S['name']:=UTF8Decode(tmp)
+        end
+      end
+      else
+        Package.S['name']:=Package.S['package'];
     end;
   end;
-  SortByFields(FAllPackages,['signature_date'],not(SortByDateAsc));
+  if (SortByName) then
+    SortByFields(FAllPackages,['name'],not(SortByNameAZ))
+  else
+    SortByFields(FAllPackages,['signature_date'],not(SortByDateAsc));
   Result:=FAllPackages;
 end;
 
@@ -1071,18 +1092,35 @@ begin
   if Assigned(FAllPackages) then
   begin
     for Package in FAllPackages do
-        if pos('T',Package.S['signature_date'])<>0 then
+    begin
+      if pos('T',Package.S['signature_date'])<>0 then
+      begin
+         tmp:=UTF8Encode(Package.S['signature_date']);
+         tmp:=copy(tmp,1,19);
+         tmp:=ReplaceStr(tmp,'-','');
+         tmp:=ReplaceStr(tmp,':','');
+         tmp:=ReplaceStr(tmp,'T','-');
+         Package.S['signature_date']:=UTF8Decode(tmp);
+      end;
+      if (UTF8Encode(Package.S['section'])='base') then
+      begin
+        if (UTF8Encode(Package.S['name'])='') then
         begin
-           tmp:=UTF8Encode(Package.S['signature_date']);
-           tmp:=copy(tmp,1,19);
-           tmp:=ReplaceStr(tmp,'-','');
-           tmp:=ReplaceStr(tmp,':','');
-           tmp:=ReplaceStr(tmp,'T','-');
-           Package.S['signature_date']:=UTF8Decode(tmp);
+          tmp:=UTF8Encode(Package.S['package']);
+          tmp:=Copy(tmp,pos('-',tmp)+1,tmp.Length);
+          Package.S['name']:=UTF8Decode(tmp)
         end;
-    SortByFields(FAllPackages,['signature_date'],not(SortByDateAsc));
+      end
+      else
+        Package.S['name']:=Package.S['package'];
+    end;
   end;
+  if (SortByName) then
+    SortByFields(FAllPackages,['name'],not(SortByNameAZ))
+  else
+    SortByFields(FAllPackages,['signature_date'],not(SortByDateAsc));
 end;
+
 
 function TVisWaptSelf.IsValidFilter(package: ISuperObject): Boolean;
 begin
@@ -1092,16 +1130,6 @@ end;
 function TVisWaptSelf.IsValidPackage(package: ISuperObject): Boolean;
 begin
   Result:=(pos(lowercase(EdSearch.Text),lowercase(Package.S['package']))>0) or (EdSearch.Text='');
-end;
-
-function TVisWaptSelf.IsValidKeyword(package: ISuperObject): Boolean;
-var
-  i:integer;
-begin
-  Result:=true;
-  for i:=0 to CBKeywords.Items.Count-1 do
-    if (CBKeywords.Checked[i]) and (pos(lowercase(CBKeywords.Items[i]),lowercase(package.S['keywords']))=0) then
-      exit(false);
 end;
 
 { TThreadGetAllIcons }

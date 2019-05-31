@@ -249,7 +249,11 @@ msgid "Wrong password or login !"
 msgstr ""
 
 #: tviswaptself.actcanceltask.caption
-msgid "Cancel task"
+msgid "Cancel task(s)"
+msgstr ""
+
+#: tviswaptself.acthidedetailsclick.caption
+msgid "Hide"
 msgstr ""
 
 #: tviswaptself.actsearchpackages.caption
@@ -273,39 +277,6 @@ msgstr ""
 msgid "ActUpdatePackagesList"
 msgstr ""
 
-#: tviswaptself.btnhidedetails.caption
-msgid "Hide"
-msgstr ""
-
-#: tviswaptself.btnshowall.caption
-msgid "Show all / clear filtrer"
-msgstr ""
-
-#: tviswaptself.btnshowinstalled.caption
-msgid "Show installed"
-msgstr ""
-
-#: tviswaptself.btnshownotinstalled.caption
-msgid "Show not installed"
-msgstr ""
-
-#: tviswaptself.btnshowupgradable.caption
-msgid "Show upgradable"
-msgstr ""
-
-#: tviswaptself.btnsortbydate.caption
-msgctxt "tviswaptself.btnsortbydate.caption"
-msgid "Sort by date : desc"
-msgstr ""
-
-#: tviswaptself.btnunselectallkeywords.caption
-msgid "Unselect all keywords"
-msgstr ""
-
-#: tviswaptself.btnupdatelist.caption
-msgid "Update list"
-msgstr ""
-
 #: tviswaptself.caption
 #| msgid "WAPT softwares Self-service"
 msgid "WAPT Self-service"
@@ -323,6 +294,43 @@ msgstr ""
 msgctxt "tviswaptself.labpackagelist.caption"
 msgid "Available packages"
 msgstr "Paquets disponibles"
+
+#: tviswaptself.packages.caption
+msgid "Packages"
+msgstr ""
+
+#: tviswaptself.radioshowall.caption
+msgid "All"
+msgstr ""
+
+#: tviswaptself.radioshowinstalled.caption
+msgctxt "tviswaptself.radioshowinstalled.caption"
+msgid "Installed"
+msgstr ""
+
+#: tviswaptself.radioshownotinstalled.caption
+msgid "Not installed"
+msgstr ""
+
+#: tviswaptself.radioshowupgradable.caption
+msgid "Upgradable"
+msgstr ""
+
+#: tviswaptself.radiosortbydateascending.caption
+msgid "Date : oldest"
+msgstr ""
+
+#: tviswaptself.radiosortbydatedescending.caption
+msgid "Date : most recent"
+msgstr ""
+
+#: tviswaptself.radiosortbynameaz.caption
+msgid "Name : A-Z"
+msgstr ""
+
+#: tviswaptself.radiosortbynameza.caption
+msgid "Name : Z-A"
+msgstr ""
 
 #: tviswaptself.sogridtasks.header.columns[0].text
 msgctxt "tviswaptself.sogridtasks.header.columns[0].text"
@@ -432,6 +440,10 @@ msgstr ""
 #: tviswaptself.sogridtasks.header.columns[9].text
 msgctxt "tviswaptself.sogridtasks.header.columns[9].text"
 msgid "notify_server_on_start"
+msgstr ""
+
+#: tviswaptself.sortby.caption
+msgid "Sort by"
 msgstr ""
 
 #: ufrmpackage.rserrortriggeringtask
@@ -585,6 +597,7 @@ msgid "Sort by date : desc"
 msgstr ""
 
 #: uwaptselfres.rsstatusinstalled
+msgctxt "uwaptselfres.rsstatusinstalled"
 msgid "Installed"
 msgstr ""
 

@@ -52,7 +52,6 @@ type
     password : String;
     FrmDetailsPackageInPanel : TFrmDetailsPackage;
     PanelDetails : TPanel;
-    BtnHideDetails : TBitBtn;
     DetailsClicked : boolean;
     OnLocalServiceAuth : THTTPSendAuthorization;
     ActionPackage : String;
@@ -160,7 +159,7 @@ begin
   end
   else
   begin
-    BtnHideDetails.Click;
+    VisWaptSelf.ActHideDetailsClick.Execute;
     ImageDetails.Picture.LoadFromResourceName(HINSTANCE,'PLUS2');
   end;
 end;
