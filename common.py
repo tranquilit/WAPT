@@ -605,7 +605,7 @@ class WaptSessionDB(WaptBaseDB):
 class WaptDB(WaptBaseDB):
     """Class to manage SQLite database with local installation status"""
 
-    curr_db_version = '20190522'
+    curr_db_version = '20190606'
 
     def initdb(self):
         """Initialize current sqlite db with empty table and return structure version"""
@@ -820,6 +820,8 @@ class WaptDB(WaptBaseDB):
                   insert into wapt_package (
                     package_uuid,
                     package,
+                    categories,
+                    name,
                     version,
                     section,
                     priority,
@@ -851,11 +853,16 @@ class WaptDB(WaptBaseDB):
                     editor,
                     keywords,
                     licence,
-                    homepage
-                    ) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+                    homepage,
+                    valid_from,
+                    valid_until,
+                    forced_install_on
+                    ) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
                 """,(
                     package_entry.package_uuid,
                     package_entry.package,
+                    package_entry.categories,
+                    package_entry.name,
                     package_entry.version,
                     package_entry.section,
                     package_entry.priority,
@@ -888,6 +895,9 @@ class WaptDB(WaptBaseDB):
                     package_entry.keywords,
                     package_entry.licence,
                     package_entry.homepage,
+                    package_entry.valid_from,
+                    package_entry.valid_until,
+                    package_entry.forced_install_on,
                     )
                 )
             return cur.lastrowid

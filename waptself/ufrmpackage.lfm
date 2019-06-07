@@ -1,15 +1,15 @@
 object FrmPackage: TFrmPackage
   Left = 0
-  Height = 201
+  Height = 198
   Top = 0
   Width = 401
-  ClientHeight = 201
+  ClientHeight = 198
   ClientWidth = 401
   Color = clWhite
   ParentColor = False
   TabOrder = 0
-  DesignLeft = 2156
-  DesignTop = 160
+  DesignLeft = 2503
+  DesignTop = 266
   object BCPaperPanel1: TBCPaperPanel
     AnchorSideLeft.Control = Owner
     AnchorSideLeft.Side = asrCenter
@@ -18,7 +18,7 @@ object FrmPackage: TFrmPackage
     AnchorSideBottom.Side = asrBottom
     Left = 26
     Height = 191
-    Top = 6
+    Top = 3
     Width = 350
     Alignment = taLeftJustify
     Anchors = [akBottom]
@@ -34,7 +34,7 @@ object FrmPackage: TFrmPackage
       AnchorSideLeft.Control = BCPaperPanel1
       Left = 30
       Height = 24
-      Top = 120
+      Top = 123
       Width = 120
       RoundBorders = 3
       NormalColor = 12895428
@@ -118,7 +118,7 @@ object FrmPackage: TFrmPackage
     object LabVersion: TBCLabel
       Left = 80
       Height = 16
-      Top = 32
+      Top = 35
       Width = 136
       AutoSize = False
       Background.Color = clBlack
@@ -179,7 +179,7 @@ object FrmPackage: TFrmPackage
     object LabInstallVersion: TBCLabel
       Left = 152
       Height = 16
-      Top = 32
+      Top = 35
       Width = 104
       AutoSize = False
       Background.Color = clBlack
@@ -241,7 +241,7 @@ object FrmPackage: TFrmPackage
     object LabDescription: TBCLabel
       Left = 80
       Height = 63
-      Top = 55
+      Top = 51
       Width = 248
       Anchors = []
       AutoSize = False
@@ -370,7 +370,7 @@ object FrmPackage: TFrmPackage
       AnchorSideRight.Side = asrBottom
       Left = 200
       Height = 24
-      Top = 120
+      Top = 123
       Width = 120
       RoundBorders = 3
       NormalColor = 12895428
@@ -506,7 +506,7 @@ object FrmPackage: TFrmPackage
       AnchorSideRight.Control = BtnRemove
       Left = 216
       Height = 16
-      Top = 32
+      Top = 35
       Width = 112
       Anchors = [akTop]
       AutoSize = False

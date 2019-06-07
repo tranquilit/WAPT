@@ -1257,7 +1257,7 @@ begin
 
     http.Timeout := timeout;
 
-    if copy(action,length(action),1)<>'/' then
+    if action[1]<>'/' then
       action := '/'+action;
 
     url := GetWaptLocalURL+action;
@@ -1275,7 +1275,8 @@ begin
 
     strresult := '';
     Retries := 0;
-    While True do
+    ShouldRetry:=True;
+    While ShouldRetry do
     begin
       if http.HTTPMethod('GET',url) then
         SetString(strresult, PAnsiChar(http.Document.Memory), http.Document.Size)
@@ -1288,11 +1289,8 @@ begin
       if (http.ResultCode=401) then
       begin
         inc(Retries);
-        ShouldRetry:=False;
         if Assigned(OnAuthorization) and (RetryCount>0) then
           OnAuthorization(http,ShouldRetry,Retries);
-        if not ShouldRetry then
-          Raise EIdHTTPProtocolException.CreateError(http.ResultCode,strresult,http.ResultString);
       end
       else
         Raise EIdHTTPProtocolException.CreateError(http.ResultCode,strresult,http.ResultString);

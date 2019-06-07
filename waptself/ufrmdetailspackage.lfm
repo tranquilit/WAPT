@@ -1,10 +1,10 @@
 object FrmDetailsPackage: TFrmDetailsPackage
   Left = 0
-  Height = 748
+  Height = 795
   Top = 0
   Width = 345
   AutoSize = True
-  ClientHeight = 748
+  ClientHeight = 795
   ClientWidth = 345
   Color = clWhite
   Constraints.MaxWidth = 345
@@ -18,7 +18,7 @@ object FrmDetailsPackage: TFrmDetailsPackage
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
     Left = 0
-    Height = 701
+    Height = 777
     Top = 0
     Width = 345
     Align = alCustom
@@ -26,7 +26,7 @@ object FrmDetailsPackage: TFrmDetailsPackage
     AutoSize = True
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 697
+    ClientHeight = 773
     ClientWidth = 341
     Color = clWhite
     ParentColor = False
@@ -131,13 +131,13 @@ object FrmDetailsPackage: TFrmDetailsPackage
       Left = 58
       Height = 48
       Top = 5
-      Width = 278
+      Width = 276
       Alignment = taCenter
       Anchors = [akTop, akLeft, akRight]
       AutoSize = False
       BorderSpacing.Left = 5
       BorderSpacing.Top = 5
-      BorderSpacing.Right = 5
+      BorderSpacing.Right = 7
       Caption = 'tis-waptself'
       Font.Color = 10048559
       Font.Height = 48
@@ -147,6 +147,9 @@ object FrmDetailsPackage: TFrmDetailsPackage
       Layout = tlCenter
       ParentColor = False
       ParentFont = False
+      OnClick = LabNameClick
+      OnMouseEnter = LabSignatureDateMouseEnter
+      OnMouseLeave = LabSignatureDateMouseLeave
       OptimalFill = True
     end
     object Editor: TLabel
@@ -155,10 +158,10 @@ object FrmDetailsPackage: TFrmDetailsPackage
       AnchorSideTop.Side = asrBottom
       Left = 5
       Height = 20
-      Top = 58
+      Top = 68
       Width = 50
       BorderSpacing.Left = 5
-      BorderSpacing.Top = 5
+      BorderSpacing.Top = 15
       Caption = 'Editor :'
       Constraints.MinHeight = 20
       Font.Height = 20
@@ -169,11 +172,11 @@ object FrmDetailsPackage: TFrmDetailsPackage
     end
     object LastVersion: TLabel
       AnchorSideLeft.Control = PanelDetails
-      AnchorSideTop.Control = Editor
+      AnchorSideTop.Control = LabEditor
       AnchorSideTop.Side = asrBottom
       Left = 5
       Height = 20
-      Top = 83
+      Top = 113
       Width = 96
       BorderSpacing.Left = 5
       BorderSpacing.Top = 5
@@ -187,11 +190,11 @@ object FrmDetailsPackage: TFrmDetailsPackage
     end
     object OfficialWebsite: TLabel
       AnchorSideLeft.Control = PanelDetails
-      AnchorSideTop.Control = LastVersion
+      AnchorSideTop.Control = LabLastVersion
       AnchorSideTop.Side = asrBottom
       Left = 5
       Height = 20
-      Top = 108
+      Top = 138
       Width = 120
       BorderSpacing.Left = 5
       BorderSpacing.Top = 5
@@ -205,22 +208,22 @@ object FrmDetailsPackage: TFrmDetailsPackage
     end
     object Description: TLabel
       AnchorSideLeft.Control = PanelDetails
-      AnchorSideTop.Control = Categories
+      AnchorSideTop.Control = ShapeDescriptionTop
       AnchorSideTop.Side = asrBottom
       AnchorSideRight.Control = PanelDetails
       AnchorSideRight.Side = asrBottom
       Left = 5
       Height = 25
-      Top = 463
+      Top = 527
       Width = 331
       Alignment = taCenter
       Anchors = [akTop, akLeft, akRight]
       BorderSpacing.Left = 5
-      BorderSpacing.Top = 10
+      BorderSpacing.Top = 3
       BorderSpacing.Right = 5
       Caption = 'Description'
-      Color = 10048559
-      Font.Color = clWhite
+      Color = clWhite
+      Font.Color = clMenuText
       Font.Height = 25
       Font.Style = [fsBold]
       Layout = tlCenter
@@ -236,20 +239,23 @@ object FrmDetailsPackage: TFrmDetailsPackage
       AnchorSideRight.Control = PanelDetails
       AnchorSideRight.Side = asrBottom
       Left = 59
-      Height = 20
-      Top = 58
-      Width = 277
+      Height = 40
+      Top = 68
+      Width = 275
       Anchors = [akTop, akLeft, akRight]
-      AutoSize = False
       BorderSpacing.Left = 4
-      BorderSpacing.Top = 5
-      BorderSpacing.Right = 5
-      Caption = 'dddddddddddddddddddddddd'
+      BorderSpacing.Top = 15
+      BorderSpacing.Right = 7
+      Caption = 'rgrgergergergergergergergergergergerg'#13#10'ergergergergergergerrgergergergergerge'
+      Constraints.MinHeight = 20
       Font.Height = 20
       Layout = tlCenter
       ParentColor = False
       ParentFont = False
-      OptimalFill = True
+      WordWrap = True
+      OnClick = LabNameClick
+      OnMouseEnter = LabSignatureDateMouseEnter
+      OnMouseLeave = LabSignatureDateMouseLeave
     end
     object LabLastVersion: TLabel
       AnchorSideLeft.Control = LastVersion
@@ -260,49 +266,48 @@ object FrmDetailsPackage: TFrmDetailsPackage
       AnchorSideRight.Side = asrBottom
       Left = 105
       Height = 20
-      Top = 83
-      Width = 231
+      Top = 113
+      Width = 229
       Anchors = [akTop, akLeft, akRight]
-      AutoSize = False
       BorderSpacing.Left = 4
       BorderSpacing.Top = 5
-      BorderSpacing.Right = 5
+      BorderSpacing.Right = 7
       Caption = 'dddddddddddddd'
+      Constraints.MinHeight = 20
       Font.Height = 20
       Layout = tlCenter
       ParentColor = False
       ParentFont = False
-      OptimalFill = True
+      WordWrap = True
+      OnClick = LabNameClick
+      OnMouseEnter = LabSignatureDateMouseEnter
+      OnMouseLeave = LabSignatureDateMouseLeave
     end
     object LabOfficialWebsite: TLabel
-      AnchorSideLeft.Control = OfficialWebsite
-      AnchorSideLeft.Side = asrBottom
-      AnchorSideTop.Control = LabLastVersion
+      AnchorSideLeft.Control = PanelDetails
+      AnchorSideTop.Control = OfficialWebsite
       AnchorSideTop.Side = asrBottom
-      AnchorSideRight.Control = PanelDetails
       AnchorSideRight.Side = asrBottom
-      Left = 129
+      Left = 4
       Height = 20
-      Top = 108
-      Width = 207
-      Anchors = [akTop, akLeft, akRight]
-      AutoSize = False
+      Top = 163
+      Width = 171
       BorderSpacing.Left = 4
       BorderSpacing.Top = 5
-      BorderSpacing.Right = 5
       Caption = 'ddddddddddddddddddd'
+      Constraints.MinHeight = 20
       Font.Height = 20
       Layout = tlCenter
       ParentColor = False
       ParentFont = False
+      WordWrap = True
       OnClick = LabOfficialWebsiteClick
       OnMouseEnter = LabOfficialWebsiteMouseEnter
       OnMouseLeave = LabOfficialWebsiteMouseLeave
-      OptimalFill = True
     end
     object LabDescription: TLabel
       AnchorSideLeft.Control = PanelDetails
-      AnchorSideTop.Control = Description
+      AnchorSideTop.Control = ShapeDescriptionBottom
       AnchorSideTop.Side = asrBottom
       AnchorSideRight.Control = PanelDetails
       AnchorSideRight.Side = asrBottom
@@ -310,26 +315,29 @@ object FrmDetailsPackage: TFrmDetailsPackage
       AnchorSideBottom.Side = asrBottom
       Left = 5
       Height = 189
-      Top = 498
-      Width = 331
+      Top = 574
+      Width = 329
       Anchors = [akTop, akLeft, akRight, akBottom]
       BorderSpacing.Left = 5
-      BorderSpacing.Top = 10
-      BorderSpacing.Right = 5
+      BorderSpacing.Top = 12
+      BorderSpacing.Right = 7
       BorderSpacing.Bottom = 10
       Caption = 'fezfezfezokfezkofez'#13#10#13#10'fezkofezjofezjofez'#13#10#13#10'ezfjofezofez'#13#10'fezjifezjfez'#13#10#13#10'ez'#13#10'fezjofezjofez'
       Font.Height = -16
       ParentColor = False
       ParentFont = False
       WordWrap = True
+      OnClick = LabNameClick
+      OnMouseEnter = LabSignatureDateMouseEnter
+      OnMouseLeave = LabSignatureDateMouseLeave
     end
     object Licence: TLabel
       AnchorSideLeft.Control = PanelDetails
-      AnchorSideTop.Control = OfficialWebsite
+      AnchorSideTop.Control = LabOfficialWebsite
       AnchorSideTop.Side = asrBottom
       Left = 5
       Height = 20
-      Top = 133
+      Top = 188
       Width = 63
       BorderSpacing.Left = 5
       BorderSpacing.Top = 5
@@ -350,27 +358,30 @@ object FrmDetailsPackage: TFrmDetailsPackage
       AnchorSideRight.Side = asrBottom
       Left = 72
       Height = 20
-      Top = 133
-      Width = 264
+      Top = 188
+      Width = 262
       Anchors = [akTop, akLeft, akRight]
-      AutoSize = False
       BorderSpacing.Left = 4
       BorderSpacing.Top = 5
-      BorderSpacing.Right = 5
+      BorderSpacing.Right = 7
       Caption = 'dddddddddddd'
+      Constraints.MinHeight = 20
       Font.Height = 20
       Layout = tlCenter
       ParentColor = False
       ParentFont = False
-      OptimalFill = True
+      WordWrap = True
+      OnClick = LabNameClick
+      OnMouseEnter = LabSignatureDateMouseEnter
+      OnMouseLeave = LabSignatureDateMouseLeave
     end
     object ImpactedProcess: TLabel
       AnchorSideLeft.Control = PanelDetails
-      AnchorSideTop.Control = Licence
+      AnchorSideTop.Control = LabLicence
       AnchorSideTop.Side = asrBottom
       Left = 5
       Height = 20
-      Top = 158
+      Top = 213
       Width = 131
       BorderSpacing.Left = 5
       BorderSpacing.Top = 5
@@ -382,36 +393,13 @@ object FrmDetailsPackage: TFrmDetailsPackage
       ParentColor = False
       ParentFont = False
     end
-    object LabImpactedProcess: TLabel
-      AnchorSideLeft.Control = ImpactedProcess
-      AnchorSideLeft.Side = asrBottom
-      AnchorSideTop.Control = LabLicence
-      AnchorSideTop.Side = asrBottom
-      AnchorSideRight.Control = PanelDetails
-      AnchorSideRight.Side = asrBottom
-      Left = 140
-      Height = 20
-      Top = 158
-      Width = 196
-      Anchors = [akTop, akLeft, akRight]
-      AutoSize = False
-      BorderSpacing.Left = 4
-      BorderSpacing.Top = 5
-      BorderSpacing.Right = 5
-      Caption = 'd'
-      Font.Height = 20
-      Layout = tlCenter
-      ParentColor = False
-      ParentFont = False
-      OptimalFill = True
-    end
     object Maintainer: TLabel
       AnchorSideLeft.Control = PanelDetails
-      AnchorSideTop.Control = ImpactedProcess
+      AnchorSideTop.Control = LabImpactedProcess
       AnchorSideTop.Side = asrBottom
       Left = 5
       Height = 20
-      Top = 183
+      Top = 238
       Width = 88
       BorderSpacing.Left = 5
       BorderSpacing.Top = 5
@@ -432,27 +420,30 @@ object FrmDetailsPackage: TFrmDetailsPackage
       AnchorSideRight.Side = asrBottom
       Left = 97
       Height = 20
-      Top = 183
-      Width = 239
+      Top = 238
+      Width = 237
       Anchors = [akTop, akLeft, akRight]
-      AutoSize = False
       BorderSpacing.Left = 4
       BorderSpacing.Top = 5
-      BorderSpacing.Right = 5
+      BorderSpacing.Right = 7
       Caption = 'ddddd'
+      Constraints.MinHeight = 20
       Font.Height = 20
       Layout = tlCenter
       ParentColor = False
       ParentFont = False
-      OptimalFill = True
+      WordWrap = True
+      OnClick = LabNameClick
+      OnMouseEnter = LabSignatureDateMouseEnter
+      OnMouseLeave = LabSignatureDateMouseLeave
     end
     object Size: TLabel
       AnchorSideLeft.Control = PanelDetails
-      AnchorSideTop.Control = Maintainer
+      AnchorSideTop.Control = LabMaintainer
       AnchorSideTop.Side = asrBottom
       Left = 5
       Height = 20
-      Top = 208
+      Top = 263
       Width = 99
       BorderSpacing.Left = 5
       BorderSpacing.Top = 5
@@ -473,27 +464,29 @@ object FrmDetailsPackage: TFrmDetailsPackage
       AnchorSideRight.Side = asrBottom
       Left = 108
       Height = 20
-      Top = 208
-      Width = 228
+      Top = 263
+      Width = 226
       Anchors = [akTop, akLeft, akRight]
-      AutoSize = False
       BorderSpacing.Left = 4
       BorderSpacing.Top = 5
-      BorderSpacing.Right = 5
+      BorderSpacing.Right = 7
       Caption = 'dddddd'
+      Constraints.MinHeight = 20
       Font.Height = 20
       Layout = tlCenter
       ParentColor = False
       ParentFont = False
-      OptimalFill = True
+      OnClick = LabNameClick
+      OnMouseEnter = LabSignatureDateMouseEnter
+      OnMouseLeave = LabSignatureDateMouseLeave
     end
     object SizeInstalled: TLabel
       AnchorSideLeft.Control = PanelDetails
-      AnchorSideTop.Control = Size
+      AnchorSideTop.Control = LabSize
       AnchorSideTop.Side = asrBottom
       Left = 5
       Height = 20
-      Top = 233
+      Top = 288
       Width = 102
       BorderSpacing.Left = 5
       BorderSpacing.Top = 5
@@ -514,27 +507,29 @@ object FrmDetailsPackage: TFrmDetailsPackage
       AnchorSideRight.Side = asrBottom
       Left = 111
       Height = 20
-      Top = 233
-      Width = 225
+      Top = 288
+      Width = 223
       Anchors = [akTop, akLeft, akRight]
-      AutoSize = False
       BorderSpacing.Left = 4
       BorderSpacing.Top = 5
-      BorderSpacing.Right = 5
+      BorderSpacing.Right = 7
       Caption = 'ddddddddd'
+      Constraints.MinHeight = 20
       Font.Height = 20
       Layout = tlCenter
       ParentColor = False
       ParentFont = False
-      OptimalFill = True
+      OnClick = LabNameClick
+      OnMouseEnter = LabSignatureDateMouseEnter
+      OnMouseLeave = LabSignatureDateMouseLeave
     end
     object Repository: TLabel
       AnchorSideLeft.Control = PanelDetails
-      AnchorSideTop.Control = SizeInstalled
+      AnchorSideTop.Control = LabSizeInstalled
       AnchorSideTop.Side = asrBottom
       Left = 5
       Height = 20
-      Top = 258
+      Top = 313
       Width = 85
       BorderSpacing.Left = 5
       BorderSpacing.Top = 5
@@ -555,27 +550,30 @@ object FrmDetailsPackage: TFrmDetailsPackage
       AnchorSideRight.Side = asrBottom
       Left = 94
       Height = 20
-      Top = 258
-      Width = 242
+      Top = 313
+      Width = 240
       Anchors = [akTop, akLeft, akRight]
-      AutoSize = False
       BorderSpacing.Left = 4
       BorderSpacing.Top = 5
-      BorderSpacing.Right = 5
+      BorderSpacing.Right = 7
       Caption = 'ddddddddddd'
+      Constraints.MinHeight = 20
       Font.Height = 20
       Layout = tlCenter
       ParentColor = False
       ParentFont = False
-      OptimalFill = True
+      WordWrap = True
+      OnClick = LabNameClick
+      OnMouseEnter = LabSignatureDateMouseEnter
+      OnMouseLeave = LabSignatureDateMouseLeave
     end
     object Signer: TLabel
       AnchorSideLeft.Control = PanelDetails
-      AnchorSideTop.Control = Repository
+      AnchorSideTop.Control = LabRepository
       AnchorSideTop.Side = asrBottom
       Left = 5
       Height = 20
-      Top = 283
+      Top = 338
       Width = 52
       BorderSpacing.Left = 5
       BorderSpacing.Top = 5
@@ -596,19 +594,22 @@ object FrmDetailsPackage: TFrmDetailsPackage
       AnchorSideRight.Side = asrBottom
       Left = 61
       Height = 20
-      Top = 283
-      Width = 275
+      Top = 338
+      Width = 273
       Anchors = [akTop, akLeft, akRight]
-      AutoSize = False
       BorderSpacing.Left = 4
       BorderSpacing.Top = 5
-      BorderSpacing.Right = 5
+      BorderSpacing.Right = 7
       Caption = 'ddddd'
+      Constraints.MinHeight = 20
       Font.Height = 20
       Layout = tlCenter
       ParentColor = False
       ParentFont = False
-      OptimalFill = True
+      WordWrap = True
+      OnClick = LabNameClick
+      OnMouseEnter = LabSignatureDateMouseEnter
+      OnMouseLeave = LabSignatureDateMouseLeave
     end
     object PackageName: TLabel
       AnchorSideLeft.Control = PanelDetails
@@ -616,7 +617,7 @@ object FrmDetailsPackage: TFrmDetailsPackage
       AnchorSideTop.Side = asrBottom
       Left = 5
       Height = 20
-      Top = 308
+      Top = 363
       Width = 112
       BorderSpacing.Left = 5
       BorderSpacing.Top = 5
@@ -637,27 +638,30 @@ object FrmDetailsPackage: TFrmDetailsPackage
       AnchorSideRight.Side = asrBottom
       Left = 121
       Height = 20
-      Top = 308
-      Width = 215
+      Top = 363
+      Width = 213
       Anchors = [akTop, akLeft, akRight]
-      AutoSize = False
       BorderSpacing.Left = 4
       BorderSpacing.Top = 5
-      BorderSpacing.Right = 5
+      BorderSpacing.Right = 7
       Caption = 'ddddd'
+      Constraints.MinHeight = 20
       Font.Height = 20
       Layout = tlCenter
       ParentColor = False
       ParentFont = False
-      OptimalFill = True
+      WordWrap = True
+      OnClick = LabNameClick
+      OnMouseEnter = LabSignatureDateMouseEnter
+      OnMouseLeave = LabSignatureDateMouseLeave
     end
     object Dependency: TLabel
       AnchorSideLeft.Control = PanelDetails
-      AnchorSideTop.Control = PackageName
+      AnchorSideTop.Control = LabPackageName
       AnchorSideTop.Side = asrBottom
       Left = 5
       Height = 20
-      Top = 333
+      Top = 388
       Width = 98
       BorderSpacing.Left = 5
       BorderSpacing.Top = 5
@@ -671,11 +675,11 @@ object FrmDetailsPackage: TFrmDetailsPackage
     end
     object Conflicts: TLabel
       AnchorSideLeft.Control = PanelDetails
-      AnchorSideTop.Control = Dependency
+      AnchorSideTop.Control = LabDependency
       AnchorSideTop.Side = asrBottom
       Left = 5
       Height = 20
-      Top = 358
+      Top = 413
       Width = 69
       BorderSpacing.Left = 5
       BorderSpacing.Top = 5
@@ -689,11 +693,11 @@ object FrmDetailsPackage: TFrmDetailsPackage
     end
     object Section: TLabel
       AnchorSideLeft.Control = PanelDetails
-      AnchorSideTop.Control = Conflicts
+      AnchorSideTop.Control = LabConflicts
       AnchorSideTop.Side = asrBottom
       Left = 5
       Height = 20
-      Top = 383
+      Top = 438
       Width = 63
       BorderSpacing.Left = 5
       BorderSpacing.Top = 5
@@ -707,11 +711,11 @@ object FrmDetailsPackage: TFrmDetailsPackage
     end
     object SignatureDate: TLabel
       AnchorSideLeft.Control = PanelDetails
-      AnchorSideTop.Control = Section
+      AnchorSideTop.Control = LabSection
       AnchorSideTop.Side = asrBottom
       Left = 5
       Height = 20
-      Top = 408
+      Top = 463
       Width = 110
       BorderSpacing.Left = 5
       BorderSpacing.Top = 5
@@ -732,19 +736,22 @@ object FrmDetailsPackage: TFrmDetailsPackage
       AnchorSideRight.Side = asrBottom
       Left = 107
       Height = 20
-      Top = 333
-      Width = 229
+      Top = 388
+      Width = 227
       Anchors = [akTop, akLeft, akRight]
-      AutoSize = False
       BorderSpacing.Left = 4
       BorderSpacing.Top = 5
-      BorderSpacing.Right = 5
+      BorderSpacing.Right = 7
       Caption = 'dddd'
+      Constraints.MinHeight = 20
       Font.Height = 20
       Layout = tlCenter
       ParentColor = False
       ParentFont = False
-      OptimalFill = True
+      WordWrap = True
+      OnClick = LabNameClick
+      OnMouseEnter = LabSignatureDateMouseEnter
+      OnMouseLeave = LabSignatureDateMouseLeave
     end
     object LabConflicts: TLabel
       AnchorSideLeft.Control = Conflicts
@@ -755,19 +762,22 @@ object FrmDetailsPackage: TFrmDetailsPackage
       AnchorSideRight.Side = asrBottom
       Left = 78
       Height = 20
-      Top = 358
-      Width = 258
+      Top = 413
+      Width = 256
       Anchors = [akTop, akLeft, akRight]
-      AutoSize = False
       BorderSpacing.Left = 4
       BorderSpacing.Top = 5
-      BorderSpacing.Right = 5
+      BorderSpacing.Right = 7
       Caption = 'dddd'
+      Constraints.MinHeight = 20
       Font.Height = 20
       Layout = tlCenter
       ParentColor = False
       ParentFont = False
-      OptimalFill = True
+      WordWrap = True
+      OnClick = LabNameClick
+      OnMouseEnter = LabSignatureDateMouseEnter
+      OnMouseLeave = LabSignatureDateMouseLeave
     end
     object LabSection: TLabel
       AnchorSideLeft.Control = Section
@@ -778,19 +788,22 @@ object FrmDetailsPackage: TFrmDetailsPackage
       AnchorSideRight.Side = asrBottom
       Left = 72
       Height = 20
-      Top = 383
-      Width = 264
+      Top = 438
+      Width = 262
       Anchors = [akTop, akLeft, akRight]
-      AutoSize = False
       BorderSpacing.Left = 4
       BorderSpacing.Top = 5
-      BorderSpacing.Right = 5
+      BorderSpacing.Right = 7
       Caption = 'dddddd'
+      Constraints.MinHeight = 20
       Font.Height = 20
       Layout = tlCenter
       ParentColor = False
       ParentFont = False
-      OptimalFill = True
+      WordWrap = True
+      OnClick = LabNameClick
+      OnMouseEnter = LabSignatureDateMouseEnter
+      OnMouseLeave = LabSignatureDateMouseLeave
     end
     object LabSignatureDate: TLabel
       AnchorSideLeft.Control = SignatureDate
@@ -801,27 +814,30 @@ object FrmDetailsPackage: TFrmDetailsPackage
       AnchorSideRight.Side = asrBottom
       Left = 119
       Height = 20
-      Top = 408
-      Width = 217
+      Top = 463
+      Width = 215
       Anchors = [akTop, akLeft, akRight]
-      AutoSize = False
       BorderSpacing.Left = 4
       BorderSpacing.Top = 5
-      BorderSpacing.Right = 5
+      BorderSpacing.Right = 7
       Caption = 'ddddd'
+      Constraints.MinHeight = 20
       Font.Height = 20
       Layout = tlCenter
       ParentColor = False
       ParentFont = False
-      OptimalFill = True
+      WordWrap = True
+      OnClick = LabNameClick
+      OnMouseEnter = LabSignatureDateMouseEnter
+      OnMouseLeave = LabSignatureDateMouseLeave
     end
     object Categories: TLabel
       AnchorSideLeft.Control = PanelDetails
-      AnchorSideTop.Control = SignatureDate
+      AnchorSideTop.Control = LabSignatureDate
       AnchorSideTop.Side = asrBottom
       Left = 5
       Height = 20
-      Top = 433
+      Top = 488
       Width = 82
       BorderSpacing.Left = 5
       BorderSpacing.Top = 5
@@ -842,19 +858,80 @@ object FrmDetailsPackage: TFrmDetailsPackage
       AnchorSideRight.Side = asrBottom
       Left = 91
       Height = 20
-      Top = 433
-      Width = 245
+      Top = 488
+      Width = 243
       Anchors = [akTop, akLeft, akRight]
-      AutoSize = False
       BorderSpacing.Left = 4
       BorderSpacing.Top = 5
-      BorderSpacing.Right = 5
+      BorderSpacing.Right = 7
       Caption = 'dddd'
+      Constraints.MinHeight = 20
       Font.Height = 20
       Layout = tlCenter
       ParentColor = False
       ParentFont = False
-      OptimalFill = True
+      WordWrap = True
+      OnClick = LabNameClick
+      OnMouseEnter = LabSignatureDateMouseEnter
+      OnMouseLeave = LabSignatureDateMouseLeave
+    end
+    object ShapeDescriptionBottom: TShape
+      AnchorSideLeft.Control = PanelDetails
+      AnchorSideTop.Control = Description
+      AnchorSideTop.Side = asrBottom
+      AnchorSideRight.Control = PanelDetails
+      AnchorSideRight.Side = asrBottom
+      Left = 5
+      Height = 4
+      Top = 558
+      Width = 331
+      Anchors = [akTop, akLeft, akRight]
+      BorderSpacing.Left = 5
+      BorderSpacing.Top = 6
+      BorderSpacing.Right = 5
+      Brush.Color = 10048559
+      Pen.Style = psClear
+    end
+    object ShapeDescriptionTop: TShape
+      AnchorSideLeft.Control = PanelDetails
+      AnchorSideTop.Control = LabCategories
+      AnchorSideTop.Side = asrBottom
+      AnchorSideRight.Control = PanelDetails
+      AnchorSideRight.Side = asrBottom
+      Left = 5
+      Height = 4
+      Top = 520
+      Width = 331
+      Anchors = [akTop, akLeft, akRight]
+      BorderSpacing.Left = 5
+      BorderSpacing.Top = 12
+      BorderSpacing.Right = 5
+      Brush.Color = 10048559
+      Pen.Style = psClear
+    end
+    object LabImpactedProcess: TLabel
+      AnchorSideLeft.Control = ImpactedProcess
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = LabLicence
+      AnchorSideTop.Side = asrBottom
+      AnchorSideRight.Control = PanelDetails
+      AnchorSideRight.Side = asrBottom
+      Left = 140
+      Height = 20
+      Top = 213
+      Width = 201
+      Anchors = [akTop, akLeft, akRight]
+      BorderSpacing.Left = 4
+      BorderSpacing.Top = 5
+      Caption = 'ddd'
+      Constraints.MinHeight = 20
+      Font.Height = 20
+      ParentColor = False
+      ParentFont = False
+      WordWrap = True
+      OnClick = LabNameClick
+      OnMouseEnter = LabSignatureDateMouseEnter
+      OnMouseLeave = LabSignatureDateMouseLeave
     end
   end
 end

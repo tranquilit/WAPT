@@ -5,7 +5,8 @@ unit uFrmDetailsPackage;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, Forms, Controls, ExtCtrls, StdCtrls, LCLIntf, Graphics;
+  Classes, SysUtils, FileUtil, Forms, Controls, ExtCtrls, StdCtrls, LCLIntf,
+  Graphics;
 
 type
 
@@ -16,6 +17,7 @@ type
     Editor: TLabel;
     LabDependency: TLabel;
     LabConflicts: TLabel;
+    LabImpactedProcess: TLabel;
     LabSignatureDate: TLabel;
     LabSection: TLabel;
     LabCategories: TLabel;
@@ -26,6 +28,8 @@ type
     LabRepository: TLabel;
     Dependency: TLabel;
     Conflicts: TLabel;
+    ShapeDescriptionBottom: TShape;
+    ShapeDescriptionTop: TShape;
     SignatureDate: TLabel;
     Section: TLabel;
     PanelDetails: TPanel;
@@ -38,7 +42,6 @@ type
     LabLicence: TLabel;
     LabEditor: TLabel;
     LabLastVersion: TLabel;
-    LabImpactedProcess: TLabel;
     LabOfficialWebsite: TLabel;
     LabDescription: TLabel;
     LastVersion: TLabel;
@@ -49,9 +52,12 @@ type
     Licence: TLabel;
     SizeInstalled: TLabel;
     Repository: TLabel;
+    procedure LabNameClick(Sender: TObject);
     procedure LabOfficialWebsiteClick(Sender: TObject);
     procedure LabOfficialWebsiteMouseEnter(Sender: TObject);
     procedure LabOfficialWebsiteMouseLeave(Sender: TObject);
+    procedure LabSignatureDateMouseEnter(Sender: TObject);
+    procedure LabSignatureDateMouseLeave(Sender: TObject);
     procedure PanelDetailsPaint(Sender: TObject);
   private
 
@@ -60,6 +66,8 @@ type
 
 implementation
 
+uses Clipbrd;
+
 {$R *.lfm}
 
 { TFrmDetailsPackage }
@@ -67,6 +75,12 @@ implementation
 procedure TFrmDetailsPackage.LabOfficialWebsiteClick(Sender: TObject);
 begin
   OpenDocument(LabOfficialWebsite.Caption);
+end;
+
+procedure TFrmDetailsPackage.LabNameClick(Sender: TObject);
+begin
+  if ((Sender as TLabel).Caption<>'') then
+    Clipboard.AsText:=(Sender as TLabel).Caption;
 end;
 
 procedure TFrmDetailsPackage.LabOfficialWebsiteMouseEnter(Sender: TObject);
@@ -81,6 +95,17 @@ end;
 procedure TFrmDetailsPackage.LabOfficialWebsiteMouseLeave(Sender: TObject);
 begin
   LabOfficialWebsite.Font.Color:=clDefault;
+  Screen.Cursor:=crDefault;
+end;
+
+procedure TFrmDetailsPackage.LabSignatureDateMouseEnter(Sender: TObject);
+begin
+  if ((Sender as TLabel).Caption<>'') then
+    Screen.Cursor:=crMultiDrag;
+end;
+
+procedure TFrmDetailsPackage.LabSignatureDateMouseLeave(Sender: TObject);
+begin
   Screen.Cursor:=crDefault;
 end;
 

@@ -1,0 +1,196 @@
+object VisSettings: TVisSettings
+  Left = 2064
+  Height = 121
+  Top = 123
+  Width = 272
+  BorderIcons = [biSystemMenu, biMinimize]
+  BorderStyle = bsSingle
+  Caption = 'Settings'
+  ClientHeight = 121
+  ClientWidth = 272
+  OnCreate = FormCreate
+  OnShow = FormShow
+  Position = poOwnerFormCenter
+  LCLVersion = '1.8.4.0'
+  object PanelBtn: TPanel
+    Left = 0
+    Height = 50
+    Top = 71
+    Width = 272
+    Align = alBottom
+    BevelOuter = bvNone
+    ClientHeight = 50
+    ClientWidth = 272
+    TabOrder = 0
+    object ButCancel: TBitBtn
+      AnchorSideLeft.Control = PanelBtn
+      AnchorSideRight.Control = PanelBtn
+      AnchorSideRight.Side = asrBottom
+      AnchorSideBottom.Control = PanelBtn
+      AnchorSideBottom.Side = asrBottom
+      Left = 160
+      Height = 28
+      Top = 12
+      Width = 82
+      Align = alCustom
+      Anchors = [akRight, akBottom]
+      AutoSize = True
+      BorderSpacing.Right = 30
+      BorderSpacing.Bottom = 10
+      Cancel = True
+      Caption = 'Cancel'
+      Constraints.MinHeight = 28
+      Constraints.MinWidth = 82
+      Kind = bkCancel
+      ModalResult = 2
+      TabOrder = 0
+    end
+    object ButOk: TBitBtn
+      AnchorSideLeft.Control = PanelBtn
+      AnchorSideTop.Side = asrCenter
+      AnchorSideRight.Control = PanelBtn
+      AnchorSideRight.Side = asrBottom
+      AnchorSideBottom.Control = PanelBtn
+      AnchorSideBottom.Side = asrBottom
+      Left = 30
+      Height = 28
+      Top = 12
+      Width = 82
+      Anchors = [akLeft, akBottom]
+      AutoSize = True
+      BorderSpacing.Left = 30
+      BorderSpacing.Bottom = 10
+      Constraints.MinHeight = 28
+      Constraints.MinWidth = 82
+      Default = True
+      DefaultCaption = True
+      Kind = bkOK
+      ModalResult = 1
+      TabOrder = 1
+    end
+  end
+  object PanelSettings: TPanel
+    Left = 0
+    Height = 37
+    Top = 0
+    Width = 272
+    Align = alClient
+    BevelOuter = bvNone
+    ClientHeight = 37
+    ClientWidth = 272
+    TabOrder = 1
+    object ComboBoxLang: TComboBox
+      AnchorSideLeft.Control = PanelSettings
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = PanelSettings
+      AnchorSideRight.Control = PanelSettings
+      AnchorSideRight.Side = asrBottom
+      Left = 123
+      Height = 23
+      Top = 10
+      Width = 129
+      Anchors = [akTop, akRight]
+      AutoComplete = True
+      AutoCompleteText = [cbactEnabled, cbactEndOfLineComplete, cbactSearchAscending]
+      BorderSpacing.Top = 10
+      BorderSpacing.Right = 20
+      DropDownCount = 2
+      ItemHeight = 15
+      Items.Strings = (
+        'English'
+        'Français'
+      )
+      ParentShowHint = False
+      Sorted = True
+      Style = csDropDownList
+      TabOrder = 0
+    end
+    object Language: TLabel
+      AnchorSideLeft.Control = PanelSettings
+      AnchorSideTop.Control = PanelSettings
+      AnchorSideRight.Control = ComboBoxLang
+      Left = 20
+      Height = 23
+      Top = 10
+      Width = 103
+      Anchors = [akTop, akLeft, akRight]
+      AutoSize = False
+      BorderSpacing.Left = 20
+      BorderSpacing.Top = 10
+      Caption = 'Language : '
+      Font.Height = 20
+      Layout = tlCenter
+      ParentColor = False
+      ParentFont = False
+    end
+  end
+  object PanelWarning: TPanel
+    Left = 0
+    Height = 34
+    Top = 37
+    Width = 272
+    Align = alBottom
+    AutoSize = True
+    BevelOuter = bvNone
+    ClientHeight = 34
+    ClientWidth = 272
+    TabOrder = 2
+    object ImageWarning: TImage
+      AnchorSideLeft.Control = PanelWarning
+      AnchorSideTop.Control = PanelWarning
+      Left = 35
+      Height = 16
+      Top = 5
+      Width = 16
+      AutoSize = True
+      BorderSpacing.Left = 35
+      BorderSpacing.Top = 5
+      Picture.Data = {
+        1754506F727461626C654E6574776F726B477261706869639502000089504E47
+        0D0A1A0A0000000D49484452000000100000001008060000001FF3FF61000002
+        5C49444154789C9D925D4813501886CF9A3F1BE63225679A85A15D884DC1A134
+        229D8513BB515A455852B9284B4294AC4696B39C966E5334D9064BFC43A90562
+        D44599589B3388920A22B79163E24F65B45A9AB69FB7A3D545C558F5710EE75C
+        7CCFF3BD700E213E4A9B17C1F8793FC7F3D5E5A7AC5D7B3C4F949913FF05771D
+        4A96C174101829447D4668C15F83A589CB47F0AB6BFBB0D0970BDC12E2797396
+        F39FA6F794646ADEE9C570F60AE1D16F01EEEF84727BC429BF60F1064222E97A
+        D95600BB5A00C7A3267C1AAA82B7331E2F54022CF5EC8EF123B951BEE3F69BF6
+        2CD85589703B27E19E7E8AAFAD5CA02F058DA270954FB0682D212242926C1D62
+        4C69D231D910070F15B8A8C079890DCF0582B1EAE8A514AB0A637D48FA2BB63D
+        9BD5F2F15ECDC3076514BC9F27E01A1FC6C79304EEF3046862419B1FDEFBE774
+        2E2187A348CE6C77369C3A1E16759BE09205007376607A14AE0A026F1515D4AD
+        80AD660DF884C44BE27E930C54A4CCCCB76D865BBD0E5E39136808C29C2212F3
+        F5AB01451020670057A8F46A0874F961A65FE0CA54D6B1C56E3EDC7521DF1B9B
+        4369E34A78DD0BF03A5E039A30A0856E4530D0C8C64C6D1872D924E378C20F81
+        E928C7F5E50C8D5843E1160ED0BE11D0A702A31781C752E0661AD09500B4D234
+        2A361DC042677EF0F8327C7D3F57EA2823F05452812210D0455380C2F7F280E1
+        22C024010677D1674C07DA62A980A6B8CC84B39A81DA03C2BDA4FF745AF91D31
+        B10D140658878A432D0FCB62CC066992D92813980DF2EC31A35C647E20DB6A19
+        3C9B6CB95BBADE6A28E14C198F04BE1D9130677BA43927FC7C2BFFF50D9F8D58
+        710FEB3F0E0000000049454E44AE426082
+      }
+    end
+    object WarningText: TStaticText
+      AnchorSideLeft.Control = ImageWarning
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = PanelWarning
+      AnchorSideRight.Control = PanelWarning
+      AnchorSideRight.Side = asrBottom
+      Left = 61
+      Height = 29
+      Top = 5
+      Width = 181
+      Align = alCustom
+      Anchors = [akTop, akLeft, akRight]
+      BorderSpacing.Left = 10
+      BorderSpacing.Top = 5
+      BorderSpacing.Right = 30
+      Caption = 'If you change the language the app will restart'
+      Color = clNone
+      Font.Color = clRed
+      ParentFont = False
+      ParentColor = False
+      TabOrder = 0
+    end
+  end
+end

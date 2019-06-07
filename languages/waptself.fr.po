@@ -61,11 +61,13 @@ msgid ""
 msgstr ""
 
 #: tfrmdetailspackage.labeditor.caption
-msgid "dddddddddddddddddddddddd"
+msgid ""
+"rgrgergergergergergergergergergergerg\n"
+"ergergergergergergerrgergergergergerge\n"
 msgstr ""
 
 #: tfrmdetailspackage.labimpactedprocess.caption
-msgid "d"
+msgid "ddd"
 msgstr ""
 
 #: tfrmdetailspackage.lablastversion.caption
@@ -249,6 +251,24 @@ msgstr "Mot de passe : "
 msgid "Wrong password or login !"
 msgstr "Mauvais mot de passe ou login!"
 
+#: tvissettings.butcancel.caption
+msgctxt "tvissettings.butcancel.caption"
+msgid "Cancel"
+msgstr "Annuler"
+
+#: tvissettings.caption
+msgctxt "tvissettings.caption"
+msgid "Settings"
+msgstr "Paramètres"
+
+#: tvissettings.language.caption
+msgid "Language : "
+msgstr "Langage : "
+
+#: tvissettings.warningtext.caption
+msgid "If you change the language the app will restart"
+msgstr "Si vous changer le langage l'application va redémarrer"
+
 #: tviswaptself.actcanceltask.caption
 #| msgid "Cancel task"
 msgid "Cancel task(s)"
@@ -288,20 +308,20 @@ msgstr "WAPT Self-service"
 msgid "Search..."
 msgstr "Rechercher..."
 
+#: tviswaptself.labcategories.caption
+msgid "Categories"
+msgstr "Catégories"
+
 #: tviswaptself.labelnoresult.caption
 msgid "Sorry there is no result found."
 msgstr "Désolé, aucun résultat trouvé."
-
-#: tviswaptself.labpackagelist.caption
-msgctxt "tviswaptself.labpackagelist.caption"
-msgid "Available packages"
-msgstr "Paquets disponibles"
 
 #: tviswaptself.packages.caption
 msgid "Packages"
 msgstr "Paquets"
 
 #: tviswaptself.radioshowall.caption
+msgctxt "tviswaptself.radioshowall.caption"
 msgid "All"
 msgstr "Tous"
 
@@ -316,7 +336,7 @@ msgstr "Non installés"
 
 #: tviswaptself.radioshowupgradable.caption
 msgid "Upgradable"
-msgstr "Avec mises à jour"
+msgstr "A mettre à jour"
 
 #: tviswaptself.radiosortbydateascending.caption
 msgid "Date : oldest"
@@ -332,7 +352,7 @@ msgstr "Nom : A-Z"
 
 #: tviswaptself.radiosortbynameza.caption
 msgid "Name : Z-A"
-msgstr "Nom : A-Z"
+msgstr "Nom : Z-A"
 
 #: tviswaptself.sogridtasks.header.columns[0].text
 msgctxt "tviswaptself.sogridtasks.header.columns[0].text"
@@ -372,42 +392,42 @@ msgstr "Heure de fin"
 #: tviswaptself.sogridtasks.header.columns[16].text
 msgctxt "tviswaptself.sogridtasks.header.columns[16].text"
 msgid "classname"
-msgstr ""
+msgstr "nom de classe"
 
 #: tviswaptself.sogridtasks.header.columns[17].text
 msgctxt "tviswaptself.sogridtasks.header.columns[17].text"
 msgid "logs"
-msgstr ""
+msgstr "logs"
 
 #: tviswaptself.sogridtasks.header.columns[18].text
 msgctxt "tviswaptself.sogridtasks.header.columns[18].text"
 msgid "pidlist"
-msgstr ""
+msgstr "liste de pid"
 
 #: tviswaptself.sogridtasks.header.columns[19].text
 msgctxt "tviswaptself.sogridtasks.header.columns[19].text"
 msgid "usecache"
-msgstr ""
+msgstr "utilise le cache"
 
 #: tviswaptself.sogridtasks.header.columns[1].text
 msgctxt "tviswaptself.sogridtasks.header.columns[1].text"
 msgid "Status"
-msgstr ""
+msgstr "Statut"
 
 #: tviswaptself.sogridtasks.header.columns[20].text
 msgctxt "tviswaptself.sogridtasks.header.columns[20].text"
 msgid "packagenames"
-msgstr ""
+msgstr "nom de paquet"
 
 #: tviswaptself.sogridtasks.header.columns[21].text
 msgctxt "tviswaptself.sogridtasks.header.columns[21].text"
 msgid "force"
-msgstr ""
+msgstr "force"
 
 #: tviswaptself.sogridtasks.header.columns[2].text
 msgctxt "tviswaptself.sogridtasks.header.columns[2].text"
 msgid "order"
-msgstr ""
+msgstr "ordre"
 
 #: tviswaptself.sogridtasks.header.columns[3].text
 msgctxt "tviswaptself.sogridtasks.header.columns[3].text"
@@ -417,32 +437,32 @@ msgstr "Description"
 #: tviswaptself.sogridtasks.header.columns[4].text
 msgctxt "tviswaptself.sogridtasks.header.columns[4].text"
 msgid "priority"
-msgstr ""
+msgstr "priorité"
 
 #: tviswaptself.sogridtasks.header.columns[5].text
 msgctxt "tviswaptself.sogridtasks.header.columns[5].text"
 msgid "notify_user"
-msgstr ""
+msgstr "notifier_utilisateur"
 
 #: tviswaptself.sogridtasks.header.columns[6].text
 msgctxt "tviswaptself.sogridtasks.header.columns[6].text"
 msgid "start_date"
-msgstr ""
+msgstr "date de début"
 
 #: tviswaptself.sogridtasks.header.columns[7].text
 msgctxt "tviswaptself.sogridtasks.header.columns[7].text"
 msgid "create_date"
-msgstr ""
+msgstr "date de création"
 
 #: tviswaptself.sogridtasks.header.columns[8].text
 msgctxt "tviswaptself.sogridtasks.header.columns[8].text"
 msgid "notify_server_on_finish"
-msgstr ""
+msgstr "notifier_serveur_quand_terminé"
 
 #: tviswaptself.sogridtasks.header.columns[9].text
 msgctxt "tviswaptself.sogridtasks.header.columns[9].text"
 msgid "notify_server_on_start"
-msgstr ""
+msgstr "notifer_serveur_au_demarrage"
 
 #: tviswaptself.sortby.caption
 msgid "Sort by"
@@ -537,10 +557,10 @@ msgctxt "uwaptselfres.rsactionupgrade"
 msgid "Upgrade"
 msgstr "Mettre à jour"
 
-#: uwaptselfres.rsavailablepackages
-msgctxt "uwaptselfres.rsavailablepackages"
-msgid "Available packages"
-msgstr "Paquets disponibles"
+#: uwaptselfres.rsallcategories
+msgctxt "uwaptselfres.rsallcategories"
+msgid "All"
+msgstr "Toutes"
 
 #: uwaptselfres.rserrortriggeringtask
 msgctxt "uwaptselfres.rserrortriggeringtask"
@@ -572,20 +592,10 @@ msgstr ""
 "Voulez-vous continuer ?\n"
 "Processus impactés : %s\n"
 
-#: uwaptselfres.rsinstalledpackages
-msgctxt "uwaptselfres.rsinstalledpackages"
-msgid "Installed packages"
-msgstr "Paquets installés"
-
 #: uwaptselfres.rslogin
 msgctxt "uwaptselfres.rslogin"
 msgid "Login"
 msgstr "Identifiant"
-
-#: uwaptselfres.rsnotinstalledpackages
-msgctxt "uwaptselfres.rsnotinstalledpackages"
-msgid "Not installed packages"
-msgstr "Paquets non installés"
 
 #: uwaptselfres.rspassword
 msgctxt "uwaptselfres.rspassword"
@@ -611,11 +621,6 @@ msgstr "Trier par date : desc"
 msgctxt "uwaptselfres.rsstatusinstalled"
 msgid "Installed"
 msgstr "Installé"
-
-#: uwaptselfres.rsupgradablepackages
-msgctxt "uwaptselfres.rsupgradablepackages"
-msgid "Packages to update"
-msgstr "Paquets à mettre à jour"
 
 #: uwaptselfres.rswaitinginstall
 msgctxt "uwaptselfres.rswaitinginstall"

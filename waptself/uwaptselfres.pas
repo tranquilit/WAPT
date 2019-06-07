@@ -5,16 +5,12 @@ unit uWaptSelfRes;
 interface
 
 uses
-  Classes, SysUtils, DefaultTranslator;
+  Classes, SysUtils;
 
 resourcestring
  rsLogin = 'Login';
  rsPassword = 'Password';
  rsForce = 'An operation has failed do you want to force the installation/removal?'+chr(13)+'Operation : %s';
- rsAvailablePackages = 'Available packages';
- rsInstalledPackages = 'Installed packages';
- rsNotInstalledPackages = 'Not installed packages';
- rsUpgradablePackages = 'Packages to update';
  rsSortByDateAsc = 'Sort by date : asc';
  rsSortByDateDesc = 'Sort by date : desc';
  rsShowTaskBar = 'Show task bar';
@@ -28,6 +24,8 @@ resourcestring
  rsWaitingInstall = 'Waiting for install...';
  rsWaitingRemove = 'Waiting for uninstall...';
  rsWarningNoLoginOrPassword = 'Please enter a login/password';
+ rsAllCategories = 'All';
+ rsWarningPasswordLoginBlank = 'Your password or login is empty';
 
 implementation
 

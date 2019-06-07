@@ -17,9 +17,9 @@ type
     ButCancel: TBitBtn;
     EdUsername: TEdit;
     EdPassword: TEdit;
+    LogoLogin: TImage;
     ImageWarning: TImage;
     ImgWarning: TImage;
-    LogoLogin: TImage;
     Panel1: TPanel;
     PanelLogin: TPanel;
     StaticText1: TStaticText;
@@ -56,7 +56,7 @@ begin
   if FileExists(WaptBaseDir+'\templates\waptself-logo.png') then
     LogoLogin.Picture.LoadFromFile(WaptBaseDir+'\templates\waptself-logo.png')
   else
-    LogoLogin.Picture.LoadFromResourceName(HINSTANCE,'ENTERPRISE-200PX');
+    LogoLogin.Picture.LoadFromResourceName(HINSTANCE,'LOGO-SELFSERVICE-BLEU');
   {$endif}
   if Screen.PixelsPerInch <> 96 then
   begin

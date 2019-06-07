@@ -877,7 +877,7 @@ class PackageEntry(BaseObjectClass):
         self.priority='optional'
 
         self.name=''
-        self.category=''
+        self.categories=''
         self.maintainer=''
         self.description=''
         self.depends=''

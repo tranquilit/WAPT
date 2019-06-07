@@ -17,7 +17,7 @@
         <TextDesc Value=""/>
       </XPManifest>
       <Icon Value="0"/>
-      <Resources Count="9">
+      <Resources Count="12">
         <Resource_0 FileName="..\arts\enterprise-200px.png" Type="RCDATA" ResourceName="ENTERPRISE-200PX"/>
         <Resource_1 FileName="..\arts\enterprise-400px.png" Type="RCDATA" ResourceName="ENTERPRISE-400PX"/>
         <Resource_2 FileName="..\arts\wapt-enterprise-200px.png" Type="RCDATA" ResourceName="WAPT-ENTERPRISE-200PX"/>
@@ -27,6 +27,9 @@
         <Resource_6 FileName="..\arts\iconsself\moins-blanc.png" Type="RCDATA" ResourceName="MOINS-BLANC"/>
         <Resource_7 FileName="..\arts\iconsself\cross_15_px.png" Type="RCDATA" ResourceName="CROSS_15_PX"/>
         <Resource_8 FileName="..\arts\iconsself\loupe-15px.png" Type="RCDATA" ResourceName="LOUPE-15PX"/>
+        <Resource_9 FileName="..\arts\iconsself\logo-selfservice-bleu.png" Type="RCDATA" ResourceName="LOGO-SELFSERVICE-BLEU"/>
+        <Resource_10 FileName="..\arts\iconsself\Settings.png" Type="RCDATA" ResourceName="SETTINGS"/>
+        <Resource_11 FileName="..\arts\iconsself\Settings_2.png" Type="RCDATA" ResourceName="SETTINGS_GREY"/>
       </Resources>
     </General>
     <i18n>
@@ -75,7 +78,7 @@
         <PackageName Value="LCL"/>
       </Item7>
     </RequiredPackages>
-    <Units Count="6">
+    <Units Count="7">
       <Unit0>
         <Filename Value="waptself.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -118,6 +121,14 @@
         <ResourceBaseClass Value="Frame"/>
         <UnitName Value="uFrmDetailsPackage"/>
       </Unit5>
+      <Unit6>
+        <Filename Value="uvissettings.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="VisSettings"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="uVisSettings"/>
+      </Unit6>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -148,13 +159,16 @@
     </Other>
   </CompilerOptions>
   <Debugging>
-    <Exceptions Count="2">
+    <Exceptions Count="3">
       <Item1>
         <Name Value="EIdHTTPProtocolException"/>
       </Item1>
       <Item2>
         <Name Value="EIdSocketError"/>
       </Item2>
+      <Item3>
+        <Name Value="FPImageException"/>
+      </Item3>
     </Exceptions>
   </Debugging>
 </CONFIG>

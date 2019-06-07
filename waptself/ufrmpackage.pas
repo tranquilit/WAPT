@@ -64,7 +64,7 @@ type
   end;
 
 implementation
-uses Graphics,BCTools,JwaTlHelp32,Windows,Dialogs, uWAPTPollThreads, uWaptSelfRes, uVisWaptSelf;
+uses Graphics,BCTools,JwaTlHelp32,Windows,Dialogs, uWAPTPollThreads, uWaptSelfRes, uVisWaptSelf, LCLTranslator;
 {$R *.lfm}
 
 { TFrmPackage }
@@ -109,7 +109,7 @@ begin
   end
   else
   begin
-    BtnRemove.NormalColor:=clRed;
+    BtnRemove.NormalColor:=$0099542F;
     BtnRemove.Enabled:=true;
     ActionPackage:='remove';
     BtnInstallUpgrade.Caption:=rsStatusInstalled;
@@ -132,28 +132,48 @@ begin
     FrmDetailsPackageInPanel.ImgPackage.Picture.Assign(ImgPackage.Picture);
     FrmDetailsPackageInPanel.LabName.Caption:=LabPackageName.Caption;
     FrmDetailsPackageInPanel.LabEditor.Caption:=UTF8Encode(Package.S['editor']);
+    FrmDetailsPackageInPanel.LabEditor.AdjustFontForOptimalFill;
     FrmDetailsPackageInPanel.LabLastVersion.Caption:=UTF8Encode(Package.S['version']);
+    FrmDetailsPackageInPanel.LabLastVersion.AdjustFontForOptimalFill;
     FrmDetailsPackageInPanel.LabOfficialWebsite.Caption:=UTF8Encode(Package.S['homepage']);
+    if FrmDetailsPackageInPanel.LabOfficialWebsite.Caption='' then
+      FrmDetailsPackageInPanel.LabOfficialWebsite.Hide
+    else
+      FrmDetailsPackageInPanel.LabOfficialWebsite.Show;
     FrmDetailsPackageInPanel.LabDescription.Caption:=UTF8Encode(Package.S['description']);
     FrmDetailsPackageInPanel.LabLicence.Caption:=UTF8Encode(Package.S['licence']);
-    FrmDetailsPackageInPanel.LabImpactedProcess.Caption:=UTF8Encode(Package.S['impacted_process']);
+    FrmDetailsPackageInPanel.LabLicence.AdjustFontForOptimalFill;
+
+    FrmDetailsPackageInPanel.LabImpactedProcess.Caption:=StringReplace(UTF8Encode(Package.S['impacted_process']),',',', ',[rfReplaceAll, rfIgnoreCase]);
+
     if (Package.I['installed_size']<>0) then
       FrmDetailsPackageInPanel.LabSizeInstalled.Caption:=IntToStr(Round(Package.I['installed_size']/1024))+' kB ( '+IntToStr(Package.I['installed_size'])+' bytes )'
     else
       FrmDetailsPackageInPanel.LabSizeInstalled.Caption:='';
+    FrmDetailsPackageInPanel.LabSizeInstalled.AdjustFontForOptimalFill;
     if (Package.I['size']<>0) then
       FrmDetailsPackageInPanel.LabSize.Caption:=IntToStr(Round(Package.I['size']/1024))+' kB ( '+IntToStr(Package.I['size'])+' bytes )'
     else
       FrmDetailsPackageInPanel.LabSize.Caption:='';
+    FrmDetailsPackageInPanel.LabSize.AdjustFontForOptimalFill;
     FrmDetailsPackageInPanel.LabMaintainer.Caption:=UTF8Encode(Package.S['maintainer']);
+    FrmDetailsPackageInPanel.LabMaintainer.AdjustFontForOptimalFill;
     FrmDetailsPackageInPanel.LabPackageName.Caption:=UTF8Encode(Package.S['package']);
+    FrmDetailsPackageInPanel.LabPackageName.AdjustFontForOptimalFill;
     FrmDetailsPackageInPanel.LabRepository.Caption:=UTF8Encode(Package.S['repo']);
+    FrmDetailsPackageInPanel.LabRepository.AdjustFontForOptimalFill;
     FrmDetailsPackageInPanel.LabSigner.Caption:=UTF8Encode(Package.S['signer']);
+    FrmDetailsPackageInPanel.LabSigner.AdjustFontForOptimalFill;
     FrmDetailsPackageInPanel.LabDependency.Caption:=UTF8Encode(Package.S['depends']);
+    FrmDetailsPackageInPanel.LabDependency.AdjustFontForOptimalFill;
     FrmDetailsPackageInPanel.LabConflicts.Caption:=UTF8Encode(Package.S['conflicts']);
+    FrmDetailsPackageInPanel.LabConflicts.AdjustFontForOptimalFill;
     FrmDetailsPackageInPanel.LabSection.Caption:=UTF8Encode(Package.S['section']);
+    FrmDetailsPackageInPanel.LabSection.AdjustFontForOptimalFill;
     FrmDetailsPackageInPanel.LabSignatureDate.Caption:=LabDate.Caption;
+    FrmDetailsPackageInPanel.LabSignatureDate.AdjustFontForOptimalFill;
     FrmDetailsPackageInPanel.LabCategories.Caption:=UTF8Encode(Package.S['categories']);
+    FrmDetailsPackageInPanel.LabCategories.AdjustFontForOptimalFill;
     VisWaptSelf.ChangeIconMinusByPlusOnFrames();
     DetailsClicked:=not(DetailsClicked);
   end
@@ -298,7 +318,7 @@ begin
       end
       else
       begin
-        BtnRemove.NormalColor:=clRed;
+        BtnRemove.NormalColor:=$0099542F;
         BtnRemove.Enabled:=true;
         ActionPackage:='remove';
         BtnInstallUpgrade.Caption:=rsStatusInstalled;
@@ -319,7 +339,7 @@ begin
     TaskID:=(Sender as TTriggerWaptserviceAction).Res.O['0'].I['id']
   else
     TaskID:=(Sender as TTriggerWaptserviceAction).Res.I['id'];
-  LstTasks.AddObject(UTF8Encode(Package.S['package']),TObject(Pointer(TaskID)));
+  LstTasks.AddObject(UTF8Encode(Package.S['package']),TObject(PtrUInt(TaskID)));
   BtnCancel.Show;
 end;
 
