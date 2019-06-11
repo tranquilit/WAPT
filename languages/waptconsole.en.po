@@ -402,6 +402,7 @@ msgid "Use Computer FQDN for UUID"
 msgstr ""
 
 #: tviscreatewaptsetup.cbusefqdnasuuid.hint
+msgctxt "tviscreatewaptsetup.cbusefqdnasuuid.hint"
 msgid ""
 "Ask Wapt agent to use the computer Fully Qualified Domain Name (name.domaine.lan) instead of BIOD unique ID.\n"
 "This can be useful if Wapt is not used as asset management, but only as a deployment solutioN.\n"
@@ -413,6 +414,17 @@ msgstr ""
 
 #: tviscreatewaptsetup.cbusekerberos.hint
 msgid "When first registering to waptserver, host will try to authenticate using their kerberos account"
+msgstr ""
+
+#: tviscreatewaptsetup.cbuserandomuuid.caption
+msgid "Use random host UUID (for buggy BIOS)"
+msgstr ""
+
+#: tviscreatewaptsetup.cbuserandomuuid.hint
+msgctxt "tviscreatewaptsetup.cbuserandomuuid.hint"
+msgid ""
+"Ask Wapt agent to generate a random UUID instead of BIOS unique ID.\n"
+"This can be useful if BIOS returns non unique UUID\n"
 msgstr ""
 
 #: tviscreatewaptsetup.cbverifycert.caption

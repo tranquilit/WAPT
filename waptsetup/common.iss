@@ -82,6 +82,10 @@ Name: DisableHiberboot; Description: "{cm:DisableHiberBoot}"; GroupDescription: 
 Name: InstallCertificates; Description: "{cm:InstallSSLCertificates}";  GroupDescription: "Advanced"; Flags: unchecked;
 #endif
 
+#if use_random_uuid  == ""
+Name: UseRandomUUID; Description: "{cm:UseRandomUUID}";  GroupDescription: "Advanced"; Flags: unchecked;
+#endif
+
 Name: InstallStartPackages; Description: "{cm:InstallStartPackages}";  GroupDescription: "Advanced";  Check: StartPackagesCheck();
 
 #if set_verify_cert == ""
@@ -128,6 +132,8 @@ Filename: {app}\wapt-get.ini; Section: global; Key: verify_cert; String: {code:V
 #if use_fqdn_as_uuid != ""
 Filename: {app}\wapt-get.ini; Section: global; Key: use_fqdn_as_uuid; String: {#use_fqdn_as_uuid}; 
 #endif
+
+Filename: {app}\wapt-get.ini; Section: global; Key: forced_uuid; String: {code:GenerateHostUUID}; Check: MustChangeHostUUID;
 
 #if edition != "waptserversetup"
 Filename: {app}\wapt-get.ini; Section: global; Key: dnsdomain; String: {code:GetDNSDomain}; Check: MustChangeServerConfig;
@@ -221,6 +227,7 @@ en.StaticURLS=Static WAPT Informations
 en.RunConfigTool=Run congifuration tool
 en.WAPTConsole=WAPT Management console
 en.WAPTSelf=WAPT Softwares self service
+en.UseRandomUUID=Use a random UUID to identify the computer instead of BIOS
 
 ;French translations here
 fr.StartAfterSetup=Lancer WAPT session setup à l'ouverture de session
@@ -243,6 +250,7 @@ fr.StaticURLS=URLS WAPT statiques
 fr.RunConfigTool=Exécuter l'assistant de configuration
 fr.WAPTConsole=Console WAPT
 fr.WAPTSelf=Self service logiciels WAPT
+en.UseRandomUUID=Utiliser un UUID aléatoire pour identifier l'ordinateur au lieu du BIOS
 
 ;German translation here
 de.StartAfterSetup=WAPT Setup-Sitzung bei Sitzungseröffnung starten
@@ -550,6 +558,41 @@ begin
   
 end;
 
+{
+type
+  TGuid = record
+    D1: LongWord;
+    D2: Word;
+    D3: Word;
+    D4: array[0..7] of Byte;
+  end;
+}
+
+function CoCreateGuid(var Guid:TGuid):integer;
+ external 'CoCreateGuid@ole32.dll stdcall';
+
+function FormatGuid(Guid:TGuid):string;
+begin
+  result:=Format('%.8x-%.4x-%.4x-%.2x-%.2x-%.2x-%.2x-%.2x-%.2x-%.2x-%.2x', [Guid.D1, Guid.D2, Guid.D3, Guid.D4[0], Guid.D4[1], Guid.D4[2], Guid.D4[3], Guid.D4[4], Guid.D4[5], Guid.D4[6], Guid.D4[7]]);
+end;
+
+function GenerateHostUUID(Param:String):String;
+var
+  aGuid:TGuid;
+  value: String;
+begin
+  CoCreateGuid(aGuid);
+  Result := 'rnd-'+FormatGuid(aGuid);     
+end;
+
+function MustChangeHostUUID:Boolean;
+var
+  ForcedUUID:String;
+begin
+  Result := False;
+  ForcedUUID := GetIniString( 'global', 'forced_uuid', '', ExpandConstant('{app}\wapt-get.ini'));
+  Result := ((ExpandConstant('{param:use_random_uuid|{#use_random_uuid}}')='1') or IsTaskSelected('UseRandomUUID')) and (ForcedUUID='');
+end;
 
 function CopyPackagesTrustedCACheck:Boolean;
 var
@@ -566,7 +609,6 @@ begin
   value := ExpandConstant('{param:CopyServersTrustedCA}')
   Result := (value <> '') and (value<>'0');     
 end;
-
 
 function LocalWaptServiceIsConfigured() : Boolean;
 var

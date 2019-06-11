@@ -22,6 +22,7 @@ type
     CBInstallWUAUpdatesAtShutdown: TCheckBox;
     CBUseFQDNAsUUID: TCheckBox;
     CBForceWaptServerURL: TCheckBox;
+    CBUseRandomUUID: TCheckBox;
     CBVerifyCert: TCheckBox;
     CBUseKerberos: TCheckBox;
     CBForceRepoURL: TCheckBox;
@@ -441,6 +442,7 @@ begin
       CBForceRepoURL.Checked,
       CBForceWaptServerURL.Checked,
       CBUseFQDNAsUUID.Checked,
+      CBUseRandomUUID.Checked,
       edAppendHostProfiles.Text,
       GetWUAParams(),
       EdAuditScheduling.Text

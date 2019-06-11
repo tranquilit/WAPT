@@ -3271,7 +3271,7 @@ class Wapt(BaseObjectClass):
             forced_uuid (str): uuid to force for this host. If None, generate a random one
 
         """
-        auuid = forced_uuid or str(uuid.uuid4())
+        auuid = forced_uuid or 'rnd-%s' % str(uuid.uuid4())
         self.host_uuid = auuid
         ini = RawConfigParser()
         ini.read(self.config_filename)

@@ -30,6 +30,8 @@
 
 #define use_fqdn_as_uuid ""
 
+#define use_random_uuid ""
+
 ; if not empty, the host will inherit these (comma separated) list of profile packages.
 #define append_host_profiles ""
 

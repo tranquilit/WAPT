@@ -34,6 +34,8 @@
 
 #define use_fqdn_as_uuid ""
 
+#define use_random_uuid ""
+
 ;#define waptenterprise
 
 #ifndef set_disable_hiberboot

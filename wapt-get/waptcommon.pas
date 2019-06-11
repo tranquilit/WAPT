@@ -117,6 +117,7 @@ interface
             VerifyCert:Utf8String='0'; UseKerberos:Boolean=False; CheckCertificatesValidity:Boolean=True;
             EnterpriseEdition:Boolean=False; OverwriteRepoURL:Boolean=True;OverwriteWaptServerURL:Boolean=True;
             UseFQDNAsUUID:Boolean=False;
+            UseRandomUUID:Boolean=False;
             AppendHostProfiles:String='';
             WUAParams:ISuperObject=Nil;
             WaptauditTaskPeriod:String=''
@@ -2061,7 +2062,7 @@ function CreateWaptSetup(default_public_cert: Utf8String;
   WaptEdition: Utf8String; VerifyCert: Utf8String; UseKerberos: Boolean;
   CheckCertificatesValidity: Boolean; EnterpriseEdition: Boolean;
   OverwriteRepoURL: Boolean; OverwriteWaptServerURL: Boolean;
-  UseFQDNAsUUID:Boolean=False; AppendHostProfiles:String='';
+  UseFQDNAsUUID:Boolean=False; UseRandomUUID:Boolean=False; AppendHostProfiles:String='';
   WUAParams:ISuperObject=Nil;
   WaptauditTaskPeriod:String=''): Utf8String;
 var
@@ -2117,6 +2118,13 @@ begin
             new_iss.AsArray.Add(format('#define use_fqdn_as_uuid "1"' ,[]))
           else
             new_iss.AsArray.Add(format('#define use_fqdn_as_uuid ""' ,[]))
+      end
+      else if startswith(line,'#define use_random_uuid') then
+      begin
+          if UseFQDNAsUUID then
+            new_iss.AsArray.Add(format('#define use_random_uuid "1"' ,[]))
+          else
+            new_iss.AsArray.Add(format('#define use_random_uuid ""' ,[]))
       end
       else if startswith(line,'#define set_use_kerberos') then
       begin

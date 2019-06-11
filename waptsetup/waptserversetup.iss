@@ -49,6 +49,8 @@
 
 #define use_fqdn_as_uuid ""
 
+#define use_random_uuid ""
+
 #ifdef waptenterprise
   #define set_waptwua_enabled ""
   #define set_waptwua_default_allow ""
