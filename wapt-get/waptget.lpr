@@ -933,11 +933,13 @@ begin
       TargetDir,
       'Wapt', @DoOnProgress, Edition,
       ini.ReadString('global', 'verify_cert', '0'),
-      ini.ReadBool('global', 'use_kerberos', False ),
+      ini.ReadBool('global', 'use_kerberos'
+      , False ),
       ini.ReadBool('global', 'check_certificates_validity',True ),
       IsEnterpriseEdition,
       True,
       True,
+      False,
       ini.ReadBool('global', 'use_fqdn_as_uuid',False),
       ''
       );
