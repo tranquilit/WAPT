@@ -27,6 +27,9 @@ type
     WarningText: TStaticText;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure LogoLoginClick(Sender: TObject);
+    procedure LogoLoginMouseEnter(Sender: TObject);
+    procedure LogoLoginMouseLeave(Sender: TObject);
   private
 
   public
@@ -38,7 +41,7 @@ var
 
 implementation
 
-uses waptcommon;
+uses waptcommon, LCLIntf;
 
 {$R *.lfm}
 
@@ -48,6 +51,21 @@ procedure TVisLogin.FormShow(Sender: TObject);
 begin
   MakeFullyVisible();
   EdPassword.SetFocus;
+end;
+
+procedure TVisLogin.LogoLoginClick(Sender: TObject);
+begin
+  OpenDocument('https://www.tranquil.it/solutions/wapt-deploiement-d-applications/');
+end;
+
+procedure TVisLogin.LogoLoginMouseEnter(Sender: TObject);
+begin
+  Screen.Cursor:=crHandPoint;
+end;
+
+procedure TVisLogin.LogoLoginMouseLeave(Sender: TObject);
+begin
+  Screen.Cursor:=crDefault;
 end;
 
 procedure TVisLogin.FormCreate(Sender: TObject);

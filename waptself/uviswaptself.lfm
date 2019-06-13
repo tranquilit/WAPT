@@ -1,7 +1,7 @@
 object VisWaptSelf: TVisWaptSelf
   Left = 1912
   Height = 1017
-  Top = -8
+  Top = 0
   Width = 1920
   Caption = 'WAPT Self-service'
   ClientHeight = 1017
@@ -129,8 +129,10 @@ object VisWaptSelf: TVisWaptSelf
           Top = 0
           Width = 185
           Caption = 'Date : most recent'
+          Checked = True
           OnClick = RadioSortByDateDescendingClick
           TabOrder = 0
+          TabStop = True
         end
         object RadioSortByDateAscending: TRadioButton
           Left = 6
@@ -170,6 +172,9 @@ object VisWaptSelf: TVisWaptSelf
         Width = 208
         AutoSize = True
         BorderSpacing.Top = 20
+        OnClick = ImageLogoClick
+        OnMouseEnter = ImageLogoMouseEnter
+        OnMouseLeave = ImageLogoMouseLeave
         Picture.Data = {
           1754506F727461626C654E6574776F726B47726170686963BC20000089504E47
           0D0A1A0A0000000D49484452000000D000000048080600000087917B5A000000
@@ -435,6 +440,8 @@ object VisWaptSelf: TVisWaptSelf
           00F9089D4F2500B403D40C703B035F12B09B89772BA46CAF1DFEF54758B8B0DF
           E266FD7FD5EA867E0FC749F30000000049454E44AE426082
         }
+        Proportional = True
+        Stretch = True
       end
       object LogoSettings: TImage
         AnchorSideLeft.Control = Panel2
@@ -484,6 +491,8 @@ object VisWaptSelf: TVisWaptSelf
           081EAAE353FB4B42D2EA90D8E5BA3EFF05FC09F0BBA4AEA42EF08BEBBAB53ED8
           00FE058EF336F98A62EBD20000000049454E44AE426082
         }
+        Proportional = True
+        Stretch = True
       end
       object ComboBoxCategories: TComboBox
         AnchorSideLeft.Control = Panel2
@@ -574,31 +583,33 @@ object VisWaptSelf: TVisWaptSelf
         AnchorSideTop.Control = EdSearch
         AnchorSideRight.Control = EdSearch
         AnchorSideRight.Side = asrBottom
-        Left = 208
-        Height = 16
-        Top = 125
-        Width = 26
-        Anchors = [akTop, akLeft, akRight]
-        BorderSpacing.Top = 3
+        AnchorSideBottom.Control = EdSearch
+        AnchorSideBottom.Side = asrBottom
+        Left = 216
+        Height = 17
+        Top = 126
+        Width = 18
+        Anchors = [akTop, akLeft, akRight, akBottom]
+        AutoSize = True
+        BorderSpacing.Top = 4
         BorderSpacing.Right = 2
+        BorderSpacing.Bottom = 3
         BevelOuter = bvNone
-        ClientHeight = 16
-        ClientWidth = 26
+        ClientHeight = 17
+        ClientWidth = 18
         Color = clNone
         ParentColor = False
         TabOrder = 3
         object ImageCrossSearch: TImage
-          AnchorSideLeft.Control = PanelImageCrossSearch
-          AnchorSideLeft.Side = asrCenter
-          AnchorSideTop.Control = PanelImageCrossSearch
-          AnchorSideTop.Side = asrCenter
-          Left = 6
-          Height = 15
-          Top = 1
-          Width = 15
-          AntialiasingMode = amOn
-          Align = alCustom
+          Left = 0
+          Height = 17
+          Top = 0
+          Width = 18
+          Align = alClient
+          AutoSize = True
           OnClick = ImageCrossSearchClick
+          OnMouseEnter = ImageCrossSearchMouseEnter
+          OnMouseLeave = ImageCrossSearchMouseLeave
           Picture.Data = {
             1754506F727461626C654E6574776F726B47726170686963BB01000089504E47
             0D0A1A0A0000000D494844520000000F0000000F08060000003BD6954A000000
@@ -617,7 +628,6 @@ object VisWaptSelf: TVisWaptSelf
             2247BFF3BA8086C4B947760000000049454E44AE426082
           }
           Proportional = True
-          Stretch = True
           Transparent = True
         end
       end
@@ -629,11 +639,13 @@ object VisWaptSelf: TVisWaptSelf
     Top = 0
     Width = 904
     HorzScrollBar.Page = 1
+    HorzScrollBar.Visible = False
     VertScrollBar.Increment = 60
     VertScrollBar.Page = 603
     VertScrollBar.Smooth = True
     VertScrollBar.Tracking = True
     Align = alClient
+    AutoSize = True
     BorderStyle = bsNone
     ClientHeight = 1017
     ClientWidth = 904
@@ -651,11 +663,10 @@ object VisWaptSelf: TVisWaptSelf
       BiDiMode = bdRightToLeft
       Color = clWhite
       ControlList = <>
-      UseDockManager = False
+      DockSite = True
       DoubleBuffered = True
-      FlowLayout = tlTop
+      FlowLayout = tlCenter
       FlowStyle = fsLeftRightTopBottom
-      FullRepaint = False
       ParentBiDiMode = False
       ParentColor = False
       TabOrder = 0
@@ -1368,6 +1379,7 @@ object VisWaptSelf: TVisWaptSelf
         }
         Proportional = True
         Stretch = True
+        Visible = False
       end
     end
   end
@@ -1884,7 +1896,7 @@ object VisWaptSelf: TVisWaptSelf
       HorzScrollBar.Page = 1
       HorzScrollBar.Visible = False
       VertScrollBar.Increment = 74
-      VertScrollBar.Page = 777
+      VertScrollBar.Page = 773
       Align = alClient
       AutoSize = True
       BorderStyle = bsNone
@@ -1894,10 +1906,10 @@ object VisWaptSelf: TVisWaptSelf
       ParentColor = False
       TabOrder = 0
       inline FrmDetailsPackageInPanel: TFrmDetailsPackage
-        Height = 777
+        Height = 773
         Width = 350
         Align = alCustom
-        ClientHeight = 777
+        ClientHeight = 773
         ClientWidth = 350
         Constraints.MaxWidth = 350
         Constraints.MinWidth = 350
@@ -1905,71 +1917,72 @@ object VisWaptSelf: TVisWaptSelf
           AnchorSideLeft.Control = FrmDetailsPackageInPanel
           AnchorSideTop.Control = FrmDetailsPackageInPanel
           AnchorSideRight.Control = FrmDetailsPackageInPanel
-          Height = 802
+          Height = 798
           Width = 350
           Anchors = [akTop, akLeft, akRight, akBottom]
+          BorderStyle = bsNone
           ClientHeight = 798
-          ClientWidth = 346
+          ClientWidth = 350
           inherited LabName: TLabel
-            Width = 281
+            Width = 285
           end
           inherited Description: TLabel
-            Width = 336
+            Width = 340
           end
           inherited LabEditor: TLabel
-            Width = 280
+            Width = 284
           end
           inherited LabLastVersion: TLabel
-            Width = 234
+            Width = 238
           end
           inherited LabDescription: TLabel
             Height = 214
-            Width = 334
+            Width = 338
           end
           inherited LabLicence: TLabel
-            Width = 267
+            Width = 271
           end
           inherited LabMaintainer: TLabel
-            Width = 242
+            Width = 246
           end
           inherited LabSize: TLabel
-            Width = 231
+            Width = 235
           end
           inherited LabSizeInstalled: TLabel
-            Width = 228
-          end
-          inherited LabRepository: TLabel
-            Width = 245
-          end
-          inherited LabSigner: TLabel
-            Width = 278
-          end
-          inherited LabPackageName: TLabel
-            Width = 218
-          end
-          inherited LabDependency: TLabel
             Width = 232
           end
+          inherited LabRepository: TLabel
+            Width = 249
+          end
+          inherited LabSigner: TLabel
+            Width = 282
+          end
+          inherited LabPackageName: TLabel
+            Width = 222
+          end
+          inherited LabDependency: TLabel
+            Width = 236
+          end
           inherited LabConflicts: TLabel
-            Width = 261
+            Width = 265
           end
           inherited LabSection: TLabel
-            Width = 267
+            Width = 271
           end
           inherited LabSignatureDate: TLabel
-            Width = 220
+            Width = 224
           end
           inherited LabCategories: TLabel
-            Width = 248
+            Width = 252
           end
           inherited ShapeDescriptionBottom: TShape
-            Width = 336
+            Width = 340
           end
           inherited ShapeDescriptionTop: TShape
-            Width = 336
+            Width = 340
           end
           inherited LabImpactedProcess: TLabel
-            Width = 206
+            Width = 210
           end
         end
       end

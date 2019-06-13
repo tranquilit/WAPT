@@ -9,10 +9,9 @@ uses
   ExtCtrls, EditBtn, StdCtrls, Buttons, ActnList, uvislogin, BCListBox,
   BCMaterialDesignButton, BCLabel, FXMaterialButton, IdAuthentication,
   superobject, waptcommon, httpsend, sogrid, uWAPTPollThreads, VirtualTrees,
-  ImgList, ComCtrls, Menus, uFrmPackage, uFrmDetailsPackage;
+  ImgList, ComCtrls, Menus, uFrmPackage, uFrmDetailsPackage, lmessages;
 
 type
-
   { TThreadGetAllIcons }
   TThreadGetAllIcons = class(TThread)
   private
@@ -102,12 +101,16 @@ type
     procedure EdSearchButtonClick(Sender: TObject);
     procedure EdSearchChange(Sender: TObject);
     procedure EdSearchKeyPress(Sender: TObject; var Key: char);
-    procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure FormResize(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure ActHideDetailsClickExecute(Sender: TObject);
     procedure ImageCrossSearchClick(Sender: TObject);
+    procedure ImageCrossSearchMouseEnter(Sender: TObject);
+    procedure ImageCrossSearchMouseLeave(Sender: TObject);
+    procedure ImageLogoClick(Sender: TObject);
+    procedure ImageLogoMouseEnter(Sender: TObject);
+    procedure ImageLogoMouseLeave(Sender: TObject);
     procedure ImageWAPTClick(Sender: TObject);
     procedure ImageLogoTaskBarClick(Sender: TObject);
     procedure ImageLogoOnMouseEnter(Sender: TObject);
@@ -134,7 +137,7 @@ type
     procedure FormDestroy(Sender: TObject);
     procedure FormClose(Sender: TObject);
   private
-
+    PrevWndProc: TWndMethod;
     ShowOnlyUpgradable: Boolean;
     ShowOnlyInstalled: Boolean;
     ShowOnlyNotInstalled: Boolean;
@@ -148,7 +151,6 @@ type
 
     LstIcons: TStringList;
     LstTasks: TStringList;
-    LstCategories : TStringList;
     FAllPackages: ISuperObject;
 
     FThreadGetAllIcons: TThreadGetAllIcons;
@@ -176,9 +178,11 @@ type
     function SelectedAreOnlyPending: Boolean;
 
     function RemoveAccent(const AText : String) : string;
-
+    function GetAllPackagesSorted(Pck : ISuperObject):ISuperObject;
+    function GetAllCategories(Pck : ISuperObject):TStringList;
     property AllPackages:ISuperObject read GetAllPackages write FAllPackages;
-
+    function GoodSizeForScreen(ASize : integer):integer;
+    procedure EventsScrollBar(var TheMessage: TLMessage);
   public
     CheckTasksThread: TCheckAllTasksThread;
     CheckEventsThread: TCheckEventsThread;
@@ -190,7 +194,7 @@ var
 
 
 implementation
-uses LCLIntf, LCLType, waptwinutils, soutils, strutils, uWaptSelfRes, IniFiles, IdHTTP, LConvEncoding, uVisSettings, LCLTranslator, ShellApi;
+uses LCLIntf, LCLType, waptwinutils, soutils, strutils, uWaptSelfRes, IniFiles, IdHTTP, LConvEncoding, uVisSettings, LCLTranslator;
 {$R *.lfm}
 
 { TVisWaptSelf }
@@ -212,7 +216,6 @@ var
     FlowPackages.ControlList.Clear;
 
     LastNumberOfFrame:=0;
-
     for Pck in AllPackages do
     begin
       if IsValidPackage(Pck) and IsValidFilter(Pck) and IsValidCategory(Pck) then
@@ -246,7 +249,7 @@ var
                 begin
                   BtnInstallUpgrade.Caption:=rsStatusInstalled;
                   BtnInstallUpgrade.Enabled:=false;
-                  BtnRemove.NormalColor:=$0099542F;
+                  BtnRemove.NormalColor:=$005754E0;
                 end
               else                       //Package installed but not updated
                 begin
@@ -255,7 +258,7 @@ var
                   LabInstallVersion.Caption:='(over '+UTF8Encode(package.S['install_version'])+')';
                   AdjustFont(LabInstallVersion);
                   LabInstallVersion.Visible:=True;
-                  BtnRemove.NormalColor:=$0099542F;
+                  BtnRemove.NormalColor:=$005754E0;
                   ActionPackage:='install';
                   LabVersion.Caption:=UTF8Encode(package.S['version']);
                 end;
@@ -306,7 +309,22 @@ var
                 LabelProgressionInstall.Show;
                 TextWaitInstall.Hide;
               end;
-          end;
+            end;
+
+            if (Screen.PixelsPerInch<>96) then
+            begin
+              LabPackageName.FontEx.Height:=GoodSizeForScreen(LabPackageName.FontEx.Height);
+              LabVersion.FontEx.Height:=GoodSizeForScreen(LabVersion.FontEx.Height);
+              LabDescription.FontEx.Height:=GoodSizeForScreen(LabDescription.FontEx.Height);
+              LabInstallVersion.FontEx.Height:=GoodSizeForScreen(LabInstallVersion.FontEx.Height);
+              LabDate.FontEx.Height:=GoodSizeForScreen(LabDate.FontEx.Height);
+              LabelProgressionInstall.FontEx.Height:=GoodSizeForScreen(LabelProgressionInstall.FontEx.Height);
+              BtnInstallUpgrade.TextSize:=GoodSizeForScreen(BtnInstallUpgrade.TextSize);
+              BtnCancel.TextSize:=GoodSizeForScreen(BtnCancel.TextSize);
+              BtnRemove.TextSize:=GoodSizeForScreen(BtnRemove.TextSize);
+              TextWaitInstall.FontEx.Height:=GoodSizeForScreen(TextWaitInstall.FontEx.Height);
+              ImgPackage.AntialiasingMode:=amOn;
+            end;
 
           if LastNumberOfFrame>50 then
             break;
@@ -314,7 +332,7 @@ var
       end;
     end;
 
-    if (idx=1) then
+    if (LastNumberOfFrame=0) then
     begin
       LabelNoResult.Show;
       PicLogo.Show;
@@ -345,9 +363,9 @@ var
   i,WidthPref: integer;
   AFrmPackage:TFrmPackage;
 begin
-  if (FlowPackages.Width>=350) then
+  if (FlowPackages.Width>ScaleX(350,96)) then
   begin
-    WidthPref:=trunc(FlowPackages.Width / (FlowPackages.Width div 350))-1;
+      WidthPref:=trunc((FlowPackages.Width/(FlowPackages.Width div ScaleX(350,96)))-1);
     for i:=0 to FlowPackages.ControlCount-1 do
     begin
       AFrmPackage:=FlowPackages.Controls[i] as TFrmPackage;
@@ -366,27 +384,27 @@ end;
 
 procedure TVisWaptSelf.FormResize(Sender: TObject);
 begin
-  if (FlowPackages.Showing) and (FlowPackages.Width<=350) then
+  if (FlowPackages.Showing) and (FlowPackages.Width<=ScaleX(350,96)) then
   begin
     FlowPackages.Hide;
   end;
-  if not(FlowPackages.Showing) and (ScrollBoxPackages.Width>350) then
+  if not(FlowPackages.Showing) and (ScrollBoxPackages.Width>ScaleX(350,96)) then
   begin
     FlowPackages.Show;
   end;
-  if not(FlowPackages.Showing) and (TaskBarPanel.Showing or DetailsBarPanel.Showing) and (ScrollBoxPackages.Width<=350) then
+  if not(FlowPackages.Showing) and (TaskBarPanel.Showing or DetailsBarPanel.Showing) and (ScrollBoxPackages.Width<=ScaleX(350,96)) then
   begin
     TaskBarPanel.Hide;
     DetailsBarPanel.Hide;
     BtnShowTaskBar.Caption:=rsShowTaskBar;
   end;
 
-  if (VisWaptSelf.Height<450) then
+  if (VisWaptSelf.Height<ScaleY(450,96)) then
     ImageLogoTaskBar.Hide
   else
     ImageLogoTaskBar.Show;
 
-  if (VisWaptSelf.Height<765) then
+  if (VisWaptSelf.Height<ScaleY(765,96)) then
     Panel3.Hide
   else
     Panel3.Show;
@@ -397,26 +415,26 @@ var
   Ratio: Real;
 begin
   if (Panel6.Width>0) then
-    if (Panel6.Width>650) then
+    if (Panel6.Width>ScaleX(650,96)) then
     begin
       PicLogo.AutoSize:=true;
       LabelNoResult.AutoSize:=true;
-      LabelNoResult.Width:=486;
-      LabelNoResult.Height:=50;
+      LabelNoResult.Width:=ScaleX(486,96);
+      LabelNoResult.Height:=ScaleY(50,96);
       LabelNoResult.AdjustFontForOptimalFill;
-      PicLogo.Width:=400;
-      PicLogo.Height:=190;
+      PicLogo.Width:=ScaleX(400,96);
+      PicLogo.Height:=ScaleY(190,96);
     end
     else
     begin
-      Ratio:=Panel6.Width / 650;
+      Ratio:=Panel6.Width / ScaleX(650,96);
       PicLogo.AutoSize:=false;
       LabelNoResult.AutoSize:=false;
-      LabelNoResult.Width:=trunc(486*Ratio);
-      LabelNoResult.Height:=trunc(50*Ratio);
+      LabelNoResult.Width:=trunc(ScaleX(486,96)*Ratio);
+      LabelNoResult.Height:=trunc(ScaleY(50,96)*Ratio);
       LabelNoResult.AdjustFontForOptimalFill;
-      PicLogo.Width:=trunc(400*Ratio);
-      PicLogo.Height:=trunc(190*Ratio);
+      PicLogo.Width:=trunc(ScaleX(400,96)*Ratio);
+      PicLogo.Height:=trunc(ScaleY(190,96)*Ratio);
     end
 end;
 
@@ -457,12 +475,12 @@ begin
   end
   else
     TaskBarPanel.Show;
-  if (FlowPackages.Showing) and (FlowPackages.Width<350) then
+  if (FlowPackages.Showing) and (FlowPackages.Width<ScaleX(350,96)) then
   begin
     FlowPackages.Hide;
     Panel6.Hide;
   end;
-  if not(FlowPackages.Showing) and (ScrollBoxPackages.Width>=350) then
+  if not(FlowPackages.Showing) and (ScrollBoxPackages.Width>=ScaleX(350,96)) then
   begin
     FlowPackages.Show;
     Panel6.Show;
@@ -476,7 +494,7 @@ begin
     TaskBarPanel.Hide;
     BtnShowTaskBar.Caption:=rsShowTaskBar;
   end;
-  if (FlowPackages.Showing) and (FlowPackages.Width<350) then
+  if (FlowPackages.Showing) and (FlowPackages.Width<ScaleX(350,96)) then
   begin
     FlowPackages.Hide;
     Panel6.Hide;
@@ -598,13 +616,6 @@ begin
   end;
 end;
 
-procedure TVisWaptSelf.FormClose(Sender: TObject; var CloseAction: TCloseAction
-  );
-begin
-  if Assigned(FThreadGetAllIcons) then
-    FThreadGetAllIcons.Terminate;
-end;
-
 procedure TVisWaptSelf.SOGridTasksGetImageIndexEx(Sender: TBaseVirtualTree;
   Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
   var Ghosted: Boolean; var ImageIndex: Integer; var ImageList: TCustomImageList
@@ -663,10 +674,6 @@ begin
   LstIcons:=FindAllFiles(IconsDir,'*.png',False);
   LstIcons.OwnsObjects:=True;
 
-  LstCategories:=TStringList.Create;
-  LstCategories.Sorted:=true;
-  LstCategories.Duplicates:=dupIgnore;
-
   for i:=0 to LstIcons.Count-1 do
     try
       g:=TPicture.Create;
@@ -692,9 +699,33 @@ begin
     PicLogo.AntialiasingMode:=amOn;
     ImageLogoDetails.AutoSize:=false;
     ImageLogoDetails.AntialiasingMode:=amOn;
+    ImageLogo.AutoSize:=false;
+    ImageLogo.AntialiasingMode:=amOn;
+    LogoSettings.AutoSize:=false;
+    LogoSettings.AntialiasingMode:=amOn;
     ImageCrossSearch.AutoSize:=false;
     ImageCrossSearch.AntialiasingMode:=amOn;
+    ImageCrossSearch.Stretch:=true;
+    BtnShowTaskBar.TextSize:=GoodSizeForScreen(BtnShowTaskBar.TextSize);
+    BtnHideDetails.TextSize:=GoodSizeForScreen(BtnHideDetails.TextSize);
+    BtnCancelTasks.TextSize:=GoodSizeForScreen(BtnCancelTasks.TextSize);
+    if (Screen.PixelsPerInch>96) then
+    begin
+      Panel8.Hide;
+      Panel3.Hide;
+    end;
   end;
+  MakeFullyVisible();
+  LastTaskIDOnLaunch:=-1;
+  GetAllPackages();
+  ComboBoxCategories.Sorted:=true;
+  ComboBoxCategories.Clear;
+  ComboBoxCategories.Items.AddStrings(GetAllCategories(AllPackages));
+  ComboBoxCategories.ItemIndex:=ComboBoxCategories.Items.IndexOf(rsAllCategories);
+  FThreadGetAllIcons := TThreadGetAllIcons.Create(@OnUpgradeAllIcons,AllPackages,FlowPackages);
+
+  PrevWndProc:=ScrollBoxPackages.WindowProc;
+  ScrollBoxPackages.WindowProc:=@EventsScrollBar;
 end;
 
 procedure TVisWaptSelf.FormDestroy(Sender: TObject);
@@ -707,18 +738,21 @@ begin
 end;
 
 procedure TVisWaptSelf.FormShow(Sender: TObject);
+var
+  ini : TIniFile;
 begin
     try
-    MakeFullyVisible();
-
-    LastTaskIDOnLaunch:=-1;
-    GetAllPackages();
-    ComboBoxCategories.Items.AddStrings(LstCategories);
-    ComboBoxCategories.Items.Add(rsAllCategories);
-    ComboBoxCategories.ItemIndex:=ComboBoxCategories.Items.IndexOf(rsAllCategories);
-    FThreadGetAllIcons := TThreadGetAllIcons.Create(@OnUpgradeAllIcons,AllPackages,FlowPackages);
     TimerSearch.Enabled:=False;
     TimerSearch.Enabled:=True;
+
+    //Initialise window with settings in the ini file
+    ini:=TIniFile.Create(AppIniFilename);
+    Self.left:=ini.ReadInteger('window','left',Self.Left);
+    Self.Top:=ini.ReadInteger('window','top',Self.Top);
+    Self.Width:=ini.ReadInteger('window','width',Self.Width);
+    Self.Height:=ini.ReadInteger('window','height',Self.Height);
+    Self.WindowState:=TWindowState(ini.ReadInteger('window','windowstate',Integer(Self.WindowState)));
+    FreeAndNil(ini);
 
     // Check running / pending tasks
     CheckTasksThread := TCheckAllTasksThread.Create(@OnCheckTasksThreadNotify);
@@ -747,6 +781,33 @@ begin
     EdSearch.Text:='';
     ActSearchPackages.Execute;
   end;
+end;
+
+procedure TVisWaptSelf.ImageCrossSearchMouseEnter(Sender: TObject);
+begin
+  if (EdSearch.Text<>'') then
+    Screen.Cursor:=crHandPoint;
+end;
+
+procedure TVisWaptSelf.ImageCrossSearchMouseLeave(Sender: TObject);
+begin
+  if (EdSearch.Text<>'') then
+    Screen.Cursor:=crDefault;
+end;
+
+procedure TVisWaptSelf.ImageLogoClick(Sender: TObject);
+begin
+  OpenDocument('https://www.tranquil.it/solutions/wapt-deploiement-d-applications/');
+end;
+
+procedure TVisWaptSelf.ImageLogoMouseEnter(Sender: TObject);
+begin
+  Screen.Cursor:=crHandPoint;
+end;
+
+procedure TVisWaptSelf.ImageLogoMouseLeave(Sender: TObject);
+begin
+  Screen.Cursor:=crDefault;
 end;
 
 procedure TVisWaptSelf.ImageWAPTClick(Sender: TObject);
@@ -817,8 +878,21 @@ begin
         ini.WriteString('global','language',tmpLang);
         ini.UpdateFile;
         FreeAndNil(ini);
-        ShellExecute(Handle, nil, PChar(Application.ExeName), nil, nil, SW_SHOWNORMAL);
-        Self.Close;
+        SetDefaultLang(tmpLang);
+        if (tmpLang='en') then
+        begin
+          ComboBoxCategories.Items.DelimitedText:=ReplaceStr(ComboBoxCategories.Items.DelimitedText,'Toutes',rsAllCategories);
+          ComboBoxCategories.ItemIndex:=ComboBoxCategories.Items.IndexOf(rsAllCategories);
+          ActSearchPackages.Execute;
+        end
+        else
+        begin
+          ComboBoxCategories.Items.DelimitedText:=ReplaceStr(ComboBoxCategories.Items.DelimitedText,'All',rsAllCategories);
+          ComboBoxCategories.ItemIndex:=ComboBoxCategories.Items.IndexOf(rsAllCategories);
+          ActSearchPackages.Execute;
+        end;
+        //ShellExecute(Handle, nil, PChar(Application.ExeName), nil, nil, SW_SHOWNORMAL);
+        //Self.Close;
       end;
     end;
     FreeAndNil(SettingsDlg);
@@ -836,10 +910,21 @@ begin
 end;
 
 procedure TVisWaptSelf.FormClose(Sender: TObject);
+var
+  ini : TIniFile;
 begin
   CheckTasksThread.Terminate;
   CheckEventsThread.Terminate;
   FThreadGetAllIcons.Terminate;
+  //Write save window settings
+  ini:=TIniFile.Create(AppIniFilename);
+  ini.WriteInteger('window','left',Self.Left);
+  ini.WriteInteger('window','top',Self.Top);
+  ini.WriteInteger('window','width',Self.Width);
+  ini.WriteInteger('window','height',Self.Height);
+  ini.WriteInteger('window','windowstate',Integer(Self.WindowState));
+  ini.UpdateFile;
+  FreeAndNil(ini);
 end;
 
 procedure TVisWaptSelf.OnLocalServiceAuth(Sender: THttpSend; var ShouldRetry: Boolean;RetryCount:integer);
@@ -971,7 +1056,7 @@ begin
             end
             else
             begin
-              AFrmPackage.BtnRemove.NormalColor:=clRed;
+              AFrmPackage.BtnRemove.NormalColor:=$005754E0;
               AFrmPackage.BtnRemove.Enabled:=true;
               AFrmPackage.ActionPackage:='remove';
               AFrmPackage.BtnInstallUpgrade.Caption:=rsStatusInstalled;
@@ -1066,92 +1151,19 @@ begin
 end;
 
 function TVisWaptSelf.GetAllPackages: ISuperObject;
-var
-  Package: ISuperObject;
-  tmp:String;
 begin
   if FAllPackages = Nil then
-  begin
     FAllPackages := WAPTLocalJsonGet('packages.json?latest=1',login,password,-1,@OnLocalServiceAuth,2);
-    LstCategories.Clear;
-    for Package in FAllPackages do
-    begin
-      if pos('T',Package.S['signature_date'])<>0 then
-      begin
-         tmp:=UTF8Encode(Package.S['signature_date']);
-         tmp:=copy(tmp,1,19);
-         tmp:=ReplaceStr(tmp,'-','');
-         tmp:=ReplaceStr(tmp,':','');
-         tmp:=ReplaceStr(tmp,'T','-');
-         Package.S['signature_date']:=UTF8Decode(tmp);
-      end;
-      if (UTF8Encode(Package.S['section'])='base') then
-      begin
-        if (UTF8Encode(Package.S['name'])='') then
-        begin
-          tmp:=UTF8Encode(Package.S['package']);
-          tmp:=Copy(tmp,pos('-',tmp)+1,tmp.Length);
-          tmp[1]:=upCase(tmp[1]);
-          Package.S['name']:=UTF8Decode(tmp)
-        end
-      end
-      else
-        Package.S['name']:=Package.S['package'];
-      if (UTF8Encode(Package.S['categories'])<>'') then
-        LstCategories.Add(UTF8Encode(Package.S['categories']));
-      Package.S['namelower']:=LowerCase(Package.S['name']);
-      Package.S['namelower']:=UTF8Decode(RemoveAccent(UTF8Encode(Package.S['namelower'])));
-    end;
-  end;
-  if (SortByName) then
-    SortByFields(FAllPackages,['namelower'],not(SortByNameAZ))
-  else
-    SortByFields(FAllPackages,['signature_date'],not(SortByDateAsc));
-  Result:=FAllPackages;
+  Result:=GetAllPackagesSorted(FAllPackages);
 end;
 
 procedure TVisWaptSelf.OnUpgradeTriggeredAllPackages(Sender: TObject);
-var
-  tmp: String;
-  Package : ISuperObject;
 begin
   FAllPackages:=(Sender as TTriggerWaptserviceAction).Res;
-  LstCategories.Clear;
   if Assigned(FAllPackages) then
   begin
-    for Package in FAllPackages do
-    begin
-      if pos('T',Package.S['signature_date'])<>0 then
-      begin
-         tmp:=UTF8Encode(Package.S['signature_date']);
-         tmp:=copy(tmp,1,19);
-         tmp:=ReplaceStr(tmp,'-','');
-         tmp:=ReplaceStr(tmp,':','');
-         tmp:=ReplaceStr(tmp,'T','-');
-         Package.S['signature_date']:=UTF8Decode(tmp);
-      end;
-      if (UTF8Encode(Package.S['section'])='base') then
-      begin
-        if (UTF8Encode(Package.S['name'])='') then
-        begin
-          tmp:=UTF8Encode(Package.S['package']);
-          tmp:=Copy(tmp,pos('-',tmp)+1,tmp.Length);
-          tmp[1]:=upCase(tmp[1]);
-          Package.S['name']:=UTF8Decode(tmp)
-        end;
-      end
-      else
-        Package.S['name']:=Package.S['package'];
-      if (UTF8Encode(Package.S['categories'])<>'') then
-        LstCategories.Add(UTF8Encode(Package.S['categories']));
-      Package.S['namelower']:=LowerCase(Package.S['name']);
-      Package.S['namelower']:=UTF8Decode(RemoveAccent(UTF8Encode(Package.S['namelower'])));
-    end;
+    FAllPackages:=GetAllPackagesSorted(FAllPackages);
   end;
-  if (SortByName) then
-    SortByFields(FAllPackages,['namelower'],not(SortByNameAZ))
-  else
-    SortByFields(FAllPackages,['signature_date'],not(SortByDateAsc));
 end;
 
 
@@ -1173,9 +1185,90 @@ var
   i : integer;
   tmpstr : String;
 begin
-  for i:=1 to Length(AText) do
+  for i:=1 to Length(Char_Accents) do
     tmpstr:=StringReplace(AText,Char_Accents[i],Char_Sans_Accents[i],[rfReplaceAll]);
   Result:=tmpstr
+end;
+
+function TVisWaptSelf.GetAllPackagesSorted(Pck: ISuperObject
+  ): ISuperObject;
+var
+  Package : ISuperObject;
+  tmp : String;
+begin
+  for Package in Pck do
+  begin
+    if pos('T',Package.S['signature_date'])<>0 then
+    begin
+       tmp:=UTF8Encode(Package.S['signature_date']);
+       tmp:=copy(tmp,1,19);
+       tmp:=ReplaceStr(tmp,'-','');
+       tmp:=ReplaceStr(tmp,':','');
+       tmp:=ReplaceStr(tmp,'T','-');
+       Package.S['signature_date']:=UTF8Decode(tmp);
+    end;
+    if (UTF8Encode(Package.S['section'])='base') then
+    begin
+      if (UTF8Encode(Package.S['name'])='') then
+      begin
+        tmp:=UTF8Encode(Package.S['package']);
+        tmp:=Copy(tmp,pos('-',tmp)+1,tmp.Length);
+        tmp[1]:=upCase(tmp[1]);
+        Package.S['name']:=UTF8Decode(tmp)
+      end;
+    end
+    else
+      Package.S['name']:=Package.S['package'];
+    Package.S['namelower']:=LowerCase(Package.S['name']);
+    Package.S['namelower']:=UTF8Decode(RemoveAccent(UTF8Encode(Package.S['namelower'])));
+    if (GetDefaultLang='fr') and (Package.S['categories']<>'') then
+    begin
+      tmp:=UTF8Encode(Package.S['categories']);
+      tmp:=ReplaceStr(tmp,'Utilities','Utilitaires');
+      tmp:=ReplaceStr(tmp,'Messaging','Messagerie');
+      tmp:=ReplaceStr(tmp,'Security','Sécurité');
+      tmp:=ReplaceStr(tmp,'System and network','Système et sécurité');
+      tmp:=ReplaceStr(tmp,'Media','Médias');
+      tmp:=ReplaceStr(tmp,'Development','Développement');
+      tmp:=ReplaceStr(tmp,'Office','Bureautique');
+      tmp:=ReplaceStr(tmp,'Drivers','Pilotes');
+      Package.S['categories']:=UTF8Decode(tmp);
+    end;
+  end;
+  if (SortByName) then
+    SortByFields(Pck,['namelower'],not(SortByNameAZ))
+  else
+    SortByFields(Pck,['signature_date'],not(SortByDateAsc));
+  Result:=Pck;
+end;
+
+function TVisWaptSelf.GetAllCategories(Pck: ISuperObject): TStringList;
+var
+  LstCategories: TStringList;
+  Package : ISuperObject;
+begin
+  LstCategories:=TStringList.Create;
+  LstCategories.Sorted:=true;
+  LstCategories.Duplicates:=dupIgnore;
+  LstCategories.Delimiter:=',';
+  LstCategories.StrictDelimiter:=true;
+  LstCategories.DelimitedText:=rsAllCategories;
+  for Package in Pck do
+    if (UTF8Encode(Package.S['categories'])<>'') then
+      LstCategories.DelimitedText:=LstCategories.DelimitedText+','+UTF8Encode(Package.S['categories']);
+  Result:=LstCategories;
+end;
+
+function TVisWaptSelf.GoodSizeForScreen(ASize: integer): integer;
+begin
+  Result:=trunc((ASize*Screen.PixelsPerInch)/96);
+end;
+
+procedure TVisWaptSelf.EventsScrollBar(var TheMessage: TLMessage);
+begin
+  PrevWndProc(TheMessage);
+  if TheMessage.msg=LM_VSCROLL then
+    BtnShowTaskBar.Caption:='test';
 end;
 
 function TVisWaptSelf.IsValidPackage(package: ISuperObject): Boolean;
@@ -1189,7 +1282,7 @@ begin
   Result:=true;
   for i:=0 to keywordlst.Count-1 do
   begin
-    if not((pos(keywordlst.Strings[i],lowercase(UTF8Encode(Package.S['name'])))>0) or (pos(keywordlst.Strings[i],lowercase(UTF8Encode(Package.S['description'])))>0) or (pos(keywordlst.Strings[i],lowercase(UTF8Encode(Package.S['editor'])))>0) or (pos(keywordlst.Strings[i],lowercase(UTF8Encode(Package.S['package'])))>0)) then
+    if not((pos(keywordlst.Strings[i],lowercase(UTF8Encode(Package.S['name'])))>0) or (pos(keywordlst.Strings[i],lowercase(UTF8Encode(Package.S['description'])))>0) or (pos(keywordlst.Strings[i],lowercase(UTF8Encode(Package.S['editor'])))>0) or (pos(keywordlst.Strings[i],lowercase(UTF8Encode(Package.S['package'])))>0) or (pos(keywordlst.Strings[i],lowercase(UTF8Encode(Package.S['keywords'])))>0)) then
     begin
       FreeAndNil(keywordlst);
       Exit(false);
@@ -1267,7 +1360,16 @@ begin
       tmpLstIcons:=TStringList.Create;
       tmpLstIcons.OwnsObjects:=True;
       if Terminated then
-        break;
+      begin
+        ini.WriteString('global','LastPackageDate',UTF8Encode(Package.S['signature_date']));
+        ini.WriteString('global','repositories',iniWaptGet.ReadString('global','repositories',''));
+        ini.UpdateFile;
+        FreeAndNil(ini);
+        FreeAndNil(iniWaptGet);
+        FreeAndNil(Repo);
+        FreeAndNil(LstRepo);
+        Exit();
+      end;
       if (((UTF8Encode(Package.S['signature_date']))<=(ini.ReadString('global','LastPackageDate','None'))) and not((ini.ReadString('global','LastPackageDate','None') = 'None')) and not((ini.ReadString('global','repositories','')<>iniWaptGet.ReadString('global','repositories','')))) then
         break;
       if FileExists(IconsDir+UTF8Encode(Package.S['package'])+'.png') then

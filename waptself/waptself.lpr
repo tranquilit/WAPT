@@ -7,8 +7,8 @@ uses
   cthreads,
   {$ENDIF}{$ENDIF}
   Interfaces, // this includes the LCL widgetset
-  Forms, uviswaptself, uFrmPackage, uVisLogin, uWaptSelfRes, uFrmDetailsPackage,
-  LCLTranslator, waptcommon, sysutils, IniFiles, uVisSettings;
+  Forms, uviswaptself, uVisLogin,
+  LCLTranslator, waptcommon, sysutils, IniFiles;
 
 var
   ini : TIniFile;

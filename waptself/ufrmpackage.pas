@@ -109,7 +109,7 @@ begin
   end
   else
   begin
-    BtnRemove.NormalColor:=$0099542F;
+    BtnRemove.NormalColor:=$005754E0;
     BtnRemove.Enabled:=true;
     ActionPackage:='remove';
     BtnInstallUpgrade.Caption:=rsStatusInstalled;
@@ -318,7 +318,7 @@ begin
       end
       else
       begin
-        BtnRemove.NormalColor:=$0099542F;
+        BtnRemove.NormalColor:=$005754E0;
         BtnRemove.Enabled:=true;
         ActionPackage:='remove';
         BtnInstallUpgrade.Caption:=rsStatusInstalled;

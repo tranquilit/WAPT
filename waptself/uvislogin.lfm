@@ -1,7 +1,7 @@
 object VisLogin: TVisLogin
-  Left = 2648
+  Left = 856
   Height = 204
-  Top = 330
+  Top = 386
   Width = 231
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
@@ -122,6 +122,7 @@ object VisLogin: TVisLogin
       Width = 82
       AutoSize = True
       BorderSpacing.Right = 6
+      Color = clWhite
       Constraints.MinHeight = 28
       Constraints.MinWidth = 82
       Default = True
@@ -143,6 +144,7 @@ object VisLogin: TVisLogin
       AutoSize = True
       Cancel = True
       Caption = 'Cancel'
+      Color = clWhite
       Constraints.MinHeight = 28
       Constraints.MinWidth = 82
       Kind = bkCancel
@@ -185,16 +187,22 @@ object VisLogin: TVisLogin
       3C9B6CB95BBADE6A28E14C198F04BE1D9130677BA43927FC7C2BFFF50D9F8D58
       710FEB3F0E0000000049454E44AE426082
     }
+    Proportional = True
+    Stretch = True
     Visible = False
   end
   object WarningText: TStaticText
+    AnchorSideLeft.Control = ImageWarning
+    AnchorSideLeft.Side = asrBottom
     AnchorSideTop.Control = LogoLogin
     AnchorSideTop.Side = asrBottom
-    Left = 40
+    Left = 36
     Height = 16
     Top = 87
-    Width = 175
+    Width = 139
     Align = alCustom
+    AutoSize = True
+    BorderSpacing.Left = 5
     BorderSpacing.Top = 5
     Caption = 'Wrong password or login !'
     Color = clNone
@@ -214,6 +222,9 @@ object VisLogin: TVisLogin
     Width = 208
     AutoSize = True
     BorderSpacing.Top = 10
+    OnClick = LogoLoginClick
+    OnMouseEnter = LogoLoginMouseEnter
+    OnMouseLeave = LogoLoginMouseLeave
     Picture.Data = {
       1754506F727461626C654E6574776F726B47726170686963BC20000089504E47
       0D0A1A0A0000000D49484452000000D000000048080600000087917B5A000000
@@ -479,5 +490,7 @@ object VisLogin: TVisLogin
       00F9089D4F2500B403D40C703B035F12B09B89772BA46CAF1DFEF54758B8B0DF
       E266FD7FD5EA867E0FC749F30000000049454E44AE426082
     }
+    Proportional = True
+    Stretch = True
   end
 end

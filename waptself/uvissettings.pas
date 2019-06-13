@@ -16,12 +16,9 @@ type
     ButCancel: TBitBtn;
     ButOk: TBitBtn;
     ComboBoxLang: TComboBox;
-    ImageWarning: TImage;
     Language: TLabel;
-    PanelWarning: TPanel;
     PanelSettings: TPanel;
     PanelBtn: TPanel;
-    WarningText: TStaticText;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
   private

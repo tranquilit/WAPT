@@ -1,14 +1,14 @@
 object FrmPackage: TFrmPackage
   Left = 0
-  Height = 198
+  Height = 199
   Top = 0
-  Width = 401
-  ClientHeight = 198
-  ClientWidth = 401
+  Width = 412
+  ClientHeight = 199
+  ClientWidth = 412
   Color = clWhite
   ParentColor = False
   TabOrder = 0
-  DesignLeft = 2503
+  DesignLeft = 2507
   DesignTop = 266
   object BCPaperPanel1: TBCPaperPanel
     AnchorSideLeft.Control = Owner
@@ -16,12 +16,12 @@ object FrmPackage: TFrmPackage
     AnchorSideTop.Control = Owner
     AnchorSideTop.Side = asrCenter
     AnchorSideBottom.Side = asrBottom
-    Left = 26
+    Left = 31
     Height = 191
-    Top = 3
+    Top = 4
     Width = 350
     Alignment = taLeftJustify
-    Anchors = [akBottom]
+    Anchors = [akLeft, akBottom]
     BorderSpacing.Bottom = 16
     Caption = 'BCPaperPanel1'
     ClientHeight = 191
@@ -32,6 +32,8 @@ object FrmPackage: TFrmPackage
     TabOrder = 0
     object BtnInstallUpgrade: TBCMaterialDesignButton
       AnchorSideLeft.Control = BCPaperPanel1
+      AnchorSideTop.Control = LabDescription
+      AnchorSideTop.Side = asrBottom
       Left = 30
       Height = 24
       Top = 123
@@ -47,16 +49,19 @@ object FrmPackage: TFrmPackage
       TextShadowSize = 0
       TextFont = 'Tahoma'
       TextQuality = fqSystemClearType
-      Anchors = [akLeft]
       BorderSpacing.Left = 30
+      BorderSpacing.Top = 7
       Caption = 'Install'
       OnClick = ActInstallUpgradePackage
       ParentFont = False
     end
     object LabPackageName: TBCLabel
+      AnchorSideLeft.Control = BCPaperPanel1
+      AnchorSideLeft.Side = asrCenter
+      AnchorSideTop.Control = BCPaperPanel1
       Left = 12
       Height = 32
-      Top = 8
+      Top = 5
       Width = 327
       AutoSize = False
       Background.Color = clBlack
@@ -94,6 +99,7 @@ object FrmPackage: TFrmPackage
       Border.LightWidth = 0
       Border.Style = bboNone
       Border.Width = 1
+      BorderSpacing.Top = 5
       Caption = 'tis-adobeair'
       FontEx.Color = 9852960
       FontEx.EndEllipsis = False
@@ -116,9 +122,13 @@ object FrmPackage: TFrmPackage
       Rounding.RoundOptions = []
     end
     object LabVersion: TBCLabel
-      Left = 80
+      AnchorSideLeft.Control = ImgPackage
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = LabPackageName
+      AnchorSideTop.Side = asrBottom
+      Left = 73
       Height = 16
-      Top = 35
+      Top = 37
       Width = 136
       AutoSize = False
       Background.Color = clBlack
@@ -156,6 +166,7 @@ object FrmPackage: TFrmPackage
       Border.LightWidth = 0
       Border.Style = bboNone
       Border.Width = 1
+      BorderSpacing.Left = 10
       Caption = '1.5.2-0'
       FontEx.Color = 7566195
       FontEx.EndEllipsis = False
@@ -177,10 +188,15 @@ object FrmPackage: TFrmPackage
       Rounding.RoundOptions = []
     end
     object LabInstallVersion: TBCLabel
-      Left = 152
+      AnchorSideTop.Control = LabPackageName
+      AnchorSideTop.Side = asrBottom
+      AnchorSideRight.Control = BCPaperPanel1
+      AnchorSideRight.Side = asrBottom
+      Left = 212
       Height = 16
-      Top = 35
-      Width = 104
+      Top = 37
+      Width = 128
+      Anchors = [akTop, akRight]
       AutoSize = False
       Background.Color = clBlack
       Background.ColorOpacity = 255
@@ -217,11 +233,12 @@ object FrmPackage: TFrmPackage
       Border.LightWidth = 0
       Border.Style = bboNone
       Border.Width = 1
+      BorderSpacing.Right = 10
       Caption = '1.5.1-0'
       FontEx.Color = 7566195
       FontEx.EndEllipsis = False
       FontEx.FontQuality = fqSystemClearType
-      FontEx.Height = 14
+      FontEx.Height = 12
       FontEx.SingleLine = False
       FontEx.Shadow = False
       FontEx.ShadowColor = clBlack
@@ -239,11 +256,17 @@ object FrmPackage: TFrmPackage
       Visible = False
     end
     object LabDescription: TBCLabel
-      Left = 80
+      AnchorSideLeft.Control = ImgPackage
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = LabVersion
+      AnchorSideTop.Side = asrBottom
+      AnchorSideRight.Control = BCPaperPanel1
+      AnchorSideRight.Side = asrBottom
+      Left = 73
       Height = 63
-      Top = 51
-      Width = 248
-      Anchors = []
+      Top = 53
+      Width = 267
+      Anchors = [akTop, akLeft, akRight]
       AutoSize = False
       Background.Color = clBlack
       Background.ColorOpacity = 255
@@ -280,6 +303,8 @@ object FrmPackage: TFrmPackage
       Border.LightWidth = 0
       Border.Style = bboNone
       Border.Width = 1
+      BorderSpacing.Left = 10
+      BorderSpacing.Right = 10
       Caption = 'Adobe AIR is a runtime for software created with Adobe Flash and ActionScript without using a web browser. oezkoezfezkofezkfezofezkfezofezkfezofezkfez'
       FontEx.Color = 4868682
       FontEx.EndEllipsis = True
@@ -366,6 +391,8 @@ object FrmPackage: TFrmPackage
       Visible = False
     end
     object BtnRemove: TBCMaterialDesignButton
+      AnchorSideTop.Control = LabDescription
+      AnchorSideTop.Side = asrBottom
       AnchorSideRight.Control = BCPaperPanel1
       AnchorSideRight.Side = asrBottom
       Left = 200
@@ -384,19 +411,24 @@ object FrmPackage: TFrmPackage
       TextShadowSize = 0
       TextFont = 'Tahoma'
       TextQuality = fqSystemClearType
-      Anchors = [akRight]
+      Anchors = [akTop, akRight]
+      BorderSpacing.Top = 7
       BorderSpacing.Right = 30
       Caption = 'Remove'
       OnClick = ActRemovePackage
       ParentFont = False
     end
     object ImgPackage: TImage
-      Left = 24
+      AnchorSideLeft.Control = BCPaperPanel1
+      AnchorSideTop.Control = LabPackageName
+      AnchorSideTop.Side = asrBottom
+      Left = 15
       Height = 48
-      Top = 62
+      Top = 42
       Width = 48
-      AntialiasingMode = amOn
-      Anchors = []
+      AntialiasingMode = amOff
+      BorderSpacing.Left = 15
+      BorderSpacing.Top = 5
       Picture.Data = {
         1754506F727461626C654E6574776F726B477261706869631D09000089504E47
         0D0A1A0A0000000D49484452000000300000003008060000005702F987000000
@@ -481,12 +513,13 @@ object FrmPackage: TFrmPackage
       AnchorSideBottom.Control = BCPaperPanel1
       AnchorSideBottom.Side = asrBottom
       Left = 240
-      Height = 25
+      Height = 22
       Top = 157
-      Width = 72
+      Width = 64
       RoundBorders = 3
       NormalColor = 10048559
       NormalColorEffect = clGray
+      Shadow = False
       ShadowSize = 4
       TextColor = clWhite
       TextSize = 13
@@ -496,19 +529,21 @@ object FrmPackage: TFrmPackage
       TextQuality = fqSystemClearType
       Anchors = [akTop, akLeft, akBottom]
       AutoSize = True
-      BorderSpacing.Bottom = 9
+      BorderSpacing.Bottom = 12
       Caption = 'Cancel'
       OnClick = ActCancelTaskExecute
       ParentFont = False
       Visible = False
     end
     object LabDate: TBCLabel
-      AnchorSideRight.Control = BtnRemove
-      Left = 216
+      AnchorSideLeft.Control = BCPaperPanel1
+      AnchorSideTop.Control = ImgPackage
+      AnchorSideTop.Side = asrBottom
+      AnchorSideRight.Side = asrBottom
+      Left = 13
       Height = 16
-      Top = 35
-      Width = 112
-      Anchors = [akTop]
+      Top = 95
+      Width = 51
       AutoSize = False
       Background.Color = clBlack
       Background.ColorOpacity = 255
@@ -545,12 +580,14 @@ object FrmPackage: TFrmPackage
       Border.LightWidth = 0
       Border.Style = bboNone
       Border.Width = 1
-      BorderSpacing.Right = 5
+      BorderSpacing.Left = 13
+      BorderSpacing.Top = 5
+      BorderSpacing.Right = 10
       Caption = '19/12/2024'
       FontEx.Color = 7566195
       FontEx.EndEllipsis = False
       FontEx.FontQuality = fqSystemClearType
-      FontEx.Height = 12
+      FontEx.Height = 10
       FontEx.SingleLine = True
       FontEx.Shadow = False
       FontEx.ShadowColor = clBlack
@@ -588,8 +625,8 @@ object FrmPackage: TFrmPackage
       Height = 22
       Top = 157
       Width = 22
+      AntialiasingMode = amOn
       Anchors = [akLeft, akBottom]
-      AutoSize = True
       BorderSpacing.Bottom = 12
       OnClick = ImageDetailsClick
       OnMouseEnter = ImageDetailsMouseEnter
@@ -625,6 +662,8 @@ object FrmPackage: TFrmPackage
         3EDDACE4EC03EF8EF8C18D9782C7B1B366BE0D7482CAC714BB27538E523C5718
         4FAF54D3FF032F432F1D3AAE7F2D0000000049454E44AE426082
       }
+      Proportional = True
+      Stretch = True
     end
     object TextWaitInstall: TBCLabel
       AnchorSideBottom.Control = BCPaperPanel1
