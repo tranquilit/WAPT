@@ -133,7 +133,7 @@ Filename: {app}\wapt-get.ini; Section: global; Key: verify_cert; String: {code:V
 Filename: {app}\wapt-get.ini; Section: global; Key: use_fqdn_as_uuid; String: {#use_fqdn_as_uuid}; 
 #endif
 
-Filename: {app}\wapt-get.ini; Section: global; Key: forced_uuid; String: {code:GenerateHostUUID}; Check: MustChangeHostUUID;
+Filename: {app}\wapt-get.ini; Section: global; Key: uuid; String: {code:GenerateHostUUID}; Check: MustChangeHostUUID;
 
 #if edition != "waptserversetup"
 Filename: {app}\wapt-get.ini; Section: global; Key: dnsdomain; String: {code:GetDNSDomain}; Check: MustChangeServerConfig;
@@ -250,7 +250,7 @@ fr.StaticURLS=URLS WAPT statiques
 fr.RunConfigTool=Exécuter l'assistant de configuration
 fr.WAPTConsole=Console WAPT
 fr.WAPTSelf=Self service logiciels WAPT
-en.UseRandomUUID=Utiliser un UUID aléatoire pour identifier l'ordinateur au lieu du BIOS
+fr.UseRandomUUID=Utiliser un UUID aléatoire pour identifier l'ordinateur au lieu du BIOS
 
 ;German translation here
 de.StartAfterSetup=WAPT Setup-Sitzung bei Sitzungseröffnung starten
@@ -590,7 +590,7 @@ var
   ForcedUUID:String;
 begin
   Result := False;
-  ForcedUUID := GetIniString( 'global', 'forced_uuid', '', ExpandConstant('{app}\wapt-get.ini'));
+  ForcedUUID := GetIniString( 'global', 'uuid', '', ExpandConstant('{app}\wapt-get.ini'));
   Result := ((ExpandConstant('{param:use_random_uuid|{#use_random_uuid}}')='1') or IsTaskSelected('UseRandomUUID')) and (ForcedUUID='');
 end;
 
