@@ -164,7 +164,7 @@ initialization
   begin
     AutoLoad := False;
     DllPath := RegWaptBaseDir;
-    //DllName := 'python27.dll';
+    DllName := 'python27.dll';
 
     UseLastKnownVersion := False;
     FatalAbort:=True;
