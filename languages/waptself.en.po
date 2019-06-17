@@ -4,32 +4,32 @@ msgstr "Content-Type: text/plain; charset=UTF-8"
 #: tfrmdetailspackage.categories.caption
 msgctxt "tfrmdetailspackage.categories.caption"
 msgid "Categories :"
-msgstr ""
+msgstr "Categories :"
 
 #: tfrmdetailspackage.conflicts.caption
 msgctxt "tfrmdetailspackage.conflicts.caption"
 msgid "Conflicts :"
-msgstr ""
+msgstr "Conflicts :"
 
 #: tfrmdetailspackage.dependency.caption
 msgctxt "tfrmdetailspackage.dependency.caption"
 msgid "Dependency : "
-msgstr ""
+msgstr "Dependency : "
 
 #: tfrmdetailspackage.description.caption
 msgctxt "tfrmdetailspackage.description.caption"
 msgid "Description"
-msgstr ""
+msgstr "Description"
 
 #: tfrmdetailspackage.editor.caption
 msgctxt "tfrmdetailspackage.editor.caption"
 msgid "Editor :"
-msgstr ""
+msgstr "Editor :"
 
 #: tfrmdetailspackage.impactedprocess.caption
 msgctxt "tfrmdetailspackage.impactedprocess.caption"
 msgid "Impacted process :"
-msgstr ""
+msgstr "Impacted process :"
 
 #: tfrmdetailspackage.labcategories.caption
 msgctxt "tfrmdetailspackage.labcategories.caption"
@@ -127,56 +127,60 @@ msgstr ""
 #: tfrmdetailspackage.lastversion.caption
 msgctxt "tfrmdetailspackage.lastversion.caption"
 msgid "Last version : "
-msgstr ""
+msgstr "Last version : "
 
 #: tfrmdetailspackage.licence.caption
 msgctxt "tfrmdetailspackage.licence.caption"
 msgid "Licence : "
-msgstr ""
+msgstr "Licence : "
 
 #: tfrmdetailspackage.maintainer.caption
 msgctxt "tfrmdetailspackage.maintainer.caption"
 msgid "Maintainer : "
-msgstr ""
+msgstr "Maintainer : "
 
 #: tfrmdetailspackage.officialwebsite.caption
 msgctxt "tfrmdetailspackage.officialwebsite.caption"
 msgid "Official website : "
-msgstr ""
+msgstr "Official website : "
 
 #: tfrmdetailspackage.packagename.caption
 msgctxt "tfrmdetailspackage.packagename.caption"
 msgid "Package name : "
-msgstr ""
+msgstr "Package name : "
 
 #: tfrmdetailspackage.repository.caption
 msgctxt "tfrmdetailspackage.repository.caption"
 msgid "Repository :"
-msgstr ""
+msgstr "Repository :"
 
 #: tfrmdetailspackage.section.caption
 msgctxt "tfrmdetailspackage.section.caption"
 msgid "Section : "
-msgstr ""
+msgstr "Section : "
 
 #: tfrmdetailspackage.signaturedate.caption
 msgctxt "tfrmdetailspackage.signaturedate.caption"
 msgid "Signature date :"
-msgstr ""
+msgstr "Signature date : "
 
 #: tfrmdetailspackage.signer.caption
 msgctxt "tfrmdetailspackage.signer.caption"
 msgid "Signer :"
-msgstr ""
+msgstr "Signer :"
 
 #: tfrmdetailspackage.size.caption
 msgctxt "tfrmdetailspackage.size.caption"
 msgid "Package size : "
-msgstr ""
+msgstr "Package size : "
 
 #: tfrmdetailspackage.sizeinstalled.caption
 msgctxt "tfrmdetailspackage.sizeinstalled.caption"
 msgid "Size installed : "
+msgstr "Size installed : "
+
+#: tfrmnextprevious.label1.caption
+msgid "COUCOU"
 msgstr ""
 
 #: tfrmpackage.actcanceltask.caption
@@ -187,17 +191,17 @@ msgstr ""
 #: tfrmpackage.btncancel.caption
 msgctxt "tfrmpackage.btncancel.caption"
 msgid "Cancel"
-msgstr ""
+msgstr "Cancel"
 
 #: tfrmpackage.btninstallupgrade.caption
 msgctxt "tfrmpackage.btninstallupgrade.caption"
 msgid "Install"
-msgstr ""
+msgstr "Install"
 
 #: tfrmpackage.btnremove.caption
 msgctxt "tfrmpackage.btnremove.caption"
 msgid "Remove"
-msgstr ""
+msgstr "Remove"
 
 #: tfrmpackage.labdate.caption
 msgid "19/12/2024"
@@ -210,7 +214,7 @@ msgstr ""
 #: tfrmpackage.labelprogressioninstall.caption
 msgctxt "tfrmpackage.labelprogressioninstall.caption"
 msgid "0%"
-msgstr ""
+msgstr "0%"
 
 #: tfrmpackage.labinstallversion.caption
 msgid "1.5.1-0"
@@ -227,71 +231,67 @@ msgstr ""
 #: tfrmpackage.textwaitinstall.caption
 msgctxt "tfrmpackage.textwaitinstall.caption"
 msgid "Waiting for install..."
-msgstr ""
+msgstr "Waiting for install..."
 
 #: tvislogin.butcancel.caption
 msgctxt "tvislogin.butcancel.caption"
 msgid "Cancel"
-msgstr ""
+msgstr "Cancel"
 
 #: tvislogin.caption
 msgid "Sign in"
-msgstr ""
+msgstr "Sign in"
 
 #: tvislogin.statictext1.caption
 msgid "Login : "
-msgstr ""
+msgstr "Login : "
 
 #: tvislogin.statictext2.caption
 msgid "Password :"
-msgstr ""
+msgstr "Password :"
 
 #: tvislogin.warningtext.caption
 msgid "Wrong password or login !"
-msgstr ""
+msgstr "Wrong password or login !"
 
 #: tvissettings.butcancel.caption
 msgctxt "tvissettings.butcancel.caption"
 msgid "Cancel"
-msgstr ""
+msgstr "Cancel"
 
 #: tvissettings.caption
 msgctxt "tvissettings.caption"
 msgid "Settings"
-msgstr ""
+msgstr "Settings"
 
 #: tvissettings.language.caption
 msgid "Language : "
-msgstr ""
-
-#: tvissettings.warningtext.caption
-msgid "If you change the language the app will restart"
-msgstr ""
+msgstr "Language : "
 
 #: tviswaptself.actcanceltask.caption
 msgid "Cancel task(s)"
-msgstr ""
+msgstr "Cancel task(s)"
 
 #: tviswaptself.acthidedetailsclick.caption
 msgid "Hide"
-msgstr ""
+msgstr "Hide"
 
 #: tviswaptself.actsearchpackages.caption
 msgid "Search"
-msgstr ""
+msgstr "Search"
 
 #: tviswaptself.actshowtaskbar.caption
 msgctxt "tviswaptself.actshowtaskbar.caption"
 msgid "Show task bar"
-msgstr ""
+msgstr "Show task bar"
 
 #: tviswaptself.acttriggersearch.caption
 msgid "Trigger Search"
-msgstr ""
+msgstr "Trigger Search"
 
 #: tviswaptself.actunselectallkeywords.caption
 msgid "Uncheck all"
-msgstr ""
+msgstr "Uncheck all"
 
 #: tviswaptself.actupdatepackageslist.caption
 msgid "ActUpdatePackagesList"
@@ -300,176 +300,176 @@ msgstr ""
 #: tviswaptself.caption
 #| msgid "WAPT softwares Self-service"
 msgid "WAPT Self-service"
-msgstr ""
+msgstr "WAPT Self-service"
 
 #: tviswaptself.edsearch.texthint
 msgid "Search..."
-msgstr ""
+msgstr "Search..."
 
 #: tviswaptself.labcategories.caption
 msgid "Categories"
-msgstr ""
+msgstr "Categories"
 
 #: tviswaptself.labelnoresult.caption
 msgid "Sorry there is no result found."
-msgstr ""
+msgstr "Sorry there is no result found."
 
 #: tviswaptself.packages.caption
 msgid "Packages"
-msgstr ""
+msgstr "Packages"
 
 #: tviswaptself.radioshowall.caption
 msgctxt "tviswaptself.radioshowall.caption"
 msgid "All"
-msgstr ""
+msgstr "All"
 
 #: tviswaptself.radioshowinstalled.caption
 msgctxt "tviswaptself.radioshowinstalled.caption"
 msgid "Installed"
-msgstr ""
+msgstr "Installed"
 
 #: tviswaptself.radioshownotinstalled.caption
 msgid "Not installed"
-msgstr ""
+msgstr "Not installed"
 
 #: tviswaptself.radioshowupgradable.caption
 msgid "Upgradable"
-msgstr ""
+msgstr "Upgradable"
 
 #: tviswaptself.radiosortbydateascending.caption
 msgid "Date : oldest"
-msgstr ""
+msgstr "Date : oldest"
 
 #: tviswaptself.radiosortbydatedescending.caption
 msgid "Date : most recent"
-msgstr ""
+msgstr "Date : most recent"
 
 #: tviswaptself.radiosortbynameaz.caption
 msgid "Name : A-Z"
-msgstr ""
+msgstr "Name : A-Z"
 
 #: tviswaptself.radiosortbynameza.caption
 msgid "Name : Z-A"
-msgstr ""
+msgstr "Name : Z-A"
 
 #: tviswaptself.sogridtasks.header.columns[0].text
 msgctxt "tviswaptself.sogridtasks.header.columns[0].text"
 msgid "ID"
-msgstr ""
+msgstr "ID"
 
 #: tviswaptself.sogridtasks.header.columns[10].text
 msgctxt "tviswaptself.sogridtasks.header.columns[10].text"
 msgid "result"
-msgstr ""
+msgstr "result"
 
 #: tviswaptself.sogridtasks.header.columns[11].text
 msgctxt "tviswaptself.sogridtasks.header.columns[11].text"
 msgid "runstatus"
-msgstr ""
+msgstr "runstatus"
 
 #: tviswaptself.sogridtasks.header.columns[12].text
 msgctxt "tviswaptself.sogridtasks.header.columns[12].text"
 msgid "created_by"
-msgstr ""
+msgstr "created_by"
 
 #: tviswaptself.sogridtasks.header.columns[13].text
 msgctxt "tviswaptself.sogridtasks.header.columns[13].text"
 msgid "progress"
-msgstr ""
+msgstr "progress"
 
 #: tviswaptself.sogridtasks.header.columns[14].text
 msgctxt "tviswaptself.sogridtasks.header.columns[14].text"
 msgid "summary"
-msgstr ""
+msgstr "summary"
 
 #: tviswaptself.sogridtasks.header.columns[15].text
 msgctxt "tviswaptself.sogridtasks.header.columns[15].text"
 msgid "finish_date"
-msgstr ""
+msgstr "finish_date"
 
 #: tviswaptself.sogridtasks.header.columns[16].text
 msgctxt "tviswaptself.sogridtasks.header.columns[16].text"
 msgid "classname"
-msgstr ""
+msgstr "classname"
 
 #: tviswaptself.sogridtasks.header.columns[17].text
 msgctxt "tviswaptself.sogridtasks.header.columns[17].text"
 msgid "logs"
-msgstr ""
+msgstr "logs"
 
 #: tviswaptself.sogridtasks.header.columns[18].text
 msgctxt "tviswaptself.sogridtasks.header.columns[18].text"
 msgid "pidlist"
-msgstr ""
+msgstr "pidlist"
 
 #: tviswaptself.sogridtasks.header.columns[19].text
 msgctxt "tviswaptself.sogridtasks.header.columns[19].text"
 msgid "usecache"
-msgstr ""
+msgstr "usecache"
 
 #: tviswaptself.sogridtasks.header.columns[1].text
 msgctxt "tviswaptself.sogridtasks.header.columns[1].text"
 msgid "Status"
-msgstr ""
+msgstr "Status"
 
 #: tviswaptself.sogridtasks.header.columns[20].text
 msgctxt "tviswaptself.sogridtasks.header.columns[20].text"
 msgid "packagenames"
-msgstr ""
+msgstr "packagenames"
 
 #: tviswaptself.sogridtasks.header.columns[21].text
 msgctxt "tviswaptself.sogridtasks.header.columns[21].text"
 msgid "force"
-msgstr ""
+msgstr "force"
 
 #: tviswaptself.sogridtasks.header.columns[2].text
 msgctxt "tviswaptself.sogridtasks.header.columns[2].text"
 msgid "order"
-msgstr ""
+msgstr "order"
 
 #: tviswaptself.sogridtasks.header.columns[3].text
 msgctxt "tviswaptself.sogridtasks.header.columns[3].text"
 msgid "Description"
-msgstr ""
+msgstr "Description"
 
 #: tviswaptself.sogridtasks.header.columns[4].text
 msgctxt "tviswaptself.sogridtasks.header.columns[4].text"
 msgid "priority"
-msgstr ""
+msgstr "priority"
 
 #: tviswaptself.sogridtasks.header.columns[5].text
 msgctxt "tviswaptself.sogridtasks.header.columns[5].text"
 msgid "notify_user"
-msgstr ""
+msgstr "notify_user"
 
 #: tviswaptself.sogridtasks.header.columns[6].text
 msgctxt "tviswaptself.sogridtasks.header.columns[6].text"
 msgid "start_date"
-msgstr ""
+msgstr "start_date"
 
 #: tviswaptself.sogridtasks.header.columns[7].text
 msgctxt "tviswaptself.sogridtasks.header.columns[7].text"
 msgid "create_date"
-msgstr ""
+msgstr "create_date"
 
 #: tviswaptself.sogridtasks.header.columns[8].text
 msgctxt "tviswaptself.sogridtasks.header.columns[8].text"
 msgid "notify_server_on_finish"
-msgstr ""
+msgstr "notify_server_on_finish"
 
 #: tviswaptself.sogridtasks.header.columns[9].text
 msgctxt "tviswaptself.sogridtasks.header.columns[9].text"
 msgid "notify_server_on_start"
-msgstr ""
+msgstr "notify_server_on_start"
 
 #: tviswaptself.sortby.caption
 msgid "Sort by"
-msgstr ""
+msgstr "Sort by"
 
 #: ufrmpackage.rserrortriggeringtask
 msgctxt "ufrmpackage.rserrortriggeringtask"
 msgid "Error triggering action: %s"
-msgstr ""
+msgstr "Error triggering actio: %s"
 
 #: ufrmpackage.rsimpacted_processes
 msgctxt "ufrmpackage.rsimpacted_processes"
@@ -478,11 +478,14 @@ msgid ""
 "Do you want to continue ?\n"
 "Impacted processes : %s\n"
 msgstr ""
+"Some processes (see list below) may be closed during installation/removal.\n"
+"Do you want to continue ?\n"
+"Impacted processes : %s\n"
 
 #: uviswaptself.rsavailablepackages
 msgctxt "uviswaptself.rsavailablepackages"
 msgid "Available packages"
-msgstr ""
+msgstr "Available packages"
 
 #: uviswaptself.rsforce
 msgctxt "uviswaptself.rsforce"
@@ -490,76 +493,78 @@ msgid ""
 "An operation has failed do you want to force the installation/removal?\n"
 "Operation : %s\n"
 msgstr ""
+"An operation has failed do you want to force the installation/removal?\n"
+"Operation : %s\n"
 
 #: uviswaptself.rshidetaskbar
 msgctxt "uviswaptself.rshidetaskbar"
 msgid "Hide task bar"
-msgstr ""
+msgstr "Hide task bar"
 
 #: uviswaptself.rsinstalledpackages
 msgctxt "uviswaptself.rsinstalledpackages"
 msgid "Installed packages"
-msgstr ""
+msgstr "Installed packages"
 
 #: uviswaptself.rslogin
 msgctxt "uviswaptself.rslogin"
 msgid "Login"
-msgstr ""
+msgstr "Login"
 
 #: uviswaptself.rsnotinstalledpackages
 msgctxt "uviswaptself.rsnotinstalledpackages"
 msgid "Not installed packages"
-msgstr ""
+msgstr "Not installed packages"
 
 #: uviswaptself.rspassword
 msgctxt "uviswaptself.rspassword"
 msgid "Password"
-msgstr ""
+msgstr "Password"
 
 #: uviswaptself.rsshowtaskbar
 msgctxt "uviswaptself.rsshowtaskbar"
 msgid "Show task bar"
-msgstr ""
+msgstr "Show task bar"
 
 #: uviswaptself.rssortbydateasc
 msgctxt "uviswaptself.rssortbydateasc"
 msgid "Sort by date : asc"
-msgstr ""
+msgstr "Sort by date : asc"
 
 #: uviswaptself.rssortbydatedesc
 msgctxt "uviswaptself.rssortbydatedesc"
 msgid "Sort by date : desc"
-msgstr ""
+msgstr "Sort by date : desc"
 
 #: uviswaptself.rsupgradablepackages
 msgctxt "uviswaptself.rsupgradablepackages"
 msgid "Available updates for installed packages"
-msgstr ""
+msgstr "Available updates for installed packages"
 
 #: uwaptselfres.rsactioninstall
 msgctxt "uwaptselfres.rsactioninstall"
 msgid "Install"
-msgstr ""
+msgstr "Install"
 
 #: uwaptselfres.rsactionremove
 msgctxt "uwaptselfres.rsactionremove"
 msgid "Remove"
-msgstr ""
+msgstr "Remove"
 
 #: uwaptselfres.rsactionupgrade
 msgctxt "uwaptselfres.rsactionupgrade"
 msgid "Upgrade"
-msgstr ""
+msgstr "Upgrade"
 
 #: uwaptselfres.rsallcategories
 msgctxt "uwaptselfres.rsallcategories"
 msgid "All"
-msgstr ""
+msgstr "All"
 
 #: uwaptselfres.rserrortriggeringtask
 msgctxt "uwaptselfres.rserrortriggeringtask"
 msgid "Error triggering action: %s"
-msgstr ""
+msgstr "Error triggering action: %s"
 
 #: uwaptselfres.rsforce
 msgctxt "uwaptselfres.rsforce"
@@ -567,11 +572,13 @@ msgid ""
 "An operation has failed do you want to force the installation/removal?\n"
 "Operation : %s\n"
 msgstr ""
+"An operation has failed do you want to force the installation/removal?\n"
+"Operation : %s\n"
 
 #: uwaptselfres.rshidetaskbar
 msgctxt "uwaptselfres.rshidetaskbar"
 msgid "Hide task bar"
-msgstr ""
+msgstr "Hide task bar"
 
 #: uwaptselfres.rsimpacted_processes
 msgctxt "uwaptselfres.rsimpacted_processes"
@@ -580,47 +587,54 @@ msgid ""
 "Do you want to continue ?\n"
 "Impacted processes : %s\n"
 msgstr ""
+"Some processes (see list below) may be closed during installation/removal.\n"
+"Do you want to continue ?\n"
+"Impacted processes : %s\n"
 
 #: uwaptselfres.rslogin
 msgctxt "uwaptselfres.rslogin"
 msgid "Login"
-msgstr ""
+msgstr "Login"
 
 #: uwaptselfres.rspassword
 msgctxt "uwaptselfres.rspassword"
 msgid "Password"
-msgstr ""
+msgstr "Password¨"
 
 #: uwaptselfres.rsshowtaskbar
 msgctxt "uwaptselfres.rsshowtaskbar"
 msgid "Show task bar"
-msgstr ""
+msgstr "Show task bar"
 
 #: uwaptselfres.rssortbydateasc
 msgctxt "uwaptselfres.rssortbydateasc"
 msgid "Sort by date : asc"
-msgstr ""
+msgstr "Sort by date : asc"
 
 #: uwaptselfres.rssortbydatedesc
 msgctxt "uwaptselfres.rssortbydatedesc"
 msgid "Sort by date : desc"
-msgstr ""
+msgstr "Sort by date : desc"
 
 #: uwaptselfres.rsstatusinstalled
 msgctxt "uwaptselfres.rsstatusinstalled"
 msgid "Installed"
-msgstr ""
+msgstr "Installed"
 
 #: uwaptselfres.rswaitinginstall
 msgctxt "uwaptselfres.rswaitinginstall"
 msgid "Waiting for install..."
-msgstr ""
+msgstr "Waiting for install..."
 
 #: uwaptselfres.rswaitingremove
 msgid "Waiting for uninstall..."
-msgstr ""
+msgstr "Waiting for uninstall..."
 
 #: uwaptselfres.rswarningnologinorpassword
 msgid "Please enter a login/password"
+msgstr "Please enter a login/password"
+
+#: uwaptselfres.rswarningpasswordloginblank
+msgid "Your password or login is empty"
 msgstr ""
 

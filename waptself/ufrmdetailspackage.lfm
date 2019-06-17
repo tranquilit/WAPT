@@ -8,6 +8,7 @@ object FrmDetailsPackage: TFrmDetailsPackage
   ClientWidth = 345
   Color = clWhite
   Constraints.MaxWidth = 345
+  LCLVersion = '1.8.4.0'
   ParentColor = False
   TabOrder = 0
   DesignLeft = 2570
@@ -26,8 +27,8 @@ object FrmDetailsPackage: TFrmDetailsPackage
     AutoSize = True
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 773
-    ClientWidth = 341
+    ClientHeight = 777
+    ClientWidth = 345
     Color = clWhite
     ParentColor = False
     TabOrder = 0

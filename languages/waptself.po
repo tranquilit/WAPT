@@ -179,6 +179,10 @@ msgctxt "tfrmdetailspackage.sizeinstalled.caption"
 msgid "Size installed : "
 msgstr ""
 
+#: tfrmnextprevious.label1.caption
+msgid "COUCOU"
+msgstr ""
+
 #: tfrmpackage.actcanceltask.caption
 msgctxt "tfrmpackage.actcanceltask.caption"
 msgid "ActCancelTask"
@@ -262,10 +266,6 @@ msgstr ""
 
 #: tvissettings.language.caption
 msgid "Language : "
-msgstr ""
-
-#: tvissettings.warningtext.caption
-msgid "If you change the language the app will restart"
 msgstr ""
 
 #: tviswaptself.actcanceltask.caption
@@ -622,5 +622,9 @@ msgstr ""
 
 #: uwaptselfres.rswarningnologinorpassword
 msgid "Please enter a login/password"
+msgstr ""
+
+#: uwaptselfres.rswarningpasswordloginblank
+msgid "Your password or login is empty"
 msgstr ""
 

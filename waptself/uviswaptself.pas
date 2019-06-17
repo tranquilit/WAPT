@@ -9,7 +9,7 @@ uses
   ExtCtrls, EditBtn, StdCtrls, Buttons, ActnList, uvislogin, BCListBox,
   BCMaterialDesignButton, BCLabel, FXMaterialButton, IdAuthentication,
   superobject, waptcommon, httpsend, sogrid, uWAPTPollThreads, VirtualTrees,
-  ImgList, ComCtrls, Menus, uFrmPackage, uFrmDetailsPackage, lmessages;
+  ImgList, ComCtrls, Menus, uFrmPackage, uFrmDetailsPackage, lmessages,uFrmNextPrevious;
 
 type
   { TThreadGetAllIcons }
@@ -83,6 +83,8 @@ type
     StaticText1: TStaticText;
     StaticText2: TStaticText;
     DetailsBarPanel: TPanel;
+    TimerPreviousFrames: TTimer;
+    TimerNextFrames: TTimer;
     TimerSearch: TTimer;
 
     procedure ActCancelTaskExecute(Sender: TObject);
@@ -133,6 +135,8 @@ type
       var Ghosted: Boolean; var ImageIndex: Integer;
       var ImageList: TCustomImageList);
     procedure TaskBarPanelPaint(Sender: TObject);
+    procedure TimerNextFramesTimer(Sender: TObject);
+    procedure TimerPreviousFramesTimer(Sender: TObject);
     procedure TimerSearchTimer(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormClose(Sender: TObject);
@@ -147,6 +151,7 @@ type
     WAPTServiceRunning:Boolean;
     LastTaskIDOnLaunch:integer;
     CurrentTaskID:integer;
+
     LastNumberOfFrame:integer;
 
     LstIcons: TStringList;
@@ -157,6 +162,7 @@ type
 
     login: String;
     password: String;
+    NumberOfFrames: Integer;
 
     function GetAllPackages: ISuperObject;
     procedure OnUpgradeTriggeredAllPackages(Sender : TObject);
@@ -176,6 +182,7 @@ type
     function IsValidFilter(package : ISuperObject):Boolean;
     function IsValidCategory(package : ISuperObject):Boolean;
     function SelectedAreOnlyPending: Boolean;
+    function CanNext(): Boolean;
 
     function RemoveAccent(const AText : String) : string;
     function GetAllPackagesSorted(Pck : ISuperObject):ISuperObject;
@@ -183,10 +190,14 @@ type
     property AllPackages:ISuperObject read GetAllPackages write FAllPackages;
     function GoodSizeForScreen(ASize : integer):integer;
     procedure EventsScrollBar(var TheMessage: TLMessage);
+    procedure AddFrameOnFlowPackages(Pck : ISuperObject);
   public
     CheckTasksThread: TCheckAllTasksThread;
     CheckEventsThread: TCheckEventsThread;
     procedure ChangeIconMinusByPlusOnFrames();
+    procedure NextFrames();
+    procedure PreviousFrames();
+
   end;
 
 var
@@ -202,10 +213,9 @@ uses LCLIntf, LCLType, waptwinutils, soutils, strutils, uWaptSelfRes, IniFiles, 
 procedure TVisWaptSelf.ActSearchPackagesExecute(Sender: TObject);
 var
   Pck:ISuperObject;
-  AFrmPackage:TFrmPackage;
-  idx,IconIdx:Integer;
-  strtmp:String;
-  begin
+  AFrmNextPrevious : TFrmNextPrevious;
+  idx:Integer;
+begin
   try
     TimerSearch.Enabled:=False;
     Screen.Cursor:=crHourGlass;
@@ -216,119 +226,27 @@ var
     FlowPackages.ControlList.Clear;
 
     LastNumberOfFrame:=0;
+
     for Pck in AllPackages do
     begin
       if IsValidPackage(Pck) and IsValidFilter(Pck) and IsValidCategory(Pck) then
       begin
         inc(LastNumberOfFrame);
-        AFrmPackage:=TFrmPackage.Create(FlowPackages);
-        AFrmPackage.Package:=Pck;
-        with AFrmPackage do
-        begin
-            Parent := FlowPackages;
-            Name:='package'+IntToStr(LastNumberOfFrame);
-            LabPackageName.Caption:=UTF8Encode(package.S['name']);
-            AdjustFont(LabPackageName);
-            AdjustFont(LabVersion);
-            LabDescription.Caption:=UTF8Encode(package.S['description']);
+        AddFrameOnFlowPackages(Pck);
+        if LastNumberOfFrame=NumberOfFrames then
+        Break;
+      end;
+    end;
 
-            strtmp:=UTF8Encode(package.S['signature_date']);
-            LabDate.Caption:=Copy(strtmp,7,2)+'/'+Copy(strtmp,5,2)+'/'+Copy(strtmp,1,4);
-
-            if (LstIcons<>Nil) then
-            begin
-            IconIdx := LstIcons.IndexOf(UTF8Encode(package.S['package']+'.png'));
-            if IconIdx>=0 then
-              ImgPackage.Picture.Assign(LstIcons.Objects[IconIdx] as TPicture);
-            end;
-
-            if (package.S['install_status'] = 'OK') then //Package installed
-            begin
-              LabVersion.Caption:=UTF8Encode(package.S['install_version']);
-              if (package.S['install_version'] >= package.S['version']) then //Package installed and updated
-                begin
-                  BtnInstallUpgrade.Caption:=rsStatusInstalled;
-                  BtnInstallUpgrade.Enabled:=false;
-                  BtnRemove.NormalColor:=$005754E0;
-                end
-              else                       //Package installed but not updated
-                begin
-                  BtnInstallUpgrade.Caption:=rsActionUpgrade;
-                  BtnInstallUpgrade.NormalColor:=$004080FF;
-                  LabInstallVersion.Caption:='(over '+UTF8Encode(package.S['install_version'])+')';
-                  AdjustFont(LabInstallVersion);
-                  LabInstallVersion.Visible:=True;
-                  BtnRemove.NormalColor:=$005754E0;
-                  ActionPackage:='install';
-                  LabVersion.Caption:=UTF8Encode(package.S['version']);
-                end;
-            end
-            else         //Package not installed
-              begin
-                ActionPackage:='install';
-                BtnInstallUpgrade.NormalColor:=clGreen;
-                BtnRemove.Enabled:=false;
-                LabVersion.Caption:=UTF8Encode(package.S['version']);
-              end;
-
-            //Identification
-            login:=Self.login;
-            password:=Self.password;
-            OnLocalServiceAuth:=@(Self.OnLocalServiceAuth);
-
-            //PanelDetails
-
-            FrmDetailsPackageInPanel:=Self.FrmDetailsPackageInPanel;
-            PanelDetails:=Self.DetailsBarPanel;
-
-            LstTasks:=Self.LstTasks;
-            if (LstTasks.IndexOf(UTF8Encode(Package.S['package'])))<>-1 then
-            begin
-              TaskID:=Integer(LstTasks.Objects[LstTasks.IndexOf(UTF8Encode(Package.S['package']))]);
-              if (ActionPackage='install') then
-                begin
-                  BtnInstallUpgrade.Enabled:=false;
-                  BtnInstallUpgrade.NormalColor:=$00C4C4C4;
-                  TextWaitInstall.Caption:=rsWaitingInstall;
-                  ActionPackage:='install';
-                end
-              else
-                begin
-                  ActionPackage:='remove';
-                  BtnRemove.Enabled:=false;
-                  BtnRemove.NormalColor:=$00C4C4C4;
-                  TextWaitInstall.Caption:=rsWaitingRemove;
-                  TextWaitInstall.Show;
-                end;
-              TextWaitInstall.Show;
-              BtnCancel.Show;
-              if (TaskID=CurrentTaskID) then
-              begin
-                BtnCancel.Hide;
-                ProgressBarInstall.Show;
-                LabelProgressionInstall.Show;
-                TextWaitInstall.Hide;
-              end;
-            end;
-
-            if (Screen.PixelsPerInch<>96) then
-            begin
-              LabPackageName.FontEx.Height:=GoodSizeForScreen(LabPackageName.FontEx.Height);
-              LabVersion.FontEx.Height:=GoodSizeForScreen(LabVersion.FontEx.Height);
-              LabDescription.FontEx.Height:=GoodSizeForScreen(LabDescription.FontEx.Height);
-              LabInstallVersion.FontEx.Height:=GoodSizeForScreen(LabInstallVersion.FontEx.Height);
-              LabDate.FontEx.Height:=GoodSizeForScreen(LabDate.FontEx.Height);
-              LabelProgressionInstall.FontEx.Height:=GoodSizeForScreen(LabelProgressionInstall.FontEx.Height);
-              BtnInstallUpgrade.TextSize:=GoodSizeForScreen(BtnInstallUpgrade.TextSize);
-              BtnCancel.TextSize:=GoodSizeForScreen(BtnCancel.TextSize);
-              BtnRemove.TextSize:=GoodSizeForScreen(BtnRemove.TextSize);
-              TextWaitInstall.FontEx.Height:=GoodSizeForScreen(TextWaitInstall.FontEx.Height);
-              ImgPackage.AntialiasingMode:=amOn;
-            end;
-
-          if LastNumberOfFrame>50 then
-            break;
-        end;
+    if CanNext() then
+    begin
+      AFrmNextPrevious:=TFrmNextPrevious.Create(FlowPackages);
+      with AFrmNextPrevious do
+      begin
+        Parent:=FlowPackages;
+        Name:='Next';
+        isNext:=true;
+        LogoNextPrev.Picture.LoadFromResourceName(HINSTANCE,'FLECHE-BAS-BLANC-100PX');
       end;
     end;
 
@@ -342,10 +260,145 @@ var
       LabelNoResult.Hide;
       PicLogo.Hide;
     end;
+  finally
+    FlowPackages.EnableAlign;
+    Screen.Cursor:=crDefault;
+  end;
+end;
+
+function TVisWaptSelf.CanNext(): Boolean;
+var
+  Pck : ISuperObject;
+  i : integer;
+begin
+  i:=0;
+  for Pck in AllPackages do
+  begin
+    if IsValidPackage(Pck) and IsValidFilter(Pck) and IsValidCategory(Pck) then
+    begin
+      inc(i);
+      if (i>LastNumberOfFrame) then
+        Exit(True);
+    end;
+  end;
+  Result:=false;
+end;
+
+procedure TVisWaptSelf.NextFrames();
+var
+  Pck:ISuperObject;
+  AFrmNextPrevious : TFrmNextPrevious;
+  NewLastNumberOfFrame,idx,PosHeight:Integer;
+begin
+  try
+    Screen.Cursor:=crHourGlass;
+    FlowPackages.DisableAlign;
+
+    for idx := FlowPackages.ControlCount-1 downto 0 do
+        FlowPackages.Controls[idx].Free;
+    FlowPackages.ControlList.Clear;
+
+    AFrmNextPrevious:=TFrmNextPrevious.Create(FlowPackages);
+    with AFrmNextPrevious do
+    begin
+      Parent:=FlowPackages;
+      Name:='Previous';
+      isNext:=false;
+      LogoNextPrev.Picture.LoadFromResourceName(HINSTANCE,'FLECHE-HAUT-BLANC-100PX');
+      PosHeight:=Width;
+    end;
+
+    NewLastNumberOfFrame:=LastNumberOfFrame+NumberOfFrames;
+    idx:=0;
+
+    for Pck in AllPackages do
+    begin
+      inc(idx);
+      if (idx>LastNumberOfFrame) and IsValidPackage(Pck) and IsValidFilter(Pck) and IsValidCategory(Pck) then
+      begin
+        inc(LastNumberOfFrame);
+        AddFrameOnFlowPackages(Pck);
+        if LastNumberOfFrame=NewLastNumberOfFrame then
+        Break;
+      end;
+    end;
+
+    if CanNext() then
+    begin
+      AFrmNextPrevious:=TFrmNextPrevious.Create(FlowPackages);
+      with AFrmNextPrevious do
+      begin
+        Parent:=FlowPackages;
+        Name:='Next';
+        isNext:=true;
+        LogoNextPrev.Picture.LoadFromResourceName(HINSTANCE,'FLECHE-BAS-BLANC-100PX');
+      end;
+    end;
 
   finally
     FlowPackages.EnableAlign;
     Screen.Cursor:=crDefault;
+    ScrollBoxPackages.VertScrollBar.Position:=PosHeight;
+  end;
+end;
+
+procedure TVisWaptSelf.PreviousFrames();
+var
+  Pck:ISuperObject;
+  AFrmNextPrevious : TFrmNextPrevious;
+  NewLastNumberOfFrame,idx,PosHeight:Integer;
+begin
+  try
+    Screen.Cursor:=crHourGlass;
+    FlowPackages.DisableAlign;
+
+    for idx := FlowPackages.ControlCount-1 downto 0 do
+      FlowPackages.Controls[idx].Free;
+    FlowPackages.ControlList.Clear;
+
+    if (LastNumberOfFrame-(2*NumberOfFrames))>0 then
+    begin
+      AFrmNextPrevious:=TFrmNextPrevious.Create(FlowPackages);
+      with AFrmNextPrevious do
+      begin
+        Parent:=FlowPackages;
+        Name:='Previous';
+        isNext:=false;
+        LogoNextPrev.Picture.LoadFromResourceName(HINSTANCE,'FLECHE-HAUT-BLANC-100PX');
+        PosHeight:=Width;
+      end;
+    end
+    else
+      PosHeight:=0;
+
+    NewLastNumberOfFrame:=LastNumberOfFrame-NumberOfFrames;
+    idx:=0;
+
+    for Pck in AllPackages do
+    begin
+      inc(idx);
+      if (idx>(LastNumberOfFrame-(2*NumberOfFrames))) and IsValidPackage(Pck) and IsValidFilter(Pck) and IsValidCategory(Pck) then
+      begin
+        dec(LastNumberOfFrame);
+        AddFrameOnFlowPackages(Pck);
+        if LastNumberOfFrame=NewLastNumberOfFrame then
+        Break;
+      end;
+    end;
+
+    AFrmNextPrevious:=TFrmNextPrevious.Create(FlowPackages);
+    with AFrmNextPrevious do
+    begin
+      Parent:=FlowPackages;
+      Name:='Next';
+      isNext:=true;
+      LogoNextPrev.Picture.LoadFromResourceName(HINSTANCE,'FLECHE-BAS-BLANC-100PX');
+    end;
+
+  finally
+    FlowPackages.EnableAlign;
+    Screen.Cursor:=crDefault;
+    ScrollBoxPackages.VertScrollBar.Position:=PosHeight;
   end;
 end;
 
@@ -361,15 +414,18 @@ end;
 procedure TVisWaptSelf.ActResizeFlowPackagesExecute(Sender: TObject);
 var
   i,WidthPref: integer;
-  AFrmPackage:TFrmPackage;
 begin
   if (FlowPackages.Width>ScaleX(350,96)) then
   begin
       WidthPref:=trunc((FlowPackages.Width/(FlowPackages.Width div ScaleX(350,96)))-1);
     for i:=0 to FlowPackages.ControlCount-1 do
     begin
-      AFrmPackage:=FlowPackages.Controls[i] as TFrmPackage;
-      AFrmPackage.Width:=WidthPref;
+      if (FlowPackages.Controls[i] is TFrmPackage) then
+      begin
+        (FlowPackages.Controls[i] as TFrmPackage).Width:=WidthPref;
+      end
+      else
+        (FlowPackages.Controls[i] as TFrmNextPrevious).Width:=FlowPackages.Width;
     end;
   end
   else
@@ -506,6 +562,18 @@ begin
   DetailsBarPanel.Hide;
   ChangeIconMinusByPlusOnFrames();
   BtnShowTaskBar.Caption:=rsHideTaskBar;
+end;
+
+procedure TVisWaptSelf.TimerNextFramesTimer(Sender: TObject);
+begin
+  TimerNextFrames.Enabled:=False;
+  NextFrames();
+end;
+
+procedure TVisWaptSelf.TimerPreviousFramesTimer(Sender: TObject);
+begin
+  TimerPreviousFrames.Enabled:=False;
+  PreviousFrames();
 end;
 
 procedure TVisWaptSelf.ActCancelTaskExecute(Sender: TObject);
@@ -661,6 +729,7 @@ begin
   ShowOnlyUpgradable:=false;
   SortByDateAsc:=false;
   SortByName:=false;
+  NumberOfFrames:=50;
 
   login:=waptwinutils.AGetUserName;
   password:='';
@@ -891,8 +960,6 @@ begin
           ComboBoxCategories.ItemIndex:=ComboBoxCategories.Items.IndexOf(rsAllCategories);
           ActSearchPackages.Execute;
         end;
-        //ShellExecute(Handle, nil, PChar(Application.ExeName), nil, nil, SW_SHOWNORMAL);
-        //Self.Close;
       end;
     end;
     FreeAndNil(SettingsDlg);
@@ -1007,72 +1074,75 @@ var
 begin
   for i:=0 to FlowPackages.ControlCount-1 do
   begin
-    AFrmPackage:=FlowPackages.Controls[i] as TFrmPackage;
-    if (AFrmPackage.TaskID<>0) and (AFrmPackage.TaskID=LastEvent.I['data.id']) then
+    if (FlowPackages.Controls[i] is TFrmPackage) then
     begin
-      CurrentTaskID:=LastEvent.I['data.id'];
-      case LastEvent.S['event_type'] of
-        'TASK_START':
-        begin
-          AFrmPackage.BtnCancel.Hide;
-          AFrmPackage.ProgressBarInstall.Show;
-          AFrmPackage.LabelProgressionInstall.Show;
-          AFrmPackage.TextWaitInstall.Hide;
-        end;
-        'TASK_STATUS':
-        begin
-          AFrmPackage.ProgressBarInstall.Position:=LastEvent.I['data.progress'];
-          AFrmPackage.LabelProgressionInstall.Caption:=IntToStr(LastEvent.I['data.progress'])+'%';
-        end;
-        'TASK_FINISH':
-        begin
-          AFrmPackage.ProgressBarInstall.Position:=LastEvent.I['data.progress'];
-          AFrmPackage.ProgressBarInstall.Style:=pbstNormal;
-          AFrmPackage.LabelProgressionInstall.Caption:=IntToStr(LastEvent.I['data.progress'])+'%';
-          if (ShowOnlyInstalled or ShowOnlyNotInstalled or ShowOnlyUpgradable) then
-            AFrmPackage.Autoremove:=true;
-          LstTasks.Delete(LstTasks.IndexOf(UTF8Encode(AFrmPackage.Package.S['package'])));
-          AFrmPackage.TaskID:=0;
-          AFrmPackage.TimerInstallRemoveFinished.Enabled:=true;
-          CurrentTaskID:=0;
-        end;
-        'TASK_ERROR':
-        begin
-          if (MessageDlg(Format(rsForce,[LastEvent.O['data'].S['description']]),mtWarning,mbYesNo,0)= mrYes) then
+      AFrmPackage:=FlowPackages.Controls[i] as TFrmPackage;
+      if (AFrmPackage.TaskID<>0) and (AFrmPackage.TaskID=LastEvent.I['data.id']) then
+      begin
+        CurrentTaskID:=LastEvent.I['data.id'];
+        case LastEvent.S['event_type'] of
+          'TASK_START':
           begin
-              LstTasks.Delete(LstTasks.IndexOf(UTF8Encode(AFrmPackage.Package.S['package'])));
-              AFrmPackage.TaskID:=0;
-              CurrentTaskID:=0;
-              AFrmPackage.LaunchActionPackage(AFrmPackage.ActionPackage,AFrmPackage.Package,true)
-          end
-          else
+            AFrmPackage.BtnCancel.Hide;
+            AFrmPackage.ProgressBarInstall.Show;
+            AFrmPackage.LabelProgressionInstall.Show;
+            AFrmPackage.TextWaitInstall.Hide;
+          end;
+          'TASK_STATUS':
           begin
-            if (AFrmPackage.ActionPackage='install') then
+            AFrmPackage.ProgressBarInstall.Position:=LastEvent.I['data.progress'];
+            AFrmPackage.LabelProgressionInstall.Caption:=IntToStr(LastEvent.I['data.progress'])+'%';
+          end;
+          'TASK_FINISH':
+          begin
+            AFrmPackage.ProgressBarInstall.Position:=LastEvent.I['data.progress'];
+            AFrmPackage.ProgressBarInstall.Style:=pbstNormal;
+            AFrmPackage.LabelProgressionInstall.Caption:=IntToStr(LastEvent.I['data.progress'])+'%';
+            if (ShowOnlyInstalled or ShowOnlyNotInstalled or ShowOnlyUpgradable) then
+              AFrmPackage.Autoremove:=true;
+            LstTasks.Delete(LstTasks.IndexOf(UTF8Encode(AFrmPackage.Package.S['package'])));
+            AFrmPackage.TaskID:=0;
+            AFrmPackage.TimerInstallRemoveFinished.Enabled:=true;
+            CurrentTaskID:=0;
+          end;
+          'TASK_ERROR':
+          begin
+            if (MessageDlg(Format(rsForce,[LastEvent.O['data'].S['description']]),mtWarning,mbYesNo,0)= mrYes) then
             begin
-              AFrmPackage.BtnInstallUpgrade.Caption:='Install';
-              AFrmPackage.BtnInstallUpgrade.NormalColor:=clGreen;
-              AFrmPackage.BtnInstallUpgrade.Enabled:=true;
-              AFrmPackage.ActionPackage:='install';
+                LstTasks.Delete(LstTasks.IndexOf(UTF8Encode(AFrmPackage.Package.S['package'])));
+                AFrmPackage.TaskID:=0;
+                CurrentTaskID:=0;
+                AFrmPackage.LaunchActionPackage(AFrmPackage.ActionPackage,AFrmPackage.Package,true)
             end
             else
             begin
-              AFrmPackage.BtnRemove.NormalColor:=$005754E0;
-              AFrmPackage.BtnRemove.Enabled:=true;
-              AFrmPackage.ActionPackage:='remove';
-              AFrmPackage.BtnInstallUpgrade.Caption:=rsStatusInstalled;
+              if (AFrmPackage.ActionPackage='install') then
+              begin
+                AFrmPackage.BtnInstallUpgrade.Caption:='Install';
+                AFrmPackage.BtnInstallUpgrade.NormalColor:=clGreen;
+                AFrmPackage.BtnInstallUpgrade.Enabled:=true;
+                AFrmPackage.ActionPackage:='install';
+              end
+              else
+              begin
+                AFrmPackage.BtnRemove.NormalColor:=$005754E0;
+                AFrmPackage.BtnRemove.Enabled:=true;
+                AFrmPackage.ActionPackage:='remove';
+                AFrmPackage.BtnInstallUpgrade.Caption:=rsStatusInstalled;
+              end;
+              AFrmPackage.ProgressBarInstall.Position:=0;
+              AFrmPackage.ProgressBarInstall.Hide;
+              AFrmPackage.LabelProgressionInstall.Caption:='0%';
+              AFrmPackage.LabelProgressionInstall.Hide;
+              AFrmPackage.TextWaitInstall.Hide;
+              AFrmPackage.BtnCancel.Hide;
+              LstTasks.Delete(LstTasks.IndexOf(UTF8Encode(AFrmPackage.Package.S['package'])));
+              AFrmPackage.TaskID:=0;
             end;
-            AFrmPackage.ProgressBarInstall.Position:=0;
-            AFrmPackage.ProgressBarInstall.Hide;
-            AFrmPackage.LabelProgressionInstall.Caption:='0%';
-            AFrmPackage.LabelProgressionInstall.Hide;
-            AFrmPackage.TextWaitInstall.Hide;
-            AFrmPackage.BtnCancel.Hide;
-            LstTasks.Delete(LstTasks.IndexOf(UTF8Encode(AFrmPackage.Package.S['package'])));
-            AFrmPackage.TaskID:=0;
           end;
         end;
+        Exit();
       end;
-      Exit();
     end;
   end;
 end;
@@ -1140,12 +1210,15 @@ var
 begin
   for i:=0 to FlowPackages.ControlCount-1 do
   begin
-    AFrmPackage:=FlowPackages.Controls[i] as TFrmPackage;
-    if (AFrmPackage.DetailsClicked) then
+    if (FlowPackages.Controls[i] is TFrmPackage) then
     begin
-      AFrmPackage.DetailsClicked:=not(AFrmPackage.DetailsClicked);
-      AFrmPackage.ImageDetails.Picture.LoadFromResourceName(HINSTANCE,'PLUS-BLEU-FONCE');
-      break;
+      AFrmPackage:=FlowPackages.Controls[i] as TFrmPackage;
+      if (AFrmPackage.DetailsClicked) then
+      begin
+        AFrmPackage.DetailsClicked:=not(AFrmPackage.DetailsClicked);
+        AFrmPackage.ImageDetails.Picture.LoadFromResourceName(HINSTANCE,'PLUS-BLEU-FONCE');
+        break;
+      end;
     end;
   end;
 end;
@@ -1267,8 +1340,122 @@ end;
 procedure TVisWaptSelf.EventsScrollBar(var TheMessage: TLMessage);
 begin
   PrevWndProc(TheMessage);
-  if TheMessage.msg=LM_VSCROLL then
-    BtnShowTaskBar.Caption:='test';
+  if (TheMessage.msg=LM_VSCROLL) then
+  begin
+  end;
+end;
+
+procedure TVisWaptSelf.AddFrameOnFlowPackages(Pck: ISuperObject);
+var
+  AFrmPackage : TFrmPackage;
+  strtmp : String;
+  IconIdx : Integer;
+begin
+  AFrmPackage:=TFrmPackage.Create(FlowPackages);
+  AFrmPackage.Package:=Pck;
+  with AFrmPackage do
+  begin
+      Parent := FlowPackages;
+      Name:='package'+IntToStr(LastNumberOfFrame);
+      LabPackageName.Caption:=UTF8Encode(package.S['name']);
+      AdjustFont(LabPackageName);
+      AdjustFont(LabVersion);
+      LabDescription.Caption:=UTF8Encode(package.S['description']);
+
+      strtmp:=UTF8Encode(package.S['signature_date']);
+      LabDate.Caption:=Copy(strtmp,7,2)+'/'+Copy(strtmp,5,2)+'/'+Copy(strtmp,1,4);
+
+      if (LstIcons<>Nil) then
+      begin
+      IconIdx := LstIcons.IndexOf(UTF8Encode(package.S['package']+'.png'));
+      if IconIdx>=0 then
+        ImgPackage.Picture.Assign(LstIcons.Objects[IconIdx] as TPicture);
+      end;
+
+      if (package.S['install_status'] = 'OK') then //Package installed
+      begin
+        LabVersion.Caption:=UTF8Encode(package.S['install_version']);
+        if (package.S['install_version'] >= package.S['version']) then //Package installed and updated
+          begin
+            BtnInstallUpgrade.Caption:=rsStatusInstalled;
+            BtnInstallUpgrade.Enabled:=false;
+            BtnRemove.NormalColor:=$005754E0;
+          end
+        else                       //Package installed but not updated
+          begin
+            BtnInstallUpgrade.Caption:=rsActionUpgrade;
+            BtnInstallUpgrade.NormalColor:=$004080FF;
+            LabInstallVersion.Caption:='(over '+UTF8Encode(package.S['install_version'])+')';
+            AdjustFont(LabInstallVersion);
+            LabInstallVersion.Visible:=True;
+            BtnRemove.NormalColor:=$005754E0;
+            ActionPackage:='install';
+            LabVersion.Caption:=UTF8Encode(package.S['version']);
+          end;
+      end
+      else         //Package not installed
+        begin
+          ActionPackage:='install';
+          BtnInstallUpgrade.NormalColor:=clGreen;
+          BtnRemove.Enabled:=false;
+          LabVersion.Caption:=UTF8Encode(package.S['version']);
+        end;
+
+      //Identification
+      login:=Self.login;
+      password:=Self.password;
+      OnLocalServiceAuth:=@(Self.OnLocalServiceAuth);
+
+      //PanelDetails
+
+      FrmDetailsPackageInPanel:=Self.FrmDetailsPackageInPanel;
+      PanelDetails:=Self.DetailsBarPanel;
+
+      LstTasks:=Self.LstTasks;
+      if (LstTasks.IndexOf(UTF8Encode(Package.S['package'])))<>-1 then
+      begin
+        TaskID:=Integer(LstTasks.Objects[LstTasks.IndexOf(UTF8Encode(Package.S['package']))]);
+        if (ActionPackage='install') then
+          begin
+            BtnInstallUpgrade.Enabled:=false;
+            BtnInstallUpgrade.NormalColor:=$00C4C4C4;
+            TextWaitInstall.Caption:=rsWaitingInstall;
+            ActionPackage:='install';
+          end
+        else
+          begin
+            ActionPackage:='remove';
+            BtnRemove.Enabled:=false;
+            BtnRemove.NormalColor:=$00C4C4C4;
+            TextWaitInstall.Caption:=rsWaitingRemove;
+            TextWaitInstall.Show;
+          end;
+        TextWaitInstall.Show;
+        BtnCancel.Show;
+        if (TaskID=CurrentTaskID) then
+        begin
+          BtnCancel.Hide;
+          ProgressBarInstall.Show;
+          LabelProgressionInstall.Show;
+          TextWaitInstall.Hide;
+        end;
+      end;
+
+      if (Screen.PixelsPerInch<>96) then
+      begin
+        LabPackageName.FontEx.Height:=GoodSizeForScreen(LabPackageName.FontEx.Height);
+        LabVersion.FontEx.Height:=GoodSizeForScreen(LabVersion.FontEx.Height);
+        LabDescription.FontEx.Height:=GoodSizeForScreen(LabDescription.FontEx.Height);
+        LabInstallVersion.FontEx.Height:=GoodSizeForScreen(LabInstallVersion.FontEx.Height);
+        LabDate.FontEx.Height:=GoodSizeForScreen(LabDate.FontEx.Height);
+        LabelProgressionInstall.FontEx.Height:=GoodSizeForScreen(LabelProgressionInstall.FontEx.Height);
+        BtnInstallUpgrade.TextSize:=GoodSizeForScreen(BtnInstallUpgrade.TextSize);
+        BtnCancel.TextSize:=GoodSizeForScreen(BtnCancel.TextSize);
+        BtnRemove.TextSize:=GoodSizeForScreen(BtnRemove.TextSize);
+        TextWaitInstall.FontEx.Height:=GoodSizeForScreen(TextWaitInstall.FontEx.Height);
+        ImgPackage.AntialiasingMode:=amOn;
+      end;
+  end;
 end;
 
 function TVisWaptSelf.IsValidPackage(package: ISuperObject): Boolean;
@@ -1393,12 +1580,15 @@ begin
       end;
       for i:=0 to FlowPanel.ControlCount-1 do
       begin
-        AFrmPackage:=FlowPanel.Controls[i] as TFrmPackage;
-        if (UTF8Encode(AFrmPackage.Package.S['package'])=UTF8Encode(Package.S['package'])) then
+        if (FlowPanel.Controls[i] is TFrmPackage) then
         begin
-          IconIdx := tmpLstIcons.IndexOf(UTF8Encode(AFrmPackage.Package.S['package'])+'.png');
-          if IconIdx>=0 then
-            AFrmPackage.ImgPackage.Picture.Assign(tmpLstIcons.Objects[IconIdx] as TPicture);
+          AFrmPackage:=FlowPanel.Controls[i] as TFrmPackage;
+          if (UTF8Encode(AFrmPackage.Package.S['package'])=UTF8Encode(Package.S['package'])) then
+          begin
+            IconIdx := tmpLstIcons.IndexOf(UTF8Encode(AFrmPackage.Package.S['package'])+'.png');
+            if IconIdx>=0 then
+              AFrmPackage.ImgPackage.Picture.Assign(tmpLstIcons.Objects[IconIdx] as TPicture);
+          end;
         end;
       end;
       Synchronize(@NotifyListener);

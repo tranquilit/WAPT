@@ -17,7 +17,7 @@
         <TextDesc Value=""/>
       </XPManifest>
       <Icon Value="0"/>
-      <Resources Count="12">
+      <Resources Count="16">
         <Resource_0 FileName="..\arts\enterprise-200px.png" Type="RCDATA" ResourceName="ENTERPRISE-200PX"/>
         <Resource_1 FileName="..\arts\enterprise-400px.png" Type="RCDATA" ResourceName="ENTERPRISE-400PX"/>
         <Resource_2 FileName="..\arts\wapt-enterprise-200px.png" Type="RCDATA" ResourceName="WAPT-ENTERPRISE-200PX"/>
@@ -30,6 +30,10 @@
         <Resource_9 FileName="..\arts\iconsself\logo-selfservice-bleu.png" Type="RCDATA" ResourceName="LOGO-SELFSERVICE-BLEU"/>
         <Resource_10 FileName="..\arts\iconsself\Settings.png" Type="RCDATA" ResourceName="SETTINGS"/>
         <Resource_11 FileName="..\arts\iconsself\Settings_2.png" Type="RCDATA" ResourceName="SETTINGS_GREY"/>
+        <Resource_12 FileName="..\arts\iconsself\fleche-bas-blanc-100px.png" Type="RCDATA" ResourceName="FLECHE-BAS-BLANC-100PX"/>
+        <Resource_13 FileName="..\arts\iconsself\fleche-bas-bleue-100px.png" Type="RCDATA" ResourceName="FLECHE-BAS-BLEUE-100PX"/>
+        <Resource_14 FileName="..\arts\iconsself\fleche-haut-blanc-100px.png" Type="RCDATA" ResourceName="FLECHE-HAUT-BLANC-100PX"/>
+        <Resource_15 FileName="..\arts\iconsself\fleche-haut-bleue-100px.png" Type="RCDATA" ResourceName="FLECHE-HAUT-BLEUE-100PX"/>
       </Resources>
     </General>
     <i18n>
@@ -78,7 +82,7 @@
         <PackageName Value="LCL"/>
       </Item7>
     </RequiredPackages>
-    <Units Count="7">
+    <Units Count="8">
       <Unit0>
         <Filename Value="waptself.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -129,6 +133,14 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uVisSettings"/>
       </Unit6>
+      <Unit7>
+        <Filename Value="ufrmnextprevious.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FrmNextPrevious"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Frame"/>
+        <UnitName Value="uFrmNextPrevious"/>
+      </Unit7>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
