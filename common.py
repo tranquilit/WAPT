@@ -2905,6 +2905,12 @@ class Wapt(BaseObjectClass):
         else:
             self.dbpath = os.path.join(self.wapt_base_dir,'db','waptdb.sqlite')
 
+        if self.config.has_option('global','private_dir'):
+            self.private_dir = self.config.get('global','private_dir').decode('utf8')
+
+        if self.config.has_option('global','persistent_root_dir'):
+            self.persistent_root_dir = self.config.get('global','persistent_root_dir').decode('utf8')
+
         # must have a matching key eithe rin same file or in same directory
         # see self.private_key()
         if self.config.has_option('global','personal_certificate_path'):
@@ -3005,12 +3011,6 @@ class Wapt(BaseObjectClass):
 
         if self.config.has_option('global','default_maturity'):
             self.default_maturity = self.config.get('global','default_maturity')
-
-        if self.config.has_option('global','private_dir'):
-            self.private_dir = self.config.get('global','private_dir').decode('utf8')
-
-        if self.config.has_option('global','persistent_root_dir'):
-            self.persistent_root_dir = self.config.get('global','persistent_root_dir').decode('utf8')
 
         if self.config.has_option('global','token_lifetime'):
             self.token_lifetime = self.config.getint('global','token_lifetime')
