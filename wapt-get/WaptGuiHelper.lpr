@@ -6,7 +6,7 @@ library waptguihelper;
 
 uses
   Classes,SysUtils,Windows,
-  PythonEngine, Forms,uWaptBuildParams, Controls, Interfaces
+  PythonEngine, Forms,uWaptBuildParams, Controls, Interfaces, waptcommon, LazFileUtils
   { you can add units after this };
 
 var
@@ -151,17 +151,20 @@ exports
   initwaptguihelper;
 
 initialization
-  if Pos('scripts\python.exe',LowerCase(ParamStr(0)))>0 then
-    RegWaptBaseDir := ExpandFileName(ExtractFileDir(ParamStr(0))+'\..')
-  else
-    RegWaptBaseDir := ExtractFileDir(ParamStr(0));
+  RegWaptBaseDir:=WaptBaseDir();
+  if not FileExistsUTF8(AppendPathDelim(RegWaptBaseDir)+'python27.dll') then
+    RegWaptBaseDir:=RegisteredAppInstallLocation('wapt_is1');
+
+  if RegWaptBaseDir='' then
+    RegWaptBaseDir:=RegisteredExePath('wapt-get.exe');
+
   OutputDebugString(Pchar(RegWaptBaseDir));
   PyE := TPythonEngine.Create(Nil);
   With PyE do
   begin
-    //AutoLoad := True;
-    //DllPath := RegWaptBaseDir;
-    DllName := 'python27.dll';
+    AutoLoad := False;
+    DllPath := RegWaptBaseDir;
+    //DllName := 'python27.dll';
 
     UseLastKnownVersion := False;
     FatalAbort:=True;
