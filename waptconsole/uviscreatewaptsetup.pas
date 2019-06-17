@@ -59,6 +59,8 @@ type
     PopupMenu1: TPopupMenu;
     CBWUAEnabled: TRadioButton;
     procedure ActGetServerCertificateExecute(Sender: TObject);
+    procedure CBUseFQDNAsUUIDChange(Sender: TObject);
+    procedure CBUseRandomUUIDChange(Sender: TObject);
     procedure CBVerifyCertClick(Sender: TObject);
     procedure CBWUADisableClick(Sender: TObject);
     procedure CBWUADontchangeClick(Sender: TObject);
@@ -276,6 +278,20 @@ begin
   finally
     Free;
   end;
+end;
+
+procedure TVisCreateWaptSetup.CBUseFQDNAsUUIDChange(Sender: TObject);
+begin
+  If CBUseFQDNAsUUID.Checked and CBUseRandomUUID.Checked then
+    CBUseRandomUUID.Checked := False;
+
+end;
+
+procedure TVisCreateWaptSetup.CBUseRandomUUIDChange(Sender: TObject);
+begin
+  If CBUseFQDNAsUUID.Checked and CBUseRandomUUID.Checked then
+    CBUseFQDNAsUUID.Checked := False;
+
 end;
 
 procedure TVisCreateWaptSetup.FormDestroy(Sender: TObject);

@@ -363,6 +363,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       Top = 429
       Width = 164
       Caption = 'Use Computer FQDN for UUID'
+      OnChange = CBUseFQDNAsUUIDChange
       TabOrder = 13
     end
     object CBUseRandomUUID: TCheckBox
@@ -373,6 +374,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       Top = 448
       Width = 214
       Caption = 'Use random host UUID (for buggy BIOS)'
+      OnChange = CBUseRandomUUIDChange
       TabOrder = 14
     end
   end
