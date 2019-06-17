@@ -20,12 +20,13 @@ type
 
   public
     isNext:Boolean;
+    constructor Create(TheOwner: TComponent);
   end;
 
 implementation
 
 uses
-  uVisWaptSelf;
+  Graphics, uVisWaptSelf;
 
 {$R *.lfm}
 
@@ -53,6 +54,16 @@ begin
     LogoNextPrev.Picture.LoadFromResourceName(HINSTANCE,'FLECHE-BAS-BLANC-100PX')
   else
     LogoNextPrev.Picture.LoadFromResourceName(HINSTANCE,'FLECHE-HAUT-BLANC-100PX');
+end;
+
+constructor TFrmNextPrevious.Create(TheOwner: TComponent);
+begin
+  inherited Create(TheOwner);
+  if Screen.PixelsPerInch <> 96 then
+    begin
+       LogoNextPrev.AutoSize:=false;
+       LogoNextPrev.AntialiasingMode:=amOn;
+    end;
 end;
 
 { TFrmNextPrevious }

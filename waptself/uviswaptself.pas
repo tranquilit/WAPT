@@ -153,6 +153,7 @@ type
     CurrentTaskID:integer;
 
     LastNumberOfFrame:integer;
+    LastNumberOfFramePrevious:integer;
 
     LstIcons: TStringList;
     LstTasks: TStringList;
@@ -305,9 +306,10 @@ begin
       Name:='Previous';
       isNext:=false;
       LogoNextPrev.Picture.LoadFromResourceName(HINSTANCE,'FLECHE-HAUT-BLANC-100PX');
-      PosHeight:=Width;
+      PosHeight:=Height;
     end;
 
+    LastNumberOfFramePrevious:=LastNumberOfFrame;
     NewLastNumberOfFrame:=LastNumberOfFrame+NumberOfFrames;
     idx:=0;
 
@@ -322,6 +324,8 @@ begin
         Break;
       end;
     end;
+
+    LastNumberOfFramePrevious:=LastNumberOfFrame-LastNumberOfFramePrevious;
 
     if CanNext() then
     begin
@@ -365,13 +369,16 @@ begin
         Name:='Previous';
         isNext:=false;
         LogoNextPrev.Picture.LoadFromResourceName(HINSTANCE,'FLECHE-HAUT-BLANC-100PX');
-        PosHeight:=Width;
+        PosHeight:=Height;
       end;
     end
     else
       PosHeight:=0;
 
-    NewLastNumberOfFrame:=LastNumberOfFrame-NumberOfFrames;
+    if (LastNumberOfFramePrevious<>NumberOfFrames) then
+      NewLastNumberOfFrame:=LastNumberOfFrame-LastNumberOfFramePrevious
+    else
+      NewLastNumberOfFrame:=LastNumberOfFrame-NumberOfFrames;
     idx:=0;
 
     for Pck in AllPackages do
@@ -398,7 +405,7 @@ begin
   finally
     FlowPackages.EnableAlign;
     Screen.Cursor:=crDefault;
-    ScrollBoxPackages.VertScrollBar.Position:=PosHeight;
+    ScrollBoxPackages.VertScrollBar.Position:=ScrollBoxPackages.VertScrollBar.Range-(PosHeight+ScrollBoxPackages.Height);
   end;
 end;
 
@@ -729,7 +736,7 @@ begin
   ShowOnlyUpgradable:=false;
   SortByDateAsc:=false;
   SortByName:=false;
-  NumberOfFrames:=50;
+  NumberOfFrames:=GoodSizeForScreen(80);
 
   login:=waptwinutils.AGetUserName;
   password:='';

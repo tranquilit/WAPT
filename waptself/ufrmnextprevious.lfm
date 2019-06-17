@@ -17,6 +17,7 @@ object FrmNextPrevious: TFrmNextPrevious
     Height = 100
     Top = 10
     Width = 100
+    AutoSize = True
     OnClick = LogoNextPrevClick
     OnMouseEnter = LogoNextPrevMouseEnter
     OnMouseLeave = LogoNextPrevMouseLeave
