@@ -1282,6 +1282,9 @@ def get_computername():
 def get_hostname():
     """Return host fully qualified domain name in lower case
 
+    If a main domain is set in registry, use this domain (faster)
+    If not, use value returned from main connection (ie DHCP)
+
     Result is cached because Windows 10 is sometimes slow to return when there are multiple network interfaces.
     """
     global _fake_hostname
@@ -1290,6 +1293,13 @@ def get_hostname():
 
     if _fake_hostname is not None:
         return _fake_hostname
+
+    # Use
+    nv_hostname = registry_readstring(HKEY_LOCAL_MACHINE,r'SYSTEM\CurrentControlSet\services\Tcpip\Parameters','NV Hostname')
+    nv_domain = registry_readstring(HKEY_LOCAL_MACHINE,r'SYSTEM\CurrentControlSet\services\Tcpip\Parameters','NV Domain')
+    if nv_hostname and nv_domain:
+        return u'%s.%s' % (nv_hostname.lower(),nv_domain.lower())
+
     if _hostname is None or time.time()>= _hostname_expire:
         _hostname = socket.getfqdn().lower()
         _hostname_expire = time.time()+ _dns_cache_ttl
@@ -1312,7 +1322,9 @@ def get_domain_fromregistry():
 
     key = _winreg.OpenKey(_winreg.HKEY_LOCAL_MACHINE,"SYSTEM\\CurrentControlSet\\Services\\Tcpip\\Parameters")
     try:
-        (domain,atype) = _winreg.QueryValueEx(key,'Domain')
+        (domain,atype) = _winreg.QueryValueEx(key,'NV Domain')
+        if domain=='':
+            (domain,atype) = _winreg.QueryValueEx(key,'Domain')
         if domain=='':
             (domain,atype) = _winreg.QueryValueEx(key,'DhcpDomain')
     except:
