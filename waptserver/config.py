@@ -91,6 +91,7 @@ _defaults = {
     'ldap_auth_server':None,
     'ldap_auth_base_dn':None,
     'ldap_auth_ssl_enabled':True,
+    'htpasswd_path':None,
     'http_proxy':None,
     'nginx_http' : 80,
     'nginx_https': 443
@@ -221,6 +222,9 @@ def load_config(cfgfile=DEFAULT_CONFIG_FILE):
 
     if _config.has_option('options', 'http_proxy'):
         conf['http_proxy'] = _config.get('options', 'http_proxy')
+
+    if _config.has_option('options', 'htpasswd_path'):
+        conf['htpasswd_path'] = _config.get('options', 'htpasswd_path')
 
     return conf
 

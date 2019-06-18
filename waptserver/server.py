@@ -66,11 +66,6 @@ import stat
 import re
 import functools
 
-
-import hashlib
-from passlib.hash import sha512_crypt, bcrypt
-from passlib.hash import pbkdf2_sha256
-
 import ConfigParser
 from optparse import OptionParser
 
@@ -93,6 +88,7 @@ from waptserver.config import get_http_proxies
 from waptpackage import PackageEntry,update_packages,WaptLocalRepo,EWaptBadSignature,EWaptMissingCertificate
 from waptcrypto import SSLCertificate,SSLVerifyException,SSLCertificateSigningRequest,InvalidSignature,SSLPrivateKey
 from waptcrypto import sha256_for_file,sha256_for_data
+from waptcrypto import SSLCABundle
 
 from waptutils import datetime2isodate,ensure_list,ensure_unicode,Version,setloglevel
 
@@ -270,8 +266,21 @@ def sign_host_csr(host_certificate_csr):
         host_cert = signing_cert.build_certificate_from_csr(host_certificate_csr,signing_key,host_cert_lifetime)
     return host_cert
 
+def check_host_cert(host_certificate):
+    """Check if host_certificate is trusted by the server own CA,
+    ie it has been signed by the server key
 
+    Args:
+        host_certificate (SSLCertificate): host certificate to check.
 
+    Returns
+        list: cert chain if OK. Raise exception if not approved. None if no certificate is defined on the server.
+
+    """
+    if app.conf['clients_signing_certificate'] and os.path.isfile(app.conf['clients_signing_certificate']):
+        server_ca = SSLCABundle(app.conf['clients_signing_certificate'])
+        return server_ca.check_certificates_chain(host_certificate)
+    return None
 
 @app.route('/add_host_kerberos',methods=['HEAD','POST'])
 @app.route('/add_host',methods=['HEAD','POST'])
@@ -351,20 +360,40 @@ def register_host():
                 else:
                     authenticated_user = None
 
-
+            # kerberos has failed or kerberos is not enabled
             if not authenticated_user:
                 # get authentication from basic auth. Check against waptserver admins
                 auth = request.authorization
-                if auth and check_auth(auth.username, auth.password):
+                if auth and check_auth(auth.username, auth.password, action=request.path):
                     # assume authenticated user is the fqdn provided in the data
                     logger.debug(u'Basic auth registration for %s with user %s' % (computer_fqdn,auth.username))
                     authenticated_user = computer_fqdn
                     registration_auth_user = u'Basic:%s' % auth.username
 
-                existing_host = Hosts.select(Hosts.host_certificate, Hosts.computer_fqdn).where(Hosts.uuid == uuid).first()
-                if not authenticated_user and existing_host and existing_host.host_certificate:
-                    # check if existing record, and in this case, check signature with existing certificate
-                    host_cert = SSLCertificate(crt_string=existing_host.host_certificate)
+                host_cert = None
+                # if certificate is properly signed, we can trust it without using database
+                if 'host_certificate' in data:
+                    try:
+                        untrusted_host_cert = SSLCertificate(crt_string=data['host_certificate'])
+                        if untrusted_host_cert.issuer_subject_hash != untrusted_host_cert.subject_hash:
+                            # we can check if issuer is myself...
+                            cert_chain = check_host_cert(untrusted_host_cert)
+                            if cert_chain:
+                                host_cert = untrusted_host_cert
+                                authenticated_user = computer_fqdn
+                                registration_auth_user = u'Cert:%s' % host_cert.cn
+
+                    except EWaptCryptoException:
+                        host_cert = None
+
+                if not host_cert and not authenticated_user:
+                    existing_host = Hosts.select(Hosts.host_certificate, Hosts.computer_fqdn).where(Hosts.uuid == uuid).first()
+                    if existing_host and existing_host.host_certificate:
+                        # check if existing record, and in this case, check signature with existing certificate
+                        host_cert = SSLCertificate(crt_string=existing_host.host_certificate)
+
+                # if data is properly signed by a trusted certificate, consider we are authenticated.
+                if host_cert and not authenticated_user:
                     try:
                         authenticated_user = host_cert.verify_content(sha256_for_data(raw_data), signature)
                     except (InvalidSignature,SSLVerifyException) as e:

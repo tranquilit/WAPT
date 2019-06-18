@@ -31,6 +31,7 @@ import json
 import hashlib
 from passlib.hash import sha512_crypt, bcrypt
 from passlib.hash import pbkdf2_sha256
+from passlib.apache import HtpasswdFile
 
 from waptserver.config import __version__
 
@@ -54,9 +55,17 @@ except ImportError as e:
     auth_module_ad = None
 
 
-def check_auth(username, password):
+def check_auth(username, password, action = None):
     """This function is called to check if a username /
     password combination is valid.
+
+    Args:
+        action (str): if None, check for all actions (admin)
+                      'add_host' : check credentials for initial registration
+
+    Returns:
+        bool: True if user/password is ok for action
+
     """
     def any_(l):
         """Check if any element in the list is true, in constant time.
@@ -66,6 +75,13 @@ def check_auth(username, password):
             if e:
                 ret = True
         return ret
+
+
+    # local htpasswd user/passwd file for add_host registration action
+    if action == '/add_host' and conf.get('htpasswd_path'):
+        htpasswd_users = HtpasswdFile(conf.get('htpasswd_path'))
+        if htpasswd_users.verify(username,password):
+            return True
 
     user_ok = False
     pass_sha1_ok = pbkdf2_sha256_ok = pass_sha512_ok = pass_sha512_crypt_ok = pass_bcrypt_crypt_ok = False
