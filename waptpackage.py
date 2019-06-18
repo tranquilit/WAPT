@@ -89,7 +89,7 @@ import uuid
 from iniparse import RawConfigParser
 import traceback
 
-from waptutils import BaseObjectClass,Version,ensure_unicode,ZipFile,force_utf8_no_bom
+from waptutils import BaseObjectClass,Version,ensure_unicode,ZipFile,force_utf8_no_bom,find_all_files
 from waptutils import create_recursive_zip,ensure_list,all_files,list_intersection
 from waptutils import datetime2isodate,httpdatetime2isodate,httpdatetime2datetime,fileutcdate,fileisoutcdate,isodate2datetime
 from waptutils import default_http_headers,wget,get_language,import_setup,import_code
@@ -1713,16 +1713,16 @@ class PackageEntry(BaseObjectClass):
         Returns:
             dict: {filepath:shasum,}
         """
-        if not self.localpath:
-            raise EWaptMissingLocalWaptFile(u'Wapt package "%s" is not yet built' % self.sourcespath)
-
-        if not os.path.isfile(self.localpath):
+        if self.localpath and not os.path.isfile(self.localpath):
             raise EWaptMissingLocalWaptFile(u'%s is not a Wapt package' % self.localpath)
+
+        if self.sourcespath and not os.path.isdir(self.sourcespath):
+            raise EWaptMissingLocalWaptFile(u'%s is not a Wapt package source directory' % self.sourcespath)
 
         if exclude_filenames is None:
             exclude_filenames = self.manifest_filename_excludes
 
-        if waptzip is None:
+        if waptzip is None and self.localpath:
             waptzip = zipfile.ZipFile(self.localpath,'r',allowZip64=True)
             _close_zip = True
         else:
@@ -1730,21 +1730,39 @@ class PackageEntry(BaseObjectClass):
 
         try:
             manifest = {}
-            for fn in waptzip.filelist:
-                if not fn.filename in exclude_filenames:
-                    if fn.filename in forbidden_files:
-                        raise EWaptPackageSignError('File %s is not allowed.'% fn.filename)
+            if waptzip:
+                for fn in waptzip.filelist:
+                    if not fn.filename in exclude_filenames:
+                        if fn.filename in forbidden_files:
+                            raise EWaptPackageSignError('File %s is not allowed.'% fn.filename)
 
-                    shasum = hashlib.new(md)
+                        shasum = hashlib.new(md)
 
-                    file_data = waptzip.open(fn)
-                    while True:
-                        data = file_data.read(block_size)
-                        if not data:
-                            break
+                        file_data = waptzip.open(fn)
+                        while True:
+                            data = file_data.read(block_size)
+                            if not data:
+                                break
+                            shasum.update(data)
                         shasum.update(data)
-                    shasum.update(data)
-                    manifest[fn.filename] = shasum.hexdigest()
+                        manifest[fn.filename] = shasum.hexdigest()
+            else:
+                for fn in find_all_files(self.sourcespath):
+                    filename = os.path.relpath(fn,self.sourcespath).replace('\\','/')
+                    if not filename in exclude_filenames:
+                        if filename in forbidden_files:
+                            raise EWaptPackageSignError('File %s is not allowed.'% filename)
+
+                        shasum = hashlib.new(md)
+
+                        file_data = open(fn,'rb')
+                        while True:
+                            data = file_data.read(block_size)
+                            if not data:
+                                break
+                            shasum.update(data)
+                        shasum.update(data)
+                        manifest[filename] = shasum.hexdigest()
             return manifest
         finally:
             if _close_zip:
@@ -1771,8 +1789,8 @@ class PackageEntry(BaseObjectClass):
             str: signature
 
         """
-        if not self.localpath or (not os.path.isfile(self.localpath) and not os.path.isdir(self.localpath)):
-            raise Exception(u"Path %s is not a Wapt package" % self.localpath)
+        if (self.localpath and not os.path.isfile(self.localpath)) or (self.sourcespath and not os.path.isdir(self.sourcespath)):
+            raise Exception(u"Path %s is not a Wapt package or Wapt source dir" % self.localpath)
 
         if isinstance(certificate,list):
             signer_cert = certificate[0]
@@ -1790,7 +1808,7 @@ class PackageEntry(BaseObjectClass):
             raise EWaptPackageSignError('No matching private key found for signing using certificate %s' % signer_cert)
 
         start_time = time.time()
-        package_fn = self.localpath
+        package_fn = self.localpath or self.sourcespath
         logger.debug(u'Signing %s with key %s, and certificate CN "%s"' % (package_fn,private_key,signer_cert.cn))
         # sign the control (one md only, so take default if many)
         if len(mds) == 1:
@@ -1811,53 +1829,70 @@ class PackageEntry(BaseObjectClass):
         self._invalidate_package_content()
 
         # clear existing signatures
-        with zipfile.ZipFile(self.localpath,'a',allowZip64=True,compression=zipfile.ZIP_DEFLATED) as waptzip:
-            filenames = waptzip.namelist()
-            for md in hashlib.algorithms:
-                if self.get_signature_filename(md) in filenames:
-                    waptzip.remove(self.get_signature_filename(md))
-                if self.get_manifest_filename(md) in filenames:
-                    waptzip.remove(self.get_manifest_filename(md))
+        if self.localpath:
+            with zipfile.ZipFile(self.localpath,'a',allowZip64=True,compression=zipfile.ZIP_DEFLATED) as waptzip:
+                filenames = waptzip.namelist()
+                for md in hashlib.algorithms:
+                    if self.get_signature_filename(md) in filenames:
+                        waptzip.remove(self.get_signature_filename(md))
+                    if self.get_manifest_filename(md) in filenames:
+                        waptzip.remove(self.get_manifest_filename(md))
 
-            if 'WAPT/control' in filenames:
-                waptzip.remove('WAPT/control')
-            waptzip.writestr('WAPT/control',control)
+                if 'WAPT/control' in filenames:
+                    waptzip.remove('WAPT/control')
+                waptzip.writestr('WAPT/control',control)
 
-            # replace or append signer certificate
-            if 'WAPT/certificate.crt' in filenames:
-                waptzip.remove('WAPT/certificate.crt')
+                # replace or append signer certificate
+                if 'WAPT/certificate.crt' in filenames:
+                    waptzip.remove('WAPT/certificate.crt')
+                cert_chain_str = '\n'.join([cert.as_pem() for cert in certificate_chain])
+                waptzip.writestr('WAPT/certificate.crt',cert_chain_str)
+
+                # add manifest and signature for each digest
+                for md in mds:
+                    try:
+                        # need read access to ZIP file.
+                        manifest_data = self.build_manifest(exclude_filenames = excludes,forbidden_files = forbidden_files,md=md,waptzip=waptzip)
+                    except EWaptPackageSignError as e:
+                        raise EWaptBadCertificate('Certificate %s doesn''t allow to sign packages with setup.py file.' % signer_cert.cn)
+
+                    manifest_data['WAPT/control'] = hexdigest_for_data(control,md = md)
+
+                    new_cert_hash = hexdigest_for_data(cert_chain_str,md = md)
+                    if manifest_data.get('WAPT/certificate.crt',None) != new_cert_hash:
+                        # need to replace certificate in Wapt package
+                        manifest_data['WAPT/certificate.crt'] = new_cert_hash
+                    else:
+                        new_cert_hash = None
+
+                    # convert to list of list...
+                    wapt_manifest = json.dumps( manifest_data.items())
+
+                    # sign with default md
+                    signature = private_key.sign_content(wapt_manifest,md = md)
+
+                    waptzip.writestr(self.get_manifest_filename(md=md),wapt_manifest)
+                    waptzip.writestr(self.get_signature_filename(md),signature.encode('base64'))
+
+            self._md = self._default_md
+            mtime = time.mktime(isodate2datetime(self.signature_date).timetuple())
+            os.utime(self.localpath,(mtime,mtime))
+        else:
+            # unzipped for debug
+            self.save_control_to_wapt(self.sourcespath)
+            manifest_data = self.build_manifest()
             cert_chain_str = '\n'.join([cert.as_pem() for cert in certificate_chain])
-            waptzip.writestr('WAPT/certificate.crt',cert_chain_str)
+            open(os.path.join(self.sourcespath,'WAPT','certificate.crt'),'wb').write(cert_chain_str)
 
-            # add manifest and signature for each digest
             for md in mds:
-                try:
-                    # need read access to ZIP file.
-                    manifest_data = self.build_manifest(exclude_filenames = excludes,forbidden_files = forbidden_files,md=md,waptzip=waptzip)
-                except EWaptPackageSignError as e:
-                    raise EWaptBadCertificate('Certificate %s doesn''t allow to sign packages with setup.py file.' % signer_cert.cn)
-
                 manifest_data['WAPT/control'] = hexdigest_for_data(control,md = md)
-
-                new_cert_hash = hexdigest_for_data(cert_chain_str,md = md)
-                if manifest_data.get('WAPT/certificate.crt',None) != new_cert_hash:
-                    # need to replace certificate in Wapt package
-                    manifest_data['WAPT/certificate.crt'] = new_cert_hash
-                else:
-                    new_cert_hash = None
-
+                manifest_data['WAPT/certificate.crt'] = hexdigest_for_data(cert_chain_str,md = md)
                 # convert to list of list...
                 wapt_manifest = json.dumps( manifest_data.items())
-
                 # sign with default md
                 signature = private_key.sign_content(wapt_manifest,md = md)
-
-                waptzip.writestr(self.get_manifest_filename(md=md),wapt_manifest)
-                waptzip.writestr(self.get_signature_filename(md),signature.encode('base64'))
-
-        self._md = self._default_md
-        mtime = time.mktime(isodate2datetime(self.signature_date).timetuple())
-        os.utime(self.localpath,(mtime,mtime))
+                open(os.path.join(self.sourcespath,self.get_manifest_filename(md=md)),'wb').write(wapt_manifest)
+                open(os.path.join(self.sourcespath,self.get_signature_filename(md)),'wb').write(signature.encode('base64'))
 
         return signature.encode('base64')
 
