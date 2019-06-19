@@ -526,10 +526,8 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       Width = 108
       BorderSpacing.Left = 16
       Caption = 'Dont'' set anything'
-      Checked = True
       OnClick = CBWUADontchangeClick
       TabOrder = 4
-      TabStop = True
     end
     object CBWUADisable: TRadioButton
       AnchorSideLeft.Control = CBWUAEnabled
