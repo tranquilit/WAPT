@@ -2653,6 +2653,7 @@ class Wapt(BaseObjectClass):
         # cached runstatus to avoid setting in db if not changed.
         self._runstatus = None
         self.use_hostpackages = False
+        self.use_ad_groups = False
 
         self._repositories = None
 
@@ -2799,9 +2800,11 @@ class Wapt(BaseObjectClass):
 
     @property
     def host_profiles(self):
+        result = []
         if self._host_profiles is not None:
-            return self._host_profiles
-        else:
+            result.extend(self._host_profiles)
+
+        if self.use_ad_groups:
             host_ad_groups_ttl = self.read_param('host_ad_groups_ttl',0.0,'float')
             host_ad_groups     = self.read_param('host_ad_groups',None)
 
@@ -2811,15 +2814,12 @@ class Wapt(BaseObjectClass):
                         ad_groups = setuphelpers.get_computer_groups()
                         self.write_param('host_ad_groups',ad_groups)
                         self.write_param('host_ad_groups_ttl',time.time() + (110.0 + 20.0 * random.random()) * 60.0) # random ttl
-
-                        return ad_groups
                     except:
-
-                        return host_ad_groups
+                        ad_groups = host_ad_groups
             else:
-
-                return host_ad_groups
-
+                ad_groups = host_ad_groups
+            result.extend(ad_groups)
+        return result
 
     def set_client_cert_auth(self,connection):
         """Set client side ssl authentication for a waptserver or a waptrepo using
@@ -2857,6 +2857,7 @@ class Wapt(BaseObjectClass):
             'tray_check_interval':2,
             'service_interval':2,
             'use_hostpackages':'0',
+            'use_ad_groups':'0',
             'timeout':10.0,
             'wapt_server_timeout':30.0,
             'maturities':'PROD',
@@ -3017,6 +3018,9 @@ class Wapt(BaseObjectClass):
 
         if self.config.has_option('global','use_hostpackages'):
             self.use_hostpackages = self.config.getboolean('global','use_hostpackages')
+
+        if self.config.has_option('global','use_ad_groups'):
+            self.use_ad_groups = self.config.getboolean('global','use_ad_groups')
 
         self.waptwua_enabled = None
         if self.config.has_section('waptwua'):

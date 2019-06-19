@@ -382,7 +382,7 @@ class CalledProcessErrorOutput(subprocess.CalledProcessError):
 
 def get_computer_groups():
     """Try to finc the computer in the Active Directory
-        and return the list of groups
+    and return the list of groups
     """
     groups = []
     active_directory._CACHE.clear()
