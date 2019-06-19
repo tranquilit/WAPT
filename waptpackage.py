@@ -1502,7 +1502,7 @@ class PackageEntry(BaseObjectClass):
         return result_filename
 
 
-    def build_package(self,excludes=['.svn','.git','.gitignore','setup.pyc'],target_directory=None):
+    def build_package(self,excludes=['.svn','.git','.gitignore','setup.pyc'],target_directory=None,excludes_full=[]):
         """Build the WAPT package, stores the result in target_directory
         Zip the content of self.sourcespath directory into a zipfile
         named with default package filename based on control attributes.
@@ -1532,8 +1532,6 @@ class PackageEntry(BaseObjectClass):
         if not os.path.isfile(control_filename):
             raise EWaptNotSourcesDirPackage(u'Error building package : There is no control file in WAPT directory')
 
-        force_utf8_no_bom(control_filename)
-
         # check version syntax
         parse_major_minor_patch_build(self.version)
 
@@ -1561,7 +1559,8 @@ class PackageEntry(BaseObjectClass):
             zipfn = result_filename,
             source_root = ensure_unicode(self.sourcespath),
             target_root = u'' ,
-            excludes=excludes)
+            excludes = excludes,
+            excludes_full = excludes_full)
 
         self._invalidate_package_content()
         return result_filename

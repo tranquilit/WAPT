@@ -6040,7 +6040,6 @@ class Wapt(BaseObjectClass):
             raise EWaptNotAPackage('Error building package : There is no control file in WAPT directory')
 
         control_filename = os.path.join(directoryname,'WAPT','control')
-        force_utf8_no_bom(control_filename)
 
         logger.info(u'Load control informations from control file')
         entry = PackageEntry(waptfile = directoryname)
