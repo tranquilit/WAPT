@@ -32,6 +32,7 @@ type
   TVisWaptSelf = class(TForm)
     ActCancelTask: TAction;
     ActHideDetailsClick: TAction;
+    ActHideTaskBar: TAction;
     ActResizeFlowPackages: TAction;
     ActShowTaskBar: TAction;
     ActUpdatePackagesList: TAction;
@@ -41,6 +42,7 @@ type
     ActionList1: TActionList;
     BtnCancelTasks: TFXMaterialButton;
     BtnHideDetails: TFXMaterialButton;
+    BtnHideTaskBar: TFXMaterialButton;
     BtnShowTaskBar: TFXMaterialButton;
     ComboBoxCategories: TComboBox;
     EdSearch: TEditButton;
@@ -51,6 +53,7 @@ type
     ImageLogo: TImage;
     ImageLogoDetails: TImage;
     ImageLogoTaskBar: TImage;
+    Panel1: TPanel;
     PanelImageCrossSearch: TPanel;
     RadioSortByNameAZ: TRadioButton;
     RadioSortByNameZA: TRadioButton;
@@ -89,6 +92,7 @@ type
 
     procedure ActCancelTaskExecute(Sender: TObject);
     procedure ActCancelTaskUpdate(Sender: TObject);
+    procedure ActHideTaskBarExecute(Sender: TObject);
     procedure ActResizeFlowPackagesExecute(Sender: TObject);
     procedure ActSearchPackagesExecute(Sender: TObject);
     procedure ActShowAllClearFilters(Sender: TObject);
@@ -153,7 +157,6 @@ type
     CurrentTaskID:integer;
 
     LastNumberOfFrame:integer;
-    LastNumberOfFramePrevious:integer;
 
     LstIcons: TStringList;
     LstTasks: TStringList;
@@ -161,6 +164,7 @@ type
 
     FThreadGetAllIcons: TThreadGetAllIcons;
 
+    FramePage : integer;
     login: String;
     password: String;
     NumberOfFrames: Integer;
@@ -206,7 +210,7 @@ var
 
 
 implementation
-uses LCLIntf, LCLType, waptwinutils, soutils, strutils, uWaptSelfRes, IniFiles, IdHTTP, LConvEncoding, uVisSettings, LCLTranslator;
+uses LCLIntf, LCLType, waptwinutils, soutils, strutils, uWaptSelfRes, IniFiles, IdHTTP, LConvEncoding, uVisSettings, LCLTranslator, math;
 {$R *.lfm}
 
 { TVisWaptSelf }
@@ -245,11 +249,13 @@ begin
       with AFrmNextPrevious do
       begin
         Parent:=FlowPackages;
-        Name:='Next';
-        isNext:=true;
-        LogoNextPrev.Picture.LoadFromResourceName(HINSTANCE,'FLECHE-BAS-BLANC-100PX');
+        Name:='NextPrev';
+        LogoPrev.Hide;
+        LabPage.Caption:='Page : 1/'+IntToStr(Ceil(AllPackages.AsArray.Length / NumberOfFrames));
       end;
     end;
+
+    FramePage:=1;
 
     if (LastNumberOfFrame=0) then
     begin
@@ -289,7 +295,7 @@ procedure TVisWaptSelf.NextFrames();
 var
   Pck:ISuperObject;
   AFrmNextPrevious : TFrmNextPrevious;
-  NewLastNumberOfFrame,idx,PosHeight:Integer;
+  idx:Integer;
 begin
   try
     Screen.Cursor:=crHourGlass;
@@ -299,18 +305,7 @@ begin
         FlowPackages.Controls[idx].Free;
     FlowPackages.ControlList.Clear;
 
-    AFrmNextPrevious:=TFrmNextPrevious.Create(FlowPackages);
-    with AFrmNextPrevious do
-    begin
-      Parent:=FlowPackages;
-      Name:='Previous';
-      isNext:=false;
-      LogoNextPrev.Picture.LoadFromResourceName(HINSTANCE,'FLECHE-HAUT-BLANC-100PX');
-      PosHeight:=Height;
-    end;
-
-    LastNumberOfFramePrevious:=LastNumberOfFrame;
-    NewLastNumberOfFrame:=LastNumberOfFrame+NumberOfFrames;
+    LastNumberOfFrame:=FramePage*NumberOfFrames;
     idx:=0;
 
     for Pck in AllPackages do
@@ -320,29 +315,25 @@ begin
       begin
         inc(LastNumberOfFrame);
         AddFrameOnFlowPackages(Pck);
-        if LastNumberOfFrame=NewLastNumberOfFrame then
+        if LastNumberOfFrame=(NumberOfFrames*(FramePage+1)) then
         Break;
       end;
     end;
 
-    LastNumberOfFramePrevious:=LastNumberOfFrame-LastNumberOfFramePrevious;
-
-    if CanNext() then
+    inc(FramePage);
+    AFrmNextPrevious:=TFrmNextPrevious.Create(FlowPackages);
+    with AFrmNextPrevious do
     begin
-      AFrmNextPrevious:=TFrmNextPrevious.Create(FlowPackages);
-      with AFrmNextPrevious do
-      begin
-        Parent:=FlowPackages;
-        Name:='Next';
-        isNext:=true;
-        LogoNextPrev.Picture.LoadFromResourceName(HINSTANCE,'FLECHE-BAS-BLANC-100PX');
-      end;
+      Parent:=FlowPackages;
+      Name:='NextPrev';
+      LabPage.Caption:='Page : '+IntToStr(FramePage)+'/'+IntToStr(Ceil(AllPackages.AsArray.Length / NumberOfFrames));
+      if not(CanNext()) then
+        LogoNext.Hide;
     end;
 
   finally
     FlowPackages.EnableAlign;
     Screen.Cursor:=crDefault;
-    ScrollBoxPackages.VertScrollBar.Position:=PosHeight;
   end;
 end;
 
@@ -350,7 +341,7 @@ procedure TVisWaptSelf.PreviousFrames();
 var
   Pck:ISuperObject;
   AFrmNextPrevious : TFrmNextPrevious;
-  NewLastNumberOfFrame,idx,PosHeight:Integer;
+  idx,tmp:Integer;
 begin
   try
     Screen.Cursor:=crHourGlass;
@@ -360,52 +351,37 @@ begin
       FlowPackages.Controls[idx].Free;
     FlowPackages.ControlList.Clear;
 
-    if (LastNumberOfFrame-(2*NumberOfFrames))>0 then
-    begin
-      AFrmNextPrevious:=TFrmNextPrevious.Create(FlowPackages);
-      with AFrmNextPrevious do
-      begin
-        Parent:=FlowPackages;
-        Name:='Previous';
-        isNext:=false;
-        LogoNextPrev.Picture.LoadFromResourceName(HINSTANCE,'FLECHE-HAUT-BLANC-100PX');
-        PosHeight:=Height;
-      end;
-    end
-    else
-      PosHeight:=0;
-
-    if (LastNumberOfFramePrevious<>NumberOfFrames) then
-      NewLastNumberOfFrame:=LastNumberOfFrame-LastNumberOfFramePrevious
-    else
-      NewLastNumberOfFrame:=LastNumberOfFrame-NumberOfFrames;
-    idx:=0;
+    tmp:=0;
 
     for Pck in AllPackages do
     begin
       inc(idx);
-      if (idx>(LastNumberOfFrame-(2*NumberOfFrames))) and IsValidPackage(Pck) and IsValidFilter(Pck) and IsValidCategory(Pck) then
+      if (idx>((FramePage-2)*NumberOfFrames)) and IsValidPackage(Pck) and IsValidFilter(Pck) and IsValidCategory(Pck) then
       begin
         dec(LastNumberOfFrame);
+        inc(tmp);
         AddFrameOnFlowPackages(Pck);
-        if LastNumberOfFrame=NewLastNumberOfFrame then
-        Break;
+        if (tmp=NumberOfFrames) then
+          break;
       end;
     end;
+
+    dec(FramePage);
 
     AFrmNextPrevious:=TFrmNextPrevious.Create(FlowPackages);
     with AFrmNextPrevious do
     begin
       Parent:=FlowPackages;
-      Name:='Next';
-      isNext:=true;
-      LogoNextPrev.Picture.LoadFromResourceName(HINSTANCE,'FLECHE-BAS-BLANC-100PX');
+      Name:='NextPrev';
+      LabPage.Caption:='Page : '+IntToStr(FramePage)+'/'+IntToStr(Ceil(AllPackages.AsArray.Length / NumberOfFrames));
+      if FramePage<2 then
+        LogoPrev.Hide;
     end;
 
   finally
     FlowPackages.EnableAlign;
     Screen.Cursor:=crDefault;
-    ScrollBoxPackages.VertScrollBar.Position:=ScrollBoxPackages.VertScrollBar.Range-(PosHeight+ScrollBoxPackages.Height);
+    ScrollBoxPackages.VertScrollBar.Position:=FlowPackages.Height;
   end;
 end;
 
@@ -416,6 +392,13 @@ begin
     BtnCancelTasks.NormalColor:=$0099542F
   else
     BtnCancelTasks.NormalColor:=clSilver;
+end;
+
+procedure TVisWaptSelf.ActHideTaskBarExecute(Sender: TObject);
+begin
+  TaskBarPanel.Hide;
+  FlowPackages.Show;
+  Panel6.Show;
 end;
 
 procedure TVisWaptSelf.ActResizeFlowPackagesExecute(Sender: TObject);
@@ -459,7 +442,6 @@ begin
   begin
     TaskBarPanel.Hide;
     DetailsBarPanel.Hide;
-    BtnShowTaskBar.Caption:=rsShowTaskBar;
   end;
 
   if (VisWaptSelf.Height<ScaleY(450,96)) then
@@ -532,10 +514,7 @@ end;
 procedure TVisWaptSelf.ActShowTaskBarExecute(Sender: TObject);
 begin
   if (TaskBarPanel.Showing) then
-  begin
-    TaskBarPanel.Hide;
-    BtnShowTaskBar.Caption:=rsShowTaskBar;
-  end
+    TaskBarPanel.Hide
   else
     TaskBarPanel.Show;
   if (FlowPackages.Showing) and (FlowPackages.Width<ScaleX(350,96)) then
@@ -553,10 +532,7 @@ end;
 procedure TVisWaptSelf.DetailsBarPanelPaint(Sender: TObject);
 begin
   if (TaskBarPanel.Showing) then
-  begin
     TaskBarPanel.Hide;
-    BtnShowTaskBar.Caption:=rsShowTaskBar;
-  end;
   if (FlowPackages.Showing) and (FlowPackages.Width<ScaleX(350,96)) then
   begin
     FlowPackages.Hide;
@@ -568,7 +544,7 @@ procedure TVisWaptSelf.TaskBarPanelPaint(Sender: TObject);
 begin
   DetailsBarPanel.Hide;
   ChangeIconMinusByPlusOnFrames();
-  BtnShowTaskBar.Caption:=rsHideTaskBar;
+  BtnShowTaskBar.Caption:=rsTaskBar;
 end;
 
 procedure TVisWaptSelf.TimerNextFramesTimer(Sender: TObject);
@@ -736,7 +712,7 @@ begin
   ShowOnlyUpgradable:=false;
   SortByDateAsc:=false;
   SortByName:=false;
-  NumberOfFrames:=GoodSizeForScreen(80);
+  NumberOfFrames:=Round(80*(96/Screen.PixelsPerInch));
 
   login:=waptwinutils.AGetUserName;
   password:='';
@@ -873,7 +849,19 @@ end;
 
 procedure TVisWaptSelf.ImageLogoClick(Sender: TObject);
 begin
-  OpenDocument('https://www.tranquil.it/solutions/wapt-deploiement-d-applications/');
+  ShowOnlyNotInstalled:=false;
+  ShowOnlyUpgradable:=false;
+  ShowOnlyInstalled:=false;
+  RadioShowUpgradable.Checked:=false;
+  RadioShowInstalled.Checked:=false;
+  RadioShowNotInstalled.Checked:=false;
+  RadioShowAll.Checked:=true;
+  SortByDateAsc:=false;
+  SortByName:=false;
+  SortByNameAZ:=true;
+  EdSearch.Text:='';
+  ComboBoxCategories.ItemIndex:=ComboBoxCategories.Items.IndexOf(rsAllCategories);
+  ActSearchPackages.Execute;
 end;
 
 procedure TVisWaptSelf.ImageLogoMouseEnter(Sender: TObject);
@@ -1367,7 +1355,13 @@ begin
       LabPackageName.Caption:=UTF8Encode(package.S['name']);
       AdjustFont(LabPackageName);
       AdjustFont(LabVersion);
-      LabDescription.Caption:=UTF8Encode(package.S['description']);
+      strtmp:=UTF8Encode(package.S['description']);
+      if (strtmp.Length>125) then
+      begin
+        strtmp:=copy(strtmp,1,125);
+        strtmp:=strtmp+'...';
+      end;
+      LabDescription.Caption:=strtmp;
 
       strtmp:=UTF8Encode(package.S['signature_date']);
       LabDate.Caption:=Copy(strtmp,7,2)+'/'+Copy(strtmp,5,2)+'/'+Copy(strtmp,1,4);
@@ -1392,9 +1386,6 @@ begin
           begin
             BtnInstallUpgrade.Caption:=rsActionUpgrade;
             BtnInstallUpgrade.NormalColor:=$004080FF;
-            LabInstallVersion.Caption:='(over '+UTF8Encode(package.S['install_version'])+')';
-            AdjustFont(LabInstallVersion);
-            LabInstallVersion.Visible:=True;
             BtnRemove.NormalColor:=$005754E0;
             ActionPackage:='install';
             LabVersion.Caption:=UTF8Encode(package.S['version']);
@@ -1453,7 +1444,6 @@ begin
         LabPackageName.FontEx.Height:=GoodSizeForScreen(LabPackageName.FontEx.Height);
         LabVersion.FontEx.Height:=GoodSizeForScreen(LabVersion.FontEx.Height);
         LabDescription.FontEx.Height:=GoodSizeForScreen(LabDescription.FontEx.Height);
-        LabInstallVersion.FontEx.Height:=GoodSizeForScreen(LabInstallVersion.FontEx.Height);
         LabDate.FontEx.Height:=GoodSizeForScreen(LabDate.FontEx.Height);
         LabelProgressionInstall.FontEx.Height:=GoodSizeForScreen(LabelProgressionInstall.FontEx.Height);
         BtnInstallUpgrade.TextSize:=GoodSizeForScreen(BtnInstallUpgrade.TextSize);

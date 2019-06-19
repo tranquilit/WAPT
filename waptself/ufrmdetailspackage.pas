@@ -18,6 +18,7 @@ type
     LabDependency: TLabel;
     LabConflicts: TLabel;
     LabImpactedProcess: TLabel;
+    LabUpgradeFromVersion: TLabel;
     LabSignatureDate: TLabel;
     LabSection: TLabel;
     LabCategories: TLabel;
@@ -28,6 +29,7 @@ type
     LabRepository: TLabel;
     Dependency: TLabel;
     Conflicts: TLabel;
+    UpgradeFromVersion: TLabel;
     ShapeDescriptionBottom: TShape;
     ShapeDescriptionTop: TShape;
     SignatureDate: TLabel;

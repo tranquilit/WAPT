@@ -30,10 +30,10 @@
         <Resource_9 FileName="..\arts\iconsself\logo-selfservice-bleu.png" Type="RCDATA" ResourceName="LOGO-SELFSERVICE-BLEU"/>
         <Resource_10 FileName="..\arts\iconsself\Settings.png" Type="RCDATA" ResourceName="SETTINGS"/>
         <Resource_11 FileName="..\arts\iconsself\Settings_2.png" Type="RCDATA" ResourceName="SETTINGS_GREY"/>
-        <Resource_12 FileName="..\arts\iconsself\fleche-bas-blanc-100px.png" Type="RCDATA" ResourceName="FLECHE-BAS-BLANC-100PX"/>
-        <Resource_13 FileName="..\arts\iconsself\fleche-bas-bleue-100px.png" Type="RCDATA" ResourceName="FLECHE-BAS-BLEUE-100PX"/>
-        <Resource_14 FileName="..\arts\iconsself\fleche-haut-blanc-100px.png" Type="RCDATA" ResourceName="FLECHE-HAUT-BLANC-100PX"/>
-        <Resource_15 FileName="..\arts\iconsself\fleche-haut-bleue-100px.png" Type="RCDATA" ResourceName="FLECHE-HAUT-BLEUE-100PX"/>
+        <Resource_12 FileName="..\arts\iconsself\fleche-droite-20px.png" Type="RCDATA" ResourceName="FLECHE-DROITE-20PX"/>
+        <Resource_13 FileName="..\arts\iconsself\fleche-droite-blanche-20px.png" Type="RCDATA" ResourceName="FLECHE-DROITE-BLANCHE-20PX"/>
+        <Resource_14 FileName="..\arts\iconsself\fleche-gauche-20px.png" Type="RCDATA" ResourceName="FLECHE-GAUCHE-20PX"/>
+        <Resource_15 FileName="..\arts\iconsself\fleche-gauche-blanche-20px.png" Type="RCDATA" ResourceName="FLECHE-GAUCHE-BLANCHE-20PX"/>
       </Resources>
     </General>
     <i18n>

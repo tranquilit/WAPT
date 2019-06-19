@@ -555,28 +555,28 @@ object VisWaptSelf: TVisWaptSelf
       object BtnShowTaskBar: TFXMaterialButton
         AnchorSideLeft.Control = LogoSettings
         AnchorSideLeft.Side = asrBottom
-        AnchorSideTop.Side = asrBottom
+        AnchorSideTop.Side = asrCenter
         AnchorSideRight.Control = Panel2
-        AnchorSideRight.Side = asrBottom
+        AnchorSideRight.Side = asrCenter
         AnchorSideBottom.Control = Panel2
         AnchorSideBottom.Side = asrBottom
-        Left = 52
-        Height = 22
-        Top = 981
-        Width = 185
+        Left = 77
+        Height = 25
+        Top = 979
+        Width = 150
         RoundBorders = 3
         ColorKind = mcDefault
         FontColorAutomatic = True
         NormalColor = 10048559
         Shadow = False
+        TextSize = 15
         TextShadow = False
         TextFont = 'default'
         TextQuality = fqSystemClearType
         Action = ActShowTaskBar
-        Anchors = [akLeft, akRight, akBottom]
-        BorderSpacing.Left = 10
-        BorderSpacing.Right = 27
-        BorderSpacing.Bottom = 14
+        Anchors = [akLeft, akBottom]
+        BorderSpacing.Left = 35
+        BorderSpacing.Bottom = 13
         ParentFont = False
       end
       object PanelImageCrossSearch: TPanel
@@ -1401,8 +1401,8 @@ object VisWaptSelf: TVisWaptSelf
     OnPaint = TaskBarPanelPaint
     object SOGridTasks: TSOGrid
       Left = 10
-      Height = 767
-      Top = 10
+      Height = 728
+      Top = 49
       Width = 356
       ShowAdvancedColumnsCustomize = False
       KeyFieldsNames = 'id'
@@ -1871,6 +1871,40 @@ object VisWaptSelf: TVisWaptSelf
         Enabled = False
       end
     end
+    object Panel1: TPanel
+      Left = 10
+      Height = 39
+      Top = 10
+      Width = 356
+      Align = alTop
+      AutoSize = True
+      BevelOuter = bvNone
+      ClientHeight = 39
+      ClientWidth = 356
+      TabOrder = 4
+      object BtnHideTaskBar: TFXMaterialButton
+        AnchorSideLeft.Control = Panel1
+        AnchorSideLeft.Side = asrCenter
+        AnchorSideTop.Control = Panel1
+        AnchorSideTop.Side = asrCenter
+        Left = 133
+        Height = 21
+        Top = 9
+        Width = 91
+        RoundBorders = 3
+        ColorKind = mcDefault
+        FontColorAutomatic = True
+        NormalColor = 10048559
+        Shadow = False
+        TextShadow = False
+        TextFont = 'default'
+        TextQuality = fqSystemClearType
+        Action = ActHideTaskBar
+        BorderSpacing.Bottom = 9
+        Caption = 'Hide'
+        ParentFont = False
+      end
+    end
   end
   object DetailsBarPanel: TPanel
     Left = 1168
@@ -1896,7 +1930,7 @@ object VisWaptSelf: TVisWaptSelf
       HorzScrollBar.Page = 1
       HorzScrollBar.Visible = False
       VertScrollBar.Increment = 74
-      VertScrollBar.Page = 773
+      VertScrollBar.Page = 823
       Align = alClient
       AutoSize = True
       BorderStyle = bsNone
@@ -1906,10 +1940,10 @@ object VisWaptSelf: TVisWaptSelf
       ParentColor = False
       TabOrder = 0
       inline FrmDetailsPackageInPanel: TFrmDetailsPackage
-        Height = 773
+        Height = 823
         Width = 350
         Align = alCustom
-        ClientHeight = 773
+        ClientHeight = 823
         ClientWidth = 350
         Constraints.MaxWidth = 350
         Constraints.MinWidth = 350
@@ -1917,16 +1951,20 @@ object VisWaptSelf: TVisWaptSelf
           AnchorSideLeft.Control = FrmDetailsPackageInPanel
           AnchorSideTop.Control = FrmDetailsPackageInPanel
           AnchorSideRight.Control = FrmDetailsPackageInPanel
-          Height = 1646
+          Height = 1696
           Width = 350
           Anchors = [akTop, akLeft, akRight, akBottom]
           BorderStyle = bsNone
-          ClientHeight = 1646
+          ClientHeight = 1696
           ClientWidth = 350
           inherited LabName: TLabel
             Width = 285
           end
+          inherited OfficialWebsite: TLabel
+            Top = 188
+          end
           inherited Description: TLabel
+            Top = 577
             Width = 340
           end
           inherited LabEditor: TLabel
@@ -1935,54 +1973,124 @@ object VisWaptSelf: TVisWaptSelf
           inherited LabLastVersion: TLabel
             Width = 238
           end
+          inherited LabOfficialWebsite: TLabel
+            Top = 213
+          end
           inherited LabDescription: TLabel
             Height = 1062
+            Top = 624
             Width = 338
           end
+          inherited Licence: TLabel
+            Top = 238
+          end
           inherited LabLicence: TLabel
+            Top = 238
             Width = 271
           end
+          inherited ImpactedProcess: TLabel
+            Top = 263
+          end
+          inherited Maintainer: TLabel
+            Top = 288
+          end
           inherited LabMaintainer: TLabel
+            Top = 288
             Width = 246
           end
+          inherited Size: TLabel
+            Top = 313
+          end
           inherited LabSize: TLabel
+            Top = 313
             Width = 235
           end
+          inherited SizeInstalled: TLabel
+            Top = 338
+          end
           inherited LabSizeInstalled: TLabel
+            Top = 338
             Width = 232
           end
+          inherited Repository: TLabel
+            Top = 363
+          end
           inherited LabRepository: TLabel
+            Top = 363
             Width = 249
           end
+          inherited Signer: TLabel
+            Top = 388
+          end
           inherited LabSigner: TLabel
+            Top = 388
             Width = 282
           end
+          inherited PackageName: TLabel
+            Top = 413
+          end
           inherited LabPackageName: TLabel
+            Top = 413
             Width = 222
           end
+          inherited Dependency: TLabel
+            Top = 438
+          end
+          inherited Conflicts: TLabel
+            Top = 463
+          end
+          inherited Section: TLabel
+            Top = 488
+          end
+          inherited SignatureDate: TLabel
+            Top = 513
+          end
           inherited LabDependency: TLabel
+            Top = 438
             Width = 236
           end
           inherited LabConflicts: TLabel
+            Top = 463
             Width = 265
           end
           inherited LabSection: TLabel
+            Top = 488
             Width = 271
           end
           inherited LabSignatureDate: TLabel
+            Top = 513
             Width = 224
           end
+          inherited Categories: TLabel
+            Top = 538
+          end
           inherited LabCategories: TLabel
+            Top = 538
             Width = 252
           end
           inherited ShapeDescriptionBottom: TShape
+            Top = 608
             Width = 340
           end
           inherited ShapeDescriptionTop: TShape
+            Top = 570
             Width = 340
           end
           inherited LabImpactedProcess: TLabel
+            Top = 263
             Width = 210
+          end
+          inherited LabUpgradeFromVersion: TLabel
+            AnchorSideLeft.Control = FrmDetailsPackageInPanel.PanelDetails
+            AnchorSideLeft.Side = asrTop
+            AnchorSideTop.Control = FrmDetailsPackageInPanel.UpgradeFromVersion
+            AnchorSideRight.Control = nil
+            Left = 4
+            Top = 163
+            Width = 171
+            OnClick = LabOfficialWebsiteClick
+            OnMouseEnter = LabOfficialWebsiteMouseEnter
+            OnMouseLeave = LabOfficialWebsiteMouseLeave
           end
         end
       end
@@ -2228,7 +2336,7 @@ object VisWaptSelf: TVisWaptSelf
       OnUpdate = ActCancelTaskUpdate
     end
     object ActShowTaskBar: TAction
-      Caption = 'Show task bar'
+      Caption = 'Task bar'
       OnExecute = ActShowTaskBarExecute
     end
     object ActResizeFlowPackages: TAction
@@ -2237,6 +2345,9 @@ object VisWaptSelf: TVisWaptSelf
     object ActHideDetailsClick: TAction
       Caption = 'Hide'
       OnExecute = ActHideDetailsClickExecute
+    end
+    object ActHideTaskBar: TAction
+      OnExecute = ActHideTaskBarExecute
     end
   end
   object TimerSearch: TTimer

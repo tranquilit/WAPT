@@ -13,8 +13,7 @@ resourcestring
  rsForce = 'An operation has failed do you want to force the installation/removal?'+chr(13)+'Operation : %s';
  rsSortByDateAsc = 'Sort by date : asc';
  rsSortByDateDesc = 'Sort by date : desc';
- rsShowTaskBar = 'Show task bar';
- rsHideTaskBar = 'Hide task bar';
+ rsTaskBar = 'Task bar';
  rsStatusInstalled = 'Installed';
  rsActionUpgrade = 'Upgrade';
  rsActionRemove = 'Remove';

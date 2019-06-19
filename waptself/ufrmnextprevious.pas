@@ -12,15 +12,20 @@ type
   { TFrmNextPrevious }
 
   TFrmNextPrevious = class(TFrame)
-    LogoNextPrev: TImage;
-    procedure LogoNextPrevClick(Sender: TObject);
-    procedure LogoNextPrevMouseEnter(Sender: TObject);
-    procedure LogoNextPrevMouseLeave(Sender: TObject);
+    LabPage: TLabel;
+    LogoNext: TImage;
+    LogoPrev: TImage;
+    PanelNextOrev: TPanel;
+    procedure LogoNextClick(Sender: TObject);
+    procedure LogoNextMouseEnter(Sender: TObject);
+    procedure LogoNextMouseLeave(Sender: TObject);
+    procedure LogoPrevClick(Sender: TObject);
+    procedure LogoPrevMouseEnter(Sender: TObject);
+    procedure LogoPrevMouseLeave(Sender: TObject);
   private
 
   public
-    isNext:Boolean;
-    constructor Create(TheOwner: TComponent);
+    constructor Create(TheOwner: TComponent); override;
   end;
 
 implementation
@@ -32,28 +37,34 @@ uses
 
 { TFrmNextPrevious }
 
-procedure TFrmNextPrevious.LogoNextPrevClick(Sender: TObject);
+procedure TFrmNextPrevious.LogoNextClick(Sender: TObject);
 begin
-  if isNext then
-    VisWaptSelf.TimerNextFrames.Enabled:=true
-  else
-    VisWaptSelf.TimerPreviousFrames.Enabled:=true;
+  VisWaptSelf.TimerNextFrames.Enabled:=true;
 end;
 
-procedure TFrmNextPrevious.LogoNextPrevMouseEnter(Sender: TObject);
+procedure TFrmNextPrevious.LogoNextMouseEnter(Sender: TObject);
 begin
-  if isNext then
-    LogoNextPrev.Picture.LoadFromResourceName(HINSTANCE,'FLECHE-BAS-BLEUE-100PX')
-  else
-    LogoNextPrev.Picture.LoadFromResourceName(HINSTANCE,'FLECHE-HAUT-BLEUE-100PX');
+  Screen.Cursor:=crHandPoint;
 end;
 
-procedure TFrmNextPrevious.LogoNextPrevMouseLeave(Sender: TObject);
+procedure TFrmNextPrevious.LogoNextMouseLeave(Sender: TObject);
 begin
-  if isNext then
-    LogoNextPrev.Picture.LoadFromResourceName(HINSTANCE,'FLECHE-BAS-BLANC-100PX')
-  else
-    LogoNextPrev.Picture.LoadFromResourceName(HINSTANCE,'FLECHE-HAUT-BLANC-100PX');
+  Screen.Cursor:=crDefault;
+end;
+
+procedure TFrmNextPrevious.LogoPrevClick(Sender: TObject);
+begin
+  VisWaptSelf.TimerPreviousFrames.Enabled:=true;
+end;
+
+procedure TFrmNextPrevious.LogoPrevMouseEnter(Sender: TObject);
+begin
+  Screen.Cursor:=crHandPoint;
+end;
+
+procedure TFrmNextPrevious.LogoPrevMouseLeave(Sender: TObject);
+begin
+  Screen.Cursor:=crDefault;
 end;
 
 constructor TFrmNextPrevious.Create(TheOwner: TComponent);
@@ -61,8 +72,10 @@ begin
   inherited Create(TheOwner);
   if Screen.PixelsPerInch <> 96 then
     begin
-       LogoNextPrev.AutoSize:=false;
-       LogoNextPrev.AntialiasingMode:=amOn;
+       LogoNext.AutoSize:=false;
+       LogoNext.AntialiasingMode:=amOn;
+       LogoPrev.AutoSize:=false;
+       LogoPrev.AntialiasingMode:=amOn;
     end;
 end;
 

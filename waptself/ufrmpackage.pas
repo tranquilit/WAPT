@@ -26,7 +26,6 @@ type
     ImgPackage: TImage;
     LabDescription: TBCLabel;
     LabelProgressionInstall: TBCLabel;
-    LabInstallVersion: TBCLabel;
     LabPackageName: TBCLabel;
     LabVersion: TBCLabel;
     LabDate: TBCLabel;
@@ -143,6 +142,18 @@ begin
     FrmDetailsPackageInPanel.LabDescription.Caption:=UTF8Encode(Package.S['description']);
     FrmDetailsPackageInPanel.LabLicence.Caption:=UTF8Encode(Package.S['licence']);
     FrmDetailsPackageInPanel.LabLicence.AdjustFontForOptimalFill;
+
+    if ((package.S['install_status'] = 'OK') and not(package.S['install_version'] >= package.S['version'])) then
+    begin
+      FrmDetailsPackageInPanel.LabUpgradeFromVersion.Show;
+      FrmDetailsPackageInPanel.UpgradeFromVersion.Show;
+      FrmDetailsPackageInPanel.LabUpgradeFromVersion.Caption:=UTF8Encode(Package.S['install_version'])
+    end
+    else
+    begin
+      FrmDetailsPackageInPanel.LabUpgradeFromVersion.Hide;
+      FrmDetailsPackageInPanel.UpgradeFromVersion.Hide;
+    end;
 
     FrmDetailsPackageInPanel.LabImpactedProcess.Caption:=StringReplace(UTF8Encode(Package.S['impacted_process']),',',', ',[rfReplaceAll, rfIgnoreCase]);
 
