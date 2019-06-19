@@ -343,11 +343,12 @@ begin
     FPythonEngine := TPythonEngine.Create(Nil);
 
     RegWaptBaseDir:=WaptBaseDir();
-    if not FileExists(AppendPathDelim(RegWaptBaseDir)+'python27.dll') then
+    if not FileExistsUTF8(AppendPathDelim(RegWaptBaseDir)+'python27.dll') then
       RegWaptBaseDir:=RegisteredAppInstallLocation('wapt_is1');
-
+    if not FileExistsUTF8(AppendPathDelim(RegWaptBaseDir)+'python27.dll') then
+      RegWaptBaseDir:=RegisteredAppInstallLocation('WAPT Server_is1');
     if RegWaptBaseDir='' then
-      RegWaptBaseDir:=RegisteredExePath('wapt-get.exe');
+      RegWaptBaseDir:=ExtractFilePath(RegisteredExePath('wapt-get.exe'));
 
     with FPythonEngine do
     begin

@@ -1573,9 +1573,15 @@ begin
     result :='';
 end;
 
+
+
 function WaptBaseDir: String;
 begin
-  result := GetCmdParams('waptbasedir',ExtractFilePath(ParamStrUTF8(0)));
+  result := GetCmdParams('waptbasedir',ExtractFileDir(ParamStrUTF8(0)));
+  if lowercase(ExtractFileName(result)) = 'scripts' then
+    Result := ExtractFileDir(result);
+  Result := AppendPathDelim(Result);
+
 end;
 
 function WaptgetPath: String;
