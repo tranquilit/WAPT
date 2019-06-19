@@ -1019,16 +1019,16 @@ def main():
 
                         if os.path.isdir(source_dir):
                             print('Building  %s' % source_dir)
+                            print('Signing %s with key %s and certificate %s (%s)' % (source_dir,key,certificates[0].cn,certificates[0].public_cert_filename))
+                            signature = mywapt.sign_package(source_dir,certificate=certificates,private_key=key)
+                            print(u"Package %s signed : signature : %s...%s" % (source_dir, signature[0:10],signature[-10:-1]))
                             package_fn = mywapt.build_package(
                                 source_dir,
                                 inc_package_release=options.increlease,
                                 excludes=ensure_list(options.excludes),
                                 set_maturity=options.maturity)
+                            print('...done building. Package filename %s' % (package_fn,))
                             if package_fn:
-                                print('...done building. Package filename %s' % (package_fn,))
-                                print('Signing %s with key %s and certificate %s (%s)' % (package_fn,key,certificates[0].cn,certificates[0].public_cert_filename))
-                                signature = mywapt.sign_package(package_fn,certificate=certificates,private_key=key)
-                                print(u"Package %s signed : signature : %s...%s" % (package_fn, signature[0:10],signature[-10:-1]))
                                 packages.append(package_fn)
                             else:
                                 logger.critical(u'package %s not created' % package_fn)

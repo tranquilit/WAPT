@@ -6073,13 +6073,13 @@ class Wapt(BaseObjectClass):
 
         for source_dir in [os.path.abspath(p) for p in sources_directories]:
             if os.path.isdir(source_dir):
+                logger.info('Signing %s with certificate %s' % (package_fn,self.personal_certificate() ))
+                signature = self.sign_package(source_dir,private_key_password = private_key_passwd)
+                logger.debug(u"Package %s signed : signature :\n%s" % (source_dir,signature))
                 logger.info(u'Building  %s' % source_dir)
                 package_fn = self.build_package(source_dir,inc_package_release=inc_package_release,target_directory=target_directory,set_maturity=set_maturity)
                 if package_fn:
                     logger.info(u'...done. Package filename %s' % (package_fn,))
-                    logger.info('Signing %s with certificate %s' % (package_fn,self.personal_certificate() ))
-                    signature = self.sign_package(package_fn,private_key_password = private_key_passwd)
-                    logger.debug(u"Package %s signed : signature :\n%s" % (package_fn,signature))
                     buildresults.append(package_fn)
                 else:
                     logger.critical(u'package %s not created' % package_fn)
