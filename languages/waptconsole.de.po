@@ -414,6 +414,16 @@ msgstr ""
 msgid "If some Windows updates are pending, waptexit will append a task to install all pending Windows updates"
 msgstr ""
 
+#: tviscreatewaptsetup.cbuseadgroups.caption
+msgid "Enable AD Groups"
+msgstr ""
+
+#: tviscreatewaptsetup.cbuseadgroups.hint
+msgid ""
+"Enable automatic AD groups based packages on Hots.\n"
+"Be careful, this introduce load on the AD servers and slow down the whole Wapt process\n"
+msgstr ""
+
 #: tviscreatewaptsetup.cbusefqdnasuuid.caption
 msgid "Use Computer FQDN for UUID"
 msgstr ""

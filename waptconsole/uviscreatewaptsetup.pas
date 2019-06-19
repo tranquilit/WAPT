@@ -29,6 +29,7 @@ type
     CBWUADefaultAllow: TCheckBox;
     CBWUADisable: TRadioButton;
     CBWUADontchange: TRadioButton;
+    CBUseADGroups: TCheckBox;
     EdAuditScheduling: TComboBox;
     edAppendHostProfiles: TEdit;
     EdWUADownloadScheduling: TComboBox;
@@ -323,6 +324,7 @@ begin
     CBCheckCertificatesValidity.Checked:=ini.ReadBool('global', 'check_certificates_validity',True );
     CBDualSign.Checked:= (ini.ReadString('global', 'sign_digests','') = 'sha256,sha1');
     CBUseFQDNAsUUID.Checked:= ini.ReadBool('global', 'use_fqdn_as_uuid',False);
+    CBUseADGroups.Checked:= ini.ReadBool('global', 'use_ad_groups',False);
     fnWaptDirectory.Directory := WaptBaseDir()+'\waptupgrade';
 
     fnPublicCert.FileName := UTF8Encode(ActiveCertBundle);
@@ -399,6 +401,7 @@ begin
 
     ini.WriteBool('global', 'use_kerberos', CBUseKerberos.Checked);
     ini.WriteBool('global', 'use_fqdn_as_uuid',CBUseFQDNAsUUID.Checked);
+    ini.WriteBool('global', 'use_ad_groups',CBUseADGroups.Checked);
 
     if DMPython.IsEnterpriseEdition then
     begin
@@ -459,6 +462,7 @@ begin
       CBForceWaptServerURL.Checked,
       CBUseFQDNAsUUID.Checked,
       CBUseRandomUUID.Checked,
+      CBUseADGroups.Checked,
       edAppendHostProfiles.Text,
       GetWUAParams(),
       EdAuditScheduling.Text

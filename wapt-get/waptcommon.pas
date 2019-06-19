@@ -118,6 +118,7 @@ interface
             EnterpriseEdition:Boolean=False; OverwriteRepoURL:Boolean=True;OverwriteWaptServerURL:Boolean=True;
             UseFQDNAsUUID:Boolean=False;
             UseRandomUUID:Boolean=False;
+            UseADGroups:Boolean=False;
             AppendHostProfiles:String='';
             WUAParams:ISuperObject=Nil;
             WaptauditTaskPeriod:String=''
@@ -2068,7 +2069,7 @@ function CreateWaptSetup(default_public_cert: Utf8String;
   WaptEdition: Utf8String; VerifyCert: Utf8String; UseKerberos: Boolean;
   CheckCertificatesValidity: Boolean; EnterpriseEdition: Boolean;
   OverwriteRepoURL: Boolean; OverwriteWaptServerURL: Boolean;
-  UseFQDNAsUUID:Boolean=False; UseRandomUUID:Boolean=False; AppendHostProfiles:String='';
+  UseFQDNAsUUID:Boolean=False; UseRandomUUID:Boolean=False; UseADGroups:Boolean=False; AppendHostProfiles:String='';
   WUAParams:ISuperObject=Nil;
   WaptauditTaskPeriod:String=''): Utf8String;
 var
@@ -2118,6 +2119,13 @@ begin
           new_iss.AsArray.Add(format('#define append_host_profiles "%s"' ,[AppendHostProfiles]))
       else if startswith(line,'#define set_waptaudit_task_period') and (WaptauditTaskPeriod<>'') then
           new_iss.AsArray.Add(format('#define set_waptaudit_task_period "%s"' ,[WaptauditTaskPeriod]))
+      else if startswith(line,'#define use_ad_groups') then
+      begin
+          if UseADGroups then
+            new_iss.AsArray.Add(format('#define use_ad_groups "1"' ,[]))
+          else
+            new_iss.AsArray.Add(format('#define use_ad_groups ""' ,[]))
+      end
       else if startswith(line,'#define use_fqdn_as_uuid') then
       begin
           if UseFQDNAsUUID then

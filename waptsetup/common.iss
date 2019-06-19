@@ -133,6 +133,11 @@ Filename: {app}\wapt-get.ini; Section: global; Key: verify_cert; String: {code:V
 Filename: {app}\wapt-get.ini; Section: global; Key: use_fqdn_as_uuid; String: {#use_fqdn_as_uuid}; 
 #endif
 
+#if use_ad_groups != ""
+Filename: {app}\wapt-get.ini; Section: global; Key: use_ad_groups; String: {#use_ad_groups};
+#endif
+
+
 Filename: {app}\wapt-get.ini; Section: global; Key: uuid; String: {code:GenerateHostUUID}; Check: MustChangeHostUUID;
 
 #if edition != "waptserversetup"

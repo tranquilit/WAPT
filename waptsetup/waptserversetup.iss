@@ -49,6 +49,8 @@
 
 #define use_fqdn_as_uuid ""
 
+#define use_ad_groups ""
+
 #define use_random_uuid ""
 
 #ifdef waptenterprise

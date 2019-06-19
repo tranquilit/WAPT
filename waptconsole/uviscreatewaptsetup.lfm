@@ -483,7 +483,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       Height = 21
       Hint = 'E.g. : socle,accounting'
       Top = 0
-      Width = 314
+      Width = 181
       Anchors = [akTop, akLeft, akRight]
       TabOrder = 0
     end
@@ -544,6 +544,15 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       Caption = 'Disable WAPT WUA'
       OnClick = CBWUADisableClick
       TabOrder = 5
+    end
+    object CBUseADGroups: TCheckBox
+      Left = 448
+      Height = 17
+      Hint = 'Enable automatic AD groups based packages on Hots.'#13#10'Be careful, this introduce load on the AD servers and slow down the whole Wapt process'
+      Top = 2
+      Width = 106
+      Caption = 'Enable AD Groups'
+      TabOrder = 6
     end
   end
   object PanBottom: TPanel

@@ -397,6 +397,18 @@ msgstr "Installer les mises à jour Windows à l'arrêt"
 msgid "If some Windows updates are pending, waptexit will append a task to install all pending Windows updates"
 msgstr "Si des mises à jour Windows sont en attente, waptexit ajoureta une tâche pour les installer."
 
+#: tviscreatewaptsetup.cbuseadgroups.caption
+msgid "Enable AD Groups"
+msgstr "Activer les groupes AD"
+
+#: tviscreatewaptsetup.cbuseadgroups.hint
+msgid ""
+"Enable automatic AD groups based packages on Hots.\n"
+"Be careful, this introduce load on the AD servers and slow down the whole Wapt process\n"
+msgstr ""
+"Active la gestion des paquets Groupes par l'AD.\n"
+"ATTENTION, cela introduit de la charge sur les serveurs AD et de la lenteur dans le process Wapt\n"
+
 #: tviscreatewaptsetup.cbusefqdnasuuid.caption
 msgid "Use Computer FQDN for UUID"
 msgstr "Utiliser le nom FQDN comme UUID pour les clients"
