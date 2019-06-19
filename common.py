@@ -6072,7 +6072,7 @@ class Wapt(BaseObjectClass):
 
         for source_dir in [os.path.abspath(p) for p in sources_directories]:
             if os.path.isdir(source_dir):
-                logger.info('Signing %s with certificate %s' % (package_fn,self.personal_certificate() ))
+                logger.info('Signing %s with certificate %s' % (source_dir,self.personal_certificate() ))
                 signature = self.sign_package(source_dir,private_key_password = private_key_passwd)
                 logger.debug(u"Package %s signed : signature :\n%s" % (source_dir,signature))
                 logger.info(u'Building  %s' % source_dir)
