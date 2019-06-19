@@ -6,7 +6,7 @@ library waptguihelper;
 
 uses
   Classes,SysUtils,Windows,
-  PythonEngine, Forms,uWaptBuildParams, Controls, Interfaces, waptcommon, LazFileUtils
+  PythonEngine, Forms,uWaptBuildParams, Controls, Interfaces
   { you can add units after this };
 
 var
@@ -151,19 +151,17 @@ exports
   initwaptguihelper;
 
 initialization
-  RegWaptBaseDir:=WaptBaseDir();
-  if not FileExistsUTF8(AppendPathDelim(RegWaptBaseDir)+'python27.dll') then
-    RegWaptBaseDir:=RegisteredAppInstallLocation('wapt_is1');
-  if not FileExistsUTF8(AppendPathDelim(RegWaptBaseDir)+'python27.dll') then
-    RegWaptBaseDir:=RegisteredAppInstallLocation('WAPT Server_is1');
-  if RegWaptBaseDir='' then
-    RegWaptBaseDir:=ExtractFilePath(RegisteredExePath('wapt-get.exe'));
+  RegWaptBaseDir:='c:\tranquilit\wapt\';
 
   PyE := TPythonEngine.Create(Nil);
   With PyE do
   begin
     AutoLoad := False;
-    DllPath := RegWaptBaseDir;
+    // We should not specify dll path to avoid being in conflict with already python DLL
+    // in PyScripter / RPyc.
+    // If we force path here, we have an "SystemError: dynamic module not initialized properly"
+    // when importing module in wapt-get.py...
+    // removed : DllPath := RegWaptBaseDir;
     DllName := 'python27.dll';
 
     UseLastKnownVersion := False;

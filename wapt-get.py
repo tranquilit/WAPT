@@ -300,7 +300,7 @@ def ask_user_password(title=''):
 # because if rpyc
 try:
     import waptguihelper
-except ImportError:
+except (ImportError,SystemError):
     waptguihelper = None
 
 def do_update(mywapt,options):
