@@ -163,7 +163,7 @@ parser.add_option(     "--keep-signature-date", dest="keep_signature_date",defau
 parser.add_option("-s","--sections",    dest="section_filter",    default=None,  help="Add a filter section to search query (default: ALL)")
 parser.add_option("-j","--json",    dest="json_output",    default=False, action='store_true', help="Switch to json output for scripts purpose (default: %default)")
 parser.add_option("-e","--encoding",    dest="encoding",    default=None, help="Chararacter encoding for the output (default: no change)")
-parser.add_option("-x","--excludes",    dest="excludes",    default='.svn,.git*,*.pyc,*.dbg,src', help="Comma separated list of files or directories to exclude for build-package (default: %default)")
+parser.add_option("-x","--excludes",    dest="excludes",    default=None, help="Comma separated list of files or directories to exclude for build-package (default: %default)")
 parser.add_option("-k","--certificate", dest="personal_certificate_path",    default='', help="Path to the PEM X509 personal certificate to sign packages. Package are unsigned if not provided (default: %default)")
 parser.add_option("-w","--private-key-passwd", dest="private_key_passwd", default='', help="Path to the password of the private key. (default: %default)")
 parser.add_option("-U","--user", dest="user", default=None, help="Interactive user (default: no change)")
@@ -1020,13 +1020,15 @@ def main():
                         if os.path.isdir(source_dir):
                             print('Building  %s' % source_dir)
                             print('Signing %s with key %s and certificate %s (%s)' % (source_dir,key,certificates[0].cn,certificates[0].public_cert_filename))
-                            signature = mywapt.sign_package(source_dir,certificate=certificates,private_key=key)
-                            print(u"Package %s signed : signature : %s...%s" % (source_dir, signature[0:10],signature[-10:-1]))
-                            package_fn = mywapt.build_package(
-                                source_dir,
+                            signature = mywapt.sign_package(source_dir,
+                                certificate=certificates,
+                                private_key=key,
                                 inc_package_release=options.increlease,
                                 excludes=ensure_list(options.excludes),
                                 set_maturity=options.maturity)
+                            print(u"Package %s signed : signature : %s...%s" % (source_dir, signature[0:10],signature[-10:-1]))
+                            package_fn = mywapt.build_package(source_dir,excludes=ensure_list(options.excludes))
+
                             print('...done building. Package filename %s' % (package_fn,))
                             if package_fn:
                                 packages.append(package_fn)

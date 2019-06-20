@@ -1707,7 +1707,7 @@ class PackageEntry(BaseObjectClass):
             # package is not yet built/signed.
             return None
 
-    def build_manifest(self,exclude_filenames = None,block_size=2**20,forbidden_files=[],md='sha256',waptzip=None):
+    def build_manifest(self,exclude_filenames = None,block_size=2**20,forbidden_files=[],md='sha256',waptzip=None,excludes=[]):
         """Calc the manifest of an already built (zipped) wapt package
 
         Returns:
@@ -1736,6 +1736,14 @@ class PackageEntry(BaseObjectClass):
                         if fn.filename in forbidden_files:
                             raise EWaptPackageSignError('File %s is not allowed.'% fn.filename)
 
+                        excluded = False
+                        for exclude_glob in excludes:
+                            if glob.fnmatch.fnmatch(fn.filename,exclude_glob):
+                                excluded = True
+                                break
+                        if excluded:
+                            continue
+
                         shasum = hashlib.new(md)
 
                         file_data = waptzip.open(fn)
@@ -1747,7 +1755,7 @@ class PackageEntry(BaseObjectClass):
                         shasum.update(data)
                         manifest[fn.filename] = shasum.hexdigest()
             else:
-                for fn in find_all_files(self.sourcespath):
+                for fn in find_all_files(self.sourcespath,exclude_patterns=excludes):
                     filename = os.path.relpath(fn,self.sourcespath).replace('\\','/')
                     if not filename in exclude_filenames:
                         if filename in forbidden_files:
@@ -1770,7 +1778,7 @@ class PackageEntry(BaseObjectClass):
 
 
     def sign_package(self,certificate,private_key=None,password_callback=None,private_key_password=None,
-            mds=['sha256'],keep_signature_date=False,excludes_full = ['.svn','.git','.gitignore','setup.pyc']):
+            mds=['sha256'],keep_signature_date=False,excludes_full = ['.svn','.git','.gitignore','setup.pyc'],excludes=[]):
         """Sign an already built package.
         Should follow immediately the build_package step.
 
@@ -1819,10 +1827,10 @@ class PackageEntry(BaseObjectClass):
 
         # control file is appended to manifest file separately.
         control = self.ascontrol().encode('utf8')
-        excludes = self.manifest_filename_excludes
-        excludes.append('WAPT/control')
+        exclude_filenames = self.manifest_filename_excludes
+        exclude_filenames.append('WAPT/control')
         # files to ignore as they will not be zipped into final package
-        excludes.append(full_excludes)
+        exclude_filenames.extend(excludes_full)
 
         forbidden_files = []
         # removes setup.py
@@ -1856,7 +1864,7 @@ class PackageEntry(BaseObjectClass):
                 for md in mds:
                     try:
                         # need read access to ZIP file.
-                        manifest_data = self.build_manifest(exclude_filenames = excludes,forbidden_files = forbidden_files,md=md,waptzip=waptzip)
+                        manifest_data = self.build_manifest(exclude_filenames = exclude_filenames,forbidden_files = forbidden_files,md=md,waptzip=waptzip, excludes = excludes)
                     except EWaptPackageSignError as e:
                         raise EWaptBadCertificate('Certificate %s doesn''t allow to sign packages with setup.py file.' % signer_cert.cn)
 

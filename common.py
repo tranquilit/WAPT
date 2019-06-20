@@ -5966,7 +5966,7 @@ class Wapt(BaseObjectClass):
         return self._private_key_cache
 
     def sign_package(self,zip_or_directoryname,certificate=None,private_key_password=None,private_key = None,
-        set_maturity=None,inc_package_release=False,keep_signature_date=False):
+        set_maturity=None,inc_package_release=False,keep_signature_date=False,excludes = []):
         """Calc the signature of the WAPT/manifest.sha256 file and put/replace it in ZIP or directory.
             if directory, creates WAPT/manifest.sha256 and add it to the content of package
             create a WAPT/signature file and it to directory or zip file.
@@ -6014,10 +6014,10 @@ class Wapt(BaseObjectClass):
                 private_key_password=private_key_password,
                 mds = self.sign_digests,
                 keep_signature_date=keep_signature_date,
-                full_excludes = ['.svn','.git','.gitignore','setup.pyc'] )
+                excludes = excludes,
+                excludes_full = ['.svn','.git','.gitignore','setup.pyc'] )
 
-    def build_package(self,directoryname,inc_package_release=False,
-        target_directory=None,set_maturity=None):
+    def build_package(self,directoryname,target_directory=None,excludes=[]):
         """Build the WAPT package from a directory
 
         Args:
@@ -6041,15 +6041,7 @@ class Wapt(BaseObjectClass):
 
         logger.info(u'Load control informations from control file')
         entry = PackageEntry(waptfile = directoryname)
-        if set_maturity is not None:
-            entry.maturity = set_maturity
-
-        # increment inconditionally the package buuld nr.
-        if inc_package_release:
-            entry.inc_build()
-
-        entry.save_control_to_wapt()
-        result_filename = entry.build_package(excludes_full = ['.svn','.git','.gitignore','setup.pyc'],target_directory = target_directory)
+        result_filename = entry.build_package(excludes=excludes,excludes_full = ['.svn','.git','.gitignore','setup.pyc'],target_directory = target_directory)
         return result_filename
 
 
