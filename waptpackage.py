@@ -1502,7 +1502,7 @@ class PackageEntry(BaseObjectClass):
         return result_filename
 
 
-    def build_package(self,excludes=['.svn','.git','.gitignore','setup.pyc'],target_directory=None,excludes_full=[]):
+    def build_package(self,excludes=[],target_directory=None,excludes_full=['.svn','.git','.gitignore','setup.pyc']):
         """Build the WAPT package, stores the result in target_directory
         Zip the content of self.sourcespath directory into a zipfile
         named with default package filename based on control attributes.
@@ -1514,6 +1514,7 @@ class PackageEntry(BaseObjectClass):
             excludes (list) : list of patterns for source files to exclude from built package.
             target_directory (str): target directory where to store built package.
                                  If None, use parent directory of package sources dircetory.
+            excludes_full (list) : list of exact (relative to package root) filepathes to exclude from Zip.
 
         Returns:
             str: full filepath to built wapt package
@@ -1768,7 +1769,8 @@ class PackageEntry(BaseObjectClass):
                 waptzip.close()
 
 
-    def sign_package(self,certificate,private_key=None,password_callback=None,private_key_password=None,mds=['sha256'],keep_signature_date=False):
+    def sign_package(self,certificate,private_key=None,password_callback=None,private_key_password=None,
+            mds=['sha256'],keep_signature_date=False,excludes_full = ['.svn','.git','.gitignore','setup.pyc']):
         """Sign an already built package.
         Should follow immediately the build_package step.
 
@@ -1783,6 +1785,7 @@ class PackageEntry(BaseObjectClass):
             password_callback (func) : function to call to get key password if encrypted.
             private_key_password (str): password to use if key is encrypted. Use eithe this or password_callback
             mds (list): list of message digest manifest and signature methods to include. For backward compatibility.
+            excludes_full (list) : list of exact (relative to package root) filepathes to exclude from manifest.
 
         Returns:
             str: signature
@@ -1818,6 +1821,8 @@ class PackageEntry(BaseObjectClass):
         control = self.ascontrol().encode('utf8')
         excludes = self.manifest_filename_excludes
         excludes.append('WAPT/control')
+        # files to ignore as they will not be zipped into final package
+        excludes.append(full_excludes)
 
         forbidden_files = []
         # removes setup.py

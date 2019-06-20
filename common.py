@@ -5965,7 +5965,8 @@ class Wapt(BaseObjectClass):
             raise EWaptMissingPrivateKey(u'The key matching the certificate %s can not be found or decrypted' % (cert.public_cert_filename or cert.subject))
         return self._private_key_cache
 
-    def sign_package(self,zip_or_directoryname,certificate=None,private_key_password=None,private_key = None,set_maturity=None,inc_package_release=False,keep_signature_date=False):
+    def sign_package(self,zip_or_directoryname,certificate=None,private_key_password=None,private_key = None,
+        set_maturity=None,inc_package_release=False,keep_signature_date=False):
         """Calc the signature of the WAPT/manifest.sha256 file and put/replace it in ZIP or directory.
             if directory, creates WAPT/manifest.sha256 and add it to the content of package
             create a WAPT/signature file and it to directory or zip file.
@@ -6012,15 +6013,12 @@ class Wapt(BaseObjectClass):
                 certificate = certificate,password_callback=password_callback,
                 private_key_password=private_key_password,
                 mds = self.sign_digests,
-                keep_signature_date=keep_signature_date)
+                keep_signature_date=keep_signature_date,
+                full_excludes = ['.svn','.git','.gitignore','setup.pyc'] )
 
-    def build_package(self,directoryname,inc_package_release=False,excludes=['.svn','.git','.gitignore','setup.pyc'],
-                target_directory=None,set_maturity=None):
+    def build_package(self,directoryname,inc_package_release=False,
+        target_directory=None,set_maturity=None):
         """Build the WAPT package from a directory
-
-        Call update_control from setup.py if this function is defined.
-        Then zip the content of directory. Add a manifest.sha256 file with sha256 hash of
-        the content of each file.
 
         Args:
             directoryname (str): source root directory of package to build
@@ -6051,8 +6049,7 @@ class Wapt(BaseObjectClass):
             entry.inc_build()
 
         entry.save_control_to_wapt()
-
-        result_filename = entry.build_package(excludes = excludes,target_directory = target_directory)
+        result_filename = entry.build_package(excludes_full = ['.svn','.git','.gitignore','setup.pyc'],target_directory = target_directory)
         return result_filename
 
 
@@ -6073,10 +6070,14 @@ class Wapt(BaseObjectClass):
         for source_dir in [os.path.abspath(p) for p in sources_directories]:
             if os.path.isdir(source_dir):
                 logger.info('Signing %s with certificate %s' % (source_dir,self.personal_certificate() ))
-                signature = self.sign_package(source_dir,private_key_password = private_key_passwd)
+                signature = self.sign_package(
+                        source_dir,private_key_password = private_key_passwd,
+                        inc_package_release=inc_package_release,
+                        set_maturity=set_maturity
+                        )
                 logger.debug(u"Package %s signed : signature :\n%s" % (source_dir,signature))
                 logger.info(u'Building  %s' % source_dir)
-                package_fn = self.build_package(source_dir,inc_package_release=inc_package_release,target_directory=target_directory,set_maturity=set_maturity)
+                package_fn = self.build_package(source_dir,target_directory=target_directory)
                 if package_fn:
                     logger.info(u'...done. Package filename %s' % (package_fn,))
                     buildresults.append(package_fn)

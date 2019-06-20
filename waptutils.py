@@ -1160,7 +1160,7 @@ def create_recursive_zip(zipfn, source_root, target_root = u"",excludes = [u'.sv
         source_root (unicode) : root directory of filetree to zip
         target_root (unicode) ! root directory for all in zip file
         excludes (list)  : list of glob pattern of files to excludes
-        excludes_full (list) : full relative filepath of files to exclude
+        excludes_full (list) : full "relative to source_root" filepath of files to exclude
 
     Returns:
         list : list of zipped filepath
