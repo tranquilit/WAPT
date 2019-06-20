@@ -210,12 +210,9 @@ begin
   result := ExtractFilePath(ParamStr(0))+'wapt-get.ini';
 end;
 
-
-{ TCheckWaptservice }
 type
 
 { TTriggerWaptserviceAction }
-
 TTriggerWaptserviceAction = Class(TThread)
 private
   FOnNotifyEvent: TNotifyEvent;
@@ -467,39 +464,39 @@ begin
     begin
       CheckTasksThread.Start;
       CheckEventsThread.Start;
+
+      aso := (Sender as TCheckWaptservice).LastUpdateStatus;
+      if aso<>Nil then
+      begin
+        Upgrades := aso['upgrades'];
+        Removes := aso['pending.remove'];
+
+        // running is not safe here
+        RunningTasks := aso['running_tasks'];
+        if Assigned(RunningTasks) and Assigned(RunningTasks.AsArray) and (RunningTasks.AsArray.Length>0) then
+          Running := RunningTasks.AsArray[0];
+
+
+        {$ifdef enterprise}
+        wua_status := aso['wua_status'];
+        wua_pending_count := aso['wua_pending_count'];
+        {$else}
+        wua_status := Nil;
+        wua_pending_count := Nil;
+        {$endif}
+
+        if ShouldBeUpgraded then
+        begin
+          EdRunning.Text := rsWaptUpgradespending;
+          Application.ProcessMessages;
+        end;
+      end;
     end
     else
     begin
       EdRunning.Text := rsWaptServiceNotRunning;
       Application.ProcessMessages;
       Sleep(1000);
-    end;
-
-    aso := (Sender as TCheckWaptservice).LastUpdateStatus;
-    if aso<>Nil then
-    begin
-      Upgrades := aso['upgrades'];
-      Removes := aso['pending.remove'];
-
-      // running is not safe here
-      RunningTasks := aso['running_tasks'];
-      if Assigned(RunningTasks) and Assigned(RunningTasks.AsArray) and (RunningTasks.AsArray.Length>0) then
-        Running := RunningTasks.AsArray[0];
-
-
-      {$ifdef enterprise}
-      wua_status := aso['wua_status'];
-      wua_pending_count := aso['wua_pending_count'];
-      {$else}
-      wua_status := Nil;
-      wua_pending_count := Nil;
-      {$endif}
-
-      if ShouldBeUpgraded then
-      begin
-        EdRunning.Text := rsWaptUpgradespending;
-        Application.ProcessMessages;
-      end;
     end;
   except
     on E:Exception do
@@ -530,31 +527,31 @@ begin
         LabWUAUpgrades.Caption := Format(rsWUAUpdatesAvailable,[wua_pending_count.AsInteger]);
       end;
       {$endif}
-    end
-  end;
-
-  if CheckAllowCancelUpgrade then
-  begin
-    if AutoUpgradeTime < 1 then
-    begin
-      CountDown:=InitialCountDown;
-      AutoUpgradeTime := Now + InitialCountDown / 3600.0 /24.0;
-      WaitingCountDown:=True;
     end;
-  end
-  else
-  begin
-    CountDown:=0;
-    AutoUpgradeTime := Now;
-  end;
 
-  // waptservice is running so start the count down
-  if not DisableUpgrade then
-    Timer1.Enabled:=True
-  else
-    // wa have disable the start of upgrade so close now.
-    if not WorkInProgress then
-      Application.Terminate;
+    if CheckAllowCancelUpgrade then
+    begin
+      if AutoUpgradeTime < 1 then
+      begin
+        CountDown:=InitialCountDown;
+        AutoUpgradeTime := Now + InitialCountDown / 3600.0 /24.0;
+        WaitingCountDown:=True;
+      end;
+    end
+    else
+    begin
+      CountDown:=0;
+      AutoUpgradeTime := Now;
+    end;
+
+    // waptservice is running so start the count down
+    if not DisableUpgrade then
+      Timer1.Enabled:=True
+    else
+      // wa have disable the start of upgrade so close now.
+      if not WorkInProgress then
+        Application.Terminate;
+  end;
 end;
 
 procedure TVisWaptExit.OnCheckTasksThreadNotify(Sender: TObject);
@@ -711,13 +708,15 @@ begin
   UpgradeTasks := Nil;
 
   // Check service is running and list of upgrades in background at startup
+  // Check running / pending tasks
+  CheckTasksThread := TCheckTasksThread.Create(@OnCheckTasksThreadNotify);
+  CheckEventsThread := TCheckEventsThread.Create(@OnCheckEventsThreadNotify);
+
+  // Initial check
   TCheckWaptservice.Create(@OnCheckWaptserviceNotify);
   EdRunning.Text := rsCheckingUpgrades;
 
 
-  // Check running / pending tasks
-  CheckTasksThread := TCheckTasksThread.Create(@OnCheckTasksThreadNotify);
-  CheckEventsThread := TCheckEventsThread.Create(@OnCheckEventsThreadNotify);
 end;
 
 
