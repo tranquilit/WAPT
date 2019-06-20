@@ -584,7 +584,7 @@ class WaptTask(object):
             create_date = self.create_date and self.create_date.isoformat(),
             start_date = self.start_date and self.start_date.isoformat(),
             finish_date = self.finish_date and self.finish_date.isoformat(),
-            logs = u'\n'.join(self.logs),
+            logs = u'\n'.join([ensure_unicode(l) for l in self.logs]),
             result = common.jsondump(self.result),
             summary = self.summary,
             progress = self.progress,

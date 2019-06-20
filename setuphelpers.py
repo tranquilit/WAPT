@@ -3021,6 +3021,7 @@ def host_metrics():
     result['local_drives'] = local_drives()
     result['logged_in_users'] = get_loggedinusers()
     result['last_logged_on_user'] = get_last_logged_on_user()
+    result['boot_count'] = registry_readstring(HKEY_LOCAL_MACHINE,r'SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management\PrefetchParameters','BootId',0)
 
     # memory usage
     current_process = psutil.Process()

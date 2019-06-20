@@ -336,7 +336,7 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
 
             uuid = args.get('uuid','')
             if uuid != self.wapt.host_uuid:
-                raise Exception('Task is not targeted to this host. task''s uuid does not match host''uuid')
+                raise Exception(u'Task is not targeted to this host. task''s uuid does not match host''uuid')
 
             timeout = float(args.get('timeout','10.0'))
             last_received_event_id = int(args.get('last_event_id','-1'))
@@ -352,7 +352,7 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
                 result_callback(make_response(data,uuid=self.wapt.host_uuid,))
 
         except BaseException as e:
-            logger.info('Exception for actions %s: %s' % (repr(args),repr(e)))
+            logger.info(u'Exception for actions %s: %s' % (repr(args),repr(e)))
             if result_callback:
                 result_callback(make_response_from_exception(e,uuid=self.wapt.host_uuid))
 
