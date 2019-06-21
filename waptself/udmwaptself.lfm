@@ -1,0 +1,8 @@
+object DMWaptSelf: TDMWaptSelf
+  OldCreateOrder = False
+  Height = 326
+  HorizontalOffset = 1423
+  VerticalOffset = 96
+  Width = 447
+  PPI = 96
+end

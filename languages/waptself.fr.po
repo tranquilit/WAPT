@@ -88,6 +88,7 @@ msgid "tis-waptself"
 msgstr ""
 
 #: tfrmdetailspackage.labofficialwebsite.caption
+msgctxt "tfrmdetailspackage.labofficialwebsite.caption"
 msgid "ddddddddddddddddddd"
 msgstr ""
 
@@ -122,6 +123,11 @@ msgstr ""
 
 #: tfrmdetailspackage.labsizeinstalled.caption
 msgid "ddddddddd"
+msgstr ""
+
+#: tfrmdetailspackage.labupgradefromversion.caption
+msgctxt "tfrmdetailspackage.labupgradefromversion.caption"
+msgid "ddddddddddddddddddd"
 msgstr ""
 
 #: tfrmdetailspackage.lastversion.caption
@@ -179,8 +185,12 @@ msgctxt "tfrmdetailspackage.sizeinstalled.caption"
 msgid "Size installed : "
 msgstr "Taille installé : "
 
-#: tfrmnextprevious.label1.caption
-msgid "COUCOU"
+#: tfrmdetailspackage.upgradefromversion.caption
+msgid "Upgrade from version :"
+msgstr "Mise à jour depuis :"
+
+#: tfrmnextprevious.labpage.caption
+msgid "Page : 1/5"
 msgstr ""
 
 #: tfrmpackage.actcanceltask.caption
@@ -214,10 +224,6 @@ msgstr ""
 #: tfrmpackage.labelprogressioninstall.caption
 msgctxt "tfrmpackage.labelprogressioninstall.caption"
 msgid "0%"
-msgstr ""
-
-#: tfrmpackage.labinstallversion.caption
-msgid "1.5.1-0"
 msgstr ""
 
 #: tfrmpackage.labpackagename.caption
@@ -275,6 +281,7 @@ msgid "Cancel task(s)"
 msgstr "Annuler tâche(s)"
 
 #: tviswaptself.acthidedetailsclick.caption
+msgctxt "tviswaptself.acthidedetailsclick.caption"
 msgid "Hide"
 msgstr "Cacher"
 
@@ -284,8 +291,8 @@ msgstr "Rechercher"
 
 #: tviswaptself.actshowtaskbar.caption
 msgctxt "tviswaptself.actshowtaskbar.caption"
-msgid "Show task bar"
-msgstr "Montrer la barre de tâche"
+msgid "Task bar"
+msgstr "Barre de tâches"
 
 #: tviswaptself.acttriggersearch.caption
 msgid "Trigger Search"
@@ -295,9 +302,22 @@ msgstr "Déclencher la recherche"
 msgid "Uncheck all"
 msgstr "Désélectionner tout"
 
+#: tviswaptself.actupdatecatalogue.caption
+msgid "Update catalog"
+msgstr "Mise à jour du catalogue"
+
 #: tviswaptself.actupdatepackageslist.caption
 msgid "ActUpdatePackagesList"
 msgstr ""
+
+#: tviswaptself.actupgradeall.caption
+msgid "Upgrade all"
+msgstr "Tout meetre à jour"
+
+#: tviswaptself.btnhidetaskbar.caption
+msgctxt "tviswaptself.btnhidetaskbar.caption"
+msgid "Hide"
+msgstr "Cacher"
 
 #: tviswaptself.caption
 #| msgid "WAPT softwares Self-service"
@@ -336,7 +356,7 @@ msgstr "Non installés"
 
 #: tviswaptself.radioshowupgradable.caption
 msgid "Upgradable"
-msgstr "A mettre à jour"
+msgstr "À mettre à jour"
 
 #: tviswaptself.radiosortbydateascending.caption
 msgid "Date : oldest"
@@ -540,7 +560,7 @@ msgstr "Trier par date : desc"
 
 #: uviswaptself.rsupgradablepackages
 msgid "Available updates for installed packages"
-msgstr ""
+msgstr "Mise à jour disponibles pour les paquets installés"
 
 #: uwaptselfres.rsactioninstall
 msgctxt "uwaptselfres.rsactioninstall"
@@ -576,11 +596,6 @@ msgstr ""
 "Une opération a échoué, voulez vous forcer l'installation/désinstallation?\n"
 "Opération : %s\n"
 
-#: uwaptselfres.rshidetaskbar
-msgctxt "uwaptselfres.rshidetaskbar"
-msgid "Hide task bar"
-msgstr "Cacher la barre de tâche"
-
 #: uwaptselfres.rsimpacted_processes
 msgctxt "uwaptselfres.rsimpacted_processes"
 msgid ""
@@ -602,11 +617,6 @@ msgctxt "uwaptselfres.rspassword"
 msgid "Password"
 msgstr "Mot de passe"
 
-#: uwaptselfres.rsshowtaskbar
-msgctxt "uwaptselfres.rsshowtaskbar"
-msgid "Show task bar"
-msgstr "Montrer la barre de tâche"
-
 #: uwaptselfres.rssortbydateasc
 msgctxt "uwaptselfres.rssortbydateasc"
 msgid "Sort by date : asc"
@@ -621,6 +631,11 @@ msgstr "Trier par date : desc"
 msgctxt "uwaptselfres.rsstatusinstalled"
 msgid "Installed"
 msgstr "Installé"
+
+#: uwaptselfres.rstaskbar
+msgctxt "uwaptselfres.rstaskbar"
+msgid "Task bar"
+msgstr "Barre de tâches"
 
 #: uwaptselfres.rswaitinginstall
 msgctxt "uwaptselfres.rswaitinginstall"

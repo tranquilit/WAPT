@@ -545,6 +545,7 @@ object VisWaptSelf: TVisWaptSelf
         NumGlyphs = 1
         OnButtonClick = EdSearchButtonClick
         OnChange = EdSearchChange
+        OnEditingDone = EdSearchEditingDone
         OnKeyPress = EdSearchKeyPress
         ParentFont = False
         PasswordChar = #0
@@ -630,6 +631,55 @@ object VisWaptSelf: TVisWaptSelf
           Proportional = True
           Transparent = True
         end
+      end
+      object BtnUpdateCatalogue: TFXMaterialButton
+        AnchorSideLeft.Control = Panel2
+        AnchorSideLeft.Side = asrCenter
+        AnchorSideTop.Control = ComboBoxCategories
+        AnchorSideTop.Side = asrBottom
+        AnchorSideRight.Side = asrCenter
+        AnchorSideBottom.Side = asrBottom
+        Left = 57
+        Height = 25
+        Top = 480
+        Width = 150
+        RoundBorders = 3
+        ColorKind = mcDefault
+        FontColorAutomatic = True
+        NormalColor = 10048559
+        Shadow = False
+        TextSize = 15
+        TextShadow = False
+        TextFont = 'default'
+        TextQuality = fqSystemClearType
+        Action = ActUpdateCatalogue
+        BorderSpacing.Top = 10
+        ParentFont = False
+      end
+      object BtnUpgradeAll: TFXMaterialButton
+        AnchorSideLeft.Control = Panel2
+        AnchorSideLeft.Side = asrCenter
+        AnchorSideTop.Control = BtnUpdateCatalogue
+        AnchorSideTop.Side = asrBottom
+        AnchorSideRight.Side = asrCenter
+        AnchorSideBottom.Side = asrBottom
+        Left = 57
+        Height = 25
+        Top = 515
+        Width = 150
+        RoundBorders = 3
+        ColorKind = mcDefault
+        FontColorAutomatic = True
+        NormalColor = 4227327
+        Shadow = False
+        TextSize = 15
+        TextShadow = False
+        TextFont = 'default'
+        TextQuality = fqSystemClearType
+        Action = ActUpgradeAll
+        BorderSpacing.Top = 10
+        ParentFont = False
+        Visible = False
       end
     end
   end
@@ -2348,6 +2398,14 @@ object VisWaptSelf: TVisWaptSelf
     end
     object ActHideTaskBar: TAction
       OnExecute = ActHideTaskBarExecute
+    end
+    object ActUpdateCatalogue: TAction
+      Caption = 'Update catalog'
+      OnExecute = ActUpdateCatalogueExecute
+    end
+    object ActUpgradeAll: TAction
+      Caption = 'Upgrade all'
+      OnExecute = ActUpgradeAllExecute
     end
   end
   object TimerSearch: TTimer

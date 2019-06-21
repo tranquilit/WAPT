@@ -82,7 +82,7 @@
         <PackageName Value="LCL"/>
       </Item7>
     </RequiredPackages>
-    <Units Count="8">
+    <Units Count="9">
       <Unit0>
         <Filename Value="waptself.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -141,6 +141,14 @@
         <ResourceBaseClass Value="Frame"/>
         <UnitName Value="uFrmNextPrevious"/>
       </Unit7>
+      <Unit8>
+        <Filename Value="udmwaptself.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="DMWaptSelf"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="DataModule"/>
+        <UnitName Value="uDMWaptSelf"/>
+      </Unit8>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

@@ -88,6 +88,7 @@ msgid "tis-waptself"
 msgstr ""
 
 #: tfrmdetailspackage.labofficialwebsite.caption
+msgctxt "tfrmdetailspackage.labofficialwebsite.caption"
 msgid "ddddddddddddddddddd"
 msgstr ""
 
@@ -122,6 +123,11 @@ msgstr ""
 
 #: tfrmdetailspackage.labsizeinstalled.caption
 msgid "ddddddddd"
+msgstr ""
+
+#: tfrmdetailspackage.labupgradefromversion.caption
+msgctxt "tfrmdetailspackage.labupgradefromversion.caption"
+msgid "ddddddddddddddddddd"
 msgstr ""
 
 #: tfrmdetailspackage.lastversion.caption
@@ -179,8 +185,12 @@ msgctxt "tfrmdetailspackage.sizeinstalled.caption"
 msgid "Size installed : "
 msgstr "Size installed : "
 
-#: tfrmnextprevious.label1.caption
-msgid "COUCOU"
+#: tfrmdetailspackage.upgradefromversion.caption
+msgid "Upgrade from version :"
+msgstr "Upgrade from version :"
+
+#: tfrmnextprevious.labpage.caption
+msgid "Page : 1/5"
 msgstr ""
 
 #: tfrmpackage.actcanceltask.caption
@@ -215,10 +225,6 @@ msgstr ""
 msgctxt "tfrmpackage.labelprogressioninstall.caption"
 msgid "0%"
 msgstr "0%"
-
-#: tfrmpackage.labinstallversion.caption
-msgid "1.5.1-0"
-msgstr ""
 
 #: tfrmpackage.labpackagename.caption
 msgid "tis-adobeair"
@@ -273,6 +279,7 @@ msgid "Cancel task(s)"
 msgstr "Cancel task(s)"
 
 #: tviswaptself.acthidedetailsclick.caption
+msgctxt "tviswaptself.acthidedetailsclick.caption"
 msgid "Hide"
 msgstr "Hide"
 
@@ -282,8 +289,8 @@ msgstr "Search"
 
 #: tviswaptself.actshowtaskbar.caption
 msgctxt "tviswaptself.actshowtaskbar.caption"
-msgid "Show task bar"
-msgstr "Show task bar"
+msgid "Task bar"
+msgstr "Task bar"
 
 #: tviswaptself.acttriggersearch.caption
 msgid "Trigger Search"
@@ -293,12 +300,24 @@ msgstr "Trigger Search"
 msgid "Uncheck all"
 msgstr "Uncheck all"
 
+#: tviswaptself.actupdatecatalogue.caption
+msgid "Update catalog"
+msgstr ""
+
 #: tviswaptself.actupdatepackageslist.caption
 msgid "ActUpdatePackagesList"
 msgstr ""
 
+#: tviswaptself.actupgradeall.caption
+msgid "Upgrade all"
+msgstr ""
+
+#: tviswaptself.btnhidetaskbar.caption
+msgctxt "tviswaptself.btnhidetaskbar.caption"
+msgid "Hide"
+msgstr "Hide"
+
 #: tviswaptself.caption
-#| msgid "WAPT softwares Self-service"
 msgid "WAPT Self-service"
 msgstr "WAPT Self-service"
 
@@ -575,11 +594,6 @@ msgstr ""
 "An operation has failed do you want to force the installation/removal?\n"
 "Operation : %s\n"
 
-#: uwaptselfres.rshidetaskbar
-msgctxt "uwaptselfres.rshidetaskbar"
-msgid "Hide task bar"
-msgstr "Hide task bar"
-
 #: uwaptselfres.rsimpacted_processes
 msgctxt "uwaptselfres.rsimpacted_processes"
 msgid ""
@@ -599,12 +613,7 @@ msgstr "Login"
 #: uwaptselfres.rspassword
 msgctxt "uwaptselfres.rspassword"
 msgid "Password"
-msgstr "Password¨"
-
-#: uwaptselfres.rsshowtaskbar
-msgctxt "uwaptselfres.rsshowtaskbar"
-msgid "Show task bar"
-msgstr "Show task bar"
+msgstr "Password"
 
 #: uwaptselfres.rssortbydateasc
 msgctxt "uwaptselfres.rssortbydateasc"
@@ -621,6 +630,11 @@ msgctxt "uwaptselfres.rsstatusinstalled"
 msgid "Installed"
 msgstr "Installed"
 
+#: uwaptselfres.rstaskbar
+msgctxt "uwaptselfres.rstaskbar"
+msgid "Task bar"
+msgstr "Task bar"
+
 #: uwaptselfres.rswaitinginstall
 msgctxt "uwaptselfres.rswaitinginstall"
 msgid "Waiting for install..."
@@ -635,6 +649,7 @@ msgid "Please enter a login/password"
 msgstr "Please enter a login/password"
 
 #: uwaptselfres.rswarningpasswordloginblank
+msgctxt "uwaptselfres.rswarningpasswordloginblank"
 msgid "Your password or login is empty"
-msgstr ""
+msgstr "Your password or login is empty"
 

@@ -6,9 +6,9 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, RTTICtrls, Forms, Controls, Graphics, Dialogs,
-  ExtCtrls, EditBtn, StdCtrls, Buttons, ActnList, uvislogin, BCListBox,
+  ExtCtrls, EditBtn, StdCtrls, Buttons, ActnList, BCListBox,
   BCMaterialDesignButton, BCLabel, FXMaterialButton, IdAuthentication,
-  superobject, waptcommon, httpsend, sogrid, uWAPTPollThreads, VirtualTrees,
+  superobject, waptcommon, sogrid, uWAPTPollThreads, VirtualTrees,
   ImgList, ComCtrls, Menus, uFrmPackage, uFrmDetailsPackage, lmessages,uFrmNextPrevious;
 
 type
@@ -33,6 +33,8 @@ type
     ActCancelTask: TAction;
     ActHideDetailsClick: TAction;
     ActHideTaskBar: TAction;
+    ActUpgradeAll: TAction;
+    ActUpdateCatalogue: TAction;
     ActResizeFlowPackages: TAction;
     ActShowTaskBar: TAction;
     ActUpdatePackagesList: TAction;
@@ -44,6 +46,8 @@ type
     BtnHideDetails: TFXMaterialButton;
     BtnHideTaskBar: TFXMaterialButton;
     BtnShowTaskBar: TFXMaterialButton;
+    BtnUpdateCatalogue: TFXMaterialButton;
+    BtnUpgradeAll: TFXMaterialButton;
     ComboBoxCategories: TComboBox;
     EdSearch: TEditButton;
     FrmDetailsPackageInPanel: TFrmDetailsPackage;
@@ -101,11 +105,14 @@ type
     procedure ActShowTaskBarExecute(Sender: TObject);
     procedure ActShowUpgradable(Sender: TObject);
     procedure ActTriggerSearchExecute(Sender: TObject);
+    procedure ActUpdateCatalogueExecute(Sender: TObject);
     procedure ActUpdatePackagesListExecute(Sender: TObject);
+    procedure ActUpgradeAllExecute(Sender: TObject);
     procedure ComboBoxCategoriesChange(Sender: TObject);
     procedure DetailsBarPanelPaint(Sender: TObject);
     procedure EdSearchButtonClick(Sender: TObject);
     procedure EdSearchChange(Sender: TObject);
+    procedure EdSearchEditingDone(Sender: TObject);
     procedure EdSearchKeyPress(Sender: TObject; var Key: char);
     procedure FormCreate(Sender: TObject);
     procedure FormResize(Sender: TObject);
@@ -165,17 +172,12 @@ type
     FThreadGetAllIcons: TThreadGetAllIcons;
 
     FramePage : integer;
-    login: String;
-    password: String;
     NumberOfFrames: Integer;
 
     function GetAllPackages: ISuperObject;
     procedure OnUpgradeTriggeredAllPackages(Sender : TObject);
 
     procedure OnUpgradeAllIcons(Sender : TObject);
-
-    //Authentification
-    procedure OnLocalServiceAuth(Sender: THttpSend; var ShouldRetry: Boolean;RetryCount:integer);
 
     //Polling thread
     procedure OnCheckTasksThreadNotify(Sender: TObject);
@@ -210,7 +212,7 @@ var
 
 
 implementation
-uses LCLIntf, LCLType, waptwinutils, soutils, strutils, uWaptSelfRes, IniFiles, IdHTTP, LConvEncoding, uVisSettings, LCLTranslator, math;
+uses LCLIntf, LCLType, soutils, strutils, uWaptSelfRes, IniFiles, IdHTTP, LConvEncoding, uVisSettings, LCLTranslator, math, uDMWaptSelf;
 {$R *.lfm}
 
 { TVisWaptSelf }
@@ -256,6 +258,11 @@ begin
     end;
 
     FramePage:=1;
+
+    if ShowOnlyUpgradable and (LastNumberOfFrame>1) then
+      BtnUpgradeAll.Show
+    else
+      BtnUpgradeAll.Hide;
 
     if (LastNumberOfFrame=0) then
     begin
@@ -629,10 +636,21 @@ begin
   TimerSearch.Enabled:=True;
 end;
 
+procedure TVisWaptSelf.ActUpdateCatalogueExecute(Sender: TObject);
+begin
+  DMWaptSelf.JSONGet('update');
+  ActUpdatePackagesList.Execute;
+end;
+
 procedure TVisWaptSelf.ActUpdatePackagesListExecute(Sender: TObject);
 begin
   FAllPackages:=Nil;
   ActSearchPackages.Execute;
+end;
+
+procedure TVisWaptSelf.ActUpgradeAllExecute(Sender: TObject);
+begin
+  DMWaptSelf.JSONGet('upgrade');
 end;
 
 procedure TVisWaptSelf.ComboBoxCategoriesChange(Sender: TObject);
@@ -652,6 +670,11 @@ begin
   end;
 end;
 
+procedure TVisWaptSelf.EdSearchEditingDone(Sender: TObject);
+begin
+
+end;
+
 procedure TVisWaptSelf.EdSearchButtonClick(Sender: TObject);
 begin
   if (EdSearch.Text<>'') then
@@ -660,7 +683,7 @@ end;
 
 procedure TVisWaptSelf.EdSearchKeyPress(Sender: TObject; var Key: char);
 begin
-  if (Key = #13) and (EdSearch.Text<>'')then
+  if ((Key = #13) and (EdSearch.Text<>'')) or (Key = #8) then
   begin
     EdSearch.SelectAll;
     ActSearchPackages.Execute;
@@ -714,9 +737,6 @@ begin
   SortByName:=false;
   NumberOfFrames:=Round(80*(96/Screen.PixelsPerInch));
 
-  login:=waptwinutils.AGetUserName;
-  password:='';
-
   LstTasks:=TStringList.Create;
   LstTasks.Sorted:=true;
   LstTasks.Duplicates:=dupIgnore;
@@ -769,12 +789,23 @@ begin
   end;
   MakeFullyVisible();
   LastTaskIDOnLaunch:=-1;
-  GetAllPackages();
+
+  if (DMWaptSelf.Token<>'') then
+  begin
+    GetAllPackages();
+    Application.ShowMainForm:=true;
+    Self.Visible:=true;
+    FThreadGetAllIcons := TThreadGetAllIcons.Create(@OnUpgradeAllIcons,AllPackages,FlowPackages);
+  end
+  else
+  begin
+    Application.Terminate;
+  end;
+
   ComboBoxCategories.Sorted:=true;
   ComboBoxCategories.Clear;
   ComboBoxCategories.Items.AddStrings(GetAllCategories(AllPackages));
   ComboBoxCategories.ItemIndex:=ComboBoxCategories.Items.IndexOf(rsAllCategories);
-  FThreadGetAllIcons := TThreadGetAllIcons.Create(@OnUpgradeAllIcons,AllPackages,FlowPackages);
 
   PrevWndProc:=ScrollBoxPackages.WindowProc;
   ScrollBoxPackages.WindowProc:=@EventsScrollBar;
@@ -794,25 +825,28 @@ var
   ini : TIniFile;
 begin
     try
-    TimerSearch.Enabled:=False;
-    TimerSearch.Enabled:=True;
+    if (DMWaptSelf.Token<>'') then
+    begin
+      TimerSearch.Enabled:=False;
+      TimerSearch.Enabled:=True;
 
-    //Initialise window with settings in the ini file
-    ini:=TIniFile.Create(AppIniFilename);
-    Self.left:=ini.ReadInteger('window','left',Self.Left);
-    Self.Top:=ini.ReadInteger('window','top',Self.Top);
-    Self.Width:=ini.ReadInteger('window','width',Self.Width);
-    Self.Height:=ini.ReadInteger('window','height',Self.Height);
-    Self.WindowState:=TWindowState(ini.ReadInteger('window','windowstate',Integer(Self.WindowState)));
-    FreeAndNil(ini);
+      //Initialise window with settings in the ini file
+      ini:=TIniFile.Create(AppIniFilename);
+      Self.left:=ini.ReadInteger('window','left',Self.Left);
+      Self.Top:=ini.ReadInteger('window','top',Self.Top);
+      Self.Width:=ini.ReadInteger('window','width',Self.Width);
+      Self.Height:=ini.ReadInteger('window','height',Self.Height);
+      Self.WindowState:=TWindowState(ini.ReadInteger('window','windowstate',Integer(Self.WindowState)));
+      FreeAndNil(ini);
 
-    // Check running / pending tasks
-    CheckTasksThread := TCheckAllTasksThread.Create(@OnCheckTasksThreadNotify);
-    CheckEventsThread := TCheckEventsThread.Create(@OnCheckEventsThreadNotify);
-    CheckTasksThread.Start;
-    CheckEventsThread.Start;
+      // Check running / pending tasks
+      CheckTasksThread := TCheckAllTasksThread.Create(@OnCheckTasksThreadNotify);
+      CheckEventsThread := TCheckEventsThread.Create(@OnCheckEventsThreadNotify);
+      CheckTasksThread.Start;
+      CheckEventsThread.Start;
 
-    EdSearch.Button.Enabled:=False;
+      EdSearch.Button.Enabled:=False;
+    end;
   finally
     Screen.Cursor := crDefault;
   end;
@@ -989,38 +1023,6 @@ begin
   FreeAndNil(ini);
 end;
 
-procedure TVisWaptSelf.OnLocalServiceAuth(Sender: THttpSend; var ShouldRetry: Boolean;RetryCount:integer);
-var
-  LoginDlg: TVisLogin;
-begin
-  LoginDlg:=TVisLogin.Create(Self);
-  LoginDlg.EdUsername.text:=login;
-  if (RetryCount>1) then
-  begin
-    LoginDlg.ImageWarning.Show;
-    LoginDlg.WarningText.Show;
-  end
-  else
-    LoginDlg.Height:=LoginDlg.Height-5-16;
-  case LoginDlg.ShowModal of
-    mrCancel, mrClose:
-    begin
-      LoginDlg.Free;
-      ShouldRetry:=False;
-      Application.Terminate;
-    end;
-    mrOK:
-    begin
-      Sender.UserName:=LoginDlg.EdUsername.text;
-      Sender.Password:=LoginDlg.EdPassword.text;
-      login:=LoginDlg.EdUsername.text;
-      password:=LoginDlg.EdPassword.text;
-      ShouldRetry:=True;
-      LoginDlg.Free;
-    end;
-  end;
-end;
-
 procedure TVisWaptSelf.OnCheckTasksThreadNotify(Sender: TObject);
 var
   Tasks,Row,ListDel:ISuperObject;
@@ -1163,7 +1165,7 @@ begin
             ProgressBarTaskRunning.Position:=Lastevent.I['data.progress'];
             if LastEvent.S['event_type']='TASK_FINISH' then
             begin
-              TTriggerWaptserviceAction.Create('packages.json?latest=1',@OnUpgradeTriggeredAllPackages,login,password,@OnLocalServiceAuth);
+              TTriggerWaptserviceAction.Create('packages.json?latest=1',@OnUpgradeTriggeredAllPackages,DMWaptSelf.Login,DMWaptSelf.Token,Nil);
               ProgressBarTaskRunning.Style:=pbstNormal;
             end;
           end;
@@ -1221,7 +1223,7 @@ end;
 function TVisWaptSelf.GetAllPackages: ISuperObject;
 begin
   if FAllPackages = Nil then
-    FAllPackages := WAPTLocalJsonGet('packages.json?latest=1',login,password,-1,@OnLocalServiceAuth,2);
+    FAllPackages := DMWaptSelf.JSONGet('packages.json?latest=1');
   Result:=GetAllPackagesSorted(FAllPackages);
 end;
 
@@ -1398,11 +1400,6 @@ begin
           BtnRemove.Enabled:=false;
           LabVersion.Caption:=UTF8Encode(package.S['version']);
         end;
-
-      //Identification
-      login:=Self.login;
-      password:=Self.password;
-      OnLocalServiceAuth:=@(Self.OnLocalServiceAuth);
 
       //PanelDetails
 

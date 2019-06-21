@@ -47,12 +47,9 @@ type
   public
     Package : ISuperObject;
     TaskID : Integer;
-    login : String;
-    password : String;
     FrmDetailsPackageInPanel : TFrmDetailsPackage;
     PanelDetails : TPanel;
     DetailsClicked : boolean;
-    OnLocalServiceAuth : THTTPSendAuthorization;
     ActionPackage : String;
     Autoremove : Boolean;
     LstTasks: TStringList;
@@ -63,7 +60,7 @@ type
   end;
 
 implementation
-uses Graphics,BCTools,JwaTlHelp32,Windows,Dialogs, uWAPTPollThreads, uWaptSelfRes, uVisWaptSelf, LCLTranslator;
+uses Graphics,BCTools,JwaTlHelp32,Windows,Dialogs, uWAPTPollThreads, uWaptSelfRes, uVisWaptSelf, LCLTranslator, uDMWaptSelf;
 {$R *.lfm}
 
 { TFrmPackage }
@@ -302,14 +299,14 @@ begin
   StrForce:='';
   if Force then StrForce:='&force=1';
   ProgressBarInstall.Style:=pbstMarquee;
-  TTriggerWaptserviceAction.Create(format('%s.json?package=%s%s',[ActPack,Pack.S['package'],StrForce]),@OnUpgradeTriggeredTask,login,password,OnLocalServiceAuth);
+  TTriggerWaptserviceAction.Create(format('%s.json?package=%s%s',[ActPack,Pack.S['package'],StrForce]),@OnUpgradeTriggeredTask,DMWaptSelf.Login,DMWaptSelf.Token,Nil);
 end;
 
 procedure TFrmPackage.CancelTask();
 begin
   if TaskID<>0 then
   begin
-    WAPTLocalJsonGet(Format('cancel_task.json?id=%d',[TaskID]),login,password,-1,OnLocalServiceAuth,2);
+    DMWaptSelf.JSONGet(Format('cancel_task.json?id=%d',[TaskID]));
     LstTasks.Delete(LstTasks.IndexOf(UTF8Encode(Package.S['package'])));
     TaskID:=0;
     if (ActionPackage='install') then
