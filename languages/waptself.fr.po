@@ -304,7 +304,7 @@ msgstr "Désélectionner tout"
 
 #: tviswaptself.actupdatecatalogue.caption
 msgid "Update catalog"
-msgstr "Mise à jour du catalogue"
+msgstr "Mettre à jour le catalogue"
 
 #: tviswaptself.actupdatepackageslist.caption
 msgid "ActUpdatePackagesList"
@@ -519,9 +519,8 @@ msgstr ""
 "Opération : %s\n"
 
 #: uviswaptself.rshidetaskbar
-msgctxt "uviswaptself.rshidetaskbar"
 msgid "Hide task bar"
-msgstr "Cacher la barre de tâche"
+msgstr ""
 
 #: uviswaptself.rsinstalledpackages
 msgctxt "uviswaptself.rsinstalledpackages"
@@ -544,9 +543,8 @@ msgid "Password"
 msgstr "Mot de passe"
 
 #: uviswaptself.rsshowtaskbar
-msgctxt "uviswaptself.rsshowtaskbar"
 msgid "Show task bar"
-msgstr "Montrer la barre de tâche"
+msgstr ""
 
 #: uviswaptself.rssortbydateasc
 msgctxt "uviswaptself.rssortbydateasc"
@@ -652,5 +650,5 @@ msgstr "Entrez un login/mot de passe"
 
 #: uwaptselfres.rswarningpasswordloginblank
 msgid "Your password or login is empty"
-msgstr ""
+msgstr "votre mot de passe ou login est vide"
 

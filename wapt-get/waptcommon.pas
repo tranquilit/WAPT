@@ -1291,7 +1291,7 @@ begin
       if (http.ResultCode=401) then
       begin
         inc(Retries);
-        if Assigned(OnAuthorization) and (RetryCount>0) and (Retries <= RetryCount) then
+        if Assigned(OnAuthorization) and ((RetryCount=-1) or (RetryCount>0) and (Retries <= RetryCount)) then
           OnAuthorization(http,ShouldRetry,Retries)
         else
           Raise EIdHTTPProtocolException.CreateError(http.ResultCode,strresult,http.ResultString);

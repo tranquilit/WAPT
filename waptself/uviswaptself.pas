@@ -112,7 +112,6 @@ type
     procedure DetailsBarPanelPaint(Sender: TObject);
     procedure EdSearchButtonClick(Sender: TObject);
     procedure EdSearchChange(Sender: TObject);
-    procedure EdSearchEditingDone(Sender: TObject);
     procedure EdSearchKeyPress(Sender: TObject; var Key: char);
     procedure FormCreate(Sender: TObject);
     procedure FormResize(Sender: TObject);
@@ -259,7 +258,7 @@ begin
 
     FramePage:=1;
 
-    if ShowOnlyUpgradable and (LastNumberOfFrame>1) then
+    if ShowOnlyUpgradable and (LastNumberOfFrame>=1) then
       BtnUpgradeAll.Show
     else
       BtnUpgradeAll.Hide;
@@ -638,7 +637,7 @@ end;
 
 procedure TVisWaptSelf.ActUpdateCatalogueExecute(Sender: TObject);
 begin
-  DMWaptSelf.JSONGet('update');
+  DMWaptSelf.JSONGet('update.json');
   ActUpdatePackagesList.Execute;
 end;
 
@@ -649,8 +648,12 @@ begin
 end;
 
 procedure TVisWaptSelf.ActUpgradeAllExecute(Sender: TObject);
+var
+ i:integer;
 begin
-  DMWaptSelf.JSONGet('upgrade');
+  for i:=0 to FlowPackages.ControlCount-1 do
+    if (FlowPackages.Controls[i] is TFrmPackage) then
+      (FlowPackages.Controls[i] as TFrmPackage).ActInstallUpgradePackage(Self);
 end;
 
 procedure TVisWaptSelf.ComboBoxCategoriesChange(Sender: TObject);
@@ -661,7 +664,11 @@ end;
 procedure TVisWaptSelf.EdSearchChange(Sender: TObject);
 begin
   if (EdSearch.Text='') then
-    ImageCrossSearch.Picture.LoadFromResourceName(HINSTANCE,'LOUPE-15PX')
+  begin
+    ImageCrossSearch.Picture.LoadFromResourceName(HINSTANCE,'LOUPE-15PX');
+    TimerSearch.Enabled:=False;
+    TimerSearch.Enabled:=True;
+  end
   else
   begin
     ImageCrossSearch.Picture.LoadFromResourceName(HINSTANCE,'CROSS_15_PX');
@@ -670,20 +677,14 @@ begin
   end;
 end;
 
-procedure TVisWaptSelf.EdSearchEditingDone(Sender: TObject);
-begin
-
-end;
-
 procedure TVisWaptSelf.EdSearchButtonClick(Sender: TObject);
 begin
-  if (EdSearch.Text<>'') then
-    ActSearchPackages.Execute;
+  ActSearchPackages.Execute;
 end;
 
 procedure TVisWaptSelf.EdSearchKeyPress(Sender: TObject; var Key: char);
 begin
-  if ((Key = #13) and (EdSearch.Text<>'')) or (Key = #8) then
+  if (Key = #13) and (EdSearch.Text<>'') then
   begin
     EdSearch.SelectAll;
     ActSearchPackages.Execute;

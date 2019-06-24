@@ -79,7 +79,7 @@ import windnsquery
 import tempfile
 
 # wapt specific stuff
-from waptutils import setloglevel,ensure_list,ensure_unicode,jsondump,LogOutput,get_time_delta
+from waptutils import setloglevel, ensure_list, ensure_unicode, jsondump, LogOutput, get_time_delta
 
 import common
 from common import Wapt
@@ -148,7 +148,7 @@ def beautify(c):
     elif isinstance(c,str):
         return jinja2.Markup(ensure_unicode(c).replace('\r\n','<br>').replace('\n','<br>'))
     elif isinstance(c,PackageEntry):
-        return jinja2.Markup('<a href="%s">%s</a>'%(url_for('package_details',package=c.asrequirement()),c.asrequirement()))
+        return jinja2.Markup('<a href="%s">%s</a>'%(url_for('package_details',package=c.asrequirement()), c.asrequirement()))
     elif isinstance(c,dict) or (hasattr(c,'keys') and callable(c.keys)):
         rows = []
         try:
@@ -292,9 +292,9 @@ def check_auth(logon_name, password,check_token_in_password=True,for_group='wapt
             try:
                 token_content = token_gen.loads(password)
                 if token_content['username'] != logon_name:
-                    raise Exception(u'token username does not match authorization username')
+                    return False
                 if not for_group in token_content.get('groups',[]):
-                    raise Exception(u'token does not authorize "%s" group' % for_group)
+                    return False
                 logging.info("authenticated with token : %s. groups: %s" % (logon_name,token_content.get('groups')))
                 return logon_name
             except:
@@ -359,24 +359,31 @@ def get_user_self_service_groups(self_service_groups,logon_name,password):
         logger.debug(u"malformed logon credential : %s "% logon_name)
         return False
 
-    if '\\' in logon_name:
-        domain = logon_name.split('\\')[0]
-        username = logon_name.split('\\')[1]
-    elif '@' in logon_name:
-        username = logon_name.split('@')[0]
-        domain = logon_name.split('@')[1]
-    else:
-        username = logon_name
+    try:
+        w=wapt()
+        serial=w.get_secured_token_generator()
+        groups=serial.loads(password)
+        groups=groups['groups']
+        return groups
+    except:
+        if '\\' in logon_name:
+            domain = logon_name.split('\\')[0]
+            username = logon_name.split('\\')[1]
+        elif '@' in logon_name:
+            username = logon_name.split('@')[0]
+            domain = logon_name.split('@')[1]
+        else:
+            username = logon_name
 
-    huser = win32security.LogonUser(username.decode('utf-8'),domain.decode('utf-8'),password.decode('utf-8'),win32security.LOGON32_LOGON_NETWORK_CLEARTEXT,win32security.LOGON32_PROVIDER_DEFAULT)
+        huser = win32security.LogonUser(username.decode('utf-8'),domain.decode('utf-8'),password.decode('utf-8'),win32security.LOGON32_LOGON_NETWORK_CLEARTEXT,win32security.LOGON32_PROVIDER_DEFAULT)
 
-    listgroupuser =  [username]
-    for group in self_service_groups :
-        if group in listgroupuser:
-            continue
-        if common.check_is_member_of(huser,group) :
-            listgroupuser.append(group)
-    return listgroupuser
+        listgroupuser =  [username]
+        for group in self_service_groups :
+            if group in listgroupuser:
+                continue
+            if common.check_is_member_of(huser,group) :
+                listgroupuser.append(group)
+        return listgroupuser
 
 def allow_local_auth(f):
     """Restrict access to localhost authenticated"""

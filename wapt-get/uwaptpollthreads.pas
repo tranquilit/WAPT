@@ -544,7 +544,7 @@ end;
 procedure TTriggerWaptserviceAction.Execute;
 begin
   try
-    Res:=WAPTLocalJsonGet(Action,Login,Password,-1,OnLocalServiceAuth,2);
+    Res:=WAPTLocalJsonGet(Action,Login,Password,-1,OnLocalServiceAuth,0);
   except
     on E:EIdException do
     begin

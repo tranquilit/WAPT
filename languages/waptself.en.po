@@ -302,7 +302,7 @@ msgstr "Uncheck all"
 
 #: tviswaptself.actupdatecatalogue.caption
 msgid "Update catalog"
-msgstr ""
+msgstr "Update catalog"
 
 #: tviswaptself.actupdatepackageslist.caption
 msgid "ActUpdatePackagesList"
@@ -310,7 +310,7 @@ msgstr ""
 
 #: tviswaptself.actupgradeall.caption
 msgid "Upgrade all"
-msgstr ""
+msgstr "Upgrade all"
 
 #: tviswaptself.btnhidetaskbar.caption
 msgctxt "tviswaptself.btnhidetaskbar.caption"

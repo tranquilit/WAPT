@@ -88,7 +88,7 @@ end;
 
 function TDMWaptSelf.JSONGet(action: String): ISuperObject;
 begin
-  Result:=WAPTLocalJsonGet(action,Login,Token,-1,Nil,2);
+  Result:=WAPTLocalJsonGet(action,Login,Token,-1,Nil,0);
 end;
 
 constructor TDMWaptSelf.Create(TheOwner: TComponent);
@@ -120,7 +120,7 @@ begin
     begin
       EnterCriticalSection(FLock);
       Try
-        FToken:=UTF8Encode(WAPTLocalJsonGet('login','','',-1,@OnLocalServiceAuth,1).S['token']);
+        FToken:=UTF8Encode(WAPTLocalJsonGet('login','','',-1,@OnLocalServiceAuth,-1).S['token']);
       Finally
         LeaveCriticalSection(FLock);
       end;

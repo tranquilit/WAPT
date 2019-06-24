@@ -10,7 +10,7 @@ object FrmDetailsPackage: TFrmDetailsPackage
   Constraints.MaxWidth = 345
   ParentColor = False
   TabOrder = 0
-  DesignLeft = 2570
+  DesignLeft = 650
   DesignTop = 70
   object PanelDetails: TPanel
     AnchorSideLeft.Control = Owner
