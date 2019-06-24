@@ -21,6 +21,7 @@ type
     ImageWarning: TImage;
     ImgWarning: TImage;
     Panel1: TPanel;
+    WarningPanel: TPanel;
     PanelLogin: TPanel;
     StaticText1: TStaticText;
     StaticText2: TStaticText;
@@ -74,7 +75,7 @@ begin
   if FileExists(WaptBaseDir+'\templates\waptself-logo.png') then
     LogoLogin.Picture.LoadFromFile(WaptBaseDir+'\templates\waptself-logo.png')
   else
-    LogoLogin.Picture.LoadFromResourceName(HINSTANCE,'LOGO-SELFSERVICE-BLEU');
+    LogoLogin.Picture.LoadFromResourceName(HINSTANCE,'SELF-SERVICE-ENTERPRISE-200PX');
   {$endif}
   if Screen.PixelsPerInch <> 96 then
   begin

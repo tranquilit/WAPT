@@ -760,8 +760,8 @@ begin
   if FileExists(WaptBaseDir+'\templates\waptself-logo.png') then
     PicLogo.Picture.LoadFromFile(WaptBaseDir+'\templates\waptself-logo.png')
   else
-    PicLogo.Picture.LoadFromResourceName(HINSTANCE,'ENTERPRISE-400PX');
-  ImageLogo.Picture.LoadFromResourceName(HINSTANCE,'LOGO-SELFSERVICE-BLEU');
+    PicLogo.Picture.LoadFromResourceName(HINSTANCE,'SELF-SERVICE-ENTERPRISE-400PX');
+  ImageLogo.Picture.LoadFromResourceName(HINSTANCE,'SELF-SERVICE-ENTERPRISE-200PX');
   {$endif}
 
   if Screen.PixelsPerInch <> 96 then
