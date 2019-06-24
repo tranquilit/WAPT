@@ -1,0 +1,4 @@
+sphinxcontrib.napoleon
+Sphinx
+ujson
+iniparse
