@@ -638,7 +638,6 @@ end;
 procedure TVisWaptSelf.ActUpdateCatalogueExecute(Sender: TObject);
 begin
   DMWaptSelf.JSONGet('update.json');
-  ActUpdatePackagesList.Execute;
 end;
 
 procedure TVisWaptSelf.ActUpdatePackagesListExecute(Sender: TObject);
@@ -731,12 +730,13 @@ var
 begin
   if (not ReadWaptConfig(IncludeTrailingPathDelimiter(GetCurrentDir)+'wapt-get.ini')) then
     ReadWaptConfig();
-  ShowOnlyInstalled:=false;
-  ShowOnlyNotInstalled:=false;
-  ShowOnlyUpgradable:=false;
   SortByDateAsc:=false;
   SortByName:=false;
   NumberOfFrames:=Round(80*(96/Screen.PixelsPerInch));
+
+  ShowOnlyInstalled:=false;
+  ShowOnlyNotInstalled:=false;
+  ShowOnlyUpgradable:=false;
 
   LstTasks:=TStringList.Create;
   LstTasks.Sorted:=true;
@@ -799,9 +799,7 @@ begin
     FThreadGetAllIcons := TThreadGetAllIcons.Create(@OnUpgradeAllIcons,AllPackages,FlowPackages);
   end
   else
-  begin
     Application.Terminate;
-  end;
 
   ComboBoxCategories.Sorted:=true;
   ComboBoxCategories.Clear;
@@ -829,6 +827,29 @@ begin
     if (DMWaptSelf.Token<>'') then
     begin
       TimerSearch.Enabled:=False;
+
+      if (Application.HasOption('list-upgrade')) then
+      begin
+        ShowOnlyUpgradable:=true;
+        RadioShowAll.Checked:=false;
+        RadioShowUpgradable.Checked:=true;
+      end
+      else if (Application.HasOption('list-install')) then
+        begin
+          ShowOnlyInstalled:=true;
+          RadioShowAll.Checked:=false;
+          RadioShowInstalled.Checked:=true;
+        end
+          else if (Application.HasOption('list-non-install')) then
+            begin
+              ShowOnlyNotInstalled:=true;
+              RadioShowAll.Checked:=false;
+              RadioShowInstalled.Checked:=true;
+            end;
+
+      if (Application.HasOption('s','search')) then
+        EdSearch.Caption:=Application.GetOptionValue('s','search');
+
       TimerSearch.Enabled:=True;
 
       //Initialise window with settings in the ini file
@@ -1166,7 +1187,10 @@ begin
             ProgressBarTaskRunning.Position:=Lastevent.I['data.progress'];
             if LastEvent.S['event_type']='TASK_FINISH' then
             begin
-              TTriggerWaptserviceAction.Create('packages.json?latest=1',@OnUpgradeTriggeredAllPackages,DMWaptSelf.Login,DMWaptSelf.Token,Nil);
+              if (LastEvent.S['data.classname']='WaptUpdate') then
+                ActUpdatePackagesList.Execute
+              else
+                TTriggerWaptserviceAction.Create('packages.json?latest=1',@OnUpgradeTriggeredAllPackages,DMWaptSelf.Login,DMWaptSelf.Token,Nil);
               ProgressBarTaskRunning.Style:=pbstNormal;
             end;
           end;
