@@ -2137,7 +2137,7 @@ begin
       end
       else if startswith(line,'#define use_random_uuid') then
       begin
-          if UseFQDNAsUUID then
+          if UseRandomUUID then
             new_iss.AsArray.Add(format('#define use_random_uuid "1"' ,[]))
           else
             new_iss.AsArray.Add(format('#define use_random_uuid ""' ,[]))
