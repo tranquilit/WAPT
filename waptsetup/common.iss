@@ -487,7 +487,16 @@ end;
 
 function MustChangeServerConfig:Boolean;
 begin
-  Result := runningSilently() or (not cbDontChangeServer.Checked and not cbUseWizard.Checked);     
+  Result := runningSilently() or (not cbDontChangeServer.Checked and not cbUseWizard.Checked);
+#if edition != "waptstarter"
+  // remove wapt_server entry because waptstarter must be standalone.  
+  If Result then
+  begin  
+    DeleteIniEntry('global', 'wapt_server', ExpandConstant('{app}\wapt-get.ini'));
+    DeleteIniEntry('global', 'use_hostpackages', ExpandConstant('{app}\wapt-get.ini'));
+    DeleteIniEntry('global', 'use_ad_groups', ExpandConstant('{app}\wapt-get.ini'));
+  end;
+#endif
 end;
 
 function UseKerberosCheck(param:String):String;
