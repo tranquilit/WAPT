@@ -14,11 +14,13 @@ Type: filesandordirs; Name: "{app}\waptenterprise"
 
 [Files]
 ; sources of installer to rebuild a custom installer (ignoreversion because issc has no version)
+
+#if edition != "waptstarter"
+
 #ifndef FastDebug
 Source: "innosetup\*"; DestDir: "{app}\waptsetup\innosetup"; Flags: createallsubdirs recursesubdirs ignoreversion;
 #endif
 
-#if edition != "waptstarter"
 Source: "common.iss"; DestDir: "{app}\waptsetup";
 Source: "wapt.iss"; DestDir: "{app}\waptsetup";
 Source: "waptsetup.iss"; DestDir: "{app}\waptsetup";
@@ -34,9 +36,6 @@ Source: "..\waptupgrade\WAPT\*"; DestDir: "{app}\waptupgrade\WAPT"; Flags: creat
 Source: "..\waptconsole.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\waptconsole.exe.manifest"; DestDir: "{app}";
 
-; local management console wapt selfservice
-Source: "..\waptself.exe"; DestDir: "{app}"; Flags: ignoreversion
-
 Source: "..\waptdevutils.py"; DestDir: "{app}";
 #endif
 
@@ -46,6 +45,9 @@ Source: "..\ssl\*"; DestDir: "{app}\ssl"; Tasks: installCertificates; Flags: cre
 #else
 Source: "..\ssl\*"; DestDir: "{app}\ssl"; Flags: createallsubdirs recursesubdirs; Check: InstallCertCheck();
 #endif
+
+; local management console wapt selfservice
+Source: "..\waptself.exe"; DestDir: "{app}"; Flags: ignoreversion
 
 Source: "{param:CopyPackagesTrustedCA}"; DestDir: "{app}\ssl"; Flags: external; Check: CopyPackagesTrustedCACheck();
 Source: "{param:CopyServersTrustedCA}"; DestDir: "{app}\ssl\server"; Flags: external; Check: CopyServersTrustedCACheck();
