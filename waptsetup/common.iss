@@ -684,8 +684,9 @@ begin
     if AppendProfiles<>'*' then begin
       profile := StrToken(AppendProfiles,',');
       while profile<>'' do begin
-         if pos(profile+',',Result+',')<=0 then 
-           Result := Result+','+profile;
+        if pos(profile+',',Result+',')<=0 then 
+          Result := Result+','+profile;
+	    profile := StrToken(AppendProfiles,',');
       end;
     end
   end;
