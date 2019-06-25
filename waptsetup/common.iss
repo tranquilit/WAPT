@@ -488,7 +488,7 @@ end;
 function MustChangeServerConfig:Boolean;
 begin
   Result := runningSilently() or (not cbDontChangeServer.Checked and not cbUseWizard.Checked);
-#if edition != "waptstarter"
+#if edition == "waptstarter"
   // remove wapt_server entry because waptstarter must be standalone.  
   If Result then
   begin  
