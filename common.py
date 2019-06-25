@@ -2912,6 +2912,15 @@ class Wapt(BaseObjectClass):
         if self.config.has_option('global','persistent_root_dir'):
             self.persistent_root_dir = self.config.get('global','persistent_root_dir').decode('utf8')
 
+        if self.config.has_option('global','uuid'):
+            self.forced_uuid = self.config.get('global','uuid')
+        else:
+            # force reset to None if config file is changed at runtime
+            self.forced_uuid = None
+
+        if self.config.has_option('global','use_fqdn_as_uuid'):
+            self.use_fqdn_as_uuid = self.config.getboolean('global','use_fqdn_as_uuid')
+
         # must have a matching key eithe rin same file or in same directory
         # see self.private_key()
         if self.config.has_option('global','personal_certificate_path'):
@@ -2962,15 +2971,6 @@ class Wapt(BaseObjectClass):
 
         if self.config.has_option('global','language'):
             self.language = self.config.get('global','language')
-
-        if self.config.has_option('global','uuid'):
-            self.forced_uuid = self.config.get('global','uuid')
-        else:
-            # force reset to None if config file is changed at runtime
-            self.forced_uuid = None
-
-        if self.config.has_option('global','use_fqdn_as_uuid'):
-            self.use_fqdn_as_uuid = self.config.getboolean('global','use_fqdn_as_uuid')
 
         if self.config.has_option('global','sign_digests'):
             self.sign_digests = ensure_list(self.config.get('global','sign_digests'))
