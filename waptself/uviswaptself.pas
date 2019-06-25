@@ -22,8 +22,10 @@ type
     tmpLstIcons : TStringList;
     ListPackages : ISuperObject;
     FlowPanel : TFlowPanel;
+    FLockFrames : TRTLCriticalSection;
+    FLockListIcons : TRTLCriticalSection;
     property OnNotifyEvent:TNotifyEvent read FOnNotifyEvent write SetOnNotifyEvent;
-    constructor Create(aNotifyEvent:TNotifyEvent;AllPackages:ISuperObject; aFlowPanel:TFlowPanel);
+    constructor Create(aNotifyEvent:TNotifyEvent;AllPackages:ISuperObject;aFlowPanel:TFlowPanel; aFLockListIcons : TRTLCriticalSection; aFLockFrames : TRTLCriticalSection);
     procedure Execute; override;
   end;
 
@@ -153,6 +155,7 @@ type
   private
     PrevWndProc: TWndMethod;
     FLockIconList : TRTLCriticalSection;
+    FLockFrames : TRTLCriticalSection;
     ShowOnlyUpgradable: Boolean;
     ShowOnlyInstalled: Boolean;
     ShowOnlyNotInstalled: Boolean;
@@ -224,6 +227,7 @@ var
   idx:Integer;
 begin
   try
+    EnterCriticalSection(FLockFrames);
     TimerSearch.Enabled:=False;
     Screen.Cursor:=crHourGlass;
     FlowPackages.DisableAlign;
@@ -277,6 +281,7 @@ begin
   finally
     FlowPackages.EnableAlign;
     Screen.Cursor:=crDefault;
+    LeaveCriticalSection(FLockFrames);
   end;
 end;
 
@@ -305,6 +310,7 @@ var
   idx:Integer;
 begin
   try
+    EnterCriticalSection(FLockFrames);
     Screen.Cursor:=crHourGlass;
     FlowPackages.DisableAlign;
 
@@ -341,6 +347,7 @@ begin
   finally
     FlowPackages.EnableAlign;
     Screen.Cursor:=crDefault;
+    LeaveCriticalSection(FLockFrames);
   end;
 end;
 
@@ -351,6 +358,7 @@ var
   idx,tmp:Integer;
 begin
   try
+    EnterCriticalSection(FLockFrames);
     Screen.Cursor:=crHourGlass;
     FlowPackages.DisableAlign;
 
@@ -389,6 +397,7 @@ begin
     FlowPackages.EnableAlign;
     Screen.Cursor:=crDefault;
     ScrollBoxPackages.VertScrollBar.Position:=FlowPackages.Height;
+    LeaveCriticalSection(FLockFrames);
   end;
 end;
 
@@ -414,7 +423,8 @@ var
 begin
   if (FlowPackages.Width>ScaleX(350,96)) then
   begin
-      WidthPref:=trunc((FlowPackages.Width/(FlowPackages.Width div ScaleX(350,96)))-1);
+    WidthPref:=trunc((FlowPackages.Width/(FlowPackages.Width div ScaleX(350,96)))-1);
+    EnterCriticalSection(FLockFrames);
     for i:=0 to FlowPackages.ControlCount-1 do
     begin
       if (FlowPackages.Controls[i] is TFrmPackage) then
@@ -424,6 +434,7 @@ begin
       else
         (FlowPackages.Controls[i] as TFrmNextPrevious).Width:=FlowPackages.Width;
     end;
+    LeaveCriticalSection(FLockFrames);
   end
   else
   begin
@@ -574,6 +585,7 @@ var
 begin
   for Task in SOGridTasks.SelectedRows do
   begin
+    EnterCriticalSection(FLockFrames);
     for i:=0 to FlowPackages.ControlCount-1 do
     begin
       AFrmPackage:=FlowPackages.Controls[i] as TFrmPackage;
@@ -583,6 +595,7 @@ begin
         Exit();
       end;
     end;
+    LeaveCriticalSection(FLockFrames);
   end;
 end;
 
@@ -651,9 +664,11 @@ procedure TVisWaptSelf.ActUpgradeAllExecute(Sender: TObject);
 var
  i:integer;
 begin
+  EnterCriticalSection(FLockFrames);
   for i:=0 to FlowPackages.ControlCount-1 do
     if (FlowPackages.Controls[i] is TFrmPackage) then
       (FlowPackages.Controls[i] as TFrmPackage).ActInstallUpgradePackage(Self);
+  LeaveCriticalSection(FLockFrames);
 end;
 
 procedure TVisWaptSelf.ComboBoxCategoriesChange(Sender: TObject);
@@ -795,10 +810,11 @@ begin
   if (DMWaptSelf.Token<>'') then
   begin
     InitCriticalSection(FLockIconList);
+    InitCriticalSection(FLockFrames);
     GetAllPackages();
     Application.ShowMainForm:=true;
     Self.Visible:=true;
-    FThreadGetAllIcons := TThreadGetAllIcons.Create(@OnUpgradeAllIcons,AllPackages,FlowPackages);
+    FThreadGetAllIcons := TThreadGetAllIcons.Create(@OnUpgradeAllIcons,AllPackages,FlowPackages,FLockIconList,FLockFrames);
   end
   else
     Application.Terminate;
@@ -1046,6 +1062,7 @@ begin
   ini.UpdateFile;
   FreeAndNil(ini);
   DoneCriticalSection(FLockIconList);
+  DoneCriticalsection(FLockFrames);
 end;
 
 procedure TVisWaptSelf.OnCheckTasksThreadNotify(Sender: TObject);
@@ -1094,6 +1111,7 @@ var
   i:integer;
   AFrmPackage:TFrmPackage;
 begin
+  EnterCriticalSection(FLockFrames);
   for i:=0 to FlowPackages.ControlCount-1 do
   begin
     if (FlowPackages.Controls[i] is TFrmPackage) then
@@ -1167,6 +1185,7 @@ begin
       end;
     end;
   end;
+  LeaveCriticalSection(FLockFrames);
 end;
 
 procedure TVisWaptSelf.OnCheckEventsThreadNotify(Sender: TObject);
@@ -1233,6 +1252,7 @@ var
   i : integer;
   AFrmPackage : TFrmPackage;
 begin
+  EnterCriticalSection(FLockFrames);
   for i:=0 to FlowPackages.ControlCount-1 do
   begin
     if (FlowPackages.Controls[i] is TFrmPackage) then
@@ -1246,6 +1266,7 @@ begin
       end;
     end;
   end;
+  LeaveCriticalSection(FLockFrames);
 end;
 
 function TVisWaptSelf.GetAllPackages: ISuperObject;
@@ -1519,12 +1540,14 @@ begin
   FOnNotifyEvent:=AValue;
 end;
 
-constructor TThreadGetAllIcons.Create(aNotifyEvent:TNotifyEvent;AllPackages:ISuperObject;aFlowPanel:TFlowPanel);
+constructor TThreadGetAllIcons.Create(aNotifyEvent:TNotifyEvent;AllPackages:ISuperObject;aFlowPanel:TFlowPanel;aFLockListIcons : TRTLCriticalSection; aFLockFrames : TRTLCriticalSection);
 begin
   inherited Create(False);
   OnNotifyEvent:=aNotifyEvent;
   ListPackages:=AllPackages;
   FlowPanel:=aFlowPanel;
+  FLockFrames:=aFLockFrames;
+  FLockListIcons:=aFLockListIcons;
   FreeOnTerminate:=True;
 end;
 
@@ -1602,22 +1625,35 @@ begin
           On EIdHttpProtocolException do
             DeleteFile(IconsDir+UTF8Encode(Package.S['package'])+'.png');
         end;
-        for i:=0 to FlowPanel.ControlCount-1 do
-        begin
-          if (FlowPanel.Controls[i] is TFrmPackage) then
-          begin
-            AFrmPackage:=FlowPanel.Controls[i] as TFrmPackage;
-            if (UTF8Encode(AFrmPackage.Package.S['package'])=UTF8Encode(Package.S['package'])) then
+          EnterCriticalSection(FLockFrames);
+            for i:=0 to FlowPanel.ControlCount-1 do
             begin
-              IconIdx := tmpLstIcons.IndexOf(UTF8Encode(AFrmPackage.Package.S['package'])+'.png');
-              if IconIdx>=0 then
-                try
-                  AFrmPackage.ImgPackage.Picture.Assign(tmpLstIcons.Objects[IconIdx] as TPicture);
-                finally
+              try
+                if (FlowPanel.Controls[i] is TFrmPackage) then
+                begin
+                  AFrmPackage:=FlowPanel.Controls[i] as TFrmPackage;
+                  if (UTF8Encode(AFrmPackage.Package.S['package'])=UTF8Encode(Package.S['package'])) then
+                  begin
+                    IconIdx := tmpLstIcons.IndexOf(UTF8Encode(AFrmPackage.Package.S['package'])+'.png');
+                    if IconIdx>=0 then
+                    begin
+                      try
+                        AFrmPackage.ImgPackage.Picture.Assign(tmpLstIcons.Objects[IconIdx] as TPicture);
+                      except
+                      end;
+                      LeaveCriticalSection(FLockFrames);
+                      break;
+                    end;
+                  end;
                 end;
+              except
+                On EListError do
+                begin
+                  LeaveCriticalSection(FLockFrames);
+                  break;
+                end;
+              end;
             end;
-          end;
-        end;
         Synchronize(@NotifyListener);
       end;
     end;
