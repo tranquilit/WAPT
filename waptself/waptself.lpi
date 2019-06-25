@@ -17,23 +17,21 @@
         <TextDesc Value=""/>
       </XPManifest>
       <Icon Value="0"/>
-      <Resources Count="16">
-        <Resource_0 FileName="..\arts\enterprise-200px.png" Type="RCDATA" ResourceName="ENTERPRISE-200PX"/>
-        <Resource_1 FileName="..\arts\enterprise-400px.png" Type="RCDATA" ResourceName="ENTERPRISE-400PX"/>
-        <Resource_2 FileName="..\arts\wapt-enterprise-200px.png" Type="RCDATA" ResourceName="WAPT-ENTERPRISE-200PX"/>
-        <Resource_3 FileName="..\arts\iconsself\plus2.png" Type="RCDATA" ResourceName="PLUS2"/>
-        <Resource_4 FileName="..\arts\iconsself\plus-bleu-fonce.png" Type="RCDATA" ResourceName="PLUS-BLEU-FONCE"/>
-        <Resource_5 FileName="..\arts\iconsself\moins-bleu.png" Type="RCDATA" ResourceName="MOINS-BLEU"/>
-        <Resource_6 FileName="..\arts\iconsself\moins-blanc.png" Type="RCDATA" ResourceName="MOINS-BLANC"/>
-        <Resource_7 FileName="..\arts\iconsself\cross_15_px.png" Type="RCDATA" ResourceName="CROSS_15_PX"/>
-        <Resource_8 FileName="..\arts\iconsself\loupe-15px.png" Type="RCDATA" ResourceName="LOUPE-15PX"/>
-        <Resource_9 FileName="..\arts\iconsself\logo-selfservice-bleu.png" Type="RCDATA" ResourceName="LOGO-SELFSERVICE-BLEU"/>
-        <Resource_10 FileName="..\arts\iconsself\Settings.png" Type="RCDATA" ResourceName="SETTINGS"/>
-        <Resource_11 FileName="..\arts\iconsself\Settings_2.png" Type="RCDATA" ResourceName="SETTINGS_GREY"/>
-        <Resource_12 FileName="..\arts\iconsself\fleche-droite-20px.png" Type="RCDATA" ResourceName="FLECHE-DROITE-20PX"/>
-        <Resource_13 FileName="..\arts\iconsself\fleche-droite-blanche-20px.png" Type="RCDATA" ResourceName="FLECHE-DROITE-BLANCHE-20PX"/>
-        <Resource_14 FileName="..\arts\iconsself\fleche-gauche-20px.png" Type="RCDATA" ResourceName="FLECHE-GAUCHE-20PX"/>
-        <Resource_15 FileName="..\arts\iconsself\fleche-gauche-blanche-20px.png" Type="RCDATA" ResourceName="FLECHE-GAUCHE-BLANCHE-20PX"/>
+      <Resources Count="14">
+        <Resource_0 FileName="..\arts\iconsself\plus2.png" Type="RCDATA" ResourceName="PLUS2"/>
+        <Resource_1 FileName="..\arts\iconsself\plus-bleu-fonce.png" Type="RCDATA" ResourceName="PLUS-BLEU-FONCE"/>
+        <Resource_2 FileName="..\arts\iconsself\moins-bleu.png" Type="RCDATA" ResourceName="MOINS-BLEU"/>
+        <Resource_3 FileName="..\arts\iconsself\moins-blanc.png" Type="RCDATA" ResourceName="MOINS-BLANC"/>
+        <Resource_4 FileName="..\arts\iconsself\cross_15_px.png" Type="RCDATA" ResourceName="CROSS_15_PX"/>
+        <Resource_5 FileName="..\arts\iconsself\loupe-15px.png" Type="RCDATA" ResourceName="LOUPE-15PX"/>
+        <Resource_6 FileName="..\arts\iconsself\Settings.png" Type="RCDATA" ResourceName="SETTINGS"/>
+        <Resource_7 FileName="..\arts\iconsself\Settings_2.png" Type="RCDATA" ResourceName="SETTINGS_GREY"/>
+        <Resource_8 FileName="..\arts\iconsself\fleche-droite-20px.png" Type="RCDATA" ResourceName="FLECHE-DROITE-20PX"/>
+        <Resource_9 FileName="..\arts\iconsself\fleche-droite-blanche-20px.png" Type="RCDATA" ResourceName="FLECHE-DROITE-BLANCHE-20PX"/>
+        <Resource_10 FileName="..\arts\iconsself\fleche-gauche-20px.png" Type="RCDATA" ResourceName="FLECHE-GAUCHE-20PX"/>
+        <Resource_11 FileName="..\arts\iconsself\fleche-gauche-blanche-20px.png" Type="RCDATA" ResourceName="FLECHE-GAUCHE-BLANCHE-20PX"/>
+        <Resource_12 FileName="..\arts\self-service-enterprise-200px.png" Type="RCDATA" ResourceName="SELF-SERVICE-ENTERPRISE-200PX"/>
+        <Resource_13 FileName="..\arts\self-service-enterprise-400px.png" Type="RCDATA" ResourceName="SELF-SERVICE-ENTERPRISE-400PX"/>
       </Resources>
     </General>
     <i18n>
@@ -172,7 +170,6 @@
       </Options>
     </Linking>
     <Other>
-      <CustomOptions Value="-dENTERPRISE"/>
       <OtherDefines Count="1">
         <Define0 Value="ENTERPRISE"/>
       </OtherDefines>
@@ -181,10 +178,10 @@
   <Debugging>
     <Exceptions Count="3">
       <Item1>
-        <Name Value="EIdHTTPProtocolException"/>
+        <Name Value="EIdSocketError"/>
       </Item1>
       <Item2>
-        <Name Value="EIdSocketError"/>
+        <Name Value="EIdHTTPProtocolException"/>
       </Item2>
       <Item3>
         <Name Value="FPImageException"/>

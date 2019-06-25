@@ -152,6 +152,7 @@ type
     procedure FormClose(Sender: TObject);
   private
     PrevWndProc: TWndMethod;
+    FLockIconList : TRTLCriticalSection;
     ShowOnlyUpgradable: Boolean;
     ShowOnlyInstalled: Boolean;
     ShowOnlyNotInstalled: Boolean;
@@ -793,6 +794,7 @@ begin
 
   if (DMWaptSelf.Token<>'') then
   begin
+    InitCriticalSection(FLockIconList);
     GetAllPackages();
     Application.ShowMainForm:=true;
     Self.Visible:=true;
@@ -1043,6 +1045,7 @@ begin
   ini.WriteInteger('window','windowstate',Integer(Self.WindowState));
   ini.UpdateFile;
   FreeAndNil(ini);
+  DoneCriticalSection(FLockIconList);
 end;
 
 procedure TVisWaptSelf.OnCheckTasksThreadNotify(Sender: TObject);
@@ -1393,12 +1396,17 @@ begin
       strtmp:=UTF8Encode(package.S['signature_date']);
       LabDate.Caption:=Copy(strtmp,7,2)+'/'+Copy(strtmp,5,2)+'/'+Copy(strtmp,1,4);
 
-      if (LstIcons<>Nil) then
-      begin
-      IconIdx := LstIcons.IndexOf(UTF8Encode(package.S['package']+'.png'));
-      if IconIdx>=0 then
-        ImgPackage.Picture.Assign(LstIcons.Objects[IconIdx] as TPicture);
-      end;
+      EnterCriticalSection(FLockIconList);
+        if (LstIcons<>Nil) then
+        begin
+          IconIdx := LstIcons.IndexOf(UTF8Encode(package.S['package']+'.png'));
+          if IconIdx>=0 then
+            try
+              ImgPackage.Picture.Assign(LstIcons.Objects[IconIdx] as TPicture);
+            finally
+              LeaveCriticalSection(FLockIconList);
+            end;
+        end;
 
       if (package.S['install_status'] = 'OK') then //Package installed
       begin
@@ -1540,92 +1548,99 @@ begin
   LstRepo.Duplicates:=dupIgnore;
 
   Repo:=TWaptRepo.Create();
-  Repo.LoadFromInifile(WaptIniFilename,'global');
-  LstRepo.AddObject('wapt',Repo);
+  try
+    Repo.LoadFromInifile(WaptIniFilename,'global');
+    LstRepo.AddObject('wapt',Repo);
 
-  iniWaptGet:=TIniFile.Create(WaptIniFilename);
-  Sep:=[','];
-  if not (iniWaptGet.ReadString('global','repositories','') = '') then
-  begin
-    i:=1;
-    while (ExtractWord(i,iniWaptGet.ReadString('global','repositories',''),Sep) <> '') do
+    iniWaptGet:=TIniFile.Create(WaptIniFilename);
+    Sep:=[','];
+    if not (iniWaptGet.ReadString('global','repositories','') = '') then
     begin
-      Repo:=TWaptRepo.Create();
-      Repo.LoadFromInifile(WaptIniFilename,ExtractWord(i,iniWaptGet.ReadString('global','repositories',''),Sep));
-      LstRepo.AddObject(ExtractWord(i,iniWaptGet.ReadString('global','repositories',''),Sep),Repo);
-      inc(i);
+      i:=1;
+      while (ExtractWord(i,iniWaptGet.ReadString('global','repositories',''),Sep) <> '') do
+      begin
+        Repo:=TWaptRepo.Create();
+        Repo.LoadFromInifile(WaptIniFilename,ExtractWord(i,iniWaptGet.ReadString('global','repositories',''),Sep));
+        LstRepo.AddObject(ExtractWord(i,iniWaptGet.ReadString('global','repositories',''),Sep),Repo);
+        inc(i);
+      end;
     end;
-  end;
 
-  if (ini.ReadString('global','LastPackageDate','') = '') or (ini.ReadString('global','LastPackageDate','') < (UTF8Encode(ListPackages.O['0'].S['signature_date']))) or (ini.ReadString('global','repositories','')<>iniWaptGet.ReadString('global','repositories','')) then
-  begin
-    if not(DirectoryExists(IconsDir)) then
-      CreateDir(IconsDir);
-    for Package in ListPackages do
+    if (ini.ReadString('global','LastPackageDate','') = '') or (ini.ReadString('global','LastPackageDate','') < (UTF8Encode(ListPackages.O['0'].S['signature_date']))) or (ini.ReadString('global','repositories','')<>iniWaptGet.ReadString('global','repositories','')) then
     begin
-      tmpLstIcons:=TStringList.Create;
-      tmpLstIcons.OwnsObjects:=True;
-      if Terminated then
+      if not(DirectoryExists(IconsDir)) then
+        CreateDir(IconsDir);
+      for Package in ListPackages do
       begin
-        ini.WriteString('global','LastPackageDate',UTF8Encode(Package.S['signature_date']));
-        ini.WriteString('global','repositories',iniWaptGet.ReadString('global','repositories',''));
-        ini.UpdateFile;
-        FreeAndNil(ini);
-        FreeAndNil(iniWaptGet);
-        FreeAndNil(Repo);
-        FreeAndNil(LstRepo);
-        Exit();
-      end;
-      if (((UTF8Encode(Package.S['signature_date']))<=(ini.ReadString('global','LastPackageDate','None'))) and not((ini.ReadString('global','LastPackageDate','None') = 'None')) and not((ini.ReadString('global','repositories','')<>iniWaptGet.ReadString('global','repositories','')))) then
-        break;
-      if FileExists(IconsDir+UTF8Encode(Package.S['package'])+'.png') then
-        DeleteFile(IconsDir+UTF8Encode(Package.S['package'])+'.png');
-      try
-        TWaptRepo(LstRepo.Objects[LstRepo.IndexOf(UTF8Encode(Package.S['repo']))]).IdWgetFromRepo(UTF8Encode(Package.S['repo_url'])+'/icons/'+UTF8Encode(Package.S['package'])+'.png',IconsDir+UTF8Encode(Package.S['package'])+'.png',Nil,Nil,Nil);
-        try
-          tmpLstIcons.Add(IconsDir+UTF8Encode(Package.S['package'])+'.png');
-          g:=TPicture.Create;
-          g.LoadFromFile(tmpLstIcons[tmpLstIcons.IndexOf(IconsDir+UTF8Encode(Package.S['package'])+'.png')]);
-          tmpLstIcons.Objects[tmpLstIcons.IndexOf(IconsDir+UTF8Encode(Package.S['package'])+'.png')]:=g;
-          tmpLstIcons[tmpLstIcons.IndexOf(IconsDir+UTF8Encode(Package.S['package'])+'.png')]:=ExtractFileName(tmpLstIcons[tmpLstIcons.IndexOf(IconsDir+UTF8Encode(Package.S['package'])+'.png')]);
-        except
-          FreeAndNil(g);
-          DeleteFile(IconsDir+UTF8Encode(Package.S['package'])+'.png');
-          tmpLstIcons.Delete(tmpLstIcons.IndexOf(IconsDir+UTF8Encode(Package.S['package'])+'.png'));
-        end;
-      except
-        On EIdHttpProtocolException do
-          DeleteFile(IconsDir+UTF8Encode(Package.S['package'])+'.png');
-      end;
-      for i:=0 to FlowPanel.ControlCount-1 do
-      begin
-        if (FlowPanel.Controls[i] is TFrmPackage) then
+        tmpLstIcons:=TStringList.Create;
+        tmpLstIcons.OwnsObjects:=True;
+        if Terminated then
         begin
-          AFrmPackage:=FlowPanel.Controls[i] as TFrmPackage;
-          if (UTF8Encode(AFrmPackage.Package.S['package'])=UTF8Encode(Package.S['package'])) then
+          ini.WriteString('global','LastPackageDate',UTF8Encode(Package.S['signature_date']));
+          ini.WriteString('global','repositories',iniWaptGet.ReadString('global','repositories',''));
+          ini.UpdateFile;
+          Exit();
+        end;
+        if (((UTF8Encode(Package.S['signature_date']))<=(ini.ReadString('global','LastPackageDate','None'))) and not((ini.ReadString('global','LastPackageDate','None') = 'None')) and not((ini.ReadString('global','repositories','')<>iniWaptGet.ReadString('global','repositories','')))) then
+          break;
+        if FileExists(IconsDir+UTF8Encode(Package.S['package'])+'.png') then
+          DeleteFile(IconsDir+UTF8Encode(Package.S['package'])+'.png');
+        try
+          TWaptRepo(LstRepo.Objects[LstRepo.IndexOf(UTF8Encode(Package.S['repo']))]).IdWgetFromRepo(UTF8Encode(Package.S['repo_url'])+'/icons/'+UTF8Encode(Package.S['package'])+'.png',IconsDir+UTF8Encode(Package.S['package'])+'.png',Nil,Nil,Nil);
+          try
+            tmpLstIcons.Add(IconsDir+UTF8Encode(Package.S['package'])+'.png');
+            g:=TPicture.Create;
+            g.LoadFromFile(tmpLstIcons[tmpLstIcons.IndexOf(IconsDir+UTF8Encode(Package.S['package'])+'.png')]);
+            tmpLstIcons.Objects[tmpLstIcons.IndexOf(IconsDir+UTF8Encode(Package.S['package'])+'.png')]:=g;
+            tmpLstIcons[tmpLstIcons.IndexOf(IconsDir+UTF8Encode(Package.S['package'])+'.png')]:=ExtractFileName(tmpLstIcons[tmpLstIcons.IndexOf(IconsDir+UTF8Encode(Package.S['package'])+'.png')]);
+          except
+            FreeAndNil(g);
+            DeleteFile(IconsDir+UTF8Encode(Package.S['package'])+'.png');
+            tmpLstIcons.Delete(tmpLstIcons.IndexOf(IconsDir+UTF8Encode(Package.S['package'])+'.png'));
+          end;
+        except
+          On EIdHttpProtocolException do
+            DeleteFile(IconsDir+UTF8Encode(Package.S['package'])+'.png');
+        end;
+        for i:=0 to FlowPanel.ControlCount-1 do
+        begin
+          if (FlowPanel.Controls[i] is TFrmPackage) then
           begin
-            IconIdx := tmpLstIcons.IndexOf(UTF8Encode(AFrmPackage.Package.S['package'])+'.png');
-            if IconIdx>=0 then
-              AFrmPackage.ImgPackage.Picture.Assign(tmpLstIcons.Objects[IconIdx] as TPicture);
+            AFrmPackage:=FlowPanel.Controls[i] as TFrmPackage;
+            if (UTF8Encode(AFrmPackage.Package.S['package'])=UTF8Encode(Package.S['package'])) then
+            begin
+              IconIdx := tmpLstIcons.IndexOf(UTF8Encode(AFrmPackage.Package.S['package'])+'.png');
+              if IconIdx>=0 then
+                try
+                  AFrmPackage.ImgPackage.Picture.Assign(tmpLstIcons.Objects[IconIdx] as TPicture);
+                finally
+                end;
+            end;
           end;
         end;
+        Synchronize(@NotifyListener);
       end;
-      Synchronize(@NotifyListener);
     end;
+    ini.WriteString('global','LastPackageDate',UTF8Encode(ListPackages.O['0'].S['signature_date']));
+    ini.WriteString('global','repositories',iniWaptGet.ReadString('global','repositories',''));
+    ini.UpdateFile;
+
+  finally
+    FreeAndNil(ini);
+    FreeAndNil(iniWaptGet);
+    FreeAndNil(Repo);
+    FreeAndNil(LstRepo);
   end;
-  ini.WriteString('global','LastPackageDate',UTF8Encode(ListPackages.O['0'].S['signature_date']));
-  ini.WriteString('global','repositories',iniWaptGet.ReadString('global','repositories',''));
-  ini.UpdateFile;
-  FreeAndNil(g);
-  FreeAndNil(ini);
-  FreeAndNil(iniWaptGet);
-  FreeAndNil(Repo);
-  FreeAndNil(LstRepo);
 end;
 
 procedure TVisWaptSelf.OnUpgradeAllIcons(Sender: TObject);
 begin
-  LstIcons.AddStrings((Sender as TThreadGetAllIcons).tmpLstIcons);
+  EnterCriticalSection(FLockIconList);
+    try
+      LstIcons.AddStrings((Sender as TThreadGetAllIcons).tmpLstIcons);
+    finally
+      LeaveCriticalSection(FLockIconList);
+    end;
 end;
 
 end.

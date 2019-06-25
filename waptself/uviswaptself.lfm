@@ -1,11 +1,11 @@
 object VisWaptSelf: TVisWaptSelf
-  Left = 2018
-  Height = 602
-  Top = 136
-  Width = 1918
+  Left = 1912
+  Height = 1017
+  Top = -8
+  Width = 1920
   Caption = 'WAPT Self-service'
-  ClientHeight = 602
-  ClientWidth = 1918
+  ClientHeight = 1017
+  ClientWidth = 1920
   Constraints.MinHeight = 602
   Constraints.MinWidth = 640
   OnClose = FormClose
@@ -17,24 +17,24 @@ object VisWaptSelf: TVisWaptSelf
   LCLVersion = '1.8.4.0'
   object PanCategories: TPanel
     Left = 0
-    Height = 602
+    Height = 1017
     Top = 0
     Width = 264
     Align = alLeft
     BevelOuter = bvNone
-    ClientHeight = 602
+    ClientHeight = 1017
     ClientWidth = 264
     Color = clForm
     ParentColor = False
     TabOrder = 0
     object Panel2: TPanel
       Left = 0
-      Height = 602
+      Height = 1017
       Top = 0
       Width = 264
       Align = alClient
       BevelOuter = bvNone
-      ClientHeight = 602
+      ClientHeight = 1017
       ClientWidth = 264
       Color = clForm
       ParentColor = False
@@ -405,7 +405,7 @@ object VisWaptSelf: TVisWaptSelf
         AnchorSideBottom.Side = asrBottom
         Left = 12
         Height = 30
-        Top = 562
+        Top = 977
         Width = 30
         Anchors = [akLeft, akBottom]
         AutoSize = True
@@ -518,7 +518,7 @@ object VisWaptSelf: TVisWaptSelf
         AnchorSideBottom.Side = asrBottom
         Left = 77
         Height = 25
-        Top = 564
+        Top = 979
         Width = 150
         RoundBorders = 3
         ColorKind = mcDefault
@@ -641,20 +641,20 @@ object VisWaptSelf: TVisWaptSelf
   end
   object ScrollBoxPackages: TScrollBox
     Left = 264
-    Height = 602
+    Height = 1017
     Top = 0
-    Width = 902
+    Width = 904
     HorzScrollBar.Page = 1
     HorzScrollBar.Visible = False
-    VertScrollBar.Increment = 39
-    VertScrollBar.Page = 390
+    VertScrollBar.Increment = 59
+    VertScrollBar.Page = 597
     VertScrollBar.Smooth = True
     VertScrollBar.Tracking = True
     Align = alClient
     AutoSize = True
     BorderStyle = bsNone
-    ClientHeight = 602
-    ClientWidth = 902
+    ClientHeight = 1017
+    ClientWidth = 904
     Color = clWhite
     ParentColor = False
     TabOrder = 1
@@ -662,7 +662,7 @@ object VisWaptSelf: TVisWaptSelf
       Left = 0
       Height = 0
       Top = 0
-      Width = 902
+      Width = 904
       Align = alTop
       AutoSize = True
       BevelOuter = bvNone
@@ -680,13 +680,13 @@ object VisWaptSelf: TVisWaptSelf
     end
     object Panel6: TPanel
       Left = 0
-      Height = 602
+      Height = 1017
       Top = 0
-      Width = 902
+      Width = 904
       Align = alClient
       BevelOuter = bvNone
-      ClientHeight = 602
-      ClientWidth = 902
+      ClientHeight = 1017
+      ClientWidth = 904
       Color = clWhite
       ParentColor = False
       ParentFont = False
@@ -696,9 +696,9 @@ object VisWaptSelf: TVisWaptSelf
         AnchorSideLeft.Control = Panel6
         AnchorSideLeft.Side = asrCenter
         AnchorSideBottom.Control = PicLogo
-        Left = 208
+        Left = 209
         Height = 50
-        Top = 142
+        Top = 349
         Width = 486
         Alignment = taCenter
         Anchors = [akLeft, akBottom]
@@ -717,9 +717,9 @@ object VisWaptSelf: TVisWaptSelf
         AnchorSideTop.Control = Panel6
         AnchorSideTop.Side = asrCenter
         AnchorSideBottom.Side = asrBottom
-        Left = 251
+        Left = 252
         Height = 178
-        Top = 212
+        Top = 419
         Width = 400
         AutoSize = True
         Center = True
@@ -1329,15 +1329,15 @@ object VisWaptSelf: TVisWaptSelf
     end
   end
   object TaskBarPanel: TPanel
-    Left = 1542
-    Height = 602
+    Left = 1544
+    Height = 1017
     Top = 0
     Width = 376
     Align = alRight
     BevelOuter = bvNone
     ChildSizing.LeftRightSpacing = 10
     ChildSizing.TopBottomSpacing = 10
-    ClientHeight = 602
+    ClientHeight = 1017
     ClientWidth = 376
     Color = clForm
     ParentColor = False
@@ -1346,7 +1346,7 @@ object VisWaptSelf: TVisWaptSelf
     OnPaint = TaskBarPanelPaint
     object SOGridTasks: TSOGrid
       Left = 10
-      Height = 313
+      Height = 728
       Top = 49
       Width = 356
       ShowAdvancedColumnsCustomize = False
@@ -1548,7 +1548,7 @@ object VisWaptSelf: TVisWaptSelf
     object Panel4: TPanel
       Left = 10
       Height = 121
-      Top = 400
+      Top = 815
       Width = 356
       Align = alBottom
       BevelOuter = bvNone
@@ -1603,7 +1603,7 @@ object VisWaptSelf: TVisWaptSelf
     object Panel8: TPanel
       Left = 10
       Height = 71
-      Top = 521
+      Top = 936
       Width = 356
       Align = alBottom
       AutoSize = True
@@ -1786,7 +1786,7 @@ object VisWaptSelf: TVisWaptSelf
     object Panel9: TPanel
       Left = 10
       Height = 38
-      Top = 362
+      Top = 777
       Width = 356
       Align = alBottom
       BevelOuter = bvNone
@@ -1852,15 +1852,15 @@ object VisWaptSelf: TVisWaptSelf
     end
   end
   object DetailsBarPanel: TPanel
-    Left = 1166
-    Height = 602
+    Left = 1168
+    Height = 1017
     Top = 0
     Width = 376
     Align = alRight
     BevelOuter = bvNone
     ChildSizing.LeftRightSpacing = 10
     ChildSizing.TopBottomSpacing = 10
-    ClientHeight = 602
+    ClientHeight = 1017
     ClientWidth = 376
     Color = clForm
     ParentColor = False
@@ -1869,18 +1869,18 @@ object VisWaptSelf: TVisWaptSelf
     OnPaint = DetailsBarPanelPaint
     object ScrollBoxDetails: TScrollBox
       Left = 10
-      Height = 473
+      Height = 888
       Top = 48
       Width = 356
       HorzScrollBar.Page = 1
       HorzScrollBar.Visible = False
       VertScrollBar.Increment = 74
-      VertScrollBar.Page = 473
+      VertScrollBar.Page = 823
       Align = alClient
       AutoSize = True
       BorderStyle = bsNone
-      ClientHeight = 473
-      ClientWidth = 339
+      ClientHeight = 888
+      ClientWidth = 356
       Color = clForm
       ParentColor = False
       TabOrder = 0
@@ -2044,7 +2044,7 @@ object VisWaptSelf: TVisWaptSelf
     object Panel3: TPanel
       Left = 10
       Height = 71
-      Top = 521
+      Top = 936
       Width = 356
       Align = alBottom
       AutoSize = True
