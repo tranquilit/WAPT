@@ -13,9 +13,7 @@ uses
 var
   ini: TIniFile;
 begin
-  {$ifdef ENTERPRISE }
   {$R waptself.res}
-  {$endif}
   //Create ini in AppData/Local/waptself and read language
   ini:=TIniFile.Create(AppIniFilename);
   if (ini.ReadString('global','language','')<>'') then
