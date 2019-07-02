@@ -1981,16 +1981,14 @@ if __name__ == "__main__":
     waptconfig.config_filename = options.config
     waptconfig.load()
 
-    sio_logger = logging.getLogger('socketIO-client-2')
-    sio_logger.addHandler(logging.StreamHandler())
-
     # force loglevel
     if options.loglevel:
         setloglevel(logger,options.loglevel)
-        setloglevel(sio_logger,options.loglevel)
+        setloglevel(app.logger,options.loglevel)
+
     elif waptconfig.loglevel is not None:
         setloglevel(logger,waptconfig.loglevel)
-        setloglevel(sio_logger,options.loglevel)
+        setloglevel(app.logger,waptconfig.loglevel)
 
     if waptconfig.log_to_windows_events:
         try:
@@ -2019,7 +2017,14 @@ if __name__ == "__main__":
 
     if waptconfig.waptserver:
         sio = WaptSocketIOClient(waptconfig.config_filename,task_manager=task_manager)
+        sio_logger = logging.getLogger('socketIO-client-2')
+        sio_logger.addHandler(logging.StreamHandler())
+
         sio.start()
+        if options.loglevel:
+            setloglevel(sio_logger,options.loglevel)
+        else:
+            setloglevel(sio_logger,waptconfig.loglevel)
 
     if options.devel:
         #socketio_server.run(app,host='127.0.0.1', port=8088)
@@ -2033,6 +2038,12 @@ if __name__ == "__main__":
         if waptconfig.waptservice_port:
             port_config.append(('127.0.0.1', waptconfig.waptservice_port))
             server = Rocket(port_config,'wsgi', {"wsgi_app":app})
+            rocket_logger = logging.getLogger('Rocket')
+            if options.loglevel:
+                setloglevel(rocket_logger ,options.loglevel)
+            else:
+                setloglevel(rocket_logger ,waptconfig.loglevel)
+
             try:
                 logger.info(u"starting waptservice")
                 server.start()
