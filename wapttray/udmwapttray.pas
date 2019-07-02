@@ -170,7 +170,7 @@ constructor TCheckUpgradesThread.Create(aDMWaptTray: TDMWaptTray);
 begin
   inherited Create(True);
   DMTray := aDMWaptTray;
-  PollTimeout:=3000;
+  PollTimeout:=10000;
 
 end;
 

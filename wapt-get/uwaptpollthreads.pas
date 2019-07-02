@@ -44,7 +44,7 @@ type
 
     property OnNotifyEvent: TNotifyEvent read FOnNotifyEvent write SetOnNotifyEvent;
 
-    constructor Create(aNotifyEvent:TNotifyEvent;aCheckTimeout: Integer = -1; aPollTimeout:Integer = 2000);
+    constructor Create(aNotifyEvent:TNotifyEvent;aCheckTimeout: Integer = -1; aPollTimeout:Integer = 10000);
     destructor Destroy; override;
     procedure Execute; override;
   end;
@@ -93,7 +93,7 @@ type
 
     property OnNotifyEvent: TNotifyEvent read FOnNotifyEvent write SetOnNotifyEvent;
 
-    constructor Create(aNotifyEvent:TNotifyEvent;aCheckTimeout: Integer = -1; aPollTimeout:Integer = 2000);
+    constructor Create(aNotifyEvent:TNotifyEvent;aCheckTimeout: Integer = -1; aPollTimeout:Integer = 10000);
     destructor Destroy; override;
     procedure Execute; override;
   end;
@@ -250,7 +250,7 @@ begin
   FOnNotifyEvent:=AValue;
 end;
 
-constructor TCheckTasksThread.Create(aNotifyEvent: TNotifyEvent; aCheckTimeout: Integer = -1; aPollTimeout:Integer = 2000);
+constructor TCheckTasksThread.Create(aNotifyEvent: TNotifyEvent; aCheckTimeout: Integer = -1; aPollTimeout:Integer = 10000);
 begin
   inherited Create(True);
   OnNotifyEvent:=aNotifyEvent;
@@ -435,7 +435,7 @@ begin
   FOnNotifyEvent:=AValue;
 end;
 
-constructor TCheckEventsThread.Create(aNotifyEvent: TNotifyEvent; aCheckTimeout: Integer = -1; aPollTimeout:Integer = 2000);
+constructor TCheckEventsThread.Create(aNotifyEvent: TNotifyEvent; aCheckTimeout: Integer = -1; aPollTimeout:Integer = 10000);
 begin
   inherited Create(True);
   OnNotifyEvent:=aNotifyEvent;

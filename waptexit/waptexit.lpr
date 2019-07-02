@@ -9,7 +9,7 @@ uses
   {$ENDIF}{$ENDIF}
   Translations, LCLProc,
   Interfaces, // this includes the LCL widgetset
-  Forms, uwaptexit, uwaptexitres,DefaultTranslator, uWAPTPollThreads, indylaz;
+  Forms, uwaptexit, uwaptexitres,DefaultTranslator, uWAPTPollThreads;
 
 {$R *.res}
 
@@ -18,6 +18,7 @@ begin
   RequireDerivedFormResource := True;
   Application.Initialize;
   Application.CreateForm(TVisWaptExit, VisWaptExit);
+
   Application.Run;
 end.
 

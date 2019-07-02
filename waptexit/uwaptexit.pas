@@ -689,12 +689,12 @@ end;
 
 procedure TVisWaptExit.FormShow(Sender: TObject);
 begin
-  if not (GetServiceStatusByName('','WAPTService') in [ssRunning]) and not FindCmdLineSwitch('debug') then
+  {if not (GetServiceStatusByName('','WAPTService') in [ssRunning]) and not FindCmdLineSwitch('debug') then
   begin
     Close;
     Exit;
   end;
-
+  }
   ActShowDetails.Checked:=False;
 
   Upgrades := Nil;
@@ -709,8 +709,8 @@ begin
 
   // Check service is running and list of upgrades in background at startup
   // Check running / pending tasks
-  CheckTasksThread := TCheckTasksThread.Create(@OnCheckTasksThreadNotify);
-  CheckEventsThread := TCheckEventsThread.Create(@OnCheckEventsThreadNotify);
+  CheckTasksThread := TCheckTasksThread.Create(@OnCheckTasksThreadNotify,-1,2000);
+  CheckEventsThread := TCheckEventsThread.Create(@OnCheckEventsThreadNotify,-1,2000);
 
   // Initial check
   TCheckWaptservice.Create(@OnCheckWaptserviceNotify);
