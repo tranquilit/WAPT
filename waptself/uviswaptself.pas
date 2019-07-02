@@ -22,10 +22,8 @@ type
     tmpLstIcons : TStringList;
     ListPackages : ISuperObject;
     FlowPanel : TFlowPanel;
-    FLockFrames : TRTLCriticalSection;
-    FLockListIcons : TRTLCriticalSection;
     property OnNotifyEvent:TNotifyEvent read FOnNotifyEvent write SetOnNotifyEvent;
-    constructor Create(aNotifyEvent:TNotifyEvent;AllPackages:ISuperObject;aFlowPanel:TFlowPanel; aFLockListIcons : TRTLCriticalSection; aFLockFrames : TRTLCriticalSection);
+    constructor Create(aNotifyEvent:TNotifyEvent;AllPackages:ISuperObject; aFlowPanel:TFlowPanel);
     procedure Execute; override;
   end;
 
@@ -154,8 +152,6 @@ type
     procedure FormClose(Sender: TObject);
   private
     PrevWndProc: TWndMethod;
-    FLockIconList : TRTLCriticalSection;
-    FLockFrames : TRTLCriticalSection;
     ShowOnlyUpgradable: Boolean;
     ShowOnlyInstalled: Boolean;
     ShowOnlyNotInstalled: Boolean;
@@ -178,6 +174,7 @@ type
     NumberOfFrames: Integer;
 
     function GetAllPackages: ISuperObject;
+    procedure LoadIcons;
     procedure OnUpgradeTriggeredAllPackages(Sender : TObject);
 
     procedure OnUpgradeAllIcons(Sender : TObject);
@@ -227,7 +224,6 @@ var
   idx:Integer;
 begin
   try
-    EnterCriticalSection(FLockFrames);
     TimerSearch.Enabled:=False;
     Screen.Cursor:=crHourGlass;
     FlowPackages.DisableAlign;
@@ -281,7 +277,6 @@ begin
   finally
     FlowPackages.EnableAlign;
     Screen.Cursor:=crDefault;
-    LeaveCriticalSection(FLockFrames);
   end;
 end;
 
@@ -310,7 +305,6 @@ var
   idx:Integer;
 begin
   try
-    EnterCriticalSection(FLockFrames);
     Screen.Cursor:=crHourGlass;
     FlowPackages.DisableAlign;
 
@@ -347,7 +341,6 @@ begin
   finally
     FlowPackages.EnableAlign;
     Screen.Cursor:=crDefault;
-    LeaveCriticalSection(FLockFrames);
   end;
 end;
 
@@ -358,7 +351,6 @@ var
   idx,tmp:Integer;
 begin
   try
-    EnterCriticalSection(FLockFrames);
     Screen.Cursor:=crHourGlass;
     FlowPackages.DisableAlign;
 
@@ -397,7 +389,6 @@ begin
     FlowPackages.EnableAlign;
     Screen.Cursor:=crDefault;
     ScrollBoxPackages.VertScrollBar.Position:=FlowPackages.Height;
-    LeaveCriticalSection(FLockFrames);
   end;
 end;
 
@@ -424,7 +415,6 @@ begin
   if (FlowPackages.Width>ScaleX(350,96)) then
   begin
     WidthPref:=trunc((FlowPackages.Width/(FlowPackages.Width div ScaleX(350,96)))-1);
-    EnterCriticalSection(FLockFrames);
     for i:=0 to FlowPackages.ControlCount-1 do
     begin
       if (FlowPackages.Controls[i] is TFrmPackage) then
@@ -434,7 +424,6 @@ begin
       else
         (FlowPackages.Controls[i] as TFrmNextPrevious).Width:=FlowPackages.Width;
     end;
-    LeaveCriticalSection(FLockFrames);
   end
   else
   begin
@@ -585,7 +574,6 @@ var
 begin
   for Task in SOGridTasks.SelectedRows do
   begin
-    EnterCriticalSection(FLockFrames);
     for i:=0 to FlowPackages.ControlCount-1 do
     begin
       AFrmPackage:=FlowPackages.Controls[i] as TFrmPackage;
@@ -595,7 +583,6 @@ begin
         Exit();
       end;
     end;
-    LeaveCriticalSection(FLockFrames);
   end;
 end;
 
@@ -664,11 +651,9 @@ procedure TVisWaptSelf.ActUpgradeAllExecute(Sender: TObject);
 var
  i:integer;
 begin
-  EnterCriticalSection(FLockFrames);
   for i:=0 to FlowPackages.ControlCount-1 do
     if (FlowPackages.Controls[i] is TFrmPackage) then
       (FlowPackages.Controls[i] as TFrmPackage).ActInstallUpgradePackage(Self);
-  LeaveCriticalSection(FLockFrames);
 end;
 
 procedure TVisWaptSelf.ComboBoxCategoriesChange(Sender: TObject);
@@ -738,12 +723,36 @@ begin
   ActSearchPackages.Execute;
 end;
 
-procedure TVisWaptSelf.FormCreate(Sender: TObject);
+procedure TVisWaptSelf.LoadIcons;
 var
   IconsDir : String;
   g : TPicture;
   i : integer;
 begin
+  IconsDir:=AppLocalDir+'\icons\';
+  LstIcons:=FindAllFiles(IconsDir,'*.png',False);
+  LstIcons.OwnsObjects:=True;
+
+  for i:=0 to LstIcons.Count-1 do
+  try
+    g := Nil;
+    g:=TPicture.Create;
+    g.LoadFromFile(LstIcons[i]);
+    LstIcons.Objects[i]:=g;
+    g := Nil;
+    LstIcons[i]:=ExtractFileName(LstIcons[i]);
+  except
+    if Assigned(g) then
+      FreeAndNil(g);
+  end;
+  LstIcons.Sort;
+  LstIcons.Sorted := True;
+  LstIcons.Duplicates:=dupIgnore;
+end;
+
+procedure TVisWaptSelf.FormCreate(Sender: TObject);
+begin
+  Visible := False;
   if (not ReadWaptConfig(IncludeTrailingPathDelimiter(GetCurrentDir)+'wapt-get.ini')) then
     ReadWaptConfig();
   SortByDateAsc:=false;
@@ -758,19 +767,6 @@ begin
   LstTasks.Sorted:=true;
   LstTasks.Duplicates:=dupIgnore;
   CurrentTaskID:=0;
-
-  IconsDir:=AppLocalDir+'\icons\';
-  LstIcons:=FindAllFiles(IconsDir,'*.png',False);
-  LstIcons.OwnsObjects:=True;
-
-  for i:=0 to LstIcons.Count-1 do
-    try
-      g:=TPicture.Create;
-      g.LoadFromFile(LstIcons[i]);
-      LstIcons.Objects[i]:=g;
-      LstIcons[i]:=ExtractFileName(LstIcons[i]);
-    except
-    end;
 
   {$ifdef ENTERPRISE }
   if FileExists(WaptBaseDir+'\templates\waptself-logo.png') then
@@ -796,6 +792,8 @@ begin
     ImageCrossSearch.AntialiasingMode:=amOn;
     ImageCrossSearch.Stretch:=true;
     BtnShowTaskBar.TextSize:=GoodSizeForScreen(BtnShowTaskBar.TextSize);
+    BtnUpdateCatalogue.TextSize:=GoodSizeForScreen(BtnUpdateCatalogue.TextSize);
+    BtnUpgradeAll.TextSize:=GoodSizeForScreen(BtnUpgradeAll.TextSize);
     BtnHideDetails.TextSize:=GoodSizeForScreen(BtnHideDetails.TextSize);
     BtnCancelTasks.TextSize:=GoodSizeForScreen(BtnCancelTasks.TextSize);
     if (Screen.PixelsPerInch>96) then
@@ -809,20 +807,11 @@ begin
 
   if (DMWaptSelf.Token<>'') then
   begin
-    InitCriticalSection(FLockIconList);
-    InitCriticalSection(FLockFrames);
-    GetAllPackages();
     Application.ShowMainForm:=true;
     Self.Visible:=true;
-    FThreadGetAllIcons := TThreadGetAllIcons.Create(@OnUpgradeAllIcons,AllPackages,FlowPackages,FLockIconList,FLockFrames);
   end
   else
     Application.Terminate;
-
-  ComboBoxCategories.Sorted:=true;
-  ComboBoxCategories.Clear;
-  ComboBoxCategories.Items.AddStrings(GetAllCategories(AllPackages));
-  ComboBoxCategories.ItemIndex:=ComboBoxCategories.Items.IndexOf(rsAllCategories);
 
   PrevWndProc:=ScrollBoxPackages.WindowProc;
   ScrollBoxPackages.WindowProc:=@EventsScrollBar;
@@ -841,7 +830,14 @@ procedure TVisWaptSelf.FormShow(Sender: TObject);
 var
   ini : TIniFile;
 begin
-    try
+  try
+    GetAllPackages();
+
+    ComboBoxCategories.Sorted:=true;
+    ComboBoxCategories.Clear;
+    ComboBoxCategories.Items.AddStrings(GetAllCategories(AllPackages));
+    ComboBoxCategories.ItemIndex:=ComboBoxCategories.Items.IndexOf(rsAllCategories);
+
     if (DMWaptSelf.Token<>'') then
     begin
       TimerSearch.Enabled:=False;
@@ -872,12 +868,19 @@ begin
 
       //Initialise window with settings in the ini file
       ini:=TIniFile.Create(AppIniFilename);
-      Self.left:=ini.ReadInteger('window','left',Self.Left);
-      Self.Top:=ini.ReadInteger('window','top',Self.Top);
-      Self.Width:=ini.ReadInteger('window','width',Self.Width);
-      Self.Height:=ini.ReadInteger('window','height',Self.Height);
-      Self.WindowState:=TWindowState(ini.ReadInteger('window','windowstate',Integer(Self.WindowState)));
-      FreeAndNil(ini);
+      try
+        Self.left:=ini.ReadInteger('window','left',Self.Left);
+        Self.Top:=ini.ReadInteger('window','top',Self.Top);
+        Self.Width:=ini.ReadInteger('window','width',Self.Width);
+        Self.Height:=ini.ReadInteger('window','height',Self.Height);
+        Self.WindowState:=TWindowState(ini.ReadInteger('window','windowstate',Integer(Self.WindowState)));
+      finally
+        FreeAndNil(ini);
+      end;
+      MakeFullyVisible();
+
+      LoadIcons;
+      FThreadGetAllIcons := TThreadGetAllIcons.Create(@OnUpgradeAllIcons,AllPackages,FlowPackages);
 
       // Check running / pending tasks
       CheckTasksThread := TCheckAllTasksThread.Create(@OnCheckTasksThreadNotify);
@@ -933,6 +936,10 @@ begin
   SortByDateAsc:=false;
   SortByName:=false;
   SortByNameAZ:=true;
+  RadioSortByDateDescending.Checked:=true;
+  RadioSortByDateAscending.Checked:=false;
+  RadioSortByNameAZ.Checked:=false;
+  RadioSortByNameZA.Checked:=false;
   EdSearch.Text:='';
   ComboBoxCategories.ItemIndex:=ComboBoxCategories.Items.IndexOf(rsAllCategories);
   ActSearchPackages.Execute;
@@ -1061,8 +1068,6 @@ begin
   ini.WriteInteger('window','windowstate',Integer(Self.WindowState));
   ini.UpdateFile;
   FreeAndNil(ini);
-  DoneCriticalSection(FLockIconList);
-  DoneCriticalsection(FLockFrames);
 end;
 
 procedure TVisWaptSelf.OnCheckTasksThreadNotify(Sender: TObject);
@@ -1111,7 +1116,6 @@ var
   i:integer;
   AFrmPackage:TFrmPackage;
 begin
-  EnterCriticalSection(FLockFrames);
   for i:=0 to FlowPackages.ControlCount-1 do
   begin
     if (FlowPackages.Controls[i] is TFrmPackage) then
@@ -1185,7 +1189,6 @@ begin
       end;
     end;
   end;
-  LeaveCriticalSection(FLockFrames);
 end;
 
 procedure TVisWaptSelf.OnCheckEventsThreadNotify(Sender: TObject);
@@ -1252,7 +1255,6 @@ var
   i : integer;
   AFrmPackage : TFrmPackage;
 begin
-  EnterCriticalSection(FLockFrames);
   for i:=0 to FlowPackages.ControlCount-1 do
   begin
     if (FlowPackages.Controls[i] is TFrmPackage) then
@@ -1266,7 +1268,6 @@ begin
       end;
     end;
   end;
-  LeaveCriticalSection(FLockFrames);
 end;
 
 function TVisWaptSelf.GetAllPackages: ISuperObject;
@@ -1417,17 +1418,17 @@ begin
       strtmp:=UTF8Encode(package.S['signature_date']);
       LabDate.Caption:=Copy(strtmp,7,2)+'/'+Copy(strtmp,5,2)+'/'+Copy(strtmp,1,4);
 
-      EnterCriticalSection(FLockIconList);
-        if (LstIcons<>Nil) then
-        begin
-          IconIdx := LstIcons.IndexOf(UTF8Encode(package.S['package']+'.png'));
-          if IconIdx>=0 then
-            try
-              ImgPackage.Picture.Assign(LstIcons.Objects[IconIdx] as TPicture);
-            finally
-              LeaveCriticalSection(FLockIconList);
-            end;
-        end;
+
+      if (LstIcons<>Nil) then
+      begin
+        IconIdx := LstIcons.IndexOf(UTF8Encode(package.S['package']+'.png'));
+        if IconIdx>=0 then
+          try
+            ImgPackage.Picture.Assign(LstIcons.Objects[IconIdx] as TPicture);
+          finally
+
+          end;
+      end;
 
       if (package.S['install_status'] = 'OK') then //Package installed
       begin
@@ -1540,14 +1541,12 @@ begin
   FOnNotifyEvent:=AValue;
 end;
 
-constructor TThreadGetAllIcons.Create(aNotifyEvent:TNotifyEvent;AllPackages:ISuperObject;aFlowPanel:TFlowPanel;aFLockListIcons : TRTLCriticalSection; aFLockFrames : TRTLCriticalSection);
+constructor TThreadGetAllIcons.Create(aNotifyEvent:TNotifyEvent;AllPackages:ISuperObject;aFlowPanel:TFlowPanel);
 begin
   inherited Create(False);
   OnNotifyEvent:=aNotifyEvent;
   ListPackages:=AllPackages;
   FlowPanel:=aFlowPanel;
-  FLockFrames:=aFLockFrames;
-  FLockListIcons:=aFLockListIcons;
   FreeOnTerminate:=True;
 end;
 
@@ -1625,7 +1624,6 @@ begin
           On EIdHttpProtocolException do
             DeleteFile(IconsDir+UTF8Encode(Package.S['package'])+'.png');
         end;
-          EnterCriticalSection(FLockFrames);
             for i:=0 to FlowPanel.ControlCount-1 do
             begin
               try
@@ -1641,17 +1639,13 @@ begin
                         AFrmPackage.ImgPackage.Picture.Assign(tmpLstIcons.Objects[IconIdx] as TPicture);
                       except
                       end;
-                      LeaveCriticalSection(FLockFrames);
                       break;
                     end;
                   end;
                 end;
               except
                 On EListError do
-                begin
-                  LeaveCriticalSection(FLockFrames);
                   break;
-                end;
               end;
             end;
         Synchronize(@NotifyListener);
@@ -1671,12 +1665,7 @@ end;
 
 procedure TVisWaptSelf.OnUpgradeAllIcons(Sender: TObject);
 begin
-  EnterCriticalSection(FLockIconList);
-    try
-      LstIcons.AddStrings((Sender as TThreadGetAllIcons).tmpLstIcons);
-    finally
-      LeaveCriticalSection(FLockIconList);
-    end;
+  LstIcons.AddStrings((Sender as TThreadGetAllIcons).tmpLstIcons);
 end;
 
 end.

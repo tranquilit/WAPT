@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  Buttons, ExtCtrls;
+  Buttons, ExtCtrls, LMessages;
 
 type
 
@@ -51,7 +51,10 @@ uses waptcommon, LCLIntf;
 procedure TVisLogin.FormShow(Sender: TObject);
 begin
   MakeFullyVisible();
-  EdPassword.SetFocus;
+  if EdUsername.Text<>'' then
+    EdPassword.SetFocus
+  else
+    EdUsername.SetFocus;
 end;
 
 procedure TVisLogin.LogoLoginClick(Sender: TObject);

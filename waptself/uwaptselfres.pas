@@ -25,6 +25,7 @@ resourcestring
  rsWarningNoLoginOrPassword = 'Please enter a login/password';
  rsAllCategories = 'All';
  rsWarningPasswordLoginBlank = 'Your password or login is empty';
+ rsServiceNotRun = 'The service is probably not started, try again?';
 
 implementation
 

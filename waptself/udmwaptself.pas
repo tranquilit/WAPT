@@ -5,7 +5,7 @@ unit uDMWaptSelf;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, httpsend, uVisLogin, Controls,waptwinutils,waptcommon, superobject,Forms;
+  Classes, Controls, waptcommon, superobject, httpsend;
 
 type
 
@@ -17,6 +17,7 @@ type
     FLogin:String;
     LockLogin: boolean;
     FLock: TRTLCriticalSection;
+    LockToken: boolean;
     FLockLoginDlg: TRTLCriticalSection;
     function GetToken: String;
     function GetLocalLogin: String;
@@ -34,6 +35,7 @@ var
 
 implementation
 
+uses IniFiles, Dialogs, Forms,waptwinutils, uVisLogin, sysutils, FileUtil, uWaptSelfRes;
 {$R *.lfm}
 
 { TDMWaptSelf }
@@ -99,6 +101,7 @@ begin
   FLogin:='';
   FToken:='';
   LockLogin:=false;
+  LockToken:=false;
 end;
 
 destructor TDMWaptSelf.Destroy;
@@ -109,24 +112,52 @@ begin
 end;
 
 function TDMWaptSelf.GetToken: String;
+var
+  iniWaptGet : TIniFile;
+  waptservice_localuser:String;
 begin
-  if (FToken='') then
+  if not(LockToken) then
   begin
-    if (LockLogin) then
+    if (FToken='') then
     begin
-      Result:='';
-    end
-    else
-    begin
-      EnterCriticalSection(FLock);
-      Try
-        FToken:=UTF8Encode(WAPTLocalJsonGet('login','','',-1,@OnLocalServiceAuth,-1).S['token']);
-      Finally
-        LeaveCriticalSection(FLock);
+      if (LockLogin) then
+      begin
+        Result:='';
+      end
+      else
+      begin
+        EnterCriticalSection(FLock);
+        Try
+          try
+            iniWaptGet:=TIniFile.Create(WaptIniFilename);
+            waptservice_localuser := iniWaptGet.ReadString('global','waptservice_user','admin');
+            if (iniWaptGet.ReadString('global','waptservice_password','') = 'NOPASSWORD') then
+            begin
+              FToken:=UTF8Encode(WAPTLocalJsonGet('login',waptservice_localuser,'NOPASSWORD',-1,@OnLocalServiceAuth,-1).S['token']);
+              FLogin:=waptservice_localuser;
+            end
+            else
+              FToken:=UTF8Encode(WAPTLocalJsonGet('login','','',-1,@OnLocalServiceAuth,-1).S['token']);
+          except
+            if not(LockToken) and (MessageDlg(rsServiceNotRun,mtWarning,mbYesNo,0)<>mrYes) then
+            begin
+              LockToken:=true;
+              Result:='';
+              Application.Terminate;
+            end
+            else
+              Result:=GetToken();
+          end;
+        Finally
+          FreeAndNil(iniWaptGet);
+          LeaveCriticalSection(FLock);
+        end;
       end;
     end;
-  end;
-  Result:=FToken;
+    Result:=FToken;
+  end
+  else
+    Result:='';
 end;
 
 

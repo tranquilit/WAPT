@@ -615,6 +615,10 @@ msgctxt "uwaptselfres.rspassword"
 msgid "Password"
 msgstr "Mot de passe"
 
+#: uwaptselfres.rsservicenotrun
+msgid "The service is probably not started, try again?"
+msgstr "Le service n'est probablement pas démarré, réessayer ?"
+
 #: uwaptselfres.rssortbydateasc
 msgctxt "uwaptselfres.rssortbydateasc"
 msgid "Sort by date : asc"

@@ -20,7 +20,7 @@ object VisLogin: TVisLogin
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
     Left = 15
-    Height = 52
+    Height = 51
     Top = 104
     Width = 201
     Align = alCustom
@@ -31,7 +31,7 @@ object VisLogin: TVisLogin
     BorderSpacing.Right = 15
     BevelColor = clForm
     BevelOuter = bvNone
-    ClientHeight = 52
+    ClientHeight = 51
     ClientWidth = 201
     Color = clForm
     ParentColor = False
@@ -43,7 +43,7 @@ object VisLogin: TVisLogin
       AnchorSideRight.Control = EdPassword
       Left = 3
       Height = 23
-      Top = 29
+      Top = 28
       Width = 83
       Anchors = [akTop, akLeft, akRight]
       BorderSpacing.Left = 3
@@ -69,7 +69,7 @@ object VisLogin: TVisLogin
       AnchorSideRight.Control = PanelLogin
       AnchorSideRight.Side = asrBottom
       Left = 89
-      Height = 23
+      Height = 21
       Top = 29
       Width = 112
       Anchors = [akTop, akLeft, akRight]
@@ -81,11 +81,10 @@ object VisLogin: TVisLogin
       AnchorSideRight.Control = PanelLogin
       AnchorSideRight.Side = asrBottom
       Left = 89
-      Height = 23
+      Height = 21
       Top = 0
       Width = 112
       Anchors = [akTop, akLeft, akRight]
-      AutoSelect = False
       TabOrder = 1
     end
   end
@@ -98,8 +97,8 @@ object VisLogin: TVisLogin
     AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
     Left = 15
-    Height = 65
-    Top = 156
+    Height = 66
+    Top = 155
     Width = 201
     Align = alCustom
     Anchors = [akTop, akLeft, akRight, akBottom]
@@ -107,7 +106,7 @@ object VisLogin: TVisLogin
     BorderSpacing.Left = 15
     BorderSpacing.Right = 15
     BevelOuter = bvNone
-    ClientHeight = 65
+    ClientHeight = 66
     ClientWidth = 201
     TabOrder = 1
     object ButOk: TBitBtn
@@ -117,7 +116,7 @@ object VisLogin: TVisLogin
       AnchorSideRight.Control = ButCancel
       Left = 0
       Height = 28
-      Top = 18
+      Top = 19
       Width = 82
       AutoSize = True
       BorderSpacing.Right = 6
@@ -137,7 +136,7 @@ object VisLogin: TVisLogin
       AnchorSideRight.Side = asrBottom
       Left = 119
       Height = 28
-      Top = 18
+      Top = 19
       Width = 82
       Anchors = [akTop, akRight]
       AutoSize = True
@@ -174,9 +173,9 @@ object VisLogin: TVisLogin
       AnchorSideTop.Control = WarningPanel
       AnchorSideTop.Side = asrCenter
       Left = 41
-      Height = 16
-      Top = 1
-      Width = 139
+      Height = 14
+      Top = 2
+      Width = 126
       Align = alCustom
       AutoSize = True
       BorderSpacing.Left = 5
