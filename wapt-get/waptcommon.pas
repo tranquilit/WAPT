@@ -282,10 +282,11 @@ uses LazFileUtils, LazUTF8, soutils, Variants,uwaptres,waptwinutils,uwaptcrypto,
 const
   CacheWaptServerUrl: String = 'None';
   wapt_config_filename : String = '';
+  AppVersion : String = '0.0.0';
 
 function DefaultUserAgent:String;
 begin
-  Result := ApplicationName+'/'+GetApplicationVersion;
+  Result := ApplicationName+'/'+AppVersion;
 end;
 
 function WaptIniReadBool(const user, item: string; Default: Boolean): Boolean;
@@ -1280,6 +1281,7 @@ begin
     ShouldRetry:=True;
     While ShouldRetry do
     begin
+      ShouldRetry := False;
       if http.HTTPMethod('GET',url) then
         SetString(strresult, PAnsiChar(http.Document.Memory), http.Document.Size)
       else
@@ -1291,7 +1293,7 @@ begin
       if (http.ResultCode=401) then
       begin
         inc(Retries);
-        if Assigned(OnAuthorization) and ((RetryCount=-1) or (RetryCount>0) and (Retries <= RetryCount)) then
+        if Assigned(OnAuthorization) and ((RetryCount=-1) or ((RetryCount>0) and (Retries <= RetryCount))) then
           OnAuthorization(http,ShouldRetry,Retries)
         else
           Raise EIdHTTPProtocolException.CreateError(http.ResultCode,strresult,http.ResultString);
@@ -2452,8 +2454,10 @@ end;
 initialization
 //  if not Succeeded(CoInitializeEx(nil, COINIT_MULTITHREADED)) then;
     //Raise Exception.Create('Unable to initialize ActiveX layer');
-   GetLanguageIDs(LanguageFull,Language);
-   ExtendIndyCryptoLibrary();
+  GetLanguageIDs(LanguageFull,Language);
+  ExtendIndyCryptoLibrary();
+  AppVersion := GetApplicationVersion();
+
 
 finalization
 //  CoUninitialize();
