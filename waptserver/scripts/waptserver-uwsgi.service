@@ -1,0 +1,18 @@
+[Unit]
+Description=WAPT Server uWSGI startup script
+After=syslog.target
+After=postgresql.service
+
+[Service]
+WorkingDirectory=/opt/wapt
+ExecStart=/usr/bin/uwsgi --ini /opt/wapt/conf/waptserver.ini
+RuntimeDirectory=uwsgi
+Restart=always
+KillSignal=SIGQUIT
+Type=notify
+StandardError=syslog
+NotifyAccess=all
+LimitNOFILE=32768
+
+[Install]
+WantedBy=multi-user.target
