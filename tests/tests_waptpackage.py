@@ -20,7 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-__version__ = "1.7.3.11"
+__version__ = "1.7.4"
 import logging
 import sys
 import tempfile
@@ -1391,9 +1391,29 @@ def test_update_perf():
     print([r.repo_url for r in self.repositories])
     print(self.list_upgrade())
 
+def test_sign_package_dir():
+    pwd = open('c:/tmp/tmpkeypassword','rb').read()
+    k = SSLPrivateKey('c:/private/tranquilit2.pem',password=pwd)
+    c = SSLCertificate(r'c:\private\tranquilit2-fullchain.crt')
+    pe = PackageEntry(waptfile='c:/waptdev/test-sign-wapt')
+    pe.sign_package(c,k)
+    print(pe.build_package())
+
+def test_forced_uuid():
+    w = Wapt()
+    inifile_deleteoption(w.config_filename,'global','uuid')
+    w = Wapt()
+    print(w.get_host_certificate())
+    inifile_writestring(w.config_filename,'global','uuid','rnd-'+str(uuid.uuid4()))
+    w = Wapt()
+    print(w.get_host_certificate())
+
+
 
 if __name__ == '__main__':
-    test_update_perf()
+    test_forced_uuid()
+    #test_sign_package_dir()
+    #test_update_perf()
     #test_register()
     #test_client_auth_download()
     #test_update_crl()

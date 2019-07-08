@@ -711,7 +711,7 @@ begin
   timer1.Enabled:= False;
   ActCheckAndSetwaptserver.Enabled:=True;
   if CheckServer(edServerAddress.Text) then
-    edServerAddress.Font.Color :=clText ;
+    edServerAddress.Font.Color :=clTeal;
 end;
 
 end.

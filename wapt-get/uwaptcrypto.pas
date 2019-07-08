@@ -224,7 +224,7 @@ function CreateSignedCert(pywaptcrypto:Variant;
     ):String;
 var
   vCAKeyFilename,vdestpem,vdestcrt,vdestp12,vCAKeyPassword,vKeyPassword: Variant;
-  key,cert,cakey,cacert,vPKCS12,vCommonName:Variant;
+  key,cert,cakey,cacert,vPKCS12,vCommonName,vCountry:Variant;
   ca_pem: String;
 
 begin
@@ -282,7 +282,7 @@ begin
   end;
 
   vCommonName:=UTF8Decode(commonname);
-
+  vCountry := UTF8Decode(country);
   // None can not be passed... not accepted : invalid Variant type
   // using default None on the python side to workaround this...
   // python call
@@ -292,7 +292,7 @@ begin
       cn :=  vCommonName,
       organization := organization,
       locality := locality,
-      country := country,
+      country := vCountry,
       organizational_unit := orgunit,
       email := email,
       is_ca := IsCACert,
@@ -305,7 +305,7 @@ begin
       cn := commonname,
       organization := organization,
       locality := locality,
-      country := country,
+      country := vCountry,
       organizational_unit := orgunit,
       email := email,
       is_ca := IsCACert,

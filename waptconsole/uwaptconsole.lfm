@@ -21,7 +21,7 @@ object VisWaptGUI: TVisWaptGUI
   Position = poScreenCenter
   SessionProperties = 'PanOrgUnits.Width'
   ShowHint = True
-  LCLVersion = '1.8.4.0'
+  LCLVersion = '2.1.0.0'
   object MainPages: TPageControl
     Left = 0
     Height = 669
@@ -1480,13 +1480,7 @@ object VisWaptGUI: TVisWaptGUI
               Top = 16
               Width = 264
               Color = clForm
-              EditLabel.AnchorSideLeft.Control = HostRunningTask
-              EditLabel.AnchorSideRight.Control = HostRunningTask
-              EditLabel.AnchorSideRight.Side = asrBottom
-              EditLabel.AnchorSideBottom.Control = HostRunningTask
-              EditLabel.Left = 0
               EditLabel.Height = 13
-              EditLabel.Top = 0
               EditLabel.Width = 264
               EditLabel.Caption = 'Current task'
               EditLabel.ParentColor = False
@@ -8170,13 +8164,13 @@ object VisWaptGUI: TVisWaptGUI
   object SynPythonSyn1: TSynPythonSyn
     DefaultFilter = 'Fichiers Python (*.py)|*.py'
     Enabled = False
-    left = 864
-    top = 112
+    Left = 864
+    Top = 112
   end
   object MainActionList: TActionList
     Images = ActionsImages24
-    left = 320
-    top = 296
+    Left = 320
+    Top = 296
     object ActSearchPackage: TAction
       Category = 'packages'
       Caption = 'Search'
@@ -8687,8 +8681,8 @@ object VisWaptGUI: TVisWaptGUI
   end
   object PopupMenuPackages: TPopupMenu
     Images = ActionsImages24
-    left = 200
-    top = 192
+    Left = 200
+    Top = 192
     object MenuItem22: TMenuItem
       Action = ActDeletePackage
       ShortCut = 16430
@@ -8699,8 +8693,8 @@ object VisWaptGUI: TVisWaptGUI
   end
   object MainMenu1: TMainMenu
     Images = ActionsImages24
-    left = 104
-    top = 184
+    Left = 104
+    Top = 184
     object MenuItem5: TMenuItem
       Caption = '&File'
       object MenuItem6: TMenuItem
@@ -8816,8 +8810,8 @@ object VisWaptGUI: TVisWaptGUI
   object PopupMenuHosts: TPopupMenu
     Images = ActionsImages24
     OnPopup = PopupMenuHostsPopup
-    left = 104
-    top = 240
+    Left = 104
+    Top = 240
     object MenuItem18: TMenuItem
       Action = ActEditHostPackage
     end
@@ -8829,82 +8823,6 @@ object VisWaptGUI: TVisWaptGUI
     end
     object MenuItem57: TMenuItem
       Caption = 'Trigger Burst Updates'
-      Bitmap.Data = {
-        36090000424D3609000000000000360000002800000018000000180000000100
-        2000000000000009000064000000640000000000000000000000000000000000
-        000000000000000000000000000000BFFF140000000000000000000000000FD0
-        FF670ED0FFA80FCEFFC90FCFFFC90ED1FFAA0ECBFF6C00000000000000000000
-        000000D5FF120000000000000000000000000000000000000000000000000000
-        0000000000000000000000BFFF0C0000000000CFFF2510D1FF8C0FCFFFD010CE
-        FFEF0FCDFFFA0FCCFFFE0FCCFFFE0FCEFFF80AD4FFE30CD6FFC50BD6FF8900D1
-        FF270000000000FFFF0900000000000000000000000000000000000000000000
-        00000000000000FFFF09000000000CCCFF7E10D2FFEC0FD9FFFF0FD4FFFF0FCF
-        FFFF12CDFFFF14CEFFFF08556AFE0CD3FBEE0AD6FFEE09D6FFF509D5FFFB0AD6
-        FFE20CD6FF7B0000000000AAFF090000FF060000000000000000000000000000
-        000000BFFF0C000000000ECDFFA712D5FFFF12D0FFFF0FCBFFFC16CCFFFE14CD
-        FFFE00CBFFFF00CCFFFA0086A1F3004D5BF710D6FFEC14D6FFEB0AD7FFE90AD6
-        FFF009D7FFF70AD6FFA10000000000BFFF0C00000000000000000000000000BF
-        FF0C000000000ECBFFA70FD8FFFF09CCFFFC0CCCFFFE16CDFFFF00C9FFFF00CA
-        FFFF33D2FFFB55DEFFF04FCDEAF0010506FF006479F600D3FFEC10D7FFEC0AD6
-        FFEB0AD7FFE909D5FFFB0AD6FFA10000000000BFFF0C0000000000BFFF140000
-        00000CC9FF7B0FD6FFFF0CCCFFFC20CFFFFE16CDFFFF00C8FFFF6BDAFFFFC9F1
-        FFFEF2FCFFFDFFFFFEFFFFFFFFFF5B5E60FF000000FF4A91A3F600D4FFEB0DD6
-        FFEC0DD6FFEC0AD7FFE909D6FFF90DD5FF7A0000000000D5FF1200AAFF0900CC
-        FF2310CDFFF118D2FFFE00C8FFFE93E4FFFFC9F2FFFEA3E8FFFEFFFFFEFFFFFF
-        FEFFFFFFFEFFFFFFFEFFFFFFFEFFEEEEEDFF000000FF030303FF8AB6C1F90AD5
-        FFEC10D6FFEC0DD6FFEB0AD5FFEF0AD6FFE400D9FF2800AAFF090000000010CC
-        FF8D0FD9FFFF18CCFFFC00C8FFFF93E4FFFFFFFFFEFFFFFFFEFFFDFFFFFED3F4
-        FFFE84DFFFFF54D6FFFF2A6C82FF437384FF202426FF000000FF161616FF9CCC
-        D7F800D2FFEC10D6FFED0AD7FFE70CD6FFFF0FCDFF950000000000BFFF0C0ECC
-        FFD40FD5FFFE18CDFFFD00C8FFFF8FE3FFFFFDFFFFFEF8FEFFFEFFFFFEFFDCF6
-        FFFE0FCBFFFF00C9FFFF004E63FF000000FF000000FF000000FF000000FF2323
-        23FF69CEE6F300D3FFEA15D1FFF50FD5FFFE0ECDFFD800D1FF160FCDFF6710CD
-        FFF10FCFFFFF18CDFFFF00C8FFFF94E4FFFFFFFFFEFFFFFFFEFFD7F5FFFE88E0
-        FFFF22CEFFFF14CCFFFF11AED9FF000608FF000000FF000000FF000000FF0000
-        00FF333C3EFD00CDFFF616CDFFFF0FCFFFFF10CCFFF40DCBFF750DCEFFAC0FCB
-        FFFC0FCDFFFF16CDFFFF06C9FFFF76DDFFFFC9F1FFFE68D9FFFF00CBFFFF00C8
-        FFFF0CCCFFFF0FCCFFFF0FCCFFFF043D4DFF000000FF000000FF1A3E4AFFD5F2
-        FBFE7AD2EFFE06CAFFFF14CDFFFF0FCDFFFF0FCCFFFC10CBFFBA0FCDFFCC0FCC
-        FFFE0FCCFFFF0FCCFFFF0FCCFFFF0CCCFFFF00CAFFFF00CAFFFF12CCFFFF16CD
-        FFFF0FCCFFFF0FCCFFFF0FCCFFFF0EC0F0FF000000FF000000FF000000FF0085
-        A8FF00CBFFFF0FCCFFFF0FCCFFFF0FCCFFFF0FCCFFFE0ECDFFDA0FCDFFCD0FCC
-        FFFE0FCCFFFF0FCCFFFF0FCCFFFF00CAFFFF00CBFFFF00CBFFFF12CDFFFF0FCC
-        FFFF0FCCFFFF0FCCFFFF0FCCFFFF0FCCFFFF095B72FF000000FF000000FF000D
-        11FF05BAEAFF0FCCFFFF0FCCFFFF0FCCFFFF0FCCFFFE0ECCFFDB0DCCFFAF0FCB
-        FFFC0FCDFFFF14CDFFFF06CAFFFF73DDFFFFD0F3FFFE5AD7FFFF06CAFFFF16CD
-        FFFF0FCCFFFF0FCCFFFF0FCCFFFF0FCCFFFF00AFDFFF000000FF000000FF0000
-        00FF396879FF06C9FFFF16CDFFFF0FCDFFFF0FCDFFFD10CBFFBC0ECBFF6C10CC
-        FFF30FCFFFFF18CDFFFF00C8FFFFC9F2FFFEFFFFFEFFDBF6FFFE00CAFFFF0FCC
-        FFFF18CDFFFF14CCFFFF14CCFFFF1ECDFFFF7ADDFFFFCCF2FFFEFDFFFEFFFFFF
-        FEFF9EE6FFFF00C8FFFF18CDFFFF0FCFFFFF10CCFFF50DCCFF7900AAFF120ECC
-        FFD60FD5FFFE16CDFFFD00C9FFFF70DCFFFFFFFFFEFFFFFFFEFFB3ECFFFE00CA
-        FFFF00C9FFFF00CBFFFF00CAFFFF09CBFFFFD9F6FFFEFFFFFEFFF9FFFFFEFCFF
-        FFFE98E4FFFF00C8FFFF18CDFFFE0FD4FFFE0ECDFFDA00D8FF1A0000000010CC
-        FF920FD9FFFF0FCBFFFC14CDFFFF00C9FFFFB5EDFFFEFFFFFEFFFFFFFEFFD3F4
-        FFFE7ADDFFFF48D4FFFF47D4FFFF77DCFFFFCCF2FFFEFBFFFFFEFFFFFEFFFFFF
-        FEFF9BE5FFFF00C8FFFF18CCFFFC0FD9FFFF0FCCFF9A0000000000AAFF0900D9
-        FF2810CFFFF30FD0FFFE12CCFFFE12CCFFFF0CCBFFFFB6EDFFFEFFFFFEFFFFFF
-        FEFFFFFFFEFFFDFFFFFEFCFFFFFEFFFFFEFFFFFFFEFFFFFFFEFFB0EBFFFECCF2
-        FFFE9FE6FFFF00C8FFFE18D0FFFE0FCEFFF700CFFF3000AAFF0900BFFF140000
-        00000CCCFF820FD7FFFF0FCCFFFC12CCFFFF0FCCFFFF00C9FFFF75DDFFFFD0F3
-        FFFEF6FDFFFEFFFFFEFFFFFFFEFFF7FDFFFED3F4FFFE7ADDFFFF00C9FFFF1CCE
-        FFFF28CFFFFF0CCBFFFC12D7FFFF11CCFF8B0000000000BFFF140000000000BF
-        FF0C000000000DCBFFAF0FD9FFFF0FCCFFFC12CCFFFE14CDFFFF00C9FFFF00CB
-        FFFF3DD2FFFF5DD8FFFF5ED8FFFF3ED2FFFF00CBFFFF00C9FFFF16CDFFFF0CCC
-        FFFE06CBFFFC0FD9FFFF0DCDFFB60000000000BFFF0C0000FF06000000000000
-        FF0600BFFF0C000000000DCCFFB00FD7FFFF0FCFFFFF0FCBFFFC16CDFFFE12CC
-        FFFF00CBFFFF00CAFFFF00CAFFFF00CBFFFF12CCFFFF16CDFFFE0FCBFFFC12CF
-        FFFF12D7FFFF0DCEFFB60000000000BFFF0C00FFFF0600000000000000000000
-        00000000FF0600FFFF090000000011CCFF8810D1FFF20FD9FFFF0FD3FFFF0FCF
-        FFFF14CDFFFF16CDFFFF16CDFFFF14CDFFFF0FCFFFFF0FD3FFFF0FD9FFFF10D1
-        FFF410CEFF8D0000000000AAFF0900FFFF060000000000000000000000000000
-        0000000000000000000000FFFF090000000000C5FF300FD0FF970ED0FFD710CE
-        FFF30FCDFFFC0FCCFFFE0FCCFFFE0FCDFFFC10CFFFF30ED0FFD80FD1FF9A00CA
-        FF350000000000FFFF090000FF06000000000000000000000000000000000000
-        000000000000000000000000000000BFFF14000000000000000000AAFF120DD3
-        FF7910CFFFBA0ECEFFDA0ECEFFDB10CFFFBB0CD0FF7D00D5FF18000000000000
-        000000BFFF140000000000000000000000000000000000000000
-      }
       ImageIndex = 19
       Visible = False
     end
@@ -9015,8 +8933,8 @@ object VisWaptGUI: TVisWaptGUI
     end
   end
   object ImageList1: TImageList
-    left = 440
-    top = 344
+    Left = 440
+    Top = 344
     Bitmap = {
       4C69130000001000000010000000FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
       FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
@@ -9631,8 +9549,8 @@ object VisWaptGUI: TVisWaptGUI
   end
   object PopupMenuGroups: TPopupMenu
     Images = ActionsImages24
-    left = 200
-    top = 248
+    Left = 200
+    Top = 248
     object MenuItem36: TMenuItem
       Action = ActAddGroup
     end
@@ -9645,8 +9563,8 @@ object VisWaptGUI: TVisWaptGUI
   end
   object PopupHostPackages: TPopupMenu
     Images = ActionsImages24
-    left = 664
-    top = 344
+    Left = 664
+    Top = 344
     object MenuItem20: TMenuItem
       Action = ActPackagesInstall
     end
@@ -9671,12 +9589,12 @@ object VisWaptGUI: TVisWaptGUI
     DefaultExt = '.wapt'
     Filter = 'Paquets WAPT|*.wapt|Tous les fichiers|*.*'
     Options = [ofAllowMultiSelect, ofFileMustExist, ofEnableSizing, ofViewDetail]
-    left = 464
-    top = 200
+    Left = 464
+    Top = 200
   end
   object PopupWUAUpdates: TPopupMenu
-    left = 800
-    top = 440
+    Left = 800
+    Top = 440
     object MenuItem58: TMenuItem
       Action = ActWUAAllowSelectedUpdates
     end
@@ -9695,8 +9613,8 @@ object VisWaptGUI: TVisWaptGUI
     end
   end
   object PopupWUAProducts: TPopupMenu
-    left = 800
-    top = 376
+    Left = 800
+    Top = 376
     object MenuItem63: TMenuItem
       Action = ActWUAProductAllow
     end
@@ -9732,8 +9650,8 @@ object VisWaptGUI: TVisWaptGUI
   end
   object WSUSActions: TActionList
     Images = ActionsImages24
-    left = 320
-    top = 360
+    Left = 320
+    Top = 360
     object ActTriggerWaptwua_scan: TAction
       Category = 'hostswua'
       Caption = 'Trigger the scan of missing Windows Updates'
@@ -9887,8 +9805,8 @@ object VisWaptGUI: TVisWaptGUI
     end
   end
   object PopupGridWSUSScan: TPopupMenu
-    left = 200
-    top = 408
+    Left = 200
+    Top = 408
     object MenuItem74: TMenuItem
       Caption = 'Delete task'
       ShortCut = 16430
@@ -9897,28 +9815,28 @@ object VisWaptGUI: TVisWaptGUI
   end
   object ApplicationProperties1: TApplicationProperties
     OnException = ApplicationProperties1Exception
-    left = 584
-    top = 500
+    Left = 584
+    Top = 500
   end
   object TimerWUALoadWinUpdates: TTimer
     Enabled = False
     Interval = 400
     OnTimer = TimerWUALoadWinUpdatesTimer
-    left = 416
-    top = 136
+    Left = 416
+    Top = 136
   end
   object odSelectInstaller: TOpenDialog
     Title = 'Select an installer executable or msi'
     Filter = 'Installer Files (*.exe;*.msi;*.msu;*.appx)|*.exe;*.msi;*.msu;*.appx|All files|*.*'
     Options = [ofPathMustExist, ofEnableSizing, ofViewDetail]
-    left = 584
-    top = 448
+    Left = 584
+    Top = 448
   end
   object ActionsImages24: TImageList
     Height = 24
     Width = 24
-    left = 440
-    top = 408
+    Left = 440
+    Top = 408
     Bitmap = {
       4C69220000001800000018000000000000000000000000000000000000000000
       000000BFFF14000000000000000000AAFF120DD3FF7910CFFFBA0ECEFFDA0ECE
@@ -12373,15 +12291,15 @@ object VisWaptGUI: TVisWaptGUI
   end
   object SrcOrgUnits: TDataSource
     DataSet = DBOrgUnits
-    left = 32
-    top = 384
+    Left = 32
+    Top = 384
   end
   object DBOrgUnits: TBufDataset
     FieldDefs = <>
     Filtered = True
     OnFilterRecord = DBOrgUnitsFilterRecord
-    left = 33
-    top = 448
+    Left = 33
+    Top = 448
     object DBOrgUnitsID: TLongintField
       DisplayWidth = 10
       FieldKind = fkData
@@ -12458,8 +12376,8 @@ object VisWaptGUI: TVisWaptGUI
   end
   object PopupMenuOrgUnits: TPopupMenu
     Images = ActionsImages24
-    left = 200
-    top = 328
+    Left = 200
+    Top = 328
     object MenuItem90: TMenuItem
       Action = ActEditOrgUnitPackage
     end
@@ -12474,16 +12392,16 @@ object VisWaptGUI: TVisWaptGUI
     ParamsJSON = 'Nil'
     Root = 'content'
     Active = True
-    left = 584
-    top = 168
+    Left = 584
+    Top = 168
   end
   object SOWaptServer: TSOConnection
-    left = 584
-    top = 128
+    Left = 584
+    Top = 128
   end
   object PopupHostWUAUpdates: TPopupMenu
-    left = 664
-    top = 280
+    Left = 664
+    Top = 280
     object MenuItem97: TMenuItem
       Action = ActWUAAllowSelectedUpdates
     end
@@ -12510,8 +12428,8 @@ object VisWaptGUI: TVisWaptGUI
     end
   end
   object PopupWUAClassifications: TPopupMenu
-    left = 800
-    top = 296
+    Left = 800
+    Top = 296
     object MenuItem103CheckAll: TMenuItem
       Caption = 'Check all'
       Hint = 'Add the WAPT group packages matching the ADS groups of the machines'
@@ -12525,8 +12443,8 @@ object VisWaptGUI: TVisWaptGUI
   end
   object ReportingActions: TActionList
     Images = ActionsImages24
-    left = 320
-    top = 432
+    Left = 320
+    Top = 432
     object ActReportingQueryNew: TAction
       Caption = 'New query'
       ImageIndex = 6
@@ -12631,8 +12549,8 @@ object VisWaptGUI: TVisWaptGUI
       'wsusupdates'
     )
     SQLDialect = sqlPostgres
-    left = 912
-    top = 112
+    Left = 912
+    Top = 112
   end
   object SynCompletion1: TSynCompletion
     ItemList.Strings = (
@@ -12662,20 +12580,20 @@ object VisWaptGUI: TVisWaptGUI
     ExecCommandID = ecSynCompletionExecute
     Editor = SynEditReportsSQL
     ToggleReplaceWhole = False
-    left = 960
-    top = 112
+    Left = 960
+    Top = 112
   end
   object TimerSearchPackages: TTimer
     Enabled = False
     Interval = 500
     OnTimer = TimerSearchPackagesTimer
-    left = 1240
-    top = 32
+    Left = 1240
+    Top = 32
   end
   object SelfServiceActions: TActionList
     Images = ActionsImages24
-    left = 320
-    top = 246
+    Left = 320
+    Top = 246
     object ActSelfServiceSearchPackage: TAction
       Caption = 'Refresh list'
       OnExecute = ActSelfServiceSearchPackageExecute
@@ -12687,8 +12605,8 @@ object VisWaptGUI: TVisWaptGUI
     end
   end
   object PopupMenuReportingQueries: TPopupMenu
-    left = 192
-    top = 480
+    Left = 192
+    Top = 480
     object MenuItem105: TMenuItem
       Action = ActReportingQueryExecute
     end
@@ -12716,8 +12634,8 @@ object VisWaptGUI: TVisWaptGUI
   end
   object RightsActions: TActionList
     Images = ActionsImages24
-    left = 320
-    top = 488
+    Left = 320
+    Top = 488
     object ActNewAccount: TAction
       Caption = 'New account'
       ImageIndex = 6

@@ -222,6 +222,7 @@ Name=debug
 ScriptName=$[Project-Path]service.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
+Parameters=-l info
 WorkingDir=$[Project-Path]
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log

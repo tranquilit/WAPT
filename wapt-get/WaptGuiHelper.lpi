@@ -29,8 +29,9 @@
       <MajorVersionNr Value="1" />
       <MinorVersionNr Value="7" />
       <RevisionNr Value="4" />
+      <BuildNr Value="6142" />
       <StringTable FileDescription="WAPT GUI Helper for python dialogs" LegalCopyright="Tranquil IT Systems 2012-2019" ProductName="WAPT Enterprise Edition" ProductVersion="1.7.4" />
-    <BuildNr Value="6082" /></VersionInfo>
+    </VersionInfo>
     <BuildModes Count="1">
       <Item1 Default="True" Name="Default" />
     </BuildModes>
@@ -40,6 +41,9 @@
     <RunParams>
       <local>
         <FormatVersion Value="1" />
+        <HostApplicationFilename Value="C:\tranquilit\wapt\waptpython.exe" />
+        <CommandLineParams Value="C:\tranquilit\wapt\wapt-get.py update" />
+        <WorkingDirectory Value="c:\tranquilit\wapt" />
       </local>
     </RunParams>
     <RequiredPackages Count="5">
