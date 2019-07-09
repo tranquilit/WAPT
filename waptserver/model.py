@@ -440,9 +440,50 @@ class ReportingQueries(WaptBaseModel):
     name = CharField(null=False, index=True )
     query = CharField( null=True, max_length=2000 )
     settings = BinaryJSONField(null=True,index=False)
-    def __repr__(self):
-        return '<ReportingQueries uuid=%s name=%s>' % (self.id, self.name)
+    snapshot_period = IntegerField( null=True )  # period in seconds
+    snapshot_name = CharField( null=True )
+    last_snapshot_date = TimestampField(null=True)
+    snapshot_ttl = IntegerField( null=True )     # period in seconds
 
+    def __repr__(self):
+        return '<ReportingQueries id=%s name=%s>' % (self.id, self.name)
+
+    def snapshot(self):
+        if self.snapshot_name:
+            with wapt_db.atomic() as trans:
+                report_date = datetime.datetime.now()
+                data = ReportingQueries.raw(self.query)
+                jsondata = list(data.dicts())
+                s = ReportingSnapshots.create(
+                    report_id = self.id,
+                    report_name = self.snapshot_name,
+                    report_date = report_date,
+                    data = jsondata
+                    )
+                s.save()
+
+                self.last_snapshot_date = report_date
+                self.save()
+
+                if not self.snapshot_ttl.is_null():
+                    ReportingSnapshots.delete().where(
+                        ReportingSnapshots.report_id == self.id,
+                        ReportingSnapshots.report_id <= report_date - datetime.timedelta(seconds=self.snapshot_ttl)
+                        ).execute()
+
+                trans.commit()
+
+
+class ReportingSnapshots(WaptBaseModel):
+    """Reporting queries"""
+    id = PrimaryKeyField(primary_key=True)
+    report_id = ForeignKeyField(ReportingQueries, on_delete='CASCADE', on_update='CASCADE')
+    report_name = CharField()
+    report_date = TimestampField(null=True)
+    data = BinaryJSONField(null=True)
+
+    def __repr__(self):
+        return '<ReportingSnapsphots id=%s name=%s date=%s>' % (self.id, self.report_name,self.report_date)
 
 class Normalization(WaptBaseModel):
     """Normalization table"""
