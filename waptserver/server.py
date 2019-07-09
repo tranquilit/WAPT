@@ -27,19 +27,6 @@ import platform
 
 from waptserver.config import __version__
 
-# monkeypatching for eventlet greenthreads
-from eventlet import monkey_patch
-
-# os=False for windows see https://mail.python.org/pipermail/python-bugs-list/2012-November/186579.html
-if platform.system() == 'Windows':
-    # interactive debug mode
-    if 'rpyc' in sys.modules:
-        monkey_patch(os=False,thread=False)
-    else:
-        monkey_patch(os=False)
-else:
-    monkey_patch()
-
 import time
 import json
 import ujson
@@ -73,9 +60,6 @@ from werkzeug.utils import secure_filename
 
 from flask import request, Flask, Response, send_from_directory, session, g, redirect, url_for, abort, render_template, flash
 
-from flask_socketio import disconnect, send, emit
-# from flask_login import LoginManager,login_required,current_user,UserMixin
-
 from peewee import *
 from playhouse.postgres_ext import *
 
@@ -86,7 +70,7 @@ from waptserver.model import load_db_config
 from waptserver.config import get_http_proxies
 
 from waptpackage import PackageEntry,update_packages,WaptLocalRepo,EWaptBadSignature,EWaptMissingCertificate
-from waptcrypto import SSLCertificate,SSLVerifyException,SSLCertificateSigningRequest,InvalidSignature,SSLPrivateKey
+from waptcrypto import SSLCertificate,SSLVerifyException,SSLCertificateSigningRequest,InvalidSignature,SSLPrivateKey,EWaptCryptoException
 from waptcrypto import sha256_for_file,sha256_for_data
 from waptcrypto import SSLCABundle
 
@@ -98,13 +82,16 @@ from waptserver.utils import get_disk_space,jsondump,mkdir_p
 from waptserver.utils import get_dns_domain,get_wapt_edition,get_wapt_exe_version,wapt_root_dir
 
 from waptserver.common import get_secured_token_generator,get_server_uuid
-from waptserver.common import proxy_host_request,make_response,make_response_from_exception
+from waptserver.common import make_response,make_response_from_exception
 
-from waptserver.app import app,socketio
+from waptserver.app import app
 from waptserver.auth import check_auth,change_admin_password
 from waptserver.decorators import requires_auth,check_auth_is_provided,authenticate,gzipped
 
 import waptserver.config
+
+# socketio is loaded conditionally if iwe are running in app mode, not uwsgi mode
+socketio = None
 
 try:
     from waptenterprise.waptserver import auth_module_ad
@@ -1176,6 +1163,9 @@ def reset_hosts_sid():
     """Launch a separate thread to check all reachable IP and update database with results.
     """
     try:
+        if not socketio:
+            raise Exception('socketio unavailable')
+
         # in case a POST is issued with a selection of uuids to scan.
         if request.json is not None:
             uuids = request.json.get('uuids', None) or None
@@ -1296,6 +1286,8 @@ def waptagent_version():
 @app.route('/api/v3/trigger_cancel_task')
 @requires_auth
 def host_cancel_task():
+    if not socketio:
+        raise Exception('socketio not available')
     return proxy_host_request(request, 'trigger_cancel_task')
 
 
@@ -1881,6 +1873,9 @@ def usage_statistics():
 def host_tasks_status():
     """Proxy the get tasks status action to the client"""
     try:
+        if not socketio:
+            raise Exception('socketio unavailable')
+
         uuid = request.args['uuid']
         client_tasks_timeout = float(request.args.get('client_tasks_timeout', app.conf['client_tasks_timeout']))
         start_time = time.time()
@@ -1929,6 +1924,9 @@ def host_tasks_status():
 def trigger_host_action():
     """Proxy some single shot actions to the client using websockets"""
     try:
+        if not socketio:
+            raise Exception('socketio unavailable')
+
         timeout = float(request.args.get('timeout', app.conf['client_tasks_timeout']))
         action_data = request.get_json()
         if action_data:
@@ -2016,134 +2014,32 @@ def trigger_host_action():
         return make_response_from_exception(e)
 
 
+def setup_logging(loglevel=None):
+    logger =  logging.getLogger()
+    logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s')
+    if loglevel is not None:
+        setloglevel(logger, loglevel)
+    else:
+        setloglevel(logger, app.conf['loglevel'])
 
-# SocketIO Callbacks / handlers
+    for log in ('flask.app','wapt','peewee'):
+        sublogger = logging.getLogger(log)
+        if sublogger:
+            setloglevel(sublogger,logger.level)
 
-@socketio.on('trigger_update_result')
-def on_trigger_update_result(result):
-    """Return from update on client"""
-    logger.debug(u'Trigger Update result : %s (uuid:%s)' % (result, request.args['uuid']))
-    # send to all waptconsole warching this host.
-    socketio.emit(u'trigger_update_result', result, room=request.args['uuid'], include_self=False)
+            if platform.system() == 'Linux':
+                hdlr = logging.handlers.SysLogHandler('/dev/log')
+            else:
+                log_directory = os.path.join(wapt_root_dir, 'log')
+                if not os.path.exists(log_directory):
+                    os.mkdir(log_directory)
+                hdlr = logging.FileHandler(os.path.join(log_directory, 'waptserver.log'))
 
+            hdlr.setFormatter(
+                logging.Formatter('%(name)s %(asctime)s %(levelname)s %(message)s'))
+            sublogger.addHandler(hdlr)
 
-@socketio.on('trigger_upgrade_result')
-def on_trigger_upgrade_result(result):
-    """Return from the launch of upgrade on a client"""
-    logger.debug(u'Trigger Upgrade result : %s (uuid:%s)' % (result, request.args['uuid']))
-    socketio.emit(u'trigger_upgrade_result', result, room=request.args['uuid'], include_self=False)
-
-
-@socketio.on('trigger_install_packages_result')
-def on_trigger_install_packages_result(result):
-    logger.debug(u'Trigger install result : %s (uuid:%s)' % (result, request.args['uuid']))
-    socketio.emit(u'trigger_install_packages_result', result, room=request.args['uuid'], include_self=False)
-
-
-@socketio.on('trigger_remove_packages_result')
-def on_trigger_remove_packages_result(result):
-    logger.debug(u'Trigger remove result : %s (uuid:%s)' % (result, request.args['uuid']))
-    socketio.emit(u'trigger_remove_packages_result', result, room=request.args['uuid'], include_self=False)
-
-
-@socketio.on('reconnect')
-@socketio.on('connect')
-def on_waptclient_connect():
-    try:
-        uuid = request.args.get('uuid', None)
-        if not uuid:
-            raise EWaptForbiddden('Missing source host uuid')
-        allow_unauthenticated_connect = app.conf.get('allow_unauthenticated_connect',False)
-        if not allow_unauthenticated_connect:
-            try:
-                token_gen = get_secured_token_generator()
-                token_data = token_gen.loads(request.args['token'])
-                uuid = token_data.get('uuid', None)
-                if not uuid:
-                    raise EWaptAuthenticationFailure('Bad host UUID')
-                if token_data['server_uuid'] != get_server_uuid():
-                    raise EWaptAuthenticationFailure('Bad server UUID')
-            except Exception as e:
-                raise EWaptAuthenticationFailure(u'SocketIO connection not authorized, invalid token: %s' % e)
-            logger.info(u'Socket.IO connection from wapt client sid %s (uuid: %s fqdn:%s)' % (request.sid,uuid,token_data.get('computer_fqdn')))
-        else:
-            logger.info(u'Unauthenticated Socket.IO connection from wapt client sid %s (uuid: %s)' % (request.sid,uuid))
-
-        # background update of db (we have already authenticated with the token)
-        with wapt_db.atomic() as trans:
-            # stores sid in database
-            hostcount = Hosts.update(
-                server_uuid=get_server_uuid(),
-                listening_protocol='websockets',
-                listening_address=request.sid,
-                listening_timestamp=datetime2isodate(),
-                last_seen_on=datetime2isodate()
-            ).where(Hosts.uuid == uuid).execute()
-            # if not known, reject the connection
-            if hostcount == 0:
-                raise EWaptForbiddden('Host is not registered')
-
-        session['uuid'] = uuid
-        return True
-
-    except Exception as e:
-        if 'uuid' in session:
-            session.pop('uuid')
-        logger.warning(u'SocketIO connection refused for uuid %s, sid %s: %s, instance %s' % (uuid,request.sid,e,app.conf.get('application_root')))
-        disconnect()
-        return False
-
-
-@socketio.on('wapt_pong')
-def on_wapt_pong():
-    uuid = None
-    try:
-        uuid = session.get('uuid')
-        if not uuid:
-            logger.critical(u'SocketIO %s connected but no host uuid in session: asking connected host to reconnect' % (request.sid))
-            emit('wapt_force_reconnect')
-            return False
-        else:
-            logger.debug(u'Socket.IO pong from wapt client sid %s (uuid: %s)' % (request.sid, session.get('uuid',None)))
-            # stores sid in database
-            with wapt_db.atomic() as trans:
-                hostcount = Hosts.update(
-                    server_uuid=get_server_uuid(),
-                    listening_timestamp=datetime2isodate(),
-                    listening_protocol='websockets',
-                    listening_address=request.sid,
-                    reachable='OK',
-                ).where(Hosts.uuid == uuid).execute()
-                # if not known, reject the connection
-                if hostcount == 0:
-                    logger.warning(u'SocketIO sid %s connected but no match in database for uuid %s : asking to reconnect' % (request.sid,uuid))
-                    emit('wapt_force_reconnect')
-                    return False
-            return True
-    except Exception as e:
-        logger.critical(u'SocketIO pong error for uuid %s and sid %s : %s, instance: %s' % (uuid,request.sid,traceback.format_exc(),app.conf.get('application_root')))
-        return False
-
-@socketio.on('disconnect')
-def on_waptclient_disconnect():
-    uuid = session.get('uuid', None)
-    logger.info(u'Socket.IO disconnection from wapt client sid %s (uuid: %s)' % (request.sid, uuid))
-    # clear sid in database
-    with wapt_db.atomic() as trans:
-        Hosts.update(
-            listening_timestamp=datetime2isodate(),
-            listening_protocol=None,
-            listening_address=None,
-            reachable='DISCONNECTED',
-        ).where((Hosts.uuid == uuid) & (Hosts.listening_address == request.sid)).execute()
-    return True
-
-@socketio.on_error()
-def on_wapt_socketio_error(e):
-    logger.critical('Socket IO : An error has occurred for sid %s, uuid:%s : %s' % (request.sid, request.args.get('uuid', None), repr(e)))
-
-# end websockets
-
+# app mode
 if __name__ == '__main__':
     usage = """\
     %prog [-c configfile] [--devel] [action]
@@ -2155,6 +2051,8 @@ if __name__ == '__main__':
       install   : install as a Windows service managed by nssm
 
     """
+    # monkey atch for greenlet and define a socketio on top of app
+    from waptserver.server_socketio import socketio,proxy_host_request
 
     parser = OptionParser(usage=usage, version='waptserver.py ' + __version__)
     parser.add_option(
@@ -2170,11 +2068,20 @@ if __name__ == '__main__':
             help='Enable debug mode (for development only)')
 
     (options, args) = parser.parse_args()
+    setup_logging(options.loglevel)
+    logger.info(u'Using config file %s' % options.configfile)
+
     app.config['CONFIG_FILE'] = options.configfile
     app.conf.update(**waptserver.config.load_config(options.configfile))
     app.config['SECRET_KEY'] = app.conf.get('secret_key')
     app.config['APPLICATION_ROOT'] = app.conf.get('application_root','')
 
+    if wsus:
+        # add socketio targets to trigger wsus actions on hosts
+        from waptenterprise.waptserver import wsus_socketio
+        app.register_blueprint(wsus_socketio.wsus_socketio)
+
+    logger.info(u'Load database configuration')
     load_db_config(app.conf)
     try:
         upgrade_db_structure()
@@ -2182,49 +2089,11 @@ if __name__ == '__main__':
         logger.critical('Unable to upgrade DB structure, init instead: %s' % (repr(e)))
         init_db()
 
-    logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s')
-    setloglevel(logger, app.conf['loglevel'])
-
-    if options.loglevel is not None:
-        setloglevel(logger, options.loglevel)
-    else:
-        setloglevel(logger, app.conf['loglevel'])
-
-    log_directory = os.path.join(wapt_root_dir, 'log')
-    if not os.path.exists(log_directory):
-        os.mkdir(log_directory)
-
-
-    # setup logging
-    for log in ('flask.app','wapt','peewee'):
-        logger = logging.getLogger(log)
-        if logger:
-            setloglevel(logger,options.loglevel)
-
-            if platform.system() == 'Linux':
-                hdlr = logging.handlers.SysLogHandler('/dev/log')
-            else:
-                hdlr = logging.FileHandler(os.path.join(log_directory, 'waptserver.log'))
-
-            hdlr.setFormatter(
-                logging.Formatter('%(name)s %(asctime)s %(levelname)s %(message)s'))
-            logger.addHandler(hdlr)
-
     # check wapt directories
     if not os.path.exists(app.conf['wapt_folder']):
         raise Exception('Folder missing : %s.' % app.conf['wapt_folder'])
     if not os.path.exists(app.conf['wapt_folder'] + '-host'):
         raise Exception('Folder missing : %s-host.' % app.conf['wapt_folder'])
-
-    if args and args[0] == 'doctest':
-        import doctest
-        sys.exit(doctest.testmod())
-
-    if args and args[0] == 'install':
-        # pass optional parameters along with the command
-        raise Exception('Wapt 1.5 serie does not currently support install on Windows')
-        # install_windows_service()
-        # sys.exit(0)
 
     logger.info(u'Waptserver starting...')
     port = app.conf['waptserver_port']
@@ -2248,9 +2117,23 @@ if __name__ == '__main__':
     if wapt_db and wapt_db.obj and not wapt_db.is_closed():
         wapt_db.close()
 
-    if options.devel:
-        socketio.run(app, host='0.0.0.0', log=logger, port=port, debug=options.devel,  log_output = True, use_reloader=options.devel, max_size=app.conf['max_clients'])
+    # initialize socketio layer
+    if socketio:
+        logger.info(u'Starting socketio/wsgi server on port %s' % (port,))
+        socketio.run(app, host='0.0.0.0', log=logger,  port=port, debug=options.devel, log_output = True, use_reloader=options.devel, max_size=app.conf['max_clients'])
     else:
-        socketio.run(app, host='0.0.0.0', log=logger,  port=port, debug=options.devel, log_output = True,  use_reloader=options.devel, max_size=app.conf['max_clients'])
+        # debug wsgi mode mode
+        logger.info(u'Starting wsgi debug server...')
+        app.run(host='0.0.0.0',port=port,debug=options.devel)
+
     logger.info(u'Waptserver stopped')
+else:
+    # initialize WSGI app only
+    # config filename is defined in  uwsgi config file (so refer to himself...)
+    app.config['CONFIG_FILE'] = os.environ['CONFIG_FILE']
+    setup_logging(app.conf.get('loglevel'))
+    app.conf.update(**waptserver.config.load_config(app.config['CONFIG_FILE']))
+    app.config['SECRET_KEY'] = app.conf.get('secret_key')
+    app.config['APPLICATION_ROOT'] = app.conf.get('application_root','')
+    load_db_config(app.conf)
 

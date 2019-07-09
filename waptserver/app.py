@@ -23,7 +23,6 @@
 from __future__ import absolute_import
 from waptserver.config import __version__
 from flask import Flask
-from flask_socketio import SocketIO
 
 from waptserver.config import load_config
 import logging
@@ -42,6 +41,3 @@ class FlaskApp(Flask):
         return super(FlaskApp, self).request_context(environ)
 
 app = FlaskApp(__name__, static_folder='./templates/static')
-# chain SocketIO server
-socketio = SocketIO(app, logger = logger, engineio_logger = logger)
-
