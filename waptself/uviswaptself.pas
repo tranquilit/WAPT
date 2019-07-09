@@ -880,7 +880,8 @@ begin
       MakeFullyVisible();
 
       LoadIcons;
-      FThreadGetAllIcons := TThreadGetAllIcons.Create(@OnUpgradeAllIcons,AllPackages,FlowPackages);
+      FThreadGetAllIcons:=TThreadGetAllIcons.Create(@OnUpgradeAllIcons,AllPackages,FlowPackages);
+      FThreadGetAllIcons.FreeOnTerminate:=true;
 
       // Check running / pending tasks
       CheckTasksThread := TCheckAllTasksThread.Create(@OnCheckTasksThreadNotify);
@@ -1213,7 +1214,12 @@ begin
             if LastEvent.S['event_type']='TASK_FINISH' then
             begin
               if (LastEvent.S['data.classname']='WaptUpdate') then
-                ActUpdatePackagesList.Execute
+              begin
+                ActUpdatePackagesList.Execute;
+                FThreadGetAllIcons.Terminate;
+                FThreadGetAllIcons:=TThreadGetAllIcons.Create(@OnUpgradeAllIcons,AllPackages,FlowPackages);
+                FThreadGetAllIcons.FreeOnTerminate:=true;
+              end
               else
                 TTriggerWaptserviceAction.Create('packages.json?latest=1',@OnUpgradeTriggeredAllPackages,DMWaptSelf.Login,DMWaptSelf.Token,Nil);
               ProgressBarTaskRunning.Style:=pbstNormal;
@@ -1588,7 +1594,7 @@ begin
       end;
     end;
 
-    if (ini.ReadString('global','LastPackageDate','') = '') or (ini.ReadString('global','LastPackageDate','') < (UTF8Encode(ListPackages.O['0'].S['signature_date']))) or (ini.ReadString('global','repositories','')<>iniWaptGet.ReadString('global','repositories','')) then
+    if (ini.ReadString('global','LastPackageDate','') = '')  or (ini.ReadString('global','NumberOfPackages','None')<>IntToStr(ListPackages.AsArray.Length)) or (ini.ReadString('global','LastPackageDate','')<(UTF8Encode(ListPackages.O['0'].S['signature_date']))) or (ini.ReadString('global','repositories','')<>iniWaptGet.ReadString('global','repositories','')) then
     begin
       if not(DirectoryExists(IconsDir)) then
         CreateDir(IconsDir);
@@ -1600,6 +1606,7 @@ begin
         begin
           ini.WriteString('global','LastPackageDate',UTF8Encode(Package.S['signature_date']));
           ini.WriteString('global','repositories',iniWaptGet.ReadString('global','repositories',''));
+          ini.WriteString('global','NumberOfPackages','NotTerminate');
           ini.UpdateFile;
           Exit();
         end;
@@ -1652,6 +1659,7 @@ begin
       end;
     end;
     ini.WriteString('global','LastPackageDate',UTF8Encode(ListPackages.O['0'].S['signature_date']));
+    ini.WriteString('global','NumberOfPackages',IntToStr(ListPackages.AsArray.Length));
     ini.WriteString('global','repositories',iniWaptGet.ReadString('global','repositories',''));
     ini.UpdateFile;
 

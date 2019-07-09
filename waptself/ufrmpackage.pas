@@ -60,7 +60,7 @@ type
   end;
 
 implementation
-uses Graphics,BCTools,JwaTlHelp32,Windows,Dialogs, uWAPTPollThreads, uWaptSelfRes, uVisWaptSelf, LCLTranslator, uDMWaptSelf;
+uses Graphics,BCTools,JwaTlHelp32,Windows,Dialogs, uWAPTPollThreads, uWaptSelfRes, uVisWaptSelf, LCLTranslator, uDMWaptSelf, strutils;
 {$R *.lfm}
 
 { TFrmPackage }
@@ -172,8 +172,11 @@ begin
     FrmDetailsPackageInPanel.LabRepository.AdjustFontForOptimalFill;
     FrmDetailsPackageInPanel.LabSigner.Caption:=UTF8Encode(Package.S['signer']);
     FrmDetailsPackageInPanel.LabSigner.AdjustFontForOptimalFill;
-    FrmDetailsPackageInPanel.LabDependency.Caption:=UTF8Encode(Package.S['depends']);
-    FrmDetailsPackageInPanel.LabDependency.AdjustFontForOptimalFill;
+    FrmDetailsPackageInPanel.LabDependency.Caption:=ReplaceStr(UTF8Encode(Package.S['depends']),',',','+chr(13));
+    if (FrmDetailsPackageInPanel.LabDependency.Caption='') then
+      FrmDetailsPackageInPanel.LabDependency.Hide
+    else
+      FrmDetailsPackageInPanel.LabDependency.Show;
     FrmDetailsPackageInPanel.LabConflicts.Caption:=UTF8Encode(Package.S['conflicts']);
     FrmDetailsPackageInPanel.LabConflicts.AdjustFontForOptimalFill;
     FrmDetailsPackageInPanel.LabSection.Caption:=UTF8Encode(Package.S['section']);
