@@ -10,15 +10,15 @@ object FrmDetailsPackage: TFrmDetailsPackage
   Constraints.MaxWidth = 345
   ParentColor = False
   TabOrder = 0
-  DesignLeft = 650
-  DesignTop = 70
+  DesignLeft = 1230
+  DesignTop = 116
   object PanelDetails: TPanel
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = Owner
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
     Left = 0
-    Height = 802
+    Height = 827
     Top = 0
     Width = 345
     Align = alCustom
@@ -26,7 +26,7 @@ object FrmDetailsPackage: TFrmDetailsPackage
     AutoSize = True
     BevelOuter = bvNone
     BorderStyle = bsSingle
-    ClientHeight = 798
+    ClientHeight = 823
     ClientWidth = 341
     Color = clWhite
     ParentColor = False
@@ -214,7 +214,7 @@ object FrmDetailsPackage: TFrmDetailsPackage
       AnchorSideRight.Side = asrBottom
       Left = 5
       Height = 25
-      Top = 552
+      Top = 577
       Width = 331
       Alignment = taCenter
       Anchors = [akTop, akLeft, akRight]
@@ -315,7 +315,7 @@ object FrmDetailsPackage: TFrmDetailsPackage
       AnchorSideBottom.Side = asrBottom
       Left = 5
       Height = 189
-      Top = 599
+      Top = 624
       Width = 329
       Anchors = [akTop, akLeft, akRight, akBottom]
       BorderSpacing.Left = 5
@@ -679,7 +679,7 @@ object FrmDetailsPackage: TFrmDetailsPackage
       AnchorSideTop.Side = asrBottom
       Left = 5
       Height = 20
-      Top = 438
+      Top = 463
       Width = 69
       BorderSpacing.Left = 5
       BorderSpacing.Top = 5
@@ -697,7 +697,7 @@ object FrmDetailsPackage: TFrmDetailsPackage
       AnchorSideTop.Side = asrBottom
       Left = 5
       Height = 20
-      Top = 463
+      Top = 488
       Width = 63
       BorderSpacing.Left = 5
       BorderSpacing.Top = 5
@@ -715,7 +715,7 @@ object FrmDetailsPackage: TFrmDetailsPackage
       AnchorSideTop.Side = asrBottom
       Left = 5
       Height = 20
-      Top = 488
+      Top = 513
       Width = 110
       BorderSpacing.Left = 5
       BorderSpacing.Top = 5
@@ -728,18 +728,17 @@ object FrmDetailsPackage: TFrmDetailsPackage
       ParentFont = False
     end
     object LabDependency: TLabel
-      AnchorSideLeft.Control = Dependency
-      AnchorSideLeft.Side = asrBottom
-      AnchorSideTop.Control = LabPackageName
+      AnchorSideLeft.Control = PanelDetails
+      AnchorSideTop.Control = Dependency
       AnchorSideTop.Side = asrBottom
       AnchorSideRight.Control = PanelDetails
       AnchorSideRight.Side = asrBottom
-      Left = 107
+      Left = 5
       Height = 20
-      Top = 413
-      Width = 227
+      Top = 438
+      Width = 329
       Anchors = [akTop, akLeft, akRight]
-      BorderSpacing.Left = 4
+      BorderSpacing.Left = 5
       BorderSpacing.Top = 5
       BorderSpacing.Right = 7
       Caption = 'dddd'
@@ -762,7 +761,7 @@ object FrmDetailsPackage: TFrmDetailsPackage
       AnchorSideRight.Side = asrBottom
       Left = 78
       Height = 20
-      Top = 438
+      Top = 463
       Width = 256
       Anchors = [akTop, akLeft, akRight]
       BorderSpacing.Left = 4
@@ -788,7 +787,7 @@ object FrmDetailsPackage: TFrmDetailsPackage
       AnchorSideRight.Side = asrBottom
       Left = 72
       Height = 20
-      Top = 463
+      Top = 488
       Width = 262
       Anchors = [akTop, akLeft, akRight]
       BorderSpacing.Left = 4
@@ -814,7 +813,7 @@ object FrmDetailsPackage: TFrmDetailsPackage
       AnchorSideRight.Side = asrBottom
       Left = 119
       Height = 20
-      Top = 488
+      Top = 513
       Width = 215
       Anchors = [akTop, akLeft, akRight]
       BorderSpacing.Left = 4
@@ -837,7 +836,7 @@ object FrmDetailsPackage: TFrmDetailsPackage
       AnchorSideTop.Side = asrBottom
       Left = 5
       Height = 20
-      Top = 513
+      Top = 538
       Width = 82
       BorderSpacing.Left = 5
       BorderSpacing.Top = 5
@@ -858,7 +857,7 @@ object FrmDetailsPackage: TFrmDetailsPackage
       AnchorSideRight.Side = asrBottom
       Left = 91
       Height = 20
-      Top = 513
+      Top = 538
       Width = 243
       Anchors = [akTop, akLeft, akRight]
       BorderSpacing.Left = 4
@@ -883,7 +882,7 @@ object FrmDetailsPackage: TFrmDetailsPackage
       AnchorSideRight.Side = asrBottom
       Left = 5
       Height = 4
-      Top = 583
+      Top = 608
       Width = 331
       Anchors = [akTop, akLeft, akRight]
       BorderSpacing.Left = 5
@@ -900,7 +899,7 @@ object FrmDetailsPackage: TFrmDetailsPackage
       AnchorSideRight.Side = asrBottom
       Left = 5
       Height = 4
-      Top = 545
+      Top = 570
       Width = 331
       Anchors = [akTop, akLeft, akRight]
       BorderSpacing.Left = 5
