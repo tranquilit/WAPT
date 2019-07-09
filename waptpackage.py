@@ -757,6 +757,21 @@ def control_to_dict(control,int_params=('size','installed_size')):
 
     return result
 
+def is_valid_package_for_filename(name):
+    """Return True if the package name can be used as this for package filename
+    If not, the name has to be hashed to build a filename
+
+    Args:
+        name (unicode): package name to test
+
+    Returns:
+        bool
+    """
+    for c in name:
+        if not c.isalnum() and not c in ['-','_','~','.']:
+            return False
+    return True
+
 
 def make_valid_package_name(name):
     """Return a valid package name from a proposed name.
@@ -1375,23 +1390,19 @@ class PackageEntry(BaseObjectClass):
         if self.section not in ['host','group','unit'] and not (self.package and self.version and self.architecture):
             raise Exception(u'Not enough information to build the package filename for %s (%s)'%(self.package,self.version))
 
+        if not is_valid_package_for_filename(self.package):
+            package_name = hashlib.md5(self.package.encode('utf8')).hexdigest()
+        else:
+            package_name = self.package
+
         if self.section == 'host':
-            return self.package+'.wapt'
-        elif self.section in ('group'):
-            # we don't keep version for group
-            att = u'_'.join([f for f in (self.architecture,self.maturity,'-'.join(ensure_list(self.locale))) if (f and f != 'all')])
-            if att:
-                att = '_'+att
-            return self.package+'_'+self.version+att+'.wapt'
-        elif self.section in ('unit','profile'):
-            # we have to hash the name.
-            return hashlib.md5(self.package).hexdigest()+ u'_'.join([f for f in (self.architecture,self.maturity,u'-'.join(ensure_list(self.locale))) if (f and f != 'all')]) + '.wapt'
+            return package_name+'.wapt'
         else:
             # includes only non empty fields
-            att= u'_'.join([f for f in (self.architecture,self.maturity,'-'.join(ensure_list(self.locale))) if f])
+            att= u'_'.join([f for f in (self.architecture,self.maturity,'-'.join(ensure_list(self.locale))) if (f and f != 'all')])
             if att:
                 att = '_'+att
-            return self.package+'_'+self.version+att+'.wapt'
+            return package_name+'_'+self.version+att+'.wapt'
 
     def make_package_edit_directory(self):
         """Return the standard package directory to edit the package based on current attributes
