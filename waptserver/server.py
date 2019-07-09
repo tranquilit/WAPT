@@ -25,6 +25,22 @@ import os
 import sys
 import platform
 
+if __name__ == '__main__':
+    # as soon as possible, we must monkey patch the library...
+    # monkeypatching for eventlet greenthreads
+    from eventlet import monkey_patch
+    print('monkey patching')
+    # os=False for windows see https://mail.python.org/pipermail/python-bugs-list/2012-November/186579.html
+    if platform.system() == 'Windows':
+        # interactive debug mode on PyScripter hang if tread is patched.
+        if 'rpyc' in sys.modules:
+            monkey_patch(os=False,thread=False)
+        else:
+            monkey_patch(os=False)
+    else:
+        monkey_patch()
+
+
 from waptserver.config import __version__
 
 import time
@@ -2051,9 +2067,6 @@ if __name__ == '__main__':
       install   : install as a Windows service managed by nssm
 
     """
-    # monkey atch for greenlet and define a socketio on top of app
-    from waptserver.server_socketio import socketio,proxy_host_request
-
     parser = OptionParser(usage=usage, version='waptserver.py ' + __version__)
     parser.add_option(
         '-c',
@@ -2075,6 +2088,9 @@ if __name__ == '__main__':
     app.conf.update(**waptserver.config.load_config(options.configfile))
     app.config['SECRET_KEY'] = app.conf.get('secret_key')
     app.config['APPLICATION_ROOT'] = app.conf.get('application_root','')
+
+    # monkey atch for greenlet and define a socketio on top of app
+    from waptserver.server_socketio import socketio,proxy_host_request
 
     if wsus:
         # add socketio targets to trigger wsus actions on hosts

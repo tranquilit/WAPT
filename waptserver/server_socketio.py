@@ -31,18 +31,6 @@ import time
 import json
 import traceback
 
-# monkeypatching for eventlet greenthreads
-from eventlet import monkey_patch
-
-# os=False for windows see https://mail.python.org/pipermail/python-bugs-list/2012-November/186579.html
-if platform.system() == 'Windows':
-    # interactive debug mode on PyScripter hang if tread is patched.
-    if 'rpyc' in sys.modules:
-        monkey_patch(os=False,thread=False)
-    else:
-        monkey_patch(os=False)
-else:
-    monkey_patch()
 
 from waptserver.config import __version__
 from waptserver.config import DEFAULT_CONFIG_FILE,rewrite_config_item
