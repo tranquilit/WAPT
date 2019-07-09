@@ -365,12 +365,6 @@ begin
       CanClose:= AllowCancelUpgrade and ((Running=Nil) or (MessageDlg(rsConfirmCancelTask,Format(rsConfirmCancelRunningTask,[Running.S['description']]),
           mtConfirmation, [mbYes, mbNo, mbCancel],0) = mrYes));
 
-      if CanClose then
-      begin
-        if Running<>Nil then
-          WAPTLocalJsonGet('cancel_running_task.json');
-        WAPTLocalJsonGet('cancel_all_tasks.json')
-      end
     end
     else
       CanClose := True;
