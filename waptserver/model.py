@@ -1759,7 +1759,7 @@ def upgrade_db_structure():
             v.save()
 
     next_version = '1.7.4'
-    if get_db_version() <= next_version:
+    if get_db_version() < next_version:
         with wapt_db.atomic():
             logger.info("Migrating from %s to %s" % (get_db_version(), next_version))
             opes = []
@@ -1778,6 +1778,19 @@ def upgrade_db_structure():
             if not 'hosts_server_uuid_listening' in [i.name for i in wapt_db.get_indexes('hosts')]:
                 wapt_db.execute_sql('create index hosts_server_uuid_listening on hosts(server_uuid,listening_address)')
 
+            migrate(*opes)
+            (v, created) = ServerAttribs.get_or_create(key='db_version')
+            v.value = next_version
+            v.save()
+
+    next_version = '1.7.5'
+    if get_db_version() <= next_version:
+        with wapt_db.atomic():
+            logger.info("Migrating from %s to %s" % (get_db_version(), next_version))
+            opes = []
+
+            ReportingSnapshots.create_table(fail_silently=True);
+
             columns = [c.name for c in wapt_db.get_columns('reportingqueries')]
             if not 'snapshot_period' in columns:
                 opes.append(migrator.add_column(Packages._meta.name, 'snapshot_period',ReportingQueries.snapshot_period))
@@ -1792,6 +1805,7 @@ def upgrade_db_structure():
             (v, created) = ServerAttribs.get_or_create(key='db_version')
             v.value = next_version
             v.save()
+
 
 if __name__ == '__main__':
     if platform.system() != 'Windows' and getpass.getuser() != 'wapt':
