@@ -1,8 +1,8 @@
 Installation serveur Wapt avec service uWsgi séparé multithread
 
-* Installer tis-waptserver build >= 6150
+# Installer tis-waptserver build >= 6150
 
-* apt-get install uwsgi uwsgi-plugin-python
+apt-get install uwsgi uwsgi-plugin-python
 
 
 # configuration ini pour uwsgi :
@@ -45,27 +45,24 @@ uwsgi --ini /opt/wapt/conf/waptserver.ini
 
 # fichier conf variable ennvironnement nginx -> uwsgi 
 
-vi /opt/wapt/conf/uwsgi_params
+cat > /opt/wapt/conf/uwsgi_params <<EOF
+uwsgi_param  QUERY_STRING       \$query_string;
+uwsgi_param  REQUEST_METHOD     \$request_method;
+uwsgi_param  CONTENT_TYPE       \$content_type;
+uwsgi_param  CONTENT_LENGTH     \$content_length;
 
----
-uwsgi_param  QUERY_STRING       $query_string;
-uwsgi_param  REQUEST_METHOD     $request_method;
-uwsgi_param  CONTENT_TYPE       $content_type;
-uwsgi_param  CONTENT_LENGTH     $content_length;
+uwsgi_param  REQUEST_URI        \$request_uri;
+uwsgi_param  PATH_INFO          \$document_uri;
+uwsgi_param  DOCUMENT_ROOT      \$document_root;
+uwsgi_param  SERVER_PROTOCOL    \$server_protocol;
+uwsgi_param  REQUEST_SCHEME     \$scheme;
+uwsgi_param  HTTPS              \$https if_not_empty;
 
-uwsgi_param  REQUEST_URI        $request_uri;
-uwsgi_param  PATH_INFO          $document_uri;
-uwsgi_param  DOCUMENT_ROOT      $document_root;
-uwsgi_param  SERVER_PROTOCOL    $server_protocol;
-uwsgi_param  REQUEST_SCHEME     $scheme;
-uwsgi_param  HTTPS              $https if_not_empty;
-
-uwsgi_param  REMOTE_ADDR        $remote_addr;
-uwsgi_param  REMOTE_PORT        $remote_port;
-uwsgi_param  SERVER_PORT        $server_port;
-uwsgi_param  SERVER_NAME        $server_name;
-
----
+uwsgi_param  REMOTE_ADDR        \$remote_addr;
+uwsgi_param  REMOTE_PORT        \$remote_port;
+uwsgi_param  SERVER_PORT        \$server_port;
+uwsgi_param  SERVER_NAME        \$server_name;
+EOF
 
 # modif config nginx pour séparer les flux 
 
