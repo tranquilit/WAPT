@@ -402,7 +402,7 @@ begin
     ini.Free;
   end;
 
-  WaitingCountDown:=False;
+  WaitingCountDown:=True;
 
 end;
 
@@ -530,12 +530,15 @@ begin
         CountDown:=InitialCountDown;
         AutoUpgradeTime := Now + InitialCountDown / 3600.0 /24.0;
         WaitingCountDown:=True;
-      end;
+      end
+      else
+        WaitingCountDown:=False;
     end
     else
     begin
       CountDown:=0;
       AutoUpgradeTime := Now;
+      WaitingCountDown := True;
     end;
 
     // waptservice is running so start the count down
@@ -574,11 +577,7 @@ begin
     WAPTServiceRunning := (Sender as TCheckTasksThread).WaptServiceRunning;
 
     if not WorkInProgress and not WaitingCountDown then
-    begin
-      //MemoLog.Items.Add((Sender as TCheckTasksThread).Message);
-      MemoLog.Items.Text := (Sender as TCheckTasksThread).Message;
       Close;
-    end;
 
   except
     running := Nil;
