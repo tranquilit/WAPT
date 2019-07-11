@@ -11,6 +11,9 @@ gid=www-data
 plugins=python
 chmod-socket = 664
 env = CONFIG_FILE=/opt/wapt/conf/waptserver.ini
+logto = /var/log/uwsgi/waptserver.log
+log-5xx = true
+disable-logging = true
 
 [options]
 wapt_folder=/var/www/{{application_root}}/wapt
