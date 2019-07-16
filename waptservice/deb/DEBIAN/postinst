@@ -1,0 +1,60 @@
+#!/usr/bin/python
+
+import subprocess
+import os
+import shutil
+import sys
+import time
+
+
+def run(*args, **kwargs):
+    return subprocess.check_output(*args, shell=True, **kwargs)
+
+run('systemctl enable  waptagent')
+
+print("Setting up pid and log files")
+run('touch /var/log/waptagent.log')
+run('touch /var/run/waptagent.pid')
+run('chown wapt:root /var/log/waptagent.log')
+run('chmod 640 /var/log/waptagent.log')
+
+# minimal .profile script to setup python path
+open('/opt/wapt/.profile','w').write("""#
+export PYTHONHOME=/opt/wapt
+export PYTHONPATH=/opt/wapt
+export PATH=/opt/wapt/bin:$PATH
+""")
+
+#run('rm -f /opt/wapt/*.pyc')
+#run('rm -f /opt/wapt/waptserver/*.pyc')
+
+# relocating waptserver.ini config file to the new location
+
+NEW_CFG_PATH = '/opt/wapt/conf/waptagent.ini'
+
+print("Tightening up permissions")
+run('find /opt/wapt -type f -exec chmod 644 {} +')
+run('find /opt/wapt -type d ! -name conf ! -name log -exec chmod 755 {} +')
+run('find /opt/wapt -type d ! -name conf ! -name log -exec chown root:root {} +')
+run('chown -R wapt:root /opt/wapt/conf')
+run('chown -R wapt:root /opt/wapt/db')
+run('chmod 750 /opt/wapt/conf')
+run('chown -R wapt:root /opt/wapt/log')
+run('chmod 755 /opt/wapt/log')
+run('chmod 755 /opt/wapt/bin/*')
+
+os.chmod('/opt/wapt/runwaptagent.sh',0o755)
+os.chmod('/usr/bin/waptpython',0o755)
+
+try:
+    print "Restarting syslog-ng"
+    run('systemctl restart syslog-ng')
+except subprocess.CalledProcessError:
+    print "Restarting rsyslog"
+    run('systemctl restart rsyslog')
+
+# restart server if conf file is there and if it was already running
+if os.path.exists('/opt/wapt/conf/waptagent.ini'):
+    print("Restarting Agent")
+    run('systemctl restart waptagent')
+    run('systemctl restart waptagent')

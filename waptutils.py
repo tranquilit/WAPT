@@ -51,9 +51,16 @@ import traceback
 import imp
 import shutil
 import threading
+import netifaces
+import socket
+import psutil
 from requests.adapters import HTTPAdapter
 from urllib3.util.ssl_ import create_urllib3_context
 from urllib3.exceptions import InsecureRequestWarning
+
+# some shortcuts
+isfile=os.path.isfile
+isdir=os.path.isdir
 
 if hasattr(sys.stdout,'name') and sys.stdout.name == '<stdout>':
     # not in pyscripter debugger
@@ -65,6 +72,23 @@ if hasattr(sys.stdout,'name') and sys.stdout.name == '<stdout>':
 else:
     ProgressBar = None
 
+def networking():
+    """return a list of (iface,mac,{addr,broadcast,netmask})
+    """
+    ifaces = netifaces.interfaces()
+    local_ips = socket.gethostbyname_ex(socket.gethostname())[2]
+
+    res = []
+    for i in ifaces:
+        params = netifaces.ifaddresses(i)
+        if netifaces.AF_LINK in params and params[netifaces.AF_LINK][0]['addr'] and not params[netifaces.AF_LINK][0]['addr'].startswith('00:00:00'):
+            iface = {'iface':i,'mac':params
+            [netifaces.AF_LINK][0]['addr']}
+            if netifaces.AF_INET in params:
+                iface.update(params[netifaces.AF_INET][0])
+                iface['connected'] = 'addr' in iface and iface['addr'] in local_ips
+            res.append( iface )
+    return res
 
 def setloglevel(logger,loglevel):
     """set loglevel as string"""
@@ -1502,7 +1526,36 @@ def get_time_delta(schedule,default_unit='m'):
         timedelta = None
     return timedelta
 
+def makepath(*p):
+    r"""Create a path given the components passed, but with saner defaults
+    than os.path.join.
 
+    In particular, removes ending path separators (backslashes) from components
+
+    >>> makepath('c:',programfiles)
+    'C:\\Program Files'
+    """
+    parts = []
+    for part in p:
+        # workaround for bad designed functions
+        if hasattr(part,'__call__'):
+            part = part()
+        part = part.lstrip(os.path.sep)
+        if part.endswith(':'):
+            part += os.path.sep
+        parts.append(part)
+    return os.path.join(*parts)
+
+def killtree(pid, including_parent=True):
+    try:
+        parent = psutil.Process(pid)
+        if parent:
+            for child in parent.children(recursive=True):
+                child.kill()
+            if including_parent:
+                parent.kill()
+    except psutil.NoSuchProcess as e:
+        pass
 
 if __name__ == '__main__':
     import doctest

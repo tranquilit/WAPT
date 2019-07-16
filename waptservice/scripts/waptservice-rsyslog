@@ -1,0 +1,4 @@
+if $programname == 'waptservice' then {
+            /var/log/waptservice.log
+                        ~
+}

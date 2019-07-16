@@ -55,9 +55,12 @@ from tempfile import mkdtemp
 
 from shutil import rmtree
 
-from setuphelpers import registered_organization,makepath,filecopyto,run
+from setuphelpers import makepath,filecopyto,run
 from setuphelpers import mkdirs,isfile,remove_file,get_file_properties,messagebox
 from setuphelpers import uac_enabled,inifile_readstring,shell_launch
+
+if sys.platform == 'win32':
+    from setuphelpers import registered_organization
 
 from waptutils import ensure_list,ensure_unicode,Version
 from waptcrypto import check_key_password,SSLCABundle,SSLCertificate,SSLPrivateKey
@@ -100,7 +103,7 @@ def create_wapt_setup(wapt,default_public_cert='',default_repo_url='',default_wa
     >>> create_wapt_setup(wapt,r'C:\private\ht.crt',destination='c:\\tranquilit\\wapt\\waptsetup')
     u'c:\\tranquilit\\wapt\\waptsetup\\waptsetup.exe'
     """
-    if not company:
+    if not company and sys.platform == 'win32':
         company = registered_organization()
     outputfile = ''
     iss_template = makepath(wapt.wapt_base_dir,'waptsetup','waptsetup.iss')

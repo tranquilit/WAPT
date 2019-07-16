@@ -113,3 +113,12 @@ waptsetup/waptsetuputil/lib
 /waptserver/pgsql*
 /waptself/*.exe
 /waptself/lib
+/waptserver/repository/waptwua/wsusscn2.cab
+/waptstudio/lib/i386-win32/dmwaptpython.lfm
+/waptstudio/lib/i386-win32/uvisloading.lfm
+/waptstudio/lib/i386-win32/uvisloading.rsj
+/waptstudio/lib/i386-win32/uvisprivatekeyauth.lfm
+/waptstudio/lib/i386-win32/uviswaptstudio.lfm
+/waptstudio/lib/i386-win32/uwaptconsoleres.rsj
+/waptstudio/lib/i386-win32/waptstudio.or
+/waptstudio/waptstudio.exe

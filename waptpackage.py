@@ -1425,6 +1425,14 @@ class PackageEntry(BaseObjectClass):
         """
         return u"%s(=%s)" % (self.package,self.version)
 
+    def get_software_version(self):
+        """Return the software version only (without the build number of the package)
+
+        Returns:
+            str: "software_version"
+        """
+        return self.version.split('-',1)[0]
+
     @property
     def download_url(self):
         """Calculate and return the download URL for this entry

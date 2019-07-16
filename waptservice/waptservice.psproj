@@ -85,11 +85,11 @@ Name=waptservice
 
 [Project\ChildNodes\Node0\ChildNodes\Node3\ChildNodes\Node0\ChildNodes\Node0]
 ClassName=TProjectFileNode
-FileName=C:\tranquilit\wapt\waptenterprise\waptservice\__init__.py
+FileName=$[Project-Path]..\waptenterprise\waptservice\__init__.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node3\ChildNodes\Node0\ChildNodes\Node1]
 ClassName=TProjectFileNode
-FileName=C:\tranquilit\wapt\waptenterprise\waptservice\enterprise.py
+FileName=$[Project-Path]..\waptenterprise\waptservice\enterprise.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node3\ChildNodes\Node0\ChildNodes]
 Count=2
@@ -100,34 +100,34 @@ Name=waptwua
 
 [Project\ChildNodes\Node0\ChildNodes\Node3\ChildNodes\Node1\ChildNodes\Node0]
 ClassName=TProjectFileNode
-FileName=C:\tranquilit\wapt\waptenterprise\waptwua\__init__.py
+FileName=$[Project-Path]..\waptenterprise\waptwua\__init__.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node3\ChildNodes\Node1\ChildNodes\Node1]
 ClassName=TProjectFileNode
-FileName=C:\tranquilit\wapt\waptenterprise\waptwua\client.py
+FileName=$[Project-Path]..\waptenterprise\waptwua\client.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node3\ChildNodes\Node1\ChildNodes\Node2]
 ClassName=TProjectFileNode
-FileName=C:\tranquilit\wapt\waptenterprise\waptwua\constants.py
+FileName=$[Project-Path]..\waptenterprise\waptwua\constants.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node3\ChildNodes\Node1\ChildNodes\Node3]
 ClassName=TProjectFileNode
-FileName=C:\tranquilit\wapt\waptenterprise\waptwua\fixwua.py
+FileName=$[Project-Path]..\waptenterprise\waptwua\fixwua.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node3\ChildNodes\Node1\ChildNodes\Node4]
 ClassName=TProjectFileNode
-FileName=C:\tranquilit\wapt\waptenterprise\waptwua\utils.py
+FileName=$[Project-Path]..\waptenterprise\waptwua\utils.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node3\ChildNodes\Node1\ChildNodes]
 Count=5
 
 [Project\ChildNodes\Node0\ChildNodes\Node3\ChildNodes\Node2]
 ClassName=TProjectFileNode
-FileName=C:\tranquilit\wapt\waptenterprise\__init__.py
+FileName=$[Project-Path]..\waptenterprise\__init__.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node3\ChildNodes\Node3]
 ClassName=TProjectFileNode
-FileName=C:\tranquilit\wapt\waptenterprise\licencing.py
+FileName=$[Project-Path]..\waptenterprise\licencing.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node3\ChildNodes]
 Count=4
@@ -170,46 +170,54 @@ FileName=$[Project-Path]..\setuphelpers.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node13]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]..\waptcrypto.py
+FileName=$[Project-Path]..\setuphelpers_linux.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node14]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]..\waptdevutils.py
+FileName=$[Project-Path]..\setuphelpers_windows.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node15]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]..\wapt-get.py
+FileName=$[Project-Path]..\waptcrypto.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node16]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]..\waptpackage.py
+FileName=$[Project-Path]..\waptdevutils.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node17]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]..\wapt-scanpackages.py
+FileName=$[Project-Path]..\wapt-get.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node18]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]waptservice_common.py
+FileName=$[Project-Path]..\waptpackage.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node19]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]waptservice_socketio.py
+FileName=$[Project-Path]..\wapt-scanpackages.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node20]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]..\wapt-signpackages.py
+FileName=$[Project-Path]waptservice_common.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node21]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]..\waptutils.py
+FileName=$[Project-Path]waptservice_socketio.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node22]
+ClassName=TProjectFileNode
+FileName=$[Project-Path]..\wapt-signpackages.py
+
+[Project\ChildNodes\Node0\ChildNodes\Node23]
+ClassName=TProjectFileNode
+FileName=$[Project-Path]..\waptutils.py
+
+[Project\ChildNodes\Node0\ChildNodes\Node24]
 ClassName=TProjectFileNode
 FileName=$[Project-Path]..\windnsquery.py
 
 [Project\ChildNodes\Node0\ChildNodes]
-Count=23
+Count=25
 
 [Project\ChildNodes\Node1]
 ClassName=TProjectRunConfiguationsNode
@@ -222,7 +230,6 @@ Name=debug
 ScriptName=$[Project-Path]service.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
-Parameters=-l info
 WorkingDir=$[Project-Path]
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log
@@ -277,8 +284,30 @@ ApplicationName=$[PythonExe-Short]
 Parameters=$[ActiveScript-Short]
 WorkingDirectory=$[ActiveScript-Dir]
 
+[Project\ChildNodes\Node1\ChildNodes\Node3]
+ClassName=TProjectRunConfiguationNode
+Name=wapt-get register on remote
+
+[Project\ChildNodes\Node1\ChildNodes\Node3\RunConfig]
+ScriptName=ssh://192.168.154.201//root/wapt/wapt-get.py
+Description=wapt-get register
+EngineType=peSSH
+ReinitializeBeforeRun=TRUE
+Parameters=register -ldebug
+WorkingDir=$[ActiveScript-Dir]
+WriteOutputToFile=FALSE
+OutputFileName=$[ActiveScript-NoExt].log
+AppendToFile=FALSE
+
+[Project\ChildNodes\Node1\ChildNodes\Node3\RunConfig\ExternalRun]
+Caption=External Run
+Description=Run script using an external Python Interpreter
+ApplicationName=$[PythonExe-Short]
+Parameters=$[ActiveScript-Short]
+WorkingDirectory=$[ActiveScript-Dir]
+
 [Project\ChildNodes\Node1\ChildNodes]
-Count=3
+Count=4
 
 [Project\ChildNodes]
 Count=2

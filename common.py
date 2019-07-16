@@ -81,32 +81,30 @@ import shutil
 import urlparse
 import zipfile
 
-# Windows stuff
-import windnsquery
-import win32api
-import ntsecuritycon
-import win32security
-import win32net
-import pywintypes
-from ntsecuritycon import DOMAIN_GROUP_RID_ADMINS,DOMAIN_GROUP_RID_USERS
-
-import ctypes
-from ctypes import wintypes
-
-logger = logging.getLogger()
-
-try:
-    import requests_kerberos
-    has_kerberos = True
-except:
-    has_kerberos = False
-
-from _winreg import HKEY_LOCAL_MACHINE,EnumKey,OpenKey,QueryValueEx,\
+# conditionnal imports for windows or linux
+if sys.platform=='win32':
+    import windnsquery
+    import win32api
+    import ntsecuritycon
+    import win32security
+    import win32net
+    import pywintypes
+	import pythoncom
+    from ntsecuritycon import DOMAIN_GROUP_RID_ADMINS,DOMAIN_GROUP_RID_USERS
+    from ctypes import wintypes
+    from _winreg import HKEY_LOCAL_MACHINE,EnumKey,OpenKey,QueryValueEx,\
     EnableReflectionKey,DisableReflectionKey,QueryReflectionKey,\
     QueryInfoKey,DeleteValue,DeleteKey,\
     KEY_READ,KEY_WOW64_32KEY,KEY_WOW64_64KEY,KEY_ALL_ACCESS
+    try:
+        import requests_kerberos
+        has_kerberos = True
+    except:
+        has_kerberos = False
+elif sys.platform.startswith('linux'):
+    pass
 
-# end of windows stuff
+logger = logging.getLogger()
 
 from waptutils import BaseObjectClass,ensure_list,ensure_unicode,default_http_headers,get_time_delta
 from waptutils import httpdatetime2isodate,datetime2isodate,FileChunks,jsondump,ZipFile,LogOutput,isodate2datetime
@@ -1534,7 +1532,7 @@ class WaptServer(BaseObjectClass):
         if dnsdomain:
             self.dnsdomain = dnsdomain
         else:
-            self.dnsdomain = setuphelpers.get_domain_fromregistry()
+            self.dnsdomain = setuphelpers.get_domain()
 
     def get_computer_principal(self):
         try:
@@ -2741,8 +2739,8 @@ class Wapt(BaseObjectClass):
 
         self.progress_hook = None
 
-        import pythoncom
-        pythoncom.CoInitialize()
+        if sys.platform=='win32':
+            pythoncom.CoInitialize()
 
 
     @property
@@ -3300,6 +3298,8 @@ class Wapt(BaseObjectClass):
         """Get host org unit DN from wapt-get.ini [global] host_organizational_unit_dn if defined
         or from registry as supplied by AD / GPO process
         """
+        if sys.platform.startswith('linux'):
+            return None
 
         host_organizational_unit_dn = self.read_param('host_organizational_unit_dn',None)
         if host_organizational_unit_dn:
@@ -3663,7 +3663,8 @@ class Wapt(BaseObjectClass):
         logger.info(u"Register start of install %s as user %s to local DB with params %s" % (ensure_unicode(fname), setuphelpers.get_current_user(), params_dict))
         logger.info(u"Interactive user:%s, usergroups %s" % (self.user,self.usergroups))
 
-        previous_uninstall = self.registry_uninstall_snapshot()
+        if sys.platform == 'win32':
+            previous_uninstall = self.registry_uninstall_snapshot()
 
         try:
             if not self.cabundle:
@@ -3703,18 +3704,24 @@ class Wapt(BaseObjectClass):
 
                 # check if there is enough space for final install
                 # TODO : space for the temporary unzip ?
-                free_disk_space = setuphelpers.get_disk_free_space(setuphelpers.programfiles)
-                if entry.installed_size and free_disk_space < entry.installed_size:
-                    raise EWaptDiskSpace('This package requires at least %s free space. The "Program File"s drive has only %s free space' %
-                        (format_bytes(entry.installed_size),format_bytes(free_disk_space)))
 
-                if entry.target_os and entry.target_os != 'windows':
-                    raise EWaptBadTargetOS('This package is designed for OS %s' % entry.target_os)
-                os_version = setuphelpers.windows_version()
-                if entry.min_os_version and os_version < Version(entry.min_os_version):
-                    raise EWaptBadTargetOS('This package requires that OS be at least %s' % entry.min_os_version)
-                if entry.max_os_version and os_version > Version(entry.max_os_version):
-                    raise EWaptBadTargetOS('This package requires that OS be at most %s' % entry.min_os_version)
+                #LINUXTODO
+                ###################################################################
+                if sys.platform == 'win32':
+                    free_disk_space = setuphelpers.get_disk_free_space(setuphelpers.programfiles)
+                    if entry.installed_size and free_disk_space < entry.installed_size:
+                        raise EWaptDiskSpace('This package requires at least %s free space. The "Program File"s drive has only %s free space' %
+                            (format_bytes(entry.installed_size),format_bytes(free_disk_space)))
+
+                    if entry.target_os and entry.target_os != 'windows':
+                        raise EWaptBadTargetOS('This package is designed for OS %s' % entry.target_os)
+
+                    os_version = setuphelpers.windows_version()
+                    if entry.min_os_version and os_version < Version(entry.min_os_version):
+                        raise EWaptBadTargetOS('This package requires that OS be at least %s' % entry.min_os_version)
+                    if entry.max_os_version and os_version > Version(entry.max_os_version):
+                        raise EWaptBadTargetOS('This package requires that OS be at most %s' % entry.min_os_version)
+                ###################################################################
 
                 # don't check in developper mode
                 if os.path.isfile(fname):
@@ -3802,8 +3809,10 @@ class Wapt(BaseObjectClass):
                                 return func(*args,**kwargs)
                             return new_func
 
-                        setattr(setup,'install_msi_if_needed',with_install_context(setuphelpers.install_msi_if_needed,entry.impacted_process,setup.uninstallkey,force,self.pidlist))
-                        setattr(setup,'install_exe_if_needed',with_install_context(setuphelpers.install_exe_if_needed,entry.impacted_process,setup.uninstallkey,force,self.pidlist))
+                        if sys.platform == 'win32':
+                            setattr(setup,'install_msi_if_needed',with_install_context(setuphelpers.install_msi_if_needed,entry.impacted_process,setup.uninstallkey,force,self.pidlist))
+                            setattr(setup,'install_exe_if_needed',with_install_context(setuphelpers.install_exe_if_needed,entry.impacted_process,setup.uninstallkey,force,self.pidlist))
+
                         setattr(setup,'WAPT',self)
                         setattr(setup,'control',entry)
                         setattr(setup,'language',self.language)
@@ -3856,24 +3865,29 @@ class Wapt(BaseObjectClass):
                         else:
                             dblogger.exit_status = exitstatus
 
-                        # get uninstallkey from setup module (string or array of strings)
-                        if hasattr(setup,'uninstallkey'):
-                            new_uninstall_key = ensure_list(setup.uninstallkey)[:]
-                            # check that uninstallkey(s) are in registry
-                            if not self.dry_run:
-                                key_errors = []
-                                for key in new_uninstall_key:
-                                    if not setuphelpers.uninstall_key_exists(uninstallkey=key):
-                                        key_errors.append(key)
-                                if key_errors:
-                                    if len(key_errors)>1:
-                                        raise EWaptException(u'The uninstall keys: \n%s\n have not been found in system registry after softwares installation.' % ('\n'.join(key_errors),))
-                                    else:
-                                        raise EWaptException(u'The uninstall key: %s has not been found in system registry after software installation.' % (' '.join(key_errors),))
+
+                        if sys.platform == 'win32':
+                            # get uninstallkey from setup module (string or array of strings)
+                            if hasattr(setup,'uninstallkey'):
+                                new_uninstall_key = ensure_list(setup.uninstallkey)[:]
+                                # check that uninstallkey(s) are in registry
+                                if not self.dry_run:
+                                    key_errors = []
+                                    for key in new_uninstall_key:
+                                        if not setuphelpers.uninstall_key_exists(uninstallkey=key):
+                                            key_errors.append(key)
+                                    if key_errors:
+                                        if len(key_errors)>1:
+                                            raise EWaptException(u'The uninstall keys: \n%s\n have not been found in system registry after softwares installation.' % ('\n'.join(key_errors),))
+                                        else:
+                                            raise EWaptException(u'The uninstall key: %s has not been found in system registry after software installation.' % (' '.join(key_errors),))
 
                         else:
-                            new_uninstall = self.registry_uninstall_snapshot()
-                            new_uninstall_key = [ k for k in new_uninstall if not k in previous_uninstall]
+                            if sys.platform == 'win32':
+                                new_uninstall = self.registry_uninstall_snapshot()
+                                new_uninstall_key = [ k for k in new_uninstall if not k in previous_uninstall]
+                            else:
+                                new_uninstall_key = []
 
                         # get uninstallstring from setup module (string or array of strings)
                         if hasattr(setup,'uninstallstring'):
@@ -4140,7 +4154,9 @@ class Wapt(BaseObjectClass):
 
         # Check if updated
         if force or repo.repo_url != last_url or repo.need_update(last_modified):
-            os_version = setuphelpers.windows_version()
+            #TODOLINUX
+            if sys.platform == 'win32':
+                os_version = setuphelpers.windows_version()
             old_status = repo.invalidate_packages_cache()
             discarded = []
 
@@ -4197,7 +4213,7 @@ class Wapt(BaseObjectClass):
             return (self.waptdb.get_param('last-%s' % repo.repo_url[:59]),self.waptdb.get_param('next-update-%s' % repo.name,'9999-12-31'))
 
     def get_host_architecture(self):
-        if setuphelpers.iswin64():
+        if setuphelpers.is64():
             return 'x64'
         else:
             return 'x86'
@@ -4206,7 +4222,10 @@ class Wapt(BaseObjectClass):
         return ensure_list(self.locales)
 
     def get_host_site(self):
-        return setuphelpers.registry_readstring(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows\CurrentVersion\Group Policy\State\Machine','Site-Name')
+        if sys.platform == 'win32':
+            return setuphelpers.registry_readstring(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows\CurrentVersion\Group Policy\State\Machine','Site-Name')
+        else:
+            return 'TODO'
 
     def get_host_certificate_fingerprint(self):
         result = self.read_param('host_certificate_fingerprint')
@@ -4233,8 +4252,8 @@ class Wapt(BaseObjectClass):
         host_capa = HostCapabilities(
             uuid=self.host_uuid,
             language=self.language,
-            os='windows',
-            os_version=setuphelpers.windows_version(),
+            os=sys.platform,
+            os_version=setuphelpers.get_os_version(),
             architecture=self.get_host_architecture(),
             dn=self.host_dn,
             fqdn=setuphelpers.get_hostname(),
@@ -5464,14 +5483,23 @@ class Wapt(BaseObjectClass):
             SSLCertificateSigningRequest: host public certificate sigbinbg request.
         """
         host_key = self.get_host_key()
-        csr = host_key.build_csr(
-                cn = self.host_uuid,
-                dnsname = setuphelpers.get_hostname(),
-                organization = setuphelpers.registered_organization() or None,
-                is_ca=False,
-                is_code_signing=False,
-                is_client_auth=True,
-                key_usages=['digital_signature','content_commitment','data_encipherment','key_encipherment'])
+        if sys.platform == 'win32':
+            csr = host_key.build_csr(
+                    cn = self.host_uuid,
+                    dnsname = setuphelpers.get_hostname(),
+                    organization = setuphelpers.registered_organization() or None,
+                    is_ca=False,
+                    is_code_signing=False,
+                    is_client_auth=True,
+                    key_usages=['digital_signature','content_commitment','data_encipherment','key_encipherment'])
+        else:
+            csr = host_key.build_csr(
+                    cn = self.host_uuid,
+                    dnsname = setuphelpers.get_hostname(),
+                    is_ca=False,
+                    is_code_signing=False,
+                    is_client_auth=True,
+                    key_usages=['digital_signature','content_commitment','data_encipherment','key_encipherment'])
         return csr
 
     def create_or_update_host_certificate(self,force_recreate=False):
@@ -5495,15 +5523,24 @@ class Wapt(BaseObjectClass):
             self._host_key = self.get_host_key()
             if not os.path.isdir(self.private_dir):
                 os.makedirs(self.private_dir)
-
-            crt = self._host_key.build_sign_certificate(
-                ca_signing_key=None,
-                ca_signing_cert=None,
-                cn = self.host_uuid,
-                dnsname = setuphelpers.get_hostname(),
-                organization = setuphelpers.registered_organization() or None,
-                is_ca=True,
-                is_code_signing=False)
+            if sys.platform =='win32':
+                crt = self._host_key.build_sign_certificate(
+                    ca_signing_key=None,
+                    ca_signing_cert=None,
+                    cn = self.host_uuid,
+                    dnsname = setuphelpers.get_hostname(),
+                    organization = setuphelpers.registered_organization() or None,
+                    is_ca=True,
+                    is_code_signing=False)
+            else:
+                crt = self._host_key.build_sign_certificate(
+                    ca_signing_key=None,
+                    ca_signing_cert=None,
+                    cn = self.host_uuid,
+                    dnsname = setuphelpers.get_hostname(),
+                    organization = None,
+                    is_ca=True,
+                    is_code_signing=False)
             crt.save_as_pem(crt_filename)
             self.write_param('host_certificate_fingerprint',crt.fingerprint)
             self.write_param('host_certificate_authority_key_identifier',(crt.authority_key_identifier or '').encode('hex'))
@@ -5835,7 +5872,8 @@ class Wapt(BaseObjectClass):
         result['authorized_certificates_cn'] = trusted_certs_cn
         result['maturities'] = self.maturities
         result['locales'] = self.locales
-        result['pending_reboot_reasons']= setuphelpers.pending_reboot_reasons()
+        if sys.platform == 'win32':
+            result['pending_reboot_reasons']= setuphelpers.pending_reboot_reasons()
 
         # read from config
         if self.config.has_option('global','waptservice_sslport'):

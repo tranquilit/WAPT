@@ -1,0 +1,2 @@
+#!/bin/bash
+NCURSES_NO_UTF8_ACS=1 PYTHONHOME=/opt/wapt PYTHONPATH=/opt/wapt /opt/wapt/bin/python /opt/wapt/waptservice/service.py $@

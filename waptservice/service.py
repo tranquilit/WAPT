@@ -71,11 +71,12 @@ import locale
 import datetime
 import copy
 
-import pythoncom
-import ctypes
-import win32security
-import windnsquery
+if sys.platform == 'win32':
+    import pythoncom
+    import win32security
+    import windnsquery
 
+import ctypes
 import tempfile
 
 # wapt specific stuff
@@ -96,17 +97,18 @@ from waptservice.waptservice_common import WaptRegisterComputer,WaptPackageRemov
 from waptservice.waptservice_common import WaptEvents,WaptEvent
 
 from waptservice.waptservice_socketio import WaptSocketIOClient
-
-if os.path.isdir(os.path.join(wapt_root_dir,'waptenterprise')):
-    from waptenterprise.waptservice.enterprise import get_active_sessions,start_interactive_process  # pylint: disable=import-error
-    from waptenterprise.waptservice.enterprise import WaptGPUpdate,WaptWUAScanTask,WaptWUADowloadTask,WaptWUAInstallTask  # pylint: disable=import-error
-    from waptenterprise.waptservice.enterprise import run_cleanmgr,WaptRunCleanMgr # pylint: disable=import-error
-    from waptenterprise.waptservice.enterprise import run_scheduled_wua_scan,run_scheduled_wua_downloads,run_scheduled_wua_installs # pylint: disable=import-error
-    from waptenterprise.waptservice.enterprise import waptwua_api
-    from waptenterprise import enterprise_common
-else:
-    waptwua_api = None
-    enterprise_common = None
+#TODO LINUX
+if sys.platform == 'win32':
+    if os.path.isdir(os.path.join(wapt_root_dir,'waptenterprise')):
+        from waptenterprise.waptservice.enterprise import get_active_sessions,start_interactive_process  # pylint: disable=import-error
+        from waptenterprise.waptservice.enterprise import WaptGPUpdate,WaptWUAScanTask,WaptWUADowloadTask,WaptWUAInstallTask  # pylint: disable=import-error
+        from waptenterprise.waptservice.enterprise import run_cleanmgr,WaptRunCleanMgr # pylint: disable=import-error
+        from waptenterprise.waptservice.enterprise import run_scheduled_wua_scan,run_scheduled_wua_downloads,run_scheduled_wua_installs # pylint: disable=import-error
+        from waptenterprise.waptservice.enterprise import waptwua_api
+        from waptenterprise import enterprise_common
+    else:
+        waptwua_api = None
+        enterprise_common = None
 
 from waptservice.plugins import *
 
@@ -179,8 +181,9 @@ except Exception as e:
     WaptWUAParams = None
     pass
 
-if waptwua_api is not None:
-    app.register_blueprint(waptwua_api)
+if sys.platform == 'win32':
+    if waptwua_api is not None:
+        app.register_blueprint(waptwua_api)
 
 app.jinja_env.filters['beautify'] = beautify # pylint: disable=no-member
 app.waptconfig = waptconfig
@@ -1651,11 +1654,12 @@ class WaptTaskManager(threading.Thread):
 
     def run(self):
         """Queue management, event processing"""
-        try:
-            pythoncom.CoInitializeEx(pythoncom.COINIT_MULTITHREADED)
-        except pythoncom.com_error:
-            # already initialized.
-            pass
+        if sys.platform == 'win32':
+            try:
+                pythoncom.CoInitializeEx(pythoncom.COINIT_MULTITHREADED)
+            except pythoncom.com_error:
+                # already initialized.
+                pass
 
         self.start_time = datetime.datetime.now()
         self.wapt = Wapt(config_filename=self.config_filename)
@@ -2010,8 +2014,9 @@ if __name__ == "__main__":
     task_manager.daemon = True
     task_manager.start()
     app.task_manager = task_manager
-    if waptwua_api is not None:
-        waptwua_api.task_manager = task_manager
+    if sys.platform == 'win32':
+        if waptwua_api is not None:
+            waptwua_api.task_manager = task_manager
 
     logger.info('Task queue running')
 

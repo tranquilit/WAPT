@@ -64,3 +64,5 @@ websocket-client==0.50.0
 Werkzeug==0.14.1
 wrapt==1.10.11
 WTForms==2.1
+py-cpuinfo==5.0.0
+py-dmidecode==0.0.2

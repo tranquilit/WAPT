@@ -50,7 +50,7 @@ import common
 from common import Wapt
 
 import setuphelpers
-from setuphelpers import Version
+from setuphelpers import Version,isfile,isdir
 
 from flask import request, Response, send_from_directory, send_file, session, redirect, url_for, abort, render_template, flash, stream_with_context
 

@@ -1,0 +1,17 @@
+[Unit]
+Description=WAPT Agent startup script
+After=syslog.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/opt/wapt
+ExecStart=/opt/wapt/bin/python /opt/wapt/waptservice/service.py
+Restart=on-failure
+Environment=PYTHONHOME=/opt/wapt
+Environment=PYTHONPATH=/opt/wapt
+Environment=VIRTUAL_ENV=/opt/wapt
+LimitNOFILE=32768
+
+[Install]
+WantedBy=multi-user.target
