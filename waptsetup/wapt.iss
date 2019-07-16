@@ -35,6 +35,8 @@ Source: "..\waptpackage.py"; DestDir: "{app}";
 Source: "..\wapt-get.py"; DestDir: "{app}"; 
 Source: "..\keyfinder.py"; DestDir: "{app}"; 
 Source: "..\setuphelpers.py"; DestDir: "{app}"; 
+Source: "..\setuphelpers_windows.py"; DestDir: "{app}"; 
+Source: "..\setuphelpers_linux.py"; DestDir: "{app}"; 
 Source: "..\windnsquery.py"; DestDir: "{app}"; 
 Source: "..\custom_zip.py"; DestDir: "{app}"; 
 #ifdef waptenterprise
