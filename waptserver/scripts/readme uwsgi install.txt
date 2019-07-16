@@ -4,7 +4,6 @@ Installation serveur Wapt avec service uWsgi séparé multithread
 
 apt-get install uwsgi uwsgi-plugin-python
 
-
 # configuration ini pour uwsgi :
 
 vi /opt/wapt/conf/waptserver.ini
@@ -20,7 +19,7 @@ wsgi=waptserver.server:app
 home=/opt/wapt
 chdir=/opt/wapt
 max-requests=1000
-socket=/var/run/waptserver/waptserver.sock
+socket=/tmp/waptserver.sock
 uid=wapt
 gid=www-data
 plugins=python
@@ -28,12 +27,6 @@ chmod-socket = 664
 env = CONFIG_FILE=/opt/wapt/conf/waptserver.ini
 
 ---
-
-# emplacement socket unix avec droits corrects pour process uwsgi 
-mkdir -p /var/run/waptserver
-chmod 775 /var/run/waptserver
-chown wapt:www-data /var/run/waptserver
-
 
 # test uwsgi : 
 
@@ -72,7 +65,7 @@ vi /etc/nginx/sites-enabled/wapt.conf
 
 # uwsgi upstream server
 upstream waptserver {
-   server unix:///var/run/waptserver/waptserver.sock;
+   server unix:///tmp/waptserver.sock;
 }
 
 server {

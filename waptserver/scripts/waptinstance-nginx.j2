@@ -1,0 +1,60 @@
+############## {{ application_root }}
+
+# to be moved outside server
+# uwsgi upstream {{ application_root }} server
+#upstream {{ application_root }} {
+#   server unix:///var/run/waptserver/{{ application_root }}.sock;
+#}
+
+location /{{ application_root }}/ {
+    proxy_set_header X-Real-IP  $remote_addr;
+    proxy_set_header Host $host;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+
+    client_max_body_size 4096m;
+    client_body_timeout 1800;
+
+    location /{{ application_root }}/static {
+        alias "{{ wapt_root_dir}}/waptserver/static";
+    }
+
+    location ~ ^/{{ application_root }}/(wapt/waptsetup-tis.exe|wapt/waptagent.exe|wapt/waptdeploy.exe)$ {
+        root "{{ wapt_repository_path }}";
+    }
+
+    location ~ ^/{{ application_root }}/(wapt/.*|wapt-host/.*|waptwua/.*)$ {
+        root "{{ wapt_repository_path }}";
+    }
+
+    location /{{ application_root }}/add_host_kerberos {
+        return 403;
+    }
+
+    # we prevent from reading this, as it gives info on hosts
+    location /{{ application_root }}/wapt-host/Packages {
+            return 403;
+    }
+
+    # we need socketio for these actions
+    location ~ ^/{{ application_root }}/api/v3/(trigger_host_action|reset_hosts_sid|host_tasks_status|trigger_cancel_task)$ {
+        proxy_pass http://127.0.0.1:{{ waptserver_port }};
+    }
+
+    # use wsgi {{ application_root }} multithreaded instance for non websockets
+    location / {
+        include     /opt/wapt/conf/uwsgi_params;
+        uwsgi_pass  {{ application_root }};
+    }
+
+    # for websockets tunnel
+    location /{{ application_root }}/socket.io {
+        proxy_http_version 1.1;
+        proxy_buffering off;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "Upgrade";
+        proxy_pass http://127.0.0.1:{{ waptserver_port }}/socket.io;
+    }
+}
+
+

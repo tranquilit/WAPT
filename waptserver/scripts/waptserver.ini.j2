@@ -1,7 +1,7 @@
 [uwsgi]
 master = true
 processes = 10
-wsgi=waptserver.server:app
+wsgi={{application_root}}.server:app
 home=/opt/wapt
 chdir=/opt/wapt
 max-requests=1000
