@@ -1638,7 +1638,7 @@ class WaptTaskManager(threading.Thread):
                 params.load_from_ini(config=self.wapt.config,section='waptwua')
             if params.install_scheduling:
                 if self.last_waptwua_install is None or (datetime.datetime.now() - self.last_waptwua_install > get_time_delta(params.install_scheduling,'d')):
-                    if self.wapt.read_param('waptwua.status',{}).get('status') != 'OK':
+                    if self.wapt.read_param('waptwua.status','') == 'PENDING_UPDATES':
                         self.add_task(WaptWUAInstallTask(notify_user=False,notify_server_on_finish=True,created_by='SCHEDULER'))
                     self.last_waptwua_install = datetime.datetime.now()
                     self.last_waptwua_download = datetime.datetime.now()
