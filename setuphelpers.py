@@ -389,15 +389,6 @@ def add_double_quotes_around(string):
     """
     return '"'+string+'"'
 
-class CalledProcessErrorOutput(subprocess.CalledProcessError):
-    """CalledProcessError with printed output"""
-
-    def __str__(self):
-        try:
-            return "Command %s returned non-zero exit status %d.\nOutput:%s" % (repr(self.cmd), self.returncode,ensure_unicode(self.output).encode('utf8'))
-        except UnicodeDecodeError:
-            return "Command %s returned non-zero exit status %d.\nOutput:%s" % (repr(self.cmd), self.returncode,repr(self.output))
-
 def filecopyto(filename,target):
     """Copy file from absolute or package temporary directory to target directory
 

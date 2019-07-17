@@ -72,6 +72,17 @@ if hasattr(sys.stdout,'name') and sys.stdout.name == '<stdout>':
 else:
     ProgressBar = None
 
+
+class CalledProcessErrorOutput(subprocess.CalledProcessError):
+    """CalledProcessError with printed output"""
+
+    def __str__(self):
+        try:
+            return "Command %s returned non-zero exit status %d.\nOutput:%s" % (repr(self.cmd), self.returncode,ensure_unicode(self.output).encode('utf8'))
+        except UnicodeDecodeError:
+            return "Command %s returned non-zero exit status %d.\nOutput:%s" % (repr(self.cmd), self.returncode,repr(self.output))
+
+
 def networking():
     """return a list of (iface,mac,{addr,broadcast,netmask})
     """
