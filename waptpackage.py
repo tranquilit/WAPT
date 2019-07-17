@@ -313,6 +313,8 @@ class HostCapabilities(BaseObjectClass):
         """Check if package_entry is matching the current capabilities and restrictions
 
         """
+        if self.os == "win32":
+            self.os = "windows"
         if for_datetime is not None:
             if package_entry.valid_from and package_entry.valid_from > for_datetime:
                 return False
