@@ -24,7 +24,7 @@ from __future__ import absolute_import
 
 import glob
 import locale
-import loggingf
+import logging
 import os
 import platform
 import shutil
