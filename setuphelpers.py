@@ -24,7 +24,7 @@ from __future__ import absolute_import
 
 import glob
 import locale
-import logging
+import loggingf
 import os
 import platform
 import shutil
@@ -833,34 +833,6 @@ def default_gateway():
     else:
         return None
 
-
-
-def remove_file(path):
-    r"""Try to remove a single file
-    log a warning msg if file doesn't exist
-    log a critical msg if file can't be removed
-
-    Args:
-        path (str): path to file
-
-    >>> remove_file(r'c:\tmp\fc.txt')
-
-    """
-    if os.path.isfile(path):
-        try:
-            os.unlink(path)
-        except Exception as e:
-            logger.critical(u'Unable to remove file %s : error %s' %(path,e))
-    else:
-        logger.info(u"File %s doesn't exist, so not removed" % (path))
-
-def mkdirs(path):
-    """Create directory path if it doesn't exists yet
-    Creates intermediate directories too.
-
-    """
-    if not os.path.isdir(path):
-        os.makedirs(path)
 
 def get_language():
     """Get the default locale like fr, en, pl etc..  etc

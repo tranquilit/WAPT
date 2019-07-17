@@ -48,7 +48,7 @@ import win32com.client
 from win32com.shell import shellcon
 from win32com.taskscheduler import taskscheduler
 
-from waptutils import Version,makepath,isfile,isdir,killtree,CalledProcessErrorOutput
+from waptutils import Version,makepath,isfile,isdir,killtree,CalledProcessErrorOutput,mkdirs,remove_file
 
 ## import only for windows
 import _subprocess
