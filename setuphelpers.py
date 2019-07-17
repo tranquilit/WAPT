@@ -52,8 +52,10 @@ elif sys.platform.startswith('linux'):
     from setuphelpers_linux import *
 
 ##TODO sort functions and _all_ in setuphelpers and setuphelpers_windows and setuphelpers_linux
+
+__all__ = []
 if sys.platform == 'win32':
-    __all__ = \
+    __all__.extend(
     ['CalledProcessError',
      'EWaptSetupException',
      'HKEY_CLASSES_ROOT',
@@ -290,9 +292,9 @@ if sys.platform == 'win32':
      'get_computer_description',
      'uac_enabled',
      'unzip',
-     'EnsureWUAUServRunning']
+     'EnsureWUAUServRunning'])
 elif sys.platform.startswith('linux'):
-    __all__ = \
+    __all__.extend(
     ['CalledProcessError',
      'EWaptSetupException',
      'PackageEntry',
@@ -369,7 +371,7 @@ elif sys.platform.startswith('linux'):
      'ensure_list',
      'unzip',
      'apt_install_required_dependencies',
-     'apt_autoremove']
+     'apt_autoremove'])
 
 logger = logging.getLogger()
 
