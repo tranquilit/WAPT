@@ -33,6 +33,7 @@ import platform
 import psutil
 import json
 import cpuinfo
+import subprocess
 from waptutils import (ensure_unicode, makepath, networking)
 
 def local_drives():
@@ -209,3 +210,28 @@ def get_last_logged_on_user():
         elif res.started < elem.started:
             res = elem
     return res.name
+
+def run(*args, **kwargs):
+    return subprocess.check_output(*args, shell=True, **kwargs)
+
+def apt_install(package,allow_unauthenticated=False):
+    if allow_unauthenticated:
+        return run ('apt-get install -y --allow-unauthenticated %s' %package)
+    else:
+        return run('apt-get install -y %s' %package)
+
+def apt_remove(package):
+    return run('apt-get remove -y %s' %package)
+
+def dpkg_install(path_to_deb):
+    return run('dpkg -i %s' % path_to_deb)
+
+def dpkg_purge(deb_name):
+    return run('dpkg --purge %s' % deb_name)
+
+def apt_install_required_dependencies():
+    return run('apt-get -f -y install')
+
+def apt_autoremove():
+    return run('apt-get -y autoremove')
+

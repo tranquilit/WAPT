@@ -45,6 +45,10 @@ run('chmod 755 /opt/wapt/bin/*')
 
 os.chmod('/opt/wapt/runwaptagent.sh',0o755)
 os.chmod('/usr/bin/waptpython',0o755)
+os.chmod('/opt/wapt/wapt-get.sh',0o755)
+
+os.symlink('/opt/wapt/runwaptagent.sh','/usr/bin/waptservice')
+os.symlink('/opt/wapt/wapt-get.sh','/usr/bin/wapt-get')
 
 try:
     print "Restarting syslog-ng"
@@ -54,7 +58,7 @@ except subprocess.CalledProcessError:
     run('systemctl restart rsyslog')
 
 # restart server if conf file is there and if it was already running
-if os.path.exists('/opt/wapt/conf/waptagent.ini'):
+if os.path.exists('/opt/wapt/conf/wapt-get.ini'):
     print("Restarting Agent")
-    run('systemctl restart waptagent')
-    run('systemctl restart waptagent')
+    run('systemctl restart waptagent.service')
+    run('systemctl restart waptagent.service')

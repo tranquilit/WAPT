@@ -299,6 +299,8 @@ elif sys.platform.startswith('linux'):
      'Version',
      '__version__',
      'all_files',
+     'apt_install',
+     'apt_remove',
      'control',
      'copytree2',
      'currentdate',
@@ -309,6 +311,8 @@ elif sys.platform.startswith('linux'):
      'default_skip',
      'default_gateway',
      'dir_is_empty',
+     'dpkg_install',
+     'dpkg_purge',
      'ensure_dir',
      'ensure_unicode',
      'error',
@@ -350,6 +354,7 @@ elif sys.platform.startswith('linux'):
      'params',
      'processes_for_file',
      'remove_file',
+     'run',
      'shell_launch',
      'shutil',
      'wget',
@@ -362,7 +367,9 @@ elif sys.platform.startswith('linux'):
      'fileisodate',
      'dateof',
      'ensure_list',
-     'unzip']
+     'unzip',
+     'apt_install_required_dependencies',
+     'apt_autoremove']
 
 logger = logging.getLogger()
 

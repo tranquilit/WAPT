@@ -274,9 +274,10 @@ copyfile(makepath(wapt_source_dir, 'setuphelpers_linux.py'),'./builddir/opt/wapt
 copyfile(makepath(wapt_source_dir, 'setuphelpers_windows.py'),'./builddir/opt/wapt/setupheloers_windows.py')
 copyfile(makepath(wapt_source_dir, 'wapt-scanpackages.py'),'./builddir/opt/wapt/wapt-scanpackages.py')
 copyfile(makepath(wapt_source_dir, 'wapt-signpackages.py'),'./builddir/opt/wapt/wapt-signpackages.py')
-
+copyfile(makepath(wapt_source_dir, 'wapt-get.py'),'./builddir/opt/wapt/wapt-get.py')
 copyfile(makepath(wapt_source_dir, 'wapt-scanpackages'),'./builddir/usr/bin/wapt-scanpackages')
 copyfile(makepath(wapt_source_dir, 'wapt-signpackages'),'./builddir/usr/bin/wapt-signpackages')
+shutil.copytree(makepath(wapt_source_dir, 'waptservice','deb','methods'),'./builddir/opt/wapt/lib/python2.7/site-packages/rocket/methods')
 
 # a voir si c'est encore necessaire
 eprint('cryptography patches')
@@ -307,6 +308,7 @@ eprint('copying control and postinst package metadata')
 copyfile('./DEBIAN/control', './builddir/DEBIAN/control')
 copyfile('./DEBIAN/postinst', './builddir/DEBIAN/postinst')
 copyfile('./DEBIAN/preinst', './builddir/DEBIAN/preinst')
+copyfile('./DEBIAN/postrm','./builddir/DEBIAN/postrm')
 
 eprint(run(r'find ./builddir/opt/wapt/ -type f -exec chmod 644 {} \;'))
 eprint(run(r'find ./builddir/opt/wapt/ -type d -exec chmod 755 {} \;'))
@@ -350,10 +352,9 @@ eprint(u'inscription de la version dans le fichier de control. new version: ' + 
 control = open(control_file,'r').read()
 open(control_file,'w').write(re.sub('Version: .*','Version: %s' % full_version,control))
 
-os.chmod('./builddir/DEBIAN/postinst', stat.S_IRWXU |
-         stat.S_IXGRP | stat.S_IRGRP | stat.S_IROTH | stat.S_IXOTH)
-os.chmod('./builddir/DEBIAN/preinst', stat.S_IRWXU |
-         stat.S_IXGRP | stat.S_IRGRP | stat.S_IROTH | stat.S_IXOTH)
+os.chmod('./builddir/DEBIAN/postinst', 0o755)
+os.chmod('./builddir/DEBIAN/preinst', 0o755)
+os.chmod('./builddir/DEBIAN/postrm', 0o755)
 
 # build
 if WAPTEDITION=='enterprise':
@@ -361,5 +362,5 @@ if WAPTEDITION=='enterprise':
 else:
     package_filename = 'tis-waptagent-%s.deb' % full_version
 eprint(subprocess.check_output(['dpkg-deb','--build','builddir',package_filename]))
-##shutil.rmtree("builddir")
+shutil.rmtree("builddir")
 print(package_filename)
