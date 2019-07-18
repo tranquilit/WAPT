@@ -27,6 +27,7 @@ def update_package():
 
 def audit():
     print('Auditing %%s' %% control.asrequirement())
+    return "OK"
     # put here code to check periodically that state is matching expectations
     # return "OK", "WARNING" or "ERROR" to report status in console.
     # all print statement are reported too
