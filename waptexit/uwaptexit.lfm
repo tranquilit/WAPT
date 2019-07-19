@@ -1020,4 +1020,9 @@ object VisWaptExit: TVisWaptExit
       OnExecute = ActStopCountDownExecute
     end
   end
+  object WatchdogTimer: TTimer
+    OnTimer = WatchdogTimerTimer
+    left = 413
+    top = 201
+  end
 end
