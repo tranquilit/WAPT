@@ -5,7 +5,7 @@ unit uWAPTPollThreads;
 interface
 
 uses
-  Classes, SysUtils, SuperObject,Forms,IdAntiFreeze,waptcommon;
+  Classes, SysUtils, SuperObject, Forms, waptcommon;
 
 type
 
@@ -138,12 +138,99 @@ type
     property OnNotifyEvent: TNotifyEvent read FOnNotifyEvent write SetOnNotifyEvent;
   end;
 
+  { TCheckWaptservice }
+
+  { TWatchdogThread }
+
+  TWatchdogThread = Class(TThread)
+  private
+    CheckTimeout:Integer;
+    LastPingTimestamp:Integer;
+    PingLock:TRTLCriticalSection;
+  public
+    constructor Create(aCheckTimeout:Integer=30000);
+    destructor Destroy; override;
+    procedure Execute; override;
+    procedure Ping;
+    procedure Harakiri;
+  end;
 
 implementation
 
-uses LCLIntf,tiscommon,
+uses Windows,LCLIntf,tiscommon,
     waptwinutils,soutils,tisstrings,IdException,IdTCPConnection, IdStack,
     IdExceptionCore,uWaptRes;
+
+{ TWatchdogThread }
+
+constructor TWatchdogThread.Create(aCheckTimeout: Integer=30000);
+begin
+  inherited Create(False);
+  CheckTimeout := aCheckTimeout;
+  LastPingTimestamp := GetTickCount;
+  InitCriticalSection(PingLock);
+  NameThreadForDebugging('watchdog');
+end;
+
+destructor TWatchdogThread.Destroy;
+begin
+  inherited Destroy;
+  DoneCriticalSection(PingLock);
+end;
+
+procedure TWatchdogThread.Execute;
+var
+  debugStrng:String;
+begin
+  While not Terminated do
+  begin
+    //debugStrng:=IntToStr(GetTickCount - LastPingTimestamp);
+    if (GetTickCount - LastPingTimestamp)> CheckTimeout then
+    begin
+      //OutputDebugString('CRITICAL: waptexit harakiri');
+      Harakiri;
+    end;
+    //else
+    //  OutputDebugString(PChar(debugStrng));
+    //OutputDebugString('waptexit sleeping');
+    Sleep(2000);
+  end;
+end;
+
+procedure TWatchdogThread.Ping;
+begin
+  EnterCriticalSection(PingLock);
+  try
+    //OutputDebugString('waptexit ping');
+    LastPingTimestamp:=GetTickCount;
+  finally
+    LeaveCriticalSection(PingLock);
+  end;
+end;
+
+procedure TWatchdogThread.Harakiri;
+var
+  AHandle: THandle;
+  ID: THANDLE;
+begin
+  Try
+     //trying to get access to process
+     AHandle := OpenProcess(PROCESS_ALL_ACCESS,False,GetCurrentProcessId); //uses windows
+     if AHandle = 0 then
+     begin
+       //cannot open process
+       exit;
+     end;
+     //try to kill th eprocess (in a nasty way)
+     if not TerminateProcess(AHandle,255) then
+     begin
+       //failure to kill
+       exit;
+     end;
+   Finally
+     CloseHandle(AHandle);
+   end;
+end;
 
 { TRunWaptService }
 

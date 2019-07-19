@@ -48,6 +48,7 @@ type
     Splitter2: TSplitter;
     Splitter3: TSplitter;
     Timer1: TTimer;
+    WatchdogTimer: TTimer;
     procedure ActShowDetailsExecute(Sender: TObject);
     procedure actSkipExecute(Sender: TObject);
     procedure actSkipUpdate(Sender: TObject);
@@ -67,6 +68,7 @@ type
       var Ghosted: Boolean; var ImageIndex: Integer;
       var ImageList: TCustomImageList);
     procedure Timer1Timer(Sender: TObject);
+    procedure WatchdogTimerTimer(Sender: TObject);
   private
     { private declarations }
     FAllowCancelUpgrade: Boolean;
@@ -104,6 +106,8 @@ type
 
     // Prevent the count down timed auto upgrade
     DisableAutoUpgrade: Boolean;
+
+    Watchdog: TWatchdogThread;
 
     CheckTasksThread: TCheckTasksThread;
     CheckEventsThread: TCheckEventsThread;
@@ -377,6 +381,8 @@ procedure TVisWaptExit.FormCreate(Sender: TObject);
 var
   ini:TIniFile;
 begin
+  // if no ping for 30s, harakiri...
+  Watchdog := TWatchdogThread.Create(30000);
   if FileExists(AppendPathDelim(WaptBaseDir)+'templates\waptexit-logo.png') then
     CustomLogo.Picture.LoadFromFile(AppendPathDelim(WaptBaseDir)+'templates\waptexit-logo.png')
   else
@@ -410,6 +416,7 @@ procedure TVisWaptExit.FormDestroy(Sender: TObject);
 begin
   FreeAndNil(CheckTasksThread);
   FreeAndNil(CheckEventsThread);
+  FreeAndNil(Watchdog);
 end;
 
 Function TVisWaptExit.GetPackageStatus(LastUpdateStatus:ISuperObject):ISuperObject;
@@ -768,6 +775,11 @@ begin
     Application.ProcessMessages;
     Timer1.Enabled := True;
   end;
+end;
+
+procedure TVisWaptExit.WatchdogTimerTimer(Sender: TObject);
+begin
+  Watchdog.Ping;
 end;
 
 procedure TVisWaptExit.SetCountDown(AValue: Integer);
