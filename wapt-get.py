@@ -1225,6 +1225,24 @@ def main():
                     print(u"No waptserver defined. Register unavailable")
                     sys.exit(1)
 
+            elif action == 'unregister':
+                if mywapt.waptserver:
+                    print(u"Unregistering host from server: %s" % mywapt.waptserver.server_url)
+                    result['unregister'] = mywapt.unregister_computer()
+                    if not options.json_output:
+                        if not result['unregister']['success']:
+                            print(u"Error when unregistering host against server %s: %s" % (mywapt.waptserver.server_url,result['unregister']['msg']))
+                            sys.exit(1)
+                        else:
+                            print(u"Host correctly unregistered against server %s." % (mywapt.waptserver.server_url,))
+
+                    if options.json_output:
+                        jsonresult['result'] = result
+
+                else:
+                    print(u"No waptserver defined. Unregister unavailable")
+                    sys.exit(1)
+
             elif action == 'setlocalpassword':
                 if len(args)>=2:
                     pwd = ' '.join(args[1:])

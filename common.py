@@ -5435,6 +5435,36 @@ class Wapt(BaseObjectClass):
                 data = data,
                 )
 
+    def unregister_computer(self):
+        """Remove computer informations from WAPT Server
+
+        Returns:
+            dict: response from server.
+
+        >>> wapt = Wapt()
+        >>> s = wapt.unregister_computer()
+        >>>
+
+        """
+        if self.waptserver:
+            data = {'uuids': [self.host_uuid], 'delete_packages':1,'delete_inventory':1}
+            result = self.waptserver.post('api/v3/hosts_delete',
+                data = data ,
+                signature = self.sign_host_content(data),
+                signer = self.get_host_certificate().cn
+                )
+
+            if result and result['success']:
+                self.delete_param('last_update_server_hashes')
+            return result
+
+        else:
+            return dict(
+                success = False,
+                msg = u'No WAPT server defined',
+                data = data,
+                )
+
     def get_host_key_filename(self):
         return os.path.join(self.private_dir,self.host_uuid+'.pem')
 
