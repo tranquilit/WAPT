@@ -3,6 +3,6 @@ Version: 0.0.7
 Section: base
 Priority: optional
 Architecture: amd64
-Depends: python, sudo
+Depends: python
 Maintainer: Tranquil IT <technique@tranquil.it>
 Description: WAPT Agent for Linux

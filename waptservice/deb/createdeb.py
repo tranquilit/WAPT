@@ -249,18 +249,22 @@ if WAPTEDITION=='enterprise':
 
 # for some reason the virtualenv does not build itself right if we don't
 # have pip systemwide...
-eprint(run('sudo apt-get install -y python-virtualenv python-setuptools python-pip python-dev libpq-dev libffi-dev libldap2-dev libsasl2-dev'))
 
+##check linux distrib
+if platform.linux_distribution()[0].startswith('debian'):
+	eprint(run('apt-get install -y python-virtualenv python-setuptools python-pip python-dev libpq-dev libffi-dev libldap2-dev libsasl2-dev'))
+else:
+    eprint('Wrong linux distribution script only for CentOs or debian, yours : \n')
+    eprint(platform.linux_distribution())
+    sys.exit(1)
+
+run_verbose('pip install distribute')
 eprint('Create a build environment virtualenv. May need to download a few libraries, it may take some time')
 run_verbose(r'virtualenv ./builddir/opt/wapt --always-copy')
-
 eprint('Install additional libraries in build environment virtualenv')
-
 run_verbose('./builddir/opt/wapt/bin/pip install pip setuptools --upgrade')
-
 # qq libs a rajouter
 run('./builddir/opt/wapt/bin/pip install -r ../../requirements.txt -t ./builddir/opt/wapt/lib/python2.7/site-packages')
-
 run_verbose(r'virtualenv ./builddir/opt/wapt --relocatable')
 
 eprint('copying the waptrepo files')
@@ -271,13 +275,17 @@ copyfile(makepath(wapt_source_dir, 'custom_zip.py'),'./builddir/opt/wapt/custom_
 copyfile(makepath(wapt_source_dir, 'waptpackage.py'),'./builddir/opt/wapt/waptpackage.py')
 copyfile(makepath(wapt_source_dir, 'setuphelpers.py'),'./builddir/opt/wapt/setuphelpers.py')
 copyfile(makepath(wapt_source_dir, 'setuphelpers_linux.py'),'./builddir/opt/wapt/setuphelpers_linux.py')
-copyfile(makepath(wapt_source_dir, 'setuphelpers_windows.py'),'./builddir/opt/wapt/setupheloers_windows.py')
+copyfile(makepath(wapt_source_dir, 'setuphelpers_windows.py'),'./builddir/opt/wapt/setuphelpers_windows.py')
 copyfile(makepath(wapt_source_dir, 'wapt-scanpackages.py'),'./builddir/opt/wapt/wapt-scanpackages.py')
 copyfile(makepath(wapt_source_dir, 'wapt-signpackages.py'),'./builddir/opt/wapt/wapt-signpackages.py')
 copyfile(makepath(wapt_source_dir, 'wapt-get.py'),'./builddir/opt/wapt/wapt-get.py')
 copyfile(makepath(wapt_source_dir, 'wapt-scanpackages'),'./builddir/usr/bin/wapt-scanpackages')
 copyfile(makepath(wapt_source_dir, 'wapt-signpackages'),'./builddir/usr/bin/wapt-signpackages')
 shutil.copytree(makepath(wapt_source_dir, 'waptservice','deb','methods'),'./builddir/opt/wapt/lib/python2.7/site-packages/rocket/methods')
+
+# delete pythonwheels
+if os.path.exists(makepath('builddir','opt','wapt', 'share/')):
+	shutil.rmtree(makepath('builddir','opt','wapt', 'share/'))
 
 # a voir si c'est encore necessaire
 eprint('cryptography patches')
@@ -294,7 +302,7 @@ if WAPTEDITION=='enterprise':
           excludes=[' ','waptservice','postconf', 'repository', 'rpm', 'deb', 'spnego-http-auth-nginx-module', '*.bat'])
 
 
-# script to run waptserver in foreground mode
+# script to run waptagent in foreground mode
 copyfile(makepath(wapt_source_dir, 'runwaptagent.sh'),'./builddir/opt/wapt/runwaptagent.sh')
 copyfile(makepath(wapt_source_dir, 'wapt-get.sh'),'./builddir/opt/wapt/wapt-get.sh')
 copyfile(makepath(wapt_source_dir, 'waptpython'),'./builddir/usr/bin/waptpython')
@@ -355,6 +363,14 @@ open(control_file,'w').write(re.sub('Version: .*','Version: %s' % full_version,c
 os.chmod('./builddir/DEBIAN/postinst', 0o755)
 os.chmod('./builddir/DEBIAN/preinst', 0o755)
 os.chmod('./builddir/DEBIAN/postrm', 0o755)
+
+#delete locale
+if os.path.exists(makepath('builddir','opt','wapt', 'local/')):
+	shutil.rmtree(makepath('builddir','opt','wapt', 'local/'))
+
+#delete include
+if os.path.exists(makepath('builddir','opt','wapt', 'include/')):
+	shutil.rmtree(makepath('builddir','opt','wapt', 'include/'))
 
 # build
 if WAPTEDITION=='enterprise':

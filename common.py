@@ -101,7 +101,7 @@ if sys.platform=='win32':
         has_kerberos = True
     except:
         has_kerberos = False
-elif sys.platform.startswith('linux'):
+elif sys.platform.startswith('linux') or sys.platform.startswith('darwin'):
     pass
 
 logger = logging.getLogger()
@@ -3298,7 +3298,7 @@ class Wapt(BaseObjectClass):
         """Get host org unit DN from wapt-get.ini [global] host_organizational_unit_dn if defined
         or from registry as supplied by AD / GPO process
         """
-        if sys.platform.startswith('linux'):
+        if sys.platform.startswith('linux') or sys.platform.startswith('darwin'):
             return None
 
         host_organizational_unit_dn = self.read_param('host_organizational_unit_dn',None)

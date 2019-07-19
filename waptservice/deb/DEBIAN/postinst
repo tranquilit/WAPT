@@ -61,4 +61,3 @@ except subprocess.CalledProcessError:
 if os.path.exists('/opt/wapt/conf/wapt-get.ini'):
     print("Restarting Agent")
     run('systemctl restart waptagent.service')
-    run('systemctl restart waptagent.service')

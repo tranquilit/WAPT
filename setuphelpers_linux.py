@@ -33,6 +33,7 @@ import platform
 import psutil
 import json
 import cpuinfo
+import sys
 import subprocess
 from waptutils import (ensure_unicode, makepath, networking)
 
@@ -62,13 +63,17 @@ def host_metrics():
     return result
 
 def get_default_gateways():
-    """Read the default gateway directly from /proc."""
-    with open("/proc/net/route") as fh:
-        for line in fh:
-            fields = line.strip().split()
-            if fields[1] != '00000000' or not int(fields[3], 16) & 2:
-                continue
-            return socket.inet_ntoa(struct.pack("<L", int(fields[2], 16)))
+    if sys.platform.startswith('linux'):
+        """Read the default gateway directly from /proc."""
+        with open("/proc/net/route") as fh:
+            for line in fh:
+                fields = line.strip().split()
+                if fields[1] != '00000000' or not int(fields[3], 16) & 2:
+                    continue
+                return socket.inet_ntoa(struct.pack("<L", int(fields[2], 16)))
+    else:
+        #TODO: Darwin
+        pass
 
 def user_local_appdata():
     r"""Return the local appdata profile of current user

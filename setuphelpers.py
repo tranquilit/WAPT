@@ -44,11 +44,12 @@ from waptutils import (Version, __version__, all_files, dateof,
                        datetime2isodate, ensure_list, ensure_unicode,
                        fileisodate, find_all_files, get_disk_free_space,
                        hours_minutes, httpdatetime2isodate, isodate2datetime,
-                       time2display, wget, wgets, makepath,networking,killtree,isfile,isdir)
+                       time2display, wget, wgets, makepath,networking,killtree,isfile,isdir,
+                       CalledProcessErrorOutput,remove_file,mkdirs)
 
 if sys.platform == 'win32':
     from setuphelpers_windows import *
-elif sys.platform.startswith('linux'):
+elif sys.platform.startswith('linux') or sys.platform.startswith('darwin'):
     from setuphelpers_linux import *
 
 ##TODO sort functions and _all_ in setuphelpers and setuphelpers_windows and setuphelpers_linux
