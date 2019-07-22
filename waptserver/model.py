@@ -1793,13 +1793,13 @@ def upgrade_db_structure():
 
             columns = [c.name for c in wapt_db.get_columns('reportingqueries')]
             if not 'snapshot_period' in columns:
-                opes.append(migrator.add_column(Packages._meta.name, 'snapshot_period',ReportingQueries.snapshot_period))
+                opes.append(migrator.add_column(ReportingQueries._meta.name, 'snapshot_period',ReportingQueries.snapshot_period))
             if not 'snapshot_name' in columns:
-                opes.append(migrator.add_column(Packages._meta.name, 'snapshot_name',ReportingQueries.snapshot_name))
+                opes.append(migrator.add_column(ReportingQueries._meta.name, 'snapshot_name',ReportingQueries.snapshot_name))
             if not 'last_snapshot_date' in columns:
-                opes.append(migrator.add_column(Packages._meta.name, 'last_snapshot_date',ReportingQueries.last_snapshot_date))
+                opes.append(migrator.add_column(ReportingQueries._meta.name, 'last_snapshot_date',ReportingQueries.last_snapshot_date))
             if not 'snapshot_ttl' in columns:
-                opes.append(migrator.add_column(Packages._meta.name, 'snapshot_ttl',ReportingQueries.snapshot_ttl))
+                opes.append(migrator.add_column(ReportingQueries._meta.name, 'snapshot_ttl',ReportingQueries.snapshot_ttl))
 
             migrate(*opes)
             (v, created) = ServerAttribs.get_or_create(key='db_version')
