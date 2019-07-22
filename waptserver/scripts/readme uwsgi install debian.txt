@@ -2,6 +2,7 @@ Installation serveur Wapt avec service uWsgi séparé multithread
 
 # Installer tis-waptserver build >= 6150
 
+Debian:
 apt-get install uwsgi uwsgi-plugin-python
 
 # configuration ini pour uwsgi :
