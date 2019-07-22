@@ -37,6 +37,7 @@ import psutil
 import netifaces
 import platform
 import time
+import threading
 from custom_zip import ZipFile
 from iniparse import RawConfigParser
 from waptpackage import PackageEntry
@@ -51,10 +52,16 @@ if sys.platform == 'win32':
     from setuphelpers_windows import *
 elif sys.platform.startswith('linux') or sys.platform.startswith('darwin'):
     from setuphelpers_linux import *
-
 ##TODO sort functions and _all_ in setuphelpers and setuphelpers_windows and setuphelpers_linux
 
-__all__ = []
+__all__ = [
+    'RunOutput',
+    'TimeoutExpired',
+    'RunReader',
+    'run_notfatal',
+    'run'
+    ]
+
 if sys.platform == 'win32':
     __all__.extend(
     ['CalledProcessError',
@@ -72,7 +79,6 @@ if sys.platform == 'win32':
      'REG_EXPAND_SZ',
      'REG_MULTI_SZ',
      'REG_SZ',
-     'TimeoutExpired',
      'Version',
      '__version__',
      'add_shutdown_script',
@@ -222,8 +228,6 @@ if sys.platform == 'win32':
      'remove_user_programs_menu_shortcut',
      'remove_user_programs_menu_folder',
      'replace_at_next_reboot',
-     'run',
-     'run_notfatal',
      'run_task',
      'run_powershell',
      'run_powershell_from_file',
@@ -921,6 +925,211 @@ class EWaptSetupException(Exception):
 def error(reason):
     """Raise a WAPT fatal error"""
     raise EWaptSetupException(u'Fatal error : %s' % reason)
+
+def run(cmd,shell=True,timeout=600,accept_returncodes=[0,3010],on_write=None,pidlist=None,return_stderr=True,**kwargs):
+    r"""Run the command cmd in a shell and return the output and error text as string
+
+    Args:
+        cmd : command and arguments, either as a string or as a list of arguments
+        shell (boolean) : True is assumed
+        timeout (int) : maximum time to wait for cmd completion is second (default = 600)
+                        a TimeoutExpired exception is raised if tiemout is reached.
+        on_write : callback when a new line is printed on stdout or stderr by the subprocess
+                        func(unicode_line). arg is enforced to unicode
+        accept_returncodes (list) : list of return code which are considered OK default = (0,1601)
+        pidlist (list): external list where to append the pid of the launched process.
+        return_stderr (bool or list) : if True, the error lines are returned to caller in result.
+                                       if a list is provided, the error lines are appended to this list
+
+        all other parameters from the psutil.Popen constructor are accepted
+
+    Returns:
+        RunOutput : bytes like output of stdout and optionnaly stderr streams.
+                    returncode attribute
+
+    Raises:
+        CalledProcessError: if return code of cmd is not in accept_returncodes list
+        TimeoutExpired:  if process is running for more than timeout time.
+
+    .. versionchanged:: 1.3.9
+            return_stderr parameters to disable stderr or get it in a separate list
+            return value has a returncode attribute to
+
+    .. versionchanged:: 1.4.0
+            output is not forced to unicode
+
+    .. versionchanged:: 1.4.1
+          error code 1603 is no longer accepted by default.
+
+    .. versionchanged:: 1.5.1
+          If cmd is unicode, encode it to default filesystem encoding before
+            running it.
+
+    >>> run(r'dir /B c:\windows\explorer.exe')
+    'explorer.exe\r\n'
+
+    >>> out = []
+    >>> pids = []
+    >>> def getlines(line):
+    ...    out.append(line)
+    >>> run(r'dir /B c:\windows\explorer.exe',pidlist=pids,on_write=getlines)
+    u'explorer.exe\r\n'
+
+    >>> print out
+    ['explorer.exe\r\n']
+    >>> try:
+    ...     run(r'ping /t 127.0.0.1',timeout=3)
+    ... except TimeoutExpired:
+    ...     print('timeout')
+    timeout
+    """
+    logger.info(u'Run "%s"' % (ensure_unicode(cmd),))
+    output = []
+
+    if return_stderr is None or return_stderr == False:
+        return_stderr = []
+    elif not isinstance(return_stderr,list):
+        return_stderr = output
+
+    if pidlist is None:
+        pidlist = []
+
+    # unicode cmd is not understood by shell system anyway...
+    if isinstance(cmd,unicode):
+        cmd = cmd.encode(sys.getfilesystemencoding())
+
+    try:
+        proc = psutil.Popen(cmd, shell = shell, bufsize=1, stdin=PIPE, stdout=PIPE, stderr=PIPE,**kwargs)
+    except WindowsError as e:
+        # be sure to not trigger encoding errors.
+        raise WindowsError(e[0],repr(e[1]))
+    # keep track of launched pid if required by providing a pidlist argument to run
+    if not proc.pid in pidlist:
+        pidlist.append(proc.pid)
+
+    def worker(pipe,on_write=None):
+        while True:
+            line = pipe.readline()
+            if line == '':
+                break
+            else:
+                if on_write:
+                    on_write(ensure_unicode(line))
+                if pipe == proc.stderr:
+                    return_stderr.append(line)
+                else:
+                    output.append(line)
+
+    stdout_worker = RunReader(worker, proc.stdout,on_write)
+    stderr_worker = RunReader(worker, proc.stderr,on_write)
+    stdout_worker.start()
+    stderr_worker.start()
+    stdout_worker.join(timeout)
+    if stdout_worker.is_alive():
+        # kill the task and all subtasks
+        if proc.pid in pidlist:
+            pidlist.remove(proc.pid)
+            killtree(proc.pid)
+        raise TimeoutExpired(cmd,''.join(output),timeout)
+    stderr_worker.join(timeout)
+    if stderr_worker.is_alive():
+        if proc.pid in pidlist:
+            pidlist.remove(proc.pid)
+            killtree(proc.pid)
+        raise TimeoutExpired(cmd,''.join(output),timeout)
+    proc.returncode = _subprocess.GetExitCodeProcess(proc._handle)
+    if proc.pid in pidlist:
+        pidlist.remove(proc.pid)
+        killtree(proc.pid)
+    if accept_returncodes is not None and not proc.returncode in accept_returncodes:
+        if return_stderr != output:
+            raise CalledProcessErrorOutput(proc.returncode,cmd,''.join(output+return_stderr))
+        else:
+            raise CalledProcessErrorOutput(proc.returncode,cmd,''.join(output))
+    else:
+        if proc.returncode == 0:
+            logger.info(u'%s command returns code %s' % (ensure_unicode(cmd),proc.returncode))
+        else:
+            logger.warning(u'%s command returns code %s' % (ensure_unicode(cmd),proc.returncode))
+    result = RunOutput(output)
+    result.returncode = proc.returncode
+    return result
+
+
+def run_notfatal(*cmd,**args):
+    """Runs the command and wait for it termination, returns output
+    Ignore exit status code of command, return '' instead
+
+    .. versionchanged:: 1.4.0
+          output is not enforced to unicode
+    """
+    try:
+        return run(*cmd,accept_returncodes=None,**args)
+    except Exception as e:
+        return ensure_unicode(e)
+
+class RunReader(threading.Thread):
+    # helper thread to read output of run command
+    def __init__(self, callable, *args, **kwargs):
+        super(RunReader, self).__init__()
+        self.callable = callable
+        self.args = args
+        self.kwargs = kwargs
+        self.setDaemon(True)
+
+    def run(self):
+        try:
+            self.callable(*self.args, **self.kwargs)
+        except Exception as e:
+            print(ensure_unicode(e))
+
+
+class TimeoutExpired(Exception):
+    """This exception is raised when the timeout expires while waiting for a
+    child process.
+
+    >>> try:
+    ...     run('ping -t 10.10.1.67',timeout=5)
+    ... except TimeoutExpired as e:
+    ...     print e.output
+    ...     raise
+    ...
+
+    """
+    def __init__(self, cmd, output=None, timeout=None):
+        self.cmd = cmd
+        self.output = output
+        self.timeout = timeout
+
+    def __str__(self):
+        return "Command '%s' timed out after %s seconds with output '%s'" % (self.cmd, self.timeout, repr(self.output))
+
+
+class RunOutput(str):
+    u"""Subclass of str (bytes) to return returncode from runned command in addition to output
+
+    >>> run(r'cmd /C dir c:\toto ',accept_returncodes=[0,1])
+    No handlers could be found for logger "root"
+    <RunOuput returncode :[0, 1]>
+     Le volume dans le lecteur C n'a pas de nom.
+     Le numéro de série du volume est 74EF-5918
+
+    Fichier introuvable
+     Répertoire de c:\
+
+    .. versionchanged:: 1.4.0
+          subclass str(bytes string) and not unicode
+    """
+
+    def __new__(cls, value):
+        if isinstance(value,list):
+            value = ''.join(value)
+        self = super(RunOutput, cls).__new__(cls, value)
+        self.returncode = None
+        return self
+
+    def __repr__(self):
+        return "<RunOuput returncode :%s>\n%s"%(self.returncode,str.__repr__(self))
 
 # Specific parameters for install scripts
 params = {}

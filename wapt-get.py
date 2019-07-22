@@ -50,6 +50,10 @@ import pprint
 from common import Wapt
 from common import WaptDB
 
+if sys.platform.startswith('linux') or sys.platform.startswith('darwin'):
+    del os.environ['PYTHONPATH']
+    del os.environ['PYTHONHOME']
+
 import setuphelpers
 
 try:

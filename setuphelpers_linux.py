@@ -58,7 +58,7 @@ def host_metrics():
 
     # memory usage
     current_process = psutil.Process()
-    result['wapt-memory-usage'] = vars(current_process.memory_info())
+    result['wapt-memory-usage'] = dir(current_process.memory_info())
 
     return result
 
@@ -216,27 +216,30 @@ def get_last_logged_on_user():
             res = elem
     return res.name
 
-def run(*args, **kwargs):
-    return subprocess.check_output(*args, shell=True, **kwargs)
-
 def apt_install(package,allow_unauthenticated=False):
     if allow_unauthenticated:
-        return run ('apt-get install -y --allow-unauthenticated %s' %package)
+        return run('LANG=C DEBIAN_FRONTEND=noninteractive apt-get install -y --allow-unauthenticated %s' %package)
     else:
-        return run('apt-get install -y %s' %package)
+        return run('LANG=C DEBIAN_FRONTEND=noninteractive apt-get install -y %s' %package)
 
 def apt_remove(package):
-    return run('apt-get remove -y %s' %package)
+    return run('LANG=C DEBIAN_FRONTEND=noninteractive apt-get remove -y %s' %package)
 
 def dpkg_install(path_to_deb):
-    return run('dpkg -i %s' % path_to_deb)
+    return run('LANG=C DEBIAN_FRONTEND=noninteractive dpkg -i %s' % path_to_deb)
 
 def dpkg_purge(deb_name):
-    return run('dpkg --purge %s' % deb_name)
+    return run('LANG=C DEBIAN_FRONTEND=noninteractive dpkg --purge %s' % deb_name)
 
 def apt_install_required_dependencies():
-    return run('apt-get -f -y install')
+    return run('LANG=C DEBIAN_FRONTEND=noninteractive apt-get -f -y install')
 
 def apt_autoremove():
-    return run('apt-get -y autoremove')
+    return run('LANG=C DEBIAN_FRONTEND=noninteractive apt-get -y autoremove')
+
+def yum_install(package):
+    return run('yum install -y %s' % package)
+
+def yum_remove(package):
+    return run('yum remove -y %s' % package)
 

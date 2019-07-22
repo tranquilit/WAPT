@@ -252,7 +252,7 @@ if WAPTEDITION=='enterprise':
 
 ##check linux distrib
 if platform.linux_distribution()[0].startswith('debian'):
-	eprint(run('apt-get install -y python-virtualenv python-setuptools python-pip python-dev libpq-dev libffi-dev libldap2-dev libsasl2-dev'))
+	eprint(run('sudo apt-get install -y python-virtualenv python-setuptools python-pip python-dev libpq-dev libffi-dev libldap2-dev libsasl2-dev'))
 else:
     eprint('Wrong linux distribution script only for CentOs or debian, yours : \n')
     eprint(platform.linux_distribution())
