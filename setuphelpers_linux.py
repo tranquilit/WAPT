@@ -216,6 +216,9 @@ def get_last_logged_on_user():
             res = elem
     return res.name
 
+def run(*args, **kwargs):
+    return subprocess.check_output(*args, shell=True, **kwargs)
+
 def apt_install(package,allow_unauthenticated=False):
     if allow_unauthenticated:
         return run('LANG=C DEBIAN_FRONTEND=noninteractive apt-get install -y --allow-unauthenticated %s' %package)
@@ -238,8 +241,23 @@ def apt_autoremove():
     return run('LANG=C DEBIAN_FRONTEND=noninteractive apt-get -y autoremove')
 
 def yum_install(package):
-    return run('yum install -y %s' % package)
+    return run('LANG=C yum install -y %s' % package)
 
 def yum_remove(package):
-    return run('yum remove -y %s' % package)
+    return run('LANG=C yum remove -y %s' % package)
+
+def yum_autoremove():
+    return run('LANG=C yum autoremove -y')
+
+def apt_update():
+    return run('LANG=C DEBIAN_FRONTEND=noninteractive apt-get -y update')
+
+def apt_upgrade():
+    return run('LANG=C DEBIAN_FRONTEND=noninteractive apt-get -y upgrade')
+
+def yum_update():
+    return run('LANG=C yum update -y')
+
+def yum_upgrade():
+    return run('LANG=C yum upgrade -y')
 

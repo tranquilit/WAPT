@@ -1,7 +1,7 @@
 object VisWaptSelf: TVisWaptSelf
   Left = 1912
   Height = 1017
-  Top = -8
+  Top = 0
   Width = 1920
   Caption = 'WAPT Self-service'
   ClientHeight = 1017

@@ -869,15 +869,19 @@ begin
       //Initialise window with settings in the ini file
       ini:=TIniFile.Create(AppIniFilename);
       try
-        Self.left:=ini.ReadInteger('window','left',Self.Left);
-        Self.Top:=ini.ReadInteger('window','top',Self.Top);
-        Self.Width:=ini.ReadInteger('window','width',Self.Width);
-        Self.Height:=ini.ReadInteger('window','height',Self.Height);
-        Self.WindowState:=TWindowState(ini.ReadInteger('window','windowstate',Integer(Self.WindowState)));
+        if not ini.ValueExists('window','left') then
+          LCLIntf.ShowWindow(VisWaptSelf.Handle, SW_MAXIMIZE)
+        else
+        begin
+          Self.left:=ini.ReadInteger('window','left',Self.Left);
+          Self.Top:=ini.ReadInteger('window','top',Self.Top);
+          Self.Width:=ini.ReadInteger('window','width',Self.Width);
+          Self.Height:=ini.ReadInteger('window','height',Self.Height);
+          Self.WindowState:=TWindowState(ini.ReadInteger('window','windowstate',Integer(Self.WindowState)));
+        end;
       finally
         FreeAndNil(ini);
       end;
-      MakeFullyVisible();
 
       LoadIcons;
       FThreadGetAllIcons:=TThreadGetAllIcons.Create(@OnUpgradeAllIcons,AllPackages,FlowPackages);
