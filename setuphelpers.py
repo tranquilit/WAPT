@@ -790,31 +790,7 @@ def inifile_writestring(inifilename,section,key,value):
     inifile.set(section,key,value)
     inifile.write(open(inifilename,'w'))
 
-def ini2winstr(ini):
-    """Returns a unicode string from an iniparse.RawConfigParser with windows crlf
-    Utility function for local gpo
-    """
-    items = []
-    for sub in [ (u"%s"%l).strip() for l in ini.data._data.contents]:
-        items.extend(sub.splitlines())
-    return u'\r\n'.join(items)
 
-def _lower(s):
-    return s.lower()
-
-def default_gateway():
-    """Returns default ipv4 current gateway"""
-    gateways = netifaces.gateways()
-    if gateways:
-        default_gw = gateways.get('default',None)
-        if default_gw:
-            default_inet_gw = default_gw.get(netifaces.AF_INET,None)
-        else:
-            default_inet_gw = None
-    if default_gateway:
-        return default_inet_gw[0]
-    else:
-        return None
 
 
 def get_language():
@@ -898,9 +874,7 @@ CalledProcessError = subprocess.CalledProcessError
 class EWaptSetupException(Exception):
     pass
 
-def error(reason):
-    """Raise a WAPT fatal error"""
-    raise EWaptSetupException(u'Fatal error : %s' % reason)
+
 
 # Specific parameters for install scripts
 params = {}

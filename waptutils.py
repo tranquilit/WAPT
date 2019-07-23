@@ -1627,6 +1627,36 @@ def currentdatetime():
     """
     return time.strftime('%Y%m%d-%H%M%S')
 
+def _lower(s):
+    return s.lower()
+
+def ini2winstr(ini):
+    """Returns a unicode string from an iniparse.RawConfigParser with windows crlf
+    Utility function for local gpo
+    """
+    items = []
+    for sub in [ (u"%s"%l).strip() for l in ini.data._data.contents]:
+        items.extend(sub.splitlines())
+    return u'\r\n'.join(items)
+
+def default_gateway():
+    """Returns default ipv4 current gateway"""
+    gateways = netifaces.gateways()
+    if gateways:
+        default_gw = gateways.get('default',None)
+        if default_gw:
+            default_inet_gw = default_gw.get(netifaces.AF_INET,None)
+        else:
+            default_inet_gw = None
+    if default_gateway:
+        return default_inet_gw[0]
+    else:
+        return None
+
+def error(reason):
+    """Raise a WAPT fatal error"""
+    raise EWaptSetupException(u'Fatal error : %s' % reason)
+
 if __name__ == '__main__':
     import doctest
     import sys
