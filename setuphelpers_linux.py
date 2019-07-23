@@ -35,7 +35,7 @@ import json
 import cpuinfo
 import sys
 import subprocess
-from waptutils import (ensure_unicode, makepath, networking)
+from waptutils import (ensure_unicode, makepath, networking,ensure_dir,currentdate,currentdatetime)
 
 def local_drives():
     partitions = psutil.disk_partitions()

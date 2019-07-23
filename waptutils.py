@@ -1596,6 +1596,37 @@ def mkdirs(path):
     if not os.path.isdir(path):
         os.makedirs(path)
 
+def ensure_dir(filename):
+    """Be sure the directory of filename exists on disk. Create it if not
+
+    The intermediate directories are created either.
+
+    Args:
+        filename (str): path to a future file for which to create directory.
+    Returns:
+        None
+
+    """
+    d = os.path.dirname(filename)
+    if not os.path.isdir(d):
+        os.makedirs(d)
+
+def currentdate():
+    """date as string YYYYMMDD
+
+    >>> currentdate()
+    '20161102'
+    """
+    return time.strftime('%Y%m%d')
+
+def currentdatetime():
+    """date/time as YYYYMMDD-hhmmss
+
+    >>> currentdatetime()
+    '20161102-193600'
+    """
+    return time.strftime('%Y%m%d-%H%M%S')
+
 if __name__ == '__main__':
     import doctest
     import sys
