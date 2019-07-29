@@ -34,17 +34,17 @@ import stat
 import glob
 import types
 
-from git import Repo
-
 makepath = os.path.join
 from shutil import copyfile
-
 
 def run(*args, **kwargs):
     return subprocess.check_output(*args, shell=True, **kwargs)
 
 def eprint(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)
+
+eprint(run('sudo pip install gitpython'))
+from git import Repo
 
 def run_verbose(*args, **kwargs):
     output =  subprocess.check_output(*args, shell=True, **kwargs)

@@ -77,7 +77,7 @@ for f in nssm_files:
     # fix ACL extraction snafu in zipfile library. We reset acl after creation.
     # It is only need for dev time. Innosetup reset things properly when installing
     run('icacls %s /t /Q /C /RESET' % new_name)
-print nssm_files
+print(nssm_files)
 
 
 print('Get Postgresql zip')

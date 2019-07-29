@@ -39,6 +39,7 @@ import stat
 import subprocess
 import sys
 import time
+import json
 import threading
 from ctypes import wintypes
 from subprocess import PIPE

@@ -3,6 +3,7 @@ object VisLogin: TVisLogin
   Height = 221
   Top = 375
   Width = 231
+  AutoSize = True
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'Sign in'
@@ -20,7 +21,7 @@ object VisLogin: TVisLogin
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
     Left = 15
-    Height = 51
+    Height = 52
     Top = 104
     Width = 201
     Align = alCustom
@@ -31,7 +32,7 @@ object VisLogin: TVisLogin
     BorderSpacing.Right = 15
     BevelColor = clForm
     BevelOuter = bvNone
-    ClientHeight = 51
+    ClientHeight = 52
     ClientWidth = 201
     Color = clForm
     ParentColor = False
@@ -43,7 +44,7 @@ object VisLogin: TVisLogin
       AnchorSideRight.Control = EdPassword
       Left = 3
       Height = 23
-      Top = 28
+      Top = 29
       Width = 83
       Anchors = [akTop, akLeft, akRight]
       BorderSpacing.Left = 3
@@ -69,7 +70,7 @@ object VisLogin: TVisLogin
       AnchorSideRight.Control = PanelLogin
       AnchorSideRight.Side = asrBottom
       Left = 89
-      Height = 21
+      Height = 23
       Top = 29
       Width = 112
       Anchors = [akTop, akLeft, akRight]
@@ -81,7 +82,7 @@ object VisLogin: TVisLogin
       AnchorSideRight.Control = PanelLogin
       AnchorSideRight.Side = asrBottom
       Left = 89
-      Height = 21
+      Height = 23
       Top = 0
       Width = 112
       Anchors = [akTop, akLeft, akRight]
@@ -97,57 +98,69 @@ object VisLogin: TVisLogin
     AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
     Left = 15
-    Height = 66
-    Top = 155
+    Height = 45
+    Top = 166
     Width = 201
     Align = alCustom
     Anchors = [akTop, akLeft, akRight, akBottom]
     AutoSize = True
     BorderSpacing.Left = 15
+    BorderSpacing.Top = 10
     BorderSpacing.Right = 15
+    BorderSpacing.Bottom = 10
     BevelOuter = bvNone
-    ClientHeight = 66
+    ClientHeight = 45
     ClientWidth = 201
     TabOrder = 1
-    object ButOk: TBitBtn
+    object Panel2: TPanel
       AnchorSideLeft.Control = Panel1
-      AnchorSideTop.Control = Panel1
-      AnchorSideTop.Side = asrCenter
-      AnchorSideRight.Control = ButCancel
-      Left = 0
+      AnchorSideLeft.Side = asrCenter
+      Left = 13
       Height = 28
-      Top = 19
-      Width = 82
+      Top = 0
+      Width = 174
       AutoSize = True
-      BorderSpacing.Right = 6
-      Color = clWhite
-      Constraints.MinHeight = 28
-      Constraints.MinWidth = 82
-      Default = True
-      DefaultCaption = True
-      Kind = bkOK
-      ModalResult = 1
+      BevelOuter = bvNone
+      ClientHeight = 28
+      ClientWidth = 174
       TabOrder = 0
-    end
-    object ButCancel: TBitBtn
-      AnchorSideTop.Control = Panel1
-      AnchorSideTop.Side = asrCenter
-      AnchorSideRight.Control = Panel1
-      AnchorSideRight.Side = asrBottom
-      Left = 119
-      Height = 28
-      Top = 19
-      Width = 82
-      Anchors = [akTop, akRight]
-      AutoSize = True
-      Cancel = True
-      Caption = 'Cancel'
-      Color = clWhite
-      Constraints.MinHeight = 28
-      Constraints.MinWidth = 82
-      Kind = bkCancel
-      ModalResult = 2
-      TabOrder = 1
+      object ButOk: TBitBtn
+        AnchorSideTop.Side = asrCenter
+        Left = 0
+        Height = 28
+        Top = 0
+        Width = 82
+        AutoSize = True
+        Color = clWhite
+        Constraints.MinHeight = 28
+        Constraints.MinWidth = 82
+        Default = True
+        DefaultCaption = True
+        Kind = bkOK
+        ModalResult = 1
+        TabOrder = 0
+      end
+      object ButCancel: TBitBtn
+        AnchorSideLeft.Control = ButOk
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Side = asrCenter
+        AnchorSideRight.Side = asrBottom
+        Left = 92
+        Height = 28
+        Top = 0
+        Width = 82
+        Anchors = [akLeft]
+        AutoSize = True
+        BorderSpacing.Left = 10
+        Cancel = True
+        Caption = 'Cancel'
+        Color = clWhite
+        Constraints.MinHeight = 28
+        Constraints.MinWidth = 82
+        Kind = bkCancel
+        ModalResult = 2
+        TabOrder = 1
+      end
     end
   end
   object WarningPanel: TPanel
@@ -173,9 +186,9 @@ object VisLogin: TVisLogin
       AnchorSideTop.Control = WarningPanel
       AnchorSideTop.Side = asrCenter
       Left = 41
-      Height = 14
-      Top = 2
-      Width = 126
+      Height = 16
+      Top = 1
+      Width = 139
       Align = alCustom
       AutoSize = True
       BorderSpacing.Left = 5
@@ -232,13 +245,18 @@ object VisLogin: TVisLogin
     AnchorSideLeft.Control = Owner
     AnchorSideLeft.Side = asrCenter
     AnchorSideTop.Control = Owner
-    Left = 15
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    Left = 9
     Height = 56
     Top = 20
-    Width = 201
+    Width = 212
     Align = alCustom
+    Anchors = [akTop, akLeft, akRight]
     AutoSize = True
+    BorderSpacing.Left = 10
     BorderSpacing.Top = 20
+    BorderSpacing.Right = 10
     OnClick = LogoLoginClick
     OnMouseEnter = LogoLoginMouseEnter
     OnMouseLeave = LogoLoginMouseLeave

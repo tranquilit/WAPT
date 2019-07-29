@@ -21,6 +21,7 @@ type
     ImageWarning: TImage;
     ImgWarning: TImage;
     Panel1: TPanel;
+    Panel2: TPanel;
     WarningPanel: TPanel;
     PanelLogin: TPanel;
     StaticText1: TStaticText;
@@ -59,7 +60,9 @@ end;
 
 procedure TVisLogin.LogoLoginClick(Sender: TObject);
 begin
-  OpenDocument('https://www.tranquil.it/solutions/wapt-deploiement-d-applications/');
+  {$ifndef ENTERPRISE }
+    OpenDocument('https://www.tranquil.it/solutions/wapt-deploiement-d-applications/');
+  {$endif}
 end;
 
 procedure TVisLogin.LogoLoginMouseEnter(Sender: TObject);

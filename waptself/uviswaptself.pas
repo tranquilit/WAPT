@@ -751,6 +751,8 @@ begin
 end;
 
 procedure TVisWaptSelf.FormCreate(Sender: TObject);
+var
+  PicLogoTmp: TPicture;
 begin
   Visible := False;
   if (not ReadWaptConfig(IncludeTrailingPathDelimiter(GetCurrentDir)+'wapt-get.ini')) then
@@ -773,7 +775,16 @@ begin
     PicLogo.Picture.LoadFromFile(WaptBaseDir+'\templates\waptself-logo.png')
   else
     PicLogo.Picture.LoadFromResourceName(HINSTANCE,'SELF-SERVICE-ENTERPRISE-400PX');
-  ImageLogo.Picture.LoadFromResourceName(HINSTANCE,'SELF-SERVICE-ENTERPRISE-200PX');
+  if FileExists(WaptBaseDir+'\templates\waptself-logo.png') then
+  begin
+    ImageLogo.Picture.LoadFromFile(WaptBaseDir+'\templates\waptself-logo.png');
+    PicLogoTmp:=TPicture.Create;
+    PicLogoTmp.LoadFromResourceName(HINSTANCE,'SELF-SERVICE-ENTERPRISE-200PX');
+    VisWaptSelf.Constraints.MinHeight:=VisWaptSelf.Constraints.MinHeight-PicLogoTmp.Height+ImageLogo.Picture.Height;
+    FreeAndNil(PicLogoTmp);
+  end
+  else
+    ImageLogo.Picture.LoadFromResourceName(HINSTANCE,'SELF-SERVICE-ENTERPRISE-200PX');
   {$endif}
 
   if Screen.PixelsPerInch <> 96 then

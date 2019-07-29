@@ -1349,6 +1349,13 @@ def get_ad_ou():
     except Exception as e:
         return make_response_from_exception(e)
 
+@app.route('/api/v3/get_site')
+@requires_auth
+def get_site():
+    """
+    """
+    return ''
+
 @app.route('/api/v3/get_ad_sites')
 @requires_auth
 def get_ad_sites():
