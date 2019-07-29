@@ -57,6 +57,7 @@ import psutil
 from requests.adapters import HTTPAdapter
 from urllib3.util.ssl_ import create_urllib3_context
 from urllib3.exceptions import InsecureRequestWarning
+from setuphelpers import EWaptSetupException
 
 # some shortcuts
 isfile=os.path.isfile
