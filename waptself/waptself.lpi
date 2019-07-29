@@ -170,13 +170,14 @@
       </Options>
     </Linking>
     <Other>
+      <CustomOptions Value="-dENTERPRISE"/>
       <OtherDefines Count="1">
         <Define0 Value="ENTERPRISE"/>
       </OtherDefines>
     </Other>
   </CompilerOptions>
   <Debugging>
-    <Exceptions Count="3">
+    <Exceptions Count="5">
       <Item1>
         <Name Value="EIdSocketError"/>
       </Item1>
@@ -186,6 +187,12 @@
       <Item3>
         <Name Value="FPImageException"/>
       </Item3>
+      <Item4>
+        <Name Value="EFOpenError"/>
+      </Item4>
+      <Item5>
+        <Name Value="EFCreateError"/>
+      </Item5>
     </Exceptions>
   </Debugging>
 </CONFIG>
