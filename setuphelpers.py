@@ -60,7 +60,6 @@ __all__ = [
 if sys.platform == 'win32':
     __all__.extend(
     ['CalledProcessError',
-     'EWaptSetupException',
      'HKEY_CLASSES_ROOT',
      'HKEY_CURRENT_CONFIG',
      'HKEY_CURRENT_USER',
@@ -300,7 +299,6 @@ if sys.platform == 'win32':
 elif sys.platform.startswith('linux'):
     __all__.extend(
     ['CalledProcessError',
-     'EWaptSetupException',
      'PackageEntry',
      'Version',
      '__version__',
@@ -870,11 +868,6 @@ def unzip(zipfn,target=None,filenames=None):
     return [makepath(target,fn.replace('/',os.sep)) for fn in files]
 
 CalledProcessError = subprocess.CalledProcessError
-
-class EWaptSetupException(Exception):
-    pass
-
-
 
 # Specific parameters for install scripts
 params = {}
