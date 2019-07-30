@@ -112,9 +112,14 @@ def sign_exe(exe_path,p12path,p12password):
 def set_app_ico(lpi_path,edition):
     (lpi_rootname,lpi_ext) = os.path.splitext(lpi_path)
     appico_path = lpi_rootname+'.ico'
-    source_ico = setuphelpers.makepath(wapt_root_dir,'wapt-%s.ico'%edition)
-    if not os.path.isfile(source_ico):
-        source_ico = setuphelpers.makepath(wapt_root_dir,'wapt.ico')
+    if not lpi_rootname.endswith('waptself'):
+        source_ico = setuphelpers.makepath(wapt_root_dir,'wapt-%s.ico'%edition)
+        if not os.path.isfile(source_ico):
+            source_ico = setuphelpers.makepath(wapt_root_dir,'wapt.ico')
+    else:
+        source_ico = setuphelpers.makepath(wapt_root_dir,'waptself','waptself-%s.ico' % edition.lower())
+        if not os.path.isfile(source_ico):
+            source_ico = setuphelpers.makepath(wapt_root_dir,'waptself','waptself-community.ico')
     setuphelpers.filecopyto(source_ico,appico_path)
 
 
