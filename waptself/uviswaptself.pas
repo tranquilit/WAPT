@@ -195,7 +195,6 @@ type
     function GetAllPackagesSorted(Pck : ISuperObject):ISuperObject;
     function GetAllCategories(Pck : ISuperObject):TStringList;
     property AllPackages:ISuperObject read GetAllPackages write FAllPackages;
-    function GoodSizeForScreen(ASize : integer):integer;
     procedure EventsScrollBar(var TheMessage: TLMessage);
     procedure AddFrameOnFlowPackages(Pck : ISuperObject);
   public
@@ -204,7 +203,7 @@ type
     procedure ChangeIconMinusByPlusOnFrames();
     procedure NextFrames();
     procedure PreviousFrames();
-
+    function GoodSizeForScreen(ASize : integer):integer;
   end;
 
 var
@@ -807,6 +806,7 @@ begin
     BtnUpgradeAll.TextSize:=GoodSizeForScreen(BtnUpgradeAll.TextSize);
     BtnHideDetails.TextSize:=GoodSizeForScreen(BtnHideDetails.TextSize);
     BtnCancelTasks.TextSize:=GoodSizeForScreen(BtnCancelTasks.TextSize);
+    BtnHideTaskBar.TextSize:=GoodSizeForScreen(BtnHideTaskBar.TextSize);
     if (Screen.PixelsPerInch>96) then
     begin
       Panel8.Hide;

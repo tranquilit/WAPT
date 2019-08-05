@@ -43,7 +43,7 @@ var
 
 implementation
 
-uses waptcommon, LCLIntf;
+uses waptcommon, LCLIntf, uVisWaptSelf;
 
 {$R *.lfm}
 
@@ -86,6 +86,8 @@ begin
   if Screen.PixelsPerInch <> 96 then
   begin
      LogoLogin.AutoSize:=false;
+     LogoLogin.Height:=VisWaptSelf.GoodSizeForScreen(LogoLogin.Height);
+     LogoLogin.Width:=VisWaptSelf.GoodSizeForScreen(LogoLogin.Width);
      LogoLogin.AntialiasingMode:=amOn;
      ImageWarning.AutoSize:=false;
      ImageWarning.AntialiasingMode:=amOn;
