@@ -56,6 +56,7 @@ elif sys.platform.startswith('linux') or sys.platform.startswith('darwin'):
 __all__ = []
 
 __all__.extend([
+     'wget',
      'run',
      'Version',
      '__version__',
