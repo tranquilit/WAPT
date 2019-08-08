@@ -57,6 +57,7 @@ __all__ = []
 
 __all__.extend([
      'wget',
+     'wgets',
      'run',
      'Version',
      '__version__',
