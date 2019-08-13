@@ -303,6 +303,9 @@ class WaptServiceConfig(object):
                 logger.info(u"No password set for local waptservice, using local computer security")
                 self.waptservice_password=None  # = password
 
+            if config.has_option('global','waptservice_admin_auth_allow'):
+                self.waptservice_admin_auth_allow = config.getboolean('global','waptservice_admin_auth_allow')
+
             if config.has_option('global','waptservice_port'):
                 port = config.get('global','waptservice_port')
                 if port:
