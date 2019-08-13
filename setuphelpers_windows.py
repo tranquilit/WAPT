@@ -1321,7 +1321,7 @@ def task_exists(name):
     try:
         run(ur'schtasks /Query /TN "%s"' % name)
         return True
-    except CalledProcessError as e:
+    except subprocess.CalledProcessError as e:
         if e.returncode == 1:
             return False
         raise e
@@ -1342,7 +1342,7 @@ def delete_task(name):
     """
     try:
         return ensure_unicode(run(ur'schtasks /Delete /F /TN "%s"' % name))
-    except CalledProcessError as e:
+    except subprocess.CalledProcessError as e:
         if e.returncode == 1:
             return ensure_unicode(e)
         raise e

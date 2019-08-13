@@ -101,9 +101,9 @@ class WaptBaseModel(SignaledModel):
 
     # audit data
     created_on = DateTimeField(null=True)
-    created_by = DateTimeField(null=True)
+    created_by = CharField(null=True)
     updated_on = DateTimeField(null=True)
-    updated_by = DateTimeField(null=True)
+    updated_by = CharField(null=True)
 
     def __unicode__(self):
         return u'%s' % (self.__data__,)
@@ -611,6 +611,14 @@ class StoreUsage(SignaledModel):
     packages_count_max = IntegerField(null=True)
     hosts_count_need_upgrade = IntegerField(null=True)
     hosts_count_has_error = IntegerField(null=True)
+
+class SiteRules(WaptBaseModel):
+    id = PrimaryKeyField(primary_key=True)
+    sequence = IntegerField(null=False)
+    name = CharField(null=True)
+    condition = CharField(null=False)
+    value = CharField(null=False)
+    repo_url = CharField(null=False)
 
 
 def dictgetpath(adict, pathstr):
@@ -1800,6 +1808,31 @@ def upgrade_db_structure():
                 opes.append(migrator.add_column(ReportingQueries._meta.name, 'last_snapshot_date',ReportingQueries.last_snapshot_date))
             if not 'snapshot_ttl' in columns:
                 opes.append(migrator.add_column(ReportingQueries._meta.name, 'snapshot_ttl',ReportingQueries.snapshot_ttl))
+
+            migrate(*opes)
+            (v, created) = ServerAttribs.get_or_create(key='db_version')
+            v.value = next_version
+            v.save()
+
+    next_version = '1.7.5.5'
+    if get_db_version() <= next_version:
+        with wapt_db.atomic():
+            logger.info("Migrating from %s to %s" % (get_db_version(), next_version))
+            opes = []
+
+            SiteRules.create_table(fail_silently=True);
+
+            columns = [c.name for c in wapt_db.get_columns('siterules')]
+            if not 'sequence' in columns:
+                opes.append(migrator.add_column(SiteRules._meta.name, 'sequence',SiteRules.sequence))
+            if not 'name' in columns:
+                opes.append(migrator.add_column(SiteRules._meta.name, 'name',SiteRules.name))
+            if not 'condition' in columns:
+                opes.append(migrator.add_column(SiteRules._meta.name, 'condition',SiteRules.condition))
+            if not 'value' in columns:
+                opes.append(migrator.add_column(SiteRules._meta.name, 'value',SiteRules.value))
+            if not 'repo_url' in columns:
+                opes.append(migrator.add_column(SiteRules._meta.name, 'repo_url',SiteRules.repo_url))
 
             migrate(*opes)
             (v, created) = ServerAttribs.get_or_create(key='db_version')

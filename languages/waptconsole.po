@@ -1,6 +1,42 @@
 msgid ""
 msgstr "Content-Type: text/plain; charset=UTF-8"
 
+#: tform1.caption
+msgid "Form1"
+msgstr ""
+
+#: tformeditrule.bitbtncancel.caption
+#, fuzzy
+msgctxt "tformeditrule.bitbtncancel.caption"
+msgid "Cancel"
+msgstr "Annuler"
+
+#: tformeditrule.bitbtnok.caption
+msgctxt "tformeditrule.bitbtnok.caption"
+msgid "Save"
+msgstr ""
+
+#: tformeditrule.caption
+msgctxt "tformeditrule.caption"
+msgid "Edit rule"
+msgstr ""
+
+#: tformeditrule.labcondition.caption
+msgid "Condition :"
+msgstr ""
+
+#: tformeditrule.labname.caption
+msgid "Name : "
+msgstr ""
+
+#: tformeditrule.labrepourl.caption
+msgid "Repository URL :"
+msgstr ""
+
+#: tformeditrule.labvalue.caption
+msgid "Value :"
+msgstr ""
+
 #: tvisapropos.caption
 msgid "About WAPTConsole"
 msgstr ""
@@ -1980,6 +2016,10 @@ msgstr ""
 msgid "New host AD profile"
 msgstr ""
 
+#: tviswaptgui.actascendrule.caption
+msgid "Up rule"
+msgstr ""
+
 #: tviswaptgui.actcancelrunningtask.caption
 msgctxt "tviswaptgui.actcancelrunningtask.caption"
 msgid "Cancel current task"
@@ -2054,6 +2094,14 @@ msgctxt "tviswaptgui.actdeletepackage.caption"
 msgid "Remove from repository"
 msgstr ""
 
+#: tviswaptgui.actdeleterule.caption
+msgid "Delete rule"
+msgstr ""
+
+#: tviswaptgui.actdescendrule.caption
+msgid "Down rule"
+msgstr ""
+
 #: tviswaptgui.actdisplaypreferences.caption
 msgctxt "TVISWAPTGUI.ACTDISPLAYPREFERENCES.CAPTION"
 msgid "Display preferences"
@@ -2085,6 +2133,11 @@ msgstr ""
 #: tviswaptgui.acteditpackage.caption
 msgctxt "tviswaptgui.acteditpackage.caption"
 msgid "Edit package"
+msgstr ""
+
+#: tviswaptgui.acteditrule.caption
+msgctxt "tviswaptgui.acteditrule.caption"
+msgid "Edit rule"
 msgstr ""
 
 #: tviswaptgui.actenglish.caption
@@ -2158,6 +2211,10 @@ msgstr ""
 
 #: tviswaptgui.actnewaccount.caption
 msgid "New account"
+msgstr ""
+
+#: tviswaptgui.actnewrule.caption
+msgid "Add rule"
 msgstr ""
 
 #: tviswaptgui.actpackagesaudit.caption
@@ -2294,6 +2351,11 @@ msgstr ""
 
 #: tviswaptgui.actreportingquerysaveall.caption
 msgid "Save queries"
+msgstr ""
+
+#: tviswaptgui.actrepositoriesgetupdaterules.caption
+msgctxt "tviswaptgui.actrepositoriesgetupdaterules.caption"
+msgid "Refresh"
 msgstr ""
 
 #: tviswaptgui.actresetwebsocketconnections.caption
@@ -4194,6 +4256,7 @@ msgid "id"
 msgstr ""
 
 #: tviswaptgui.gridreportingqueries.header.columns[1].text
+msgctxt "tviswaptgui.gridreportingqueries.header.columns[1].text"
 msgid "name"
 msgstr ""
 
@@ -4203,6 +4266,50 @@ msgstr ""
 
 #: tviswaptgui.gridreportingqueries.header.columns[3].text
 msgid "settings"
+msgstr ""
+
+#: tviswaptgui.gridrules.header.columns[0].text
+msgctxt "tviswaptgui.gridrules.header.columns[0].text"
+msgid "sequence"
+msgstr ""
+
+#: tviswaptgui.gridrules.header.columns[1].text
+msgctxt "tviswaptgui.gridrules.header.columns[1].text"
+msgid "name"
+msgstr ""
+
+#: tviswaptgui.gridrules.header.columns[2].text
+msgctxt "tviswaptgui.gridrules.header.columns[2].text"
+msgid "condition"
+msgstr ""
+
+#: tviswaptgui.gridrules.header.columns[3].text
+msgid "value"
+msgstr ""
+
+#: tviswaptgui.gridrules.header.columns[4].text
+msgctxt "tviswaptgui.gridrules.header.columns[4].text"
+msgid "repo_url"
+msgstr ""
+
+#: tviswaptgui.gridrules.header.columns[5].text
+msgctxt "tviswaptgui.gridrules.header.columns[5].text"
+msgid "created_by"
+msgstr ""
+
+#: tviswaptgui.gridrules.header.columns[6].text
+msgctxt "tviswaptgui.gridrules.header.columns[6].text"
+msgid "created_on"
+msgstr ""
+
+#: tviswaptgui.gridrules.header.columns[7].text
+msgctxt "tviswaptgui.gridrules.header.columns[7].text"
+msgid "updated_by"
+msgstr ""
+
+#: tviswaptgui.gridrules.header.columns[8].text
+msgctxt "tviswaptgui.gridrules.header.columns[8].text"
+msgid "updated_on"
 msgstr ""
 
 #: tviswaptgui.gridselfservicepackages.header.columns[0].text
@@ -5203,6 +5310,10 @@ msgstr ""
 msgid "Reports"
 msgstr ""
 
+#: tviswaptgui.pgrepositories.caption
+msgid "Repositories"
+msgstr ""
+
 #: tviswaptgui.pgrights.caption
 msgid "Rights management"
 msgstr ""
@@ -5260,8 +5371,16 @@ msgstr ""
 msgid "TbReport1"
 msgstr ""
 
+#: tviswaptgui.tbrepos.caption
+msgid "TbRepos"
+msgstr ""
+
 #: tviswaptgui.toolbar1.caption
 msgid "ToolBar1"
+msgstr ""
+
+#: tviswaptgui.toolbutton1.caption
+msgid "ToolButton1"
 msgstr ""
 
 #: tviswaptgui.toolbutton6.caption
@@ -5270,6 +5389,10 @@ msgstr ""
 
 #: tviswaptgui.toolbuttonsep1.caption
 msgid "ToolButtonSep1"
+msgstr ""
+
+#: tviswaptgui.toolbuttonsep2.caption
+msgid "ToolButtonSep2"
 msgstr ""
 
 #: tviswuadownloads.actwuadownloadsrefresh.caption
@@ -5803,6 +5926,10 @@ msgid ""
 "Are you sure to continue ?\n"
 msgstr ""
 
+#: uwaptconsoleres.rsagentip
+msgid "AGENT IP"
+msgstr ""
+
 #: uwaptconsoleres.rsbuildinprogress
 msgctxt "uwaptconsoleres.rsbuildinprogress"
 msgid "Build in progress."
@@ -5983,6 +6110,10 @@ msgstr ""
 msgid "Are you sure you want to download %d Windows updates on the server ?"
 msgstr ""
 
+#: uwaptconsoleres.rscreatenewrule
+msgid "Create new rule"
+msgstr ""
+
 #: uwaptconsoleres.rsdefaultusagestatsurl
 msgid "http://wapt.tranquil.it/usage_stats"
 msgstr ""
@@ -6035,6 +6166,10 @@ msgstr ""
 #: uwaptconsoleres.rsdnsserver
 msgctxt "uwaptconsoleres.rsdnsserver"
 msgid "DNS Server : %s"
+msgstr ""
+
+#: uwaptconsoleres.rsdomain
+msgid "DOMAIN"
 msgstr ""
 
 #: uwaptconsoleres.rsdownloadcurrupted
@@ -6170,6 +6305,10 @@ msgstr ""
 #: uwaptconsoleres.rshostconfigeditcaption
 msgctxt "uwaptconsoleres.rshostconfigeditcaption"
 msgid "Edit host configuration"
+msgstr ""
+
+#: uwaptconsoleres.rshostname
+msgid "HOSTNAME"
 msgstr ""
 
 #: uwaptconsoleres.rshostsselectedtotal
@@ -6411,6 +6550,10 @@ msgctxt "uwaptconsoleres.rsprivatekeydoesntexist"
 msgid "Private key doesn't exist : %s"
 msgstr ""
 
+#: uwaptconsoleres.rspublicip
+msgid "PUBLIC IP"
+msgstr ""
+
 #: uwaptconsoleres.rspublickeygenerror
 msgctxt "uwaptconsoleres.rspublickeygenerror"
 msgid "Error during key generation : %s"
@@ -6478,6 +6621,10 @@ msgstr ""
 
 #: uwaptconsoleres.rsshowmessageforusers
 msgid "Send message to users"
+msgstr ""
+
+#: uwaptconsoleres.rssite
+msgid "SITE"
 msgstr ""
 
 #: uwaptconsoleres.rsspecifycertificateforfulter

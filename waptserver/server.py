@@ -24,6 +24,8 @@ from __future__ import absolute_import
 import os
 import sys
 import platform
+import ipaddress
+import fnmatch
 
 if __name__ == '__main__':
     # as soon as possible, we must monkey patch the library...
@@ -79,7 +81,7 @@ from flask import request, Flask, Response, send_from_directory, session, g, red
 from peewee import *
 from playhouse.postgres_ext import *
 
-from waptserver.model import Hosts, HostSoftwares, HostPackagesStatus, ServerAttribs, HostGroups,HostWsus,WsusUpdates,Packages
+from waptserver.model import Hosts, HostSoftwares, HostPackagesStatus, ServerAttribs, HostGroups,HostWsus,WsusUpdates,Packages,SiteRules
 from waptserver.model import get_db_version, init_db, wapt_db, model_to_dict, dict_to_model, update_host_data
 from waptserver.model import upgrade_db_structure
 from waptserver.model import load_db_config
@@ -1349,12 +1351,122 @@ def get_ad_ou():
     except Exception as e:
         return make_response_from_exception(e)
 
-@app.route('/api/v3/get_site')
+@app.route('/api/v3/get_repo_url',methods=['HEAD','POST'])
+def get_repo_url():
+    """
+    """
+    rules = list(SiteRules.select().order_by(SiteRules.sequence.asc()).dicts())
+    res = {}
+    res['REPO_URL'] = ''
+    r = request.data
+    if request.data is not None:
+        r = ujson.loads(zlib.decompress(r))
+        for rule in rules:
+            try:
+                if ((rule['condition'] == 'AGENT IP') and (ipaddress.ip_address(r.get('Agent IP')) in ipaddress.ip_network(rule['value']))) or ((rule['condition'] == 'DOMAIN') and (r.get('domain') == rule['value'])) or ((rule['condition'] == 'HOSTNAME') and fnmatch.fnmatch(r.get('hostname'),rule['value'])) or ((rule['condition'] == 'PUBLIC IP') and (ipaddress.ip_address(request.remote_addr) in ipaddress.ip_network(rule['value']))) or ((rule['condition'] == 'SITE') and (rule['value'] == r.get('site'))):
+                    res['REPO_URL'] = rule['repo_url']
+            except:
+                pass
+    return jsondump(res)
+
+@app.route('/api/v3/get_all_rules')
 @requires_auth
-def get_site():
+def get_all_rules():
     """
     """
-    return ''
+    start_time = time.time()
+    try:
+        rules = list(SiteRules.select().order_by(SiteRules.sequence.asc()).dicts())
+        return make_response(result=rules, success=True, request_time = time.time() - start_time )
+    except Exception as e:
+        return make_response_from_exception(e)
+
+@app.route('/api/v3/add_rule',methods=['HEAD','POST'])
+@requires_auth
+def add_rule():
+    """
+    """
+    start_time = time.time()
+    try:
+        data = ujson.loads(request.data)
+        data['updated_by']=request.authorization.username
+        data['updated_on']=datetime.datetime.now()
+        data['created_by']=request.authorization.username
+        data['created_on']=datetime.datetime.now()
+        idprev=data.pop('id_prev',None)
+        if idprev:
+            curseq=int(model_to_dict(SiteRules.get_by_id(idprev))['sequence'])
+            q = SiteRules.update(sequence=(SiteRules.sequence+1),updated_by=request.authorization.username,updated_on=datetime.datetime.now()).where(SiteRules.sequence>=curseq).execute()
+            data['sequence']=curseq
+        else:
+            data['sequence']=1
+            q = SiteRules.update(sequence=(SiteRules.sequence+1),updated_by=request.authorization.username,updated_on=datetime.datetime.now()).where(SiteRules.sequence>0).execute()
+        result=model_to_dict(SiteRules.create(**data))
+        return make_response(result=result, success=True, request_time = time.time() - start_time )
+    except Exception as e:
+        return make_response_from_exception(e)
+
+@app.route('/api/v3/remove_rule',methods=['HEAD','POST'])
+@requires_auth
+def remove_rule():
+    """
+    """
+    start_time = time.time()
+    try:
+        idtoremove = int(request.data)
+        curseq=int(model_to_dict(SiteRules.get_by_id(idtoremove))['sequence'])
+        q = SiteRules.update(sequence=(SiteRules.sequence-1),updated_by=request.authorization.username,updated_on=datetime.datetime.now()).where(SiteRules.sequence>curseq)
+        q.execute()
+        query = SiteRules.delete().where(SiteRules.id == idtoremove)
+        result=query.execute()
+        return make_response(result=result, success=True, request_time = time.time() - start_time )
+    except Exception as e:
+        return make_response_from_exception(e)
+
+@app.route('/api/v3/modify_rule',methods=['HEAD','POST'])
+@requires_auth
+def modify_rule():
+    """
+    """
+    start_time = time.time()
+    try:
+        data = ujson.loads(request.data)
+        data['updated_by']=request.authorization.username
+        data['updated_on']=datetime.datetime.now()
+        result=SiteRules.update(updated_by=data['updated_by'],updated_on=data['updated_on'],name=data['name'],condition=data['condition'],repo_url=data['repo_url'],value=data['value']).where(SiteRules.id == data['id']).execute()
+        return make_response(result=result, success=True, request_time = time.time() - start_time )
+    except Exception as e:
+        return make_response_from_exception(e)
+
+@app.route('/api/v3/modify_rules_order',methods=['HEAD','POST'])
+@requires_auth
+def modify_rules_order():
+    """
+    """
+    start_time = time.time()
+    try:
+        data = ujson.loads(request.data)
+        seq=int(model_to_dict(SiteRules.get_by_id(data['id']))['sequence'])
+        if data['ascordesc']=='desc':
+            seqtochange=seq+1
+        elif data['ascordesc']=='asc':
+            seqtochange=seq-1
+        else:
+            return make_repsonse(result=None,success=False, request_time = time.time() - start_time)
+        idtochange=int(model_to_dict(SiteRules.select(SiteRules.id).where(SiteRules.sequence == seqtochange).get())['id'])
+        rule={}
+        ruletochange={}
+        rule['sequence']=seqtochange
+        ruletochange['sequence']=seq
+        rule['updated_by']=request.authorization.username
+        ruletochange['updated_by']=request.authorization.username
+        rule['updated_on']=datetime.datetime.now()
+        ruletochange['updated_on']=datetime.datetime.now()
+        SiteRules.set_by_id(int(idtochange),ruletochange)
+        SiteRules.set_by_id(int(data['id']),rule)
+        return make_response(result=None, success=True, request_time = time.time() - start_time )
+    except Exception as e:
+        return make_response_from_exception(e)
 
 @app.route('/api/v3/get_ad_sites')
 @requires_auth

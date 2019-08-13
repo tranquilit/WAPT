@@ -2004,23 +2004,23 @@ class WaptRepo(WaptRemoteRepo):
     """Gives access to a remote http repository, with a zipped Packages packages index
     Find its repo_url based on
     * repo_url explicit setting in ini config section [<name>]
-    * dnsdomain: if repo_url is empty, lookup a _<name>._tcp.<dnsdomain> SRV record
+    * wapt_server: if repo_url is empty, ask a repo_url at the server
 
     >>> repo = WaptRepo(name='main',url='http://wapt/wapt',timeout=4)
     >>> packages = repo.packages()
     >>> len(packages)
     """
 
-    def __init__(self,url=None,name='wapt',verify_cert=None,http_proxy=None,timeout=None,dnsdomain=None,cabundle=None,config=None):
+    def __init__(self,url=None,name='wapt',verify_cert=None,http_proxy=None,timeout=None,cabundle=None,config=None,wapt_server=None,WAPT=None):
         """Initialize a repo at url "url".
 
         Args:
             name (str): internal local name of this repository
             url  (str): http URL to the repository.
-                 If url is None, the url is requested from DNS by a SRV query
+                 If url is None, the url is requested at the server.
             http_proxy (str): URL to http proxy or None if no proxy.
             timeout (float): timeout in seconds for the connection to the rmeote repository
-            dnsdomain (str): DNS domain to use for autodiscovery of URL if url is not supplied.
+            wapt_server (str): WAPT Server URL to use for autodiscovery if url is not supplied.
 
         .. versionchanged:: 1.4.0
            authorized_certs (list):  list of trusted SSL certificates to filter out untrusted entries.
@@ -2030,44 +2030,53 @@ class WaptRepo(WaptRemoteRepo):
                                      if None, no check is performed. All antries are accepted.
 
         """
-
+        self._WAPT = None
+        self.WAPT = WAPT
         # additional properties
         self._default_config.update({
-            'dnsdomain':'',
+            'wapt_server':'',
         })
 
         # create additional properties
-        self._dnsdomain = None
-        self._cached_dns_repo_url = None
+        self._wapt_server = None
+        self._cached_wapt_server_repo_url = None
 
         WaptRemoteRepo.__init__(self,url=url,name=name,verify_cert=verify_cert,http_proxy=http_proxy,timeout=timeout,cabundle=cabundle,config=config)
 
         # force with supplied not None parameters
-        if dnsdomain is not None:
-            self.dnsdomain = dnsdomain
+        if wapt_server is not None:
+            self.wapt_server = wapt_server
 
     def reset_network(self):
         """called by wapt when network configuration has changed"""
-        self._cached_dns_repo_url = None
+        self._cached_wapt_server_repo_url = None
         self._packages = None
         self._packages_date = None
 
     @property
-    def dnsdomain(self):
-        return self._dnsdomain
+    def wapt_server(self):
+        return self._wapt_server
 
-    @dnsdomain.setter
-    def dnsdomain(self,value):
-        if value != self._dnsdomain:
-            self._dnsdomain = value
-            self._cached_dns_repo_url = None
+    @wapt_server.setter
+    def wapt_server(self,value):
+        if value != self._wapt_server:
+            self._wapt_server = value
+            self._cached_wapt_server_repo_url = None
+
+    @property
+    def WAPT(self):
+        return self._WAPT
+
+    @WAPT.setter
+    def WAPT(self,value):
+        if value!=self.WAPT:
+            self._WAPT=value
 
     @property
     def repo_url(self):
         """Repository URL
 
-        Fixed url if any, else request DNS with a SRV _wapt._tcp.domain query
-        or a CNAME by the find_wapt_repo_url method.
+        Fixed url if none is set in wapt-get.ini by querying the server.
 
         The URL is queried once and then cached into a local property.
 
@@ -2075,22 +2084,22 @@ class WaptRepo(WaptRemoteRepo):
             str: url to the repository
 
         >>> repo = WaptRepo(name='wapt',timeout=4)
-        >>> print repo.dnsdomain
-        tranquilit.local
+        >>> print repo.wapt_server
+        http://wapt.wapt.fr/
         >>> repo = WaptRepo(name='wapt',timeout=4)
-        >>> print repo.dnsdomain
-        tranquilit.local
+        >>> print repo.wapt_server
+        http://wapt.wapt.fr/
         >>> print repo.repo_url
         http://srvwapt.tranquilit.local/wapt
         """
         if self._repo_url:
             return self._repo_url
         else:
-            if not self._cached_dns_repo_url and self.dnsdomain:
-                self._cached_dns_repo_url = self.find_wapt_repo_url()
-            elif not self.dnsdomain:
-                raise Exception(u'No dnsdomain defined for repo %s'%self.name)
-            return self._cached_dns_repo_url
+            if not self._cached_wapt_server_repo_url and self.wapt_server:
+                self._cached_wapt_server_repo_url = self.find_wapt_repo_url()
+            elif not self.wapt_server:
+                raise Exception(u'No wapt_server defined for repo %s'%self.name)
+            return self._cached_wapt_server_repo_url
 
     @repo_url.setter
     def repo_url(self,value):
@@ -2101,151 +2110,36 @@ class WaptRepo(WaptRemoteRepo):
             self._repo_url = value
             self._packages = None
             self._packages_date = None
-            self._cached_dns_repo_url = None
+            self._cached_wapt_server_repo_url = None
 
 
     def find_wapt_repo_url(self):
-        """Search the nearest working main WAPT repository given the following priority
-        - URL defined in ini file
-        - first SRV record in the same network as one of the connected network interface
-        - first SRV record with the highest weight
-        - wapt CNAME in the local dns domain (https first then http)
-
-        Preference for SRV records is :
-           same subnet -> priority asc -> weight desc
-
+        """Ask the server for the url of a repo
         Returns:
-            str: URL to the server.
+            str: URL to the repo.
 
-        >>> repo = WaptRepo(name='wapt',dnsdomain='tranquil.it',timeout=4,url=None)
+        >>> repo = WaptRepo(name='wapt',wapt_server='https://wapt/',timeout=4,url=None)
         >>> repo.repo_url
         'http://wapt.tranquil.it./wapt'
         >>> repo = WaptRepo(name='wapt',url='http://wapt/wapt',timeout=4)
         >>> repo.repo_url
         'http://wapt/wapt'
         """
-
-        try:
-            local_ips = socket.gethostbyname_ex(socket.gethostname())[2]
-            logger.debug(u'All interfaces : %s' % [ "%s/%s" % (i['addr'],i['netmask']) for i in host_ipv4() if 'addr' in i and 'netmask' in i])
-            connected_interfaces = [ i for i in host_ipv4() if 'addr' in i and 'netmask' in i and i['addr'] in local_ips ]
-            logger.debug(u'Local connected IPs: %s' % [ "%s/%s" % (i['addr'],i['netmask']) for i in connected_interfaces])
-
-            def is_inmysubnets(ip):
-                """Return True if IP is in one of my connected subnets
-
-                Returns:
-                    boolean: True if ip is in one of my local connected interfaces subnets
-                """
-                for i in connected_interfaces:
-                    if same_net(i['addr'],ip,i['netmask']):
-                        logger.debug(u'  %s is in same subnet as %s/%s local connected interface' % (ip,i['addr'],i['netmask']))
-                        return True
-                return False
-
-            if self.dnsdomain and self.dnsdomain != '.':
-                # find by dns SRV _wapt._tcp
-                try:
-                    logger.debug(u'Trying _%s._tcp.%s SRV records' % (self.name,self.dnsdomain))
-                    answers = windnsquery.dnsquery_srv('_%s._tcp.%s' % (self.name,self.dnsdomain))
-                    if not answers:
-                        logger.debug(u'  No _%s._tcp.%s SRV record found' % (self.name,self.dnsdomain))
-                    else:
-                        # list of (outside,priority,weight,url)
-                        servers = []
-                        for (priority,weight,wapthost,port) in answers:
-                            # get first numerical ipv4 from SRV name record
-                            try:
-                                ips = windnsquery.dnsquery_a(wapthost)
-                                if not ips:
-                                    logger.debug('DNS Name %s is not resolvable' % wapthost)
-                                else:
-                                    ip = ips[0]
-                                    if port == 80:
-                                        url = 'http://%s/wapt' % (wapthost,)
-                                        servers.append([not is_inmysubnets(ip),priority,-weight,url])
-                                    elif port == 443:
-                                        url = 'https://%s/wapt' % (wapthost)
-                                        servers.append([not is_inmysubnets(ip),priority,-weight,url])
-                                    else:
-                                        url = 'http://%s:%i/wapt' % (wapthost,port)
-                                        servers.append([not is_inmysubnets(ip),priority,-weight,url])
-                            except Exception as e:
-                                logging.debug('Unable to resolve %s : error %s' % (wapthost,ensure_unicode(e),))
-
-                        servers.sort()
-                        available_servers = []
-                        for (outside,priority,weight,url) in servers:
-                            probe_delay = tryurl(url+'/Packages',timeout=self.timeout,proxies=self.proxies)
-                            if probe_delay is not None:
-                                available_servers.append([outside,probe_delay,url])
-                        if available_servers:
-                            available_servers.sort()
-                            return available_servers[0][2]  # [delay,url]
-                        else:
-                            logger.debug(u'  No wapt repo reachable with SRV request within specified timeout %s' % (self.timeout))
-
-                except Exception as e:
-                    logger.debug(u'  DNS resolver exception: %s' % (ensure_unicode(e),))
-                    raise
-
-                # find by dns CNAME
-                try:
-                    logger.debug(u'Trying %s.%s CNAME records' % (self.name,self.dnsdomain))
-                    answers = windnsquery.dnsquery_cname('%s.%s' % (self.name,self.dnsdomain))
-                    if not answers:
-                        logger.debug(u'  No working %s.%s CNAME record found' % (self.name,self.dnsdomain))
-                    else:
-                        # list of (outside,priority,weight,url)
-                        servers = []
-                        available_servers = []
-                        for wapthost in answers:
-                            url = 'https://%s/wapt' % (wapthost,)
-                            probe_delay = tryurl(url+'/Packages',timeout=self.timeout,proxies=self.proxies)
-                            if probe_delay is not None:
-                                available_servers.append([probe_delay,url])
-                            else:
-                                probe_delay = tryurl(url+'/Packages',timeout=self.timeout,proxies=self.proxies)
-                                if probe_delay is not None:
-                                    available_servers.append([probe_delay,url])
-
-                        if available_servers:
-                            available_servers.sort()
-                            return available_servers[0][1]  # [delay,url]
-                        else:
-                            logger.debug(u'  No wapt repo reachable using CNAME records within specified timeout %s' % (self.timeout))
-
-
-                except Exception as e:
-                    logger.debug(u'  DNS error: %s' % (ensure_unicode(e),))
-                    raise
-
-                # find by dns A
-                try:
-                    wapthost = 'wapt.%s.' % self.dnsdomain
-                    logger.debug(u'Trying %s A records' % wapthost)
-                    answers = windnsquery.dnsquery_a(wapthost)
-                    if answers:
-                        url = 'https://%s/wapt' % (wapthost,)
-                        if tryurl(url+'/Packages',timeout=self.timeout,proxies=self.proxies):
-                            return url
-                        url = 'http://%s/wapt' % (wapthost,)
-                        if tryurl(url+'/Packages',timeout=self.timeout,proxies=self.proxies):
-                            return url
-                    else:
-                        logger.debug(u'  No %s A record found' % wapthost)
-
-                except Exception as e:
-                    logger.debug(u'  DNS resolver exception: %s' % (ensure_unicode(e),))
-                    raise
-
-            else:
-                logger.warning(u'Local DNS domain not found, skipping SRV _%s._tcp and CNAME search ' % (self.name))
-
-            return None
-        except Exception as e:
-            logger.debug(u'Waptrepo.find_wapt_repo_url: exception: %s' % (e,))
-            raise
+        s=socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
+        s.connect(("8.8.8.8",80))
+        IP=s.getsockname()[0]
+        data = {}
+        data['uuid']=self.WAPT.host_uuid
+        data['host_certificate']= self.WAPT.create_or_update_host_certificate()
+        data['host_certificate_signing_request'] = self.WAPT.get_host_certificate_signing_request().as_pem()
+        data['Agent IP'] = IP
+        data['hostname'] = setuphelpers.get_hostname()
+        data['domain'] = setuphelpers.get_domain()
+        data['site'] = self.WAPT.get_host_site()
+        data = jsondump(data)
+        if self.WAPT.waptserver:
+            result = self.WAPT.waptserver.post('api/v3/get_repo_url',data=data)
+        return result.get('REPO_URL')
 
     def load_config(self,config,section=None):
         """Load waptrepo configuration from inifile section.
@@ -2265,27 +2159,27 @@ class WaptRepo(WaptRemoteRepo):
             section = 'global'
 
         WaptRemoteRepo.load_config(self,config,section)
-        if config.has_section(section) and config.has_option(section,'dnsdomain'):
-            self.dnsdomain = config.get(section,'dnsdomain')
+        if config.has_section(section) and config.has_option(section,'wapt_server'):
+            self.wapt_server = config.get(section,'wapt_server')
         return self
 
     def as_dict(self):
         result = super(WaptRepo,self).as_dict()
         result.update(
             {
-            'repo_url':self._repo_url or self._cached_dns_repo_url,
-            'dnsdomain':self.dnsdomain,
+            'repo_url':self._repo_url or self._cached_wapt_server_repo_url,
+            'wapt_server':self.wapt_server,
             })
         return result
 
     def __repr__(self):
         try:
-            if self.dnsdomain:
-                return '<WaptRepo %s for domain %s>' % (self.repo_url,self.dnsdomain)
+            if self.wapt_server:
+                return '<WaptRepo %s for wapt_server %s>' % (self.repo_url,self.wapt_server)
             else:
                 return '<WaptRepo %s>' % (self.repo_url,)
         except:
-            return '<WaptRepo %s for domain %s>' % ('unknown',self.dnsdomain)
+            return '<WaptRepo %s for wapt_server %s>' % ('unknown',self.wapt_server)
 
 class WaptHostRepo(WaptRepo):
     """Dummy http repository for host packages
@@ -2297,10 +2191,10 @@ class WaptHostRepo(WaptRepo):
      PackageEntry('4C4C4544-004E-3510-8051-C7C04F325131','30') ]
     """
 
-    def __init__(self,url=None,name='wapt-host',verify_cert=None,http_proxy=None,timeout = None,dnsdomain=None,host_id=None,cabundle=None,config=None,host_key=None):
+    def __init__(self,url=None,name='wapt-host',verify_cert=None,http_proxy=None,timeout = None,wapt_server=None,host_id=None,cabundle=None,config=None,host_key=None,WAPT=None):
         self._host_id = None
         self.host_key = None
-        WaptRepo.__init__(self,url=url,name=name,verify_cert=verify_cert,http_proxy=http_proxy,timeout = timeout,dnsdomain=dnsdomain,cabundle=cabundle,config=config)
+        WaptRepo.__init__(self,url=url,name=name,verify_cert=verify_cert,http_proxy=http_proxy,timeout = timeout,wapt_server=wapt_server,cabundle=cabundle,config=config,WAPT=WAPT)
         self.host_id = host_id
 
         if host_key:
@@ -2375,7 +2269,7 @@ class WaptHostRepo(WaptRepo):
         self._index = {}
         self.discarded = []
         if not self.repo_url:
-            raise EWaptException(u'URL for WaptHostRepo repository %s is empty. Either add a wapt-host section in ini, or add a _%s._tcp.%s SRV record' % (self.name,self.name,self.dnsdomain))
+            raise EWaptException(u'URL for WaptHostRepo repository %s is empty. Either add a wapt-host section in ini, or add a correct wapt_server and rules' % (self.name,self.name,self.wapt_server))
         if self.host_id and not isinstance(self.host_id,list):
             host_ids = [self.host_id]
         else:
@@ -2511,13 +2405,8 @@ class WaptHostRepo(WaptRepo):
         if self._repo_url:
             return self._repo_url
         else:
-            if not self._cached_dns_repo_url and self.dnsdomain:
-                main = self.find_wapt_repo_url()
-                if main:
-                    self._cached_dns_repo_url = main +'-host'
-                else:
-                    self._cached_dns_repo_url = None
-            return self._cached_dns_repo_url
+            self._cached_wapt_server_repo_url = None
+            return self._cached_wapt_server_repo_url
 
     @repo_url.setter
     def repo_url(self,value):
@@ -2528,16 +2417,16 @@ class WaptHostRepo(WaptRepo):
             self._repo_url = value
             self._packages = None
             self._packages_date = None
-            self._cached_dns_repo_url = None
+            self._cached_wapt_server_repo_url = None
 
     def __repr__(self):
         try:
-            if self.dnsdomain:
-                return '<WaptHostRepo %s for domain %s and host_id %s >' % (self.repo_url,self.dnsdomain,self.host_id)
+            if self.wapt_server:
+                return '<WaptHostRepo %s for server %s and host_id %s >' % (self.repo_url,self.wapt_server,self.host_id)
             else:
                 return '<WaptHostRepo %s for host_id %s >' % (self.repo_url,self.host_id)
         except:
-            return '<WaptHostRepo %s for domain %s and host id %s >' % ('unknown',self.dnsdomain,self.host_id)
+            return '<WaptHostRepo %s for server %s and host id %s >' % ('unknown',self.wapt_server,self.host_id)
 
 
 class WaptPackageInstallLogger(LogOutput):
@@ -3046,7 +2935,7 @@ class Wapt(BaseObjectClass):
                 logger.info(u'Other repositories : %s' % (repository_names,))
                 for name in repository_names:
                     if name:
-                        w = WaptRepo(name=name).load_config(self.config,section=name)
+                        w = WaptRepo(name=name,WAPT=self).load_config(self.config,section=name)
                         if w.cabundle is None:
                             w.cabundle = self.cabundle
                         self.set_client_cert_auth(w)
@@ -3058,7 +2947,7 @@ class Wapt(BaseObjectClass):
 
             # last is main repository so it overrides the secondary repositories
             if self.config.has_option('global','repo_url') and not 'wapt' in repository_names:
-                w = WaptRepo(name='wapt').load_config(self.config)
+                w = WaptRepo(name='wapt',WAPT=self).load_config(self.config)
                 self._repositories.append(w)
                 if w.cabundle is None:
                     w.cabundle = self.cabundle
@@ -3119,16 +3008,12 @@ class Wapt(BaseObjectClass):
         while self.repositories and isinstance(self.repositories[-1],WaptHostRepo):
             del self.repositories[-1]
 
-        main = None
-        if self.repositories:
-            main = self.repositories[-1]
-
         if self.config.has_section('wapt-host'):
             section = 'wapt-host'
         else:
             section = None
 
-        if main or section:
+        if self.waptserver or section:
             try:
                 # don't create key if not exist at this step
                 host_key = self.get_host_key(False)
@@ -3136,14 +3021,14 @@ class Wapt(BaseObjectClass):
                 # unable to access or create host key
                 host_key = None
 
-            host_repo = WaptHostRepo(name='wapt-host',config=self.config,host_id=self.host_packagename(),host_key=host_key)
+            host_repo = WaptHostRepo(name='wapt-host',config=self.config,host_id=self.host_packagename(),host_key=host_key,WAPT=self)
             self.repositories.append(host_repo)
             if host_repo.cabundle is None:
                 host_repo.cabundle = self.cabundle
 
-            # in case host repo is guessed from main repo (no specific section) ans main repor_url is set
-            if section is None and main and main._repo_url:
-                host_repo.repo_url = main._repo_url+'-host'
+            # in case host repo is determiner from server url (no specific section) and main repor_url is set
+            if section is None and self.waptserver:
+                host_repo.repo_url=self.waptserver.server_url+'/wapt-host'
 
             self.set_client_cert_auth(host_repo)
 
@@ -5820,7 +5705,7 @@ class Wapt(BaseObjectClass):
         {
         	'setuphelpers-version': '1.1.1',
         	'waptserver': {
-        		'dnsdomain': u'tranquilit.local',
+        		'wapt_server': u'tranquilit.local',
         		'proxies': {
         			'http': None,
         			'https': None
@@ -5829,7 +5714,7 @@ class Wapt(BaseObjectClass):
         	},
         	'waptservice_protocol': 'http',
         	'repositories': [{
-        		'dnsdomain': u'tranquilit.local',
+        		'wapt_server': u'tranquilit.local',
         		'proxies': {
         			'http': None,
         			'https': None
@@ -5838,7 +5723,7 @@ class Wapt(BaseObjectClass):
         		'repo_url': 'http: //wapt.tranquilit.local/wapt'
         	},
         	{
-        		'dnsdomain': u'tranquilit.local',
+        		'wapt_server': u'tranquilit.local',
         		'proxies': {
         			'http': None,
         			'https': None
@@ -6913,7 +6798,7 @@ class Wapt(BaseObjectClass):
                 remove_depends.append(d)
 
         # create a temporary repo for this host
-        host_repo = WaptHostRepo(name='wapt-host',host_id=hostname,config = self.config,host_key = self._host_key)
+        host_repo = WaptHostRepo(name='wapt-host',host_id=hostname,config = self.config,host_key = self._host_key,WAPT=self)
         entry = host_repo.get(hostname)
         if entry:
             host_repo.download_packages(entry)

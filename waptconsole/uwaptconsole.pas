@@ -32,9 +32,16 @@ type
     ActInstallLicence: TAction;
     ActAddProfile: TAction;
     ActDeleteAccount: TAction;
+    ActAscendRule: TAction;
+    ActDescendRule: TAction;
+    ActDeleteRule: TAction;
+    ActEditRule: TAction;
+    ActNewRule: TAction;
+    ActRepositoriesGetUpdateRules: TAction;
     ActSaveAccounts: TAction;
     ActReloadAccounts: TAction;
     ActNewAccount: TAction;
+    GridRules: TSOGrid;
     RightsActions: TActionList;
     ActRefreshHostsForPackage: TAction;
     ActTriggerWaptwua_uninstall: TAction;
@@ -92,18 +99,28 @@ type
     Splitter13: TSplitter;
     SplitTopTaskTaskGrid: TSplitter;
     PgRights: TTabSheet;
+    pgRepositories: TTabSheet;
     TbLeftTopreporting: TToolBar;
+    tbRefresh: TToolButton;
     TbReport1: TToolBar;
     tbSoftwaresNormalization: TToolButton;
+    TbRepos: TToolBar;
+    tbUpRule: TToolButton;
+    tbDownRule: TToolButton;
+    tbNewRule: TToolButton;
+    tbDeleteRule: TToolButton;
+    ToolButton1: TToolButton;
     ToolButton10: TToolButton;
     ToolButton11: TToolButton;
     ToolButton12: TToolButton;
     ToolButton13: TToolButton;
+    tbEditRule: TToolButton;
     ToolButton5: TToolButton;
     ToolButton7: TToolButton;
     ToolButton8: TToolButton;
     ToolButton9: TToolButton;
     ToolButtonReportingQueryDuplicate1: TToolButton;
+    ToolButtonSep2: TToolButton;
     WUAConfigPages: TPageControl;
     SelfServiceActions: TActionList;
     ActWUASearchPackage: TAction;
@@ -573,6 +590,7 @@ type
     procedure ActAddHWPropertyToGridUpdate(Sender: TObject);
     procedure ActAddNewNetworkExecute(Sender: TObject);
     procedure ActAddProfileExecute(Sender: TObject);
+    procedure ActAscendRuleExecute(Sender: TObject);
     procedure ActCancelRunningTaskExecute(Sender: TObject);
     procedure ActChangePasswordExecute(Sender: TObject);
     procedure ActChangePasswordUpdate(Sender: TObject);
@@ -594,21 +612,26 @@ type
     procedure ActDeleteNetworkExecute(Sender: TObject);
     procedure ActDeletePackageExecute(Sender: TObject);
     procedure ActDeletePackageUpdate(Sender: TObject);
+    procedure ActDeleteRuleExecute(Sender: TObject);
+    procedure ActDescendRuleExecute(Sender: TObject);
     procedure ActDisplayPreferencesExecute(Sender: TObject);
     procedure ActDisplayUserMessageExecute(Sender: TObject);
     procedure ActEditGroupUpdate(Sender: TObject);
     procedure ActEditHostPackageUpdate(Sender: TObject);
     procedure ActEditOrgUnitPackageExecute(Sender: TObject);
     procedure ActEditOrgUnitPackageUpdate(Sender: TObject);
+    procedure ActEditRuleExecute(Sender: TObject);
     procedure ActForgetPackagesUpdate(Sender: TObject);
     procedure ActGermanExecute(Sender: TObject);
     procedure ActGermanUpdate(Sender: TObject);
     procedure ActHostsDeletePackageUpdate(Sender: TObject);
     procedure ActHostsDeleteUpdate(Sender: TObject);
+    procedure ActNewRuleExecute(Sender: TObject);
     procedure ActRefreshHostsForPackageExecute(Sender: TObject);
     procedure ActReportingQueryExportExecute(Sender: TObject);
     procedure ActReportingQueryImportExecute(Sender: TObject);
     procedure ActReportingQueryImportUpdate(Sender: TObject);
+    procedure ActRepositoriesGetUpdateRulesExecute(Sender: TObject);
     procedure ActSelfServiceNewPackageExecute(Sender: TObject);
     procedure ActSelfServiceSearchPackageExecute(Sender: TObject);
     procedure ActLaunchGPUpdateExecute(Sender: TObject);
@@ -869,6 +892,8 @@ type
       Column: TColumnIndex; OldPosition: Integer);
     procedure GridReportingResultSOCompareNodes(Sender: TSOGrid; Node1,
       Node2: ISuperObject; const Columns: array of String; var Result: Integer);
+    procedure GridRulesChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
+    procedure GridRulesDblClick(Sender: TObject);
     procedure GridSelfServicePackagesChange(Sender: TBaseVirtualTree;
       Node: PVirtualNode);
     procedure GridSelfServicePackagesColumnDblClick(Sender: TBaseVirtualTree;
@@ -962,7 +987,8 @@ type
     procedure UpdateTasksReport(tasksresult: ISuperObject);
     procedure SetGridReportingData( data : ISuperObject );
     procedure SetReportingDirty(Report:ISuperObject);
-
+    function DesassociationTranslationCondRules(trans:String):String;
+    function AssociationTranslationCondRules(origin:String):String;
   public
     { public declarations }
     MainRepoUrl, WaptServer, TemplatesRepoUrl: string;
@@ -1046,7 +1072,7 @@ uses LCLIntf, LCLType, IniFiles, variants, LazFileUtils,FileUtil, base64,
   uVisPackageWizard, uVisChangeKeyPassword, uVisDisplayPreferences,
   uvisrepositories, uVisHostDelete, windirs,winutils,uWaptPythonUtils
   {$ifdef ENTERPRISE}
-  ,uVisWUAGroup,uviswuadownloads,uvissoftwaresnormalization,uvisselfservicegroup
+  ,uVisWUAGroup,uviswuadownloads,uvissoftwaresnormalization,uvisselfservicegroup,uviseditcreaterule
   {$endif}
   {$ifdef wsus},uVisWAPTWUAProducts, uviswuapackageselect,
   uVisWUAClassificationsSelect
@@ -1781,7 +1807,7 @@ begin
               for packagereq in upgrades do
               begin
                 packagename := PackageRequest.FromString(UTF8Encode(packagereq.AsString)).package;
-                if package.S['package'] = packagename then
+                if package.S['package'] = UTF8Decode(packagename) then
                   package.S['install_status'] := 'NEED-UPGRADE';
               end;
             end;
@@ -1795,7 +1821,7 @@ begin
               for packagereq in remove do
               begin
                 packagename:= PackageRequest.FromString(UTF8Encode(packagereq.AsString)).package;
-                if package.S['package'] = packagename then
+                if package.S['package'] = UTF8Decode(packagename) then
                   package.S['install_status'] := 'NEED-REMOVE';
               end;
             end;
@@ -1811,8 +1837,8 @@ begin
                 PackageRequest.FromString(UTF8Encode(packagereq.AsString));
                 packagename:= PackageRequest.package;
                 packageversion := PackageRequest.version;
-                if (package.S['package'] = packagename) and (package.S['version'] = packageversion) then
-                  if StrIsOneOf(package.S['install_status'],['MISSING','NEED-UPGRADE']) THEN
+                if (package.S['package'] = UTF8Decode(packagename)) and (package.S['version'] = UTF8Decode(packageversion)) then
+                  if StrIsOneOf(UTF8Decode(package.S['install_status']),['MISSING','NEED-UPGRADE']) THEN
                     package.S['install_status'] := 'ERROR';
               end;
             end;
@@ -2523,6 +2549,28 @@ begin
     ActPackagesUpdate.Execute;
 end;
 
+procedure TVisWaptGUI.ActAscendRuleExecute(Sender: TObject);
+var
+  Data,row:ISuperObject;
+  id:Integer;
+begin
+  if (GridRules.FocusedRow.I['sequence']>1) then
+  begin
+    id:=GridRules.FocusedRow.I['id'];
+    Data:=SO();
+    Data.S['id']:=GridRules.FocusedRow.S['id'];
+    Data.S['ascordesc']:='asc';
+    if WAPTServerJsonPost('/api/v3/modify_rules_order',[],Data).B['success']=True then
+      ActRepositoriesGetUpdateRules.Execute;
+    for row in GridRules.Data do
+      if row.I['id']=id then
+      begin
+        GridRules.SetFocusedRowNoClearSelection(row);
+        Break;
+      end;
+  end;
+end;
+
 procedure TVisWaptGUI.ActCancelRunningTaskExecute(Sender: TObject);
 var
   uuids: ISuperObject;
@@ -2530,7 +2578,7 @@ var
 begin
   if GridHosts.FocusedRow<>Nil then
   begin
-    uuids := TSuperObject.Create(stArray);;
+    uuids := TSuperObject.Create(stArray);
     currhost := UTF8Encode(GridHosts.FocusedRow.S['uuid']);
     uuids.AsArray.Add(currhost);
     TriggerActionOnHosts(uuids,'trigger_cancel_all_tasks',Nil,'Cancel all tasks','Error cancelling tasks');
@@ -2633,7 +2681,6 @@ begin
   except
     ActComputerMgmt.Enabled := False;
   end;
-
 end;
 
 procedure TVisWaptGUI.ActComputerServicesExecute(Sender: TObject);
@@ -2662,7 +2709,6 @@ begin
   except
    ActComputerServices.Enabled := False;
   end;
-
 end;
 
 procedure TVisWaptGUI.ActComputerUsersExecute(Sender: TObject);
@@ -2691,7 +2737,6 @@ begin
   except
     ActComputerUsers.Enabled := False;
   end;
-
 end;
 
 procedure TVisWaptGUI.ActDeleteGroupExecute(Sender: TObject);
@@ -2762,6 +2807,50 @@ end;
 procedure TVisWaptGUI.ActDeletePackageUpdate(Sender: TObject);
 begin
   ActDeletePackage.Enabled := GridPackages.Focused and (GridPackages.SelectedCount > 0);
+end;
+
+procedure TVisWaptGUI.ActDeleteRuleExecute(Sender: TObject);
+var
+  seq : integer;
+  row : ISuperObject;
+begin
+  tbDeleteRule.Enabled:=false;
+  seq:=GridRules.FocusedRow.I['sequence'];
+  if WAPTServerJsonPost('/api/v3/remove_rule',[],GridRules.FocusedRow.O['id']).B['success'] = True then
+    ActRepositoriesGetUpdateRules.Execute;
+  for row in GridRules.Data do
+    if row.I['sequence']=seq then
+      begin
+        GridRules.SetFocusedRowNoClearSelection(row);
+        Break;
+      end;
+  tbDeleteRule.Enabled:=true;
+end;
+
+procedure TVisWaptGUI.ActDescendRuleExecute(Sender: TObject);
+var
+  Data,row: ISuperObject;
+  maxseq,id:integer;
+begin
+  maxseq:=0;
+  for row in GridRules.Data do
+    if row.I['sequence']>maxseq then
+      maxseq:=row.I['sequence'];
+  if (GridRules.FocusedRow.I['sequence']<maxseq) then
+  begin
+    id:=GridRules.FocusedRow.I['id'];
+    Data:=SO();
+    Data.S['id']:=GridRules.FocusedRow.S['id'];
+    Data.S['ascordesc']:='desc';
+    if WAPTServerJsonPost('/api/v3/modify_rules_order',[],Data).B['success']=True then
+      ActRepositoriesGetUpdateRules.Execute;
+    for row in GridRules.Data do
+      if row.I['id']=id then
+      begin
+        GridRules.SetFocusedRowNoClearSelection(row);
+        Break;
+      end;
+  end;
 end;
 
 procedure TVisWaptGUI.ActDisplayPreferencesExecute(Sender: TObject);
@@ -2919,7 +3008,42 @@ end;
 procedure TVisWaptGUI.ActHostsDeleteUpdate(Sender: TObject);
 begin
   (Sender as TAction).Enabled:=(GridHosts.SelectedCount>0);
+end;
 
+procedure TVisWaptGUI.ActNewRuleExecute(Sender: TObject);
+var
+  FormEditRule:TFormEditRule;
+  DATA,row,Result: ISuperObject;
+begin
+  FormEditRule:=TFormEditRule.Create(Self);
+  FormEditRule.Caption:=rsCreateNewRule;
+  with FormEditRule do
+  begin
+    if ShowModal = mrOK then
+    begin
+      DATA:=SO();
+      DATA.S['name']:=UTF8Decode(EditName.Text);
+      DATA.S['condition']:=UTF8Decode(DesassociationTranslationCondRules(ComboBoxCondition.Items[ComboBoxCondition.ItemIndex]));
+      DATA.S['repo_url']:=UTF8Decode(EditRepoUrl.Text);
+      DATA.S['value']:=UTF8Decode(EditValue.Text);
+      if Assigned(GridRules.FocusedRow) then
+        DATA.I['id_prev']:=GridRules.FocusedRow.I['id']
+      else
+        DATA.I['id_prev']:=0;
+      Result:=WAPTServerJsonPost('/api/v3/add_rule',[],DATA);
+      if Result.B['success']=True then
+      begin
+        ActRepositoriesGetUpdateRules.Execute;
+        for row in GridRules.Data do
+          if row.I['id']=Result.I['result.id'] then
+          begin
+            GridRules.SetFocusedRowNoClearSelection(row);
+            Break;
+          end;
+      end;
+    end;
+    FreeAndNil(FormEditRule);
+  end;
 end;
 
 
@@ -3929,14 +4053,16 @@ begin
 
     RequestFilter := SO();
 
-    if AtLeastOne(cbFilterPackagesArch) then begin
+    if AtLeastOne(cbFilterPackagesArch) then
+    begin
       ASA := TSuperObject.Create(stArray);
       if cbFilterPackagesArch.Checked[0] then ASA.AsArray.Add('x86');
       if cbFilterPackagesArch.Checked[1] then ASA.AsArray.Add('x64');
       RequestFilter['architectures'] := ASA;
     end;
 
-    if AtLeastOne(cbFilterPackagesLocales) then begin
+    if AtLeastOne(cbFilterPackagesLocales) then
+    begin
       ASA := TSuperObject.Create(stArray);
       if cbFilterPackagesLocales.Checked[0] then ASA.AsArray.Add('en');
       if cbFilterPackagesLocales.Checked[1] then ASA.AsArray.Add('fr');
@@ -5347,8 +5473,12 @@ begin
       else
         ActReportingQueryExecute.Execute;
     end;
+  end
+  else if MainPages.ActivePage = pgRepositories then
+  begin
+    if not Assigned(GridRules.Data) then
+      ActRepositoriesGetUpdateRules.Execute;
   end;
-
 end;
 
 function TVisWaptGUI.updateprogress(receiver: TObject;

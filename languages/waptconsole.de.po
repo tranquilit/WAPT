@@ -1,6 +1,43 @@
 msgid ""
 msgstr "Content-Type: text/plain; charset=UTF-8"
 
+#: tform1.caption
+msgid "Form1"
+msgstr ""
+
+#: tformeditrule.bitbtncancel.caption
+#, fuzzy
+msgctxt "tformeditrule.bitbtncancel.caption"
+msgid "Cancel"
+msgstr "Abbrechen"
+
+#: tformeditrule.bitbtnok.caption
+#, fuzzy
+msgctxt "tformeditrule.bitbtnok.caption"
+msgid "Save"
+msgstr "Speichern"
+
+#: tformeditrule.caption
+msgctxt "tformeditrule.caption"
+msgid "Edit rule"
+msgstr ""
+
+#: tformeditrule.labcondition.caption
+msgid "Condition :"
+msgstr ""
+
+#: tformeditrule.labname.caption
+msgid "Name : "
+msgstr ""
+
+#: tformeditrule.labrepourl.caption
+msgid "Repository URL :"
+msgstr ""
+
+#: tformeditrule.labvalue.caption
+msgid "Value :"
+msgstr ""
+
 #: tvisapropos.caption
 msgid "About WAPTConsole"
 msgstr "Über WAPTConsole"
@@ -2083,6 +2120,10 @@ msgstr ""
 msgid "New host AD profile"
 msgstr ""
 
+#: tviswaptgui.actascendrule.caption
+msgid "Up rule"
+msgstr ""
+
 #: tviswaptgui.actcancelrunningtask.caption
 msgctxt "tviswaptgui.actcancelrunningtask.caption"
 msgid "Cancel current task"
@@ -2165,6 +2206,14 @@ msgctxt "tviswaptgui.actdeletepackage.caption"
 msgid "Remove from repository"
 msgstr "Vom Archiv entfernen "
 
+#: tviswaptgui.actdeleterule.caption
+msgid "Delete rule"
+msgstr ""
+
+#: tviswaptgui.actdescendrule.caption
+msgid "Down rule"
+msgstr ""
+
 #: tviswaptgui.actdisplaypreferences.caption
 msgctxt "tviswaptgui.actdisplaypreferences.caption"
 msgid "Display preferences"
@@ -2199,6 +2248,11 @@ msgstr ""
 msgctxt "tviswaptgui.acteditpackage.caption"
 msgid "Edit package"
 msgstr "Paket bearbeiten "
+
+#: tviswaptgui.acteditrule.caption
+msgctxt "tviswaptgui.acteditrule.caption"
+msgid "Edit rule"
+msgstr ""
 
 #: tviswaptgui.actenglish.caption
 msgctxt "tviswaptgui.actenglish.caption"
@@ -2273,6 +2327,10 @@ msgstr ""
 
 #: tviswaptgui.actnewaccount.caption
 msgid "New account"
+msgstr ""
+
+#: tviswaptgui.actnewrule.caption
+msgid "Add rule"
 msgstr ""
 
 #: tviswaptgui.actpackagesaudit.caption
@@ -2425,6 +2483,11 @@ msgstr ""
 #: tviswaptgui.actreportingquerysaveall.caption
 msgid "Save queries"
 msgstr ""
+
+#: tviswaptgui.actrepositoriesgetupdaterules.caption
+msgctxt "tviswaptgui.actrepositoriesgetupdaterules.caption"
+msgid "Refresh"
+msgstr "Aktualisieren"
 
 #: tviswaptgui.actresetwebsocketconnections.caption
 msgid "Reset Websocket connections"
@@ -4372,6 +4435,7 @@ msgid "id"
 msgstr ""
 
 #: tviswaptgui.gridreportingqueries.header.columns[1].text
+msgctxt "tviswaptgui.gridreportingqueries.header.columns[1].text"
 msgid "name"
 msgstr ""
 
@@ -4381,6 +4445,50 @@ msgstr ""
 
 #: tviswaptgui.gridreportingqueries.header.columns[3].text
 msgid "settings"
+msgstr ""
+
+#: tviswaptgui.gridrules.header.columns[0].text
+msgctxt "tviswaptgui.gridrules.header.columns[0].text"
+msgid "sequence"
+msgstr ""
+
+#: tviswaptgui.gridrules.header.columns[1].text
+msgctxt "tviswaptgui.gridrules.header.columns[1].text"
+msgid "name"
+msgstr ""
+
+#: tviswaptgui.gridrules.header.columns[2].text
+msgctxt "tviswaptgui.gridrules.header.columns[2].text"
+msgid "condition"
+msgstr ""
+
+#: tviswaptgui.gridrules.header.columns[3].text
+msgid "value"
+msgstr ""
+
+#: tviswaptgui.gridrules.header.columns[4].text
+msgctxt "tviswaptgui.gridrules.header.columns[4].text"
+msgid "repo_url"
+msgstr ""
+
+#: tviswaptgui.gridrules.header.columns[5].text
+msgctxt "tviswaptgui.gridrules.header.columns[5].text"
+msgid "created_by"
+msgstr ""
+
+#: tviswaptgui.gridrules.header.columns[6].text
+msgctxt "tviswaptgui.gridrules.header.columns[6].text"
+msgid "created_on"
+msgstr ""
+
+#: tviswaptgui.gridrules.header.columns[7].text
+msgctxt "tviswaptgui.gridrules.header.columns[7].text"
+msgid "updated_by"
+msgstr ""
+
+#: tviswaptgui.gridrules.header.columns[8].text
+msgctxt "tviswaptgui.gridrules.header.columns[8].text"
+msgid "updated_on"
 msgstr ""
 
 #: tviswaptgui.gridselfservicepackages.header.columns[0].text
@@ -5414,6 +5522,10 @@ msgstr "Privater Aufbewahrungsort"
 msgid "Reports"
 msgstr ""
 
+#: tviswaptgui.pgrepositories.caption
+msgid "Repositories"
+msgstr "Repositories"
+
 #: tviswaptgui.pgrights.caption
 msgid "Rights management"
 msgstr ""
@@ -5472,9 +5584,17 @@ msgstr ""
 msgid "TbReport1"
 msgstr ""
 
+#: tviswaptgui.tbrepos.caption
+msgid "TbRepos"
+msgstr ""
+
 #: tviswaptgui.toolbar1.caption
 msgid "ToolBar1"
 msgstr "Symobolleiste"
+
+#: tviswaptgui.toolbutton1.caption
+msgid "ToolButton1"
+msgstr ""
 
 #: tviswaptgui.toolbutton6.caption
 msgid "ToolButton6"
@@ -5482,6 +5602,10 @@ msgstr "ToolButton6"
 
 #: tviswaptgui.toolbuttonsep1.caption
 msgid "ToolButtonSep1"
+msgstr ""
+
+#: tviswaptgui.toolbuttonsep2.caption
+msgid "ToolButtonSep2"
 msgstr ""
 
 #: tviswuadownloads.actwuadownloadsrefresh.caption
@@ -7238,6 +7362,10 @@ msgstr ""
 "\n"
 "Sind Sie sich sicher, dass Sie fortsetzen wollen?\n"
 
+#: uwaptconsoleres.rsagentip
+msgid "AGENT IP"
+msgstr ""
+
 #: uwaptconsoleres.rsbuildinprogress
 #, fuzzy
 #| msgid "Building..."
@@ -8142,6 +8270,10 @@ msgstr ""
 msgid "Are you sure you want to download %d Windows updates on the server ?"
 msgstr ""
 
+#: uwaptconsoleres.rscreatenewrule
+msgid "Create new rule"
+msgstr ""
+
 #: uwaptconsoleres.rsdefaultusagestatsurl
 msgid "http://wapt.tranquil.it/usage_stats"
 msgstr "http://wapt.tranquil.it/usage_stats"
@@ -8195,6 +8327,10 @@ msgstr "DNS Domain : %s"
 msgctxt "uwaptconsoleres.rsdnsserver"
 msgid "DNS Server : %s"
 msgstr "DNS Server : %s"
+
+#: uwaptconsoleres.rsdomain
+msgid "DOMAIN"
+msgstr ""
 
 #: uwaptconsoleres.rsdownloadcurrupted
 msgid "Downloaded file %s is corrupted. MD5 mismatch."
@@ -8332,6 +8468,10 @@ msgstr "Fehler beim vergessenen Packet %s: %s"
 msgctxt "uwaptconsoleres.rshostconfigeditcaption"
 msgid "Edit host configuration"
 msgstr "Host Konfiguration bearbeiten"
+
+#: uwaptconsoleres.rshostname
+msgid "HOSTNAME"
+msgstr ""
 
 #: uwaptconsoleres.rshostsselectedtotal
 #, fuzzy,badformat
@@ -9299,6 +9439,10 @@ msgctxt "uwaptconsoleres.rsprivatekeydoesntexist"
 msgid "Private key doesn't exist : %s"
 msgstr "Privater Key existiert nicht : %s"
 
+#: uwaptconsoleres.rspublicip
+msgid "PUBLIC IP"
+msgstr ""
+
 #: uwaptconsoleres.rspublickeygenerror
 msgctxt "uwaptconsoleres.rspublickeygenerror"
 msgid "Error during key generation : %s"
@@ -9370,6 +9514,10 @@ msgstr ""
 
 #: uwaptconsoleres.rsshowmessageforusers
 msgid "Send message to users"
+msgstr ""
+
+#: uwaptconsoleres.rssite
+msgid "SITE"
 msgstr ""
 
 #: uwaptconsoleres.rsspecifycertificateforfulter

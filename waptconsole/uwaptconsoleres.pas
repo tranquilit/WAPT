@@ -181,6 +181,8 @@ resourcestring
 
   rsFilterAll = '(All)';
 
+  rsCreateNewRule = 'Create new rule';
+
   rsAddADSGroups = 'This will get the Active Directory groups of each selected host and '+LineEnding+
         'add the matching Wapt packages to dependencies of the host'+LineEnding+
         'if the package exists.'+LineEnding+''+LineEnding+
@@ -304,6 +306,14 @@ resourcestring
 
   { Messages Normalizarion }
   rsQueryApplyUpdates = 'Some of your changes are not yet saved. Do you want to save your changes ?';
+
+  { Messages dans repo-rules }
+
+  rsAgentIP = 'AGENT IP';
+  rsHostname = 'HOSTNAME';
+  rsDomain = 'DOMAIN';
+  rsSite = 'SITE';
+  rsPublicIP = 'PUBLIC IP';
 
 implementation
 
