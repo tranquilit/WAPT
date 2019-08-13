@@ -309,7 +309,7 @@ def check_auth(logon_name, password,check_token_in_password=True,for_group='wapt
                 win32security.LOGON32_LOGON_NETWORK_CLEARTEXT,
                 win32security.LOGON32_PROVIDER_DEFAULT
             )
-            #check if user is domain admins ou member of waptselfservice admin
+            #check if user is domain admins or member of waptselfservice admin
             try:
                 domain_admins_group_name = common.get_domain_admins_group_name()
                 if common.check_is_member_of(huser,domain_admins_group_name):
@@ -319,9 +319,10 @@ def check_auth(logon_name, password,check_token_in_password=True,for_group='wapt
             except:
                 pass
 
-            local_admins_group_name = common.get_local_admins_group_name()
-            if common.check_is_member_of(huser,local_admins_group_name):
-                return huser
+            if app.waptconfig.waptservice_admin_auth_allow:
+                local_admins_group_name = common.get_local_admins_group_name()
+                if common.check_is_member_of(huser,local_admins_group_name):
+                    return huser
 
             if app.waptconfig.waptservice_password:
                 logger.debug('auth using wapt local account')

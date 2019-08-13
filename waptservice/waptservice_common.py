@@ -215,7 +215,7 @@ class WaptServiceConfig(object):
          'MAX_HISTORY','waptservice_port',
          'dbpath','loglevel','log_directory','waptserver',
          'hiberboot_enabled','max_gpo_script_wait','pre_shutdown_timeout','log_to_windows_events',
-         'allow_user_service_restart','signature_clockskew','waptwua_enabled','notify_user']
+         'allow_user_service_restart','signature_clockskew','waptwua_enabled','notify_user','waptservice_admin_auth_allow']
 
     def __init__(self,config_filename=None):
         if not config_filename:
@@ -224,6 +224,8 @@ class WaptServiceConfig(object):
             self.config_filename = config_filename
         self.waptservice_user = None
         self.waptservice_password = None
+
+        self.waptservice_admin_auth_allow = True
 
         # maximum nb of tasks to keep in history wapt task manager
         self.MAX_HISTORY = 30
@@ -300,6 +302,9 @@ class WaptServiceConfig(object):
             else:
                 logger.info(u"No password set for local waptservice, using local computer security")
                 self.waptservice_password=None  # = password
+
+            if config.has_option('global','waptservice_admin_auth_allow'):
+                self.waptservice_admin_auth_allow = config.getboolean('global','waptservice_admin_auth_allow')
 
             if config.has_option('global','waptservice_port'):
                 port = config.get('global','waptservice_port')
