@@ -20,15 +20,20 @@
 #
 # -----------------------------------------------------------------------
 from __future__ import absolute_import
+from __future__ import print_function
 
-import glob
+from future import standard_library
+standard_library.install_aliases()
+
 import os
 import sys
-import types
 import time
+
 python_version = (sys.version_info.major, sys.version_info.minor)
-if python_version != (2, 7):
-    raise Exception('waptservice supports only Python 2.7, not %d.%d' % python_version)
+if python_version == (2, 7) or python_version == (3,5) or python_version == (3,6):
+    pass
+else:
+    raise Exception('waptservice supports only Python 2.7 and 3.3 and above, not %d.%d' % python_version)
 
 try:
     wapt_root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__),'..'))
@@ -41,47 +46,36 @@ if sys.platform.startswith('linux') or sys.platform.startswith('darwin'):
 
 from waptutils import __version__
 
-import ConfigParser
 from optparse import OptionParser
 
 import hashlib
-import requests
 
 from rocket import Rocket
 
 # flask
-from flask import request, Flask,Response, send_from_directory, send_file, session, g, redirect, url_for, abort, render_template, flash, stream_with_context
-from flask_paginate import Pagination
+from flask import request, Flask,Response, send_from_directory, session, g, redirect, url_for, render_template
 
 import jinja2
 from werkzeug.utils import secure_filename
 from werkzeug.utils import html
 
-import urlparse
 from functools import wraps
 
 import logging
 import sqlite3
 
 import json
-import StringIO
-
-import thread
 import threading
-import Queue
+import queue
 import traceback
-import locale
 
 import datetime
-import copy
 
 if sys.platform == 'win32':
     import pythoncom
     import win32security
-    import windnsquery
 
 import ctypes
-import tempfile
 
 # wapt specific stuff
 from waptutils import setloglevel, ensure_list, ensure_unicode, jsondump, LogOutput, get_time_delta
@@ -90,15 +84,14 @@ import common
 from common import Wapt
 import setuphelpers
 from setuphelpers import Version
-from waptpackage import PackageEntry,WaptLocalRepo,WaptPackage,EWaptException,PackageRequest
-from waptcrypto import SSLVerifyException,SSLCABundle,SSLCertificate,SSLPrivateKey
+from waptpackage import PackageEntry,WaptLocalRepo
 
 from waptservice.waptservice_common import waptconfig
-from waptservice.waptservice_common import forbidden,badtarget,authenticate,allow_local
+from waptservice.waptservice_common import forbidden,authenticate,allow_local
 from waptservice.waptservice_common import WaptClientUpgrade,WaptServiceRestart,WaptNetworkReconfig,WaptPackageInstall,WaptSyncRepo
 from waptservice.waptservice_common import WaptUpgrade,WaptUpdate,WaptUpdateServerStatus,WaptCleanup,WaptDownloadPackage,WaptLongTask,WaptAuditPackage
-from waptservice.waptservice_common import WaptRegisterComputer,WaptPackageRemove,WaptPackageRemove,WaptPackageForget,WaptServiceRestart
-from waptservice.waptservice_common import WaptEvents,WaptEvent
+from waptservice.waptservice_common import WaptRegisterComputer,WaptPackageRemove,WaptPackageForget
+from waptservice.waptservice_common import WaptEvents
 
 from waptservice.waptservice_socketio import WaptSocketIOClient
 #TODO LINUX
@@ -125,8 +118,6 @@ except ImportError:
 # i18n
 _ = gettext
 
-import gc
-
 logger = logging.getLogger()
 logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s')
 
@@ -149,7 +140,7 @@ def beautify(c):
         return '{}'.format(c)
     elif isinstance(c,float):
         return '{:.3}'.format(c)
-    elif isinstance(c,unicode):
+    elif isinstance(c,str):
         return jinja2.Markup(c.replace('\r\n','<br>').replace('\n','<br>'))
     elif isinstance(c,str):
         return jinja2.Markup(ensure_unicode(c).replace('\r\n','<br>').replace('\n','<br>'))
@@ -158,7 +149,7 @@ def beautify(c):
     elif isinstance(c,dict) or (hasattr(c,'keys') and callable(c.keys)):
         rows = []
         try:
-            for key in c.keys():
+            for key in list(c.keys()):
                 rows.append(u'<li><b>{}</b>: {}</li>'.format(beautify(key),beautify(c[key])))
             return jinja2.Markup(u'<ul>{}</ul>'.format(join(rows)))
         except:
@@ -473,7 +464,7 @@ def login():
                 logger.debug(u'User %s authenticated against local wapt admins (%s)' % (auth.username,wapt_admin_group))
             elif rules:
                 try:
-                    groups = get_user_self_service_groups(rules.keys(),auth.username,auth.password)
+                    groups = get_user_self_service_groups(list(rules.keys()),auth.username,auth.password)
                     username = auth.username
                     logger.debug(u'User %s authenticated against self-service groups %s' % (auth.username,groups))
                 except:
@@ -544,7 +535,7 @@ def latest_only(packages):
         else:
             index[p.package].previous.append(p)
 
-    return index.values()
+    return list(index.values())
 
 @app.route('/keywords.json')
 @allow_local
@@ -592,7 +583,6 @@ def all_packages(page=1):
         if not request.authorization:
             return authenticate()
 
-    username = None
     grpuser = []
 
     rules = None
@@ -604,11 +594,9 @@ def all_packages(page=1):
         try:
             if check_auth(auth.username,auth.password):
                 grpuser.append('waptselfservice')
-                username = auth.username
                 logger.debug(u'User %s authenticated against local admins (waptselfservice)' % auth.username)
             else:
-                grpuser = get_user_self_service_groups(rules.keys(),auth.username,auth.password)
-                username = auth.username
+                grpuser = get_user_self_service_groups(list(rules.keys()),auth.username,auth.password)
                 logger.debug(u'User %s authenticated against self-service groups %s' % (auth.username,grpuser))
         except:
             return authenticate()
@@ -681,17 +669,12 @@ def all_packages(page=1):
             # hack to enable proper version comparison in templates
             pe.install_version = Version(pe.install_version)
             pe.version = Version(pe.version)
-        total = len(rows)
-        per_page = 30
 
         try:
             search = search
         except NameError:
             search = False
 
-        _min = per_page * (page - 1)
-        _max = _min + per_page
-        #pagination = Pagination(css_framework='bootstrap', page=page, total=total, search=search, per_page=per_page)
         pagination = None
         return render_template(
             'list.html',
@@ -709,7 +692,6 @@ def local_package_details():
         if not request.authorization:
             return authenticate()
 
-    username = None
     grpuser = []
     rules = None
     if enterprise_common:
@@ -721,12 +703,10 @@ def local_package_details():
         try:
             if check_auth(auth.username,auth.password):
                 grpuser.append('waptselfservice')
-                username = auth.username
                 logger.debug(u'User %s authenticated against local admins (waptselfservice)' % auth.username)
             else:
                 try:
-                    grpuser = get_user_self_service_groups(rules.keys(),auth.username,auth.password)
-                    username = auth.username
+                    grpuser = get_user_self_service_groups(list(rules.keys()),auth.username,auth.password)
                     logger.debug(u'User %s authenticated against self-service groups %s' % (auth.username,grpuser))
                 except:
                     return authenticate()
@@ -747,8 +727,6 @@ def local_package_details():
             cur = con.cursor()
             cur.execute(query)
             rows = []
-
-            search = request.args.get('q','').encode('utf8').replace('\\', '')
 
             for row in cur.fetchall():
                 pe = PackageEntry().load_control_from_dict(
@@ -896,7 +874,6 @@ def waptservicerestart():
 @allow_local
 def reload_config():
     """trigger reload of wapt-get.ini file for the service"""
-    force = int(request.args.get('force','0')) == 1
     notify_user = int(request.args.get('notify_user','0')) == 1
     data = app.task_manager.add_task(WaptNetworkReconfig(notify_user=notify_user)).as_dict()
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
@@ -1142,7 +1119,7 @@ def install():
                 logger.debug(u'User %s authenticated against local admins or waptselfservice)' % auth.username)
             else:
                 try:
-                    grpuser = get_user_self_service_groups(rules.keys(),auth.username,auth.password)
+                    grpuser = get_user_self_service_groups(list(rules.keys()),auth.username,auth.password)
                     username = auth.username
                     logger.debug(u'User %s authenticated against self-service groups %s' % (auth.username,grpuser))
                 except:
@@ -1222,7 +1199,7 @@ def remove():
                 logger.debug(u'User %s authenticated against local admins (waptselfservice)' % auth.username)
             else:
                 try:
-                    grpuser = get_user_self_service_groups(rules.keys(),auth.username,auth.password)
+                    grpuser = get_user_self_service_groups(list(rules.keys()),auth.username,auth.password)
                     username = auth.username
                     logger.debug(u'User %s authenticated against self-service groups %s' % (auth.username,grpuser))
                 except:
@@ -1477,7 +1454,7 @@ class WaptTaskManager(threading.Thread):
         self.wapt = None
         self.tasks = []
 
-        self.tasks_queue = Queue.PriorityQueue()
+        self.tasks_queue = queue.PriorityQueue()
         self.tasks_counter = 0
 
         self.tasks_done = []
@@ -1763,7 +1740,7 @@ class WaptTaskManager(threading.Thread):
                     if len(self.tasks_error)>waptconfig.MAX_HISTORY:
                         del self.tasks_error[:len(self.tasks_error)-waptconfig.MAX_HISTORY]
 
-            except Queue.Empty:
+            except queue.Empty:
                 try:
                     self.update_runstatus('')
                 except Exception as e:
