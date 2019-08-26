@@ -1453,7 +1453,7 @@ def modify_rules_order():
         elif data['ascordesc']=='asc':
             seqtochange=seq-1
         else:
-            return make_repsonse(result=None,success=False, request_time = time.time() - start_time)
+            return make_response(result=None,success=False, request_time = time.time() - start_time)
         idtochange=int(model_to_dict(SiteRules.select(SiteRules.id).where(SiteRules.sequence == seqtochange).get())['id'])
         rule={}
         ruletochange={}
