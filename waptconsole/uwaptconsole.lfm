@@ -27,9 +27,9 @@ object VisWaptGUI: TVisWaptGUI
     Height = 634
     Top = 0
     Width = 1106
-    ActivePage = pgRepositories
+    ActivePage = pgInventory
     Align = alClient
-    TabIndex = 9
+    TabIndex = 0
     TabOrder = 0
     OnChange = MainPagesChange
     object pgInventory: TTabSheet
@@ -8101,14 +8101,14 @@ object VisWaptGUI: TVisWaptGUI
         end
         object ToolButtonSep2: TToolButton
           Left = 49
-          Height = 48
+          Height = 5
           Top = 2
           Caption = 'ToolButtonSep2'
           Style = tbsDivider
         end
         object ToolButton1: TToolButton
           Left = 158
-          Height = 48
+          Height = 5
           Top = 2
           Caption = 'ToolButton1'
           Style = tbsDivider

@@ -6238,6 +6238,28 @@ begin
   ;;
 end;
 
+procedure TVisWaptGUI.GridRulesChange(Sender: TBaseVirtualTree;
+  Node: PVirtualNode);
+begin
+  ;;
+end;
+
+
+procedure TVisWaptGUI.GridRulesDblClick(Sender: TObject);
+begin
+  ;;
+end;
+
+function TVisWaptGUI.DesassociationTranslationCondRules(trans: String): String;
+begin
+  ;;
+end;
+
+
+function TVisWaptGUI.AssociationTranslationCondRules(origin: String): String;
+begin
+  ;;
+end;
 
 {$endif}
 
