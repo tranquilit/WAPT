@@ -35,7 +35,11 @@ import json
 import cpuinfo
 import sys
 import subprocess
+import logging
 from waptutils import (ensure_unicode, makepath, networking,ensure_dir,currentdate,currentdatetime,_lower,ini2winstr,default_gateway,error)
+
+logger = logging.getLogger()
+
 
 def local_drives():
     partitions = psutil.disk_partitions()
@@ -155,11 +159,15 @@ def host_info():
     True
     """
     info = {}
-    dmidecode_system=dmidecode.get_by_type(1)[0]
+    try:
+        dmidecode_system=dmidecode.get_by_type(1)[0]
 
-##    info['description'] = 'LINUX' ## inexistant in Linux
-    info['system_manufacturer'] = dmidecode_system.get('Manufacturer')
-    info['system_productname'] = dmidecode_system.get('Product Name')
+    ##    info['description'] = 'LINUX' ## inexistant in Linux
+        info['system_manufacturer'] = dmidecode_system.get('Manufacturer')
+        info['system_productname'] = dmidecode_system.get('Product Name')
+    except:
+        logger.info('error while running dmidecode, dmidecode needs root privileges')
+        pass
 
     info['computer_name'] = socket.gethostname()
     info['computer_fqdn'] = socket.getfqdn()
@@ -214,7 +222,7 @@ def get_last_logged_on_user():
             res = elem
         elif res.started < elem.started:
             res = elem
-    return res.name
+    return res
 
 def run(*args, **kwargs):
     return subprocess.check_output(*args, shell=True, **kwargs)

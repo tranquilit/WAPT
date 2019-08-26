@@ -5,7 +5,7 @@ astroid==1.5.3
 Babel==2.5.1
 backports.functools-lru-cache==1.4
 backports.ssl-match-hostname==3.5.0.1
-BeautifulSoup==3.2.1
+BeautifulSoup4
 blinker==1.4
 certifi==2019.3.9
 cffi==1.11.5
@@ -53,7 +53,6 @@ python-socketio==1.9.0
 pytz==2017.2
 requests==2.20.0
 rpyc==4.0.2
-Rocket==1.2.8
 singledispatch==3.4.0.3
 six==1.11.0
 socketIO-client-2==0.7.5

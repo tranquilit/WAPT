@@ -2,12 +2,12 @@
 
 # to run in the current wapt dir after checkout
 
-sudo easy_install pip virtualenv setuptools 
+#sudo easy_install pip virtualenv setuptools 
 
 
 virtualenv --no-site-packages .
 ./bin/pip install -r requirements.txt 
-ln -s ./bin/python2.7 waptpython
+#ln -s ./bin/python2.7 waptpython
 #chmod 755 runwapt-get.sh
 
 # Patch memory leak
@@ -21,4 +21,4 @@ cp -f utils/patch-cryptography/verification.py  lib/python2.7/site-packages/cryp
 
 rsync -aP  waptservice/deb/methods/ lib/python2.7/site-packages/rocket/methods/
 
-brew install cavaliercoder/dmidecode/dmidecode
+#brew install cavaliercoder/dmidecode/dmidecode
