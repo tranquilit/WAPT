@@ -20,7 +20,13 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-from __future__ import absolute_import
+from __future__ import print_function, division, absolute_import, unicode_literals
+from past.builtins import cmp
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str
+from builtins import range
+from builtins import object
 __version__ = "1.7.5"
 
 import os
@@ -45,7 +51,7 @@ import custom_zip as zipfile
 from custom_zip import ZipFile
 import tempfile
 import fnmatch
-import urlparse
+import urllib.parse
 import hashlib
 import traceback
 import imp
@@ -117,7 +123,7 @@ if platform.system() == 'Windows':
         import win32api
         import pythoncom
 
-        class _disable_file_system_redirection:
+        class _disable_file_system_redirection(object):
             r"""Context manager to disable temporarily the wow3264 file redirector
 
             >>> with disable_file_system_redirection():
@@ -138,7 +144,7 @@ if platform.system() == 'Windows':
                 if self._revert and self.success:
                     self._revert(self.old_value)
     except Exception as e:
-        class _disable_file_system_redirection:
+        class _disable_file_system_redirection(object):
             def __enter__(self):
                 pass
 
@@ -154,7 +160,7 @@ if platform.system() == 'Windows':
 
 
 else:
-    class _disable_file_system_redirection:
+    class _disable_file_system_redirection(object):
         def __enter__(self):
             pass
 
@@ -417,9 +423,9 @@ def ensure_unicode(data):
     try:
         if data is None:
             return None
-        if isinstance(data,types.UnicodeType):
+        if isinstance(data,str):
             return data
-        if isinstance(data,types.StringType):
+        if isinstance(data,bytes):
             try:
                 return data.decode('utf8')
             except UnicodeError:
@@ -437,7 +443,7 @@ def ensure_unicode(data):
                                 return data.decode(sys.getdefaultencoding(),'ignore')
                 else:
                     return data.decode(sys.getfilesystemencoding(),'replace')
-        if platform.system() == 'Windows' and isinstance(data,pythoncom.com_error):
+        if platform.system() == 'Windows' and isinstance(data,pythoncom.com_error): # pylint: disable=no-member
             try:
                 try:
                     error_msg = ensure_unicode(win32api.FormatMessage(data.args[2][5]))
@@ -473,7 +479,7 @@ def ensure_unicode(data):
                 return data.__unicode__()
             except:
                 pass
-        return unicode(data)
+        return str(data)
     except UnicodeError:
         if logger.level != logging.DEBUG:
             return("Error in ensure_unicode / %s"%(repr(data)))
@@ -499,7 +505,7 @@ def ensure_list(csv_or_list,ignore_empty_args=True,allow_none = False):
 
     if isinstance(csv_or_list,(tuple,list)):
         return list(csv_or_list)
-    elif isinstance(csv_or_list,(str,unicode)):
+    elif isinstance(csv_or_list,str):
         if ignore_empty_args:
             return [s.strip() for s in csv_or_list.split(u',') if s.strip() != '']
         else:
@@ -626,7 +632,7 @@ def force_utf8_no_bom(filename):
 def expand_args(args,expand_file_wildcards=None):
     """Return list of unicode file paths expanded from wildcard list args"""
     def from_system_encoding(t):
-        if isinstance(t,unicode):
+        if isinstance(t,str):
             return t
         else:
             try:
@@ -748,22 +754,22 @@ class SSLAdapter(HTTPAdapter):
         self._keyfile = keyfile
         self._password_callback = password_callback
         self._password = password
-        super(self.__class__, self).__init__(*args, **kwargs)
+        super(SSLAdapter, self).__init__(*args, **kwargs)
 
     def init_poolmanager(self, *args, **kwargs):
         self._add_ssl_context(kwargs)
-        return super(self.__class__, self).init_poolmanager(*args, **kwargs)
+        return super(SSLAdapter, self).init_poolmanager(*args, **kwargs)
 
     def proxy_manager_for(self, *args, **kwargs):
         self._add_ssl_context(kwargs)
-        return super(self.__class__, self).proxy_manager_for(*args, **kwargs)
+        return super(SSLAdapter, self).proxy_manager_for(*args, **kwargs)
 
     def _add_ssl_context(self, kwargs):
         logger.debug('Loading ssl context with cert %s and key %s' % (self._certfile,self._keyfile,))
         context = create_urllib3_context()
         if self._password is None and not self._password_callback is None:
             self._password = self._password_callback(self._certfile)
-        context.load_cert_chain(certfile=self._certfile,
+        context.load_cert_chain(certfile=self._certfile,                        # pylint: disable=unexpected-keyword-arg
                                 keyfile=self._keyfile,
                                 password=str(self._password))
         kwargs['ssl_context'] = context
@@ -870,7 +876,7 @@ def wget(url,target=None,printhook=None,proxies=None,connect_timeout=10,download
 
     (dir,filename) = os.path.split(target)
     if not filename:
-        url_parts = urlparse.urlparse(url)
+        url_parts = urllib.parse.urlparse(url)
         filename = url_parts.path.split('/')[-1]
     if not dir:
         dir = os.getcwd()
@@ -1135,7 +1141,7 @@ class Version(object):
     def __init__(self,version,members_count=None):
         if version is None:
             version = ''
-        assert isinstance(version,types.ModuleType) or isinstance(version,str) or isinstance(version,unicode) or isinstance(version,Version)
+        assert isinstance(version,types.ModuleType) or isinstance(version,bytes) or isinstance(version,str) or isinstance(version,Version)
         if isinstance(version,types.ModuleType):
             self.versionstring =  getattr(version,'__version__',None)
         elif isinstance(version,Version):
@@ -1204,12 +1210,12 @@ def create_recursive_zip(zipfn, source_root, target_root = u"",excludes = [u'.sv
         list : list of zipped filepath
     """
     result = []
-    if not isinstance(source_root,unicode):
-        source_root = unicode(source_root)
-    if not isinstance(target_root,unicode):
-        target_root = unicode(target_root)
+    if not isinstance(source_root,str):
+        source_root = str(source_root)
+    if not isinstance(target_root,str):
+        target_root = str(target_root)
 
-    if isinstance(zipfn,str) or isinstance(zipfn,unicode):
+    if isinstance(zipfn,str) or isinstance(zipfn,str):
         if logger: logger.debug(u'Create zip file %s' % zipfn)
         zipf = ZipFile(zipfn,'w',allowZip64=True,compression=zipfile.ZIP_DEFLATED)
     elif isinstance(zipfn,ZipFile):
@@ -1236,7 +1242,7 @@ def create_recursive_zip(zipfn, source_root, target_root = u"",excludes = [u'.sv
         elif os.path.isdir(source_item_fn):
             #if logger: logger.debug(u'Add directory %s' % source_item_fn)
             result.extend(create_recursive_zip(zipf, source_item_fn, zip_item_fn,excludes=excludes,excludes_full=excludes_full))
-    if isinstance(zipfn,str) or isinstance(zipfn,unicode):
+    if isinstance(zipfn,str) or isinstance(zipfn,str):
         zipf.close()
     return result
 

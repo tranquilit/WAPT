@@ -4,7 +4,8 @@ Read and write ZIP files.
 modified version of the original Python 2.7 zipfile module
 Copyright (c) 2001-2016 Python Software Foundation; All Rights Reserved
 """
-from __future__ import print_function
+from __future__ import print_function, division, absolute_import, unicode_literals
+
 # 1. This LICENSE AGREEMENT is between the Python Software Foundation ("PSF"), and
 #    the Individual or Organization ("Licensee") accessing and otherwise using Python
 #    2.7.11 software in source or binary form and its associated documentation.
@@ -47,6 +48,12 @@ from __future__ import print_function
 # 8. By copying, installing or otherwise using Python 2.7.11, Licensee agrees
 #    to be bound by the terms and conditions of this License Agreement.
 
+from builtins import str
+from builtins import bytes
+from builtins import chr
+from builtins import map
+from builtins import range
+from builtins import object
 """
 Read and write ZIP files.
 
@@ -106,8 +113,8 @@ ZIP_DEFLATED = 8
 
 # The "end of central directory" structure, magic number, size, and indices
 # (section V.I in the format document)
-structEndArchive = b"<4s4H2LH"
-stringEndArchive = b"PK\005\006"
+structEndArchive = bytes(b"<4s4H2LH")
+stringEndArchive = bytes(b"PK\005\006")
 sizeEndCentDir = struct.calcsize(structEndArchive)
 
 _ECD_SIGNATURE = 0
@@ -126,7 +133,7 @@ _ECD_LOCATION = 9
 # The "central directory" structure, magic number, size, and indices
 # of entries in the structure (section V.F in the format document)
 structCentralDir = "<4s4B4HL2L5H2L"
-stringCentralDir = b"PK\001\002"
+stringCentralDir = bytes(b"PK\001\002")
 sizeCentralDir = struct.calcsize(structCentralDir)
 
 # indexes of entries in the central directory structure
@@ -153,7 +160,7 @@ _CD_LOCAL_HEADER_OFFSET = 18
 # The "local file header" structure, magic number, size, and indices
 # (section V.A in the format document)
 structFileHeader = "<4s2B4HL2L2H"
-stringFileHeader = b"PK\003\004"
+stringFileHeader = bytes(b"PK\003\004")
 sizeFileHeader = struct.calcsize(structFileHeader)
 
 _FH_SIGNATURE = 0
@@ -174,13 +181,13 @@ dataDescriptorSignature = 0x08074b50
 
 # The "Zip64 end of central directory locator" structure, magic number, and size
 structEndArchive64Locator = "<4sLQL"
-stringEndArchive64Locator = b"PK\x06\x07"
+stringEndArchive64Locator = bytes(b"PK\x06\x07")
 sizeEndCentDir64Locator = struct.calcsize(structEndArchive64Locator)
 
 # The "Zip64 end of central directory" record, magic number, size, and indices
 # (section V.G in the format document)
 structEndArchive64 = "<4sQ2H2L4Q"
-stringEndArchive64 = b"PK\x06\x06"
+stringEndArchive64 = bytes(b"PK\x06\x06")
 sizeEndCentDir64 = struct.calcsize(structEndArchive64)
 
 _CD64_SIGNATURE = 0
@@ -281,13 +288,13 @@ def _EndRecData(fpin):
     data = fpin.read()
     if (len(data) == sizeEndCentDir and
         data[0:4] == stringEndArchive and
-        data[-2:] == b"\000\000"):
+        data[-2:] == bytes(b"\000\000")):
         # the signature is correct and there's no comment, unpack structure
         endrec = struct.unpack(structEndArchive, data)
         endrec=list(endrec)
 
         # Append a blank comment and record start offset
-        endrec.append(b"")
+        endrec.append(bytes(b""))
         endrec.append(filesize - sizeEndCentDir)
 
         # Try to read the "Zip64 end of central directory" structure
@@ -349,7 +356,7 @@ class ZipInfo (object):
             '_raw_time',
         )
 
-    def __init__(self, filename="NoName", date_time=(1980,1,1,0,0,0)):
+    def __init__(self, filename=b"NoName", date_time=(1980,1,1,0,0,0)):
         self.orig_filename = filename   # Original file name in archive
 
         # Terminate the file name at the first null byte.  Null bytes in file
@@ -371,8 +378,8 @@ class ZipInfo (object):
 
         # Standard values:
         self.compress_type = ZIP_STORED # Type of compression for the file
-        self.comment = b""              # Comment for each file
-        self.extra = b""                # ZIP extra data
+        self.comment = bytes(b"")              # Comment for each file
+        self.extra = bytes(b"")                # ZIP extra data
         if sys.platform == 'win32':
             self.create_system = 0          # System which created ZIP archive
         else:
@@ -431,7 +438,7 @@ class ZipInfo (object):
         return header + filename + extra
 
     def _encodeFilenameFlags(self):
-        if sys.version_info[0] >= 3 or isinstance(self.filename, unicode):
+        if sys.version_info[0] >= 3 or isinstance(self.filename, str):
             try:
                 return self.filename.encode('ascii'), self.flag_bits
             except UnicodeEncodeError:
@@ -476,7 +483,7 @@ class ZipInfo (object):
             extra = extra[ln+4:]
 
 
-class _ZipDecrypter:
+class _ZipDecrypter(object):
     """Class to handle decryption of files stored within a ZIP archive.
 
     ZIP supports a password-based form of encryption. Even though known
@@ -512,7 +519,7 @@ class _ZipDecrypter:
 
     def _crc32(self, ch, crc):
         """Compute the CRC32 primitive on one byte."""
-        if isinstance(ch, (str, unicode)):
+        if isinstance(ch, bytes):
             ch = ord(ch)
         return ((crc >> 8) & 0xffffff) ^ self.crctable[(crc ^ ch) & 0xff]
 
@@ -531,7 +538,7 @@ class _ZipDecrypter:
 
     def __call__(self, c):
         """Decrypt a single character."""
-        if isinstance(c, (str, unicode)):
+        if isinstance(c, bytes):
             c = ord(c)
         k = self.key2 | 2
         c = c ^ (((k * (k^1)) >> 8) & 255)
@@ -821,7 +828,7 @@ class ZipFile(object):
         self.comment = b''
 
         # Check if we were passed a file-like object
-        if isinstance(file, (str,unicode)):
+        if isinstance(file, (str,bytes)):
             # No, it's a filename
             self._filePassed = 0
             self.filename = file
@@ -1221,7 +1228,7 @@ class ZipFile(object):
         if os.path.sep == '\\':
             # filter illegal characters on Windows
             illegal = ':<>|"?*'
-            if isinstance(arcname, unicode):
+            if isinstance(arcname, str):
                 table = {ord(c): ord('_') for c in illegal}
             else:
                 table = string.maketrans(illegal, '_' * len(illegal))
@@ -1255,16 +1262,13 @@ class ZipFile(object):
             import warnings
             warnings.warn('Duplicate name: %r' % zinfo.filename, stacklevel=3)
         if self.mode not in ("w", "a"):
-            raise RuntimeError, 'write() requires mode "w" or "a"'
+            raise RuntimeError('write() requires mode "w" or "a"')
         if not self.fp:
-            raise RuntimeError, \
-                  "Attempt to write ZIP archive that was already closed"
+            raise RuntimeError("Attempt to write ZIP archive that was already closed")
         if zinfo.compress_type == ZIP_DEFLATED and not zlib:
-            raise RuntimeError, \
-                  "Compression requires the (missing) zlib module"
+            raise RuntimeError("Compression requires the (missing) zlib module")
         if zinfo.compress_type not in (ZIP_STORED, ZIP_DEFLATED):
-            raise RuntimeError, \
-                  "That compression method is not supported"
+            raise RuntimeError("That compression method is not supported")
         if not self._allowZip64:
             requires_zip64 = None
             if len(self.filelist) >= ZIP_FILECOUNT_LIMIT:
