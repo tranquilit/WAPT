@@ -57,7 +57,6 @@ import traceback
 import imp
 import shutil
 import threading
-import netifaces
 import socket
 import psutil
 from requests.adapters import HTTPAdapter
@@ -88,24 +87,6 @@ class CalledProcessErrorOutput(subprocess.CalledProcessError):
         except UnicodeDecodeError:
             return "Command %s returned non-zero exit status %d.\nOutput:%s" % (repr(self.cmd), self.returncode,repr(self.output))
 
-
-def networking():
-    """return a list of (iface,mac,{addr,broadcast,netmask})
-    """
-    ifaces = netifaces.interfaces()
-    local_ips = socket.gethostbyname_ex(socket.gethostname())[2]
-
-    res = []
-    for i in ifaces:
-        params = netifaces.ifaddresses(i)
-        if netifaces.AF_LINK in params and params[netifaces.AF_LINK][0]['addr'] and not params[netifaces.AF_LINK][0]['addr'].startswith('00:00:00'):
-            iface = {'iface':i,'mac':params
-            [netifaces.AF_LINK][0]['addr']}
-            if netifaces.AF_INET in params:
-                iface.update(params[netifaces.AF_INET][0])
-                iface['connected'] = 'addr' in iface and iface['addr'] in local_ips
-            res.append( iface )
-    return res
 
 def setloglevel(logger,loglevel):
     """set loglevel as string"""
@@ -1644,20 +1625,6 @@ def ini2winstr(ini):
     for sub in [ (u"%s"%l).strip() for l in ini.data._data.contents]:
         items.extend(sub.splitlines())
     return u'\r\n'.join(items)
-
-def default_gateway():
-    """Returns default ipv4 current gateway"""
-    gateways = netifaces.gateways()
-    if gateways:
-        default_gw = gateways.get('default',None)
-        if default_gw:
-            default_inet_gw = default_gw.get(netifaces.AF_INET,None)
-        else:
-            default_inet_gw = None
-    if default_gateway:
-        return default_inet_gw[0]
-    else:
-        return None
 
 def error(reason):
     """Raise a WAPT fatal error"""

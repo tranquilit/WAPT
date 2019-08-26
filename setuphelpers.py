@@ -44,7 +44,7 @@ from waptutils import (Version, __version__, all_files, dateof,
                        datetime2isodate, ensure_list, ensure_unicode,
                        fileisodate, find_all_files, get_disk_free_space,
                        hours_minutes, httpdatetime2isodate, isodate2datetime,
-                       time2display, wget, wgets, makepath,networking,killtree,isfile,isdir,
+                       time2display, wget, wgets, makepath,killtree,isfile,isdir,
                        CalledProcessErrorOutput,remove_file,mkdirs)
 
 if sys.platform == 'win32':

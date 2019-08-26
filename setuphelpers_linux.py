@@ -31,12 +31,13 @@ import dmidecode
 import configparser
 import platform
 import psutil
+import netifaces
 import json
 import cpuinfo
 import sys
 import subprocess
 import logging
-from waptutils import (ensure_unicode, makepath, networking,ensure_dir,currentdate,currentdatetime,_lower,ini2winstr,default_gateway,error)
+from waptutils import (ensure_unicode, makepath, ensure_dir,currentdate,currentdatetime,_lower,ini2winstr,error)
 
 logger = logging.getLogger()
 
@@ -65,6 +66,42 @@ def host_metrics():
     result['wapt-memory-usage'] = dir(current_process.memory_info())
 
     return result
+
+
+def default_gateway():
+    """Returns default ipv4 current gateway"""
+    gateways = netifaces.gateways()
+    if gateways:
+        default_gw = gateways.get('default',None)
+        if default_gw:
+            default_inet_gw = default_gw.get(netifaces.AF_INET,None)
+        else:
+            default_inet_gw = None
+    if default_gateway:
+        return default_inet_gw[0]
+    else:
+        return None
+
+
+def networking():
+    """return a list of (iface,mac,{addr,broadcast,netmask})
+    """
+    ifaces = netifaces.interfaces()
+    local_ips = socket.gethostbyname_ex(socket.gethostname())[2]
+
+    res = []
+    for i in ifaces:
+        params = netifaces.ifaddresses(i)
+        if netifaces.AF_LINK in params and params[netifaces.AF_LINK][0]['addr'] and not params[netifaces.AF_LINK][0]['addr'].startswith('00:00:00'):
+            iface = {'iface':i,'mac':params
+            [netifaces.AF_LINK][0]['addr']}
+            if netifaces.AF_INET in params:
+                iface.update(params[netifaces.AF_INET][0])
+                iface['connected'] = 'addr' in iface and iface['addr'] in local_ips
+            res.append( iface )
+    return res
+
+
 
 def get_default_gateways():
     if sys.platform.startswith('linux'):
