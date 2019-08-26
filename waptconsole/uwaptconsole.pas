@@ -2549,28 +2549,6 @@ begin
     ActPackagesUpdate.Execute;
 end;
 
-procedure TVisWaptGUI.ActAscendRuleExecute(Sender: TObject);
-var
-  Data,row:ISuperObject;
-  id:Integer;
-begin
-  if (GridRules.FocusedRow.I['sequence']>1) then
-  begin
-    id:=GridRules.FocusedRow.I['id'];
-    Data:=SO();
-    Data.S['id']:=GridRules.FocusedRow.S['id'];
-    Data.S['ascordesc']:='asc';
-    if WAPTServerJsonPost('/api/v3/modify_rules_order',[],Data).B['success']=True then
-      ActRepositoriesGetUpdateRules.Execute;
-    for row in GridRules.Data do
-      if row.I['id']=id then
-      begin
-        GridRules.SetFocusedRowNoClearSelection(row);
-        Break;
-      end;
-  end;
-end;
-
 procedure TVisWaptGUI.ActCancelRunningTaskExecute(Sender: TObject);
 var
   uuids: ISuperObject;
@@ -2809,50 +2787,6 @@ begin
   ActDeletePackage.Enabled := GridPackages.Focused and (GridPackages.SelectedCount > 0);
 end;
 
-procedure TVisWaptGUI.ActDeleteRuleExecute(Sender: TObject);
-var
-  seq : integer;
-  row : ISuperObject;
-begin
-  tbDeleteRule.Enabled:=false;
-  seq:=GridRules.FocusedRow.I['sequence'];
-  if WAPTServerJsonPost('/api/v3/remove_rule',[],GridRules.FocusedRow.O['id']).B['success'] = True then
-    ActRepositoriesGetUpdateRules.Execute;
-  for row in GridRules.Data do
-    if row.I['sequence']=seq then
-      begin
-        GridRules.SetFocusedRowNoClearSelection(row);
-        Break;
-      end;
-  tbDeleteRule.Enabled:=true;
-end;
-
-procedure TVisWaptGUI.ActDescendRuleExecute(Sender: TObject);
-var
-  Data,row: ISuperObject;
-  maxseq,id:integer;
-begin
-  maxseq:=0;
-  for row in GridRules.Data do
-    if row.I['sequence']>maxseq then
-      maxseq:=row.I['sequence'];
-  if (GridRules.FocusedRow.I['sequence']<maxseq) then
-  begin
-    id:=GridRules.FocusedRow.I['id'];
-    Data:=SO();
-    Data.S['id']:=GridRules.FocusedRow.S['id'];
-    Data.S['ascordesc']:='desc';
-    if WAPTServerJsonPost('/api/v3/modify_rules_order',[],Data).B['success']=True then
-      ActRepositoriesGetUpdateRules.Execute;
-    for row in GridRules.Data do
-      if row.I['id']=id then
-      begin
-        GridRules.SetFocusedRowNoClearSelection(row);
-        Break;
-      end;
-  end;
-end;
-
 procedure TVisWaptGUI.ActDisplayPreferencesExecute(Sender: TObject);
 var
   inifile: TIniFile;
@@ -3008,42 +2942,6 @@ end;
 procedure TVisWaptGUI.ActHostsDeleteUpdate(Sender: TObject);
 begin
   (Sender as TAction).Enabled:=(GridHosts.SelectedCount>0);
-end;
-
-procedure TVisWaptGUI.ActNewRuleExecute(Sender: TObject);
-var
-  FormEditRule:TFormEditRule;
-  DATA,row,Result: ISuperObject;
-begin
-  FormEditRule:=TFormEditRule.Create(Self);
-  FormEditRule.Caption:=rsCreateNewRule;
-  with FormEditRule do
-  begin
-    if ShowModal = mrOK then
-    begin
-      DATA:=SO();
-      DATA.S['name']:=UTF8Decode(EditName.Text);
-      DATA.S['condition']:=UTF8Decode(DesassociationTranslationCondRules(ComboBoxCondition.Items[ComboBoxCondition.ItemIndex]));
-      DATA.S['repo_url']:=UTF8Decode(EditRepoUrl.Text);
-      DATA.S['value']:=UTF8Decode(EditValue.Text);
-      if Assigned(GridRules.FocusedRow) then
-        DATA.I['id_prev']:=GridRules.FocusedRow.I['id']
-      else
-        DATA.I['id_prev']:=0;
-      Result:=WAPTServerJsonPost('/api/v3/add_rule',[],DATA);
-      if Result.B['success']=True then
-      begin
-        ActRepositoriesGetUpdateRules.Execute;
-        for row in GridRules.Data do
-          if row.I['id']=Result.I['result.id'] then
-          begin
-            GridRules.SetFocusedRowNoClearSelection(row);
-            Break;
-          end;
-      end;
-    end;
-    FreeAndNil(FormEditRule);
-  end;
 end;
 
 
@@ -6307,6 +6205,37 @@ end;
 procedure TVisWaptGUI.SetCurrentPackageForGridHostsForPackage(AValue: String);
 begin
 ;;
+end;
+
+procedure TVisWaptGUI.ActNewRuleExecute(Sender: TObject);
+begin
+;;
+end;
+
+procedure TVisWaptGUI.ActRepositoriesGetUpdateRulesExecute(Sender: TObject);
+begin
+;;
+end;
+
+
+procedure TVisWaptGUI.ActAscendRuleExecute(Sender: TObject);
+begin
+  ;;
+end;
+
+procedure TVisWaptGUI.ActDescendRuleExecute(Sender: TObject);
+begin
+  ;;
+end;
+
+procedure TVisWaptGUI.ActEditRuleExecute(Sender: TObject);
+begin
+  ;;
+end;
+
+procedure TVisWaptGUI.ActDeleteRuleExecute(Sender: TObject);
+begin
+  ;;
 end;
 
 
