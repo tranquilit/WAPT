@@ -39,12 +39,15 @@ import locale
 import json
 import urlparse
 import copy
+import shutil
+import urllib
+import requests
 
 import ConfigParser
 from optparse import OptionParser
 
 # wapt specific stuff
-from waptutils import ensure_unicode,ensure_list,LogOutput,jsondump,get_time_delta
+from waptutils import ensure_unicode,ensure_list,LogOutput,jsondump,get_time_delta,wget
 
 import common
 from common import Wapt
@@ -910,6 +913,118 @@ class WaptLongTask(WaptTask):
 
     def __unicode__(self):
         return _(u"Test long running task of {}s").format(self.duration)
+
+class WaptSyncRepo(WaptTask):
+    """Task for sync the server Repo in the current machine"""
+    def _init_(self,**args):
+        super(WaptSyncRepo,self).__init__()
+        for k in args:
+            setattr(self,k,args[k])
+
+    def _run(self):
+        """Launch the sync of the server"""
+        self.progress = 0.0
+
+        def readTreeOfFilesAndDownloadRec(srvname = '',pathtosync= '',atree={}, SyncDict={}, Result = {}):
+            ListRemovableSynDict = SyncDict.keys()
+            if not(Result):
+                Result = {}
+                Result['errors'] = {}
+                Result['modified'] = {}
+                Result['new'] = {}
+                Result['deleted'] = {}
+                Result['success'] = True
+            for afile in atree:
+                pathfile=os.path.join(pathtosync,afile)
+                if (SyncDict.get(afile)):
+                    ListRemovableSynDict.remove(afile)
+                    if atree[afile]['isDir'] and SyncDict[afile]['isDir']:
+                        readTreeOfFilesAndDownloadRec(srvname,pathtosync,atree[afile]['files'],SyncDict[afile]['files'],Result)
+                    elif not(atree[afile]['isDir']) and not(SyncDict[afile]['isDir']):
+                        if SyncDict[afile]['sum']==atree[afile]['sum']:
+                            continue
+                        else:
+                            url = srvname+urllib.pathname2url(afile)
+                            try:
+                                wget(url,pathfile,sha256=atree[afile]['sum'])
+                                SyncDict[afile]['isDir']=False
+                                SyncDict[afile]['sum']=atree[afile]['sum']
+                                Result['modified'][afile]=url
+                            except Exception as e:
+                                Result['errors'][afile]=str(e)
+                                Result['success'] = False
+                    else:
+                        if atree[afile]['isDir']:
+                            os.remove(pathfile)
+                            SyncDict[afile]['isDir']=True
+                            SyncDict[afile]['files']={}
+                            del SyncDict[afile]['sum']
+                            Result['modified'][afile]='toDir'
+                            readTreeOfFilesAndDownloadRec(srvname,pathtosync,atree[afile]['files'],SyncDict[afile]['files'],Result)
+                        else:
+                            shutil.rmtree(pathfile,ignore_errors=True)
+                            SyncDict[afile]['isDir']=False
+                            SyncDict[afile]['sum']=atree[afile]['sum']
+                            del SyncDict[afile]['files']
+                            url = srvname+urllib.pathname2url(afile)
+                            try:
+                                wget(url,pathfile,sha256=atree[afile]['sum'])
+                                SyncDict[afile]['isDir']=False
+                                SyncDict[afile]['sum']=atree[afile]['sum']
+                                Result['modified'][afile]=url
+                            except Exception as e:
+                                Result['errors'][afile]=str(e)
+                                Result['success'] = False
+                else:
+                    SyncDict[afile]={}
+                    if atree[afile]['isDir']:
+                        SyncDict[afile]['isDir']=True
+                        SyncDict[afile]['files']={}
+                        os.mkdir(pathfile)
+                        Result['new'][afile]='isDir'
+                        readTreeOfFilesAndDownloadRec(srvname,pathtosync,atree[afile]['files'],SyncDict[afile]['files'],Result)
+                    else:
+                        url = srvname+urllib.pathname2url(afile)
+                        try:
+                            wget(url,pathfile,sha256=atree[afile]['sum'])
+                            SyncDict[afile]['isDir']=False
+                            SyncDict[afile]['sum']=atree[afile]['sum']
+                            Result['new'][afile]=url
+                        except Exception as e:
+                            Result['errors'][afile]=str(e)
+                            Result['success'] = False
+            for afile in ListRemovableSynDict:
+                pathfile=os.path.join(pathtosync,afile)
+                if SyncDict[afile]['isDir']:
+                    shutil.rmtree(pathfile,ignore_errors=True)
+                    Result['deleted'][afile]='isDir'
+                else:
+                    os.remove(pathfile)
+                    Result['deleted'][afile]='isFile'
+                del SyncDict[afile]
+            return Result
+
+        path = 'C:\TEST'
+        filesync = 'C:\Sync.json'
+        srvname= 'http://127.0.0.1/'
+        r=requests.get('http://127.0.0.1:8080/api/v3/get_sha256andpathforsync')
+        if r.status_code==200:
+            dic=r.json()
+            if dic['success']:
+                if os.path.isfile(filesync):
+                    with open(filesync,'r') as f:
+                        SyncDict=json.load(f)
+                else:
+                    SyncDict={}
+                Res = readTreeOfFilesAndDownloadRec(srvname,path,dic['files'],SyncDict)
+                with open(filesync,'w+') as f:
+                    json.dump(SyncDict,f)
+        self.result = Res
+        self.progress=100.0
+
+
+    def __unicode__(self):
+        return _(u"Synchronizing server packages and WUA")
 
 
 class WaptDownloadPackage(WaptTask):

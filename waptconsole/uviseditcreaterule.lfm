@@ -1,11 +1,11 @@
 object FormEditRule: TFormEditRule
-  Left = 2354
-  Height = 162
+  Left = 434
+  Height = 164
   Top = 274
   Width = 321
   BorderStyle = bsDialog
   Caption = 'Edit rule'
-  ClientHeight = 162
+  ClientHeight = 164
   ClientWidth = 321
   OnCreate = FormCreate
   OnShow = FormShow
@@ -110,12 +110,13 @@ object FormEditRule: TFormEditRule
     ItemHeight = 15
     Items.Strings = (
       'AGENT IP'
-      'HOSTNAME'
       'DOMAIN'
-      'SITE'
+      'HOSTNAME'
       'PUBLIC IP'
+      'SITE'
     )
     OnChange = ComboBoxConditionChange
+    Sorted = True
     Style = csDropDownList
     TabOrder = 1
   end
@@ -182,5 +183,17 @@ object FormEditRule: TFormEditRule
     Caption = 'Repository URL :'
     Layout = tlCenter
     ParentColor = False
+  end
+  object ComboBoxSites: TComboBox
+    Left = 112
+    Height = 23
+    Top = 64
+    Width = 184
+    ItemHeight = 15
+    OnChange = ComboBoxConditionChange
+    Sorted = True
+    Style = csDropDownList
+    TabOrder = 6
+    Visible = False
   end
 end

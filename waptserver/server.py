@@ -26,6 +26,7 @@ import sys
 import platform
 import ipaddress
 import fnmatch
+import hashlib
 
 if __name__ == '__main__':
     # as soon as possible, we must monkey patch the library...
@@ -1465,6 +1466,131 @@ def modify_rules_order():
         SiteRules.set_by_id(int(idtochange),ruletochange)
         SiteRules.set_by_id(int(data['id']),rule)
         return make_response(result=None, success=True, request_time = time.time() - start_time )
+    except Exception as e:
+        return make_response_from_exception(e)
+
+@app.route('/api/v3/get_sha256andpathforsync')
+def get_sha256andpathforsync():
+    """
+    """
+
+    def getSHA256(afile = '',BLOCK_SIZE=2**20):
+        file_hash=hashlib.sha256()
+        with open(afile,'rb') as f:
+            fb=f.read(BLOCK_SIZE)
+            while len(fb)>0:
+                file_hash.update(fb)
+                fb=f.read(BLOCK_SIZE)
+            return file_hash.hexdigest()
+
+
+    def getTreeOfFilesRec(adir = '', allFiles = {},rmpath = ''):
+        for entry in os.listdir(adir):
+            fullPath = os.path.join(adir, entry)
+            minpath = os.path.relpath(fullPath,rmpath)
+            allFiles[minpath]={}
+            if os.path.isdir(fullPath):
+                allFiles[minpath]['isDir']=True
+                allFiles[minpath]['lastmodification']=os.path.getmtime(fullPath)
+                allFiles[minpath]['size']=os.path.getsize(fullPath)
+                allFiles[minpath]['files']={}
+                getTreeOfFilesRec(fullPath,allFiles[minpath]['files'],rmpath)
+            else:
+                allFiles[minpath]['isDir']=False
+                allFiles[minpath]['size']=os.path.getsize(fullPath)
+                allFiles[minpath]['lastmodification']=os.path.getmtime(fullPath)
+                allFiles[minpath]['sum']=getSHA256(fullPath)
+        return allFiles
+
+    def getTreeOfFiles(dirs = []):
+        allFiles = {}
+        for adir in dirs:
+            minpath=os.path.relpath(adir,os.path.dirname(adir))
+            allFiles[minpath]={}
+            allFiles[minpath]['lastmodification']=os.path.getmtime(adir)
+            allFiles[minpath]['size']=os.path.getsize(adir)
+            allFiles[minpath]['realpath']=adir
+            allFiles[minpath]['isDir']=True
+            allFiles[minpath]['files']={}
+            getTreeOfFilesRec(adir,allFiles[minpath]['files'],os.path.dirname(adir))
+        return allFiles
+
+    def putTreeOfFilesInSyncFile(filesync = '',dirs = []):
+        with open(filesync,'w+') as f:
+            TreeOfFiles = getTreeOfFiles(dirs)
+            json.dump(TreeOfFiles,f)
+            return TreeOfFiles
+
+    def actualizeTreeOfFilesRec(adir = '',dico = {},rmpath = ''):
+        listdirdico = dico.keys()
+        for entry in os.listdir(adir):
+            fullpath=os.path.join(adir,entry)
+            minpath=os.path.relpath(fullpath,rmpath)
+            if (dico.get(minpath)):
+                listdirdico.remove(minpath)
+                if (dico[minpath]['lastmodification']==os.path.getmtime(fullpath)) and (dico[minpath]['size']==os.path.getsize(fullpath)):
+                    if dico[minpath]['isDir']:
+                        actualizeTreeOfFilesRec(fullpath,dico[minpath]['files'],rmpath)
+                    else:
+                        continue
+                else:
+                    if os.path.isdir(fullpath):
+                        dico[minpath]['lastmodification']=os.path.getmtime(fullpath)
+                        dico[minpath]['size']=os.path.getsize(fullpath)
+                        if (dico[minpath]['isDir']):
+                            actualizeTreeOfFilesRec(fullpath,dico[minpath]['files'],rmpath)
+                        else:
+                            dico[minpath]['isDir']=True
+                            dico[minpath]['files']={}
+                            del dico[minpath]['sum']
+                            getTreeOfFilesRec(fullpath,dico[minpath]['files'],rmpath)
+                    else:
+                        dico[minpath]['lastmodification']=os.path.getmtime(fullpath)
+                        dico[minpath]['sum']=getSHA256(fullpath)
+                        if (dico[minpath]['isDir']):
+                            dico[minpath]['isDir']=False
+                            del dico[minpath]['files']
+            else:
+                dico[minpath]={}
+                dico[minpath]['lastmodification']=os.path.getmtime(fullpath)
+                dico[minpath]['size']=os.path.getsize(fullpath)
+                if os.path.isdir(fullpath):
+                    dico[minpath]['isDir']=True
+                    dico[minpath]['files']={}
+                    getTreeOfFilesRec(fullpath,dico[minpath]['files'],rmpath)
+                else:
+                    dico[minpath]['isDir']=False
+                    dico[minpath]['sum']=getSHA256(fullpath)
+        for entry in listdirdico:
+            del dico[entry]
+
+    def actualizeTreeOfFiles(dico = {}):
+        for adir in dico:
+                actualizeTreeOfFilesRec(dico[adir]['realpath'],dico[adir]['files'],os.path.dirname(dico[adir]['realpath']))
+        return dico
+
+    def actualizeTreeOfFilesInSyncFile(filesync = '', dirs = []):
+        with open(filesync,'r') as f:
+            TreeOfFiles = json.load(f)
+            NewTree = actualizeTreeOfFiles(TreeOfFiles)
+        with open(filesync,'w') as f:
+            json.dump(NewTree,f)
+            return NewTree
+
+    def SyncFileTreeOfFiles(filesync = '', dirs = []):
+        if not(os.path.isfile(filesync)):
+            return putTreeOfFilesInSyncFile(filesync,dirs)
+        else:
+            return actualizeTreeOfFilesInSyncFile(filesync,dirs)
+
+    start_time = time.time()
+    result={}
+    result['files']=SyncFileTreeOfFiles(os.path.join(os.path.abspath(os.path.join(app.conf['wapt_folder'], os.pardir)),'Sync.json'),[os.path.join(app.conf['wapt_folder']),os.path.join(app.conf['wapt_folder'])+'wua'])
+    result['time']=time.time()-start_time
+    result['success']=True
+    result=json.dumps(result)
+    try:
+        return Response(result,mimetype='application/json')
     except Exception as e:
         return make_response_from_exception(e)
 

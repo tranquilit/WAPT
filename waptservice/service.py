@@ -95,7 +95,7 @@ from waptcrypto import SSLVerifyException,SSLCABundle,SSLCertificate,SSLPrivateK
 
 from waptservice.waptservice_common import waptconfig
 from waptservice.waptservice_common import forbidden,badtarget,authenticate,allow_local
-from waptservice.waptservice_common import WaptClientUpgrade,WaptServiceRestart,WaptNetworkReconfig,WaptPackageInstall
+from waptservice.waptservice_common import WaptClientUpgrade,WaptServiceRestart,WaptNetworkReconfig,WaptPackageInstall,WaptSyncRepo
 from waptservice.waptservice_common import WaptUpgrade,WaptUpdate,WaptUpdateServerStatus,WaptCleanup,WaptDownloadPackage,WaptLongTask,WaptAuditPackage
 from waptservice.waptservice_common import WaptRegisterComputer,WaptPackageRemove,WaptPackageRemove,WaptPackageForget,WaptServiceRestart
 from waptservice.waptservice_common import WaptEvents,WaptEvent
@@ -1433,6 +1433,14 @@ def get_wapt_package(input_package_name):
     else:
         return Response(status=404)
 
+@app.route('/launchsync')
+@allow_local
+def launchsync():
+    data = app.task_manager.add_task(WaptSyncRepo()).as_json()
+    if request.args.get('format','html')=='json' or request.path.endswith('.json'):
+        return Response(common.jsondump(data), mimetype='application/json')
+    else:
+        return render_template('default.html',data=data,title='Upgrade')
 
 @app.route('/events')
 @app.route('/events.json')
