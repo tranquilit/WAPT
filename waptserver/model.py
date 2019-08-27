@@ -1792,7 +1792,7 @@ def upgrade_db_structure():
             v.save()
 
     next_version = '1.7.5'
-    if get_db_version() <= next_version:
+    if get_db_version() < next_version:
         with wapt_db.atomic():
             logger.info("Migrating from %s to %s" % (get_db_version(), next_version))
             opes = []
