@@ -2067,6 +2067,7 @@ def hosts_for_package():
                 Hosts.description,
                 Hosts.connected_ips,
                 Hosts.reachable,
+                Hosts.connected_users,
             )
             .where(
                 HostPackagesStatus.package == package)

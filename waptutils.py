@@ -21,6 +21,8 @@
 #
 # -----------------------------------------------------------------------
 from __future__ import print_function, division, absolute_import, unicode_literals
+from future.utils import python_2_unicode_compatible
+
 from past.builtins import cmp
 from future import standard_library
 standard_library.install_aliases()
@@ -48,7 +50,7 @@ import glob
 import requests
 import locale
 import custom_zip as zipfile
-from custom_zip import ZipFile
+from zipfile import ZipFile
 import tempfile
 import fnmatch
 import urllib.parse
@@ -62,6 +64,7 @@ import psutil
 from requests.adapters import HTTPAdapter
 from urllib3.util.ssl_ import create_urllib3_context
 from urllib3.exceptions import InsecureRequestWarning
+from io import open
 
 # some shortcuts
 isfile=os.path.isfile
@@ -77,13 +80,13 @@ if hasattr(sys.stdout,'name') and sys.stdout.name == '<stdout>':
 else:
     ProgressBar = None
 
-
+@python_2_unicode_compatible
 class CalledProcessErrorOutput(subprocess.CalledProcessError):
     """CalledProcessError with printed output"""
 
     def __str__(self):
         try:
-            return "Command %s returned non-zero exit status %d.\nOutput:%s" % (repr(self.cmd), self.returncode,ensure_unicode(self.output).encode('utf8'))
+            return "Command %s returned non-zero exit status %d.\nOutput:%s" % (repr(self.cmd), self.returncode,ensure_unicode(self.output))
         except UnicodeDecodeError:
             return "Command %s returned non-zero exit status %d.\nOutput:%s" % (repr(self.cmd), self.returncode,repr(self.output))
 
@@ -412,11 +415,11 @@ def ensure_unicode(data):
             except UnicodeError:
                 if platform.system() == 'Windows':
                     try:
-                        return data.decode('utf16')
+                        # cmd output mostly cp850 in france ?
+                        return data.decode('cp850')
                     except UnicodeError:
                         try:
-                            # cmd output mostly cp850 in france ?
-                            return data.decode('cp850')
+                            return data.decode('utf16')
                         except UnicodeError:
                             try:
                                 return data.decode(sys.getfilesystemencoding())
@@ -605,10 +608,10 @@ def force_utf8_no_bom(filename):
         open(filename, mode='wb').write(content[BOMLEN:])
     else:
         try:
-            content = codecs.open(filename, encoding='utf8').read()
+            content = open(filename, encoding='utf8').read()
         except:
-            content = codecs.open(filename, encoding='iso8859-15').read()
-            codecs.open(filename, mode='wb', encoding='utf8').write(content)
+            content = open(filename, encoding='iso8859-15').read()
+            open(filename, mode='wb', encoding='utf8').write(content)
 
 def expand_args(args,expand_file_wildcards=None):
     """Return list of unicode file paths expanded from wildcard list args"""
@@ -1096,6 +1099,7 @@ class FileChunks(object):
             self.file_obj.close()
 
 
+@python_2_unicode_compatible
 class Version(object):
     """Version object of form 0.0.0
     can compare with respect to natural numbering and not alphabetical
@@ -1129,13 +1133,19 @@ class Version(object):
             self.versionstring = getattr(version,'versionstring',None)
         else:
             self.versionstring = version
-        self.members = [ v.strip() for v in self.versionstring.split('.')]
         self.members_count = members_count
-        if members_count is not None:
-            if len(self.members)<members_count:
-                self.members.extend(['0'] * (members_count-len(self.members)))
-            else:
-                self.members = self.members[0:members_count]
+        self._members = None
+
+    @property
+    def members(self):
+        if self._members is None:
+            self._members = [ v.strip() for v in self.versionstring.split('.')]
+            if self.members_count is not None:
+                if len(self._members )< self.members_count:
+                    self._members.extend(['0'] * (self.members_count-len(self._members)))
+                else:
+                    self._members = self._members[0:self.members_count]
+        return self._members
 
     def __cmp__(self,aversion):
         def nat_cmp(a, b):
@@ -1170,10 +1180,10 @@ class Version(object):
         return 0
 
     def __str__(self):
-        return '.'.join(self.members)
+        return self.versionstring
 
     def __repr__(self):
-        return "Version('{}')".format('.'.join(self.members))
+        return repr(u"Version('{}')".format(self.versionstring))
 
 def create_recursive_zip(zipfn, source_root, target_root = u"",excludes = [u'.svn',u'.git',u'.gitignore',u'*.pyc',u'*.dbg',u'src'],
         excludes_full=[os.path.join(u'WAPT','manifest.sha256'),os.path.join(u'WAPT','manifest.sha1'),os.path.join(u'WAPT','signature')]):
