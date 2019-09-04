@@ -47,7 +47,9 @@ Build a "Packages" file from all wapt file in the specified directory
 def main():
     parser=OptionParser(usage=__doc__)
     parser.add_option("-f","--force",    dest="force",    default=False, action='store_true', help="Force (default: %default)")
+    parser.add_option("-r","--canonical-filenames", dest="canonical_filenames",  default=False, action='store_true', help="Rename package filenames to comply with latest canonical naming (default: %default)")
     parser.add_option("-l","--loglevel", dest="loglevel", default=None, type='choice',  choices=['debug','warning','info','error','critical'], metavar='LOGLEVEL',help="Loglevel (default: warning)")
+    parser.add_option("-p","--proxy",    dest="proxy",    default=None, help="http proxy (default: %default)")
     (options,args) = parser.parse_args()
 
     loglevel = options.loglevel
@@ -75,7 +77,10 @@ def main():
         logger.error("%s is not a directory", wapt_path)
         sys.exit(1)
 
-    res = update_packages(wapt_path,force = options.force)
+
+    res = update_packages(wapt_path,force = options.force,
+        proxies = {'http':options.proxy,'https':options.proxy},
+        canonical_filenames=options.canonical_filenames)
 
     if res and os.name == 'posix':
         logger.info('Set Packages file ownership to wapt')

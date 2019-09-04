@@ -2973,11 +2973,12 @@ class WaptLocalRepo(WaptBaseRepo):
             logger.warning(u'Package filename %s should be %s to comply with control metadata. Renaming...'%(package_filename,theoritical_package_filename))
             new_fn = os.path.join(os.path.dirname(entry.localpath),theoritical_package_filename)
             os.rename(entry.localpath,new_fn)
+            entry.filename = theoritical_package_filename
             return new_fn
         else:
             return None
 
-    def update_packages_index(self,force_all=False,proxies=None):
+    def update_packages_index(self,force_all=False,proxies=None,canonical_filenames=False):
         """Scan self.localpath directory for WAPT packages and build a Packages (utf8) zip file with control data and MD5 hash
 
         Extract icons from packages (WAPT/icon.png) and stores them in <repo path>/icons/<package name>.png
@@ -3049,7 +3050,8 @@ class WaptLocalRepo(WaptBaseRepo):
                     logger.info(u"  Processing new %s" % fname)
                     entry.load_control_from_wapt(fname)
                     processed.append(fname)
-                    self._ensure_canonical_package_filename(entry)
+                    if canonical_filenames:
+                        self._ensure_canonical_package_filename(entry)
 
                 packages_lines.append(entry.ascontrol(with_non_control_attributes=True))
                 # add a blank line between each package control
@@ -3556,7 +3558,7 @@ class WaptRemoteRepo(WaptBaseRepo):
                         errors.append((download_url,"%s" % e))
         return {"downloaded":downloaded,"skipped":skipped,"errors":errors,"packages":packages}
 
-def update_packages(adir,force=False,proxies=None):
+def update_packages(adir,force=False,proxies=None,canonical_filenames=False):
     """Helper function to update a local packages index
 
     This function is used on repositories to rescan all packages and
@@ -3583,7 +3585,7 @@ def update_packages(adir,force=False,proxies=None):
     ["test (=10)"]
     """
     repo = WaptLocalRepo(localpath=os.path.abspath(adir))
-    return repo.update_packages_index(force_all=force,proxies=proxies)
+    return repo.update_packages_index(force_all=force,proxies=proxies,canonical_filenames=canonical_filenames)
 
 if __name__ == '__main__':
     import doctest
