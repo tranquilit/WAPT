@@ -390,11 +390,11 @@ def ensure_unicode(data):
             except UnicodeError:
                 if platform.system() == 'Windows':
                     try:
-                        return data.decode('utf16')
+                        # cmd output mostly cp850 in france ?
+                        return data.decode('cp850')
                     except UnicodeError:
                         try:
-                            # cmd output mostly cp850 in france ?
-                            return data.decode('cp850')
+                            return data.decode('utf16')
                         except UnicodeError:
                             try:
                                 return data.decode(sys.getfilesystemencoding())
@@ -402,7 +402,7 @@ def ensure_unicode(data):
                                 return data.decode(sys.getdefaultencoding(),'ignore')
                 else:
                     return data.decode(sys.getfilesystemencoding(),'replace')
-        if platform.system() == 'Windows' and isinstance(data,pythoncom.com_error):
+        if platform.system() == 'Windows' and isinstance(data,pythoncom.com_error): # pylint: disable=no-member
             try:
                 try:
                     error_msg = ensure_unicode(win32api.FormatMessage(data.args[2][5]))
