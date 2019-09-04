@@ -2498,7 +2498,7 @@ def networking():
     """
     ifaces = netifaces.interfaces()
     #local_ips = socket.gethostbyname_ex(socket.gethostname())[2]
-    local_ips = get_ip_address(True)
+    local_ips = [a['ip_str'] for a in get_ip_address(True)]
 
     res = []
     for i in ifaces:
@@ -2983,7 +2983,7 @@ def host_info():
     except:
         info['gateways'] = [default_gateway()]
 
-    info['connected_ips'] = get_ip_address(True)
+    info['connected_ips'] = [a['ip_str'] for a in get_ip_address(True)]
 
     info['mac'] = [ c['mac'] for c in networking() if 'mac' in c and 'addr' in c and c['addr'] in info['connected_ips']]
 
