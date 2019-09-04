@@ -101,9 +101,9 @@ class WaptBaseModel(SignaledModel):
 
     # audit data
     created_on = DateTimeField(null=True)
-    created_by = DateTimeField(null=True)
+    created_by = CharField(null=True)
     updated_on = DateTimeField(null=True)
-    updated_by = DateTimeField(null=True)
+    updated_by = CharField(null=True)
 
     def __unicode__(self):
         return u'%s' % (self.__data__,)
