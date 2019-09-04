@@ -2895,7 +2895,7 @@ def get_ip_address(connected_only=False):
     if windll.iphlpapi.GetIpAddrTable(  ctypes.byref(ipTable),
                                         ctypes.byref(dwSize),
                                         0) != 0:
-        raise WindowsError, "GetIpAddrTable returned %d" % rc
+        raise WindowsError, "GetIpAddrTable returned error"
 
     MIB_IPADDR_PRIMARY = 0x0001
     MIB_IPADDR_DYNAMIC = 0x0004
