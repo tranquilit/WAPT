@@ -80,6 +80,7 @@ object VisEditPackage: TVisEditPackage
           end>
         Header.DefaultHeight = 18
         Header.Height = 18
+        Header.MinHeight = 18
         Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
         Header.Style = hsPlates
         PopupMenu = PopupMenuEditDepends
@@ -146,6 +147,7 @@ object VisEditPackage: TVisEditPackage
           end>
         Header.DefaultHeight = 18
         Header.Height = 18
+        Header.MinHeight = 18
         Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
         Header.Style = hsPlates
         PopupMenu = PopupMenuEditConflicts
@@ -750,6 +752,8 @@ object VisEditPackage: TVisEditPackage
             Width = 452
           end>
         Header.DefaultHeight = 17
+        Header.Height = 18
+        Header.MinHeight = 18
         Header.Options = [hoAutoResize, hoColumnResize, hoDrag, hoShowSortGlyphs, hoVisible, hoAutoSpring]
         TabOrder = 1
         TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSpanColumns, toAutoTristateTracking, toAutoDeleteMovedNodes, toAutoChangeScale]
@@ -1320,6 +1324,7 @@ object VisEditPackage: TVisEditPackage
         end>
       Header.DefaultHeight = 18
       Header.Height = 18
+      Header.MinHeight = 18
       Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
       Header.SortColumn = 0
       Header.Style = hsPlates
