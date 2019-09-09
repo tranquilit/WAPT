@@ -679,7 +679,7 @@ def networking():
     """return a list of (iface,mac,{addr,broadcast,netmask})
     """
     ifaces = netifaces.interfaces()
-    local_ips = [ip['ip_str'] for ip in get_ip_address(True)]
+    local_ips = [a['ip_str'] for a in get_ip_address(True) if a['ip_str'] != '127.0.0.1' ]
 
     res = []
     for i in ifaces:
@@ -745,7 +745,7 @@ def host_info():
         info['gateways'] = [default_gateway()]
 
     #info['connected_ips'] = socket.gethostbyname_ex(socket.gethostname())[2]
-    info['connected_ips'] = [ip['ip_str'] for ip in get_ip_address(True)]
+    info['connected_ips'] = [a['ip_str'] for a in get_ip_address(True) if a['ip_str'] != '127.0.0.1' ]
     info['mac'] = [ c['mac'] for c in networking() if 'mac' in c and 'addr' in c and c['addr'] in info['connected_ips']]
 
     info['win64'] = iswin64()

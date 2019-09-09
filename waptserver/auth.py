@@ -78,7 +78,7 @@ def check_auth(username, password, action = None):
 
 
     # local htpasswd user/passwd file for add_host registration action
-    if action == '/add_host' and app.conf.get('htpasswd_path'):
+    if action in ('/add_host','/api/v3/hosts_delete') and app.conf.get('htpasswd_path'):
         htpasswd_users = HtpasswdFile(app.conf.get('htpasswd_path'))
         if htpasswd_users.verify(username,password):
             return True

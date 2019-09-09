@@ -276,6 +276,7 @@ class WaptServiceConfig(object):
         self.websockets_check_config_interval = 120
         self.websockets_hurry_interval = 1
         self.websockets_root = 'socket.io'
+        self.websockets_request_timeout = 15000
 
         # tolerance time replay limit for signed actions from server
         self.signature_clockskew = 30*60

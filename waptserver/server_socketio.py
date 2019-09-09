@@ -54,7 +54,7 @@ from flask_socketio import disconnect, send, emit
 logger = logging.getLogger()
 
 # chain SocketIO server
-socketio = SocketIO(app, logger = logger, engineio_logger = logger)
+socketio = SocketIO(app, logger = logger, engineio_logger = logger, cors_allowed_origins = '*')
 
 
 def proxy_host_request(request, action):

@@ -381,7 +381,7 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
 
 
 class WaptSocketIOClient(threading.Thread):
-    def __init__(self,config_filename = 'c:/wapt/wapt-get.ini',task_manager=None):
+    def __init__(self,config_filename = 'c:/wapt/wapt-get.ini',task_manager=None,request_timeout=None):
         threading.Thread.__init__(self)
         self.name = 'SocketIOClient'
         self.config_filename = config_filename
@@ -390,7 +390,9 @@ class WaptSocketIOClient(threading.Thread):
         self.socketio_client = None
         self.wapt_remote_calls = None
         self.server_authorization_token = None
-
+        if request_timeout is None:
+            request_timeout = self.config.websockets_request_timeout
+        self.request_timeout = request_timeout
 
     def run(self):
         self.config.reload_if_updated()
@@ -432,6 +434,7 @@ class WaptSocketIOClient(threading.Thread):
                                 transport = ['websocket'],
                                 ping_interval = self.config.websockets_ping,
                                 hurry_interval_in_seconds = self.config.websockets_hurry_interval,
+                                request_timeout = self.request_timeout,
                                 **kwargs)
                         self.socketio_client.get_namespace().wapt = tmp_wapt
                         self.socketio_client.get_namespace().task_manager = self.task_manager

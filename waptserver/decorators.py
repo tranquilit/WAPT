@@ -66,7 +66,7 @@ def requires_auth(f):
             return authenticate()
 
         logging.debug('authenticating : %s' % auth.username)
-        if not check_auth(auth.username, auth.password):
+        if not check_auth(auth.username, auth.password, action=request.path):
             return authenticate()
         logger.info(u'user %s authenticated' % auth.username)
         return f(*args, **kwargs)
