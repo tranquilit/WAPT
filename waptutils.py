@@ -713,22 +713,22 @@ class SSLAdapter(HTTPAdapter):
         self._keyfile = keyfile
         self._password_callback = password_callback
         self._password = password
-        super(self.__class__, self).__init__(*args, **kwargs)
+        super(SSLAdapter, self).__init__(*args, **kwargs)
 
     def init_poolmanager(self, *args, **kwargs):
         self._add_ssl_context(kwargs)
-        return super(self.__class__, self).init_poolmanager(*args, **kwargs)
+        return super(SSLAdapter, self).init_poolmanager(*args, **kwargs)
 
     def proxy_manager_for(self, *args, **kwargs):
         self._add_ssl_context(kwargs)
-        return super(self.__class__, self).proxy_manager_for(*args, **kwargs)
+        return super(SSLAdapter, self).proxy_manager_for(*args, **kwargs)
 
     def _add_ssl_context(self, kwargs):
         logger.debug('Loading ssl context with cert %s and key %s' % (self._certfile,self._keyfile,))
         context = create_urllib3_context()
         if self._password is None and not self._password_callback is None:
             self._password = self._password_callback(self._certfile)
-        context.load_cert_chain(certfile=self._certfile,
+        context.load_cert_chain(certfile=self._certfile,         # pylint: disable=unexpected-keyword-arg
                                 keyfile=self._keyfile,
                                 password=str(self._password))
         kwargs['ssl_context'] = context
@@ -1206,7 +1206,7 @@ def create_recursive_zip(zipfn, source_root, target_root = u"",excludes = [u'.sv
     return result
 
 
-def find_all_files(rootdir,include_patterns=None,exclude_patterns=None):
+def find_all_files(rootdir,include_patterns=None,exclude_patterns=None,include_dirs=None,exclude_dirs=None):
     """Generator which recursively find all files from rootdir and sub directories
     matching the (dos style) patterns (example: *.exe)
 
@@ -1216,12 +1216,15 @@ def find_all_files(rootdir,include_patterns=None,exclude_patterns=None):
         exclude_patterns (str or list) : list of glob pattern of files to exclude
                                          (if a file is both in include and exclude, it is excluded)
 
+        include_dirs (str or list) : list of glob directory patterns to return
+        exclude_dirs (str or list) : list of glob directory patterns to exclude
+                                         (if a dir is both in include and exclude, it is excluded)
 
     >>> for fn in find_all_files('c:\\tmp','*.txt'):
             print(fn)
     >>>
     """
-    rootdir = os.path.abspath(rootdir)
+    absolute_rootdir = os.path.abspath(rootdir)
 
     if include_patterns and not isinstance(include_patterns,list):
         include_patterns = [include_patterns]
@@ -1229,7 +1232,13 @@ def find_all_files(rootdir,include_patterns=None,exclude_patterns=None):
     if exclude_patterns and not isinstance(exclude_patterns,list):
         exclude_patterns = [exclude_patterns]
 
-    def match(fn):
+    if include_dirs and not isinstance(include_dirs,list):
+        include_dirs = [include_dirs]
+
+    if exclude_dirs and not isinstance(exclude_dirs,list):
+        exclude_dirs = [exclude_dirs]
+
+    def match(fn,include_patterns,exclude_patterns):
         if include_patterns:
             result = False
             for pattern in include_patterns:
@@ -1246,13 +1255,16 @@ def find_all_files(rootdir,include_patterns=None,exclude_patterns=None):
                     break
         return result
 
-    for fn in os.listdir(rootdir):
-        full_fn = os.path.join(rootdir,fn)
+    for fn in os.listdir(absolute_rootdir):
+        relative_fn = os.path.join(rootdir,fn)
+        full_fn = os.path.join(absolute_rootdir,fn)
+        print(fn,relative_fn,full_fn)
         if os.path.isdir(full_fn):
-            for fn in find_all_files(full_fn,include_patterns,exclude_patterns):
-                yield fn
+            if match(fn,include_dirs,exclude_dirs):
+                for fn in find_all_files(full_fn,include_patterns,exclude_patterns,include_dirs,exclude_dirs):
+                    yield fn
         else:
-            if match(fn):
+            if match(fn,include_patterns,exclude_patterns):
                 yield full_fn
 
 

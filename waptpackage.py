@@ -1766,7 +1766,7 @@ class PackageEntry(BaseObjectClass):
                         shasum.update(data)
                         manifest[fn.filename] = shasum.hexdigest()
             else:
-                for fn in find_all_files(self.sourcespath,exclude_patterns=excludes):
+                for fn in find_all_files(self.sourcespath,exclude_patterns=excludes,exclude_dirs=excludes):
                     filename = os.path.relpath(fn,self.sourcespath).replace('\\','/')
                     if not filename in exclude_filenames:
                         if filename in forbidden_files:
