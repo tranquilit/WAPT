@@ -63,7 +63,6 @@ __all__ = [
 
 
 import os
-import custom_zip as zipfile
 import StringIO
 import hashlib
 import logging
@@ -89,7 +88,9 @@ import uuid
 from iniparse import RawConfigParser
 import traceback
 
-from waptutils import BaseObjectClass,Version,ensure_unicode,ZipFile,force_utf8_no_bom,find_all_files
+import custom_zip
+import zipfile
+from waptutils import BaseObjectClass,Version,ensure_unicode,force_utf8_no_bom,find_all_files
 from waptutils import create_recursive_zip,ensure_list,all_files,list_intersection
 from waptutils import datetime2isodate,httpdatetime2isodate,httpdatetime2datetime,fileutcdate,fileisoutcdate,isodate2datetime
 from waptutils import default_http_headers,wget,get_language,import_setup,import_code
@@ -1318,7 +1319,7 @@ class PackageEntry(BaseObjectClass):
                     self.sourcespath = fname
                 return old_control
             else:
-                waptzip = zipfile.ZipFile(fname,'a',allowZip64=True,compression=zipfile.ZIP_DEFLATED)
+                waptzip = custom_zip.ZipFile(fname,'a',allowZip64=True,compression=zipfile.ZIP_DEFLATED)
                 try:
                     try:
                         previous_zi = waptzip.getinfo(u'WAPT/control')
@@ -1517,7 +1518,7 @@ class PackageEntry(BaseObjectClass):
             os.unlink(result_filename)
 
         self.localpath = result_filename
-        with ZipFile(result_filename,'w',allowZip64=True,compression=zipfile.ZIP_DEFLATED) as wapt_zip:
+        with zipfile.ZipFile(result_filename,'w',allowZip64=True,compression=zipfile.ZIP_DEFLATED) as wapt_zip:
             wapt_zip.writestr('WAPT/control',control_data.encode('utf8'))
         return result_filename
 
@@ -1711,7 +1712,7 @@ class PackageEntry(BaseObjectClass):
         """
         if self.localpath and os.path.isfile(self.localpath):
             try:
-                with ZipFile(self.localpath,allowZip64=True) as zip:
+                with zipfile.ZipFile(self.localpath,allowZip64=True) as zip:
                     cert_pem = zip.read('WAPT/certificate.crt')
                 certs = SSLCABundle()
                 certs.add_certificates_from_pem(cert_pem)
@@ -1862,7 +1863,7 @@ class PackageEntry(BaseObjectClass):
 
         # clear existing signatures
         if self.localpath:
-            with zipfile.ZipFile(self.localpath,'a',allowZip64=True,compression=zipfile.ZIP_DEFLATED) as waptzip:
+            with custom_zip.ZipFile(self.localpath,'a',allowZip64=True,compression=zipfile.ZIP_DEFLATED) as waptzip:
                 filenames = waptzip.namelist()
                 for md in hashlib.algorithms:
                     if self.get_signature_filename(md) in filenames:
@@ -2161,7 +2162,7 @@ class PackageEntry(BaseObjectClass):
             target_dir = os.path.abspath(target_dir)
 
         logger.info(u'Unzipping package %s to directory %s' % (self.localpath,ensure_unicode(target_dir)))
-        with ZipFile(self.localpath,allowZip64=True) as zip:
+        with zipfile.ZipFile(self.localpath,allowZip64=True) as zip:
             try:
                 zip.extractall(path=target_dir)
                 self.sourcespath = target_dir
@@ -2188,11 +2189,11 @@ class PackageEntry(BaseObjectClass):
                 pass
 
     def as_zipfile(self,mode='r'):
-        """Return a Zipfile for this package for read only operations"""
+        """Return a updatable Zipfile for this package for read only operations"""
         if self.localpath and os.path.isfile(self.localpath):
-            return ZipFile(self.localpath,compression=zipfile.ZIP_DEFLATED,allowZip64=True,mode=mode)
+            return custom_zip.ZipFile(self.localpath,compression=zipfile.ZIP_DEFLATED,allowZip64=True,mode=mode)
         elif self._package_content is not None:
-            return ZipFile(StringIO.StringIO(self._package_content),mode=mode,compression=zipfile.ZIP_DEFLATED,allowZip64=True)
+            return custom_zip.ZipFile(StringIO.StringIO(self._package_content),mode=mode,compression=zipfile.ZIP_DEFLATED,allowZip64=True)
         else:
             raise EWaptMissingLocalWaptFile('This PackageEntry has no local content for zip operations %s' % self.asrequirement())
 
@@ -2938,7 +2939,7 @@ class WaptLocalRepo(WaptBaseRepo):
         tmp_packages_fname = packages_fname+'.%s'%datetime.datetime.now().strftime("%Y%m%d%H%M%S")
         try:
             shutil.copy2(packages_fname,tmp_packages_fname)
-            with zipfile.ZipFile(tmp_packages_fname, "a",compression=zipfile.ZIP_DEFLATED) as  myzipfile:
+            with custom_zip.ZipFile(tmp_packages_fname, "a",compression=zipfile.ZIP_DEFLATED) as  myzipfile:
                 packages_lines = myzipfile.read('Packages').decode('utf8').splitlines()
                 if packages_lines and packages_lines[-1] != '':
                     packages_lines.append('')

@@ -49,8 +49,8 @@ import codecs
 import glob
 import requests
 import locale
-import custom_zip as zipfile
-from zipfile import ZipFile
+import zipfile
+import custom_zip # ZipFile with remove()
 import tempfile
 import fnmatch
 import urllib.parse
@@ -1212,8 +1212,8 @@ def create_recursive_zip(zipfn, source_root, target_root = u"",excludes = [u'.sv
 
     if isinstance(zipfn,str) or isinstance(zipfn,str):
         if logger: logger.debug(u'Create zip file %s' % zipfn)
-        zipf = ZipFile(zipfn,'w',allowZip64=True,compression=zipfile.ZIP_DEFLATED)
-    elif isinstance(zipfn,ZipFile):
+        zipf = zipfile.ZipFile(zipfn,'w',allowZip64=True,compression=zipfile.ZIP_DEFLATED)
+    elif isinstance(zipfn,(zipfile.ZipFile,custom_zip.ZipFile)):
         zipf = zipfn
     else:
         raise Exception('zipfn must be either a filename (string) or an ZipFile')

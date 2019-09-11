@@ -37,7 +37,7 @@ import psutil
 import netifaces
 import platform
 import time
-from custom_zip import ZipFile
+from zipfile import ZipFile
 from iniparse import RawConfigParser
 from waptpackage import PackageEntry
 from waptutils import (Version, __version__, all_files, dateof,

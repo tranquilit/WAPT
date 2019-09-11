@@ -107,7 +107,7 @@ elif sys.platform.startswith('linux') or sys.platform.startswith('darwin'):
 logger = logging.getLogger()
 
 from waptutils import BaseObjectClass,ensure_list,ensure_unicode,default_http_headers,get_time_delta
-from waptutils import httpdatetime2isodate,datetime2isodate,FileChunks,jsondump,ZipFile,LogOutput,isodate2datetime
+from waptutils import httpdatetime2isodate,datetime2isodate,FileChunks,jsondump,LogOutput,isodate2datetime
 from waptutils import import_code,import_setup,force_utf8_no_bom,format_bytes,wget,merge_dict,remove_encoding_declaration,list_intersection
 from waptutils import _disable_file_system_redirection
 from waptutils import get_requests_client_cert_session
@@ -2269,7 +2269,7 @@ class WaptHostRepo(WaptRepo):
         self._index = {}
         self.discarded = []
         if not self.repo_url:
-            raise EWaptException(u'URL for WaptHostRepo repository %s is empty. Either add a wapt-host section in ini, or add a correct wapt_server and rules' % (self.name,self.name,self.wapt_server))
+            raise EWaptException(u'URL for WaptHostRepo repository %s is empty. Either add a wapt-host section in ini, or add a correct wapt_server and rules' % (self.name,))
         if self.host_id and not isinstance(self.host_id,list):
             host_ids = [self.host_id]
         else:
@@ -2315,7 +2315,7 @@ class WaptHostRepo(WaptRepo):
                         _host_package_content = content
 
                     # Packages file is a zipfile with one Packages file inside
-                    with ZipFile(StringIO.StringIO(_host_package_content)) as zip:
+                    with zipfile.ZipFile(StringIO.StringIO(_host_package_content)) as zip:
                         control_data = codecs.decode(zip.read(name='WAPT/control'),'UTF-8')
                         package._load_control(control_data)
                         package.filename = package.make_package_filename()
