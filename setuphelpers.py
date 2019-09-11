@@ -85,7 +85,7 @@ __all__.extend([
      'get_default_gateways',
      'get_disk_free_space',
      'get_dns_servers',
-     'get_exit_ip',
+     'get_main_ip',
      'get_hostname',
      'get_language',
      'get_last_logged_on_user',
