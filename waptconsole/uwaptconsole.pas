@@ -4607,7 +4607,7 @@ end;
 procedure TVisWaptGUI.GridAgentRepoChange(Sender: TBaseVirtualTree;
   Node: PVirtualNode);
 begin
-  tbSyncSelected.Enabled:=Assigned(GridAgentRepo.SelectedRows);
+  tbSyncSelected.Enabled:=Assigned(GridAgentRepo.SelectedRows) and Assigned(GridAgentRepo.FocusedRow);
 end;
 
 procedure TVisWaptGUI.GridAgentRepoGetImageIndexEx(Sender: TBaseVirtualTree;
@@ -5266,6 +5266,7 @@ begin
   ActTISHelp.Visible:=False;
   PgNetworksConfig.TabVisible:=False;
   PgReports.TabVisible := False;
+  pgRepositories.TabVisible:=False;
   pgSelfService.TabVisible:=False;
   pgWaptWUAConfig.TabVisible:=False;
   pgHostWUA.TabVisible:=False;
@@ -6321,6 +6322,30 @@ begin
   ;;
 end;
 
+procedure TVisWaptGUI.ActRepositoriesGetSecondReposExecute(Sender: TObject);
+begin
+  ;;
+end;
+
+procedure TVisWaptGUI.tbRefeshAgentReposClick(Sender: TObject);
+begin
+  ;;
+end;
+
+procedure TVisWaptGUI.tbSyncAllClick(Sender: TObject);
+begin
+  ;;
+end;
+
+procedure TVisWaptGUI.tbSyncSelectedClick(Sender: TObject);
+begin
+  ;;
+end;
+
+procedure TVisWaptGUI.tbUpdateFileSyncClick(Sender: TObject);
+begin
+  ;;
+end;
 {$endif}
 
 end.
