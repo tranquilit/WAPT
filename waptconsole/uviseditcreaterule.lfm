@@ -1,12 +1,12 @@
 object FormEditRule: TFormEditRule
-  Left = 434
+  Left = 2193
   Height = 164
-  Top = 274
-  Width = 321
+  Top = 265
+  Width = 425
   BorderStyle = bsDialog
   Caption = 'Edit rule'
   ClientHeight = 164
-  ClientWidth = 321
+  ClientWidth = 425
   OnCreate = FormCreate
   OnShow = FormShow
   Position = poMainFormCenter
@@ -55,10 +55,10 @@ object FormEditRule: TFormEditRule
       FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00
     }
     ModalResult = 1
-    TabOrder = 4
+    TabOrder = 5
   end
   object BitBtnCancel: TBitBtn
-    Left = 192
+    Left = 296
     Height = 30
     Top = 120
     Width = 104
@@ -100,13 +100,13 @@ object FormEditRule: TFormEditRule
       FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00
     }
     ModalResult = 2
-    TabOrder = 5
+    TabOrder = 6
   end
   object ComboBoxCondition: TComboBox
     Left = 112
     Height = 23
     Top = 40
-    Width = 184
+    Width = 288
     ItemHeight = 15
     Items.Strings = (
       'AGENT IP'
@@ -124,25 +124,17 @@ object FormEditRule: TFormEditRule
     Left = 112
     Height = 23
     Top = 16
-    Width = 184
-    OnChange = ComboBoxConditionChange
+    Width = 288
+    OnChange = EditNameChange
     TabOrder = 0
   end
   object EditValue: TEdit
     Left = 112
     Height = 23
     Top = 64
-    Width = 184
-    OnChange = ComboBoxConditionChange
+    Width = 288
+    OnChange = EditNameChange
     TabOrder = 2
-  end
-  object EditRepoUrl: TEdit
-    Left = 112
-    Height = 23
-    Top = 88
-    Width = 184
-    OnChange = ComboBoxConditionChange
-    TabOrder = 3
   end
   object LabName: TLabel
     Left = 24
@@ -188,12 +180,23 @@ object FormEditRule: TFormEditRule
     Left = 112
     Height = 23
     Top = 64
-    Width = 184
+    Width = 288
+    Enabled = False
     ItemHeight = 15
-    OnChange = ComboBoxConditionChange
+    OnChange = EditNameChange
     Sorted = True
     Style = csDropDownList
-    TabOrder = 6
+    TabOrder = 3
     Visible = False
+  end
+  object ComboBoxUrl: TComboBox
+    Left = 112
+    Height = 23
+    Top = 88
+    Width = 288
+    ItemHeight = 15
+    OnChange = EditNameChange
+    Sorted = True
+    TabOrder = 4
   end
 end

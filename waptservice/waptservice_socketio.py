@@ -64,11 +64,11 @@ from waptutils import ensure_unicode,ensure_list,jsondump
 from waptpackage import PackageEntry,WaptLocalRepo,WaptPackage,EWaptException
 from waptcrypto import SSLVerifyException,SSLCABundle,SSLCertificate,SSLPrivateKey
 
-from common import Wapt
+from common import Wapt,is_between_two_times
 
 from waptservice.waptservice_common import waptservice_remote_actions,waptconfig,WaptServiceConfig
 from waptservice.waptservice_common import WaptUpdate,WaptUpgrade,WaptUpdateServerStatus,WaptRegisterComputer
-from waptservice.waptservice_common import WaptCleanup,WaptPackageInstall,WaptPackageRemove,WaptPackageForget,WaptLongTask,WaptAuditPackage
+from waptservice.waptservice_common import WaptCleanup,WaptPackageInstall,WaptPackageRemove,WaptPackageForget,WaptLongTask,WaptAuditPackage,WaptSyncRepo
 
 from waptservice.plugins import *
 
@@ -359,6 +359,17 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
     def on_wapt_ping(self,args):
         logger.debug('wapt_ping... %s'% (args,))
         self.emit('wapt_pong')
+
+    def on_sync_remote_repo(self,args):
+        logger.debug('Synchronize local remote repo %s' % (args,))
+        if waptconfig.enable_remote_repo and (not(waptconfig.local_repo_time_for_sync_start) or is_between_two_times(waptconfig.local_repo_time_for_sync_start,waptconfig.local_repo_time_for_sync_end)):
+            try:
+                self.task_manager.add_task(WaptSyncRepo(notifyuser=False,created_by='SERVER',local_repo_path=waptconfig.local_repo_path,srvurl=waptconfig.waptserver.server_url,speed=waptconfig.local_repo_limit_bandwidth))
+                self.emit('syncing_done')
+            except Exception as e:
+                logger.debug(u'Error syncing local repo with server repo : %s' % e)
+        else:
+            self.emit("syncing_not_in_time_range")
 
     def on_wapt_force_reconnect(self,args):
         logger.debug('Force disconnect from server... %s'% (args,))

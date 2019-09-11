@@ -58,7 +58,7 @@ server {
             alias "{{ wapt_root_dir}}/waptserver/static";
         }
 
-        location ~ ^/(wapt/waptsetup-tis.exe|wapt/waptagent.exe|wapt/waptdeploy.exe)$ {
+        location ~ ^/(wapt/waptsetup-tis.exe|wapt/waptagent.exe|wapt/waptdeploy.exe|sync.json)$ {
             root "{{ wapt_repository_path }}";
         }
 

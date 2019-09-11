@@ -15,16 +15,17 @@ type
   TFormEditRule = class(TForm)
     BitBtnOk: TBitBtn;
     BitBtnCancel: TBitBtn;
+    ComboBoxUrl: TComboBox;
     ComboBoxCondition: TComboBox;
     ComboBoxSites: TComboBox;
     EditName: TEdit;
     EditValue: TEdit;
-    EditRepoUrl: TEdit;
     LabValue: TLabel;
     LabName: TLabel;
     LabCondition: TLabel;
     LabRepoURL: TLabel;
     procedure ComboBoxConditionChange(Sender: TObject);
+    procedure EditNameChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
   private
@@ -53,23 +54,36 @@ procedure TFormEditRule.ComboBoxConditionChange(Sender: TObject);
 var
   Sites, Site : ISuperObject;
 begin
-  if (ComboBoxCondition.ItemIndex<>-1) and (ComboBoxCondition.Items[ComboBoxCondition.ItemIndex]=rsSite) then
+  if (ComboBoxCondition.ItemIndex<>-1) then
   begin
-    if (ComboBoxSites.Items.Count=0) then
+    EditValue.Text:='';
+    if (ComboBoxCondition.Items[ComboBoxCondition.ItemIndex]=rsSite) then
     begin
-      Sites:=WAPTServerJsonGet('api/v3/get_ad_sites',[])['result'];
-      if Assigned(Sites) then
-        for Site in Sites do
-            ComboBoxSites.Items.Add(Site.AsString{%H-});
+      if (ComboBoxSites.Items.Count=0) then
+      begin
+        Sites:=WAPTServerJsonGet('api/v3/get_ad_sites',[])['result'];
+        if Assigned(Sites) then
+          for Site in Sites do
+              ComboBoxSites.Items.Add(Site.AsString{%H-});
+      end;
+      ComboBoxSites.Visible:=True;
+      ComboBoxSites.Enabled:=True;
+      EditValue.Visible:=False;
+      EditValue.Enabled:=False;
+    end
+    else
+    begin
+      ComboBoxSites.Visible:=False;
+      ComboBoxSites.Enabled:=False;
+      EditValue.Visible:=True;
+      EditValue.Enabled:=True;
     end;
-    ComboBoxSites.Visible:=true;
-    EditValue.Visible:=false;
-  end
-  else
-  begin
-      ComboBoxSites.Visible:=false;
-      EditValue.Visible:=true;
   end;
+  BitBtnOk.Enabled:=CanOk();
+end;
+
+procedure TFormEditRule.EditNameChange(Sender: TObject);
+begin
   BitBtnOk.Enabled:=CanOk();
 end;
 
@@ -89,12 +103,12 @@ var
   RegexObj : TRegExpr;
   ComboBoxValue : String;
 begin
-  if (EditName.Caption='') or (ComboBoxCondition.ItemIndex=-1) or (EditRepoUrl.Caption='') then
+  if (EditName.Caption='') or (ComboBoxCondition.ItemIndex=-1) or (ComboBoxUrl.Text='') then
     Exit(False)
   else
     begin
       RegexObj:=TRegExpr.Create('^(http|https)://.+');
-      if RegexObj.Exec(EditRepoUrl.Text) then
+      if RegexObj.Exec(ComboBoxUrl.Text) then
       begin
         FreeAndNil(RegexObj);
         ComboBoxValue:=ComboBoxCondition.Items[ComboBoxCondition.ItemIndex];
@@ -121,6 +135,9 @@ begin
           else
             Exit(False);
         end;
+        if (ComboBoxValue=rsHostname ) then
+           if (EditValue.Text='') then
+              Exit(False);
         Exit(True);
       end
       else

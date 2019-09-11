@@ -311,4 +311,26 @@ def on_waptclient_disconnect():
 def on_wapt_socketio_error(e):
     logger.critical(u'Socket IO : An error has occurred for sid %s, uuid:%s : %s' % (request.sid, request.args.get('uuid', None), repr(e)))
 
+def target_for_sync(uuids=None):
+    logger.debug(u'Emit websockets sync')
+    where_clause_is_remote = Hosts.wapt_status.contains({'is_remote_repo':True})
+    if uuids:
+        where_clause = Hosts.uuid.in_(uuids)
+        sids=list(Hosts.select(Hosts.listening_address, Hosts.computer_fqdn).where(where_clause,where_clause_is_remote).dicts())
+    else:
+        sids=list(Hosts.select(Hosts.listening_address, Hosts.computer_fqdn).where(where_clause_is_remote).dicts())
+    listfqdn =[]
+    for sid in sids:
+        if sid['listening_address']:
+            listfqdn.append(sid['computer_fqdn'])
+            socketio.emit('sync_remote_repo',room=sid['listening_address'])
+    return listfqdn
+
+@socketio.on('syncing_done')
+def on_sync_remote_repo():
+    uuid = session.get('uuid',None)
+    logger.info(u'Syncing done for remote repo client sid %s (uuid:%s)' % (request.sid,uuid))
+    return True
+
+
 # end websockets

@@ -45,7 +45,7 @@ from waptutils import (Version, __version__, all_files, dateof,
                        fileisodate, find_all_files, get_disk_free_space,
                        hours_minutes, httpdatetime2isodate, isodate2datetime,
                        time2display, wget, wgets, makepath,killtree,isfile,isdir,
-                       CalledProcessErrorOutput,remove_file,mkdirs)
+                       CalledProcessErrorOutput,remove_file,mkdirs,get_main_ip)
 
 if sys.platform == 'win32':
     from setuphelpers_windows import *
@@ -85,6 +85,7 @@ __all__.extend([
      'get_default_gateways',
      'get_disk_free_space',
      'get_dns_servers',
+     'get_exit_ip',
      'get_hostname',
      'get_language',
      'get_last_logged_on_user',

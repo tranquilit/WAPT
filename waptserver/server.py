@@ -26,7 +26,6 @@ import sys
 import platform
 import ipaddress
 import fnmatch
-import hashlib
 
 if __name__ == '__main__':
     # as soon as possible, we must monkey patch the library...
@@ -49,55 +48,41 @@ from waptserver.config import __version__
 import time
 import json
 import ujson
-
 import logging
 import logging.handlers
-import codecs
-import base64
 import zlib
-
-import zipfile
 import platform
 import socket
-import requests
 import shutil
-import subprocess
 import tempfile
 import traceback
 import datetime
-import uuid as uuid_
-import email.utils
-import urlparse
-import stat
 import re
-import functools
-
-import ConfigParser
 from optparse import OptionParser
 
 from werkzeug.utils import secure_filename
 
-from flask import request, Flask, Response, send_from_directory, session, g, redirect, url_for, abort, render_template, flash
+from flask import request, Response, send_from_directory, session, g, redirect, render_template
 
 from peewee import *
 from playhouse.postgres_ext import *
 
-from waptserver.model import Hosts, HostSoftwares, HostPackagesStatus, ServerAttribs, HostGroups,HostWsus,WsusUpdates,Packages,SiteRules
-from waptserver.model import get_db_version, init_db, wapt_db, model_to_dict, dict_to_model, update_host_data
+from waptserver.model import Hosts, HostSoftwares, HostPackagesStatus, HostGroups,HostWsus,WsusUpdates,Packages,SiteRules
+from waptserver.model import get_db_version, init_db, wapt_db, model_to_dict, update_host_data
 from waptserver.model import upgrade_db_structure
 from waptserver.model import load_db_config
 from waptserver.config import get_http_proxies
 
-from waptpackage import PackageEntry,update_packages,WaptLocalRepo,EWaptBadSignature,EWaptMissingCertificate
+from waptpackage import PackageEntry,WaptLocalRepo,EWaptBadSignature,EWaptMissingCertificate
 from waptcrypto import SSLCertificate,SSLVerifyException,SSLCertificateSigningRequest,InvalidSignature,SSLPrivateKey,EWaptCryptoException
 from waptcrypto import sha256_for_file,sha256_for_data
 from waptcrypto import SSLCABundle
 
-from waptutils import datetime2isodate,ensure_list,ensure_unicode,Version,setloglevel
+from waptutils import datetime2isodate,ensure_list,Version,setloglevel,update_file_tree_of_files
 
-from waptserver.utils import EWaptAuthenticationFailure,EWaptForbiddden,EWaptHostUnreachable,EWaptMissingHostData
-from waptserver.utils import EWaptMissingParameter,EWaptSignalReceived,EWaptTimeoutWaitingForResult,EWaptUnknownHost
-from waptserver.utils import get_disk_space,jsondump,mkdir_p
+from waptserver.utils import EWaptAuthenticationFailure,EWaptForbiddden,EWaptHostUnreachable
+from waptserver.utils import EWaptMissingParameter,EWaptTimeoutWaitingForResult,EWaptUnknownHost
+from waptserver.utils import get_disk_space,jsondump
 from waptserver.utils import get_dns_domain,get_wapt_edition,get_wapt_exe_version,wapt_root_dir
 
 from waptserver.common import get_secured_token_generator,get_server_uuid
@@ -823,6 +808,10 @@ def upload_packages():
             pass
 
         g.packages = None
+        if app.conf.get('remote_repo_support'):
+            update_file_tree_of_files(os.path.join(os.path.abspath(os.path.join(app.conf['wapt_folder'], os.pardir)),'Sync.json'),[os.path.join(app.conf['wapt_folder']),os.path.join(app.conf['wapt_folder'])+'wua'])
+            target_for_sync()
+
         spenttime = time.time() - starttime
         return make_response(success=len(errors) == 0 and len(done)>0,
                              result=dict(done=done, errors=errors, packages_index_result = packages_index_result),
@@ -1051,6 +1040,7 @@ def packages_delete():
 
     if request.method == 'POST':
         filenames = request.get_json()
+        listpackage=[]
         for filename in filenames:
             try:
                 if not allowed_file(filename):
@@ -1058,7 +1048,8 @@ def packages_delete():
                 package_path = os.path.join(app.conf['wapt_folder'], secure_filename(filename))
                 if os.path.isfile(package_path):
                     package = PackageEntry(waptfile=package_path)
-                    package_uuid = package.package_uuid
+                    listpackage.append(package)
+                    #package_uuid = package.package_uuid
                     os.unlink(package_path)
                     deleted.append(filename)
 
@@ -1078,9 +1069,26 @@ def packages_delete():
                 errors.append(filename)
         repo = WaptLocalRepo(localpath=app.conf['wapt_folder'])
         result = repo.update_packages_index(proxies=get_http_proxies(app.conf))
+        for package in listpackage:
+            icons_path = os.path.abspath(os.path.join(repo.localpath,'icons'))
+            icon_fn = os.path.join(icons_path,u"%s.png" % package.package)
+            if os.path.isfile(icon_fn):
+                remicon = True
+                for c in result['kept']:
+                    if package.package in c:
+                        remicon = False
+                        pass
+                if remicon:
+                    try:
+                        os.unlink(icon_fn)
+                    except:
+                        pass
     else:
         pass
     msg = ['%s packages deleted' % len(deleted)]
+    if app.conf.get('remote_repo_support'):
+        update_file_tree_of_files(os.path.join(os.path.abspath(os.path.join(app.conf['wapt_folder'], os.pardir)),'Sync.json'),[os.path.join(app.conf['wapt_folder']),os.path.join(app.conf['wapt_folder'])+'wua'])
+        target_for_sync()
     if errors:
         msg.append('ERROR : %s packages could not be deleted' % len(errors))
     return make_response(result=result, msg='\n'.join(msg), status=200)
@@ -1111,6 +1119,15 @@ def serve_icons(iconfilename):
     if 'content-length' not in r.headers:
         r.headers.add_header(
             'content-length', int(os.path.getsize(os.path.join(icons_folder, iconfilename))))
+    return r
+
+@app.route('/sync.json')
+def serve_sync():
+    """Serves sync"""
+    r=send_from_directory(os.path.abspath(os.path.join(app.conf['wapt_folder'], os.pardir)),'sync.json')
+    if 'content-length' not in r.headers:
+        r.headers.add_header(
+            'content-length', int(os.path.join(os.path.abspath(os.path.join(app.conf['wapt_folder'], os.pardir)),'sync.json')))
     return r
 
 
@@ -1214,6 +1231,29 @@ def reset_hosts_sid():
         return make_response_from_exception(e)
     return make_response(msg=message)
 
+
+@app.route('/api/v3/launch_sync_on_remotes_repos',methods=['GET','HEAD','POST'])
+@requires_auth
+def launch_sync_on_remotes_repos():
+    """Launch sync on remotes repositories"""
+    start_time = time.time()
+    try:
+        if not socketio:
+            raise Exception('socketio unavailable')
+
+        #in case a POST is issued with a selection of uuids to launch sync
+
+        if request.json is not None:
+            uuids = request.json.get('uuids',None) or None
+        else:
+            uuids = None
+
+        s = "; "
+        message = _(u'Synchronization launched for host(s) : %s' % s.join(target_for_sync(uuids)))
+
+        return make_response(msg=message,success=True,request_time=time.time()-start_time)
+    except Exception as e:
+        return make_response_from_exception(e)
 
 @app.route('/api/v3/trigger_wakeonlan', methods=['HEAD','POST'])
 @requires_auth
@@ -1374,6 +1414,7 @@ def get_repo_url():
 @requires_auth
 def get_all_rules():
     """
+    Get all rules (rules for the agent to select a repo_url) from the DB
     """
     start_time = time.time()
     try:
@@ -1382,10 +1423,25 @@ def get_all_rules():
     except Exception as e:
         return make_response_from_exception(e)
 
+@app.route('/api/v3/get_all_agentrepos')
+@requires_auth
+def get_all_agentrepos():
+    """
+    Get all agent who are secondary repository
+    """
+    start_time = time.time()
+    try:
+        where_clause = Hosts.wapt_status.contains({'is_remote_repo':True})
+        list_agent_repo=list(Hosts.select(Hosts.uuid,Hosts.reachable,Hosts.computer_fqdn,Hosts.description,Hosts.computer_name,SQL("host_info ->> 'exit_ip' AS exit_ip")).where(where_clause).dicts())
+        return make_response(result=list_agent_repo,success=True,request_time = time.time() - start_time)
+    except Exception as e:
+        return make_response_from_exception(e)
+
 @app.route('/api/v3/add_rule',methods=['HEAD','POST'])
 @requires_auth
 def add_rule():
     """
+    Add a new rule for repo_url in the DB
     """
     start_time = time.time()
     try:
@@ -1411,6 +1467,7 @@ def add_rule():
 @requires_auth
 def remove_rule():
     """
+    Delete a rule for repo_url in the DB
     """
     start_time = time.time()
     try:
@@ -1428,6 +1485,7 @@ def remove_rule():
 @requires_auth
 def modify_rule():
     """
+    Modify informations of a rule
     """
     start_time = time.time()
     try:
@@ -1443,6 +1501,7 @@ def modify_rule():
 @requires_auth
 def modify_rules_order():
     """
+    Modify order of rules
     """
     start_time = time.time()
     try:
@@ -1469,123 +1528,15 @@ def modify_rules_order():
     except Exception as e:
         return make_response_from_exception(e)
 
-@app.route('/api/v3/get_sha256andpathforsync')
-def get_sha256andpathforsync():
+@app.route('/api/v3/createupdatefilesync')
+@requires_auth
+def get_createupdatefilesync():
     """
+    Create or update the file sync.json
     """
-
-    def getSHA256(afile = '',BLOCK_SIZE=2**20):
-        file_hash=hashlib.sha256()
-        with open(afile,'rb') as f:
-            fb=f.read(BLOCK_SIZE)
-            while len(fb)>0:
-                file_hash.update(fb)
-                fb=f.read(BLOCK_SIZE)
-            return file_hash.hexdigest()
-
-
-    def getTreeOfFilesRec(adir = '', allFiles = {},rmpath = ''):
-        for entry in os.listdir(adir):
-            fullPath = os.path.join(adir, entry)
-            minpath = os.path.relpath(fullPath,rmpath)
-            allFiles[minpath]={}
-            if os.path.isdir(fullPath):
-                allFiles[minpath]['isDir']=True
-                allFiles[minpath]['lastmodification']=os.path.getmtime(fullPath)
-                allFiles[minpath]['size']=os.path.getsize(fullPath)
-                allFiles[minpath]['files']={}
-                getTreeOfFilesRec(fullPath,allFiles[minpath]['files'],rmpath)
-            else:
-                allFiles[minpath]['isDir']=False
-                allFiles[minpath]['size']=os.path.getsize(fullPath)
-                allFiles[minpath]['lastmodification']=os.path.getmtime(fullPath)
-                allFiles[minpath]['sum']=getSHA256(fullPath)
-        return allFiles
-
-    def getTreeOfFiles(dirs = []):
-        allFiles = {}
-        for adir in dirs:
-            minpath=os.path.relpath(adir,os.path.dirname(adir))
-            allFiles[minpath]={}
-            allFiles[minpath]['lastmodification']=os.path.getmtime(adir)
-            allFiles[minpath]['size']=os.path.getsize(adir)
-            allFiles[minpath]['realpath']=adir
-            allFiles[minpath]['isDir']=True
-            allFiles[minpath]['files']={}
-            getTreeOfFilesRec(adir,allFiles[minpath]['files'],os.path.dirname(adir))
-        return allFiles
-
-    def putTreeOfFilesInSyncFile(filesync = '',dirs = []):
-        with open(filesync,'w+') as f:
-            TreeOfFiles = getTreeOfFiles(dirs)
-            json.dump(TreeOfFiles,f)
-            return TreeOfFiles
-
-    def actualizeTreeOfFilesRec(adir = '',dico = {},rmpath = ''):
-        listdirdico = dico.keys()
-        for entry in os.listdir(adir):
-            fullpath=os.path.join(adir,entry)
-            minpath=os.path.relpath(fullpath,rmpath)
-            if (dico.get(minpath)):
-                listdirdico.remove(minpath)
-                if (dico[minpath]['lastmodification']==os.path.getmtime(fullpath)) and (dico[minpath]['size']==os.path.getsize(fullpath)):
-                    if dico[minpath]['isDir']:
-                        actualizeTreeOfFilesRec(fullpath,dico[minpath]['files'],rmpath)
-                    else:
-                        continue
-                else:
-                    if os.path.isdir(fullpath):
-                        dico[minpath]['lastmodification']=os.path.getmtime(fullpath)
-                        dico[minpath]['size']=os.path.getsize(fullpath)
-                        if (dico[minpath]['isDir']):
-                            actualizeTreeOfFilesRec(fullpath,dico[minpath]['files'],rmpath)
-                        else:
-                            dico[minpath]['isDir']=True
-                            dico[minpath]['files']={}
-                            del dico[minpath]['sum']
-                            getTreeOfFilesRec(fullpath,dico[minpath]['files'],rmpath)
-                    else:
-                        dico[minpath]['lastmodification']=os.path.getmtime(fullpath)
-                        dico[minpath]['sum']=getSHA256(fullpath)
-                        if (dico[minpath]['isDir']):
-                            dico[minpath]['isDir']=False
-                            del dico[minpath]['files']
-            else:
-                dico[minpath]={}
-                dico[minpath]['lastmodification']=os.path.getmtime(fullpath)
-                dico[minpath]['size']=os.path.getsize(fullpath)
-                if os.path.isdir(fullpath):
-                    dico[minpath]['isDir']=True
-                    dico[minpath]['files']={}
-                    getTreeOfFilesRec(fullpath,dico[minpath]['files'],rmpath)
-                else:
-                    dico[minpath]['isDir']=False
-                    dico[minpath]['sum']=getSHA256(fullpath)
-        for entry in listdirdico:
-            del dico[entry]
-
-    def actualizeTreeOfFiles(dico = {}):
-        for adir in dico:
-                actualizeTreeOfFilesRec(dico[adir]['realpath'],dico[adir]['files'],os.path.dirname(dico[adir]['realpath']))
-        return dico
-
-    def actualizeTreeOfFilesInSyncFile(filesync = '', dirs = []):
-        with open(filesync,'r') as f:
-            TreeOfFiles = json.load(f)
-            NewTree = actualizeTreeOfFiles(TreeOfFiles)
-        with open(filesync,'w') as f:
-            json.dump(NewTree,f)
-            return NewTree
-
-    def SyncFileTreeOfFiles(filesync = '', dirs = []):
-        if not(os.path.isfile(filesync)):
-            return putTreeOfFilesInSyncFile(filesync,dirs)
-        else:
-            return actualizeTreeOfFilesInSyncFile(filesync,dirs)
-
     start_time = time.time()
     result={}
-    result['files']=SyncFileTreeOfFiles(os.path.join(os.path.abspath(os.path.join(app.conf['wapt_folder'], os.pardir)),'Sync.json'),[os.path.join(app.conf['wapt_folder']),os.path.join(app.conf['wapt_folder'])+'wua'])
+    result['files']=update_file_tree_of_files(os.path.join(os.path.abspath(os.path.join(app.conf['wapt_folder'], os.pardir)),'sync.json'),[os.path.join(app.conf['wapt_folder']),os.path.join(app.conf['wapt_folder'])+'wua'])
     result['time']=time.time()-start_time
     result['success']=True
     result=json.dumps(result)
@@ -2335,8 +2286,8 @@ if __name__ == '__main__':
     app.config['SECRET_KEY'] = app.conf.get('secret_key')
     app.config['APPLICATION_ROOT'] = app.conf.get('application_root','')
 
-    # monkey atch for greenlet and define a socketio on top of app
-    from waptserver.server_socketio import socketio,proxy_host_request
+    # monkey patch for greenlet and define a socketio on top of app
+    from waptserver.server_socketio import socketio,proxy_host_request,target_for_sync
 
     if wsus:
         # add socketio targets to trigger wsus actions on hosts

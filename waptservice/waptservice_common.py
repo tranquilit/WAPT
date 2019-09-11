@@ -42,6 +42,7 @@ import copy
 import shutil
 import urllib
 import requests
+import re
 
 import ConfigParser
 from optparse import OptionParser
@@ -218,7 +219,8 @@ class WaptServiceConfig(object):
          'MAX_HISTORY','waptservice_port',
          'dbpath','loglevel','log_directory','waptserver',
          'hiberboot_enabled','max_gpo_script_wait','pre_shutdown_timeout','log_to_windows_events',
-         'allow_user_service_restart','signature_clockskew','waptwua_enabled','notify_user','waptservice_admin_auth_allow']
+         'allow_user_service_restart','signature_clockskew','waptwua_enabled','notify_user','waptservice_admin_auth_allow',
+		'local_repo_path','local_repo_sync_task_period','local_repo_time_for_sync_start','local_repo_time_for_sync_end','local_repo_limit_bandwidth']
 
     def __init__(self,config_filename=None):
         if not config_filename:
@@ -285,6 +287,12 @@ class WaptServiceConfig(object):
         self.waptaudit_task_period = None
 
         self.notify_user = False
+        self.enable_remote_repo = False
+        self.local_repo_path = os.path.join(wapt_root_dir,'waptserver','repository')
+        self.local_repo_sync_task_period = None
+        self.local_repo_time_for_sync_start = None
+        self.local_repo_time_for_sync_end = None
+        self.local_repo_limit_bandwidth = None
 
     def load(self):
         """Load waptservice parameters from global wapt-get.ini file"""
@@ -424,6 +432,26 @@ class WaptServiceConfig(object):
 
             if config.has_option('global','signature_clockskew'):
                 self.signature_clockskew = config.getint('global','signature_clockskew')
+
+            if config.has_option('global','enable_remote_repo'):
+                self.enable_remote_repo = config.getboolean('global','enable_remote_repo')
+                if config.has_option('global','local_repo_path'):
+                    self.local_repo_path = config.get('global','local_repo_path')
+                if config.has_option('global','local_repo_time_for_sync_start'):
+                    regex = re.compile('([0-1][0-9]|2[0-3]):[0-5][0-9]')
+                    timeforsync_start = config.get('global','local_repo_time_for_sync_start') or None
+                    if regex.match(timeforsync_start):
+                        self.local_repo_time_for_sync_start = timeforsync_start
+                        if config.has_option('global','local_repo_time_for_sync_end') and regex.match(config.get('global','local_repo_time_for_sync_end')):
+                            self.local_repo_time_for_sync_end=config.get('global','local_repo_time_for_sync_end') or None
+                        else:
+                            self.local_repo_time_for_sync_end='%d:%s' % (int(timeforsync_start.split(':')[0])+1, timeforsync_start.split(':')[1])
+                elif config.has_option('global','local_repo_sync_task_period'):
+                    self.local_repo_sync_task_period = config.get('global','local_repo_sync_task_period') or None
+                else:
+                    self.local_repo_sync_task_period = '30m'
+                if config.has_option('global','local_repo_limit_bandwidth'):
+                    self.local_repo_limit_bandwidth = config.getfloat('global','local_repo_limit_bandwidth') or None
 
             # settings for waptexit / shutdown policy
             #   recommended settings :
@@ -917,8 +945,11 @@ class WaptLongTask(WaptTask):
 
 class WaptSyncRepo(WaptTask):
     """Task for sync the server Repo in the current machine"""
-    def _init_(self,**args):
+    def _init_(self,local_repo_path=None,srvurl=None,speed=None,**args):
         super(WaptSyncRepo,self).__init__()
+        self.local_repo_path = local_repo_path
+        self.srvurl = srvurl
+        self.speed = speed
         for k in args:
             setattr(self,k,args[k])
 
@@ -926,7 +957,7 @@ class WaptSyncRepo(WaptTask):
         """Launch the sync of the server"""
         self.progress = 0.0
 
-        def readTreeOfFilesAndDownloadRec(srvname = '',pathtosync= '',atree={}, SyncDict={}, Result = {}):
+        def readTreeOfFilesAndDownloadRec(srvname = '',pathtosync= '',atree={}, SyncDict={}, Result = {},speed = None):
             ListRemovableSynDict = SyncDict.keys()
             if not(Result):
                 Result = {}
@@ -936,18 +967,18 @@ class WaptSyncRepo(WaptTask):
                 Result['deleted'] = {}
                 Result['success'] = True
             for afile in atree:
-                pathfile=os.path.join(pathtosync,afile)
+                pathfile=os.path.normpath(os.path.join(pathtosync,afile))
                 if (SyncDict.get(afile)):
                     ListRemovableSynDict.remove(afile)
                     if atree[afile]['isDir'] and SyncDict[afile]['isDir']:
-                        readTreeOfFilesAndDownloadRec(srvname,pathtosync,atree[afile]['files'],SyncDict[afile]['files'],Result)
+                        readTreeOfFilesAndDownloadRec(srvname,pathtosync,atree[afile]['files'],SyncDict[afile]['files'],Result,speed)
                     elif not(atree[afile]['isDir']) and not(SyncDict[afile]['isDir']):
                         if SyncDict[afile]['sum']==atree[afile]['sum']:
                             continue
                         else:
                             url = srvname+urllib.pathname2url(afile)
                             try:
-                                wget(url,pathfile,sha256=atree[afile]['sum'])
+                                wget(url,target=pathfile,sha256=atree[afile]['sum'],limit_bandwidth=speed)
                                 SyncDict[afile]['isDir']=False
                                 SyncDict[afile]['sum']=atree[afile]['sum']
                                 Result['modified'][afile]=url
@@ -961,7 +992,7 @@ class WaptSyncRepo(WaptTask):
                             SyncDict[afile]['files']={}
                             del SyncDict[afile]['sum']
                             Result['modified'][afile]='toDir'
-                            readTreeOfFilesAndDownloadRec(srvname,pathtosync,atree[afile]['files'],SyncDict[afile]['files'],Result)
+                            readTreeOfFilesAndDownloadRec(srvname,pathtosync,atree[afile]['files'],SyncDict[afile]['files'],Result,speed)
                         else:
                             shutil.rmtree(pathfile,ignore_errors=True)
                             SyncDict[afile]['isDir']=False
@@ -969,7 +1000,7 @@ class WaptSyncRepo(WaptTask):
                             del SyncDict[afile]['files']
                             url = srvname+urllib.pathname2url(afile)
                             try:
-                                wget(url,pathfile,sha256=atree[afile]['sum'])
+                                wget(url,target=pathfile,sha256=atree[afile]['sum'],limit_bandwidth=speed)
                                 SyncDict[afile]['isDir']=False
                                 SyncDict[afile]['sum']=atree[afile]['sum']
                                 Result['modified'][afile]=url
@@ -983,11 +1014,11 @@ class WaptSyncRepo(WaptTask):
                         SyncDict[afile]['files']={}
                         os.mkdir(pathfile)
                         Result['new'][afile]='isDir'
-                        readTreeOfFilesAndDownloadRec(srvname,pathtosync,atree[afile]['files'],SyncDict[afile]['files'],Result)
+                        readTreeOfFilesAndDownloadRec(srvname,pathtosync,atree[afile]['files'],SyncDict[afile]['files'],Result,speed)
                     else:
                         url = srvname+urllib.pathname2url(afile)
                         try:
-                            wget(url,pathfile,sha256=atree[afile]['sum'])
+                            wget(url,pathfile,sha256=atree[afile]['sum'],limit_bandwidth=speed)
                             SyncDict[afile]['isDir']=False
                             SyncDict[afile]['sum']=atree[afile]['sum']
                             Result['new'][afile]=url
@@ -995,7 +1026,7 @@ class WaptSyncRepo(WaptTask):
                             Result['errors'][afile]=str(e)
                             Result['success'] = False
             for afile in ListRemovableSynDict:
-                pathfile=os.path.join(pathtosync,afile)
+                pathfile=os.path.normpath(os.path.join(pathtosync,afile))
                 if SyncDict[afile]['isDir']:
                     shutil.rmtree(pathfile,ignore_errors=True)
                     Result['deleted'][afile]='isDir'
@@ -1005,21 +1036,21 @@ class WaptSyncRepo(WaptTask):
                 del SyncDict[afile]
             return Result
 
-        path = 'C:\TEST'
-        filesync = 'C:\Sync.json'
-        srvname= 'http://127.0.0.1/'
-        r=requests.get('http://127.0.0.1:8080/api/v3/get_sha256andpathforsync')
+        r=requests.get(self.srvurl+'/sync.json')
+        Res = {}
         if r.status_code==200:
             dic=r.json()
-            if dic['success']:
-                if os.path.isfile(filesync):
-                    with open(filesync,'r') as f:
-                        SyncDict=json.load(f)
-                else:
-                    SyncDict={}
-                Res = readTreeOfFilesAndDownloadRec(srvname,path,dic['files'],SyncDict)
-                with open(filesync,'w+') as f:
-                    json.dump(SyncDict,f)
+            filesync=os.path.join(self.local_repo_path,'sync.json')
+            if os.path.isfile(filesync):
+                with open(filesync,'r') as f:
+                    SyncDict=json.load(f)
+            else:
+                SyncDict={}
+            if not(os.path.isdir(self.local_repo_path)):
+                os.mkdir(self.local_repo_path)
+            Res = readTreeOfFilesAndDownloadRec(self.srvurl,self.local_repo_path,dic,SyncDict,speed=self.speed)
+            with open(filesync,'w+') as f:
+                json.dump(SyncDict,f)
         self.result = Res
         self.progress=100.0
 

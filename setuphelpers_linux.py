@@ -37,7 +37,7 @@ import cpuinfo
 import sys
 import subprocess
 import logging
-from waptutils import (ensure_unicode, makepath, ensure_dir,currentdate,currentdatetime,_lower,ini2winstr,error)
+from waptutils import (ensure_unicode, makepath, ensure_dir,currentdate,currentdatetime,_lower,ini2winstr,error,get_main_ip)
 
 logger = logging.getLogger()
 
@@ -211,7 +211,7 @@ def host_info():
     info['dnsdomain'] = socket.getfqdn().split('.', 1)[1]
 
     if os.path.isfile('/etc/samba/smb.conf'):
-        config = configparser.RawConfigParser()
+        config = configparser.RawConfigParser(strict=False)
         config.read('/etc/samba/smb.conf')
         if config.has_option('global','workgroup'):
             info['workgroup_name'] = config.get('global','workgroup')
@@ -228,6 +228,7 @@ def host_info():
     info['cpu_name'] = cpuinfo.get_cpu_info()['brand']
 
     info['environ'] = {k:ensure_unicode(v) for k,v in os.environ.iteritems()}
+    info['main_ip'] = get_main_ip()
 
     return info
 

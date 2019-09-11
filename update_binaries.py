@@ -163,17 +163,6 @@ python_ldap = wget('https://pypi.python.org/packages/55/8b/7e9b4f4f5c3b4c98416b1
 print('Install ldap wheel')
 print(run([makepath(wapt_base_dir,'Scripts','pip.exe'),'install',python_ldap,'--target',site_packages,'--upgrade']))
 
-
-print('Rocket 1.2.8 workaround (until pip is fixed...)')
-fn = wget('https://codeload.github.com/explorigin/Rocket/zip/53313677768159d13e6c2b7c69ad69ca59bb8c79',sha256='9d27faae175667b04788deec372e0c400cb1334ba240b1435de2af7e190ab56c',resume=False,cache_dir=binaries_cache,proxies=proxies)
-tmpdir = tempfile.mktemp('rockettmp')
-try:
-    unzip(fn,target=tmpdir)
-    copytree2(makepath(tmpdir,'Rocket-53313677768159d13e6c2b7c69ad69ca59bb8c79','rocket'),makepath(site_packages,'rocket'))
-finally:
-    if os.path.isdir(tmpdir):
-        shutil.rmtree(tmpdir)
-
 print('Get Cryptography 2.4.2 for Windows XP')
 fn = wget('https://files.pythonhosted.org/packages/f2/fe/0877f63affd2ad8c3390d21f76342ef5229fd932f9f9e7388feaf705b040/cryptography-2.4.2-cp27-cp27m-win32.whl',sha256='5ecaf9e7db3ca582c6de6229525d35db8a4e59dc3e8a40a331674ed90e658cbf',resume=False,cache_dir=binaries_cache,proxies=proxies)
 tmpdir = tempfile.mktemp('cryptographytmp')

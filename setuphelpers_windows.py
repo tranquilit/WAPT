@@ -52,7 +52,7 @@ import win32com.client
 from win32com.shell import shellcon
 from win32com.taskscheduler import taskscheduler
 
-from waptutils import (Version,makepath,isfile,isdir,killtree,CalledProcessErrorOutput,mkdirs,remove_file,currentdate,currentdatetime,ensure_dir,_lower,ini2winstr,error,find_all_files)
+from waptutils import (Version,makepath,isfile,isdir,killtree,CalledProcessErrorOutput,mkdirs,remove_file,currentdate,currentdatetime,ensure_dir,_lower,ini2winstr,error,find_all_files,get_main_ip)
 
 ## import only for windows
 import _subprocess
@@ -635,10 +635,11 @@ def get_ip_address(connected_only=False):
                     ('table', MIB_IPADDRROW * dwSize.value)]
 
     ipTable = MIB_IPADDRTABLE()
-    if windll.iphlpapi.GetIpAddrTable(  ctypes.byref(ipTable),
+    error = windll.iphlpapi.GetIpAddrTable(  ctypes.byref(ipTable),
                                         ctypes.byref(dwSize),
-                                        0) != 0:
-        raise WindowsError, "GetIpAddrTable returned %d" % rc
+                                        0)
+    if error != 0:
+        raise WindowsError(error,"GetIpAddrTable returned error")
 
     MIB_IPADDR_PRIMARY = 0x0001
     MIB_IPADDR_DYNAMIC = 0x0004
@@ -778,6 +779,8 @@ def host_info():
     info['computer_ad_site'] =  registry_readstring(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows\CurrentVersion\Group Policy\State\Machine','Site-Name')
 
     info['environ'] = {k:ensure_unicode(v) for k,v in os.environ.iteritems()}
+
+    info['main_ip'] = get_main_ip()
 
     return info
 
@@ -2997,7 +3000,7 @@ def _environ_params(dict_or_module={}):
     params_dict['programfiles'] = programfiles()
     params_dict['domainname'] = get_domain_fromregistry()
     params_dict['computername'] = os.environ['COMPUTERNAME']
-    if type(dict_or_module) is ModuleType:
+    if type(dict_or_module) is types.ModuleType:
         for k,v in params_dict.items():
             setattr(dict_or_module,k,v)
     return params_dict

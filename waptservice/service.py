@@ -48,9 +48,9 @@ from waptutils import __version__
 
 from optparse import OptionParser
 
-import hashlib
+from waitress import serve
 
-from rocket import Rocket
+import hashlib
 
 # flask
 from flask import request, Flask,Response, send_from_directory, session, g, redirect, url_for, render_template
@@ -94,7 +94,7 @@ from waptservice.waptservice_common import WaptRegisterComputer,WaptPackageRemov
 from waptservice.waptservice_common import WaptEvents
 
 from waptservice.waptservice_socketio import WaptSocketIOClient
-#TODO LINUX
+
 if sys.platform == 'win32':
     if os.path.isdir(os.path.join(wapt_root_dir,'waptenterprise')):
         from waptenterprise.waptservice.enterprise import get_active_sessions,start_interactive_process  # pylint: disable=import-error
@@ -199,8 +199,6 @@ def apply_host_settings(waptconfig):
         if waptconfig.hiberboot_enabled is not None and wapt.hiberboot_enabled != waptconfig.hiberboot_enabled:
             logger.info('Setting hiberboot_enabled to %s'%waptconfig.hiberboot_enabled)
             wapt.hiberboot_enabled = waptconfig.hiberboot_enabled
-
-
     except Exception as e:
         logger.critical('Unable to set shutdown policies : %s' % e)
 
@@ -221,11 +219,13 @@ def wapt():
     """Flask request contextual cached Wapt instance access"""
     if not hasattr(g,'wapt'):
         g.wapt = Wapt(config_filename = waptconfig.config_filename)
-        apply_host_settings(waptconfig)
+        if sys.platform == 'win32':
+            apply_host_settings(waptconfig)
     # apply settings if changed at each wapt access...
     elif g.wapt.reload_config_if_updated():
         #apply waptservice / waptexit specific settings
-        apply_host_settings(waptconfig)
+        if sys.platform == 'win32':
+            apply_host_settings(waptconfig)
     return g.wapt
 
 @app.before_first_request
@@ -1413,7 +1413,10 @@ def get_wapt_package(input_package_name):
 @app.route('/launchsync')
 @allow_local
 def launchsync():
-    data = app.task_manager.add_task(WaptSyncRepo()).as_json()
+    if (waptconfig.enable_remote_repo):
+        data = app.task_manager.add_task(WaptSyncRepo(created_by='flask /launchsync',local_repo_path=waptconfig.local_repo_path,srvurl=waptconfig.waptserver.server_url,speed=waptconfig.local_repo_limit_bandwidth)).as_json()
+    else:
+        data=None
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
     else:
@@ -1470,6 +1473,7 @@ class WaptTaskManager(threading.Thread):
         self.last_upgrade = None
         self.last_update = None
         self.last_audit = None
+        self.last_sync = None
 
     def setup_event_queue(self):
         self.events = WaptEvents()
@@ -1523,6 +1527,8 @@ class WaptTaskManager(threading.Thread):
                 self.last_update = datetime.datetime.now()
             if isinstance(task,WaptUpgrade):
                 self.last_upgrade = datetime.datetime.now()
+            if isinstance(task,WaptSyncRepo):
+                self.last_sync = datetime.datetime.now()
 
             # not already in pending  actions...
             if not same:
@@ -1624,6 +1630,24 @@ class WaptTaskManager(threading.Thread):
                     self.run_scheduled_audits()
                 except Exception as e:
                     logger.debug(u'Error checking audit: %s' % e)
+
+        if waptconfig.enable_remote_repo:
+            if waptconfig.local_repo_sync_task_period:
+                if self.last_sync is None or (datetime.datetime.now() - self.last_sync > get_time_delta(waptconfig.local_repo_sync_task_period,'m')):
+                    try:
+                        logger.debug(u'Add_task for sync with local_repo_sync_task_period')
+                        self.add_task(WaptSyncRepo(notifyuser=False,created_by='SCHEDULER',local_repo_path=waptconfig.local_repo_path,srvurl=waptconfig.waptserver.server_url,speed=waptconfig.local_repo_limit_bandwidth))
+                    except Exception as e:
+                        logger.debug(u'Error syncing local repo with server repo : %s' % e)
+            elif waptconfig.local_repo_time_for_sync_start:
+                time_now = datetime.datetime.now()
+                if common.is_between_two_times(waptconfig.local_repo_time_for_sync_start,waptconfig.local_repo_time_for_sync_end) and (self.last_sync is None or (datetime.datetime.now() - self.last_sync > get_time_delta('10m','m'))):
+                    try:
+                        logger.debug(u'Add_task for sync with local_repo_time_for_sync')
+                        self.add_task(WaptSyncRepo(notifyuser=False,created_by='SCHEDULER',local_repo_path=waptconfig.local_repo_path,srvurl=waptconfig.waptserver.server_url,speed=waptconfig.local_repo_limit_bandwidth))
+                    except Exception as e:
+                        logger.debug(u'Error syncing local repo with server repo : %s' % e)
+
 
         if WaptWUAParams is not None and self.wapt.waptwua_enabled:
             params = WaptWUAParams()
@@ -1993,7 +2017,8 @@ if __name__ == "__main__":
             logger.warning('Unable to initialize windows log Event handler: %s' % e)
 
     # setup basic settings
-    apply_host_settings(waptconfig)
+    if sys.platform == 'win32':
+        apply_host_settings(waptconfig)
 
     # waptwua
     apply_waptwua_settings(waptconfig)
@@ -2031,17 +2056,9 @@ if __name__ == "__main__":
 
         port_config = []
         if waptconfig.waptservice_port:
-            port_config.append(('127.0.0.1', waptconfig.waptservice_port))
-            server = Rocket(port_config,'wsgi', {"wsgi_app":app})
-            rocket_logger = logging.getLogger('Rocket')
+            server = serve(app ,host='127.0.0.1' , port=waptconfig.waptservice_port)
+            waitress_logger = logging.getLogger('waitress')
             if options.loglevel:
-                setloglevel(rocket_logger ,options.loglevel)
+                setloglevel(waitress_logger ,options.loglevel)
             else:
-                setloglevel(rocket_logger ,waptconfig.loglevel)
-
-            try:
-                logger.info(u"starting waptservice")
-                server.start()
-            except KeyboardInterrupt:
-                logger.info(u"stopping waptservice")
-                server.stop()
+                setloglevel(waitress_logger ,waptconfig.loglevel)

@@ -2354,6 +2354,10 @@ msgstr ""
 msgid "Save queries"
 msgstr ""
 
+#: tviswaptgui.actrepositoriesgetsecondrepos.caption
+msgid "ActRepositoriesGetSecondRepos"
+msgstr ""
+
 #: tviswaptgui.actrepositoriesgetupdaterules.caption
 msgctxt "tviswaptgui.actrepositoriesgetupdaterules.caption"
 msgid "Refresh"
@@ -2855,6 +2859,36 @@ msgstr ""
 #: tviswaptgui.edsearchorgunits.hint
 msgctxt "tviswaptgui.edsearchorgunits.hint"
 msgid "Regular expressions allowed"
+msgstr ""
+
+#: tviswaptgui.gridagentrepo.header.columns[0].text
+msgctxt "tviswaptgui.gridagentrepo.header.columns[0].text"
+msgid "Status"
+msgstr ""
+
+#: tviswaptgui.gridagentrepo.header.columns[1].text
+msgctxt "tviswaptgui.gridagentrepo.header.columns[1].text"
+msgid "Description"
+msgstr ""
+
+#: tviswaptgui.gridagentrepo.header.columns[2].text
+msgctxt "tviswaptgui.gridagentrepo.header.columns[2].text"
+msgid "Computer name"
+msgstr ""
+
+#: tviswaptgui.gridagentrepo.header.columns[3].text
+msgctxt "tviswaptgui.gridagentrepo.header.columns[3].text"
+msgid "Computer FQDN"
+msgstr ""
+
+#: tviswaptgui.gridagentrepo.header.columns[4].text
+msgctxt "tviswaptgui.gridagentrepo.header.columns[4].text"
+msgid "IP"
+msgstr ""
+
+#: tviswaptgui.gridagentrepo.header.columns[5].text
+msgctxt "tviswaptgui.gridagentrepo.header.columns[5].text"
+msgid "uuid"
 msgstr ""
 
 #: tviswaptgui.gridgroups.header.columns[0].text
@@ -3423,6 +3457,7 @@ msgid "maintainer"
 msgstr ""
 
 #: tviswaptgui.gridhostsforpackage.header.columns[1].text
+msgctxt "tviswaptgui.gridhostsforpackage.header.columns[1].text"
 msgid "Computer name"
 msgstr ""
 
@@ -5258,6 +5293,10 @@ msgctxt "tviswaptgui.panel7.caption"
 msgid "Panel7"
 msgstr ""
 
+#: tviswaptgui.panelagentrepos.caption
+msgid "PanelAgentRepos"
+msgstr ""
+
 #: tviswaptgui.panelreportingeditsql.caption
 msgid "PanelReportingEditSQL"
 msgstr ""
@@ -5365,6 +5404,11 @@ msgstr ""
 msgid "Errors"
 msgstr ""
 
+#: tviswaptgui.tbrefeshagentrepos.caption
+msgctxt "tviswaptgui.tbrefeshagentrepos.caption"
+msgid "Refresh"
+msgstr ""
+
 #: tviswaptgui.tbreport.caption
 msgid "TbReport"
 msgstr ""
@@ -5377,12 +5421,32 @@ msgstr ""
 msgid "TbRepos"
 msgstr ""
 
+#: tviswaptgui.tbsyncall.caption
+msgid "Sync all"
+msgstr ""
+
+#: tviswaptgui.tbsyncselected.caption
+msgid "Sync selected"
+msgstr ""
+
+#: tviswaptgui.tbupdatefilesync.caption
+msgid "Update sync.json"
+msgstr ""
+
 #: tviswaptgui.toolbar1.caption
 msgid "ToolBar1"
 msgstr ""
 
 #: tviswaptgui.toolbutton1.caption
 msgid "ToolButton1"
+msgstr ""
+
+#: tviswaptgui.toolbutton14.caption
+msgid "ToolButton14"
+msgstr ""
+
+#: tviswaptgui.toolbutton4.caption
+msgid "ToolButton4"
 msgstr ""
 
 #: tviswaptgui.toolbutton6.caption

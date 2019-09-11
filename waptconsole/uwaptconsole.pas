@@ -36,12 +36,16 @@ type
     ActDescendRule: TAction;
     ActDeleteRule: TAction;
     ActEditRule: TAction;
+    ActRepositoriesGetSecondRepos: TAction;
     ActNewRule: TAction;
     ActRepositoriesGetUpdateRules: TAction;
     ActSaveAccounts: TAction;
     ActReloadAccounts: TAction;
     ActNewAccount: TAction;
     GridRules: TSOGrid;
+    PanelRules: TPanel;
+    PanelAgentRepos: TPanel;
+    PanelRepositories: TPanel;
     RightsActions: TActionList;
     ActRefreshHostsForPackage: TAction;
     ActTriggerWaptwua_uninstall: TAction;
@@ -92,29 +96,38 @@ type
     PanWUASearchClassifications: TPanel;
     PopupMenuReportingQueries: TPopupMenu;
     GridUsers: TSOGrid;
+    GridAgentRepo: TSOGrid;
     SplitGridUnitsHosts1: TSplitter;
     SplitHostsForPackage: TSplitter;
     Splitter1: TSplitter;
     Splitter12: TSplitter;
     Splitter13: TSplitter;
+    SplitterRepo: TSplitter;
     SplitTopTaskTaskGrid: TSplitter;
     PgRights: TTabSheet;
     pgRepositories: TTabSheet;
+    tbDeleteRule: TToolButton;
+    tbDownRule: TToolButton;
+    tbEditRule: TToolButton;
     TbLeftTopreporting: TToolBar;
+    tbNewRule: TToolButton;
     tbRefresh: TToolButton;
     TbReport1: TToolBar;
-    tbSoftwaresNormalization: TToolButton;
     TbRepos: TToolBar;
+    tbSoftwaresNormalization: TToolButton;
     tbUpRule: TToolButton;
-    tbDownRule: TToolButton;
-    tbNewRule: TToolButton;
-    tbDeleteRule: TToolButton;
+    tbAgentRepos: TToolBar;
     ToolButton1: TToolButton;
     ToolButton10: TToolButton;
     ToolButton11: TToolButton;
     ToolButton12: TToolButton;
     ToolButton13: TToolButton;
-    tbEditRule: TToolButton;
+    tbRefeshAgentRepos: TToolButton;
+    tbSyncSelected: TToolButton;
+    tbSyncAll: TToolButton;
+    ToolButton14: TToolButton;
+    tbUpdateFileSync: TToolButton;
+    ToolButton4: TToolButton;
     ToolButton5: TToolButton;
     ToolButton7: TToolButton;
     ToolButton8: TToolButton;
@@ -631,6 +644,7 @@ type
     procedure ActReportingQueryExportExecute(Sender: TObject);
     procedure ActReportingQueryImportExecute(Sender: TObject);
     procedure ActReportingQueryImportUpdate(Sender: TObject);
+    procedure ActRepositoriesGetSecondReposExecute(Sender: TObject);
     procedure ActRepositoriesGetUpdateRulesExecute(Sender: TObject);
     procedure ActSelfServiceNewPackageExecute(Sender: TObject);
     procedure ActSelfServiceSearchPackageExecute(Sender: TObject);
@@ -793,6 +807,11 @@ type
       State: TDragState; var Accept: Boolean);
     procedure FormDropFiles(Sender: TObject; const FileNames: array of String);
     procedure FormShow(Sender: TObject);
+    procedure GridAgentRepoChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
+    procedure GridAgentRepoGetImageIndexEx(Sender: TBaseVirtualTree;
+      Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
+      var Ghosted: Boolean; var ImageIndex: Integer;
+      var ImageList: TCustomImageList);
     procedure GridGroupsChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
     procedure GridGroupsColumnDblClick(Sender: TBaseVirtualTree;
       Column: TColumnIndex; Shift: TShiftState);
@@ -920,6 +939,10 @@ type
     procedure MenuItemProductsCheckAllClick(Sender: TObject);
     procedure PopupMenuHostsPopup(Sender: TObject);
     procedure SynEditReportsSQLChange(Sender: TObject);
+    procedure tbRefeshAgentReposClick(Sender: TObject);
+    procedure tbSyncAllClick(Sender: TObject);
+    procedure tbSyncSelectedClick(Sender: TObject);
+    procedure tbUpdateFileSyncClick(Sender: TObject);
     procedure TimerSearchPackagesTimer(Sender: TObject);
     procedure TimerWUALoadWinUpdatesTimer(Sender: TObject);
     procedure WUAConfigPagesChange(Sender: TObject);
@@ -4581,6 +4604,41 @@ begin
   end;
 end;
 
+procedure TVisWaptGUI.GridAgentRepoChange(Sender: TBaseVirtualTree;
+  Node: PVirtualNode);
+begin
+  tbSyncSelected.Enabled:=Assigned(GridAgentRepo.SelectedRows);
+end;
+
+procedure TVisWaptGUI.GridAgentRepoGetImageIndexEx(Sender: TBaseVirtualTree;
+  Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
+  var Ghosted: Boolean; var ImageIndex: Integer; var ImageList: TCustomImageList
+  );
+  var
+  reachable: ISuperObject;
+  propname: String;
+  aGrid:TSOGrid;
+begin
+  aGrid := (Sender as TSOGrid);
+  propName:=TSOGridColumn(aGrid.Header.Columns[Column]).PropertyName;
+  if propName='reachable' then
+  begin
+    ImageIndex:=-1;
+    reachable := aGrid.GetCellData(Node, 'reachable', Nil);
+    if (reachable<>Nil)then
+    begin
+      if (reachable.AsString = 'OK') then
+        ImageIndex := 4
+      else if (reachable.AsString = 'UNREACHABLE') or (reachable.AsString = 'UNKNOWN') or (reachable.AsString = 'DISCONNECTED') then
+        ImageIndex := 5
+      else
+        ImageIndex := 6;
+    end
+    else
+      ImageIndex := 6
+  end
+end;
+
 procedure TVisWaptGUI.GridGroupsColumnDblClick(Sender: TBaseVirtualTree;
   Column: TColumnIndex; Shift: TShiftState);
 begin
@@ -5375,7 +5433,9 @@ begin
   else if MainPages.ActivePage = pgRepositories then
   begin
     if not Assigned(GridRules.Data) then
-      ActRepositoriesGetUpdateRules.Execute;
+       ActRepositoriesGetUpdateRules.Execute;
+    if not Assigned(GridAgentRepo.Data) then
+       ActRepositoriesGetSecondRepos.Execute;
   end;
 end;
 

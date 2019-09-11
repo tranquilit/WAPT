@@ -431,7 +431,7 @@ def ensure_unicode(data):
             try:
                 try:
                     error_msg = ensure_unicode(win32api.FormatMessage(data.args[2][5]))
-                except Exception as e:
+                except Exception:
                     error_msg = '(unable to get meaning for error code %s)' % int2uhex(data.args[2][5])
                 return u"%s (%s): %s (%s)" % (int2uhex(data.args[0]), data.args[1].decode('cp850'),int2uhex(data.args[2][5]),error_msg)
             except:
@@ -599,7 +599,6 @@ def force_utf8_no_bom(filename):
     """Check if the file is encoded in utf8 readable encoding without BOM
     rewrite the file in place if not compliant.
     """
-    BUFSIZE = 4096
     BOMLEN = len(codecs.BOM_UTF8)
 
     content = open(filename, mode='rb').read(BOMLEN)
@@ -672,7 +671,7 @@ def http_resource_datetime(url,proxies=None,timeout=2,auth=None,verify_cert=Fals
             return httpdatetime2datetime(headers.headers.get('last-modified',None))
         else:
             headers.raise_for_status()
-    except Exception as e:
+    except Exception:
         return None
 
 def http_resource_isodatetime(url,proxies=None,timeout=2,auth=None,verify_cert=False,cert=None):
@@ -687,7 +686,7 @@ def http_resource_isodatetime(url,proxies=None,timeout=2,auth=None,verify_cert=F
             return httpdatetime2isodate(headers.headers.get('last-modified',None))
         else:
             headers.raise_for_status()
-    except Exception as e:
+    except Exception:
         return None
 
 def get_disk_free_space(filepath):
@@ -791,7 +790,7 @@ def get_requests_client_cert_session(url=None,cert=None, verify=True, proxies = 
     return result
 
 def wget(url,target=None,printhook=None,proxies=None,connect_timeout=10,download_timeout=None,verify_cert=None,referer=None,
-            user_agent=None,cert=None,resume=False,md5=None,sha1=None,sha256=None,cache_dir=None,requests_session=None):
+            user_agent=None,cert=None,resume=False,md5=None,sha1=None,sha256=None,cache_dir=None,requests_session=None,limit_bandwidth=None):
     r"""Copy the contents of a file from a given URL to a local file.
 
     Args:
@@ -914,7 +913,7 @@ def wget(url,target=None,printhook=None,proxies=None,connect_timeout=10,download
                 elif target_size < actual_size:
                     target_size = None
                     write_mode = 'wb'
-            except Exception as e:
+            except Exception:
                 target_size = None
                 write_mode = 'wb'
 
@@ -949,7 +948,7 @@ def wget(url,target=None,printhook=None,proxies=None,connect_timeout=10,download
                     raise Exception('wget : not enough free space on target drive to get %s MB. Total size: %s MB. Free space: %s MB' % (url,total_bytes // (1024*1024),target_free_bytes // (1024*1024)))
 
                 # 1Mb max, 1kb min
-                chunk_size = min([1024*1024,max([total_bytes/100,2048])])
+                chunk_size = min([1024*1024,max([total_bytes//100,2048])])
             else:
                 chunk_size = 1024*1024
 
@@ -964,7 +963,12 @@ def wget(url,target=None,printhook=None,proxies=None,connect_timeout=10,download
                 last_time_display = time.time()
                 last_downloaded = 0
                 if httpreq.ok:
+                    if limit_bandwidth:
+                        sleep_time = chunk_size/(limit_bandwidth*1024*1024)
+                    else:
+   	                    sleep_time = 0
                     for chunk in httpreq.iter_content(chunk_size=chunk_size):
+                        time.sleep(sleep_time)
                         output_file.write(chunk)
                         output_file.flush()
                         cnt +=1
@@ -1389,7 +1393,7 @@ def import_setup(setupfilename,modulename=''):
         # can not debug but memory is not cumbered with setup.py modules
         #py_mod = import_code(codecs.open(setupfilename,'r').read(), modulename)
         return py_mod
-    except Exception as e:
+    except Exception:
         logger.critical(u'Error importing %s :\n%s'%(setupfilename,ensure_unicode(traceback.format_exc())))
         raise
 
@@ -1574,7 +1578,7 @@ def killtree(pid, including_parent=True):
                 child.kill()
             if including_parent:
                 parent.kill()
-    except psutil.NoSuchProcess as e:
+    except psutil.NoSuchProcess:
         pass
 
 
@@ -1651,6 +1655,128 @@ def ini2winstr(ini):
 def error(reason):
     """Raise a WAPT fatal error"""
     raise EWaptSetupException(u'Fatal error : %s' % reason)
+
+def get_sha256(afile = '',BLOCK_SIZE=2**20):
+        file_hash=hashlib.sha256()
+        with open(afile,'rb') as f:
+            fb=f.read(BLOCK_SIZE)
+            while len(fb)>0:
+                file_hash.update(fb)
+                fb=f.read(BLOCK_SIZE)
+            return file_hash.hexdigest()
+
+
+def get_tree_of_files_rec(adir = '', all_files = {},rmpath = ''):
+    for entry in os.listdir(adir):
+        full_path = os.path.join(adir, entry)
+        minpath = os.path.normpath(os.path.relpath(full_path,rmpath)).replace(os.sep, '/')
+        all_files[minpath]={}
+        if os.path.isdir(full_path):
+            all_files[minpath]['isDir']=True
+            all_files[minpath]['lastmodification']=os.path.getmtime(full_path)
+            all_files[minpath]['size']=os.path.getsize(full_path)
+            all_files[minpath]['files']={}
+            get_tree_of_files_rec(full_path,all_files[minpath]['files'],rmpath)
+        else:
+            all_files[minpath]['isDir']=False
+            all_files[minpath]['size']=os.path.getsize(full_path)
+            all_files[minpath]['lastmodification']=os.path.getmtime(full_path)
+            all_files[minpath]['sum']=get_sha256(full_path)
+    return all_files
+
+def get_tree_of_files(dirs = []):
+    all_files = {}
+    for adir in dirs:
+        if os.path.isdir(adir):
+            minpath=os.path.normpath(os.path.relpath(adir,os.path.dirname(adir))).replace(os.sep, '/')
+            all_files[minpath]={}
+            all_files[minpath]['lastmodification']=os.path.getmtime(adir)
+            all_files[minpath]['size']=os.path.getsize(adir)
+            all_files[minpath]['realpath']=os.path.normpath(adir)
+            all_files[minpath]['isDir']=True
+            all_files[minpath]['files']={}
+            get_tree_of_files_rec(adir,all_files[minpath]['files'],os.path.dirname(adir))
+    return all_files
+
+def put_tree_of_files_in_sync_file(filesync = '',dirs = []):
+    with open(filesync,'w+') as f:
+        tree_of_files = get_tree_of_files(dirs)
+        f.write(unicode(json.dumps(tree_of_files,f)))
+        return tree_of_files
+
+def actualize_tree_of_files_rec(adir = '',dico = {},rmpath = ''):
+    listdirdico = dico.keys()
+    for entry in os.listdir(adir):
+        fullpath=os.path.join(adir,entry)
+        minpath=os.path.normpath(os.path.relpath(fullpath,rmpath)).replace(os.sep, '/')
+        if (dico.get(minpath)):
+            listdirdico.remove(minpath)
+            if (dico[minpath]['lastmodification']==os.path.getmtime(fullpath)) and (dico[minpath]['size']==os.path.getsize(fullpath)):
+                if dico[minpath]['isDir']:
+                    actualize_tree_of_files_rec(fullpath,dico[minpath]['files'],rmpath)
+                else:
+                    continue
+            else:
+                if os.path.isdir(fullpath):
+                    dico[minpath]['lastmodification']=os.path.getmtime(fullpath)
+                    dico[minpath]['size']=os.path.getsize(fullpath)
+                    if (dico[minpath]['isDir']):
+                        actualize_tree_of_files_rec(fullpath,dico[minpath]['files'],rmpath)
+                    else:
+                        dico[minpath]['isDir']=True
+                        dico[minpath]['files']={}
+                        del dico[minpath]['sum']
+                        get_tree_of_files_rec(fullpath,dico[minpath]['files'],rmpath)
+                else:
+                    dico[minpath]['lastmodification']=os.path.getmtime(fullpath)
+                    dico[minpath]['sum']=get_sha256(fullpath)
+                    if (dico[minpath]['isDir']):
+                        dico[minpath]['isDir']=False
+                        del dico[minpath]['files']
+        else:
+            dico[minpath]={}
+            dico[minpath]['lastmodification']=os.path.getmtime(fullpath)
+            dico[minpath]['size']=os.path.getsize(fullpath)
+            if os.path.isdir(fullpath):
+                dico[minpath]['isDir']=True
+                dico[minpath]['files']={}
+                get_tree_of_files_rec(fullpath,dico[minpath]['files'],rmpath)
+            else:
+                dico[minpath]['isDir']=False
+                dico[minpath]['sum']=get_sha256(fullpath)
+    for entry in listdirdico:
+        del dico[entry]
+
+def actualize_tree_of_files(dico = {}):
+    for adir in dico:
+            actualize_tree_of_files_rec(dico[adir]['realpath'],dico[adir]['files'],os.path.dirname(dico[adir]['realpath']))
+    return dico
+
+def actualize_tree_of_files_in_sync_file(filesync = ''):
+    with open(filesync,'r') as f:
+        tree_of_files = json.load(f)
+        new_tree = actualize_tree_of_files(tree_of_files)
+    with open(filesync,'w') as f:
+        f.write(unicode(json.dumps(new_tree,f)))
+        return new_tree
+
+def update_file_tree_of_files(filesync = '', dirs = []):
+    if not(os.path.isfile(filesync)):
+        return put_tree_of_files_in_sync_file(filesync,dirs)
+    else:
+        return actualize_tree_of_files_in_sync_file(filesync)
+
+def get_main_ip():
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        # doesn't even have to be reachable
+        s.connect(('10.255.255.255', 1))
+        IP = s.getsockname()[0]
+    except:
+        IP = '127.0.0.1'
+    finally:
+        s.close()
+    return IP
 
 class EWaptSetupException(Exception):
     pass

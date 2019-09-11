@@ -94,7 +94,8 @@ _defaults = {
     'htpasswd_path':None,
     'http_proxy':None,
     'nginx_http' : 80,
-    'nginx_https': 443
+    'nginx_https': 443,
+    'remote_repo_support': False
 }
 
 DEFAULT_CONFIG_FILE = os.path.join(wapt_root_dir, 'conf', 'waptserver.ini')
@@ -225,6 +226,9 @@ def load_config(cfgfile=DEFAULT_CONFIG_FILE):
 
     if _config.has_option('options', 'htpasswd_path'):
         conf['htpasswd_path'] = _config.get('options', 'htpasswd_path')
+
+    if _config.has_option('options','remote_repo_support'):
+        conf['remote_repo_support'] = _config.getboolean('options','remote_repo_support')
 
     return conf
 
