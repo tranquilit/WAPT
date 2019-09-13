@@ -1608,7 +1608,13 @@ begin
         inc(i);
       end;
     end;
-
+    if (iniWaptGet.ReadString('global','repositories','') <> ini.ReadString('global','repositories','')) or (iniWaptGet.ReadString('global','repo_url','') <> ini.ReadString('global','repo_url','')) or (iniWaptGet.ReadString('global','wapt_server','') <> ini.ReadString('global','wapt_server','')) then
+    begin
+      ini.WriteString('global','repositories','');
+      ini.WriteString('global','LastPackageDate','');
+      ini.WriteString('global','NumberOfPackages','');
+      ini.UpdateFile;
+    end;
     if (ini.ReadString('global','LastPackageDate','') = '')  or (ini.ReadString('global','NumberOfPackages','None')<>IntToStr(ListPackages.AsArray.Length)) or (ini.ReadString('global','LastPackageDate','')<(UTF8Encode(ListPackages.O['0'].S['signature_date']))) or (ini.ReadString('global','repositories','')<>iniWaptGet.ReadString('global','repositories','')) then
     begin
       if not(DirectoryExists(IconsDir)) then
@@ -1673,9 +1679,12 @@ begin
         Synchronize(@NotifyListener);
       end;
     end;
-    ini.WriteString('global','LastPackageDate',UTF8Encode(ListPackages.O['0'].S['signature_date']));
+    if ListPackages.AsArray.Length>0 then
+      ini.WriteString('global','LastPackageDate',UTF8Encode(ListPackages.O['0'].S['signature_date']));
     ini.WriteString('global','NumberOfPackages',IntToStr(ListPackages.AsArray.Length));
     ini.WriteString('global','repositories',iniWaptGet.ReadString('global','repositories',''));
+    ini.WriteString('global','repo_url',iniWaptGet.ReadString('global','repo_url',''));
+    ini.WriteString('global','wapt_server',iniWaptGet.ReadString('global','wapt_server',''));
     ini.UpdateFile;
 
   finally

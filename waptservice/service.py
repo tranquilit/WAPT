@@ -617,7 +617,7 @@ def all_packages(page=1):
                     s.version as install_version,s.install_status,s.install_date,s.explicit_by
                 from wapt_package r
                 left join wapt_localstatus s on s.package=r.package
-                where not r.section in ("host","unit","profile")
+                where not r.section in ("host","unit","profile","restricted")
                 order by r.package,r.version'''
             cur = con.cursor()
             cur.execute(query)
