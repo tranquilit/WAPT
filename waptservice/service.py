@@ -271,11 +271,11 @@ def check_auth(logon_name, password,check_token_in_password=True,for_group='wapt
     """
     if app.waptconfig.waptservice_password != 'NOPASSWORD':
         if len(logon_name) ==0 or len(password)==0:
-            return False
+            raise Exception('WRONG_PASSWORD_USERNAME')
         domain = ''
         if logon_name.count('\\') > 1 or logon_name.count('@') > 1  or (logon_name.count('\\') == 1 and logon_name.count('@')==1)  :
             logger.debug(u"malformed logon credential : %s "% logon_name)
-            return False
+            raise Exception('WRONG_PASSWORD_USERNAME')
 
         if '\\' in logon_name:
             domain = logon_name.split('\\')[0]
@@ -302,13 +302,16 @@ def check_auth(logon_name, password,check_token_in_password=True,for_group='wapt
                 pass
 
         try:
-            huser = win32security.LogonUser (
-                username.decode("utf-8"),
-                domain.decode('utf-8'),
-                password.decode("utf-8"),
-                win32security.LOGON32_LOGON_NETWORK_CLEARTEXT,
-                win32security.LOGON32_PROVIDER_DEFAULT
-            )
+            try:
+                huser = win32security.LogonUser (
+                    username.decode("utf-8"),
+                    domain.decode('utf-8'),
+                    password.decode("utf-8"),
+                    win32security.LOGON32_LOGON_NETWORK_CLEARTEXT,
+                    win32security.LOGON32_PROVIDER_DEFAULT
+                )
+            except Exception:
+                raise Exception('WRONG_PASSWORD_USERNAME')
             #check if user is domain admins or member of waptselfservice admin
             try:
                 domain_admins_group_name = common.get_domain_admins_group_name()
@@ -464,17 +467,18 @@ def login():
                 username = auth.username
                 groups = [wapt_admin_group]
                 logger.debug(u'User %s authenticated against local wapt admins (%s)' % (auth.username,wapt_admin_group))
-            elif rules:
-                try:
-                    groups = get_user_self_service_groups(rules.keys(),auth.username,auth.password)
-                    username = auth.username
-                    logger.debug(u'User %s authenticated against self-service groups %s' % (auth.username,groups))
-                except:
-                    return authenticate()
             else:
-                return authenticate()
-        except:
-            return authenticate()
+                if rules:
+                    try:
+                        groups = get_user_self_service_groups(rules.keys(),auth.username,auth.password)
+                        username = auth.username
+                        logger.debug(u'User %s authenticated against self-service groups %s' % (auth.username,groups))
+                    except Exception as e:
+                        return authenticate(msg = str(e))
+                else:
+                    return authenticate(msg = 'NO_RULES')
+        except Exception as e:
+            return authenticate(msg = str(e))
     else:
         return authenticate()
 
@@ -617,7 +621,7 @@ def all_packages(page=1):
                     s.version as install_version,s.install_status,s.install_date,s.explicit_by
                 from wapt_package r
                 left join wapt_localstatus s on s.package=r.package
-                where not r.section in ("host","unit","profile","restricted")
+                where not r.section in ("host","unit","profile","restricted","selfservice")
                 order by r.package,r.version'''
             cur = con.cursor()
             cur.execute(query)

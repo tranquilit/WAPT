@@ -26,6 +26,8 @@ resourcestring
  rsAllCategories = 'All';
  rsWarningPasswordLoginBlank = 'Your password or login is empty';
  rsServiceNotRun = 'The service is probably not started, try again?';
+ rsNO_RULES = 'There is no rules for self-service';
+ rsWRONG_PASSWORD_USERNAME = 'Wrong username or password';
 
 implementation
 

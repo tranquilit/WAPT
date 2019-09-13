@@ -87,8 +87,10 @@ def badtarget():
         'Host target UUID is not matching your request.\n',
          400)
 
-def authenticate():
+def authenticate(msg = None):
     """Sends a 401 response that enables basic auth"""
+    if msg:
+        return Response(msg,401,{'WWW-Authenticate': 'Basic realm="Login Required"'})
     return Response(
         'Could not verify your access level for that URL.\n'
         'You have to login with proper credentials', 401,

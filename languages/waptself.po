@@ -601,6 +601,10 @@ msgctxt "uwaptselfres.rslogin"
 msgid "Login"
 msgstr ""
 
+#: uwaptselfres.rsno_rules
+msgid "There is no rules for self-service"
+msgstr ""
+
 #: uwaptselfres.rspassword
 msgctxt "uwaptselfres.rspassword"
 msgid "Password"
@@ -645,5 +649,9 @@ msgstr ""
 
 #: uwaptselfres.rswarningpasswordloginblank
 msgid "Your password or login is empty"
+msgstr ""
+
+#: uwaptselfres.rswrong_password_username
+msgid "Wrong username or password"
 msgstr ""
 

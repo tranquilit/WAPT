@@ -50,6 +50,7 @@ end;
 procedure TDMWaptSelf.OnLocalServiceAuth(Sender: THttpSend; var ShouldRetry: Boolean;RetryCount:integer);
 var
   LoginDlg: TVisLogin;
+  result: String;
 begin
   EnterCriticalSection(FLockLoginDlg);
   Try
@@ -61,11 +62,18 @@ begin
       LoginDlg.EdUsername.text:=FLogin;
     if (RetryCount>1) then
     begin
+      SetString(result, PAnsiChar(Sender.Document.Memory), Sender.Document.Size);
+      if (result='WRONG_PASSWORD_USERNAME') then
+         LoginDlg.WarningText.Caption:=rsWRONG_PASSWORD_USERNAME
+      else if (result='NO_RULES') then
+         LoginDlg.WarningText.Caption:=rsNO_RULES
+      else
+          LoginDlg.WarningText.Caption:=result;
       LoginDlg.ImageWarning.Show;
       LoginDlg.WarningText.Show;
     end
     else
-      LoginDlg.Height:=LoginDlg.Height-5-16;
+      LoginDlg.Height:=LoginDlg.Height;
     case LoginDlg.ShowModal of
       mrCancel, mrClose:
       begin
