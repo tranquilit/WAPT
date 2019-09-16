@@ -3315,14 +3315,17 @@ def killalltasks(exenames,include_children=True):
     """
     logger.debug('Kill tasks %s' % (exenames,))
     if not exenames:
-        return
+        return []
     if not isinstance(exenames,list):
         exenames = [exenames]
+
+    result = []
     exenames = [exe.lower() for exe in exenames]+[exe.lower()+'.exe' for exe in exenames]
     for p in psutil.process_iter():
         try:
             if p.name().lower() in exenames:
                 logger.debug('Kill process %i' % (p.pid,))
+                result.append((p.pid,p.name()))
                 if include_children:
                     killtree(p.pid)
                 else:
@@ -3330,6 +3333,7 @@ def killalltasks(exenames,include_children=True):
         except (psutil.AccessDenied,psutil.NoSuchProcess):
             pass
 
+    return result
     """
     for c in exenames:
       run(u'taskkill /t /im "%s" /f' % c)
