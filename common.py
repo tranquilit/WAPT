@@ -4675,6 +4675,14 @@ class Wapt(BaseObjectClass):
         >>> res == {'removed': ['tis-wapttest'], 'errors': []}
         True
         """
+
+        def is_process_running(processes):
+            processes = ensure_list(processes)
+            for p in processes:
+                if setuphelpers.isrunning(p):
+                    return True
+            return False
+
         apackages = self._ensure_package_requests_list(apackages,keep_package_entries=True)
 
         # ensure that apackages is a list of package requirements (strings)
@@ -4695,10 +4703,13 @@ class Wapt(BaseObjectClass):
 
         # removal from conflicts
         to_remove = actions['remove']
+
+        # check that the removal will not impact running processes
         for (request,pe) in to_remove:
             logger.info('Removing conflicting package %s'%request)
             try:
-                res = self.remove(request,force=True)
+                res = self.remove(request,force=True,
+                    only_if_not_process_running=only_if_not_process_running,process_dependencies=False)
                 actions['errors'].extend(res['errors'])
                 if res['errors']:
                     logger.warning(u'Error removing %s:%s'%(request,ensure_unicode(res['errors'])))
@@ -4707,12 +4718,6 @@ class Wapt(BaseObjectClass):
 
         to_install = []
 
-        def is_process_running(processes):
-            processes = ensure_list(processes)
-            for p in processes:
-                if setuphelpers.isrunning(p):
-                    return True
-            return False
 
         def is_allowed(package):
             return ((only_priorities is None or package.priority in only_priorities) and
@@ -4887,7 +4892,10 @@ class Wapt(BaseObjectClass):
         else:
             return []
 
-    def remove(self,packages_list,force=False):
+    def remove(self,packages_list,
+            force=False,
+            only_if_not_process_running=False,
+            process_dependencies=True):
         """Removes a package giving its package name, unregister from local status DB
 
         Args:
@@ -4903,8 +4911,16 @@ class Wapt(BaseObjectClass):
         if not isinstance(packages_list,list):
             packages_list = [packages_list]
 
-        for package in packages_list:
-            try:
+        def is_process_running(processes):
+            processes = ensure_list(processes)
+            for p in processes:
+                if setuphelpers.isrunning(p):
+                    return True
+            return False
+
+
+        try:
+            for package in packages_list:
                 self.check_cancelled()
                 # development mode, remove a package by its directory
                 if isinstance(package,(str,unicode)) and os.path.isfile(os.path.join(package,'WAPT','control')):
@@ -4916,77 +4932,82 @@ class Wapt(BaseObjectClass):
                     if pe:
                         package = pe.package
 
-                q = self.waptdb.query(u"""\
-                   select * from wapt_localstatus
-                    where package=?
-                   """ , (package,))
-                if not q:
-                    logger.debug(u"Package %s not installed, removal aborted" % package)
-                    return result
+                if (not only_if_not_process_running or not pe.impacted_process or not is_process_running(pe.impacted_process)):
+                    q = self.waptdb.query(u"""\
+                       select * from wapt_localstatus
+                        where package=?
+                       """ , (package,))
+                    if not q:
+                        logger.debug(u"Package %s not installed, removal aborted" % package)
+                        return result
 
-                # several versions installed of the same package... ?
-                for mydict in q:
-                    self.runstatus = u"Removing package %s version %s from computer..." % (mydict['package'],mydict['version'])
+                    # several versions installed of the same package... ?
+                    for mydict in q:
+                        self.runstatus = u"Removing package %s version %s from computer..." % (mydict['package'],mydict['version'])
 
-                    # removes recursively meta packages which are not satisfied anymore
-                    additional_removes = self.check_remove(package)
+                        if process_dependencies:
+                            # removes recursively meta packages which are not satisfied anymore
+                            additional_removes = self.check_remove(package)
+                        else:
+                            additional_removes = []
 
-                    if mydict.get('impacted_process',None):
-                        setuphelpers.killalltasks(ensure_list(mydict['impacted_process']))
+                        if mydict.get('impacted_process',None):
+                            setuphelpers.killalltasks(ensure_list(mydict['impacted_process']))
 
 
-                    if mydict['uninstall_key']:
-                        # cook the uninstall_key because could be either repr of python list or string
-                        # should be now json list in DB
-                        uninstall_keys = self._get_uninstallkeylist(mydict['uninstall_key'])
-                        if uninstall_keys:
-                            for uninstall_key in uninstall_keys:
-                                if uninstall_key:
-                                    try:
-                                        uninstall_cmd = self.uninstall_cmd(uninstall_key)
-                                        if uninstall_cmd:
-                                            logger.info(u'Launch uninstall cmd %s' % (uninstall_cmd,))
-                                            # if running porcesses, kill them before launching uninstaller
-                                            print(self.run(uninstall_cmd))
-                                    except Exception as e:
-                                        logger.critical(u"Critical error during uninstall: %s" % (ensure_unicode(e)))
-                                        result['errors'].append(package)
-                                        if not force:
-                                            raise
+                        if mydict['uninstall_key']:
+                            # cook the uninstall_key because could be either repr of python list or string
+                            # should be now json list in DB
+                            uninstall_keys = self._get_uninstallkeylist(mydict['uninstall_key'])
+                            if uninstall_keys:
+                                for uninstall_key in uninstall_keys:
+                                    if uninstall_key:
+                                        try:
+                                            uninstall_cmd = self.uninstall_cmd(uninstall_key)
+                                            if uninstall_cmd:
+                                                logger.info(u'Launch uninstall cmd %s' % (uninstall_cmd,))
+                                                # if running processes, kill them before launching uninstaller
+                                                print(self.run(uninstall_cmd))
+                                        except Exception as e:
+                                            logger.critical(u"Critical error during uninstall: %s" % (ensure_unicode(e)))
+                                            result['errors'].append(package)
+                                            if not force:
+                                                raise
 
-                    else:
-                        logger.debug(u'uninstall key not registered in local DB status.')
+                        else:
+                            logger.debug(u'uninstall key not registered in local DB status.')
 
-                    if mydict['install_status'] != 'ERROR':
-                        try:
-                            self.uninstall(package)
-                        except Exception as e:
-                            logger.critical(u'Error running uninstall script: %s'%e)
-                            result['errors'].append(package)
+                        if mydict['install_status'] != 'ERROR':
+                            try:
+                                self.uninstall(package)
+                            except Exception as e:
+                                logger.critical(u'Error running uninstall script: %s'%e)
+                                result['errors'].append(package)
 
-                    if mydict['persistent_dir'] and os.path.isdir(os.path.abspath(mydict['persistent_dir'])):
-                        shutil.rmtree(os.path.abspath(mydict['persistent_dir']))
+                        if mydict['persistent_dir'] and os.path.isdir(os.path.abspath(mydict['persistent_dir'])):
+                            shutil.rmtree(os.path.abspath(mydict['persistent_dir']))
 
-                    logger.info(u'Remove status record from local DB for %s' % package)
-                    if mydict['package_uuid']:
-                        self.waptdb.remove_install_status(package_uuid=mydict['package_uuid'])
-                    else:
-                        # backard
-                        self.waptdb.remove_install_status(package=package)
+                        logger.info(u'Remove status record from local DB for %s' % package)
+                        if mydict['package_uuid']:
+                            self.waptdb.remove_install_status(package_uuid=mydict['package_uuid'])
+                        else:
+                            # backard
+                            self.waptdb.remove_install_status(package=package)
 
-                    result['removed'].append(package)
+                        result['removed'].append(package)
 
-                    if reversed(additional_removes):
-                        logger.info(u'Additional packages to remove : %s' % additional_removes)
-                        for apackage in additional_removes:
-                            res = self.remove(apackage,force=True)
-                            result['removed'].extend(res['removed'])
-                            result['errors'].extend(res['errors'])
+                        if reversed(additional_removes):
+                            logger.info(u'Additional packages to remove : %s' % additional_removes)
+                            for apackage in additional_removes:
+                                res = self.remove(apackage,force=True)
+                                result['removed'].extend(res['removed'])
+                                result['errors'].extend(res['errors'])
 
-                return result
-            finally:
-                self.store_upgrade_status()
-                self.runstatus=''
+            return result
+
+        finally:
+            self.store_upgrade_status()
+            self.runstatus=''
 
     def host_packagename(self):
         """Return package name for current computer"""
@@ -5115,7 +5136,7 @@ class Wapt(BaseObjectClass):
         finally:
             self.runstatus=''
 
-    def list_upgrade(self):
+    def list_upgrade(self,forced_only=None,only_not_process_running=None):
         """Returns a list of packages requirement which can be upgraded
 
         Returns:
@@ -5128,7 +5149,19 @@ class Wapt(BaseObjectClass):
             remove=[])
         # only most up to date (first one in list)
         # put 'host' package at the end.
-        result['upgrade'].extend([p[0].asrequirement() for p in self.waptdb.upgradeable().values() if p and not p[0].section in ('host','unit','profile')])
+        now = datetime2isodate()
+
+        def is_process_running(processes):
+            processes = ensure_list(processes)
+            for p in processes:
+                if setuphelpers.isrunning(p):
+                    return True
+            return False
+
+        result['upgrade'].extend([p[0].asrequirement() for p in self.waptdb.upgradeable().values()
+                if p and not p[0].section in ('host','unit','profile')
+                     and (not forced_only or p.forced_install_on <= now)
+                     and (not only_not_process_running or not p.impacted_process or not is_process_running(p.impacted_process))])
 
         to_remove = self.get_unrelevant_host_packages()
         result['remove'].extend(to_remove)
