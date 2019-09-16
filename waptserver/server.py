@@ -2090,11 +2090,22 @@ def usage_statistics():
     except:
         pass
 
+    version_fn = os.path.join(wapt_root_dir,'waptserver','VERSION')
+    if os.path.isfile(version_fn):
+        version = open(version_fn,'r').read().splitlines()[0]
+    else:
+        version_fn = os.path.join(wapt_root_dir,'revision.txt')
+        if os.path.isfile(version_fn):
+            version = __version__+'-'+open(version_fn,'r').read().splitlines()[0]
+        else:
+            version = __version__
+
+
     result = dict(
         uuid=app.conf['server_uuid'],
         platform=platform.system(),
         architecture=platform.architecture(),
-        version=__version__,
+        version=version,
         date=datetime2isodate(),
     )
     result.update(stats)
