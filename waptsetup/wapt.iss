@@ -21,6 +21,8 @@ Source: "..\python27.dll"; DestDir: "{app}";
 ;Source: "..\pywintypes27.dll"; DestDir: "{app}";
 ;Source: "..\sqlite3.dll"; DestDir: "{app}"; 
 
+Source: "..\Scripts\*"; DestDir: "{app}\Scripts"; Flags: createallsubdirs recursesubdirs ;
+
 ; additional python modules
 Source: "..\lib\*"; DestDir: "{app}\lib"; Flags: createallsubdirs recursesubdirs ; Excludes: "*.dist-info,*.pyc,*.pyo,test,*.~*,bson,*.chm,testsuite,Demos,tests,examples,HTML,scintilla,idle,idlelib,pylint,isort,mccabe*,*.whl,pydoc_data"
 
