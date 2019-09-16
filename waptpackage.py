@@ -432,7 +432,7 @@ class PackageRequest(BaseObjectClass):
         locales (list) : list of 2 letters lki
 
     """
-    _attributes = ['package','version','architectures','locales','maturities','min_os_version','max_os_version']
+    _attributes = ['package','version','architectures','locales','maturities','min_os_version','max_os_version','sections']
 
     def __init__(self,request=None,copy_from=None,**kwargs):
         self.package = None
@@ -440,6 +440,7 @@ class PackageRequest(BaseObjectClass):
         self.architectures = None
         self.locales = None
         self.maturities = None
+        self.sections = None
         # boundaries are included
         self.min_os_version = None
         self.max_os_version = None
@@ -451,6 +452,7 @@ class PackageRequest(BaseObjectClass):
         self._architectures = None
         self._locales = None
         self._maturities = None
+        self._sections = None
         self._min_os_version = None
         self._max_os_version = None
 
@@ -600,6 +602,19 @@ class PackageRequest(BaseObjectClass):
             self._maturities = ensure_list(value,allow_none=True)
 
     @property
+    def sections(self):
+        """List of accepted sections"""
+        return self._sections
+
+    @sections.setter
+    def sections(self,value):
+        """List of accepted sections"""
+        if value in ('all','','*',None):
+            self._sections = None
+        else:
+            self._sections = ensure_list(value,allow_none=True)
+
+    @property
     def locales(self):
         return self._locales
 
@@ -618,6 +633,7 @@ class PackageRequest(BaseObjectClass):
                 (self.min_os_version is None or not package_entry.max_os_version or Version(package_entry.max_os_version)>=self.min_os_version) and
                 (self.max_os_version is None or not package_entry.min_os_version or Version(package_entry.min_os_version)<=self.max_os_version) and
                 (self.architectures is None or package_entry.architecture in ('','all') or package_entry.architecture in self.architectures) and
+                (self.sections is None or package_entry.section in self.sections) and
                 (self.locales is None or package_entry.locale in ('','all') or len(list_intersection(ensure_list(package_entry.locale),self.locales))>0) and
                 (self.maturities is None or (package_entry.maturity == '' and  (self.maturities is None or 'PROD' in self.maturities)) or package_entry.maturity in self.maturities))
 

@@ -489,7 +489,7 @@ def ensure_list(csv_or_list,ignore_empty_args=True,allow_none = False):
 
     if isinstance(csv_or_list,(tuple,list)):
         return list(csv_or_list)
-    elif isinstance(csv_or_list,str):
+    elif isinstance(csv_or_list,(str,bytes)):
         if ignore_empty_args:
             return [s.strip() for s in csv_or_list.split(u',') if s.strip() != '']
         else:
