@@ -1487,6 +1487,12 @@ begin
   end;
 end;
 
+function waptversion_full:String;
+begin
+  Result := GetApplicationVersion(WaptgetPath);
+  if FileExists(ExtractFilePath(ParamStr(0))+'revision.txt') then
+    Result := Result+' rev '+FileToString(ExtractFilePath(ParamStr(0))+'revision.txt');
+end;
 
 procedure TVisWaptGUI.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 var
