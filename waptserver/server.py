@@ -1440,8 +1440,17 @@ def hosts_delete():
     if request.method == 'POST':
         with wapt_db.atomic() as trans:
             try:
-                # build filter
-                post_data = request.get_json()
+                # unzip if post data is gzipped
+                if request.headers.get('Content-Encoding') == 'gzip':
+                    raw_data = zlib.decompress(request.data)
+                else:
+                    raw_data = request.data
+
+                print(raw_data)
+
+                post_data = ujson.loads(raw_data)
+                if not post_data:
+                    raise Exception('unregister_host: No data supplied')
 
                 if 'uuids' in post_data:
                     query = Hosts.uuid.in_(ensure_list(post_data['uuids']))

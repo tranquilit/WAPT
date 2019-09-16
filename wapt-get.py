@@ -1228,6 +1228,7 @@ def main():
             elif action == 'unregister':
                 if mywapt.waptserver:
                     print(u"Unregistering host from server: %s" % mywapt.waptserver.server_url)
+                    result = {}
                     result['unregister'] = mywapt.unregister_computer()
                     if not options.json_output:
                         if not result['unregister']['success']:

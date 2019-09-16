@@ -5447,9 +5447,9 @@ class Wapt(BaseObjectClass):
 
         """
         if self.waptserver:
-            data = {'uuids': [self.host_uuid], 'delete_packages':1,'delete_inventory':1}
+            data = jsondump({'uuids': [self.host_uuid], 'delete_packages':1,'delete_inventory':1})
             result = self.waptserver.post('api/v3/hosts_delete',
-                data = data ,
+                data = data,
                 signature = self.sign_host_content(data),
                 signer = self.get_host_certificate().cn
                 )
@@ -5462,7 +5462,7 @@ class Wapt(BaseObjectClass):
             return dict(
                 success = False,
                 msg = u'No WAPT server defined',
-                data = data,
+                data = {},
                 )
 
     def get_host_key_filename(self):
