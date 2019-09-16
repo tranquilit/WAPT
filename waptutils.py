@@ -1258,7 +1258,6 @@ def find_all_files(rootdir,include_patterns=None,exclude_patterns=None,include_d
     for fn in os.listdir(absolute_rootdir):
         relative_fn = os.path.join(rootdir,fn)
         full_fn = os.path.join(absolute_rootdir,fn)
-        print(fn,relative_fn,full_fn)
         if os.path.isdir(full_fn):
             if match(fn,include_dirs,exclude_dirs):
                 for fn in find_all_files(full_fn,include_patterns,exclude_patterns,include_dirs,exclude_dirs):
