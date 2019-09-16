@@ -5456,6 +5456,8 @@ class Wapt(BaseObjectClass):
 
             if result and result['success']:
                 self.delete_param('last_update_server_hashes')
+                if os.path.isfile(self.get_host_certificate_filename()):
+                    os.unlink(self.get_host_certificate_filename())
             return result
 
         else:
