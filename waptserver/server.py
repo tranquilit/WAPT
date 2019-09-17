@@ -29,7 +29,6 @@ if __name__ == '__main__':
     # as soon as possible, we must monkey patch the library...
     # monkeypatching for eventlet greenthreads
     from eventlet import monkey_patch
-    print('monkey patching')
     # os=False for windows see https://mail.python.org/pipermail/python-bugs-list/2012-November/186579.html
     if platform.system() == 'Windows':
         # interactive debug mode on PyScripter hang if tread is patched.
@@ -1445,8 +1444,6 @@ def hosts_delete():
                     raw_data = zlib.decompress(request.data)
                 else:
                     raw_data = request.data
-
-                print(raw_data)
 
                 post_data = ujson.loads(raw_data)
                 if not post_data:
