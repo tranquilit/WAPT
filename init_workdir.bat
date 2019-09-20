@@ -10,7 +10,7 @@ REM uncomment and modify the following lines if you need proxy for internet acce
 REM set http_proxy=http://srvproxy:8080
 REM set https_proxy=http://srvproxy:8080
 
-git clean -xfd
+git -C %0\.. clean -xfd
 %PYTHON_PATH%\python.exe -m pip install -U pip setuptools
 %PYTHON_PATH%\Scripts\pip.exe install virtualenv
 %PYTHON_PATH%\Scripts\virtualenv.exe  --no-site-packages --always-copy %0\..\ 
