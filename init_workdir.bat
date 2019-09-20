@@ -10,7 +10,7 @@ REM uncomment and modify the following lines if you need proxy for internet acce
 REM set http_proxy=http://srvproxy:8080
 REM set https_proxy=http://srvproxy:8080
 
-git -C %0\.. clean -xfd
+git clean -xfd
 %PYTHON_PATH%\python.exe -m pip install -U pip setuptools
 %PYTHON_PATH%\Scripts\pip.exe install virtualenv
 %PYTHON_PATH%\Scripts\virtualenv.exe  --no-site-packages --always-copy %0\..\ 
@@ -42,4 +42,4 @@ copy /Y %0\..\utils\patch-cryptography\__init__.py  %0\..\lib\site-packages\cryp
 copy /Y %0\..\utils\patch-cryptography\verification.py  %0\..\lib\site-packages\cryptography\x509\
 
 REM get iscc nginx and pgsql binaries
-%0\..\waptpython.exe update_binaries.py
+%0\..\waptpython.exe %0\..\update_binaries.py
