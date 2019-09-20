@@ -29,7 +29,7 @@ standard_library.install_aliases()
 from builtins import str
 from builtins import range
 from builtins import object
-__version__ = "1.7.5"
+__version__ = "1.7.6"
 
 import os
 import sys
@@ -53,7 +53,6 @@ import zipfile
 import custom_zip # ZipFile with remove()
 import tempfile
 import fnmatch
-import urllib.parse
 import hashlib
 import traceback
 import imp
@@ -61,6 +60,7 @@ import shutil
 import threading
 import socket
 import psutil
+import urllib
 from requests.adapters import HTTPAdapter
 from urllib3.util.ssl_ import create_urllib3_context
 from urllib3.exceptions import InsecureRequestWarning
@@ -1294,7 +1294,6 @@ def find_all_files(rootdir,include_patterns=None,exclude_patterns=None,include_d
     for fn in os.listdir(absolute_rootdir):
         relative_fn = os.path.join(rootdir,fn)
         full_fn = os.path.join(absolute_rootdir,fn)
-        print(fn,relative_fn,full_fn)
         if os.path.isdir(full_fn):
             if match(fn,include_dirs,exclude_dirs):
                 for fn in find_all_files(full_fn,include_patterns,exclude_patterns,include_dirs,exclude_dirs):
@@ -1664,107 +1663,6 @@ def get_sha256(afile = '',BLOCK_SIZE=2**20):
                 file_hash.update(fb)
                 fb=f.read(BLOCK_SIZE)
             return file_hash.hexdigest()
-
-
-def get_tree_of_files_rec(adir = '', all_files = {},rmpath = ''):
-    for entry in os.listdir(adir):
-        full_path = os.path.join(adir, entry)
-        minpath = os.path.normpath(os.path.relpath(full_path,rmpath)).replace(os.sep, '/')
-        all_files[minpath]={}
-        if os.path.isdir(full_path):
-            all_files[minpath]['isDir']=True
-            all_files[minpath]['lastmodification']=os.path.getmtime(full_path)
-            all_files[minpath]['size']=os.path.getsize(full_path)
-            all_files[minpath]['files']={}
-            get_tree_of_files_rec(full_path,all_files[minpath]['files'],rmpath)
-        else:
-            all_files[minpath]['isDir']=False
-            all_files[minpath]['size']=os.path.getsize(full_path)
-            all_files[minpath]['lastmodification']=os.path.getmtime(full_path)
-            all_files[minpath]['sum']=get_sha256(full_path)
-    return all_files
-
-def get_tree_of_files(dirs = []):
-    all_files = {}
-    for adir in dirs:
-        if os.path.isdir(adir):
-            minpath=os.path.normpath(os.path.relpath(adir,os.path.dirname(adir))).replace(os.sep, '/')
-            all_files[minpath]={}
-            all_files[minpath]['lastmodification']=os.path.getmtime(adir)
-            all_files[minpath]['size']=os.path.getsize(adir)
-            all_files[minpath]['realpath']=os.path.normpath(adir)
-            all_files[minpath]['isDir']=True
-            all_files[minpath]['files']={}
-            get_tree_of_files_rec(adir,all_files[minpath]['files'],os.path.dirname(adir))
-    return all_files
-
-def put_tree_of_files_in_sync_file(filesync = '',dirs = []):
-    with open(filesync,'w+') as f:
-        tree_of_files = get_tree_of_files(dirs)
-        f.write(unicode(json.dumps(tree_of_files,f)))
-        return tree_of_files
-
-def actualize_tree_of_files_rec(adir = '',dico = {},rmpath = ''):
-    listdirdico = dico.keys()
-    for entry in os.listdir(adir):
-        fullpath=os.path.join(adir,entry)
-        minpath=os.path.normpath(os.path.relpath(fullpath,rmpath)).replace(os.sep, '/')
-        if (dico.get(minpath)):
-            listdirdico.remove(minpath)
-            if (dico[minpath]['lastmodification']==os.path.getmtime(fullpath)) and (dico[minpath]['size']==os.path.getsize(fullpath)):
-                if dico[minpath]['isDir']:
-                    actualize_tree_of_files_rec(fullpath,dico[minpath]['files'],rmpath)
-                else:
-                    continue
-            else:
-                if os.path.isdir(fullpath):
-                    dico[minpath]['lastmodification']=os.path.getmtime(fullpath)
-                    dico[minpath]['size']=os.path.getsize(fullpath)
-                    if (dico[minpath]['isDir']):
-                        actualize_tree_of_files_rec(fullpath,dico[minpath]['files'],rmpath)
-                    else:
-                        dico[minpath]['isDir']=True
-                        dico[minpath]['files']={}
-                        del dico[minpath]['sum']
-                        get_tree_of_files_rec(fullpath,dico[minpath]['files'],rmpath)
-                else:
-                    dico[minpath]['lastmodification']=os.path.getmtime(fullpath)
-                    dico[minpath]['sum']=get_sha256(fullpath)
-                    if (dico[minpath]['isDir']):
-                        dico[minpath]['isDir']=False
-                        del dico[minpath]['files']
-        else:
-            dico[minpath]={}
-            dico[minpath]['lastmodification']=os.path.getmtime(fullpath)
-            dico[minpath]['size']=os.path.getsize(fullpath)
-            if os.path.isdir(fullpath):
-                dico[minpath]['isDir']=True
-                dico[minpath]['files']={}
-                get_tree_of_files_rec(fullpath,dico[minpath]['files'],rmpath)
-            else:
-                dico[minpath]['isDir']=False
-                dico[minpath]['sum']=get_sha256(fullpath)
-    for entry in listdirdico:
-        del dico[entry]
-
-def actualize_tree_of_files(dico = {}):
-    for adir in dico:
-            actualize_tree_of_files_rec(dico[adir]['realpath'],dico[adir]['files'],os.path.dirname(dico[adir]['realpath']))
-    return dico
-
-def actualize_tree_of_files_in_sync_file(filesync = ''):
-    with open(filesync,'r') as f:
-        tree_of_files = json.load(f)
-        new_tree = actualize_tree_of_files(tree_of_files)
-    with open(filesync,'w') as f:
-        f.write(unicode(json.dumps(new_tree,f)))
-        return new_tree
-
-def update_file_tree_of_files(filesync = '', dirs = []):
-    if not(os.path.isfile(filesync)):
-        return put_tree_of_files_in_sync_file(filesync,dirs)
-    else:
-        return actualize_tree_of_files_in_sync_file(filesync)
 
 def get_main_ip():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)

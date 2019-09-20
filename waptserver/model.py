@@ -620,6 +620,11 @@ class SiteRules(WaptBaseModel):
     value = CharField(null=False)
     repo_url = CharField(null=False)
 
+class SyncStatus(WaptBaseModel):
+    id = PrimaryKeyField(primary_key=True)
+    version = IntegerField(null=False)
+    changelog = JSONField(null=False)
+
 
 def dictgetpath(adict, pathstr):
     """Iterates a list of path pathstr of the form 'key.subkey.sskey' and returns
@@ -1833,6 +1838,25 @@ def upgrade_db_structure():
                 opes.append(migrator.add_column(SiteRules._meta.name, 'value',SiteRules.value))
             if not 'repo_url' in columns:
                 opes.append(migrator.add_column(SiteRules._meta.name, 'repo_url',SiteRules.repo_url))
+
+            migrate(*opes)
+            (v, created) = ServerAttribs.get_or_create(key='db_version')
+            v.value = next_version
+            v.save()
+
+    next_version = '1.7.6'
+    if get_db_version() <= next_version:
+        with wapt_db.atomic():
+            logger.info("Migrating from %s to %s" % (get_db_version(), next_version))
+            opes = []
+
+            SyncStatus.create_table(fail_silently=True);
+
+            columns = [c.name for c in wapt_db.get_columns('syncstatus')]
+            if not 'version' in columns:
+                opes.append(migrator.add_column(SyncStatus._meta.name, 'version',SyncStatus.version))
+            if not 'changelog' in columns:
+                opes.append(migrator.add_column(SyncStatus._meta.name, 'changelog',SyncStatus.changelog))
 
             migrate(*opes)
             (v, created) = ServerAttribs.get_or_create(key='db_version')

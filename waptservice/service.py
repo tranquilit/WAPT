@@ -300,13 +300,16 @@ def check_auth(logon_name, password,check_token_in_password=True,for_group='wapt
                 pass
 
         try:
-            huser = win32security.LogonUser (
-                username.decode("utf-8"),
-                domain.decode('utf-8'),
-                password.decode("utf-8"),
-                win32security.LOGON32_LOGON_NETWORK_CLEARTEXT,
-                win32security.LOGON32_PROVIDER_DEFAULT
-            )
+            try:
+                huser = win32security.LogonUser (
+                    username.decode("utf-8"),
+                    domain.decode('utf-8'),
+                    password.decode("utf-8"),
+                    win32security.LOGON32_LOGON_NETWORK_CLEARTEXT,
+                    win32security.LOGON32_PROVIDER_DEFAULT
+                )
+            except Exception:
+                raise Exception('WRONG_PASSWORD_USERNAME')
             #check if user is domain admins or member of waptselfservice admin
             try:
                 domain_admins_group_name = common.get_domain_admins_group_name()
@@ -462,17 +465,18 @@ def login():
                 username = auth.username
                 groups = [wapt_admin_group]
                 logger.debug(u'User %s authenticated against local wapt admins (%s)' % (auth.username,wapt_admin_group))
-            elif rules:
-                try:
-                    groups = get_user_self_service_groups(list(rules.keys()),auth.username,auth.password)
-                    username = auth.username
-                    logger.debug(u'User %s authenticated against self-service groups %s' % (auth.username,groups))
-                except:
-                    return authenticate()
             else:
-                return authenticate()
-        except:
-            return authenticate()
+                if rules:
+                    try:
+                        groups = get_user_self_service_groups(rules.keys(),auth.username,auth.password)
+                        username = auth.username
+                        logger.debug(u'User %s authenticated against self-service groups %s' % (auth.username,groups))
+                    except Exception as e:
+                        return authenticate(msg = str(e))
+                else:
+                    return authenticate(msg = 'NO_RULES')
+        except Exception as e:
+            return authenticate(msg = str(e))
     else:
         return authenticate()
 
@@ -612,7 +616,7 @@ def all_packages(page=1):
                     s.version as install_version,s.install_status,s.install_date,s.explicit_by
                 from wapt_package r
                 left join wapt_localstatus s on s.package=r.package
-                where not r.section in ("host","unit","profile")
+                where not r.section in ("host","unit","profile","restricted","selfservice")
                 order by r.package,r.version'''
             cur = con.cursor()
             cur.execute(query)
@@ -1414,6 +1418,8 @@ def get_wapt_package(input_package_name):
 @allow_local
 def launchsync():
     if (waptconfig.enable_remote_repo):
+        if sio:
+            sio.socketio_client.emit('synchronization_started')
         data = app.task_manager.add_task(WaptSyncRepo(created_by='flask /launchsync',local_repo_path=waptconfig.local_repo_path,srvurl=waptconfig.waptserver.server_url,speed=waptconfig.local_repo_limit_bandwidth)).as_json()
     else:
         data=None
@@ -1636,6 +1642,8 @@ class WaptTaskManager(threading.Thread):
                 if self.last_sync is None or (datetime.datetime.now() - self.last_sync > get_time_delta(waptconfig.local_repo_sync_task_period,'m')):
                     try:
                         logger.debug(u'Add_task for sync with local_repo_sync_task_period')
+                        if sio:
+                            sio.socketio_client.emit('synchronization_started')
                         self.add_task(WaptSyncRepo(notifyuser=False,created_by='SCHEDULER',local_repo_path=waptconfig.local_repo_path,srvurl=waptconfig.waptserver.server_url,speed=waptconfig.local_repo_limit_bandwidth))
                     except Exception as e:
                         logger.debug(u'Error syncing local repo with server repo : %s' % e)
@@ -1644,6 +1652,8 @@ class WaptTaskManager(threading.Thread):
                 if common.is_between_two_times(waptconfig.local_repo_time_for_sync_start,waptconfig.local_repo_time_for_sync_end) and (self.last_sync is None or (datetime.datetime.now() - self.last_sync > get_time_delta('10m','m'))):
                     try:
                         logger.debug(u'Add_task for sync with local_repo_time_for_sync')
+                        if sio:
+                            sio.socketio_client.emit('synchronization_started')
                         self.add_task(WaptSyncRepo(notifyuser=False,created_by='SCHEDULER',local_repo_path=waptconfig.local_repo_path,srvurl=waptconfig.waptserver.server_url,speed=waptconfig.local_repo_limit_bandwidth))
                     except Exception as e:
                         logger.debug(u'Error syncing local repo with server repo : %s' % e)

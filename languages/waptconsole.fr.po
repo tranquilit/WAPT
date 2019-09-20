@@ -2882,33 +2882,37 @@ msgstr "Expressions régulières autorisées"
 
 #: tviswaptgui.gridagentrepo.header.columns[0].text
 msgctxt "tviswaptgui.gridagentrepo.header.columns[0].text"
-msgid "Status"
-msgstr "Statut"
+msgid "Status sync"
+msgstr "Statut synchro"
 
 #: tviswaptgui.gridagentrepo.header.columns[1].text
 msgctxt "tviswaptgui.gridagentrepo.header.columns[1].text"
-msgid "Description"
-msgstr "Description"
+msgid "Status"
+msgstr "Statut"
 
 #: tviswaptgui.gridagentrepo.header.columns[2].text
 msgctxt "tviswaptgui.gridagentrepo.header.columns[2].text"
-msgid "Computer name"
-msgstr "Nom de l'ordinateur"
+msgid "Description"
+msgstr "Description"
 
 #: tviswaptgui.gridagentrepo.header.columns[3].text
 msgctxt "tviswaptgui.gridagentrepo.header.columns[3].text"
-msgid "Computer FQDN"
-msgstr "FQDN de l'ordinateur"
+msgid "Computer name"
+msgstr "Nom de l'ordinateur"
 
 #: tviswaptgui.gridagentrepo.header.columns[4].text
 msgctxt "tviswaptgui.gridagentrepo.header.columns[4].text"
-msgid "IP"
-msgstr "Adresse IP"
+msgid "Computer FQDN"
+msgstr "FQDN du poste"
 
 #: tviswaptgui.gridagentrepo.header.columns[5].text
 msgctxt "tviswaptgui.gridagentrepo.header.columns[5].text"
+msgid "IP"
+msgstr "IP"
+
+#: tviswaptgui.gridagentrepo.header.columns[6].text
 msgid "uuid"
-msgstr "UUID"
+msgstr "uuid"
 
 #: tviswaptgui.gridgroups.header.columns[0].text
 msgctxt "tviswaptgui.gridgroups.header.columns[0].text"

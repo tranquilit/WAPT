@@ -1608,8 +1608,19 @@ begin
         inc(i);
       end;
     end;
-
-    if (ini.ReadString('global','LastPackageDate','') = '')  or (ini.ReadString('global','NumberOfPackages','None')<>IntToStr(ListPackages.AsArray.Length)) or (ini.ReadString('global','LastPackageDate','')<(UTF8Encode(ListPackages.O['0'].S['signature_date']))) or (ini.ReadString('global','repositories','')<>iniWaptGet.ReadString('global','repositories','')) then
+    if (iniWaptGet.ReadString('global','repositories','') <> ini.ReadString('global','repositories','')) or (iniWaptGet.ReadString('global','repo_url','') <> ini.ReadString('global','repo_url','')) or (iniWaptGet.ReadString('global','wapt_server','') <> ini.ReadString('global','wapt_server','')) or (ListPackages.AsArray.Length=0) then
+    begin
+      ini.DeleteKey('global','NumberOfPackages');
+      ini.DeleteKey('global','repo_url');
+      ini.DeleteKey('global','wapt_server');
+      ini.DeleteKey('global','repositories');
+      ini.DeleteKey('global','LastPackageDate');
+      if DirectoryExists(IconsDir) then
+        if DeleteDirectory(IconsDir,True) then
+           RemoveDir(IconsDir);
+      ini.UpdateFile;
+    end;
+    if (ini.ReadString('global','LastPackageDate','') = '')  or (ini.ReadString('global','NumberOfPackages','None')<>IntToStr(ListPackages.AsArray.Length)) or ((ListPackages.AsArray.Length>0) and (ini.ReadString('global','LastPackageDate','')<(UTF8Encode(ListPackages.O['0'].S['signature_date'])))) or (ini.ReadString('global','repositories','')<>iniWaptGet.ReadString('global','repositories','')) then
     begin
       if not(DirectoryExists(IconsDir)) then
         CreateDir(IconsDir);
@@ -1673,9 +1684,12 @@ begin
         Synchronize(@NotifyListener);
       end;
     end;
-    ini.WriteString('global','LastPackageDate',UTF8Encode(ListPackages.O['0'].S['signature_date']));
+    if ListPackages.AsArray.Length>0 then
+      ini.WriteString('global','LastPackageDate',UTF8Encode(ListPackages.O['0'].S['signature_date']));
     ini.WriteString('global','NumberOfPackages',IntToStr(ListPackages.AsArray.Length));
     ini.WriteString('global','repositories',iniWaptGet.ReadString('global','repositories',''));
+    ini.WriteString('global','repo_url',iniWaptGet.ReadString('global','repo_url',''));
+    ini.WriteString('global','wapt_server',iniWaptGet.ReadString('global','wapt_server',''));
     ini.UpdateFile;
 
   finally

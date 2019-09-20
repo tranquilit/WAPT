@@ -1,14 +1,13 @@
 object VisLogin: TVisLogin
-  Left = 2193
-  Height = 203
-  Top = 251
-  Width = 226
-  AutoSize = True
+  Left = 775
+  Height = 201
+  Top = 385
+  Width = 321
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'Sign in'
-  ClientHeight = 203
-  ClientWidth = 226
+  ClientHeight = 201
+  ClientWidth = 321
   Color = clForm
   OnCreate = FormCreate
   OnShow = FormShow
@@ -22,8 +21,8 @@ object VisLogin: TVisLogin
     AnchorSideRight.Side = asrBottom
     Left = 15
     Height = 52
-    Top = 104
-    Width = 196
+    Top = 102
+    Width = 291
     Align = alCustom
     Anchors = [akTop, akLeft, akRight]
     AutoSize = True
@@ -33,7 +32,7 @@ object VisLogin: TVisLogin
     BevelColor = clForm
     BevelOuter = bvNone
     ClientHeight = 52
-    ClientWidth = 196
+    ClientWidth = 291
     Color = clForm
     ParentColor = False
     TabOrder = 0
@@ -72,7 +71,7 @@ object VisLogin: TVisLogin
       Left = 89
       Height = 23
       Top = 29
-      Width = 107
+      Width = 202
       Anchors = [akTop, akLeft, akRight]
       EchoMode = emPassword
       PasswordChar = '*'
@@ -84,7 +83,7 @@ object VisLogin: TVisLogin
       Left = 89
       Height = 23
       Top = 0
-      Width = 107
+      Width = 202
       Anchors = [akTop, akLeft, akRight]
       TabOrder = 1
     end
@@ -99,8 +98,8 @@ object VisLogin: TVisLogin
     AnchorSideBottom.Side = asrBottom
     Left = 15
     Height = 27
-    Top = 166
-    Width = 196
+    Top = 164
+    Width = 291
     Align = alCustom
     Anchors = [akTop, akLeft, akRight, akBottom]
     AutoSize = True
@@ -110,12 +109,12 @@ object VisLogin: TVisLogin
     BorderSpacing.Bottom = 10
     BevelOuter = bvNone
     ClientHeight = 27
-    ClientWidth = 196
+    ClientWidth = 291
     TabOrder = 1
     object Panel2: TPanel
       AnchorSideLeft.Control = Panel1
       AnchorSideLeft.Side = asrCenter
-      Left = 11
+      Left = 58
       Height = 28
       Top = 0
       Width = 174
@@ -164,32 +163,36 @@ object VisLogin: TVisLogin
     end
   end
   object WarningPanel: TPanel
-    AnchorSideLeft.Control = Owner
+    AnchorSideLeft.Control = PanelLogin
     AnchorSideTop.Control = LogoLogin
     AnchorSideTop.Side = asrBottom
-    AnchorSideRight.Control = Owner
+    AnchorSideRight.Control = PanelLogin
     AnchorSideRight.Side = asrBottom
-    Left = 0
-    Height = 18
+    Left = 15
+    Height = 16
     Top = 81
-    Width = 226
+    Width = 291
     Align = alCustom
     Anchors = [akTop, akLeft, akRight]
+    AutoSize = True
     BorderSpacing.Top = 5
     BevelOuter = bvNone
-    ClientHeight = 18
-    ClientWidth = 226
+    ClientHeight = 16
+    ClientWidth = 291
     TabOrder = 2
     object WarningText: TStaticText
       AnchorSideLeft.Control = ImageWarning
       AnchorSideLeft.Side = asrBottom
       AnchorSideTop.Control = WarningPanel
       AnchorSideTop.Side = asrCenter
+      AnchorSideRight.Control = WarningPanel
+      AnchorSideRight.Side = asrBottom
       Left = 41
       Height = 16
-      Top = 1
-      Width = 139
+      Top = 0
+      Width = 250
       Align = alCustom
+      Anchors = [akTop, akLeft, akRight]
       AutoSize = True
       BorderSpacing.Left = 5
       BorderSpacing.Top = 3
@@ -207,7 +210,7 @@ object VisLogin: TVisLogin
       AnchorSideTop.Side = asrCenter
       Left = 20
       Height = 16
-      Top = 1
+      Top = 0
       Width = 16
       AutoSize = True
       BorderSpacing.Left = 20
@@ -246,17 +249,15 @@ object VisLogin: TVisLogin
     AnchorSideLeft.Side = asrCenter
     AnchorSideTop.Control = Owner
     AnchorSideRight.Control = Owner
-    AnchorSideRight.Side = asrBottom
-    Left = 10
+    AnchorSideRight.Side = asrCenter
+    Left = 60
     Height = 56
     Top = 20
-    Width = 206
+    Width = 201
     Align = alCustom
-    Anchors = [akTop, akLeft, akRight]
     AutoSize = True
     BorderSpacing.Left = 10
     BorderSpacing.Top = 20
-    BorderSpacing.Right = 10
     OnClick = LogoLoginClick
     OnMouseEnter = LogoLoginMouseEnter
     OnMouseLeave = LogoLoginMouseLeave

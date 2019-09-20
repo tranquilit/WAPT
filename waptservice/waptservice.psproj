@@ -1,5 +1,5 @@
 ﻿[PyScripter]
-Version=3.6.0.0
+Version=3.6.1.0
 
 [Project]
 ClassName=TProjectRootNode
@@ -230,6 +230,7 @@ Name=debug
 ScriptName=$[Project-Path]service.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
+Parameters=-ldebug
 WorkingDir=$[Project-Path]
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log

@@ -110,7 +110,7 @@ from waptutils import BaseObjectClass,ensure_list,ensure_unicode,default_http_he
 from waptutils import httpdatetime2isodate,datetime2isodate,FileChunks,jsondump,LogOutput,isodate2datetime
 from waptutils import import_code,import_setup,force_utf8_no_bom,format_bytes,wget,merge_dict,remove_encoding_declaration,list_intersection
 from waptutils import _disable_file_system_redirection
-from waptutils import get_requests_client_cert_session
+from waptutils import get_requests_client_cert_session,get_main_ip
 
 from waptcrypto import SSLCABundle,SSLCertificate,SSLPrivateKey,SSLCRL,SSLVerifyException,SSLCertificateSigningRequest
 from waptcrypto import get_peer_cert_chain_from_server,default_pwd_callback,hexdigest_for_data,get_cert_chain_as_pem
@@ -2125,14 +2125,11 @@ class WaptRepo(WaptRemoteRepo):
         >>> repo.repo_url
         'http://wapt/wapt'
         """
-        s=socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
-        s.connect(("8.8.8.8",80))
-        IP=s.getsockname()[0]
         data = {}
         data['uuid']=self.WAPT.host_uuid
         data['host_certificate']= self.WAPT.create_or_update_host_certificate()
         data['host_certificate_signing_request'] = self.WAPT.get_host_certificate_signing_request().as_pem()
-        data['Agent IP'] = IP
+        data['Agent IP'] = get_main_ip()
         data['hostname'] = setuphelpers.get_hostname()
         data['domain'] = setuphelpers.get_domain()
         data['site'] = self.WAPT.get_host_site()
@@ -2269,7 +2266,7 @@ class WaptHostRepo(WaptRepo):
         self._index = {}
         self.discarded = []
         if not self.repo_url:
-            raise EWaptException(u'URL for WaptHostRepo repository %s is empty. Either add a wapt-host section in ini, or add a correct wapt_server and rules' % (self.name,))
+            raise EWaptException(u'URL for WaptHostRepo repository %s is empty. Either add a wapt-host section in ini, or add a correct wapt_server and rules' % (self.name))
         if self.host_id and not isinstance(self.host_id,list):
             host_ids = [self.host_id]
         else:
@@ -3026,7 +3023,7 @@ class Wapt(BaseObjectClass):
             if host_repo.cabundle is None:
                 host_repo.cabundle = self.cabundle
 
-            # in case host repo is determiner from server url (no specific section) and main repor_url is set
+            # in case host repo is determine from server url (no specific section) and main repor_url is set
             if section is None and self.waptserver:
                 host_repo.repo_url=self.waptserver.server_url+'/wapt-host'
 
@@ -5347,6 +5344,38 @@ class Wapt(BaseObjectClass):
                 success = False,
                 msg = u'No WAPT server defined',
                 data = data,
+                )
+
+    def unregister_computer(self):
+        """Remove computer informations from WAPT Server
+
+        Returns:
+            dict: response from server.
+
+        >>> wapt = Wapt()
+        >>> s = wapt.unregister_computer()
+        >>>
+
+        """
+        if self.waptserver:
+            data = jsondump({'uuids': [self.host_uuid], 'delete_packages':1,'delete_inventory':1})
+            result = self.waptserver.post('api/v3/hosts_delete',
+                data = data,
+                signature = self.sign_host_content(data),
+                signer = self.get_host_certificate().cn
+                )
+
+            if result and result['success']:
+                self.delete_param('last_update_server_hashes')
+                if os.path.isfile(self.get_host_certificate_filename()):
+                    os.unlink(self.get_host_certificate_filename())
+            return result
+
+        else:
+            return dict(
+                success = False,
+                msg = u'No WAPT server defined',
+                data = {},
                 )
 
     def get_host_key_filename(self):

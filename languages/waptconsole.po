@@ -2861,31 +2861,36 @@ msgstr ""
 
 #: tviswaptgui.gridagentrepo.header.columns[0].text
 msgctxt "tviswaptgui.gridagentrepo.header.columns[0].text"
-msgid "Status"
+msgid "Status sync"
 msgstr ""
 
 #: tviswaptgui.gridagentrepo.header.columns[1].text
 msgctxt "tviswaptgui.gridagentrepo.header.columns[1].text"
-msgid "Description"
+msgid "Status"
 msgstr ""
 
 #: tviswaptgui.gridagentrepo.header.columns[2].text
 msgctxt "tviswaptgui.gridagentrepo.header.columns[2].text"
-msgid "Computer name"
+msgid "Description"
 msgstr ""
 
 #: tviswaptgui.gridagentrepo.header.columns[3].text
 msgctxt "tviswaptgui.gridagentrepo.header.columns[3].text"
-msgid "Computer FQDN"
+msgid "Computer name"
 msgstr ""
 
 #: tviswaptgui.gridagentrepo.header.columns[4].text
 msgctxt "tviswaptgui.gridagentrepo.header.columns[4].text"
-msgid "IP"
+msgid "Computer FQDN"
 msgstr ""
 
 #: tviswaptgui.gridagentrepo.header.columns[5].text
 msgctxt "tviswaptgui.gridagentrepo.header.columns[5].text"
+msgid "IP"
+msgstr ""
+
+#: tviswaptgui.gridagentrepo.header.columns[6].text
+msgctxt "tviswaptgui.gridagentrepo.header.columns[6].text"
 msgid "uuid"
 msgstr ""
 

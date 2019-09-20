@@ -91,8 +91,10 @@ def badtarget():
         'Host target UUID is not matching your request.\n',
          400)
 
-def authenticate():
+def authenticate(msg = None):
     """Sends a 401 response that enables basic auth"""
+    if msg:
+        return Response(msg,401,{'WWW-Authenticate': 'Basic realm="Login Required"'})
     return Response(
         'Could not verify your access level for that URL.\n'
         'You have to login with proper credentials', 401,
@@ -945,11 +947,17 @@ class WaptLongTask(WaptTask):
 
 class WaptSyncRepo(WaptTask):
     """Task for sync the server Repo in the current machine"""
-    def _init_(self,local_repo_path=None,srvurl=None,speed=None,**args):
+    def __init__(self,local_repo_path=None,srvurl=None,speed=None,**args):
         super(WaptSyncRepo,self).__init__()
         self.local_repo_path = local_repo_path
         self.srvurl = srvurl
         self.speed = speed
+        self.realspeed = 0
+        self.totalsize = 0
+        self.currenturl = ''
+        self.totaldownloaded = 0
+        self.lastprogressdownload = 0
+        self.timefordownload=0
         for k in args:
             setattr(self,k,args[k])
 
@@ -957,7 +965,7 @@ class WaptSyncRepo(WaptTask):
         """Launch the sync of the server"""
         self.progress = 0.0
 
-        def readTreeOfFilesAndDownloadRec(srvname = '',pathtosync= '',atree={}, SyncDict={}, Result = {},speed = None):
+        def readTreeOfFilesAndInit(srvname = '',pathtosync= '',atree={}, SyncDict={}, Result = {}):
             ListRemovableSynDict = SyncDict.keys()
             if not(Result):
                 Result = {}
@@ -966,75 +974,119 @@ class WaptSyncRepo(WaptTask):
                 Result['new'] = {}
                 Result['deleted'] = {}
                 Result['success'] = True
+                Result['todownload'] = {}
+                Result['total_to_download']=0
             for afile in atree:
-                pathfile=os.path.normpath(os.path.join(pathtosync,afile))
-                if (SyncDict.get(afile)):
-                    ListRemovableSynDict.remove(afile)
-                    if atree[afile]['isDir'] and SyncDict[afile]['isDir']:
-                        readTreeOfFilesAndDownloadRec(srvname,pathtosync,atree[afile]['files'],SyncDict[afile]['files'],Result,speed)
-                    elif not(atree[afile]['isDir']) and not(SyncDict[afile]['isDir']):
-                        if SyncDict[afile]['sum']==atree[afile]['sum']:
-                            continue
-                        else:
-                            url = srvname+urllib.pathname2url(afile)
-                            try:
-                                wget(url,target=pathfile,sha256=atree[afile]['sum'],limit_bandwidth=speed)
+                try:
+                    pathfile=os.path.normpath(os.path.join(pathtosync,afile))
+                    if (SyncDict.get(afile)):
+                        ListRemovableSynDict.remove(afile)
+                        if atree[afile]['isDir'] and SyncDict[afile]['isDir']:
+                            readTreeOfFilesAndInit(srvname,pathtosync,atree[afile]['files'],SyncDict[afile]['files'],Result)
+                        elif not(atree[afile]['isDir']) and not(SyncDict[afile]['isDir']):
+                            if SyncDict[afile]['sum']==atree[afile]['sum']:
+                                continue
+                            else:
+                                url = srvname+urllib.pathname2url(afile)
+                                Result['todownload'][afile]={}
+                                Result['todownload'][afile]['url']=url
+                                Result['todownload'][afile]['sum']=atree[afile]['sum']
+                                Result['todownload'][afile]['path']=pathfile
+                                Result['total_to_download']+=atree[afile]['size']
                                 SyncDict[afile]['isDir']=False
                                 SyncDict[afile]['sum']=atree[afile]['sum']
                                 Result['modified'][afile]=url
-                            except Exception as e:
-                                Result['errors'][afile]=str(e)
-                                Result['success'] = False
+                        else:
+                            if atree[afile]['isDir']:
+                                os.remove(pathfile)
+                                SyncDict[afile]['isDir']=True
+                                SyncDict[afile]['files']={}
+                                del SyncDict[afile]['sum']
+                                Result['modified'][afile]='toDir'
+                                readTreeOfFilesAndInit(srvname,pathtosync,atree[afile]['files'],SyncDict[afile]['files'],Result)
+                            else:
+                                shutil.rmtree(pathfile,ignore_errors=True)
+                                SyncDict[afile]['isDir']=False
+                                SyncDict[afile]['sum']=atree[afile]['sum']
+                                del SyncDict[afile]['files']
+                                url = srvname+urllib.pathname2url(afile)
+                                Result['todownload'][afile]={}
+                                Result['todownload'][afile]['url']=url
+                                Result['todownload'][afile]['sum']=atree[afile]['sum']
+                                Result['todownload'][afile]['path']=pathfile
+                                Result['total_to_download']+=atree[afile]['size']
+                                SyncDict[afile]['isDir']=False
+                                SyncDict[afile]['sum']=atree[afile]['sum']
+                                Result['modified'][afile]=url
                     else:
+                        SyncDict[afile]={}
                         if atree[afile]['isDir']:
-                            os.remove(pathfile)
                             SyncDict[afile]['isDir']=True
                             SyncDict[afile]['files']={}
-                            del SyncDict[afile]['sum']
-                            Result['modified'][afile]='toDir'
-                            readTreeOfFilesAndDownloadRec(srvname,pathtosync,atree[afile]['files'],SyncDict[afile]['files'],Result,speed)
+                            os.mkdir(pathfile)
+                            Result['new'][afile]='isDir'
+                            readTreeOfFilesAndInit(srvname,pathtosync,atree[afile]['files'],SyncDict[afile]['files'],Result)
                         else:
-                            shutil.rmtree(pathfile,ignore_errors=True)
-                            SyncDict[afile]['isDir']=False
-                            SyncDict[afile]['sum']=atree[afile]['sum']
-                            del SyncDict[afile]['files']
                             url = srvname+urllib.pathname2url(afile)
-                            try:
-                                wget(url,target=pathfile,sha256=atree[afile]['sum'],limit_bandwidth=speed)
-                                SyncDict[afile]['isDir']=False
-                                SyncDict[afile]['sum']=atree[afile]['sum']
-                                Result['modified'][afile]=url
-                            except Exception as e:
-                                Result['errors'][afile]=str(e)
-                                Result['success'] = False
-                else:
-                    SyncDict[afile]={}
-                    if atree[afile]['isDir']:
-                        SyncDict[afile]['isDir']=True
-                        SyncDict[afile]['files']={}
-                        os.mkdir(pathfile)
-                        Result['new'][afile]='isDir'
-                        readTreeOfFilesAndDownloadRec(srvname,pathtosync,atree[afile]['files'],SyncDict[afile]['files'],Result,speed)
-                    else:
-                        url = srvname+urllib.pathname2url(afile)
-                        try:
-                            wget(url,pathfile,sha256=atree[afile]['sum'],limit_bandwidth=speed)
+                            Result['todownload'][afile]={}
+                            Result['todownload'][afile]['url']=url
+                            Result['todownload'][afile]['sum']=atree[afile]['sum']
+                            Result['todownload'][afile]['path']=pathfile
+                            Result['total_to_download']+=atree[afile]['size']
                             SyncDict[afile]['isDir']=False
                             SyncDict[afile]['sum']=atree[afile]['sum']
                             Result['new'][afile]=url
-                        except Exception as e:
-                            Result['errors'][afile]=str(e)
-                            Result['success'] = False
+                except Exception as e:
+                    Result['errors'][afile]=str(e)
+                    Result['success']=False
             for afile in ListRemovableSynDict:
-                pathfile=os.path.normpath(os.path.join(pathtosync,afile))
-                if SyncDict[afile]['isDir']:
-                    shutil.rmtree(pathfile,ignore_errors=True)
-                    Result['deleted'][afile]='isDir'
-                else:
-                    os.remove(pathfile)
-                    Result['deleted'][afile]='isFile'
-                del SyncDict[afile]
+                try:
+                    pathfile=os.path.normpath(os.path.join(pathtosync,afile))
+                    if SyncDict[afile]['isDir']:
+                        shutil.rmtree(pathfile,ignore_errors=True)
+                        Result['deleted'][afile]='isDir'
+                    else:
+                        os.remove(pathfile)
+                        Result['deleted'][afile]='isFile'
+                    del SyncDict[afile]
+                except Exception as e:
+                    Result['errors'][afile]=str(e)
+                    Result['success']=False
+            print('\nsuccess : %s' % Result['success'])
+            print('\nerrors : %s' % Result['errors'])
+            print('\ndeleted : %s' % Result['deleted'])
+            print('\nnew : %s' % Result['new'])
+            print('\nmodified : %s' % Result['modified'])
+            print('\nfiles to download : %s' % Result['todownload'])
             return Result
+
+        def DownloadFiles(DictRes = {},speed=None):
+
+            def setterProgress(received,total,speed,url):
+                self.realspeed=speed
+                self.currenturl=url
+                self.totaldownloaded+=-self.lastprogressdownload+received
+                self.progress=(self.totaldownloaded/float(DictRes['total_to_download']))*100
+                self.lastprogressdownload=received
+            DictRes['downloaded']={}
+            for afile in DictRes['todownload']:
+                try:
+                    print('Downloading : %s' % DictRes['todownload'][afile])
+                    self.lastprogressdownload=0
+                    self.start_time_download=time.time()
+                    wget(DictRes['todownload'][afile]['url'],target=DictRes['todownload'][afile]['path'],printhook=setterProgress,sha256=DictRes['todownload'][afile]['sum'],limit_bandwidth=speed)
+                    DictRes['downloaded'][afile]=DictRes['todownload'][afile]
+                    DictRes['downloaded'][afile]['time']=time.time()-self.start_time_download
+                    print('Downloaded in %f seconds.\n' % DictRes['downloaded'][afile]['time'])
+                    self.realspeed=0
+                    self.currenturl=''
+                except Exception as e:
+                    DictRes['errors'][afile]=str(e)
+                    DictRes['success']=False
+            print('\n errors : %s' % DictRes['errors'])
+            print('\n success : %s' % DictRes['success'])
+            del DictRes['todownload']
+
 
         r=requests.get(self.srvurl+'/sync.json')
         Res = {}
@@ -1048,7 +1100,10 @@ class WaptSyncRepo(WaptTask):
                 SyncDict={}
             if not(os.path.isdir(self.local_repo_path)):
                 os.mkdir(self.local_repo_path)
-            Res = readTreeOfFilesAndDownloadRec(self.srvurl,self.local_repo_path,dic,SyncDict,speed=self.speed)
+
+            Res = readTreeOfFilesAndInit(self.srvurl,self.local_repo_path,dic['files'],SyncDict)
+            if 'todownload' in Res:
+                DownloadFiles(Res,self.speed)
             with open(filesync,'w+') as f:
                 json.dump(SyncDict,f)
         self.result = Res

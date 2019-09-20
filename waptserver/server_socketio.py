@@ -44,7 +44,7 @@ from waptserver.utils import EWaptMissingParameter,EWaptSignalReceived,EWaptTime
 from waptserver.common import get_secured_token_generator,get_server_uuid
 from waptserver.common import make_response,make_response_from_exception
 
-from waptserver.model import wapt_db,Hosts
+from waptserver.model import wapt_db,Hosts,SyncStatus,fn
 
 from flask import request, session
 from flask_socketio import SocketIO
@@ -326,11 +326,33 @@ def target_for_sync(uuids=None):
             socketio.emit('sync_remote_repo',room=sid['listening_address'])
     return listfqdn
 
-@socketio.on('syncing_done')
-def on_sync_remote_repo():
+@socketio.on('synchronization_started')
+def on_sync_remote_repo_started():
     uuid = session.get('uuid',None)
-    logger.info(u'Syncing done for remote repo client sid %s (uuid:%s)' % (request.sid,uuid))
+    maxversion = int(SyncStatus.select(fn.MAX(SyncStatus.version)).scalar())
+    data =  {'status_remote_repo':'SYNC_STARTED','status_sync_version':maxversion}
+    with wapt_db.atomic() as trans:
+        Hosts.update({Hosts.wapt_status:Hosts.wapt_status.concat(data)}).where((Hosts.uuid == uuid) & (Hosts.listening_address == request.sid)).execute()
+    logger.info(u'Synchronization started for remote repo client sid %s (uuid:%s)' % (request.sid,uuid))
     return True
+
+@socketio.on('synchronization_not_in_time_range')
+def on_sync_remote_repo_not_in_time_range():
+    uuid = session.get('uuid',None)
+    data =  {'status_remote_repo':'NOT_IN_TIME_RANGE'}
+    with wapt_db.atomic() as trans:
+        Hosts.update({Hosts.wapt_status:Hosts.wapt_status.concat(data)}).where((Hosts.uuid == uuid) & (Hosts.listening_address == request.sid)).execute()
+    logger.info(u'Synchronization not in time range for remote repo client sid %s (uuid:%s)' % (request.sid,uuid))
+    return False
+
+@socketio.on('synchronization_not_a_local_remote_repo')
+def on_sync_remote_repo_not_a_local_remote_repo():
+    uuid = session.get('uuid',None)
+    data =  {'status_remote_repo':'NOT_A_REMOTE_REPO'}
+    with wapt_db.atomic() as trans:
+        Hosts.update({Hosts.wapt_status:Hosts.wapt_status.concat(data)}).where((Hosts.uuid == uuid) & (Hosts.listening_address == request.sid)).execute()
+    logger.info(u'Synchronization impossible not a local remote repo for remote repo client sid %s (uuid:%s)' % (request.sid,uuid))
+    return False
 
 
 # end websockets

@@ -31,7 +31,6 @@ if __name__ == '__main__':
     # as soon as possible, we must monkey patch the library...
     # monkeypatching for eventlet greenthreads
     from eventlet import monkey_patch
-    print('monkey patching')
     # os=False for windows see https://mail.python.org/pipermail/python-bugs-list/2012-November/186579.html
     if platform.system() == 'Windows':
         # interactive debug mode on PyScripter hang if tread is patched.
@@ -78,7 +77,7 @@ from waptcrypto import SSLCertificate,SSLVerifyException,SSLCertificateSigningRe
 from waptcrypto import sha256_for_file,sha256_for_data
 from waptcrypto import SSLCABundle
 
-from waptutils import datetime2isodate,ensure_list,Version,setloglevel,update_file_tree_of_files
+from waptutils import datetime2isodate,ensure_list,Version,setloglevel
 
 from waptserver.utils import EWaptAuthenticationFailure,EWaptForbiddden,EWaptHostUnreachable
 from waptserver.utils import EWaptMissingParameter,EWaptTimeoutWaitingForResult,EWaptUnknownHost
@@ -91,6 +90,7 @@ from waptserver.common import make_response,make_response_from_exception
 from waptserver.app import app
 from waptserver.auth import check_auth,change_admin_password
 from waptserver.decorators import requires_auth,check_auth_is_provided,authenticate,gzipped
+from waptserver.sync import update_file_tree_of_files
 
 import waptserver.config
 
@@ -1432,8 +1432,22 @@ def get_all_agentrepos():
     start_time = time.time()
     try:
         where_clause = Hosts.wapt_status.contains({'is_remote_repo':True})
-        list_agent_repo=list(Hosts.select(Hosts.uuid,Hosts.reachable,Hosts.computer_fqdn,Hosts.description,Hosts.computer_name,SQL("host_info ->> 'exit_ip' AS exit_ip")).where(where_clause).dicts())
+        list_agent_repo=list(Hosts.select(Hosts.uuid,Hosts.reachable,Hosts.computer_fqdn,Hosts.description,Hosts.computer_name,SQL("host_info ->> 'main_ip' AS main_ip"),SQL("wapt_status ->> 'status_remote_repo' AS status_remote_repo"), SQL("wapt_status ->> 'status_sync_version' AS status_sync_version")).where(where_clause).dicts())
         return make_response(result=list_agent_repo,success=True,request_time = time.time() - start_time)
+    except Exception as e:
+        return make_response_from_exception(e)
+
+@app.route('/api/v3/get_sync_version')
+@requires_auth
+def get_sync_version():
+    """
+    Get sync.json version if there is no sync.json return {version : null}
+    """
+    start_time = time.time()
+    try:
+        maxversion = int(SyncStatus.select(fn.MAX(SyncStatus.version)).scalar())
+        data = {'version':maxversion}
+        return make_response(result=data,success=True,request_time = time.time() - start_time)
     except Exception as e:
         return make_response_from_exception(e)
 
@@ -1535,8 +1549,7 @@ def get_createupdatefilesync():
     Create or update the file sync.json
     """
     start_time = time.time()
-    result={}
-    result['files']=update_file_tree_of_files(os.path.join(os.path.abspath(os.path.join(app.conf['wapt_folder'], os.pardir)),'sync.json'),[os.path.join(app.conf['wapt_folder']),os.path.join(app.conf['wapt_folder'])+'wua'])
+    result=update_file_tree_of_files(os.path.join(os.path.abspath(os.path.join(app.conf['wapt_folder'], os.pardir)),'sync.json'),[os.path.join(app.conf['wapt_folder']),os.path.join(app.conf['wapt_folder'])+'wua'],request.authorization.username)
     result['time']=time.time()-start_time
     result['success']=True
     result=json.dumps(result)
@@ -1636,8 +1649,15 @@ def hosts_delete():
     if request.method == 'POST':
         with wapt_db.atomic() as trans:
             try:
-                # build filter
-                post_data = request.get_json()
+                # unzip if post data is gzipped
+                if request.headers.get('Content-Encoding') == 'gzip':
+                    raw_data = zlib.decompress(request.data)
+                else:
+                    raw_data = request.data
+
+                post_data = ujson.loads(raw_data)
+                if not post_data:
+                    raise Exception('unregister_host: No data supplied')
 
                 if 'uuids' in post_data:
                     query = Hosts.uuid.in_(ensure_list(post_data['uuids']))
@@ -2108,7 +2128,8 @@ def host_tasks_status():
             def result_callback(data):
                 result.append(data)
 
-            socketio.emit('get_tasks_status', request.args, room=host_data['listening_address'], callback=result_callback)
+            request.sid=host_data['listening_address']
+            socketio.emit('get_tasks_status', request.args, room=request.sid, callback=result_callback)
 
             start_waiting = time.time()
             while not result:

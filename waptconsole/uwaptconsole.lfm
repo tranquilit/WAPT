@@ -1,7 +1,7 @@
 object VisWaptGUI: TVisWaptGUI
-  Left = 1914
+  Left = 1912
   Height = 1017
-  Top = 7
+  Top = -8
   Width = 1920
   AllowDropFiles = True
   Caption = 'WAPT console'
@@ -41,9 +41,9 @@ object VisWaptGUI: TVisWaptGUI
         Height = 700
         Top = 126
         Width = 572
-        ActivePage = pgPackages
+        ActivePage = pgTasks
         Align = alRight
-        TabIndex = 0
+        TabIndex = 4
         TabOrder = 0
         OnChange = HostPagesChange
         object pgPackages: TTabSheet
@@ -1459,7 +1459,7 @@ object VisWaptGUI: TVisWaptGUI
         end
         object pgTasks: TTabSheet
           Caption = 'Tasks'
-          ClientHeight = 486
+          ClientHeight = 672
           ClientWidth = 564
           object PanTaskTop: TPanel
             Left = 4
@@ -1541,7 +1541,7 @@ object VisWaptGUI: TVisWaptGUI
           end
           object PagesTasks: TPageControl
             Left = 0
-            Height = 306
+            Height = 492
             Top = 125
             Width = 564
             ActivePage = TabSheet1
@@ -1551,11 +1551,11 @@ object VisWaptGUI: TVisWaptGUI
             TabOrder = 2
             object TabSheet1: TTabSheet
               Caption = 'Pending'
-              ClientHeight = 278
+              ClientHeight = 464
               ClientWidth = 556
               object GridHostTasksPending: TSOGrid
                 Left = 0
-                Height = 276
+                Height = 462
                 Top = 2
                 Width = 556
                 ShowAdvancedColumnsCustomize = False
@@ -1696,11 +1696,11 @@ object VisWaptGUI: TVisWaptGUI
             end
             object TabSheet2: TTabSheet
               Caption = 'Done'
-              ClientHeight = 263
+              ClientHeight = 464
               ClientWidth = 556
               object GridHostTasksDone: TSOGrid
                 Left = 0
-                Height = 261
+                Height = 462
                 Top = 2
                 Width = 556
                 ShowAdvancedColumnsCustomize = False
@@ -1840,11 +1840,11 @@ object VisWaptGUI: TVisWaptGUI
             end
             object TabSheet3: TTabSheet
               Caption = 'Errors'
-              ClientHeight = 263
+              ClientHeight = 464
               ClientWidth = 556
               object GridHostTasksErrors: TSOGrid
                 Left = 0
-                Height = 261
+                Height = 462
                 Top = 2
                 Width = 556
                 ShowAdvancedColumnsCustomize = False
@@ -1985,7 +1985,7 @@ object VisWaptGUI: TVisWaptGUI
             Cursor = crVSplit
             Left = 0
             Height = 5
-            Top = 431
+            Top = 617
             Width = 564
             Align = alBottom
             ResizeAnchor = akBottom
@@ -1993,7 +1993,7 @@ object VisWaptGUI: TVisWaptGUI
           object PanLog: TPanel
             Left = 0
             Height = 50
-            Top = 436
+            Top = 622
             Width = 564
             Align = alBottom
             BevelOuter = bvNone
@@ -8266,42 +8266,57 @@ object VisWaptGUI: TVisWaptGUI
             Header.Columns = <            
               item
                 Position = 0
-                Text = 'Status'
-                Width = 99
-                PropertyName = 'reachable'
+                Text = 'Status sync'
+                Width = 71
+                PropertyName = 'status_remote_repo'
               end            
               item
                 Position = 1
                 Tag = 1
+                Text = 'Sync version'
+                Width = 83
+                PropertyName = 'status_sync_version'
+              end            
+              item
+                Position = 2
+                Tag = 2
+                Text = 'Status'
+                Width = 49
+                PropertyName = 'reachable'
+              end            
+              item
+                Position = 3
+                Tag = 3
                 Text = 'Description'
                 Width = 90
                 PropertyName = 'description'
               end            
               item
-                Position = 2
-                Tag = 2
+                Position = 4
+                Tag = 4
                 Text = 'Computer name'
                 Width = 100
                 PropertyName = 'computer_name'
               end            
               item
-                Position = 3
-                Tag = 3
+                Position = 5
+                Tag = 5
                 Text = 'Computer FQDN'
                 Width = 150
                 PropertyName = 'computer_fqdn'
               end            
               item
-                Position = 4
-                Tag = 4
+                Position = 6
+                Tag = 6
                 Text = 'IP'
                 Width = 94
                 PropertyName = 'main_ip'
               end            
               item
-                Position = 5
+                Position = 7
+                Tag = 7
                 Text = 'uuid'
-                Width = 231
+                Width = 10
                 PropertyName = 'uuid'
               end>
             Header.DefaultHeight = 10
@@ -8374,6 +8389,16 @@ object VisWaptGUI: TVisWaptGUI
               Caption = 'Update sync.json'
               ImageIndex = 20
               OnClick = tbUpdateFileSyncClick
+            end
+            object StaticText1: TStaticText
+              Left = 284
+              Height = 48
+              Top = 0
+              Width = 65
+              Align = alRight
+              Alignment = taCenter
+              Caption = 'Sync.json version :'
+              TabOrder = 0
             end
           end
         end

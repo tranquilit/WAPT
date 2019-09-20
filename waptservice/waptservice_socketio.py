@@ -91,7 +91,7 @@ def make_response_from_exception(exception,error_code='',uuid=None,request_time=
     """Create a standard answer for websocket callback exception
 
     Returns:
-        dict: {success : False,msg : message from exceptionerror_code : classname of exception if not provided}
+        dict: {success : False, msg : message from exception, error_code : classname of exception if not provided}
    """
     if not error_code:
         error_code = type(exception).__name__.lower()
@@ -362,14 +362,17 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
 
     def on_sync_remote_repo(self,args):
         logger.debug('Synchronize local remote repo %s' % (args,))
-        if waptconfig.enable_remote_repo and (not(waptconfig.local_repo_time_for_sync_start) or is_between_two_times(waptconfig.local_repo_time_for_sync_start,waptconfig.local_repo_time_for_sync_end)):
-            try:
-                self.task_manager.add_task(WaptSyncRepo(notifyuser=False,created_by='SERVER',local_repo_path=waptconfig.local_repo_path,srvurl=waptconfig.waptserver.server_url,speed=waptconfig.local_repo_limit_bandwidth))
-                self.emit('syncing_done')
-            except Exception as e:
-                logger.debug(u'Error syncing local repo with server repo : %s' % e)
+        if waptconfig.enable_remote_repo:
+            if not(waptconfig.local_repo_time_for_sync_start) or is_between_two_times(waptconfig.local_repo_time_for_sync_start,waptconfig.local_repo_time_for_sync_end):
+                try:
+                    self.emit('synchronization_started')
+                    self.task_manager.add_task(WaptSyncRepo(notifyuser=False,created_by='SERVER',local_repo_path=waptconfig.local_repo_path,srvurl=waptconfig.waptserver.server_url,speed=waptconfig.local_repo_limit_bandwidth))
+                except Exception as e:
+                    logger.debug(u'Error syncing local repo with server repo : %s' % e)
+            else:
+                self.emit("synchronization_not_in_time_range")
         else:
-            self.emit("syncing_not_in_time_range")
+            self.emit("synchronization_not_a_local_remote_repo")
 
     def on_wapt_force_reconnect(self,args):
         logger.debug('Force disconnect from server... %s'% (args,))

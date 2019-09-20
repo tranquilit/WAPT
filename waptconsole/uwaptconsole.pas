@@ -106,6 +106,7 @@ type
     SplitTopTaskTaskGrid: TSplitter;
     PgRights: TTabSheet;
     pgRepositories: TTabSheet;
+    StaticText1: TStaticText;
     tbDeleteRule: TToolButton;
     tbDownRule: TToolButton;
     tbEditRule: TToolButton;
@@ -5235,9 +5236,7 @@ end;
 
 procedure TVisWaptGUI.GridPackagesColumnDblClick(Sender: TBaseVirtualTree;
   Column: TColumnIndex; Shift: TShiftState);
-
 begin
-
   if ActEditpackage.Enabled and (GridPackages.FocusedRow<>Nil) and (MessageDlg(rsConfirmCaption, Format(rsConfirmPackageEdit,[GridPackages.FocusedRow.S['package']]),mtConfirmation,mbYesNoCancel ,'') = mrYes) then
     ActEditpackage.Execute;
 end;

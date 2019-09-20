@@ -34,8 +34,6 @@ import stat
 import glob
 import types
 
-from git import Repo
-
 makepath = os.path.join
 from shutil import copyfile
 
@@ -45,6 +43,9 @@ def run(*args, **kwargs):
 
 def eprint(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)
+    
+eprint(run('sudo pip install gitpython'))
+from git import Repo
 
 def run_verbose(*args, **kwargs):
     output =  subprocess.check_output(*args, shell=True, **kwargs)
@@ -281,7 +282,6 @@ copyfile(makepath(wapt_source_dir, 'wapt-signpackages.py'),'./builddir/opt/wapt/
 copyfile(makepath(wapt_source_dir, 'wapt-get.py'),'./builddir/opt/wapt/wapt-get.py')
 copyfile(makepath(wapt_source_dir, 'wapt-scanpackages'),'./builddir/usr/bin/wapt-scanpackages')
 copyfile(makepath(wapt_source_dir, 'wapt-signpackages'),'./builddir/usr/bin/wapt-signpackages')
-shutil.copytree(makepath(wapt_source_dir, 'waptservice','deb','methods'),'./builddir/opt/wapt/lib/python2.7/site-packages/rocket/methods')
 
 # delete pythonwheels
 if os.path.exists(makepath('builddir','opt','wapt', 'share/')):
@@ -291,6 +291,10 @@ if os.path.exists(makepath('builddir','opt','wapt', 'share/')):
 eprint('cryptography patches')
 copyfile(makepath(wapt_source_dir, 'utils', 'patch-cryptography', '__init__.py'),'./builddir/opt/wapt/lib/python2.7/site-packages/cryptography/x509/__init__.py')
 copyfile(makepath(wapt_source_dir, 'utils', 'patch-cryptography', 'verification.py'),'./builddir/opt/wapt/lib/python2.7/site-packages/cryptography/x509/verification.py')
+
+eprint('Patch memory leak')
+copyfile(makepath(wapt_source_dir,'utils','patch-socketio-client-2','__init__.py'),'./builddir/opt/wapt/lib/python2.7/site-packages/socketIO_client/__init__.py')
+copyfile(makepath(wapt_source_dir,'utils','patch-socketio-client-2','transports.py'),'./builddir/opt/wapt/lib/python2.7/site-packages/socketIO_client/transports.py')
 
 eprint('copying the waptserver files')
 rsync(source_dir, './builddir/opt/wapt/',
