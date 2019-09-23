@@ -31,6 +31,7 @@ if __name__ == '__main__':
     # as soon as possible, we must monkey patch the library...
     # monkeypatching for eventlet greenthreads
     from eventlet import monkey_patch
+
     # os=False for windows see https://mail.python.org/pipermail/python-bugs-list/2012-November/186579.html
     if platform.system() == 'Windows':
         # interactive debug mode on PyScripter hang if tread is patched.
@@ -78,6 +79,7 @@ from waptcrypto import sha256_for_file,sha256_for_data
 from waptcrypto import SSLCABundle
 
 from waptutils import datetime2isodate,ensure_list,Version,setloglevel
+
 
 from waptserver.utils import EWaptAuthenticationFailure,EWaptForbiddden,EWaptHostUnreachable
 from waptserver.utils import EWaptMissingParameter,EWaptTimeoutWaitingForResult,EWaptUnknownHost
@@ -1654,10 +1656,6 @@ def hosts_delete():
                     raw_data = zlib.decompress(request.data)
                 else:
                     raw_data = request.data
-
-                post_data = ujson.loads(raw_data)
-                if not post_data:
-                    raise Exception('unregister_host: No data supplied')
 
                 if 'uuids' in post_data:
                     query = Hosts.uuid.in_(ensure_list(post_data['uuids']))

@@ -2431,6 +2431,8 @@ class WaptBaseRepo(BaseObjectClass):
         self.packages_whitelist = None
         self.packages_blacklist = None
 
+        self.maturities = None
+
         self.load_config(config=config)
 
         if self.public_certs_dir:
@@ -2480,6 +2482,9 @@ class WaptBaseRepo(BaseObjectClass):
 
         if config.has_option(section,'packages_blacklist'):
             self.packages_blacklist = ensure_list(config.get(section,'packages_blacklist'),allow_none=True)
+
+        if config.has_option(section,'maturities'):
+            self.maturities = ensure_list(config.get(section,'maturities'),allow_none=True)
 
         return self
 
@@ -2577,6 +2582,10 @@ class WaptBaseRepo(BaseObjectClass):
         blacklist is taken in account first if defined.
         whitelist is taken in acoount if not None, else all not blacklisted package names are allowed.
         """
+        if self.maturities is not None:
+            if (package.maturity == '' and not 'PROD' in self.maturities) or not package.maturity in self.maturities:
+                return False
+
         if self.packages_blacklist is not None:
             for bl in self.packages_blacklist:
                 if glob.fnmatch.fnmatch(package.package,bl):
@@ -2587,6 +2596,7 @@ class WaptBaseRepo(BaseObjectClass):
             for wl in self.packages_whitelist:
                 if glob.fnmatch.fnmatch(package.package,wl):
                     return True
+
         return False
 
 
