@@ -52,7 +52,9 @@ import win32com.client
 from win32com.shell import shellcon
 from win32com.taskscheduler import taskscheduler
 
-from waptutils import (Version,makepath,isfile,isdir,killtree,CalledProcessErrorOutput,mkdirs,remove_file,currentdate,currentdatetime,ensure_dir,_lower,ini2winstr,error,find_all_files,get_main_ip)
+from waptutils import (Version,makepath,isfile,isdir,killtree,CalledProcessErrorOutput,
+    mkdirs,remove_file,currentdate,currentdatetime,ensure_dir,_lower,ini2winstr,
+    error,find_all_files,get_main_ip,ensure_list)
 
 ## import only for windows
 import _subprocess
@@ -3307,6 +3309,22 @@ def isrunning(processname):
             pass
     return False
 
+
+
+def is_any_process_running(processes):
+    """Check if any process in processes list is running,
+
+    >>> is_any_running(['firefox','thunderbird'])
+    True
+    """
+    exenames = [exe.lower() for exe in processes]+[exe.lower()+'.exe' for exe in processes]
+    for p in psutil.process_iter():
+        try:
+            if p.name().lower() in exenames:
+                return True
+        except (psutil.AccessDenied,psutil.NoSuchProcess):
+            pass
+    return False
 
 def killalltasks(exenames,include_children=True):
     """Kill the task by their exename

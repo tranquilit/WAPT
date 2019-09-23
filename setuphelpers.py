@@ -189,6 +189,7 @@ if sys.platform == 'win32':
      'install_msi_if_needed',
      'installed_windows_updates',
      'isrunning',
+     'is_any_process_running',
      'iswin64',
      'KEY_ALL_ACCESS',
      'KEY_READ',

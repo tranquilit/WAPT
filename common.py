@@ -3023,7 +3023,7 @@ class Wapt(BaseObjectClass):
             if host_repo.cabundle is None:
                 host_repo.cabundle = self.cabundle
 
-            # in case host repo is determine from server url (no specific section) and main repor_url is set
+            # in case host repo is calculated from server url (no specific section) and main repor_url is set
             if section is None and self.waptserver:
                 host_repo.repo_url=self.waptserver.server_url+'/wapt-host'
 
@@ -4676,13 +4676,6 @@ class Wapt(BaseObjectClass):
         True
         """
 
-        def is_process_running(processes):
-            processes = ensure_list(processes)
-            for p in processes:
-                if setuphelpers.isrunning(p):
-                    return True
-            return False
-
         apackages = self._ensure_package_requests_list(apackages,keep_package_entries=True)
 
         # ensure that apackages is a list of package requirements (strings)
@@ -4721,7 +4714,7 @@ class Wapt(BaseObjectClass):
 
         def is_allowed(package):
             return ((only_priorities is None or package.priority in only_priorities) and
-                   (not only_if_not_process_running or not package.impacted_process or not is_process_running(package.impacted_process))
+                   (not only_if_not_process_running or not package.impacted_process or not is_any_process_running(package.impacted_process))
                    )
 
         to_install.extend([p for p in additional_install if is_allowed(p[1])])
@@ -4911,14 +4904,6 @@ class Wapt(BaseObjectClass):
         if not isinstance(packages_list,list):
             packages_list = [packages_list]
 
-        def is_process_running(processes):
-            processes = ensure_list(processes)
-            for p in processes:
-                if setuphelpers.isrunning(p):
-                    return True
-            return False
-
-
         try:
             for package in packages_list:
                 self.check_cancelled()
@@ -4932,7 +4917,7 @@ class Wapt(BaseObjectClass):
                     if pe:
                         package = pe.package
 
-                if (not only_if_not_process_running or not pe.impacted_process or not is_process_running(pe.impacted_process)):
+                if (not only_if_not_process_running or not pe.impacted_process or not is_any_process_running(pe.impacted_process)):
                     q = self.waptdb.query(u"""\
                        select * from wapt_localstatus
                         where package=?
@@ -5151,17 +5136,10 @@ class Wapt(BaseObjectClass):
         # put 'host' package at the end.
         now = datetime2isodate()
 
-        def is_process_running(processes):
-            processes = ensure_list(processes)
-            for p in processes:
-                if setuphelpers.isrunning(p):
-                    return True
-            return False
-
         result['upgrade'].extend([p[0].asrequirement() for p in self.waptdb.upgradeable().values()
                 if p and not p[0].section in ('host','unit','profile')
                      and (not forced_only or p.forced_install_on <= now)
-                     and (not only_not_process_running or not p.impacted_process or not is_process_running(p.impacted_process))])
+                     and (not only_not_process_running or not p.impacted_process or not is_any_process_running(p.impacted_process))])
 
         to_remove = self.get_unrelevant_host_packages()
         result['remove'].extend(to_remove)
