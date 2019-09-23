@@ -4714,7 +4714,7 @@ class Wapt(BaseObjectClass):
 
         def is_allowed(package):
             return ((only_priorities is None or package.priority in only_priorities) and
-                   (not only_if_not_process_running or not package.impacted_process or not is_any_process_running(package.impacted_process))
+                   (not only_if_not_process_running or not package.impacted_process or not setuphelpers.is_any_process_running(package.impacted_process))
                    )
 
         to_install.extend([p for p in additional_install if is_allowed(p[1])])
@@ -4917,7 +4917,7 @@ class Wapt(BaseObjectClass):
                     if pe:
                         package = pe.package
 
-                if (not only_if_not_process_running or not pe.impacted_process or not is_any_process_running(pe.impacted_process)):
+                if (not only_if_not_process_running or not pe.impacted_process or not setuphelpers.is_any_process_running(pe.impacted_process)):
                     q = self.waptdb.query(u"""\
                        select * from wapt_localstatus
                         where package=?
@@ -5139,7 +5139,7 @@ class Wapt(BaseObjectClass):
         result['upgrade'].extend([p[0].asrequirement() for p in self.waptdb.upgradeable().values()
                 if p and not p[0].section in ('host','unit','profile')
                      and (not forced_only or p.forced_install_on <= now)
-                     and (not only_not_process_running or not p.impacted_process or not is_any_process_running(p.impacted_process))])
+                     and (not only_not_process_running or not p.impacted_process or not setuphelpers.is_any_process_running(p.impacted_process))])
 
         to_remove = self.get_unrelevant_host_packages()
         result['remove'].extend(to_remove)
