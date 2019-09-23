@@ -18,7 +18,7 @@ xcopy /I /E /F /Y c:\python27\libs %0\..\libs
 xcopy /I /E /F /Y c:\python27\DLLs %0\..\DLLs
 xcopy /I /E /F /Y /EXCLUDE:libexcludes.txt c:\python27\lib %0\..\lib
 
-%0\..\Scripts\python  -m pip install -U pip setuptools wheel virtualenv six requests==2.19.1
+%0\..\Scripts\python  -m pip install -U pip setuptools wheel virtualenv six requests==2.19.1 psutil==3.4.2
 
 REM get  pywin32-220.win32Sc            -py2.7.exe from internet
 python -c "from waptutils import wget; from subprocess import check_output; pywin32=wget('https://github.com/mhammond/pywin32/releases/download/b223/pywin32-223.win32-py2.7.exe',resume=True,cache_dir='c:\\binaries',md5='366d181c39169d3b0c0e1d25f781d1d6'); print check_output('%0\..\Scripts\easy_install.exe ""%%s""' %% pywin32,shell=True)"
