@@ -344,6 +344,9 @@ class Packages(WaptBaseModel):
                 new_value = cls._as_attribute(a,v)
                 if new_value != getattr(rec,a):
                     setattr(rec,a,cls._as_attribute(a,v))
+        # rec.available = True
+        if not rec.package_uuid:
+            rec.package_uuid = entry.make_fallback_uuid()
         if rec.is_dirty():
             rec.save()
         return (rec,_isnew)
@@ -684,6 +687,14 @@ def update_installed_packages(uuid, data, applied_status_hashes):
             package['conflicts'] = ensure_list(package.get('conflicts'))
             package['uninstall_key'] = _get_uninstallkeylist(package.get('uninstall_key'))
             package['created_on'] = datetime.datetime.now()
+            if not package.get('package_uuid'):
+                package['package_uuid'] = 'fb-%s' % (hashlib.sha256('-'.join([
+                    (package.get('package') or '').encode('utf8'),
+                     str(package.get('version') or ''),
+                     str(package.get('architecture') or ''),
+                     str(package.get('locale') or ''),
+                     str(package.get('maturity') or '')])).hexdigest(),)
+
 
             # filter out all unknown fields from json data for the SQL insert
             packages.append(dict([(k, encode_value(v)) for k, v in package.iteritems() if k in HostPackagesStatus._meta.fields]))
