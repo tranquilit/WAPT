@@ -1218,6 +1218,99 @@ msgctxt "tvisimportpackage.cbnewestonly.caption"
 msgid "Last version only"
 msgstr "Dernière version seulement"
 
+#: tvisimportpackage.gridexternalpackages.header.columns[0].text
+msgctxt "tvisimportpackage.gridexternalpackages.header.columns[0].text"
+msgid "Section"
+msgstr "Section"
+
+#: tvisimportpackage.gridexternalpackages.header.columns[10].text
+msgctxt "tvisimportpackage.gridexternalpackages.header.columns[10].text"
+msgid "Maturity"
+msgstr "Maturité"
+
+#: tvisimportpackage.gridexternalpackages.header.columns[11].text
+msgctxt "tvisimportpackage.gridexternalpackages.header.columns[11].text"
+msgid "Signer"
+msgstr "Signataire"
+
+#: tvisimportpackage.gridexternalpackages.header.columns[12].text
+msgid "Sign on"
+msgstr "Signé le"
+
+#: tvisimportpackage.gridexternalpackages.header.columns[13].text
+msgctxt "tvisimportpackage.gridexternalpackages.header.columns[13].text"
+msgid "Editor"
+msgstr "Editeur"
+
+#: tvisimportpackage.gridexternalpackages.header.columns[14].text
+msgctxt "tvisimportpackage.gridexternalpackages.header.columns[14].text"
+msgid "Min OS version"
+msgstr "Version min de l'OS"
+
+#: tvisimportpackage.gridexternalpackages.header.columns[15].text
+msgctxt "tvisimportpackage.gridexternalpackages.header.columns[15].text"
+msgid "Max OS version"
+msgstr "Version max de l'OS"
+
+#: tvisimportpackage.gridexternalpackages.header.columns[16].text
+msgctxt "tvisimportpackage.gridexternalpackages.header.columns[16].text"
+msgid "Min Wapt version"
+msgstr "Version min de WAPT"
+
+#: tvisimportpackage.gridexternalpackages.header.columns[17].text
+msgctxt "tvisimportpackage.gridexternalpackages.header.columns[17].text"
+msgid "Filename"
+msgstr "Nom de fichier"
+
+#: tvisimportpackage.gridexternalpackages.header.columns[18].text
+msgctxt "tvisimportpackage.gridexternalpackages.header.columns[18].text"
+msgid "md5sum"
+msgstr ""
+
+#: tvisimportpackage.gridexternalpackages.header.columns[1].text
+msgctxt "tvisimportpackage.gridexternalpackages.header.columns[1].text"
+msgid "Package"
+msgstr "Paquet"
+
+#: tvisimportpackage.gridexternalpackages.header.columns[2].text
+msgctxt "tvisimportpackage.gridexternalpackages.header.columns[2].text"
+msgid "Version"
+msgstr "Version"
+
+#: tvisimportpackage.gridexternalpackages.header.columns[3].text
+msgctxt "tvisimportpackage.gridexternalpackages.header.columns[3].text"
+msgid "Arch"
+msgstr "Arch"
+
+#: tvisimportpackage.gridexternalpackages.header.columns[4].text
+msgctxt "tvisimportpackage.gridexternalpackages.header.columns[4].text"
+msgid "Locale"
+msgstr "Langue"
+
+#: tvisimportpackage.gridexternalpackages.header.columns[5].text
+msgctxt "tvisimportpackage.gridexternalpackages.header.columns[5].text"
+msgid "Description"
+msgstr "Description"
+
+#: tvisimportpackage.gridexternalpackages.header.columns[6].text
+msgctxt "tvisimportpackage.gridexternalpackages.header.columns[6].text"
+msgid "Licence"
+msgstr "Licence"
+
+#: tvisimportpackage.gridexternalpackages.header.columns[7].text
+msgctxt "tvisimportpackage.gridexternalpackages.header.columns[7].text"
+msgid "Dependencies"
+msgstr "Dépendances"
+
+#: tvisimportpackage.gridexternalpackages.header.columns[8].text
+msgctxt "tvisimportpackage.gridexternalpackages.header.columns[8].text"
+msgid "Size"
+msgstr "Taille"
+
+#: tvisimportpackage.gridexternalpackages.header.columns[9].text
+msgid "Installed Size"
+msgstr "Taille finale"
+
 #: tvisimportpackage.label7.caption
 msgctxt "tvisimportpackage.label7.caption"
 msgid "Default package maturity"
@@ -4311,6 +4404,7 @@ msgid "Signed on"
 msgstr "Signé le"
 
 #: tviswaptgui.gridpackages.header.columns[13].text
+msgctxt "tviswaptgui.gridpackages.header.columns[13].text"
 msgid "Editor"
 msgstr "Editeur"
 
@@ -4485,6 +4579,7 @@ msgid "Conflicts"
 msgstr "Conflits"
 
 #: tviswaptgui.gridpackages.header.columns[8].text
+msgctxt "tviswaptgui.gridpackages.header.columns[8].text"
 msgid "Licence"
 msgstr "Licence"
 
