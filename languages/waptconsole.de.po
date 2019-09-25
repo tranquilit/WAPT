@@ -1731,6 +1731,43 @@ msgstr "Schließen"
 msgid "Normalizes sofware titles"
 msgstr ""
 
+#: tvissyncchangelog.caption
+msgid "Changelog synchronization"
+msgstr ""
+
+#: tvissyncchangelog.gridchangelog.header.columns[0].text
+msgid "version"
+msgstr ""
+
+#: tvissyncchangelog.gridchangelog.header.columns[1].text
+msgctxt "tvissyncchangelog.gridchangelog.header.columns[1].text"
+msgid "id"
+msgstr ""
+
+#: tvissyncchangelog.gridchangelog.header.columns[2].text
+msgid "changelog"
+msgstr ""
+
+#: tvissyncchangelog.gridchangelog.header.columns[3].text
+msgctxt "tvissyncchangelog.gridchangelog.header.columns[3].text"
+msgid "updated_on"
+msgstr ""
+
+#: tvissyncchangelog.gridchangelog.header.columns[4].text
+msgctxt "tvissyncchangelog.gridchangelog.header.columns[4].text"
+msgid "updated_by"
+msgstr ""
+
+#: tvissyncchangelog.gridchangelog.header.columns[5].text
+msgctxt "tvissyncchangelog.gridchangelog.header.columns[5].text"
+msgid "created_on"
+msgstr ""
+
+#: tvissyncchangelog.gridchangelog.header.columns[6].text
+msgctxt "tvissyncchangelog.gridchangelog.header.columns[6].text"
+msgid "created_by"
+msgstr ""
+
 #: tvistriggerhostsaction.actstop.caption
 #, fuzzy
 msgctxt "tvistriggerhostsaction.actstop.caption"
@@ -2485,8 +2522,10 @@ msgid "Save queries"
 msgstr ""
 
 #: tviswaptgui.actrepositoriesgetsecondrepos.caption
-msgid "ActRepositoriesGetSecondRepos"
-msgstr ""
+#, fuzzy
+msgctxt "tviswaptgui.actrepositoriesgetsecondrepos.caption"
+msgid "Refresh"
+msgstr "Aktualisieren"
 
 #: tviswaptgui.actrepositoriesgetupdaterules.caption
 msgctxt "tviswaptgui.actrepositoriesgetupdaterules.caption"
@@ -3019,33 +3058,48 @@ msgstr ""
 
 #: tviswaptgui.gridagentrepo.header.columns[1].text
 #, fuzzy
-#| msgid "Description"
+#| msgid "Status"
 msgctxt "tviswaptgui.gridagentrepo.header.columns[1].text"
-msgid "Status"
+msgid "Sync version"
 msgstr "Beschreibung"
 
 #: tviswaptgui.gridagentrepo.header.columns[2].text
+#, fuzzy
+#| msgid "Status"
 msgctxt "tviswaptgui.gridagentrepo.header.columns[2].text"
-msgid "Description"
-msgstr ""
+msgid "Sync status"
+msgstr "Beschreibung"
 
 #: tviswaptgui.gridagentrepo.header.columns[3].text
+#, fuzzy
+#| msgid "Description"
 msgctxt "tviswaptgui.gridagentrepo.header.columns[3].text"
-msgid "Computer name"
-msgstr ""
+msgid "Status"
+msgstr "Beschreibung"
 
 #: tviswaptgui.gridagentrepo.header.columns[4].text
+#, fuzzy
 msgctxt "tviswaptgui.gridagentrepo.header.columns[4].text"
-msgid "Computer FQDN"
-msgstr ""
+msgid "Description"
+msgstr "Beschreibung"
 
 #: tviswaptgui.gridagentrepo.header.columns[5].text
 msgctxt "tviswaptgui.gridagentrepo.header.columns[5].text"
-msgid "IP"
+msgid "Computer name"
 msgstr ""
 
 #: tviswaptgui.gridagentrepo.header.columns[6].text
 msgctxt "tviswaptgui.gridagentrepo.header.columns[6].text"
+msgid "Computer FQDN"
+msgstr ""
+
+#: tviswaptgui.gridagentrepo.header.columns[7].text
+msgctxt "tviswaptgui.gridagentrepo.header.columns[7].text"
+msgid "IP"
+msgstr ""
+
+#: tviswaptgui.gridagentrepo.header.columns[8].text
+msgctxt "tviswaptgui.gridagentrepo.header.columns[8].text"
 msgid "uuid"
 msgstr ""
 
@@ -3259,9 +3313,11 @@ msgid "Locale"
 msgstr ""
 
 #: tviswaptgui.gridhostpackages.header.columns[0].text
+#, fuzzy
+#| msgid "Description"
 msgctxt "tviswaptgui.gridhostpackages.header.columns[0].text"
 msgid "Status"
-msgstr ""
+msgstr "Beschreibung"
 
 #: tviswaptgui.gridhostpackages.header.columns[10].text
 #, fuzzy
@@ -3450,9 +3506,11 @@ msgid "Installed by"
 msgstr ""
 
 #: tviswaptgui.gridhosts.header.columns[0].text
+#, fuzzy
+#| msgid "Description"
 msgctxt "tviswaptgui.gridhosts.header.columns[0].text"
 msgid "Status"
-msgstr ""
+msgstr "Beschreibung"
 
 #: tviswaptgui.gridhosts.header.columns[10].text
 msgctxt "tviswaptgui.gridhosts.header.columns[10].text"
@@ -3683,9 +3741,11 @@ msgid "Next audit"
 msgstr ""
 
 #: tviswaptgui.gridhostsforpackage.header.columns[2].text
+#, fuzzy
+#| msgid "Description"
 msgctxt "tviswaptgui.gridhostsforpackage.header.columns[2].text"
 msgid "Status"
-msgstr ""
+msgstr "Beschreibung"
 
 #: tviswaptgui.gridhostsforpackage.header.columns[30].text
 msgctxt "tviswaptgui.gridhostsforpackage.header.columns[30].text"
@@ -4872,9 +4932,11 @@ msgid "WSUS Cab Date"
 msgstr ""
 
 #: tviswaptgui.gridwsusscan.header.columns[3].text
+#, fuzzy
+#| msgid "Description"
 msgctxt "tviswaptgui.gridwsusscan.header.columns[3].text"
 msgid "Status"
-msgstr ""
+msgstr "Beschreibung"
 
 #: tviswaptgui.gridwsusscan.header.columns[4].text
 msgctxt "tviswaptgui.gridwsusscan.header.columns[4].text"
@@ -5622,12 +5684,6 @@ msgstr "Fertig"
 msgid "Errors"
 msgstr "Fehler"
 
-#: tviswaptgui.tbrefeshagentrepos.caption
-#, fuzzy
-msgctxt "tviswaptgui.tbrefeshagentrepos.caption"
-msgid "Refresh"
-msgstr "Aktualisieren"
-
 #: tviswaptgui.tbreport.caption
 msgid "TbReport"
 msgstr ""
@@ -5644,11 +5700,16 @@ msgstr ""
 msgid "Sync all"
 msgstr ""
 
+#: tviswaptgui.tbsyncchangelog.caption
+msgid "Changelog"
+msgstr ""
+
 #: tviswaptgui.tbsyncselected.caption
 msgid "Sync selected"
 msgstr ""
 
 #: tviswaptgui.tbupdatefilesync.caption
+msgctxt "tviswaptgui.tbupdatefilesync.caption"
 msgid "Update sync.json"
 msgstr ""
 
@@ -6106,9 +6167,11 @@ msgid "reboot_behaviour"
 msgstr ""
 
 #: tviswuagroup.gridwuupdates.header.columns[1].text
+#, fuzzy
+#| msgid "Description"
 msgctxt "tviswuagroup.gridwuupdates.header.columns[1].text"
 msgid "Status"
-msgstr ""
+msgstr "Beschreibung"
 
 #: tviswuagroup.gridwuupdates.header.columns[20].text
 msgctxt "tviswuagroup.gridwuupdates.header.columns[20].text"
@@ -8346,6 +8409,10 @@ msgstr ""
 msgid "Create new rule"
 msgstr ""
 
+#: uwaptconsoleres.rscreatesyncjson
+msgid "Create sync.json"
+msgstr ""
+
 #: uwaptconsoleres.rsdefaultusagestatsurl
 msgid "http://wapt.tranquil.it/usage_stats"
 msgstr "http://wapt.tranquil.it/usage_stats"
@@ -9611,6 +9678,10 @@ msgctxt "uwaptconsoleres.rssuccessfullyimported"
 msgid "%s successfully imported."
 msgstr "%s Erfolgreich importiert"
 
+#: uwaptconsoleres.rssyncjson
+msgid "You have to first create a sync.json file"
+msgstr ""
+
 #: uwaptconsoleres.rstaskcanceled
 msgctxt "uwaptconsoleres.rstaskcanceled"
 msgid "Task canceled."
@@ -9659,6 +9730,11 @@ msgstr "Deinstallation %s..."
 #: uwaptconsoleres.rsunknownversion
 msgid "Unknown version"
 msgstr "Unbekannte Version"
+
+#: uwaptconsoleres.rsupdatesyncjson
+msgctxt "uwaptconsoleres.rsupdatesyncjson"
+msgid "Update sync.json"
+msgstr ""
 
 #: uwaptconsoleres.rsupdatingpackagelist
 msgctxt "uwaptconsoleres.rsupdatingpackagelist"

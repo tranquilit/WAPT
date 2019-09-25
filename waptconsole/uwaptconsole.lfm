@@ -41,9 +41,9 @@ object VisWaptGUI: TVisWaptGUI
         Height = 700
         Top = 126
         Width = 572
-        ActivePage = pgTasks
+        ActivePage = pgPackages
         Align = alRight
-        TabIndex = 4
+        TabIndex = 0
         TabOrder = 0
         OnChange = HostPagesChange
         object pgPackages: TTabSheet
@@ -8070,7 +8070,7 @@ object VisWaptGUI: TVisWaptGUI
         ClientWidth = 1912
         TabOrder = 0
         object SplitterRepo: TSplitter
-          Left = 1336
+          Left = 1151
           Height = 824
           Top = 1
           Width = 8
@@ -8080,18 +8080,18 @@ object VisWaptGUI: TVisWaptGUI
           Left = 1
           Height = 824
           Top = 1
-          Width = 1335
+          Width = 1150
           Align = alLeft
           BevelColor = clNone
           BevelOuter = bvNone
           ClientHeight = 824
-          ClientWidth = 1335
+          ClientWidth = 1150
           TabOrder = 1
           object TbRepos: TToolBar
             Left = 0
             Height = 48
             Top = 0
-            Width = 1335
+            Width = 1150
             AutoSize = True
             ButtonHeight = 48
             ButtonWidth = 48
@@ -8154,7 +8154,7 @@ object VisWaptGUI: TVisWaptGUI
             Left = 0
             Height = 776
             Top = 48
-            Width = 1335
+            Width = 1150
             ShowAdvancedColumnsCustomize = False
             Align = alClient
             Alignment = taCenter
@@ -8241,22 +8241,22 @@ object VisWaptGUI: TVisWaptGUI
           end
         end
         object PanelAgentRepos: TPanel
-          Left = 1344
+          Left = 1159
           Height = 824
           Top = 1
-          Width = 567
+          Width = 752
           Align = alClient
           BevelColor = clNone
           BevelOuter = bvNone
           Caption = 'PanelAgentRepos'
           ClientHeight = 824
-          ClientWidth = 567
+          ClientWidth = 752
           TabOrder = 2
           object GridAgentRepo: TSOGrid
             Left = 0
             Height = 774
             Top = 50
-            Width = 567
+            Width = 752
             ShowAdvancedColumnsCustomize = False
             Align = alClient
             Alignment = taCenter
@@ -8265,12 +8265,14 @@ object VisWaptGUI: TVisWaptGUI
             Header.AutoSizeIndex = -1
             Header.Columns = <            
               item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
                 Position = 0
                 Text = 'Status sync'
                 Width = 71
                 PropertyName = 'status_remote_repo'
               end            
               item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
                 Position = 1
                 Tag = 1
                 Text = 'Sync version'
@@ -8280,43 +8282,52 @@ object VisWaptGUI: TVisWaptGUI
               item
                 Position = 2
                 Tag = 2
-                Text = 'Status'
-                Width = 49
-                PropertyName = 'reachable'
+                Text = 'Sync status'
+                Width = 109
+                PropertyName = 'sync_status'
               end            
               item
                 Position = 3
                 Tag = 3
-                Text = 'Description'
-                Width = 90
-                PropertyName = 'description'
+                Text = 'Status'
+                Width = 112
+                PropertyName = 'reachable'
               end            
               item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
                 Position = 4
                 Tag = 4
-                Text = 'Computer name'
-                Width = 100
-                PropertyName = 'computer_name'
+                Text = 'Description'
+                Width = 107
+                PropertyName = 'description'
               end            
               item
                 Position = 5
                 Tag = 5
-                Text = 'Computer FQDN'
-                Width = 150
-                PropertyName = 'computer_fqdn'
+                Text = 'Computer name'
+                Width = 132
+                PropertyName = 'computer_name'
               end            
               item
                 Position = 6
                 Tag = 6
-                Text = 'IP'
-                Width = 94
-                PropertyName = 'main_ip'
+                Text = 'Computer FQDN'
+                Width = 139
+                PropertyName = 'computer_fqdn'
               end            
               item
                 Position = 7
                 Tag = 7
+                Text = 'IP'
+                Width = 151
+                PropertyName = 'main_ip'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                Position = 8
+                Tag = 8
                 Text = 'uuid'
-                Width = 10
+                Width = 72
                 PropertyName = 'uuid'
               end>
             Header.DefaultHeight = 10
@@ -8339,7 +8350,7 @@ object VisWaptGUI: TVisWaptGUI
             Left = 0
             Height = 50
             Top = 0
-            Width = 567
+            Width = 752
             ButtonHeight = 48
             ButtonWidth = 48
             EdgeInner = esNone
@@ -8350,8 +8361,7 @@ object VisWaptGUI: TVisWaptGUI
             object tbRefeshAgentRepos: TToolButton
               Left = 1
               Top = 0
-              Caption = 'Refresh'
-              ImageIndex = 5
+              Action = ActRepositoriesGetSecondRepos
               OnClick = tbRefeshAgentReposClick
             end
             object tbSyncSelected: TToolButton
@@ -8366,6 +8376,7 @@ object VisWaptGUI: TVisWaptGUI
               Left = 133
               Top = 0
               Caption = 'Sync all'
+              Enabled = False
               ImageIndex = 0
               OnClick = tbSyncAllClick
             end
@@ -8390,15 +8401,12 @@ object VisWaptGUI: TVisWaptGUI
               ImageIndex = 20
               OnClick = tbUpdateFileSyncClick
             end
-            object StaticText1: TStaticText
+            object tbSyncChangelog: TToolButton
               Left = 284
-              Height = 48
               Top = 0
-              Width = 65
-              Align = alRight
-              Alignment = taCenter
-              Caption = 'Sync.json version :'
-              TabOrder = 0
+              Caption = 'Changelog'
+              ImageIndex = 36
+              OnClick = tbSyncChangelogClick
             end
           end
         end
@@ -9073,8 +9081,10 @@ object VisWaptGUI: TVisWaptGUI
     end
     object ActRepositoriesGetSecondRepos: TAction
       Category = 'Repositories'
-      Caption = 'ActRepositoriesGetSecondRepos'
+      Caption = 'Refresh'
+      ImageIndex = 5
       OnExecute = ActRepositoriesGetSecondReposExecute
+      ShortCut = 116
     end
   end
   object PopupMenuPackages: TPopupMenu
@@ -10312,7 +10322,7 @@ object VisWaptGUI: TVisWaptGUI
     left = 440
     top = 408
     Bitmap = {
-      4C69240000001800000018000000000000000000000000000000000000000000
+      4C69250000001800000018000000000000000000000000000000000000000000
       000000BFFF14000000000000000000AAFF120DD3FF7910CFFFBA0ECEFFDA0ECE
       FFDB10CFFFBB0CD0FF7D00D5FF18000000000000000000BFFF14000000000000
       00000000000000000000000000000000000000000000000000000000000000FF
@@ -12904,7 +12914,79 @@ object VisWaptGUI: TVisWaptGUI
       0000000000000000000000000000000000000000000000000000000000000000
       00000000000000000000000000000000000000000000000000001E211EA41C1F
       1EA2000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000750000
+      00EF000000EE000000EE000000EE000000EE000000EE000000EE000000EE0000
+      00EE000000EE000000EE000000F6000000470000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000B40000
+      003C000000000000000000000000000000000000000000000000000000000000
+      00000000000000000000000000DC000000F20000003000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000B40000
+      003C000000000000000000000000000000000000000000000000000000000000
+      00000000000000000000000000DC000000FF000000E50000001E000000000000
+      0000000000000000000000000000000000000000000000000000000000B40000
+      003C000000000000000000000000000000000000000000000000000000000000
+      00000000000000000000000000DC000000FF000000FF000000D5000000100000
+      0000000000000000000000000000000000000000000000000000000000B40000
+      003C000000000000000000000000000000000000000000000000000000000000
+      00000000000000000000000000DC000000FF000000FF000000FF000000BF0000
+      0007000000000000000000000000000000000000000000000000000000B40000
+      003C000000000000000000000000000000000000000000000000000000000000
+      00000000000000000000000000D9000000FF000000FF000000FF000000FF0000
+      008C000000000000000000000000000000000000000000000000000000B40000
+      003C000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000022000000330000003300000033000000630000
+      00B4000000000000000000000000000000000000000000000000000000B40000
+      003C000000000000000000000000000000000000000000000000000000000000
+      00000000000000000000000000000000000000000000000000000000003C0000
+      00B400000000000000000000000000000000000000060000005A000000D20000
+      008A000000660000006600000066000000660000006600000066000000660000
+      00660000006600000066000000660000006600000066000000660000008A0000
+      00D20000005900000006000000000000000000000081000000FF000000FF0000
+      00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+      00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+      00FF000000FF000000800000000000000000000000A0000000FF000000A60000
+      0022000000F6000000FF000000FF000000F30000006B000000210000002D0000
+      008C000000FE000000FF000000F0000000770000003300000020000000540000
+      00FF000000FF000000A00000000000000000000000A0000000FF000000980000
+      0000000000F4000000FF000000FF000000550000001A000000B30000008B0000
+      000100000097000000FB0000003A0000001C00000095000000AF000000A70000
+      00FF000000FF000000A00000000000000000000000A0000000FF000000980000
+      0000000000F4000000FF000000ED000000000000008D000000FF000000FF0000
+      003D00000037000000B200000000000000B9000000F9000000DD000000DD0000
+      00F9000000FF000000A00000000000000000000000A0000000FF000000980000
+      0000000000F4000000FF000000D200000000000000A9000000FF000000FF0000
+      005A000000230000009A00000000000000E0000000CF00000000000000000000
+      00CF000000FF000000A00000000000000000000000A0000000FF000000980000
+      0000000000F4000000FF000000F30000000700000074000000FF000000FC0000
+      002500000050000000C40000000000000096000000FF000000CB000000000000
+      00CF000000FF000000A00000000000000000000000A0000000FF000000980000
+      000000000051000000550000009D0000007E0000000300000063000000410000
+      000A000000CD000000FF0000005600000003000000510000004F000000000000
+      00CF000000FF000000A00000000000000000000000A0000000FF000000C80000
+      00770000007700000077000000B0000000FF000000AF0000006D0000007D0000
+      00DA000000FF000000FF000000FE000000B00000007A00000070000000970000
+      00F2000000FF000000A000000000000000000000006F000000FF000000FF0000
+      00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+      00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+      00FF000000FF0000006E00000000000000000000000000000035000000C80000
+      0070000000440000004400000044000000440000004400000044000000440000
+      0044000000440000004400000044000000440000004400000044000000700000
+      00C8000000350000000000000000000000000000000000000000000000B40000
+      003C000000000000000000000000000000000000000000000000000000000000
+      00000000000000000000000000000000000000000000000000000000003C0000
+      00B4000000000000000000000000000000000000000000000000000000B40000
+      003C000000000000000000000000000000000000000000000000000000000000
+      00000000000000000000000000000000000000000000000000000000003C0000
+      00B4000000000000000000000000000000000000000000000000000000B40000
+      003C000000000000000000000000000000000000000000000000000000000000
+      00000000000000000000000000000000000000000000000000000000003C0000
+      00B4000000000000000000000000000000000000000000000000000000B40000
+      0063000000330000003300000033000000330000003300000033000000330000
+      0033000000330000003300000033000000330000003300000033000000630000
+      00B40000000000000000000000000000000000000000000000000000007A0000
+      00FE000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+      00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FC0000
+      0074000000000000000000000000
     }
   end
   object SrcOrgUnits: TDataSource

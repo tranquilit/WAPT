@@ -106,7 +106,6 @@ type
     SplitTopTaskTaskGrid: TSplitter;
     PgRights: TTabSheet;
     pgRepositories: TTabSheet;
-    StaticText1: TStaticText;
     tbDeleteRule: TToolButton;
     tbDownRule: TToolButton;
     tbEditRule: TToolButton;
@@ -128,6 +127,7 @@ type
     tbSyncAll: TToolButton;
     ToolButton14: TToolButton;
     tbUpdateFileSync: TToolButton;
+    tbSyncChangelog: TToolButton;
     ToolButton4: TToolButton;
     ToolButton5: TToolButton;
     ToolButton7: TToolButton;
@@ -942,6 +942,7 @@ type
     procedure SynEditReportsSQLChange(Sender: TObject);
     procedure tbRefeshAgentReposClick(Sender: TObject);
     procedure tbSyncAllClick(Sender: TObject);
+    procedure tbSyncChangelogClick(Sender: TObject);
     procedure tbSyncSelectedClick(Sender: TObject);
     procedure tbUpdateFileSyncClick(Sender: TObject);
     procedure TimerSearchPackagesTimer(Sender: TObject);
@@ -1031,6 +1032,8 @@ type
     PollTasksThread: TPollTasksThread;
 
     HostsForPackageData: ISuperObject;
+    SyncVersion : Integer;
+    SyncID : Integer;
 
     property GridHostsPlugins: ISuperObject read GetGridHostsPlugins write SetGridHostsPlugins;
 
@@ -1096,7 +1099,7 @@ uses LCLIntf, LCLType, IniFiles, variants, LazFileUtils,FileUtil, base64,
   uVisPackageWizard, uVisChangeKeyPassword, uVisDisplayPreferences,
   uvisrepositories, uVisHostDelete, windirs,winutils,uWaptPythonUtils
   {$ifdef ENTERPRISE}
-  ,uVisWUAGroup,uviswuadownloads,uvissoftwaresnormalization,uvisselfservicegroup,uviseditcreaterule
+  ,uVisWUAGroup,uviswuadownloads,uvissoftwaresnormalization,uvisselfservicegroup,uviseditcreaterule,uvissyncchangelog
   {$endif}
   {$ifdef wsus},uVisWAPTWUAProducts, uviswuapackageselect,
   uVisWUAClassificationsSelect
@@ -1487,12 +1490,6 @@ begin
   end;
 end;
 
-function waptversion_full:String;
-begin
-  Result := GetApplicationVersion(WaptgetPath);
-  if FileExists(ExtractFilePath(ParamStr(0))+'revision.txt') then
-    Result := Result+' rev '+FileToString(ExtractFilePath(ParamStr(0))+'revision.txt');
-end;
 
 procedure TVisWaptGUI.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 var
@@ -4284,6 +4281,7 @@ procedure TVisWaptGUI.FormCreate(Sender: TObject);
 begin
   WaptServerUser := IniReadString(Appuserinipath,self.name,'lastwaptserveruser','admin');
   HostsLimit := 2000;
+  SyncVersion := -1;
   DMPython.PythonOutput.OnSendData := @PythonOutputSendData;
 end;
 
@@ -4613,8 +4611,27 @@ end;
 
 procedure TVisWaptGUI.GridAgentRepoChange(Sender: TBaseVirtualTree;
   Node: PVirtualNode);
+var
+  Row: ISuperObject;
+  Enable: Boolean;
 begin
-  tbSyncSelected.Enabled:=Assigned(GridAgentRepo.SelectedRows) and Assigned(GridAgentRepo.FocusedRow);
+  Enable:=False;
+  if (Assigned(GridAgentRepo.SelectedRows) and Assigned(GridAgentRepo.FocusedRow)) then
+    for Row in GridAgentRepo.SelectedRows do
+        if (Row.S['reachable'] = 'OK') and (Row.I['status_sync_version']<>SyncVersion) then
+        begin
+          Enable:=True;
+          Break;
+        end;
+  tbSyncSelected.Enabled:=Enable;
+  Enable:=False;
+  for Row in GridAgentRepo.Data do
+      if (Row.S['reachable'] = 'OK') and (Row.I['status_sync_version']<>SyncVersion) then
+      begin
+        Enable:=True;
+        Break;
+      end;
+  tbSyncAll.Enabled:=Enable;
 end;
 
 procedure TVisWaptGUI.GridAgentRepoGetImageIndexEx(Sender: TBaseVirtualTree;
@@ -4622,7 +4639,7 @@ procedure TVisWaptGUI.GridAgentRepoGetImageIndexEx(Sender: TBaseVirtualTree;
   var Ghosted: Boolean; var ImageIndex: Integer; var ImageList: TCustomImageList
   );
   var
-  reachable: ISuperObject;
+  reachable, sync_status: ISuperObject;
   propname: String;
   aGrid:TSOGrid;
 begin
@@ -4632,7 +4649,7 @@ begin
   begin
     ImageIndex:=-1;
     reachable := aGrid.GetCellData(Node, 'reachable', Nil);
-    if (reachable<>Nil)then
+    if Assigned(reachable)then
     begin
       if (reachable.AsString = 'OK') then
         ImageIndex := 4
@@ -4643,7 +4660,25 @@ begin
     end
     else
       ImageIndex := 6
-  end
+  end;
+  if propName='sync_status' then
+  begin
+    ImageIndex:=-1;
+    sync_status:= aGrid.GetCellData(Node,'sync_status', Nil);
+    if Assigned(sync_status) then
+    begin
+      if (sync_status.AsString = 'OK') then
+         ImageIndex:=0
+      else if (sync_status.AsString = 'TO UPDATE') then
+           ImageIndex:=1
+      else if Pos('%',sync_status.AsString)>0 then
+           ImageIndex:=6
+      else
+          ImageIndex:=2
+    end
+    else
+        ImageIndex:=2;
+  end;
 end;
 
 procedure TVisWaptGUI.GridGroupsColumnDblClick(Sender: TBaseVirtualTree;

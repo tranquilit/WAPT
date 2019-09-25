@@ -31,7 +31,6 @@ if __name__ == '__main__':
     # as soon as possible, we must monkey patch the library...
     # monkeypatching for eventlet greenthreads
     from eventlet import monkey_patch
-
     # os=False for windows see https://mail.python.org/pipermail/python-bugs-list/2012-November/186579.html
     if platform.system() == 'Windows':
         # interactive debug mode on PyScripter hang if tread is patched.
@@ -67,7 +66,7 @@ from flask import request, Response, send_from_directory, session, g, redirect, 
 from peewee import *
 from playhouse.postgres_ext import *
 
-from waptserver.model import Hosts, HostSoftwares, HostPackagesStatus, HostGroups,HostWsus,WsusUpdates,Packages,SiteRules
+from waptserver.model import Hosts, HostSoftwares, HostPackagesStatus, HostGroups,HostWsus,WsusUpdates,Packages,SiteRules, SyncStatus
 from waptserver.model import get_db_version, init_db, wapt_db, model_to_dict, update_host_data
 from waptserver.model import upgrade_db_structure
 from waptserver.model import load_db_config
@@ -79,7 +78,6 @@ from waptcrypto import sha256_for_file,sha256_for_data
 from waptcrypto import SSLCABundle
 
 from waptutils import datetime2isodate,ensure_list,Version,setloglevel
-
 
 from waptserver.utils import EWaptAuthenticationFailure,EWaptForbiddden,EWaptHostUnreachable
 from waptserver.utils import EWaptMissingParameter,EWaptTimeoutWaitingForResult,EWaptUnknownHost
@@ -1434,7 +1432,7 @@ def get_all_agentrepos():
     start_time = time.time()
     try:
         where_clause = Hosts.wapt_status.contains({'is_remote_repo':True})
-        list_agent_repo=list(Hosts.select(Hosts.uuid,Hosts.reachable,Hosts.computer_fqdn,Hosts.description,Hosts.computer_name,SQL("host_info ->> 'main_ip' AS main_ip"),SQL("wapt_status ->> 'status_remote_repo' AS status_remote_repo"), SQL("wapt_status ->> 'status_sync_version' AS status_sync_version")).where(where_clause).dicts())
+        list_agent_repo=list(Hosts.select(Hosts.uuid,Hosts.reachable,Hosts.computer_fqdn,Hosts.description,Hosts.computer_name,SQL("host_info ->> 'main_ip' AS main_ip"),SQL("wapt_status ->> 'status_remote_repo' AS status_remote_repo"), SQL("wapt_status ->> 'status_sync_version' AS status_sync_version"),SQL("wapt_status ->> 'status_sync_progress' AS status_sync_progress"),SQL("wapt_status ->> 'status_sync_id' AS status_sync_id")).where(where_clause).dicts())
         return make_response(result=list_agent_repo,success=True,request_time = time.time() - start_time)
     except Exception as e:
         return make_response_from_exception(e)
@@ -1447,8 +1445,25 @@ def get_sync_version():
     """
     start_time = time.time()
     try:
-        maxversion = int(SyncStatus.select(fn.MAX(SyncStatus.version)).scalar())
-        data = {'version':maxversion}
+        try:
+            version = int(SyncStatus.select(fn.MAX(SyncStatus.version)).scalar())
+            id = int(SyncStatus.select(fn.MIN(SyncStatus.id)).scalar())
+        except:
+            version = -1
+            id = 0
+        data = {'version':version,'id': id}
+        return make_response(result=data,success=True,request_time = time.time() - start_time)
+    except Exception as e:
+        return make_response_from_exception(e)
+
+@app.route('/api/v3/get_sync_changelog')
+@requires_auth
+def get_sync_changelog():
+    """
+    """
+    start_time = time.time()
+    try:
+        data = list(SyncStatus.select().dicts())
         return make_response(result=data,success=True,request_time = time.time() - start_time)
     except Exception as e:
         return make_response_from_exception(e)
@@ -1656,6 +1671,10 @@ def hosts_delete():
                     raw_data = zlib.decompress(request.data)
                 else:
                     raw_data = request.data
+
+                post_data = ujson.loads(raw_data)
+                if not post_data:
+                    raise Exception('unregister_host: No data supplied')
 
                 if 'uuids' in post_data:
                     query = Hosts.uuid.in_(ensure_list(post_data['uuids']))
@@ -2088,22 +2107,11 @@ def usage_statistics():
     except:
         pass
 
-    version_fn = os.path.join(wapt_root_dir,'waptserver','VERSION')
-    if os.path.isfile(version_fn):
-        version = open(version_fn,'r').read().splitlines()[0]
-    else:
-        version_fn = os.path.join(wapt_root_dir,'revision.txt')
-        if os.path.isfile(version_fn):
-            version = __version__+'-'+open(version_fn,'r').read().splitlines()[0]
-        else:
-            version = __version__
-
-
     result = dict(
         uuid=app.conf['server_uuid'],
         platform=platform.system(),
         architecture=platform.architecture(),
-        version=version,
+        version=__version__,
         date=datetime2isodate(),
     )
     result.update(stats)

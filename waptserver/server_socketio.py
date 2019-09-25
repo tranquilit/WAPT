@@ -327,13 +327,29 @@ def target_for_sync(uuids=None):
     return listfqdn
 
 @socketio.on('synchronization_started')
-def on_sync_remote_repo_started():
+def on_sync_remote_repo_started(sync_version):
     uuid = session.get('uuid',None)
-    maxversion = int(SyncStatus.select(fn.MAX(SyncStatus.version)).scalar())
-    data =  {'status_remote_repo':'SYNC_STARTED','status_sync_version':maxversion}
+    data =  {'status_remote_repo':'SYNC_STARTED','status_sync_progress':0.0,'status_sync_id':sync_version['id']}
     with wapt_db.atomic() as trans:
         Hosts.update({Hosts.wapt_status:Hosts.wapt_status.concat(data)}).where((Hosts.uuid == uuid) & (Hosts.listening_address == request.sid)).execute()
     logger.info(u'Synchronization started for remote repo client sid %s (uuid:%s)' % (request.sid,uuid))
+    return True
+
+@socketio.on('synchronization_finished')
+def on_sync_remote_repo_finished(sync_version):
+    uuid = session.get('uuid',None)
+    data = {'status_remote_repo':'SYNC_FINISHED','status_sync_version':sync_version['version'],'status_sync_progress':None,'status_sync_id':sync_version['id']}
+    with wapt_db.atomic() as trans:
+        Hosts.update({Hosts.wapt_status:Hosts.wapt_status.concat(data)}).where((Hosts.uuid == uuid) & (Hosts.listening_address == request.sid)).execute()
+    logger.info(u'Synchronization finished for remote repo client sid %s (uuid:%s)' % (request.sid,uuid))
+    return True
+
+@socketio.on('sync_progress')
+def on_sync_progress(data):
+    uuid = session.get('uuid',None)
+    with wapt_db.atomic() as trans:
+        Hosts.update({Hosts.wapt_status:Hosts.wapt_status.concat(data)}).where((Hosts.uuid == uuid) & (Hosts.listening_address == request.sid)).execute()
+    logger.info(u'Synchronization progress for remote repo client sid %s (uuid:%s) : %s/100' % (request.sid,uuid,data['status_sync_progress']))
     return True
 
 @socketio.on('synchronization_not_in_time_range')

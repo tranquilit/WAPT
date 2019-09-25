@@ -1418,9 +1418,7 @@ def get_wapt_package(input_package_name):
 @allow_local
 def launchsync():
     if (waptconfig.enable_remote_repo):
-        if sio:
-            sio.socketio_client.emit('synchronization_started')
-        data = app.task_manager.add_task(WaptSyncRepo(created_by='flask /launchsync',local_repo_path=waptconfig.local_repo_path,srvurl=waptconfig.waptserver.server_url,speed=waptconfig.local_repo_limit_bandwidth)).as_json()
+        data = app.task_manager.add_task(WaptSyncRepo(created_by='flask /launchsync',local_repo_path=waptconfig.local_repo_path,srvurl=waptconfig.waptserver.server_url,speed=waptconfig.local_repo_limit_bandwidth,sio = sio.socketio_client)).as_json()
     else:
         data=None
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
@@ -1642,9 +1640,7 @@ class WaptTaskManager(threading.Thread):
                 if self.last_sync is None or (datetime.datetime.now() - self.last_sync > get_time_delta(waptconfig.local_repo_sync_task_period,'m')):
                     try:
                         logger.debug(u'Add_task for sync with local_repo_sync_task_period')
-                        if sio:
-                            sio.socketio_client.emit('synchronization_started')
-                        self.add_task(WaptSyncRepo(notifyuser=False,created_by='SCHEDULER',local_repo_path=waptconfig.local_repo_path,srvurl=waptconfig.waptserver.server_url,speed=waptconfig.local_repo_limit_bandwidth))
+                        self.add_task(WaptSyncRepo(notifyuser=False,created_by='SCHEDULER',local_repo_path=waptconfig.local_repo_path,srvurl=waptconfig.waptserver.server_url,speed=waptconfig.local_repo_limit_bandwidth, sio = sio.socketio_client))
                     except Exception as e:
                         logger.debug(u'Error syncing local repo with server repo : %s' % e)
             elif waptconfig.local_repo_time_for_sync_start:
@@ -1652,9 +1648,7 @@ class WaptTaskManager(threading.Thread):
                 if common.is_between_two_times(waptconfig.local_repo_time_for_sync_start,waptconfig.local_repo_time_for_sync_end) and (self.last_sync is None or (datetime.datetime.now() - self.last_sync > get_time_delta('10m','m'))):
                     try:
                         logger.debug(u'Add_task for sync with local_repo_time_for_sync')
-                        if sio:
-                            sio.socketio_client.emit('synchronization_started')
-                        self.add_task(WaptSyncRepo(notifyuser=False,created_by='SCHEDULER',local_repo_path=waptconfig.local_repo_path,srvurl=waptconfig.waptserver.server_url,speed=waptconfig.local_repo_limit_bandwidth))
+                        self.add_task(WaptSyncRepo(notifyuser=False,created_by='SCHEDULER',local_repo_path=waptconfig.local_repo_path,srvurl=waptconfig.waptserver.server_url,speed=waptconfig.local_repo_limit_bandwidth, sio = sio.socketio_client))
                     except Exception as e:
                         logger.debug(u'Error syncing local repo with server repo : %s' % e)
 

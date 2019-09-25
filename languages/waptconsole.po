@@ -1656,6 +1656,43 @@ msgstr ""
 msgid "Normalizes sofware titles"
 msgstr ""
 
+#: tvissyncchangelog.caption
+msgid "Changelog synchronization"
+msgstr ""
+
+#: tvissyncchangelog.gridchangelog.header.columns[0].text
+msgid "version"
+msgstr ""
+
+#: tvissyncchangelog.gridchangelog.header.columns[1].text
+msgctxt "tvissyncchangelog.gridchangelog.header.columns[1].text"
+msgid "id"
+msgstr ""
+
+#: tvissyncchangelog.gridchangelog.header.columns[2].text
+msgid "changelog"
+msgstr ""
+
+#: tvissyncchangelog.gridchangelog.header.columns[3].text
+msgctxt "tvissyncchangelog.gridchangelog.header.columns[3].text"
+msgid "updated_on"
+msgstr ""
+
+#: tvissyncchangelog.gridchangelog.header.columns[4].text
+msgctxt "tvissyncchangelog.gridchangelog.header.columns[4].text"
+msgid "updated_by"
+msgstr ""
+
+#: tvissyncchangelog.gridchangelog.header.columns[5].text
+msgctxt "tvissyncchangelog.gridchangelog.header.columns[5].text"
+msgid "created_on"
+msgstr ""
+
+#: tvissyncchangelog.gridchangelog.header.columns[6].text
+msgctxt "tvissyncchangelog.gridchangelog.header.columns[6].text"
+msgid "created_by"
+msgstr ""
+
 #: tvistriggerhostsaction.actstop.caption
 msgctxt "tvistriggerhostsaction.actstop.caption"
 msgid "Terminate"
@@ -2354,7 +2391,8 @@ msgid "Save queries"
 msgstr ""
 
 #: tviswaptgui.actrepositoriesgetsecondrepos.caption
-msgid "ActRepositoriesGetSecondRepos"
+msgctxt "tviswaptgui.actrepositoriesgetsecondrepos.caption"
+msgid "Refresh"
 msgstr ""
 
 #: tviswaptgui.actrepositoriesgetupdaterules.caption
@@ -2866,31 +2904,41 @@ msgstr ""
 
 #: tviswaptgui.gridagentrepo.header.columns[1].text
 msgctxt "tviswaptgui.gridagentrepo.header.columns[1].text"
-msgid "Status"
+msgid "Sync version"
 msgstr ""
 
 #: tviswaptgui.gridagentrepo.header.columns[2].text
 msgctxt "tviswaptgui.gridagentrepo.header.columns[2].text"
-msgid "Description"
+msgid "Sync status"
 msgstr ""
 
 #: tviswaptgui.gridagentrepo.header.columns[3].text
 msgctxt "tviswaptgui.gridagentrepo.header.columns[3].text"
-msgid "Computer name"
+msgid "Status"
 msgstr ""
 
 #: tviswaptgui.gridagentrepo.header.columns[4].text
 msgctxt "tviswaptgui.gridagentrepo.header.columns[4].text"
-msgid "Computer FQDN"
+msgid "Description"
 msgstr ""
 
 #: tviswaptgui.gridagentrepo.header.columns[5].text
 msgctxt "tviswaptgui.gridagentrepo.header.columns[5].text"
-msgid "IP"
+msgid "Computer name"
 msgstr ""
 
 #: tviswaptgui.gridagentrepo.header.columns[6].text
 msgctxt "tviswaptgui.gridagentrepo.header.columns[6].text"
+msgid "Computer FQDN"
+msgstr ""
+
+#: tviswaptgui.gridagentrepo.header.columns[7].text
+msgctxt "tviswaptgui.gridagentrepo.header.columns[7].text"
+msgid "IP"
+msgstr ""
+
+#: tviswaptgui.gridagentrepo.header.columns[8].text
+msgctxt "tviswaptgui.gridagentrepo.header.columns[8].text"
 msgid "uuid"
 msgstr ""
 
@@ -5407,11 +5455,6 @@ msgstr ""
 msgid "Errors"
 msgstr ""
 
-#: tviswaptgui.tbrefeshagentrepos.caption
-msgctxt "tviswaptgui.tbrefeshagentrepos.caption"
-msgid "Refresh"
-msgstr ""
-
 #: tviswaptgui.tbreport.caption
 msgid "TbReport"
 msgstr ""
@@ -5428,11 +5471,16 @@ msgstr ""
 msgid "Sync all"
 msgstr ""
 
+#: tviswaptgui.tbsyncchangelog.caption
+msgid "Changelog"
+msgstr ""
+
 #: tviswaptgui.tbsyncselected.caption
 msgid "Sync selected"
 msgstr ""
 
 #: tviswaptgui.tbupdatefilesync.caption
+msgctxt "tviswaptgui.tbupdatefilesync.caption"
 msgid "Update sync.json"
 msgstr ""
 
@@ -6183,6 +6231,10 @@ msgstr ""
 msgid "Create new rule"
 msgstr ""
 
+#: uwaptconsoleres.rscreatesyncjson
+msgid "Create sync.json"
+msgstr ""
+
 #: uwaptconsoleres.rsdefaultusagestatsurl
 msgid "http://wapt.tranquil.it/usage_stats"
 msgstr ""
@@ -6715,6 +6767,10 @@ msgctxt "uwaptconsoleres.rssuccessfullyimported"
 msgid "%s successfully imported."
 msgstr ""
 
+#: uwaptconsoleres.rssyncjson
+msgid "You have to first create a sync.json file"
+msgstr ""
+
 #: uwaptconsoleres.rstaskcanceled
 msgctxt "uwaptconsoleres.rstaskcanceled"
 msgid "Task canceled."
@@ -6762,6 +6818,11 @@ msgstr ""
 
 #: uwaptconsoleres.rsunknownversion
 msgid "Unknown version"
+msgstr ""
+
+#: uwaptconsoleres.rsupdatesyncjson
+msgctxt "uwaptconsoleres.rsupdatesyncjson"
+msgid "Update sync.json"
 msgstr ""
 
 #: uwaptconsoleres.rsupdatingpackagelist

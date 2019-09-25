@@ -947,9 +947,10 @@ class WaptLongTask(WaptTask):
 
 class WaptSyncRepo(WaptTask):
     """Task for sync the server Repo in the current machine"""
-    def __init__(self,local_repo_path=None,srvurl=None,speed=None,**args):
+    def __init__(self,local_repo_path=None,srvurl=None,speed=None,sio=None,**args):
         super(WaptSyncRepo,self).__init__()
         self.local_repo_path = local_repo_path
+        self.sio = sio
         self.srvurl = srvurl
         self.speed = speed
         self.realspeed = 0
@@ -1068,16 +1069,32 @@ class WaptSyncRepo(WaptTask):
                 self.totaldownloaded+=-self.lastprogressdownload+received
                 self.progress=(self.totaldownloaded/float(DictRes['total_to_download']))*100
                 self.lastprogressdownload=received
+                if self.sio:
+                    self.countchunk+=1
+                    if self.countchunk>4:
+                        self.countchunk=0
+                        d = {'status_sync_progress':self.progress}
+                        self.sio.emit('sync_progress',d)
+
+
             DictRes['downloaded']={}
+            if self.sio:
+                self.countchunk=0
             for afile in DictRes['todownload']:
                 try:
                     print('Downloading : %s' % DictRes['todownload'][afile])
                     self.lastprogressdownload=0
                     self.start_time_download=time.time()
+                    if self.sio:
+                        d = {'status_sync_progress':self.progress}
+                        self.sio.emit('sync_progress',d)
                     wget(DictRes['todownload'][afile]['url'],target=DictRes['todownload'][afile]['path'],printhook=setterProgress,sha256=DictRes['todownload'][afile]['sum'],limit_bandwidth=speed)
                     DictRes['downloaded'][afile]=DictRes['todownload'][afile]
                     DictRes['downloaded'][afile]['time']=time.time()-self.start_time_download
                     print('Downloaded in %f seconds.\n' % DictRes['downloaded'][afile]['time'])
+                    if self.sio:
+                        d = {'status_sync_progress':self.progress}
+                        self.sio.emit('sync_progress',d)
                     self.realspeed=0
                     self.currenturl=''
                 except Exception as e:
@@ -1087,15 +1104,20 @@ class WaptSyncRepo(WaptTask):
             print('\n success : %s' % DictRes['success'])
             del DictRes['todownload']
 
-
         r=requests.get(self.srvurl+'/sync.json')
         Res = {}
         if r.status_code==200:
             dic=r.json()
+            sync_version = {'version':dic['version'],'id':dic['id']}
+            if self.sio:
+                self.sio.emit('synchronization_started',sync_version)
             filesync=os.path.join(self.local_repo_path,'sync.json')
             if os.path.isfile(filesync):
                 with open(filesync,'r') as f:
                     SyncDict=json.load(f)
+                    if SyncDict['id'] != dic['id']:
+                        shutil.rmtree(self.local_repo_path,ignore_errors=True)
+                        SyncDict={}
             else:
                 SyncDict={}
             if not(os.path.isdir(self.local_repo_path)):
@@ -1104,10 +1126,14 @@ class WaptSyncRepo(WaptTask):
             Res = readTreeOfFilesAndInit(self.srvurl,self.local_repo_path,dic['files'],SyncDict)
             if 'todownload' in Res:
                 DownloadFiles(Res,self.speed)
+            SyncDict['id']=dic['id']
+            SyncDict['version']=dic['version']
             with open(filesync,'w+') as f:
                 json.dump(SyncDict,f)
+            if self.sio:
+                self.sio.emit('synchronization_finished',sync_version)
         self.result = Res
-        self.progress=100.0
+        self.progress = 100.0
 
 
     def __unicode__(self):

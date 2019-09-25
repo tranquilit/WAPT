@@ -314,6 +314,9 @@ resourcestring
   rsDomain = 'DOMAIN';
   rsSite = 'SITE';
   rsPublicIP = 'PUBLIC IP';
+  rsSyncJson = 'You have to first create a sync.json file';
+  rsCreateSyncJson = 'Create sync.json';
+  rsUpdateSyncJson = 'Update sync.json';
 
 implementation
 

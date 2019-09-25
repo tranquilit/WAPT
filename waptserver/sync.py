@@ -24,7 +24,7 @@
 from __future__ import absolute_import
 from future.utils import python_2_unicode_compatible
 from waptutils import get_sha256
-from waptserver.model import SyncStatus
+from waptserver.model import SyncStatus, Hosts, wapt_db
 import json
 import os
 import datetime
@@ -68,18 +68,26 @@ def get_tree_of_files(dirs = []):
 def put_tree_of_files_in_sync_file(filesync = '',dirs = [],username = 'SERVER'):
     with open(filesync,'w+') as f:
         tree_of_files =  get_tree_of_files(dirs)
+        try:
+            id=int(SyncStatus.select(fn.MIN(SyncStatus.id)).scalar())+1
+        except:
+            id=1
         SyncStatus.delete().execute()
+        data = {'status_remote_repo': None,'sync_progress': None,'status_sync_id':id}
+        with wapt_db.atomic() as trans:
+            Hosts.update({Hosts.wapt_status:Hosts.wapt_status.concat(data)}).execute()
         data = {}
         data['updated_by']=username
         data['updated_on']=datetime.datetime.now()
         data['created_by']=username
         data['created_on']=datetime.datetime.now()
-        data['version'] = 1
-        changelog = unicode(json.dumps(tree_of_files))
+        data['version']=1
+        changelog = unicode(json.dumps({'new':tree_of_files}))
         data['changelog'] = changelog
         SyncStatus.create(**data)
         tree_of_files_version = {}
         tree_of_files_version['version'] = 1
+        tree_of_files_version['id']=id
         tree_of_files_version['files'] = tree_of_files
         f.write(unicode(json.dumps(tree_of_files_version,f)))
         return tree_of_files_version
@@ -162,6 +170,7 @@ def actualize_tree_of_files_in_sync_file(filesync = '',username='SERVER'):
             SyncStatus.create(**data)
         else:
             new_tree['version']=tree_of_files['version']
+        new_tree['id']=tree_of_files['id']
         new_tree['changelog']=changelog
     with open(filesync,'w') as f:
         f.write(unicode(json.dumps(new_tree,f)))

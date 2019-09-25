@@ -1,0 +1,101 @@
+object VisSyncChangelog: TVisSyncChangelog
+  Left = 2447
+  Height = 538
+  Top = 88
+  Width = 1115
+  Caption = 'Changelog synchronization'
+  ClientHeight = 538
+  ClientWidth = 1115
+  LCLVersion = '1.8.4.0'
+  object GridChangelog: TSOGrid
+    Left = 0
+    Height = 538
+    Top = 0
+    Width = 610
+    ShowAdvancedColumnsCustomize = False
+    Align = alClient
+    Color = clWhite
+    Colors.UnfocusedColor = clMedGray
+    Header.AutoSizeIndex = -1
+    Header.Columns = <    
+      item
+        Alignment = taRightJustify
+        Position = 0
+        Text = 'version'
+        Width = 100
+        PropertyName = 'version'
+      end    
+      item
+        Alignment = taRightJustify
+        Position = 1
+        Tag = 1
+        Text = 'id'
+        Width = 23
+        PropertyName = 'id'
+      end    
+      item
+        Position = 2
+        Tag = 2
+        Text = 'changelog'
+        Width = 100
+        PropertyName = 'changelog'
+      end    
+      item
+        Position = 3
+        Tag = 3
+        Text = 'updated_on'
+        Width = 100
+        PropertyName = 'updated_on'
+      end    
+      item
+        Position = 4
+        Tag = 4
+        Text = 'updated_by'
+        Width = 100
+        PropertyName = 'updated_by'
+      end    
+      item
+        Position = 5
+        Tag = 5
+        Text = 'created_on'
+        Width = 100
+        PropertyName = 'created_on'
+      end    
+      item
+        Position = 6
+        Tag = 6
+        Text = 'created_by'
+        Width = 87
+        PropertyName = 'created_by'
+      end>
+    Header.DefaultHeight = 10
+    Header.Height = 18
+    Header.MaxHeight = 18
+    Header.MinHeight = 18
+    Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
+    Header.Style = hsFlatButtons
+    TabOrder = 0
+    TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes, toAutoChangeScale]
+    TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toFullRowDrag]
+    TreeOptions.PaintOptions = [toHideFocusRect, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages, toAlwaysHideSelection]
+    TreeOptions.SelectionOptions = [toExtendedFocus, toRightClickSelect, toSimpleDrawSelection]
+    WantTabs = True
+    OnChange = GridChangelogChange
+  end
+  object Splitter1: TSplitter
+    Left = 610
+    Height = 538
+    Top = 0
+    Width = 5
+    Align = alRight
+    ResizeAnchor = akRight
+  end
+  object Memo1: TMemo
+    Left = 615
+    Height = 538
+    Top = 0
+    Width = 500
+    Align = alRight
+    TabOrder = 2
+  end
+end

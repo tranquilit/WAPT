@@ -1664,6 +1664,48 @@ msgstr "Fermer"
 msgid "Normalizes sofware titles"
 msgstr "Normaliser le nom des logiciels"
 
+#: tvissyncchangelog.caption
+msgid "Changelog synchronization"
+msgstr ""
+
+#: tvissyncchangelog.gridchangelog.header.columns[0].text
+msgid "version"
+msgstr ""
+
+#: tvissyncchangelog.gridchangelog.header.columns[1].text
+#, fuzzy
+msgctxt "tvissyncchangelog.gridchangelog.header.columns[1].text"
+msgid "id"
+msgstr "id"
+
+#: tvissyncchangelog.gridchangelog.header.columns[2].text
+msgid "changelog"
+msgstr ""
+
+#: tvissyncchangelog.gridchangelog.header.columns[3].text
+#, fuzzy
+msgctxt "tvissyncchangelog.gridchangelog.header.columns[3].text"
+msgid "updated_on"
+msgstr "Modifié le"
+
+#: tvissyncchangelog.gridchangelog.header.columns[4].text
+#, fuzzy
+msgctxt "tvissyncchangelog.gridchangelog.header.columns[4].text"
+msgid "updated_by"
+msgstr "Modifié par"
+
+#: tvissyncchangelog.gridchangelog.header.columns[5].text
+#, fuzzy
+msgctxt "tvissyncchangelog.gridchangelog.header.columns[5].text"
+msgid "created_on"
+msgstr "Créé le"
+
+#: tvissyncchangelog.gridchangelog.header.columns[6].text
+#, fuzzy
+msgctxt "tvissyncchangelog.gridchangelog.header.columns[6].text"
+msgid "created_by"
+msgstr "Créé par"
+
 #: tvistriggerhostsaction.actstop.caption
 msgctxt "tvistriggerhostsaction.actstop.caption"
 msgid "Terminate"
@@ -2373,8 +2415,9 @@ msgid "Save queries"
 msgstr "Enregistrer tout"
 
 #: tviswaptgui.actrepositoriesgetsecondrepos.caption
-msgid "ActRepositoriesGetSecondRepos"
-msgstr ""
+msgctxt "tviswaptgui.actrepositoriesgetsecondrepos.caption"
+msgid "Refresh"
+msgstr "Actualiser"
 
 #: tviswaptgui.actrepositoriesgetupdaterules.caption
 msgctxt "tviswaptgui.actrepositoriesgetupdaterules.caption"
@@ -2886,31 +2929,57 @@ msgid "Status sync"
 msgstr "Statut synchro"
 
 #: tviswaptgui.gridagentrepo.header.columns[1].text
+#, fuzzy
+#| msgid "Status"
 msgctxt "tviswaptgui.gridagentrepo.header.columns[1].text"
-msgid "Status"
+msgid "Sync version"
 msgstr "Statut"
 
 #: tviswaptgui.gridagentrepo.header.columns[2].text
+#, fuzzy
+#| msgid "Status"
 msgctxt "tviswaptgui.gridagentrepo.header.columns[2].text"
-msgid "Description"
+msgid "Sync status"
 msgstr "Description"
 
 #: tviswaptgui.gridagentrepo.header.columns[3].text
+#, fuzzy
+#| msgid "Description"
 msgctxt "tviswaptgui.gridagentrepo.header.columns[3].text"
-msgid "Computer name"
+msgid "Status"
 msgstr "Nom de l'ordinateur"
 
 #: tviswaptgui.gridagentrepo.header.columns[4].text
+#, fuzzy
+#| msgid "Computer name"
 msgctxt "tviswaptgui.gridagentrepo.header.columns[4].text"
-msgid "Computer FQDN"
+msgid "Description"
 msgstr "FQDN du poste"
 
 #: tviswaptgui.gridagentrepo.header.columns[5].text
+#, fuzzy
+#| msgid "Computer FQDN"
 msgctxt "tviswaptgui.gridagentrepo.header.columns[5].text"
-msgid "IP"
+msgid "Computer name"
 msgstr "IP"
 
 #: tviswaptgui.gridagentrepo.header.columns[6].text
+#, fuzzy
+#| msgid "IP"
+msgctxt "tviswaptgui.gridagentrepo.header.columns[6].text"
+msgid "Computer FQDN"
+msgstr "uuid"
+
+#: tviswaptgui.gridagentrepo.header.columns[7].text
+#, fuzzy
+#| msgid "uuid"
+msgctxt "tviswaptgui.gridagentrepo.header.columns[7].text"
+msgid "IP"
+msgstr "uuid"
+
+#: tviswaptgui.gridagentrepo.header.columns[8].text
+#, fuzzy
+msgctxt "tviswaptgui.gridagentrepo.header.columns[8].text"
 msgid "uuid"
 msgstr "uuid"
 
@@ -5425,11 +5494,6 @@ msgstr "Terminées"
 msgid "Errors"
 msgstr "Erreurs"
 
-#: tviswaptgui.tbrefeshagentrepos.caption
-msgctxt "tviswaptgui.tbrefeshagentrepos.caption"
-msgid "Refresh"
-msgstr "Actualiser"
-
 #: tviswaptgui.tbreport.caption
 msgid "TbReport"
 msgstr ""
@@ -5446,11 +5510,16 @@ msgstr ""
 msgid "Sync all"
 msgstr "Sync tous"
 
+#: tviswaptgui.tbsyncchangelog.caption
+msgid "Changelog"
+msgstr ""
+
 #: tviswaptgui.tbsyncselected.caption
 msgid "Sync selected"
 msgstr "Sync sélectionnés"
 
 #: tviswaptgui.tbupdatefilesync.caption
+msgctxt "tviswaptgui.tbupdatefilesync.caption"
 msgid "Update sync.json"
 msgstr "Mettre à jour sync.json"
 
@@ -6206,6 +6275,10 @@ msgstr "Êtes-vous sûr de vouloir télécharger %d Mises à jour Windows sur le
 msgid "Create new rule"
 msgstr "Ajouter une règle"
 
+#: uwaptconsoleres.rscreatesyncjson
+msgid "Create sync.json"
+msgstr "Créer sync.json"
+
 #: uwaptconsoleres.rsdefaultusagestatsurl
 msgid "http://wapt.tranquil.it/usage_stats"
 msgstr ""
@@ -6745,6 +6818,10 @@ msgctxt "uwaptconsoleres.rssuccessfullyimported"
 msgid "%s successfully imported."
 msgstr "%s importé avec succès."
 
+#: uwaptconsoleres.rssyncjson
+msgid "You have to first create a sync.json file"
+msgstr "Vous devez premièrement créer un fichier sync.json"
+
 #: uwaptconsoleres.rstaskcanceled
 msgctxt "uwaptconsoleres.rstaskcanceled"
 msgid "Task canceled."
@@ -6793,6 +6870,11 @@ msgstr "Désinstallation de %s..."
 #: uwaptconsoleres.rsunknownversion
 msgid "Unknown version"
 msgstr "Version inconnue"
+
+#: uwaptconsoleres.rsupdatesyncjson
+msgctxt "uwaptconsoleres.rsupdatesyncjson"
+msgid "Update sync.json"
+msgstr "Mettre à jour sync.json"
 
 #: uwaptconsoleres.rsupdatingpackagelist
 msgctxt "uwaptconsoleres.rsupdatingpackagelist"

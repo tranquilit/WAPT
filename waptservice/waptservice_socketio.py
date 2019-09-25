@@ -365,8 +365,7 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
         if waptconfig.enable_remote_repo:
             if not(waptconfig.local_repo_time_for_sync_start) or is_between_two_times(waptconfig.local_repo_time_for_sync_start,waptconfig.local_repo_time_for_sync_end):
                 try:
-                    self.emit('synchronization_started')
-                    self.task_manager.add_task(WaptSyncRepo(notifyuser=False,created_by='SERVER',local_repo_path=waptconfig.local_repo_path,srvurl=waptconfig.waptserver.server_url,speed=waptconfig.local_repo_limit_bandwidth))
+                    self.task_manager.add_task(WaptSyncRepo(notifyuser=False,created_by='SERVER',local_repo_path=waptconfig.local_repo_path,srvurl=waptconfig.waptserver.server_url,speed=waptconfig.local_repo_limit_bandwidth,sio = self))
                 except Exception as e:
                     logger.debug(u'Error syncing local repo with server repo : %s' % e)
             else:

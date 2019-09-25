@@ -79,7 +79,7 @@
         <PackageName Value="LCL"/>
       </Item12>
     </RequiredPackages>
-    <Units Count="27">
+    <Units Count="28">
       <Unit0>
         <Filename Value="waptconsole.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -271,6 +271,13 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
       </Unit26>
+      <Unit27>
+        <Filename Value="uvissyncchangelog.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="VisSyncChangelog"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit27>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -305,11 +312,6 @@
       </Verbosity>
       <CustomOptions Value="-dENTERPRISE
 -dDEVMODE"/>
-      <OtherDefines Count="3">
-        <Define0 Value="UseCThreads"/>
-        <Define1 Value="ENTERPRISE"/>
-        <Define2 Value="DEVMODE"/>
-      </OtherDefines>
     </Other>
   </CompilerOptions>
   <Debugging>
