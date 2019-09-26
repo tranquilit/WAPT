@@ -1398,6 +1398,9 @@ class PackageEntry(BaseObjectClass):
         if self.section == 'host':
             return package_name+'.wapt'
         else:
+            if package_name.lower().endswith('-waptupgrade'):
+                return '_'.join([f for f in (self.package,self.version,self.architecture,self.maturity,self.locale) if f]) + '.wapt'
+
             # includes only non empty fields
             att= u'_'.join([f for f in (self.architecture,self.maturity,'-'.join(ensure_list(self.locale))) if (f and f != 'all')])
             if att:
