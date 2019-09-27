@@ -8289,46 +8289,69 @@ object VisWaptGUI: TVisWaptGUI
               item
                 Position = 3
                 Tag = 3
+                Text = 'status_sync_current_download'
+                Width = 208
+                PropertyName = 'status_sync_current_download'
+              end            
+              item
+                Position = 4
+                Tag = 4
                 Text = 'Status'
                 Width = 112
                 PropertyName = 'reachable'
               end            
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-                Position = 4
-                Tag = 4
+                Position = 5
+                Tag = 5
+                Text = 'status_sync_progress'
+                Width = 142
+                PropertyName = 'status_sync_progress'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                Position = 6
+                Tag = 6
                 Text = 'Description'
                 Width = 107
                 PropertyName = 'description'
               end            
               item
-                Position = 5
-                Tag = 5
+                Position = 7
+                Tag = 7
                 Text = 'Computer name'
                 Width = 132
                 PropertyName = 'computer_name'
               end            
               item
-                Position = 6
-                Tag = 6
+                Position = 8
+                Tag = 8
                 Text = 'Computer FQDN'
                 Width = 139
                 PropertyName = 'computer_fqdn'
               end            
               item
-                Position = 7
-                Tag = 7
+                Position = 9
+                Tag = 9
                 Text = 'IP'
-                Width = 151
+                Width = 149
                 PropertyName = 'main_ip'
               end            
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-                Position = 8
-                Tag = 8
+                Position = 10
+                Tag = 10
                 Text = 'uuid'
                 Width = 72
                 PropertyName = 'uuid'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                Position = 11
+                Tag = 11
+                Text = 'status_sync_id'
+                Width = 100
+                PropertyName = 'status_sync_id'
               end>
             Header.DefaultHeight = 10
             Header.Height = 18

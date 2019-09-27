@@ -1062,7 +1062,6 @@ class WaptSyncRepo(WaptTask):
             return Result
 
         def DownloadFiles(DictRes = {},speed=None):
-
             def setterProgress(received,total,speed,url):
                 self.realspeed=speed
                 self.currenturl=url
@@ -1086,7 +1085,7 @@ class WaptSyncRepo(WaptTask):
                     self.lastprogressdownload=0
                     self.start_time_download=time.time()
                     if self.sio:
-                        d = {'status_sync_progress':self.progress}
+                        d = {'status_sync_progress':self.progress,'status_sync_current_download':DictRes['todownload'][afile]['url']}
                         self.sio.emit('sync_progress',d)
                     wget(DictRes['todownload'][afile]['url'],target=DictRes['todownload'][afile]['path'],printhook=setterProgress,sha256=DictRes['todownload'][afile]['sum'],limit_bandwidth=speed)
                     DictRes['downloaded'][afile]=DictRes['todownload'][afile]
@@ -1104,34 +1103,55 @@ class WaptSyncRepo(WaptTask):
             print('\n success : %s' % DictRes['success'])
             del DictRes['todownload']
 
-        r=requests.get(self.srvurl+'/sync.json')
+        uptodate=True
+        filesync=os.path.join(self.local_repo_path,'sync.json')
+        requests_head = requests.head(self.srvurl+'/sync.json')
         Res = {}
-        if r.status_code==200:
-            dic=r.json()
-            sync_version = {'version':dic['version'],'id':dic['id']}
-            if self.sio:
-                self.sio.emit('synchronization_started',sync_version)
-            filesync=os.path.join(self.local_repo_path,'sync.json')
-            if os.path.isfile(filesync):
-                with open(filesync,'r') as f:
-                    SyncDict=json.load(f)
-                    if SyncDict['id'] != dic['id']:
-                        shutil.rmtree(self.local_repo_path,ignore_errors=True)
-                        SyncDict={}
+        if requests_head.status_code==200:
+            if os.path.isdir(self.local_repo_path):
+                if os.path.isfile(filesync):
+                    with open(filesync,'r') as f:
+                        SyncDict=json.load(f)
+                        if SyncDict['last-modified']==requests_head.headers['last-modified']:
+                            print('\nAlready up-to-date')
+                        else:
+                            uptodate=False
+                else:
+                    SyncDict={}
+                    uptodate=False
             else:
                 SyncDict={}
-            if not(os.path.isdir(self.local_repo_path)):
+                uptodate=False
                 os.mkdir(self.local_repo_path)
 
-            Res = readTreeOfFilesAndInit(self.srvurl,self.local_repo_path,dic['files'],SyncDict)
-            if 'todownload' in Res:
-                DownloadFiles(Res,self.speed)
-            SyncDict['id']=dic['id']
-            SyncDict['version']=dic['version']
-            with open(filesync,'w+') as f:
-                json.dump(SyncDict,f)
-            if self.sio:
-                self.sio.emit('synchronization_finished',sync_version)
+            if not(uptodate):
+                requests_file = requests.get(self.srvurl+'/sync.json')
+                if requests_file.status_code==200:
+                    dict_sync=requests_file.json()
+                    sync_version = {'version':dict_sync['version'],'id':dict_sync['id']}
+                    if self.sio:
+                        self.sio.emit('synchronization_started',sync_version)
+                    if SyncDict:
+                        if SyncDict['id']!=dict_sync['id']:
+                            shutil.rmtree(self.local_repo_path,ignore_errors=True)
+                            os.mkdir(self.local_repo_path)
+                            SyncDict={}
+                    Res = readTreeOfFilesAndInit(self.srvurl,self.local_repo_path,dict_sync['files'],SyncDict)
+                    if 'todownload' in Res:
+                        DownloadFiles(Res,self.speed)
+                    SyncDict['id']=dict_sync['id']
+                    SyncDict['version']=dict_sync['version']
+                    SyncDict['date']=requests_file.headers['date']
+                    SyncDict['last-modified']=requests_file.headers['last-modified']
+                    with open(filesync,'w+') as f:
+                        json.dump(SyncDict,f)
+                    if self.sio:
+                        self.sio.emit('synchronization_finished',sync_version)
+                else:
+                    print("\nImpossible to get sync.json file")
+        else:
+            print("\nImpossible to get sync.json file")
+
         self.result = Res
         self.progress = 100.0
 

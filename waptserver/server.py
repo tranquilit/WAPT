@@ -1435,7 +1435,7 @@ def get_all_agentrepos():
     start_time = time.time()
     try:
         where_clause = Hosts.wapt_status.contains({'is_remote_repo':True})
-        list_agent_repo=list(Hosts.select(Hosts.uuid,Hosts.reachable,Hosts.computer_fqdn,Hosts.description,Hosts.computer_name,SQL("host_info ->> 'main_ip' AS main_ip"),SQL("wapt_status ->> 'status_remote_repo' AS status_remote_repo"), SQL("wapt_status ->> 'status_sync_version' AS status_sync_version"),SQL("wapt_status ->> 'status_sync_progress' AS status_sync_progress"),SQL("wapt_status ->> 'status_sync_id' AS status_sync_id")).where(where_clause).dicts())
+        list_agent_repo=list(Hosts.select(Hosts.uuid,Hosts.reachable,Hosts.computer_fqdn,Hosts.description,Hosts.computer_name,SQL("host_info ->> 'main_ip' AS main_ip"),SQL("wapt_status ->> 'status_remote_repo' AS status_remote_repo"), SQL("wapt_status ->> 'status_sync_version' AS status_sync_version"),SQL("wapt_status ->> 'status_sync_progress' AS status_sync_progress"),SQL("wapt_status ->> 'status_sync_id' AS status_sync_id"),SQL("wapt_status ->> 'status_sync_current_download' AS status_sync_current_download")).where(where_clause).dicts())
         return make_response(result=list_agent_repo,success=True,request_time = time.time() - start_time)
     except Exception as e:
         return make_response_from_exception(e)

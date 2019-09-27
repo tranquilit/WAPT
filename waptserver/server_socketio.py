@@ -338,7 +338,7 @@ def on_sync_remote_repo_started(sync_version):
 @socketio.on('synchronization_finished')
 def on_sync_remote_repo_finished(sync_version):
     uuid = session.get('uuid',None)
-    data = {'status_remote_repo':'SYNC_FINISHED','status_sync_version':sync_version['version'],'status_sync_progress':None,'status_sync_id':sync_version['id']}
+    data = {'status_remote_repo':'SYNC_FINISHED','status_sync_version':sync_version['version'],'status_sync_progress':None,'status_sync_id':sync_version['id'],'status_sync_current_download':None}
     with wapt_db.atomic() as trans:
         Hosts.update({Hosts.wapt_status:Hosts.wapt_status.concat(data)}).where((Hosts.uuid == uuid) & (Hosts.listening_address == request.sid)).execute()
     logger.info(u'Synchronization finished for remote repo client sid %s (uuid:%s)' % (request.sid,uuid))

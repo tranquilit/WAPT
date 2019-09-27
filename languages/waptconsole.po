@@ -2902,6 +2902,15 @@ msgctxt "tviswaptgui.gridagentrepo.header.columns[0].text"
 msgid "Status sync"
 msgstr ""
 
+#: tviswaptgui.gridagentrepo.header.columns[10].text
+msgctxt "tviswaptgui.gridagentrepo.header.columns[10].text"
+msgid "uuid"
+msgstr ""
+
+#: tviswaptgui.gridagentrepo.header.columns[11].text
+msgid "status_sync_id"
+msgstr ""
+
 #: tviswaptgui.gridagentrepo.header.columns[1].text
 msgctxt "tviswaptgui.gridagentrepo.header.columns[1].text"
 msgid "Sync version"
@@ -2914,32 +2923,37 @@ msgstr ""
 
 #: tviswaptgui.gridagentrepo.header.columns[3].text
 msgctxt "tviswaptgui.gridagentrepo.header.columns[3].text"
-msgid "Status"
+msgid "status_sync_current_download"
 msgstr ""
 
 #: tviswaptgui.gridagentrepo.header.columns[4].text
 msgctxt "tviswaptgui.gridagentrepo.header.columns[4].text"
-msgid "Description"
+msgid "Status"
 msgstr ""
 
 #: tviswaptgui.gridagentrepo.header.columns[5].text
 msgctxt "tviswaptgui.gridagentrepo.header.columns[5].text"
-msgid "Computer name"
+msgid "status_sync_progress"
 msgstr ""
 
 #: tviswaptgui.gridagentrepo.header.columns[6].text
 msgctxt "tviswaptgui.gridagentrepo.header.columns[6].text"
-msgid "Computer FQDN"
+msgid "Description"
 msgstr ""
 
 #: tviswaptgui.gridagentrepo.header.columns[7].text
 msgctxt "tviswaptgui.gridagentrepo.header.columns[7].text"
-msgid "IP"
+msgid "Computer name"
 msgstr ""
 
 #: tviswaptgui.gridagentrepo.header.columns[8].text
 msgctxt "tviswaptgui.gridagentrepo.header.columns[8].text"
-msgid "uuid"
+msgid "Computer FQDN"
+msgstr ""
+
+#: tviswaptgui.gridagentrepo.header.columns[9].text
+msgctxt "tviswaptgui.gridagentrepo.header.columns[9].text"
+msgid "IP"
 msgstr ""
 
 #: tviswaptgui.gridgroups.header.columns[0].text
