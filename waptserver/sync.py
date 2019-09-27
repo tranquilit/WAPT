@@ -24,7 +24,7 @@
 from __future__ import absolute_import
 from future.utils import python_2_unicode_compatible
 from waptutils import get_sha256
-from waptserver.model import SyncStatus, Hosts, wapt_db
+from waptserver.model import SyncStatus, Hosts, wapt_db, fn
 import json
 import os
 import datetime
@@ -69,11 +69,11 @@ def put_tree_of_files_in_sync_file(filesync = '',dirs = [],username = 'SERVER'):
     with open(filesync,'w+') as f:
         tree_of_files =  get_tree_of_files(dirs)
         try:
-            id=int(SyncStatus.select(fn.MIN(SyncStatus.id)).scalar())+1
+            id=int(SyncStatus.select(fn.MAX(SyncStatus.id)).scalar())+1
         except:
             id=1
         SyncStatus.delete().execute()
-        data = {'status_remote_repo': None,'sync_progress': None,'status_sync_id':id}
+        data = {'status_remote_repo': None,'sync_progress': None}
         with wapt_db.atomic() as trans:
             Hosts.update({Hosts.wapt_status:Hosts.wapt_status.concat(data)}).execute()
         data = {}

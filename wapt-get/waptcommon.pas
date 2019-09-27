@@ -222,7 +222,7 @@ const
   waptservice_port:integer = 8088;
   waptserver_port:integer = 80;
   waptserver_sslport:integer = 443;
-  waptservice_timeout:integer = 10;
+  waptservice_timeout:integer = 20;
 
   WaptServerUser: String ='admin';
   WaptServerPassword: String ='';

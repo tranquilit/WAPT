@@ -8362,7 +8362,6 @@ object VisWaptGUI: TVisWaptGUI
               Left = 1
               Top = 0
               Action = ActRepositoriesGetSecondRepos
-              OnClick = tbRefeshAgentReposClick
             end
             object tbSyncSelected: TToolButton
               Left = 54

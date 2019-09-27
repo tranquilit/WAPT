@@ -16,6 +16,7 @@ type
     Memo1: TMemo;
     GridChangelog: TSOGrid;
     Splitter1: TSplitter;
+    procedure FormShow(Sender: TObject);
     procedure GridChangelogChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
   private
 
@@ -37,6 +38,11 @@ procedure TVisSyncChangelog.GridChangelogChange(Sender: TBaseVirtualTree;
 begin
   if Assigned(GridChangelog.FocusedRow) then
      Memo1.Caption:=GridChangelog.FocusedRow.O['changelog'].AsJSon(true,true);
+end;
+
+procedure TVisSyncChangelog.FormShow(Sender: TObject);
+begin
+  MakeFullyVisible();
 end;
 
 end.

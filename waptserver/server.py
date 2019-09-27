@@ -915,7 +915,7 @@ def upload_host():
 @app.route('/upload_waptsetup',methods=['HEAD','POST'])
 @requires_auth
 def upload_waptsetup():
-    """Handle the uplaod of customized waptagent.exe into wapt repository
+    """Handle the upload of customized waptagent.exe into wapt repository
     """
     waptagent = os.path.join(app.conf['wapt_folder'], 'waptagent.exe')
     logger.debug(u'Entering upload_waptsetup')
@@ -933,6 +933,9 @@ def upload_waptsetup():
                 else:
                     os.rename(tmp_target, target)
                     result = dict(status='OK', message=_('{} uploaded').format((filename,)))
+                    if app.conf.get('remote_repo_support'):
+                        update_file_tree_of_files(os.path.join(os.path.abspath(os.path.join(app.conf['wapt_folder'], os.pardir)),'Sync.json'),[os.path.join(app.conf['wapt_folder']),os.path.join(app.conf['wapt_folder'])+'wua'])
+                        target_for_sync()
 
             else:
                 result = dict(status='ERROR', message=_('Wrong file name (version conflict?)'))
@@ -1445,10 +1448,14 @@ def get_sync_version():
     """
     start_time = time.time()
     try:
-        try:
-            version = int(SyncStatus.select(fn.MAX(SyncStatus.version)).scalar())
-            id = int(SyncStatus.select(fn.MIN(SyncStatus.id)).scalar())
-        except:
+        if os.path.isfile(os.path.join(os.path.abspath(os.path.join(app.conf['wapt_folder'], os.pardir)),'sync.json')):
+            try:
+                version = int(SyncStatus.select(fn.MAX(SyncStatus.version)).scalar())
+                id = int(SyncStatus.select(fn.MIN(SyncStatus.id)).scalar())
+            except:
+                version = -1
+                id = 0
+        else:
             version = -1
             id = 0
         data = {'version':version,'id': id}

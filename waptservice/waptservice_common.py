@@ -451,7 +451,7 @@ class WaptServiceConfig(object):
                 elif config.has_option('global','local_repo_sync_task_period'):
                     self.local_repo_sync_task_period = config.get('global','local_repo_sync_task_period') or None
                 else:
-                    self.local_repo_sync_task_period = '30m'
+                    self.local_repo_sync_task_period = '10m'
                 if config.has_option('global','local_repo_limit_bandwidth'):
                     self.local_repo_limit_bandwidth = config.getfloat('global','local_repo_limit_bandwidth') or None
 

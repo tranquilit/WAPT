@@ -1,11 +1,13 @@
 object VisSyncChangelog: TVisSyncChangelog
-  Left = 2447
+  Left = 437
   Height = 538
-  Top = 88
+  Top = 84
   Width = 1115
   Caption = 'Changelog synchronization'
   ClientHeight = 538
   ClientWidth = 1115
+  OnShow = FormShow
+  Position = poMainFormCenter
   LCLVersion = '1.8.4.0'
   object GridChangelog: TSOGrid
     Left = 0
@@ -30,14 +32,14 @@ object VisSyncChangelog: TVisSyncChangelog
         Position = 1
         Tag = 1
         Text = 'id'
-        Width = 23
+        Width = 29
         PropertyName = 'id'
       end    
       item
         Position = 2
         Tag = 2
         Text = 'changelog'
-        Width = 100
+        Width = 79
         PropertyName = 'changelog'
       end    
       item

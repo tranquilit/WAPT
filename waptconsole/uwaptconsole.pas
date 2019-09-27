@@ -940,7 +940,6 @@ type
     procedure MenuItemProductsCheckAllClick(Sender: TObject);
     procedure PopupMenuHostsPopup(Sender: TObject);
     procedure SynEditReportsSQLChange(Sender: TObject);
-    procedure tbRefeshAgentReposClick(Sender: TObject);
     procedure tbSyncAllClick(Sender: TObject);
     procedure tbSyncChangelogClick(Sender: TObject);
     procedure tbSyncSelectedClick(Sender: TObject);
@@ -2150,7 +2149,11 @@ begin
       ActPackagesUpdate.Execute
     else
     if MainPages.ActivePage = PgReports then
-      ActReportingQueryExecute.Execute;
+      ActReportingQueryExecute.Execute
+    else
+    if MainPages.ActivePage = pgRepositories then
+       ActRepositoriesGetSecondRepos.Execute;
+
 
 
   finally
@@ -4618,7 +4621,7 @@ begin
   Enable:=False;
   if (Assigned(GridAgentRepo.SelectedRows) and Assigned(GridAgentRepo.FocusedRow)) then
     for Row in GridAgentRepo.SelectedRows do
-        if (Row.S['reachable'] = 'OK') and (Row.I['status_sync_version']<>SyncVersion) then
+        if (Row.S['reachable'] = 'OK') and (Row.S['sync_status']<>'OK') then
         begin
           Enable:=True;
           Break;
@@ -4626,7 +4629,7 @@ begin
   tbSyncSelected.Enabled:=Enable;
   Enable:=False;
   for Row in GridAgentRepo.Data do
-      if (Row.S['reachable'] = 'OK') and (Row.I['status_sync_version']<>SyncVersion) then
+      if (Row.S['reachable'] = 'OK') and (Row.S['sync_status']<>'OK') then
       begin
         Enable:=True;
         Break;
@@ -6367,11 +6370,6 @@ begin
   ;;
 end;
 
-procedure TVisWaptGUI.tbRefeshAgentReposClick(Sender: TObject);
-begin
-  ;;
-end;
-
 procedure TVisWaptGUI.tbSyncAllClick(Sender: TObject);
 begin
   ;;
@@ -6386,6 +6384,12 @@ procedure TVisWaptGUI.tbUpdateFileSyncClick(Sender: TObject);
 begin
   ;;
 end;
+
+procedure TVisWaptGUI.tbSyncChangelogClick(Sender: TObject);
+begin
+  ;;
+end;
+
 {$endif}
 
 end.
