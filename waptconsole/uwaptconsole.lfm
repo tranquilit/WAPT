@@ -1,5 +1,5 @@
 object VisWaptGUI: TVisWaptGUI
-  Left = 1912
+  Left = -8
   Height = 1017
   Top = -8
   Width = 1920
@@ -8289,15 +8289,15 @@ object VisWaptGUI: TVisWaptGUI
               item
                 Position = 3
                 Tag = 3
-                Text = 'status_sync_current_download'
-                Width = 208
+                Text = 'Current download'
+                Width = 118
                 PropertyName = 'status_sync_current_download'
               end            
               item
                 Position = 4
                 Tag = 4
-                Text = 'Status'
-                Width = 112
+                Text = 'Connection status'
+                Width = 138
                 PropertyName = 'reachable'
               end            
               item
@@ -8419,12 +8419,12 @@ object VisWaptGUI: TVisWaptGUI
             object tbUpdateFileSync: TToolButton
               Left = 186
               Top = 0
-              Caption = 'Update sync.json'
+              Caption = 'Update index'
               ImageIndex = 20
               OnClick = tbUpdateFileSyncClick
             end
             object tbSyncChangelog: TToolButton
-              Left = 284
+              Left = 264
               Top = 0
               Caption = 'Changelog'
               ImageIndex = 36

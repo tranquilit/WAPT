@@ -26,15 +26,15 @@ msgstr "Condition :"
 
 #: tformeditrule.labname.caption
 msgid "Name : "
-msgstr ""
+msgstr "Nom : "
 
 #: tformeditrule.labrepourl.caption
 msgid "Repository URL :"
-msgstr ""
+msgstr "URL du dépôt :"
 
 #: tformeditrule.labvalue.caption
 msgid "Value :"
-msgstr ""
+msgstr "Valeur : "
 
 #: tvisapropos.caption
 msgid "About WAPTConsole"
@@ -1666,14 +1666,13 @@ msgstr "Normaliser le nom des logiciels"
 
 #: tvissyncchangelog.caption
 msgid "Changelog synchronization"
-msgstr ""
+msgstr "Changelog de la synchronisation"
 
 #: tvissyncchangelog.gridchangelog.header.columns[0].text
 msgid "version"
 msgstr ""
 
 #: tvissyncchangelog.gridchangelog.header.columns[1].text
-#, fuzzy
 msgctxt "tvissyncchangelog.gridchangelog.header.columns[1].text"
 msgid "id"
 msgstr "id"
@@ -1683,25 +1682,21 @@ msgid "changelog"
 msgstr ""
 
 #: tvissyncchangelog.gridchangelog.header.columns[3].text
-#, fuzzy
 msgctxt "tvissyncchangelog.gridchangelog.header.columns[3].text"
 msgid "updated_on"
 msgstr "Modifié le"
 
 #: tvissyncchangelog.gridchangelog.header.columns[4].text
-#, fuzzy
 msgctxt "tvissyncchangelog.gridchangelog.header.columns[4].text"
 msgid "updated_by"
 msgstr "Modifié par"
 
 #: tvissyncchangelog.gridchangelog.header.columns[5].text
-#, fuzzy
 msgctxt "tvissyncchangelog.gridchangelog.header.columns[5].text"
 msgid "created_on"
 msgstr "Créé le"
 
 #: tvissyncchangelog.gridchangelog.header.columns[6].text
-#, fuzzy
 msgctxt "tvissyncchangelog.gridchangelog.header.columns[6].text"
 msgid "created_by"
 msgstr "Créé par"
@@ -2018,7 +2013,7 @@ msgstr "Répertoire des licences"
 #: tviswaptconfig.labstatusrepo.caption
 msgctxt "tviswaptconfig.labstatusrepo.caption"
 msgid "Status"
-msgstr "Status"
+msgstr "Statut de connexion"
 
 #: tviswaptconfig.labstatusserver.caption
 msgctxt "tviswaptconfig.labstatusserver.caption"
@@ -2426,7 +2421,7 @@ msgstr "Actualiser"
 
 #: tviswaptgui.actresetwebsocketconnections.caption
 msgid "Reset Websocket connections"
-msgstr "Reset des connections Websockets établies"
+msgstr "Reset des connexions Websockets établies"
 
 #: tviswaptgui.actrestoredefaultlayout.caption
 msgctxt "tviswaptgui.actrestoredefaultlayout.caption"
@@ -2929,7 +2924,6 @@ msgid "Status sync"
 msgstr "Statut synchro"
 
 #: tviswaptgui.gridagentrepo.header.columns[10].text
-#, fuzzy
 msgctxt "tviswaptgui.gridagentrepo.header.columns[10].text"
 msgid "uuid"
 msgstr "uuid"
@@ -2939,67 +2933,42 @@ msgid "status_sync_id"
 msgstr ""
 
 #: tviswaptgui.gridagentrepo.header.columns[1].text
-#, fuzzy
-#| msgid "Status"
-msgctxt "tviswaptgui.gridagentrepo.header.columns[1].text"
 msgid "Sync version"
-msgstr "Statut"
+msgstr ""
 
 #: tviswaptgui.gridagentrepo.header.columns[2].text
-#, fuzzy
-#| msgid "Status"
-msgctxt "tviswaptgui.gridagentrepo.header.columns[2].text"
 msgid "Sync status"
-msgstr "Description"
+msgstr "Statut de synchro"
 
 #: tviswaptgui.gridagentrepo.header.columns[3].text
-#, fuzzy
-#| msgid "Status"
-msgctxt "tviswaptgui.gridagentrepo.header.columns[3].text"
-msgid "status_sync_current_download"
-msgstr "Nom de l'ordinateur"
+msgid "Current download"
+msgstr "Téléchargement en cours"
 
 #: tviswaptgui.gridagentrepo.header.columns[4].text
-#, fuzzy
-#| msgid "Description"
-msgctxt "tviswaptgui.gridagentrepo.header.columns[4].text"
-msgid "Status"
-msgstr "FQDN du poste"
+msgid "Connection status"
+msgstr "Statut de connexion"
 
 #: tviswaptgui.gridagentrepo.header.columns[5].text
-#, fuzzy
-#| msgid "Computer name"
-msgctxt "tviswaptgui.gridagentrepo.header.columns[5].text"
 msgid "status_sync_progress"
-msgstr "IP"
+msgstr ""
 
 #: tviswaptgui.gridagentrepo.header.columns[6].text
-#, fuzzy
-#| msgid "Computer FQDN"
 msgctxt "tviswaptgui.gridagentrepo.header.columns[6].text"
 msgid "Description"
-msgstr "uuid"
+msgstr "Description"
 
 #: tviswaptgui.gridagentrepo.header.columns[7].text
-#, fuzzy
-#| msgid "IP"
 msgctxt "tviswaptgui.gridagentrepo.header.columns[7].text"
 msgid "Computer name"
-msgstr "uuid"
+msgstr "Nom de l'ordinateur"
 
 #: tviswaptgui.gridagentrepo.header.columns[8].text
-#, fuzzy
-#| msgid "uuid"
-msgctxt "tviswaptgui.gridagentrepo.header.columns[8].text"
 msgid "Computer FQDN"
-msgstr "uuid"
+msgstr "FQDN de l'ordinateur"
 
 #: tviswaptgui.gridagentrepo.header.columns[9].text
-#, fuzzy
-#| msgid "IP"
-msgctxt "tviswaptgui.gridagentrepo.header.columns[9].text"
 msgid "IP"
-msgstr "uuid"
+msgstr ""
 
 #: tviswaptgui.gridgroups.header.columns[0].text
 msgctxt "tviswaptgui.gridgroups.header.columns[0].text"
@@ -3406,7 +3375,7 @@ msgstr "Numéro de série"
 
 #: tviswaptgui.gridhosts.header.columns[11].text
 msgid "Last seen on"
-msgstr "Dernière connection"
+msgstr "Dernière connexion"
 
 #: tviswaptgui.gridhosts.header.columns[12].text
 msgid "Logged in users"
@@ -3992,7 +3961,7 @@ msgstr "Est remplacé par"
 
 #: tviswaptgui.gridhostwinupdates.header.columns[16].text
 msgid "Requires network"
-msgstr "Nécessite une connection réseau"
+msgstr "Nécessite une connexion réseau"
 
 #: tviswaptgui.gridhostwinupdates.header.columns[17].text
 msgctxt "tviswaptgui.gridhostwinupdates.header.columns[17].text"
@@ -5051,7 +5020,7 @@ msgstr "Ids des mises à jour remplacées"
 #: tviswaptgui.gridwuupdates.header.columns[14].text
 msgctxt "tviswaptgui.gridwuupdates.header.columns[14].text"
 msgid "requires_network_connectivity"
-msgstr "Nécessite une connection réseau"
+msgstr "Nécessite une connexion réseau"
 
 #: tviswaptgui.gridwuupdates.header.columns[15].text
 msgctxt "tviswaptgui.gridwuupdates.header.columns[15].text"
@@ -5530,7 +5499,7 @@ msgstr "Sync tous"
 
 #: tviswaptgui.tbsyncchangelog.caption
 msgid "Changelog"
-msgstr ""
+msgstr "Changelog"
 
 #: tviswaptgui.tbsyncselected.caption
 msgid "Sync selected"
@@ -5538,8 +5507,8 @@ msgstr "Sync sélectionnés"
 
 #: tviswaptgui.tbupdatefilesync.caption
 msgctxt "tviswaptgui.tbupdatefilesync.caption"
-msgid "Update sync.json"
-msgstr "Mettre à jour sync.json"
+msgid "Update index"
+msgstr "Mettre à jour l'index"
 
 #: tviswaptgui.toolbar1.caption
 msgid "ToolBar1"
@@ -5704,7 +5673,7 @@ msgstr "Ids des mises à jour remplacées"
 #: tviswuagroup.gridallowedwu.header.columns[14].text
 msgctxt "tviswuagroup.gridallowedwu.header.columns[14].text"
 msgid "requires_network_connectivity"
-msgstr "Nécessite une connection réseau"
+msgstr "Nécessite une connexion réseau"
 
 #: tviswuagroup.gridallowedwu.header.columns[15].text
 msgctxt "tviswuagroup.gridallowedwu.header.columns[15].text"
@@ -5824,7 +5793,7 @@ msgstr "Ids des mises à jour remplacées"
 #: tviswuagroup.gridforbiddenwu.header.columns[14].text
 msgctxt "tviswuagroup.gridforbiddenwu.header.columns[14].text"
 msgid "requires_network_connectivity"
-msgstr "Nécessite une connection réseau"
+msgstr "Nécessite une connexion réseau"
 
 #: tviswuagroup.gridforbiddenwu.header.columns[15].text
 msgctxt "tviswuagroup.gridforbiddenwu.header.columns[15].text"
@@ -5949,7 +5918,7 @@ msgstr "Ids des mises à jour remplacées"
 #: tviswuagroup.gridwuupdates.header.columns[14].text
 msgctxt "tviswuagroup.gridwuupdates.header.columns[14].text"
 msgid "requires_network_connectivity"
-msgstr "Nécessite une connection réseau"
+msgstr "Nécessite une connexion réseau"
 
 #: tviswuagroup.gridwuupdates.header.columns[15].text
 msgctxt "tviswuagroup.gridwuupdates.header.columns[15].text"
@@ -6294,8 +6263,8 @@ msgid "Create new rule"
 msgstr "Ajouter une règle"
 
 #: uwaptconsoleres.rscreatesyncjson
-msgid "Create sync.json"
-msgstr "Créer sync.json"
+msgid "Create index"
+msgstr "Créer l'index"
 
 #: uwaptconsoleres.rsdefaultusagestatsurl
 msgid "http://wapt.tranquil.it/usage_stats"
@@ -6559,7 +6528,7 @@ msgstr "  installation sur c:\\wapt : --setup -s"
 
 #: uwaptconsoleres.rsinvalidservercertificate
 msgid "The https server trusted certificates bundle \"%s\" can not verify the server https connection. Check your bundle"
-msgstr "Le bundle de certificats de confiance %s ne permet pas de vérifier le certificat serveur de la connection https. Vérifier votre bundle."
+msgstr "Le bundle de certificats de confiance %s ne permet pas de vérifier le certificat serveur de la connexion https. Vérifier votre bundle."
 
 #: uwaptconsoleres.rsinvalidservercertificatedir
 msgid "The https server trusted certificates bundle \"%s\" is not located in a valid directory. It should be in \"<waptbasedir>\\ssl\\server\" directory"
@@ -6837,8 +6806,8 @@ msgid "%s successfully imported."
 msgstr "%s importé avec succès."
 
 #: uwaptconsoleres.rssyncjson
-msgid "You have to first create a sync.json file"
-msgstr "Vous devez premièrement créer un fichier sync.json"
+msgid "You have to first create the index of files for the server"
+msgstr "Vous devez premièrement créer l'index des fichiers sur le serveur."
 
 #: uwaptconsoleres.rstaskcanceled
 msgctxt "uwaptconsoleres.rstaskcanceled"
@@ -6891,8 +6860,8 @@ msgstr "Version inconnue"
 
 #: uwaptconsoleres.rsupdatesyncjson
 msgctxt "uwaptconsoleres.rsupdatesyncjson"
-msgid "Update sync.json"
-msgstr "Mettre à jour sync.json"
+msgid "Update index"
+msgstr "Mettre à jour l'index"
 
 #: uwaptconsoleres.rsupdatingpackagelist
 msgctxt "uwaptconsoleres.rsupdatingpackagelist"

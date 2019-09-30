@@ -3081,16 +3081,16 @@ msgstr "Beschreibung"
 
 #: tviswaptgui.gridagentrepo.header.columns[3].text
 #, fuzzy
-#| msgid "Status"
+#| msgid "status_sync_current_download"
 msgctxt "tviswaptgui.gridagentrepo.header.columns[3].text"
-msgid "status_sync_current_download"
+msgid "Current download"
 msgstr "Beschreibung"
 
 #: tviswaptgui.gridagentrepo.header.columns[4].text
 #, fuzzy
-#| msgid "Description"
+#| msgid "Status"
 msgctxt "tviswaptgui.gridagentrepo.header.columns[4].text"
-msgid "Status"
+msgid "Connection status"
 msgstr "Beschreibung"
 
 #: tviswaptgui.gridagentrepo.header.columns[5].text
@@ -3099,9 +3099,10 @@ msgid "status_sync_progress"
 msgstr ""
 
 #: tviswaptgui.gridagentrepo.header.columns[6].text
+#, fuzzy
 msgctxt "tviswaptgui.gridagentrepo.header.columns[6].text"
 msgid "Description"
-msgstr ""
+msgstr "Beschreibung"
 
 #: tviswaptgui.gridagentrepo.header.columns[7].text
 msgctxt "tviswaptgui.gridagentrepo.header.columns[7].text"
@@ -5727,7 +5728,7 @@ msgstr ""
 
 #: tviswaptgui.tbupdatefilesync.caption
 msgctxt "tviswaptgui.tbupdatefilesync.caption"
-msgid "Update sync.json"
+msgid "Update index"
 msgstr ""
 
 #: tviswaptgui.toolbar1.caption
@@ -8427,7 +8428,7 @@ msgid "Create new rule"
 msgstr ""
 
 #: uwaptconsoleres.rscreatesyncjson
-msgid "Create sync.json"
+msgid "Create index"
 msgstr ""
 
 #: uwaptconsoleres.rsdefaultusagestatsurl
@@ -9696,7 +9697,7 @@ msgid "%s successfully imported."
 msgstr "%s Erfolgreich importiert"
 
 #: uwaptconsoleres.rssyncjson
-msgid "You have to first create a sync.json file"
+msgid "You have to first create the index of files for the server"
 msgstr ""
 
 #: uwaptconsoleres.rstaskcanceled
@@ -9750,7 +9751,7 @@ msgstr "Unbekannte Version"
 
 #: uwaptconsoleres.rsupdatesyncjson
 msgctxt "uwaptconsoleres.rsupdatesyncjson"
-msgid "Update sync.json"
+msgid "Update index"
 msgstr ""
 
 #: uwaptconsoleres.rsupdatingpackagelist
