@@ -43,9 +43,12 @@ type
     ActReloadAccounts: TAction;
     ActNewAccount: TAction;
     GridRules: TSOGrid;
+    MenuItemSync: TMenuItem;
+    MenuItemSyncForce: TMenuItem;
     PanelRules: TPanel;
     PanelAgentRepos: TPanel;
     PanelRepositories: TPanel;
+    PopupSecRepo: TPopupMenu;
     RightsActions: TActionList;
     ActRefreshHostsForPackage: TAction;
     ActTriggerWaptwua_uninstall: TAction;
@@ -938,6 +941,8 @@ type
     procedure MenuItem27Click(Sender: TObject);
     procedure MenuItem74Click(Sender: TObject);
     procedure MenuItemProductsCheckAllClick(Sender: TObject);
+    procedure MenuItemSyncClick(Sender: TObject);
+    procedure MenuItemSyncForceClick(Sender: TObject);
     procedure PopupMenuHostsPopup(Sender: TObject);
     procedure SynEditReportsSQLChange(Sender: TObject);
     procedure tbSyncAllClick(Sender: TObject);
@@ -4627,6 +4632,8 @@ begin
           Break;
         end;
   tbSyncSelected.Enabled:=Enable;
+  MenuItemSync.Enabled:=Enable;
+  MenuItemSyncForce.Enabled:=Enable;
   Enable:=False;
   for Row in GridAgentRepo.Data do
       if (Row.S['reachable'] = 'OK') and (Row.S['sync_status']<>'OK') then

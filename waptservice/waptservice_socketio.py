@@ -373,6 +373,16 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
         else:
             self.emit("synchronization_not_a_local_remote_repo")
 
+    def on_sync_remote_repo_force(self,args):
+        logger.debug('Synchronize local remote repo %s' % (args,))
+        if waptconfig.enable_remote_repo:
+            try:
+                self.task_manager.add_task(WaptSyncRepo(notifyuser=False,created_by='SERVER',local_repo_path=waptconfig.local_repo_path,srvurl=waptconfig.waptserver.server_url,speed=waptconfig.local_repo_limit_bandwidth,sio = self))
+            except Exception as e:
+                logger.debug(u'Error syncing local repo with server repo : %s' % e)
+        else:
+            self.emit("synchronization_not_a_local_remote_repo")
+
     def on_wapt_force_reconnect(self,args):
         logger.debug('Force disconnect from server... %s'% (args,))
         self.disconnect()

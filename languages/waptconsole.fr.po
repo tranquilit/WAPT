@@ -5357,6 +5357,15 @@ msgctxt "tviswaptgui.menuitemproductscheckall.caption"
 msgid "Check all"
 msgstr "Cocher tout"
 
+#: tviswaptgui.menuitemsync.caption
+msgctxt "tviswaptgui.menuitemsync.caption"
+msgid "Sync selected"
+msgstr "Synchroniser"
+
+#: tviswaptgui.menuitemsyncforce.caption
+msgid "Force sync selected"
+msgstr "Forcer la synchronisation"
+
 #: tviswaptgui.odselectinstaller.title
 msgid "Select an installer executable or msi"
 msgstr "Sélectionner un fichier d'installation exe ou msi"
@@ -5502,6 +5511,7 @@ msgid "Changelog"
 msgstr "Changelog"
 
 #: tviswaptgui.tbsyncselected.caption
+msgctxt "tviswaptgui.tbsyncselected.caption"
 msgid "Sync selected"
 msgstr "Sync sélectionnés"
 

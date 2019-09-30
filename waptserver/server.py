@@ -1248,11 +1248,12 @@ def launch_sync_on_remotes_repos():
 
         if request.json is not None:
             uuids = request.json.get('uuids',None) or None
+            force = request.json.get('force',None) or None
         else:
             uuids = None
-
+            force = None
         s = "; "
-        message = _(u'Synchronization launched for host(s) : %s' % s.join(target_for_sync(uuids)))
+        message = _(u'Synchronization launched for host(s) : %s' % s.join(target_for_sync(uuids,force)))
 
         return make_response(msg=message,success=True,request_time=time.time()-start_time)
     except Exception as e:
