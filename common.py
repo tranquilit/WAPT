@@ -2665,7 +2665,7 @@ class Wapt(BaseObjectClass):
         self.proxies = None
         self.language = setuphelpers.get_language()
         self.locales = [setuphelpers.get_language()]
-        self.maturities = ['PROD']
+        self.maturities = ['PROD','']
         # default maturity when importing or creating new package
         self.default_maturity = ''
 

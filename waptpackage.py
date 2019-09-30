@@ -2557,11 +2557,13 @@ class WaptBaseRepo(BaseObjectClass):
         """Return True if package is not in blacklist and is in whitelist if whitelist is not None
         packages_whitelist and packages_blacklist are list of package name wildcards (file style wildcards)
         blacklist is taken in account first if defined.
-        whitelist is taken in acoount if not None, else all not blacklisted package names are allowed.
+        whitelist is taken in account if not None, else all not blacklisted package names are allowed.
         """
-        if self.maturities is not None:
-            if (package.maturity == '' and not 'PROD' in self.maturities) or not package.maturity in self.maturities:
+        if self.maturities:
+            if not package.maturity in self.maturities:
                 return False
+        elif not package.maturity in ['PROD','']:
+            return False
 
         if self.packages_blacklist is not None:
             for bl in self.packages_blacklist:
@@ -2814,16 +2816,16 @@ class WaptLocalRepo(WaptBaseRepo):
     >>> localrepo.update()
     """
 
-    def __init__(self,localpath=u'/var/www/wapt',name='waptlocal',cabundle=None,config=None):
+    def __init__(self,localpath=None,name='waptlocal',cabundle=None,config=None):
         # store defaults at startup
         self._default_config.update({
-            'localpath':ensure_unicode(localpath),
+            'localpath':'',
         })
 
         WaptBaseRepo.__init__(self,name=name,cabundle=cabundle,config=None)
 
         # override defaults and config with supplied parameters
-        if self.localpath is not None:
+        if localpath is not None:
             self.localpath = ensure_unicode(localpath.rstrip(os.path.sep))
 
     @property
