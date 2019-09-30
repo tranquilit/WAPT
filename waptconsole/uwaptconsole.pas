@@ -6397,6 +6397,16 @@ begin
   ;;
 end;
 
+procedure TVisWaptGUI.MenuItemSyncClick(Sender: TObject);
+begin
+  ;;
+end;
+
+procedure TVisWaptGUI.MenuItemSyncForceClick(Sender: TObject);
+begin
+  ;;
+end;
+
 {$endif}
 
 end.

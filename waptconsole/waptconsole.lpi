@@ -312,9 +312,10 @@
       </Verbosity>
       <CustomOptions Value="-dENTERPRISE
 -dDEVMODE"/>
-      <OtherDefines Count="2">
+      <OtherDefines Count="3">
         <Define0 Value="ENTERPRISE"/>
         <Define1 Value="DEVMODE"/>
+        <Define2 Value="UseCThreads"/>
       </OtherDefines>
     </Other>
   </CompilerOptions>
