@@ -2585,11 +2585,13 @@ class WaptBaseRepo(BaseObjectClass):
         blacklist is taken in account first if defined.
         whitelist is taken in acoount if not None, else all not blacklisted package names are allowed.
         """
-        if self.maturities:
-            if not package.maturity in self.maturities:
+        if self.maturities is not None:
+            # historical special case for PROD or empty maturity
+            if package.maturity in ('','PROD'):
+                if not ('PROD' in self.maturities or '' in self.maturities):
+                    return False
+            elif not package.maturity in self.maturities:
                 return False
-        elif not package.maturity in ['PROD','']:
-            return False
 
         if self.packages_blacklist is not None:
             for bl in self.packages_blacklist:
