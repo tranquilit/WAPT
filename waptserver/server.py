@@ -66,7 +66,7 @@ from flask import request, Response, send_from_directory, session, g, redirect, 
 from peewee import *
 from playhouse.postgres_ext import *
 
-from waptserver.model import Hosts, HostSoftwares, HostPackagesStatus, HostGroups,HostWsus,WsusUpdates,Packages,SiteRules, SyncStatus
+from waptserver.model import Hosts, HostSoftwares, HostPackagesStatus, HostGroups, HostWsus, WsusUpdates, Packages
 from waptserver.model import get_db_version, init_db, wapt_db, model_to_dict, update_host_data
 from waptserver.model import upgrade_db_structure
 from waptserver.model import load_db_config
@@ -90,7 +90,6 @@ from waptserver.common import make_response,make_response_from_exception
 from waptserver.app import app
 from waptserver.auth import check_auth,change_admin_password
 from waptserver.decorators import requires_auth,check_auth_is_provided,authenticate,gzipped
-from waptserver.sync import update_file_tree_of_files
 
 import waptserver.config
 
@@ -128,14 +127,16 @@ babel = Babel(app)
 logger = logging.getLogger()
 
 try:
-    from waptenterprise.waptserver import wsus,enterprise,store
+    from waptenterprise.waptserver import wsus,enterprise,store,repositories
     app.register_blueprint(wsus.wsus)
     app.register_blueprint(enterprise.enterprise)
     app.register_blueprint(store.store)
+    app.register_blueprint(repositories.repositories)
 
 except Exception as e:
     logger.info(str(e))
     wsus = False
+    repositories = False
 
 @app.teardown_request
 def _db_close(error):
@@ -808,9 +809,11 @@ def upload_packages():
             pass
 
         g.packages = None
-        if app.conf.get('remote_repo_support'):
-            update_file_tree_of_files(os.path.join(os.path.abspath(os.path.join(app.conf['wapt_folder'], os.pardir)),'Sync.json'),[os.path.join(app.conf['wapt_folder']),os.path.join(app.conf['wapt_folder'])+'wua'])
-            target_for_sync()
+
+
+        if repositories and app.conf.get('remote_repo_support'):
+            repositories.update_file_tree_of_files(os.path.join(os.path.abspath(os.path.join(app.conf['wapt_folder'], os.pardir)),'Sync.json'),[os.path.join(app.conf['wapt_folder']),os.path.join(app.conf['wapt_folder'])+'wua'])
+            repositories_socketio.target_for_sync()
 
         spenttime = time.time() - starttime
         return make_response(success=len(errors) == 0 and len(done)>0,
@@ -933,9 +936,10 @@ def upload_waptsetup():
                 else:
                     os.rename(tmp_target, target)
                     result = dict(status='OK', message=_('{} uploaded').format((filename,)))
-                    if app.conf.get('remote_repo_support'):
-                        update_file_tree_of_files(os.path.join(os.path.abspath(os.path.join(app.conf['wapt_folder'], os.pardir)),'Sync.json'),[os.path.join(app.conf['wapt_folder']),os.path.join(app.conf['wapt_folder'])+'wua'])
-                        target_for_sync()
+
+                    if repositories and app.conf.get('remote_repo_support'):
+                        repositories.update_file_tree_of_files(os.path.join(os.path.abspath(os.path.join(app.conf['wapt_folder'], os.pardir)),'Sync.json'),[os.path.join(app.conf['wapt_folder']),os.path.join(app.conf['wapt_folder'])+'wua'])
+                        repositories_socketio.target_for_sync()
 
             else:
                 result = dict(status='ERROR', message=_('Wrong file name (version conflict?)'))
@@ -1089,9 +1093,11 @@ def packages_delete():
     else:
         pass
     msg = ['%s packages deleted' % len(deleted)]
-    if app.conf.get('remote_repo_support'):
-        update_file_tree_of_files(os.path.join(os.path.abspath(os.path.join(app.conf['wapt_folder'], os.pardir)),'Sync.json'),[os.path.join(app.conf['wapt_folder']),os.path.join(app.conf['wapt_folder'])+'wua'])
-        target_for_sync()
+
+    if repositories and app.conf.get('remote_repo_support'):
+        repositories.update_file_tree_of_files(os.path.join(os.path.abspath(os.path.join(app.conf['wapt_folder'], os.pardir)),'Sync.json'),[os.path.join(app.conf['wapt_folder']),os.path.join(app.conf['wapt_folder'])+'wua'])
+        repositories_socketio.target_for_sync()
+
     if errors:
         msg.append('ERROR : %s packages could not be deleted' % len(errors))
     return make_response(result=result, msg='\n'.join(msg), status=200)
@@ -1123,16 +1129,6 @@ def serve_icons(iconfilename):
         r.headers.add_header(
             'content-length', int(os.path.getsize(os.path.join(icons_folder, iconfilename))))
     return r
-
-@app.route('/sync.json')
-def serve_sync():
-    """Serves sync"""
-    r=send_from_directory(os.path.abspath(os.path.join(app.conf['wapt_folder'], os.pardir)),'sync.json')
-    if 'content-length' not in r.headers:
-        r.headers.add_header(
-            'content-length', int(os.path.join(os.path.abspath(os.path.join(app.conf['wapt_folder'], os.pardir)),'sync.json')))
-    return r
-
 
 @app.route('/static/css/<string:fn>')
 @app.route('/static/fonts/<string:fn>')
@@ -1195,7 +1191,6 @@ def ping():
         )
     )
 
-
 @app.route('/api/v3/reset_hosts_sid', methods=['GET','HEAD','POST'])
 @requires_auth
 def reset_hosts_sid():
@@ -1233,31 +1228,6 @@ def reset_hosts_sid():
     except Exception as e:
         return make_response_from_exception(e)
     return make_response(msg=message)
-
-
-@app.route('/api/v3/launch_sync_on_remotes_repos',methods=['GET','HEAD','POST'])
-@requires_auth
-def launch_sync_on_remotes_repos():
-    """Launch sync on remotes repositories"""
-    start_time = time.time()
-    try:
-        if not socketio:
-            raise Exception('socketio unavailable')
-
-        #in case a POST is issued with a selection of uuids to launch sync
-
-        if request.json is not None:
-            uuids = request.json.get('uuids',None) or None
-            force = request.json.get('force',None) or None
-        else:
-            uuids = None
-            force = None
-        s = "; "
-        message = _(u'Synchronization launched for host(s) : %s' % s.join(target_for_sync(uuids,force)))
-
-        return make_response(msg=message,success=True,request_time=time.time()-start_time)
-    except Exception as e:
-        return make_response_from_exception(e)
 
 @app.route('/api/v3/trigger_wakeonlan', methods=['HEAD','POST'])
 @requires_auth
@@ -1393,193 +1363,6 @@ def get_ad_ou():
         message = 'AD OU DN List'
         return make_response(result=result, msg=message, request_time=time.time() - starttime)
 
-    except Exception as e:
-        return make_response_from_exception(e)
-
-@app.route('/api/v3/get_repo_url',methods=['HEAD','POST'])
-def get_repo_url():
-    """
-    """
-    rules = list(SiteRules.select().order_by(SiteRules.sequence.asc()).dicts())
-    res = {}
-    res['REPO_URL'] = ''
-    r = request.data
-    if request.data is not None:
-        r = ujson.loads(zlib.decompress(r))
-        for rule in rules:
-            try:
-                if ((rule['condition'] == 'AGENT IP') and (ipaddress.ip_address(r.get('Agent IP')) in ipaddress.ip_network(rule['value']))) or ((rule['condition'] == 'DOMAIN') and (r.get('domain') == rule['value'])) or ((rule['condition'] == 'HOSTNAME') and fnmatch.fnmatch(r.get('hostname'),rule['value'])) or ((rule['condition'] == 'PUBLIC IP') and (ipaddress.ip_address(request.remote_addr) in ipaddress.ip_network(rule['value']))) or ((rule['condition'] == 'SITE') and (rule['value'] == r.get('site'))):
-                    res['REPO_URL'] = rule['repo_url']
-            except:
-                pass
-    return jsondump(res)
-
-@app.route('/api/v3/get_all_rules')
-@requires_auth
-def get_all_rules():
-    """
-    Get all rules (rules for the agent to select a repo_url) from the DB
-    """
-    start_time = time.time()
-    try:
-        rules = list(SiteRules.select().order_by(SiteRules.sequence.asc()).dicts())
-        return make_response(result=rules, success=True, request_time = time.time() - start_time )
-    except Exception as e:
-        return make_response_from_exception(e)
-
-@app.route('/api/v3/get_all_agentrepos')
-@requires_auth
-def get_all_agentrepos():
-    """
-    Get all agent who are secondary repository
-    """
-    start_time = time.time()
-    try:
-        where_clause = Hosts.wapt_status.contains({'is_remote_repo':True})
-        list_agent_repo=list(Hosts.select(Hosts.uuid,Hosts.reachable,Hosts.computer_fqdn,Hosts.description,Hosts.computer_name,SQL("host_info ->> 'main_ip' AS main_ip"),SQL("wapt_status ->> 'status_remote_repo' AS status_remote_repo"), SQL("wapt_status ->> 'status_sync_version' AS status_sync_version"),SQL("wapt_status ->> 'status_sync_progress' AS status_sync_progress"),SQL("wapt_status ->> 'status_sync_id' AS status_sync_id"),SQL("wapt_status ->> 'status_sync_current_download' AS status_sync_current_download")).where(where_clause).dicts())
-        return make_response(result=list_agent_repo,success=True,request_time = time.time() - start_time)
-    except Exception as e:
-        return make_response_from_exception(e)
-
-@app.route('/api/v3/get_sync_version')
-@requires_auth
-def get_sync_version():
-    """
-    Get sync.json version if there is no sync.json return {version : null}
-    """
-    start_time = time.time()
-    try:
-        if os.path.isfile(os.path.join(os.path.abspath(os.path.join(app.conf['wapt_folder'], os.pardir)),'sync.json')):
-            try:
-                version = int(SyncStatus.select(fn.MAX(SyncStatus.version)).scalar())
-                id = int(SyncStatus.select(fn.MIN(SyncStatus.id)).scalar())
-            except:
-                version = -1
-                id = 0
-        else:
-            version = -1
-            id = 0
-        data = {'version':version,'id': id}
-        return make_response(result=data,success=True,request_time = time.time() - start_time)
-    except Exception as e:
-        return make_response_from_exception(e)
-
-@app.route('/api/v3/get_sync_changelog')
-@requires_auth
-def get_sync_changelog():
-    """
-    """
-    start_time = time.time()
-    try:
-        data = list(SyncStatus.select().dicts())
-        return make_response(result=data,success=True,request_time = time.time() - start_time)
-    except Exception as e:
-        return make_response_from_exception(e)
-
-@app.route('/api/v3/add_rule',methods=['HEAD','POST'])
-@requires_auth
-def add_rule():
-    """
-    Add a new rule for repo_url in the DB
-    """
-    start_time = time.time()
-    try:
-        data = ujson.loads(request.data)
-        data['updated_by']=request.authorization.username
-        data['updated_on']=datetime.datetime.now()
-        data['created_by']=request.authorization.username
-        data['created_on']=datetime.datetime.now()
-        idprev=data.pop('id_prev',None)
-        if idprev:
-            curseq=int(model_to_dict(SiteRules.get_by_id(idprev))['sequence'])
-            q = SiteRules.update(sequence=(SiteRules.sequence+1),updated_by=request.authorization.username,updated_on=datetime.datetime.now()).where(SiteRules.sequence>=curseq).execute()
-            data['sequence']=curseq
-        else:
-            data['sequence']=1
-            q = SiteRules.update(sequence=(SiteRules.sequence+1),updated_by=request.authorization.username,updated_on=datetime.datetime.now()).where(SiteRules.sequence>0).execute()
-        result=model_to_dict(SiteRules.create(**data))
-        return make_response(result=result, success=True, request_time = time.time() - start_time )
-    except Exception as e:
-        return make_response_from_exception(e)
-
-@app.route('/api/v3/remove_rule',methods=['HEAD','POST'])
-@requires_auth
-def remove_rule():
-    """
-    Delete a rule for repo_url in the DB
-    """
-    start_time = time.time()
-    try:
-        idtoremove = int(request.data)
-        curseq=int(model_to_dict(SiteRules.get_by_id(idtoremove))['sequence'])
-        q = SiteRules.update(sequence=(SiteRules.sequence-1),updated_by=request.authorization.username,updated_on=datetime.datetime.now()).where(SiteRules.sequence>curseq)
-        q.execute()
-        query = SiteRules.delete().where(SiteRules.id == idtoremove)
-        result=query.execute()
-        return make_response(result=result, success=True, request_time = time.time() - start_time )
-    except Exception as e:
-        return make_response_from_exception(e)
-
-@app.route('/api/v3/modify_rule',methods=['HEAD','POST'])
-@requires_auth
-def modify_rule():
-    """
-    Modify informations of a rule
-    """
-    start_time = time.time()
-    try:
-        data = ujson.loads(request.data)
-        data['updated_by']=request.authorization.username
-        data['updated_on']=datetime.datetime.now()
-        result=SiteRules.update(updated_by=data['updated_by'],updated_on=data['updated_on'],name=data['name'],condition=data['condition'],repo_url=data['repo_url'],value=data['value']).where(SiteRules.id == data['id']).execute()
-        return make_response(result=result, success=True, request_time = time.time() - start_time )
-    except Exception as e:
-        return make_response_from_exception(e)
-
-@app.route('/api/v3/modify_rules_order',methods=['HEAD','POST'])
-@requires_auth
-def modify_rules_order():
-    """
-    Modify order of rules
-    """
-    start_time = time.time()
-    try:
-        data = ujson.loads(request.data)
-        seq=int(model_to_dict(SiteRules.get_by_id(data['id']))['sequence'])
-        if data['ascordesc']=='desc':
-            seqtochange=seq+1
-        elif data['ascordesc']=='asc':
-            seqtochange=seq-1
-        else:
-            return make_response(result=None,success=False, request_time = time.time() - start_time)
-        idtochange=int(model_to_dict(SiteRules.select(SiteRules.id).where(SiteRules.sequence == seqtochange).get())['id'])
-        rule={}
-        ruletochange={}
-        rule['sequence']=seqtochange
-        ruletochange['sequence']=seq
-        rule['updated_by']=request.authorization.username
-        ruletochange['updated_by']=request.authorization.username
-        rule['updated_on']=datetime.datetime.now()
-        ruletochange['updated_on']=datetime.datetime.now()
-        SiteRules.set_by_id(int(idtochange),ruletochange)
-        SiteRules.set_by_id(int(data['id']),rule)
-        return make_response(result=None, success=True, request_time = time.time() - start_time )
-    except Exception as e:
-        return make_response_from_exception(e)
-
-@app.route('/api/v3/createupdatefilesync')
-@requires_auth
-def get_createupdatefilesync():
-    """
-    Create or update the file sync.json
-    """
-    start_time = time.time()
-    result=update_file_tree_of_files(os.path.join(os.path.abspath(os.path.join(app.conf['wapt_folder'], os.pardir)),'sync.json'),[os.path.join(app.conf['wapt_folder']),os.path.join(app.conf['wapt_folder'])+'wua'],request.authorization.username)
-    result['time']=time.time()-start_time
-    result['success']=True
-    result=json.dumps(result)
-    try:
-        return Response(result,mimetype='application/json')
     except Exception as e:
         return make_response_from_exception(e)
 
@@ -2333,12 +2116,17 @@ if __name__ == '__main__':
     app.config['APPLICATION_ROOT'] = app.conf.get('application_root','')
 
     # monkey patch for greenlet and define a socketio on top of app
-    from waptserver.server_socketio import socketio,proxy_host_request,target_for_sync
+    from waptserver.server_socketio import socketio,proxy_host_request
 
     if wsus:
         # add socketio targets to trigger wsus actions on hosts
         from waptenterprise.waptserver import wsus_socketio
         app.register_blueprint(wsus_socketio.wsus_socketio)
+
+    if repositories:
+        # add socketio targets to trigger repositories actions on hosts
+        from waptenterprise.waptserver import repositories_socketio
+        app.register_blueprint(repositories_socketio.repositories_socketio)
 
     logger.info(u'Load database configuration')
     load_db_config(app.conf)
