@@ -8,7 +8,7 @@ After=postgresql-9.4.service
 Type=simple
 User=wapt
 WorkingDirectory=/opt/wapt
-ExecStart=/opt/wapt/bin/python /opt/wapt/waptserver/wapthuey.py waptenterprise.waptserver.wsus_tasks.huey -w 2 -k thread
+ExecStart=/opt/wapt/bin/python /opt/wapt/waptserver/wapthuey.py tasks_common.huey -w 2 -k thread
 Restart=on-failure
 Environment=PYTHONHOME=/opt/wapt
 Environment=PYTHONPATH=/opt/wapt
