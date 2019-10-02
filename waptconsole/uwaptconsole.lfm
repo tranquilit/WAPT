@@ -12408,6 +12408,8 @@ object VisWaptGUI: TVisWaptGUI
     top = 384
   end
   object DBOrgUnits: TBufDataset
+    PacketRecords = -1
+    IndexFieldNames = 'Description'
     FieldDefs = <>
     Filtered = True
     OnFilterRecord = DBOrgUnitsFilterRecord
