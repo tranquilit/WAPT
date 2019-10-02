@@ -55,8 +55,9 @@ uses uWaptConsoleRes;
 procedure ShowLoadWait(Msg: String; Progress: Integer; MaxProgress: Integer);
 begin
   if VisLoading = Nil then
-      VisLoading := TVisLoading.Create(Application);
-  VisLoading.Show;
+      VisLoading := TVisLoading.Create(Application.MainForm);
+  if not VisLoading.Visible  then
+    VisLoading.Show;
   inc(VisLoading.ShowCount);
   VisLoading.ProgressStep(Progress,MaxProgress);
   VisLoading.ProgressTitle(Msg);
@@ -112,8 +113,9 @@ begin
   AMessage.Caption := Title;
   if ForceRefresh or ((Now-LastUpdate)*3600*24>=0.5) then
   begin
+    if not Visible then
+      Show;
     Application.ProcessMessages;
-    ShowOnTop;
     LastUpdate:=Now;
   end;
 end;
@@ -126,7 +128,8 @@ begin
   AProgressBar.position:=step;
   if ForceRefresh or ((Now-LastUpdate)*3600*24>=0.5) then
   begin
-    ShowOnTop;
+    if not Visible then
+      Show;
     Application.ProcessMessages;
     LastUpdate:=Now;
   end;
@@ -134,9 +137,9 @@ end;
 
 procedure TVisLoading.Start(Max: Integer);
 begin
+  ShowOnTop;
   AProgressBar.position:=0;
   AProgressBar.Max:=Max;
-  ShowOnTop;
   Application.ProcessMessages;
   LastUpdate:=Now;
 end;
@@ -144,9 +147,9 @@ end;
 procedure TVisLoading.Finish;
 begin
   AProgressBar.position:=AProgressBar.Max;
-  ShowOnTop;
   Application.ProcessMessages;
   LastUpdate:=Now;
+  Hide;
 end;
 
 procedure TVisLoading.DoProgress(Sender: TObject);
@@ -157,11 +160,12 @@ begin
   // update screen only every half second
   if (Now-LastUpdate)*3600*24>=0.5 then
   begin
+    if not Visible then
+      Show;
     if AProgressBar.position >= AProgressBar.Max then
         AProgressBar.position := AProgressBar.Min
     else
       AProgressBar.position := AProgressBar.position+1;
-    ShowOnTop;
     Application.ProcessMessages;
     LastUpdate:=Now;
   end;
