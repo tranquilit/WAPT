@@ -1989,7 +1989,7 @@ class WaptServer(BaseObjectClass):
             if user:
                 password = getpass.getpass('Password: ')
                 if user and password:
-                    return (user,password)
+                    return (ensure_unicode(user).encode('utf8'),ensure_unicode(password).encode('utf8'))
                 else:
                     return None
         else:

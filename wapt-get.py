@@ -294,7 +294,7 @@ def ask_user_password(title=''):
             user = 'admin'
         if password is None or password == '':
             password = getpass.getpass('Password:')
-    return (user,password)
+    return (ensure_unicode(user).encode('utf8'),ensure_unicode(password).encode('utf8'))
 
 # import after parsing command line, as import when debugging seems to break command line
 # because if rpyc
