@@ -103,7 +103,7 @@ interface
       OnHTTPWork:TWorkEvent=Nil;
       DataStream:TStream=Nil):RawByteString;
 
-  function GetReachableIP(IPS:ISuperObject;port:word;Timeout:Integer=200):String;
+  function GetReachableIP(IPS:ISuperObject;port:word;Timeout:Integer=3000):String;
 
   //return ip for waptservice
   function WaptServiceReachableIP(UUID:String;hostdata:ISuperObject=Nil):String;
@@ -2207,7 +2207,7 @@ begin
   StringToFile(AppendPathDelim(wapt_base_dir) + 'waptupgrade\waptagent.sha256',SHA256Hash(Result)+'  waptagent.exe');
 end;
 
-function GetReachableIP(IPS:ISuperObject;port:word;Timeout:Integer=200):String;
+function GetReachableIP(IPS:ISuperObject;port:word;Timeout:Integer=3000):String;
 var
   IP:ISuperObject;
 begin
