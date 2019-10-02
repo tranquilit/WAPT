@@ -1440,6 +1440,7 @@ end;
 
 procedure TVisWaptGUI.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 var
+  i: Integer;
   ini : TIniFile;
   last_usage_report : TDateTime;
   stats: ISuperObject;
@@ -1458,6 +1459,12 @@ begin
   try
     for CB in VarArrayOf([cbAdvancedSearch,cbSearchAll,cbSearchDMI,cbSearchHost,cbSearchPackages,cbSearchSoftwares,cbReachable]) do
       ini.WriteBool(self.name,CB.Name,TCheckBox(CB).Checked);
+
+    for i:=0 to cbFilterPackagesLocales.Items.Count-1 do
+      ini.WriteBool(self.Name,cbFilterPackagesLocales.Items[i],cbFilterPackagesLocales.Checked[i]);
+
+    for i:=0 to cbFilterPackagesArch.Items.Count-1 do
+      ini.WriteBool(self.Name,cbFilterPackagesArch.Items[i],cbFilterPackagesArch.Checked[i]);
 
     ini.WriteInteger(self.name,'HostsLimit',HostsLimit);
     ini.WriteInteger(self.name,HostPages.Name+'.width',HostPages.Width);
@@ -4231,6 +4238,11 @@ begin
   WaptServerUser := IniReadString(Appuserinipath,self.name,'lastwaptserveruser','admin');
   HostsLimit := 2000;
   DMPython.PythonOutput.OnSendData := @PythonOutputSendData;
+  cbFilterPackagesArch.Checked[0] := False;
+  cbFilterPackagesArch.Checked[1] := True;
+  if cbFilterPackagesLocales.Items.IndexOf(Language)>=0 then
+    cbFilterPackagesLocales.Checked[cbFilterPackagesLocales.Items.IndexOf(Language)] := True;
+
 end;
 
 procedure TVisWaptGUI.FormDestroy(Sender: TObject);
@@ -4413,6 +4425,7 @@ end;
 
 procedure TVisWaptGUI.FormShow(Sender: TObject);
 var
+  i: Integer;
   sores: ISuperObject;
   CB:TComponent;
   ini:TIniFile;
@@ -4467,6 +4480,13 @@ begin
       try
         for CB in VarArrayOf([cbAdvancedSearch,cbSearchAll,cbSearchDMI,cbSearchHost,cbSearchPackages,cbSearchSoftwares,cbReachable]) do
           TCheckBox(CB).Checked := ini.ReadBool(self.Name,CB.Name,TCheckBox(CB).Checked);
+
+        for i:=0 to cbFilterPackagesLocales.Items.Count-1 do
+          cbFilterPackagesLocales.Checked[i] := ini.ReadBool(self.Name,cbFilterPackagesLocales.Items[i],cbFilterPackagesLocales.Checked[i]);
+
+        for i:=0 to cbFilterPackagesArch.Items.Count-1 do
+          cbFilterPackagesArch.Checked[i] := ini.ReadBool(self.Name,cbFilterPackagesArch.Items[i],cbFilterPackagesArch.Checked[i]);
+
 
         HostsLimit := ini.ReadInteger(self.name,'HostsLimit',2000);
         //ShowMessage(Appuserinipath+'/'+self.Name+'/'+EdHostsLimit.Name+'/'+ini.ReadString(name,EdHostsLimit.Name,'not found'));
