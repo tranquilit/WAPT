@@ -812,7 +812,7 @@ def upload_packages():
 
 
         if repositories and app.conf.get('remote_repo_support'):
-            repositories.update_file_tree_of_files(os.path.join(os.path.abspath(os.path.join(app.conf['wapt_folder'], os.pardir)),'Sync.json'),[os.path.join(app.conf['wapt_folder']),os.path.join(app.conf['wapt_folder'])+'wua'],emit_websocket=True)
+            repositories.update_file_tree_of_files(os.path.join(os.path.abspath(os.path.join(app.conf['wapt_folder'], os.pardir)),'sync.json'),[os.path.join(app.conf['wapt_folder']),os.path.join(app.conf['wapt_folder'])+'wua'],emit_websocket=True,username=request.authorization.username)
 
         spenttime = time.time() - starttime
         return make_response(success=len(errors) == 0 and len(done)>0,
@@ -937,7 +937,7 @@ def upload_waptsetup():
                     result = dict(status='OK', message=_('{} uploaded').format((filename,)))
 
                     if repositories and app.conf.get('remote_repo_support'):
-                        repositories.update_file_tree_of_files(os.path.join(os.path.abspath(os.path.join(app.conf['wapt_folder'], os.pardir)),'Sync.json'),[os.path.join(app.conf['wapt_folder']),os.path.join(app.conf['wapt_folder'])+'wua'],emit_websocket=True)
+                        repositories.update_file_tree_of_files(os.path.join(os.path.abspath(os.path.join(app.conf['wapt_folder'], os.pardir)),'sync.json'),[os.path.join(app.conf['wapt_folder']),os.path.join(app.conf['wapt_folder'])+'wua'],emit_websocket=True,username=request.authorization.username)
 
             else:
                 result = dict(status='ERROR', message=_('Wrong file name (version conflict?)'))
@@ -1093,7 +1093,7 @@ def packages_delete():
     msg = ['%s packages deleted' % len(deleted)]
 
     if repositories and app.conf.get('remote_repo_support'):
-        repositories.update_file_tree_of_files(os.path.join(os.path.abspath(os.path.join(app.conf['wapt_folder'], os.pardir)),'Sync.json'),[os.path.join(app.conf['wapt_folder']),os.path.join(app.conf['wapt_folder'])+'wua'],emit_websocket=True)
+        repositories.update_file_tree_of_files(os.path.join(os.path.abspath(os.path.join(app.conf['wapt_folder'], os.pardir)),'sync.json'),[os.path.join(app.conf['wapt_folder']),os.path.join(app.conf['wapt_folder'])+'wua'],emit_websocket=True,username=request.authorization.username)
 
     if errors:
         msg.append('ERROR : %s packages could not be deleted' % len(errors))
