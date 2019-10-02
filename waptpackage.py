@@ -2400,10 +2400,12 @@ class WaptBaseRepo(BaseObjectClass):
         self._packages = None
         self._index = {}
         self._packages_date = None
+        self._cabundle = None
+        self._public_certs_dir = ''
+        self._index_config_fingerprint = None
+
         self.discarded = []
         self.check_certificates_validity = None
-        self.public_certs_dir = None
-        self.cabundle = None
 
         self.packages_whitelist = None
         self.packages_blacklist = None
@@ -2412,13 +2414,32 @@ class WaptBaseRepo(BaseObjectClass):
 
         self.load_config(config=config)
 
-        if self.public_certs_dir:
-            self.cabundle = SSLCABundle()
-            self.cabundle.add_pems(self.public_certs_dir)
-
         # if not None, control's signature will be check against this certificates list
         if cabundle is not None:
-            self.cabundle = cabundle
+            self._cabundle = cabundle
+
+
+    @property
+    def public_certs_dir(self):
+        return self._public_certs_dir
+
+    @public_certs_dir.setter
+    def public_certs_dir(self,value):
+        if value != self._public_certs_dir:
+            self._cabundle =  None
+            self._public_certs_dir = value
+
+    @property
+    def cabundle(self):
+        if self._cabundle is not None:
+            return self._cabundle
+        elif self.public_certs_dir:
+            if self._cabundle is None:
+                self._cabundle = SSLCABundle()
+                self._cabundle.add_pems(self.public_certs_dir)
+            return self._cabundle
+        else:
+            return None
 
     def load_config(self,config=None,section=None):
         """Load configuration from inifile section.
@@ -2462,8 +2483,17 @@ class WaptBaseRepo(BaseObjectClass):
 
         if config.has_option(section,'maturities'):
             self.maturities = ensure_list(config.get(section,'maturities'),allow_none=True)
+            if not self.maturities:
+                self.maturities = None
+
+        if self.config_fingerprint() != self._index_config_fingerprint:
+            self.invalidate_packages_cache()
 
         return self
+
+    def config_fingerprint(self):
+        config_attributes = ['_packages_date','public_certs_dir','check_certificates_validity','packages_whitelist','packages_blacklist','maturities','repo_url','localpath','proxies']
+        return hashlib.sha256(''.join(['%s' % getattr(self,a) for a in config_attributes if hasattr(self,a)])).hexdigest()
 
     def load_config_from_file(self,config_filename,section=None):
         """Load repository configuration from an inifile located at config_filename
@@ -2543,6 +2573,7 @@ class WaptBaseRepo(BaseObjectClass):
         self._packages_date = None
         self._index = {}
         self.discarded = []
+        self._index_config_fingerprint = None
         return old_status
 
     def update(self):
@@ -2552,6 +2583,8 @@ class WaptBaseRepo(BaseObjectClass):
             None
         """
         self._load_packages_index()
+        self._index_config_fingerprint = self.config_fingerprint()
+
 
     def is_locally_allowed_package(self,package):
         """Return True if package is not in blacklist and is in whitelist if whitelist is not None
@@ -2586,8 +2619,11 @@ class WaptBaseRepo(BaseObjectClass):
         To force the reload, call invalidate_index_cache() first or update()
 
         """
+        if self._index_config_fingerprint != self.config_fingerprint():
+            self.invalidate_packages_cache()
         if self._packages is None:
             self._load_packages_index()
+            self._index_config_fingerprint = self.config_fingerprint()
         return self._packages
 
     def packages_date(self):
@@ -2598,6 +2634,8 @@ class WaptBaseRepo(BaseObjectClass):
         """
         if self._packages is None:
             self._load_packages_index()
+            self._index_config_fingerprint = self.config_fingerprint()
+
         return self._packages_date
 
     def is_available(self):
@@ -2624,22 +2662,29 @@ class WaptBaseRepo(BaseObjectClass):
         >>> isinstance(res,bool)
         True
         """
+        # config has changed
+        if self._index_config_fingerprint != self.config_fingerprint():
+            return True
+
+        # package_date is unknown
         if not last_modified and not self._packages_date:
             logger.debug(u'need_update : no last_modified date provided, update is needed')
             return True
-        else:
-            if not last_modified:
-                last_modified = self._packages_date
-            if last_modified:
-                logger.debug(u'Check last-modified header for %s to avoid unecessary update' % (self.name,))
-                current_update = self.is_available()
-                if current_update == last_modified:
-                    logger.info(u'Index from %s has not been updated (last update %s), skipping update' % (self.name,current_update))
-                    return False
-                else:
-                    return True
+
+        if not last_modified:
+            last_modified = self._packages_date
+
+        # check if remote packages index date has been changed
+        if last_modified:
+            logger.debug(u'Check last-modified header for %s to avoid unecessary update' % (self.name,))
+            current_update = self.is_available()
+            if current_update == last_modified:
+                logger.info(u'Index from %s has not been updated (last update %s), skipping update' % (self.name,current_update))
+                return False
             else:
                 return True
+        else:
+            return True
 
     def search(self,searchwords = [],sections=[],newest_only=False,exclude_sections=[],description_locale=None,
             host_capabilities=None,package_request=None):
@@ -2778,6 +2823,8 @@ class WaptBaseRepo(BaseObjectClass):
         # ensure packages is loaded
         if self._packages is None:
             self._load_packages_index()
+            self._index_config_fingerprint = self.config_fingerprint()
+
         return self._index.__iter__()
 
 
@@ -2787,12 +2834,16 @@ class WaptBaseRepo(BaseObjectClass):
         # ensure packages is loaded
         if self._packages is None:
             self._load_packages_index()
+            self._index_config_fingerprint = self.config_fingerprint()
+
         return self._index[packagename]
 
     def get(self,packagename,default=None):
         # ensure packages is loaded
         if self._packages is None:
             self._load_packages_index()
+            self._index_config_fingerprint = self.config_fingerprint()
+
         return self._index.get(packagename,default)
 
     def as_dict(self):
@@ -2801,11 +2852,14 @@ class WaptBaseRepo(BaseObjectClass):
             'packages_whitelist':self.packages_whitelist,
             'packages_blacklist':self.packages_blacklist,
             'check_certificates_validity':self.check_certificates_validity,
-            'authorized_certificates':([dict(c) for c in self.cabundle.certificates()] if self.cabundle else None),
+            'authorized_certificates':self.authorized_certificates,
+            'maturities':self.maturities,
              }
         return result
 
-
+    @property
+    def authorized_certificates(self):
+        return [[dict(c) for c in self.cabundle.certificates()] if self.cabundle else None]
 
 class WaptLocalRepo(WaptBaseRepo):
     """Index of Wapt local repository.
@@ -3199,10 +3253,17 @@ class WaptRemoteRepo(WaptBaseRepo):
         # create additional properties
         self._repo_url = None
         self.http_proxy = None
+
+        # path to directory of PEM ca files or path to a PME bundle file
         self.verify_cert = None
 
+        # path to the client auth pem encoded X509 cert if needed
         self.client_certificate = None
+        # path to the client auth pem encoded RSA private key if needed
         self.client_private_key = None
+        # password callback to get private key password
+        # this tales 2 str parameters to inform user or callback about target key and usage
+        #    location, identity
         self.private_key_password_callback = None
 
         self.timeout = None
@@ -3232,6 +3293,12 @@ class WaptRemoteRepo(WaptBaseRepo):
             return None
 
     def get_requests_session(self,url=None):
+        """Returns a requests session object with optional ssl client side auth and proxies
+
+        Returns:
+            requests.Session
+
+        """
         if url is None:
             url = self.repo_url
         if self.client_private_key and is_pem_key_encrypted(self.client_private_key):
@@ -3248,6 +3315,12 @@ class WaptRemoteRepo(WaptBaseRepo):
 
     @property
     def proxies(self):
+        """dict for http proxies url suitable for requests based on the http_proxy repo attribute
+
+        Returns:
+            dict: {'http':'http://proxy:port','https':'http://proxy:port'}
+        """
+
         if self.http_proxy:
             return {'http':self.http_proxy,'https':self.http_proxy}
         else:
@@ -3255,6 +3328,10 @@ class WaptRemoteRepo(WaptBaseRepo):
 
     @repo_url.setter
     def repo_url(self,value):
+        """Set the repo_url
+        invalidate local packages list cache if it differs from previous one
+
+        """
         if value:
             value = value.rstrip('/')
 
@@ -3265,15 +3342,17 @@ class WaptRemoteRepo(WaptBaseRepo):
     def load_config(self,config=None,section=None):
         """Load waptrepo configuration from inifile section.
 
-                Use name of repo as section name if section is not provided.
-                Use 'global' if no section named section in ini file
+        Use name of repo as section name if section is not provided.
+
+        Use 'global' if no section named section in ini file
+
         Args:
             config (RawConfigParser): ini configuration
             section (str)           : section where to loads parameters
                                       defaults to name of repository
 
         Returns:
-            WaptRemoteRepo: return itself to chain calls.
+            WaptRemoteRepo: return itself for chain calls.
         """
         if not section:
              section = self.name
@@ -3330,7 +3409,10 @@ class WaptRemoteRepo(WaptBaseRepo):
         return self.repo_url + '/Packages'
 
     def client_auth(self):
-        """Return SSL pair (cert,key) filenames for client side SSL auth
+        """Return SSL trio filenames for client side SSL auth
+
+        Returns:
+            tuple: (cert filename,key filename,key pwd)
         """
         if self.client_certificate and os.path.isfile(self.client_certificate):
             if self.client_private_key is None:
@@ -3467,12 +3549,8 @@ class WaptRemoteRepo(WaptBaseRepo):
             _packages_index_date = httpdatetime2datetime(packages_last_modified)
             return (str(packages_answer.content),_packages_index_date)
 
-    def packages(self):
-        if self._packages is None:
-            self._load_packages_index()
-        return self._packages
-
     def as_dict(self):
+        """returns a dict representation of the repository configuration and parameters"""
         result = super(WaptRemoteRepo,self).as_dict()
         result.update({
             'repo_url':self._repo_url,
