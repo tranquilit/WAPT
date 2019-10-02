@@ -2441,6 +2441,13 @@ class WaptBaseRepo(BaseObjectClass):
         else:
             return None
 
+    @cabundle.setter
+    def cabundle(self,value):
+        # direct setting
+        if value != self._cabundle:
+            self._cabundle = value
+            self._public_certs_dir = None
+
     def load_config(self,config=None,section=None):
         """Load configuration from inifile section.
                 Use name of repo as section name if section is not provided.
