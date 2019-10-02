@@ -5482,7 +5482,7 @@ class Wapt(BaseObjectClass):
             SSLCertificate: host public certificate.
         """
         cert_fn = self.get_host_certificate_filename()
-        if not self._host_certificate or self._host_certificate_timestamp != os.stat(cert_fn).st_mtime:
+        if not self._host_certificate or not os.path.isfile(cert_fn) or self._host_certificate_timestamp != os.stat(cert_fn).st_mtime:
             if not os.path.isfile(cert_fn):
                 self.create_or_update_host_certificate()
             self._host_certificate = SSLCertificate(cert_fn)
