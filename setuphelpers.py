@@ -4453,12 +4453,17 @@ def run_powershell(cmd,output_format='json',**kwargs):
     """Run a command/script (possibly multiline) using powershell, return output in text format
     If format is 'json', the result is piped to ConvertTo-Json and converted back to a python dict for convenient use
 
+    WARNING: This works only with powershell >= 3
+
+    Returns:
+        str or dict or list
+
     .. versionadded:: 1.3.9
     """
     cmd = ensure_unicode(cmd)
     if output_format == 'json':
         output_format_ps = 'text'
-        cmd = '(%s) | ConvertTo-Json' % cmd
+        cmd = '$ProgressPreference = "SilentlyContinue"\n(%s) | ConvertTo-Json' % cmd
     else:
         output_format_ps = output_format
     # command is a utf16 without bom encoded with base54 without \n
