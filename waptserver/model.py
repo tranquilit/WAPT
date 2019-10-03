@@ -32,6 +32,7 @@ import subprocess
 import getpass
 import traceback
 import platform
+import hashlib
 
 from peewee import *
 from peewee import Function
