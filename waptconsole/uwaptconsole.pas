@@ -43,6 +43,7 @@ type
     ActReloadAccounts: TAction;
     ActNewAccount: TAction;
     GridRules: TSOGrid;
+    MenuItemResync: TMenuItem;
     MenuItemSync: TMenuItem;
     MenuItemSyncForce: TMenuItem;
     PanelRules: TPanel;
@@ -941,6 +942,7 @@ type
     procedure MenuItem27Click(Sender: TObject);
     procedure MenuItem74Click(Sender: TObject);
     procedure MenuItemProductsCheckAllClick(Sender: TObject);
+    procedure MenuItemResyncClick(Sender: TObject);
     procedure MenuItemSyncClick(Sender: TObject);
     procedure MenuItemSyncForceClick(Sender: TObject);
     procedure PopupMenuHostsPopup(Sender: TObject);
@@ -4633,7 +4635,16 @@ begin
         end;
   tbSyncSelected.Enabled:=Enable;
   MenuItemSync.Enabled:=Enable;
+  Enable:=False;
+  if (Assigned(GridAgentRepo.SelectedRows) and Assigned(GridAgentRepo.FocusedRow)) then
+     for Row in GridAgentRepo.SelectedRows do
+         if (Row.S['reachable']= 'OK') then
+         begin
+           Enable:=True;
+           break;
+         end;
   MenuItemSyncForce.Enabled:=Enable;
+  MenuItemResync.Enabled:=Enable;
   Enable:=False;
   for Row in GridAgentRepo.Data do
       if (Row.S['reachable'] = 'OK') and (Row.S['sync_status']<>'OK') then

@@ -91,8 +91,12 @@ FileName=$[Project-Path]..\waptenterprise\waptservice\__init__.py
 ClassName=TProjectFileNode
 FileName=$[Project-Path]..\waptenterprise\waptservice\enterprise.py
 
+[Project\ChildNodes\Node0\ChildNodes\Node3\ChildNodes\Node0\ChildNodes\Node2]
+ClassName=TProjectFileNode
+FileName=C:\tranquilit\wapt\waptenterprise\waptservice\repositories.py
+
 [Project\ChildNodes\Node0\ChildNodes\Node3\ChildNodes\Node0\ChildNodes]
-Count=2
+Count=3
 
 [Project\ChildNodes\Node0\ChildNodes\Node3\ChildNodes\Node1]
 ClassName=TProjectFolderNode

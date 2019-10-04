@@ -68,7 +68,12 @@ from common import Wapt,is_between_two_times
 
 from waptservice.waptservice_common import waptservice_remote_actions,waptconfig,WaptServiceConfig
 from waptservice.waptservice_common import WaptUpdate,WaptUpgrade,WaptUpdateServerStatus,WaptRegisterComputer
-from waptservice.waptservice_common import WaptCleanup,WaptPackageInstall,WaptPackageRemove,WaptPackageForget,WaptLongTask,WaptAuditPackage,WaptSyncRepo
+from waptservice.waptservice_common import WaptCleanup,WaptPackageInstall,WaptPackageRemove,WaptPackageForget,WaptLongTask,WaptAuditPackage
+
+try:
+    from waptenterprise.waptservice.repositories import WaptSyncRepo
+except:
+    WaptSyncRepo = None
 
 from waptservice.plugins import *
 
@@ -362,10 +367,10 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
 
     def on_sync_remote_repo(self,args):
         logger.debug('Synchronize local remote repo %s' % (args,))
-        if waptconfig.enable_remote_repo:
+        if waptconfig.enable_remote_repo and WaptSyncRepo is not None:
             if not(waptconfig.local_repo_time_for_sync_start) or is_between_two_times(waptconfig.local_repo_time_for_sync_start,waptconfig.local_repo_time_for_sync_end):
                 try:
-                    self.task_manager.add_task(WaptSyncRepo(notifyuser=False,created_by='SERVER',local_repo_path=waptconfig.local_repo_path,srvurl=waptconfig.waptserver.server_url,speed=waptconfig.local_repo_limit_bandwidth,sio = self))
+                    self.task_manager.add_task(WaptSyncRepo(notifyuser=False,created_by='SERVER'))
                 except Exception as e:
                     logger.debug(u'Error syncing local repo with server repo : %s' % e)
             else:
@@ -375,11 +380,21 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
 
     def on_sync_remote_repo_force(self,args):
         logger.debug('Synchronize local remote repo %s' % (args,))
-        if waptconfig.enable_remote_repo:
+        if waptconfig.enable_remote_repo and WaptSyncRepo is not None:
             try:
-                self.task_manager.add_task(WaptSyncRepo(notifyuser=False,created_by='SERVER',local_repo_path=waptconfig.local_repo_path,srvurl=waptconfig.waptserver.server_url,speed=waptconfig.local_repo_limit_bandwidth,sio = self))
+                self.task_manager.add_task(WaptSyncRepo(notifyuser=False,created_by='SERVER'))
             except Exception as e:
                 logger.debug(u'Error syncing local repo with server repo : %s' % e)
+        else:
+            self.emit("synchronization_not_a_local_remote_repo")
+
+    def on_resync_remote_repo(self,args):
+        logger.debug('Delete sync files and resync remote repo %s' % (args,))
+        if waptconfig.enable_remote_repo and WaptSyncRepo is not None:
+            try:
+                self.task_manager.add_task(WaptSyncRepo(notifyuser=False,created_by='SERVER',resync=True))
+            except Exception as e:
+                logger.debug(u'Error removing and syncing local repo with server repo : %s' % e)
         else:
             self.emit("synchronization_not_a_local_remote_repo")
 

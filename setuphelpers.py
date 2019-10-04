@@ -37,6 +37,7 @@ import psutil
 import netifaces
 import platform
 import time
+import getpass
 from zipfile import ZipFile
 from iniparse import RawConfigParser
 from waptpackage import PackageEntry

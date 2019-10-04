@@ -1,12 +1,12 @@
 object VisWaptGUI: TVisWaptGUI
-  Left = -8
+  Left = 1912
   Height = 1017
   Top = -8
   Width = 1920
   AllowDropFiles = True
   Caption = 'WAPT console'
-  ClientHeight = 997
-  ClientWidth = 1920
+  ClientHeight = 0
+  ClientWidth = 0
   Constraints.MinHeight = 600
   Constraints.MinWidth = 800
   Menu = MainMenu1
@@ -27,9 +27,9 @@ object VisWaptGUI: TVisWaptGUI
     Height = 854
     Top = 0
     Width = 1920
-    ActivePage = pgRepositories
+    ActivePage = pgInventory
     Align = alClient
-    TabIndex = 9
+    TabIndex = 0
     TabOrder = 0
     OnChange = MainPagesChange
     object pgInventory: TTabSheet
@@ -41,9 +41,9 @@ object VisWaptGUI: TVisWaptGUI
         Height = 700
         Top = 126
         Width = 572
-        ActivePage = pgTasks
+        ActivePage = pgSoftwares
         Align = alRight
-        TabIndex = 4
+        TabIndex = 2
         TabOrder = 0
         OnChange = HostPagesChange
         object pgPackages: TTabSheet
@@ -3093,7 +3093,7 @@ object VisWaptGUI: TVisWaptGUI
           end
           object ToolButtonSep1: TToolButton
             Left = 48
-            Height = 5
+            Height = 45
             Top = 0
             Caption = 'ToolButtonSep1'
             Style = tbsDivider
@@ -3115,7 +3115,7 @@ object VisWaptGUI: TVisWaptGUI
           end
           object ToolButton6: TToolButton
             Left = 193
-            Height = 5
+            Height = 45
             Top = 0
             Caption = 'ToolButton6'
             Style = tbsDivider
@@ -13577,6 +13577,11 @@ object VisWaptGUI: TVisWaptGUI
       }
       ImageIndex = 19
       OnClick = MenuItemSyncForceClick
+    end
+    object MenuItemResync: TMenuItem
+      Caption = 'Resync selected'
+      ImageIndex = 20
+      OnClick = MenuItemResyncClick
     end
   end
 end

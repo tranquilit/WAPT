@@ -5357,6 +5357,10 @@ msgctxt "tviswaptgui.menuitemproductscheckall.caption"
 msgid "Check all"
 msgstr "Cocher tout"
 
+#: tviswaptgui.menuitemresync.caption
+msgid "Resync selected"
+msgstr "Resync sélectionnés"
+
 #: tviswaptgui.menuitemsync.caption
 msgctxt "tviswaptgui.menuitemsync.caption"
 msgid "Sync selected"

@@ -88,7 +88,7 @@ from waptpackage import PackageEntry,WaptLocalRepo
 
 from waptservice.waptservice_common import waptconfig
 from waptservice.waptservice_common import forbidden,authenticate,allow_local
-from waptservice.waptservice_common import WaptClientUpgrade,WaptServiceRestart,WaptNetworkReconfig,WaptPackageInstall,WaptSyncRepo
+from waptservice.waptservice_common import WaptClientUpgrade,WaptServiceRestart,WaptNetworkReconfig,WaptPackageInstall
 from waptservice.waptservice_common import WaptUpgrade,WaptUpdate,WaptUpdateServerStatus,WaptCleanup,WaptDownloadPackage,WaptLongTask,WaptAuditPackage
 from waptservice.waptservice_common import WaptRegisterComputer,WaptPackageRemove,WaptPackageForget
 from waptservice.waptservice_common import WaptEvents
@@ -106,6 +106,11 @@ if sys.platform == 'win32':
     else:
         waptwua_api = None
         enterprise_common = None
+
+if os.path.isdir(os.path.join(wapt_root_dir,'waptenterprise')):
+    from waptenterprise.waptservice.repositories import WaptSyncRepo,waptrepositories_api
+else:
+    waptrepositories_api = None
 
 from waptservice.plugins import *
 
@@ -179,6 +184,9 @@ except Exception as e:
 if sys.platform == 'win32':
     if waptwua_api is not None:
         app.register_blueprint(waptwua_api)
+
+if waptrepositories_api is not None:
+        app.register_blueprint(waptrepositories_api)
 
 app.jinja_env.filters['beautify'] = beautify # pylint: disable=no-member
 app.waptconfig = waptconfig
@@ -1414,18 +1422,6 @@ def get_wapt_package(input_package_name):
     else:
         return Response(status=404)
 
-@app.route('/launchsync')
-@allow_local
-def launchsync():
-    if (waptconfig.enable_remote_repo):
-        data = app.task_manager.add_task(WaptSyncRepo(created_by='flask /launchsync',local_repo_path=waptconfig.local_repo_path,srvurl=waptconfig.waptserver.server_url,speed=waptconfig.local_repo_limit_bandwidth,sio = sio.socketio_client)).as_json()
-    else:
-        data=None
-    if request.args.get('format','html')=='json' or request.path.endswith('.json'):
-        return Response(common.jsondump(data), mimetype='application/json')
-    else:
-        return render_template('default.html',data=data,title='Upgrade')
-
 @app.route('/events')
 @app.route('/events.json')
 @allow_local
@@ -1635,12 +1631,12 @@ class WaptTaskManager(threading.Thread):
                 except Exception as e:
                     logger.debug(u'Error checking audit: %s' % e)
 
-        if waptconfig.enable_remote_repo:
+        if waptrepositories_api and waptconfig.enable_remote_repo:
             if waptconfig.local_repo_sync_task_period:
                 if self.last_sync is None or (datetime.datetime.now() - self.last_sync > get_time_delta(waptconfig.local_repo_sync_task_period,'m')):
                     try:
                         logger.debug(u'Add_task for sync with local_repo_sync_task_period')
-                        self.add_task(WaptSyncRepo(notifyuser=False,created_by='SCHEDULER',local_repo_path=waptconfig.local_repo_path,srvurl=waptconfig.waptserver.server_url,speed=waptconfig.local_repo_limit_bandwidth, sio = sio.socketio_client))
+                        self.add_task(WaptSyncRepo(notifyuser=False,created_by='SCHEDULER'))
                     except Exception as e:
                         logger.debug(u'Error syncing local repo with server repo : %s' % e)
             elif waptconfig.local_repo_time_for_sync_start:
@@ -1648,7 +1644,7 @@ class WaptTaskManager(threading.Thread):
                 if common.is_between_two_times(waptconfig.local_repo_time_for_sync_start,waptconfig.local_repo_time_for_sync_end) and (self.last_sync is None or (datetime.datetime.now() - self.last_sync > get_time_delta('10m','m'))):
                     try:
                         logger.debug(u'Add_task for sync with local_repo_time_for_sync')
-                        self.add_task(WaptSyncRepo(notifyuser=False,created_by='SCHEDULER',local_repo_path=waptconfig.local_repo_path,srvurl=waptconfig.waptserver.server_url,speed=waptconfig.local_repo_limit_bandwidth, sio = sio.socketio_client))
+                        self.add_task(WaptSyncRepo(notifyuser=False,created_by='SCHEDULER'))
                     except Exception as e:
                         logger.debug(u'Error syncing local repo with server repo : %s' % e)
 
@@ -2036,6 +2032,8 @@ if __name__ == "__main__":
     if sys.platform == 'win32':
         if waptwua_api is not None:
             waptwua_api.task_manager = task_manager
+    if waptrepositories_api is not None:
+        waptrepositories_api.task_manager = task_manager
 
     logger.info('Task queue running')
 
@@ -2049,6 +2047,8 @@ if __name__ == "__main__":
             setloglevel(sio_logger,options.loglevel)
         else:
             setloglevel(sio_logger,waptconfig.loglevel)
+        if waptrepositories_api is not None:
+            waptrepositories_api.sio = sio
 
     if options.devel:
         #socketio_server.run(app,host='127.0.0.1', port=8088)
