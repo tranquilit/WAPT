@@ -1,5 +1,5 @@
 object VisWaptGUI: TVisWaptGUI
-  Left = -8
+  Left = 1912
   Height = 1017
   Top = -8
   Width = 1920
