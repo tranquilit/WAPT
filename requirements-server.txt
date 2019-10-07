@@ -34,6 +34,6 @@ six==1.11.0
 ujson==1.35
 urllib3==1.24.2
 wakeonlan==0.2.2
-Werkzeug==0.15.3
+Werkzeug==0.16
 wsgiref==0.1.2
 WTForms==2.1
