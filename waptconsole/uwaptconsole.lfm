@@ -352,7 +352,7 @@ object VisWaptGUI: TVisWaptGUI
             Header.DefaultHeight = 18
             Header.Height = 18
             Header.MinHeight = 18
-            Header.Options = [hoAutoResize, hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
+            Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
             Header.SortDirection = sdDescending
             Header.Style = hsFlatButtons
             Images = ImageList1
@@ -710,7 +710,7 @@ object VisWaptGUI: TVisWaptGUI
             Header.DefaultHeight = 18
             Header.Height = 18
             Header.MinHeight = 18
-            Header.Options = [hoAutoResize, hoColumnResize, hoDrag, hoShowSortGlyphs, hoVisible, hoAutoSpring, hoHeaderClickAutoSort]
+            Header.Options = [hoColumnResize, hoDrag, hoShowSortGlyphs, hoVisible, hoAutoSpring, hoHeaderClickAutoSort]
             Header.Style = hsFlatButtons
             TabOrder = 1
             TreeOptions.AutoOptions = [toAutoScrollOnExpand, toAutoSort, toAutoSpanColumns, toAutoTristateTracking, toAutoDeleteMovedNodes, toAutoChangeScale]
@@ -806,7 +806,7 @@ object VisWaptGUI: TVisWaptGUI
             Header.DefaultHeight = 18
             Header.Height = 18
             Header.MinHeight = 18
-            Header.Options = [hoAutoResize, hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
+            Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
             Header.SortDirection = sdDescending
             Header.Style = hsFlatButtons
             TabOrder = 0
@@ -1157,7 +1157,7 @@ object VisWaptGUI: TVisWaptGUI
             Header.DefaultHeight = 18
             Header.Height = 18
             Header.MinHeight = 18
-            Header.Options = [hoAutoResize, hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
+            Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
             Header.SortDirection = sdDescending
             Header.Style = hsFlatButtons
             Images = ImageList1
@@ -1440,7 +1440,7 @@ object VisWaptGUI: TVisWaptGUI
             Header.DefaultHeight = 18
             Header.Height = 18
             Header.MinHeight = 18
-            Header.Options = [hoAutoResize, hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
+            Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
             Header.SortDirection = sdDescending
             Header.Style = hsFlatButtons
             Images = ImageList1
@@ -1685,7 +1685,7 @@ object VisWaptGUI: TVisWaptGUI
                 Header.DefaultHeight = 18
                 Header.Height = 18
                 Header.MinHeight = 18
-                Header.Options = [hoAutoResize, hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
+                Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
                 Header.SortDirection = sdDescending
                 Header.Style = hsFlatButtons
                 Images = ImageList1
@@ -1829,7 +1829,7 @@ object VisWaptGUI: TVisWaptGUI
                 Header.DefaultHeight = 18
                 Header.Height = 18
                 Header.MinHeight = 18
-                Header.Options = [hoAutoResize, hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
+                Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
                 Header.SortDirection = sdDescending
                 Header.Style = hsFlatButtons
                 Images = ImageList1
@@ -1972,7 +1972,7 @@ object VisWaptGUI: TVisWaptGUI
                 Header.DefaultHeight = 18
                 Header.Height = 18
                 Header.MinHeight = 18
-                Header.Options = [hoAutoResize, hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
+                Header.Options = [ hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
                 Header.SortDirection = sdDescending
                 Header.Style = hsFlatButtons
                 Images = ImageList1
@@ -2296,7 +2296,7 @@ object VisWaptGUI: TVisWaptGUI
           Header.DefaultHeight = 18
           Header.Height = 18
           Header.MinHeight = 18
-          Header.Options = [hoAutoResize, hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
+          Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
           Header.ParentFont = True
           Header.SortDirection = sdDescending
           Header.Style = hsFlatButtons
@@ -3444,7 +3444,7 @@ object VisWaptGUI: TVisWaptGUI
         Header.DefaultHeight = 18
         Header.Height = 18
         Header.MinHeight = 18
-        Header.Options = [hoAutoResize, hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
+        Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
         Header.SortDirection = sdDescending
         Header.Style = hsFlatButtons
         PopupMenu = PopupMenuGroups
@@ -4067,7 +4067,7 @@ object VisWaptGUI: TVisWaptGUI
         Header.DefaultHeight = 18
         Header.Height = 18
         Header.MinHeight = 18
-        Header.Options = [hoAutoResize, hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
+        Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
         Header.SortDirection = sdDescending
         Header.Style = hsFlatButtons
         PopupMenu = PopupMenuPackages
@@ -4432,7 +4432,7 @@ object VisWaptGUI: TVisWaptGUI
           Header.DefaultHeight = 18
           Header.Height = 18
           Header.MinHeight = 18
-          Header.Options = [hoAutoResize, hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
+          Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
           Header.SortDirection = sdDescending
           Header.Style = hsFlatButtons
           Images = ImageList1
@@ -5165,7 +5165,7 @@ object VisWaptGUI: TVisWaptGUI
             Header.DefaultHeight = 18
             Header.Height = 18
             Header.MinHeight = 18
-            Header.Options = [hoAutoResize, hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
+            Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
             Header.SortDirection = sdDescending
             Header.Style = hsFlatButtons
             TabOrder = 1
@@ -5342,7 +5342,7 @@ object VisWaptGUI: TVisWaptGUI
             Header.DefaultHeight = 18
             Header.Height = 18
             Header.MinHeight = 18
-            Header.Options = [hoAutoResize, hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
+            Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
             Header.SortDirection = sdDescending
             Header.Style = hsFlatButtons
             Images = ImageList1
@@ -5730,7 +5730,7 @@ object VisWaptGUI: TVisWaptGUI
               Header.DefaultHeight = 18
               Header.Height = 18
               Header.MinHeight = 18
-              Header.Options = [hoAutoResize, hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
+              Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
               Header.SortDirection = sdDescending
               Header.Style = hsFlatButtons
               Images = ImageList1
@@ -6332,7 +6332,7 @@ object VisWaptGUI: TVisWaptGUI
         Header.DefaultHeight = 18
         Header.Height = 18
         Header.MinHeight = 18
-        Header.Options = [hoAutoResize, hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
+        Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
         Header.SortDirection = sdDescending
         Header.Style = hsFlatButtons
         TabOrder = 1
@@ -7133,7 +7133,7 @@ object VisWaptGUI: TVisWaptGUI
         Header.DefaultHeight = 18
         Header.Height = 18
         Header.MinHeight = 18
-        Header.Options = [hoAutoResize, hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
+        Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
         Header.SortDirection = sdDescending
         Header.Style = hsFlatButtons
         TabOrder = 1
@@ -7194,7 +7194,7 @@ object VisWaptGUI: TVisWaptGUI
             Header.Height = 18
             Header.MainColumn = -1
             Header.MinHeight = 18
-            Header.Options = [hoAutoResize, hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
+            Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
             Header.SortDirection = sdDescending
             Header.Style = hsFlatButtons
             TabOrder = 0
@@ -7859,7 +7859,7 @@ object VisWaptGUI: TVisWaptGUI
           Header.DefaultHeight = 18
           Header.Height = 18
           Header.MinHeight = 18
-          Header.Options = [hoAutoResize, hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
+          Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
           Header.SortDirection = sdDescending
           Header.Style = hsFlatButtons
           PopupMenu = PopupMenuReportingQueries
@@ -8041,7 +8041,7 @@ object VisWaptGUI: TVisWaptGUI
         Header.DefaultHeight = 18
         Header.Height = 18
         Header.MinHeight = 18
-        Header.Options = [hoAutoResize, hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
+        Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
         Header.SortDirection = sdDescending
         Header.Style = hsFlatButtons
         TabOrder = 0
