@@ -305,7 +305,7 @@ rsync(source_dir, './builddir/opt/wapt/',
 if WAPTEDITION=='enterprise':
     eprint('copying the waptserver enterprise files')
     rsync(wapt_source_dir+'/waptenterprise/', './builddir/opt/wapt/waptenterprise/',
-          excludes=[' ','waptservice','postconf', 'repository', 'rpm', 'deb', 'spnego-http-auth-nginx-module', '*.bat'])
+          excludes=[' ','waptwua','waptconsole', 'includes', 'waptserver'])
 
 
 # script to run waptagent in foreground mode
