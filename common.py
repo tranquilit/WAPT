@@ -1794,6 +1794,30 @@ class WaptServer(BaseObjectClass):
         else:
             raise Exception(u'Wapt server url not defined or not found in DNS')
 
+    def head(self,action,auth=None,timeout=None):
+        """ """
+        surl = self.server_url
+        if surl:
+            with self.get_requests_session(surl) as session:
+                req = session.head("%s/%s" % (surl,action),
+                    timeout=timeout or self.timeout,
+                    auth=auth,
+                    allow_redirects=True)
+                if req.status_code == 401:
+                    req = session.head("%s/%s" % (surl,action),
+                        timeout=timeout or self.timeout,
+                        auth=self.auth(action=action),
+                        allow_redirects=True)
+
+                req.raise_for_status()
+                return req.headers
+        else:
+            raise Exception(u'Wapt server url not defined or not found in DNS')
+
+    def wget(self,action,auth=None,timeout=None):
+        """ """
+        surl = self.server_url
+
     def post(self,action,data=None,files=None,auth=None,timeout=None,signature=None,signer=None,content_length=None):
         """Post data to waptserver using http POST method
 
