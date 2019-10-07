@@ -6418,6 +6418,11 @@ begin
   ;;
 end;
 
+procedure TVisWaptGUI.MenuItemResyncClick(Sender: TObject);
+begin
+  ;;
+end;
+
 {$endif}
 
 end.
