@@ -21,7 +21,10 @@
 #
 # -----------------------------------------------------------------------
 from __future__ import print_function, division, absolute_import, unicode_literals
-from future.utils import python_2_unicode_compatible
+try:
+    from future.utils import python_2_unicode_compatible
+except:
+    print('to fix')
 
 from past.builtins import cmp
 from future import standard_library
