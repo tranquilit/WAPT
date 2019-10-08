@@ -25,5 +25,6 @@ rm -rf ./builddir
 rm -rf ./BUILD
 rm -rf ./RPMS
 rm -rf ~/rpmbuild
-echo tis-waptagent*.rpm
+deb=`echo tis-waptagent*.rpm`
 cd -
+echo $deb
