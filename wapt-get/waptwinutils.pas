@@ -1018,6 +1018,8 @@ begin
         raise EOSError.CreateFmt(SOSError, [exitCode, Error])
       end;
     finally
+	  myReadOutputThread.Terminate;
+      myReadErrorThread.Terminate;
       if myWriteInputThread<>Nil then  myWriteInputThread.Free;
       if myReadOutputThread<>Nil then myReadOutputThread.Free;
       if myReadErrorThread<>Nil then myReadErrorThread.Free;

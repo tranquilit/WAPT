@@ -4,7 +4,6 @@ object VisLoading: TVisLoading
   Top = 403
   Width = 305
   AutoSize = True
-  BorderStyle = bsDialog
   Caption = 'Loading'
   ChildSizing.LeftRightSpacing = 6
   ChildSizing.TopBottomSpacing = 3
@@ -13,6 +12,7 @@ object VisLoading: TVisLoading
   ChildSizing.Layout = cclLeftToRightThenTopToBottom
   ClientHeight = 171
   ClientWidth = 305
+  FormStyle = fsStayOnTop
   OnCreate = FormCreate
   ParentFont = True
   Position = poScreenCenter
