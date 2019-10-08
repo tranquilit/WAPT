@@ -54,19 +54,41 @@
         <PackageName Value="pltis_superobject"/>
       </Item4>
     </RequiredPackages>
-    <Units Count="1">
+    <Units Count="2">
       <Unit0>
         <Filename Value="waptget.lpr"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
         <TopLine Value="935"/>
         <CursorPos X="8" Y="947"/>
         <UsageCount Value="222"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit0>
+      <Unit1>
+        <Filename Value="waptcommon.pas"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="2198"/>
+        <CursorPos X="72" Y="2210"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit1>
     </Units>
-    <JumpHistory HistoryIndex="-1"/>
+    <JumpHistory Count="3" HistoryIndex="2">
+      <Position1>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="947" Column="8" TopLine="935"/>
+      </Position1>
+      <Position2>
+        <Filename Value="waptcommon.pas"/>
+        <Caret Line="2210" Column="70" TopLine="2197"/>
+      </Position2>
+      <Position3>
+        <Filename Value="waptcommon.pas"/>
+        <Caret Line="2204" Column="70" TopLine="2191"/>
+      </Position3>
+    </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="11"/>

@@ -2207,7 +2207,7 @@ begin
   StringToFile(AppendPathDelim(wapt_base_dir) + 'waptupgrade\waptagent.sha256',SHA256Hash(Result)+'  waptagent.exe');
 end;
 
-function GetReachableIP(IPS:ISuperObject;port:word;Timeout:Integer=200):String;
+function GetReachableIP(IPS:ISuperObject;port:word;Timeout:Integer=3000):String;
 var
   IP:ISuperObject;
 begin
