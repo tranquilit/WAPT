@@ -60,7 +60,7 @@ def git_hash():
     return '%s' % (r.active_branch.object.name_rev[:8],)
 
 def dev_revision():
-    return '-%s-%s-%s' % (get_distrib(), debian_major(), git_hash())
+    return '%s-%s-%s' % (get_distrib(), debian_major(), git_hash())
 
 def setloglevel(alogger,loglevel):
     """set loglevel as string"""
