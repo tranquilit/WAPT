@@ -58,7 +58,7 @@ def mkdir_p(path):
 
 def debian_major():
     return platform.linux_distribution()[1].split('.')[0]
-    
+
 def get_distrib():
     return platform.linux_distribution()[0].lower()
 
@@ -67,7 +67,7 @@ def git_hash():
     return '%s' % (r.active_branch.object.name_rev[:8],)
 
 def dev_revision():
-    return 'tisdeb-%s-%s-%s' % (get_distrib(), debian_major(), git_hash())
+    return '-%s-%s-%s' % (get_distrib(), debian_major(), git_hash())
 
 def setloglevel(alogger,loglevel):
     """set loglevel as string"""
