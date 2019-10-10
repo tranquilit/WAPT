@@ -1,0 +1,22 @@
+object FormErrorsRepos: TFormErrorsRepos
+  Left = 2174
+  Height = 240
+  Top = 374
+  Width = 358
+  Caption = 'Errors'
+  ClientHeight = 240
+  ClientWidth = 358
+  OnShow = FormShow
+  Position = poMainFormCenter
+  LCLVersion = '1.8.4.0'
+  object MemoErrors: TMemo
+    Left = 0
+    Height = 240
+    Top = 0
+    Width = 358
+    Align = alClient
+    ReadOnly = True
+    ScrollBars = ssAutoBoth
+    TabOrder = 0
+  end
+end
