@@ -9,7 +9,7 @@ msgstr ""
 #, fuzzy
 msgctxt "tformeditrule.bitbtncancel.caption"
 msgid "Cancel"
-msgstr "Annuler"
+msgstr ""
 
 #: tformeditrule.bitbtnok.caption
 msgctxt "tformeditrule.bitbtnok.caption"
@@ -35,6 +35,11 @@ msgstr ""
 
 #: tformeditrule.labvalue.caption
 msgid "Value :"
+msgstr ""
+
+#: tformerrorsrepos.caption
+msgctxt "tformerrorsrepos.caption"
+msgid "Errors"
 msgstr ""
 
 #: tvisapropos.caption
@@ -996,7 +1001,7 @@ msgstr ""
 #: tvisimportpackage.bitbtn2.caption
 msgctxt "tvisimportpackage.bitbtn2.caption"
 msgid "Cancel"
-msgstr "Annuler"
+msgstr ""
 
 #: tvisimportpackage.caption
 msgid "Import packages"
@@ -1083,7 +1088,7 @@ msgstr ""
 #: tvispackagewizard.butcancel.caption
 msgctxt "tvispackagewizard.butcancel.caption"
 msgid "Cancel"
-msgstr "Annuler"
+msgstr ""
 
 #: tvispackagewizard.caption
 msgid "Package Wizard"
@@ -2911,6 +2916,10 @@ msgstr ""
 
 #: tviswaptgui.gridagentrepo.header.columns[11].text
 msgid "status_sync_id"
+msgstr ""
+
+#: tviswaptgui.gridagentrepo.header.columns[12].text
+msgid "status_sync_errors"
 msgstr ""
 
 #: tviswaptgui.gridagentrepo.header.columns[1].text
@@ -5351,6 +5360,10 @@ msgstr ""
 msgid "Resync selected"
 msgstr ""
 
+#: tviswaptgui.menuitemshowerrors.caption
+msgid "Show errors"
+msgstr ""
+
 #: tviswaptgui.menuitemsync.caption
 msgctxt "tviswaptgui.menuitemsync.caption"
 msgid "Sync selected"
@@ -5433,7 +5446,7 @@ msgstr ""
 
 #: tviswaptgui.pgrepositories.caption
 msgid "Repositories"
-msgstr "Repositorios"
+msgstr ""
 
 #: tviswaptgui.pgrights.caption
 msgid "Rights management"
@@ -5481,6 +5494,7 @@ msgid "Done"
 msgstr ""
 
 #: tviswaptgui.tabsheet3.caption
+msgctxt "tviswaptgui.tabsheet3.caption"
 msgid "Errors"
 msgstr ""
 

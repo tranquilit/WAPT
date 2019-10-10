@@ -98,6 +98,7 @@ object VisSyncChangelog: TVisSyncChangelog
     Top = 0
     Width = 500
     Align = alRight
+    ReadOnly = True
     ScrollBars = ssAutoBoth
     TabOrder = 2
   end

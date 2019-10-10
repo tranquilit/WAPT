@@ -705,7 +705,7 @@ object VisWaptGUI: TVisWaptGUI
               item
                 Position = 1
                 Text = 'Value'
-                Width = 310
+                Width = 314
               end>
             Header.DefaultHeight = 18
             Header.Height = 18
@@ -1972,7 +1972,7 @@ object VisWaptGUI: TVisWaptGUI
                 Header.DefaultHeight = 18
                 Header.Height = 18
                 Header.MinHeight = 18
-                Header.Options = [ hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
+                Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
                 Header.SortDirection = sdDescending
                 Header.Style = hsFlatButtons
                 Images = ImageList1
@@ -3093,7 +3093,7 @@ object VisWaptGUI: TVisWaptGUI
           end
           object ToolButtonSep1: TToolButton
             Left = 48
-            Height = 5
+            Height = 45
             Top = 0
             Caption = 'ToolButtonSep1'
             Style = tbsDivider
@@ -3115,7 +3115,7 @@ object VisWaptGUI: TVisWaptGUI
           end
           object ToolButton6: TToolButton
             Left = 193
-            Height = 5
+            Height = 45
             Top = 0
             Caption = 'ToolButton6'
             Style = tbsDivider
@@ -8386,6 +8386,13 @@ object VisWaptGUI: TVisWaptGUI
                 Text = 'status_sync_id'
                 Width = 10
                 PropertyName = 'status_sync_id'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                Position = 12
+                Text = 'status_sync_errors'
+                Width = 10
+                PropertyName = 'status_sync_errors'
               end>
             Header.DefaultHeight = 18
             Header.Height = 18
@@ -13660,6 +13667,11 @@ object VisWaptGUI: TVisWaptGUI
       }
       ImageIndex = 20
       OnClick = MenuItemResyncClick
+    end
+    object MenuItemShowErrors: TMenuItem
+      Caption = 'Show errors'
+      ImageIndex = 36
+      OnClick = MenuItemShowErrorsClick
     end
   end
 end

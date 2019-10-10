@@ -36,6 +36,12 @@ msgstr "URL du dépôt :"
 msgid "Value :"
 msgstr "Valeur : "
 
+#: tformerrorsrepos.caption
+#, fuzzy
+msgctxt "tformerrorsrepos.caption"
+msgid "Errors"
+msgstr "Erreurs"
+
 #: tvisapropos.caption
 msgid "About WAPTConsole"
 msgstr "Apropos de WAPTConsole"
@@ -2932,6 +2938,10 @@ msgstr "uuid"
 msgid "status_sync_id"
 msgstr ""
 
+#: tviswaptgui.gridagentrepo.header.columns[12].text
+msgid "status_sync_errors"
+msgstr ""
+
 #: tviswaptgui.gridagentrepo.header.columns[1].text
 msgid "Sync version"
 msgstr ""
@@ -5361,6 +5371,10 @@ msgstr "Cocher tout"
 msgid "Resync selected"
 msgstr "Resync sélectionnés"
 
+#: tviswaptgui.menuitemshowerrors.caption
+msgid "Show errors"
+msgstr ""
+
 #: tviswaptgui.menuitemsync.caption
 msgctxt "tviswaptgui.menuitemsync.caption"
 msgid "Sync selected"
@@ -5491,6 +5505,7 @@ msgid "Done"
 msgstr "Terminées"
 
 #: tviswaptgui.tabsheet3.caption
+msgctxt "tviswaptgui.tabsheet3.caption"
 msgid "Errors"
 msgstr "Erreurs"
 

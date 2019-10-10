@@ -43,6 +43,7 @@ type
     ActReloadAccounts: TAction;
     ActNewAccount: TAction;
     GridRules: TSOGrid;
+    MenuItemShowErrors: TMenuItem;
     MenuItemResync: TMenuItem;
     MenuItemSync: TMenuItem;
     MenuItemSyncForce: TMenuItem;
@@ -943,6 +944,7 @@ type
     procedure MenuItem74Click(Sender: TObject);
     procedure MenuItemProductsCheckAllClick(Sender: TObject);
     procedure MenuItemResyncClick(Sender: TObject);
+    procedure MenuItemShowErrorsClick(Sender: TObject);
     procedure MenuItemSyncClick(Sender: TObject);
     procedure MenuItemSyncForceClick(Sender: TObject);
     procedure PopupMenuHostsPopup(Sender: TObject);
@@ -1105,7 +1107,7 @@ uses LCLIntf, LCLType, IniFiles, variants, LazFileUtils,FileUtil, base64,
   uVisPackageWizard, uVisChangeKeyPassword, uVisDisplayPreferences,
   uvisrepositories, uVisHostDelete, windirs,winutils,uWaptPythonUtils
   {$ifdef ENTERPRISE}
-  ,uVisWUAGroup,uviswuadownloads,uvissoftwaresnormalization,uvisselfservicegroup,uviseditcreaterule,uvissyncchangelog
+  ,uVisWUAGroup,uviswuadownloads,uvissoftwaresnormalization,uvisselfservicegroup,uviseditcreaterule,uvissyncchangelog, uVisErrorsRepos
   {$endif}
   {$ifdef wsus},uVisWAPTWUAProducts, uviswuapackageselect,
   uVisWUAClassificationsSelect
@@ -4671,6 +4673,7 @@ begin
         Break;
       end;
   tbSyncAll.Enabled:=Enable;
+  MenuItemShowErrors.Enabled:=Assigned(GridAgentRepo.FocusedRow) and (GridAgentRepo.FocusedRow.S['sync_status']='ERROR');
 end;
 
 procedure TVisWaptGUI.GridAgentRepoGetImageIndexEx(Sender: TBaseVirtualTree;

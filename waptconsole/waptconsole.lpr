@@ -19,7 +19,7 @@ uses
   uVisAPropos, uVisImportPackage, uwaptconsoleres, uVisPackageWizard,
   uVisChangeKeyPassword, uvisrepositories, uvisdisplaypreferences,
   uVisHostDelete, waptcommon, tiscommon, uviswuadownloads,
-  uvissoftwaresnormalization, uvisselfservicegroup, uviseditcreaterule;
+  uvissoftwaresnormalization, uvisselfservicegroup, uviseditcreaterule, uVisErrorsRepos;
 
 {$R *.res}
 

@@ -79,7 +79,7 @@
         <PackageName Value="LCL"/>
       </Item12>
     </RequiredPackages>
-    <Units Count="28">
+    <Units Count="29">
       <Unit0>
         <Filename Value="waptconsole.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -278,6 +278,14 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
       </Unit27>
+      <Unit28>
+        <Filename Value="uviserrorsrepos.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FormErrorsRepos"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="uVisErrorsRepos"/>
+      </Unit28>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -312,11 +320,6 @@
       </Verbosity>
       <CustomOptions Value="-dENTERPRISE
 -dDEVMODE"/>
-      <OtherDefines Count="3">
-        <Define0 Value="ENTERPRISE"/>
-        <Define1 Value="DEVMODE"/>
-        <Define2 Value="UseCThreads"/>
-      </OtherDefines>
     </Other>
   </CompilerOptions>
   <Debugging>
