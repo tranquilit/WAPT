@@ -6444,6 +6444,12 @@ begin
   ;;
 end;
 
+procedure TVisWaptGUI.MenuItemShowErrorsClick(Sender: TObject);
+begin
+  ;;
+end;
+
+
 {$endif}
 
 end.
