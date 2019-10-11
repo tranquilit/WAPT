@@ -159,9 +159,14 @@ ssl_file = unzip(ssl_zip,target=makepath(wapt_base_dir),filenames=['ssleay32.dll
 
 
 print('Python ldap wheel windows')
-python_ldap = wget('https://pypi.python.org/packages/55/8b/7e9b4f4f5c3b4c98416b10ba02f682e8e23d34c20fe8e56b9d09f4667e02/python_ldap-2.4.44-cp27-cp27m-win32.whl',resume=True,md5='21db70f804fe06d941a2e36f907358cf',cache_dir=binaries_cache,proxies=proxies)
+python_ldap = makepath(base,'waptserver','scripts','python_ldap-3.2.0-cp27-cp27m-win32.whl')
 print('Install ldap wheel')
 print(run([makepath(wapt_base_dir,'Scripts','pip.exe'),'install',python_ldap,'--target',site_packages,'--upgrade']))
+
+print('Get gcc-mingw')
+gcc_mingw = wget('https://github.com/develersrl/gccwinbinaries/releases/download/v1.1/gcc-mingw-4.3.3-setup.exe',resume=True,md5='f7f671fc26f3572c8c6a101e55a90cec',cache_dir=binaries_cache,proxies=proxies)
+print('Install gcc-mingw')
+print(run('gcc-mingw-4.3.3-setup.exe /verysilent'))
 
 print('Get Cryptography 2.4.2 for Windows XP')
 fn = wget('https://files.pythonhosted.org/packages/f2/fe/0877f63affd2ad8c3390d21f76342ef5229fd932f9f9e7388feaf705b040/cryptography-2.4.2-cp27-cp27m-win32.whl',sha256='5ecaf9e7db3ca582c6de6229525d35db8a4e59dc3e8a40a331674ed90e658cbf',resume=False,cache_dir=binaries_cache,proxies=proxies)
