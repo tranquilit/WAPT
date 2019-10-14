@@ -152,7 +152,13 @@ def get_domain_batch():
     >>> get_domain_batch()
     u'tranquilit.local'
     """
-    return socket.getfqdn().split('.', 1)[1]
+
+    try: 
+        dom =  socket.getfqdn().split('.', 1)[1]
+    except:
+        dom = ""
+
+    return dom
 
 def get_hostname():
     return socket.getfqdn().lower()
@@ -175,6 +181,8 @@ def get_dns_servers():
     with open('/etc/resolv.conf') as fp:
         for cnt, line in enumerate(fp):
             columns = line.split()
+            if len(columns) == 0 :
+                continue
             if columns[0] == 'nameserver':
                 ip = columns[1:][0]
                 if is_valid_ipv4_address(ip):
@@ -208,7 +216,7 @@ def host_info():
 
     info['computer_name'] = socket.gethostname()
     info['computer_fqdn'] = socket.getfqdn()
-    info['dnsdomain'] = socket.getfqdn().split('.', 1)[1]
+    info['dnsdomain'] = get_domain_batch()
 
     if os.path.isfile('/etc/samba/smb.conf'):
         config = configparser.RawConfigParser(strict=False)
@@ -239,6 +247,11 @@ def get_computername():
 
 def installed_softwares(keywords='',uninstallkey=None,name=None):
     return [{'key':'TODOLINUX', 'name':'TODOLINUX', 'version':'TODOLINUX', 'install_date':'TODOLINUX', 'install_location':'TODOLINUX', 'uninstall_string':'TODOLINUX', 'publisher':'TODOLINUX','system_component':'TODOLINUX'}]
+
+def get_ip_address():
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    s.connect(("8.8.8.8", 80))
+    return [s.getsockname()[0]]
 
 def get_loggedinusers():
     suser = psutil.users()

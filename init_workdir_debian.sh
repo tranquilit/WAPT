@@ -1,5 +1,5 @@
 #!/bin/bash
-
+set -e
 # to run in the current wapt dir after checkout
 
 #sudo easy_install pip virtualenv setuptools 
@@ -19,6 +19,5 @@ cp -f utils/patch-cryptography/__init__.py  lib/python2.7/site-packages/cryptogr
 cp -f utils/patch-cryptography/verification.py  lib/python2.7/site-packages/cryptography/x509/
 
 
-rsync -aP  waptservice/deb/methods/ lib/python2.7/site-packages/rocket/methods/
 
 #brew install cavaliercoder/dmidecode/dmidecode
