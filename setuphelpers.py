@@ -306,7 +306,6 @@ if sys.platform == 'win32':
 elif sys.platform.startswith('linux'):
     __all__.extend(
     [
-     'get_ip_address',
      'apt_install',
      'apt_remove',
      'dpkg_install',

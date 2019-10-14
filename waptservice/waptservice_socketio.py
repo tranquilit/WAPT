@@ -398,6 +398,16 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
         else:
             self.emit("synchronization_not_a_local_remote_repo")
 
+    def on_audit_remote_repo(self,args):
+        logger.debug('Auditing files of remote repo %s' % (args,))
+        if waptconfig.enable_remote_repo and WaptSyncRepo is not None:
+            try:
+                self.task_manager.add_task(WaptSyncRepo(notifyuser=False,created_by='SERVER',audit=True))
+            except Exception as e:
+                logger.debug(u'Error auditing local repo with server repo : %s' % e)
+        else:
+            self.emit("synchronization_not_a_local_remote_repo")
+
     def on_wapt_force_reconnect(self,args):
         logger.debug('Force disconnect from server... %s'% (args,))
         self.disconnect()

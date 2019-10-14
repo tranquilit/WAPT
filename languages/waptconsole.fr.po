@@ -5362,6 +5362,10 @@ msgstr "Ré-ouvrir"
 msgid "Information about KB on MS Web site"
 msgstr "Information MS sur la mise à jour"
 
+#: tviswaptgui.menuitemcheckfiles.caption
+msgid "Check files"
+msgstr "Vérifier les fichiers"
+
 #: tviswaptgui.menuitemproductscheckall.caption
 msgctxt "tviswaptgui.menuitemproductscheckall.caption"
 msgid "Check all"

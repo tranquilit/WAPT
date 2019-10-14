@@ -43,6 +43,7 @@ type
     ActReloadAccounts: TAction;
     ActNewAccount: TAction;
     GridRules: TSOGrid;
+    MenuItemCheckFiles: TMenuItem;
     MenuItemShowErrors: TMenuItem;
     MenuItemResync: TMenuItem;
     MenuItemSync: TMenuItem;
@@ -942,6 +943,7 @@ type
     procedure MenuItem105UncheclAllClick(Sender: TObject);
     procedure MenuItem27Click(Sender: TObject);
     procedure MenuItem74Click(Sender: TObject);
+    procedure MenuItemCheckFilesClick(Sender: TObject);
     procedure MenuItemProductsCheckAllClick(Sender: TObject);
     procedure MenuItemResyncClick(Sender: TObject);
     procedure MenuItemShowErrorsClick(Sender: TObject);
@@ -4639,90 +4641,6 @@ begin
   end;
 end;
 
-procedure TVisWaptGUI.GridAgentRepoChange(Sender: TBaseVirtualTree;
-  Node: PVirtualNode);
-var
-  Row: ISuperObject;
-  Enable: Boolean;
-begin
-  Enable:=False;
-  if (Assigned(GridAgentRepo.SelectedRows) and Assigned(GridAgentRepo.FocusedRow)) then
-    for Row in GridAgentRepo.SelectedRows do
-        if (Row.S['reachable'] = 'OK') and (Row.S['sync_status']<>'OK') then
-        begin
-          Enable:=True;
-          Break;
-        end;
-  tbSyncSelected.Enabled:=Enable;
-  MenuItemSync.Enabled:=Enable;
-  Enable:=False;
-  if (Assigned(GridAgentRepo.SelectedRows) and Assigned(GridAgentRepo.FocusedRow)) then
-     for Row in GridAgentRepo.SelectedRows do
-         if (Row.S['reachable']= 'OK') then
-         begin
-           Enable:=True;
-           break;
-         end;
-  MenuItemSyncForce.Enabled:=Enable;
-  MenuItemResync.Enabled:=Enable;
-  Enable:=False;
-  for Row in GridAgentRepo.Data do
-      if (Row.S['reachable'] = 'OK') and (Row.S['sync_status']<>'OK') then
-      begin
-        Enable:=True;
-        Break;
-      end;
-  tbSyncAll.Enabled:=Enable;
-  MenuItemShowErrors.Enabled:=Assigned(GridAgentRepo.FocusedRow) and (GridAgentRepo.FocusedRow.S['sync_status']='ERROR');
-end;
-
-procedure TVisWaptGUI.GridAgentRepoGetImageIndexEx(Sender: TBaseVirtualTree;
-  Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
-  var Ghosted: Boolean; var ImageIndex: Integer; var ImageList: TCustomImageList
-  );
-  var
-  reachable, sync_status: ISuperObject;
-  propname: String;
-  aGrid:TSOGrid;
-begin
-  aGrid := (Sender as TSOGrid);
-  propName:=TSOGridColumn(aGrid.Header.Columns[Column]).PropertyName;
-  if propName='reachable' then
-  begin
-    ImageIndex:=-1;
-    reachable := aGrid.GetCellData(Node, 'reachable', Nil);
-    if Assigned(reachable)then
-    begin
-      if (reachable.AsString = 'OK') then
-        ImageIndex := 4
-      else if (reachable.AsString = 'UNREACHABLE') or (reachable.AsString = 'UNKNOWN') or (reachable.AsString = 'DISCONNECTED') then
-        ImageIndex := 5
-      else
-        ImageIndex := 6;
-    end
-    else
-      ImageIndex := 6
-  end;
-  if propName='sync_status' then
-  begin
-    ImageIndex:=-1;
-    sync_status:= aGrid.GetCellData(Node,'sync_status', Nil);
-    if Assigned(sync_status) then
-    begin
-      if (sync_status.AsString = 'OK') then
-         ImageIndex:=0
-      else if (sync_status.AsString = 'TO UPDATE') then
-           ImageIndex:=1
-      else if Pos('%',sync_status.AsString)>0 then
-           ImageIndex:=6
-      else
-          ImageIndex:=2
-    end
-    else
-        ImageIndex:=2;
-  end;
-end;
-
 procedure TVisWaptGUI.GridGroupsColumnDblClick(Sender: TBaseVirtualTree;
   Column: TColumnIndex; Shift: TShiftState);
 begin
@@ -6445,6 +6363,25 @@ begin
 end;
 
 procedure TVisWaptGUI.MenuItemShowErrorsClick(Sender: TObject);
+begin
+  ;;
+end;
+
+procedure TVisWaptGUI.MenuItemCheckFilesClick(Sender: TObject);
+begin
+  ;;
+end;
+
+procedure TVisWaptGUI.GridAgentRepoChange(Sender: TBaseVirtualTree;
+  Node: PVirtualNode);
+begin
+  ;;
+end;
+
+procedure TVisWaptGUI.GridAgentRepoGetImageIndexEx(Sender: TBaseVirtualTree;
+  Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
+  var Ghosted: Boolean; var ImageIndex: Integer; var ImageList: TCustomImageList
+  );
 begin
   ;;
 end;

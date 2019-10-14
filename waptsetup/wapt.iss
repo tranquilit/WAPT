@@ -213,6 +213,9 @@ Name: "{commonstartup}\WAPT tray helper"; Tasks: autorunTray; Filename: "{app}\w
 [Tasks]
 Name: installService; Description: "{cm:InstallWAPTservice}";  GroupDescription: "Base";
 Name: autorunTray; Description: "{cm:LaunchIcon}"; Flags: unchecked;  GroupDescription: "Base";
+#if edition = "waptstarter"
+Name: EnableWaptServiceNoPassword; Description: "{cm:EnableWaptServiceNoPassword}";  GroupDescription: "Base";
+#endif
 
 #ifdef vcredist
 Name: installredist2008; Description: "{cm:InstallVCpp}";  Check: VCRedistNeedsInstall();  GroupDescription: "Base";
@@ -252,6 +255,7 @@ fr.InstallingVCpp=Installation des librairies MS VC++
 fr.SetupACL=Mise en place des droits sur le répertoire wapt
 fr.RunWaptTray=Lancement de l'icône de notification
 fr.UnregisterWaptService=Suppression du service waptservice
+fr.EnableWaptServiceNoPassword=Ne pas demander de mot de passe pour l'installation et la désinstallation des paquets Wapt.
 
 ;English translations here
 en.InstallWAPTservice=Install WAPT service
@@ -264,7 +268,8 @@ en.LaunchSession=Launch WAPT setup session upon session opening
 en.InstallingVCpp=Installing librairies MS VC++
 en.SetupACL=Setup ACL rights on wapt directory
 en.RunWaptTray=Launching notification tray icon
-fr.UnregisterWaptService=Suppression du service waptservice
+en.UnregisterWaptService=Removal of service waptservice
+en.EnableWaptServiceNoPassword=Don't ask password for installation and removal of Wapt packages for local user
 
 ;German translations here
 de.InstallWAPTservice=WAPT service installieren

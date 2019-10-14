@@ -5351,6 +5351,10 @@ msgstr ""
 msgid "Information about KB on MS Web site"
 msgstr ""
 
+#: tviswaptgui.menuitemcheckfiles.caption
+msgid "Check files"
+msgstr ""
+
 #: tviswaptgui.menuitemproductscheckall.caption
 msgctxt "tviswaptgui.menuitemproductscheckall.caption"
 msgid "Check all"

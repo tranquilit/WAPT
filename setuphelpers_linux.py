@@ -240,11 +240,6 @@ def get_computername():
 def installed_softwares(keywords='',uninstallkey=None,name=None):
     return [{'key':'TODOLINUX', 'name':'TODOLINUX', 'version':'TODOLINUX', 'install_date':'TODOLINUX', 'install_location':'TODOLINUX', 'uninstall_string':'TODOLINUX', 'publisher':'TODOLINUX','system_component':'TODOLINUX'}]
 
-def get_ip_address():
-    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    s.connect(("8.8.8.8", 80))
-    return [s.getsockname()[0]]
-
 def get_loggedinusers():
     suser = psutil.users()
     result = []

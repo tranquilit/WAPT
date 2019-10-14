@@ -13670,8 +13670,13 @@ object VisWaptGUI: TVisWaptGUI
     end
     object MenuItemShowErrors: TMenuItem
       Caption = 'Show errors'
-      ImageIndex = 36
+      ImageIndex = 3
       OnClick = MenuItemShowErrorsClick
+    end
+    object MenuItemCheckFiles: TMenuItem
+      Caption = 'Check files'
+      ImageIndex = 30
+      OnClick = MenuItemCheckFilesClick
     end
   end
 end
