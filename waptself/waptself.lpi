@@ -16,6 +16,7 @@
         <TextName Value="WAPT Self Service"/>
         <TextDesc Value=""/>
       </XPManifest>
+      <Icon Value="0"/>
       <Resources Count="14">
         <Resource_0 FileName="..\arts\iconsself\plus2.png" Type="RCDATA" ResourceName="PLUS2"/>
         <Resource_1 FileName="..\arts\iconsself\plus-bleu-fonce.png" Type="RCDATA" ResourceName="PLUS-BLEU-FONCE"/>
@@ -170,9 +171,6 @@
     </Linking>
     <Other>
       <CustomOptions Value="-dENTERPRISE"/>
-      <OtherDefines Count="1">
-        <Define0 Value="ENTERPRISE"/>
-      </OtherDefines>
     </Other>
   </CompilerOptions>
   <Debugging>
