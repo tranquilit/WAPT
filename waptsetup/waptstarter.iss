@@ -70,3 +70,8 @@ Filename: "{app}\waptself.exe"; Flags: postinstall runascurrentuser skipifsilent
 fr.RunWaptSelfService=Lancer le Self service applicatif WAPT
 en.RunWaptSelfService=Start WAPT Self service
 de.RunWaptSelfService=WAPT Self Service Konsole starten
+
+
+[INI]
+Filename: {app}\wapt-get.ini; Section: global; Key: waptservice_password; String: "NOPASSWORD"; Tasks: EnableWaptServiceNoPassword;
+
