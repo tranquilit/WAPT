@@ -153,7 +153,7 @@ def get_domain_batch():
     u'tranquilit.local'
     """
 
-    try: 
+    try:
         dom =  socket.getfqdn().split('.', 1)[1]
     except:
         dom = ""
@@ -227,7 +227,7 @@ def host_info():
     info['networking'] = networking()
     info['gateways'] = get_default_gateways()
     info['dns_servers'] = get_dns_servers()
-    info['connected_ips'] = get_ip_address()
+    info['connected_ips'] = [get_main_ip()]
     info['mac'] = [ c['mac'] for c in networking() if 'mac' in c and 'addr' in c and c['addr'] in info['connected_ips']]
     info['linux64'] = isLinux64()
     info['kernel_version'] = get_kernel_version()
@@ -247,18 +247,6 @@ def get_computername():
 
 def installed_softwares(keywords='',uninstallkey=None,name=None):
     return [{'key':'TODOLINUX', 'name':'TODOLINUX', 'version':'TODOLINUX', 'install_date':'TODOLINUX', 'install_location':'TODOLINUX', 'uninstall_string':'TODOLINUX', 'publisher':'TODOLINUX','system_component':'TODOLINUX'}]
-
-def get_ip_address():
-    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    try:
-        # doesn't even have to be reachable
-        s.connect(('10.255.255.255', 1))
-        IP = s.getsockname()[0]
-    except:
-        IP = '127.0.0.1'
-    finally:
-        s.close()
-    return IP
 
 def get_loggedinusers():
     suser = psutil.users()
