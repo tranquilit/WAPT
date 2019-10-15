@@ -209,7 +209,11 @@ Filename: "{app}\wapt-get.exe"; Parameters: "--direct update"; Flags: runhidden;
 
 [Icons]
 Name: "{commonstartup}\WAPT session setup"; Filename: "{app}\wapt-get.exe"; Parameters: "session-setup ALL"; Flags: runminimized excludefromshowinnewinstall;
+
+#if edition != "waptstarter"
 Name: "{group}\{cm:WAPTConsole}"; Filename: "{app}\waptconsole.exe"; WorkingDir: "{app}"; Check: Not IsWaptAgent();
+#endif
+
 Name: "{group}\{cm:WAPTSelf}"; Filename: "{app}\waptself.exe"; WorkingDir: "{app}"
 
 [CustomMessages]
