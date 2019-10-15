@@ -5613,40 +5613,41 @@ class Wapt(BaseObjectClass):
         authorized_certificates_pem = [c.as_pem() for c in self.authorized_certificates()]
         _add_data_if_updated(inv,'authorized_certificates',authorized_certificates_pem,old_hashes,new_hashes)
 
-        if include_wmi:
-            try:
-                _add_data_if_updated(inv,'wmi',setuphelpers.wmi_info(),old_hashes,new_hashes)
-            except:
-                logger.warning('WMI not working')
-
-        if include_dmi:
-            try:
-                _add_data_if_updated(inv,'dmi',setuphelpers.dmi_info(),old_hashes,new_hashes)
-            except:
-                logger.warning(u'WMI not working')
-
-        if self.get_wapt_edition() == 'enterprise':
-            try:
-                import waptenterprise.waptwua.client
-                wua_client = waptenterprise.waptwua.client.WaptWUA(self)
+        if os.name=='nt':
+            if include_wmi:
                 try:
-                    waptwua_status = wua_client.stored_waptwua_status()
-                    waptwua_rules_packages = wua_client.stored_waptwua_rules()
-                    waptwua_updates = wua_client.stored_updates()
-                    waptwua_updates_localstatus = wua_client.stored_updates_localstatus()
+                    _add_data_if_updated(inv,'wmi',setuphelpers.wmi_info(),old_hashes,new_hashes)
+                except:
+                    logger.warning('WMI not working')
 
-                    _add_data_if_updated(inv,'wuauserv_status', wua_client.get_wuauserv_status(),old_hashes,new_hashes)
-                    _add_data_if_updated(inv,'waptwua_status', waptwua_status,old_hashes,new_hashes)
-                    # not useful
-                    _add_data_if_updated(inv,'waptwua_rules_packages', waptwua_rules_packages,old_hashes,new_hashes)
-                    _add_data_if_updated(inv,'waptwua_updates', waptwua_updates,old_hashes,new_hashes)
-                    _add_data_if_updated(inv,'waptwua_updates_localstatus', waptwua_updates_localstatus,old_hashes,new_hashes)
+            if include_dmi:
+                try:
+                    _add_data_if_updated(inv,'dmi',setuphelpers.dmi_info(),old_hashes,new_hashes)
+                except:
+                    logger.warning(u'DMI not working')
 
-                finally:
-                    wua_client = None
+            if self.get_wapt_edition() == 'enterprise':
+                try:
+                    import waptenterprise.waptwua.client
+                    wua_client = waptenterprise.waptwua.client.WaptWUA(self)
+                    try:
+                        waptwua_status = wua_client.stored_waptwua_status()
+                        waptwua_rules_packages = wua_client.stored_waptwua_rules()
+                        waptwua_updates = wua_client.stored_updates()
+                        waptwua_updates_localstatus = wua_client.stored_updates_localstatus()
 
-            except ImportError as e:
-                logger.warning(u'waptwua module not installed')
+                        _add_data_if_updated(inv,'wuauserv_status', wua_client.get_wuauserv_status(),old_hashes,new_hashes)
+                        _add_data_if_updated(inv,'waptwua_status', waptwua_status,old_hashes,new_hashes)
+                        # not useful
+                        _add_data_if_updated(inv,'waptwua_rules_packages', waptwua_rules_packages,old_hashes,new_hashes)
+                        _add_data_if_updated(inv,'waptwua_updates', waptwua_updates,old_hashes,new_hashes)
+                        _add_data_if_updated(inv,'waptwua_updates_localstatus', waptwua_updates_localstatus,old_hashes,new_hashes)
+
+                    finally:
+                        wua_client = None
+
+                except ImportError as e:
+                    logger.warning(u'waptwua module not installed')
 
         return inv
 
