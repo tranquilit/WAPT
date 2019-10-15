@@ -780,6 +780,8 @@ type
       ParentNode, Node: PVirtualNode; var InitialStates: TVirtualNodeInitStates);
     procedure GridGroupsMeasureItem(Sender: TBaseVirtualTree;
       TargetCanvas: TCanvas; Node: PVirtualNode; var NodeHeight: integer);
+    procedure GridGroupsSOCompareNodes(Sender: TSOGrid; Node1,
+      Node2: ISuperObject; const Columns: array of String; var Result: Integer);
     procedure GridHostPackagesChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
     procedure GridHostPackagesFocusChanged(Sender: TBaseVirtualTree;
       Node: PVirtualNode; Column: TColumnIndex);
@@ -4638,6 +4640,39 @@ begin
   if maxheight > 6 *(Sender as TSOGrid).DefaultNodeHeight then
     maxheight := 6 *(Sender as TSOGrid).DefaultNodeHeight;
   NodeHeight := maxheight + 4;
+end;
+
+procedure TVisWaptGUI.GridGroupsSOCompareNodes(Sender: TSOGrid; Node1,
+  Node2: ISuperObject; const Columns: array of String; var Result: Integer);
+begin
+  if (length(Columns) > 0) and (Node1 <> nil) and (Node2 <> nil) then
+  begin
+    if length(Columns) = 1 then
+    begin
+      if pos('package',Columns[0])>0 then
+      begin
+        Result:=CompareStr(Node1.S[Columns[0]],Node2.S[Columns[0]]);
+        If Result = 0 then
+          Result:= CompareVersion(Node1.S['version'],Node2.S['version']);
+        If Result = 0 then
+          Result:= CompareStr(Node1.S['architecture'],Node2.S['architecture']);
+        If Result = 0 then
+          Result:= CompareStr(Node1.S['locale'],Node2.S['locale']);
+        If Result = 0 then
+          Result:= CompareStr(Node1.S['maturity'],Node2.S['maturity']);
+      end else
+      if pos('size',Columns[0])>0 then
+        Result:=CompareInt(Node1.I[Columns[0]],Node2.I[Columns[0]])
+      else if pos('version',Columns[0])>0 then
+        Result:= CompareVersion(Node1.S[Columns[0]],Node2.S[Columns[0]])
+      else
+        Result := integer(SOCompareByKeys(Node1,Node2,Columns));
+    end
+    else
+      Result := integer(SOCompareByKeys(Node1,Node2,Columns));
+  end
+  else
+    Result := -1;
 end;
 
 procedure TVisWaptGUI.GridHostPackagesChange(Sender: TBaseVirtualTree;

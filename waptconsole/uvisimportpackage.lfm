@@ -98,6 +98,7 @@ object VisImportPackage: TVisImportPackage
     Width = 1235
     OnGetText = GridExternalPackagesGetText
     ShowAdvancedColumnsCustomize = False
+    OnSOCompareNodes = GridExternalPackagesSOCompareNodes
     Align = alClient
     Color = clWhite
     Colors.UnfocusedColor = clMedGray
