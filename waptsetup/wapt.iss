@@ -211,7 +211,7 @@ Name: "{commonstartup}\WAPT tray helper"; Tasks: autorunTray; Filename: "{app}\w
 [Tasks]
 Name: installService; Description: "{cm:InstallWAPTservice}";  GroupDescription: "Base";
 Name: autorunTray; Description: "{cm:LaunchIcon}"; Flags: unchecked;  GroupDescription: "Base";
-#if edition = "waptstarter"
+#if edition == "waptstarter"
 Name: EnableWaptServiceNoPassword; Description: "{cm:EnableWaptServiceNoPassword}";  GroupDescription: "Base";
 #endif
 
