@@ -35,7 +35,7 @@ var
 
 implementation
 
-uses IniFiles, Dialogs, Forms,waptwinutils, uVisLogin, sysutils, FileUtil, uWaptSelfRes;
+uses IniFiles, Dialogs, Forms,waptwinutils, uVisLogin, sysutils, FileUtil, uWaptSelfRes, tiscommon;
 {$R *.lfm}
 
 { TDMWaptSelf }
@@ -139,8 +139,13 @@ begin
           try
             iniWaptGet:=TIniFile.Create(WaptIniFilename);
             waptservice_localuser := iniWaptGet.ReadString('global','waptservice_user','admin');
+
+            if not CheckOpenPort(waptservice_port,'127.0.0.1',waptservice_timeout*1000) then
+              Raise Exception.Create(rsServiceNotRun);
+
             if (iniWaptGet.ReadString('global','waptservice_password','') = 'NOPASSWORD') then
             begin
+              // wait for service to start
               FToken:=UTF8Encode(WAPTLocalJsonGet('login',waptservice_localuser,'NOPASSWORD',-1,@OnLocalServiceAuth,-1).S['token']);
               FLogin:=waptservice_localuser;
             end

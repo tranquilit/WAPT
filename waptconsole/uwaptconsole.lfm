@@ -27,7 +27,7 @@ object VisWaptGUI: TVisWaptGUI
     Height = 854
     Top = 0
     Width = 1920
-    ActivePage = pgRepositories
+    ActivePage = pgInventory
     Align = alClient
     TabIndex = 9
     TabOrder = 0
@@ -3146,6 +3146,7 @@ object VisWaptGUI: TVisWaptGUI
         OnGetText = GridGroupsGetText
         ShowAdvancedColumnsCustomize = False
         KeyFieldsNames = 'package;version;architecture;locale;maturity'
+        OnSOCompareNodes = GridGroupsSOCompareNodes
         Align = alClient
         Color = clWhite
         Colors.UnfocusedColor = clMedGray
@@ -3762,6 +3763,7 @@ object VisWaptGUI: TVisWaptGUI
         OnGetText = GridGroupsGetText
         ShowAdvancedColumnsCustomize = False
         KeyFieldsNames = 'package;version;architecture;locale;maturity'
+        OnSOCompareNodes = GridGroupsSOCompareNodes
         Align = alClient
         Color = clWhite
         Colors.UnfocusedColor = clMedGray
@@ -4832,6 +4834,7 @@ object VisWaptGUI: TVisWaptGUI
             OnNodesDelete = GridWUAPackagesNodesDelete
             ShowAdvancedColumnsCustomize = False
             KeyFieldsNames = 'package_uuid'
+            OnSOCompareNodes = GridGroupsSOCompareNodes
             Align = alClient
             Color = clWhite
             Colors.UnfocusedColor = clMedGray
@@ -5999,6 +6002,7 @@ object VisWaptGUI: TVisWaptGUI
         OnNodesDelete = GridWUAPackagesNodesDelete
         ShowAdvancedColumnsCustomize = False
         KeyFieldsNames = 'package_uuid'
+        OnSOCompareNodes = GridGroupsSOCompareNodes
         Align = alClient
         Color = clWhite
         Colors.UnfocusedColor = clMedGray
