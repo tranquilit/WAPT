@@ -1,2 +1,2 @@
 #!/bin/bash
-sudo -u wapt PYTHONHOME=/opt/wapt PYTHONPATH=/opt/wapt /opt/wapt/bin/python $@
+sudo PYTHONHOME=/opt/wapt PYTHONPATH=/opt/wapt /opt/wapt/bin/python $@
