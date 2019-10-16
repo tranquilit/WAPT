@@ -65,4 +65,3 @@ Werkzeug==0.16
 wrapt==1.10.11
 WTForms==2.1
 py-cpuinfo==5.0.0
-py-dmidecode==0.0.2

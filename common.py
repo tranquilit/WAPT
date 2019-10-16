@@ -5613,18 +5613,18 @@ class Wapt(BaseObjectClass):
         authorized_certificates_pem = [c.as_pem() for c in self.authorized_certificates()]
         _add_data_if_updated(inv,'authorized_certificates',authorized_certificates_pem,old_hashes,new_hashes)
 
+        if include_dmi:
+            try:
+                _add_data_if_updated(inv,'dmi',setuphelpers.dmi_info(),old_hashes,new_hashes)
+            except:
+                logger.warning(u'DMI not working')
+
         if os.name=='nt':
             if include_wmi:
                 try:
                     _add_data_if_updated(inv,'wmi',setuphelpers.wmi_info(),old_hashes,new_hashes)
                 except:
                     logger.warning('WMI not working')
-
-            if include_dmi:
-                try:
-                    _add_data_if_updated(inv,'dmi',setuphelpers.dmi_info(),old_hashes,new_hashes)
-                except:
-                    logger.warning(u'DMI not working')
 
             if self.get_wapt_edition() == 'enterprise':
                 try:

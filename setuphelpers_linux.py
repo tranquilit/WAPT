@@ -266,7 +266,7 @@ def get_last_logged_on_user():
     return res
 
 def run(*args, **kwargs):
-    return subprocess.check_output(*args, shell=True, **kwargs)
+    return subprocess.check_output(*args, **kwargs)
 
 def apt_install(package,allow_unauthenticated=False):
     if allow_unauthenticated:
@@ -309,4 +309,54 @@ def yum_update():
 
 def yum_upgrade():
     return run('LANG=C yum upgrade -y')
+
+def dmi_info():
+    """Hardware System information from BIOS estracted with dmidecode
+    Convert dmidecode -q output to python dict
+
+    Returns:
+        dict
+
+    >>> dmi = dmi_info()
+    >>> 'UUID' in dmi['System_Information']
+    True
+    >>> 'Product_Name' in dmi['System_Information']
+    True
+    """
+
+    result = {}
+    dmiout = ensure_unicode(run('dmidecode -q',shell=True))
+    new_section = True
+    for l in dmiout.splitlines():
+        if not l.strip() or l.startswith('#'):
+            new_section = True
+            continue
+
+        if not l.startswith('\t') or new_section:
+            currobject={}
+            key = l.strip().replace(' ','_')
+            # already here... so add as array...
+            if (key in result):
+                if not isinstance(result[key],list):
+                    result[key] = [result[key]]
+                result[key].append(currobject)
+            else:
+                result[key]  = currobject
+            if l.startswith('\t'):
+                print(l)
+        else:
+            if not l.startswith('\t\t'):
+                currarray = []
+                if ':' in l:
+                    (name,value)=l.split(':',1)
+                    currobject[name.strip().replace(' ','_')]=value.strip()
+                else:
+                    print("Error in line : %s" % l)
+            else:
+                # first line of array
+                if not currarray:
+                    currobject[name.strip().replace(' ','_')]=currarray
+                currarray.append(l.strip())
+        new_section = False
+    return result
 

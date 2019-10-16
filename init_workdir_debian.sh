@@ -17,7 +17,3 @@ cp -f utils/patch-socketio-client-2/transports.py  ./lib/python2.7/site-packages
 # Patch x509 certificate signature checking
 cp -f utils/patch-cryptography/__init__.py  lib/python2.7/site-packages/cryptography/x509/
 cp -f utils/patch-cryptography/verification.py  lib/python2.7/site-packages/cryptography/x509/
-
-
-
-#brew install cavaliercoder/dmidecode/dmidecode
