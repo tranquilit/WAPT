@@ -3129,7 +3129,10 @@ class Wapt(BaseObjectClass):
             new_uuid = current_hostname
         else:
             try:
-                inv = setuphelpers.wmi_info_basic()
+                if os.name=='nt':
+                    inv = setuphelpers.wmi_info_basic()
+                else:
+                    inv = setuphelpers.dmi_info()
                 new_uuid = inv['System_Information']['UUID']
             except:
                 if previous_uuid is None or registered_hostname != current_hostname:

@@ -27,7 +27,6 @@ import socket
 import struct
 import getpass
 import platform
-import dmidecode
 import configparser
 import platform
 import psutil
@@ -205,11 +204,11 @@ def host_info():
     """
     info = {}
     try:
-        dmidecode_system=dmidecode.get_by_type(1)[0]
+        dmi = dmi_info()
 
     ##    info['description'] = 'LINUX' ## inexistant in Linux
-        info['system_manufacturer'] = dmidecode_system.get('Manufacturer')
-        info['system_productname'] = dmidecode_system.get('Product Name')
+        info['system_manufacturer'] = dmi['System_Information']['Manufacturer']
+        info['system_productname'] = dmi['System_Information']['Product_Name']
     except:
         logger.info('error while running dmidecode, dmidecode needs root privileges')
         pass
