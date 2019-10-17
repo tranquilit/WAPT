@@ -758,6 +758,8 @@ def host_info():
     info['registered_owner'] =  ensure_unicode(registry_readstring(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows NT\CurrentVersion','RegisteredOwner'))
     info['windows_version'] =  windows_version()
     info['windows_product_infos'] =  keyfinder.windows_product_infos()
+    info['os_version'] = windows_version()
+    info['os_name'] = keyfinder.windows_product_infos()['version']
     info['installation_date'] = datetime.datetime.fromtimestamp(int(registry_readstring(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows NT\CurrentVersion','InstallDate','0'))).isoformat()
 
     info['uac_level'] =  registry_readstring(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System','EnableLUA')
