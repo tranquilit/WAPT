@@ -323,10 +323,10 @@ begin
       else if pos('version',Columns[0])>0 then
         Result:= CompareVersion(Node1.S[Columns[0]],Node2.S[Columns[0]])
       else
-        Result := integer(SOCompareByKeys(Node1,Node2,Columns));
+        Result := integer(SOCompareByKeys(Node1,Node2,Columns)) - 1;
     end
     else
-      Result := integer(SOCompareByKeys(Node1,Node2,Columns));
+      Result := integer(SOCompareByKeys(Node1,Node2,Columns)) - 1;
   end
   else
     Result := -1;

@@ -4724,16 +4724,16 @@ begin
           Result:= CompareStr(Node1.S['locale'],Node2.S['locale']);
         If Result = 0 then
           Result:= CompareStr(Node1.S['maturity'],Node2.S['maturity']);
-      end else
-      if pos('size',Columns[0])>0 then
+      end
+      else if pos('size',Columns[0])>0 then
         Result:=CompareInt(Node1.I[Columns[0]],Node2.I[Columns[0]])
       else if pos('version',Columns[0])>0 then
         Result:= CompareVersion(Node1.S[Columns[0]],Node2.S[Columns[0]])
       else
-        Result := integer(SOCompareByKeys(Node1,Node2,Columns));
+        Result := integer(SOCompareByKeys(Node1,Node2,Columns)) - 1;
     end
     else
-      Result := integer(SOCompareByKeys(Node1,Node2,Columns));
+      Result := integer(SOCompareByKeys(Node1,Node2,Columns)) - 1;
   end
   else
     Result := -1;

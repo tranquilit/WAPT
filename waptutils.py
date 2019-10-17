@@ -1475,7 +1475,7 @@ class LogOutput(BaseObjectClass):
 
     def _send_tail_to_updatehook(self):
         """send pending output to hook"""
-        append_txt = u'\n'.join(self.output[self.last_update_idx:])
+        append_txt = u''.join(self.output[self.last_update_idx:])
         try:
             self.update_status_hook(append_output=append_txt,set_status=self.running_status,**self.hook_args)
             self.last_update_idx = len(self.output)
@@ -1486,11 +1486,10 @@ class LogOutput(BaseObjectClass):
     def write(self,txt):
         with self.lock:
             txt = ensure_unicode(txt)
-            if txt != '\n':
-                self.output.append(txt)
-                if self.update_status_hook and threading.current_thread() == self.threadid and (time.time()-self.last_update_time>=self.update_buffer_time):
-                    # wait update_buffer_time before sending data to update_hook to avoid high frequency I/O
-                    self._send_tail_to_updatehook()
+            self.output.append(txt)
+            if self.update_status_hook and threading.current_thread() == self.threadid and (time.time()-self.last_update_time>=self.update_buffer_time):
+                # wait update_buffer_time before sending data to update_hook to avoid high frequency I/O
+                self._send_tail_to_updatehook()
 
             if self.console:
                 try:
