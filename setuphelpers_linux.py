@@ -36,7 +36,19 @@ import cpuinfo
 import sys
 import subprocess
 import logging
+import datetime
 from waptutils import (ensure_unicode, makepath, ensure_dir,currentdate,currentdatetime,_lower,ini2winstr,error,get_main_ip)
+
+try:
+    import apt
+except:
+    apt=None
+
+try:
+    import rpm
+except:
+    rpm=None
+
 
 logger = logging.getLogger()
 
@@ -245,7 +257,31 @@ def get_computername():
 
 
 def installed_softwares(keywords='',uninstallkey=None,name=None):
-    return [{'key':'TODOLINUX', 'name':'TODOLINUX', 'version':'TODOLINUX', 'install_date':'TODOLINUX', 'install_location':'TODOLINUX', 'uninstall_string':'TODOLINUX', 'publisher':'TODOLINUX','system_component':'TODOLINUX'}]
+    if apt:
+        list_installed_softwares=[]
+        for pkg in apt.Cache():
+            path_dpkg_info ="/var/lib/dpkg/info/"
+            if pkg.is_installed:
+                try:
+                    if os.path.isfile(os.path.join(path_dpkg_info,(pkg.name+'.list'))):
+                        install_date=os.path.getctime(os.path.join(path_dpkg_info,(pkg.name+'.list')))
+                    else:
+                        install_date=os.path.getctime(os.path.join(path_dpkg_info,(pkg.fullname+'.list')))
+                    install_date=datetime.datetime.fromtimestamp(install_date).strftime('%Y-%m-%d %H:%M:%S')
+                except:
+                    install_date=''
+                pkg_dict={'key':'','name':pkg.name,'version':str(pkg.installed).split('=',1)[1],'install_date':install_date,'install_location':'','uninstall_string':'','publisher':pkg.versions[0].homepage,'system_component':''}
+                list_installed_softwares.append(pkg_dict)
+        return list_installed_softwares
+    elif rpm:
+        list_installed_softwares=[]
+        trans = rpm.TransactionSet()
+        for header in trans.dbMatch():
+            pkg_dict={'key':'','name':header['name'],'version':header['version'],'install_date':datetime.datetime.strptime(header.sprintf("%{INSTALLTID:date}"),'%a %b %d %H:%M:%S %Y'),'install_location':'','uninstall_string':'','publisher':header['url'],'system_component':''}
+            list_installed_softwares.append(pkg_dict)
+        return list_installed_softwares
+    else:
+        return [{'key':'Distribution not supported yet', 'name':'Distribution not supported yet', 'version':'Distribution not supported yet', 'install_date':'Distribution not supported yet', 'install_location':'Distribution not supported yet', 'uninstall_string':'Distribution not supported yet', 'publisher':'Distribution not supported yet','system_component':'Distribution not supported yet'}]
 
 def get_loggedinusers():
     suser = psutil.users()

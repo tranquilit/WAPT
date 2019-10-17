@@ -310,13 +310,13 @@ begin
       begin
         Result:=CompareStr(Node1.S[Columns[0]],Node2.S[Columns[0]]);
         If Result = 0 then
-          Result:= CompareVersion(Node1.S['version'],Node2.S['version']);
+          Result:= CompareVersion(UTF8Encode(Node1.S['version']),UTF8Encode(Node2.S['version']));
         If Result = 0 then
-          Result:= CompareStr(Node1.S['architecture'],Node2.S['architecture']);
+          Result:= CompareStr(UTF8Encode(Node1.S['architecture']),UTF8Encode(Node2.S['architecture']));
         If Result = 0 then
-          Result:= CompareStr(Node1.S['locale'],Node2.S['locale']);
+          Result:= CompareStr(UTF8Encode(Node1.S['locale']),UTF8Encode(Node2.S['locale']));
         If Result = 0 then
-          Result:= CompareStr(Node1.S['maturity'],Node2.S['maturity']);
+          Result:= CompareStr(UTF8Encode(Node1.S['maturity']),UTF8Encode(Node2.S['maturity']));
       end else
       if pos('size',Columns[0])>0 then
         Result:=CompareInt(Node1.I[Columns[0]],Node2.I[Columns[0]])

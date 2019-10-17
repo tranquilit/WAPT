@@ -5642,7 +5642,7 @@ var
 begin
   PluginName:=(Sender as TMenuItem).Caption;
   for plugin in GridHostsPlugins do
-    if plugin.S['name']=PluginName then
+    if plugin.S['name']=UTF8Decode(PluginName) then
     begin
       Executable := plugin.S['executable'];
       Arguments := plugin.S['arguments'];

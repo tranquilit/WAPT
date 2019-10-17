@@ -58,6 +58,7 @@
       <Unit0>
         <Filename Value="waptget.lpr"/>
         <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
         <TopLine Value="935"/>
         <CursorPos X="8" Y="947"/>
         <UsageCount Value="222"/>
@@ -66,9 +67,8 @@
       </Unit0>
       <Unit1>
         <Filename Value="waptcommon.pas"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="2198"/>
+        <TopLine Value="2180"/>
         <CursorPos X="72" Y="2210"/>
         <UsageCount Value="10"/>
         <Loaded Value="True"/>

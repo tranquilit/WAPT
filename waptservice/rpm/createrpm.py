@@ -251,14 +251,24 @@ if WAPTEDITION=='enterprise':
 
 ##check linux distrib
 if platform.linux_distribution()[0].startswith('CentOS'):
-    eprint(run('sudo yum install -y python-virtualenv python-setuptools gcc python-pip python-devel postgresql-devel libffi-devel openldap-devel openssl-devel python-psycopg2'))
+    eprint(run('sudo yum install -y python-virtualenv python-setuptools gcc python-pip python-devel postgresql-devel libffi-devel openldap-devel openssl-devel python-psycopg2 yum-utils'))
     eprint('Create a build environment virtualenv. May need to download a few libraries, it may take some time')
     run_verbose('pip install --upgrade pip')
     run_verbose('pip install distribute')
     run_verbose(r'virtualenv ./builddir/opt/wapt/')
     run_verbose(r'virtualenv ./builddir/opt/wapt/ --always-copy')
     eprint('Install additional libraries in build environment virtualenv')
-    run_verbose(r'source ./builddir/opt/wapt/bin/activate; pip install -r ../../requirements.txt')
+    run_verbose(r'source ./builddir/opt/wapt/bin/activate; pip install -r ../../requirements.txt -r ../../requirements-linux.txt')
+    
+    run('cp -ruf /usr/lib/python2.7/site-packages/yum* ./builddir/opt/wapt/lib/python2.7/site-packages/')
+    run('cp -ruf /usr/lib64/python2.7/site-packages/yum* ./builddir/opt/wapt/lib64/python2.7/site-packages/')
+    run('cp -ruf /usr/lib/python2.7/site-packages/rpm* ./builddir/opt/wapt/lib/python2.7/site-packages/')
+    run('cp -ruf /usr/lib64/python2.7/site-packages/rpm* ./builddir/opt/wapt/lib64/python2.7/site-packages/')
+    run('cp -ruf /usr/lib/python2.7/site-packages/urlgrabber* ./builddir/opt/wapt/lib/python2.7/site-packages/')
+    run('cp -ruf /usr/lib64/python2.7/site-packages/pycurl* ./builddir/opt/wapt/lib64/python2.7/site-packages/')
+    run('cp -ruf /usr/lib64/python2.7/site-packages/sqlitecachec* ./builddir/opt/wapt/lib64/python2.7/site-packages/')
+    run('cp -ruf /usr/lib64/python2.7/site-packages/_sqlitecache* ./builddir/opt/wapt/lib/python2.7/site-packages/')
+    
 
     # python dialog
     copyfile(makepath(wapt_source_dir, 'lib', 'site-packages', 'dialog.py'),'builddir/opt/wapt/lib/python2.7/site-packages/dialog.py')
