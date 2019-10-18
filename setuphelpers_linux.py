@@ -250,6 +250,7 @@ def host_info():
     info['os_version'] = platform.linux_distribution()[1]
     info['environ'] = {k:ensure_unicode(v) for k,v in os.environ.iteritems()}
     info['main_ip'] = get_main_ip()
+    info['platform'] = platform.system()
 
     return info
 

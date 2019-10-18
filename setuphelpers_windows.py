@@ -772,6 +772,7 @@ def host_info():
     info['local_administrators'] = local_admins()
     info['local_groups'] =  {g:local_group_members(g) for g in local_groups()}
     info['local_users'] =  local_users()
+    info['platform'] = platform.system()
 
     info['windows_startup_items'] = win_startup_info()
 

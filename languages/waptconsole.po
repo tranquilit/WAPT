@@ -3439,6 +3439,10 @@ msgstr ""
 msgid "Registration Method"
 msgstr ""
 
+#: tviswaptgui.gridhosts.header.columns[27].text
+msgid "Platform"
+msgstr ""
+
 #: tviswaptgui.gridhosts.header.columns[2].text
 msgctxt "tviswaptgui.gridhosts.header.columns[2].text"
 msgid "Audit status"
@@ -3468,7 +3472,8 @@ msgid "IP addresses"
 msgstr ""
 
 #: tviswaptgui.gridhosts.header.columns[8].text
-msgid "Windows version"
+msgctxt "tviswaptgui.gridhosts.header.columns[8].text"
+msgid "Operating system"
 msgstr ""
 
 #: tviswaptgui.gridhosts.header.columns[9].text

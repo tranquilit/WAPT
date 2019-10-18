@@ -2143,7 +2143,7 @@ object VisWaptGUI: TVisWaptGUI
             item
               Position = 8
               Tag = 8
-              Text = 'Windows version'
+              Text = 'Operating system'
               Width = 192
               PropertyName = 'os_name'
             end          
@@ -2282,7 +2282,7 @@ object VisWaptGUI: TVisWaptGUI
               Position = 25
               Tag = 25
               Text = 'Last logged on user'
-              Width = 107
+              Width = 72
               PropertyName = 'last_logged_on_user'
             end          
             item
@@ -2292,6 +2292,11 @@ object VisWaptGUI: TVisWaptGUI
               Text = 'Registration Method'
               Width = 10
               PropertyName = 'registration_auth_user'
+            end          
+            item
+              Position = 27
+              Text = 'Platform'
+              PropertyName = 'platform'
             end>
           Header.DefaultHeight = 18
           Header.Height = 18

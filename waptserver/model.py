@@ -1032,6 +1032,7 @@ def wapthosts_json(model_class, instance, created):
             ['manufacturer', 'system_manufacturer'],
             ['productname', 'system_productname'],
             ['os_name', 'os_name'],
+            ['platform','platform'],
             ['os_version', ('os_version', 'os_name')],
             ['connected_ips', 'connected_ips'],
             ['connected_users', ('connected_users', 'current_user')],

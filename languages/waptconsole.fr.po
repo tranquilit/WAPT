@@ -3454,6 +3454,10 @@ msgstr "Dernier utilisateur logué"
 msgid "Registration Method"
 msgstr "Méthode d'enregistrement"
 
+#: tviswaptgui.gridhosts.header.columns[27].text
+msgid "Platform"
+msgstr "Plateforme"
+
 #: tviswaptgui.gridhosts.header.columns[2].text
 msgctxt "tviswaptgui.gridhosts.header.columns[2].text"
 msgid "Audit status"
@@ -3483,8 +3487,9 @@ msgid "IP addresses"
 msgstr "Adresses IP"
 
 #: tviswaptgui.gridhosts.header.columns[8].text
-msgid "Windows version"
-msgstr "Version Windows"
+msgctxt "tviswaptgui.gridhosts.header.columns[8].text"
+msgid "Operating system"
+msgstr "Système d'exploitation"
 
 #: tviswaptgui.gridhosts.header.columns[9].text
 msgctxt "tviswaptgui.gridhosts.header.columns[9].text"
