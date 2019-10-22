@@ -180,6 +180,7 @@ class Hosts(WaptBaseModel):
     os_name = CharField(null=True)
     os_version = CharField(null=True)
     os_architecture = CharField(null=True)
+    platform = CharField(null=True)
 
     # frequently updated data from host update_status
     connected_users = ArrayField(CharField, null=True)
@@ -1043,6 +1044,7 @@ def wapthosts_json(model_class, instance, created):
             ['computer_ad_site', 'computer_ad_site'],
             ['computer_ad_ou', extract_ou],
             ['computer_ad_groups', 'computer_ad_groups'],
+            ['platform','platform'],
         ]
 
         for field, attribute in extractmap:
@@ -1858,6 +1860,10 @@ def upgrade_db_structure():
                 opes.append(migrator.add_column(SiteRules._meta.name, 'value',SiteRules.value))
             if not 'repo_url' in columns:
                 opes.append(migrator.add_column(SiteRules._meta.name, 'repo_url',SiteRules.repo_url))
+
+            columns = [c.name for c in wapt_db.get_columns('hosts')]
+            if not 'platform' in columns:
+                opes.append(migrator.add_column(Hosts._meta.name, 'platform',Hosts.platform))
 
             migrate(*opes)
             (v, created) = ServerAttribs.get_or_create(key='db_version')

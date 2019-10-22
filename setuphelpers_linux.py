@@ -246,8 +246,12 @@ def host_info():
     info['distrib'] = get_distrib_linux()
     info['distrib_version'] = get_distrib_version()
     info['cpu_name'] = cpuinfo.get_cpu_info()['brand']
-    info['os_name'] = platform.linux_distribution()[0]
-    info['os_version'] = platform.linux_distribution()[1]
+    if platform.system()=='Darwin':
+        info['os_name']= platform.system()
+        info['os_version']=platform.release()
+    else:
+        info['os_name'] = platform.linux_distribution()[0]
+        info['os_version'] = platform.linux_distribution()[1]
     info['environ'] = {k:ensure_unicode(v) for k,v in os.environ.iteritems()}
     info['main_ip'] = get_main_ip()
     info['platform'] = platform.system()

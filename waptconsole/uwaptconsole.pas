@@ -3857,9 +3857,9 @@ var
   prop: string;
   HostsCount,i: integer;
 const
-  DefaultColumns:Array[0..13] of String = ('uuid','os_name','connected_ips','computer_fqdn',
+  DefaultColumns:Array[0..14] of String = ('uuid','os_name','connected_ips','computer_fqdn',
     'computer_name','manufacturer','description','productname','serialnr','mac_addresses','connected_users','last_logged_on_user',
-    'computer_ad_ou','computer_ad_site');
+    'computer_ad_ou','computer_ad_site','platform');
 begin
   if AppLoading then
     Exit;
@@ -3900,6 +3900,7 @@ begin
         fields.AsArray.Add('mac_addresses');
         fields.AsArray.Add('connected_users');
         fields.AsArray.Add('serialnr');
+        fields.AsArray.Add('platform');
       end;
 
       if cbSearchDMI.Checked = True then
@@ -4992,7 +4993,7 @@ procedure TVisWaptGUI.GridHostsGetImageIndexEx(Sender: TBaseVirtualTree;
   var Ghosted: boolean; var ImageIndex: integer; var ImageList: TCustomImageList);
 var
   RowSO, status,
-  registration_auth_user,reachable: ISuperObject;
+  registration_auth_user,reachable,platform: ISuperObject;
 begin
   if TSOGridColumn(GridHosts.Header.Columns[Column]).PropertyName = 'host_status' then
   begin
@@ -5027,6 +5028,21 @@ begin
           ImageIndex := 6
       else
         ImageIndex := -1;
+    end
+    else
+      ImageIndex := -1;
+  end
+  else if TSOGridColumn(GridHosts.Header.Columns[Column]).PropertyName = 'platform' then
+  begin
+    platform := GridHostPackages.GetCellData(Node, 'platform', Nil);
+    if (platform<>Nil)then
+    begin
+      if (platform.AsString = 'Linux') then
+        ImageIndex := 21
+      else if (platform.AsString = 'Windows') then
+        ImageIndex := 20
+      else if (platform.AsString = 'Darwin') then
+          ImageIndex := 22;
     end
     else
       ImageIndex := -1;

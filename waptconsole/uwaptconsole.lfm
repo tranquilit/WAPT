@@ -41,9 +41,9 @@ object VisWaptGUI: TVisWaptGUI
         Height = 700
         Top = 126
         Width = 572
-        ActivePage = pgSoftwares
+        ActivePage = pgPackages
         Align = alRight
-        TabIndex = 2
+        TabIndex = 0
         TabOrder = 0
         OnChange = HostPagesChange
         object pgPackages: TTabSheet
@@ -2143,14 +2143,21 @@ object VisWaptGUI: TVisWaptGUI
             item
               Position = 8
               Tag = 8
+              Text = 'Platform'
+              Width = 78
+              PropertyName = 'platform'
+            end          
+            item
+              Position = 9
+              Tag = 9
               Text = 'Operating system'
               Width = 192
               PropertyName = 'os_name'
             end          
             item
               MaxWidth = 400
-              Position = 9
-              Tag = 9
+              Position = 10
+              Tag = 10
               Text = 'Model'
               Width = 187
               PropertyName = 'productname'
@@ -2158,23 +2165,23 @@ object VisWaptGUI: TVisWaptGUI
             item
               MaxWidth = 400
               Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-              Position = 10
-              Tag = 10
+              Position = 11
+              Tag = 11
               Text = 'Serial number'
               Width = 100
               PropertyName = 'serialnr'
             end          
             item
               MaxWidth = 400
-              Position = 11
-              Tag = 11
+              Position = 12
+              Tag = 12
               Text = 'Last seen on'
               Width = 105
               PropertyName = 'last_seen_on'
             end          
             item
-              Position = 12
-              Tag = 12
+              Position = 13
+              Tag = 13
               Text = 'Logged in users'
               Width = 99
               PropertyName = 'connected_users'
@@ -2182,16 +2189,16 @@ object VisWaptGUI: TVisWaptGUI
             item
               MaxWidth = 400
               Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-              Position = 13
-              Tag = 13
+              Position = 14
+              Tag = 14
               Text = 'MAC address'
               Width = 100
               PropertyName = 'mac_addresses'
             end          
             item
               Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus]
-              Position = 14
-              Tag = 14
+              Position = 15
+              Tag = 15
               Text = 'WAPT version'
               Width = 80
               PropertyName = 'wapt_version'
@@ -2199,8 +2206,8 @@ object VisWaptGUI: TVisWaptGUI
             item
               MaxWidth = 400
               Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-              Position = 15
-              Tag = 15
+              Position = 16
+              Tag = 16
               Text = 'uuid'
               Width = 100
               PropertyName = 'uuid'
@@ -2208,8 +2215,8 @@ object VisWaptGUI: TVisWaptGUI
             item
               MaxWidth = 400
               Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-              Position = 16
-              Tag = 16
+              Position = 17
+              Tag = 17
               Text = 'purchase_order'
               Width = 100
               PropertyName = 'purchase_order'
@@ -2217,8 +2224,8 @@ object VisWaptGUI: TVisWaptGUI
             item
               MaxWidth = 400
               Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-              Position = 17
-              Tag = 17
+              Position = 18
+              Tag = 18
               Text = 'purchase_date'
               Width = 100
               PropertyName = 'purchase_date'
@@ -2226,77 +2233,72 @@ object VisWaptGUI: TVisWaptGUI
             item
               MaxWidth = 400
               Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-              Position = 18
-              Tag = 18
+              Position = 19
+              Tag = 19
               Text = 'attributes'
               Width = 100
               PropertyName = 'attributes'
             end          
             item
               Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-              Position = 19
-              Tag = 19
+              Position = 20
+              Tag = 20
               Text = 'Domain controller'
               PropertyName = 'host_info/domain_controller'
             end          
             item
               Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-              Position = 20
-              Tag = 20
+              Position = 21
+              Tag = 21
               Text = 'Groups'
               Width = 64
               PropertyName = 'depends'
             end          
             item
               Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-              Position = 21
-              Tag = 21
+              Position = 22
+              Tag = 22
               Text = 'Domaine'
               Width = 80
               PropertyName = 'host_info/domain_name'
             end          
             item
               Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-              Position = 22
-              Tag = 22
+              Position = 23
+              Tag = 23
               Text = 'Listening address'
               Width = 75
               PropertyName = 'listening_address'
             end          
             item
               Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-              Position = 23
-              Tag = 23
+              Position = 24
+              Tag = 24
               Text = 'Domain controller address'
               PropertyName = 'host_info/domain_controller_address'
             end          
             item
               Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-              Position = 24
-              Tag = 24
+              Position = 25
+              Tag = 25
               Text = 'AD DN'
               Width = 69
               PropertyName = 'host_info/computer_ad_dn'
             end          
             item
-              Position = 25
-              Tag = 25
+              Position = 26
+              Tag = 26
               Text = 'Last logged on user'
               Width = 72
               PropertyName = 'last_logged_on_user'
             end          
             item
               Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-              Position = 26
-              Tag = 26
+              Position = 27
+              Tag = 27
               Text = 'Registration Method'
               Width = 10
               PropertyName = 'registration_auth_user'
-            end          
-            item
-              Position = 27
-              Text = 'Platform'
-              PropertyName = 'platform'
             end>
           Header.DefaultHeight = 18
           Header.Height = 18
@@ -9495,7 +9497,7 @@ object VisWaptGUI: TVisWaptGUI
     left = 440
     top = 344
     Bitmap = {
-      4C69130000001000000010000000FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      4C69160000001000000010000000FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
       FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
       FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
       FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF000093
@@ -10103,7 +10105,103 @@ object VisWaptGUI: TVisWaptGUI
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000005D000000D1000000350000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000000000000000000000000006C000000FF000000F7000000120000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000009000000F1000000FF00000083000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00060000001E0000000600000020000000D30000007100000027000000250000
+      0000000000000000000000000000000000000000000000000003000000810000
+      00F2000000FF000000F2000000A600000097000000E7000000FF000000FF0000
+      00D90000003D0000000000000000000000000000000000000092000000FF0000
+      00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+      00FF000000E300000007000000000000000000000024000000FD000000FF0000
+      00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+      00F70000002F0000000000000000000000000000006B000000FF000000FF0000
+      00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+      009E0000000000000000000000000000000000000085000000FF000000FF0000
+      00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+      0076000000000000000000000000000000000000007B000000FF000000FF0000
+      00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+      0099000000000000000000000000000000000000004A000000FF000000FF0000
+      00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+      00F8000000300000000000000000000000000000000A000000F8000000FF0000
+      00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+      00FF000000F000000045000000000000000000000000000000A1000000FF0000
+      00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+      00FF000000FF0000003800000000000000000000000000000020000000F80000
+      00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+      00FF000000B20000000000000000000000000000000000000000000000690000
+      00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+      00E80000001C0000000000000000000000000000000000000000000000000000
+      007E000000F0000000D30000007E000000650000009F000000EB000000CF0000
+      0034000000000000000000000000000000000000000000000000000000000000
+      002F0000004C0000004800000021000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000B20000
+      00FF000000FF000000FF000000FF000000D20000000800000000000000000000
+      0000000000000000000000000000000000000000000000000013000000FD0000
+      00FF000000FF000000FF000000FF000000D7000000250000008F000000380000
+      000A000000000000000200000021000000000000000000000057000000FF0000
+      00FF000000FF000000FF000000FF0000009700000069000000FF000000FF0000
+      00FF000000F5000000F7000000C800000000000000000000009C000000FF0000
+      00FF000000FF000000FF000000FF00000057000000AA000000FF000000FF0000
+      00FF000000FF000000FF0000007C0000000000000000000000DF000000FF0000
+      00FF000000FF000000FF000000FF0000001B000000E8000000FF000000FF0000
+      00FF000000FF000000FF00000030000000000000000A00000061000000370000
+      00330000004E00000080000000AC0000002B000000FF000000FF000000FF0000
+      00FF000000FF000000E500000001000000000000002A0000008B000000AC0000
+      00B30000008C000000430000000100000058000000FF000000FF000000FF0000
+      00FF000000FF000000980000000000000000000000CA000000FF000000FF0000
+      00FF000000FF000000FF000000270000000800000042000000800000009D0000
+      00910000005F000000100000000000000010000000FC000000FF000000FF0000
+      00FF000000FF000000E700000006000000E50000009300000058000000440000
+      004A0000007E0000000A0000000000000050000000FF000000FF000000FF0000
+      00FF000000FF000000A70000003E000000FF000000FF000000FF000000FF0000
+      00FF000000CD000000000000000000000092000000FF000000FF000000FF0000
+      00FF000000FF0000006800000083000000FF000000FF000000FF000000FF0000
+      00FF000000810000000000000000000000CB000000C2000000BB000000CD0000
+      00FA000000FF00000028000000C9000000FF000000FF000000FF000000FF0000
+      00FF0000003600000000000000000000000A0000000000000000000000000000
+      000E0000005F00000012000000FC000000FF000000FF000000FF000000FF0000
+      00E9000000020000000000000000000000000000000000000000000000000000
+      00000000000000000024000000D6000000FF000000FF000000FF000000FB0000
+      0081000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000002000000290000004F00000042000000180000
+      0000000000000000000000000000FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF00FFFFFF000000005A000000CB000000E600000083FFFFFF00FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF0000000013000000F1000000FF000000FF000000FF00000056FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF0000000040040404E4000000FF191919CB000000FC00000092FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF000000003E000000FB000001F4020202E9010101EF000000C1FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF000000003D010507DC278DD8F20B2437C1000000FF000000F600000005FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF000000005C323232C31C2228C18C8C8CC5404040C0000000FF00000047FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF000000
+      0015070707D0FBFBFBFBFFFFFFFFFFFFFFFFD4D4D4DF000000FF000000D30000
+      0004FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF000000
+      009C575757BFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF141414CF000000FF0000
+      0074FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00000000130000
+      00F3E5E5E5E9FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF8D8D8DC5000000FF0000
+      00F30000001CFFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF000000006D0606
+      06E0FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF0F0F0F2000000FF0000
+      00FF00000067FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00000000A61919
+      19CCFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFE5E5E5E9000000FF0000
+      00FF00000068FFFFFF00FFFFFF00FFFFFF000000000700000076040E14CA0101
+      02EC969696C7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF1B1B1BCA000000FC0000
+      00FF0000008DFFFFFF00FFFFFF00FFFFFF0000000096103A59C0278EDAF41859
+      88C8000000F9B6B6B6D1FFFFFFFFFFFFFFFFFFFFFFFF090909D8103C5AC0144B
+      72C304111AC40000002CFFFFFF00FFFFFF00000000AE2689D2ED2996E6FF2996
+      E6FF061520C7868686C4FFFFFFFFDCDCDCE4363636C2010305E12996E6FF2996
+      E6FF175784C7000000A8FFFFFF00FFFFFF000000008F091F2FBF144870C22483
+      CAE51D6BA5D1000000FC000000F6000000FF000000FF010306DF268CD7F00921
+      32C1000000A900000018FFFFFF00FFFFFF00FFFFFF00000000110000005B0000
+      00A2010407BF00000066000000370000002900000044000000CA010405C30000
+      004FFFFFFF00FFFFFF00FFFFFF00
     }
   end
   object PopupMenuGroups: TPopupMenu

@@ -3380,45 +3380,49 @@ msgstr "Status"
 
 #: tviswaptgui.gridhosts.header.columns[10].text
 msgctxt "tviswaptgui.gridhosts.header.columns[10].text"
+msgid "Model"
+msgstr "Modèle"
+
+#: tviswaptgui.gridhosts.header.columns[11].text
+msgctxt "tviswaptgui.gridhosts.header.columns[11].text"
 msgid "Serial number"
 msgstr "Numéro de série"
 
-#: tviswaptgui.gridhosts.header.columns[11].text
+#: tviswaptgui.gridhosts.header.columns[12].text
 msgid "Last seen on"
 msgstr "Dernière connexion"
 
-#: tviswaptgui.gridhosts.header.columns[12].text
+#: tviswaptgui.gridhosts.header.columns[13].text
 msgid "Logged in users"
 msgstr "Utilisateurs logués"
 
-#: tviswaptgui.gridhosts.header.columns[13].text
+#: tviswaptgui.gridhosts.header.columns[14].text
 msgid "MAC address"
 msgstr "Adresse MAC"
 
-#: tviswaptgui.gridhosts.header.columns[14].text
+#: tviswaptgui.gridhosts.header.columns[15].text
+msgctxt "tviswaptgui.gridhosts.header.columns[15].text"
 msgid "WAPT version"
 msgstr "Version de WAPT"
 
-#: tviswaptgui.gridhosts.header.columns[15].text
-msgctxt "tviswaptgui.gridhosts.header.columns[15].text"
+#: tviswaptgui.gridhosts.header.columns[16].text
+msgctxt "tviswaptgui.gridhosts.header.columns[16].text"
 msgid "uuid"
 msgstr "uuid"
 
-#: tviswaptgui.gridhosts.header.columns[16].text
+#: tviswaptgui.gridhosts.header.columns[17].text
 msgid "purchase_order"
 msgstr "N° Commande achat"
 
-#: tviswaptgui.gridhosts.header.columns[17].text
+#: tviswaptgui.gridhosts.header.columns[18].text
 msgid "purchase_date"
 msgstr "Date d'achat"
 
-#: tviswaptgui.gridhosts.header.columns[18].text
+#: tviswaptgui.gridhosts.header.columns[19].text
+#, fuzzy
+msgctxt "tviswaptgui.gridhosts.header.columns[19].text"
 msgid "attributes"
 msgstr "Attributs"
-
-#: tviswaptgui.gridhosts.header.columns[19].text
-msgid "Domain controller"
-msgstr "Contrôleur de domaine"
 
 #: tviswaptgui.gridhosts.header.columns[1].text
 msgid "Reachable"
@@ -3426,37 +3430,38 @@ msgstr "Joignable"
 
 #: tviswaptgui.gridhosts.header.columns[20].text
 msgctxt "tviswaptgui.gridhosts.header.columns[20].text"
-msgid "Groups"
-msgstr "Groupes"
+msgid "Domain controller"
+msgstr "Contrôleur de domaine"
 
 #: tviswaptgui.gridhosts.header.columns[21].text
 msgctxt "tviswaptgui.gridhosts.header.columns[21].text"
+msgid "Groups"
+msgstr "Groupes"
+
+#: tviswaptgui.gridhosts.header.columns[22].text
 msgid "Domaine"
 msgstr "Domaine"
 
-#: tviswaptgui.gridhosts.header.columns[22].text
+#: tviswaptgui.gridhosts.header.columns[23].text
 msgid "Listening address"
 msgstr "Adresse d'écoute"
 
-#: tviswaptgui.gridhosts.header.columns[23].text
+#: tviswaptgui.gridhosts.header.columns[24].text
 msgid "Domain controller address"
 msgstr "Adresse du contrôleur de domaine"
 
-#: tviswaptgui.gridhosts.header.columns[24].text
+#: tviswaptgui.gridhosts.header.columns[25].text
 msgid "AD DN"
 msgstr "DN dans l'AD"
 
-#: tviswaptgui.gridhosts.header.columns[25].text
+#: tviswaptgui.gridhosts.header.columns[26].text
 msgid "Last logged on user"
 msgstr "Dernier utilisateur logué"
 
-#: tviswaptgui.gridhosts.header.columns[26].text
+#: tviswaptgui.gridhosts.header.columns[27].text
+msgctxt "tviswaptgui.gridhosts.header.columns[27].text"
 msgid "Registration Method"
 msgstr "Méthode d'enregistrement"
-
-#: tviswaptgui.gridhosts.header.columns[27].text
-msgid "Platform"
-msgstr "Plateforme"
 
 #: tviswaptgui.gridhosts.header.columns[2].text
 msgctxt "tviswaptgui.gridhosts.header.columns[2].text"
@@ -3488,13 +3493,13 @@ msgstr "Adresses IP"
 
 #: tviswaptgui.gridhosts.header.columns[8].text
 msgctxt "tviswaptgui.gridhosts.header.columns[8].text"
-msgid "Operating system"
-msgstr "Système d'exploitation"
+msgid "Platform"
+msgstr "Plateforme"
 
 #: tviswaptgui.gridhosts.header.columns[9].text
 msgctxt "tviswaptgui.gridhosts.header.columns[9].text"
-msgid "Model"
-msgstr "Modèle"
+msgid "Operating system"
+msgstr "Système d'exploitation"
 
 #: tviswaptgui.gridhostsforpackage.header.columns[0].text
 msgid "Host reachable"

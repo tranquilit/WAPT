@@ -1,4 +1,5 @@
 pyad==0.5.20
+pywin32==225
 requests-kerberos==0.12.0
 kerberos-sspi==0.2 
 winkerberos==0.7.0 

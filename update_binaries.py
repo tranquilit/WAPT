@@ -48,13 +48,13 @@ import tempfile
 p7zip = makepath(programfiles,'7-Zip','7z.exe')
 
 print('Get MS VC++ 2008 SP1 redist')
-msvc = wget('https://download.microsoft.com/download/d/d/9/dd9a82d0-52ef-40db-8dab-795376989c03/vcredist_x86.exe',resume=True,md5='5689d43c3b201dd3810fa3bba4a6476a',cache_dir=binaries_cache,proxies=proxies)
+msvc = wget('https://download.microsoft.com/download/5/D/8/5D8C65CB-C849-4025-8E95-C3966CAFD8AE/vcredist_x86.exe',resume=True,md5='35da2bf2befd998980a495b6f4f55e60',cache_dir=binaries_cache,proxies=proxies)
 msvc_dst_path = os.path.join(wapt_base_dir,'vc_redist','vcredist_x86.exe')
 
 run([p7zip,'e',msvc,'-o'+makepath(tempfile.gettempdir,'vcredist'),'-y'])
 run([p7zip,'e',makepath(tempfile.gettempdir,'vcredist','vc_red.cab'),'-o'+makepath(tempfile.gettempdir,'vcredist','dll'),'-y'])
-for dll in ('msvcm90.dll.30729.01.Microsoft_VC90_CRT_x86.SP','msvcp90.dll.30729.01.Microsoft_VC90_CRT_x86.SP','msvcr90.dll.30729.01.Microsoft_VC90_CRT_x86.SP'):
-    dest_path = makepath(wapt_base_dir,dll.replace('.30729.01.Microsoft_VC90_CRT_x86.SP',''))
+for dll in ('msvcm90.dll.30729.6161.Microsoft_VC90_CRT_x86.QFE','msvcp90.dll.30729.6161.Microsoft_VC90_CRT_x86.QFE','msvcr90.dll.30729.6161.Microsoft_VC90_CRT_x86.QFE'):
+    dest_path = makepath(wapt_base_dir,dll.replace('.30729.6161.Microsoft_VC90_CRT_x86.QFE',''))
     if os.path.exists(dest_path):
         os.unlink(dest_path)
     os.rename(makepath(tempfile.gettempdir,'vcredist','dll',dll),dest_path)
@@ -117,12 +117,10 @@ for f in mongoexport_files :
     os.renames(f,new_name)
 
 
-
-
 print('Get innosetup compiler setup and extract files to waptsetup')
 innosetup_install = wget('http://files.jrsoftware.org/is/5/innosetup-5.6.0-unicode.exe',resume=True,md5='d8364b03587846b44cf00937d206d3e1',cache_dir=binaries_cache,proxies=proxies)
 
-innoextract_zip = wget('http://constexpr.org/innoextract/files/innoextract-1.7-windows.zip',resume=True,md5='b801b0740b4ab19d69a739ab4a9180ae',cache_dir=binaries_cache,proxies=proxies)
+innoextract_zip = wget('https://constexpr.org/innoextract/files/innoextract-1.8/innoextract-1.8-windows.zip',resume=True,md5='01efb1f497f9afef630e32097d8a1e33',cache_dir=binaries_cache,proxies=proxies)
 innoextract_files = unzip(innoextract_zip,filenames=['innoextract.exe'])
 run([innoextract_files[0],'-e',innosetup_install,'-d',makepath(tempfile.gettempdir,'iscc')])
 

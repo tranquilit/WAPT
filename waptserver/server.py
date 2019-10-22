@@ -1593,6 +1593,7 @@ def get_hosts():
                                'os_name',
                                'os_version',
                                'registration_auth_user',
+                               'platform',
                                ]
 
             # keep only top tree nodes (mongo doesn't want fields like {'wapt':1,'wapt.listening_address':1} !

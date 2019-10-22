@@ -1,13 +1,14 @@
 object VisLogin: TVisLogin
-  Left = 775
+  Left = 2285
   Height = 201
-  Top = 385
-  Width = 321
+  Top = 345
+  Width = 327
+  AutoSize = True
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'Sign in'
   ClientHeight = 201
-  ClientWidth = 321
+  ClientWidth = 327
   Color = clForm
   OnCreate = FormCreate
   OnShow = FormShow
@@ -15,6 +16,7 @@ object VisLogin: TVisLogin
   LCLVersion = '1.8.4.0'
   object PanelLogin: TPanel
     AnchorSideLeft.Control = Owner
+    AnchorSideLeft.Side = asrCenter
     AnchorSideTop.Control = WarningPanel
     AnchorSideTop.Side = asrBottom
     AnchorSideRight.Control = Owner
@@ -22,17 +24,14 @@ object VisLogin: TVisLogin
     Left = 15
     Height = 52
     Top = 102
-    Width = 291
+    Width = 297
     Align = alCustom
-    Anchors = [akTop, akLeft, akRight]
-    AutoSize = True
-    BorderSpacing.Left = 15
     BorderSpacing.Top = 5
     BorderSpacing.Right = 15
     BevelColor = clForm
     BevelOuter = bvNone
     ClientHeight = 52
-    ClientWidth = 291
+    ClientWidth = 297
     Color = clForm
     ParentColor = False
     TabOrder = 0
@@ -71,8 +70,9 @@ object VisLogin: TVisLogin
       Left = 89
       Height = 23
       Top = 29
-      Width = 202
+      Width = 208
       Anchors = [akTop, akLeft, akRight]
+      AutoSize = False
       EchoMode = emPassword
       PasswordChar = '*'
       TabOrder = 3
@@ -83,13 +83,15 @@ object VisLogin: TVisLogin
       Left = 89
       Height = 23
       Top = 0
-      Width = 202
+      Width = 208
       Anchors = [akTop, akLeft, akRight]
+      AutoSize = False
       TabOrder = 1
     end
   end
   object Panel1: TPanel
     AnchorSideLeft.Control = Owner
+    AnchorSideLeft.Side = asrCenter
     AnchorSideTop.Control = PanelLogin
     AnchorSideTop.Side = asrBottom
     AnchorSideRight.Control = Owner
@@ -99,26 +101,23 @@ object VisLogin: TVisLogin
     Left = 15
     Height = 27
     Top = 164
-    Width = 291
+    Width = 297
     Align = alCustom
-    Anchors = [akTop, akLeft, akRight, akBottom]
-    AutoSize = True
-    BorderSpacing.Left = 15
+    Anchors = [akTop, akLeft, akBottom]
     BorderSpacing.Top = 10
     BorderSpacing.Right = 15
     BorderSpacing.Bottom = 10
     BevelOuter = bvNone
     ClientHeight = 27
-    ClientWidth = 291
+    ClientWidth = 297
     TabOrder = 1
     object Panel2: TPanel
       AnchorSideLeft.Control = Panel1
       AnchorSideLeft.Side = asrCenter
-      Left = 58
+      Left = 61
       Height = 28
       Top = 0
       Width = 174
-      AutoSize = True
       BevelOuter = bvNone
       ClientHeight = 28
       ClientWidth = 174
@@ -129,7 +128,6 @@ object VisLogin: TVisLogin
         Height = 28
         Top = 0
         Width = 82
-        AutoSize = True
         Color = clWhite
         Constraints.MinHeight = 28
         Constraints.MinWidth = 82
@@ -149,7 +147,6 @@ object VisLogin: TVisLogin
         Top = 0
         Width = 82
         Anchors = [akLeft]
-        AutoSize = True
         BorderSpacing.Left = 10
         Cancel = True
         Caption = 'Cancel'
@@ -163,7 +160,8 @@ object VisLogin: TVisLogin
     end
   end
   object WarningPanel: TPanel
-    AnchorSideLeft.Control = PanelLogin
+    AnchorSideLeft.Control = Owner
+    AnchorSideLeft.Side = asrCenter
     AnchorSideTop.Control = LogoLogin
     AnchorSideTop.Side = asrBottom
     AnchorSideRight.Control = PanelLogin
@@ -171,14 +169,12 @@ object VisLogin: TVisLogin
     Left = 15
     Height = 16
     Top = 81
-    Width = 291
+    Width = 297
     Align = alCustom
-    Anchors = [akTop, akLeft, akRight]
-    AutoSize = True
     BorderSpacing.Top = 5
     BevelOuter = bvNone
     ClientHeight = 16
-    ClientWidth = 291
+    ClientWidth = 297
     TabOrder = 2
     object WarningText: TStaticText
       AnchorSideLeft.Control = ImageWarning
@@ -190,10 +186,9 @@ object VisLogin: TVisLogin
       Left = 41
       Height = 16
       Top = 0
-      Width = 250
+      Width = 256
       Align = alCustom
       Anchors = [akTop, akLeft, akRight]
-      AutoSize = True
       BorderSpacing.Left = 5
       BorderSpacing.Top = 3
       Caption = 'Wrong password or login !'
@@ -250,13 +245,12 @@ object VisLogin: TVisLogin
     AnchorSideTop.Control = Owner
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrCenter
-    Left = 60
+    Left = 63
     Height = 56
     Top = 20
     Width = 201
     Align = alCustom
     AutoSize = True
-    BorderSpacing.Left = 10
     BorderSpacing.Top = 20
     OnClick = LogoLoginClick
     OnMouseEnter = LogoLoginMouseEnter
