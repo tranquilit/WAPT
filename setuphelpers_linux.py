@@ -284,7 +284,7 @@ def installed_softwares(keywords='',uninstallkey=None,name=None):
         list_installed_softwares=[]
         trans = rpm.TransactionSet()
         for header in trans.dbMatch():
-            pkg_dict={'key':'','name':header['name'],'version':header['version'],'install_date':datetime.datetime.strptime(header.sprintf("%{INSTALLTID:date}"),'%a %b %d %H:%M:%S %Y'),'install_location':'','uninstall_string':'','publisher':header['url'],'system_component':''}
+            pkg_dict={'key':'','name':header['name'],'version':header['version'],'install_date':datetime.datetime.strptime(header.sprintf("%{INSTALLTID:date}"),'%a %b %d %H:%M:%S %Y').strftime('%Y-%m-%d %H:%M:%S'),'install_location':'','uninstall_string':'','publisher':header['url'],'system_component':''}
             list_installed_softwares.append(pkg_dict)
         return list_installed_softwares
     else:
