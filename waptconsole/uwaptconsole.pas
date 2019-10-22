@@ -3901,6 +3901,7 @@ begin
         fields.AsArray.Add('connected_users');
         fields.AsArray.Add('serialnr');
         fields.AsArray.Add('platform');
+		fields.AsArray.Add('os_name');
       end;
 
       if cbSearchDMI.Checked = True then
