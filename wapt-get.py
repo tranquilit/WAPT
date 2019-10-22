@@ -1333,28 +1333,28 @@ def main():
 
             elif action == 'waptwua-scan':
                 if WaptWUA is None:
-                    raise Exception('waptwua is not available on thid computer. Enterprise feature only')
+                    raise Exception('waptwua is not available on this computer. Enterprise feature only')
                 with WaptWUA(mywapt) as wc:
                     result = wc.scan_updates_status(force=options.force)
                     print(pprint.pprint(result))
 
             elif action == 'waptwua-download':
                 if WaptWUA is None:
-                    raise Exception('waptwua is not available on thid computer. Enterprise feature only')
+                    raise Exception('waptwua is not available on this computer. Enterprise feature only')
                 with WaptWUA(mywapt) as wc:
                     result = wc.download_updates(force=options.force)
                     print(pprint.pprint(result))
 
             elif action == 'waptwua-install':
                 if WaptWUA is None:
-                    raise Exception('waptwua is not available on thid computer. Enterprise feature only')
+                    raise Exception('waptwua is not available on this computer. Enterprise feature only')
                 with WaptWUA(mywapt) as wc:
                     result = wc.install_updates(force=options.force)
                     print(pprint.pprint(result))
 
             elif action == 'waptwua-status':
                 if WaptWUA is None:
-                    raise Exception('waptwua is not available on thid computer. Enterprise feature only')
+                    raise Exception('waptwua is not available on this computer. Enterprise feature only')
                 wc = WaptWUA(mywapt)
                 result = wc.stored_waptwua_status()
                 print(pprint.pprint(result))

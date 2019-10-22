@@ -3214,6 +3214,7 @@ var
   actions_json,
   signed_actions_json:String;
   VPrivateKeyPassword: Variant;
+  Message: String;
 begin
   try
     Screen.Cursor:=crHourGlass;
@@ -3252,7 +3253,10 @@ begin
           MemoLog.Append(UTF8Encode(result.AsString));
           if result.AsObject.Exists('msg') and (title<>'') then
           begin
-            ShowMessage(copy(UTF8Encode(result.S['msg']),1,250));
+            Message:=copy(UTF8Encode(result.S['msg']),1,250);
+            if 'actions launched'<>rsActionsLaunched then
+               Message:=Message.Replace('actions launched',rsActionsLaunched).Replace('server errors',rsActionsServerErrors).Replace('errors',rsActionsErrors).Replace('skipped',rsActionsSkipped);
+            ShowMessage(Message);
           end;
         end
         else

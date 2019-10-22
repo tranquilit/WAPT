@@ -5,8 +5,8 @@ object VisWaptGUI: TVisWaptGUI
   Width = 1920
   AllowDropFiles = True
   Caption = 'WAPT console'
-  ClientHeight = 997
-  ClientWidth = 1920
+  ClientHeight = 0
+  ClientWidth = 0
   Constraints.MinHeight = 600
   Constraints.MinWidth = 800
   Menu = MainMenu1

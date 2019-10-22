@@ -6360,6 +6360,22 @@ msgctxt "uvisloading.rscanceledbyuser"
 msgid "Task %s has been canceled by the user"
 msgstr "Der Task %s wurde vom Benutzer abgebrochen"
 
+#: uwaptconsoleres.rsactionserrors
+msgid "errors"
+msgstr ""
+
+#: uwaptconsoleres.rsactionslaunched
+msgid "actions launched"
+msgstr ""
+
+#: uwaptconsoleres.rsactionsservererrors
+msgid "server errors"
+msgstr ""
+
+#: uwaptconsoleres.rsactionsskipped
+msgid "skipped"
+msgstr ""
+
 #: uwaptconsoleres.rsaddadsgroups
 #, fuzzy
 #| msgid ""

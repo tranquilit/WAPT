@@ -14,6 +14,10 @@ resourcestring
   rsLoadPackages = 'Loading Packages index';
   rsLoadInventory = 'Loading hosts inventory';
   rsLoadSettings = 'Loading application settings';
+  rsActionsLaunched = 'actions launched';
+  rsActionsErrors = 'errors';
+  rsActionsSkipped ='skipped';
+  rsActionsServerErrors = 'server errors';
 
   rsLicencedTo = 'Licenced to %s';
 

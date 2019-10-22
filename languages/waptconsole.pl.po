@@ -6106,6 +6106,22 @@ msgctxt "uvisloading.rscanceledbyuser"
 msgid "Task %s has been canceled by the user"
 msgstr ""
 
+#: uwaptconsoleres.rsactionserrors
+msgid "errors"
+msgstr ""
+
+#: uwaptconsoleres.rsactionslaunched
+msgid "actions launched"
+msgstr ""
+
+#: uwaptconsoleres.rsactionsservererrors
+msgid "server errors"
+msgstr ""
+
+#: uwaptconsoleres.rsactionsskipped
+msgid "skipped"
+msgstr ""
+
 #: uwaptconsoleres.rsaddadsgroups
 msgid ""
 "This will get the Active Directory groups of each selected host and \n"
