@@ -1,7 +1,7 @@
 object VisPrivateKeyAuth: TVisPrivateKeyAuth
-  Left = 326
+  Left = 856
   Height = 114
-  Top = 315
+  Top = 220
   Width = 315
   AutoSize = True
   BorderStyle = bsDialog
@@ -21,7 +21,7 @@ object VisPrivateKeyAuth: TVisPrivateKeyAuth
     ClientHeight = 30
     ClientWidth = 315
     TabOrder = 1
-    object BitBtn1: TBitBtn
+    object BitBtnOk: TBitBtn
       Left = 155
       Height = 23
       Top = 4
@@ -32,7 +32,7 @@ object VisPrivateKeyAuth: TVisPrivateKeyAuth
       ModalResult = 1
       TabOrder = 0
     end
-    object BitBtn2: TBitBtn
+    object BitBtnCancel: TBitBtn
       Left = 235
       Height = 23
       Top = 4
@@ -61,42 +61,42 @@ object VisPrivateKeyAuth: TVisPrivateKeyAuth
     ClientHeight = 84
     ClientWidth = 315
     TabOrder = 0
-    object Label1: TLabel
+    object LabKey: TLabel
       Left = 6
-      Height = 13
+      Height = 15
       Top = 6
-      Width = 159
+      Width = 173
       Alignment = taRightJustify
       AutoSize = False
       Caption = 'For key matching the certificate: '
       ParentColor = False
     end
     object laKeyPath: TLabel
-      Left = 171
-      Height = 13
+      Left = 185
+      Height = 15
       Top = 6
       Width = 120
       Caption = 'laKeyPath'
       ParentColor = False
     end
-    object laPassword: TLabel
+    object LabPassword: TLabel
       Left = 6
-      Height = 21
-      Top = 25
-      Width = 159
+      Height = 23
+      Top = 27
+      Width = 173
       Alignment = taRightJustify
       AutoSize = False
       Caption = 'Private key password :'
       ParentColor = False
     end
-    object edPasswordKey: TEdit
-      Left = 171
-      Height = 21
-      Top = 25
+    object EdPasswordKey: TEdit
+      Left = 185
+      Height = 23
+      Top = 27
       Width = 120
       Constraints.MinWidth = 120
       EchoMode = emPassword
-      OnKeyPress = edPasswordKeyKeyPress
+      OnKeyPress = EdPasswordKeyKeyPress
       PasswordChar = '*'
       TabOrder = 0
     end

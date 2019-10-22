@@ -1201,6 +1201,22 @@ msgctxt "tvispackagewizard.labsetupfilename.caption"
 msgid "Installer / Setup"
 msgstr ""
 
+#: tvisprivatekeyauth.caption
+msgid "Private key authentication"
+msgstr ""
+
+#: tvisprivatekeyauth.labkey.caption
+msgid "For key matching the certificate: "
+msgstr ""
+
+#: tvisprivatekeyauth.labpassword.caption
+msgid "Private key password :"
+msgstr ""
+
+#: tvisprivatekeyauth.lakeypath.caption
+msgid "laKeyPath"
+msgstr ""
+
 #: tvisrepositories.actcertificacert.caption
 msgid "Use default Wapt bundle"
 msgstr ""
@@ -7585,6 +7601,18 @@ msgstr "Abgebrochen %s"
 msgctxt "uwaptconsoleres.rscertificatecopyfailure"
 msgid "Couldn't copy certificate %s to %s."
 msgstr "Das Zertifikat %s kann nicht kopiert werden zu %s "
+
+#: uwaptconsoleres.rscertificateerror
+msgid "Error : No private key in directory %s could be decrypted with supplied password, or none matches the certificate."
+msgstr ""
+
+#: uwaptconsoleres.rscertificatesuccess
+msgid "Success: Matching private key %s decrypted properly and matching the certificate."
+msgstr ""
+
+#: uwaptconsoleres.rscertificatesuccessnopasskey
+msgid "Success: Matching private key %s found. Warning, key is not encrypted"
+msgstr ""
 
 #: uwaptconsoleres.rscleanuptemporaryfiles
 msgid "Remove temporary files"

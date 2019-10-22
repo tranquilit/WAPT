@@ -37,7 +37,6 @@ msgid "Value :"
 msgstr "Valeur : "
 
 #: tformerrorsrepos.caption
-#, fuzzy
 msgctxt "tformerrorsrepos.caption"
 msgid "Errors"
 msgstr "Erreurs"
@@ -1157,6 +1156,22 @@ msgstr "Section"
 msgctxt "tvispackagewizard.labsetupfilename.caption"
 msgid "Installer / Setup"
 msgstr "Installeur"
+
+#: tvisprivatekeyauth.caption
+msgid "Private key authentication"
+msgstr "Authentification de la clé privée"
+
+#: tvisprivatekeyauth.labkey.caption
+msgid "For key matching the certificate: "
+msgstr "Pour la clé correspondant au certificat :"
+
+#: tvisprivatekeyauth.labpassword.caption
+msgid "Private key password :"
+msgstr "Mot de passe de la clé privée :"
+
+#: tvisprivatekeyauth.lakeypath.caption
+msgid "laKeyPath"
+msgstr ""
 
 #: tvisrepositories.actcertificacert.caption
 msgid "Use default Wapt bundle"
@@ -3419,7 +3434,6 @@ msgid "purchase_date"
 msgstr "Date d'achat"
 
 #: tviswaptgui.gridhosts.header.columns[19].text
-#, fuzzy
 msgctxt "tviswaptgui.gridhosts.header.columns[19].text"
 msgid "attributes"
 msgstr "Attributs"
@@ -6145,6 +6159,18 @@ msgstr "%s annulé"
 msgctxt "uwaptconsoleres.rscertificatecopyfailure"
 msgid "Couldn't copy certificate %s to %s."
 msgstr "Echec de la copie du certificat %s vers %s."
+
+#: uwaptconsoleres.rscertificateerror
+msgid "Error : No private key in directory %s could be decrypted with supplied password, or none matches the certificate."
+msgstr "Erreur : Pas de clé privée dans le dossier %s qui peut être déchiffrée avec le mot de passe donnée ou aucune ne correspond au certificat."
+
+#: uwaptconsoleres.rscertificatesuccess
+msgid "Success: Matching private key %s decrypted properly and matching the certificate."
+msgstr "Succès : Clé privée correspondate (%s) déchiffrée correctement. Elle correspond bien au certificat."
+
+#: uwaptconsoleres.rscertificatesuccessnopasskey
+msgid "Success: Matching private key %s found. Warning, key is not encrypted"
+msgstr "Succès : Correspondance avec la clé privée %s trouvée. Attention, la clé n'est pas chiffrée."
 
 #: uwaptconsoleres.rscleanuptemporaryfiles
 msgid "Remove temporary files"

@@ -13,15 +13,15 @@ type
   { TVisPrivateKeyAuth }
 
   TVisPrivateKeyAuth = class(TForm)
-    BitBtn1: TBitBtn;
-    BitBtn2: TBitBtn;
-    edPasswordKey: TEdit;
-    Label1: TLabel;
+    BitBtnOk: TBitBtn;
+    BitBtnCancel: TBitBtn;
+    EdPasswordKey: TEdit;
+    LabKey: TLabel;
     laKeyPath: TLabel;
-    laPassword: TLabel;
+    LabPassword: TLabel;
     Panel1: TPanel;
     Panel2: TPanel;
-    procedure edPasswordKeyKeyPress(Sender: TObject; var Key: char);
+    procedure EdPasswordKeyKeyPress(Sender: TObject; var Key: char);
   private
     { private declarations }
   public
@@ -37,12 +37,12 @@ implementation
 
 { TVisPrivateKeyAuth }
 
-procedure TVisPrivateKeyAuth.edPasswordKeyKeyPress(Sender: TObject;
+procedure TVisPrivateKeyAuth.EdPasswordKeyKeyPress(Sender: TObject;
   var Key: char);
 begin
   if Key=#13 then
   begin
-     BitBtn1.Click;
+     BitBtnOk.Click;
   end;
 end;
 

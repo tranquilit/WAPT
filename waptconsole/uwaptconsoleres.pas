@@ -65,6 +65,9 @@ resourcestring
         'Current server version: %s'#13#10+
         'Required server version: %s';
   rsUnknownVersion = 'Unknown version';
+  rsCertificateError = 'Error : No private key in directory %s could be decrypted with supplied password, or none matches the certificate.';
+  rsCertificateSuccessNoPassKey = 'Success: Matching private key %s found. Warning, key is not encrypted';
+  rsCertificateSuccess = 'Success: Matching private key %s decrypted properly and matching the certificate.';
 
   rsWaptAgentOldVersion = 'waptagent.exe needs to be upgraded'#13#10+
           'Current waptagent.exe version: %s'#13#10+

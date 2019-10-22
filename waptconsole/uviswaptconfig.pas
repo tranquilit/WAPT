@@ -255,14 +255,14 @@ begin
       if keyPath = '' then
       begin
         SetStatus(ImgStatusPersonalCertificate,ssError);
-        ShowMessageFmt('Error : No private key in directory %s could be decrypted with supplied password, or none matches the certificate.',[ExtractFileDir(edPersonalCertificatePath.Text)])
+        ShowMessageFmt(rsCertificateError,[ExtractFileDir(edPersonalCertificatePath.Text)])
       end
       else
       begin
         if vpassword='' then
-          ShowMessageFmt('Success: Matching private key %s found. Warning, key is not encrypted',[keyPath])
+          ShowMessageFmt(rsCertificateSuccessNoPassKey,[keyPath])
         else
-          ShowMessageFmt('Success: Matching private key %s decrypted properly and matching the certificate.',[keyPath]);
+          ShowMessageFmt(rsCertificateSuccess,[keyPath]);
         SetStatus(ImgStatusPersonalCertificate,ssOK);
       end;
     end;
