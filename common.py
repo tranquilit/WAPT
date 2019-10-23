@@ -6154,7 +6154,7 @@ class Wapt(BaseObjectClass):
                 session_db = WaptSessionDB(self.user)  # WaptSessionDB()
                 with session_db:
                     if force or is_dev_mode or not session_db.is_installed(package_entry.package,package_entry.version):
-                        logger.info(u"Running session_setup for package %s and user %s" % (package,self.user))
+                        print(u"Running session_setup for package %s and user %s" % (package.asrequirement(),self.user))
                         install_id = session_db.add_start_install(package_entry)
                         with WaptPackageSessionSetupLogger(console=sys.stderr,waptsessiondb=session_db,install_id=install_id) as dblog:
                             try:
@@ -6173,11 +6173,12 @@ class Wapt(BaseObjectClass):
                                     session_db.update_install_status(install_id,append_output = u'session_setup() done\n')
                                 return result
                             except Exception as e:
+                                logger.critical(u"session_setup failed for package %s and user %s" % (package,self.user))
                                 session_db.update_install_status(install_id,append_output = traceback.format_exc())
                                 dblog.exit_status = 'ERROR'
 
                     else:
-                        print(u'Already installed.')
+                        logger.info(u"session_setup for package %s and user %s already installed" % (package,self.user))
             else:
                 logger.debug('No setup.py, skipping session-setup')
         finally:
