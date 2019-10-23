@@ -712,15 +712,14 @@ def main():
                 if args[1] == 'ALL':
                     for package in mywapt.installed():
                         try:
-                            print(u"Configuring %s ..." % (package.asrequirement(),))
                             result.append(mywapt.session_setup(package,force=options.force))
-                            print("Done")
                         except Exception as e:
                             logger.critical(ensure_unicode(e))
 
                     if args[1] == 'ALL':
                         logger.debug('cleanup session db, removed not installed package entries')
                         mywapt.cleanup_session_setup()
+                    print('%s packages configured for user %s' % (len(result),mywapt.user))
                 else:
                     packages_list = expand_args(args[1:])
                     for packagename in packages_list:

@@ -1268,8 +1268,13 @@ class WaptDB(WaptBaseDB):
            """ % " and ".join(search),words)
         return q
 
-    def installed_matching(self,package_cond,include_errors=False):
-        """Return True if one properly installed (if include_errors=False) package match the package condition 'tis-package (>=version)'
+    def installed_matching(self,package_cond,include_errors=False,include_setup=True):
+        """Return a list of PackageEntry
+        if one properly installed (if include_errors=False) package match the package condition 'tis-package (>=version)'
+
+        Args:
+            package_cond (str): package requirement to lookup
+            include_errors
 
         Returns:
             list of PackageEntry merge with localstatus attributes WITH setuppy
@@ -1293,8 +1298,8 @@ class WaptDB(WaptBaseDB):
                 l.package,l.version,l.architecture,
                 coalesce(l.locale,r.locale) as locale,
                 coalesce(l.maturity,r.maturity) as maturity,
-                l.install_date,l.install_status,l.install_output,l.install_params,
-                l.setuppy,l.persistent_dir,
+                l.install_date,l.install_status,l.install_output,l.install_params,%s
+                l.persistent_dir,
                 l.uninstall_key,l.explicit_by,
                 l.last_audit_status,l.last_audit_on,l.last_audit_output,l.next_audit_on,
                 coalesce(l.depends,r.depends) as depends,
@@ -1306,7 +1311,7 @@ class WaptDB(WaptBaseDB):
                 from wapt_localstatus l
                 left join wapt_package r on r.package=l.package and l.version=r.version and (l.architecture is null or l.architecture=r.architecture)
               where l.package=? and l.install_status in (%s)
-           """ % status,(package,))
+           """ % (('l.setuppy,' if include_setup else ''),status),(package,))
         return q[0] if q and package_cond.is_matched_by(q[0]) else None
 
     def upgradeable(self,include_errors=True):
@@ -6144,7 +6149,7 @@ class Wapt(BaseObjectClass):
             if not package_entry:
                 raise Exception(u'Package %s is not installed' % package)
 
-            if package_entry.has_setup_py():
+            if package_entry.has_setup_py() and (is_dev_mode or 'def session_setup():' in package_entry.setuppy):
                 # initialize a session db for the user
                 session_db = WaptSessionDB(self.user)  # WaptSessionDB()
                 with session_db:
