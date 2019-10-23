@@ -1724,6 +1724,12 @@ class PackageEntry(BaseObjectClass):
     def build_manifest(self,exclude_filenames = None,block_size=2**20,forbidden_files=[],md='sha256',waptzip=None,excludes=[]):
         """Calc the manifest of an already built (zipped) wapt package
 
+        Args:
+            forbidden_files (list): list of relative files which must not be present for the manifest to be built
+                                    (if one is found, build fails)
+            exclude_filenames (list) : list of exact (relative to package root with forward slashes) filepathes to exclude from manifest.
+            excludes (list) : list of file / dir patterns to exclude, whatever level they are in the file hierarchy
+
         Returns:
             dict: {filepath:shasum,}
         """
@@ -1769,22 +1775,36 @@ class PackageEntry(BaseObjectClass):
                         shasum.update(data)
                         manifest[fn.filename] = shasum.hexdigest()
             else:
-                for fn in find_all_files(self.sourcespath,exclude_patterns=excludes,exclude_dirs=excludes):
-                    filename = os.path.relpath(fn,self.sourcespath).replace('\\','/')
-                    if not filename in exclude_filenames:
-                        if filename in forbidden_files:
-                            raise EWaptPackageSignError('File %s is not allowed.'% filename)
+                def _process(rootdir):
+                    for fn in os.listdir(rootdir):
+                        absolute_filename = os.path.abspath(os.path.join(rootdir,fn))
+                        relative_filename = os.path.relpath(absolute_filename,self.sourcespath).replace('\\','/')
+                        if not relative_filename in exclude_filenames:
+                            if fn in forbidden_files:
+                                raise EWaptPackageSignError('File %s is not allowed.'% fn)
 
-                        shasum = hashlib.new(md)
+                            excluded = False
+                            for exclude_glob in excludes:
+                                if glob.fnmatch.fnmatch(fn,exclude_glob):
+                                    excluded = True
+                                    break
+                            if excluded:
+                                continue
 
-                        file_data = open(fn,'rb')
-                        while True:
-                            data = file_data.read(block_size)
-                            if not data:
-                                break
-                            shasum.update(data)
-                        shasum.update(data)
-                        manifest[filename] = shasum.hexdigest()
+                            if os.path.isdir(absolute_filename):
+                                _process(absolute_filename)
+                            else:
+                                shasum = hashlib.new(md)
+
+                                file_data = open(absolute_filename,'rb')
+                                while True:
+                                    data = file_data.read(block_size)
+                                    if not data:
+                                        break
+                                    shasum.update(data)
+                                shasum.update(data)
+                                manifest[relative_filename] = shasum.hexdigest()
+                _process(self.sourcespath)
             return manifest
         finally:
             if _close_zip:
@@ -1806,8 +1826,10 @@ class PackageEntry(BaseObjectClass):
             private_key (SSLPrivateKey): signer private key
             password_callback (func) : function to call to get key password if encrypted.
             private_key_password (str): password to use if key is encrypted. Use eithe this or password_callback
+            keep_signature_date (bool): If true, previous date fo signature is kept (useful when resigning is needed, but no meaningful change has been done)
             mds (list): list of message digest manifest and signature methods to include. For backward compatibility.
             excludes_full (list) : list of exact (relative to package root) filepathes to exclude from manifest.
+            excludes (list) : list of file / dir patterns to exclude, whatever level they are in the file hierarchy
 
         Returns:
             str: signature
@@ -1892,7 +1914,7 @@ class PackageEntry(BaseObjectClass):
                         new_cert_hash = None
 
                     # convert to list of list...
-                    wapt_manifest = json.dumps( manifest_data.items())
+                    wapt_manifest = serialize_content_for_signature(manifest_data.items())
 
                     # sign with default md
                     signature = private_key.sign_content(wapt_manifest,md = md)
@@ -1906,15 +1928,15 @@ class PackageEntry(BaseObjectClass):
         else:
             # unzipped for debug
             self.save_control_to_wapt(self.sourcespath)
-            manifest_data = self.build_manifest()
             cert_chain_str = '\n'.join([cert.as_pem() for cert in certificate_chain])
             open(os.path.join(self.sourcespath,'WAPT','certificate.crt'),'wb').write(cert_chain_str)
 
             for md in mds:
+                manifest_data = self.build_manifest(exclude_filenames = exclude_filenames,forbidden_files = forbidden_files,md=md,excludes = excludes)
                 manifest_data['WAPT/control'] = hexdigest_for_data(control,md = md)
                 manifest_data['WAPT/certificate.crt'] = hexdigest_for_data(cert_chain_str,md = md)
                 # convert to list of list...
-                wapt_manifest = json.dumps( manifest_data.items())
+                wapt_manifest = serialize_content_for_signature(manifest_data.items())
                 # sign with default md
                 signature = private_key.sign_content(wapt_manifest,md = md)
                 open(os.path.join(self.sourcespath,self.get_manifest_filename(md=md)),'wb').write(wapt_manifest)
