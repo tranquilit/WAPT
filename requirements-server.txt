@@ -25,8 +25,8 @@ psutil==3.4.2
 psycopg2==2.7.3.1
 pyOpenSSL==19.0.0
 pyparsing==2.2.0
-python-engineio==3.9.3
-python-socketio==4.3.1
+python-engineio==2.0.4
+python-socketio==1.9.0
 python-ldap==2.4.44
 pytz==2017.2
 requests==2.20.0
