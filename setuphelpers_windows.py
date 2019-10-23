@@ -2867,7 +2867,14 @@ def installed_softwares(keywords='',uninstallkey=None,name=None):
                     appkey = reg_openkey_noredir(_winreg.HKEY_LOCAL_MACHINE,"%s\\%s" % (uninstall,subkey.encode(os_encoding)),noredir=noredir)
                     display_name = reg_getvalue(appkey,'DisplayName','')
                     display_version = reg_getvalue(appkey,'DisplayVersion','')
-                    install_date = reg_getvalue(appkey,'InstallDate','')
+                    date = reg_getvalue(appkey,'InstallDate','').replace('\x00','')
+                    try:
+                        install_date=datetime.datetime.strptime(date,'%Y%m%d').strftime('%Y-%m-%d %H:%M:%S')
+                    except:
+                        try:
+                            install_date=datetime.datetime.strptime(date,'%d/%m/%Y').strftime('%Y-%m-%d %H:%M:%S')
+                        except:
+                            install_date=date
                     install_location = reg_getvalue(appkey,'InstallLocation','')
                     uninstallstring = reg_getvalue(appkey,'UninstallString','')
                     publisher = reg_getvalue(appkey,'Publisher','')
@@ -2881,7 +2888,7 @@ def installed_softwares(keywords='',uninstallkey=None,name=None):
                         result.append({'key':subkey,
                             'name':display_name.replace('\x00',''),
                             'version':("%s"%display_version).replace('\x00',''),
-                            'install_date':("%s"%install_date).replace('\x00',''),
+                            'install_date':("%s"%install_date),
                             'install_location':install_location.replace('\x00',''),
                             'uninstall_string':uninstallstring.strip('\x00'),
                             'publisher':publisher.replace('\x00',''),

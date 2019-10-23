@@ -48,7 +48,7 @@ pycparser==2.19
 pylint==1.7.4
 pyOpenSSL==19.0.0
 pyparsing==2.2.0
-python-engineio==3.9.3
+python-engineio==3.10.0
 python-socketio==4.3.1
 pytz==2017.2
 requests==2.20.0
