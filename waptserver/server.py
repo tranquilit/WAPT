@@ -21,18 +21,13 @@
 #
 # -----------------------------------------------------------------------
 from __future__ import absolute_import
-import os
 import sys
-import platform
-import ipaddress
-import fnmatch
-
 if __name__ == '__main__':
     # as soon as possible, we must monkey patch the library...
     # monkeypatching for eventlet greenthreads
     from eventlet import monkey_patch
     # os=False for windows see https://mail.python.org/pipermail/python-bugs-list/2012-November/186579.html
-    if platform.system() == 'Windows':
+    if hasattr(sys,'getwindowsversion'):
         # interactive debug mode on PyScripter hang if tread is patched.
         if 'rpyc' in sys.modules:
             monkey_patch(os=False,thread=False)
@@ -41,6 +36,8 @@ if __name__ == '__main__':
     else:
         monkey_patch()
 
+import platform
+import os
 
 from waptserver.config import __version__
 
@@ -49,6 +46,8 @@ import json
 import ujson
 import logging
 import logging.handlers
+import ipaddress
+import fnmatch
 import zlib
 import platform
 import socket
