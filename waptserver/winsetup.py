@@ -46,6 +46,7 @@ import time
 import random
 import string
 import base64
+import uuid
 
 from setuphelpers import run
 from waptutils import setloglevel,ensure_unicode
@@ -408,6 +409,10 @@ def install_waptserver_service(options,conf=None):
     if not os.path.isdir(conf_dir):
         os.makedirs(conf_dir)
     run(r'icacls "%s" /t /grant  "*S-1-5-20":(OI)(CI)(M)' % conf_dir)
+
+    if not conf.get('server_uuid'):
+        conf['server_uuid'] = str(uuid.uuid1())
+        waptserver.config.write_config_file(options.configfile,conf)
 
     print("install waptserver")
     service_binary = os.path.abspath(os.path.join(wapt_root_dir,'waptpython.exe'))

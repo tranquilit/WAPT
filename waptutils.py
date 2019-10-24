@@ -1242,7 +1242,7 @@ def create_recursive_zip(zipfn, source_root, target_root = u"",excludes = [u'.sv
     return result
 
 
-def find_all_files(rootdir,include_patterns=None,exclude_patterns=None,include_dirs=None,exclude_dirs=None):
+def find_all_files(rootdir,include_patterns=None,exclude_patterns=None,include_dirs=None,exclude_dirs=None,excludes_full=None):
     """Generator which recursively find all files from rootdir and sub directories
     matching the (dos style) patterns (example: *.exe)
 
@@ -1255,25 +1255,12 @@ def find_all_files(rootdir,include_patterns=None,exclude_patterns=None,include_d
         include_dirs (str or list) : list of glob directory patterns to return
         exclude_dirs (str or list) : list of glob directory patterns to exclude
                                          (if a dir is both in include and exclude, it is excluded)
+        excludes_full (list) : list of exact (relative to package root) filepathes to exclude from manifest.
 
     >>> for fn in find_all_files('c:\\tmp','*.txt'):
             print(fn)
     >>>
     """
-    absolute_rootdir = os.path.abspath(rootdir)
-
-    if include_patterns and not isinstance(include_patterns,list):
-        include_patterns = [include_patterns]
-
-    if exclude_patterns and not isinstance(exclude_patterns,list):
-        exclude_patterns = [exclude_patterns]
-
-    if include_dirs and not isinstance(include_dirs,list):
-        include_dirs = [include_dirs]
-
-    if exclude_dirs and not isinstance(exclude_dirs,list):
-        exclude_dirs = [exclude_dirs]
-
     def match(fn,include_patterns,exclude_patterns):
         if include_patterns:
             result = False
@@ -1291,16 +1278,37 @@ def find_all_files(rootdir,include_patterns=None,exclude_patterns=None,include_d
                     break
         return result
 
-    for fn in os.listdir(absolute_rootdir):
-        relative_fn = os.path.join(rootdir,fn)
-        full_fn = os.path.join(absolute_rootdir,fn)
-        if os.path.isdir(full_fn):
-            if match(fn,include_dirs,exclude_dirs):
-                for fn in find_all_files(full_fn,include_patterns,exclude_patterns,include_dirs,exclude_dirs):
-                    yield fn
-        else:
-            if match(fn,include_patterns,exclude_patterns):
-                yield full_fn
+    def do_find_all_files(rootdir):
+        absolute_rootdir = os.path.abspath(rootdir)
+        relative_rootdir = os.path.relpath(absolute_rootdir,top_rootdir)
+
+        for fn in os.listdir(absolute_rootdir):
+            if not excludes_full or not os.path.join(relative_rootdir,fn) in excludes_full:
+                full_fn = os.path.join(absolute_rootdir,fn)
+                if os.path.isdir(full_fn):
+                    if match(fn,include_dirs,exclude_dirs):
+                        for fn in do_find_all_files(full_fn):
+                            yield fn
+                else:
+                    if match(fn,include_patterns,exclude_patterns):
+                        yield full_fn
+
+    top_rootdir = os.path.relpath(rootdir)
+    if include_patterns and not isinstance(include_patterns,list):
+        include_patterns = [include_patterns]
+
+    if exclude_patterns and not isinstance(exclude_patterns,list):
+        exclude_patterns = [exclude_patterns]
+
+    if include_dirs and not isinstance(include_dirs,list):
+        include_dirs = [include_dirs]
+
+    if exclude_dirs and not isinstance(exclude_dirs,list):
+        exclude_dirs = [exclude_dirs]
+
+    for f in do_find_all_files(rootdir):
+        if f:
+            yield f
 
 
 def all_files(rootdir,pattern=None):

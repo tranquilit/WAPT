@@ -94,6 +94,7 @@ import waptserver.config
 
 # socketio is loaded conditionally if iwe are running in app mode, not uwsgi mode
 socketio = None
+git_hash = ''
 
 try:
     from waptenterprise.waptserver import auth_module_ad
@@ -1184,6 +1185,10 @@ def ping():
             uuid=get_server_uuid(),
             date=datetime2isodate(),
             application_root=app.conf['application_root'],
+            edition=get_wapt_edition(),
+            git_hash=git_hash,
+            platform=platform.system(),
+            architecture=platform.architecture(),
         )
     )
 
@@ -1901,6 +1906,8 @@ def usage_statistics():
         architecture=platform.architecture(),
         version=__version__,
         date=datetime2isodate(),
+        edition=get_wapt_edition(),
+        git_hash=git_hash,
     )
     result.update(stats)
     return make_response(msg=_('Anomnymous usage statistics'), result=result)
@@ -2078,6 +2085,13 @@ def setup_logging(loglevel=None):
                 logging.Formatter('%(name)s %(asctime)s %(levelname)s %(message)s'))
             sublogger.addHandler(hdlr)
 
+def get_revision_hash():
+    fn = os.path.join(wapt_root_dir,'revision.txt')
+    if os.path.isfile(fn):
+        return open(fn,'r').read()
+    else:
+        return ''
+
 # app mode
 if __name__ == '__main__':
     usage = """\
@@ -2090,6 +2104,8 @@ if __name__ == '__main__':
       install   : install as a Windows service managed by nssm
 
     """
+    git_hash = get_revision_hash()
+
     parser = OptionParser(usage=usage, version='waptserver.py ' + __version__)
     parser.add_option(
         '-c',
