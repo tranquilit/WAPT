@@ -58,6 +58,7 @@ except subprocess.CalledProcessError:
     run('systemctl restart rsyslog')
 
 # restart server if conf file is there and if it was already running
-if os.path.exists('/opt/wapt/conf/wapt-get.ini'):
     print("Restarting Agent")
+if os.path.exists('/opt/wapt/conf/wapt-get.ini'):
+    run('wapt-get register')
     run('systemctl restart waptagent.service')

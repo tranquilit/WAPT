@@ -1805,7 +1805,7 @@ begin
   begin
     currhost := UTF8Encode(RowSO.S['uuid']);
     pgTasks.TabVisible := RowSO.S['reachable'] = 'OK';
-    pgHostWUA.TabVisible:= RowSO.S['platform'] = 'Windows';
+    pgHostWUA.TabVisible:= (RowSO.S['platform'] = 'Windows') or (RowSO.S['platform'] = '');
     if (not pgTasks.TabVisible and (HostPages.ActivePage = pgTasks)) or (not pgHostWUA.TabVisible and (HostPages.ActivePage = pgTasks)) then
       HostPages.ActivePage := pgPackages;
 
