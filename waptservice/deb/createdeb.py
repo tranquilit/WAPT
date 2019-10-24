@@ -245,7 +245,8 @@ mkdir_p('builddir/opt/wapt/log')
 mkdir_p('builddir/opt/wapt/db')
 mkdir_p('builddir/opt/wapt/lib/python2.7/site-packages')
 mkdir_p('builddir/opt/wapt/waptagent')
-mkdir_p('builddir/usr/bin/')
+mkdir_p('builddir/usr/bin')
+mkdir_p('builddir/opt/wapt/templates')
 
 WAPTEDITION=os.environ.get('WAPTEDITION','community')
 if WAPTEDITION=='enterprise':
@@ -301,13 +302,16 @@ eprint('Patch memory leak')
 copyfile(makepath(wapt_source_dir,'utils','patch-socketio-client-2','__init__.py'),'./builddir/opt/wapt/lib/python2.7/site-packages/socketIO_client/__init__.py')
 copyfile(makepath(wapt_source_dir,'utils','patch-socketio-client-2','transports.py'),'./builddir/opt/wapt/lib/python2.7/site-packages/socketIO_client/transports.py')
 
-eprint('copying the waptserver files')
+eprint('copying the waptservice files')
 rsync(source_dir, './builddir/opt/wapt/',
       excludes=['postconf', 'repository', 'rpm', 'deb', 'spnego-http-auth-nginx-module', '*.bat'])
+      
+eprint('copying the templates files')
+rsync(makepath(wapt_source_dir,'templates/'),'./builddir/opt/wapt/templates/', excludes=[])
 
 if WAPTEDITION=='enterprise':
     eprint('copying the waptserver enterprise files')
-    rsync(wapt_source_dir+'/waptenterprise/', './builddir/opt/wapt/waptenterprise/',
+    rsync(makepath(wapt_source_dir,'waptenterprise/'), './builddir/opt/wapt/waptenterprise/',
           excludes=[' ','waptwua','waptconsole', 'includes', 'waptserver'])
 
 

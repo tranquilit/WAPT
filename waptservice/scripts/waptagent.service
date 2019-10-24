@@ -12,6 +12,7 @@ Environment=PYTHONHOME=/opt/wapt
 Environment=PYTHONPATH=/opt/wapt
 Environment=VIRTUAL_ENV=/opt/wapt
 LimitNOFILE=32768
+KillMode=control-group
 
 [Install]
 WantedBy=multi-user.target

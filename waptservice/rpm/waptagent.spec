@@ -58,6 +58,7 @@ mkdir -p %{buildroot}/usr/lib/systemd/
 /opt/wapt/waptutils.py
 /opt/wapt/custom_zip.py
 /opt/wapt/wapt-get.py
+/opt/wapt/templates
 %if %is_enterprise
 /opt/wapt/waptenterprise
 %endif

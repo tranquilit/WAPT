@@ -48,9 +48,9 @@ from waptutils import (Version, __version__, all_files, dateof,
                        time2display, wget, wgets, makepath,killtree,isfile,isdir,
                        CalledProcessErrorOutput,remove_file,mkdirs,get_main_ip)
 
-if sys.platform == 'win32':
+if os.name == 'nt':
     from setuphelpers_windows import *
-elif sys.platform.startswith('linux') or sys.platform.startswith('darwin'):
+else:
     from setuphelpers_linux import *
 
 

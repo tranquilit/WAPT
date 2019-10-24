@@ -996,7 +996,7 @@ def main():
                     print(u"You must provide at least one source directory for package building")
                     sys.exit(1)
                 if not mywapt.personal_certificate_path or not os.path.isfile(mywapt.personal_certificate_path):
-                    print(u"You must provide the filepath to a your personal certificate the [global]->personal_certificate_path key of configuration %s" %config_file)
+                    print(u"You must provide the filepath to your personal certificate the [global]->personal_certificate_path key of configuration %s" %config_file)
                     sys.exit(1)
 
                 packages = []

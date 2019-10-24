@@ -51,6 +51,8 @@ except:
     pass
 
 import fnmatch
+import whichcraft
+import subprocess
 import platform
 import socket
 import ssl
@@ -60,14 +62,10 @@ import psutil
 import threading
 import traceback
 import uuid
-
 import gc
-
 import random
 import string
-
 import locale
-
 import shlex
 from iniparse import RawConfigParser,INIConfig
 from optparse import OptionParser
@@ -2782,7 +2780,7 @@ class Wapt(BaseObjectClass):
             'token_lifetime': 24*60*60,  # 24 hours
 
             # optional...
-            'default_sources_root':'c:\\waptdev',
+            'default_sources_root': 'c:\\waptdev' if (os.name == 'nt') else os.path.join(os.path.expanduser('~'),'waptdev'),
             'default_package_prefix':'tis',
             'default_sources_suffix':'wapt',
             'default_sources_url':'',
@@ -2834,7 +2832,7 @@ class Wapt(BaseObjectClass):
         if self.config.has_option('global','use_fqdn_as_uuid'):
             self.use_fqdn_as_uuid = self.config.getboolean('global','use_fqdn_as_uuid')
 
-        # must have a matching key eithe rin same file or in same directory
+        # must have a matching key either in same file or in same directory
         # see self.private_key()
         if self.config.has_option('global','personal_certificate_path'):
             self.personal_certificate_path = self.config.get('global','personal_certificate_path').decode('utf8')
@@ -6127,7 +6125,7 @@ class Wapt(BaseObjectClass):
                 session_db = WaptSessionDB(self.user)  # WaptSessionDB()
                 with session_db:
                     if force or is_dev_mode or not session_db.is_installed(package_entry.package,package_entry.version):
-                        logger.info(u"Running session_setup for package %s and user %s" % (package,self.user))
+                        print(u"Running session_setup for package %s and user %s" % (package.asrequirement(),self.user))
                         install_id = session_db.add_start_install(package_entry)
                         with WaptPackageSessionSetupLogger(console=sys.stderr,waptsessiondb=session_db,install_id=install_id) as dblog:
                             try:
@@ -6146,11 +6144,12 @@ class Wapt(BaseObjectClass):
                                     session_db.update_install_status(install_id,append_output = u'session_setup() done\n')
                                 return result
                             except Exception as e:
+                                logger.critical(u"session_setup failed for package %s and user %s" % (package,self.user))
                                 session_db.update_install_status(install_id,append_output = traceback.format_exc())
                                 dblog.exit_status = 'ERROR'
 
                     else:
-                        print(u'Already installed.')
+                        logger.info(u"session_setup for package %s and user %s already installed" % (package,self.user))
             else:
                 logger.debug('No setup.py, skipping session-setup')
         finally:
@@ -7320,27 +7319,35 @@ def wapt_sources_edit(wapt_sources_dir):
     psproj_filename = os.path.join(wapt_sources_dir,u'WAPT',u'wapt.psproj')
     control_filename = os.path.join(wapt_sources_dir,u'WAPT',u'control')
     setup_filename = os.path.join(wapt_sources_dir,u'setup.py')
-    pyscripter_filename = os.path.join(setuphelpers.programfiles32,
-                                       'PyScripter', 'PyScripter.exe')
-    wapt_base_dir = os.path.dirname(__file__)
-    env = os.environ
-    env.update(dict(
-        PYTHONHOME=wapt_base_dir,
-        PYTHONPATH=wapt_base_dir,
-        VIRTUAL_ENV=wapt_base_dir
-        ))
+    if os.name == 'nt':
+        pyscripter_filename = os.path.join(setuphelpers.programfiles32,
+                                           'PyScripter', 'PyScripter.exe')
+        wapt_base_dir = os.path.dirname(__file__)
+        env = os.environ
+        env.update(dict(
+            PYTHONHOME=wapt_base_dir,
+            PYTHONPATH=wapt_base_dir,
+            VIRTUAL_ENV=wapt_base_dir
+            ))
 
-    if os.path.isfile(pyscripter_filename) and os.path.isfile(psproj_filename):
-        p = psutil.Popen((u'"%s" --PYTHONDLLPATH "%s" --python27 -N --project "%s" "%s" "%s"' % (
-                        pyscripter_filename,
-                        wapt_base_dir,
-                        psproj_filename,
-                        setup_filename,
-                        control_filename)).encode(sys.getfilesystemencoding()),
-                        cwd=wapt_sources_dir.encode(sys.getfilesystemencoding()),
-                        env=env)
+        if os.path.isfile(pyscripter_filename) and os.path.isfile(psproj_filename):
+            p = psutil.Popen((u'"%s" --PYTHONDLLPATH "%s" --python27 -N --project "%s" "%s" "%s"' % (
+                            pyscripter_filename,
+                            wapt_base_dir,
+                            psproj_filename,
+                            setup_filename,
+                            control_filename)).encode(sys.getfilesystemencoding()),
+                            cwd=wapt_sources_dir.encode(sys.getfilesystemencoding()),
+                            env=env)
+        else:
+            os.startfile(wapt_sources_dir)
     else:
-        os.startfile(wapt_sources_dir)
+        if whichcraft.which('nano'):
+            command = ['nano', setup_filename]
+            subprocess.call(command)
+        elif whichcraft.which('vim'):
+            command = ['vim', setup_filename]
+            subprocess.call(command)
     return wapt_sources_dir
 
 
