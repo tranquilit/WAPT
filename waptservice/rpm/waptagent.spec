@@ -125,7 +125,7 @@ EOF
 systemctl restart syslog-nginx
 systemctl restart rsyslog
 
-FILE=/opt/wapt/conf/wapt-get.ini
+FILE=/opt/wapt/wapt-get.ini
 if [[ -f "$FILE" ]]; then
 	wapt-get register
     systemctl restart waptagent.service

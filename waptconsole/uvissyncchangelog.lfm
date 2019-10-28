@@ -1,7 +1,7 @@
 object VisSyncChangelog: TVisSyncChangelog
-  Left = 437
+  Left = 2004
   Height = 538
-  Top = 84
+  Top = 198
   Width = 1115
   Caption = 'Changelog synchronization'
   ClientHeight = 538
@@ -9,11 +9,19 @@ object VisSyncChangelog: TVisSyncChangelog
   OnShow = FormShow
   Position = poMainFormCenter
   LCLVersion = '1.8.4.0'
+  object Splitter1: TSplitter
+    Left = 558
+    Height = 538
+    Top = 0
+    Width = 7
+    Align = alRight
+    ResizeAnchor = akRight
+  end
   object GridChangelog: TSOGrid
     Left = 0
     Height = 538
     Top = 0
-    Width = 610
+    Width = 558
     ShowAdvancedColumnsCustomize = False
     Align = alClient
     Color = clWhite
@@ -24,7 +32,7 @@ object VisSyncChangelog: TVisSyncChangelog
         Alignment = taRightJustify
         Position = 0
         Text = 'version'
-        Width = 100
+        Width = 56
         PropertyName = 'version'
       end    
       item
@@ -76,7 +84,7 @@ object VisSyncChangelog: TVisSyncChangelog
     Header.MinHeight = 18
     Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
     Header.Style = hsFlatButtons
-    TabOrder = 0
+    TabOrder = 1
     TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes, toAutoChangeScale]
     TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toFullRowDrag]
     TreeOptions.PaintOptions = [toHideFocusRect, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages, toAlwaysHideSelection]
@@ -84,22 +92,39 @@ object VisSyncChangelog: TVisSyncChangelog
     WantTabs = True
     OnChange = GridChangelogChange
   end
-  object Splitter1: TSplitter
-    Left = 610
+  object GridJSONViewChangelog: TVirtualJSONInspector
+    Left = 565
     Height = 538
     Top = 0
-    Width = 5
+    Width = 550
+    PropertyDefs = <>
     Align = alRight
-    ResizeAnchor = akRight
-  end
-  object Memo1: TMemo
-    Left = 615
-    Height = 538
-    Top = 0
-    Width = 500
-    Align = alRight
-    ReadOnly = True
-    ScrollBars = ssAutoBoth
+    Color = clWhite
+    Colors.UnfocusedColor = clMedGray
+    DragMode = dmAutomatic
+    DragType = dtVCL
+    Header.AutoSizeIndex = -1
+    Header.Columns = <    
+      item
+        Position = 0
+        Text = 'Property'
+        Width = 250
+      end    
+      item
+        Position = 1
+        Text = 'Value'
+        Width = 258
+      end>
+    Header.DefaultHeight = 18
+    Header.Font.Style = [fsBold]
+    Header.Height = 18
+    Header.MinHeight = 18
+    Header.Options = [hoColumnResize, hoDrag, hoShowSortGlyphs, hoVisible, hoAutoSpring, hoHeaderClickAutoSort]
+    Header.Style = hsFlatButtons
     TabOrder = 2
+    TreeOptions.AutoOptions = [toAutoScrollOnExpand, toAutoSort, toAutoSpanColumns, toAutoTristateTracking, toAutoDeleteMovedNodes, toAutoChangeScale]
+    TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toFullRowDrag, toEditOnClick]
+    TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowRoot, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
+    TreeOptions.SelectionOptions = [toDisableDrawSelection, toExtendedFocus, toFullRowSelect, toMultiSelect]
   end
 end

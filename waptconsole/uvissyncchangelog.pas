@@ -6,15 +6,15 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ExtCtrls,
-  StdCtrls, sogrid, VirtualTrees;
+  StdCtrls, vte_json, sogrid, VirtualTrees, jsonparser;
 
 type
 
   { TVisSyncChangelog }
 
   TVisSyncChangelog = class(TForm)
-    Memo1: TMemo;
     GridChangelog: TSOGrid;
+    GridJSONViewChangelog: TVirtualJSONInspector;
     Splitter1: TSplitter;
     procedure FormShow(Sender: TObject);
     procedure GridChangelogChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
@@ -35,9 +35,24 @@ implementation
 
 procedure TVisSyncChangelog.GridChangelogChange(Sender: TBaseVirtualTree;
   Node: PVirtualNode);
+var
+  jsp:TJSONParser;
 begin
   if Assigned(GridChangelog.FocusedRow) then
-     Memo1.Caption:=GridChangelog.FocusedRow.O['changelog'].AsJSon(true,true);
+  begin
+    try
+       GridJSONViewChangelog.Clear;
+       GridJSONViewChangelog.BeginUpdate;
+       jsp := TJSONParser.Create(UTF8Encode(GridChangelog.FocusedRow.O['changelog'].AsJSon));
+       if assigned(GridJSONViewChangelog.RootData) then
+          GridJSONViewChangelog.rootdata.Free;
+       GridJSONViewChangelog.rootData := jsp.Parse;
+       jsp.Free;
+    finally
+       GridJSONViewChangelog.EndUpdate;
+    end;
+    GridJSONViewChangelog.FullExpand();
+  end;
 end;
 
 procedure TVisSyncChangelog.FormShow(Sender: TObject);

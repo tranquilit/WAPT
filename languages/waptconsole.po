@@ -2929,6 +2929,7 @@ msgid "uuid"
 msgstr ""
 
 #: tviswaptgui.gridagentrepo.header.columns[11].text
+msgctxt "tviswaptgui.gridagentrepo.header.columns[11].text"
 msgid "status_sync_id"
 msgstr ""
 
@@ -2948,12 +2949,12 @@ msgstr ""
 
 #: tviswaptgui.gridagentrepo.header.columns[3].text
 msgctxt "tviswaptgui.gridagentrepo.header.columns[3].text"
-msgid "Current download"
+msgid "Connection status"
 msgstr ""
 
 #: tviswaptgui.gridagentrepo.header.columns[4].text
 msgctxt "tviswaptgui.gridagentrepo.header.columns[4].text"
-msgid "Connection status"
+msgid "Current download"
 msgstr ""
 
 #: tviswaptgui.gridagentrepo.header.columns[5].text
@@ -2968,12 +2969,12 @@ msgstr ""
 
 #: tviswaptgui.gridagentrepo.header.columns[7].text
 msgctxt "tviswaptgui.gridagentrepo.header.columns[7].text"
-msgid "Computer name"
+msgid "Computer FQDN"
 msgstr ""
 
 #: tviswaptgui.gridagentrepo.header.columns[8].text
 msgctxt "tviswaptgui.gridagentrepo.header.columns[8].text"
-msgid "Computer FQDN"
+msgid "Computer name"
 msgstr ""
 
 #: tviswaptgui.gridagentrepo.header.columns[9].text
@@ -4035,6 +4036,7 @@ msgid "local_status_history"
 msgstr ""
 
 #: tviswaptgui.gridhostwinupdates.header.columns[28].text
+msgctxt "tviswaptgui.gridhostwinupdates.header.columns[28].text"
 msgid "Updated on"
 msgstr ""
 
@@ -4171,6 +4173,7 @@ msgid "DNS Domain"
 msgstr ""
 
 #: tviswaptgui.gridnetworks.header.columns[5].text
+msgctxt "tviswaptgui.gridnetworks.header.columns[5].text"
 msgid "Repository URL"
 msgstr ""
 
@@ -4405,46 +4408,46 @@ msgstr ""
 
 #: tviswaptgui.gridrules.header.columns[0].text
 msgctxt "tviswaptgui.gridrules.header.columns[0].text"
-msgid "sequence"
+msgid "Sequence"
 msgstr ""
 
 #: tviswaptgui.gridrules.header.columns[1].text
 msgctxt "tviswaptgui.gridrules.header.columns[1].text"
-msgid "name"
+msgid "Name"
 msgstr ""
 
 #: tviswaptgui.gridrules.header.columns[2].text
 msgctxt "tviswaptgui.gridrules.header.columns[2].text"
-msgid "condition"
+msgid "Condition"
 msgstr ""
 
 #: tviswaptgui.gridrules.header.columns[3].text
-msgid "value"
+msgid "Value"
 msgstr ""
 
 #: tviswaptgui.gridrules.header.columns[4].text
 msgctxt "tviswaptgui.gridrules.header.columns[4].text"
-msgid "repo_url"
+msgid "Repository URL"
 msgstr ""
 
 #: tviswaptgui.gridrules.header.columns[5].text
 msgctxt "tviswaptgui.gridrules.header.columns[5].text"
-msgid "created_by"
+msgid "Created by"
 msgstr ""
 
 #: tviswaptgui.gridrules.header.columns[6].text
 msgctxt "tviswaptgui.gridrules.header.columns[6].text"
-msgid "created_on"
+msgid "Created on"
 msgstr ""
 
 #: tviswaptgui.gridrules.header.columns[7].text
 msgctxt "tviswaptgui.gridrules.header.columns[7].text"
-msgid "updated_by"
+msgid "Updated by"
 msgstr ""
 
 #: tviswaptgui.gridrules.header.columns[8].text
 msgctxt "tviswaptgui.gridrules.header.columns[8].text"
-msgid "updated_on"
+msgid "Updated on"
 msgstr ""
 
 #: tviswaptgui.gridselfservicepackages.header.columns[0].text
@@ -5380,10 +5383,6 @@ msgstr ""
 #: tviswaptgui.menuitemproductscheckall.caption
 msgctxt "tviswaptgui.menuitemproductscheckall.caption"
 msgid "Check all"
-msgstr ""
-
-#: tviswaptgui.menuitemresync.caption
-msgid "Resync selected"
 msgstr ""
 
 #: tviswaptgui.menuitemshowerrors.caption

@@ -1,22 +1,48 @@
 object FormErrorsRepos: TFormErrorsRepos
-  Left = 2174
+  Left = 2237
   Height = 240
-  Top = 374
-  Width = 358
+  Top = 290
+  Width = 694
   Caption = 'Errors'
   ClientHeight = 240
-  ClientWidth = 358
+  ClientWidth = 694
   OnShow = FormShow
   Position = poMainFormCenter
   LCLVersion = '1.8.4.0'
-  object MemoErrors: TMemo
+  object GridJSONViewErrors: TVirtualJSONInspector
     Left = 0
     Height = 240
     Top = 0
-    Width = 358
+    Width = 694
+    PropertyDefs = <>
     Align = alClient
-    ReadOnly = True
-    ScrollBars = ssAutoBoth
+    Color = clWhite
+    Colors.UnfocusedColor = clMedGray
+    DragMode = dmAutomatic
+    DragType = dtVCL
+    Header.AutoSizeIndex = -1
+    Header.Columns = <    
+      item
+        Position = 0
+        Text = 'Property'
+        Width = 250
+      end    
+      item
+        Position = 1
+        Text = 'Value'
+        Width = 440
+      end>
+    Header.DefaultHeight = 18
+    Header.Font.Style = [fsBold]
+    Header.Height = 18
+    Header.MinHeight = 18
+    Header.Options = [hoColumnResize, hoDrag, hoShowSortGlyphs, hoVisible, hoAutoSpring, hoHeaderClickAutoSort]
+    Header.Style = hsFlatButtons
     TabOrder = 0
+    TreeOptions.AutoOptions = [toAutoScrollOnExpand, toAutoSort, toAutoSpanColumns, toAutoTristateTracking, toAutoDeleteMovedNodes, toAutoChangeScale]
+    TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toFullRowDrag]
+    TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowRoot, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
+    TreeOptions.SelectionOptions = [toDisableDrawSelection, toExtendedFocus, toFullRowSelect, toMultiSelect]
+    TreeOptions.StringOptions = [toSaveCaptions]
   end
 end

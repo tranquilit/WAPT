@@ -27,9 +27,9 @@ object VisWaptGUI: TVisWaptGUI
     Height = 854
     Top = 0
     Width = 1920
-    ActivePage = pgInventory
+    ActivePage = pgRepositories
     Align = alClient
-    TabIndex = 0
+    TabIndex = 9
     TabOrder = 0
     OnChange = MainPagesChange
     object pgInventory: TTabSheet
@@ -350,6 +350,7 @@ object VisWaptGUI: TVisWaptGUI
                 PropertyName = 'package_uuid'
               end>
             Header.DefaultHeight = 18
+            Header.Font.Style = [fsBold]
             Header.Height = 18
             Header.MinHeight = 18
             Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
@@ -708,6 +709,7 @@ object VisWaptGUI: TVisWaptGUI
                 Width = 314
               end>
             Header.DefaultHeight = 18
+            Header.Font.Style = [fsBold]
             Header.Height = 18
             Header.MinHeight = 18
             Header.Options = [hoColumnResize, hoDrag, hoShowSortGlyphs, hoVisible, hoAutoSpring, hoHeaderClickAutoSort]
@@ -804,6 +806,7 @@ object VisWaptGUI: TVisWaptGUI
                 PropertyName = 'system_component'
               end>
             Header.DefaultHeight = 18
+            Header.Font.Style = [fsBold]
             Header.Height = 18
             Header.MinHeight = 18
             Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
@@ -1155,6 +1158,7 @@ object VisWaptGUI: TVisWaptGUI
                 PropertyName = 'release_notes'
               end>
             Header.DefaultHeight = 18
+            Header.Font.Style = [fsBold]
             Header.Height = 18
             Header.MinHeight = 18
             Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
@@ -1438,6 +1442,7 @@ object VisWaptGUI: TVisWaptGUI
                 PropertyName = 'update_id'
               end>
             Header.DefaultHeight = 18
+            Header.Font.Style = [fsBold]
             Header.Height = 18
             Header.MinHeight = 18
             Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
@@ -1683,6 +1688,7 @@ object VisWaptGUI: TVisWaptGUI
                     PropertyName = 'created_by'
                   end>
                 Header.DefaultHeight = 18
+                Header.Font.Style = [fsBold]
                 Header.Height = 18
                 Header.MinHeight = 18
                 Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
@@ -1827,6 +1833,7 @@ object VisWaptGUI: TVisWaptGUI
                     PropertyName = 'created_by'
                   end>
                 Header.DefaultHeight = 18
+                Header.Font.Style = [fsBold]
                 Header.Height = 18
                 Header.MinHeight = 18
                 Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
@@ -1970,6 +1977,7 @@ object VisWaptGUI: TVisWaptGUI
                     PropertyName = 'created_by'
                   end>
                 Header.DefaultHeight = 18
+                Header.Font.Style = [fsBold]
                 Header.Height = 18
                 Header.MinHeight = 18
                 Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
@@ -2301,10 +2309,10 @@ object VisWaptGUI: TVisWaptGUI
               PropertyName = 'registration_auth_user'
             end>
           Header.DefaultHeight = 18
+          Header.Font.Style = [fsBold]
           Header.Height = 18
           Header.MinHeight = 18
           Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
-          Header.ParentFont = True
           Header.SortDirection = sdDescending
           Header.Style = hsFlatButtons
           HintMode = hmHintAndDefault
@@ -3100,7 +3108,7 @@ object VisWaptGUI: TVisWaptGUI
           end
           object ToolButtonSep1: TToolButton
             Left = 48
-            Height = 45
+            Height = 5
             Top = 0
             Caption = 'ToolButtonSep1'
             Style = tbsDivider
@@ -3122,7 +3130,7 @@ object VisWaptGUI: TVisWaptGUI
           end
           object ToolButton6: TToolButton
             Left = 193
-            Height = 45
+            Height = 5
             Top = 0
             Caption = 'ToolButton6'
             Style = tbsDivider
@@ -3450,6 +3458,7 @@ object VisWaptGUI: TVisWaptGUI
             PropertyName = 'sourcespath'
           end>
         Header.DefaultHeight = 18
+        Header.Font.Style = [fsBold]
         Header.Height = 18
         Header.MinHeight = 18
         Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
@@ -3565,14 +3574,6 @@ object VisWaptGUI: TVisWaptGUI
       Caption = 'Softwares repository'
       ClientHeight = 826
       ClientWidth = 1912
-      object Splitter3: TSplitter
-        Left = 1906
-        Height = 609
-        Top = 50
-        Width = 6
-        Align = alRight
-        ResizeAnchor = akRight
-      end
       object Panel4: TPanel
         Left = 0
         Height = 50
@@ -3766,7 +3767,7 @@ object VisWaptGUI: TVisWaptGUI
         Left = 0
         Height = 609
         Top = 50
-        Width = 1906
+        Width = 1912
         OnGetText = GridGroupsGetText
         ShowAdvancedColumnsCustomize = False
         KeyFieldsNames = 'package;version;architecture;locale;maturity'
@@ -4074,13 +4075,14 @@ object VisWaptGUI: TVisWaptGUI
             PropertyName = 'sourcespath'
           end>
         Header.DefaultHeight = 18
+        Header.Font.Style = [fsBold]
         Header.Height = 18
         Header.MinHeight = 18
         Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
         Header.SortDirection = sdDescending
         Header.Style = hsFlatButtons
         PopupMenu = PopupMenuPackages
-        TabOrder = 2
+        TabOrder = 1
         TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes, toAutoChangeScale]
         TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toFullRowDrag, toNodeHeightResize, toNodeHeightDblClickResize]
         TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages, toAlwaysHideSelection]
@@ -4112,7 +4114,7 @@ object VisWaptGUI: TVisWaptGUI
         Caption = 'PanHostsForPackage'
         ClientHeight = 161
         ClientWidth = 1912
-        TabOrder = 4
+        TabOrder = 3
         Visible = False
         object GridHostsForPackage: TSOGrid
           Left = 0
@@ -4439,6 +4441,7 @@ object VisWaptGUI: TVisWaptGUI
               PropertyName = 'signer_fingerprint'
             end>
           Header.DefaultHeight = 18
+          Header.Font.Style = [fsBold]
           Header.Height = 18
           Header.MinHeight = 18
           Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
@@ -5173,6 +5176,7 @@ object VisWaptGUI: TVisWaptGUI
                 PropertyName = 'sourcespath'
               end>
             Header.DefaultHeight = 18
+            Header.Font.Style = [fsBold]
             Header.Height = 18
             Header.MinHeight = 18
             Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
@@ -5350,6 +5354,7 @@ object VisWaptGUI: TVisWaptGUI
                 PropertyName = 'id'
               end>
             Header.DefaultHeight = 18
+            Header.Font.Style = [fsBold]
             Header.Height = 18
             Header.MinHeight = 18
             Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
@@ -5738,6 +5743,7 @@ object VisWaptGUI: TVisWaptGUI
                   PropertyName = 'release_notes'
                 end>
               Header.DefaultHeight = 18
+              Header.Font.Style = [fsBold]
               Header.Height = 18
               Header.MinHeight = 18
               Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
@@ -6341,6 +6347,7 @@ object VisWaptGUI: TVisWaptGUI
             PropertyName = 'sourcespath'
           end>
         Header.DefaultHeight = 18
+        Header.Font.Style = [fsBold]
         Header.Height = 18
         Header.MinHeight = 18
         Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
@@ -7142,6 +7149,7 @@ object VisWaptGUI: TVisWaptGUI
             PropertyName = 'pref'
           end>
         Header.DefaultHeight = 18
+        Header.Font.Style = [fsBold]
         Header.Height = 18
         Header.MinHeight = 18
         Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
@@ -7202,6 +7210,7 @@ object VisWaptGUI: TVisWaptGUI
             Header.AutoSizeIndex = -1
             Header.Columns = <>
             Header.DefaultHeight = 18
+            Header.Font.Style = [fsBold]
             Header.Height = 18
             Header.MainColumn = -1
             Header.MinHeight = 18
@@ -7868,6 +7877,7 @@ object VisWaptGUI: TVisWaptGUI
               PropertyName = 'settings'
             end>
           Header.DefaultHeight = 18
+          Header.Font.Style = [fsBold]
           Header.Height = 18
           Header.MinHeight = 18
           Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
@@ -8052,6 +8062,7 @@ object VisWaptGUI: TVisWaptGUI
             Width = 1006
           end>
         Header.DefaultHeight = 18
+        Header.Font.Style = [fsBold]
         Header.Height = 18
         Header.MinHeight = 18
         Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
@@ -8208,67 +8219,68 @@ object VisWaptGUI: TVisWaptGUI
               item
                 Alignment = taRightJustify
                 Position = 0
-                Text = 'sequence'
+                Text = 'Sequence'
                 Width = 64
                 PropertyName = 'sequence'
               end            
               item
                 Position = 1
                 Tag = 1
-                Text = 'name'
+                Text = 'Name'
                 Width = 54
                 PropertyName = 'name'
               end            
               item
                 Position = 2
                 Tag = 2
-                Text = 'condition'
+                Text = 'Condition'
                 Width = 100
                 PropertyName = 'condition'
               end            
               item
                 Position = 3
                 Tag = 3
-                Text = 'value'
+                Text = 'Value'
                 Width = 100
                 PropertyName = 'value'
               end            
               item
                 Position = 4
                 Tag = 4
-                Text = 'repo_url'
+                Text = 'Repository URL'
                 Width = 100
                 PropertyName = 'repo_url'
               end            
               item
                 Position = 5
                 Tag = 5
-                Text = 'created_by'
+                Text = 'Created by'
                 Width = 100
                 PropertyName = 'created_by'
               end            
               item
                 Position = 6
                 Tag = 6
-                Text = 'created_on'
+                Text = 'Created on'
                 Width = 157
                 PropertyName = 'created_on'
               end            
               item
                 Position = 7
                 Tag = 7
-                Text = 'updated_by'
+                Text = 'Updated by'
                 Width = 100
                 PropertyName = 'updated_by'
               end            
               item
                 Position = 8
                 Tag = 8
-                Text = 'updated_on'
+                Text = 'Updated on'
                 Width = 371
                 PropertyName = 'updated_on'
               end>
             Header.DefaultHeight = 18
+            Header.Font.Style = [fsBold]
             Header.Height = 18
             Header.MinHeight = 18
             Header.Options = [hoAutoResize, hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
@@ -8334,21 +8346,21 @@ object VisWaptGUI: TVisWaptGUI
               item
                 Position = 3
                 Tag = 3
-                Text = 'Current download'
-                Width = 118
-                PropertyName = 'status_sync_current_download'
-              end            
-              item
-                Position = 4
-                Tag = 4
                 Text = 'Connection status'
                 Width = 138
                 PropertyName = 'reachable'
               end            
               item
+                Position = 4
+                Tag = 4
+                Text = 'Current download'
+                Width = 118
+                PropertyName = 'status_sync_current_download'
+              end            
+              item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
                 Position = 5
-                Tag = 5
+                Tag = 6
                 Text = 'status_sync_progress'
                 Width = 142
                 PropertyName = 'status_sync_progress'
@@ -8356,36 +8368,36 @@ object VisWaptGUI: TVisWaptGUI
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
                 Position = 6
-                Tag = 6
+                Tag = 7
                 Text = 'Description'
                 Width = 107
                 PropertyName = 'description'
               end            
               item
                 Position = 7
-                Tag = 7
-                Text = 'Computer name'
-                Width = 132
-                PropertyName = 'computer_name'
-              end            
-              item
-                Position = 8
                 Tag = 8
                 Text = 'Computer FQDN'
                 Width = 139
                 PropertyName = 'computer_fqdn'
               end            
               item
-                Position = 9
+                Position = 8
                 Tag = 9
+                Text = 'Computer name'
+                Width = 132
+                PropertyName = 'computer_name'
+              end            
+              item
+                Position = 9
+                Tag = 10
                 Text = 'IP'
-                Width = 149
+                Width = 120
                 PropertyName = 'main_ip'
               end            
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
                 Position = 10
-                Tag = 10
+                Tag = 11
                 Text = 'uuid'
                 Width = 72
                 PropertyName = 'uuid'
@@ -8393,7 +8405,7 @@ object VisWaptGUI: TVisWaptGUI
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
                 Position = 11
-                Tag = 11
+                Tag = 12
                 Text = 'status_sync_id'
                 Width = 10
                 PropertyName = 'status_sync_id'
@@ -8401,11 +8413,13 @@ object VisWaptGUI: TVisWaptGUI
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
                 Position = 12
+                Tag = 13
                 Text = 'status_sync_errors'
                 Width = 10
                 PropertyName = 'status_sync_errors'
               end>
             Header.DefaultHeight = 18
+            Header.Font.Style = [fsBold]
             Header.Height = 18
             Header.MinHeight = 18
             Header.Options = [hoAutoResize, hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
@@ -13693,87 +13707,6 @@ object VisWaptGUI: TVisWaptGUI
       }
       ImageIndex = 19
       OnClick = MenuItemSyncForceClick
-    end
-    object MenuItemResync: TMenuItem
-      Caption = 'Resync selected'
-      Bitmap.Data = {
-        36090000424D3609000000000000360000002800000018000000180000000100
-        2000000000000009000064000000640000000000000000000000000000000000
-        0000000000000000000000000000CCFF990F0000000000000000F3FF8B2CF6FF
-        8F70F5FF919BF6FF8FB0F6FF8FB0F7FF919BF6FF8E6FF9FF8C28000000000000
-        0000FFFF800C0000000000000000000000000000000000000000000000000000
-        000000000000FFFF000600FF000600000000F1FF8735F5FF907CF6FF8FA2F6FF
-        8FB0F6FF90B3F6FF90B3F6FF90B3F5FF90B3F8FF8FAAF7FF8D9CF6FF8D77F5FF
-        8F320000000000000000FFFF0006000000000000000000000000000000000000
-        0000FFFF00060000000000000000F6FF8F74F5FF8FB6F6FF90BEF7FF90B7F7FF
-        91B4F6FF90B3F7FF92B44B4D2CE2F6FF8DAFF8FF8EADF6FF8FB1F7FF8EB7F6FF
-        8DAFF6FF8E6F0000000000000000FFFF0006000000000000000000000000FFFF
-        0006FFFF0006E6FF7314F6FF908FF6FF90BEF6FF90B3F5FF90B1F5FF90B3F6FF
-        90B3F7FF92B4F5FF87B1818647CD484B2AE0F6FF8EADF6FF8EACF8FF8FAAF6FF
-        8EADF7FF8EB7F6FF8D89FFFF8012FFFF0006FFFF000600000000FFFF0006FFFF
-        AA09FFFFFF06F8FF908EF6FF90BEF6FF8FB0F6FF90B3F6FF90B3F6FF90B3F7FF
-        93B5F5FF82AFFAFFB8C6E0E5A6C6000000FF767B46D1F6FF8EADF6FF8EADF6FF
-        8EADF8FF8FAAF7FF8EB7F6FF8D89FFFF0006FFFFAA09FFFF0006CCFF990F0000
-        0000F6FF8D72F6FF90BEF6FF8FB0F6FF90B3F6FF90B3F6FF90B3F7FF91B4F5FF
-        8BB2F7FF96B6FFFFFAF8FFFFFBF746492BE2000000FF898E51CAF6FF8EADF6FF
-        8EADF6FF8EADF8FF8DAAF7FF8EB7F6FF8F6D00000000FFFF800CFFFF0006FAFF
-        8A30F4FF8EB7F6FF90B3F6FF90B3F6FF90B3F6FF90B3F6FF90B3F7FF92B4F5FF
-        83AFFEFFEBE9FFFFFFFFFFFFFFFFF3F4E1E9000100FE010201FEC4CC71B9F6FF
-        8EADF6FF8EADF6FF8EADF6FF8EADF8FF8DAFFFFF932DFFFF000600000000F5FF
-        8F7BF6FF90BEF6FF90B1F6FF90B3F6FF90B3F6FF90B3F7FF94B5F3FF7CADFBFF
-        D7DAFFFFFFFFFFFFFEFEA9A9A9FEA7A7A7FF1D1D19FA000000FF000000FFD1D9
-        79B6F6FF8EADF6FF8EADF6FF8EABF7FF8EB7F8FF8E7500000000F9FF8C28F6FF
-        8FA2F7FF90B7F5FF90B3F6FF90B3F6FF90B3F7FF93B5F5FF81AEFAFFBEC9FFFF
-        FFFFFFFFFEFEFFFFFFFF626262FF000000FF000000FF000000FF000000FF0F10
-        09F8F6FF8EADF6FF8EADF6FF8EACF6FF8FB1F7FF8D9BF1FF8A25F6FF906EF8FF
-        90AFF7FF8FB4F6FF90B3F6FF90B3F7FF92B4F6FF87B0F7FFA1BBFEFFFAF9FFFF
-        FFFEFFFFFFFEFFFFFFFFD6D6D6FF000000FF000000FF000000FF000000FF0000
-        00FF17180DF4F6FF8EADF6FF8EADF6FF8EADF6FF8EABF6FF906EF7FF8E9AF6FF
-        90B3F6FF90B3F6FF90B3F6FF91B3F6FF8EB3F7FF93B5FEFFF1F1FFFFFFFFFFFF
-        FFFEFFFFFFFFFFFFFFFFFFFFFFFF454545FF000000FF000000FF3B3B38FBF0F9
-        8EB0E8F184B0F6FF8FADF6FF8EADF6FF8EAEF5FF90B3F5FF8D9BF6FF8FB0F6FF
-        90B3F6FF90B3F6FF90B3F6FF91B3F4FF8AB3F7FF9CB9F9FFBAC7FAFFB7C5FFFF
-        F8F7FFFFFFFFFFFFFFFEFFFFFFFEFAFAFAFF010201FF000000FF000000FF9EA3
-        63C8F6FF8BABF6FF8FADF6FF8EADF5FF8EB3F6FF90B3F6FF8FB0F6FF8FB0F6FF
-        90B3F6FF90B3F6FF90B3F6FF90B3F6FF91B3F5FF8DB3F5FF82AFF6FF85B0FEFF
-        F6F4FFFFFFFFFFFFFFFEFFFFFFFEFFFFFFFF4F4F4CFB000000FF000000FF0405
-        02FDF6FF8FADF6FF8EADF5FF8FB2F5FF8FB4F6FF90B3F6FF8FB0F5FF8E9AF6FF
-        90B3F6FF90B3F6FF90B3F6FF90B3F6FF90B3F6FF90B3F7FF91B4F7FF93B5FEFF
-        F6F5FFFFFFFFFFFFFFFEFFFFFFFEFFFFFFFFEBECE3F5000000FF000000FF0000
-        00FF3C3E22E4F5FF8FB1F5FF8FB4F6FF90B3F6FF90B3F7FF8E9AF6FF8F6DF8FF
-        90AFF7FF8FB4F6FF90B3F6FF90B3F6FF90B3F6FF90B3F6FF8EB3F7FF91B4FEFF
-        F6F5FFFFFFFFFFFFFFFEFFFFFFFEFFFFFFFFFEFFF6F4F6FF8EAEF6FF8CADF6FF
-        8EADF8FF90AFF5FF8FB4F6FF90B3F7FF8FB4F8FF90AFF6FF906EFFFF9825F5FF
-        90A1F5FF8FB8F5FF90B3F6FF90B3F6FF90B3F6FF90B3F6FF8EB3F7FF91B4FEFF
-        F6F5FFFFFFFFFFFFFFFEFFFFFFFEFFFFFFFFFEFFF6F4F6FF8EAEF6FF8DACF6FF
-        8DAFF6FF90B3F6FF90B3F5FF90B3F5FF8FB8F5FF90A1F2FF902700000000F7FF
-        9179F6FF90BEF6FF90B1F6FF90B3F6FF90B3F6FF90B3F6FF8EB3F7FF91B4FEFF
-        F5F5FEFFFEFFFFFFFFFEFFFFFFFEFEFFFEFFFEFFF6F4F6FF8EAEF5FF8DAEF6FF
-        90B3F6FF90B3F6FF90B3F6FF90B1F6FF90BEF7FF917900000000FFFF0006F4FF
-        8D2FF5FF8FB6F6FF90B3F6FF90B3F6FF90B3F6FF90B3F6FF8EB3F7FF91B4FEFF
-        F7F6FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFF7F5F6FF8EAEF5FF8FB2F7FF
-        91B4F6FF90B3F6FF90B3F6FF90B3F5FF8FB6F4FF8D2FFFFF0006CCFF990F0000
-        0000F6FF8F70F6FF90BEF6FF8FB0F6FF90B3F6FF90B3F6FF8EB3F7FF91B4FDFF
-        F0F1FFFFFAFAFEFFFAFAFEFFFAFAFFFFFAFAFEFFF1EFF6FF91B2F6FF90B3F6FF
-        90B3F6FF90B3F6FF8FB0F6FF90BEF6FF8F7000000000CCFF990FFFFF0006FFFF
-        AA09FFFF0006F6FF918DF6FF90BEF6FF8FB0F6FF90B3F6FF90B3F6FF90B3F7FF
-        9AB8F7FF9CB9F8FF9DB8F8FF9DB8F7FF9CB9F7FF9AB8F6FF90B3F6FF90B3F6FF
-        90B3F6FF8FB0F6FF90BEF6FF918DFFFF0006FFFFAA09FFFF000600000000FFFF
-        0006FFFF0006FFFF8012F6FF908EF6FF90BEF6FF90B3F5FF90B1F5FF90B3F5FF
-        8BB2F5FF8BB2F5FF8BB2F5FF8BB2F5FF8BB2F5FF8BB2F5FF90B3F5FF90B1F6FF
-        90B3F6FF90BEF8FF918DFFFF8012FFFF0006FFFF000600000000000000000000
-        0000FFFF00060000000000000000F6FF9172F7FF90B5F6FF90BEF5FF8FB8F7FF
-        90B5F7FF91B4F6FF91B3F6FF91B3F7FF91B4F7FF90B5F7FF90B7F6FF90BEF7FF
-        90B5F6FF90730000000000000000FFFF00060000000000000000000000000000
-        000000000000FFFF0006FFFF000600000000F5FF8F32F7FF907AF5FF90A1F8FF
-        90AFF6FF90B3F6FF90B3F6FF90B3F6FF90B3F6FF8FB0F6FF8FA2F5FF8F7BF0FF
-        8C3300000000FFFF0006FFFF0006000000000000000000000000000000000000
-        0000000000000000000000000000CCFF990F0000000000000000F9FF8C28F6FF
-        8E6FF7FF8E9AF6FF8FB0F6FF8FB0F7FF919BF6FF8D70F3FF922A000000000000
-        0000CCFF990F0000000000000000000000000000000000000000
-      }
-      ImageIndex = 20
-      OnClick = MenuItemResyncClick
     end
     object MenuItemShowErrors: TMenuItem
       Caption = 'Show errors'

@@ -45,7 +45,6 @@ type
     GridRules: TSOGrid;
     MenuItemCheckFiles: TMenuItem;
     MenuItemShowErrors: TMenuItem;
-    MenuItemResync: TMenuItem;
     MenuItemSync: TMenuItem;
     MenuItemSyncForce: TMenuItem;
     PanelRules: TPanel;
@@ -550,7 +549,6 @@ type
     EdSearchPackage: TSearchEdit;
     ImageList1: TImageList;
     pgGroups: TTabSheet;
-    Splitter3: TSplitter;
     pgTasks: TTabSheet;
     SplitHostTaskLog: TSplitter;
     TabSheet1: TTabSheet;
@@ -947,7 +945,6 @@ type
     procedure MenuItem74Click(Sender: TObject);
     procedure MenuItemCheckFilesClick(Sender: TObject);
     procedure MenuItemProductsCheckAllClick(Sender: TObject);
-    procedure MenuItemResyncClick(Sender: TObject);
     procedure MenuItemShowErrorsClick(Sender: TObject);
     procedure MenuItemSyncClick(Sender: TObject);
     procedure MenuItemSyncForceClick(Sender: TObject);
@@ -4928,7 +4925,6 @@ begin
   end
   else
     Allowed := False;
-
 end;
 
 procedure TVisWaptGUI.GridHostsForPackageChange(Sender: TBaseVirtualTree;

@@ -2950,12 +2950,13 @@ msgid "uuid"
 msgstr "uuid"
 
 #: tviswaptgui.gridagentrepo.header.columns[11].text
+msgctxt "tviswaptgui.gridagentrepo.header.columns[11].text"
 msgid "status_sync_id"
-msgstr ""
+msgstr "ID de synchronisation"
 
 #: tviswaptgui.gridagentrepo.header.columns[12].text
 msgid "status_sync_errors"
-msgstr ""
+msgstr "Erreurs de synchro"
 
 #: tviswaptgui.gridagentrepo.header.columns[1].text
 msgid "Sync version"
@@ -2966,16 +2967,16 @@ msgid "Sync status"
 msgstr "Statut de synchro"
 
 #: tviswaptgui.gridagentrepo.header.columns[3].text
-msgid "Current download"
-msgstr "Téléchargement en cours"
-
-#: tviswaptgui.gridagentrepo.header.columns[4].text
 msgid "Connection status"
 msgstr "Statut de connexion"
 
+#: tviswaptgui.gridagentrepo.header.columns[4].text
+msgid "Current download"
+msgstr "Téléchargement en cours"
+
 #: tviswaptgui.gridagentrepo.header.columns[5].text
 msgid "status_sync_progress"
-msgstr ""
+msgstr "Progression de la synchronisation"
 
 #: tviswaptgui.gridagentrepo.header.columns[6].text
 msgctxt "tviswaptgui.gridagentrepo.header.columns[6].text"
@@ -2984,16 +2985,18 @@ msgstr "Description"
 
 #: tviswaptgui.gridagentrepo.header.columns[7].text
 msgctxt "tviswaptgui.gridagentrepo.header.columns[7].text"
-msgid "Computer name"
-msgstr "Nom de l'ordinateur"
-
-#: tviswaptgui.gridagentrepo.header.columns[8].text
 msgid "Computer FQDN"
 msgstr "FQDN de l'ordinateur"
 
+#: tviswaptgui.gridagentrepo.header.columns[8].text
+msgctxt "tviswaptgui.gridagentrepo.header.columns[8].text"
+msgid "Computer name"
+msgstr "Nom de l'ordinateur"
+
 #: tviswaptgui.gridagentrepo.header.columns[9].text
+msgctxt "tviswaptgui.gridagentrepo.header.columns[9].text"
 msgid "IP"
-msgstr ""
+msgstr "IP"
 
 #: tviswaptgui.gridgroups.header.columns[0].text
 msgctxt "tviswaptgui.gridgroups.header.columns[0].text"
@@ -4050,6 +4053,7 @@ msgid "local_status_history"
 msgstr "Historique local"
 
 #: tviswaptgui.gridhostwinupdates.header.columns[28].text
+msgctxt "tviswaptgui.gridhostwinupdates.header.columns[28].text"
 msgid "Updated on"
 msgstr "Modifié le"
 
@@ -4186,6 +4190,7 @@ msgid "DNS Domain"
 msgstr "Domaine DNS"
 
 #: tviswaptgui.gridnetworks.header.columns[5].text
+msgctxt "tviswaptgui.gridnetworks.header.columns[5].text"
 msgid "Repository URL"
 msgstr "URL du dépôt"
 
@@ -4419,45 +4424,45 @@ msgid "settings"
 msgstr "Paramètres"
 
 #: tviswaptgui.gridrules.header.columns[0].text
-msgid "sequence"
+msgid "Sequence"
 msgstr "Ordre"
 
 #: tviswaptgui.gridrules.header.columns[1].text
 msgctxt "tviswaptgui.gridrules.header.columns[1].text"
-msgid "name"
+msgid "Name"
 msgstr "Nom"
 
 #: tviswaptgui.gridrules.header.columns[2].text
-msgid "condition"
+msgid "Condition"
 msgstr "Condition"
 
 #: tviswaptgui.gridrules.header.columns[3].text
-msgid "value"
+msgid "Value"
 msgstr "Valeur"
 
 #: tviswaptgui.gridrules.header.columns[4].text
 msgctxt "tviswaptgui.gridrules.header.columns[4].text"
-msgid "repo_url"
+msgid "Repository URL"
 msgstr "URL du dépôt"
 
 #: tviswaptgui.gridrules.header.columns[5].text
 msgctxt "tviswaptgui.gridrules.header.columns[5].text"
-msgid "created_by"
+msgid "Created by"
 msgstr "Créé par"
 
 #: tviswaptgui.gridrules.header.columns[6].text
 msgctxt "tviswaptgui.gridrules.header.columns[6].text"
-msgid "created_on"
+msgid "Created on"
 msgstr "Créé le"
 
 #: tviswaptgui.gridrules.header.columns[7].text
 msgctxt "tviswaptgui.gridrules.header.columns[7].text"
-msgid "updated_by"
+msgid "Updated by"
 msgstr "Modifié par"
 
 #: tviswaptgui.gridrules.header.columns[8].text
 msgctxt "tviswaptgui.gridrules.header.columns[8].text"
-msgid "updated_on"
+msgid "Updated on"
 msgstr "Modifié le"
 
 #: tviswaptgui.gridselfservicepackages.header.columns[0].text
@@ -5394,10 +5399,6 @@ msgstr "Vérifier les fichiers"
 msgctxt "tviswaptgui.menuitemproductscheckall.caption"
 msgid "Check all"
 msgstr "Cocher tout"
-
-#: tviswaptgui.menuitemresync.caption
-msgid "Resync selected"
-msgstr "Resync sélectionnés"
 
 #: tviswaptgui.menuitemshowerrors.caption
 msgid "Show errors"

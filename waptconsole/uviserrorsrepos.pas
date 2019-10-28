@@ -5,14 +5,15 @@ unit uVisErrorsRepos;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls;
+  Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
+  vte_json;
 
 type
 
   { TFormErrorsRepos }
 
   TFormErrorsRepos = class(TForm)
-    MemoErrors: TMemo;
+    GridJSONViewErrors: TVirtualJSONInspector;
     procedure FormShow(Sender: TObject);
   private
 
