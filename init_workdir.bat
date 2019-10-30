@@ -5,7 +5,7 @@ REM  dev tree with dependencies and dll
 REM  ##########################################"
 
 set PYTHON_PATH=c:\python27
-
+set PYTHON_HOME=%PYTHON_PATH%
 REM uncomment and modify the following lines if you need proxy for internet access
 REM set http_proxy=http://srvproxy:8080
 REM set https_proxy=http://srvproxy:8080
