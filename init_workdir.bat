@@ -16,7 +16,7 @@ git -C %~dp0 clean -xfd
 %PYTHON_PATH%\Scripts\virtualenv.exe  --no-site-packages --always-copy %~dp0
 xcopy /I /E /F /Y c:\python27\libs %~dp0\libs
 xcopy /I /E /F /Y c:\python27\DLLs %~dp0\DLLs
-xcopy /I /E /F /Y /EXCLUDE:libexcludes.txt c:\python27\lib %~dp0\lib
+xcopy /I /E /F /Y /EXCLUDE:%~dp0\libexcludes.txt c:\python27\lib %~dp0\lib
 
 %~dp0\Scripts\python  -m pip install -U pip setuptools wheel virtualenv six requests==2.19.1 psutil==3.4.2
 
