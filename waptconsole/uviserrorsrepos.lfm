@@ -38,11 +38,12 @@ object FormErrorsRepos: TFormErrorsRepos
     Header.MinHeight = 18
     Header.Options = [hoColumnResize, hoDrag, hoShowSortGlyphs, hoVisible, hoAutoSpring, hoHeaderClickAutoSort]
     Header.Style = hsFlatButtons
+    ScrollBarOptions.ScrollBars = ssAutoBoth
     TabOrder = 0
     TreeOptions.AutoOptions = [toAutoScrollOnExpand, toAutoSort, toAutoSpanColumns, toAutoTristateTracking, toAutoDeleteMovedNodes, toAutoChangeScale]
-    TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toFullRowDrag]
+    TreeOptions.MiscOptions = [toAcceptOLEDrop, toEditable, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toEditOnClick]
     TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowRoot, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
-    TreeOptions.SelectionOptions = [toDisableDrawSelection, toExtendedFocus, toFullRowSelect, toMultiSelect]
+    TreeOptions.SelectionOptions = [toExtendedFocus, toMultiSelect, toRightClickSelect]
     TreeOptions.StringOptions = [toSaveCaptions]
   end
 end

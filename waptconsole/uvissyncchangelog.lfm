@@ -78,11 +78,12 @@ object VisSyncChangelog: TVisSyncChangelog
         Width = 87
         PropertyName = 'created_by'
       end>
-    Header.DefaultHeight = 10
+    Header.DefaultHeight = 18
     Header.Height = 18
     Header.MaxHeight = 18
     Header.MinHeight = 18
     Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
+    Header.SortColumn = 0
     Header.Style = hsFlatButtons
     TabOrder = 1
     TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes, toAutoChangeScale]
@@ -121,10 +122,12 @@ object VisSyncChangelog: TVisSyncChangelog
     Header.MinHeight = 18
     Header.Options = [hoColumnResize, hoDrag, hoShowSortGlyphs, hoVisible, hoAutoSpring, hoHeaderClickAutoSort]
     Header.Style = hsFlatButtons
+    ScrollBarOptions.ScrollBars = ssAutoBoth
     TabOrder = 2
     TreeOptions.AutoOptions = [toAutoScrollOnExpand, toAutoSort, toAutoSpanColumns, toAutoTristateTracking, toAutoDeleteMovedNodes, toAutoChangeScale]
-    TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toFullRowDrag, toEditOnClick]
+    TreeOptions.MiscOptions = [toEditable, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toEditOnClick]
     TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowRoot, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
-    TreeOptions.SelectionOptions = [toDisableDrawSelection, toExtendedFocus, toFullRowSelect, toMultiSelect]
+    TreeOptions.SelectionOptions = [toExtendedFocus, toRightClickSelect]
+    TreeOptions.StringOptions = [toSaveCaptions]
   end
 end
