@@ -44,6 +44,4 @@ copy /Y %~dp0\utils\patch-cryptography\__init__.py  %~dp0\lib\site-packages\cryp
 copy /Y %~dp0\utils\patch-cryptography\verification.py  %~dp0\lib\site-packages\cryptography\x509\
 
 REM get iscc nginx and pgsql binaries
-set PYTHON_PATH=c:\tranquilit\wapt
-set PYTHON_HOME=c:\tranquilit\wapt
 %~dp0\waptpython.exe %~dp0\update_binaries.py
