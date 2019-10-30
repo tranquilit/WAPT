@@ -5,7 +5,6 @@ REM  dev tree with dependencies and dll
 REM  ##########################################"
 
 set PYTHON_PATH=c:\python27
-set PYTHON_HOME=%PYTHON_PATH%
 REM uncomment and modify the following lines if you need proxy for internet access
 REM set http_proxy=http://srvproxy:8080
 REM set https_proxy=http://srvproxy:8080
@@ -23,8 +22,6 @@ xcopy /I /E /F /Y /EXCLUDE:%~dp0\libexcludes.txt c:\python27\lib %~dp0\lib
 REM get  pywin32-220.win32Sc            -py2.7.exe from internet
 python -c "from urllib import urlretrieve; from subprocess import check_output; pywin32=urlretrieve('https://github.com/mhammond/pywin32/releases/download/b223/pywin32-223.win32-py2.7.exe');print(pywin32[0]); print(check_output(r'%~dp0\Scripts\easy_install.exe %%s' %% (pywin32[0]),shell=True));"
 %~dp0\Scripts\pip.exe install -r %~dp0\requirements.txt -r %~dp0\requirements-windows.txt
-
-
 
 rem copy /Y %0\..\lib\site-packages\pywin32-220-py2.7-win32.egg\py*.dll %0\..\
 copy /Y c:\windows\SysWOW64\python27.dll %~dp0\
