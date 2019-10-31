@@ -6154,7 +6154,7 @@ class Wapt(BaseObjectClass):
                 session_db = WaptSessionDB(self.user)  # WaptSessionDB()
                 with session_db:
                     if force or is_dev_mode or not session_db.is_installed(package_entry.package,package_entry.version):
-                        print(u"Running session_setup for package %s and user %s" % (package.asrequirement(),self.user))
+                        print(u"Running session_setup for package %s and user %s" % (package_entry.asrequirement(),self.user))
                         install_id = session_db.add_start_install(package_entry)
                         with WaptPackageSessionSetupLogger(console=sys.stderr,waptsessiondb=session_db,install_id=install_id) as dblog:
                             try:
