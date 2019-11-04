@@ -6410,11 +6410,6 @@ begin
   ;;
 end;
 
-procedure TVisWaptGUI.MenuItemResyncClick(Sender: TObject);
-begin
-  ;;
-end;
-
 procedure TVisWaptGUI.MenuItemShowErrorsClick(Sender: TObject);
 begin
   ;;
