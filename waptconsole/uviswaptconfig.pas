@@ -103,6 +103,7 @@ type
       Column: TColumnIndex; var Allowed: Boolean);
     procedure HelpButtonClick(Sender: TObject);
     procedure OKButtonClick(Sender: TObject);
+    procedure pgPluginsShow(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
   private
     FIniFilename: String;
@@ -654,8 +655,6 @@ begin
   LabLicencesDirectory.Visible := False;
   ImgStatusLicences.Visible := False;
   {$endif}
-  if Screen.PixelsPerInch<>96 then
-    GridPlugins.Header.DefaultHeight:=trunc((GridPlugins.Header.DefaultHeight*Screen.PixelsPerInch)/96);
 end;
 
 procedure TVisWAPTConfig.FormDestroy(Sender: TObject);
@@ -688,6 +687,8 @@ begin
     edPersonalCertificatePath.SetFocus
   else if (edDefaultPackagePrefix.Text='') and edDefaultPackagePrefix.Enabled then
     edDefaultPackagePrefix.SetFocus;
+  if Screen.PixelsPerInch<>96 then
+    GridPlugins.Header.Height:=trunc((GridPlugins.Header.Height*Screen.PixelsPerInch)/96);
 end;
 
 procedure TVisWAPTConfig.GridPluginsEditing(Sender: TBaseVirtualTree;
@@ -704,6 +705,10 @@ end;
 procedure TVisWAPTConfig.OKButtonClick(Sender: TObject);
 begin
   ActSaveConfig.Execute;
+end;
+
+procedure TVisWAPTConfig.pgPluginsShow(Sender: TObject);
+begin
 end;
 
 procedure TVisWAPTConfig.Timer1Timer(Sender: TObject);

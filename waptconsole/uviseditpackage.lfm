@@ -1,7 +1,7 @@
 object VisEditPackage: TVisEditPackage
-  Left = 484
+  Left = 485
   Height = 523
-  Top = 157
+  Top = 158
   Width = 935
   Align = alRight
   BorderIcons = [biSystemMenu, biMaximize]

@@ -1,12 +1,12 @@
 object VisCreateWaptSetup: TVisCreateWaptSetup
-  Left = 554
-  Height = 715
-  Top = 103
+  Left = 763
+  Height = 646
+  Top = 0
   Width = 573
   AutoSize = True
   BorderStyle = bsDialog
   Caption = 'Create WAPT agent'
-  ClientHeight = 715
+  ClientHeight = 646
   ClientWidth = 573
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
@@ -18,14 +18,14 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
   LCLVersion = '1.8.4.0'
   object PanClient: TPanel
     Left = 4
-    Height = 468
+    Height = 460
     Top = 4
     Width = 565
     Align = alClient
     AutoSize = True
     BorderSpacing.Around = 4
     BevelOuter = bvNone
-    ClientHeight = 468
+    ClientHeight = 460
     ClientWidth = 565
     Constraints.MinHeight = 460
     Constraints.MinWidth = 560
@@ -301,10 +301,10 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
           PropertyName = 'issuer_dn'
         end>
       Header.DefaultHeight = 18
+      Header.Font.Style = [fsBold]
       Header.Height = 18
       Header.MinHeight = 18
       Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
-      Header.ParentFont = True
       Header.SortColumn = 0
       Header.Style = hsFlatButtons
       TabOrder = 1
@@ -381,7 +381,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
   object PanAgentEnterprise: TPanel
     Left = 0
     Height = 204
-    Top = 476
+    Top = 407
     Width = 573
     Align = alBottom
     AutoSize = True
@@ -556,7 +556,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
   object PanBottom: TPanel
     Left = 0
     Height = 35
-    Top = 680
+    Top = 611
     Width = 573
     Align = alBottom
     AutoSize = True

@@ -803,13 +803,6 @@ begin
   GridConflicts.Clear;
 
   HostCapabilities := None();
-  if Screen.PixelsPerInch <> 96 then
-  begin
-    GridConflicts.Header.DefaultHeight:=trunc((GridConflicts.Header.DefaultHeight*Screen.PixelsPerInch)/96);
-    GridPackages.Header.DefaultHeight:=trunc((GridPackages.Header.DefaultHeight*Screen.PixelsPerInch)/96);
-    GridDepends.Header.DefaultHeight:=trunc((GridDepends.Header.DefaultHeight*Screen.PixelsPerInch)/96);
-    jsonlog.Header.DefaultHeight:=trunc((jsonlog.Header.DefaultHeight*Screen.PixelsPerInch)/96);
-  end;
 end;
 
 procedure TVisEditPackage.FormShow(Sender: TObject);
@@ -818,6 +811,14 @@ begin
   Left := IniReadInteger(Appuserinipath,Name,'Left',Left);
   Width := IniReadInteger(Appuserinipath,Name,'Width',Width);
   Height := IniReadInteger(Appuserinipath,Name,'Height',Height);
+
+  if Screen.PixelsPerInch <> 96 then
+  begin
+    GridConflicts.Header.Height:=trunc((GridConflicts.Header.Height*Screen.PixelsPerInch)/96);
+    GridPackages.Header.Height:=trunc((GridPackages.Header.Height*Screen.PixelsPerInch)/96);
+    GridDepends.Header.Height:=trunc((GridDepends.Header.Height*Screen.PixelsPerInch)/96);
+    jsonlog.Header.Height:=trunc((jsonlog.Header.Height*Screen.PixelsPerInch)/96);
+  end;
 
   MakeFullyVisible();
 

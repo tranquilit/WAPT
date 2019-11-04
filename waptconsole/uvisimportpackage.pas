@@ -152,8 +152,6 @@ end;
 procedure TVisImportPackage.FormCreate(Sender: TObject);
 begin
   EdMaturity.Text:=DefaultMaturity;
-  if Screen.PixelsPerInch<>96 then
-    GridExternalPackages.Header.DefaultHeight:=trunc((GridExternalPackages.Header.DefaultHeight*Screen.PixelsPerInch)/96);
 end;
 
 procedure TVisImportPackage.FillReposList;
@@ -232,6 +230,9 @@ begin
   Left := IniReadInteger(Appuserinipath,Name,'Left',Left);
   Width := IniReadInteger(Appuserinipath,Name,'Width',Width);
   Height := IniReadInteger(Appuserinipath,Name,'Height',Height);
+
+  if Screen.PixelsPerInch<>96 then
+    GridExternalPackages.Header.Height:=trunc((GridExternalPackages.Header.Height*Screen.PixelsPerInch)/96);
 
   MakeFullyVisible;
 

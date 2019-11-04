@@ -116,8 +116,6 @@ end;
 
 procedure TvisGroupChoice.FormCreate(Sender: TObject);
 begin
-  if Screen.PixelsPerInch<>96 then
-    GridPackages.Header.DefaultHeight:=trunc((GridPackages.Header.DefaultHeight*Screen.PixelsPerInch)/96);
 end;
 
 procedure TvisGroupChoice.FormShow(Sender: TObject);
@@ -127,6 +125,9 @@ begin
   Left := IniReadInteger(Appuserinipath,Name,'Left',Left);
   Width := IniReadInteger(Appuserinipath,Name,'Width',Width);
   Height := IniReadInteger(Appuserinipath,Name,'Height',Height);
+
+  if Screen.PixelsPerInch<>96 then
+    GridPackages.Header.Height:=trunc((GridPackages.Header.Height*Screen.PixelsPerInch)/96);
 
   MakeFullyVisible;
 

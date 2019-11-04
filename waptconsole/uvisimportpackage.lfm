@@ -1,11 +1,11 @@
 object VisImportPackage: TVisImportPackage
-  Left = 492
+  Left = 50
   Height = 540
-  Top = 261
+  Top = 158
   Width = 1235
   Caption = 'Import packages'
-  ClientHeight = 0
-  ClientWidth = 0
+  ClientHeight = 540
+  ClientWidth = 1235
   OnClose = FormClose
   OnCreate = FormCreate
   OnShow = FormShow

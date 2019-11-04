@@ -975,6 +975,102 @@ msgstr "Installation restreinte"
 msgid "Use keywords to narrow your search."
 msgstr "Affinez la recherche à l'aide de mots-clés."
 
+#: tvisgroupchoice.gridpackages.header.columns[0].text
+msgctxt "tvisgroupchoice.gridpackages.header.columns[0].text"
+msgid "Package"
+msgstr "Paquet"
+
+#: tvisgroupchoice.gridpackages.header.columns[10].text
+msgid "Author"
+msgstr "Auteur"
+
+#: tvisgroupchoice.gridpackages.header.columns[11].text
+msgctxt "tvisgroupchoice.gridpackages.header.columns[11].text"
+msgid "conflicts"
+msgstr "Conflits"
+
+#: tvisgroupchoice.gridpackages.header.columns[12].text
+msgctxt "tvisgroupchoice.gridpackages.header.columns[12].text"
+msgid "installed_size"
+msgstr "Taille installée"
+
+#: tvisgroupchoice.gridpackages.header.columns[13].text
+msgctxt "tvisgroupchoice.gridpackages.header.columns[13].text"
+msgid "id"
+msgstr "ID"
+
+#: tvisgroupchoice.gridpackages.header.columns[14].text
+msgctxt "tvisgroupchoice.gridpackages.header.columns[14].text"
+msgid "repo_url"
+msgstr "URL du dépôt"
+
+#: tvisgroupchoice.gridpackages.header.columns[15].text
+msgid "installed"
+msgstr "installé"
+
+#: tvisgroupchoice.gridpackages.header.columns[16].text
+msgctxt "tvisgroupchoice.gridpackages.header.columns[16].text"
+msgid "size"
+msgstr "Taille"
+
+#: tvisgroupchoice.gridpackages.header.columns[17].text
+msgctxt "tvisgroupchoice.gridpackages.header.columns[17].text"
+msgid "repo"
+msgstr "Dépôt"
+
+#: tvisgroupchoice.gridpackages.header.columns[18].text
+msgctxt "tvisgroupchoice.gridpackages.header.columns[18].text"
+msgid "localpath"
+msgstr "Chemin local"
+
+#: tvisgroupchoice.gridpackages.header.columns[19].text
+msgctxt "tvisgroupchoice.gridpackages.header.columns[19].text"
+msgid "architecture"
+msgstr "Architecture"
+
+#: tvisgroupchoice.gridpackages.header.columns[1].text
+msgctxt "tvisgroupchoice.gridpackages.header.columns[1].text"
+msgid "Description"
+msgstr "Description"
+
+#: tvisgroupchoice.gridpackages.header.columns[2].text
+msgctxt "tvisgroupchoice.gridpackages.header.columns[2].text"
+msgid "Dependencies"
+msgstr "Dépendances"
+
+#: tvisgroupchoice.gridpackages.header.columns[3].text
+msgctxt "tvisgroupchoice.gridpackages.header.columns[3].text"
+msgid "priority"
+msgstr "Priorité"
+
+#: tvisgroupchoice.gridpackages.header.columns[4].text
+msgctxt "tvisgroupchoice.gridpackages.header.columns[4].text"
+msgid "sources"
+msgstr "Sources"
+
+#: tvisgroupchoice.gridpackages.header.columns[5].text
+msgctxt "tvisgroupchoice.gridpackages.header.columns[5].text"
+msgid "md5sum"
+msgstr "Somme MD5"
+
+#: tvisgroupchoice.gridpackages.header.columns[6].text
+msgid "status"
+msgstr "Statut"
+
+#: tvisgroupchoice.gridpackages.header.columns[7].text
+msgctxt "tvisgroupchoice.gridpackages.header.columns[7].text"
+msgid "filename"
+msgstr "Nom de fichier"
+
+#: tvisgroupchoice.gridpackages.header.columns[8].text
+msgid "section"
+msgstr "Section"
+
+#: tvisgroupchoice.gridpackages.header.columns[9].text
+msgctxt "tvisgroupchoice.gridpackages.header.columns[9].text"
+msgid "Version"
+msgstr "Version"
+
 #: tvisimportpackage.actpackageduplicate.caption
 msgid "Import in repository..."
 msgstr "Importer..."
@@ -1032,6 +1128,99 @@ msgstr "Paquets plus récents seulement"
 msgctxt "tvisimportpackage.cbnewestonly.caption"
 msgid "Last version only"
 msgstr "Dernière version seulement"
+
+#: tvisimportpackage.gridexternalpackages.header.columns[0].text
+msgctxt "tvisimportpackage.gridexternalpackages.header.columns[0].text"
+msgid "Section"
+msgstr "Section"
+
+#: tvisimportpackage.gridexternalpackages.header.columns[10].text
+msgctxt "tvisimportpackage.gridexternalpackages.header.columns[10].text"
+msgid "Maturity"
+msgstr "Maturité"
+
+#: tvisimportpackage.gridexternalpackages.header.columns[11].text
+msgctxt "tvisimportpackage.gridexternalpackages.header.columns[11].text"
+msgid "Signer"
+msgstr "Signataire"
+
+#: tvisimportpackage.gridexternalpackages.header.columns[12].text
+msgid "Sign on"
+msgstr ""
+
+#: tvisimportpackage.gridexternalpackages.header.columns[13].text
+msgctxt "tvisimportpackage.gridexternalpackages.header.columns[13].text"
+msgid "Editor"
+msgstr "Editeur"
+
+#: tvisimportpackage.gridexternalpackages.header.columns[14].text
+msgctxt "tvisimportpackage.gridexternalpackages.header.columns[14].text"
+msgid "Min OS version"
+msgstr "Version min de l'OS"
+
+#: tvisimportpackage.gridexternalpackages.header.columns[15].text
+msgctxt "tvisimportpackage.gridexternalpackages.header.columns[15].text"
+msgid "Max OS version"
+msgstr "Version max de l''OS"
+
+#: tvisimportpackage.gridexternalpackages.header.columns[16].text
+msgctxt "tvisimportpackage.gridexternalpackages.header.columns[16].text"
+msgid "Min Wapt version"
+msgstr "Version min de Wapt"
+
+#: tvisimportpackage.gridexternalpackages.header.columns[17].text
+msgctxt "tvisimportpackage.gridexternalpackages.header.columns[17].text"
+msgid "Filename"
+msgstr "Nom de fichier"
+
+#: tvisimportpackage.gridexternalpackages.header.columns[18].text
+msgctxt "tvisimportpackage.gridexternalpackages.header.columns[18].text"
+msgid "md5sum"
+msgstr ""
+
+#: tvisimportpackage.gridexternalpackages.header.columns[1].text
+msgctxt "tvisimportpackage.gridexternalpackages.header.columns[1].text"
+msgid "Package"
+msgstr "Paquet"
+
+#: tvisimportpackage.gridexternalpackages.header.columns[2].text
+msgctxt "tvisimportpackage.gridexternalpackages.header.columns[2].text"
+msgid "Version"
+msgstr "Version"
+
+#: tvisimportpackage.gridexternalpackages.header.columns[3].text
+msgctxt "tvisimportpackage.gridexternalpackages.header.columns[3].text"
+msgid "Arch"
+msgstr "Architecture"
+
+#: tvisimportpackage.gridexternalpackages.header.columns[4].text
+msgctxt "tvisimportpackage.gridexternalpackages.header.columns[4].text"
+msgid "Locale"
+msgstr "Langue"
+
+#: tvisimportpackage.gridexternalpackages.header.columns[5].text
+msgctxt "tvisimportpackage.gridexternalpackages.header.columns[5].text"
+msgid "Description"
+msgstr "Description"
+
+#: tvisimportpackage.gridexternalpackages.header.columns[6].text
+msgctxt "tvisimportpackage.gridexternalpackages.header.columns[6].text"
+msgid "Licence"
+msgstr "Licence"
+
+#: tvisimportpackage.gridexternalpackages.header.columns[7].text
+msgctxt "tvisimportpackage.gridexternalpackages.header.columns[7].text"
+msgid "Dependencies"
+msgstr "Dépendances"
+
+#: tvisimportpackage.gridexternalpackages.header.columns[8].text
+msgctxt "tvisimportpackage.gridexternalpackages.header.columns[8].text"
+msgid "Size"
+msgstr "Taille"
+
+#: tvisimportpackage.gridexternalpackages.header.columns[9].text
+msgid "Installed Size"
+msgstr "Taille à l'installation"
 
 #: tvisimportpackage.label7.caption
 msgctxt "tvisimportpackage.label7.caption"
@@ -1684,6 +1873,27 @@ msgstr "Fermer"
 #: tvissoftwaresnormalization.caption
 msgid "Normalizes sofware titles"
 msgstr "Normaliser le nom des logiciels"
+
+#: tvissoftwaresnormalization.gridnormalization.header.columns[0].text
+msgctxt "tvissoftwaresnormalization.gridnormalization.header.columns[0].text"
+msgid "Name"
+msgstr "Nom"
+
+#: tvissoftwaresnormalization.gridnormalization.header.columns[1].text
+msgid "Normalized"
+msgstr "Normalisé"
+
+#: tvissoftwaresnormalization.gridnormalization.header.columns[2].text
+msgid "Key"
+msgstr "Clé"
+
+#: tvissoftwaresnormalization.gridnormalization.header.columns[3].text
+msgid "Windows update"
+msgstr ""
+
+#: tvissoftwaresnormalization.gridnormalization.header.columns[4].text
+msgid "Banned"
+msgstr "Banni"
 
 #: tvissyncchangelog.caption
 msgid "Changelog synchronization"
@@ -3821,6 +4031,7 @@ msgid "summary"
 msgstr "Résumé"
 
 #: tviswaptgui.gridhosttasksdone.header.columns[9].text
+msgctxt "tviswaptgui.gridhosttasksdone.header.columns[9].text"
 msgid "Finished on"
 msgstr "Terminée le"
 
@@ -4223,6 +4434,7 @@ msgid "Signed on"
 msgstr "Signé le"
 
 #: tviswaptgui.gridpackages.header.columns[13].text
+msgctxt "tviswaptgui.gridpackages.header.columns[13].text"
 msgid "Editor"
 msgstr "Editeur"
 
@@ -4397,6 +4609,7 @@ msgid "Conflicts"
 msgstr "Conflits"
 
 #: tviswaptgui.gridpackages.header.columns[8].text
+msgctxt "tviswaptgui.gridpackages.header.columns[8].text"
 msgid "Licence"
 msgstr "Licence"
 
@@ -4815,10 +5028,12 @@ msgid "Error"
 msgstr "Erreur"
 
 #: tviswaptgui.gridwsusscan.header.columns[7].text
+msgctxt "tviswaptgui.gridwsusscan.header.columns[7].text"
 msgid "Forced"
 msgstr "Forcé"
 
 #: tviswaptgui.gridwsusscan.header.columns[8].text
+msgctxt "tviswaptgui.gridwsusscan.header.columns[8].text"
 msgid "Skipped"
 msgstr "Ignoré"
 
@@ -5604,6 +5819,71 @@ msgstr "Actualiser"
 #: tviswuadownloads.caption
 msgid "Windows updates dowload tasks"
 msgstr "Tâches de téléchargement de mises à jour Windows"
+
+#: tviswuadownloads.gridwudownloads.header.columns[0].text
+msgctxt "tviswuadownloads.gridwudownloads.header.columns[0].text"
+msgid "id"
+msgstr "id"
+
+#: tviswuadownloads.gridwudownloads.header.columns[10].text
+msgid "Target size"
+msgstr ""
+
+#: tviswuadownloads.gridwudownloads.header.columns[11].text
+msgid "File date"
+msgstr ""
+
+#: tviswuadownloads.gridwudownloads.header.columns[12].text
+msgid "Error message"
+msgstr ""
+
+#: tviswuadownloads.gridwudownloads.header.columns[13].text
+msgctxt "tviswuadownloads.gridwudownloads.header.columns[13].text"
+msgid "Skipped"
+msgstr "Ignoré"
+
+#: tviswuadownloads.gridwudownloads.header.columns[14].text
+msgctxt "tviswuadownloads.gridwudownloads.header.columns[14].text"
+msgid "Forced"
+msgstr "Forcé"
+
+#: tviswuadownloads.gridwudownloads.header.columns[1].text
+msgid "Task ID"
+msgstr ""
+
+#: tviswuadownloads.gridwudownloads.header.columns[2].text
+msgid "Kind"
+msgstr ""
+
+#: tviswuadownloads.gridwudownloads.header.columns[3].text
+msgctxt "tviswuadownloads.gridwudownloads.header.columns[3].text"
+msgid "Status"
+msgstr "Status"
+
+#: tviswuadownloads.gridwudownloads.header.columns[4].text
+msgid "Message"
+msgstr ""
+
+#: tviswuadownloads.gridwudownloads.header.columns[5].text
+msgid "Download URL"
+msgstr ""
+
+#: tviswuadownloads.gridwudownloads.header.columns[6].text
+msgid "Started on"
+msgstr ""
+
+#: tviswuadownloads.gridwudownloads.header.columns[7].text
+msgctxt "tviswuadownloads.gridwudownloads.header.columns[7].text"
+msgid "Finished on"
+msgstr "Terminée le"
+
+#: tviswuadownloads.gridwudownloads.header.columns[8].text
+msgid "Local Filename"
+msgstr ""
+
+#: tviswuadownloads.gridwudownloads.header.columns[9].text
+msgid "File size"
+msgstr ""
 
 #: tviswuagroup.actbuilduploadpackage.caption
 msgctxt "tviswuagroup.actbuilduploadpackage.caption"

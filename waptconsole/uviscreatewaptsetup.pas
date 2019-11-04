@@ -197,8 +197,6 @@ begin
     ActiveCertBundle := fnPublicCert.FileName;
   finally
   end;
-  if Screen.PixelsPerInch<>96 then
-    GridCertificates.Header.DefaultHeight:=trunc((GridCertificates.Header.DefaultHeight*Screen.PixelsPerInch)/96);
 end;
 
 procedure TVisCreateWaptSetup.fnPublicCertExit(Sender: TObject);
@@ -390,6 +388,8 @@ begin
     MakeFullyVisible;
     ini.Free;
   end;
+  if Screen.PixelsPerInch<>96 then
+    GridCertificates.Header.Height:=trunc((GridCertificates.Header.Height*Screen.PixelsPerInch)/96);
 end;
 
 

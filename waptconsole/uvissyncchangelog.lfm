@@ -1,11 +1,11 @@
 object VisSyncChangelog: TVisSyncChangelog
-  Left = 242
+  Left = 310
   Height = 538
-  Top = 282
+  Top = 218
   Width = 1115
   Caption = 'Changelog synchronization'
-  ClientHeight = 0
-  ClientWidth = 0
+  ClientHeight = 538
+  ClientWidth = 1115
   OnShow = FormShow
   Position = poMainFormCenter
   LCLVersion = '1.8.4.0'
@@ -75,15 +75,14 @@ object VisSyncChangelog: TVisSyncChangelog
         Position = 6
         Tag = 6
         Text = 'created_by'
-        Width = 87
+        Width = 90
         PropertyName = 'created_by'
       end>
     Header.DefaultHeight = 18
     Header.Font.Style = [fsBold]
     Header.Height = 18
-    Header.MaxHeight = 18
     Header.MinHeight = 18
-    Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
+    Header.Options = [hoAutoResize, hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeightResize, hoHeaderClickAutoSort]
     Header.SortColumn = 0
     Header.Style = hsFlatButtons
     TabOrder = 1

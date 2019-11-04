@@ -50,6 +50,7 @@ type
     PanelRules: TPanel;
     PanelAgentRepos: TPanel;
     PanelRepositories: TPanel;
+    PopupMenu1: TPopupMenu;
     PopupSecRepo: TPopupMenu;
     RightsActions: TActionList;
     ActRefreshHostsForPackage: TAction;
@@ -4313,33 +4314,6 @@ begin
   cbFilterPackagesArch.Checked[1] := True;
   if cbFilterPackagesLocales.Items.IndexOf(Language)>=0 then
     cbFilterPackagesLocales.Checked[cbFilterPackagesLocales.Items.IndexOf(Language)] := True;
-  if Screen.PixelsPerInch<>96 then
-  begin
-    GridHosts.Header.DefaultHeight:=trunc((GridHosts.Header.DefaultHeight*Screen.PixelsPerInch)/96);
-    GridHostPackages.Header.DefaultHeight:=trunc((GridHostPackages.Header.DefaultHeight*Screen.PixelsPerInch)/96);
-    GridHostSoftwares.Header.DefaultHeight:=trunc((GridHostSoftwares.Header.DefaultHeight*Screen.PixelsPerInch)/96);
-    GridHostWinUpdates.Header.DefaultHeight:=trunc((GridHostWinUpdates.Header.DefaultHeight*Screen.PixelsPerInch)/96);
-    GridHostWinUpdatesHistory.Header.DefaultHeight:=trunc((GridHostWinUpdatesHistory.Header.DefaultHeight*Screen.PixelsPerInch)/96);
-    GridHostTasksPending.Header.DefaultHeight:=trunc((GridHostTasksPending.Header.DefaultHeight*Screen.PixelsPerInch)/96);
-    GridHostTasksDone.Header.DefaultHeight:=trunc((GridHostTasksDone.Header.DefaultHeight*Screen.PixelsPerInch)/96);
-    GridHostTasksErrors.Header.DefaultHeight:=trunc((GridHostTasksErrors.Header.DefaultHeight*Screen.PixelsPerInch)/96);
-    GridGroups.Header.DefaultHeight:=trunc((GridGroups.Header.DefaultHeight*Screen.PixelsPerInch)/96);
-    GridPackages.Header.DefaultHeight:=trunc((GridPackages.Header.DefaultHeight*Screen.PixelsPerInch)/96);
-    GridHostsForPackage.Header.DefaultHeight:=trunc((GridHostsForPackage.Header.DefaultHeight*Screen.PixelsPerInch)/96);
-    GridWUAPackages.Header.DefaultHeight:=trunc((GridWUAPackages.Header.DefaultHeight*Screen.PixelsPerInch)/96);
-    GridWSUSScan.Header.DefaultHeight:=trunc((GridWSUSScan.Header.DefaultHeight*Screen.PixelsPerInch)/96);
-    GridWUUpdates.Header.DefaultHeight:=trunc((GridWUUpdates.Header.DefaultHeight*Screen.PixelsPerInch)/96);
-    GridSelfServicePackages.Header.DefaultHeight:=trunc((GridSelfServicePackages.Header.DefaultHeight*Screen.PixelsPerInch)/96);
-    GridNetworks.Header.DefaultHeight:=trunc((GridNetworks.Header.DefaultHeight*Screen.PixelsPerInch)/96);
-    GridReportingResult.Header.DefaultHeight:=trunc((GridReportingResult.Header.DefaultHeight*Screen.PixelsPerInch)/96);
-    GridReportingQueries.Header.DefaultHeight:=trunc((GridReportingQueries.Header.DefaultHeight*Screen.PixelsPerInch)/96);
-    GridUsers.Header.DefaultHeight:=trunc((GridUsers.Header.DefaultHeight*Screen.PixelsPerInch)/96);
-    GridRules.Header.DefaultHeight:=trunc((GridRules.Header.DefaultHeight*Screen.PixelsPerInch)/96);
-    GridAgentRepo.Header.DefaultHeight:=trunc((GridAgentRepo.Header.DefaultHeight*Screen.PixelsPerInch)/96);
-    GridhostInventory.Header.DefaultHeight:=trunc((GridhostInventory.Header.DefaultHeight*Screen.PixelsPerInch)/96);
-    GridOrgUnits.Header.DefaultHeight:=trunc((GridOrgUnits.Header.DefaultHeight*Screen.PixelsPerInch)/96);
-    jsonlog.Header.DefaultHeight:=trunc((jsonlog.Header.DefaultHeight*Screen.PixelsPerInch)/96);
-  end;
 end;
 
 procedure TVisWaptGUI.FormDestroy(Sender: TObject);
@@ -4670,6 +4644,33 @@ begin
   finally
     AppLoading:=False;
     Free;
+  end;
+  if Screen.PixelsPerInch<>96 then
+  begin
+    GridHosts.Header.Height:=trunc((GridHosts.Header.Height*Screen.PixelsPerInch)/96);
+    GridHostPackages.Header.Height:=trunc((GridHostPackages.Header.Height*Screen.PixelsPerInch)/96);
+    GridHostSoftwares.Header.Height:=trunc((GridHostSoftwares.Header.Height*Screen.PixelsPerInch)/96);
+    GridHostWinUpdates.Header.Height:=trunc((GridHostWinUpdates.Header.Height*Screen.PixelsPerInch)/96);
+    GridHostWinUpdatesHistory.Header.Height:=trunc((GridHostWinUpdatesHistory.Header.Height*Screen.PixelsPerInch)/96);
+    GridHostTasksPending.Header.Height:=trunc((GridHostTasksPending.Header.Height*Screen.PixelsPerInch)/96);
+    GridHostTasksDone.Header.Height:=trunc((GridHostTasksDone.Header.Height*Screen.PixelsPerInch)/96);
+    GridHostTasksErrors.Header.Height:=trunc((GridHostTasksErrors.Header.Height*Screen.PixelsPerInch)/96);
+    GridGroups.Header.Height:=trunc((GridGroups.Header.Height*Screen.PixelsPerInch)/96);
+    GridPackages.Header.Height:=trunc((GridPackages.Header.Height*Screen.PixelsPerInch)/96);
+    GridHostsForPackage.Header.Height:=trunc((GridHostsForPackage.Header.Height*Screen.PixelsPerInch)/96);
+    GridWUAPackages.Header.Height:=trunc((GridWUAPackages.Header.Height*Screen.PixelsPerInch)/96);
+    GridWSUSScan.Header.Height:=trunc((GridWSUSScan.Header.Height*Screen.PixelsPerInch)/96);
+    GridWUUpdates.Header.Height:=trunc((GridWUUpdates.Header.Height*Screen.PixelsPerInch)/96);
+    GridSelfServicePackages.Header.Height:=trunc((GridSelfServicePackages.Header.Height*Screen.PixelsPerInch)/96);
+    GridNetworks.Header.Height:=trunc((GridNetworks.Header.Height*Screen.PixelsPerInch)/96);
+    GridReportingResult.Header.Height:=trunc((GridReportingResult.Header.Height*Screen.PixelsPerInch)/96);
+    GridReportingQueries.Header.Height:=trunc((GridReportingQueries.Header.Height*Screen.PixelsPerInch)/96);
+    GridUsers.Header.Height:=trunc((GridUsers.Header.Height*Screen.PixelsPerInch)/96);
+    GridRules.Header.Height:=trunc((GridRules.Header.Height*Screen.PixelsPerInch)/96);
+    GridAgentRepo.Header.Height:=trunc((GridAgentRepo.Header.Height*Screen.PixelsPerInch)/96);
+    GridhostInventory.Header.Height:=trunc((GridhostInventory.Header.Height*Screen.PixelsPerInch)/96);
+    GridOrgUnits.Header.Height:=trunc((GridOrgUnits.Header.Height*Screen.PixelsPerInch)/96);
+    jsonlog.Header.Height:=trunc((jsonlog.Header.Height*Screen.PixelsPerInch)/96);
   end;
 end;
 

@@ -1,7 +1,7 @@
 object VisWAPTConfig: TVisWAPTConfig
-  Left = 483
+  Left = 648
   Height = 368
-  Top = 337
+  Top = 452
   Width = 614
   BorderStyle = bsDialog
   Caption = 'WAPTConsole configuration'
@@ -40,9 +40,9 @@ object VisWAPTConfig: TVisWAPTConfig
     Height = 322
     Top = 0
     Width = 614
-    ActivePage = pgPlugins
+    ActivePage = pgBase
     Align = alClient
-    TabIndex = 2
+    TabIndex = 0
     TabOrder = 0
     object pgBase: TTabSheet
       Caption = 'Base'
@@ -642,6 +642,7 @@ object VisWAPTConfig: TVisWAPTConfig
       Caption = 'Plugins'
       ClientHeight = 294
       ClientWidth = 606
+      OnShow = pgPluginsShow
       object GridPlugins: TSOGrid
         Left = 8
         Height = 208
@@ -668,14 +669,14 @@ object VisWAPTConfig: TVisWAPTConfig
           item
             Position = 2
             Text = 'Arguments'
-            Width = 217
+            Width = 329
             PropertyName = 'arguments'
           end>
         Header.DefaultHeight = 18
         Header.Font.Style = [fsBold]
         Header.Height = 18
         Header.MinHeight = 18
-        Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
+        Header.Options = [hoAutoResize, hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeightResize, hoHeaderClickAutoSort]
         Header.Style = hsFlatButtons
         TabOrder = 0
         TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes, toAutoChangeScale]

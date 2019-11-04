@@ -33,8 +33,6 @@ implementation
 
 procedure TFormErrorsRepos.FormCreate(Sender: TObject);
 begin
-  if Screen.PixelsPerInch<>96 then
-    GridJSONViewErrors.Header.DefaultHeight:=trunc((GridJSONViewErrors.Header.DefaultHeight*Screen.PixelsPerInch)/96);
 end;
 
 procedure TFormErrorsRepos.FormShow(Sender: TObject);

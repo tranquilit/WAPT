@@ -1,11 +1,11 @@
 object visGroupChoice: TvisGroupChoice
-  Left = 228
+  Left = 230
   Height = 549
-  Top = 252
+  Top = 146
   Width = 749
   Caption = 'Package selection'
-  ClientHeight = 0
-  ClientWidth = 0
+  ClientHeight = 549
+  ClientWidth = 749
   OnClose = FormClose
   OnShow = FormShow
   Position = poMainFormCenter
