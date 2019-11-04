@@ -32,6 +32,8 @@ implementation
 
 procedure TFormErrorsRepos.FormShow(Sender: TObject);
 begin
+  if Screen.PixelsPerInch<>96 then
+    GridJSONViewErrors.Header.DefaultHeight:=trunc((GridJSONViewErrors.Header.DefaultHeight*Screen.PixelsPerInch)/96);
   MakeFullyVisible();
 end;
 

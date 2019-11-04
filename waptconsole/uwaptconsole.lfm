@@ -1,12 +1,12 @@
 object VisWaptGUI: TVisWaptGUI
-  Left = 1912
+  Left = 42
   Height = 1017
-  Top = -8
+  Top = 42
   Width = 1920
   AllowDropFiles = True
   Caption = 'WAPT console'
-  ClientHeight = 997
-  ClientWidth = 1920
+  ClientHeight = 0
+  ClientWidth = 0
   Constraints.MinHeight = 600
   Constraints.MinWidth = 800
   Menu = MainMenu1
@@ -27,9 +27,9 @@ object VisWaptGUI: TVisWaptGUI
     Height = 854
     Top = 0
     Width = 1920
-    ActivePage = pgRepositories
+    ActivePage = pgInventory
     Align = alClient
-    TabIndex = 9
+    TabIndex = 0
     TabOrder = 0
     OnChange = MainPagesChange
     object pgInventory: TTabSheet
@@ -41,9 +41,9 @@ object VisWaptGUI: TVisWaptGUI
         Height = 700
         Top = 126
         Width = 572
-        ActivePage = pgHostInventory
+        ActivePage = pgTasks
         Align = alRight
-        TabIndex = 1
+        TabIndex = 4
         TabOrder = 0
         OnChange = HostPagesChange
         object pgPackages: TTabSheet
@@ -1555,10 +1555,10 @@ object VisWaptGUI: TVisWaptGUI
             Height = 492
             Top = 125
             Width = 564
-            ActivePage = TabSheet1
+            ActivePage = TabSheet3
             Align = alClient
             Anchors = [akTop, akLeft, akBottom]
-            TabIndex = 0
+            TabIndex = 2
             TabOrder = 2
             object TabSheet1: TTabSheet
               Caption = 'Pending'
@@ -3108,7 +3108,7 @@ object VisWaptGUI: TVisWaptGUI
           end
           object ToolButtonSep1: TToolButton
             Left = 48
-            Height = 5
+            Height = 45
             Top = 0
             Caption = 'ToolButtonSep1'
             Style = tbsDivider
@@ -3130,7 +3130,7 @@ object VisWaptGUI: TVisWaptGUI
           end
           object ToolButton6: TToolButton
             Left = 193
-            Height = 5
+            Height = 45
             Top = 0
             Caption = 'ToolButton6'
             Style = tbsDivider
@@ -4735,20 +4735,20 @@ object VisWaptGUI: TVisWaptGUI
         Height = 826
         Top = 0
         Width = 1912
-        ActivePage = pgWindowsUpdates
+        ActivePage = pgWAPTWuaPackages
         Align = alClient
-        TabIndex = 1
+        TabIndex = 0
         TabOrder = 0
         OnChange = WUAConfigPagesChange
         object pgWAPTWuaPackages: TTabSheet
           Caption = 'Wapt WUA packages'
-          ClientHeight = 612
-          ClientWidth = 1195
+          ClientHeight = 798
+          ClientWidth = 1904
           object PanTopWAPTWuaPackages: TPanel
             Left = 0
             Height = 40
             Top = 0
-            Width = 1195
+            Width = 1904
             Align = alTop
             AutoSize = True
             BevelOuter = bvNone
@@ -4757,7 +4757,7 @@ object VisWaptGUI: TVisWaptGUI
             ChildSizing.HorizontalSpacing = 6
             ChildSizing.ControlsPerLine = 10
             ClientHeight = 40
-            ClientWidth = 1195
+            ClientWidth = 1904
             TabOrder = 0
             object EdWUASearchPackage: TSearchEdit
               AnchorSideLeft.Control = PanTopWAPTWuaPackages
@@ -4837,9 +4837,9 @@ object VisWaptGUI: TVisWaptGUI
             AnchorSideTop.Side = asrBottom
             AnchorSideBottom.Side = asrBottom
             Left = 0
-            Height = 572
+            Height = 758
             Top = 40
-            Width = 1195
+            Width = 1904
             OnGetText = GridGroupsGetText
             OnNodesDelete = GridWUAPackagesNodesDelete
             ShowAdvancedColumnsCustomize = False

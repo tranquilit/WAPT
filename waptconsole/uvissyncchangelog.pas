@@ -57,6 +57,11 @@ end;
 
 procedure TVisSyncChangelog.FormShow(Sender: TObject);
 begin
+  if Screen.PixelsPerInch<>96 then
+  begin
+    GridJSONViewChangelog.Header.DefaultHeight:=trunc((GridJSONViewChangelog.Header.DefaultHeight*Screen.PixelsPerInch)/96);
+    GridChangelog.Header.DefaultHeight:=trunc((GridChangelog.Header.DefaultHeight*Screen.PixelsPerInch)/96);
+  end;
   MakeFullyVisible();
 end;
 

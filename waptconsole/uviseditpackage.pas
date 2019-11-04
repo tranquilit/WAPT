@@ -822,7 +822,13 @@ begin
 
   ActEditSearch.Execute;
   EdPackage.SetFocus;
-
+  if Screen.PixelsPerInch <> 96 then
+  begin
+    GridConflicts.Header.DefaultHeight:=trunc((GridConflicts.Header.DefaultHeight*Screen.PixelsPerInch)/96);
+    GridPackages.Header.DefaultHeight:=trunc((GridPackages.Header.DefaultHeight*Screen.PixelsPerInch)/96);
+    GridDepends.Header.DefaultHeight:=trunc((GridDepends.Header.DefaultHeight*Screen.PixelsPerInch)/96);
+    jsonlog.Header.DefaultHeight:=trunc((jsonlog.Header.DefaultHeight*Screen.PixelsPerInch)/96);
+  end;
 end;
 
 function TVisEditPackage.GridConflictsBeforePaste(Sender: TSOGrid;

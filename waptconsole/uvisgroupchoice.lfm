@@ -4,16 +4,16 @@ object visGroupChoice: TvisGroupChoice
   Top = 252
   Width = 749
   Caption = 'Package selection'
-  ClientHeight = 549
-  ClientWidth = 749
+  ClientHeight = 0
+  ClientWidth = 0
   OnClose = FormClose
   OnShow = FormShow
   Position = poMainFormCenter
   LCLVersion = '1.8.4.0'
   object GridPackages: TSOGrid
     Left = 0
-    Height = 488
-    Top = 35
+    Height = 486
+    Top = 37
     Width = 749
     ShowAdvancedColumnsCustomize = False
     Align = alClient
@@ -178,6 +178,7 @@ object visGroupChoice: TvisGroupChoice
         PropertyName = 'architecture'
       end>
     Header.DefaultHeight = 18
+    Header.Font.Style = [fsBold]
     Header.Height = 18
     Header.MinHeight = 18
     Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
@@ -193,20 +194,20 @@ object visGroupChoice: TvisGroupChoice
   end
   object PanHaut: TPanel
     Left = 0
-    Height = 35
+    Height = 37
     Top = 0
     Width = 749
     Align = alTop
     AutoSize = True
     BevelOuter = bvNone
-    ClientHeight = 35
+    ClientHeight = 37
     ClientWidth = 749
     TabOrder = 0
     object panFilter1: TPanel
       Left = 0
-      Height = 35
+      Height = 37
       Top = 0
-      Width = 239
+      Width = 241
       Align = alLeft
       AutoSize = True
       BevelOuter = bvNone
@@ -218,12 +219,12 @@ object visGroupChoice: TvisGroupChoice
       ChildSizing.EnlargeVertical = crsHomogenousSpaceResize
       ChildSizing.Layout = cclLeftToRightThenTopToBottom
       ChildSizing.ControlsPerLine = 3
-      ClientHeight = 35
-      ClientWidth = 239
+      ClientHeight = 37
+      ClientWidth = 241
       TabOrder = 0
       object EdSearch: TEdit
         Left = 12
-        Height = 23
+        Height = 25
         Hint = 'Use keywords to narrow your search.'
         Top = 6
         Width = 150
@@ -235,19 +236,19 @@ object visGroupChoice: TvisGroupChoice
       end
       object butSearchGroups: TButton
         Left = 168
-        Height = 23
+        Height = 25
         Top = 6
-        Width = 59
+        Width = 61
         Action = ActSearch
         AutoSize = True
         TabOrder = 1
       end
     end
     object panFilter: TPanel
-      Left = 239
-      Height = 35
+      Left = 241
+      Height = 37
       Top = 0
-      Width = 299
+      Width = 317
       Align = alLeft
       AutoSize = True
       BevelOuter = bvNone
@@ -259,14 +260,14 @@ object visGroupChoice: TvisGroupChoice
       ChildSizing.EnlargeVertical = crsHomogenousSpaceResize
       ChildSizing.Layout = cclLeftToRightThenTopToBottom
       ChildSizing.ControlsPerLine = 3
-      ClientHeight = 35
-      ClientWidth = 299
+      ClientHeight = 37
+      ClientWidth = 317
       TabOrder = 1
       object cbGroup: TCheckBox
         Left = 12
-        Height = 17
+        Height = 19
         Top = 9
-        Width = 100
+        Width = 109
         Caption = 'Package bundles'
         Checked = True
         OnClick = cbBaseClick
@@ -274,19 +275,19 @@ object visGroupChoice: TvisGroupChoice
         TabOrder = 0
       end
       object cbrestricted: TCheckBox
-        Left = 118
-        Height = 17
+        Left = 127
+        Height = 19
         Top = 9
-        Width = 99
+        Width = 106
         Caption = 'Restricted install'
         OnClick = cbBaseClick
         TabOrder = 1
       end
       object cbBase: TCheckBox
-        Left = 223
-        Height = 17
+        Left = 239
+        Height = 19
         Top = 9
-        Width = 64
+        Width = 66
         Caption = 'Software'
         OnClick = cbBaseClick
         TabOrder = 2
@@ -306,10 +307,10 @@ object visGroupChoice: TvisGroupChoice
     ClientWidth = 749
     TabOrder = 2
     object ButOK: TBitBtn
-      Left = 600
+      Left = 593
       Height = 26
       Top = 0
-      Width = 60
+      Width = 62
       Align = alRight
       AutoSize = True
       Default = True
@@ -319,10 +320,10 @@ object visGroupChoice: TvisGroupChoice
       TabOrder = 0
     end
     object ButCancel: TBitBtn
-      Left = 666
+      Left = 661
       Height = 26
       Top = 0
-      Width = 83
+      Width = 88
       Align = alRight
       AutoSize = True
       Cancel = True

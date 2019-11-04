@@ -384,6 +384,8 @@ begin
         EdWUAInstallDelay.Text := '';
       end;
     end;
+    if Screen.PixelsPerInch<>96 then
+        GridCertificates.Header.DefaultHeight:=trunc((GridCertificates.Header.DefaultHeight*Screen.PixelsPerInch)/96);
   finally
     MakeFullyVisible;
     ini.Free;

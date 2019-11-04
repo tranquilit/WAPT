@@ -26,6 +26,7 @@ type
     procedure ActStopExecute(Sender: TObject);
     procedure ActUpgradeExecute(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure FormShow(Sender: TObject);
     procedure ProgressGridDragAllowed(Sender: TBaseVirtualTree;
       Node: PVirtualNode; Column: TColumnIndex; var Allowed: Boolean);
     procedure ProgressGridGetImageIndexEx(Sender: TBaseVirtualTree;
@@ -158,6 +159,12 @@ procedure TVisTriggerHostsAction.FormCreate(Sender: TObject);
 begin
   Action := 'upgrade_host';
   notifyServer:=True;
+end;
+
+procedure TVisTriggerHostsAction.FormShow(Sender: TObject);
+begin
+  if Screen.PixelsPerInch<>96 then
+    ProgressGrid.Header.DefaultHeight:=trunc((ProgressGrid.Header.DefaultHeight*Screen.PixelsPerInch)/96);
 end;
 
 procedure TVisTriggerHostsAction.ProgressGridDragAllowed(Sender: TBaseVirtualTree;

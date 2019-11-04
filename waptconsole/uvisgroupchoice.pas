@@ -122,6 +122,8 @@ begin
   Height := IniReadInteger(Appuserinipath,Name,'Height',Height);
 
   MakeFullyVisible;
+  if Screen.PixelsPerInch<>96 then
+    GridPackages.Header.DefaultHeight:=trunc((GridPackages.Header.DefaultHeight*Screen.PixelsPerInch)/96);
 
   cbGroup.Checked := IniReadBool(Appuserinipath,Name,'cbGroup.Checked',cbGroup.Checked);
   cbBase.Checked := IniReadBool(Appuserinipath,Name,'cbBase.Checked',cbBase.Checked);

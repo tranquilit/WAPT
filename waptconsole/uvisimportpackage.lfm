@@ -4,8 +4,8 @@ object VisImportPackage: TVisImportPackage
   Top = 261
   Width = 1235
   Caption = 'Import packages'
-  ClientHeight = 540
-  ClientWidth = 1235
+  ClientHeight = 0
+  ClientWidth = 0
   OnClose = FormClose
   OnCreate = FormCreate
   OnShow = FormShow
@@ -26,10 +26,10 @@ object VisImportPackage: TVisImportPackage
     ClientWidth = 1235
     TabOrder = 0
     object BitBtn2: TBitBtn
-      Left = 1151
+      Left = 1147
       Height = 34
       Top = 2
-      Width = 78
+      Width = 82
       Align = alRight
       AutoSize = True
       Cancel = True
@@ -39,20 +39,20 @@ object VisImportPackage: TVisImportPackage
       TabOrder = 0
     end
     object ButPackageDuplicate: TBitBtn
-      Left = 835
+      Left = 813
       Height = 34
       Top = 2
-      Width = 143
+      Width = 154
       Action = ActPackageEdit
       Align = alRight
       AutoSize = True
       TabOrder = 1
     end
     object ButPackageDuplicate1: TBitBtn
-      Left = 984
+      Left = 973
       Height = 34
       Top = 2
-      Width = 161
+      Width = 168
       Action = ActPackageDuplicate
       Align = alRight
       AutoSize = True
@@ -62,10 +62,10 @@ object VisImportPackage: TVisImportPackage
       AnchorSideTop.Control = PanBas
       AnchorSideTop.Side = asrCenter
       AnchorSideRight.Control = EdMaturity
-      Left = 361
-      Height = 13
-      Top = 13
-      Width = 121
+      Left = 349
+      Height = 15
+      Top = 12
+      Width = 133
       Alignment = taRightJustify
       Anchors = [akTop, akRight]
       Caption = 'Default package maturity'
@@ -76,11 +76,11 @@ object VisImportPackage: TVisImportPackage
       AnchorSideTop.Side = asrCenter
       AnchorSideRight.Control = ButPackageDuplicate
       Left = 488
-      Height = 21
-      Top = 9
-      Width = 341
+      Height = 23
+      Top = 8
+      Width = 319
       Anchors = [akTop, akLeft, akRight]
-      ItemHeight = 13
+      ItemHeight = 15
       ItemIndex = 0
       Items.Strings = (
         ''
@@ -93,8 +93,8 @@ object VisImportPackage: TVisImportPackage
   end
   object GridExternalPackages: TSOGrid
     Left = 0
-    Height = 439
-    Top = 63
+    Height = 437
+    Top = 65
     Width = 1235
     OnGetText = GridExternalPackagesGetText
     ShowAdvancedColumnsCustomize = False
@@ -248,7 +248,9 @@ object VisImportPackage: TVisImportPackage
         PropertyName = 'md5sum'
       end>
     Header.DefaultHeight = 18
+    Header.Font.Style = [fsBold]
     Header.Height = 18
+    Header.MinHeight = 18
     Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
     Header.SortColumn = 1
     Header.Style = hsFlatButtons
@@ -266,20 +268,20 @@ object VisImportPackage: TVisImportPackage
   end
   object PanHaut: TPanel
     Left = 0
-    Height = 63
+    Height = 65
     Top = 0
     Width = 1235
     Align = alTop
     AutoSize = True
     BevelOuter = bvNone
-    ClientHeight = 63
+    ClientHeight = 65
     ClientWidth = 1235
     TabOrder = 2
     object PanSearch: TPanel
       Left = 0
-      Height = 63
+      Height = 65
       Top = 0
-      Width = 291
+      Width = 315
       AutoSize = True
       BevelOuter = bvNone
       ChildSizing.LeftRightSpacing = 6
@@ -287,8 +289,8 @@ object VisImportPackage: TVisImportPackage
       ChildSizing.HorizontalSpacing = 6
       ChildSizing.VerticalSpacing = 3
       ChildSizing.Layout = cclLeftToRightThenTopToBottom
-      ClientHeight = 63
-      ClientWidth = 291
+      ClientHeight = 65
+      ClientWidth = 315
       TabOrder = 0
       object EdSearchPackage: TSearchEdit
         AnchorSideTop.Control = butSearchExternalPackages
@@ -314,7 +316,7 @@ object VisImportPackage: TVisImportPackage
         Left = 162
         Height = 34
         Top = 3
-        Width = 87
+        Width = 89
         Action = ActSearchExternalPackage
         AutoSize = True
         TabOrder = 1
@@ -326,23 +328,23 @@ object VisImportPackage: TVisImportPackage
         AnchorSideBottom.Control = PanSearch
         AnchorSideBottom.Side = asrBottom
         Left = 6
-        Height = 17
+        Height = 19
         Top = 40
-        Width = 279
+        Width = 303
         AutoSize = True
         BevelOuter = bvNone
         ChildSizing.HorizontalSpacing = 6
         ChildSizing.Layout = cclLeftToRightThenTopToBottom
-        ClientHeight = 17
-        ClientWidth = 279
+        ClientHeight = 19
+        ClientWidth = 303
         TabOrder = 2
         object cbNewerThanMine: TCheckBox
           AnchorSideLeft.Control = Panel2
           AnchorSideTop.Control = Panel2
           Left = 0
-          Height = 17
+          Height = 19
           Top = 0
-          Width = 172
+          Width = 189
           Caption = 'Newer packages than mine only'
           OnClick = cbNewerThanMineClick
           TabOrder = 0
@@ -351,10 +353,10 @@ object VisImportPackage: TVisImportPackage
           AnchorSideLeft.Control = cbNewerThanMine
           AnchorSideLeft.Side = asrBottom
           AnchorSideTop.Control = Panel2
-          Left = 178
-          Height = 17
+          Left = 195
+          Height = 19
           Top = 0
-          Width = 101
+          Width = 108
           Caption = 'Last version only'
           Checked = True
           OnClick = cbNewerThanMineClick
@@ -368,9 +370,9 @@ object VisImportPackage: TVisImportPackage
       AnchorSideLeft.Side = asrBottom
       AnchorSideTop.Control = PanHaut
       AnchorSideTop.Side = asrCenter
-      Left = 496
-      Height = 47
-      Top = 8
+      Left = 523
+      Height = 51
+      Top = 7
       Width = 102
       AutoFill = True
       AutoSize = True
@@ -384,7 +386,7 @@ object VisImportPackage: TVisImportPackage
       ChildSizing.ShrinkVertical = crsScaleChilds
       ChildSizing.Layout = cclLeftToRightThenTopToBottom
       ChildSizing.ControlsPerLine = 5
-      ClientHeight = 29
+      ClientHeight = 31
       ClientWidth = 98
       Columns = 5
       Items.Strings = (
@@ -402,10 +404,10 @@ object VisImportPackage: TVisImportPackage
       AnchorSideLeft.Side = asrBottom
       AnchorSideTop.Control = PanHaut
       AnchorSideTop.Side = asrCenter
-      Left = 291
-      Height = 47
-      Top = 8
-      Width = 205
+      Left = 315
+      Height = 51
+      Top = 7
+      Width = 208
       AutoFill = True
       AutoSize = True
       Caption = 'Locale'
@@ -418,8 +420,8 @@ object VisImportPackage: TVisImportPackage
       ChildSizing.ShrinkVertical = crsScaleChilds
       ChildSizing.Layout = cclLeftToRightThenTopToBottom
       ChildSizing.ControlsPerLine = 6
-      ClientHeight = 29
-      ClientWidth = 201
+      ClientHeight = 31
+      ClientWidth = 204
       Columns = 6
       Items.Strings = (
         'en'
@@ -439,10 +441,10 @@ object VisImportPackage: TVisImportPackage
       AnchorSideLeft.Side = asrBottom
       AnchorSideTop.Control = PanHaut
       AnchorSideTop.Side = asrCenter
-      Left = 598
-      Height = 51
-      Top = 6
-      Width = 414
+      Left = 625
+      Height = 57
+      Top = 4
+      Width = 431
       AutoSize = True
       BevelOuter = bvNone
       ChildSizing.LeftRightSpacing = 6
@@ -450,20 +452,20 @@ object VisImportPackage: TVisImportPackage
       ChildSizing.HorizontalSpacing = 6
       ChildSizing.VerticalSpacing = 3
       ChildSizing.ControlsPerLine = 5
-      ClientHeight = 51
-      ClientWidth = 414
+      ClientHeight = 57
+      ClientWidth = 431
       TabOrder = 3
       object EdRepoName: TComboBox
         AnchorSideTop.Control = PanSettings
         AnchorSideTop.Side = asrCenter
         Left = 6
-        Height = 21
-        Top = 15
+        Height = 23
+        Top = 17
         Width = 150
         AutoComplete = True
         AutoCompleteText = [cbactEnabled, cbactEndOfLineComplete, cbactSearchAscending]
         Constraints.MinWidth = 150
-        ItemHeight = 13
+        ItemHeight = 15
         OnSelect = EdRepoNameSelect
         Style = csDropDownList
         TabOrder = 1
@@ -476,8 +478,8 @@ object VisImportPackage: TVisImportPackage
         AnchorSideRight.Side = asrBottom
         Left = 162
         Height = 34
-        Top = 8
-        Width = 147
+        Top = 11
+        Width = 154
         Action = ActRepositoriesSettings
         AutoSize = True
         Constraints.MaxHeight = 34
@@ -488,38 +490,38 @@ object VisImportPackage: TVisImportPackage
         AnchorSideLeft.Side = asrBottom
         AnchorSideTop.Control = PanSettings
         AnchorSideTop.Side = asrCenter
-        Left = 315
-        Height = 39
+        Left = 322
+        Height = 45
         Top = 6
-        Width = 93
+        Width = 103
         AutoSize = True
         BevelOuter = bvNone
         ChildSizing.LeftRightSpacing = 6
         ChildSizing.HorizontalSpacing = 3
         ChildSizing.Layout = cclLeftToRightThenTopToBottom
-        ClientHeight = 39
-        ClientWidth = 93
+        ClientHeight = 45
+        ClientWidth = 103
         TabOrder = 2
         object LabRepoURL: TTILabel
           Left = 6
-          Height = 13
+          Height = 15
           Top = 0
-          Width = 81
+          Width = 91
           Link.TIPropertyName = 'RepoURL'
           OnClick = LabRepoURLClick
         end
         object LabServerCABundle: TTILabel
           Left = 6
-          Height = 13
-          Top = 13
-          Width = 81
+          Height = 15
+          Top = 15
+          Width = 91
           Link.TIPropertyName = 'ServerCABundle'
         end
         object LabSignersCABundle: TTILabel
           Left = 6
-          Height = 13
-          Top = 26
-          Width = 81
+          Height = 15
+          Top = 30
+          Width = 91
           Link.TIPropertyName = 'SignersCABundle'
         end
       end

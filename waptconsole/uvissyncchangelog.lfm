@@ -1,11 +1,11 @@
 object VisSyncChangelog: TVisSyncChangelog
-  Left = 2004
+  Left = 242
   Height = 538
-  Top = 198
+  Top = 282
   Width = 1115
   Caption = 'Changelog synchronization'
-  ClientHeight = 538
-  ClientWidth = 1115
+  ClientHeight = 0
+  ClientWidth = 0
   OnShow = FormShow
   Position = poMainFormCenter
   LCLVersion = '1.8.4.0'
@@ -79,6 +79,7 @@ object VisSyncChangelog: TVisSyncChangelog
         PropertyName = 'created_by'
       end>
     Header.DefaultHeight = 18
+    Header.Font.Style = [fsBold]
     Header.Height = 18
     Header.MaxHeight = 18
     Header.MinHeight = 18
@@ -114,7 +115,7 @@ object VisSyncChangelog: TVisSyncChangelog
       item
         Position = 1
         Text = 'Value'
-        Width = 258
+        Width = 300
       end>
     Header.DefaultHeight = 18
     Header.Font.Style = [fsBold]

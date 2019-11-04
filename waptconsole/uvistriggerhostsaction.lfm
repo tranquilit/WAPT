@@ -7,6 +7,7 @@ object VisTriggerHostsAction: TVisTriggerHostsAction
   ClientHeight = 408
   ClientWidth = 669
   OnCreate = FormCreate
+  OnShow = FormShow
   Position = poMainFormCenter
   LCLVersion = '1.8.4.0'
   object ProgressGrid: TSOGrid
@@ -57,7 +58,9 @@ object VisTriggerHostsAction: TVisTriggerHostsAction
         PropertyName = 'message'
       end>
     Header.DefaultHeight = 18
+    Header.Font.Style = [fsBold]
     Header.Height = 18
+    Header.MinHeight = 18
     Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
     Header.Style = hsFlatButtons
     Images = ImageList1
@@ -92,28 +95,28 @@ object VisTriggerHostsAction: TVisTriggerHostsAction
     TabOrder = 1
     object Button1: TButton
       Left = 6
-      Height = 23
+      Height = 25
       Top = 3
-      Width = 74
+      Width = 79
       Action = ActStop
       AutoSize = True
       TabOrder = 0
     end
     object Button5: TButton
-      Left = 480
+      Left = 469
       Height = 26
       Top = 3
-      Width = 97
+      Width = 105
       Action = ActUpgrade
       Align = alRight
       AutoSize = True
       TabOrder = 1
     end
     object BitBtn2: TBitBtn
-      Left = 583
+      Left = 580
       Height = 26
       Top = 3
-      Width = 80
+      Width = 83
       Align = alRight
       AutoSize = True
       DefaultCaption = True
