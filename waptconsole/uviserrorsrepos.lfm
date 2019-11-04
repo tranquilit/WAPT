@@ -1,7 +1,7 @@
 object FormErrorsRepos: TFormErrorsRepos
-  Left = 2237
+  Left = 666
   Height = 240
-  Top = 290
+  Top = 342
   Width = 694
   Caption = 'Errors'
   ClientHeight = 240
@@ -30,7 +30,7 @@ object FormErrorsRepos: TFormErrorsRepos
       item
         Position = 1
         Text = 'Value'
-        Width = 440
+        Width = 444
       end>
     Header.DefaultHeight = 18
     Header.Font.Style = [fsBold]

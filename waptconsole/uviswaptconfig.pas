@@ -654,6 +654,8 @@ begin
   LabLicencesDirectory.Visible := False;
   ImgStatusLicences.Visible := False;
   {$endif}
+  if Screen.PixelsPerInch<>96 then
+    GridPlugins.Header.DefaultHeight:=trunc((GridPlugins.Header.DefaultHeight*Screen.PixelsPerInch)/96);
 end;
 
 procedure TVisWAPTConfig.FormDestroy(Sender: TObject);
@@ -686,9 +688,6 @@ begin
     edPersonalCertificatePath.SetFocus
   else if (edDefaultPackagePrefix.Text='') and edDefaultPackagePrefix.Enabled then
     edDefaultPackagePrefix.SetFocus;
-
-  if Screen.PixelsPerInch<>96 then
-    GridPlugins.Header.DefaultHeight:=trunc((GridPlugins.Header.DefaultHeight*Screen.PixelsPerInch)/96);
 end;
 
 procedure TVisWAPTConfig.GridPluginsEditing(Sender: TBaseVirtualTree;

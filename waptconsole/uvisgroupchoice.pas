@@ -35,6 +35,7 @@ type
     procedure EdSearchKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState
       );
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
+    procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
   private
     { private declarations }
@@ -113,6 +114,12 @@ begin
   GridPackages.SaveSettingsToIni(Appuserinipath);
 end;
 
+procedure TvisGroupChoice.FormCreate(Sender: TObject);
+begin
+  if Screen.PixelsPerInch<>96 then
+    GridPackages.Header.DefaultHeight:=trunc((GridPackages.Header.DefaultHeight*Screen.PixelsPerInch)/96);
+end;
+
 procedure TvisGroupChoice.FormShow(Sender: TObject);
 begin
   GridPackages.LoadSettingsFromIni(Appuserinipath);
@@ -122,8 +129,6 @@ begin
   Height := IniReadInteger(Appuserinipath,Name,'Height',Height);
 
   MakeFullyVisible;
-  if Screen.PixelsPerInch<>96 then
-    GridPackages.Header.DefaultHeight:=trunc((GridPackages.Header.DefaultHeight*Screen.PixelsPerInch)/96);
 
   cbGroup.Checked := IniReadBool(Appuserinipath,Name,'cbGroup.Checked',cbGroup.Checked);
   cbBase.Checked := IniReadBool(Appuserinipath,Name,'cbBase.Checked',cbBase.Checked);

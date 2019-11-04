@@ -14,6 +14,7 @@ type
 
   TFormErrorsRepos = class(TForm)
     GridJSONViewErrors: TVirtualJSONInspector;
+    procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
   private
 
@@ -30,10 +31,14 @@ implementation
 
 { TFormErrorsRepos }
 
-procedure TFormErrorsRepos.FormShow(Sender: TObject);
+procedure TFormErrorsRepos.FormCreate(Sender: TObject);
 begin
   if Screen.PixelsPerInch<>96 then
     GridJSONViewErrors.Header.DefaultHeight:=trunc((GridJSONViewErrors.Header.DefaultHeight*Screen.PixelsPerInch)/96);
+end;
+
+procedure TFormErrorsRepos.FormShow(Sender: TObject);
+begin
   MakeFullyVisible();
 end;
 

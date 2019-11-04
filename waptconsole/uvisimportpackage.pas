@@ -152,6 +152,8 @@ end;
 procedure TVisImportPackage.FormCreate(Sender: TObject);
 begin
   EdMaturity.Text:=DefaultMaturity;
+  if Screen.PixelsPerInch<>96 then
+    GridExternalPackages.Header.DefaultHeight:=trunc((GridExternalPackages.Header.DefaultHeight*Screen.PixelsPerInch)/96);
 end;
 
 procedure TVisImportPackage.FillReposList;
@@ -237,9 +239,6 @@ begin
   if EdRepoName.ItemIndex<0 then
     EdRepoName.ItemIndex := 0;
   EdRepoName.OnSelect(Sender);
-
-  if Screen.PixelsPerInch<>96 then
-    GridExternalPackages.Header.DefaultHeight:=trunc((GridExternalPackages.Header.DefaultHeight*Screen.PixelsPerInch)/96);
 end;
 
 procedure TVisImportPackage.GridExternalPackagesGetText(

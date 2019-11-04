@@ -1,12 +1,12 @@
 object VisWaptGUI: TVisWaptGUI
-  Left = 42
+  Left = -8
   Height = 1017
-  Top = 42
+  Top = -8
   Width = 1920
   AllowDropFiles = True
   Caption = 'WAPT console'
-  ClientHeight = 0
-  ClientWidth = 0
+  ClientHeight = 997
+  ClientWidth = 1920
   Constraints.MinHeight = 600
   Constraints.MinWidth = 800
   Menu = MainMenu1
@@ -8185,14 +8185,14 @@ object VisWaptGUI: TVisWaptGUI
             end
             object ToolButtonSep2: TToolButton
               Left = 49
-              Height = 48
+              Height = 5
               Top = 0
               Caption = 'ToolButtonSep2'
               Style = tbsDivider
             end
             object ToolButton1: TToolButton
               Left = 164
-              Height = 48
+              Height = 5
               Top = 0
               Caption = 'ToolButton1'
               Style = tbsDivider
@@ -8471,14 +8471,14 @@ object VisWaptGUI: TVisWaptGUI
             end
             object ToolButton4: TToolButton
               Left = 49
-              Height = 48
+              Height = 5
               Top = 0
               Caption = 'ToolButton4'
               Style = tbsDivider
             end
             object ToolButton14: TToolButton
               Left = 181
-              Height = 48
+              Height = 5
               Top = 0
               Caption = 'ToolButton14'
               Style = tbsDivider
