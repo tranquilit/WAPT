@@ -127,7 +127,7 @@ begin
   Height := IniReadInteger(Appuserinipath,Name,'Height',Height);
 
   if Screen.PixelsPerInch<>96 then
-    GridPackages.Header.Height:=trunc((GridPackages.Header.Height*Screen.PixelsPerInch)/96);
+    GridPackages.Header.Height:=trunc((GridPackages.Header.MinHeight*Screen.PixelsPerInch)/96);
 
   MakeFullyVisible;
 

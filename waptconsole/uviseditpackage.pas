@@ -814,10 +814,10 @@ begin
 
   if Screen.PixelsPerInch <> 96 then
   begin
-    GridConflicts.Header.Height:=trunc((GridConflicts.Header.Height*Screen.PixelsPerInch)/96);
-    GridPackages.Header.Height:=trunc((GridPackages.Header.Height*Screen.PixelsPerInch)/96);
-    GridDepends.Header.Height:=trunc((GridDepends.Header.Height*Screen.PixelsPerInch)/96);
-    jsonlog.Header.Height:=trunc((jsonlog.Header.Height*Screen.PixelsPerInch)/96);
+    GridConflicts.Header.Height:=trunc((GridConflicts.Header.MinHeight*Screen.PixelsPerInch)/96);
+    GridPackages.Header.Height:=trunc((GridPackages.Header.MinHeight*Screen.PixelsPerInch)/96);
+    GridDepends.Header.Height:=trunc((GridDepends.Header.MinHeight*Screen.PixelsPerInch)/96);
+    jsonlog.Header.Height:=trunc((jsonlog.Header.MinHeight*Screen.PixelsPerInch)/96);
   end;
 
   MakeFullyVisible();

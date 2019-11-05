@@ -688,7 +688,7 @@ begin
   else if (edDefaultPackagePrefix.Text='') and edDefaultPackagePrefix.Enabled then
     edDefaultPackagePrefix.SetFocus;
   if Screen.PixelsPerInch<>96 then
-    GridPlugins.Header.Height:=trunc((GridPlugins.Header.Height*Screen.PixelsPerInch)/96);
+    GridPlugins.Header.Height:=trunc((GridPlugins.Header.MinHeight*Screen.PixelsPerInch)/96);
 end;
 
 procedure TVisWAPTConfig.GridPluginsEditing(Sender: TBaseVirtualTree;

@@ -389,7 +389,7 @@ begin
     ini.Free;
   end;
   if Screen.PixelsPerInch<>96 then
-    GridCertificates.Header.Height:=trunc((GridCertificates.Header.Height*Screen.PixelsPerInch)/96);
+    GridCertificates.Header.Height:=trunc((GridCertificates.Header.MinHeight*Screen.PixelsPerInch)/96);
 end;
 
 

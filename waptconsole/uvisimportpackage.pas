@@ -232,7 +232,7 @@ begin
   Height := IniReadInteger(Appuserinipath,Name,'Height',Height);
 
   if Screen.PixelsPerInch<>96 then
-    GridExternalPackages.Header.Height:=trunc((GridExternalPackages.Header.Height*Screen.PixelsPerInch)/96);
+    GridExternalPackages.Header.Height:=trunc((GridExternalPackages.Header.MinHeight*Screen.PixelsPerInch)/96);
 
   MakeFullyVisible;
 
