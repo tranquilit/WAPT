@@ -21,6 +21,13 @@
 # -----------------------------------------------------------------------
 from __future__ import absolute_import
 from __future__ import print_function
+from __future__ import division
+from past.builtins import cmp
+from future import standard_library
+standard_library.install_aliases()
+from builtins import range
+from past.utils import old_div
+from builtins import object
 import time
 import sys
 import os
@@ -38,14 +45,14 @@ from waptutils import __version__
 
 import locale
 import json
-import urlparse
+import urllib.parse
 import copy
 import shutil
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import requests
 import re
 
-import ConfigParser
+import configparser
 from optparse import OptionParser
 
 # wapt specific stuff
@@ -299,7 +306,7 @@ class WaptServiceConfig(object):
 
     def load(self):
         """Load waptservice parameters from global wapt-get.ini file"""
-        config = ConfigParser.RawConfigParser()
+        config = configparser.RawConfigParser()
         if os.path.exists(self.config_filename):
             config.read(self.config_filename)
             self.config_filedate = os.stat(self.config_filename).st_mtime
@@ -381,7 +388,7 @@ class WaptServiceConfig(object):
             if config.has_option('global','wapt_server'):
                 self.waptserver = common.WaptServer().load_config(config)
                 if self.waptserver.server_url:
-                    waptserver_url = urlparse.urlparse(self.waptserver.server_url)
+                    waptserver_url = urllib.parse.urlparse(self.waptserver.server_url)
                     self.websockets_host = waptserver_url.hostname
                     self.websockets_proto = waptserver_url.scheme
 
@@ -494,7 +501,7 @@ class WaptServiceConfig(object):
     def __unicode__(self):
         return u"{}".format(self.as_dict(),)
 
-class EventsPrinter:
+class EventsPrinter(object):
     '''EventsPrinter class which serves to emulates a file object and logs
        whatever it gets sent to a broadcast object at the INFO level.'''
     def __init__(self,events,logs):
@@ -962,8 +969,8 @@ class WaptDownloadPackage(WaptTask):
     def printhook(self,received,total,speed,url):
         self.wapt.check_cancelled()
         if total>1.0:
-            stat = u'%i / %i (%.0f%%) (%.0f KB/s)\r' % (received,total,100.0*received/total, speed)
-            self.progress = 100.0*received/total
+            stat = u'%i / %i (%.0f%%) (%.0f KB/s)\r' % (received,total,old_div(100.0*received,total), speed)
+            self.progress = old_div(100.0*received,total)
             if not self.size:
                 self.size = total
         else:
@@ -979,7 +986,7 @@ class WaptDownloadPackage(WaptTask):
             self.summary = _(u"Error while downloading {packagenames}: {error}").format(packagenames=','.join(self.packagenames),error=self.result['errors'][0][1])
         else:
             if end-start> 0.01:
-                self.summary = _(u"Done downloading {packagenames}. {speed} kB/s").format(packagenames=','.join(self.packagenames),speed=self.size/1024/(end-start))
+                self.summary = _(u"Done downloading {packagenames}. {speed} kB/s").format(packagenames=','.join(self.packagenames),speed=old_div(old_div(self.size,1024),(end-start)))
             else:
                 self.summary = _(u"Done downloading {packagenames}.").format(packagenames=','.join(self.packagenames))
 

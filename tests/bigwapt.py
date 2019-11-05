@@ -9,6 +9,7 @@
 # Licence:     <your licence>
 #-------------------------------------------------------------------------------
 
+from builtins import range
 import os
 from hashlib import md5
 from common import *

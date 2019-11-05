@@ -11,11 +11,13 @@
 #-------------------------------------------------------------------------------
 
 from __future__ import print_function
+from future import standard_library
+standard_library.install_aliases()
 import os
 import sys
 
 import subprocess
-import ConfigParser
+import configparser
 import shutil
 import getpass
 import glob
@@ -84,7 +86,7 @@ def sign_all_exe(ksigntool_path, private_key, key_password, checkout_dir):
 
 
 config_file = 'c:\\private\\autobuild.ini'
-config = ConfigParser.RawConfigParser()
+config = configparser.RawConfigParser()
 
 
 if os.path.exists(config_file):

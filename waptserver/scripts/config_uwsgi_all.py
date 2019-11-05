@@ -22,6 +22,8 @@
 # -----------------------------------------------------------------------
 
 from __future__ import print_function
+from future import standard_library
+standard_library.install_aliases()
 usage = """\
 %prog [-c configfile] [-l loglevel] action
 
@@ -63,7 +65,7 @@ from waptcrypto import SSLCertificate,SSLPrivateKey
 from waptpackage import PackageEntry,WaptLocalRepo
 
 import logging
-import ConfigParser
+import configparser
 from optparse import OptionParser
 
 DEFAULT_CONFIG_FILE = os.path.join(r'c:\wapt', 'conf', 'waptserver.ini')

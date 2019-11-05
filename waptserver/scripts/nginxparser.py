@@ -1,3 +1,4 @@
+from builtins import object
 import string
 
 from pyparsing import (

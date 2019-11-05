@@ -22,6 +22,13 @@
 # -----------------------------------------------------------------------
 from __future__ import absolute_import
 from __future__ import print_function
+from __future__ import division
+from past.builtins import cmp
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str
+from past.utils import old_div
+from builtins import object
 from waptutils import __version__
 
 __all__ = [
@@ -64,7 +71,7 @@ __all__ = [
 
 
 import os
-import StringIO
+import io
 import hashlib
 import logging
 import glob
@@ -272,7 +279,7 @@ class HostCapabilities(BaseObjectClass):
         self.host_certificate_authority_key_identifier = None
         self.on_date = None
 
-        for (k,v) in kwargs.iteritems():
+        for (k,v) in kwargs.items():
             if hasattr(self,k):
                 setattr(self,k,v)
             else:
@@ -280,7 +287,7 @@ class HostCapabilities(BaseObjectClass):
                 logger.critical('HostCapabilities has no attribute %s : ignored' % k)
 
     def __getitem__(self,name):
-        if name is str or name is unicode:
+        if name is str or name is str:
             name = name.lower()
         if hasattr(self,name):
             return getattr(self,name)
@@ -460,7 +467,7 @@ class PackageRequest(BaseObjectClass):
 
         self.request = request
 
-        for (k,v) in kwargs.iteritems():
+        for (k,v) in kwargs.items():
             if hasattr(self,k):
                 setattr(self,k,v)
             else:
@@ -622,7 +629,7 @@ class PackageRequest(BaseObjectClass):
                 (self.maturities is None or (package_entry.maturity == '' and  (self.maturities is None or 'PROD' in self.maturities)) or package_entry.maturity in self.maturities))
 
     def __cmp__(self,other):
-        if isinstance(other,str) or isinstance(other,unicode):
+        if isinstance(other,str) or isinstance(other,str):
             other = PackageRequest(request=other)
 
         if isinstance(other,PackageRequest):
@@ -721,7 +728,7 @@ def control_to_dict(control,int_params=('size','installed_size')):
     (key,value) = ('','')
     linenr = 0
 
-    if isinstance(control,(unicode,str)):
+    if isinstance(control,str):
         control = control.splitlines()
 
     while 1:
@@ -751,7 +758,7 @@ def control_to_dict(control,int_params=('size','installed_size')):
             key = key.lower()
             if key in int_params:
                 try:
-                    value = long(value)
+                    value = int(value)
                 except:
                     pass
             result[key] = value
@@ -956,7 +963,7 @@ class PackageEntry(BaseObjectClass):
 
 
         if kwargs:
-            for key,value in kwargs.iteritems():
+            for key,value in kwargs.items():
                 if key in self.required_attributes + self.optional_attributes + self.non_control_attributes:
                     setattr(self,key,value)
 
@@ -992,7 +999,7 @@ class PackageEntry(BaseObjectClass):
         return parse_major_minor_patch_build(self.version)
 
     def __getitem__(self,name):
-        if name is str or name is unicode:
+        if name is str or name is str:
             name = name.lower()
         if hasattr(self,name):
             return getattr(self,name)
@@ -1029,7 +1036,7 @@ class PackageEntry(BaseObjectClass):
         Returns:
             any : property value
         """
-        if name is str or name is unicode:
+        if name is str or name is str:
             name = name.lower()
         if hasattr(self,name):
             return getattr(self,name)
@@ -1064,7 +1071,7 @@ class PackageEntry(BaseObjectClass):
         setattr(self,name,value)
 
     def __setattr__(self,name,value):
-        if name is str or name is unicode:
+        if name is str or name is str:
             name = name.lower()
         if name not in self.all_attributes:
             self._calculated_attributes.append(name)
@@ -1081,7 +1088,7 @@ class PackageEntry(BaseObjectClass):
 
             def convert(text):
                 if text.isdigit():
-                    return long(text)
+                    return int(text)
                 else:
                     return text.lower()
             alphanum_key = lambda key: [convert(c) for c in re.split('([0-9]+)', key)]
@@ -1138,7 +1145,7 @@ class PackageEntry(BaseObjectClass):
         """
         if isinstance(match_expr,PackageRequest):
             return match_expr.is_matched_by(self)
-        elif isinstance(match_expr,(str,unicode)):
+        elif isinstance(match_expr,str):
             pcv = REGEX_PACKAGE_CONDITION.match(match_expr).groupdict()
             if pcv['package'] != self.package:
                 return False
@@ -1358,7 +1365,7 @@ class PackageEntry(BaseObjectClass):
         def escape_cr(s):
             # format multi-lines description with a space at each line start
             # format list as csv
-            if s and (isinstance(s,str) or isinstance(s,unicode)):
+            if s and (isinstance(s,str) or isinstance(s,str)):
                 return re.sub(r'$(\n)(?=^\S)',r'\n ',s,flags=re.MULTILINE)
             elif isinstance(s,list):
                 return ','.join([ensure_unicode(item) for item in s])
@@ -1924,7 +1931,7 @@ class PackageEntry(BaseObjectClass):
                         new_cert_hash = None
 
                     # convert to list of list...
-                    wapt_manifest = serialize_content_for_signature(manifest_data.items())
+                    wapt_manifest = serialize_content_for_signature(list(manifest_data.items()))
 
                     # sign with default md
                     signature = private_key.sign_content(wapt_manifest,md = md)
@@ -1946,7 +1953,7 @@ class PackageEntry(BaseObjectClass):
                 manifest_data['WAPT/control'] = hexdigest_for_data(control,md = md)
                 manifest_data['WAPT/certificate.crt'] = hexdigest_for_data(cert_chain_str,md = md)
                 # convert to list of list...
-                wapt_manifest = serialize_content_for_signature(manifest_data.items())
+                wapt_manifest = serialize_content_for_signature(list(manifest_data.items()))
                 # sign with default md
                 signature = private_key.sign_content(wapt_manifest,md = md)
                 open(os.path.join(self.sourcespath,self.get_manifest_filename(md=md)),'wb').write(wapt_manifest)
@@ -2178,7 +2185,7 @@ class PackageEntry(BaseObjectClass):
         if not os.path.isfile(self.localpath):
             raise EWaptNotAPackage('unzip_package : Package %s does not exists' % ensure_unicode(self.localpath))
 
-        if target_dir is not None and not isinstance(target_dir,(unicode,str)):
+        if target_dir is not None and not isinstance(target_dir,str):
             raise Exception('Provide a valid directory name to unzip package to')
 
         if not target_dir:
@@ -2218,7 +2225,7 @@ class PackageEntry(BaseObjectClass):
         if self.localpath and os.path.isfile(self.localpath):
             return custom_zip.ZipFile(self.localpath,compression=zipfile.ZIP_DEFLATED,allowZip64=True,mode=mode)
         elif self._package_content is not None:
-            return custom_zip.ZipFile(StringIO.StringIO(self._package_content),mode=mode,compression=zipfile.ZIP_DEFLATED,allowZip64=True)
+            return custom_zip.ZipFile(io.StringIO(self._package_content),mode=mode,compression=zipfile.ZIP_DEFLATED,allowZip64=True)
         else:
             raise EWaptMissingLocalWaptFile('This PackageEntry has no local content for zip operations %s' % self.asrequirement())
 
@@ -2265,7 +2272,7 @@ class PackageEntry(BaseObjectClass):
         oldpath = sys.path
 
         try:
-            previous_cwd = os.getcwdu()
+            previous_cwd = os.getcwd()
             if self.sourcespath :
                 os.chdir(self.sourcespath)
 
@@ -2582,7 +2589,7 @@ class WaptBaseRepo(BaseObjectClass):
         signer_certificates = SSLCABundle()
         if packages_zipfile is None:
             (packages_index_data,_dummy_date) = self._get_packages_index_data()
-            packages_zipfile = zipfile.ZipFile(StringIO.StringIO(packages_index_data))
+            packages_zipfile = zipfile.ZipFile(io.StringIO(packages_index_data))
 
         filenames = packages_zipfile.namelist()
         for fn in filenames:
@@ -2817,7 +2824,7 @@ class WaptBaseRepo(BaseObjectClass):
         True
         """
         result = {'packages':[],'missing':[]}
-        if isinstance(packages_names,str) or isinstance(packages_names,unicode):
+        if isinstance(packages_names,str) or isinstance(packages_names,str):
             packages_names=[ p.strip() for p in packages_names.split(",")]
         for package_name in packages_names:
             matches = self.packages_matching(package_name)
@@ -2958,7 +2965,7 @@ class WaptLocalRepo(WaptBaseRepo):
         if os.path.isfile(self.packages_path):
             (packages_data_str,_packages_datetime) =  self._get_packages_index_data()
             self._packages_date = datetime2isodate(_packages_datetime)
-            with zipfile.ZipFile(StringIO.StringIO(packages_data_str)) as packages_file:
+            with zipfile.ZipFile(io.StringIO(packages_data_str)) as packages_file:
                 packages_lines = packages_file.read(name='Packages').decode('utf8').splitlines()
 
             if self._packages is not None:
@@ -3520,7 +3527,7 @@ class WaptRemoteRepo(WaptBaseRepo):
         logger.debug(u'Read remote Packages zip file %s' % self.packages_url)
 
         (_packages_index_str,_packages_index_date) = self._get_packages_index_data()
-        with zipfile.ZipFile(StringIO.StringIO(_packages_index_str)) as waptzip:
+        with zipfile.ZipFile(io.StringIO(_packages_index_str)) as waptzip:
             filenames = waptzip.namelist()
             packages_lines = codecs.decode(waptzip.read(name='Packages'),'UTF-8').splitlines()
 
@@ -3624,7 +3631,7 @@ class WaptRemoteRepo(WaptBaseRepo):
         errors = []
         packages = []
         for p in package_requests:
-            if isinstance(p,(str,unicode)):
+            if isinstance(p,str):
                 mp = self.packages_matching(p)
                 if mp:
                     packages.append(mp[-1])
@@ -3665,7 +3672,7 @@ class WaptRemoteRepo(WaptBaseRepo):
                         def report(received,total,speed,url):
                             try:
                                 if total>1:
-                                    stat = u'%s : %i / %i (%.0f%%) (%.0f KB/s)\r' % (url,received,total,100.0*received/total, speed)
+                                    stat = u'%s : %i / %i (%.0f%%) (%.0f KB/s)\r' % (url,received,total,old_div(100.0*received,total), speed)
                                     print(stat)
                                 else:
                                     stat = ''

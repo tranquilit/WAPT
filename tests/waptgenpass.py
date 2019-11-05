@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import print_function
+from builtins import input
 import os
 import sys
 
@@ -29,5 +30,5 @@ def derive_key(password):
         print(hashlib.sha1(password).hexdigest())
 
 if __name__ == '__main__':
-    password = raw_input()
+    password = input()
     derive_key(password)

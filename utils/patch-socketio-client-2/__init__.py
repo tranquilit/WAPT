@@ -1,3 +1,5 @@
+from builtins import next
+from builtins import str
 from pkg_resources import get_distribution
 from .exceptions import ConnectionError, TimeoutError, PacketError
 from .heartbeats import HeartbeatThread
@@ -371,7 +373,7 @@ class SocketIO(EngineIO):
         return self._opened
 
     def _connect_namespaces(self):
-        for path, namespace in self._namespace_by_path.items():
+        for path, namespace in list(self._namespace_by_path.items()):
             namespace._transport = self._transport_instance
             if path:
                 self.connect(path, with_transport_instance=True)
@@ -471,7 +473,7 @@ class SocketIO(EngineIO):
 
     def _should_stop_waiting(self, for_connect=False, for_callbacks=False):
         if for_connect:
-            for namespace in self._namespace_by_path.values():
+            for namespace in list(self._namespace_by_path.values()):
                 is_namespace_connected = getattr(
                     namespace, '_connected', False)
                 if not is_namespace_connected:

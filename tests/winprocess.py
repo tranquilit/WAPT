@@ -15,6 +15,7 @@ This code is free for any purpose, with no warranty of any kind.
 """
 from __future__ import print_function
 
+from builtins import object
 import win32api, win32process, win32security
 import win32event, win32con, msvcrt, win32gui
 import os
@@ -37,7 +38,7 @@ def logonUser(loginString):
         )
 
 
-class Process:
+class Process(object):
     """
     A Windows process.
     """

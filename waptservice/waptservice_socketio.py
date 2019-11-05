@@ -20,6 +20,10 @@
 #
 # -----------------------------------------------------------------------
 from __future__ import absolute_import
+from future import standard_library
+standard_library.install_aliases()
+from builtins import range
+from builtins import object
 import time
 import sys
 import os
@@ -36,18 +40,18 @@ from waptutils import __version__
 
 from socketIO_client import SocketIO, LoggingSocketIONamespace,SocketIONamespace
 
-import urlparse
+import urllib.parse
 
 import logging
 import sqlite3
 
 import json
-import StringIO
+import io
 
-import thread
+import _thread
 import threading
 
-import Queue
+import queue
 import traceback
 import locale
 
@@ -135,7 +139,7 @@ def wait_for_event_send_tasks(task_manager,last_received_event_id,timeout,uuid,r
 class ThreadPool(object):
     """Pool of threads consuming tasks from a queue"""
     def __init__(self, num_threads):
-        self.tasks = Queue.Queue(num_threads)
+        self.tasks = queue.Queue(num_threads)
         for _ in range(num_threads):
             Worker(self.tasks)
 

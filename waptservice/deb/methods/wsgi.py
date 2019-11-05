@@ -4,6 +4,7 @@
 # Copyright (c) 2011 Timothy Farrell
 
 # Import System Modules
+from builtins import str
 import sys
 import socket
 from wsgiref.headers import Headers
@@ -68,7 +69,7 @@ class WSGIWorker(Worker):
         environ = self.base_environ.copy()
 
         # Grab the headers
-        for k, v in self.read_headers(sock_file).items():
+        for k, v in list(self.read_headers(sock_file).items()):
             environ[str('HTTP_'+k)] = v
 
         # Add CGI Variables

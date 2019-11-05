@@ -22,6 +22,7 @@
 from __future__ import absolute_import
 from __future__ import print_function
 
+from builtins import str
 from future import standard_library
 standard_library.install_aliases()
 
@@ -476,7 +477,7 @@ def login():
             else:
                 if rules:
                     try:
-                        groups = get_user_self_service_groups(rules.keys(),auth.username,auth.password)
+                        groups = get_user_self_service_groups(list(rules.keys()),auth.username,auth.password)
                         username = auth.username
                         logger.debug(u'User %s authenticated against self-service groups %s' % (auth.username,groups))
                     except Exception as e:

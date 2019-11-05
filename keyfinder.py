@@ -33,30 +33,34 @@
 #
 # -----------------------------------------------------------------------
 from __future__ import print_function
+from future import standard_library
+standard_library.install_aliases()
+from builtins import chr
+from builtins import range
 __version__ = "1.0.0"
 
 import platform,sys,os
 import math
-import _winreg
+import winreg
 import string
 
 ###########
-HKEY_CLASSES_ROOT = _winreg.HKEY_CLASSES_ROOT
-HKEY_CURRENT_USER = _winreg.HKEY_CURRENT_USER
-HKEY_LOCAL_MACHINE = _winreg.HKEY_LOCAL_MACHINE
-HKEY_USERS = _winreg.HKEY_USERS
-HKEY_CURRENT_CONFIG = _winreg.HKEY_CURRENT_CONFIG
+HKEY_CLASSES_ROOT = winreg.HKEY_CLASSES_ROOT
+HKEY_CURRENT_USER = winreg.HKEY_CURRENT_USER
+HKEY_LOCAL_MACHINE = winreg.HKEY_LOCAL_MACHINE
+HKEY_USERS = winreg.HKEY_USERS
+HKEY_CURRENT_CONFIG = winreg.HKEY_CURRENT_CONFIG
 
-KEY_WRITE = _winreg.KEY_WRITE
-KEY_READ = _winreg.KEY_READ
+KEY_WRITE = winreg.KEY_WRITE
+KEY_READ = winreg.KEY_READ
 
-REG_SZ = _winreg.REG_SZ
-REG_MULTI_SZ = _winreg.REG_MULTI_SZ
-REG_DWORD = _winreg.REG_DWORD
-REG_EXPAND_SZ = _winreg.REG_EXPAND_SZ
+REG_SZ = winreg.REG_SZ
+REG_MULTI_SZ = winreg.REG_MULTI_SZ
+REG_DWORD = winreg.REG_DWORD
+REG_EXPAND_SZ = winreg.REG_EXPAND_SZ
 
 
-def reg_openkey_noredir(key, sub_key, sam=_winreg.KEY_READ,create_if_missing=False):
+def reg_openkey_noredir(key, sub_key, sam=winreg.KEY_READ,create_if_missing=False):
     """Open the registry key\subkey with access rights sam
         Returns a key handle for reg_getvalue and reg_set_value
        key     : HKEY_LOCAL_MACHINE, HKEY_CURRENT_USER ...
@@ -66,16 +70,16 @@ def reg_openkey_noredir(key, sub_key, sam=_winreg.KEY_READ,create_if_missing=Fal
     """
     try:
         if platform.machine() == 'AMD64':
-            return _winreg.OpenKey(key,sub_key,0, sam | _winreg.KEY_WOW64_64KEY)
+            return winreg.OpenKey(key,sub_key,0, sam | winreg.KEY_WOW64_64KEY)
         else:
-            return _winreg.OpenKey(key,sub_key,0,sam)
+            return winreg.OpenKey(key,sub_key,0,sam)
     except WindowsError as e:
         if e.errno == 2:
             if create_if_missing:
                 if platform.machine() == 'AMD64':
-                    return _winreg.CreateKeyEx(key,sub_key,0, sam | _winreg.KEY_READ| _winreg.KEY_WOW64_64KEY | _winreg.KEY_WRITE )
+                    return winreg.CreateKeyEx(key,sub_key,0, sam | winreg.KEY_READ| winreg.KEY_WOW64_64KEY | winreg.KEY_WRITE )
                 else:
-                    return _winreg.CreateKeyEx(key,sub_key,0,sam | _winreg.KEY_READ | _winreg.KEY_WRITE )
+                    return winreg.CreateKeyEx(key,sub_key,0,sam | winreg.KEY_READ | winreg.KEY_WRITE )
             else:
                 raise WindowsError(e.errno,'The key %s can not be opened' % sub_key)
 
@@ -87,7 +91,7 @@ def reg_getvalue(key,name,default=None):
          default : value returned if specified name doesn't exist
     """
     try:
-        return _winreg.QueryValueEx(key,name)[0]
+        return winreg.QueryValueEx(key,name)[0]
     except WindowsError as e:
         if e.errno in(259,2):
             # WindowsError: [Errno 259] No more data is available
@@ -176,7 +180,7 @@ reg_root = r'Software\Microsoft\Office'
 def chunks(l, n):
     """ Yield successive n-sized chunks from l.
     """
-    for i in xrange(0, len(l), n):
+    for i in range(0, len(l), n):
         yield l[i:i+n]
 
 
@@ -233,10 +237,10 @@ def b24decode(input, chrmap=None):
     # clean invalid characters from input (e.g. '-' (dashes) in product key)
     # and map to \x00 through \x23.
     rmchrs = []
-    for i in xrange(256):
+    for i in range(256):
         if not chr(i) in chrmap:
             rmchrs.append(chr(i))
-    tt = string.maketrans(chrmap, ''.join([chr(i) for i in xrange(24)]))
+    tt = string.maketrans(chrmap, ''.join([chr(i) for i in range(24)]))
     input = input.translate(tt, ''.join(rmchrs))
 
     encnum = 0
@@ -311,7 +315,7 @@ def GetMSDPID3(sHivePath):
     key = reg_openkey_noredir(HKEY_LOCAL_MACHINE,sHivePath)
     result = {}
     if reg_getvalue(key,'DigitalProductID',None):
-        (HexBuf,rtype) = _winreg.QueryValueEx(key,'DigitalProductID')
+        (HexBuf,rtype) = winreg.QueryValueEx(key,'DigitalProductID')
         iBinarySize = len(HexBuf)
         if iBinarySize >= 67:  # Incomplete data but might still be enough
             sProdID = 'Not found'

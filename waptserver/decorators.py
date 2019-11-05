@@ -21,13 +21,15 @@
 #
 # -----------------------------------------------------------------------
 from __future__ import absolute_import
+from future import standard_library
+standard_library.install_aliases()
 from waptserver.config import __version__
 import functools
 import logging
 
 from flask import request, Flask, Response, session, g, redirect, url_for, abort, render_template, flash,after_this_request
 
-from cStringIO import StringIO as IO
+from io import StringIO as IO
 import gzip
 
 from waptserver.app import app

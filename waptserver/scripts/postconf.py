@@ -22,6 +22,10 @@
 # -----------------------------------------------------------------------
 from __future__ import absolute_import
 from __future__ import print_function
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str
+from builtins import range
 from waptserver.config import __version__
 
 
@@ -51,7 +55,7 @@ import string
 import random
 import pwd
 import grp
-import ConfigParser
+import configparser
 from optparse import OptionParser
 import nginxparser
 from passlib.hash import pbkdf2_sha256
@@ -309,7 +313,7 @@ def check_mongo2pgsql_upgrade_needed(waptserver_ini):
     def mongod_running():
         return [p for p in psutil.process_iter() if p.name().lower() in ('mongod','mongod.exe')]
 
-    ini = ConfigParser.RawConfigParser()
+    ini = configparser.RawConfigParser()
     ini.read(waptserver_ini)
 
     return ini.has_option('options', 'mongodb_port') and len(mongod_running())>0

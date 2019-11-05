@@ -241,7 +241,7 @@ class SignatureDatabase(object):
 
             signatures = self.signature_tree_eponly_false
 
-            scan_addresses = range( len(data) )
+            scan_addresses = list(range( len(data)))
 
         # For each start address, check if any signature matches
         #

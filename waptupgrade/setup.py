@@ -1,8 +1,14 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function
+from past.builtins import cmp
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str
+from builtins import range
+from builtins import object
 from setuphelpers import *
 import os
-import _winreg
+import winreg
 import tempfile
 import hashlib
 import time
@@ -17,8 +23,8 @@ uninstallkey = []
 
 def update_registry_version(version):
     # updatethe registry
-    with _winreg.CreateKeyEx(HKEY_LOCAL_MACHINE,'SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\WAPT_is1',\
-            0, _winreg.KEY_READ| _winreg.KEY_WRITE ) as waptis:
+    with winreg.CreateKeyEx(HKEY_LOCAL_MACHINE,'SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\WAPT_is1',\
+            0, winreg.KEY_READ| winreg.KEY_WRITE ) as waptis:
         reg_setvalue(waptis,"DisplayName","WAPT %s" % version)
         reg_setvalue(waptis,"DisplayVersion","%s" % version)
         reg_setvalue(waptis,"InstallDate",currentdate())
@@ -51,7 +57,7 @@ class Version(object):
     def __init__(self,version,members_count=None):
         if version is None:
             version = ''
-        assert isinstance(version,types.ModuleType) or isinstance(version,str) or isinstance(version,unicode) or isinstance(version,Version)
+        assert isinstance(version,types.ModuleType) or isinstance(version,str) or isinstance(version,str) or isinstance(version,Version)
         if isinstance(version,types.ModuleType):
             self.versionstring =  getattr(version,'__version__',None)
         elif isinstance(version,Version):

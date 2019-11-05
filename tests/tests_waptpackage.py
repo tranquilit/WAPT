@@ -21,6 +21,10 @@
 #
 # -----------------------------------------------------------------------
 from __future__ import print_function
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str
+from builtins import range
 __version__ = "1.7.4"
 import logging
 import sys
@@ -481,7 +485,7 @@ def test_localrepo_cert():
 
     #list files
     import custom_zip as zipfile
-    import StringIO
+    import io
 
     with zipfile.ZipFile(open(r.packages_path,'rb'),allowZip64=True) as zip:
         packages_lines = codecs.decode(zip.read(name='Packages'),'UTF-8').splitlines()
@@ -1300,10 +1304,10 @@ def test_status_hashes():
     w = Wapt(config_filename=r'c:\wapt\wapt-get.ini')
     w.waptserver.server_url = 'http://127.0.0.1:8080'
     res = w.update_server_status()
-    print(res['result']['status_hashes'].keys())
+    print(list(res['result']['status_hashes'].keys()))
     w.update()
     res = w.update_server_status()
-    print(res['result']['status_hashes'].keys())
+    print(list(res['result']['status_hashes'].keys()))
 
 
 def test_capabilities():

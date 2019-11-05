@@ -23,6 +23,8 @@
 from __future__ import absolute_import
 from __future__ import print_function
 
+from builtins import str
+from builtins import object
 import os
 import sys
 import uuid as _uuid
@@ -98,7 +100,7 @@ def load_db_config(server_config=None):
 
 class WaptBaseModel(SignaledModel):
     """A base model that will use our Postgresql database"""
-    class Meta:
+    class Meta(object):
         database = wapt_db
 
     # audit data
@@ -123,7 +125,7 @@ def waptbasemodel_pre_save(model_class, instance, created):
 
 class ServerAttribs(SignaledModel):
     """key/value registry"""
-    class Meta:
+    class Meta(object):
         database = wapt_db
 
     key = CharField(primary_key=True, null=False, index=True)
@@ -332,7 +334,7 @@ class Packages(WaptBaseModel):
 
     @classmethod
     def from_control(cls,entry):
-        package = cls(** dict((a,cls._as_attribute(a,v)) for (a,v) in entry.as_dict().iteritems() if a in cls._meta.columns))
+        package = cls(** dict((a,cls._as_attribute(a,v)) for (a,v) in entry.as_dict().items() if a in cls._meta.columns))
 
 
     @classmethod
@@ -342,7 +344,7 @@ class Packages(WaptBaseModel):
         """
         key = {'package':entry.package,'version':entry.version,'architecture':entry.architecture,'locale':entry.locale,'maturity':entry.maturity}
         (rec,_isnew) = Packages.get_or_create(**key)
-        for (a,v) in entry.as_dict().iteritems():
+        for (a,v) in entry.as_dict().items():
             if a in cls._meta.columns and not a in key:
                 new_value = cls._as_attribute(a,v)
                 if new_value != getattr(rec,a):
@@ -498,7 +500,7 @@ class Normalization(WaptBaseModel):
     normalized_name = CharField( max_length=2000, null=True,  index=True )
     banned = BooleanField( null=True )
     windows_update = BooleanField( null=True  )
-    class Meta:
+    class Meta(object):
         primary_key = CompositeKey('original_name', 'key' )
     def __repr__(self):
         return '<Normalization uuid=%s name=%s>' % (self.uuid, self.name)
@@ -596,7 +598,7 @@ class StoreMember(WaptBaseModel):
     validat_account = BooleanField(null=True)
 
 class StoreUsage(SignaledModel):
-    class Meta:
+    class Meta(object):
         database = wapt_db
 
     id = PrimaryKeyField(primary_key=True)
@@ -653,7 +655,7 @@ def dictgetpath(adict, pathstr):
             elif k == '*' and isinstance(result, list):
                 # assume this level is an array, and iterates all items
                 continue
-            elif isinstance(k, (str, unicode)) and isinstance(result, list):
+            elif isinstance(k, (str, str)) and isinstance(result, list):
                 # iterate through a list returning only a key
                 result = [item.get(k) for item in result if item.get(k)]
             else:
@@ -696,7 +698,7 @@ def update_installed_packages(uuid, data, applied_status_hashes):
     #old_installed = HostPackagesStatus.select().where(HostPackagesStatus.host == uuid).dicts()
 
     def encode_value(value):
-        if isinstance(value,unicode):
+        if isinstance(value,str):
             value = value.replace(u'\x00', ' ')
         return value
 
@@ -727,7 +729,7 @@ def update_installed_packages(uuid, data, applied_status_hashes):
                 except:
                     guids = uninstall_key_str
 
-            if isinstance(guids,(unicode,str)):
+            if isinstance(guids,str):
                 guids = [guids]
             return guids
         else:
@@ -754,7 +756,7 @@ def update_installed_packages(uuid, data, applied_status_hashes):
 
 
             # filter out all unknown fields from json data for the SQL insert
-            packages.append(dict([(k, encode_value(v)) for k, v in package.iteritems() if k in HostPackagesStatus._meta.fields]))
+            packages.append(dict([(k, encode_value(v)) for k, v in package.items() if k in HostPackagesStatus._meta.fields]))
 
         if packages:
             HostPackagesStatus.insert_many(packages).execute() # pylint: disable=no-value-for-parameter
@@ -779,7 +781,7 @@ def update_installed_softwares(uuid, data,applied_status_hashes):
         softwares = []
 
         def encode_value(value):
-            if isinstance(value,unicode):
+            if isinstance(value,str):
                 value = value.replace(u'\x00', ' ')
             return value
 
@@ -787,7 +789,7 @@ def update_installed_softwares(uuid, data,applied_status_hashes):
             software['host'] = uuid
             software['created_on'] = datetime.datetime.now()
             # filter out all unknown fields from json data for the SQL insert
-            softwares.append(dict([(k,encode_value(v)) for k, v in software.iteritems() if k in HostSoftwares._meta.fields]))
+            softwares.append(dict([(k,encode_value(v)) for k, v in software.items() if k in HostSoftwares._meta.fields]))
 
         if softwares:
             HostSoftwares.insert_many(softwares).execute() # pylint: disable=no-value-for-parameter
@@ -806,14 +808,14 @@ def update_waptwua(uuid,data,applied_status_hashes):
         None
     """
     def encode_value(value):
-        if isinstance(value,unicode):
+        if isinstance(value,str):
             value = value.replace(u'\x00', ' ')
         return value
 
     if 'waptwua_updates' in data:
         windows_updates = []
         for w in data['waptwua_updates']:
-            u = dict([(k,encode_value(v)) for k, v in w.iteritems() if k in WsusUpdates._meta.fields])
+            u = dict([(k,encode_value(v)) for k, v in w.items() if k in WsusUpdates._meta.fields])
             u['created_on'] = datetime.datetime.now()
             windows_updates.append(u)
         if windows_updates:
@@ -842,7 +844,7 @@ def update_waptwua(uuid,data,applied_status_hashes):
         host_wsus = []
         for h in data['waptwua_updates_localstatus']:
             # default if not supplied
-            new_rec = dict([(k,encode_value(v)) for k, v in h.iteritems() if k in HostWsus._meta.fields])
+            new_rec = dict([(k,encode_value(v)) for k, v in h.items() if k in HostWsus._meta.fields])
             new_rec['host'] = uuid
             new_rec['created_on'] = datetime.datetime.now()
             if not 'install_date' in new_rec:
@@ -930,11 +932,11 @@ def update_host_data(data,server_conf=None):
             applied_status_hashes = {}
             existing = Hosts.select(Hosts.uuid, Hosts.computer_fqdn,Hosts.status_hashes).where(Hosts.uuid == uuid).first()
             if not existing:
-                logger.debug('Inserting new host %s with fields %s' % (uuid, data.keys()))
+                logger.debug('Inserting new host %s with fields %s' % (uuid, list(data.keys())))
                 # wapt update_status packages softwares host
                 updhost = Hosts()
 
-                for k in data.keys():
+                for k in list(data.keys()):
                     # manage field renaming between 1.3 and >= 1.4
                     target_key = migrate_map_13_14.get(k, k)
                     if target_key and hasattr(updhost, target_key):
@@ -944,13 +946,13 @@ def update_host_data(data,server_conf=None):
                 updhost.status_hashes = applied_status_hashes
                 updhost.save(force_insert=True)
             else:
-                logger.debug('Updating %s for fields %s' % (uuid, data.keys()))
+                logger.debug('Updating %s for fields %s' % (uuid, list(data.keys())))
 
                 updhost = Hosts.get(uuid=uuid)
                 if not updhost.status_hashes:
                     updhost.status_hashes = {}
 
-                for k in data.keys():
+                for k in list(data.keys()):
                     # supplied status_hashes is a subset of known hashes
                     if k != 'status_hashes':
                         # manage field renaming between 1.3 and >= 1.4
@@ -1000,7 +1002,7 @@ def update_host_data(data,server_conf=None):
             # merge new known hashes for properly applied data, for next round
             updhost.status_hashes.update(applied_status_hashes)
             updhost.save()
-            logger.info('Applied data for host %s: %s' % (uuid,applied_status_hashes.keys()))
+            logger.info('Applied data for host %s: %s' % (uuid,list(applied_status_hashes.keys())))
             # returns actual registered fqdn and status hashes so that host can omit to send some data next time if they have not changed
             result_query = Hosts.select(Hosts.uuid, Hosts.computer_fqdn,Hosts.status_hashes)
             return result_query.where(Hosts.uuid == uuid).dicts().first()
@@ -1239,7 +1241,7 @@ class TableProvider(object):
     def _where_from_values(self,old_values={}):
         """Return a where clause from old and new dict for update and delete"""
         result = None
-        for (column_name,column_value) in old_values.iteritems():
+        for (column_name,column_value) in old_values.items():
             column = self.column_by_name(column_name)
             if column:
                 if column.in_key or column.in_where:
@@ -1254,7 +1256,7 @@ class TableProvider(object):
         filtering out non updateable values.
         """
         result = {}
-        for (column_name,column_value) in new_values.iteritems():
+        for (column_name,column_value) in new_values.items():
             column = self.column_by_name(column_name)
             if column:
                 if column.in_update:
@@ -1265,7 +1267,7 @@ class TableProvider(object):
         """Return a dict
         """
         result = {}
-        for (column_name,column_value) in values.iteritems():
+        for (column_name,column_value) in values.items():
             column = self.column_by_name(column_name)
             if column:
                 result[column_name] = column.to_client(column_value)
@@ -1276,7 +1278,7 @@ class TableProvider(object):
         filtering out non updateable values.
         """
         result = {}
-        for (column_name,column_value) in new_values.iteritems():
+        for (column_name,column_value) in new_values.items():
             column = self.column_by_name(column_name)
             if column:
                 if column.in_update:

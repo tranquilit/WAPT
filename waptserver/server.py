@@ -21,6 +21,10 @@
 #
 # -----------------------------------------------------------------------
 from __future__ import absolute_import
+from __future__ import division
+from builtins import str
+from builtins import object
+from past.utils import old_div
 import sys
 if __name__ == '__main__':
     # as soon as possible, we must monkey patch the library...
@@ -210,7 +214,7 @@ def index():
         space = get_disk_space(app.conf['wapt_folder'])
         if not space:
             raise Exception('Disk info not found')
-        percent_free = (space[0] * 100) / space[1]
+        percent_free = old_div((space[0] * 100), space[1])
         if percent_free >= 20:
             disk_space_style = ''
         disk_space_str = str(percent_free) + '% free'
@@ -471,7 +475,7 @@ def update_host():
         # 'host' is for pre wapt pre 1.4
         computer_fqdn =  (data.get('host_info',None) or data.get('host',{})).get('computer_fqdn',None)
 
-        logger.info(u'updating host status %s (%s), data:%s' % (uuid,computer_fqdn,data.keys()))
+        logger.info(u'updating host status %s (%s), data:%s' % (uuid,computer_fqdn,list(data.keys())))
 
         # get request signature
         signature_b64 = request.headers.get('X-Signature', None)
@@ -845,7 +849,7 @@ def upload_host():
         done = []
         errors = []
         if request.method == 'POST':
-            files = request.files.keys()
+            files = list(request.files.keys())
             logger.info(u'Upload of %s host packages' % len(files))
             for fkey in files:
                 hostpackagefile = request.files[fkey]
@@ -1745,7 +1749,7 @@ def host_data():
 
         if 'field' in request.args:
             field = request.args['field']
-            if not field in Hosts._meta.fields.keys() + ['installed_softwares', 'installed_packages', 'wsusupdates']: # pylint: disable=no-member
+            if not field in list(Hosts._meta.fields.keys()) + ['installed_softwares', 'installed_packages', 'wsusupdates']: # pylint: disable=no-member
                 raise EWaptMissingParameter('Parameter field %s is unknown' % field)
         else:
             raise EWaptMissingParameter('Parameter field is missing')

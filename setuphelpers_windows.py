@@ -22,7 +22,14 @@
 # -----------------------------------------------------------------------
 from __future__ import absolute_import
 from __future__ import print_function
+from __future__ import division
 
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str
+from builtins import range
+from past.utils import old_div
+from builtins import object
 import codecs
 import ctypes
 import datetime
@@ -59,7 +66,7 @@ from waptutils import (Version,makepath,isfile,isdir,killtree,CalledProcessError
 
 ## import only for windows
 import _subprocess
-import _winreg
+import winreg
 import active_directory
 import keyfinder
 import netifaces
@@ -107,22 +114,22 @@ sendto = winshell.sendto
 
 ###########
 # root key
-HKEY_CLASSES_ROOT = _winreg.HKEY_CLASSES_ROOT
-HKEY_CURRENT_USER = _winreg.HKEY_CURRENT_USER
-HKEY_LOCAL_MACHINE = _winreg.HKEY_LOCAL_MACHINE
-HKEY_USERS = _winreg.HKEY_USERS
-HKEY_CURRENT_CONFIG = _winreg.HKEY_CURRENT_CONFIG
+HKEY_CLASSES_ROOT = winreg.HKEY_CLASSES_ROOT
+HKEY_CURRENT_USER = winreg.HKEY_CURRENT_USER
+HKEY_LOCAL_MACHINE = winreg.HKEY_LOCAL_MACHINE
+HKEY_USERS = winreg.HKEY_USERS
+HKEY_CURRENT_CONFIG = winreg.HKEY_CURRENT_CONFIG
 
 # Access modes when opening registry keys
-KEY_WRITE = _winreg.KEY_WRITE
-KEY_READ = _winreg.KEY_READ
-KEY_ALL_ACCESS = _winreg.KEY_ALL_ACCESS
+KEY_WRITE = winreg.KEY_WRITE
+KEY_READ = winreg.KEY_READ
+KEY_ALL_ACCESS = winreg.KEY_ALL_ACCESS
 
 # Types of value
-REG_SZ = _winreg.REG_SZ
-REG_MULTI_SZ = _winreg.REG_MULTI_SZ
-REG_DWORD = _winreg.REG_DWORD
-REG_EXPAND_SZ = _winreg.REG_EXPAND_SZ
+REG_SZ = winreg.REG_SZ
+REG_MULTI_SZ = winreg.REG_MULTI_SZ
+REG_DWORD = winreg.REG_DWORD
+REG_EXPAND_SZ = winreg.REG_EXPAND_SZ
 
 # aliases
 wincomputername = win32api.GetComputerName
@@ -165,9 +172,9 @@ def reg_closekey(hkey):
     """Close a registry key opened with reg_openkey_noredir
 
     """
-    _winreg.CloseKey(hkey)
+    winreg.CloseKey(hkey)
 
-def reg_openkey_noredir(rootkey, subkeypath, sam=_winreg.KEY_READ,create_if_missing=False,noredir=True):
+def reg_openkey_noredir(rootkey, subkeypath, sam=winreg.KEY_READ,create_if_missing=False,noredir=True):
     """Open the registry key\subkey with access rights sam
 
     The Wow6432Node redirector is disabled. So one can access 32 and 64 part or the registry
@@ -192,38 +199,38 @@ def reg_openkey_noredir(rootkey, subkeypath, sam=_winreg.KEY_READ,create_if_miss
         subkeypath = subkeypath.replace('\\Wow6432Node\\','\\')
         noredir = False
 
-    if isinstance(subkeypath,unicode):
+    if isinstance(subkeypath,str):
         subkeypath = subkeypath.encode(locale.getpreferredencoding())
     try:
         if platform.machine() == 'AMD64' and noredir:
-            result = _winreg.OpenKey(rootkey,subkeypath,0, sam | _winreg.KEY_WOW64_64KEY)
+            result = winreg.OpenKey(rootkey,subkeypath,0, sam | winreg.KEY_WOW64_64KEY)
         else:
-            result = _winreg.OpenKey(rootkey,subkeypath,0,sam)
+            result = winreg.OpenKey(rootkey,subkeypath,0,sam)
         return result
     except WindowsError as e:
         if e.errno == 2:
             if create_if_missing:
                 if platform.machine() == 'AMD64' and noredir:
-                    return _winreg.CreateKeyEx(rootkey,subkeypath,0, sam | _winreg.KEY_READ| _winreg.KEY_WOW64_64KEY | _winreg.KEY_WRITE )
+                    return winreg.CreateKeyEx(rootkey,subkeypath,0, sam | winreg.KEY_READ| winreg.KEY_WOW64_64KEY | winreg.KEY_WRITE )
                 else:
-                    return _winreg.CreateKeyEx(rootkey,subkeypath,0,sam | _winreg.KEY_READ | _winreg.KEY_WRITE )
+                    return winreg.CreateKeyEx(rootkey,subkeypath,0,sam | winreg.KEY_READ | winreg.KEY_WRITE )
             else:
                 raise WindowsError(e.errno,'The key %s can not be opened' % subkeypath)
 
-def reg_setvalue(key,name,value,type=_winreg.REG_SZ ):
+def reg_setvalue(key,name,value,type=winreg.REG_SZ ):
     """Set the value of specified name inside 'key' folder
 
          key  : handle of registry key as returned by reg_openkey_noredir()
          name : value name
          type : type of value (REG_SZ,REG_MULTI_SZ,REG_DWORD,REG_EXPAND_SZ)
     """
-    if isinstance(name,unicode):
+    if isinstance(name,str):
         name = name.encode(locale.getpreferredencoding())
-    if isinstance(value,unicode):
+    if isinstance(value,str):
         value = value.encode(locale.getpreferredencoding())
-    return _winreg.SetValueEx(key,name,0,type,value)
+    return winreg.SetValueEx(key,name,0,type,value)
 
-def registry_setstring(root,path,keyname,value,type=_winreg.REG_SZ):
+def registry_setstring(root,path,keyname,value,type=winreg.REG_SZ):
     """Set the value of a string key in registry
     the path can be either with backslash or slash
 
@@ -254,7 +261,7 @@ def iswin64():
     return win32process.IsWow64Process()
     #return 'PROGRAMW6432' in os.environ and 'ProgramFiles(x86)' in os.environ and os.environ['PROGRAMW6432'] != os.environ['ProgramFiles(x86)']
 
-class disable_file_system_redirection:
+class disable_file_system_redirection(object):
     r"""Context manager to disable temporarily the wow3264 file redirector
 
     >>> with disable_file_system_redirection():
@@ -297,8 +304,8 @@ def set_file_visible(path):
         path (str): path to the file
     """
     FILE_ATTRIBUTE_HIDDEN = 0x02
-    old_att = ctypes.windll.kernel32.GetFileAttributesW(unicode(path))
-    ret = ctypes.windll.kernel32.SetFileAttributesW(unicode(path),old_att  & ~FILE_ATTRIBUTE_HIDDEN)
+    old_att = ctypes.windll.kernel32.GetFileAttributesW(str(path))
+    ret = ctypes.windll.kernel32.SetFileAttributesW(str(path),old_att  & ~FILE_ATTRIBUTE_HIDDEN)
     if not ret:
         raise ctypes.WinError()
 
@@ -408,16 +415,16 @@ def get_domain_fromregistry():
         if len(host_domain)>1:
             return host_domain[1]
 
-    key = _winreg.OpenKey(_winreg.HKEY_LOCAL_MACHINE,"SYSTEM\\CurrentControlSet\\Services\\Tcpip\\Parameters")
+    key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE,"SYSTEM\\CurrentControlSet\\Services\\Tcpip\\Parameters")
     try:
-        (domain,atype) = _winreg.QueryValueEx(key,'NV Domain')
+        (domain,atype) = winreg.QueryValueEx(key,'NV Domain')
         if domain=='':
-            (domain,atype) = _winreg.QueryValueEx(key,'Domain')
+            (domain,atype) = winreg.QueryValueEx(key,'Domain')
         if domain=='':
-            (domain,atype) = _winreg.QueryValueEx(key,'DhcpDomain')
+            (domain,atype) = winreg.QueryValueEx(key,'DhcpDomain')
     except:
         try:
-            (domain,atype) = _winreg.QueryValueEx(key,'DhcpDomain')
+            (domain,atype) = winreg.QueryValueEx(key,'DhcpDomain')
         except:
             domain = None
     return domain
@@ -517,7 +524,7 @@ def wmi_info(keys=['Win32_ComputerSystem',
                     na = result[key] = []
                     for cs2 in cs:
                         na.append({})
-                        for k in cs2.properties.keys():
+                        for k in list(cs2.properties.keys()):
                             if not k in exclude_subkeys:
                                 prop = cs2.wmi_property(k)
                                 if prop:
@@ -525,7 +532,7 @@ def wmi_info(keys=['Win32_ComputerSystem',
                 elif len(cs)>0:
                     result[key] = {}
                     if cs:
-                        for k in cs[0].properties.keys():
+                        for k in list(cs[0].properties.keys()):
                             if not k in exclude_subkeys:
                                 prop = cs[0].wmi_property(k)
                                 if prop:
@@ -543,7 +550,7 @@ def wmi_as_struct(wmi_object,exclude_subkeys=['OEMLogoBitmap']):
         na = result = []
         for cs2 in wmi_object:
             na.append({})
-            for k in cs2.properties.keys():
+            for k in list(cs2.properties.keys()):
                 if not k in exclude_subkeys:
                     prop = cs2.wmi_property(k)
                     if prop:
@@ -551,7 +558,7 @@ def wmi_as_struct(wmi_object,exclude_subkeys=['OEMLogoBitmap']):
     elif len(wmi_object)>0:
         result = {}
         if wmi_object:
-            for k in wmi_object[0].properties.keys():
+            for k in list(wmi_object[0].properties.keys()):
                 if not k in exclude_subkeys:
                     prop = wmi_object[0].wmi_property(k)
                     if prop:
@@ -784,7 +791,7 @@ def host_info():
     info['computer_ad_dn'] =  registry_readstring(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows\CurrentVersion\Group Policy\State\Machine','Distinguished-Name')
     info['computer_ad_site'] =  registry_readstring(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows\CurrentVersion\Group Policy\State\Machine','Site-Name')
 
-    info['environ'] = {k:ensure_unicode(v) for k,v in os.environ.iteritems()}
+    info['environ'] = {k:ensure_unicode(v) for k,v in os.environ.items()}
 
     info['main_ip'] = get_main_ip()
 
@@ -795,7 +802,7 @@ def get_user_from_sid(sid,controller=None):
     sid is either a string or a PySID
     """
     try:
-        if isinstance(sid,str) or isinstance(sid,unicode):
+        if isinstance(sid,str) or isinstance(sid,str):
             pysid = win32security.ConvertStringSidToSid(sid)
         else:
             pysid = sid
@@ -850,7 +857,7 @@ def uac_enabled():
 
     """
     with reg_openkey_noredir(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System') as k:
-        return _winreg.QueryValueEx(k,'EnableLUA')[1] == 0
+        return winreg.QueryValueEx(k,'EnableLUA')[1] == 0
 
 def running_on_ac():
     """Return True if computer is connected to AC power supply
@@ -974,8 +981,8 @@ def local_users_profiles():
     i = 0
     while True:
         try:
-            profid = _winreg.EnumKey(key, i).decode(os_encoding)
-            prof_key = reg_openkey_noredir(_winreg.HKEY_LOCAL_MACHINE,"%s\\%s"%(profiles_path,profid))
+            profid = winreg.EnumKey(key, i).decode(os_encoding)
+            prof_key = reg_openkey_noredir(winreg.HKEY_LOCAL_MACHINE,"%s\\%s"%(profiles_path,profid))
             image_path = reg_getvalue(prof_key,'ProfileImagePath','')
             if isdir(image_path):
                 result.append(image_path)
@@ -1160,7 +1167,7 @@ def install_msi_if_needed(msi,min_version=None,killbefore=None,accept_returncode
         if killbefore:
             killalltasks(killbefore)
         if isinstance(properties,dict):
-            props = ' '.join(["%s=%s" % (k,v) for (k,v) in properties.iteritems()])
+            props = ' '.join(["%s=%s" % (k,v) for (k,v) in properties.items()])
         elif isinstance(properties,str):
             props = properties
         else:
@@ -1276,8 +1283,8 @@ def local_desktops():
     i = 0
     while True:
         try:
-            profid = _winreg.EnumKey(key, i).decode(os_encoding)
-            prof_key = reg_openkey_noredir(_winreg.HKEY_LOCAL_MACHINE,"%s\\%s"%(profiles_path,profid))
+            profid = winreg.EnumKey(key, i).decode(os_encoding)
+            prof_key = reg_openkey_noredir(winreg.HKEY_LOCAL_MACHINE,"%s\\%s"%(profiles_path,profid))
             image_path = reg_getvalue(prof_key,'ProfileImagePath','')
             if isdir(makepath(image_path,'Desktop')):
                 result.append(makepath(image_path,'Desktop'))
@@ -1595,7 +1602,7 @@ def windows_version(members_count=3):
         return Version(platform.win32_ver()[1])
 
 
-class WindowsVersions:
+class WindowsVersions(object):
     """Helper class to get numbered windows version from windows name version
 
     ... versionadded:: 1.3.5
@@ -1707,7 +1714,7 @@ def user_desktop():
     >>> user_desktop()
     u'C:\\Users\\htouvet\\Desktop'
     """
-    return unicode(desktop(0))
+    return str(desktop(0))
 
 
 def common_desktop():
@@ -1716,7 +1723,7 @@ def common_desktop():
     >>> common_desktop()
     u'C:\\Users\\Public\\Desktop'
     """
-    return unicode(desktop(1))
+    return str(desktop(1))
 
 def service_installed(service_name):
     """Return True if the service is installed"""
@@ -2198,7 +2205,7 @@ def get_profile_path(sid):
 def get_user_from_profpath(sid):
     """extrapolate user from the profile directory path"""
     try:
-        if not isinstance(sid,(str,unicode)):
+        if not isinstance(sid,str):
             sid = ("%s" % sid).split(':')[1]
         profpath = get_profile_path(sid)
         user = os.path.basename(profpath)
@@ -2245,7 +2252,7 @@ def local_drives():
                 else:
                     details[key] = None
             if details.get('Size',0)>0:
-                details['FreePercent'] =int(details.get('FreeSpace',0) * 100 / details['Size'])
+                details['FreePercent'] =int(old_div(details.get('FreeSpace',0) * 100, details['Size']))
             letter = disk.Caption
             result[letter.replace(':','')] = details
     except Exception as e:
@@ -2343,8 +2350,8 @@ def get_file_properties(fname):
     if not props['FileVersion']:
         try:
             fixedInfo = win32api.GetFileVersionInfo(fname, '\\')
-            props['FileVersion'] = u"%d.%d.%d.%d" % (fixedInfo['FileVersionMS'] / 65536,
-                    fixedInfo['FileVersionMS'] % 65536, fixedInfo['FileVersionLS'] / 65536,
+            props['FileVersion'] = u"%d.%d.%d.%d" % (old_div(fixedInfo['FileVersionMS'], 65536),
+                    fixedInfo['FileVersionMS'] % 65536, old_div(fixedInfo['FileVersionLS'], 65536),
                     fixedInfo['FileVersionLS'] % 65536)
         except Exception as e:
             logger.warning(u"%s" % ensure_unicode(e))
@@ -2353,8 +2360,8 @@ def get_file_properties(fname):
     if not props['ProductVersion']:
         try:
             fixedInfo = win32api.GetFileVersionInfo(fname, '\\')
-            props['ProductVersion'] = u"%d.%d.%d.%d" % (fixedInfo['ProductVersionMS'] / 65536,
-                    fixedInfo['ProductVersionMS'] % 65536, fixedInfo['ProductVersionLS'] / 65536,
+            props['ProductVersion'] = u"%d.%d.%d.%d" % (old_div(fixedInfo['ProductVersionMS'], 65536),
+                    fixedInfo['ProductVersionMS'] % 65536, old_div(fixedInfo['ProductVersionLS'], 65536),
                     fixedInfo['ProductVersionLS'] % 65536)
         except Exception as e:
             logger.warning(u"%s" % ensure_unicode(e))
@@ -2464,8 +2471,8 @@ def register_uninstall(uninstallkey,uninstallstring,win64app=False,
         raise Exception('No uninstallstring provided')
 
     root = "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall"
-    with reg_openkey_noredir(_winreg.HKEY_LOCAL_MACHINE,"%s\\%s" % (root,uninstallkey.encode(locale.getpreferredencoding())),
-           sam=_winreg.KEY_ALL_ACCESS,create_if_missing=True,noredir=iswin64() and win64app) as appkey:
+    with reg_openkey_noredir(winreg.HKEY_LOCAL_MACHINE,"%s\\%s" % (root,uninstallkey.encode(locale.getpreferredencoding())),
+           sam=winreg.KEY_ALL_ACCESS,create_if_missing=True,noredir=iswin64() and win64app) as appkey:
         reg_setvalue(appkey,'UninstallString',uninstallstring)
         reg_setvalue(appkey,'InstallDate',currentdate())
         if quiet_uninstall_string:
@@ -2502,14 +2509,14 @@ def unregister_uninstall(uninstallkey,win64app=False):
         else:
             root = "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\"+uninstallkey
         try:
-            _winreg.DeleteKeyEx(_winreg.HKEY_LOCAL_MACHINE,root.encode(locale.getpreferredencoding()))
+            winreg.DeleteKeyEx(winreg.HKEY_LOCAL_MACHINE,root.encode(locale.getpreferredencoding()))
         except WindowsError as e:
             logger.warning(u'Unable to remove key %s, error : %s' % (ensure_unicode(root),ensure_unicode(e)))
 
     else:
         root = "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\"+uninstallkey
         try:
-            _winreg.DeleteKey(_winreg.HKEY_LOCAL_MACHINE,root.encode(locale.getpreferredencoding()))
+            winreg.DeleteKey(winreg.HKEY_LOCAL_MACHINE,root.encode(locale.getpreferredencoding()))
         except WindowsError as e:
             logger.warning(u'Unable to remove key %s, error : %s' % (ensure_unicode(root),ensure_unicode(e)))
 
@@ -2717,7 +2724,7 @@ def shutdown_scripts_ui_visible(state=True):
         r'SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System',sam=KEY_ALL_ACCESS) as key:
         if state is None:
             try:
-                _winreg.DeleteValue(key,'HideShutdownScripts')
+                winreg.DeleteValue(key,'HideShutdownScripts')
             except WindowsError as e:
                 if not e.errno in (259,2):
                     raise
@@ -2738,14 +2745,14 @@ def uninstall_cmd(guid):
     def get_fromkey(uninstall,noredir=True):
         with reg_openkey_noredir(HKEY_LOCAL_MACHINE,"%s\\%s" % (uninstall,guid),noredir=noredir) as key:
             try:
-                cmd = _winreg.QueryValueEx(key,'QuietUninstallString')[0]
+                cmd = winreg.QueryValueEx(key,'QuietUninstallString')[0]
                 # fix silent arg for innosetup
                 if 'unins000' in cmd.lower():
                     cmd = cmd.replace(' /SILENT',' /VERYSILENT')
                 return cmd
             except WindowsError:
                 try:
-                    cmd = _winreg.QueryValueEx(key,'UninstallString')[0]
+                    cmd = winreg.QueryValueEx(key,'UninstallString')[0]
                     if 'msiexec' in cmd.lower():
                         cmd = cmd.replace('/I','/X').replace('/i','/X')
                         args = shlex.split(cmd,posix=False)
@@ -2784,7 +2791,7 @@ def uninstall_cmd(guid):
                                 args.append('/verysilent')
                     return args
                 except WindowsError:
-                    is_msi = _winreg.QueryValueEx(key,'WindowsInstaller')[0]
+                    is_msi = winreg.QueryValueEx(key,'WindowsInstaller')[0]
                     if is_msi == 1:
                         return u'msiexec /quiet /norestart /X %s' % guid
                     else:
@@ -2855,8 +2862,8 @@ def installed_softwares(keywords='',uninstallkey=None,name=None):
     def list_fromkey(uninstall,noredir=True):
         result = []
         os_encoding=locale.getpreferredencoding()
-        with reg_openkey_noredir(_winreg.HKEY_LOCAL_MACHINE,uninstall,noredir=noredir) as key:
-            if isinstance(keywords,str) or isinstance(keywords,unicode):
+        with reg_openkey_noredir(winreg.HKEY_LOCAL_MACHINE,uninstall,noredir=noredir) as key:
+            if isinstance(keywords,str) or isinstance(keywords,str):
                 mykeywords = keywords.lower().split()
             else:
                 mykeywords = [ ensure_unicode(k).lower() for k in keywords ]
@@ -2864,8 +2871,8 @@ def installed_softwares(keywords='',uninstallkey=None,name=None):
             i = 0
             while True:
                 try:
-                    subkey = _winreg.EnumKey(key, i).decode(os_encoding)
-                    appkey = reg_openkey_noredir(_winreg.HKEY_LOCAL_MACHINE,"%s\\%s" % (uninstall,subkey.encode(os_encoding)),noredir=noredir)
+                    subkey = winreg.EnumKey(key, i).decode(os_encoding)
+                    appkey = reg_openkey_noredir(winreg.HKEY_LOCAL_MACHINE,"%s\\%s" % (uninstall,subkey.encode(os_encoding)),noredir=noredir)
                     display_name = reg_getvalue(appkey,'DisplayName','')
                     display_version = reg_getvalue(appkey,'DisplayVersion','')
                     date = reg_getvalue(appkey,'InstallDate','').replace('\x00','')
@@ -2927,8 +2934,8 @@ def set_file_hidden(path):
         path (str): path to the file
     """
     FILE_ATTRIBUTE_HIDDEN = 0x02
-    old_att = ctypes.windll.kernel32.GetFileAttributesW(unicode(path))
-    ret = ctypes.windll.kernel32.SetFileAttributesW(unicode(path),old_att | FILE_ATTRIBUTE_HIDDEN)
+    old_att = ctypes.windll.kernel32.GetFileAttributesW(str(path))
+    ret = ctypes.windll.kernel32.SetFileAttributesW(str(path),old_att | FILE_ATTRIBUTE_HIDDEN)
     if not ret:
         raise ctypes.WinError()
 
@@ -3019,7 +3026,7 @@ def _environ_params(dict_or_module={}):
     params_dict['domainname'] = get_domain_fromregistry()
     params_dict['computername'] = os.environ['COMPUTERNAME']
     if type(dict_or_module) is types.ModuleType:
-        for k,v in params_dict.items():
+        for k,v in list(params_dict.items()):
             setattr(dict_or_module,k,v)
     return params_dict
 
@@ -3066,9 +3073,9 @@ def reg_value_exists(rootkey, subkeypath,value_name):
     """
     try:
         with reg_openkey_noredir(rootkey,subkeypath) as key:
-            if isinstance(value_name,unicode):
+            if isinstance(value_name,str):
                 value_name = value_name.encode(locale.getpreferredencoding())
-            value = _winreg.QueryValueEx(key,value_name)[0]
+            value = winreg.QueryValueEx(key,value_name)[0]
             return True
 
     except WindowsError as e:
@@ -3093,9 +3100,9 @@ def reg_getvalue(key,name,default=None):
         int or str or list: depends on type of value named name.
     """
     try:
-        if isinstance(name,unicode):
+        if isinstance(name,str):
             name = name.encode(locale.getpreferredencoding())
-        value = _winreg.QueryValueEx(key,name)[0]
+        value = winreg.QueryValueEx(key,name)[0]
         if isinstance(value,str):
             value = value.decode(locale.getpreferredencoding())
         return value
@@ -3113,9 +3120,9 @@ def reg_delvalue(key,name):
          name : value name
     """
     try:
-        if isinstance(name,unicode):
+        if isinstance(name,str):
             name = name.encode(locale.getpreferredencoding())
-        _winreg.DeleteValue(key,name)
+        winreg.DeleteValue(key,name)
         return True
     except WindowsError as e:
         # WindowsError: [Errno 2] : file does not exist
@@ -3130,7 +3137,7 @@ def reg_enum_subkeys(rootkey):
     i = 0
     while True:
         try:
-            subkey_name = _winreg.EnumKey(rootkey, i).decode(os_encoding)
+            subkey_name = winreg.EnumKey(rootkey, i).decode(os_encoding)
             if subkey_name is not None:
                 yield subkey_name
             i += 1
@@ -3146,7 +3153,7 @@ def reg_enum_values(rootkey):
     i = 0
     while True:
         try:
-            (name,value,_type) = _winreg.EnumValue(rootkey, i)
+            (name,value,_type) = winreg.EnumValue(rootkey, i)
             try:
                 name = name.decode(os_encoding)
             except:
@@ -3208,7 +3215,7 @@ def registry_set(root,path,keyname,value,type=None):
                 type = REG_DWORD
             else:
                 type = REG_SZ
-        if isinstance(value,unicode):
+        if isinstance(value,str):
             value = value.encode(locale.getpreferredencoding())
         return reg_setvalue(key,keyname,value,type=type)
 
@@ -3228,7 +3235,7 @@ def registry_delete(root,path,valuename):
     path = path.replace(u'/',u'\\')
     try:
         with reg_openkey_noredir(root,path,sam=KEY_WRITE) as key:
-            return _winreg.DeleteValue(key,valuename)
+            return winreg.DeleteValue(key,valuename)
     except WindowsError as e:
         logger.warning(u'registry_delete:%s'%ensure_unicode(e))
     return result
@@ -3256,9 +3263,9 @@ def registry_deletekey(root,path,keyname,force=False):
     path = path.replace(u'/',u'\\')
     try:
         with reg_openkey_noredir(root,path,sam=KEY_WRITE) as key:
-            if isinstance(keyname,unicode):
+            if isinstance(keyname,str):
                 keyname = keyname.encode(locale.getpreferredencoding())
-            return _winreg.DeleteKey(key,keyname)
+            return winreg.DeleteKey(key,keyname)
     except WindowsError as e:
         logger.warning(u'registry_deletekey:%s'%ensure_unicode(e))
     return result
@@ -3761,7 +3768,7 @@ def run(cmd,shell=True,timeout=600,accept_returncodes=[0,3010],on_write=None,pid
         pidlist = []
 
     # unicode cmd is not understood by shell system anyway...
-    if isinstance(cmd,unicode):
+    if isinstance(cmd,str):
         cmd = cmd.encode(sys.getfilesystemencoding())
 
     try:

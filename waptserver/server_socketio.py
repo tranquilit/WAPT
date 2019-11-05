@@ -77,7 +77,7 @@ def proxy_host_request(request, action):
     """
     try:
         start_time = time.time()
-        all_args = {k: v for k, v in request.args.iteritems()}
+        all_args = {k: v for k, v in request.args.items()}
         if request.json:
             all_args.update(request.json)
 

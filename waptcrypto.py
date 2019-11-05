@@ -22,6 +22,12 @@
 # -----------------------------------------------------------------------
 from __future__ import absolute_import
 from __future__ import print_function
+from past.builtins import cmp
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str
+from builtins import range
+from builtins import object
 from waptutils import __version__
 
 import os
@@ -33,7 +39,7 @@ import glob
 import subprocess
 import logging
 import time
-import urlparse
+import urllib.parse
 import datetime
 
 from cryptography import x509
@@ -102,7 +108,7 @@ def check_key_password(key_filename,password=None):
 
     """
     try:
-        if isinstance(password,unicode):
+        if isinstance(password,str):
             password = password.encode('utf8')
         with open(key_filename,'rb') as key_pem:
             serialization.load_pem_private_key(key_pem.read(),password or None,default_backend())
@@ -169,7 +175,7 @@ def sha1_for_data(data):
 
 def serialize_content_for_signature(content,pre_py3=False):
     result = content
-    if isinstance(result,unicode):
+    if isinstance(result,str):
         result = result.encode('utf8')
     elif isinstance(result,(list,dict)):
         if pre_py3:
@@ -367,7 +373,7 @@ class SSLCABundle(BaseObjectClass):
         Returns:
             SSLCertificate
         """
-        if not isinstance(fingerprint,(str,unicode)):
+        if not isinstance(fingerprint,str):
             raise EWaptCryptoException(u'A certificate fingerprint as bytes str is expected, %s supplied' % fingerprint)
         return self._certs_fingerprint_idx.get(fingerprint,None)
 
@@ -674,7 +680,7 @@ class SSLCABundle(BaseObjectClass):
                             self._check_url_in_negative_cache(url)
                         logger.debug(u'Download CRL %s' % (url,))
                         if cache_dir:
-                            crl_filename =  os.path.join(cache_dir,urlparse.urlparse(url).path.split('/')[-1])
+                            crl_filename =  os.path.join(cache_dir,urllib.parse.urlparse(url).path.split('/')[-1])
                         else:
                             crl_filename = None
 
@@ -733,7 +739,7 @@ class SSLCABundle(BaseObjectClass):
             return False
 
     def as_pem(self,with_keys=True,password=None):
-        if isinstance(password,unicode):
+        if isinstance(password,str):
             password = password.encode('utf8')
         # reorder by longest path to have leaf first
         roots = [crt for crt in self._certificates]
@@ -796,7 +802,7 @@ def get_peer_cert_chain_from_server(url):
     def verify_cb(conn, cert, errnum, depth, ok):
         return ok
     url = str(url)
-    location = urlparse.urlparse(url)
+    location = urllib.parse.urlparse(url)
     client_ctx = SSL.Context(SSL.SSLv23_METHOD)
     client_ctx.set_verify(SSL.VERIFY_NONE, verify_cb)
     client = SSL.Connection(client_ctx, SSL.socket.socket())
@@ -819,7 +825,7 @@ def get_pem_server_certificate(url,save_to_file=None):
         str: pem encoded data
     """
     url = str(url)
-    url = urlparse.urlparse(url)
+    url = urllib.parse.urlparse(url)
     if url.scheme == 'https':
         # try a connection to get server certificate
         pem_data = str(ssl.get_server_certificate((url.hostname, url.port or 443)))
@@ -862,7 +868,7 @@ class SSLPrivateKey(BaseObjectClass):
             if password is None and callback is None:
                 callback = default_pwd_callback
         self.password_callback = callback
-        if isinstance(password,unicode):
+        if isinstance(password,str):
             password = password.encode('utf8')
         self._rsa = rsa
         self.pem_data = pem_data
@@ -892,7 +898,7 @@ class SSLPrivateKey(BaseObjectClass):
         Returns:
             str: pem encoded RSA Private key.
         """
-        if isinstance(password,unicode):
+        if isinstance(password,str):
             password = password.encode('utf8')
 
         if password is not None:
@@ -920,7 +926,7 @@ class SSLPrivateKey(BaseObjectClass):
         """
         if filename is None:
             filename = self.private_key_filename
-        if isinstance(password,unicode):
+        if isinstance(password,str):
             password = password.encode('utf8')
         # get before opening file to be sure to not overwrite a file if pem data can not decrypted...
 
@@ -955,7 +961,7 @@ class SSLPrivateKey(BaseObjectClass):
                     password = self.password_callback(self.private_key_filename)
                     if password == '':
                         password = None
-                    if isinstance(password,unicode):
+                    if isinstance(password,str):
                         password = password.encode('utf8')
                 else:
                     raise
@@ -1114,7 +1120,7 @@ class SSLPrivateKey(BaseObjectClass):
 
         """
         if attributes is None:
-            attributes = claim.keys()
+            attributes = list(claim.keys())
         if not isinstance(signer_certificate_chain,list):
             signer_certificate_chain = [signer_certificate_chain]
 
@@ -1368,7 +1374,7 @@ class SSLPrivateKey(BaseObjectClass):
 
 
         if dnsname is not None:
-            if isinstance(dnsname,(str,unicode)):
+            if isinstance(dnsname,str):
                 dnsname = [dnsname]
             extensions.append(dict(
                     extension=x509.SubjectAlternativeName([x509.DNSName(ensure_unicode(name)) for name in dnsname]),

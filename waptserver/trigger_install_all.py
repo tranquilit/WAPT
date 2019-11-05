@@ -21,6 +21,8 @@
 #
 # -----------------------------------------------------------------------
 from __future__ import print_function
+from future import standard_library
+standard_library.install_aliases()
 __version__ = '1.5.0'
 usage = """
 This script if aimed at triggering package upgrade through direct http call
@@ -49,7 +51,7 @@ import glob
 import requests
 
 import logging
-import ConfigParser
+import configparser
 from optparse import OptionParser
 
 from playhouse.migrate import *

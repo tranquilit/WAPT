@@ -60,7 +60,7 @@ import shutil
 import threading
 import socket
 import psutil
-import urllib
+import urllib.request, urllib.parse, urllib.error
 from requests.adapters import HTTPAdapter
 from urllib3.util.ssl_ import create_urllib3_context
 from urllib3.exceptions import InsecureRequestWarning

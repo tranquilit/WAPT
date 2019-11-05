@@ -10,6 +10,7 @@ from __future__ import print_function
 # Licence:     <your licence>
 #-------------------------------------------------------------------------------
 
+from builtins import range
 import os
 import time
 

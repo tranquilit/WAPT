@@ -23,6 +23,7 @@
 from __future__ import absolute_import
 from __future__ import print_function
 
+from builtins import str
 import os
 import socket
 import struct
@@ -253,7 +254,7 @@ def host_info():
     else:
         info['os_name'] = platform.linux_distribution()[0]
         info['os_version'] = platform.linux_distribution()[1]
-    info['environ'] = {k:ensure_unicode(v) for k,v in os.environ.iteritems()}
+    info['environ'] = {k:ensure_unicode(v) for k,v in os.environ.items()}
     info['main_ip'] = get_main_ip()
     info['platform'] = platform.system()
 

@@ -17,14 +17,16 @@
 ''' Automatically authenticate to servers protected with Kerberos/NTLM/SSPI (e.g. Active Directory)
 '''
 
-import urllib2
-import httplib
+from future import standard_library
+standard_library.install_aliases()
+import urllib.request, urllib.error, urllib.parse
+import http.client
 import os
 from base64 import encodestring, decodestring
 
 from sspi import ClientAuth
 
-class SSPIAuthHandler(urllib2.BaseHandler):
+class SSPIAuthHandler(urllib.request.BaseHandler):
     """auth handler for urllib2 that does Kerberos/NTLM/SSPI HTTP Negotiate Authentication
     """
 
@@ -51,9 +53,9 @@ class SSPIAuthHandler(urllib2.BaseHandler):
                     raise
 
 auth_handler= SSPIAuthHandler()
-opener = urllib2.build_opener(auth_handler)
-urllib2.install_opener(opener)
-response = urllib2.urlopen('http://srvwiki.tranquilit.local')
+opener = urllib.request.build_opener(auth_handler)
+urllib.request.install_opener(opener)
+response = urllib.request.urlopen('http://srvwiki.tranquilit.local')
 data = response.read()
 myfile = open('c:\\toto.html','w')
 myfile.write(data)

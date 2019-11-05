@@ -21,6 +21,8 @@
 #
 # -----------------------------------------------------------------------
 from __future__ import absolute_import
+from future import standard_library
+standard_library.install_aliases()
 __version__ = "1.7.6"
 
 import os
@@ -31,7 +33,7 @@ try:
 except:
     wapt_root_dir = 'c:/tranquilit/wapt'
 
-import ConfigParser
+import configparser
 import tempfile
 import platform
 
@@ -104,7 +106,7 @@ def load_config(cfgfile=DEFAULT_CONFIG_FILE):
     conf = _defaults.copy()
 
     # read configuration from waptserver.ini
-    _config = ConfigParser.RawConfigParser()
+    _config = configparser.RawConfigParser()
     if os.path.exists(cfgfile):
         _config.read(cfgfile)
     else:
@@ -237,7 +239,7 @@ def write_config_file(cfgfile=DEFAULT_CONFIG_FILE,server_config=None,non_default
         server_config = _defaults.copy()
 
     # read configuration from waptserver.ini
-    _config = ConfigParser.RawConfigParser()
+    _config = configparser.RawConfigParser()
     if os.path.isfile(cfgfile):
         _config.read(cfgfile)
 
@@ -258,7 +260,7 @@ def write_config_file(cfgfile=DEFAULT_CONFIG_FILE,server_config=None,non_default
        _config.write(inifile)
 
 def rewrite_config_item(cfg_file=DEFAULT_CONFIG_FILE, *args):
-    config = ConfigParser.RawConfigParser()
+    config = configparser.RawConfigParser()
     config.read(cfg_file)
     config.set(*args)
     with open(cfg_file, 'wb') as cfg:

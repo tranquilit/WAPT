@@ -26,6 +26,7 @@
 # -----------------------------------------------------------------------
 
 from __future__ import print_function
+from builtins import str
 import ctypes
 from ctypes import wintypes
 from ctypes import *

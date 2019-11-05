@@ -21,6 +21,10 @@
 #
 # -----------------------------------------------------------------------
 from __future__ import absolute_import,print_function
+from future import standard_library
+standard_library.install_aliases()
+from builtins import input
+from builtins import object
 from waptutils import __version__
 
 import sys
@@ -31,7 +35,7 @@ import glob
 import json
 import logging
 import shutil
-import urlparse
+import urllib.parse
 
 from optparse import OptionParser
 
@@ -249,7 +253,7 @@ def guess_waptrepo_url(host):
     if not result.startswith('http://') and not result.startswith('https://'):
         result = 'https://%s' % result
 
-    url = urlparse.urlparse(result)
+    url = urllib.parse.urlparse(result)
     if not url.path:
         result = result+'/wapt'
     return result
@@ -282,7 +286,7 @@ def ask_user_password(title=''):
     user = options.wapt_server_user
     password = options.wapt_server_passwd
     if (options.use_gui_helper or sys.stdin is not sys.__stdin__) and waptguihelper:
-        if isinstance(title,unicode):
+        if isinstance(title,str):
             title = title.encode('utf8')
         res = waptguihelper.login_password_dialog('Credentials for wapt server',title.encode('utf8') or '',user or 'admin',password or '')
         if res:
@@ -291,9 +295,9 @@ def ask_user_password(title=''):
     else:
         if not user:
             if title:
-                user = raw_input('Please get login for %s:' % title)
+                user = input('Please get login for %s:' % title)
             else:
-                user = raw_input('Please get login:')
+                user = input('Please get login:')
         if user == '':
             user = 'admin'
         if password is None or password == '':
@@ -337,7 +341,7 @@ def do_enable_check_certificate(mywapt,options):
             cert = SSLCertificate(cert_filename)
             sha1_fingerprint = cert.digest('sha1')
 
-            server_host_name = urlparse.urlparse(mywapt.waptserver.server_url).netloc
+            server_host_name = urllib.parse.urlparse(mywapt.waptserver.server_url).netloc
             if cert.cn.lower() != server_host_name.lower() :
                 logger.critical(u'Common name of certificate (%s) does not match server hostname (%s)' % (cert.cn,server_host_name) )
             if not server_host_name.lower() in cert.subject_alt_names:
@@ -345,7 +349,7 @@ def do_enable_check_certificate(mywapt,options):
 
             # check if certificate match repo_url defined in global too
             if mywapt.config.has_option('global','repo_url'):
-                repo_host_name = urlparse.urlparse(mywapt.config.get('global','repo_url')).netloc
+                repo_host_name = urllib.parse.urlparse(mywapt.config.get('global','repo_url')).netloc
                 if cert.cn.lower() != repo_host_name.lower() :
                     logger.critical(u'Common name of certificate (%s) does not match server hostname (%s)' % (cert.cn,repo_host_name) )
                 if not repo_host_name.lower() in cert.subject_alt_names:

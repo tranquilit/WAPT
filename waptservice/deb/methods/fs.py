@@ -4,6 +4,7 @@
 # Copyright (c) 2012 Timothy Farrell
 
 # Import System Modules
+from builtins import str
 import os
 import time
 import mimetypes
@@ -136,7 +137,7 @@ class FileSystemWorker(Worker):
 
         try:
             # Get our file path
-            headers = dict([(str(k.lower()), v) for k, v in self.read_headers(sock_file).items()])
+            headers = dict([(str(k.lower()), v) for k, v in list(self.read_headers(sock_file).items())])
             rpath = request.get('path', '').lstrip('/')
             filepath = os.path.join(self.root, rpath)
             filepath = os.path.abspath(filepath)

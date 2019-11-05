@@ -9,6 +9,7 @@ from __future__ import print_function
 # Copyright:   (c) htouvet 2013
 # Licence:     <your licence>
 #-------------------------------------------------------------------------------
+from builtins import range
 import requests,os,threading
 
 def task(*args,**kwargs):
