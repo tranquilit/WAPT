@@ -246,6 +246,16 @@ object VisImportPackage: TVisImportPackage
         Tag = 18
         Text = 'md5sum'
         PropertyName = 'md5sum'
+      end    
+      item
+        Position = 19
+        Text = 'Categories'
+        PropertyName = 'categories'
+      end    
+      item
+        Position = 20
+        Text = 'Name'
+        PropertyName = 'name'
       end>
     Header.DefaultHeight = 18
     Header.Font.Style = [fsBold]

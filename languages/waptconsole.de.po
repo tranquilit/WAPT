@@ -1222,11 +1222,22 @@ msgctxt "tvisimportpackage.gridexternalpackages.header.columns[18].text"
 msgid "md5sum"
 msgstr ""
 
+#: tvisimportpackage.gridexternalpackages.header.columns[19].text
+msgctxt "tvisimportpackage.gridexternalpackages.header.columns[19].text"
+msgid "Categories"
+msgstr ""
+
 #: tvisimportpackage.gridexternalpackages.header.columns[1].text
 #, fuzzy
 msgctxt "tvisimportpackage.gridexternalpackages.header.columns[1].text"
 msgid "Package"
 msgstr "Packet"
+
+#: tvisimportpackage.gridexternalpackages.header.columns[20].text
+#, fuzzy
+msgctxt "tvisimportpackage.gridexternalpackages.header.columns[20].text"
+msgid "Name"
+msgstr "Name"
 
 #: tvisimportpackage.gridexternalpackages.header.columns[2].text
 #, fuzzy
@@ -4543,6 +4554,7 @@ msgid "Result"
 msgstr ""
 
 #: tviswaptgui.gridhostwinupdateshistory.header.columns[3].text
+msgctxt "tviswaptgui.gridhostwinupdateshistory.header.columns[3].text"
 msgid "Categories"
 msgstr ""
 
@@ -4778,6 +4790,17 @@ msgstr ""
 msgctxt "tviswaptgui.gridpackages.header.columns[40].text"
 msgid "sourcespath"
 msgstr ""
+
+#: tviswaptgui.gridpackages.header.columns[41].text
+msgctxt "tviswaptgui.gridpackages.header.columns[41].text"
+msgid "Categories"
+msgstr ""
+
+#: tviswaptgui.gridpackages.header.columns[42].text
+#, fuzzy
+msgctxt "tviswaptgui.gridpackages.header.columns[42].text"
+msgid "Name"
+msgstr "Name"
 
 #: tviswaptgui.gridpackages.header.columns[4].text
 msgctxt "tviswaptgui.gridpackages.header.columns[4].text"

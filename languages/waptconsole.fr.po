@@ -1176,12 +1176,22 @@ msgstr "Nom de fichier"
 #: tvisimportpackage.gridexternalpackages.header.columns[18].text
 msgctxt "tvisimportpackage.gridexternalpackages.header.columns[18].text"
 msgid "md5sum"
-msgstr ""
+msgstr "Somme MD5"
+
+#: tvisimportpackage.gridexternalpackages.header.columns[19].text
+msgctxt "tvisimportpackage.gridexternalpackages.header.columns[19].text"
+msgid "Categories"
+msgstr "Catégories"
 
 #: tvisimportpackage.gridexternalpackages.header.columns[1].text
 msgctxt "tvisimportpackage.gridexternalpackages.header.columns[1].text"
 msgid "Package"
 msgstr "Paquet"
+
+#: tvisimportpackage.gridexternalpackages.header.columns[20].text
+msgctxt "tvisimportpackage.gridexternalpackages.header.columns[20].text"
+msgid "Name"
+msgstr "Nom"
 
 #: tvisimportpackage.gridexternalpackages.header.columns[2].text
 msgctxt "tvisimportpackage.gridexternalpackages.header.columns[2].text"
@@ -1622,7 +1632,7 @@ msgstr "Attributs signés"
 #: tvisselfservicegroup.gridpackages.header.columns[12].text
 msgctxt "tvisselfservicegroup.gridpackages.header.columns[12].text"
 msgid "md5sum"
-msgstr ""
+msgstr "Somme MD5"
 
 #: tvisselfservicegroup.gridpackages.header.columns[13].text
 msgctxt "tvisselfservicegroup.gridpackages.header.columns[13].text"
@@ -3760,7 +3770,7 @@ msgstr "Langue"
 #: tviswaptgui.gridhostsforpackage.header.columns[15].text
 msgctxt "tviswaptgui.gridhostsforpackage.header.columns[15].text"
 msgid "md5sum"
-msgstr ""
+msgstr "Somme MD5"
 
 #: tviswaptgui.gridhostsforpackage.header.columns[16].text
 msgctxt "tviswaptgui.gridhostsforpackage.header.columns[16].text"
@@ -4358,6 +4368,7 @@ msgid "Result"
 msgstr "Résultat"
 
 #: tviswaptgui.gridhostwinupdateshistory.header.columns[3].text
+msgctxt "tviswaptgui.gridhostwinupdateshistory.header.columns[3].text"
 msgid "Categories"
 msgstr "Catégories"
 
@@ -4466,7 +4477,7 @@ msgstr "Nom de fichier"
 #: tviswaptgui.gridpackages.header.columns[19].text
 msgctxt "tviswaptgui.gridpackages.header.columns[19].text"
 msgid "md5sum"
-msgstr ""
+msgstr "Somme MD5"
 
 #: tviswaptgui.gridpackages.header.columns[1].text
 msgctxt "tviswaptgui.gridpackages.header.columns[1].text"
@@ -4587,6 +4598,16 @@ msgstr "Arch"
 msgctxt "tviswaptgui.gridpackages.header.columns[40].text"
 msgid "sourcespath"
 msgstr "Chemin des sources"
+
+#: tviswaptgui.gridpackages.header.columns[41].text
+msgctxt "tviswaptgui.gridpackages.header.columns[41].text"
+msgid "Categories"
+msgstr "Catégories"
+
+#: tviswaptgui.gridpackages.header.columns[42].text
+msgctxt "tviswaptgui.gridpackages.header.columns[42].text"
+msgid "Name"
+msgstr "Nom"
 
 #: tviswaptgui.gridpackages.header.columns[4].text
 msgctxt "tviswaptgui.gridpackages.header.columns[4].text"
