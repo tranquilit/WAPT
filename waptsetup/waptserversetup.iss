@@ -1,4 +1,4 @@
-﻿#define waptserver
+#define waptserver
 #define edition "waptserversetup"
 #define AppName "WAPT Server"
 #define default_repo_url "http://127.0.0.1/wapt/"

@@ -1,4 +1,4 @@
-﻿==Installation on Windows==
+==Installation on Windows==
 Configuration of WAPTServer on windows
 
 Install PostgreSQL >= 9.4 server (https://get.enterprisedb.com/postgresql/postgresql-9.4.11-2-windows-x64.exe) 

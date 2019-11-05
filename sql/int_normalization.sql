@@ -1,4 +1,4 @@
-﻿
+
 INSERT INTO NORMALIZATION ( original_name, key ) 	
 SELECT
 	L.name,
