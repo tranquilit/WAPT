@@ -160,7 +160,7 @@ class Worker(threading.Thread):
             func, args, kargs = self.tasks.get()
             try:
                 func(*args, **kargs)
-            except Exception, e:
+            except Exception as e:
                 logger.info(u"%s" % ensure_unicode(e))
             finally:
                 self.tasks.task_done()

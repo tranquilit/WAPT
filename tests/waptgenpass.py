@@ -1,6 +1,7 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from __future__ import print_function
 import os
 import sys
 
@@ -23,9 +24,9 @@ except Exception:
 
 def derive_key(password):
     if has_passlib:
-        print sha512_crypt.encrypt(password, rounds=100000)
+        print(sha512_crypt.encrypt(password, rounds=100000))
     else:
-        print hashlib.sha1(password).hexdigest()
+        print(hashlib.sha1(password).hexdigest())
 
 if __name__ == '__main__':
     password = raw_input()

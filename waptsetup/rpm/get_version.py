@@ -1,3 +1,4 @@
+from __future__ import print_function
 import pefile
 WAPTSETUP = 'waptsetup-tis.exe'
 pe = pefile.PE(WAPTSETUP)

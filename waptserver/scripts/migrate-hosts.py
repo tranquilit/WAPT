@@ -21,6 +21,7 @@
 #
 # -----------------------------------------------------------------------
 from __future__ import absolute_import
+from __future__ import print_function
 
 import sys
 import os
@@ -96,7 +97,7 @@ if __name__ == '__main__':
             host_pe.package = host_map.get(host_pe.package,host_pe.package)
             host_pe.build_package(target_directory=wapt_host_dir)
             host_pe.sign_package(private_key=key,certificate = cert)
-            print host_pe.localpath
+            print(host_pe.localpath)
             os.unlink(host_fn)
             if os.path.isdir(tmp_dir):
                 shutil.rmtree(tmp_dir)

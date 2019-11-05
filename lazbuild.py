@@ -9,6 +9,7 @@
 # Licence:     <your licence>
 #-------------------------------------------------------------------------------
 from __future__ import absolute_import
+from __future__ import print_function
 
 import os
 import sys
@@ -98,15 +99,15 @@ def sign_exe(exe_path,p12path,p12password):
 
     for attempt in [1, 2, 3]:
         try:
-            print "Signing attempt #" + str(attempt)
+            print("Signing attempt #" + str(attempt))
             setuphelpers.run(r'"%s" sign /f "%s" /p "%s" /t http://timestamp.verisign.com/scripts/timstamp.dll "%s"' % (SIGNTOOL,p12path,p12password,exe_path),return_stderr=False)
             break
         except subprocess.CalledProcessError as cpe:
             cpe.cmd =  cpe.cmd.replace(p12password, '********')
             cpe.output = cpe.output.replace(p12password, '********')
-            print "Got CalledProcessError from subprocess.check_output: %s" % str(cpe)
+            print("Got CalledProcessError from subprocess.check_output: %s" % str(cpe))
         except Exception as e:
-            print "Got an exception from subprocess.check_output"
+            print("Got an exception from subprocess.check_output")
             raise
 
 def set_app_ico(lpi_path,edition):

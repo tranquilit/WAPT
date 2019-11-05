@@ -21,6 +21,7 @@
 #
 # -----------------------------------------------------------------------
 from __future__ import absolute_import
+from __future__ import print_function
 from waptserver.config import __version__
 
 
@@ -67,7 +68,7 @@ def run(*args, **kwargs):
 
 def run_verbose(*args, **kwargs):
     output = subprocess.check_output(*args, shell=True, **kwargs)
-    print output
+    print(output)
     return output
 
 if type_debian():
@@ -83,7 +84,7 @@ elif type_redhat():
     wapt_folder = '/var/www/html/wapt'
     NGINX_GID= grp.getgrnam('nginx').gr_gid
 else:
-    print "distrib type unknown"
+    print("distrib type unknown")
     sys.exit(1)
 
 quiet = False
@@ -385,7 +386,7 @@ def main():
 
     if not quiet:
         if postconf.yesno("Do you want to launch post configuration tool ?") != postconf.DIALOG_OK:
-            print "canceling wapt postconfiguration"
+            print("canceling wapt postconfiguration")
             sys.exit(1)
     else:
         print('WAPT silent post-configuration')
@@ -616,6 +617,6 @@ def main():
 
 if __name__ == "__main__":
     if not type_debian() and not type_redhat():
-        print "unsupported distrib"
+        print("unsupported distrib")
         sys.exit(1)
     main()

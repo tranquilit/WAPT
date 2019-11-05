@@ -21,6 +21,7 @@
 #
 # -----------------------------------------------------------------------
 from __future__ import absolute_import
+from __future__ import print_function
 from waptutils import __version__
 
 import os
@@ -2112,7 +2113,7 @@ class SSLCertificate(BaseObjectClass):
         wapt_basedir = os.path.abspath(os.path.join(os.path.dirname(__file__)))
         openssl_bin = os.path.join(wapt_basedir,'openssl.exe')
         certfile = self.public_cert_filename
-        print '"%(openssl_bin)s" verify -CAfile "%(CAfile)s" "%(certfile)s"' % locals()
+        print('"%(openssl_bin)s" verify -CAfile "%(CAfile)s" "%(certfile)s"' % locals())
         p = subprocess.Popen('"%(openssl_bin)s" verify -CAfile "%(CAfile)s" "%(certfile)s"' % locals(),stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         check_output = p.communicate()[0]
 

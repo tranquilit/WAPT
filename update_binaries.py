@@ -1,3 +1,5 @@
+from __future__ import print_function
+from __future__ import absolute_import
 #-------------------------------------------------------------------------------
 # Name:
 # Purpose:     get ISCC, pgsql and nginx binaries
@@ -42,7 +44,7 @@ sys.path[:0] = new_sys_path
 
 print('Python PATH: %s' % sys.path)
 
-from setuphelpers import *
+from .setuphelpers import *
 import tempfile
 
 p7zip = makepath(programfiles,'7-Zip','7z.exe')

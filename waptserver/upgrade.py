@@ -21,6 +21,7 @@
 #
 # -----------------------------------------------------------------------
 from __future__ import absolute_import
+from __future__ import print_function
 usage = """\
 %prog [-c configfile] [-l loglevel] action
 
@@ -80,7 +81,7 @@ def create_import_data():
         data = data.replace('\u0000', ' ')
         jsondata = ujson.loads(data)
     else:
-        print "unsupported platform"
+        print("unsupported platform")
         sys.exit(1)
     return jsondata
 
@@ -96,7 +97,7 @@ def load_json(json_data):
             if not 'uuid' in rec:
                 rec['uuid'] = uuid
             computer_fqdn = rec.get('host_info', rec.get('host'))['computer_fqdn']
-            print update_host_data(rec)
+            print(update_host_data(rec))
             wapt_db.commit()
         except Exception as e:
             print(u'Error for %s : %s' % (ensure_unicode(computer_fqdn), ensure_unicode(e)))
@@ -119,7 +120,7 @@ def comment_mongodb_lines(conf_filename=DEFAULT_CONFIG_FILE):
             line = '#%s' % line
             modified = True
         new_conf_file_data = new_conf_file_data + line + '\n'
-    print new_conf_file_data
+    print(new_conf_file_data)
     if modified == True:
         os.rename(conf_filename, '%s.%s' % (conf_filename, datetime.datetime.today().strftime('%Y%m%d-%H:%M:%S')))
         with open(conf_filename, 'w') as text_file:

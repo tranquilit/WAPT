@@ -22,6 +22,7 @@
 # -----------------------------------------------------------------------
 
 #import des bibliothèque nécessaire
+from __future__ import print_function
 from setuphelpers import *
 from setuphelpers import CalledProcessErrorOutput##on l'import a part car pas dans le * de setuphelper
 from setuphelpers import get_user_from_profpath

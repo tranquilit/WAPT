@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import print_function
 from setuphelpers import *
 import sys
 
@@ -17,4 +18,4 @@ def update_control(control):
 def install():
     if control.description:
         print('Change local computer description to match package description')
-        print run_notfatal('WMIC os set description="'+control.description.splitlines()[0].encode(sys.getfilesystemencoding())+'"')
+        print(run_notfatal('WMIC os set description="'+control.description.splitlines()[0].encode(sys.getfilesystemencoding())+'"'))

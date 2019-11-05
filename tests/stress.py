@@ -1,3 +1,4 @@
+from __future__ import print_function
 #-------------------------------------------------------------------------------
 # Name:        module1
 # Purpose:
@@ -15,7 +16,7 @@ def task(*args,**kwargs):
     while True:
      r = requests.request('GET','http://localhost:8088/update',stream=False)
      i += 1
-     print i,r.content
+     print(i,r.content)
 
 if __name__ == '__main__':
     try:

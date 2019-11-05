@@ -20,6 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
+from __future__ import print_function
 __version__ = '1.5.1'
 usage = """
 This script if aimed at triggering package upgrade through direct http call
@@ -142,8 +143,8 @@ if __name__ == '__main__':
                                                          proxies={'http': None, 'https': None}, verify=False, timeout=options.timeout).text
                             try:
                                 client_result = json.loads(client_result)
-                                print json.dumps(client_result, indent=True)
-                                print 'OK'
+                                print(json.dumps(client_result, indent=True))
+                                print('OK')
                                 break
                             except ValueError as e:
                                 if 'Restricted access' in client_result:

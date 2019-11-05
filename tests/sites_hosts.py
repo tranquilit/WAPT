@@ -29,6 +29,7 @@
 #  This allows to install packages based on computers active directory memberships
 #------------------------------------------------
 
+from __future__ import print_function
 import sys,os
 from common import *
 from common import *

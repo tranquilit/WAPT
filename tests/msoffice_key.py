@@ -1,3 +1,4 @@
+from __future__ import print_function
 import sys
 import string
 import math
@@ -189,11 +190,11 @@ def main(argv=None):
 
     rf = "{0:<%i} {1:<}" % (max([len(i[0]) for i in prod_keys]) + 3)
 
-    print rf.format(product_head, dpid_head)
-    print rf.format('-' * len(product_head),'-' * len(dpid_head))
+    print(rf.format(product_head, dpid_head))
+    print(rf.format('-' * len(product_head),'-' * len(dpid_head)))
 
     for prod_key in prod_keys:
-        print rf.format(*prod_key)
+        print(rf.format(*prod_key))
 
 
 if __name__ == "__main__":

@@ -229,7 +229,7 @@ else:
 
 eprint('This is a dummy package for easy upgrade from wapt 1.3, it does nothing')
 
-new_umask = 022
+new_umask = 0o22
 old_umask = os.umask(new_umask)
 if new_umask != old_umask:
     eprint('umask fixed (previous %03o, current %03o)' % (old_umask, new_umask))

@@ -1,5 +1,6 @@
 """Implementation of ISesNework in Python."""
 from __future__ import absolute_import
+from __future__ import print_function
 import logging
 import logging.handlers
 
@@ -125,10 +126,10 @@ if __name__ == '__main__':
     from threading import Thread
 
     def connected():
-        print 'Connected'
+        print('Connected')
 
     def disconnected():
-        print 'Disconnected'
+        print('Disconnected')
 
     manager = NetworkManager(connected, disconnected)
     p = Thread(target=manager.register)

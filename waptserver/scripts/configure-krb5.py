@@ -20,6 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
+from __future__ import print_function
 __version__ = "1.4.0"
 
 import subprocess
@@ -63,8 +64,8 @@ def main(dc_name):
     if dc_name !='' :
         cmd = "%s --server %s" % (cmd,dc_name)
 
-    print "Excuting shell command : %s " % cmd
-    print subprocess.check_output(cmd,shell=True)
+    print("Excuting shell command : %s " % cmd)
+    print(subprocess.check_output(cmd,shell=True))
 
     # --server needed only if default dc not suitable for RW operation (rodc, etc.)
     # we support only 0x8=aes128-cts-hmac-sha1 and  0x10=aes256-cts-hmac-sha1 (no DES / RC4)
@@ -86,11 +87,11 @@ def main(dc_name):
 if __name__ == "__main__":
 
     if not type_debian() and not type_redhat():
-        print "unsupported distrib"
+        print("unsupported distrib")
         sys.exit(1)
 
     if getpass.getuser()!='root':
-        print "Command should be run as root"
+        print("Command should be run as root")
         sys.exit(1)
 
     main(options.dc_name)

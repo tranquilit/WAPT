@@ -10,6 +10,7 @@
 # Licence:     GPL v3
 #-------------------------------------------------------------------------------
 
+from __future__ import print_function
 import os
 import sys
 
@@ -64,7 +65,7 @@ def update_waptupgrade(checkout_dir):
 
 def sign_all_exe(ksigntool_path, private_key, key_password, checkout_dir):
     for file_to_sign in glob.glob(checkout_dir + '\\*.exe'):
-        print file_to_sign
+        print(file_to_sign)
         cmd = """ "%(ksigntool_path)s" \
         /d "Binary part of Wapt-get software management suite" \
         /du http://dev.tranquil.it \
@@ -77,8 +78,8 @@ def sign_all_exe(ksigntool_path, private_key, key_password, checkout_dir):
             'file_to_sign': file_to_sign,
         }
 
-        print cmd
-        print subprocess.check_output(cmd, shell=True)
+        print(cmd)
+        print(subprocess.check_output(cmd, shell=True))
 ######################
 
 
@@ -109,13 +110,13 @@ else:
 
 
 key_password = getpass.getpass('Signing key password :')
-print '\n'
+print('\n')
 
 if os.path.exists(ksigntool_path) == False:
-    print 'FATAL: ksigntool_path %s does not exists' % ksigntool_path
+    print('FATAL: ksigntool_path %s does not exists' % ksigntool_path)
     sys.exit(1)
 if os.path.exists(private_key) == False:
-    print 'FATAL: private_key file %s does not exists' % private_key
+    print('FATAL: private_key file %s does not exists' % private_key)
     sys.exit(1)
 
 # if there is space in the name, we have to protect it with quote
@@ -136,7 +137,7 @@ ksign = """%(ksigntool_path)s /f %(private_key)s /p %(key_password)s $p""" % {
     'private_key': private_key_protected,
     'key_password': key_password}
 
-print ksign
+print(ksign)
 
 # CHECKOUT
 checkout_dir = os.path.join('C:\\', 'tranquilit', 'wapt')
@@ -152,16 +153,16 @@ update_waptupgrade(checkout_dir)
 issc_binary = os.path.join(programfiles32(), 'Inno Setup 5', 'ISCC.exe')
 
 for buildtype in ('waptserver', 'waptsetup', 'waptstarter'):
-    print 'building %s.exe' % (buildtype,)
+    print('building %s.exe' % (buildtype,))
 
     issfile = os.path.join(checkout_dir, 'waptsetup', '%s.iss' % buildtype)
-    print 'running waptsetup for iss file : %s ' % issfile
+    print('running waptsetup for iss file : %s ' % issfile)
     cmd = '"%(issc_binary)s" /s"kSign=%(ksign)s" /f%(buildtype)s %(issfile)s' % {
         'issc_binary': issc_binary,
         'ksign': ksign,
         'buildtype': buildtype,
         'issfile': issfile
     }
-    print 'ligne de commande : %s ' % cmd
-    print subprocess.check_output(cmd)
+    print('ligne de commande : %s ' % cmd)
+    print(subprocess.check_output(cmd))
     #,'' % (buildtype,),"%s"%issfile])

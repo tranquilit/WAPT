@@ -21,6 +21,7 @@
 #
 # -----------------------------------------------------------------------
 from __future__ import absolute_import
+from __future__ import print_function
 
 import os
 import sys
@@ -435,7 +436,7 @@ class HostGroups(WaptBaseModel):
                 if to_add:
                     HostGroups.insert_many([dict(host=host_id, group_name=group) for group in to_add]).execute() #pylint: disable=no-value-for-parameter
                 return (to_add,to_delete)
-            except IntegrityError  as e:
+            except IntegrityError as e:
                 trans.rollback()
                 return (0,0)
 
@@ -1874,10 +1875,10 @@ def upgrade_db_structure():
 
 if __name__ == '__main__':
     if platform.system() != 'Windows' and getpass.getuser() != 'wapt':
-        print """you should run this program as wapt:
+        print("""you should run this program as wapt:
                      sudo -u wapt python /opt/wapt/waptserver/model.py  <action>
                  actions : init_db
-                           upgrade2postgres"""
+                           upgrade2postgres""")
         sys.exit(1)
 
     usage = """\

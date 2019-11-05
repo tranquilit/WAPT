@@ -21,6 +21,7 @@
 #
 # -----------------------------------------------------------------------
 
+from __future__ import print_function
 usage = """\
 %prog [-c configfile] [-l loglevel] action
 

@@ -203,7 +203,7 @@ wapt_source_dir = os.path.abspath('../..')
 # waptrepo
 source_dir = os.path.abspath('..')
 
-new_umask = 022
+new_umask = 0o22
 old_umask = os.umask(new_umask)
 if new_umask != old_umask:
     eprint('umask fixed (previous %03o, current %03o)' % (old_umask, new_umask))

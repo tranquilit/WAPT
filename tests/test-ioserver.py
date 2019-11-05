@@ -1,3 +1,4 @@
+from __future__ import print_function
 #-------------------------------------------------------------------------------
 # Name:        module1
 # Purpose:
@@ -156,7 +157,7 @@ def disconnect_request():
 
 @socketio.on('my_ping')
 def ping_pong():
-    print(request.sid,rooms())
+    print((request.sid,rooms()))
     emit('my_pong')
 
 
@@ -176,7 +177,7 @@ def test_disconnect():
     if client_count is None:
         client_count = 0
     client_count -=1
-    print('Client disconnected (count=%s)', (request.sid,client_count))
+    print(('Client disconnected (count=%s)', (request.sid,client_count)))
 
 
 if __name__ == '__main__':

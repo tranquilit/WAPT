@@ -1,3 +1,4 @@
+from __future__ import print_function
 #-------------------------------------------------------------------------------
 # Name:        module1
 # Purpose:
@@ -18,7 +19,7 @@ w.register_computer()['result']['uuid']
 
 w.generate_host_uuid()
 print(w.host_uuid)
-print w.register_computer()['result']['uuid']
+print(w.register_computer()['result']['uuid'])
 
 w = Wapt()
 print(w.host_uuid)

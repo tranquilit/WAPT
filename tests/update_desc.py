@@ -1,3 +1,4 @@
+from __future__ import print_function
 #-------------------------------------------------------------------------------
 # Name:        module1
 # Purpose:
@@ -18,7 +19,7 @@ for pc in active_directory.search (objectCategory='Computer', objectClass='Compu
   host = pc.dNShostname
   description = pc.description
   if host and description:
-    print "Change %s description to %s" % (host,description)
+    print("Change %s description to %s" % (host,description))
     try:
         print('echo "" | wmic /USER:%s /PASSWORD:%s /NODE:"%s" os set description="%s"' % (ad_admin,ad_passwd,host,description))
     except Exception as e:
