@@ -44,7 +44,7 @@ sys.path[:0] = new_sys_path
 
 print('Python PATH: %s' % sys.path)
 
-from .setuphelpers import *
+from setuphelpers import *
 import tempfile
 
 p7zip = makepath(programfiles,'7-Zip','7z.exe')
