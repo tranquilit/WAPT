@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from __future__ import print_function
 from __future__ import absolute_import
 #-------------------------------------------------------------------------------
@@ -53,7 +54,7 @@ print('Get MS VC++ 2008 SP1 redist')
 msvc = wget('https://download.microsoft.com/download/5/D/8/5D8C65CB-C849-4025-8E95-C3966CAFD8AE/vcredist_x86.exe',resume=True,md5='35da2bf2befd998980a495b6f4f55e60',cache_dir=binaries_cache,proxies=proxies)
 msvc_dst_path = os.path.join(wapt_base_dir,'vc_redist','vcredist_x86.exe')
 
-run([p7zip,'e',msvc,'-o'+makepath(tempfile.gettempdir,'vcredist'),'-y'])
+run('"%s" e "%s" -o"%s" -y ' % (p7zip,msvc,makepath(tempfile.gettempdir,'vcredist')))
 run([p7zip,'e',makepath(tempfile.gettempdir,'vcredist','vc_red.cab'),'-o'+makepath(tempfile.gettempdir,'vcredist','dll'),'-y'])
 for dll in ('msvcm90.dll.30729.6161.Microsoft_VC90_CRT_x86.QFE','msvcp90.dll.30729.6161.Microsoft_VC90_CRT_x86.QFE','msvcr90.dll.30729.6161.Microsoft_VC90_CRT_x86.QFE'):
     dest_path = makepath(wapt_base_dir,dll.replace('.30729.6161.Microsoft_VC90_CRT_x86.QFE',''))

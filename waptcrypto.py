@@ -163,7 +163,7 @@ def sha256_for_file(fname, block_size=2**20):
 
 def hexdigest_for_data(data,md='sha256'):
     digest = hashlib.new(md)
-    assert(isinstance(data,str))
+    assert(isinstance(data,bytes))
     digest.update(data)
     return digest.hexdigest()
 
@@ -318,7 +318,7 @@ class SSLCABundle(BaseObjectClass):
                 incert = True
             elif line == self.END_CERTIFICATE:
                 tmplines.append(line)
-                cert = SSLCertificate(crt_string = str('\n'.join(tmplines)))
+                cert = SSLCertificate(crt_string = bytearray(str('\n'.join(tmplines)),encoding='utf-8'))
                 cert._public_cert_filename = pem_filename
                 result.append(cert)
                 incert = False
@@ -328,7 +328,7 @@ class SSLCABundle(BaseObjectClass):
                 incrl = True
             elif line == self.END_CRL:
                 tmplines.append(line)
-                crl = SSLCRL (pem_data = str('\n'.join(tmplines)))
+                crl = SSLCRL (pem_data = bytearray(str('\n'.join(tmplines)),encoding='utf-8'))
                 crl.filename = pem_filename
                 crls.append(crl)
                 incrl = False
@@ -340,8 +340,9 @@ class SSLCABundle(BaseObjectClass):
                 tmplines.append(line)
                 if load_keys:
                     key_pem_data = str('\n'.join(tmplines))
-                    key = SSLPrivateKey(pem_data = key_pem_data,callback=self.callback)
+                    key = SSLPrivateKey(pem_data = bytearray(key_pem_data,callback=self.callback,encoding='utf-8'))
                     key.private_key_filename = pem_filename
+                    key = bytearray(key,encoding='utf-8')
                     keys.append(key)
                 inkey = False
                 tmplines = []
@@ -1679,9 +1680,9 @@ class SSLCertificate(BaseObjectClass):
 
     def _load_cert_data(self,pem_data):
         try:
-            self._crt = x509.load_pem_x509_certificate(str(pem_data),default_backend())
+            self._crt = x509.load_pem_x509_certificate(pem_data,default_backend())
         except ValueError:
-            self._crt = x509.load_der_x509_certificate(str(pem_data),default_backend())
+            self._crt = x509.load_der_x509_certificate(pem_data,default_backend())
 
     def _load_cert_file(self,filename):
         with open(filename,'rb') as crt_file:

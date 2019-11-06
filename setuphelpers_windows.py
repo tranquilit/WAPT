@@ -3789,9 +3789,9 @@ def run(cmd,shell=True,timeout=600,accept_returncodes=[0,3010],on_write=None,pid
                 if on_write:
                     on_write(ensure_unicode(line))
                 if pipe == proc.stderr:
-                    return_stderr.append(line)
+                    return_stderr.append(ensure_unicode(line))
                 else:
-                    output.append(line)
+                    output.append(ensure_unicode(line))
 
     stdout_worker = RunReader(worker, proc.stdout,on_write)
     stderr_worker = RunReader(worker, proc.stderr,on_write)
