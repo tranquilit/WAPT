@@ -163,6 +163,8 @@ def sha256_for_file(fname, block_size=2**20):
 
 def hexdigest_for_data(data,md='sha256'):
     digest = hashlib.new(md)
+    if not(isinstance(data,bytes)):
+        data=bytes(data)
     assert(isinstance(data,bytes))
     digest.update(data)
     return digest.hexdigest()
@@ -175,7 +177,7 @@ def sha1_for_data(data):
 
 def serialize_content_for_signature(content,pre_py3=False):
     result = content
-    if isinstance(result,str):
+    if isinstance(result,bytes):
         result = result.encode('utf8')
     elif isinstance(result,(list,dict)):
         if pre_py3:
@@ -374,7 +376,7 @@ class SSLCABundle(BaseObjectClass):
         Returns:
             SSLCertificate
         """
-        if not isinstance(fingerprint,str):
+        if not isinstance(fingerprint,bytes):
             raise EWaptCryptoException(u'A certificate fingerprint as bytes str is expected, %s supplied' % fingerprint)
         return self._certs_fingerprint_idx.get(fingerprint,None)
 
@@ -951,7 +953,7 @@ class SSLPrivateKey(BaseObjectClass):
         while retry_cnt>0:
             try:
                 self._rsa = serialization.load_pem_private_key(
-                    str(pem_data),
+                    pem_data,
                     password = password,
                     backend = default_backend())
                 break
@@ -969,7 +971,7 @@ class SSLPrivateKey(BaseObjectClass):
 
     def _load_pem_data_from_file(self):
         with open(self.private_key_filename,'rb') as pem_file:
-            self.pem_data = pem_file.read()
+            self.pem_data = bytearray(pem_file.read(),encoding='utf-8')
 
 
     @property
@@ -1016,7 +1018,7 @@ class SSLPrivateKey(BaseObjectClass):
         apadding = padding.PKCS1v15()
         algo = get_hash_algo(md)
         content = serialize_content_for_signature(content,pre_py3=pre_py3)
-        if not isinstance(content,str):
+        if not isinstance(content,bytes):
             raise Exception(u'Bad content type for sign_content, should be str')
         signature = self.rsa.sign(content,apadding,algo)
         return signature
@@ -1442,7 +1444,8 @@ class SSLCertificateSigningRequest(BaseObjectClass):
         if csr:
             self.csr = csr
         elif csr_pem_string:
-            self.csr = x509.load_pem_x509_csr(str(csr_pem_string),default_backend())
+            csr_pem_string=bytes(csr_pem_string)
+            self.csr = x509.load_pem_x509_csr(csr_pem_string,default_backend())
         elif csr_filename:
             with open(csr_filename, "rb") as f:
                 self.csr = x509.load_pem_x509_csr(f.read(),default_backend())
@@ -1675,6 +1678,7 @@ class SSLCertificate(BaseObjectClass):
         if crt:
             self._crt = crt
         elif crt_string:
+            crt_string=bytes(crt_string)
             self._load_cert_data(crt_string)
         self.ignore_validity_checks = ignore_validity_checks
 
@@ -2571,8 +2575,10 @@ class SSLPKCS12(object):
         if filename is None:
             filename = self._filename
         if filename is not None:
+            if isinstance(password,str):
+                password = password.encode('utf8')
             with open(filename,'wb') as p12file:
-                p12file.write(pkcs12.export(password.encode('utf8')))
+                p12file.write(pkcs12.export(password))
         else:
             raise Exception(u'No filename supplied for pkcs12 export')
 

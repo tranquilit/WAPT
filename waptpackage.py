@@ -2225,7 +2225,7 @@ class PackageEntry(BaseObjectClass):
         if self.localpath and os.path.isfile(self.localpath):
             return custom_zip.ZipFile(self.localpath,compression=zipfile.ZIP_DEFLATED,allowZip64=True,mode=mode)
         elif self._package_content is not None:
-            return custom_zip.ZipFile(io.StringIO(self._package_content),mode=mode,compression=zipfile.ZIP_DEFLATED,allowZip64=True)
+            return custom_zip.ZipFile(io.BytesIO(self._package_content),mode=mode,compression=zipfile.ZIP_DEFLATED,allowZip64=True)
         else:
             raise EWaptMissingLocalWaptFile('This PackageEntry has no local content for zip operations %s' % self.asrequirement())
 
@@ -2589,7 +2589,7 @@ class WaptBaseRepo(BaseObjectClass):
         signer_certificates = SSLCABundle()
         if packages_zipfile is None:
             (packages_index_data,_dummy_date) = self._get_packages_index_data()
-            packages_zipfile = zipfile.ZipFile(io.StringIO(packages_index_data))
+            packages_zipfile = zipfile.ZipFile(io.BytesIO(packages_index_data))
 
         filenames = packages_zipfile.namelist()
         for fn in filenames:
@@ -2965,7 +2965,7 @@ class WaptLocalRepo(WaptBaseRepo):
         if os.path.isfile(self.packages_path):
             (packages_data_str,_packages_datetime) =  self._get_packages_index_data()
             self._packages_date = datetime2isodate(_packages_datetime)
-            with zipfile.ZipFile(io.StringIO(packages_data_str)) as packages_file:
+            with zipfile.ZipFile(io.BytesIO(packages_data_str)) as packages_file:
                 packages_lines = packages_file.read(name='Packages').decode('utf8').splitlines()
 
             if self._packages is not None:
@@ -3527,7 +3527,7 @@ class WaptRemoteRepo(WaptBaseRepo):
         logger.debug(u'Read remote Packages zip file %s' % self.packages_url)
 
         (_packages_index_str,_packages_index_date) = self._get_packages_index_data()
-        with zipfile.ZipFile(io.StringIO(_packages_index_str)) as waptzip:
+        with zipfile.ZipFile(io.BytesIO(_packages_index_str)) as waptzip:
             filenames = waptzip.namelist()
             packages_lines = codecs.decode(waptzip.read(name='Packages'),'UTF-8').splitlines()
 
@@ -3593,7 +3593,7 @@ class WaptRemoteRepo(WaptBaseRepo):
             packages_answer.raise_for_status()
             packages_last_modified = packages_answer.headers.get('last-modified')
             _packages_index_date = httpdatetime2datetime(packages_last_modified)
-            return (str(packages_answer.content),_packages_index_date)
+            return (bytes(packages_answer.content),_packages_index_date)
 
     def as_dict(self):
         """returns a dict representation of the repository configuration and parameters"""
