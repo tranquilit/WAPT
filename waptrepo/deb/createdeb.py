@@ -128,7 +128,7 @@ class Version(object):
     def __init__(self,version,members_count=None):
         if version is None:
             version = ''
-        assert isinstance(version,types.ModuleType) or isinstance(version,str) or isinstance(version,str) or isinstance(version,Version)
+        assert isinstance(version,types.ModuleType) or isinstance(version,bytes) or isinstance(version,bytes) or isinstance(version,Version)
         if isinstance(version,types.ModuleType):
             self.versionstring =  getattr(version,'__version__',None)
         elif isinstance(version,Version):
