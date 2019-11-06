@@ -1,7 +1,7 @@
 object VisWaptGUI: TVisWaptGUI
-  Left = -8
+  Left = -1928
   Height = 1017
-  Top = -8
+  Top = -5
   Width = 1920
   AllowDropFiles = True
   Caption = 'WAPT console'
@@ -43,7 +43,7 @@ object VisWaptGUI: TVisWaptGUI
         Width = 648
         ActivePage = pgHostInventory
         Align = alRight
-        TabIndex = 0
+        TabIndex = 1
         TabOrder = 0
         OnChange = HostPagesChange
         object pgPackages: TTabSheet
@@ -2441,7 +2441,7 @@ object VisWaptGUI: TVisWaptGUI
           Left = 596
           Height = 81
           Top = 0
-          Width = 232
+          Width = 267
           Align = alLeft
           AutoSize = True
           BevelOuter = bvNone
@@ -2451,20 +2451,20 @@ object VisWaptGUI: TVisWaptGUI
           ChildSizing.Layout = cclLeftToRightThenTopToBottom
           ChildSizing.ControlsPerLine = 2
           ClientHeight = 81
-          ClientWidth = 232
+          ClientWidth = 267
           TabOrder = 0
           object Label15: TLabel
             Left = 12
             Height = 23
             Top = 6
-            Width = 38
+            Width = 73
             Alignment = taRightJustify
-            Caption = 'Groups'
+            Caption = 'WAPT Groups'
             Layout = tlCenter
             ParentColor = False
           end
           object cbGroups: TComboBox
-            Left = 56
+            Left = 91
             Height = 23
             Hint = 'Filter hosts which have this direct package dependency'
             Top = 6
@@ -2480,15 +2480,15 @@ object VisWaptGUI: TVisWaptGUI
             Left = 12
             Height = 23
             Top = 29
-            Width = 38
+            Width = 73
             Alignment = taRightJustify
-            Caption = 'Site'
+            Caption = 'AD sites'
             Layout = tlCenter
             ParentColor = False
             Visible = False
           end
           object cbADSite: TComboBox
-            Left = 56
+            Left = 91
             Height = 23
             Hint = 'Filter hosts which have this direct package dependency'
             Top = 29
@@ -2505,13 +2505,13 @@ object VisWaptGUI: TVisWaptGUI
             Left = 12
             Height = 19
             Top = 52
-            Width = 38
+            Width = 73
             Alignment = taRightJustify
             Layout = tlCenter
             ParentColor = False
           end
           object cbAuthorizedHosts: TCheckBox
-            Left = 56
+            Left = 91
             Height = 19
             Hint = 'Returns only computers accepting current personal certificate'
             Top = 52

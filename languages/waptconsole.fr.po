@@ -4767,7 +4767,7 @@ msgstr "Attributs signés"
 #: tviswaptgui.gridselfservicepackages.header.columns[21].text
 msgctxt "tviswaptgui.gridselfservicepackages.header.columns[21].text"
 msgid "md5sum"
-msgstr ""
+msgstr "Somme MD5"
 
 #: tviswaptgui.gridselfservicepackages.header.columns[22].text
 msgctxt "tviswaptgui.gridselfservicepackages.header.columns[22].text"
@@ -5130,7 +5130,7 @@ msgstr "Attributs signés"
 #: tviswaptgui.gridwuapackages.header.columns[21].text
 msgctxt "tviswaptgui.gridwuapackages.header.columns[21].text"
 msgid "md5sum"
-msgstr ""
+msgstr "Somme MD5"
 
 #: tviswaptgui.gridwuapackages.header.columns[22].text
 msgctxt "tviswaptgui.gridwuapackages.header.columns[22].text"
@@ -5450,8 +5450,8 @@ msgstr "Filtre :"
 
 #: tviswaptgui.label15.caption
 msgctxt "tviswaptgui.label15.caption"
-msgid "Groups"
-msgstr "Groupes"
+msgid "WAPT Groups"
+msgstr "Groupes WAPT"
 
 #: tviswaptgui.label17.caption
 msgctxt "tviswaptgui.label17.caption"
@@ -5523,8 +5523,8 @@ msgstr "Sélectionné / Total : %d / %d"
 
 #: tviswaptgui.labfiltersite.caption
 msgctxt "tviswaptgui.labfiltersite.caption"
-msgid "Site"
-msgstr "Site"
+msgid "AD sites"
+msgstr "Sites AD"
 
 #: tviswaptgui.labuser.caption
 msgctxt "tviswaptgui.labuser.caption"

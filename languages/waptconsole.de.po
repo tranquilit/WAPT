@@ -5663,8 +5663,10 @@ msgid "Filter : "
 msgstr "Filter :"
 
 #: tviswaptgui.label15.caption
+#, fuzzy
+#| msgid "Groups WAPT"
 msgctxt "tviswaptgui.label15.caption"
-msgid "Groups"
+msgid "WAPT Groups"
 msgstr "Gruppen"
 
 #: tviswaptgui.label17.caption
@@ -5748,7 +5750,7 @@ msgstr "0"
 
 #: tviswaptgui.labfiltersite.caption
 msgctxt "tviswaptgui.labfiltersite.caption"
-msgid "Site"
+msgid "AD sites"
 msgstr ""
 
 #: tviswaptgui.labuser.caption
