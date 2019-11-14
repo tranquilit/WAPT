@@ -148,10 +148,15 @@ except Exception as e:
     logger.info(str(e))
     wsus = False
 
+@app.before_request
+def _db_connect():
+    if wapt_db:
+        wapt_db.connect()
+
 @app.teardown_request
 def _db_close(error):
     """Closes the database again at the end of the request."""
-    if wapt_db and wapt_db.obj and not wapt_db.is_closed():
+    if wapt_db and not wapt_db.is_closed():
         wapt_db.close()
 
 @babel.localeselector
@@ -2135,25 +2140,27 @@ if __name__ == '__main__':
 
     logger.info(u'Waptserver starting...')
     port = app.conf['waptserver_port']
-    with wapt_db.atomic() as trans:
-        while True:
-            try:
-                logger.info(u'Reset connections SID for former hosts on this server')
-                hosts_count = Hosts.update(
-                    reachable='DISCONNECTED',
-                    listening_protocol=None,
-                    listening_address=None,
-                ).where(
-                    (Hosts.listening_protocol == 'websockets') & (Hosts.server_uuid == get_server_uuid())
-                ).execute()
-                break
-            except Exception as e:
-                trans.rollback()
-                logger.critical('Trying to upgrade database structure, error was : %s' % repr(e))
-                upgrade_db_structure()
-
-    if wapt_db and wapt_db.obj and not wapt_db.is_closed():
-        wapt_db.close()
+    try:
+        wapt_db.connect()
+        with wapt_db.atomic() as trans:
+            while True:
+                try:
+                    logger.info(u'Reset connections SID for former hosts on this server')
+                    hosts_count = Hosts.update(
+                        reachable='DISCONNECTED',
+                        listening_protocol=None,
+                        listening_address=None,
+                    ).where(
+                        (Hosts.listening_protocol == 'websockets') & (Hosts.server_uuid == get_server_uuid())
+                    ).execute()
+                    break
+                except Exception as e:
+                    trans.rollback()
+                    logger.critical('Trying to upgrade database structure, error was : %s' % repr(e))
+                    upgrade_db_structure()
+    finally:
+        if not wapt_db.is_closed():
+            wapt_db.close()
 
     # initialize socketio layer
     if socketio:
