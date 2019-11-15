@@ -1,12 +1,7 @@
-from __future__ import print_function
-from future import standard_library
-standard_library.install_aliases()
-from builtins import chr
-from builtins import range
 import sys
 import string
 import math
-import winreg as wr
+import _winreg as wr
 
 #b24chrs = (string.digits + string.ascii_uppercase)[:24]
 generic_b24chrs = '0123456789ABCDEFGHIJKLMN'
@@ -22,7 +17,7 @@ reg_root = r'Software\Microsoft\Office'
 def chunks(l, n):
     """ Yield successive n-sized chunks from l.
     """
-    for i in range(0, len(l), n):
+    for i in xrange(0, len(l), n):
         yield l[i:i+n]
 
 def b24encode(input, outlen=None, chrmap=None):
@@ -77,10 +72,10 @@ def b24decode(input, chrmap=None):
     # clean invalid characters from input (e.g. '-' (dashes) in product key)
     # and map to \x00 through \x23.
     rmchrs = []
-    for i in range(256):
+    for i in xrange(256):
         if not chr(i) in chrmap:
             rmchrs.append(chr(i))
-    tt = string.maketrans(chrmap, ''.join([chr(i) for i in range(24)]))
+    tt = string.maketrans(chrmap, ''.join([chr(i) for i in xrange(24)]))
     input = input.translate(tt, ''.join(rmchrs))
 
     encnum = 0
@@ -194,11 +189,11 @@ def main(argv=None):
 
     rf = "{0:<%i} {1:<}" % (max([len(i[0]) for i in prod_keys]) + 3)
 
-    print(rf.format(product_head, dpid_head))
-    print(rf.format('-' * len(product_head),'-' * len(dpid_head)))
+    print rf.format(product_head, dpid_head)
+    print rf.format('-' * len(product_head),'-' * len(dpid_head))
 
     for prod_key in prod_keys:
-        print(rf.format(*prod_key))
+        print rf.format(*prod_key)
 
 
 if __name__ == "__main__":

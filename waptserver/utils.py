@@ -21,7 +21,6 @@
 #
 # -----------------------------------------------------------------------
 from __future__ import absolute_import
-from builtins import str
 from waptserver.config import __version__
 
 import sys

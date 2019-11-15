@@ -1,5 +1,3 @@
-from past.builtins import basestring
-from builtins import object
 import requests
 import six
 import socket
@@ -131,7 +129,7 @@ class WebsocketTransport(AbstractTransport):
         params = dict(http_session.params, **{
             'EIO': ENGINEIO_PROTOCOL, 'transport': 'websocket'})
         request = http_session.prepare_request(requests.Request('GET', url))
-        kw = {'header': ['%s: %s' % x for x in list(request.headers.items())]}
+        kw = {'header': ['%s: %s' % x for x in request.headers.items()]}
         if engineIO_session:
             params['sid'] = engineIO_session.id
             kw['timeout'] = self._timeout = engineIO_session.ping_timeout

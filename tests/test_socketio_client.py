@@ -1,4 +1,3 @@
-from __future__ import print_function
 #-------------------------------------------------------------------------------
 # Name:        module1
 # Purpose:
@@ -9,9 +8,6 @@ from __future__ import print_function
 # Copyright:   (c) htouvet 2017
 # Licence:     <your licence>
 #-------------------------------------------------------------------------------
-from future import standard_library
-standard_library.install_aliases()
-from builtins import object
 __version__ = "1.5.0.5"
 import time
 import sys
@@ -27,7 +23,7 @@ sys.path.append(os.path.join(wapt_root_dir))
 sys.path.append(os.path.join(wapt_root_dir,'lib'))
 sys.path.append(os.path.join(wapt_root_dir,'lib','site-packages'))
 
-import configparser
+import ConfigParser
 from optparse import OptionParser
 
 import hashlib
@@ -43,7 +39,7 @@ from werkzeug.utils import html
 
 from socketIO_client import SocketIO, LoggingSocketIONamespace,SocketIONamespace
 
-import urllib.parse
+import urlparse
 from functools import wraps
 
 import logging
@@ -52,9 +48,9 @@ logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s')
 
 
 import json
-import io
+import StringIO
 
-import queue
+import Queue
 import traceback
 import locale
 
@@ -139,7 +135,7 @@ class WaptServiceConfig(object):
 
     def load(self):
         """Load waptservice parameters from global wapt-get.ini file"""
-        config = configparser.RawConfigParser()
+        config = ConfigParser.RawConfigParser()
         if os.path.exists(self.config_filename):
             config.read(self.config_filename)
             self.config_filedate = os.stat(self.config_filename).st_mtime
@@ -217,7 +213,7 @@ class WaptServiceConfig(object):
 
             if config.has_option('global','wapt_server'):
                 self.waptserver = common.WaptServer().load_config(config)
-                waptserver_url = urllib.parse.urlparse(self.waptserver.server_url)
+                waptserver_url = urlparse.urlparse(self.waptserver.server_url)
                 if waptserver_url.port is None:
                     if waptserver_url.scheme == 'https':
                         self.websockets_port = 443

@@ -21,10 +21,6 @@
 #
 # -----------------------------------------------------------------------
 
-from __future__ import print_function
-from future import standard_library
-standard_library.install_aliases()
-from builtins import str
 usage = """\
 %prog [-c configfile] [-l loglevel] action
 
@@ -56,7 +52,7 @@ from waptserver.model import load_db_config
 import platform
 
 import logging
-import configparser
+import ConfigParser
 from optparse import OptionParser
 
 from waptserver.model import *
@@ -79,21 +75,21 @@ def test_tableprovider():
                 ~Hosts.computer_ad_ou.is_null())
                 .group_by(Hosts.computer_ad_ou),
                 model = Hosts)
-    print(q.get_data())
+    print q.get_data()
     q = Hosts.select(Hosts.computer_fqdn,fn.COUNT(HostPackagesStatus.package).alias('cnt')).join(HostPackagesStatus).group_by(Hosts.computer_fqdn)
     p = TableProvider(q)
     print(p.get_data())
 
 def test_beforesave():
     h = Hosts(uuid=str(_uuid.uuid4()),computer_fqdn='Test')
-    print(h.created_on)
+    print h.created_on
     h.save()
-    print(h.created_on)
+    print h.created_on
 
 def test_packages():
     repo = WaptLocalRepo('c:/wapt/cache')
     new_packages = Packages.update_from_repo(repo)
-    print(new_packages)
+    print new_packages
 
 if __name__ == '__main__':
     parser = OptionParser(usage=usage, version=__version__)

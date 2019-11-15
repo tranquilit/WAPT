@@ -35,10 +35,6 @@
 """
 from __future__ import absolute_import
 from __future__ import print_function
-from builtins import input
-from builtins import str
-from builtins import range
-from builtins import object
 from waptutils import __version__
 
 import sys,os
@@ -83,7 +79,7 @@ def get_private_key_encrypted(certificate_path,password=None):
         str: path to matching private key
     """
     cert = SSLCertificate(certificate_path)
-    if isinstance(password,bytes):
+    if isinstance(password,unicode):
         password = password.encode('utf8')
     try:
         if password is None or password == '':
@@ -359,7 +355,7 @@ def build_waptupgrade_package(waptconfigfile,target_directory=None,wapt_server_u
         target_directory = tempfile.gettempdir()
 
     if not wapt_server_user:
-        wapt_server_user = input('WAPT Server user :')
+        wapt_server_user = raw_input('WAPT Server user :')
     if not wapt_server_passwd:
         wapt_server_passwd = getpass.getpass('WAPT Server password :').encode('ascii')
 
@@ -758,7 +754,7 @@ def sign_actions(actions,sign_certs=None,sign_key=None,key_password=None):
     if sign_key is None:
         sign_key = sign_certs[0].matching_key_in_dirs(private_key_password=key_password)
 
-    if isinstance(actions,(bytes,str)):
+    if isinstance(actions,(str,unicode)):
         actions = json.loads(actions)
     assert(isinstance(actions,list))
 

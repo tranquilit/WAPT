@@ -1,4 +1,3 @@
-from __future__ import print_function
 #-------------------------------------------------------------------------------
 # Name:        module1
 # Purpose:
@@ -10,8 +9,6 @@ from __future__ import print_function
 # Licence:     <your licence>
 #-------------------------------------------------------------------------------
 
-from builtins import input
-from builtins import range
 from setuphelpers import *
 from jinja2 import Template
 import subprocess
@@ -92,7 +89,7 @@ try:
 
         clients_processes.append((hostname,wapt_service))
 
-    input('Enter to stop...')
+    raw_input('Enter to stop...')
 finally:
     for (hostname,process) in clients_processes:
         process.terminate()

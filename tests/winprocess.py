@@ -13,9 +13,7 @@ extensions.
 This code is free for any purpose, with no warranty of any kind.
 -- John B. Dell'Aquila <jbd@alum.mit.edu>
 """
-from __future__ import print_function
 
-from builtins import object
 import win32api, win32process, win32security
 import win32event, win32con, msvcrt, win32gui
 import os
@@ -38,7 +36,7 @@ def logonUser(loginString):
         )
 
 
-class Process(object):
+class Process:
     """
     A Windows process.
     """
@@ -173,7 +171,7 @@ def run(cmd, mSec=None, stdin=None, stdout=None, stderr=None, **kw):
 if __name__ == '__main__':
 
     # Pipe commands to a shell and display the output in notepad
-    print('Testing winprocess.py...')
+    print 'Testing winprocess.py...'
 
     import tempfile
 
@@ -193,12 +191,12 @@ _this_is_a_test_of_stderr_\r
         out = open(out_name, "w+b")
         cmd.write(cmdString.encode('mbcs'))
         cmd.seek(0)
-        print('CMD.EXE exit code:', run('cmd.exe', show=0, stdin=cmd,
-                                        stdout=out, stderr=out))
+        print 'CMD.EXE exit code:', run('cmd.exe', show=0, stdin=cmd,
+                                        stdout=out, stderr=out)
         cmd.close()
-        print('NOTEPAD exit code:', run('notepad.exe %s' % out.name,
+        print 'NOTEPAD exit code:', run('notepad.exe %s' % out.name,
                                         show=win32con.SW_MAXIMIZE,
-                                        mSec=timeoutSeconds*1000))
+                                        mSec=timeoutSeconds*1000)
         out.close()
     finally:
         for n in (cmd_name, out_name):

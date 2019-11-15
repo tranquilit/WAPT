@@ -20,21 +20,14 @@
 #
 # -----------------------------------------------------------------------
 from __future__ import absolute_import
-from __future__ import print_function
-
-from builtins import str
-from future import standard_library
-standard_library.install_aliases()
 
 import os
 import sys
 import time
 
 python_version = (sys.version_info.major, sys.version_info.minor)
-if python_version == (2, 7) or python_version == (3,5) or python_version == (3,6):
-    pass
-else:
-    raise Exception('waptservice supports only Python 2.7 and 3.3 and above, not %d.%d' % python_version)
+if python_version != (2, 7):
+    raise Exception('waptservice supports only Python 2.7, not %d.%d' % python_version)
 
 try:
     wapt_root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__),'..'))
@@ -146,7 +139,7 @@ def beautify(c):
         return '{}'.format(c)
     elif isinstance(c,float):
         return '{:.3}'.format(c)
-    elif isinstance(c,str):
+    elif isinstance(c,unicode):
         return jinja2.Markup(c.replace('\r\n','<br>').replace('\n','<br>'))
     elif isinstance(c,str):
         return jinja2.Markup(ensure_unicode(c).replace('\r\n','<br>').replace('\n','<br>'))
@@ -278,11 +271,11 @@ def check_auth(logon_name, password,check_token_in_password=True,for_group='wapt
     """
     if app.waptconfig.waptservice_password != 'NOPASSWORD':
         if len(logon_name) ==0 or len(password)==0:
-            return False
+            raise Exception('WRONG_PASSWORD_USERNAME')
         domain = ''
         if logon_name.count('\\') > 1 or logon_name.count('@') > 1  or (logon_name.count('\\') == 1 and logon_name.count('@')==1)  :
             logger.debug(u"malformed logon credential : %s "% logon_name)
-            return False
+            raise Exception('WRONG_PASSWORD_USERNAME')
 
         if '\\' in logon_name:
             domain = logon_name.split('\\')[0]
@@ -682,12 +675,17 @@ def all_packages(page=1):
             # hack to enable proper version comparison in templates
             pe.install_version = Version(pe.install_version)
             pe.version = Version(pe.version)
+        total = len(rows)
+        per_page = 30
 
         try:
             search = search
         except NameError:
             search = False
 
+        _min = per_page * (page - 1)
+        _max = _min + per_page
+        #pagination = Pagination(css_framework='bootstrap', page=page, total=total, search=search, per_page=per_page)
         pagination = None
         return render_template(
             'list.html',
@@ -740,6 +738,8 @@ def local_package_details():
             cur = con.cursor()
             cur.execute(query)
             rows = []
+
+            search = request.args.get('q','').encode('utf8').replace('\\', '')
 
             for row in cur.fetchall():
                 pe = PackageEntry().load_control_from_dict(
@@ -887,6 +887,7 @@ def waptservicerestart():
 @allow_local
 def reload_config():
     """trigger reload of wapt-get.ini file for the service"""
+    force = int(request.args.get('force','0')) == 1
     notify_user = int(request.args.get('notify_user','0')) == 1
     data = app.task_manager.add_task(WaptNetworkReconfig(notify_user=notify_user)).as_dict()
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
@@ -1209,7 +1210,7 @@ def remove():
             if check_auth(auth.username,auth.password):
                 grpuser.append('waptselfservice')
                 username = auth.username
-                logger.debug(u'User %s authenticated against local admins (waptselfservice)' % auth.username)
+                logger.debug(u'User %s authenticated against local admins or waptselfservice)' % auth.username)
             else:
                 try:
                     grpuser = get_user_self_service_groups(list(rules.keys()),auth.username,auth.password)

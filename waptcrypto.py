@@ -21,13 +21,6 @@
 #
 # -----------------------------------------------------------------------
 from __future__ import absolute_import
-from __future__ import print_function
-from past.builtins import cmp
-from future import standard_library
-standard_library.install_aliases()
-from builtins import str
-from builtins import range
-from builtins import object
 from waptutils import __version__
 
 import os
@@ -108,7 +101,7 @@ def check_key_password(key_filename,password=None):
 
     """
     try:
-        if isinstance(password,str):
+        if isinstance(password,unicode):
             password = password.encode('utf8')
         with open(key_filename,'rb') as key_pem:
             serialization.load_pem_private_key(key_pem.read(),password or None,default_backend())
@@ -163,9 +156,7 @@ def sha256_for_file(fname, block_size=2**20):
 
 def hexdigest_for_data(data,md='sha256'):
     digest = hashlib.new(md)
-    if not(isinstance(data,bytes)):
-        data=bytes(data)
-    assert(isinstance(data,bytes))
+    assert(isinstance(data,str))
     digest.update(data)
     return digest.hexdigest()
 
@@ -177,7 +168,7 @@ def sha1_for_data(data):
 
 def serialize_content_for_signature(content,pre_py3=False):
     result = content
-    if isinstance(result,bytes):
+    if isinstance(result,unicode):
         result = result.encode('utf8')
     elif isinstance(result,(list,dict)):
         if pre_py3:
@@ -320,7 +311,7 @@ class SSLCABundle(BaseObjectClass):
                 incert = True
             elif line == self.END_CERTIFICATE:
                 tmplines.append(line)
-                cert = SSLCertificate(crt_string = bytearray(str('\n'.join(tmplines)),encoding='utf-8'))
+                cert = SSLCertificate(crt_string = str('\n'.join(tmplines)))
                 cert._public_cert_filename = pem_filename
                 result.append(cert)
                 incert = False
@@ -330,7 +321,7 @@ class SSLCABundle(BaseObjectClass):
                 incrl = True
             elif line == self.END_CRL:
                 tmplines.append(line)
-                crl = SSLCRL (pem_data = bytearray(str('\n'.join(tmplines)),encoding='utf-8'))
+                crl = SSLCRL (pem_data = str('\n'.join(tmplines)))
                 crl.filename = pem_filename
                 crls.append(crl)
                 incrl = False
@@ -342,9 +333,8 @@ class SSLCABundle(BaseObjectClass):
                 tmplines.append(line)
                 if load_keys:
                     key_pem_data = str('\n'.join(tmplines))
-                    key = SSLPrivateKey(pem_data = bytearray(key_pem_data,callback=self.callback,encoding='utf-8'))
+                    key = SSLPrivateKey(pem_data = key_pem_data,callback=self.callback)
                     key.private_key_filename = pem_filename
-                    key = bytearray(key,encoding='utf-8')
                     keys.append(key)
                 inkey = False
                 tmplines = []
@@ -376,7 +366,7 @@ class SSLCABundle(BaseObjectClass):
         Returns:
             SSLCertificate
         """
-        if not isinstance(fingerprint,bytes):
+        if not isinstance(fingerprint,(str,unicode)):
             raise EWaptCryptoException(u'A certificate fingerprint as bytes str is expected, %s supplied' % fingerprint)
         return self._certs_fingerprint_idx.get(fingerprint,None)
 
@@ -742,7 +732,7 @@ class SSLCABundle(BaseObjectClass):
             return False
 
     def as_pem(self,with_keys=True,password=None):
-        if isinstance(password,str):
+        if isinstance(password,unicode):
             password = password.encode('utf8')
         # reorder by longest path to have leaf first
         roots = [crt for crt in self._certificates]
@@ -871,7 +861,7 @@ class SSLPrivateKey(BaseObjectClass):
             if password is None and callback is None:
                 callback = default_pwd_callback
         self.password_callback = callback
-        if isinstance(password,str):
+        if isinstance(password,unicode):
             password = password.encode('utf8')
         self._rsa = rsa
         self.pem_data = pem_data
@@ -901,7 +891,7 @@ class SSLPrivateKey(BaseObjectClass):
         Returns:
             str: pem encoded RSA Private key.
         """
-        if isinstance(password,str):
+        if isinstance(password,unicode):
             password = password.encode('utf8')
 
         if password is not None:
@@ -929,7 +919,7 @@ class SSLPrivateKey(BaseObjectClass):
         """
         if filename is None:
             filename = self.private_key_filename
-        if isinstance(password,str):
+        if isinstance(password,unicode):
             password = password.encode('utf8')
         # get before opening file to be sure to not overwrite a file if pem data can not decrypted...
 
@@ -953,7 +943,7 @@ class SSLPrivateKey(BaseObjectClass):
         while retry_cnt>0:
             try:
                 self._rsa = serialization.load_pem_private_key(
-                    pem_data,
+                    str(pem_data),
                     password = password,
                     backend = default_backend())
                 break
@@ -964,7 +954,7 @@ class SSLPrivateKey(BaseObjectClass):
                     password = self.password_callback(self.private_key_filename)
                     if password == '':
                         password = None
-                    if isinstance(password,str):
+                    if isinstance(password,unicode):
                         password = password.encode('utf8')
                 else:
                     raise
@@ -1018,7 +1008,7 @@ class SSLPrivateKey(BaseObjectClass):
         apadding = padding.PKCS1v15()
         algo = get_hash_algo(md)
         content = serialize_content_for_signature(content,pre_py3=pre_py3)
-        if not isinstance(content,bytes):
+        if not isinstance(content,str):
             raise Exception(u'Bad content type for sign_content, should be str')
         signature = self.rsa.sign(content,apadding,algo)
         return signature
@@ -1377,7 +1367,7 @@ class SSLPrivateKey(BaseObjectClass):
 
 
         if dnsname is not None:
-            if isinstance(dnsname,str):
+            if isinstance(dnsname,(str,unicode)):
                 dnsname = [dnsname]
             extensions.append(dict(
                     extension=x509.SubjectAlternativeName([x509.DNSName(ensure_unicode(name)) for name in dnsname]),
@@ -1444,8 +1434,7 @@ class SSLCertificateSigningRequest(BaseObjectClass):
         if csr:
             self.csr = csr
         elif csr_pem_string:
-            csr_pem_string=bytes(csr_pem_string)
-            self.csr = x509.load_pem_x509_csr(csr_pem_string,default_backend())
+            self.csr = x509.load_pem_x509_csr(str(csr_pem_string),default_backend())
         elif csr_filename:
             with open(csr_filename, "rb") as f:
                 self.csr = x509.load_pem_x509_csr(f.read(),default_backend())
@@ -1678,15 +1667,14 @@ class SSLCertificate(BaseObjectClass):
         if crt:
             self._crt = crt
         elif crt_string:
-            crt_string=bytes(crt_string)
             self._load_cert_data(crt_string)
         self.ignore_validity_checks = ignore_validity_checks
 
     def _load_cert_data(self,pem_data):
         try:
-            self._crt = x509.load_pem_x509_certificate(pem_data,default_backend())
+            self._crt = x509.load_pem_x509_certificate(str(pem_data),default_backend())
         except ValueError:
-            self._crt = x509.load_der_x509_certificate(pem_data,default_backend())
+            self._crt = x509.load_der_x509_certificate(str(pem_data),default_backend())
 
     def _load_cert_file(self,filename):
         with open(filename,'rb') as crt_file:
@@ -2575,10 +2563,8 @@ class SSLPKCS12(object):
         if filename is None:
             filename = self._filename
         if filename is not None:
-            if isinstance(password,str):
-                password = password.encode('utf8')
             with open(filename,'wb') as p12file:
-                p12file.write(pkcs12.export(password))
+                p12file.write(pkcs12.export(password.encode('utf8')))
         else:
             raise Exception(u'No filename supplied for pkcs12 export')
 

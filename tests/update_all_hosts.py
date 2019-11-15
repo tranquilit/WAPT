@@ -36,7 +36,6 @@
 
     This allows to install packages based on computers active directory memberships
 """
-from __future__ import print_function
 
 import sys,os
 from common import *
@@ -94,7 +93,7 @@ if __name__ == '__main__':
     for h in hosts['result']:
         try:
             hostname = h['computer_fqdn']
-            print('Computer %s... ' % hostname, end=' ')
+            print 'Computer %s... ' % hostname,
 
             groups = base_packages + get_computer_groups(h['computer_name'])
 
@@ -117,15 +116,15 @@ if __name__ == '__main__':
                         result = wapt.build_package(package['source_dir'])
                     else:
                         result = wapt.build_upload(package['source_dir'], wapt_server_user='admin', wapt_server_passwd=server_password,inc_package_release=True)[0]
-                    print("  done, new packages: %s" % (','.join(additional)))
+                    print "  done, new packages: %s" % (','.join(additional))
                     if os.path.isfile(result['filename']):
                         os.remove(result['filename'])
                 else:
-                    print(" skipped, current packages: %s" % (','.join(depends)))
+                    print " skipped, current packages: %s" % (','.join(depends))
             finally:
                 # cleanup of temporary
                 if os.path.isdir(tmpdir):
                     rmtree(tmpdir)
         except Exception as e:
-            print(" error %s" % e)
+            print " error %s" % e
             raise

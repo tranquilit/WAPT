@@ -21,13 +21,6 @@
 #
 # -----------------------------------------------------------------------
 from __future__ import absolute_import
-from __future__ import print_function
-from __future__ import division
-from future import standard_library
-standard_library.install_aliases()
-from builtins import str
-from builtins import input
-from builtins import range
 from waptutils import __version__
 
 import os
@@ -45,9 +38,9 @@ import zlib
 import sqlite3
 import json
 import ujson
-import io
+import StringIO
 import requests
-import pickle
+import cPickle
 try:
     # pylint: disable=no-member
     # no error
@@ -331,7 +324,7 @@ class WaptBaseDB(BaseObjectClass):
         with self:
             if not value is None:
                 if ptype is None:
-                    if isinstance(value,str):
+                    if isinstance(value,(str,unicode)):
                         ptype = 'str'
                     # bool before int !
                     elif isinstance(value,bool):
@@ -362,7 +355,7 @@ class WaptBaseDB(BaseObjectClass):
                 ptype = sptype
             if not value is None:
                 if ptype == 'int':
-                    value = int(value)
+                    value = long(value)
                 elif ptype == 'float':
                     value = float(value)
                 elif ptype in ('json','bool'):
@@ -1116,7 +1109,7 @@ class WaptDB(WaptBaseDB):
             list of PakcageEntry
 
         """
-        if isinstance(package_cond,str):
+        if isinstance(package_cond,(unicode,str)):
             package_cond = PackageRequest(request=package_cond)
 
         q = self.query_package_entry("""\
@@ -1154,7 +1147,7 @@ class WaptDB(WaptBaseDB):
             section_filter = ensure_list(section_filter)
             search.append(u'section in ( %s )' %  u",".join(['"%s"' % x for x in  section_filter]))
 
-        if isinstance(packages_filter,str):
+        if isinstance(packages_filter,(unicode,str)):
             packages_filter = PackageRequest(request=packages_filter)
 
         result = self.query_package_entry(u"select * from wapt_package where %s" % " and ".join(search),words)
@@ -1283,7 +1276,7 @@ class WaptDB(WaptBaseDB):
             list of PackageEntry merge with localstatus attributes WITH setuppy
 
         """
-        if isinstance(package_cond,str):
+        if isinstance(package_cond,(str,unicode)):
             requ = package_cond
             package_cond = PackageRequest(request=requ)
         elif not isinstance(package_cond,PackageRequest):
@@ -1390,7 +1383,7 @@ class WaptDB(WaptBaseDB):
             # loop over all package names
             for package in packages:
                 if not package in explored:
-                    if isinstance(package,str):
+                    if isinstance(package,(str,unicode)):
                         package_request.request = package
                         entries = self.packages_matching(package_request)
                     else:
@@ -1459,7 +1452,7 @@ class WaptDB(WaptBaseDB):
                 (package,version_min,version_min,version_max,version_max))
         if not entries:
             raise Exception('Package %s (min : %s, max %s) not found in local DB, please update' % (package,version_min,version_max))
-        for k,v in entries[0].items():
+        for k,v in entries[0].iteritems():
             setattr(result,k,v)
         return result
 
@@ -2017,7 +2010,7 @@ class WaptServer(BaseObjectClass):
         if self.ask_user_password_hook is not None:
             return self.ask_user_password_hook(action) # pylint: disable=not-callable
         elif self.interactive_session:
-            user = input(u'Please provide username for action "%s" on server %s: ' % (action,self.server_url))
+            user = raw_input(u'Please provide username for action "%s" on server %s: ' % (action,self.server_url))
             if user:
                 password = getpass.getpass('Password: ')
                 if user and password:
@@ -2346,7 +2339,7 @@ class WaptHostRepo(WaptRepo):
                         _host_package_content = content
 
                     # Packages file is a zipfile with one Packages file inside
-                    with zipfile.ZipFile(io.StringIO(_host_package_content)) as zip:
+                    with ZipFile(StringIO.StringIO(_host_package_content)) as zip:
                         control_data = codecs.decode(zip.read(name='WAPT/control'),'UTF-8')
                         package._load_control(control_data)
                         package.filename = package.make_package_filename()
@@ -2407,7 +2400,7 @@ class WaptHostRepo(WaptRepo):
         for pr in package_requests:
             for pe in self.packages():
                 if ((isinstance(pr,PackageEntry) and (pe == pr)) or
-                   (isinstance(pr,str) and pe.match(pr))):
+                   (isinstance(pr,(str,unicode)) and pe.match(pr))):
                     if not pe.filename:
                         # fallback
                         pfn = os.path.join(target_dir,pe.make_package_filename())
@@ -2600,7 +2593,7 @@ class Wapt(BaseObjectClass):
         try:
             self.wapt_base_dir = os.path.abspath(os.path.dirname(__file__))
         except NameError:
-            self.wapt_base_dir = os.getcwd()
+            self.wapt_base_dir = os.getcwdu()
 
         self.private_dir = os.path.join(self.wapt_base_dir,'private')
         self.persistent_root_dir = os.path.join(self.wapt_base_dir,'private','persistent')
@@ -3340,7 +3333,7 @@ class Wapt(BaseObjectClass):
                 else:
                     ok = []
                     errors = []
-                    for (fn,f) in files.items():
+                    for (fn,f) in files.iteritems():
                         res_partiel = self.waptserver.post('api/v3/upload_packages',data=f.get(),auth=auth,timeout=300)
                         if not res_partiel['success']:
                             errors.append(res_partiel)
@@ -3348,7 +3341,7 @@ class Wapt(BaseObjectClass):
                             ok.append(res_partiel)
                     res = {'success':len(errors)==0,'result':{'ok':ok,'errors':errors},'msg':'%s Packages uploaded, %s errors' % (len(ok),len(errors))}
             finally:
-                for f in list(files.values()):
+                for f in files.values():
                     if isinstance(f,file):
                         f.close()
             return res
@@ -3429,7 +3422,7 @@ class Wapt(BaseObjectClass):
             with setuphelpers.reg_openkey_noredir(HKEY_LOCAL_MACHINE,r'SYSTEM\CurrentControlSet\services\gpsvc') as key:
                 ms = setuphelpers.reg_getvalue(key,'PreshutdownTimeout',None)
                 if ms:
-                    return ms//(60*1000)
+                    return ms / (60*1000)
                 else:
                     return None
         else:
@@ -3451,7 +3444,7 @@ class Wapt(BaseObjectClass):
         with setuphelpers.reg_openkey_noredir(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System') as key:
             ms = setuphelpers.reg_getvalue(key,'MaxGPOScriptWait',None)
             if ms:
-                return ms//(60*1000)
+                return ms / (60*1000)
             else:
                 return None
 
@@ -3665,7 +3658,7 @@ class Wapt(BaseObjectClass):
                     raise EWaptNotAPackage(u'%s is not a file nor a directory, aborting.' % ensure_unicode(fname))
 
                 try:
-                    previous_cwd = os.getcwd()
+                    previous_cwd = os.getcwdu()
                     self.check_cancelled()
 
                     exitstatus = None
@@ -3697,8 +3690,8 @@ class Wapt(BaseObjectClass):
                     # take in account the case we have no setup.py
                     if os.path.isfile(setup_filename):
                         os.chdir(os.path.dirname(setup_filename))
-                        if not os.getcwd() in sys.path:
-                            sys.path.append(os.getcwd())
+                        if not os.getcwdu() in sys.path:
+                            sys.path.append(os.getcwdu())
 
                         # import the setup module from package file
                         logger.info(u"  sourcing install file %s " % ensure_unicode(setup_filename) )
@@ -3751,7 +3744,7 @@ class Wapt(BaseObjectClass):
                         for p in required_params:
                             if not p in params:
                                 if not is_system_user():
-                                    params[p] = input(u"%s: " % p)
+                                    params[p] = raw_input(u"%s: " % p)
                                 else:
                                     raise EWaptException(u'Required parameters %s is not supplied' % p)
                         logger.info(u'Install parameters : %s' % (params,))
@@ -4125,7 +4118,7 @@ class Wapt(BaseObjectClass):
                 except Exception as e:
                     logger.info(u'Unable to update repository status of %s, error %s'%(repo._repo_url,e))
                     # put back cached status data
-                    for (k,v) in old_status.items():
+                    for (k,v) in old_status.iteritems():
                         setattr(repo,k,v)
                     raise
         else:
@@ -4626,7 +4619,7 @@ class Wapt(BaseObjectClass):
         Returns:
             list (of PackageEntry)
         """
-        if isinstance(package_request,str):
+        if isinstance(package_request,(unicode,str)):
             package_request = PackageRequest(request=package_request)
 
         if query is None:
@@ -4663,7 +4656,7 @@ class Wapt(BaseObjectClass):
                     package_requests.append(req)
                 else:
                     package_requests.append(PackageRequest(request=req.asrequirement(),copy_from=package_request_filter))
-            elif isinstance(req,str):
+            elif isinstance(req,(str,unicode)):
                 package_requests.append(PackageRequest(request=req,copy_from=package_request_filter))
             elif isinstance(req,PackageRequest):
                 package_requests.append(req)
@@ -4733,13 +4726,10 @@ class Wapt(BaseObjectClass):
 
         # removal from conflicts
         to_remove = actions['remove']
-
-        # check that the removal will not impact running processes
         for (request,pe) in to_remove:
             logger.info('Removing conflicting package %s'%request)
             try:
-                res = self.remove(request,force=True,
-                    only_if_not_process_running=only_if_not_process_running,process_dependencies=False)
+                res = self.remove(request,force=True)
                 actions['errors'].extend(res['errors'])
                 if res['errors']:
                     logger.warning(u'Error removing %s:%s'%(request,ensure_unicode(res['errors'])))
@@ -4748,10 +4738,16 @@ class Wapt(BaseObjectClass):
 
         to_install = []
 
+        def is_process_running(processes):
+            processes = ensure_list(processes)
+            for p in processes:
+                if setuphelpers.isrunning(p):
+                    return True
+            return False
 
         def is_allowed(package):
             return ((only_priorities is None or package.priority in only_priorities) and
-                   (not only_if_not_process_running or not package.impacted_process or not setuphelpers.is_any_process_running(package.impacted_process))
+                   (not only_if_not_process_running or not package.impacted_process or not is_process_running(package.impacted_process))
                    )
 
         to_install.extend([p for p in additional_install if is_allowed(p[1])])
@@ -4860,7 +4856,7 @@ class Wapt(BaseObjectClass):
                 self.check_cancelled()
                 try:
                     if total>1:
-                        stat = u'%s : %i / %i (%.0f%%) (%.0f KB/s)\r' % (url,received,total,100.0*received//total, speed)
+                        stat = u'%s : %i / %i (%.0f%%) (%.0f KB/s)\r' % (url,received,total,100.0*received/total, speed)
                         print(stat)
                     else:
                         stat = u''
@@ -4916,16 +4912,13 @@ class Wapt(BaseObjectClass):
                 except:
                     guids = uninstall_key_str
 
-            if isinstance(guids,str):
+            if isinstance(guids,(unicode,str)):
                 guids = [guids]
             return guids
         else:
             return []
 
-    def remove(self,packages_list,
-            force=False,
-            only_if_not_process_running=False,
-            process_dependencies=True):
+    def remove(self,packages_list,force=False):
         """Removes a package giving its package name, unregister from local status DB
 
         Args:
@@ -4941,11 +4934,11 @@ class Wapt(BaseObjectClass):
         if not isinstance(packages_list,list):
             packages_list = [packages_list]
 
-        try:
-            for package in packages_list:
+        for package in packages_list:
+            try:
                 self.check_cancelled()
                 # development mode, remove a package by its directory
-                if isinstance(package,str) and os.path.isfile(os.path.join(package,'WAPT','control')):
+                if isinstance(package,(str,unicode)) and os.path.isfile(os.path.join(package,'WAPT','control')):
                     package = PackageEntry().load_control_from_wapt(package).package
                 elif isinstance(package,PackageEntry):
                     package = package.package
@@ -4954,82 +4947,77 @@ class Wapt(BaseObjectClass):
                     if pe:
                         package = pe.package
 
-                if (not only_if_not_process_running or not pe.impacted_process or not setuphelpers.is_any_process_running(pe.impacted_process)):
-                    q = self.waptdb.query(u"""\
-                       select * from wapt_localstatus
-                        where package=?
-                       """ , (package,))
-                    if not q:
-                        logger.debug(u"Package %s not installed, removal aborted" % package)
-                        return result
+                q = self.waptdb.query(u"""\
+                   select * from wapt_localstatus
+                    where package=?
+                   """ , (package,))
+                if not q:
+                    logger.debug(u"Package %s not installed, removal aborted" % package)
+                    return result
 
-                    # several versions installed of the same package... ?
-                    for mydict in q:
-                        self.runstatus = u"Removing package %s version %s from computer..." % (mydict['package'],mydict['version'])
+                # several versions installed of the same package... ?
+                for mydict in q:
+                    self.runstatus = u"Removing package %s version %s from computer..." % (mydict['package'],mydict['version'])
 
-                        if process_dependencies:
-                            # removes recursively meta packages which are not satisfied anymore
-                            additional_removes = self.check_remove(package)
-                        else:
-                            additional_removes = []
+                    # removes recursively meta packages which are not satisfied anymore
+                    additional_removes = self.check_remove(package)
 
-                        if mydict.get('impacted_process',None):
-                            setuphelpers.killalltasks(ensure_list(mydict['impacted_process']))
+                    if mydict.get('impacted_process',None):
+                        setuphelpers.killalltasks(ensure_list(mydict['impacted_process']))
 
 
-                        if mydict['uninstall_key']:
-                            # cook the uninstall_key because could be either repr of python list or string
-                            # should be now json list in DB
-                            uninstall_keys = self._get_uninstallkeylist(mydict['uninstall_key'])
-                            if uninstall_keys:
-                                for uninstall_key in uninstall_keys:
-                                    if uninstall_key:
-                                        try:
-                                            uninstall_cmd = self.uninstall_cmd(uninstall_key)
-                                            if uninstall_cmd:
-                                                logger.info(u'Launch uninstall cmd %s' % (uninstall_cmd,))
-                                                # if running processes, kill them before launching uninstaller
-                                                print(self.run(uninstall_cmd))
-                                        except Exception as e:
-                                            logger.critical(u"Critical error during uninstall: %s" % (ensure_unicode(e)))
-                                            result['errors'].append(package)
-                                            if not force:
-                                                raise
+                    if mydict['uninstall_key']:
+                        # cook the uninstall_key because could be either repr of python list or string
+                        # should be now json list in DB
+                        uninstall_keys = self._get_uninstallkeylist(mydict['uninstall_key'])
+                        if uninstall_keys:
+                            for uninstall_key in uninstall_keys:
+                                if uninstall_key:
+                                    try:
+                                        uninstall_cmd = self.uninstall_cmd(uninstall_key)
+                                        if uninstall_cmd:
+                                            logger.info(u'Launch uninstall cmd %s' % (uninstall_cmd,))
+                                            # if running porcesses, kill them before launching uninstaller
+                                            print(self.run(uninstall_cmd))
+                                    except Exception as e:
+                                        logger.critical(u"Critical error during uninstall: %s" % (ensure_unicode(e)))
+                                        result['errors'].append(package)
+                                        if not force:
+                                            raise
 
-                        else:
-                            logger.debug(u'uninstall key not registered in local DB status.')
+                    else:
+                        logger.debug(u'uninstall key not registered in local DB status.')
 
-                        if mydict['install_status'] != 'ERROR':
-                            try:
-                                self.uninstall(package)
-                            except Exception as e:
-                                logger.critical(u'Error running uninstall script: %s'%e)
-                                result['errors'].append(package)
+                    if mydict['install_status'] != 'ERROR':
+                        try:
+                            self.uninstall(package)
+                        except Exception as e:
+                            logger.critical(u'Error running uninstall script: %s'%e)
+                            result['errors'].append(package)
 
-                        if mydict['persistent_dir'] and os.path.isdir(os.path.abspath(mydict['persistent_dir'])):
-                            shutil.rmtree(os.path.abspath(mydict['persistent_dir']))
+                    if mydict['persistent_dir'] and os.path.isdir(os.path.abspath(mydict['persistent_dir'])):
+                        shutil.rmtree(os.path.abspath(mydict['persistent_dir']))
 
-                        logger.info(u'Remove status record from local DB for %s' % package)
-                        if mydict['package_uuid']:
-                            self.waptdb.remove_install_status(package_uuid=mydict['package_uuid'])
-                        else:
-                            # backard
-                            self.waptdb.remove_install_status(package=package)
+                    logger.info(u'Remove status record from local DB for %s' % package)
+                    if mydict['package_uuid']:
+                        self.waptdb.remove_install_status(package_uuid=mydict['package_uuid'])
+                    else:
+                        # backard
+                        self.waptdb.remove_install_status(package=package)
 
-                        result['removed'].append(package)
+                    result['removed'].append(package)
 
-                        if reversed(additional_removes):
-                            logger.info(u'Additional packages to remove : %s' % additional_removes)
-                            for apackage in additional_removes:
-                                res = self.remove(apackage,force=True)
-                                result['removed'].extend(res['removed'])
-                                result['errors'].extend(res['errors'])
+                    if reversed(additional_removes):
+                        logger.info(u'Additional packages to remove : %s' % additional_removes)
+                        for apackage in additional_removes:
+                            res = self.remove(apackage,force=True)
+                            result['removed'].extend(res['removed'])
+                            result['errors'].extend(res['errors'])
 
-            return result
-
-        finally:
-            self.store_upgrade_status()
-            self.runstatus=''
+                return result
+            finally:
+                self.store_upgrade_status()
+                self.runstatus=''
 
     def host_packagename(self):
         """Return package name for current computer"""
@@ -5158,7 +5146,7 @@ class Wapt(BaseObjectClass):
         finally:
             self.runstatus=''
 
-    def list_upgrade(self,forced_only=None,only_not_process_running=None):
+    def list_upgrade(self):
         """Returns a list of packages requirement which can be upgraded
 
         Returns:
@@ -5171,12 +5159,7 @@ class Wapt(BaseObjectClass):
             remove=[])
         # only most up to date (first one in list)
         # put 'host' package at the end.
-        now = datetime2isodate()
-
-        result['upgrade'].extend([p[0].asrequirement() for p in list(self.waptdb.upgradeable().values())
-                if p and not p[0].section in ('host','unit','profile')
-                     and (not forced_only or p.forced_install_on <= now)
-                     and (not only_not_process_running or not p.impacted_process or not setuphelpers.is_any_process_running(p.impacted_process))])
+        result['upgrade'].extend([p[0].asrequirement() for p in self.waptdb.upgradeable().values() if p and not p[0].section in ('host','unit','profile')])
 
         to_remove = self.get_unrelevant_host_packages()
         result['remove'].extend(to_remove)
@@ -5272,7 +5255,7 @@ class Wapt(BaseObjectClass):
         if apackages is None:
             actions = self.list_upgrade()
             apackages = actions['install']+actions['additional']+actions['upgrade']
-        elif isinstance(apackages,str):
+        elif isinstance(apackages,(str,unicode)):
             apackages = ensure_list(apackages)
         elif isinstance(apackages,list):
             # ensure that apackages is a list of package requirements (strings)
@@ -5600,7 +5583,7 @@ class Wapt(BaseObjectClass):
 
         def _add_data_if_updated(inv,key,data,old_hashes,new_hashes):
             """Add the data to inv as key if modified since last update_server_status"""
-            newhash = hashlib.sha1(pickle.dumps(data)).hexdigest()
+            newhash = hashlib.sha1(cPickle.dumps(data)).hexdigest()
             oldhash = old_hashes.get(key,None)
             if force or oldhash != newhash:
                 inv[key] = data
@@ -5998,8 +5981,8 @@ class Wapt(BaseObjectClass):
         Returns:
             str: base64 encoded signature of manifest.sha256 file (content
         """
-        if not isinstance(zip_or_directoryname,str):
-            zip_or_directoryname = str(zip_or_directoryname)
+        if not isinstance(zip_or_directoryname,unicode):
+            zip_or_directoryname = unicode(zip_or_directoryname)
 
         if certificate is None:
             certificate = self.personal_certificate()
@@ -6043,8 +6026,8 @@ class Wapt(BaseObjectClass):
         Returns:
             str: Filename of built WAPT package
         """
-        if not isinstance(directoryname,str):
-            directoryname = str(directoryname)
+        if not isinstance(directoryname,unicode):
+            directoryname = unicode(directoryname)
         result_filename = u''
         # some checks
         if not os.path.isdir(os.path.join(directoryname,'WAPT')):
@@ -6303,7 +6286,7 @@ class Wapt(BaseObjectClass):
         Source setup.py from database or filename
         """
         try:
-            previous_cwd = os.getcwd()
+            previous_cwd = os.getcwdu()
             if os.path.isdir(packagename):
                 entry = PackageEntry().load_control_from_wapt(packagename)
             else:
@@ -6566,7 +6549,7 @@ class Wapt(BaseObjectClass):
             entry.sources = self.config.get('global','default_sources_url') % {'packagename':packagename}
 
         # check if depends should be appended to existing depends
-        if (isinstance(depends,str) or isinstance(depends,str)) and depends.startswith('+'):
+        if (isinstance(depends,str) or isinstance(depends,unicode)) and depends.startswith('+'):
             append_depends = True
             depends = ensure_list(depends[1:])
             current = ensure_list(entry.depends)
@@ -6584,7 +6567,7 @@ class Wapt(BaseObjectClass):
 
 
         # check if conflicts should be appended to existing conflicts
-        if (isinstance(conflicts,str) or isinstance(conflicts,str)) and conflicts.startswith('+'):
+        if (isinstance(conflicts,str) or isinstance(conflicts,unicode)) and conflicts.startswith('+'):
             append_conflicts = True
             conflicts = ensure_list(conflicts[1:])
             current = ensure_list(entry.conflicts)
@@ -7202,7 +7185,7 @@ class Wapt(BaseObjectClass):
         True
         """
         result = {'packages':[],'missing':[]}
-        if isinstance(packages_names,str) or isinstance(packages_names,str):
+        if isinstance(packages_names,str) or isinstance(packages_names,unicode):
             packages_names=[ p.strip() for p in packages_names.split(",")]
         for package_name in packages_names:
             matches = self.waptdb.packages_matching(package_name)

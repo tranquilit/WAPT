@@ -128,7 +128,7 @@ class Version(object):
     def __init__(self,version,members_count=None):
         if version is None:
             version = ''
-        assert isinstance(version,types.ModuleType) or isinstance(version,bytes) or isinstance(version,bytes) or isinstance(version,Version)
+        assert isinstance(version,types.ModuleType) or isinstance(version,str) or isinstance(version,unicode) or isinstance(version,Version)
         if isinstance(version,types.ModuleType):
             self.versionstring =  getattr(version,'__version__',None)
         elif isinstance(version,Version):
@@ -233,7 +233,7 @@ else:
 
 eprint('This is a dummy package for easy upgrade from wapt 1.3, it does nothing')
 
-new_umask = 0o22
+new_umask = 022
 old_umask = os.umask(new_umask)
 if new_umask != old_umask:
     eprint('umask fixed (previous %03o, current %03o)' % (old_umask, new_umask))

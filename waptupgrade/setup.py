@@ -8,7 +8,7 @@ from builtins import range
 from builtins import object
 from setuphelpers import *
 import os
-import winreg
+import _winreg
 import tempfile
 import hashlib
 import time
@@ -23,8 +23,8 @@ uninstallkey = []
 
 def update_registry_version(version):
     # updatethe registry
-    with winreg.CreateKeyEx(HKEY_LOCAL_MACHINE,'SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\WAPT_is1',\
-            0, winreg.KEY_READ| winreg.KEY_WRITE ) as waptis:
+    with _winreg.CreateKeyEx(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\WAPT_is1',\
+            0, _winreg.KEY_READ| _winreg.KEY_WRITE ) as waptis:
         reg_setvalue(waptis,"DisplayName","WAPT %s" % version)
         reg_setvalue(waptis,"DisplayVersion","%s" % version)
         reg_setvalue(waptis,"InstallDate",currentdate())
@@ -57,7 +57,7 @@ class Version(object):
     def __init__(self,version,members_count=None):
         if version is None:
             version = ''
-        assert isinstance(version,types.ModuleType) or isinstance(version,str) or isinstance(version,str) or isinstance(version,Version)
+        assert isinstance(version,types.ModuleType) or isinstance(version,str) or isinstance(version,unicode) or isinstance(version,Version)
         if isinstance(version,types.ModuleType):
             self.versionstring =  getattr(version,'__version__',None)
         elif isinstance(version,Version):
@@ -118,7 +118,7 @@ def download_waptagent(waptagent_path,expected_sha256):
             try:
                 waptagent_url = "%s/waptagent.exe" % r.repo_url
                 print('Trying %s'%waptagent_url)
-                print( wget(waptagent_url,waptagent_path))
+                print(wget(waptagent_url,waptagent_path))
                 wapt_agent_sha256 =  sha256_for_file(waptagent_path)
                 # eefac39c40fdb2feb4aa920727a43d48817eb4df   waptagent.exe
                 if expected_sha256 != wapt_agent_sha256:
@@ -214,7 +214,7 @@ def create_onetime_task(name,cmd,parameters=None, delay_minutes=2,max_runtime=10
 
     if windows_version(2) <= Version('5.2',2):
         # for win XP
-        system_account = '"NT AUTHORITY\\SYSTEM"'
+        system_account = r'"NT AUTHORITY\SYSTEM"'
         # windows xp doesn't support one time startup task /Z nor /F
         hour_min = time.strftime('%H:%M:%S', run_time)
         run_notfatal('schtasks /Delete /TN "%s" /F'%name)
@@ -256,7 +256,7 @@ def full_waptagent_install(min_version,at_startup=False):
             print('waptexit is running, scheduling a one time task at system startup with command %s'%cmd)
         # task at system startup
         try:
-            print( run('schtasks /Create /RU SYSTEM /SC ONSTART /TN fullwaptupgrade /TR "%s" /F /V1 /Z' % cmd))
+            print(run('schtasks /Create /RU SYSTEM /SC ONSTART /TN fullwaptupgrade /TR "%s" /F /V1 /Z' % cmd))
         except:
             # windows xp doesn't support one time startup task /Z nor /F
             run_notfatal('schtasks /Delete /TN fullwaptupgrade /F')

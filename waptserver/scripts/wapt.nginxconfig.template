@@ -52,8 +52,6 @@ server {
         client_max_body_size 4096m;
         client_body_timeout 1800;
 
-        include /opt/wapt/conf/wapt.d/*.conf;
-
         location /static {
             alias "{{ wapt_root_dir}}/waptserver/static";
         }
@@ -73,40 +71,49 @@ server {
             root "{{ wapt_repository_path }}";
         }
 
-
-{% if use_kerberos  %}
-        location /add_host_kerberos {
-            auth_gss on;
-            auth_gss_keytab  /etc/nginx/http-krb5.keytab;
-            proxy_pass http://127.0.0.1:{{waptserver_port}};
-        }
-{% else %}
-        location /add_host_kerberos {
-            return 403;
-        }
-{% endif %} {# if use_kerberos #}
-
-        location /wapt-host/Packages {
-                return 403;
-        }
-
         location / {
-{% if use_ssl_client_auth %}
-            proxy_set_header X-Ssl-Authenticated $ssl_client_verify;
-            proxy_set_header X-Ssl-Client-DN $ssl_client_s_dn;
-            if ($ssl_client_verify != SUCCESS) {
-               return 401;
-            }
-{% endif %}
-            proxy_pass http://127.0.0.1:{{waptserver_port}};
-        }
+            proxy_set_header X-Real-IP  $remote_addr;
+            proxy_set_header Host $host;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
 
-        location /socket.io {
-            proxy_http_version 1.1;
-            proxy_buffering off;
-            proxy_set_header Upgrade $http_upgrade;
-            proxy_set_header Connection "Upgrade";
-            proxy_pass http://127.0.0.1:{{waptserver_port}}/socket.io;
+            client_max_body_size 4096m;
+            client_body_timeout 1800;
+
+    {% if use_kerberos  %}
+            location /add_host_kerberos {
+                auth_gss on;
+                auth_gss_keytab  /etc/nginx/http-krb5.keytab;
+                proxy_pass http://127.0.0.1:{{waptserver_port}};
+            }
+    {% else %}
+            location /add_host_kerberos {
+                return 403;
+            }
+    {% endif %} {# if use_kerberos #}
+
+            location /wapt-host/Packages {
+                    return 403;
+            }
+
+            location / {
+    {% if use_ssl_client_auth %}
+                proxy_set_header X-Ssl-Authenticated $ssl_client_verify;
+                proxy_set_header X-Ssl-Client-DN $ssl_client_s_dn;
+                if ($ssl_client_verify != SUCCESS) {
+                   return 401;
+                }
+    {% endif %}
+                proxy_pass http://127.0.0.1:{{waptserver_port}};
+            }
+
+            location /socket.io {
+                proxy_http_version 1.1;
+                proxy_buffering off;
+                proxy_set_header Upgrade $http_upgrade;
+                proxy_set_header Connection "Upgrade";
+                proxy_pass http://127.0.0.1:{{waptserver_port}}/socket.io;
+            }
         }
     }
 }

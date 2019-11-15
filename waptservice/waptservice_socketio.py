@@ -46,9 +46,9 @@ import logging
 import sqlite3
 
 import json
-import io
+import StringIO
 
-import _thread
+import thread
 import threading
 
 import queue
@@ -139,7 +139,7 @@ def wait_for_event_send_tasks(task_manager,last_received_event_id,timeout,uuid,r
 class ThreadPool(object):
     """Pool of threads consuming tasks from a queue"""
     def __init__(self, num_threads):
-        self.tasks = queue.Queue(num_threads)
+        self.tasks = Queue.Queue(num_threads)
         for _ in range(num_threads):
             Worker(self.tasks)
 

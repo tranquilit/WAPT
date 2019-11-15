@@ -22,11 +22,6 @@
 # -----------------------------------------------------------------------
 
 #import des bibliothèque nécessaire
-from __future__ import print_function
-from future import standard_library
-standard_library.install_aliases()
-from builtins import str
-from builtins import object
 from setuphelpers import *
 from setuphelpers import CalledProcessErrorOutput##on l'import a part car pas dans le * de setuphelper
 from setuphelpers import get_user_from_profpath
@@ -36,7 +31,7 @@ import requests
 import win32ui
 import unittest
 import time
-import winreg
+import _winreg
 from win32com.shell import shell, shellcon
 import ctypes
 import json
@@ -636,9 +631,9 @@ class Test_Setup_Helpers(unittest.TestCase):
         fichier.close()
 
         set_file_visible(self.test_dir+"testFile.txt")
-        self.assertEqual(32,ctypes.windll.kernel32.GetFileAttributesW(str(self.test_dir+"testFile.txt")))
-        if (ctypes.windll.kernel32.GetFileAttributesW(str(self.test_dir+"testFile.txt"))==34):
-            ret = ctypes.windll.kernel32.SetFileAttributesW(str(self.emplacementTest_ini),32  & ~FILE_ATTRIBUTE_HIDDEN)
+        self.assertEqual(32,ctypes.windll.kernel32.GetFileAttributesW(unicode(self.test_dir+"testFile.txt")))
+        if (ctypes.windll.kernel32.GetFileAttributesW(unicode(self.test_dir+"testFile.txt"))==34):
+            ret = ctypes.windll.kernel32.SetFileAttributesW(unicode(self.emplacementTest_ini),32  & ~FILE_ATTRIBUTE_HIDDEN)
         os.remove(self.test_dir+"testFile.txt")
 
     def test_set_file_hidden(self):
@@ -649,9 +644,9 @@ class Test_Setup_Helpers(unittest.TestCase):
 
         set_file_hidden(self.test_dir+"testFile.txt")
         FILE_ATTRIBUTE_HIDDEN = 0x02
-        self.assertEqual(34,ctypes.windll.kernel32.GetFileAttributesW(str(self.test_dir+"testFile.txt")))
-        if (ctypes.windll.kernel32.GetFileAttributesW(str(self.emplacementTest_ini))==34):
-            ret = ctypes.windll.kernel32.SetFileAttributesW(str(self.emplacementTest_ini),32  & ~FILE_ATTRIBUTE_HIDDEN)
+        self.assertEqual(34,ctypes.windll.kernel32.GetFileAttributesW(unicode(self.test_dir+"testFile.txt")))
+        if (ctypes.windll.kernel32.GetFileAttributesW(unicode(self.emplacementTest_ini))==34):
+            ret = ctypes.windll.kernel32.SetFileAttributesW(unicode(self.emplacementTest_ini),32  & ~FILE_ATTRIBUTE_HIDDEN)
         os.remove(self.test_dir+"testFile.txt")
 
     def test_replace_at_next_reboot(self):
@@ -749,7 +744,7 @@ class Test_Setup_Helpers(unittest.TestCase):
         with disable_file_system_redirection():
             if reg_key_exists(HKEY_LOCAL_MACHINE,r'HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\testpack'):
                 os.system (r'REG DELETE HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\testpack /f')
-        class package_entry(object):
+        class package_entry:
             def __init__(self):
                 self.package = 'testpack'
                 self.description= 'a totally fake package'
@@ -770,7 +765,7 @@ class Test_Setup_Helpers(unittest.TestCase):
         with disable_file_system_redirection():
             if reg_key_exists(HKEY_LOCAL_MACHINE,r'HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\testpack'):
                 os.system (r'REG DELETE HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\testpack /f')
-        class package_entry(object):
+        class package_entry:
             def __init__(self):
                 self.package = 'testpack'
                 self.description= 'a totally fake package'

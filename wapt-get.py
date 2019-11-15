@@ -21,10 +21,6 @@
 #
 # -----------------------------------------------------------------------
 from __future__ import absolute_import,print_function
-from future import standard_library
-standard_library.install_aliases()
-from builtins import input
-from builtins import object
 from waptutils import __version__
 
 import sys
@@ -286,7 +282,7 @@ def ask_user_password(title=''):
     user = options.wapt_server_user
     password = options.wapt_server_passwd
     if (options.use_gui_helper or sys.stdin is not sys.__stdin__) and waptguihelper:
-        if isinstance(title,str):
+        if isinstance(title,unicode):
             title = title.encode('utf8')
         res = waptguihelper.login_password_dialog('Credentials for wapt server',title.encode('utf8') or '',user or 'admin',password or '')
         if res:
@@ -295,9 +291,9 @@ def ask_user_password(title=''):
     else:
         if not user:
             if title:
-                user = input('Please get login for %s:' % title)
+                user = raw_input('Please get login for %s:' % title)
             else:
-                user = input('Please get login:')
+                user = raw_input('Please get login:')
         if user == '':
             user = 'admin'
         if password is None or password == '':

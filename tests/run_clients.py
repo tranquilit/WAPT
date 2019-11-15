@@ -1,4 +1,3 @@
-from __future__ import print_function
 #-------------------------------------------------------------------------------
 # Name:        module1
 # Purpose:
@@ -10,13 +9,12 @@ from __future__ import print_function
 # Licence:     <your licence>
 #-------------------------------------------------------------------------------
 
-from builtins import range
 import os
 import time
 
 for client in range(0,2000):
     p = os.spawnl(os.P_NOWAIT,r'c:\windows\system32\cmd.exe','/C',r'c:\tranquilit\wapt\waptpython.exe',r'c:\tranquilit\wapt\tests\sio_client.py')
-    print(client,p)
+    print client,p
 
 
 while 1:

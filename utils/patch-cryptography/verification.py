@@ -4,7 +4,6 @@
 
 from __future__ import absolute_import, division, print_function
 
-from builtins import object
 from cryptography.hazmat.primitives.asymmetric import ec, padding, rsa
 from cryptography.hazmat.primitives import hashes
 from cryptography.x509 import Certificate,CertificateRevocationList

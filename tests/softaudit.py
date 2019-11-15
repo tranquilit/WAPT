@@ -4,7 +4,6 @@
 """
     Sample script which check softwares installed recently on wapt registred computers
 """
-from __future__ import print_function
 
 import sys,os
 from common import *
@@ -45,6 +44,6 @@ if __name__ == '__main__':
             datemin = compact_date(datetime.datetime.now()-datetime.timedelta(days=options.days)) # forme YYYYMMDD 20161007
             recent_installs = [s['name'] for s in softs if s['install_date'] >= datemin]
             if recent_installs:
-                print("%s (%s)  %s:\n    %s\n" %(hostname,ip,description,'\n    '.join(recent_installs)))
+                print "%s (%s)  %s:\n    %s\n" %(hostname,ip,description,'\n    '.join(recent_installs))
         except Exception as e:
-            print(" error %s" % e)
+            print " error %s" % e

@@ -9,9 +9,7 @@
 # Licence:     <your licence>
 #-------------------------------------------------------------------------------
 from __future__ import absolute_import
-from __future__ import print_function
 
-from builtins import str
 import os
 import sys
 
@@ -63,7 +61,7 @@ def set_lpi_options(lpi_fn,waptedition,waptversion,buildnr=None):
         compiler_custom_options.attrib['Value'] = "-dUseCThreads -d%s" % waptedition.upper()
     else:
         print('WARNING: No compiler options')
-    print("Compiler special options: %s" % (compiler_custom_options is not None and list(compiler_custom_options.items()),))
+    print("Compiler special options: %s" % (compiler_custom_options is not None and compiler_custom_options.items(),))
     lpi.write(lpi_fn)
 
 def get_lpi_output(lpi_fn):

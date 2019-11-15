@@ -20,9 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-from __future__ import print_function
-from future import standard_library
-standard_library.install_aliases()
+from __future__ import absolute_import
 __version__ = '1.5.0'
 usage = """
 This script if aimed at triggering package upgrade through direct http call
@@ -51,7 +49,7 @@ import glob
 import requests
 
 import logging
-import configparser
+import ConfigParser
 from optparse import OptionParser
 
 from playhouse.migrate import *

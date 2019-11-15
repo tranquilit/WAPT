@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import print_function
 from __future__ import absolute_import
 #-------------------------------------------------------------------------------
 # Name:
@@ -54,7 +53,7 @@ print('Get MS VC++ 2008 SP1 redist')
 msvc = wget('https://download.microsoft.com/download/5/D/8/5D8C65CB-C849-4025-8E95-C3966CAFD8AE/vcredist_x86.exe',resume=True,md5='35da2bf2befd998980a495b6f4f55e60',cache_dir=binaries_cache,proxies=proxies)
 msvc_dst_path = os.path.join(wapt_base_dir,'vc_redist','vcredist_x86.exe')
 
-run('"%s" e "%s" -o"%s" -y ' % (p7zip,msvc,makepath(tempfile.gettempdir,'vcredist')))
+run([p7zip,'e',msvc,'-o'+makepath(tempfile.gettempdir,'vcredist'),'-y'])
 run([p7zip,'e',makepath(tempfile.gettempdir,'vcredist','vc_red.cab'),'-o'+makepath(tempfile.gettempdir,'vcredist','dll'),'-y'])
 for dll in ('msvcm90.dll.30729.6161.Microsoft_VC90_CRT_x86.QFE','msvcp90.dll.30729.6161.Microsoft_VC90_CRT_x86.QFE','msvcr90.dll.30729.6161.Microsoft_VC90_CRT_x86.QFE'):
     dest_path = makepath(wapt_base_dir,dll.replace('.30729.6161.Microsoft_VC90_CRT_x86.QFE',''))
@@ -120,10 +119,12 @@ for f in mongoexport_files :
     os.renames(f,new_name)
 
 
+
+
 print('Get innosetup compiler setup and extract files to waptsetup')
 innosetup_install = wget('http://files.jrsoftware.org/is/5/innosetup-5.6.0-unicode.exe',resume=True,md5='d8364b03587846b44cf00937d206d3e1',cache_dir=binaries_cache,proxies=proxies)
 
-innoextract_zip = wget('https://constexpr.org/innoextract/files/innoextract-1.8/innoextract-1.8-windows.zip',resume=True,md5='01efb1f497f9afef630e32097d8a1e33',cache_dir=binaries_cache,proxies=proxies)
+innoextract_zip = wget('http://constexpr.org/innoextract/files/innoextract-1.7-windows.zip',resume=True,md5='b801b0740b4ab19d69a739ab4a9180ae',cache_dir=binaries_cache,proxies=proxies)
 innoextract_files = unzip(innoextract_zip,filenames=['innoextract.exe'])
 run([innoextract_files[0],'-e',innosetup_install,'-d',makepath(tempfile.gettempdir,'iscc')])
 
@@ -157,11 +158,6 @@ os.renames(dmidecode,makepath(wapt_base_dir,'dmidecode.exe'))
 print('Get OpenSSL binaries from Fulgan')
 ssl_zip = wget('https://indy.fulgan.com/SSL/openssl-1.0.2r-i386-win32.zip',resume=True,md5='397c5e70b17cf6ab7bc9be8d15c457b9',cache_dir=binaries_cache,proxies=proxies)
 ssl_file = unzip(ssl_zip,target=makepath(wapt_base_dir),filenames=['ssleay32.dll','openssl.exe','libeay32.dll'])
-
-print('Get gcc-mingw')
-gcc_mingw = wget('https://github.com/develersrl/gccwinbinaries/releases/download/v1.1/gcc-mingw-4.3.3-setup.exe',resume=True,md5='f7f671fc26f3572c8c6a101e55a90cec',cache_dir=binaries_cache,proxies=proxies)
-print('Install gcc-mingw')
-print(run('%s /verysilent' % gcc_mingw))
 
 print('Python ldap wheel windows')
 python_ldap = makepath(base,'waptserver','scripts','python_ldap-3.2.0-cp27-cp27m-win32.whl')

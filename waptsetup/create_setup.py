@@ -17,7 +17,7 @@ import os
 import sys
 
 import subprocess
-import configparser
+import ConfigParser
 import shutil
 import getpass
 import glob
@@ -86,7 +86,7 @@ def sign_all_exe(ksigntool_path, private_key, key_password, checkout_dir):
 
 
 config_file = 'c:\\private\\autobuild.ini'
-config = configparser.RawConfigParser()
+config = ConfigParser.RawConfigParser()
 
 
 if os.path.exists(config_file):

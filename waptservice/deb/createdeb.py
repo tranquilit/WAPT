@@ -20,11 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-from __future__ import print_function
-from past.builtins import cmp
-from builtins import str
-from builtins import range
-from builtins import object
+from __future__ import absolute_import
 import sys
 import os
 import platform

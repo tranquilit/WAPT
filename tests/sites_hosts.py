@@ -29,7 +29,6 @@
 #  This allows to install packages based on computers active directory memberships
 #------------------------------------------------
 
-from __future__ import print_function
 import sys,os
 from common import *
 from common import *
@@ -107,7 +106,7 @@ if __name__ == '__main__':
             sites_host = []
             #list les sites possibles pour cette IP
             for ip in ips:
-                sites_host.extend([sites[prefix] for prefix in list(sites.keys()) if ip.startswith(prefix)])
+                sites_host.extend([sites[prefix] for prefix in sites.keys() if ip.startswith(prefix)])
             if not sites_host:
                 sites_host.append('OTHER')
 

@@ -1,16 +1,19 @@
 [uwsgi]
 master = true
 processes = 10
-wsgi={{application_root}}.server:app
+wsgi=waptserver.server:app
 home=/opt/wapt
 chdir=/opt/wapt
 max-requests=1000
-socket=/var/run/waptserver/{{application_root}}.sock
+socket=/tmp/{{application_root}}.sock
 uid=wapt
 gid=www-data
 plugins=python
 chmod-socket = 664
-env = CONFIG_FILE=/opt/wapt/conf/{{application_root}}.ini
+env = CONFIG_FILE=/opt/wapt/conf/waptserver.ini
+logto = /var/log/uwsgi/waptserver.log
+log-5xx = true
+disable-logging = true
 
 [options]
 wapt_folder=/var/www/{{application_root}}/wapt

@@ -20,15 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-from __future__ import print_function, division, absolute_import, unicode_literals
-from future.utils import python_2_unicode_compatible
-from past.builtins import cmp
-from future import standard_library
-standard_library.install_aliases()
-from builtins import str
-from builtins import range
-from builtins import object
-
+from __future__ import absolute_import
 __version__ = "1.7.6"
 
 import os
@@ -49,8 +41,8 @@ import codecs
 import glob
 import requests
 import locale
-import zipfile
-import custom_zip # ZipFile with remove()
+import custom_zip as zipfile
+from custom_zip import ZipFile
 import tempfile
 import fnmatch
 import hashlib
@@ -64,7 +56,6 @@ import urllib.request, urllib.parse, urllib.error
 from requests.adapters import HTTPAdapter
 from urllib3.util.ssl_ import create_urllib3_context
 from urllib3.exceptions import InsecureRequestWarning
-from io import open
 
 # some shortcuts
 isfile=os.path.isfile
@@ -80,7 +71,6 @@ if hasattr(sys.stdout,'name') and sys.stdout.name == '<stdout>':
 else:
     ProgressBar = None
 
-@python_2_unicode_compatible
 class CalledProcessErrorOutput(subprocess.CalledProcessError):
     """CalledProcessError with printed output"""
 
@@ -407,9 +397,9 @@ def ensure_unicode(data):
     try:
         if data is None:
             return None
-        if isinstance(data,str):
+        if isinstance(data,types.UnicodeType):
             return data
-        if isinstance(data,bytes):
+        if isinstance(data,types.StringType):
             try:
                 return data.decode('utf8')
             except UnicodeError:
@@ -463,7 +453,7 @@ def ensure_unicode(data):
                 return data.__unicode__()
             except:
                 pass
-        return str(data)
+        return unicode(data)
     except UnicodeError:
         if logger.level != logging.DEBUG:
             return("Error in ensure_unicode / %s"%(repr(data)))
@@ -489,7 +479,7 @@ def ensure_list(csv_or_list,ignore_empty_args=True,allow_none = False):
 
     if isinstance(csv_or_list,(tuple,list)):
         return list(csv_or_list)
-    elif isinstance(csv_or_list,(str,bytes)):
+    elif isinstance(csv_or_list,(str,unicode)):
         if ignore_empty_args:
             return [s.strip() for s in csv_or_list.split(u',') if s.strip() != '']
         else:
@@ -607,15 +597,15 @@ def force_utf8_no_bom(filename):
         open(filename, mode='wb').write(content[BOMLEN:])
     else:
         try:
-            content = open(filename, encoding='utf8').read()
+            content = codecs.open(filename, encoding='utf8').read()
         except:
-            content = open(filename, encoding='iso8859-15').read()
-            open(filename, mode='wb', encoding='utf8').write(content)
+            content = codecs.open(filename, encoding='iso8859-15').read()
+            codecs.open(filename, mode='wb', encoding='utf8').write(content)
 
 def expand_args(args,expand_file_wildcards=None):
     """Return list of unicode file paths expanded from wildcard list args"""
     def from_system_encoding(t):
-        if isinstance(t,str):
+        if isinstance(t,unicode):
             return t
         else:
             try:
@@ -948,7 +938,7 @@ def wget(url,target=None,printhook=None,proxies=None,connect_timeout=10,download
                     raise Exception('wget : not enough free space on target drive to get %s MB. Total size: %s MB. Free space: %s MB' % (url,total_bytes // (1024*1024),target_free_bytes // (1024*1024)))
 
                 # 1Mb max, 1kb min
-                chunk_size = min([1024*1024,max([total_bytes//100,2048])])
+                chunk_size = min([1024*1024,max([total_bytes/100,2048])])
             else:
                 chunk_size = 1024*1024
 
@@ -1130,26 +1120,20 @@ class Version(object):
     def __init__(self,version,members_count=None):
         if version is None:
             version = ''
-        assert isinstance(version,types.ModuleType) or isinstance(version,bytes) or isinstance(version,str) or isinstance(version,Version)
+        assert isinstance(version,types.ModuleType) or isinstance(version,str) or isinstance(version,unicode) or isinstance(version,Version)
         if isinstance(version,types.ModuleType):
             self.versionstring =  getattr(version,'__version__',None)
         elif isinstance(version,Version):
             self.versionstring = getattr(version,'versionstring',None)
         else:
             self.versionstring = version
+        self.members = [ v.strip() for v in self.versionstring.split('.')]
         self.members_count = members_count
-        self._members = None
-
-    @property
-    def members(self):
-        if self._members is None:
-            self._members = [ v.strip() for v in self.versionstring.split('.')]
-            if self.members_count is not None:
-                if len(self._members )< self.members_count:
-                    self._members.extend(['0'] * (self.members_count-len(self._members)))
-                else:
-                    self._members = self._members[0:self.members_count]
-        return self._members
+        if members_count is not None:
+            if len(self.members)<members_count:
+                self.members.extend(['0'] * (members_count-len(self.members)))
+            else:
+                self.members = self.members[0:members_count]
 
     def __cmp__(self,aversion):
         def nat_cmp(a, b):
@@ -1184,12 +1168,12 @@ class Version(object):
         return 0
 
     def __str__(self):
-        return self.versionstring
+        return '.'.join(self.members)
 
     def __repr__(self):
-        return repr(u"Version('{}')".format(self.versionstring))
+        return "Version('{}')".format('.'.join(self.members))
 
-def create_recursive_zip(zipfn, source_root, target_root = u"",excludes = [u'.svn',u'.git',u'.gitignore',u'*.pyc',u'*.dbg',u'src'],
+def create_recursive_zip(zipfn, source_root, target_root = u"",excludes = [u'.svn',u'.git',u'.gitignore',u'*.pyc',u'*.dbg'],
         excludes_full=[os.path.join(u'WAPT','manifest.sha256'),os.path.join(u'WAPT','manifest.sha1'),os.path.join(u'WAPT','signature')]):
     """Create a zip file with filename zipf from source_root directory with target_root as new root.
     Don't include file which match excludes file pattern
@@ -1205,15 +1189,15 @@ def create_recursive_zip(zipfn, source_root, target_root = u"",excludes = [u'.sv
         list : list of zipped filepath
     """
     result = []
-    if not isinstance(source_root,str):
-        source_root = str(source_root)
-    if not isinstance(target_root,str):
-        target_root = str(target_root)
+    if not isinstance(source_root,unicode):
+        source_root = unicode(source_root)
+    if not isinstance(target_root,unicode):
+        target_root = unicode(target_root)
 
-    if isinstance(zipfn,str) or isinstance(zipfn,str):
+    if isinstance(zipfn,str) or isinstance(zipfn,unicode):
         if logger: logger.debug(u'Create zip file %s' % zipfn)
-        zipf = zipfile.ZipFile(zipfn,'w',allowZip64=True,compression=zipfile.ZIP_DEFLATED)
-    elif isinstance(zipfn,(zipfile.ZipFile,custom_zip.ZipFile)):
+        zipf = ZipFile(zipfn,'w',allowZip64=True,compression=zipfile.ZIP_DEFLATED)
+    elif isinstance(zipfn,ZipFile):
         zipf = zipfn
     else:
         raise Exception('zipfn must be either a filename (string) or an ZipFile')
@@ -1237,7 +1221,7 @@ def create_recursive_zip(zipfn, source_root, target_root = u"",excludes = [u'.sv
         elif os.path.isdir(source_item_fn):
             #if logger: logger.debug(u'Add directory %s' % source_item_fn)
             result.extend(create_recursive_zip(zipf, source_item_fn, zip_item_fn,excludes=excludes,excludes_full=excludes_full))
-    if isinstance(zipfn,str) or isinstance(zipfn,str):
+    if isinstance(zipfn,str) or isinstance(zipfn,unicode):
         zipf.close()
     return result
 

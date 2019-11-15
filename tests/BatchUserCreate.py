@@ -1,4 +1,3 @@
-from __future__ import print_function
 # BatchUserCreate.py
 #
 # A sample administrative script to perform a batch
@@ -91,7 +90,7 @@ def DeleteUser(name):
 if __name__=='__main__':
     import fileinput # Helper for reading files line by line
     if len(sys.argv)<2:
-        print("You must specify an options file")
+        print "You must specify an options file"
         sys.exit(1)
     if sys.argv[1]=="-delete":
         for line in fileinput.input(sys.argv[2:]):
@@ -100,4 +99,4 @@ if __name__=='__main__':
         for line in fileinput.input(sys.argv[1:]):
             userName, fullName = string.split(string.strip(line), ",")
             CreateUserAndShare(userName, fullName)
-            print("Created", userName)
+            print "Created", userName

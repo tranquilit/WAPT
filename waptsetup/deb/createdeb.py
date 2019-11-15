@@ -131,8 +131,8 @@ else:
 #########################################
 logger.info('Creating .deb')
 shutil.copytree('./debian/', BDIR + 'DEBIAN/')
-os.chmod(BDIR + 'DEBIAN/', 0o755)
-os.chmod(BDIR + 'DEBIAN/postinst', 0o755)
+os.chmod(BDIR + 'DEBIAN/', 0755)
+os.chmod(BDIR + 'DEBIAN/postinst', 0755)
 
 #########################################
 # update Control version
@@ -142,9 +142,9 @@ open(BDIR + 'DEBIAN/control','w').write(re.sub('Version: .*','Version: %s' % ful
 # creates package file structure
 mkdir(BDIR + 'var/www/wapt/')
 shutil.copy(WAPTSETUP, BDIR + 'var/www/wapt/')
-os.chmod(BDIR + 'var/www/wapt/' + WAPTSETUP, 0o644)
+os.chmod(BDIR + 'var/www/wapt/' + WAPTSETUP, 0644)
 shutil.copy(WAPTDEPLOY, BDIR + 'var/www/wapt/')
-os.chmod(BDIR + 'var/www/wapt/' + WAPTDEPLOY, 0o644)
+os.chmod(BDIR + 'var/www/wapt/' + WAPTDEPLOY, 0644)
 
 # build
 # build

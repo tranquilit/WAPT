@@ -21,10 +21,6 @@
 #
 # -----------------------------------------------------------------------
 from __future__ import print_function
-from past.builtins import cmp
-from builtins import str
-from builtins import range
-from builtins import object
 import os
 import glob
 import sys
@@ -103,7 +99,7 @@ class Version(object):
     def __init__(self,version,members_count=None):
         if version is None:
             version = ''
-        assert isinstance(version,types.ModuleType) or isinstance(version,bytes) or isinstance(version,bytes) or isinstance(version,Version)
+        assert isinstance(version,types.ModuleType) or isinstance(version,str) or isinstance(version,unicode) or isinstance(version,Version)
         if isinstance(version,types.ModuleType):
             self.versionstring =  getattr(version,'__version__',None)
         elif isinstance(version,Version):
@@ -174,7 +170,7 @@ if len(sys.argv) > 2:
     eprint('wrong number of parameters (0 or 1)')
     sys.exit(1)
 
-new_umask = 0o22
+new_umask = 022
 old_umask = os.umask(new_umask)
 if new_umask != old_umask:
     eprint('umask fixed (previous %03o, current %03o)' %

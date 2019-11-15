@@ -20,12 +20,7 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-from __future__ import print_function
-from future import standard_library
-standard_library.install_aliases()
-from builtins import str
-from builtins import range
-__version__ = "1.7.4"
+__version__ = "1.7.3.11"
 import logging
 import sys
 import tempfile
@@ -82,7 +77,7 @@ def setup_test():
     global cabundle
     cabundle = SSLCABundle()
     #cabundle.add_pems('c:/wapt/ssl/*.crt')
-    print(cabundle.certificates())
+    print cabundle.certificates()
 
     global cacert
     cacert = SSLCertificate(r'c:/private/tranquilit-ca-test.crt')
@@ -105,27 +100,27 @@ def setup_test():
 def test_build_sign_verify_package():
     print('creation paquet test')
     p = PackageEntry(waptfile= 'c:/tranquilit/tis-putty-wapt')
-    print(ensure_unicode(p))
+    print ensure_unicode(p)
     p.inc_build()
-    print(p.build_package())
+    print p.build_package()
 
     try:
         print(u'Signature paquet test avec clé gestionnaire')
-        print(p.sign_package(gest,key))
+        print p.sign_package(gest,key)
         raise Exception('Should fail, package has a setup.py')
     except EWaptBadCertificate as e:
         print(u"%s" % e)
 
     print(u'Signature paquet test avec clé codeur')
-    print(p.sign_package(codeur,key))
+    print p.sign_package(codeur,key)
     print('OK, codeur')
 
     p2= PackageEntry(waptfile = p.localpath)
-    print(u"Paquet testé:\n%s" % ensure_unicode(p2))
+    print u"Paquet testé:\n%s" % ensure_unicode(p2)
 
-    print(p2.check_control_signature(cabundle))
+    print p2.check_control_signature(cabundle)
     destdir = p2.unzip_package(cabundle = cabundle)
-    print(destdir)
+    print destdir
 
     logger.debug('Test avec certificat simple gestionnaire')
     try:
@@ -223,13 +218,13 @@ def test_sign_action():
 
 
     print('test verification')
-    print(gest.verify_claim(action_signed))
+    print gest.verify_claim(action_signed)
 
     print('test corruption')
     action_signed = key.sign_claim(action,certificate=gest)
     action_signed['package']='garb'
     try:
-        print(gest.verify_claim(action_signed))
+        print gest.verify_claim(action_signed)
         raise Exception('erreur... devrait fail')
     except SSLVerifyException as e:
         print(u'OK: erreur %s'%e)
@@ -238,16 +233,16 @@ def test_sign_action():
     action_signed = key.sign_claim(action,certificate=gest)
     try:
         time.sleep(2)
-        print(gest.verify_claim(action_signed,max_age_secs=1))
+        print gest.verify_claim(action_signed,max_age_secs=1)
         raise Exception('erreur... devrait fail')
     except SSLVerifyException as e:
         print(u'OK: erreur %s'%e)
 
-    print(gest.verify_claim(action_signed))
+    print gest.verify_claim(action_signed)
     print('test fake replay')
     action_signed['signature_date']=(datetime.datetime.now()+datetime.timedelta(seconds=10)).isoformat()
     try:
-        print(gest.verify_claim(action_signed,max_age_secs=50))
+        print gest.verify_claim(action_signed,max_age_secs=50)
         raise Exception('erreur... devrait fail')
     except SSLVerifyException as e:
         print(u'OK: erreur %s'%e)
@@ -264,19 +259,19 @@ def test_sign_action2():
 
     print('test verification attribut requis')
     try:
-        print(gest.verify_claim(action_signed,required_attributes=['package']))
+        print gest.verify_claim(action_signed,required_attributes=['package'])
         raise Exception('erreur... devrait fail')
     except SSLVerifyException as e:
         print(u'OK: erreur %s'%e)
 
     print('test verification partielle')
-    print(gest.verify_claim(action_signed,required_attributes=['action']))
+    print gest.verify_claim(action_signed,required_attributes=['action'])
 
     print('test corruption')
     action_signed = key.sign_claim(action,certificate=gest)
     action_signed['package']='garb'
     try:
-        print(gest.verify_claim(action_signed,required_attributes=['action']))
+        print gest.verify_claim(action_signed,required_attributes=['action'])
         raise Exception('erreur... devrait fail')
     except SSLVerifyException as e:
         print(u'OK: erreur %s'%e)
@@ -285,16 +280,16 @@ def test_sign_action2():
     action_signed = key.sign_claim(action,certificate=gest,attributes=[])
     try:
         time.sleep(2)
-        print(gest.verify_claim(action_signed,max_age_secs=1,required_attributes=[]))
+        print gest.verify_claim(action_signed,max_age_secs=1,required_attributes=[])
         raise Exception('erreur... devrait fail')
     except SSLVerifyException as e:
         print(u'OK: erreur %s'%e)
 
-    print(gest.verify_claim(action_signed))
+    print gest.verify_claim(action_signed)
     print('test fake replay')
     action_signed['signature_date']=(datetime.datetime.now()+datetime.timedelta(seconds=10)).isoformat()
     try:
-        print(gest.verify_claim(action_signed,max_age_secs=50))
+        print gest.verify_claim(action_signed,max_age_secs=50)
         raise Exception('erreur... devrait fail')
     except SSLVerifyException as e:
         print(u'OK: erreur %s'%e)
@@ -304,22 +299,22 @@ def test_sign_verify_file():
     t1 = time.time()
     s = key.sign_content(sha256_for_file(r'C:\tranquilit\tis-lazarus-wapt\lazarus-1.6.0-fpc-3.0.0-win32.exe'))
     codeur.verify_content(sha256_for_file(r'C:\tranquilit\tis-lazarus-wapt\lazarus-1.6.0-fpc-3.0.0-win32.exe'),s)
-    print(time.time()-t1)
+    print time.time()-t1
 
     t1 = time.time()
     s = key.sign_content(sha256_for_file(r'C:\tranquilit\tis-lazarus-wapt\lazarus-1.6.0-fpc-3.0.0-win32.exe'))
     codeur.verify_content(sha256_for_file(r'C:\tranquilit\tis-lazarus-wapt\lazarus-1.6.0-fpc-3.0.0-win32.exe'),s)
-    print(time.time()-t1)
+    print time.time()-t1
 
     t1 = time.time()
     s = key.sign_content(open(r'C:\tranquilit\tis-lazarus-wapt\lazarus-1.6.0-fpc-3.0.0-win32.exe','rb'))
     codeur.verify_content(open(r'C:\tranquilit\tis-lazarus-wapt\lazarus-1.6.0-fpc-3.0.0-win32.exe','rb'),s)
-    print(time.time()-t1)
+    print time.time()-t1
 
     t1 = time.time()
     s = key.sign_content(open(r'C:\tranquilit\tis-lazarus-wapt\lazarus-1.6.0-fpc-3.0.0-win32.exe','rb'))
     codeur.verify_content(open(r'C:\tranquilit\tis-lazarus-wapt\lazarus-1.6.0-fpc-3.0.0-win32.exe','rb'),s)
-    print(time.time()-t1)
+    print time.time()-t1
 
 
 
@@ -339,9 +334,9 @@ def test_paquet_host():
     signature = pe.sign_package(gest,key)
     pe.unzip_package()
     print('Les deux certificats sont OK car pas de setup.py')
-    print(pe.sourcespath)
-    print(pe.check_package_signature(gest))
-    print(pe.check_package_signature(SSLCABundle(certificates=[codeur,gest])))
+    print pe.sourcespath
+    print pe.check_package_signature(gest)
+    print pe.check_package_signature(SSLCABundle(certificates=[codeur,gest]))
 
     # Ajout d'un setup.py
     codecs.open(os.path.join(pe.sourcespath,'setup.py'),'w',encoding='utf8').write(u"""\
@@ -376,10 +371,10 @@ def test_oldsignature():
 
 def test_waptrepo():
     r = WaptRemoteRepo('https://wapt142.tranquilit.local/wapt',cabundle=cabundle,verify_cert=False)
-    print(r.packages_matching('tis-longtask'))
+    print r.packages_matching('tis-longtask')
     r = WaptRemoteRepo('https://wapt142.tranquilit.local/wapt',cabundle=cabundle,verify_cert=True)
     try:
-        print(r.packages)
+        print r.packages
         raise('certificate autosigné, doit failer')
     except requests.exceptions.SSLError as e:
         print('OK: %s' % e)
@@ -401,16 +396,16 @@ def test_wapt_engine():
     w._set_fake_hostname('testwaptcomputer.tranquilit.local')
 
     w.update()
-    print(w.search())
+    print w.search()
 
     w.use_hostpackages = True
-    print(w.update())
+    print w.update()
 
-    print(w.search())
-    print(w.list_upgrade())
+    print w.search()
+    print w.list_upgrade()
     for r in w.repositories:
-        print(r.cabundle)
-    print(w.waptserver)
+        print r.cabundle
+    print w.waptserver
     res = w.update()
     print('OK: %s'%res)
 
@@ -421,8 +416,8 @@ def test_edithost():
     w.use_hostpackages = False
     w._set_fake_hostname('testwaptcomputer.tranquilit.local')
     pe = w.edit_host('testwaptcomputer.tranquilit.local')
-    print(pe)
-    print(w.is_available(setuphelpers.get_hostname()))
+    print pe
+    print w.is_available(setuphelpers.get_hostname())
 
 def test_dnsrepos():
     w = Wapt(config_filename= r"C:\Users\htouvet\AppData\Local\waptconsole\waptconsole.ini")
@@ -441,11 +436,11 @@ def test_reload_config():
     open(cfn,'wb').write(ini.replace('dnsdomain=tranquilit.local',';dnsdomain=tranquilit.local'))
     w = Wapt(config_filename=cfn )
     w.dbpath=':memory:'
-    print(w.repositories[1].dnsdomain)
+    print w.repositories[1].dnsdomain
     ini = open(cfn,'r').read()
     open(cfn,'wb').write(ini.replace(';dnsdomain=tranquilit.local','dnsdomain=tranquilit.local'))
-    print(w.reload_config_if_updated())
-    print(w.repositories[1].dnsdomain)
+    print w.reload_config_if_updated()
+    print w.repositories[1].dnsdomain
 
 
 def test_editpackage():
@@ -459,14 +454,14 @@ def test_editpackage():
     wapt_sources_edit(pe.sourcespath)
 
 def test_keypassword():
-    print(get_private_key_encrypted('c:/private/150-codeur.crt',''))
-    print(get_private_key_encrypted('c:/private/150-codeur.crt','test'))
-    print(SSLPrivateKey('c:/private/150.pem',password='test').modulus)
+    print get_private_key_encrypted('c:/private/150-codeur.crt','')
+    print get_private_key_encrypted('c:/private/150-codeur.crt','test')
+    print SSLPrivateKey('c:/private/150.pem',password='test').modulus
     c = SSLCertificate('c:/private/150-codeur.crt')
     try:
         k = c.matching_key_in_dirs()
     except RSAError as e:
-        print(e)
+        print e
         raise
 
 def test_waptdevutils():
@@ -477,7 +472,7 @@ def test_waptdevutils():
     templates = WaptRemoteRepo(url='https://store.wapt.fr/wapt',name='wapt-templates',config = w.config,verify_cert=True)
     localfn = wget('%s/%s'% (templates.repo_url,fn),verify_cert=True)
     res = duplicate_from_file(localfn,'test')
-    print(res)
+    print res
 
 def test_localrepo_cert():
     r = WaptLocalRepo('c:/wapt/cache')
@@ -485,7 +480,7 @@ def test_localrepo_cert():
 
     #list files
     import custom_zip as zipfile
-    import io
+    import StringIO
 
     with zipfile.ZipFile(open(r.packages_path,'rb'),allowZip64=True) as zip:
         packages_lines = codecs.decode(zip.read(name='Packages'),'UTF-8').splitlines()
@@ -494,7 +489,7 @@ def test_localrepo_cert():
         for fn in names:
             if fn.startswith('ssl/'):
                 cert = SSLCertificate(crt_string=zip.read(name=fn))
-                print(cert.cn)
+                print cert.cn
 
 
     print('Done')
@@ -505,7 +500,7 @@ def test_editzip():
     res = r.download_packages('tistest-7zip')
     if res:
         pe = res['packages'][0]
-        print(pe)
+        print pe
         os.startfile(pe.unzip_package( cabundle = r.cabundle))
     print('Done')
 
@@ -527,7 +522,7 @@ def test_edit_host():
 
 def test_findsnsrepourl():
     r = WaptRepo(dnsdomain='tranquilit.local')
-    print(r.repo_url)
+    print r.repo_url
 
 def test_installemove_host():
     w = Wapt()
@@ -535,7 +530,7 @@ def test_installemove_host():
     w.install('htlaptop.tranquilit.local')
     w.remove('htlaptop.tranquilit.local')
     res = w.list_upgrade()
-    print(res)
+    print res
 
 
 def test_buildupload():
@@ -560,13 +555,13 @@ def test_conflicts():
     w.use_hostpackages = True
     w.update()
     r = w.check_depends('htlaptop.tranquilit.local')
-    print(r)
+    print r
 
 def test_certifi_cacert():
     import certifi
     cabundle = SSLCABundle()
     cabundle.add_pems(certifi.where())
-    print(len(cabundle.certificates()))
+    print len(cabundle.certificates())
 
 def test_newcrypto():
     #
@@ -575,17 +570,17 @@ def test_newcrypto():
     assert(not check_key_password('c:/private/150.pem'))
 
     crt = SSLCertificate('c:/private/150-codeur2.crt')
-    print(crt.fingerprint)
+    print crt.fingerprint
 
     key = SSLPrivateKey('c:/private/150.pem',password='test')
     sign = key.sign_content('test')
 
 
-    print(crt.verify_content('test',sign))
+    print crt.verify_content('test',sign)
     cabundle = SSLCABundle(certifi.where())
     chain = get_peer_cert_chain_from_server('https://www.google.fr')
     cecert = chain[0]
-    print(cecert.issuer)
+    print cecert.issuer
 
     cabundle.check_certificates_chain(chain)
     pass
@@ -595,7 +590,7 @@ def test_saveservercert():
     w.waptserver.save_server_certificate(server_ssl_dir='c:/tranquilit/wapt/ssl/server')
 
 def test_get_peer_chain():
-    print(SSLCABundle(certificates = get_peer_cert_chain_from_server('https://www.google.fr')).as_pem())
+    print SSLCABundle(certificates = get_peer_cert_chain_from_server('https://www.google.fr')).as_pem()
 
     certs = get_peer_cert_chain_from_server('https://www.google.fr')
 
@@ -609,24 +604,24 @@ def test_get_peer_chain():
 
 def test_subject_hash():
     crt = SSLCertificate('c:/private/150-codeur2.crt')
-    print(crt.subject_hash)
-    print(crt.issuer_subject_hash)
+    print crt.subject_hash
+    print crt.issuer_subject_hash
 
 def test_openssl():
     codeur_bundle = SSLCABundle('c:/private/tranquilit-codeur.crt')
     codeur = codeur_bundle.certificates()[0]
     trusted_ca = SSLCABundle(certifi.where())
-    print(codeur_bundle.certificate_chain(codeur))
+    print codeur_bundle.certificate_chain(codeur)
 
     codeur.verify_signature_with(codeur_bundle)
 
-    print(trusted_ca.certificate_chain(codeur))
+    print trusted_ca.certificate_chain(codeur)
 
     for ca in codeur_bundle.certificate_chain(codeur):
-        print(ca.crl_urls())
+        print ca.crl_urls()
 
     for ca in trusted_ca.certificates():
-        print(ca.crl_urls())
+        print ca.crl_urls()
 
     store = crypto.X509Store()
     store.set_flags( (
@@ -644,15 +639,15 @@ def test_openssl():
 
     store_ctx = crypto.X509StoreContext(store,cert.as_X509())
     try:
-        print(store_ctx.verify_certificate())
+        print store_ctx.verify_certificate()
     except Exception as e:
-        print(e)
+        print e
 
 def test_crl():
     w = Wapt(config_filename='c:/wapt/wapt-get.ini')
     for crl in w.update_crls(force=True):
-        print(crl.crl)
-        print(crl.revoked_certs())
+        print crl.crl
+        print crl.revoked_certs()
 
 
 def test_self_signed():
@@ -677,10 +672,10 @@ def test_self_signed():
     c.save_as_pem('c:/tmp/test.crt')
 
     assert(c.authority_key_identifier == cacert.subject_key_identifier)
-    print(c.subject)
-    print(c.key_usage)
+    print c.subject
+    print c.key_usage
 
-    print(c.verify_signature_with(cacert))
+    print c.verify_signature_with(cacert)
 
 def test_hostcert():
     w = Wapt()
@@ -704,38 +699,38 @@ def test_update_crl():
     w = Wapt(config_filename='c:/wapt/wapt-get.ini')
     proxies = w.proxies
     cabundle.update_crl(force=True,proxies=proxies)
-    print(cabundle.crls)
+    print cabundle.crls
     crl = cabundle.crls[0]
-    print(cabundle.crl_for_authority_key_identifier(crl.authority_key_identifier))
-    print(crl.verify_signature_with(cabundle))
+    print cabundle.crl_for_authority_key_identifier(crl.authority_key_identifier)
+    print crl.verify_signature_with(cabundle)
     cabundle.is_known_issuer(crl)
 
 def test_github():
     gh_server_bundle = get_peer_cert_chain_from_server('https://github.com/')
     cabundle = SSLCABundle()
     cabundle.add_pems(certifi.where())
-    print(cabundle.check_certificates_chain(gh_server_bundle))
+    print cabundle.check_certificates_chain(gh_server_bundle)
     try:
-        print(cabundle.check_certificates_chain(SSLCABundle('c:/private/tranquilit-codeur.crt').certificates()))
+        print cabundle.check_certificates_chain(SSLCABundle('c:/private/tranquilit-codeur.crt').certificates())
         raise Exception('should fail, expired...')
     except EWaptCertificateExpired:
         print('ok')
 
     google = get_peer_cert_chain_from_server('https://google.com/')
-    print(cabundle.check_certificates_chain(google))
+    print cabundle.check_certificates_chain(google)
 
 def test_update_packages():
     r = WaptLocalRepo('c:/tranquilit/wapt/cache')
     r.update_packages_index()
     cabundle = r.get_certificates()
-    print(cabundle._certificates)
-    print(cabundle.crls)
+    print cabundle._certificates
+    print cabundle.crls
 
 def test_fernet_encrypt():
     data = open(__file__,'rb').read()
     cert = SSLCertificate('c:/private/htouvet.crt')
     enc_data = cert.encrypt_fernet(data)
-    print((len(data),len(enc_data)))
+    print(len(data),len(enc_data))
 
     key = SSLPrivateKey('c:/private/htouvet.pem',password='test')
     data2 = key.decrypt_fernet(enc_data)
@@ -755,8 +750,8 @@ def test_is_valid_certificate():
     #caev = SSLCertificate('c:/private/COMODORSAExtendedValidationCodeSigningCA.crt')
     #ca.add_certificates(caev)
     cert = SSLCertificate('c:/private/tranquilit-comodo-ev.crt')
-    print(cert.issuer_cert_urls())
-    print(ca.download_issuer_certs(for_certificates = cert))
+    print cert.issuer_cert_urls()
+    print ca.download_issuer_certs(for_certificates = cert)
 
     ca.update_crl(for_certificates = ca.certificate_chain(cert))
     ca.is_valid_certificate(cert)
@@ -773,26 +768,26 @@ def test_check_certificates_chain():
     ca = SSLCABundle()
     ca.add_pems('c:/private/tranquilit-ca-test.crt')
     cert = SSLCertificate('c:/private/htouvet.crt')
-    print(ca.check_certificates_chain([cert]))
+    print ca.check_certificates_chain([cert])
 
     cert = SSLCertificate('c:/private/tranquilit-comodo-ev.crt')
-    print(cert.issuer_cert_urls())
-    print(ca.download_issuer_certs(for_certificates = cert))
+    print cert.issuer_cert_urls()
+    print ca.download_issuer_certs(for_certificates = cert)
 
     ca.update_crl(for_certificates = ca.certificate_chain(cert))
-    print(ca.check_certificates_chain([cert]))
+    print ca.check_certificates_chain([cert])
 
     open('c:/tmp/myca.pem','wb').write(ca.as_pem())
 
     crt2 = SSLCertificate('c:/private/tranquilit-gest.crt')
     try:
-        print(ca.check_certificates_chain([crt2]))
+        print ca.check_certificates_chain([crt2])
         raise Exception('not trusted Self signed')
     except EWaptBadCertificate:
         print('OK : self signed')
 
     ca.add_certificates(crt2)
-    print(ca.check_certificates_chain([crt2]))
+    print ca.check_certificates_chain([crt2])
     print('OK')
 
 def test_whole_ca():
@@ -803,11 +798,11 @@ def test_whole_ca():
 
     certs = SSLCABundle('c:/private/crts/')
     for cert in certs.certificates():
-        print(cert.subject,cert.serial_number)
+        print cert.subject,cert.serial_number
         try:
             ca.check_if_revoked(cert)
         except (EWaptCertificateRevoked,EWaptCertificateRevoked) as e:
-            print(e)
+            print e
     print('ok')
 
 def test_partial_chain():
@@ -818,7 +813,7 @@ def test_partial_chain():
     #ca.add_pems('c:/private/crts/crl.pem')
     certs = SSLCABundle('c:/private/htouvet.crt')
     res = ca.check_certificates_chain(certs)
-    print(res)
+    print res
 
 def test_update():
     w = Wapt()
@@ -835,7 +830,7 @@ def test_download_packages():
     t1 = time.time()
     w.update()
     res = w.download_packages('tis-firefox-esr')
-    print(res)
+    print res
     print('download: %ss' % (time.time() - t1,))
 
 def test_hostkey():
@@ -847,7 +842,7 @@ def test_hostkey():
 def test_encryption_algo():
     k = SSLPrivateKey()
     k.create()
-    print(k.as_pem('mypassword'))
+    print k.as_pem('mypassword')
 
 
 def test_uploadpackages():
@@ -864,7 +859,7 @@ def test_uploadpackages():
     prog = PackageEntry(waptfile='c:/waptdev/test-mercurial_4.2.1-0_all.wapt')
 
     result = s.upload_packages(hosts,auth=('admin','password'))
-    print(result)
+    print result
     if not result['ok'] or result['errors']:
         raise Exception('not uploaded properly')
 
@@ -892,12 +887,12 @@ def edit_host_raw():
     s = WaptServer()
     s.load_config_from_file(w.config_filename)
     res = s.upload_packages([host],auth=('admin','...'))
-    print(res)
+    print res
 
 
 def test_personalchain():
     w = Wapt(config_filename=r'C:\Users\htouvet\AppData\Local\waptconsole\waptconsole.ini')
-    print(w.personal_certificate())
+    print w.personal_certificate()
 
 
 def test_host_repo():
@@ -911,9 +906,9 @@ C36AF555-E13F-C4FE-C2BF-717BD56DDD82
 C7587600-34D4-11E1-A8F9-C03FD5609ED9""".splitlines()
     repo = WaptHostRepo('https://srvwapt.ad.tranquil.it/wapt-host',host_id=host_uuids,verify_cert=False)
     repo.update()
-    print(repo.discarded)
-    print('8CDEA880-9149-11E4-A9D5-B8AEEDE9EA51' in [p.package for p in repo.discarded])
-    print(repo.packages)
+    print repo.discarded
+    print '8CDEA880-9149-11E4-A9D5-B8AEEDE9EA51' in [p.package for p in repo.discarded]
+    print repo.packages
 
 
 def test_inter():
@@ -949,17 +944,17 @@ def test_inter():
     pe = PackageEntry('test')
     pe.build_management_package()
     pe.sign_package(devtest_cert,devtest_key)
-    print(pe.check_control_signature(trusted))
-    print(trusted.check_certificates_chain(pe.package_certificate()))
+    print pe.check_control_signature(trusted)
+    print trusted.check_certificates_chain(pe.package_certificate())
 
     print('OK')
 
     csr = devtest_key.build_csr(cn='test2')
-    print(csr)
+    print csr
 
     test2_cert = inter1test_cert.build_certificate_from_csr(csr,inter1test_key)
-    print(test2_cert)
-    print(catestbundle.check_certificates_chain(test2_cert))
+    print test2_cert
+    print catestbundle.check_certificates_chain(test2_cert)
 
 
 def test_tableprovider():
@@ -969,7 +964,7 @@ def test_tableprovider():
         ColumnDef(Hosts.description),
         ColumnDef(Hosts.uuid)],
         where=Hosts.computer_fqdn=='htlaptop.ad.tranquil.it')
-    print(hosts.get_data())
+    print hosts.get_data()
     hosts.apply_updates([['update',{'uuid':'4C4C4544-004E-3510-8051-C7C04F325131'},{'description':u'Test hubert'}]])
 
 
@@ -982,16 +977,16 @@ def test_crl():
     serial = mycert.serial_number
 
     ca = SSLCABundle(certificates=[cacert])
-    print(ca.check_certificates_chain(mycert))
+    print ca.check_certificates_chain(mycert)
 
     cacrl = cacert.build_crl(cakey,[serial])
     cacrl_pem = cacrl.as_pem()
-    print(cacrl_pem)
+    print cacrl_pem
     cacrl.verify_signature_with(ca)
 
     ca.add_crl(cacrl)
     try:
-        print(ca.check_certificates_chain(mycert))
+        print ca.check_certificates_chain(mycert)
         raise Exception('ERROR should be revoked...')
     except EWaptCertificateRevoked as e:
         print('OK revoked')
@@ -1076,7 +1071,7 @@ def test_waptinstalllog():
         sys.stderr.write("%s %s" % (ps.install_status,ps.install_output))
 
     ps = w.is_installed('tis-7zip')
-    print((ps.install_status,ps.install_output))
+    print(ps.install_status,ps.install_output)
 
 def test_install_uninstall():
 
@@ -1304,10 +1299,10 @@ def test_status_hashes():
     w = Wapt(config_filename=r'c:\wapt\wapt-get.ini')
     w.waptserver.server_url = 'http://127.0.0.1:8080'
     res = w.update_server_status()
-    print(list(res['result']['status_hashes'].keys()))
+    print res['result']['status_hashes'].keys()
     w.update()
     res = w.update_server_status()
-    print(list(res['result']['status_hashes'].keys()))
+    print res['result']['status_hashes'].keys()
 
 
 def test_capabilities():
@@ -1396,29 +1391,9 @@ def test_update_perf():
     print([r.repo_url for r in self.repositories])
     print(self.list_upgrade())
 
-def test_sign_package_dir():
-    pwd = open('c:/tmp/tmpkeypassword','rb').read()
-    k = SSLPrivateKey('c:/private/tranquilit2.pem',password=pwd)
-    c = SSLCertificate(r'c:\private\tranquilit2-fullchain.crt')
-    pe = PackageEntry(waptfile='c:/waptdev/test-sign-wapt')
-    pe.sign_package(c,k)
-    print(pe.build_package())
-
-def test_forced_uuid():
-    w = Wapt()
-    inifile_deleteoption(w.config_filename,'global','uuid')
-    w = Wapt()
-    print(w.get_host_certificate())
-    inifile_writestring(w.config_filename,'global','uuid','rnd-'+str(uuid.uuid4()))
-    w = Wapt()
-    print(w.get_host_certificate())
-
-
 
 if __name__ == '__main__':
-    test_forced_uuid()
-    #test_sign_package_dir()
-    #test_update_perf()
+    test_update_perf()
     #test_register()
     #test_client_auth_download()
     #test_update_crl()
