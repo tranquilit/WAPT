@@ -150,7 +150,7 @@ except Exception as e:
 
 @app.before_request
 def _db_connect():
-    if wapt_db:
+    if wapt_db and wapt_db.is_closed():
         wapt_db.connect()
 
 @app.teardown_request
@@ -1202,16 +1202,22 @@ def reset_hosts_sid():
             message = _(u'Hosts connection reset launched for all hosts')
 
         def target(uuids):
-            logger.debug(u'Reset wsocket.io SID and timestamps of hosts')
-            if uuids:
-                where_clause = Hosts.uuid.in_(uuids)
-                sids = [ s[0] for s in Hosts.select(Hosts.listening_address).where(where_clause).tuples()]
-                Hosts.update(reachable=None,listening_timestamp=None, listening_protocol=None).where(where_clause).execute()
-                for sid in sids:
-                    socketio.emit('wapt_ping',room=sid)
-            else:
-                Hosts.update(reachable=None,listening_timestamp=None, listening_protocol=None).where(Hosts.server_uuid == get_server_uuid()).execute()
-                socketio.emit('wapt_ping')
+            try:
+                if wapt_db.is_closed():
+                    wapt_db.connect()
+                logger.debug(u'Reset wsocket.io SID and timestamps of hosts')
+                if uuids:
+                    where_clause = Hosts.uuid.in_(uuids)
+                    sids = [ s[0] for s in Hosts.select(Hosts.listening_address).where(where_clause).tuples()]
+                    Hosts.update(reachable=None,listening_timestamp=None, listening_protocol=None).where(where_clause).execute()
+                    for sid in sids:
+                        socketio.emit('wapt_ping',room=sid)
+                else:
+                    Hosts.update(reachable=None,listening_timestamp=None, listening_protocol=None).where(Hosts.server_uuid == get_server_uuid()).execute()
+                    socketio.emit('wapt_ping')
+            finally:
+                if not wapt_db.is_closed():
+                    wapt_db.close()
 
         socketio.start_background_task(target=target, uuids=uuids)
 
@@ -1929,6 +1935,7 @@ def host_tasks_status():
             def result_callback(data):
                 result.append(data)
 
+            request.sid = host_data['listening_address']
             socketio.emit('get_tasks_status', request.args, room=host_data['listening_address'], callback=result_callback)
 
             start_waiting = time.time()
@@ -2022,6 +2029,7 @@ def trigger_host_action():
                     else:
                         socket_callback = None
                     try:
+                        request.sid = host['listening_address']
                         socketio.emit('trigger_host_action', action, room=host['listening_address']) #, callback = socket_callback)
                         if notify_server:
                             expected_result_count += 1

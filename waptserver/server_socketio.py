@@ -239,7 +239,8 @@ def on_waptclient_connect():
             logger.info(u'Unauthenticated Socket.IO connection from wapt client sid %s (uuid: %s)' % (request.sid,uuid))
 
         try:
-            wapt_db.connect()
+            if wapt_db.is_closed():
+                wapt_db.connect()
             # update the db
             with wapt_db.atomic() as trans:
                 # stores sid in database
@@ -281,7 +282,8 @@ def on_wapt_pong():
             logger.debug(u'Socket.IO pong from wapt client sid %s (uuid: %s)' % (request.sid, session.get('uuid',None)))
             # stores sid in database
             try:
-                wapt_db.connect()
+                if wapt_db.is_closed():
+                    wapt_db.connect()
                 with wapt_db.atomic() as trans:
                     hostcount = Hosts.update(
                         server_uuid=get_server_uuid(),
@@ -309,7 +311,8 @@ def on_waptclient_disconnect():
     logger.info(u'Socket.IO disconnection from wapt client sid %s (uuid: %s)' % (request.sid, uuid))
     # clear sid in database
     try:
-        wapt_db.connect()
+        if wapt_db.is_closed():
+            wapt_db.connect()
         with wapt_db.atomic() as trans:
             Hosts.update(
                 listening_timestamp=datetime2isodate(),

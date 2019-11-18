@@ -1462,7 +1462,7 @@ class LogOutput(BaseObjectClass):
 
             if self.console:
                 try:
-                    self.console.write(txt)
+                    self.console.stream.write(txt)
                 except:
                     self.console.write(repr(txt))
 
