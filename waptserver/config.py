@@ -95,7 +95,7 @@ _defaults = {
     'http_proxy':None,
     'nginx_http' : 80,
     'nginx_https': 443,
-    'remote_repo_support': False
+    'remote_repo_support': False,
     'trusted_signers_certificates_folder':None, # path to trusted certificate directory
 }
 
