@@ -76,7 +76,7 @@ from collections import defaultdict
 from types import ModuleType
 
 import shutil
-import urllib.parse
+import urlparse
 import zipfile
 
 # conditionnal imports for windows or linux
@@ -1551,7 +1551,7 @@ class WaptServer(BaseObjectClass):
     def auth(self,action=None):
         if self._server_url:
             if action in ('add_host_kerberos','add_host'):
-                scheme = urllib.parse.urlparse(self._server_url).scheme
+                scheme = urlparse.urlparse(self._server_url).scheme
                 if scheme == 'https' and has_kerberos and self.use_kerberos:
                     return requests_kerberos.HTTPKerberosAuth(mutual_authentication=requests_kerberos.DISABLED)
 
@@ -1594,7 +1594,7 @@ class WaptServer(BaseObjectClass):
         certs = get_peer_cert_chain_from_server(self.server_url)
         if certs:
             new_cert = certs[0]
-            url = urllib.parse.urlparse(self.server_url)
+            url = urlparse.urlparse(self.server_url)
             pem_fn = os.path.join(server_ssl_dir,new_cert.cn+'.crt')
 
             if new_cert.cn != url.hostname:
@@ -5883,7 +5883,7 @@ class Wapt(BaseObjectClass):
         """
         try:
             if self.waptserver and self.waptserver.server_url:
-                host = urllib.parse.urlparse(self.waptserver.server_url).hostname
+                host = urlparse.urlparse(self.waptserver.server_url).hostname
                 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
                 s.settimeout(1)
                 s.connect((host, 0))

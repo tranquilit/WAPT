@@ -32,7 +32,7 @@ import glob
 import subprocess
 import logging
 import time
-import urllib.parse
+import urlparse as urllib
 import datetime
 
 from cryptography import x509
@@ -795,7 +795,7 @@ def get_peer_cert_chain_from_server(url):
     def verify_cb(conn, cert, errnum, depth, ok):
         return ok
     url = str(url)
-    location = urllib.parse.urlparse(url)
+    location = urlparse.urlparse(url)
     client_ctx = SSL.Context(SSL.SSLv23_METHOD)
     client_ctx.set_verify(SSL.VERIFY_NONE, verify_cb)
     client = SSL.Connection(client_ctx, SSL.socket.socket())
@@ -818,7 +818,7 @@ def get_pem_server_certificate(url,save_to_file=None):
         str: pem encoded data
     """
     url = str(url)
-    url = urllib.parse.urlparse(url)
+    url = urlparse.urlparse(url)
     if url.scheme == 'https':
         # try a connection to get server certificate
         pem_data = str(ssl.get_server_certificate((url.hostname, url.port or 443)))

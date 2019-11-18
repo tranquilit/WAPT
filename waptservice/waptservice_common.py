@@ -37,7 +37,7 @@ from waptutils import __version__
 
 import locale
 import json
-import urllib.parse
+import urlparse
 import copy
 import shutil
 import urllib.request, urllib.parse, urllib.error
@@ -380,7 +380,7 @@ class WaptServiceConfig(object):
             if config.has_option('global','wapt_server'):
                 self.waptserver = common.WaptServer().load_config(config)
                 if self.waptserver.server_url:
-                    waptserver_url = urllib.parse.urlparse(self.waptserver.server_url)
+                    waptserver_url = urlparse.urlparse(self.waptserver.server_url)
                     self.websockets_host = waptserver_url.hostname
                     self.websockets_proto = waptserver_url.scheme
 

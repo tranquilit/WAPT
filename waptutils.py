@@ -52,7 +52,7 @@ import shutil
 import threading
 import socket
 import psutil
-import urllib.request, urllib.parse, urllib.error
+import urlparse
 from requests.adapters import HTTPAdapter
 from urllib3.util.ssl_ import create_urllib3_context
 from urllib3.exceptions import InsecureRequestWarning
@@ -849,7 +849,7 @@ def wget(url,target=None,printhook=None,proxies=None,connect_timeout=10,download
 
     (dir,filename) = os.path.split(target)
     if not filename:
-        url_parts = urllib.parse.urlparse(url)
+        url_parts = urlparse.urlparse(url)
         filename = url_parts.path.split('/')[-1]
     if not dir:
         dir = os.getcwd()
@@ -1092,8 +1092,6 @@ class FileChunks(object):
         if not self.file_obj.closed:
             self.file_obj.close()
 
-
-@python_2_unicode_compatible
 class Version(object):
     """Version object of form 0.0.0
     can compare with respect to natural numbering and not alphabetical

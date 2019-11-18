@@ -31,7 +31,7 @@ import glob
 import json
 import logging
 import shutil
-import urllib.parse
+import urlparse
 
 from optparse import OptionParser
 
@@ -249,7 +249,7 @@ def guess_waptrepo_url(host):
     if not result.startswith('http://') and not result.startswith('https://'):
         result = 'https://%s' % result
 
-    url = urllib.parse.urlparse(result)
+    url = urlparse.urlparse(result)
     if not url.path:
         result = result+'/wapt'
     return result
@@ -337,7 +337,7 @@ def do_enable_check_certificate(mywapt,options):
             cert = SSLCertificate(cert_filename)
             sha1_fingerprint = cert.digest('sha1')
 
-            server_host_name = urllib.parse.urlparse(mywapt.waptserver.server_url).netloc
+            server_host_name = urlparse.urlparse(mywapt.waptserver.server_url).netloc
             if cert.cn.lower() != server_host_name.lower() :
                 logger.critical(u'Common name of certificate (%s) does not match server hostname (%s)' % (cert.cn,server_host_name) )
             if not server_host_name.lower() in cert.subject_alt_names:
@@ -345,7 +345,7 @@ def do_enable_check_certificate(mywapt,options):
 
             # check if certificate match repo_url defined in global too
             if mywapt.config.has_option('global','repo_url'):
-                repo_host_name = urllib.parse.urlparse(mywapt.config.get('global','repo_url')).netloc
+                repo_host_name = urlparse.urlparse(mywapt.config.get('global','repo_url')).netloc
                 if cert.cn.lower() != repo_host_name.lower() :
                     logger.critical(u'Common name of certificate (%s) does not match server hostname (%s)' % (cert.cn,repo_host_name) )
                 if not repo_host_name.lower() in cert.subject_alt_names:
