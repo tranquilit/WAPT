@@ -350,7 +350,6 @@ object VisWaptGUI: TVisWaptGUI
                 PropertyName = 'package_uuid'
               end>
             Header.DefaultHeight = 18
-            Header.Font.Style = [fsBold]
             Header.Height = 18
             Header.MaxHeight = 100
             Header.MinHeight = 18
@@ -710,7 +709,6 @@ object VisWaptGUI: TVisWaptGUI
                 Width = 390
               end>
             Header.DefaultHeight = 18
-            Header.Font.Style = [fsBold]
             Header.Height = 18
             Header.MinHeight = 18
             Header.Options = [hoColumnResize, hoDrag, hoShowSortGlyphs, hoVisible, hoAutoSpring, hoHeaderClickAutoSort]
@@ -807,7 +805,6 @@ object VisWaptGUI: TVisWaptGUI
                 PropertyName = 'system_component'
               end>
             Header.DefaultHeight = 18
-            Header.Font.Style = [fsBold]
             Header.Height = 18
             Header.MaxHeight = 100
             Header.MinHeight = 18
@@ -1160,7 +1157,6 @@ object VisWaptGUI: TVisWaptGUI
                 PropertyName = 'release_notes'
               end>
             Header.DefaultHeight = 18
-            Header.Font.Style = [fsBold]
             Header.Height = 18
             Header.MaxHeight = 100
             Header.MinHeight = 18
@@ -1445,7 +1441,6 @@ object VisWaptGUI: TVisWaptGUI
                 PropertyName = 'update_id'
               end>
             Header.DefaultHeight = 18
-            Header.Font.Style = [fsBold]
             Header.Height = 18
             Header.MaxHeight = 100
             Header.MinHeight = 18
@@ -1692,7 +1687,6 @@ object VisWaptGUI: TVisWaptGUI
                     PropertyName = 'created_by'
                   end>
                 Header.DefaultHeight = 18
-                Header.Font.Style = [fsBold]
                 Header.Height = 18
                 Header.MaxHeight = 100
                 Header.MinHeight = 18
@@ -1838,7 +1832,6 @@ object VisWaptGUI: TVisWaptGUI
                     PropertyName = 'created_by'
                   end>
                 Header.DefaultHeight = 18
-                Header.Font.Style = [fsBold]
                 Header.Height = 18
                 Header.MaxHeight = 100
                 Header.MinHeight = 18
@@ -1983,7 +1976,6 @@ object VisWaptGUI: TVisWaptGUI
                     PropertyName = 'created_by'
                   end>
                 Header.DefaultHeight = 18
-                Header.Font.Style = [fsBold]
                 Header.Height = 18
                 Header.MaxHeight = 100
                 Header.MinHeight = 18
@@ -2316,7 +2308,6 @@ object VisWaptGUI: TVisWaptGUI
               PropertyName = 'registration_auth_user'
             end>
           Header.DefaultHeight = 18
-          Header.Font.Style = [fsBold]
           Header.Height = 18
           Header.MaxHeight = 100
           Header.MinHeight = 18
@@ -3466,7 +3457,6 @@ object VisWaptGUI: TVisWaptGUI
             PropertyName = 'sourcespath'
           end>
         Header.DefaultHeight = 18
-        Header.Font.Style = [fsBold]
         Header.Height = 18
         Header.MaxHeight = 100
         Header.MinHeight = 18
@@ -3581,11 +3571,11 @@ object VisWaptGUI: TVisWaptGUI
     end
     object pgPrivateRepo: TTabSheet
       Caption = 'Softwares repository'
-      ClientHeight = 643
-      ClientWidth = 1203
+      ClientHeight = 826
+      ClientWidth = 1912
       object Splitter3: TSplitter
-        Left = 1197
-        Height = 426
+        Left = 1906
+        Height = 609
         Top = 50
         Width = 6
         Align = alRight
@@ -3784,7 +3774,7 @@ object VisWaptGUI: TVisWaptGUI
         Left = 0
         Height = 609
         Top = 50
-        Width = 1912
+        Width = 1906
         OnGetText = GridGroupsGetText
         ShowAdvancedColumnsCustomize = False
         KeyFieldsNames = 'package;version;architecture;locale;maturity'
@@ -4102,7 +4092,6 @@ object VisWaptGUI: TVisWaptGUI
             PropertyName = 'name'
           end>
         Header.DefaultHeight = 18
-        Header.Font.Style = [fsBold]
         Header.Height = 18
         Header.MaxHeight = 100
         Header.MinHeight = 18
@@ -4469,7 +4458,6 @@ object VisWaptGUI: TVisWaptGUI
               PropertyName = 'signer_fingerprint'
             end>
           Header.DefaultHeight = 18
-          Header.Font.Style = [fsBold]
           Header.Height = 18
           Header.MaxHeight = 100
           Header.MinHeight = 18
@@ -5205,7 +5193,6 @@ object VisWaptGUI: TVisWaptGUI
                 PropertyName = 'sourcespath'
               end>
             Header.DefaultHeight = 18
-            Header.Font.Style = [fsBold]
             Header.Height = 18
             Header.MaxHeight = 100
             Header.MinHeight = 18
@@ -5384,7 +5371,6 @@ object VisWaptGUI: TVisWaptGUI
                 PropertyName = 'id'
               end>
             Header.DefaultHeight = 18
-            Header.Font.Style = [fsBold]
             Header.Height = 18
             Header.MaxHeight = 100
             Header.MinHeight = 18
@@ -5774,7 +5760,6 @@ object VisWaptGUI: TVisWaptGUI
                   PropertyName = 'release_notes'
                 end>
               Header.DefaultHeight = 18
-              Header.Font.Style = [fsBold]
               Header.Height = 18
               Header.MaxHeight = 100
               Header.MinHeight = 18
@@ -6379,7 +6364,6 @@ object VisWaptGUI: TVisWaptGUI
             PropertyName = 'sourcespath'
           end>
         Header.DefaultHeight = 18
-        Header.Font.Style = [fsBold]
         Header.Height = 18
         Header.MaxHeight = 100
         Header.MinHeight = 18
@@ -7182,7 +7166,6 @@ object VisWaptGUI: TVisWaptGUI
             PropertyName = 'pref'
           end>
         Header.DefaultHeight = 18
-        Header.Font.Style = [fsBold]
         Header.Height = 18
         Header.MaxHeight = 100
         Header.MinHeight = 18
@@ -7244,7 +7227,6 @@ object VisWaptGUI: TVisWaptGUI
             Header.AutoSizeIndex = -1
             Header.Columns = <>
             Header.DefaultHeight = 18
-            Header.Font.Style = [fsBold]
             Header.Height = 18
             Header.MainColumn = -1
             Header.MaxHeight = 100
@@ -7912,7 +7894,6 @@ object VisWaptGUI: TVisWaptGUI
               PropertyName = 'settings'
             end>
           Header.DefaultHeight = 18
-          Header.Font.Style = [fsBold]
           Header.Height = 18
           Header.MaxHeight = 100
           Header.MinHeight = 18
@@ -8372,14 +8353,14 @@ object VisWaptGUI: TVisWaptGUI
             end
             object ToolButtonSep2: TToolButton
               Left = 49
-              Height = 5
+              Height = 48
               Top = 0
               Caption = 'ToolButtonSep2'
               Style = tbsDivider
             end
             object ToolButton1: TToolButton
               Left = 164
-              Height = 5
+              Height = 48
               Top = 0
               Caption = 'ToolButton1'
               Style = tbsDivider
@@ -8467,7 +8448,6 @@ object VisWaptGUI: TVisWaptGUI
                 PropertyName = 'updated_on'
               end>
             Header.DefaultHeight = 18
-            Header.Font.Style = [fsBold]
             Header.Height = 18
             Header.MinHeight = 18
             Header.Options = [hoAutoResize, hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
@@ -8606,7 +8586,6 @@ object VisWaptGUI: TVisWaptGUI
                 PropertyName = 'status_sync_errors'
               end>
             Header.DefaultHeight = 18
-            Header.Font.Style = [fsBold]
             Header.Height = 18
             Header.MinHeight = 18
             Header.Options = [hoAutoResize, hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
@@ -8658,14 +8637,14 @@ object VisWaptGUI: TVisWaptGUI
             end
             object ToolButton4: TToolButton
               Left = 49
-              Height = 5
+              Height = 48
               Top = 0
               Caption = 'ToolButton4'
               Style = tbsDivider
             end
             object ToolButton14: TToolButton
               Left = 181
-              Height = 5
+              Height = 48
               Top = 0
               Caption = 'ToolButton14'
               Style = tbsDivider

@@ -258,7 +258,7 @@ object VisImportPackage: TVisImportPackage
         PropertyName = 'name'
       end>
     Header.DefaultHeight = 18
-    Header.Font.Style = [fsBold]
+    
     Header.Height = 18
     Header.MinHeight = 18
     Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]

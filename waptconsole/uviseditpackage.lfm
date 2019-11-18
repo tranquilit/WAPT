@@ -79,7 +79,7 @@ object VisEditPackage: TVisEditPackage
             PropertyName = 'depends'
           end>
         Header.DefaultHeight = 18
-        Header.Font.Style = [fsBold]
+        
         Header.Height = 18
         Header.MinHeight = 18
         Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
@@ -147,7 +147,7 @@ object VisEditPackage: TVisEditPackage
             PropertyName = 'depends'
           end>
         Header.DefaultHeight = 18
-        Header.Font.Style = [fsBold]
+        
         Header.Height = 18
         Header.MinHeight = 18
         Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
@@ -754,7 +754,7 @@ object VisEditPackage: TVisEditPackage
             Width = 456
           end>
         Header.DefaultHeight = 17
-        Header.Font.Style = [fsBold]
+        
         Header.Height = 18
         Header.MinHeight = 18
         Header.Options = [hoColumnResize, hoDrag, hoShowSortGlyphs, hoVisible, hoAutoSpring]
@@ -1326,7 +1326,7 @@ object VisEditPackage: TVisEditPackage
           PropertyName = 'signer'
         end>
       Header.DefaultHeight = 18
-      Header.Font.Style = [fsBold]
+      
       Header.Height = 18
       Header.MinHeight = 18
       Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
