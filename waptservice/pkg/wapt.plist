@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+        <key>Label</key>
+        <string>com.wapt</string>
+        <key>ProgramArguments</key>
+        <array>
+        <string>/opt/wapt/bin/python</string>
+        <string>/opt/wapt/waptservice/service.py</string>
+        </array>
+        <key>EnvironmentVariables</key>
+        <dict>
+            <key>PYTHONHOME</key>
+            <string>/opt/wapt/</string>
+            <key>PYTHONPATH</key>
+            <string>/opt/wapt</string>
+            <key>LC_ALL</key>
+            <string>en_US.UTF-8</string>
+        </dict>
+        <key>RunAtLoad</key>
+        <true/>
+	    <key>StandardOutPath</key>
+	    <string>/tmp/wapt.out</string>
+	    <key>StandardErrorPath</key>
+	    <string>/tmp/wapt.err</string>
+</dict>
+</plist>

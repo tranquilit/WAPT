@@ -366,7 +366,12 @@ def dmi_info():
     """
 
     result = {}
-    dmiout = ensure_unicode(run('dmidecode -q',shell=True))
+    # dmidecode is bugged on macOS, and prints "Bad address" repeatedly on stderr
+    if platform.system() != 'Darwin':
+        dmiout = ensure_unicode(run('dmidecode -q',shell=True))
+    else:
+        dmiout = ensure_unicode(run('dmidecode -q 2> /dev/null',shell=True))
+
     new_section = True
     for l in dmiout.splitlines():
         if not l.strip() or l.startswith('#'):

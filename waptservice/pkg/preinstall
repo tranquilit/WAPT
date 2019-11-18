@@ -1,0 +1,33 @@
+#!/usr/bin/python
+import subprocess
+
+from pwd import getpwnam
+import time
+
+while (int(subprocess.check_output("ifconfig -a inet 2>/dev/null | sed -n -e '/127.0.0.1/d' -e '/0.0.0.0/d' -e '/inet/p' | wc -l", shell=True)) <= 0):
+    print("No network currently available")
+    time.sleep(1)
+
+def check_user_exists(username):
+    try:
+        getpwnam(username)
+        return True
+    except:
+        return False
+
+if not check_user_exists('wapt'):
+    print("Adding user wapt")
+    #Note : le PrimaryGroupID 33 appartient au groupe _appstore sur macOS
+    cmds = ["dscl . -create /Users/wapt", \
+            "dscl . -create /Users/wapt UserShell /bin/bash", \
+            "dscl . -create /Users/wapt Realname Wapt", \
+            "dscl . -create /Users/wapt UniqueID 424", \
+            "dscl . -create /Users/wapt PrimaryGroupID 33", \
+            "mkdir -p /opt/wapt", \
+            "dscl . -create /Users/wapt NFSHomeDirectory /opt/wapt", \
+            "dscl . -append /Groups/admin GroupMembership wapt"]
+    for cmd in cmds:
+        print("Executing : %s " % cmd)
+        print(subprocess.check_output(cmd, shell=True))
+else:
+    print "User wapt already existing, skipping user creation"
