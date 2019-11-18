@@ -1,7 +1,7 @@
 object VisWaptGUI: TVisWaptGUI
-  Left = -1928
+  Left = -8
   Height = 1017
-  Top = -5
+  Top = -8
   Width = 1920
   AllowDropFiles = True
   Caption = 'WAPT console'
@@ -7971,13 +7971,13 @@ object VisWaptGUI: TVisWaptGUI
     end
     object PgRights: TTabSheet
       Caption = 'Rights management'
-      ClientHeight = 643
-      ClientWidth = 1254
+      ClientHeight = 826
+      ClientWidth = 1912
       object GridUsers: TSOGrid
         Left = 0
-        Height = 502
+        Height = 685
         Top = 50
-        Width = 1254
+        Width = 1912
         ShowAdvancedColumnsCustomize = False
         Align = alClient
         Color = clWhite
@@ -8224,7 +8224,7 @@ object VisWaptGUI: TVisWaptGUI
         Left = 0
         Height = 50
         Top = 0
-        Width = 1254
+        Width = 1912
         AutoSize = True
         ButtonHeight = 48
         ButtonWidth = 48
@@ -8233,7 +8233,7 @@ object VisWaptGUI: TVisWaptGUI
         ShowCaptions = True
         TabOrder = 1
         object ToolButton12: TToolButton
-          Left = 151
+          Left = 166
           Top = 2
           Action = ActReloadAccounts
         end
@@ -8243,17 +8243,17 @@ object VisWaptGUI: TVisWaptGUI
           Action = ActNewAccount
         end
         object ToolButton10: TToolButton
-          Left = 71
+          Left = 79
           Top = 2
           Action = ActDeleteAccount
         end
         object ToolButton13: TToolButton
-          Left = 238
+          Left = 261
           Top = 2
           Action = ActSaveAccounts
         end
         object PanCertTop: TPanel
-          Left = 316
+          Left = 344
           Height = 48
           Top = 2
           Width = 363
@@ -8263,15 +8263,15 @@ object VisWaptGUI: TVisWaptGUI
           TabOrder = 0
           object Label13: TLabel
             Left = 0
-            Height = 13
+            Height = 15
             Top = 11
-            Width = 134
+            Width = 145
             Caption = 'Certificates and key root dir'
             ParentColor = False
           end
           object EdPKIRootDirectory: TDirectoryEdit
             Left = 144
-            Height = 21
+            Height = 23
             Hint = 'c:\private'
             Top = 8
             Width = 219
@@ -8284,16 +8284,18 @@ object VisWaptGUI: TVisWaptGUI
             TabOrder = 0
             Text = 'c:\private'
           end
+        end
       end
       object PanCertDetails: TPanel
         Left = 0
         Height = 91
-        Top = 552
-        Width = 1254
+        Top = 735
+        Width = 1912
         Align = alBottom
         BevelOuter = bvNone
         TabOrder = 2
       end
+    end
     object pgRepositories: TTabSheet
       Caption = 'Repositories'
       ClientHeight = 826
