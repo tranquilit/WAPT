@@ -20,7 +20,6 @@
 #    along with WAPT.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------
-from __future__ import absolute_import
 __version__ = '1.5.1'
 usage = """
 This script if aimed at triggering package upgrade through direct http call

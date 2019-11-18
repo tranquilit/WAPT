@@ -140,7 +140,6 @@ begin
   ShowOnTop;
   AProgressBar.position:=0;
   AProgressBar.Max:=Max;
-  ShowOnTop;
   Application.ProcessMessages;
   LastUpdate:=Now;
 end;
@@ -148,7 +147,6 @@ end;
 procedure TVisLoading.Finish;
 begin
   AProgressBar.position:=AProgressBar.Max;
-  ShowOnTop;
   Application.ProcessMessages;
   LastUpdate:=Now;
   Hide;

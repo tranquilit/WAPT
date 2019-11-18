@@ -88,7 +88,7 @@ from waptserver.common import make_response,make_response_from_exception
 
 from waptserver.app import app
 from waptserver.auth import check_auth,change_admin_password
-from waptserver.decorators import requires_auth,check_auth_is_provided,authenticate,gzipped
+from waptserver.decorators import requires_auth,authenticate,gzipped
 
 import waptserver.config
 
@@ -281,7 +281,6 @@ def check_host_cert(host_certificate):
 
 @app.route('/add_host_kerberos',methods=['HEAD','POST'])
 @app.route('/add_host',methods=['HEAD','POST'])
-@check_auth_is_provided
 def register_host():
     """Add a new host into database, and return registration info
     If path is add_host_kerberos, assume there is (already validated by NGINX) computer kerberos SPN in the user part of Authorization http header else
@@ -353,19 +352,20 @@ def register_host():
                         dns_domain = '.'.join(socket.getfqdn().split('.')[1:])
                         authenticated_user = '%s.%s' % (authenticated_user, dns_domain)
                         logger.debug(u'Kerberos authenticated user %s for %s' % (authenticated_user,computer_fqdn))
-                        registration_auth_user = u'Kerb:%s' % authenticated_user
+                        registration_auth_user = u'kerb:%s' % authenticated_user
                 else:
                     authenticated_user = None
 
             # kerberos has failed or kerberos is not enabled
             if not authenticated_user:
                 # get authentication from basic auth. Check against waptserver admins
-                auth = request.authorization
-                if auth and check_auth(auth.username, auth.password, action=request.path):
+                auth_result = check_auth(request = request, session=session)
+                if auth_result:
                     # assume authenticated user is the fqdn provided in the data
-                    logger.debug(u'Basic auth registration for %s with user %s' % (computer_fqdn,auth.username))
+                    logger.debug(u'Authenticated registration for %s with user %s' % (computer_fqdn,auth_result['user']))
                     authenticated_user = computer_fqdn
-                    registration_auth_user = u'Basic:%s' % auth.username
+                    registration_auth_user = u'%s:%s' % (auth_result['method'],auth_result['user'])
+                    session.update(**auth_result)
 
                 host_cert = None
                 # if certificate is properly signed, we can trust it without using database
@@ -586,6 +586,7 @@ def get_websocket_auth_token():
         if not existing_host or not existing_host.host_certificate:
             raise EWaptAuthenticationFailure('Unknown host UUID %s. Please register first.' % (uuid, ))
 
+        auth_result = check_auth(request=request,session=session)
         host_cert = SSLCertificate(crt_string=existing_host.host_certificate)
         try:
             host_cert_cn = host_cert.verify_content(sha256_for_data(raw_data), signature)
@@ -677,6 +678,32 @@ def known_packages():
         logger.critical('known_packages failed %s' % (repr(e)))
         return make_response_from_exception(e)
 
+
+def read_trusted_certificates(trusted_signers_certificates_folder=None):
+    """
+    Returns:
+        SSLCABundle : trusted certs are in trusted dict attribute (indexed by fingerprint)
+    """
+    if not trusted_signers_certificates_folder:
+        return None
+    if not os.path.isdir(trusted_signers_certificates_folder):
+        raise Exception(u'trusted_signers_certificates_folder %s does not exists' % trusted_signers_certificates_folder)
+
+    cabundle = SSLCABundle()
+    cabundle.add_pems(trusted_signers_certificates_folder,trust_first=True)
+    return cabundle
+
+def check_valid_signer(package,cabundle):
+    signer_certs = package.package_certificates()
+    if package.has_file('setup.py'):
+        # check if certificate has code_signing extended attribute
+        signer_certs = package.package_certificates()
+        if not signer_certs or not signer_certs[0].is_code_signing:
+            raise EWaptForbiddden(u'The package %s contains setup.py code but has not been signed with a proper code_signing certificate' % package.package)
+    if cabundle is not None:
+        trusted = cabundle.check_certificates_chain(signer_certs,check_is_trusted=True)
+    return signer_certs
+
 @app.route('/api/v3/upload_packages',methods=['HEAD','POST'])
 @requires_auth
 def upload_packages():
@@ -726,14 +753,10 @@ def upload_packages():
             if not allowed_file(entry.make_package_filename()):
                 raise EWaptForbiddden(u'Package filename / name is forbidden : %s' % entry.make_package_filename())
 
-            if entry.has_file('setup.py'):
-                # check if certificate has code_signing extended attribute
-                signer_certs = entry.package_certificates()
-                if not signer_certs or not signer_certs[0].is_code_signing:
-                    raise EWaptForbiddden(u'The package %s contains setup.py code but has not been signed with a proper code_signing certificate' % entry.package)
+            # check if package signer is authorized
+            check_valid_signer(entry,trusted_signers)
 
             logger.debug(u'Saved package %s into %s' % (entry.asrequirement(),tmp_target))
-            # TODO check if certificate is allowed on thi server ?
 
             if entry.section == 'host':
                 target = os.path.join(wapt_folder+'-host', entry.make_package_filename())
@@ -778,6 +801,9 @@ def upload_packages():
         errors_msg = []
         packages_index_result = None
 
+        # load trusted signers
+        trusted_signers = read_trusted_certificates(app.conf.get('trusted_signers_certificates_folder'))
+
         if request.method == 'POST':
             if request.files:
                 files = request.files
@@ -788,7 +814,8 @@ def upload_packages():
                         packagefile = request.files[fkey]
                         logger.debug(u'uploading file : %s' % fkey)
                         if packagefile and allowed_file(packagefile.filename):
-                            done.append(read_package(packagefile))
+                            new_package = read_package(packagefile)
+                            done.append(new_package)
                     except Exception as e:
                         logger.critical(u'Error uploading %s : %s' % (fkey,e))
                         errors.append(fkey)
@@ -796,7 +823,10 @@ def upload_packages():
             else:
                 # streamed upload
                 packagefile = PackageStream(request.stream)
-                done.append(read_package(packagefile))
+                new_package = read_package(packagefile)
+                # check if package signer is auhtorized for the hos
+                check_valid_signer(new_package,trusted_signers)
+                done.append(new_package)
 
 
             if [e for e in done if e.section != 'host']:
@@ -974,7 +1004,7 @@ def change_password():
         try:
             post_data = request.get_json()
             if 'user' in post_data and 'password' in post_data:
-                if check_auth(post_data['user'], post_data['password']):
+                if check_auth(username = post_data['user'], password = post_data['password'], session=session):
                     # change master password
                     if 'new_password' in post_data and post_data['user'] == 'admin':
                         if len(post_data['new_password']) < app.conf.get('min_password_length',10):
@@ -995,7 +1025,7 @@ def change_password():
 
 
 
-@app.route('/api/v3/login',methods=['HEAD','POST','GET'])
+@app.route('/api/v3/login',methods=['HEAD','POST'])
 def login():
     error = ''
     result = None
@@ -1018,19 +1048,27 @@ def login():
             raise EWaptAuthenticationFailure(msg)
 
         if user is not None and password is not None:
-            if check_auth(user, password):
+            auth_result = check_auth(username = user, password = password, session=session, request = request)
+            if auth_result:
                 try:
                     hosts_count = Hosts.select(fn.COUNT(Hosts.uuid)).tuples().first()[0] # pylint: disable=no-value-for-parameter
                 except:
                     hosts_count = None
+
+                token_gen = get_secured_token_generator()
+                auth_result.update({'server_uuid':get_server_uuid()})
+
                 result = dict(
                     server_uuid=get_server_uuid(),
                     version=__version__,
                     hosts_count = hosts_count,
                     server_domain = get_dns_domain(),
                     edition = get_wapt_edition(),
+                    auth_result = auth_result,
+                    token =  token_gen.dumps(auth_result),
+                    client_headers = request.headers
                 )
-                session['user'] = user
+                session.update(**auth_result)
                 msg = 'Authentication OK'
                 spenttime = time.time() - starttime
                 return make_response(result=result, msg=msg, status=200,request_time=spenttime)

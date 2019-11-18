@@ -52,7 +52,6 @@ from waptserver.model import load_db_config
 import platform
 
 import logging
-import configparser
 from optparse import OptionParser
 
 from waptserver.model import *

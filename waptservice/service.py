@@ -589,6 +589,7 @@ def all_packages(page=1):
         if not request.authorization:
             return authenticate()
 
+    username = None
     grpuser = []
 
     rules = None
@@ -600,9 +601,11 @@ def all_packages(page=1):
         try:
             if check_auth(auth.username,auth.password):
                 grpuser.append('waptselfservice')
+                username = auth.username
                 logger.debug(u'User %s authenticated against local admins (waptselfservice)' % auth.username)
             else:
-                grpuser = get_user_self_service_groups(list(rules.keys()),auth.username,auth.password)
+                grpuser = get_user_self_service_groups(rules.keys(),auth.username,auth.password)
+                username = auth.username
                 logger.debug(u'User %s authenticated against self-service groups %s' % (auth.username,grpuser))
         except:
             return authenticate()
@@ -703,6 +706,7 @@ def local_package_details():
         if not request.authorization:
             return authenticate()
 
+    username = None
     grpuser = []
     rules = None
     if enterprise_common:
@@ -714,10 +718,12 @@ def local_package_details():
         try:
             if check_auth(auth.username,auth.password):
                 grpuser.append('waptselfservice')
+                username = auth.username
                 logger.debug(u'User %s authenticated against local admins (waptselfservice)' % auth.username)
             else:
                 try:
-                    grpuser = get_user_self_service_groups(list(rules.keys()),auth.username,auth.password)
+                    grpuser = get_user_self_service_groups(rules.keys(),auth.username,auth.password)
+                    username = auth.username
                     logger.debug(u'User %s authenticated against self-service groups %s' % (auth.username,grpuser))
                 except:
                     return authenticate()
@@ -1766,7 +1772,7 @@ class WaptTaskManager(threading.Thread):
                     if len(self.tasks_error)>waptconfig.MAX_HISTORY:
                         del self.tasks_error[:len(self.tasks_error)-waptconfig.MAX_HISTORY]
 
-            except queue.Empty:
+            except Queue.Empty:
                 try:
                     self.update_runstatus('')
                 except Exception as e:

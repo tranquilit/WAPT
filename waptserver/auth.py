@@ -32,6 +32,7 @@ import hashlib
 from passlib.hash import sha512_crypt, bcrypt
 from passlib.hash import pbkdf2_sha256
 from passlib.apache import HtpasswdFile
+import datetime
 
 from waptserver.config import __version__
 
@@ -40,11 +41,14 @@ from waptserver.config import __version__
 from waptutils import datetime2isodate,ensure_list,ensure_unicode,Version,setloglevel
 
 from waptserver.common import make_response,make_response_from_exception
+from waptserver.common import get_secured_token_generator,get_server_uuid
 from waptserver.utils import EWaptAuthenticationFailure
 
 from waptserver.app import app
 
 from waptserver.config import DEFAULT_CONFIG_FILE,rewrite_config_item
+
+from itsdangerous import TimedJSONWebSignatureSerializer
 
 logger = logging.getLogger()
 
@@ -54,68 +58,163 @@ except ImportError as e:
     logger.debug(u'LDAP Auth disabled: %s' % e)
     auth_module_ad = None
 
+"""
+def get_token_secret_key(self):
+    private_dir = app.conf['private_dir']
+    kfn = os.path.join(private_dir,'secret_key')
+    if not os.path.isfile(kfn):
+        if not os.path.isdir(private_dir):
+            os.makedirs(private_dir)
+        result = ''.join(random.SystemRandom().choice(string.letters + string.digits) for _ in range(64))
+        open(kfn,'w').write(result)
+        return result
+    else:
+        return open(kfn,'r').read()
+"""
 
-def check_auth(username, password, action = None):
+def check_auth( username=None, password = None, request = None,
+                session=None, methods=['admin','passwd','ldap','session','ssl','token']):
     """This function is called to check if a username /
     password combination is valid.
 
     Args:
-        action (str): if None, check for all actions (admin)
-                      'add_host' : check credentials for initial registration
+        username (str):
+        password (str):
+        request (Flask.Request) : request where to looup authrization basic header
+        session (Flask.Session) where to lookup session user
 
     Returns:
-        bool: True if user/password is ok for action
+        list of (str,str): list of (Auth method,username) or None if bad auth
 
     """
-    def any_(l):
-        """Check if any element in the list is true, in constant time.
-        """
-        ret = False
-        for e in l:
-            if e:
-                ret = True
-        return ret
+    if not username and not password and request.authorization:
+        username = request.authorization.username
+        password = request.authorization.password
+
+    auth_method = None
+    auth_user = None
+    auth_date = None
+
+    for method in methods:
+        if method == 'session' and session:
+            session_user = session.get('user',None)
+            if session_user:
+                auth_user = session_user
+                auth_date = session.get('auth_date',None)
+                auth_method = method
+                logger.debug(u'User %s authenticated using session cookie' % (username,))
+
+        elif method == 'password' and username != app.conf['wapt_user']:
+                # local htpasswd user/passwd file for add_host registration action
+                if app.conf.get('htpasswd_path'):
+                    htpasswd_users = HtpasswdFile(app.conf.get('htpasswd_path'))
+                    if htpasswd_users.verify(username,password):
+                        auth_method = method
+                        auth_user = username
+                        auth_date = datetime.datetime.utcnow().isoformat()
+                        logger.debug(u'User %s authenticated using htpasswd %s' % (username,htpasswd_users))
+                    else:
+                        logger.debug(u'user %s htpasswd %s verification failed' % (username,htpasswd_users))
 
 
-    # local htpasswd user/passwd file for add_host registration action
-    if action in ('/add_host','/api/v3/hosts_delete') and app.conf.get('htpasswd_path'):
-        htpasswd_users = HtpasswdFile(app.conf.get('htpasswd_path'))
-        if htpasswd_users.verify(username,password):
-            return True
+        elif method == 'admin' and app.conf['wapt_user'] == username:
+                pbkdf2_sha256_ok = False
+                pass_sha512_crypt_ok = False
+                pass_bcrypt_crypt_ok = False
 
-    user_ok = False
-    pass_sha1_ok = pbkdf2_sha256_ok = pass_sha512_ok = pass_sha512_crypt_ok = pass_bcrypt_crypt_ok = False
+                if '$pbkdf2-sha256$' in app.conf['wapt_password']:
+                    pbkdf2_sha256_ok = pbkdf2_sha256.verify(password, app.conf['wapt_password'])
+                elif sha512_crypt.identify(app.conf['wapt_password']):
+                    pass_sha512_crypt_ok = sha512_crypt.verify(
+                        password,
+                        app.conf['wapt_password'])
+                else:
+                    try:
+                        if bcrypt.identify(app.conf['wapt_password']):
+                            pass_bcrypt_crypt_ok = bcrypt.verify(
+                                password,
+                                app.conf['wapt_password'])
+                    except Exception:
+                        pass
 
-    user_ok = app.conf['wapt_user'] == username
+                if pbkdf2_sha256_ok or pass_sha512_crypt_ok or pass_bcrypt_crypt_ok:
+                    auth_method = method
+                    auth_user = username
+                    auth_date = datetime.datetime.utcnow().isoformat()
+                else:
+                    logger.debug(u'wapt admin passwd verification failed')
 
-    pass_sha1_ok = app.conf['wapt_password'] == hashlib.sha1(
-        password.encode('utf8')).hexdigest()
-    pass_sha512_ok = app.conf['wapt_password'] == hashlib.sha512(
-        password.encode('utf8')).hexdigest()
+        elif method == 'token':
+            # token auth
+            token_secret_key = app.conf['secret_key']
+            if token_secret_key:
+                # check if there is a valid token in the password
+                try:
+                    token_gen = get_secured_token_generator(token_secret_key)
+                    token_data = token_gen.loads(password)
+                    uuid = token_data.get('uuid', None)
+                    if not uuid:
+                        raise EWaptAuthenticationFailure('Bad token UUID')
+                    if token_data['server_uuid'] != get_server_uuid():
+                        raise EWaptAuthenticationFailure('Bad server UUID')
+                    auth_method = method
+                    auth_user = uuid
+                    auth_date =  datetime.datetime.fromtimestamp(token_data['iat']).isoformat()
+                    logger.debug(u'User %s authenticated using token' % (uuid,))
+                except Exception as e:
+                    logger.debug(u'Token verification failed : %s' % repr(e))
+                    pass
 
-    if '$pbkdf2-sha256$' in app.conf['wapt_password']:
-        pbkdf2_sha256_ok = pbkdf2_sha256.verify(password, app.conf['wapt_password'])
-    elif sha512_crypt.identify(app.conf['wapt_password']):
-        pass_sha512_crypt_ok = sha512_crypt.verify(
-            password,
-            app.conf['wapt_password'])
+        elif method == 'kerb':
+            # with nginx kerberos module, auth user name is stored as Basic auth in the
+            # 'Authorisation' header with password 'bogus_auth_gss_passwd'
+
+            # Kerberos auth negociated by nginx
+            if username != '' and password == 'bogus_auth_gss_passwd':
+                authenticated_user = username.lower().replace('$', '')
+                auth_method = method
+                auth_user = authenticated_user
+                auth_date = datetime.datetime.utcnow().isoformat()
+                logger.debug(u'User %s authenticated using kerberos' % (authenticated_user,))
+
+        elif method == 'ldap':
+            if auth_module_ad is not None and (app.conf['wapt_user'] != username and
+                    auth_module_ad.check_credentials_ad(app.conf, username, password)):
+                auth_method = method
+                auth_user = username
+                auth_date = datetime.datetime.utcnow().isoformat()
+                logger.debug(u'User %s authenticated using LDAP' % (username,))
+
+        # nginx ssl auth.
+        elif request and request.headers.get('X-Ssl-Authenticated', None) == 'SUCCESS':
+            dn = request.headers.get('X-Ssl-Client-Dn', None)
+            if dn:
+                auth_method = method
+                auth_user = dn
+                auth_date = datetime.datetime.utcnow().isoformat()
+                logger.debug(u'User %s authenticated using SSL client certificate' % (dn,))
+
+        if auth_method and auth_user:
+            break
+
+    if auth_method and auth_user:
+        return dict(auth_method = auth_method,user=auth_user,auth_date=auth_date)
     else:
-        try:
-            if bcrypt.identify(app.conf['wapt_password']):
-                pass_bcrypt_crypt_ok = bcrypt.verify(
-                    password,
-                    app.conf['wapt_password'])
-
-        except Exception:
-            pass
-
-    basic_auth = any_([pbkdf2_sha256_ok, pass_sha1_ok, pass_sha512_ok,
-                 pass_sha512_crypt_ok, pass_bcrypt_crypt_ok]) and user_ok
-
-    return basic_auth or (auth_module_ad is not None and auth_module_ad.check_credentials_ad(app.conf, username, password))
+        return None
 
 def change_admin_password(newpassword):
     new_hash = pbkdf2_sha256.hash(newpassword.encode('utf8'))
     rewrite_config_item(app.config['CONFIG_FILE'],'options', 'wapt_password', new_hash)
     app.conf['wapt_password'] = new_hash
 
+
+def get_authorized_actions(user):
+    """
+
+    Args:
+        user (str): username
+
+    Returns:
+        dict : 'action': ['scopes']
+    """
+    return []

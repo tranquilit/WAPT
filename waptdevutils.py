@@ -308,9 +308,9 @@ def duplicate_from_file(package_filename,new_prefix='test',target_directory=None
     # authorized_certs is a directoyr instead a list of certificates.
     if authorized_certs is not None and authorized_certs != '' and not isinstance(authorized_certs,list):
         bundle = SSLCABundle()
-        bundle.add_pems(makepath(authorized_certs,'*.crt'))
-        bundle.add_pems(makepath(authorized_certs,'*.cer'))
-        bundle.add_pems(makepath(authorized_certs,'*.pem'))
+        bundle.add_pems(makepath(authorized_certs,'*.crt'),trust_first=True)
+        bundle.add_pems(makepath(authorized_certs,'*.cer'),trust_first=True)
+        bundle.add_pems(makepath(authorized_certs,'*.pem'),trust_all=True)
     else:
         bundle = authorized_certs or None
 

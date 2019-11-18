@@ -49,45 +49,19 @@ def authenticate():
         _('You have to login with proper credentials'), 401,
         {'WWW-Authenticate': 'Basic realm="Login Required"'})
 
-def requires_auth(f):
+def requires_auth(f,methods=['session','token','ssl','admin','passwd','ldap']):
     """Flask route decorator which requires Basic Auth http header
     If not header, returns a 401 http status.
     """
     @functools.wraps(f)
     def decorated(*args, **kwargs):
-        auth = request.authorization
-
-        if session.get('user',None):
-            logger.debug(u'connection from user %s ' % session.get('user'))
-            return f(*args, **kwargs)
-
-        if not auth:
-            logger.info(u'no credential given')
+        auth_result = check_auth(request = request, session=session, methods=methods)
+        if not auth_result:
             return authenticate()
-
-        logging.debug('authenticating : %s' % auth.username)
-        if not check_auth(auth.username, auth.password, action=request.path):
-            return authenticate()
-        logger.info(u'user %s authenticated' % auth.username)
+        logger.info(u'user %s authenticated' % auth_result )
+        session.update(**auth_result)
         return f(*args, **kwargs)
     return decorated
-
-def allow_local(f):
-    """Restrict access to localhost"""
-    @functools.wraps(f)
-    def decorated(*args, **kwargs):
-        if request.remote_addr in ['127.0.0.1']:
-            return f(*args, **kwargs)
-        else:
-            return forbidden()
-    return decorated
-
-def forbidden():
-    """Sends a 403 response that enables basic auth"""
-    return Response(
-        'Restricted access.\n',
-         403)
-
 
 def check_auth_is_provided(f):
     """Check if there is at least basic-auth or kerberos or ssl signature if
@@ -96,14 +70,9 @@ def check_auth_is_provided(f):
     @functools.wraps(f)
     def decorated(*args, **kwargs):
         auth = session.get('user',None)
-        if not auth:
-            auth = request.headers.get('Authorization', None)
-        if not auth:
-            auth = request.authorization
-        if not auth:
-            auth = request.headers.get('X-Signature', None)
-        if not auth:
-            auth = request.headers.get('X-Ssl-Authenticated', None)
+        #if not session_user:
+        #
+        #    auth = check_auth( session=session)
         if not auth and not app.conf['allow_unauthenticated_registration']:
             return authenticate()
         return f(*args, **kwargs)

@@ -33,6 +33,7 @@ import getpass
 import traceback
 import platform
 import hashlib
+import re
 
 from peewee import *
 from peewee import Function
@@ -117,8 +118,8 @@ class WaptBaseModel(SignaledModel):
 @pre_save(sender=WaptBaseModel)
 def waptbasemodel_pre_save(model_class, instance, created):
     if created:
-        instance.created_on = datetime.datetime.now()
-    instance.updated_on = datetime.datetime.now()
+        instance.created_on = datetime.datetime.utcnow()
+    instance.updated_on = datetime.datetime.utcnow()
 
 
 class ServerAttribs(SignaledModel):
@@ -285,6 +286,25 @@ class HostPackagesStatus(WaptBaseModel):
 
     def __repr__(self):
         return '<HostPackageStatus uuid=%s packages=%s (%s) install_status=%s>' % (self.id, self.package, self.version, self.install_status)
+
+class WaptUsers(WaptBaseModel):
+    """Users
+    """
+    id = PrimaryKeyField(primary_key=True)
+    name = CharField(null=True, index=True)
+    auth_method = CharField(null=True)
+    description = CharField(null=True, index=False)
+    acls = ArrayField(CharField,null=True)
+    user_certificate = TextField(null=True, help_text='User public X509 certificates chain')
+    authorized_certificates_sha256 = ArrayField(CharField, null=True, help_text='Authorized packages signers certificates sha256 fingerprint')
+    signer = CharField(null=True)
+    signature = CharField(null=True)
+    signer_fingerprint = CharField(null=True)
+
+
+    def __repr__(self):
+        return '<WaptUsers id=%s name=%s>' % (self.id, self.name)
+
 
 class Packages(WaptBaseModel):
     """Stores the content of packages of repositories
@@ -676,13 +696,29 @@ def set_host_field(host, fieldname, data):
     setattr(host, fieldname, data)
     return host
 
+def package_version_from_prequest(prequest):
+    """Split package and version from  "package(=version)"
+
+    Returns:
+        tuple (str,str): (package,version)
+    """
+    package_version_re = re.compile('([^()]+)\s*(\(\s*([<=>]*)\s*(\S+)\s*\))?.*')
+    match = package_version_re.match(prequest)
+    if match and len(match.groups())==4:
+        result = match.groups()
+        return (result[0],result[3])
+    else:
+        return None
 
 def update_installed_packages(uuid, data, applied_status_hashes):
     """Stores packages json data into separate HostPackagesStatus
 
+    Merge
+
     Args:
         uuid (str) : unique ID of host
         data (dict): data from host
+        applied_status_hashes (dict): add the supplied hash into 'installed_packages' key
 
     Returns:
         None
@@ -734,6 +770,17 @@ def update_installed_packages(uuid, data, applied_status_hashes):
             return []
 
     installed_packages = data.get('installed_packages', data.get('packages', None))
+
+    last_update_status = data.get('last_update_status',None)
+    if last_update_status is None:
+        last_update_status = Hosts.select(Hosts.last_update_status).where(uuid=uuid).dicts().first()
+    pending = last_update_status.get('pending',{})
+
+    missing = [ package_version_from_prequest(pr) for pr in pending.get('install',[]) or [] + pending.get('additional',[]) or []]
+    upgrades = [ package_version_from_prequest(pr) for pr in pending.get('upgrade',[])]  or []
+    removes = [ package_version_from_prequest(pr)[0] for pr in pending.get('remove',[])]  or []
+    errors = [ package_version_from_prequest(pr) for pr in last_update_status.get('errors',[])]  or []
+
     if installed_packages is not None:
         HostPackagesStatus.delete().where(HostPackagesStatus.host == uuid).execute()
         packages = []
@@ -743,7 +790,7 @@ def update_installed_packages(uuid, data, applied_status_hashes):
             package['depends'] = ensure_list(package.get('depends'))
             package['conflicts'] = ensure_list(package.get('conflicts'))
             package['uninstall_key'] = _get_uninstallkeylist(package.get('uninstall_key'))
-            package['created_on'] = datetime.datetime.now()
+            package['created_on'] = datetime.datetime.utcnow()
             if not package.get('package_uuid'):
                 package['package_uuid'] = 'fb-%s' % (hashlib.sha256('-'.join([
                     (package.get('package') or '').encode('utf8'),
@@ -752,12 +799,35 @@ def update_installed_packages(uuid, data, applied_status_hashes):
                      str(package.get('locale') or ''),
                      str(package.get('maturity') or '')])).hexdigest(),)
 
+            # merge update status from Hosts.last_update_status
+            pv = (package['package'],package['version'])
+            if pv in errors:
+                package['install_status'] = 'ERROR'
+            elif package['package'] in [p[0] for p in upgrades]:
+                p = [p for p in upgrades if p[0] == package['package']][0]
+                if Version(p[1]) > Version(package['version']):
+                    package['install_status'] = 'NEED-UPGRADE'
+                elif Version(p[1]) < Version(package['version']):
+                    package['install_status'] = 'NEED-DOWNGRADE'
+            elif package['package'] in removes:
+                package['install_status'] = 'NEED-REMOVE'
 
             # filter out all unknown fields from json data for the SQL insert
             packages.append(dict([(k, encode_value(v)) for k, v in package.iteritems() if k in HostPackagesStatus._meta.fields]))
 
+
         if packages:
             HostPackagesStatus.insert_many(packages).execute() # pylint: disable=no-value-for-parameter
+
+        for pv in missing+upgrades:
+            HostPackagesStatus(
+                    host = uuid,
+                    package=pv[0],
+                    version=pv[1],
+                    created_on=datetime.datetime.utcnow(),
+                    install_status='NEED-INSTALL',
+                    package_uuid='fb-%s' % (hashlib.sha256(package['package'].encode('utf8')+'-'+package['version'])),
+                    ).save()
 
         applied_status_hashes['installed_packages'] = data.get('status_hashes',{}).get('installed_packages')
 
@@ -785,7 +855,7 @@ def update_installed_softwares(uuid, data,applied_status_hashes):
 
         for software in installed_softwares:
             software['host'] = uuid
-            software['created_on'] = datetime.datetime.now()
+            software['created_on'] = datetime.datetime.utcnow()
             # filter out all unknown fields from json data for the SQL insert
             softwares.append(dict([(k,encode_value(v)) for k, v in software.iteritems() if k in HostSoftwares._meta.fields]))
 
@@ -814,7 +884,7 @@ def update_waptwua(uuid,data,applied_status_hashes):
         windows_updates = []
         for w in data['waptwua_updates']:
             u = dict([(k,encode_value(v)) for k, v in w.iteritems() if k in WsusUpdates._meta.fields])
-            u['created_on'] = datetime.datetime.now()
+            u['created_on'] = datetime.datetime.utcnow()
             windows_updates.append(u)
         if windows_updates:
             # if win update has already been registered, we don't update it, but simply ignore the insert
@@ -844,7 +914,7 @@ def update_waptwua(uuid,data,applied_status_hashes):
             # default if not supplied
             new_rec = dict([(k,encode_value(v)) for k, v in h.iteritems() if k in HostWsus._meta.fields])
             new_rec['host'] = uuid
-            new_rec['created_on'] = datetime.datetime.now()
+            new_rec['created_on'] = datetime.datetime.utcnow()
             if not 'install_date' in new_rec:
                 new_rec['install_date'] = None
             host_wsus.append(new_rec)

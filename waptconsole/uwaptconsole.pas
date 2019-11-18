@@ -11,7 +11,7 @@ uses
   SynCompletion, vte_json, vte_dbtreeex, ExtCtrls, StdCtrls, ComCtrls, ActnList,
   Menus, jsonparser, superobject, VirtualTrees, VarPyth, ImgList, SOGrid,
   uvisloading, IdComponent, DefaultTranslator, IniPropStorage, DBGrids,
-  ShellCtrls, CheckLst, GetText, uWaptConsoleRes, db,
+  ShellCtrls, CheckLst, EditBtn, GetText, uWaptConsoleRes, db,
   BufDataset, SearchEdit, MenuButton, ToggleLabel, tisstrings;
 
 type
@@ -42,6 +42,10 @@ type
     ActSaveAccounts: TAction;
     ActReloadAccounts: TAction;
     ActNewAccount: TAction;
+    EdPKIRootDirectory: TDirectoryEdit;
+    Label13: TLabel;
+    PanCertTop: TPanel;
+    PanCertDetails: TPanel;
     GridRules: TSOGrid;
     MenuItemCheckFiles: TMenuItem;
     MenuItemShowErrors: TMenuItem;
@@ -550,6 +554,7 @@ type
     EdSearchPackage: TSearchEdit;
     ImageList1: TImageList;
     pgGroups: TTabSheet;
+    Splitter3: TSplitter;
     pgTasks: TTabSheet;
     SplitHostTaskLog: TSplitter;
     TabSheet1: TTabSheet;
@@ -645,8 +650,10 @@ type
     procedure ActGermanUpdate(Sender: TObject);
     procedure ActHostsDeletePackageUpdate(Sender: TObject);
     procedure ActHostsDeleteUpdate(Sender: TObject);
+    procedure ActNewAccountExecute(Sender: TObject);
     procedure ActNewRuleExecute(Sender: TObject);
     procedure ActRefreshHostsForPackageExecute(Sender: TObject);
+    procedure ActReloadAccountsExecute(Sender: TObject);
     procedure ActReportingQueryExportExecute(Sender: TObject);
     procedure ActReportingQueryImportExecute(Sender: TObject);
     procedure ActReportingQueryImportUpdate(Sender: TObject);
@@ -925,6 +932,11 @@ type
       Node: PVirtualNode);
     procedure GridSelfServicePackagesColumnDblClick(Sender: TBaseVirtualTree;
       Column: TColumnIndex; Shift: TShiftState);
+    procedure GridUsersDrawText(Sender: TBaseVirtualTree;
+      TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex;
+      const AText: String; const CellRect: TRect; var DefaultDraw: Boolean);
+    procedure GridUsersKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
     procedure GridWinproductsChange(Sender: TBaseVirtualTree; Node: PVirtualNode );
     procedure GridWinUpdatesGetImageIndexEx(Sender: TBaseVirtualTree;
       Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
@@ -1117,6 +1129,11 @@ uses LCLIntf, LCLType, IniFiles, variants, LazFileUtils,FileUtil, base64,
 
 {$R *.lfm}
 
+const
+  IMG_CHECKBOX_ENABLE_CHECKED   = 15;
+  IMG_CHECKBOX_ENABLE_UNCHECKED = 16;
+  IMG_CHECKBOX_DISABLE_CHECKED  = 17;
+  IMG_CHECKBOX_DISABLE_UNCHECKED= 18;
 
 type TComponentsArray=Array of TComponent;
 
@@ -1153,6 +1170,20 @@ begin
       ACol.Options := ACol.Options+[coVisible]
     else
       ACol.Options := ACol.Options-[coVisible]
+  end;
+end;
+
+procedure SetSOGridEnabled(Grid:TSOGrid;PropertyName:String;Enabled:Boolean);
+var
+  Acol: TSOGridColumn;
+begin
+  ACol := Grid.FindColumnByPropertyName(PropertyName);
+  If Acol<>Nil then
+  begin
+    if Enabled then
+      ACol.Options := ACol.Options+[coEnabled,coEditable,coResizable]
+    else
+      ACol.Options := ACol.Options-[coEnabled,coEditable,coResizable]
   end;
 end;
 
@@ -1791,11 +1822,10 @@ end;
 
 procedure TVisWaptGUI.UpdateHostPages(Sender: TObject);
 var
-  currhost,packagename,packageversion : String;
-  PackageRequest: TPackageReq;
-  RowSO, package,packages,packagereq,softwares,PackagesIndex: ISuperObject;
+  currhost : String;
+  RowSO, packages, softwares: ISuperObject;
   waptwua_status,wuauserv_status,wsusupdates: ISuperObject;
-  sores,all_missing,pending_install,additional,upgrades,errors,remove: ISuperObject;
+  sores: ISuperObject;
 begin
   RowSO := Gridhosts.FocusedRow;
 
@@ -1814,81 +1844,7 @@ begin
       try
         sores := WAPTServerJsonGet('api/v1/host_data?field=installed_packages&uuid=%S',[currhost]);
         if sores.B['success'] then
-        begin
-          RowSO['installed_packages'] := sores['result'];
-          // add missing packages
-          all_missing := TSuperObject.Create(stArray);
-          additional :=   RowSO['last_update_status.pending.additional'];
-          pending_install := RowSO['last_update_status.pending.install'];
-          if pending_install <> Nil then
-            for package in pending_install do
-              all_missing.AsArray.Add(package);
-          if (additional<>Nil) and (additional.AsArray.Length>0) then
-            for package in additional do
-              all_missing.AsArray.Add(package);
-
-          PackagesIndex := TSuperObject.Create(stObject);
-          for package in RowSO['installed_packages'] do
-            PackagesIndex.AsObject.O[PackageRequest.FromSOPackage(package).AsString] := package;
-
-          for packagereq in all_missing do
-          begin
-            PackageRequest.FromString(UTF8Encode(packagereq.AsString));
-            if not PackagesIndex.AsObject.Exists(PackageRequest.AsString) then
-            begin
-              package := TSuperObject.Create();
-              package.S['package'] := PackageRequest.package ;
-              package.S['version'] := PackageRequest.version;
-              package.S['install_status'] := 'NEED-INSTALL';
-              RowSO.A['installed_packages'].Add(package);
-            end;
-          end;
-
-          upgrades := RowSO['last_update_status.pending.upgrade'];
-          if (upgrades<>Nil) and (upgrades.AsArray.Length>0) then
-          begin
-            for package in RowSO['installed_packages'] do
-            begin
-              for packagereq in upgrades do
-              begin
-                packagename := PackageRequest.FromString(UTF8Encode(packagereq.AsString)).package;
-                if package.S['package'] = UTF8Decode(packagename) then
-                  package.S['install_status'] := 'NEED-UPGRADE';
-              end;
-            end;
-          end;
-
-          remove :=   RowSO['last_update_status.pending.remove'];
-          if (remove<>Nil) and (remove.AsArray.Length>0) then
-          begin
-            for package in RowSO['installed_packages'] do
-            begin
-              for packagereq in remove do
-              begin
-                packagename:= PackageRequest.FromString(UTF8Encode(packagereq.AsString)).package;
-                if package.S['package'] = UTF8Decode(packagename) then
-                  package.S['install_status'] := 'NEED-REMOVE';
-              end;
-            end;
-          end;
-
-          errors := RowSO['last_update_status.errors'];
-          if (errors<>Nil) and (errors.AsArray.Length>0) then
-          begin
-            for package in RowSO['installed_packages'] do
-            begin
-              for packagereq in errors do
-              begin
-                PackageRequest.FromString(UTF8Encode(packagereq.AsString));
-                packagename:= PackageRequest.package;
-                packageversion := PackageRequest.version;
-                if (package.S['package'] = UTF8Decode(packagename)) and (package.S['version'] = UTF8Decode(packageversion)) then
-                  if StrIsOneOf(UTF8Decode(package.S['install_status']),['MISSING','NEED-UPGRADE']) THEN
-                    package.S['install_status'] := 'ERROR';
-              end;
-            end;
-          end;
-        end
+          RowSO['installed_packages'] := sores['result']
         else
           RowSO['installed_packages'] := nil;
       except
@@ -2993,6 +2949,18 @@ begin
   (Sender as TAction).Enabled:=(GridHosts.SelectedCount>0);
 end;
 
+procedure TVisWaptGUI.ActNewAccountExecute(Sender: TObject);
+begin
+  with TVisCreateKey.Create(Self) do
+  try
+    if ShowModal = mrOk then
+    begin
+      ActReloadAccounts.Execute;
+    end
+  finally
+    Free;
+  end;
+end;
 
 procedure TVisWaptGUI.ActmakePackageTemplateExecute(Sender: TObject);
 begin
@@ -4557,8 +4525,7 @@ begin
 
         for i:=0 to cbFilterPackagesArch.Items.Count-1 do
           cbFilterPackagesArch.Checked[i] := ini.ReadBool(self.Name,cbFilterPackagesArch.Items[i],cbFilterPackagesArch.Checked[i]);
-		
-		HostsLimit := ini.ReadInteger(self.name,'HostsLimit',2000);
+        HostsLimit := ini.ReadInteger(self.name,'HostsLimit',2000);
         //ShowMessage(Appuserinipath+'/'+self.Name+'/'+EdHostsLimit.Name+'/'+ini.ReadString(name,EdHostsLimit.Name,'not found'));
         HostPages.Width := ini.ReadInteger(self.name,HostPages.Name+'.width',HostPages.Width);
 
@@ -5359,14 +5326,26 @@ begin
   SetSOGridVisible(GridHosts,'audit_status',False);
   SetSOGridVisible(GridHosts,'waptwua.status',False);
 
+  SetSOGridEnabled(GridHosts,'audit_status',False);
+  SetSOGridEnabled(GridHosts,'waptwua.status',False);
+
   SetSOGridVisible(GridHostsForPackage,'last_audit_status',False);
   SetSOGridVisible(GridHostsForPackage,'last_audit_status',False);
   SetSOGridVisible(GridHostsForPackage,'last_audit_on',False);
   SetSOGridVisible(GridHostsForPackage,'next_audit_on',False);
 
+  SetSOGridEnabled(GridHostsForPackage,'last_audit_status',False);
+  SetSOGridEnabled(GridHostsForPackage,'last_audit_status',False);
+  SetSOGridEnabled(GridHostsForPackage,'last_audit_on',False);
+  SetSOGridEnabled(GridHostsForPackage,'next_audit_on',False);
+
   SetSOGridVisible(GridHostPackages,'last_audit_status',False);
   SetSOGridVisible(GridHostPackages,'last_audit_on',False);
   SetSOGridVisible(GridHostPackages,'next_audit_on',False);
+
+  SetSOGridEnabled(GridHostPackages,'last_audit_status',False);
+  SetSOGridEnabled(GridHostPackages,'last_audit_on',False);
+  SetSOGridEnabled(GridHostPackages,'next_audit_on',False);
 
   cbAuthorizedHosts.Checked := False;
 

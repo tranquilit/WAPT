@@ -92,7 +92,9 @@ def get_server_uuid():
     server_uuid = app.conf.get('server_uuid', None)
     return server_uuid
 
-def get_secured_token_generator():
-    return TimedJSONWebSignatureSerializer(app.conf['secret_key'], expires_in = app.conf['token_lifetime'])
+def get_secured_token_generator(secret_key=None):
+    if not secret_key:
+        secret_key = app.conf['secret_key']
+    return TimedJSONWebSignatureSerializer(secret_key, expires_in = app.conf['token_lifetime'])
 
 

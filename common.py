@@ -5531,7 +5531,7 @@ class Wapt(BaseObjectClass):
             bytes: signature of sha256 hash of data.
         """
         key = self.get_host_key()
-        return key.sign_content(hexdigest_for_data(data,md = md))
+        return key.sign_content(hexdigest_for_data(str(data),md = md))
 
     def get_last_update_status(self):
         """Get update status of host as stored at the end of last operation.

@@ -32,7 +32,7 @@ import glob
 import subprocess
 import logging
 import time
-import urlparse as urllib
+import urlparse
 import datetime
 
 from cryptography import x509
@@ -213,9 +213,9 @@ class SSLCABundle(BaseObjectClass):
         Can load and save PEM encoded CA certificates from directory and from supplied certificates list.
 
         Args:
-            cert_pattern_or_dir (str): Loads CA trusted certs from here. Path to a directory or files pattern like c:/wapt/ssl/*.crt
+            cert_pattern_or_dir (str): Loads CA certs from here. Path to a directory or files pattern like c:/wapt/ssl/*.crt
             callback (func):  callback to decrypt keys in supplied PEM.
-            certificates (list) : list of *trusted* SSLCertificate to include.
+            certificates (list) : list of SSLCertificate to include.
 
         """
         self._keys = []
@@ -229,6 +229,8 @@ class SSLCABundle(BaseObjectClass):
         self._cert_chains_cache = {}
         self.check_cache_ttl = 10 # minutes
 
+        self.trusted = {}
+
         if callback is None:
             callback = default_pwd_callback
         self.callback = callback
@@ -237,8 +239,8 @@ class SSLCABundle(BaseObjectClass):
         if certificates is not None:
             self.add_certificates(certificates)
 
-
     def clear(self):
+        self.trusted.clear()
         del self._keys[:]
         del self._certificates[:]
         self._certs_subject_hash_idx.clear()
@@ -247,16 +249,35 @@ class SSLCABundle(BaseObjectClass):
         self._crls_negative_cache.clear()
         self._cert_chains_cache.clear()
 
-    def add_pems(self,cert_pattern_or_dir=u'*.crt',load_keys=False):
+    def add_pems(self,cert_pattern_or_dir=u'*.crt',load_keys=False,trust_first=False,trust_all=False):
+        """Read a list of PEM encoded X509 certificates/bundle files
+
+        Args:
+            cert_pattern_or_dir (str): Loads CA certs from here. Path to a directory or files pattern like c:/wapt/ssl/*.crt
+            trust_first (bool): add first certificate of each pem file in the trusted store
+            trust_all (bool): add all certificates of each pem file in the trusted store
+
+        """
         if cert_pattern_or_dir:
             if os.path.isdir(cert_pattern_or_dir):
                 # load pems from provided directory
                 for fn in glob.glob(os.path.join(cert_pattern_or_dir,u'*.crt'))+glob.glob(os.path.join(cert_pattern_or_dir,u'*.pem')):
-                    self.add_certificates_from_pem(pem_filename = fn,load_keys=load_keys)
+                    certs = self.add_certificates_from_pem(pem_filename = fn,load_keys=load_keys)
+                    if certs:
+                        if trust_first:
+                            self.trust_certificates(certs[0])
+                        elif trust_all:
+                            self.trust_certificates(certs)
+
             else:
                 # load pems based on file wildcards
                 for fn in glob.glob(cert_pattern_or_dir):
-                    self.add_certificates_from_pem(pem_filename = fn,load_keys=load_keys)
+                    certs = self.add_certificates_from_pem(pem_filename = fn,load_keys=load_keys)
+                    if certs:
+                        if trust_first:
+                            self.trust_certificates(certs[0])
+                        elif trust_all:
+                            self.trust_certificates(certs)
         return self
 
     def add_certificates(self,certificates):
@@ -288,7 +309,7 @@ class SSLCABundle(BaseObjectClass):
         If key needs to be decrypted, password callback property must be assigned.
 
         Returns:
-            SSLCABundle : self
+            (ordered) list of SSLCertificate in pem
         """
         if pem_data is None:
             if os.path.isfile(pem_filename):
@@ -349,7 +370,13 @@ class SSLCABundle(BaseObjectClass):
 
         self._keys.extend(keys)
 
-        return self
+        return result
+
+    def trust_certificates(self,certificates):
+        if isinstance(certificates,SSLCertificate):
+            certificates = [certificates]
+        for cert in certificates:
+            self.trusted[cert.fingerprint]= cert
 
     def key(self,modulus,password):
         for k in self._keys:
@@ -489,9 +516,11 @@ class SSLCABundle(BaseObjectClass):
             logger.critical(u'Error for certificate %s. Faulty certificate is %s: %s' % (certificate,e.certificate.get_subject(),e))
             raise
 
-    def check_certificates_chain(self,cert_chain,verify_expiry=True,verify_revoke=True,allow_pinned=True):
+    def check_certificates_chain(self,cert_chain,verify_expiry=True,verify_revoke=True,allow_pinned=True,check_is_trusted=False):
         """Check if first certificate in cert_chain is approved
         by one of the CA certificate from this bundle.
+
+        If check_is_trusted is True, check that top certificate is in trusted collection.
 
         If intermediate issuers can not be found in this ca bundle, try to get them from
         supplied cert_chain.
@@ -502,6 +531,8 @@ class SSLCABundle(BaseObjectClass):
             verify_revoke (bool) : Check if certificate is not in the CRLs (if certificate contains crl location URL)
                                      CRL must have been already retrieved using update_crl.
             allow_pinned (bool) : If True, accept certificate if it is in trusted certificates, even if we don't know the issuer.
+            check_is_trusted (bool): Check that the verified top ca certificate is in trusted collection.
+                                     If False, we only check that we know the issuer (and the ca cert is valid)
 
         Returns:
             (list) : SSLCertificate chain of trusted cert
@@ -537,7 +568,7 @@ class SSLCABundle(BaseObjectClass):
             while cert:
                 try:
                     # trust the cert itself if it is the bundle, even if issuer is unknown at this stage.
-                    if allow_pinned and cert in self._certificates:
+                    if allow_pinned and cert in self._certificates and (not check_is_trusted or cert.fingerprint in self.trusted):
                         reason = u'Certificate "%s" is trusted by himself' % cert.cn
                         add_chain_cache(cache_key,result,reason)
                         return result
@@ -545,11 +576,13 @@ class SSLCABundle(BaseObjectClass):
                     # append chain of trusted upstream CA certificates
                     issuer_chain = cert.verify_signature_with(self)
                     for issuer in issuer_chain:
-                        if allow_pinned and issuer in self._certificates:
-                            result.append(issuer)
-                            break
                         issuer.verify_signature_with(self)
                         result.append(issuer)
+                        if allow_pinned and issuer in self._certificates and (not check_is_trusted or cert.fingerprint in self.trusted):
+                            break
+
+                    if check_is_trusted and not cert.fingerprint in self.trusted:
+                        raise EWaptCertificateUntrustedIssuer(reason)
 
                     reason = u'Certificate "%s" is trusted' % cert.cn
                     add_chain_cache(cache_key,result,reason)
@@ -573,7 +606,7 @@ class SSLCABundle(BaseObjectClass):
                             cert = issuer
 
         # return cached checked chain
-        elif cached_chain:
+        elif cached_chain and (not check_is_trusted or cached_chain[0].fingerprint in self.trusted):
             return cached_chain
 
         #reason = u'None of certificates (%s) are trusted.' % (','.join(['"%s"' % c.cn for c in cert_chain]))
@@ -673,7 +706,7 @@ class SSLCABundle(BaseObjectClass):
                             self._check_url_in_negative_cache(url)
                         logger.debug(u'Download CRL %s' % (url,))
                         if cache_dir:
-                            crl_filename =  os.path.join(cache_dir,urllib.parse.urlparse(url).path.split('/')[-1])
+                            crl_filename =  os.path.join(cache_dir,urlparse.urlparse(url).path.split('/')[-1])
                         else:
                             crl_filename = None
 
@@ -961,7 +994,7 @@ class SSLPrivateKey(BaseObjectClass):
 
     def _load_pem_data_from_file(self):
         with open(self.private_key_filename,'rb') as pem_file:
-            self.pem_data = bytearray(pem_file.read(),encoding='utf-8')
+            self.pem_data = pem_file.read()
 
 
     @property
@@ -1088,6 +1121,10 @@ class SSLPrivateKey(BaseObjectClass):
     @property
     def modulus(self):
         return format(self.rsa.private_numbers().public_numbers.n, "x")
+
+    @property
+    def modulus_hash(self):
+        return sha1_for_data(self.modulus)
 
     def as_PKey(self):
         return crypto.PKey().from_cryptography_key(self.rsa)
@@ -1460,6 +1497,10 @@ class SSLCertificateSigningRequest(BaseObjectClass):
     def modulus(self):
         return format(self.rsa.public_numbers().n, "x")
 
+    @property
+    def modulus_hash(self):
+        return sha1_for_data(self.modulus)
+
     def _subject_attribute(self,oid):
         att = self.csr.subject.get_attributes_for_oid(oid)
         if att:
@@ -1743,6 +1784,10 @@ class SSLCertificate(BaseObjectClass):
     def modulus(self):
         return format(self.rsa.public_numbers().n, "x")
 
+    @property
+    def modulus_hash(self):
+        return sha1_for_data(self.modulus)
+
     def _subject_attribute(self,oid):
         att = self.crt.subject.get_attributes_for_oid(oid)
         if att:
@@ -1825,10 +1870,6 @@ class SSLCertificate(BaseObjectClass):
 
     @property
     def issuer_cn(self):
-        return self.issuer.get('commonName',None)
-
-    @property
-    def issuer_hash(self):
         return self.issuer.get('commonName',None)
 
     @property

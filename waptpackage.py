@@ -89,9 +89,7 @@ import uuid
 from iniparse import RawConfigParser
 import traceback
 
-import custom_zip
-import zipfile
-from waptutils import BaseObjectClass,Version,ensure_unicode,force_utf8_no_bom,find_all_files
+from waptutils import BaseObjectClass,Version,ensure_unicode,ZipFile,force_utf8_no_bom,find_all_files
 from waptutils import create_recursive_zip,ensure_list,all_files,list_intersection
 from waptutils import datetime2isodate,httpdatetime2isodate,httpdatetime2datetime,fileutcdate,fileisoutcdate,isodate2datetime
 from waptutils import default_http_headers,wget,get_language,import_setup,import_code
@@ -1632,11 +1630,11 @@ class PackageEntry(BaseObjectClass):
         """Check in memory control signature against a list of public certificates
 
         Args:
-            trusted_bundle (SSLCABundle): Trusted certificates. : packages certificates must be signed by a one of this bundle.
+            trusted_bundle (SSLCABundle): Trusted certificates. : packages certificates must be signed by one of this bundle.
             signers_bundle : Optional. List of potential packages signers certificates chains.
                              When checking Packages index, actual
                              packages are not available, only certificates embedded in Packages index.
-                             Package signature are checked againt these certificates
+                             Package signature are checked against these certificates
                              looking here for potential intermediate CA too.
                              and matching certificate is checked against trusted_bundle.
 
@@ -1703,7 +1701,6 @@ class PackageEntry(BaseObjectClass):
         else:
             # package is not yet built/signed.
             return None
-
 
     def package_certificates(self):
         """Return certificates from package. If package is built, take it from Zip
@@ -2080,7 +2077,7 @@ class PackageEntry(BaseObjectClass):
         - check that the package certificate is issued by a know CA or the same as one the authorized certitificates.
 
         Args:
-            trusted_bundle (SSLCABundle) : list of authorized certificates / ca filepaths
+            trusted_bundle (SSLCABundle) : list of authorized certificates
 
         Returns:
             SSLCertificate : matching certificate
@@ -2468,7 +2465,7 @@ class WaptBaseRepo(BaseObjectClass):
         elif self.public_certs_dir:
             if self._cabundle is None:
                 self._cabundle = SSLCABundle()
-                self._cabundle.add_pems(self.public_certs_dir)
+                self._cabundle.add_pems(self.public_certs_dir,trust_first=True)
             return self._cabundle
         else:
             return None

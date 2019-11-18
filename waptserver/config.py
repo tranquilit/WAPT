@@ -96,6 +96,7 @@ _defaults = {
     'nginx_http' : 80,
     'nginx_https': 443,
     'remote_repo_support': False
+    'trusted_signers_certificates_folder':None, # path to trusted certificate directory
 }
 
 DEFAULT_CONFIG_FILE = os.path.join(wapt_root_dir, 'conf', 'waptserver.ini')
@@ -224,11 +225,16 @@ def load_config(cfgfile=DEFAULT_CONFIG_FILE):
     if _config.has_option('options', 'http_proxy'):
         conf['http_proxy'] = _config.get('options', 'http_proxy')
 
+    # path to a htpasswd file for additional users authentication (register/unregister)
     if _config.has_option('options', 'htpasswd_path'):
         conf['htpasswd_path'] = _config.get('options', 'htpasswd_path')
 
     if _config.has_option('options','remote_repo_support'):
         conf['remote_repo_support'] = _config.getboolean('options','remote_repo_support')
+
+    # path to X509 certificates file of trusted signers to restrict access to upload packages / actions proxying
+    if _config.has_option('options', 'trusted_signers_certificates_folder'):
+        conf['trusted_signers_certificates_folder'] = _config.get('options', 'trusted_signers_certificates_folder')
 
     return conf
 
@@ -247,7 +253,7 @@ def write_config_file(cfgfile=DEFAULT_CONFIG_FILE,server_config=None,non_default
     for key in server_config:
         if not non_default_values_only or server_config[key] != _defaults.get(key):
             if server_config[key] is None:
-                _config.set('options',key,'')
+                _config.remove_option('options',key)
             else:
                 _config.set('options',key,server_config[key])
 

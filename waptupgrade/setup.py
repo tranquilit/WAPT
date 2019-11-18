@@ -1,11 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import print_function
-from past.builtins import cmp
-from future import standard_library
-standard_library.install_aliases()
-from builtins import str
-from builtins import range
-from builtins import object
 from setuphelpers import *
 import os
 import _winreg
