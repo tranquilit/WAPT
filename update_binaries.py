@@ -118,9 +118,6 @@ for f in mongoexport_files :
         os.remove(new_name)
     os.renames(f,new_name)
 
-
-
-
 print('Get innosetup compiler setup and extract files to waptsetup')
 innosetup_install = wget('http://files.jrsoftware.org/is/5/innosetup-5.6.0-unicode.exe',resume=True,md5='d8364b03587846b44cf00937d206d3e1',cache_dir=binaries_cache,proxies=proxies)
 
