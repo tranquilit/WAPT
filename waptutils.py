@@ -1463,8 +1463,11 @@ class LogOutput(BaseObjectClass):
             if self.console:
                 try:
                     self.console.stream.write(txt)
-                except:
-                    self.console.write(repr(txt))
+                except Exception as e:
+                    try:
+                        self.console.write(txt)
+                    except Exception as e:
+                        self.console.write(repr(txt))
 
     def __enter__(self):
         self.old_stdout = sys.stdout

@@ -660,6 +660,8 @@ def localrepo_packages():
                              msg = '%s packages in local repository matching the keywords %s' % (len(packages),query),
                              request_time=time.time() - start_time)
     except Exception as e:
+        logger.debug(traceback.format_exc())
+        logger.critical('localrepo_packages %s' % (repr(e)))
         return make_response_from_exception(e)
 
 @app.route('/api/v3/known_packages')
@@ -681,6 +683,8 @@ def known_packages():
                              msg = '%s known packages' % (len(packages),),
                              request_time=time.time() - start_time)
     except Exception as e:
+        logger.debug(traceback.format_exc())
+        logger.critical('known_packages failed %s' % (repr(e)))
         return make_response_from_exception(e)
 
 @app.route('/api/v3/upload_packages',methods=['HEAD','POST'])
@@ -831,6 +835,8 @@ def upload_packages():
                              request_time=spenttime)
 
     except Exception as e:
+        logger.debug(traceback.format_exc())
+        logger.critical('upload_packages failed %s' % (repr(e)))
         return make_response_from_exception(e, status='500')
 
 
@@ -921,6 +927,8 @@ def upload_host():
                              request_time=spenttime)
 
     except Exception as e:
+        logger.debug(traceback.format_exc())
+        logger.critical('upload_host failed %s' % (repr(e)))
         return make_response_from_exception(e, status='201')
 
 
@@ -983,6 +991,8 @@ def change_password():
                 raise EWaptMissingParameter('Missing parameter')
             return make_response(result=msg, msg=msg, status=200)
         except Exception as e:
+            logger.debug(traceback.format_exc())
+            logger.critical('change_password failed %s' % (repr(e)))
             return make_response_from_exception(e)
 
 
@@ -1034,6 +1044,7 @@ def login():
         if 'auth_token' in session:
             del session['auth_token']
         logger.debug(traceback.format_exc())
+        logger.critical('login failed %s' % (repr(e)))
         return make_response_from_exception(e)
 
 
@@ -1222,6 +1233,8 @@ def reset_hosts_sid():
         socketio.start_background_task(target=target, uuids=uuids)
 
     except Exception as e:
+        logger.debug(traceback.format_exc())
+        logger.critical('reset_hosts_sid failed %s' % (repr(e)))
         return make_response_from_exception(e)
     return make_response(msg=message)
 
@@ -1261,6 +1274,8 @@ def trigger_wakeonlan():
                              msg=msg,
                              success=True)
     except Exception as e:
+        logger.debug(traceback.format_exc())
+        logger.critical('trigger_wakeonlan failed %s' % (repr(e)))
         return make_response_from_exception(e)
 
 
@@ -1361,6 +1376,8 @@ def get_ad_ou():
         return make_response(result=result, msg=message, request_time=time.time() - starttime)
 
     except Exception as e:
+        logger.debug(traceback.format_exc())
+        logger.critical('get_ad_ou failed %s' % (repr(e)))
         return make_response_from_exception(e)
 
 @app.route('/api/v3/get_ad_sites')
@@ -1376,6 +1393,8 @@ def get_ad_sites():
         return make_response(result=result, msg=message, request_time=time.time() - starttime)
 
     except Exception as e:
+        logger.debug(traceback.format_exc())
+        logger.critical('get_ad_sites failed %s' % (repr(e)))
         return make_response_from_exception(e)
 
 def build_hosts_filter(model, filter_expr):
@@ -1502,6 +1521,8 @@ def hosts_delete():
                     msg.append('{} hosts removed from DB'.format(remove_result))
 
             except Exception as e:
+                logger.debug(traceback.format_exc())
+                logger.critical('hosts_delete failed %s' % (repr(e)))
                 trans.rollback()
                 return make_response_from_exception(e)
 
@@ -1718,6 +1739,8 @@ def get_hosts():
         return make_response(
             result=result, msg=msg, status=200, request_time=time.time() - start_time)
     except Exception as e:
+        logger.debug(traceback.format_exc())
+        logger.critical('get_hosts failed %s' % (repr(e)))
         return make_response_from_exception(e)
 
 
@@ -1805,6 +1828,7 @@ def host_data():
 
     except Exception as e:
         logger.debug(traceback.format_exc())
+        logger.critical('host_data failed %s' % (repr(e)))
         return make_response_from_exception(e)
 
     if result is None:
@@ -1956,6 +1980,8 @@ def host_tasks_status():
             raise EWaptHostUnreachable('Host not connected, Websocket sid not in database')
 
     except Exception as e:
+        logger.debug(traceback.format_exc())
+        logger.critical('host_tasks_status failed %s' % (repr(e)))
         return make_response_from_exception(e)
 
 
@@ -2053,6 +2079,8 @@ def trigger_host_action():
                              msg=msg,
                              success=len(client_errors) == 0 and len(server_errors) == 0)
     except Exception as e:
+        logger.debug(traceback.format_exc())
+        logger.critical('trigger_host_action failed %s' % (repr(e)))
         return make_response_from_exception(e)
 
 
