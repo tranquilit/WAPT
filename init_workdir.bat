@@ -18,13 +18,12 @@ xcopy /I /E /F /Y %PYTHON_PATH%\DLLs %~dp0\DLLs
 xcopy /I /E /F /Y /EXCLUDE:%~dp0\libexcludes.txt %PYTHON_PATH%\lib %~dp0\lib
 
 %~dp0\Scripts\python -m pip install -U pip setuptools wheel
-
-REM get  pywin32-220.win32Sc            -py2.7.exe from internet
-python -c "from urllib import urlretrieve; from subprocess import check_output; pywin32=urlretrieve('https://github.com/mhammond/pywin32/releases/download/b223/pywin32-223.win32-py2.7.exe');print(pywin32[0]); print(check_output(r'%~dp0\Scripts\easy_install.exe %%s' %% (pywin32[0]),shell=True));"
+%PYTHON_PATH%\python.exe %~dp0\pywininstall.py
+%~dp0\Scripts\easy_install.exe %~dp0\..\binaries_cache\pywin_install.exe
+For /D %%A In ("%~dp0\lib\site-packages\pywin32*") Do @Copy "%%A\pythoncom*.dll" "%~dp0"
 %~dp0\Scripts\pip.exe install -r %~dp0\requirements.txt -r %~dp0\requirements-windows.txt
 
 copy /Y c:\windows\SysWOW64\python27.dll %~dp0\
-
 
 copy /Y %~dp0\Scripts\python.exe %~dp0\waptpython.exe
 copy /Y %~dp0\Scripts\pythonw.exe %~dp0\waptpythonw.exe
