@@ -45,7 +45,7 @@ import StringIO
 import thread
 import threading
 
-import queue
+import Queue
 import traceback
 import locale
 

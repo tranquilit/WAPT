@@ -60,7 +60,7 @@ import sqlite3
 
 import json
 import threading
-import queue
+import Queue
 import traceback
 
 import datetime
@@ -1459,7 +1459,7 @@ class WaptTaskManager(threading.Thread):
         self.wapt = None
         self.tasks = []
 
-        self.tasks_queue = queue.PriorityQueue()
+        self.tasks_queue = Queue.PriorityQueue()
         self.tasks_counter = 0
 
         self.tasks_done = []

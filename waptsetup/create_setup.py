@@ -10,9 +10,6 @@
 # Licence:     GPL v3
 #-------------------------------------------------------------------------------
 
-from __future__ import print_function
-from future import standard_library
-standard_library.install_aliases()
 import os
 import sys
 
@@ -165,6 +162,6 @@ for buildtype in ('waptserver', 'waptsetup', 'waptstarter'):
         'buildtype': buildtype,
         'issfile': issfile
     }
-    print('ligne de commande : %s ' % cmd)
+    print&('ligne de commande : %s ' % cmd)
     print(subprocess.check_output(cmd))
     #,'' % (buildtype,),"%s"%issfile])

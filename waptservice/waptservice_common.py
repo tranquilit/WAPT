@@ -39,12 +39,9 @@ import locale
 import json
 import urlparse
 import copy
-import shutil
-import urllib.request, urllib.parse, urllib.error
-import requests
 import re
 
-import configparser
+import ConfigParser
 from optparse import OptionParser
 
 # wapt specific stuff
@@ -54,7 +51,7 @@ import common
 from common import Wapt
 
 import setuphelpers
-from setuphelpers import Version,isfile,isdir
+from setuphelpers import Version
 
 from flask import request, Response, send_from_directory, send_file, session, redirect, url_for, abort, render_template, flash, stream_with_context
 
@@ -298,7 +295,7 @@ class WaptServiceConfig(object):
 
     def load(self):
         """Load waptservice parameters from global wapt-get.ini file"""
-        config = configparser.RawConfigParser()
+        config = ConfigParser.RawConfigParser()
         if os.path.exists(self.config_filename):
             config.read(self.config_filename)
             self.config_filedate = os.stat(self.config_filename).st_mtime
