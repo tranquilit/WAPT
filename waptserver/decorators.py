@@ -63,6 +63,23 @@ def requires_auth(f,methods=['session','token','ssl','admin','passwd','ldap']):
         return f(*args, **kwargs)
     return decorated
 
+def allow_local(f):
+    """Restrict access to localhost"""
+    @functools.wraps(f)
+    def decorated(*args, **kwargs):
+        if request.remote_addr in ['127.0.0.1']:
+            return f(*args, **kwargs)
+        else:
+            return forbidden()
+    return decorated
+
+def forbidden():
+    """Sends a 403 response that enables basic auth"""
+    return Response(
+        'Restricted access.\n',
+         403)
+
+
 def check_auth_is_provided(f):
     """Check if there is at least basic-auth or kerberos or ssl signature if
     allow_unauthenticated_registration is False
