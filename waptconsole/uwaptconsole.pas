@@ -657,6 +657,7 @@ type
     procedure ActReportingQueryExportExecute(Sender: TObject);
     procedure ActReportingQueryImportExecute(Sender: TObject);
     procedure ActReportingQueryImportUpdate(Sender: TObject);
+    procedure ActSaveAccountsExecute(Sender: TObject);
     procedure ActRepositoriesGetSecondReposExecute(Sender: TObject);
     procedure ActRepositoriesGetUpdateRulesExecute(Sender: TObject);
     procedure ActSelfServiceNewPackageExecute(Sender: TObject);
@@ -1002,6 +1003,7 @@ type
     function GetWUAWinUpdates: ISuperObject;
     procedure GridReportingSaveSettings(Report: ISuperObject);
     Function LoadHostInventory(host:ISuperObject): ISuperObject;
+    Procedure MergeUsersCertificates(Users:ISuperObject);
     function OneHostHasConnectedIP(GridHostsIPs:TSOGrid=Nil): Boolean;
     function OneHostIsConnected(GridHostsReachable:TSOGrid=Nil): Boolean;
     function GetSelectedOrgUnits: TDynStringArray;
@@ -5577,6 +5579,8 @@ begin
     begin
       if ADataset = GridReportingQueries.Data then
         ActReportingQuerySaveAll.Execute;
+      else if ADataset = GridUsers.Data then
+        ActSaveAccounts.Execute;
     end;
   result := not IsUpdated(datasets);
 end;
