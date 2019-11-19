@@ -1071,7 +1071,6 @@ type
     function EditIniFile: boolean;
     function updateprogress(receiver: TObject; current, total: integer): boolean;
     function TriggerActionOnHosts(uuids: ISuperObject;AAction:String;Args:ISuperObject;title,errortitle:String;Force:Boolean=False;NotifyServer:Boolean=True):ISuperObject;
-    procedure LoadHostsForPackage(PackageName:String);
     procedure TriggerActionOnHostPackages(APackagesStatusGrid:TSOGrid;HostUUIDs:ISuperObject;AAction, title, errortitle: String;Force:Boolean=False);
     function DownloadPackage(RepoUrl, Filename: String): Variant;
 
@@ -5578,7 +5577,7 @@ begin
     if IsUpdated([ADataset]) then
     begin
       if ADataset = GridReportingQueries.Data then
-        ActReportingQuerySaveAll.Execute;
+        ActReportingQuerySaveAll.Execute
       else if ADataset = GridUsers.Data then
         ActSaveAccounts.Execute;
     end;
