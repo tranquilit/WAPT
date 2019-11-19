@@ -1833,10 +1833,15 @@ begin
   if (RowSO <> nil) then
   begin
     currhost := UTF8Encode(RowSO.S['uuid']);
-    pgTasks.TabVisible := RowSO.S['reachable'] = 'OK';
-    pgHostWUA.TabVisible:= (RowSO.S['platform'] = 'Windows') or (RowSO.S['platform'] = '');
-    if (not pgTasks.TabVisible and (HostPages.ActivePage = pgTasks)) or (not pgHostWUA.TabVisible and (HostPages.ActivePage = pgTasks)) then
+
+    if pgTasks.TabVisible and (RowSO.S['reachable'] <> 'OK') and (HostPages.ActivePage = pgTasks) then
       HostPages.ActivePage := pgPackages;
+    pgTasks.TabVisible := RowSO.S['reachable'] = 'OK';
+
+    if not ((RowSO.S['platform'] = 'Windows') or (RowSO.S['platform'] = '')) and pgHostWUA.TabVisible and (HostPages.ActivePage = pgHostWUA) then
+        HostPages.ActivePage:= pgPackages;
+
+    pgHostWUA.TabVisible:=EnableWaptWUAFeatures and ((RowSO.S['platform'] = 'Windows') or (RowSO.S['platform'] = ''));
 
     if HostPages.ActivePage = pgPackages then
     begin

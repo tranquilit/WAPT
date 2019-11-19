@@ -385,10 +385,12 @@ msgid "id"
 msgstr ""
 
 #: tviscreatewaptsetup.gridcertificates.header.columns[1].text
+msgctxt "tviscreatewaptsetup.gridcertificates.header.columns[1].text"
 msgid "Certificate Name"
 msgstr ""
 
 #: tviscreatewaptsetup.gridcertificates.header.columns[2].text
+msgctxt "tviscreatewaptsetup.gridcertificates.header.columns[2].text"
 msgid "Issuer"
 msgstr ""
 

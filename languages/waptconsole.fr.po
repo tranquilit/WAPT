@@ -1,81 +1,8 @@
 msgid ""
 msgstr "Content-Type: text/plain; charset=UTF-8"
 
-#: sogrid.gsconst_advancedcustomizecolumns
-msgid "Advanced customize of table..."
-msgstr "Configuration avancée de la grille..."
-
-#: sogrid.gsconst_collapseall
-msgid "Collapse all"
-msgstr "Tout réduire"
-
-#: sogrid.gsconst_confdeleterow
-msgid "Confirm the deletion of selected rows ?"
-msgstr "Confirmer la suppresson des lignes sélectionnées ?"
-
-#: sogrid.gsconst_confirmation
-msgctxt "sogrid.gsconst_confirmation"
-msgid "Confirm"
-msgstr "Confirmer"
-
-#: sogrid.gsconst_copy
-msgid "Copy"
-msgstr "Copier"
-
-#: sogrid.gsconst_copycell
-msgid "Copy cell"
-msgstr "Copier la cellule"
-
-#: sogrid.gsconst_customizecolumns
-msgid "Customize columns..."
-msgstr "Configurer les colonnes..."
-
-#: sogrid.gsconst_cut
-msgid "Cut"
-msgstr "Couper"
-
-#: sogrid.gsconst_delete
-msgctxt "sogrid.gsconst_delete"
-msgid "Delete"
-msgstr "Supprimer"
-#: sogrid.gsconst_advancedcustomizecolumns
-msgid "Advanced customize of table..."
-msgstr "Configuration avancée de la grille..."
-
-#: sogrid.gsconst_collapseall
-msgid "Collapse all"
-msgstr "Tout réduire"
-
-#: sogrid.gsconst_confdeleterow
-msgid "Confirm the deletion of selected rows ?"
-msgstr "Confirmer la suppresson des lignes sélectionnées ?"
-
-#: sogrid.gsconst_confirmation
-msgctxt "sogrid.gsconst_confirmation"
-msgid "Confirm"
-msgstr "Confirmer"
-
-#: sogrid.gsconst_copy
-msgid "Copy"
-msgstr "Copier"
-
-#: sogrid.gsconst_copycell
-msgid "Copy cell"
-msgstr "Copier la cellule"
-
-#: sogrid.gsconst_customizecolumns
-msgid "Customize columns..."
-msgstr "Configurer les colonnes..."
-
-#: sogrid.gsconst_cut
-msgid "Cut"
-msgstr "Couper"
-
-#: sogrid.gsconst_delete
-msgctxt "sogrid.gsconst_delete"
-msgid "Delete"
-msgstr "Supprimer"
 #: tform1.caption
+msgctxt "tform1.caption"
 msgid "Form1"
 msgstr ""
 
@@ -115,79 +42,6 @@ msgctxt "tformerrorsrepos.caption"
 msgid "Errors"
 msgstr "Erreurs"
 
-#: sogrid.gsconst_deleterows
-msgid "Delete selected rows"
-msgstr "Supprimer les lignes sélectionnées"
-
-#: sogrid.gsconst_expandall
-msgid "Expand all"
-msgstr "Tout développer"
-
-#: sogrid.gsconst_exportallexcel
-msgid "Export all rows to CSV file..."
-msgstr "Exporter toutes les lignes vers un fichier CSV..."
-
-#: sogrid.gsconst_exportselectedexcel
-msgid "Export selected rows to CSV file..."
-msgstr "Exporter les lignes sélectionnées vers un fichier CSV..."
-
-#: sogrid.gsconst_find
-msgid "Search..."
-msgstr "Rechercher..."
-
-#: sogrid.gsconst_findnext
-msgid "Find next"
-msgstr "Rechercher le suivant"
-
-#: sogrid.gsconst_findreplace
-msgid "Find and replace..."
-msgstr "Rechercher et remplacer..."
-
-#: sogrid.gsconst_insert
-msgid "Insert"
-msgstr "Insérer"
-
-#: sogrid.gsconst_norecordfind
-msgid "No record found"
-msgstr "Pas d'enregistrement trouvé"
-
-#: sogrid.gsconst_page
-msgid "Page"
-msgstr "Page"
-
-#: sogrid.gsconst_paste
-msgid "Paste"
-msgstr "Coller"
-
-#: sogrid.gsconst_print
-msgid "Print..."
-msgstr "Imprimer..."
-
-#: sogrid.gsconst_printon
-msgid "Printed on"
-msgstr "Imprimé le"
-
-#: sogrid.gsconst_revertrecord
-msgid "Revert to initial record"
-msgstr "Revenir à la version initiale"
-
-#: sogrid.gsconst_selectall
-msgid "Select all rows"
-msgstr "Sélectionner toutes les lignes"
-
-#: sogrid.gsconst_undolastupdate
-msgid "Undo last change"
-msgstr "Annuler la dernière modification"
-
-#: tform1.buttonpanel1.helpbutton.caption
-msgctxt "tform1.buttonpanel1.helpbutton.caption"
-msgid "&Show config file"
-msgstr "&Voir le fichier de configuration"
-
-#: tform1.caption
-msgid "Form1"
-msgstr ""
-
 #: tvisapropos.caption
 msgid "About WAPTConsole"
 msgstr "Apropos de WAPTConsole"
@@ -199,55 +53,6 @@ msgstr "LabInfos"
 #: tvisapropos.lablicencedto.caption
 msgid "Licensedto"
 msgstr ""
-
-#: tvischangekeypassword.caption
-msgid "Change private key password"
-msgstr "Changer le mot de passe de la clef privée"
-
-#: tvischangekeypassword.edkeypassword.hint
-msgctxt "tvischangekeypassword.edkeypassword.hint"
-msgid "Used to decrypt or encrypt private jkey"
-msgstr "Utilisé pour déchiffrer ou chiffrer la clef privée"
-
-#: tvischangekeypassword.labconfirmpwd.caption
-msgctxt "tvischangekeypassword.labconfirmpwd.caption"
-msgid "Confirm password"
-msgstr "Confirmer le mot de passe"
-
-#: tvischangekeypassword.label17.caption
-msgid "New password"
-msgstr "Nouveau mot de passe"
-
-#: tvischangekeypassword.label9.caption
-msgctxt "tvischangekeypassword.label9.caption"
-msgid "Key filename :"
-msgstr "Nom du fichier de la clé :"
-
-#: tvischangekeypassword.label9.hint
-msgctxt "tvischangekeypassword.label9.hint"
-msgid "E.g. 'tranquilit'. Please don't use any special characters."
-msgstr "Par exemple : 'tranquilit' (sans caractères spéciaux !)"
-
-#: tvischangekeypassword.lapassword.caption
-msgctxt "tvischangekeypassword.lapassword.caption"
-msgid "Private key password :"
-msgstr "Mot de passe de la clé privée :"
-
-#: tvischangepassword.caption
-msgid "WAPT server password"
-msgstr "Mot de passe serveur WAPT"
-
-#: tvischangepassword.ednewpassword1.editlabel.caption
-msgid "New password :"
-msgstr "Nouveau mot de passe :"
-
-#: tvischangepassword.ednewpassword2.editlabel.caption
-msgid "Retype password :"
-msgstr "Confirmer le mot de passe :"
-
-#: tvischangepassword.edoldpassword.editlabel.caption
-msgid "Old password :"
-msgstr "Ancien mot de passe :"
 
 #: tviscreatekey.actadvanced.caption
 msgctxt "tviscreatekey.actadvanced.caption"
@@ -787,41 +592,6 @@ msgctxt "tvisdisplaypreferences.label7.caption"
 msgid "Show debug informations"
 msgstr "Voir les informations de debug"
 
-#: tviseditgroup.button5.caption
-msgctxt "tviseditgroup.button5.caption"
-msgid "Save"
-msgstr "Enregistrer"
-
-#: tviseditgroup.caption
-msgid "Group edition"
-msgstr "Edition de groupe"
-
-#: tviseditgroup.eddescription.editlabel.caption
-msgctxt "TVISEDITGROUP.EDDESCRIPTION.EDITLABEL.CAPTION"
-msgid "Description"
-msgstr "Description"
-
-#: tviseditgroup.eddescription.text
-msgctxt "tviseditgroup.eddescription.text"
-msgid " "
-msgstr " "
-
-#: tviseditgroup.edgroup.editlabel.caption
-msgid "Group"
-msgstr "Groupe"
-
-#: tviseditgroup.label1.caption
-msgid "Available packages"
-msgstr "Paquets disponibles"
-
-#: tviseditgroup.label2.caption
-msgid "Packages to be installed on group hosts"
-msgstr "Paquets à installer sur les machines du groupe"
-
-#: tviseditgroup.label3.caption
-msgid "Hosts in this group"
-msgstr "Machines appartenant à ce groupe"
-
 #: tviseditpackage.actaddconflicts.caption
 msgid "Add to blocked packages"
 msgstr "Ajouter à la liste des paquets interdits"
@@ -1211,40 +981,7 @@ msgid "Restricted install"
 msgstr "Installation restreinte"
 
 #: tvisgroupchoice.edsearch.hint
-msgid "Use keywords to narrow your search."
-msgstr "Affinez la recherche à l'aide de mots-clés."
-
-#: tvishostdelete.caption
-msgid "Confirm host(s) delete"
-msgstr "Confirmer la suppression"
-
-#: tvishostdelete.cbdeletehostconfiguration.caption
-msgid "Delete host configuration (Package)"
-msgstr "Supprimer la configuration (paquet machine)"
-
-#: tvishostdelete.cbdeletehostinventory.caption
-msgid "Delete host from inventory database"
-msgstr "Supprimer de l'inventaire"
-
-#: tvishostdelete.labmessage.caption
-msgid "Confirm deletion of hosts"
-msgstr "Confirmer la suppression"
-
-#: tvishostsupgrade.actstop.caption
-msgctxt "tvishostsupgrade.actstop.caption"
-msgid "Terminate"
-msgstr "Arrêter"
-
-#: tvishostsupgrade.actupgrade.caption
-msgctxt "tvishostsupgrade.actupgrade.caption"
-msgid "Launch update"
-msgstr "Lancer les mises à jour en attente"
-
-#: tvishostsupgrade.caption
-msgid "Launch update on hosts"
-msgstr "lancer les mises à jour en attente"
-
-#: tvisgroupchoice.edsearch.hint
+msgctxt "tvisgroupchoice.edsearch.hint"
 msgid "Use keywords to narrow your search."
 msgstr "Affinez la recherche à l'aide de mots-clés."
 
@@ -1633,18 +1370,21 @@ msgstr "Installeur"
 msgid "Private key authentication"
 msgstr "Authentification de la clé privée"
 
-#: tvisprivatekeyauth.label1.caption
+#: tvisprivatekeyauth.labkey.caption
+#, fuzzy
+msgctxt "tvisprivatekeyauth.labkey.caption"
 msgid "For key matching the certificate: "
 msgstr "Pour la clé associée au certificat:"
+
+#: tvisprivatekeyauth.labpassword.caption
+#, fuzzy
+msgctxt "tvisprivatekeyauth.labpassword.caption"
+msgid "Private key password :"
+msgstr "Mot de passe de la clé privée :"
 
 #: tvisprivatekeyauth.lakeypath.caption
 msgid "laKeyPath"
 msgstr ""
-
-#: tvisprivatekeyauth.lapassword.caption
-msgctxt "tvisprivatekeyauth.lapassword.caption"
-msgid "Private key password :"
-msgstr "Mot de passe de la clé privée :"
 
 #: tvisrepositories.actcertificacert.caption
 msgid "Use default Wapt bundle"
@@ -2533,7 +2273,7 @@ msgstr "Statut de connexion"
 #: tviswaptconfig.labstatusserver.caption
 msgctxt "tviswaptconfig.labstatusserver.caption"
 msgid "Status"
-msgstr "Status"
+msgstr "Statut"
 
 #: tviswaptconfig.pgadvanced.caption
 msgctxt "tviswaptconfig.pgadvanced.caption"
@@ -2548,47 +2288,6 @@ msgstr "Basique"
 msgctxt "tviswaptconfig.pgplugins.caption"
 msgid "Plugins"
 msgstr "Outils externes"
-
-#: tviswaptdeploy.actdeploywapt.caption
-msgid "Deploy"
-msgstr "Déployer"
-
-#: tviswaptdeploy.actstop.caption
-msgid "Stop"
-msgstr "Arrêter"
-
-#: tviswaptdeploy.caption
-msgid "Déployer WAPT"
-msgstr "Déployer WAPT"
-
-#: tviswaptdeploy.eddomaine.editlabel.caption
-msgctxt "tviswaptdeploy.eddomaine.editlabel.caption"
-msgid "Domaine"
-msgstr "Domaine"
-
-#: tviswaptdeploy.eddomainpassword.editlabel.caption
-msgid "Mot de passe"
-msgstr "Mot de passe"
-
-#: tviswaptdeploy.eddomainuser.editlabel.caption
-msgid "Utilisateur"
-msgstr "Utilisateur"
-
-#: tviswaptdeploy.label1.caption
-msgid "This method lets you deploy waptagent.exe onto all hosts via psexec."
-msgstr "Cette méthode vous permet de déployer waptagent.exe sur toutes les machines par psexec."
-
-#: tviswaptdeploy.label2.caption
-msgid "Identifiants"
-msgstr "Identifiants"
-
-#: tviswaptdeploy.label3.caption
-msgid "List of hosts on which WAPT will be installed :"
-msgstr "Liste des machines où installer WAPT :"
-
-#: tviswaptdeploy.memo1.hint
-msgid "One host per row."
-msgstr "One machine par ligne."
 
 #: tviswaptgui.actaddadsgroups.caption
 msgctxt "tviswaptgui.actaddadsgroups.caption"
@@ -3609,9 +3308,10 @@ msgid "signed_attributes"
 msgstr "Attributs signés"
 
 #: tviswaptgui.gridgroups.header.columns[21].text
+#, fuzzy
 msgctxt "tviswaptgui.gridgroups.header.columns[21].text"
 msgid "md5sum"
-msgstr ""
+msgstr "Somme MD5"
 
 #: tviswaptgui.gridgroups.header.columns[22].text
 msgctxt "tviswaptgui.gridgroups.header.columns[22].text"
@@ -3751,7 +3451,7 @@ msgstr "Langue"
 #: tviswaptgui.gridhostpackages.header.columns[0].text
 msgctxt "tviswaptgui.gridhostpackages.header.columns[0].text"
 msgid "Status"
-msgstr "Status"
+msgstr "Statut"
 
 #: tviswaptgui.gridhostpackages.header.columns[10].text
 msgctxt "tviswaptgui.gridhostpackages.header.columns[10].text"
@@ -3769,9 +3469,10 @@ msgid "Locale"
 msgstr "Langue"
 
 #: tviswaptgui.gridhostpackages.header.columns[13].text
+#, fuzzy
 msgctxt "tviswaptgui.gridhostpackages.header.columns[13].text"
 msgid "md5sum"
-msgstr ""
+msgstr "Somme MD5"
 
 #: tviswaptgui.gridhostpackages.header.columns[14].text
 msgctxt "tviswaptgui.gridhostpackages.header.columns[14].text"
@@ -3806,7 +3507,7 @@ msgstr "Taille après installation"
 #: tviswaptgui.gridhostpackages.header.columns[1].text
 msgctxt "tviswaptgui.gridhostpackages.header.columns[1].text"
 msgid "Audit status"
-msgstr "Status audit"
+msgstr "Statut d'audit"
 
 #: tviswaptgui.gridhostpackages.header.columns[20].text
 msgctxt "tviswaptgui.gridhostpackages.header.columns[20].text"
@@ -3939,7 +3640,7 @@ msgstr "Installé par"
 #: tviswaptgui.gridhosts.header.columns[0].text
 msgctxt "tviswaptgui.gridhosts.header.columns[0].text"
 msgid "Status"
-msgstr "Status"
+msgstr "Statut"
 
 #: tviswaptgui.gridhosts.header.columns[10].text
 msgctxt "tviswaptgui.gridhosts.header.columns[10].text"
@@ -4001,6 +3702,7 @@ msgid "Groups"
 msgstr "Groupes"
 
 #: tviswaptgui.gridhosts.header.columns[22].text
+msgctxt "tviswaptgui.gridhosts.header.columns[22].text"
 msgid "Domaine"
 msgstr "Domaine"
 
@@ -4028,7 +3730,7 @@ msgstr "Méthode d'enregistrement"
 #: tviswaptgui.gridhosts.header.columns[2].text
 msgctxt "tviswaptgui.gridhosts.header.columns[2].text"
 msgid "Audit status"
-msgstr "Audit"
+msgstr "Statut d'audit"
 
 #: tviswaptgui.gridhosts.header.columns[3].text
 msgid "WUA"
@@ -4174,7 +3876,7 @@ msgstr "Prochain audit"
 #: tviswaptgui.gridhostsforpackage.header.columns[2].text
 msgctxt "tviswaptgui.gridhostsforpackage.header.columns[2].text"
 msgid "Status"
-msgstr "Status"
+msgstr "Statut"
 
 #: tviswaptgui.gridhostsforpackage.header.columns[30].text
 msgctxt "tviswaptgui.gridhostsforpackage.header.columns[30].text"
@@ -4229,7 +3931,7 @@ msgstr "Empreinte du signataire"
 #: tviswaptgui.gridhostsforpackage.header.columns[3].text
 msgctxt "tviswaptgui.gridhostsforpackage.header.columns[3].text"
 msgid "Audit status"
-msgstr "Status d'audit"
+msgstr "Statut d'audit"
 
 #: tviswaptgui.gridhostsforpackage.header.columns[4].text
 msgid "Host UUID"
@@ -4563,7 +4265,7 @@ msgstr "Refusées"
 #: tviswaptgui.gridhostwinupdates.header.columns[1].text
 msgctxt "tviswaptgui.gridhostwinupdates.header.columns[1].text"
 msgid "Status"
-msgstr "Status"
+msgstr "Statut"
 
 #: tviswaptgui.gridhostwinupdates.header.columns[20].text
 msgctxt "tviswaptgui.gridhostwinupdates.header.columns[20].text"
@@ -5420,7 +5122,7 @@ msgstr "Date du fichier cab WSUS"
 #: tviswaptgui.gridwsusscan.header.columns[3].text
 msgctxt "tviswaptgui.gridwsusscan.header.columns[3].text"
 msgid "Status"
-msgstr "Status"
+msgstr "Statut"
 
 #: tviswaptgui.gridwsusscan.header.columns[4].text
 msgctxt "tviswaptgui.gridwsusscan.header.columns[4].text"
@@ -5819,7 +5521,7 @@ msgstr "Adresse IP"
 
 #: tviswaptgui.label10.caption
 msgid "WUA Status"
-msgstr "Status du WUA"
+msgstr "Statut du WUA"
 
 #: tviswaptgui.label11.caption
 msgctxt "tviswaptgui.label11.caption"
@@ -6220,13 +5922,9 @@ msgstr ""
 msgid "ToolButtonSep1"
 msgstr ""
 
-#: tviswuaclassificationsselect.caption
-msgid "Windows Updates Classification selection"
-msgstr "Sélection des classifications de Mise à jour Windows"
-
-#: tviswuaclassificationsselect.label1.caption
-msgid "Classifications"
-msgstr "Classisications"
+#: tviswaptgui.toolbuttonsep2.caption
+msgid "ToolButtonSep2"
+msgstr ""
 
 #: tviswuadownloads.actwuadownloadsrefresh.caption
 msgctxt "tviswuadownloads.actwuadownloadsrefresh.caption"
@@ -6275,7 +5973,7 @@ msgstr ""
 #: tviswuadownloads.gridwudownloads.header.columns[3].text
 msgctxt "tviswuadownloads.gridwudownloads.header.columns[3].text"
 msgid "Status"
-msgstr "Status"
+msgstr "Statut"
 
 #: tviswuadownloads.gridwudownloads.header.columns[4].text
 msgid "Message"
@@ -6703,7 +6401,7 @@ msgstr "Comportement de reboot"
 #: tviswuagroup.gridwuupdates.header.columns[1].text
 msgctxt "tviswuagroup.gridwuupdates.header.columns[1].text"
 msgid "Status"
-msgstr "Status"
+msgstr "Statut"
 
 #: tviswuagroup.gridwuupdates.header.columns[20].text
 msgctxt "tviswuagroup.gridwuupdates.header.columns[20].text"
@@ -6810,557 +6508,26 @@ msgstr "Mises à jour autorisées"
 msgid "Forbidden Windows updates"
 msgstr "Mises à jour interdites"
 
-#: tviswuapackageselect.actdefaultfilter.caption
-msgid "Default filter"
-msgstr "Filtre par défaut"
-
-#: tviswuapackageselect.actdefaultfilter.hint
-msgid "Filters on Critical and Security updates"
-msgstr "Voir les mises à jour de sécurité et critiques "
-
-#: tviswuapackageselect.actsearch.caption
-msgctxt "tviswuapackageselect.actsearch.caption"
-msgid "Search"
-msgstr "Rechercher"
-
-#: tviswuapackageselect.button1.caption
-msgid "Products filtering"
-msgstr "Filtre de produits"
-
-#: tviswuapackageselect.button1.hint
-msgid "Select the default list of products to display and filter."
-msgstr "Sélectionner les produits à afficher et filtrer"
-
-#: tviswuapackageselect.caption
-msgid "Windows Updates selection"
-msgstr "Sélection de mises à jour Windows"
-
-#: tviswuapackageselect.cbwucritical.caption
-msgctxt "tviswuapackageselect.cbwucritical.caption"
-msgid "Critical"
-msgstr "Critique"
-
-#: tviswuapackageselect.cbwuimportant.caption
-msgctxt "tviswuapackageselect.cbwuimportant.caption"
-msgid "Important"
-msgstr "Important"
-
-#: tviswuapackageselect.cbwulow.caption
-msgctxt "tviswuapackageselect.cbwulow.caption"
-msgid "Low"
-msgstr "Basse"
-
-#: tviswuapackageselect.cbwumoderate.caption
-msgctxt "tviswuapackageselect.cbwumoderate.caption"
-msgid "Moderate"
-msgstr "Modérée"
-
-#: tviswuapackageselect.cbwuother.caption
-msgctxt "tviswuapackageselect.cbwuother.caption"
-msgid "Other"
-msgstr "Autre"
-
-#: tviswuapackageselect.cbwuproductsshowall.caption
-msgctxt "tviswuapackageselect.cbwuproductsshowall.caption"
-msgid "Show all products"
-msgstr "Montrer tous les produits"
-
-#: tviswuapackageselect.label1.caption
-msgid "Classifications  and products"
-msgstr "Classisications et produits"
-
-#: tviswuapackageselect.label2.caption
-msgctxt "tviswuapackageselect.label2.caption"
-msgid "Filter"
-msgstr "Filtre"
-
-#: tviswuarules.actaddadsgroups.caption
-msgctxt "tviswuarules.actaddadsgroups.caption"
-msgid "Add ADS Groups as packages"
-msgstr "Ajouter les groupes AD comme paquets en dépendance."
-
-#: tviswuarules.actaddadsgroups.hint
-msgctxt "tviswuarules.actaddadsgroups.hint"
-msgid "Add the WAPT group packages matching the ADS groups of the machines"
-msgstr "Ajoute les groupes WAPT qui correspondent avec les groupes Active Directory des machines"
-
-#: tviswuarules.actaddconflicts.caption
-msgctxt "tviswuarules.actaddconflicts.caption"
-msgid "Block packages (causes forced uninstall)"
-msgstr "Interdire des paquets (force la désinstallation)"
-
-#: tviswuarules.actaddgroup.caption
-msgctxt "tviswuarules.actaddgroup.caption"
-msgid "New bundle"
-msgstr "Nouveau groupe de paquets"
-
-#: tviswuarules.actaddpackagegroup.caption
-msgctxt "tviswuarules.actaddpackagegroup.caption"
-msgid "Add package or bundle"
-msgstr "Ajouter un paquet ou groupe de paquets"
-
-#: tviswuarules.actadvancedmode.caption
-msgctxt "tviswuarules.actadvancedmode.caption"
-msgid "Advanced mode"
-msgstr "Mode avancé"
-
-#: tviswuarules.actbuildupload.caption
-msgctxt "tviswuarules.actbuildupload.caption"
-msgid "Activate package"
-msgstr "Activer le paquet"
-
-#: tviswuarules.actcancelrunningtask.caption
-msgctxt "tviswuarules.actcancelrunningtask.caption"
-msgid "Cancel current task"
-msgstr "Annuler la tâche en cours"
-
-#: tviswuarules.actchangepassword.caption
-msgctxt "tviswuarules.actchangepassword.caption"
-msgid "Update password"
-msgstr "Changer le mot de passe"
-
-#: tviswuarules.actcleancache.caption
-msgctxt "tviswuarules.actcleancache.caption"
-msgid "Clean local cache"
-msgstr "Nettoyer le cache local"
-
-#: tviswuarules.actcleancache.hint
-msgctxt "tviswuarules.actcleancache.hint"
-msgid "Remove all packages locall cached by WaptConsole"
-msgstr "Effacer les paquets mis en cache localement par WaptConsole"
-
-#: tviswuarules.actcreatecertificate.caption
-msgctxt "tviswuarules.actcreatecertificate.caption"
-msgid "Generate self-signed certificate"
-msgstr "Créer un certificat auto-signé"
-
-#: tviswuarules.actcreatewaptsetup.caption
-msgctxt "tviswuarules.actcreatewaptsetup.caption"
-msgid "Create custom WAPT installer"
-msgstr "Créer un agent WAPT"
-
-#: tviswuarules.actcreatewaptsetuppy.caption
-msgctxt "tviswuarules.actcreatewaptsetuppy.caption"
-msgid "Create custom WAPT installer (py)"
-msgstr "Créer un installeur d'agent WAPT"
-
-#: tviswuarules.actdeletegroup.caption
-msgctxt "tviswuarules.actdeletegroup.caption"
-msgid "Delete bundle"
-msgstr "Supprimer un paquet"
-
-#: tviswuarules.actdeletepackage.caption
-msgctxt "tviswuarules.actdeletepackage.caption"
-msgid "Remove from repository"
-msgstr "Supprimer du dépôt"
-
-#: tviswuarules.actdeploywapt.caption
-msgctxt "tviswuarules.actdeploywapt.caption"
-msgid "Deploy WAPT onto hosts"
-msgstr "Déployer WAPT sur les machines"
-
-#: tviswuarules.acteditgroup.caption
-msgctxt "tviswuarules.acteditgroup.caption"
-msgid "Edit bundle"
-msgstr "Editer un paquet"
-
-#: tviswuarules.actedithostpackage.caption
-msgctxt "tviswuarules.actedithostpackage.caption"
-msgid "Edit host configuration"
-msgstr "Modifier la configuration de la machine"
-
-#: tviswuarules.actedithostpackage.hint
-msgctxt "tviswuarules.actedithostpackage.hint"
-msgid "Edit host configuration"
-msgstr "Editer la configuration de la machine"
-
-#: tviswuarules.acteditpackage.caption
-msgctxt "tviswuarules.acteditpackage.caption"
-msgid "Edit package"
-msgstr "Editer un paquet"
-
-#: tviswuarules.actenglish.caption
-msgctxt "tviswuarules.actenglish.caption"
-msgid "English"
-msgstr "Anglais"
-
-#: tviswuarules.actevaluate.caption
-msgctxt "tviswuarules.actevaluate.caption"
-msgid "Evaluate"
-msgstr "Evaluer"
-
-#: tviswuarules.actevaluatevar.caption
-msgctxt "tviswuarules.actevaluatevar.caption"
-msgid "Evaluer Variant"
-msgstr "Evaluer une variante"
-
-#: tviswuarules.actexeccode.caption
-msgctxt "tviswuarules.actexeccode.caption"
-msgid "Execute python source"
-msgstr "Exécuter du code Python"
-
-#: tviswuarules.actforgetpackages.caption
-msgctxt "tviswuarules.actforgetpackages.caption"
-msgid "Forget packages"
-msgstr "Oublier des paquets"
-
-#: tviswuarules.actfrench.caption
-msgctxt "tviswuarules.actfrench.caption"
-msgid "French"
-msgstr "Français"
-
-#: tviswuarules.actgotohost.caption
-msgctxt "tviswuarules.actgotohost.caption"
-msgid "Search for host"
-msgstr "Rechercher une machine"
-
-#: tviswuarules.acthelp.caption
-msgctxt "tviswuarules.acthelp.caption"
-msgid "Online help"
-msgstr "Aide en ligne"
-
-#: tviswuarules.acthostsdelete.caption
-msgctxt "tviswuarules.acthostsdelete.caption"
-msgid "Remove from inventory"
-msgstr "Supprimer de l'inventaire"
-
-#: tviswuarules.acthostsdelete.hint
-msgctxt "tviswuarules.acthostsdelete.hint"
-msgid "Remove from inventory"
-msgstr "Supprimer de l'inventaire"
-
-#: tviswuarules.acthostsdeletehostpackage.caption
-msgctxt "tviswuarules.acthostsdeletehostpackage.caption"
-msgid "Remove host configuration and inventory "
-msgstr "Supprimer la machine et son paquet de configuration"
-
-#: tviswuarules.acthostwaptupgrade.caption
-msgctxt "tviswuarules.acthostwaptupgrade.caption"
-msgid "Update WAPT client"
-msgstr "Mettre à jour le client WAPT"
-
-#: tviswuarules.acthostwaptupgrade.hint
-msgctxt "tviswuarules.acthostwaptupgrade.hint"
-msgid "Run agent.exe in silent mode from <url-depot>/waptagent.exe"
-msgstr "Exécuter agent.exe en mode silencieux depuis <url-depot/>/waptagent.exe"
-
-#: tviswuarules.actimportfromfile.caption
-msgctxt "tviswuarules.actimportfromfile.caption"
-msgid "Import from file"
-msgstr "Importer depuis un fichier"
-
-#: tviswuarules.actimportfromrepo.caption
-msgctxt "tviswuarules.actimportfromrepo.caption"
-msgid "Import from repository"
-msgstr "Importer depuis un dépôt"
-
-#: tviswuarules.actlocalhostinstall.caption
-msgctxt "tviswuarules.actlocalhostinstall.caption"
-msgid "Install"
-msgstr "Installer"
-
-#: tviswuarules.actlocalhostremove.caption
-msgctxt "tviswuarules.actlocalhostremove.caption"
-msgid "Uninstall package"
-msgstr "Désinstaller un paquet"
-
-#: tviswuarules.actlocalhostupgrade.caption
-msgctxt "tviswuarules.actlocalhostupgrade.caption"
-msgid "System update"
-msgstr "Mise à jour du système"
-
-#: tviswuarules.actpackageinstall.caption
-msgctxt "tviswuarules.actpackageinstall.caption"
-msgid "Install package"
-msgstr "Installer/mettre à jour le paquet"
-
-#: tviswuarules.actpackageinstall.hint
-msgctxt "tviswuarules.actpackageinstall.hint"
-msgid "Force remote install or upgrade of package"
-msgstr "Forcer l'installation distante ou la mise à jour du paquet"
-
-#: tviswuarules.actpackageremove.caption
-msgctxt "tviswuarules.actpackageremove.caption"
-msgid "Uninstall package"
-msgstr "Désinstaller un paquet"
-
-#: tviswuarules.actpackageremove.hint
-msgctxt "tviswuarules.actpackageremove.hint"
-msgid "Forces remote uninstall of package"
-msgstr "Force la désinstallation à distance du paquet"
-
-#: tviswuarules.actpackagesupdate.caption
-msgctxt "tviswuarules.actpackagesupdate.caption"
-msgid "Update available packages"
-msgstr "Actualiser les paquets disponibles"
-
-#: tviswuarules.actquit.caption
-msgctxt "tviswuarules.actquit.caption"
-msgid "Quit"
-msgstr "Quitter"
-
-#: tviswuarules.actrdp.caption
-msgctxt "tviswuarules.actrdp.caption"
-msgid "Connect via RDP"
-msgstr "Se connecter en RDP"
-
-#: tviswuarules.actrefresh.caption
-msgctxt "tviswuarules.actrefresh.caption"
-msgid "Refresh"
-msgstr "Actualiser"
-
-#: tviswuarules.actrefreshhostinventory.caption
-msgctxt "tviswuarules.actrefreshhostinventory.caption"
-msgid "Refresh host inventory"
-msgstr "Actualiser l'inventaire des postes"
-
-#: tviswuarules.actreloadconfig.caption
-msgctxt "tviswuarules.actreloadconfig.caption"
-msgid "Reload wapt-get.ini"
-msgstr "Recharger wapt-get.ini"
-
-#: tviswuarules.actremoveconflicts.caption
-msgctxt "tviswuarules.actremoveconflicts.caption"
-msgid "Allow packages "
-msgstr "Autoriser des paquets"
-
-#: tviswuarules.actremovedepends.caption
-msgctxt "tviswuarules.actremovedepends.caption"
-msgid "Remove dependencies from packages/bundles"
-msgstr "Supprimer des dépendances de paquets ou groupes de paquets"
-
-#: tviswuarules.actrestoredefaultlayout.caption
-msgctxt "tviswuarules.actrestoredefaultlayout.caption"
-msgid "Restore default grid layout"
-msgstr "Restaurer l'affichage par défaut des grilles"
-
-#: tviswuarules.actrestoredefaultlayout.hint
-msgctxt "tviswuarules.actrestoredefaultlayout.hint"
-msgid "Restore default columns settings for all grids"
-msgstr "Restaure la configuration par défaut des colonnes de toutes les grilles"
-
-#: tviswuarules.actsearchgroups.caption
-msgctxt "tviswuarules.actsearchgroups.caption"
-msgid "Search"
-msgstr "Rechercher"
-
-#: tviswuarules.actsearchhost.caption
-msgctxt "tviswuarules.actsearchhost.caption"
-msgid "Search for host"
-msgstr "Rechercher une machine"
-
-#: tviswuarules.actsearchpackage.caption
-msgctxt "tviswuarules.actsearchpackage.caption"
-msgid "Search"
-msgstr "Rechercher"
-
-#: tviswuarules.actsearchsoftwares.caption
-msgctxt "tviswuarules.actsearchsoftwares.caption"
-msgid "ActSearchSoftware"
-msgstr "Rechercher"
-
-#: tviswuarules.acttriggerhostslistening.caption
-msgctxt "tviswuarules.acttriggerhostslistening.caption"
-msgid "Trigger scan listening IP"
-msgstr "Scanner les IP en écoute"
-
-#: tviswuarules.acttriggerhostslistening.hint
-msgctxt "tviswuarules.acttriggerhostslistening.hint"
-msgid "Trigger scan of listening IP of registered hosts."
-msgstr "Scanner les IP en écoute des machines enregistrées"
-
-#: tviswuarules.acttriggerhostupdate.caption
-msgctxt "tviswuarules.acttriggerhostupdate.caption"
-msgid "Trigger hosts update"
-msgstr "Lancer la mise à jour des paquets disponibles"
-
-#: tviswuarules.acttriggerhostupdate.hint
-msgctxt "tviswuarules.acttriggerhostupdate.hint"
-msgid "Trigger update of available packages on hosts."
-msgstr "Lancer la mise à jour de la liste des paquets disponibles sur les machines"
-
-#: tviswuarules.acttriggerhostupgrade.caption
-msgctxt "tviswuarules.acttriggerhostupgrade.caption"
-msgid "Apply updates"
-msgstr "Lancer l'installation des mises à jour de paquets"
-
-#: tviswuarules.acttriggerhostupgrade.hint
-msgctxt "tviswuarules.acttriggerhostupgrade.hint"
-msgid "Apply updates"
-msgstr "Lancer l'installation des mises à jour de paquets"
-
-#: tviswuarules.acttriggerwaptwua_download.caption
-msgctxt "tviswuarules.acttriggerwaptwua_download.caption"
-msgid "Trigger the download of pending Windows Updates"
-msgstr "Lancer le téléchargement des Mises à jour Windows en attente"
-
-#: tviswuarules.acttriggerwaptwua_install.caption
-msgctxt "tviswuarules.acttriggerwaptwua_install.caption"
-msgid "Trigger the install of pending Windows Updates"
-msgstr "Lancer l'installation des Mises à jour Windows en attente"
-
-#: tviswuarules.acttriggerwaptwua_scan.caption
-msgctxt "tviswuarules.acttriggerwaptwua_scan.caption"
-msgid "Trigger the scan of missing Windows Updates"
-msgstr "Lancer la recherche des mises à jour Windows manquantes"
-
-#: tviswuarules.actvnc.caption
-msgctxt "tviswuarules.actvnc.caption"
-msgid "Connect via VNC"
-msgstr "Se connecter en VNC"
-
-#: tviswuarules.actwaptlocalconfig.caption
-msgctxt "tviswuarules.actwaptlocalconfig.caption"
-msgid "Local WAPT configuration"
-msgstr "Configuration WAPT locale"
-
-#: tviswuarules.actwsusdowloadwsusscan.caption
-msgctxt "tviswuarules.actwsusdowloadwsusscan.caption"
-msgid "Download WSUSScan cab from Microsoft Web site"
-msgstr "Télécharger le cab WSUSScan depuis le site de Microsoft"
-
-#: tviswuarules.actwsusrefreshcabhistory.caption
-msgctxt "tviswuarules.actwsusrefreshcabhistory.caption"
-msgid "Refresh WSUSscan cab history"
-msgstr "Actualiser l'historique des WSUSscan cab"
-
-#: tviswuarules.actwuaallowselectedupdates.caption
-msgctxt "tviswuarules.actwuaallowselectedupdates.caption"
-msgid "Allow Selected Updates"
-msgstr "Autoriser les mises à jour sléectionnées"
-
-#: tviswuarules.actwuadownloadselectedupdate.caption
-msgctxt "tviswuarules.actwuadownloadselectedupdate.caption"
-msgid "Download selected"
-msgstr "Télécharger les mises à jour sélectionnées"
-
-#: tviswuarules.actwuaeditgroup.caption
-msgctxt "tviswuarules.actwuaeditgroup.caption"
-msgid "Edit group"
-msgstr "Editer le groupe"
-
-#: tviswuarules.actwuaforbidselectedupdates.caption
-msgctxt "tviswuarules.actwuaforbidselectedupdates.caption"
-msgid "Forbid Selected Updates"
-msgstr "Interdire les mises à jour sélectionnées"
-
-#: tviswuarules.actwualoadgroups.caption
-msgctxt "tviswuarules.actwualoadgroups.caption"
-msgid "Refresh"
-msgstr "Actualiser"
-
-#: tviswuarules.actwualoadupdates.caption
-msgctxt "tviswuarules.actwualoadupdates.caption"
-msgid "Load"
-msgstr "Charger"
-
-#: tviswuarules.actwuanewgroup.caption
-msgctxt "tviswuarules.actwuanewgroup.caption"
-msgid "New Windows Updates bundle"
-msgstr "Nouvel ensemble de règles de mises à jour Windows"
-
-#: tviswuarules.actwuaproductallow.caption
-msgctxt "tviswuarules.actwuaproductallow.caption"
-msgid "Allow all updates for selected products"
-msgstr "Autoriser les mises à jour pour les produits sélectionnés"
-
-#: tviswuarules.actwuaproductallowseverity.caption
-msgctxt "tviswuarules.actwuaproductallowseverity.caption"
-msgid "Allow updates for selected products and severities"
-msgstr "Autoriser les mises à jour pour les produits et criticités sélectionnés"
-
-#: tviswuarules.actwuaproductforbid.caption
-msgctxt "tviswuarules.actwuaproductforbid.caption"
-msgid "Forbid updates for selected products"
-msgstr "Interdire les mises à jour pour les produits sélectionnés"
-
-#: tviswuarules.actwuaproductforbidseverity.caption
-msgctxt "tviswuarules.actwuaproductforbidseverity.caption"
-msgid "Forbid updates for selected products and severities"
-msgstr "Interdire les mises à jour pour les produits et criticités sélectionnés"
-
-#: tviswuarules.actwuaproducthide.caption
-msgctxt "tviswuarules.actwuaproducthide.caption"
-msgid "Hide product"
-msgstr "Cacher les produits"
-
-#: tviswuarules.actwuaproductshow.caption
-msgctxt "tviswuarules.actwuaproductshow.caption"
-msgid "Show product"
-msgstr "Montrer les produits"
-
-#: tviswuarules.actwuaproductsselection.caption
-msgctxt "tviswuarules.actwuaproductsselection.caption"
-msgid "Windows Products selection"
-msgstr "Sélection de produits Windows"
-
-#: tviswuarules.actwuaresetselectedupdates.caption
-msgctxt "tviswuarules.actwuaresetselectedupdates.caption"
-msgid "Reset Selected"
-msgstr "Réinitialiser la sélection"
-
-#: tviswuarules.actwuasaveupdatesgroup.caption
-msgctxt "tviswuarules.actwuasaveupdatesgroup.caption"
-msgid "Save"
-msgstr "Enregistrer"
-
-#: tviswuarules.caption
-msgid "VisWUARules"
-msgstr "Règles Wapt WUA"
-
-#: tviswuarules.cbwucritical.caption
-msgctxt "tviswuarules.cbwucritical.caption"
-msgid "Critical"
-msgstr "Critique"
-
-#: tviswuarules.cbwuimportant.caption
-msgctxt "tviswuarules.cbwuimportant.caption"
-msgid "Important"
-msgstr "Important"
-
-#: tviswuarules.cbwulow.caption
-msgctxt "tviswuarules.cbwulow.caption"
-msgid "Low"
-msgstr "Basse"
-
-#: tviswuarules.cbwumoderate.caption
-msgctxt "tviswuarules.cbwumoderate.caption"
-msgid "Moderate"
-msgstr "Modérée"
-
-#: tviswuarules.cbwuother.caption
-msgctxt "tviswuarules.cbwuother.caption"
-msgid "Other"
-msgstr "Autre"
-
-#: tviswuarules.cbwuproductsshowall.caption
-msgctxt "tviswuarules.cbwuproductsshowall.caption"
-msgid "Show all products"
-msgstr "Montrer tous les produits"
-
-#: tviswuarules.label17.caption
-msgctxt "tviswuarules.label17.caption"
-msgid "Windows updates restrictions"
-msgstr "Restrictions de mises à jour Windows"
-
-#: tviswuarules.panel1.caption
-msgid "Panel1"
-msgstr ""
-
-#: tviswuarules.panel13.caption
-msgctxt "tviswuarules.panel13.caption"
-msgid "Panel13"
-msgstr ""
-
-#: tviswuarules.wupanright.caption
-msgctxt "tviswuarules.wupanright.caption"
-msgid "wupanright"
-msgstr ""
-
 #: uvisloading.rscanceledbyuser
 msgctxt "uvisloading.rscanceledbyuser"
 msgid "Task %s has been canceled by the user"
 msgstr "La tâche %s a été interrompue par l'utilisateur"
+
+#: uwaptconsoleres.rsactionserrors
+msgid "errors"
+msgstr ""
+
+#: uwaptconsoleres.rsactionslaunched
+msgid "actions launched"
+msgstr ""
+
+#: uwaptconsoleres.rsactionsservererrors
+msgid "server errors"
+msgstr ""
+
+#: uwaptconsoleres.rsactionsskipped
+msgid "skipped"
+msgstr ""
 
 #: uwaptconsoleres.rsaddadsgroups
 msgid ""
@@ -8373,673 +7540,4 @@ msgstr "W : interruption reçue, arrêt du serveur"
 #: uwaptconsoleres.rswritecertonlocalmachine
 msgid "Do you want to copy this certificate to ssl Authorized Package Certificate store (%s) ?"
 msgstr "Voulez vous copier ce certificat vers le répertoire des certificats autorisés pour les paquets (%s) ?"
-
-#: uwaptres.rsbundleconfigeditcaption
-msgctxt "uwaptres.rsbundleconfigeditcaption"
-msgid "Edit package bundle configuration"
-msgstr "Editer la configuration d'un groupe de paquets"
-
-#: uwaptres.rscanceled
-msgctxt "uwaptres.rscanceled"
-msgid "canceled"
-msgstr "annulé"
-
-#: uwaptres.rscanceledbyuser
-msgctxt "uwaptres.rscanceledbyuser"
-msgid "Task %s has been canceled by the user"
-msgstr "La tâche %s a été interrompue par l'utilisateur"
-
-#: uwaptres.rscanceledtask
-msgctxt "uwaptres.rscanceledtask"
-msgid "Cancelled %s"
-msgstr "%s annulé"
-
-#: uwaptres.rscanceling
-msgid "Canceling %s"
-msgstr "Annulation de %s"
-
-#: uwaptres.rscertificatecopyfailure
-msgctxt "uwaptres.rscertificatecopyfailure"
-msgid "Couldn't copy certificate %s to %s."
-msgstr "Echec de la copie du certificat %s vers %s."
-
-#: uwaptres.rschecking
-msgid "Checking..."
-msgstr "Vérification..."
-
-#: uwaptres.rscname
-msgctxt "uwaptres.rscname"
-msgid "CNAME: %s"
-msgstr "CNAME : %s"
-
-#: uwaptres.rscompletionprogress
-msgctxt "uwaptres.rscompletionprogress"
-msgid "%s : %.0f%% completed"
-msgstr "%s : %.0f%% terminé"
-
-#: uwaptres.rsconfirm
-msgctxt "uwaptres.rsconfirm"
-msgid "Confirm"
-msgstr "Confirmer"
-
-#: uwaptres.rsconfirmcancelpostconfig
-msgid "Are you sure you want to cancel configuring WAPT server ?"
-msgstr "Etes-vous sûr de vouloir annuler la configuration du serveur WAPT ?"
-
-#: uwaptres.rsconfirmcaption
-msgctxt "uwaptres.rsconfirmcaption"
-msgid "Confirm"
-msgstr "Confirmer"
-
-#: uwaptres.rsconfirmdeletion
-msgctxt "uwaptres.rsconfirmdeletion"
-msgid "Confirm removal"
-msgstr "Confirmer la suppression"
-
-#: uwaptres.rsconfirmhostforgetspackages
-msgctxt "uwaptres.rsconfirmhostforgetspackages"
-msgid "Are you sure you want to forget %s packages from host %s ?"
-msgstr "Êtes-vous sûr(e) de vouloir oublier %s paquets de la machine %s ?"
-
-#: uwaptres.rsconfirmimport
-msgctxt "uwaptres.rsconfirmimport"
-msgid ""
-"Are you sure you want to import\n"
-"%s\n"
-" to your repository ?\n"
-msgstr ""
-"Êtes-vous sûr de vouloir importer\n"
-"%s\n"
-" dans votre dépôt ?\n"
-
-#: uwaptres.rsconfirmimportcaption
-msgctxt "uwaptres.rsconfirmimportcaption"
-msgid "Confirm import"
-msgstr "Confirmer l'importation"
-
-#: uwaptres.rsconfirmrmhostsfromlist
-msgctxt "uwaptres.rsconfirmrmhostsfromlist"
-msgid "Are you sure you want to remove %s hosts from the list ?"
-msgstr "Êtes-vous sûr(e) de vouloir supprimer %s machines de la liste ?"
-
-#: uwaptres.rsconfirmrmmultiplepackages
-msgctxt "uwaptres.rsconfirmrmmultiplepackages"
-msgid "Are you sure you want to remove the selected packages from the server ?"
-msgstr "Êtes-vous sûr(e) de vouloir supprimer les paquets sélectionnés du serveur ?"
-
-#: uwaptres.rsconfirmrmonepackage
-msgctxt "uwaptres.rsconfirmrmonepackage"
-msgid "Are you sure you want to remove this package from the server ?"
-msgstr "Êtes-vous sûr(e) de vouloir supprimer ce paquet du serveur ?"
-
-#: uwaptres.rsconfirmrmpackagecaption
-msgctxt "uwaptres.rsconfirmrmpackagecaption"
-msgid "Confirm removal"
-msgstr "Confirmer la suppression"
-
-#: uwaptres.rsconfirmrmpackagesfromhost
-msgctxt "uwaptres.rsconfirmrmpackagesfromhost"
-msgid "Are you sure you want to remove %s package(s) from the selected host(s) %s ?"
-msgstr "Êtes-vous sûr(e) de vouloir supprimer %s paquet(s) de la/des machine(s) sélectionnée(s) ?"
-
-#: uwaptres.rscreationinprogress
-msgctxt "uwaptres.rscreationinprogress"
-msgid "Creation in progress."
-msgstr "Création en cours."
-
-#: uwaptres.rsdefinewaptdevpath
-msgctxt "uwaptres.rsdefinewaptdevpath"
-msgid "Please select a directory on your package development host before editing a package bundle."
-msgstr "Veuillez sélectionner un répertoire sur votre machine de développement de paquets pour pouvoir éditer un groupe de paquets."
-
-#: uwaptres.rsdeletingelement
-msgctxt "uwaptres.rsdeletingelement"
-msgid "Removing %s"
-msgstr "Suppression de %s"
-
-#: uwaptres.rsdeletioninprogress
-msgctxt "uwaptres.rsdeletioninprogress"
-msgid "Removing packages..."
-msgstr "Suppression des paquets..."
-
-#: uwaptres.rsdependencies
-msgctxt "uwaptres.rsdependencies"
-msgid "Selection of packages to add to the hosts as dependencies"
-msgstr "Choix des paquets à ajouter aux hôtes en tant que dépendances"
-
-#: uwaptres.rsdiffpwerror
-msgctxt "uwaptres.rsdiffpwerror"
-msgid "Passwords do not match."
-msgstr "Les mots de passe ne correspondent pas."
-
-#: uwaptres.rsdisplaying
-msgctxt "uwaptres.rsdisplaying"
-msgid "Displaying"
-msgstr "Affichage"
-
-#: uwaptres.rsdlcanceled
-msgctxt "uwaptres.rsdlcanceled"
-msgid "Download canceled."
-msgstr "Téléchargement annulé."
-
-#: uwaptres.rsdlstoppedbyuser
-msgctxt "uwaptres.rsdlstoppedbyuser"
-msgid "Download stopped by the user"
-msgstr "Téléchargement interrompu par l'utilisateur."
-
-#: uwaptres.rsdnsdomain
-msgctxt "uwaptres.rsdnsdomain"
-msgid "DNS Domain : %s"
-msgstr "Domaine DNS : %s"
-
-#: uwaptres.rsdnsserver
-msgctxt "uwaptres.rsdnsserver"
-msgid "DNS Server : %s"
-msgstr "Serveur DNS : %s"
-
-#: uwaptres.rsdownloading
-msgctxt "uwaptres.rsdownloading"
-msgid "Downloading"
-msgstr "Téléchargement en cours"
-
-#: uwaptres.rsdownloadingpackage
-msgctxt "uwaptres.rsdownloadingpackage"
-msgid "Package(s) %s is being downloaded."
-msgstr "Paquet(s) %s en cours de téléchargement."
-
-#: uwaptres.rsduplicatefailure
-msgctxt "uwaptres.rsduplicatefailure"
-msgid "Error while duplicating the package(s)."
-msgstr "Erreur lors de la duplication du/des paquet(s)."
-
-#: uwaptres.rsduplicatesuccess
-msgctxt "uwaptres.rsduplicatesuccess"
-msgid "Package(s) %s successfully duplicated."
-msgstr "Paquet(s) %s dupliqué avec succès."
-
-#: uwaptres.rsduplicating
-msgctxt "uwaptres.rsduplicating"
-msgid "Package(s) %s is being duplicated."
-msgstr "Paquet(s) %s en cours de duplication."
-
-#: uwaptres.rseditbundle
-msgctxt "uwaptres.rseditbundle"
-msgid "Edit package bundle."
-msgstr "Editer un groupe de paquets."
-
-#: uwaptres.rsedithostcaption
-msgctxt "uwaptres.rsedithostcaption"
-msgid "Edit host"
-msgstr "Editer une machine"
-
-#: uwaptres.rsedpackage
-msgctxt "uwaptres.rsedpackage"
-msgid "Package bundle"
-msgstr "Groupe de paquets"
-
-#: uwaptres.rsemptynewpwerror
-msgctxt "uwaptres.rsemptynewpwerror"
-msgid "New password must not be empty."
-msgstr "Le nouveau mot de passe ne doit pas être vide."
-
-#: uwaptres.rsemptyoldpwerror
-msgctxt "uwaptres.rsemptyoldpwerror"
-msgid "Old password must not be empty."
-msgstr "L'ancien mot de passe ne doit pas être vide."
-
-#: uwaptres.rserror
-msgctxt "uwaptres.rserror"
-msgid "Error"
-msgstr "Erreur"
-
-#: uwaptres.rserrorcanceling
-msgctxt "uwaptres.rserrorcanceling"
-msgid "Error cancelling: %s"
-msgstr "Erreur de l'annulation : %s"
-
-#: uwaptres.rserrorfor
-msgid "Error for %s"
-msgstr "Erreur pour %s"
-
-#: uwaptres.rserrorlaunchingupdate
-msgctxt "uwaptres.rserrorlaunchingupdate"
-msgid "Error launching update: %s"
-msgstr "Erreur lors du lancement de la mise à jour : %s"
-
-#: uwaptres.rserrorlaunchingupgrade
-msgctxt "uwaptres.rserrorlaunchingupgrade"
-msgid "Error launching upgrade: %s"
-msgstr "Erreur lors du lancement de l'upgrade : %s"
-
-#: uwaptres.rserrorwhilechecking
-msgid "Error while checking..."
-msgstr "Erreur lors de la vérification..."
-
-#: uwaptres.rserrorwithmessage
-msgctxt "uwaptres.rserrorwithmessage"
-msgid "Error : %s"
-msgstr "Erreur : %s"
-
-#: uwaptres.rsfailedimport
-msgctxt "uwaptres.rsfailedimport"
-msgid "Error during import."
-msgstr "Erreur lors de l'importation."
-
-#: uwaptres.rsfailedtocancel
-msgctxt "uwaptres.rsfailedtocancel"
-msgid "Could not cancel : %s."
-msgstr "Impossible d'annuler : %s."
-
-#: uwaptres.rsfatalerror
-msgctxt "uwaptres.rsfatalerror"
-msgid "Failed to retrieve task."
-msgstr "Impossible de récupérer l'action."
-
-#: uwaptres.rsforceduninstallpackages
-msgctxt "uwaptres.rsforceduninstallpackages"
-msgid "Selection of packages to force-remove from the hosts"
-msgstr "Choix des paquets pour désinstallation explicite sur les machines"
-
-#: uwaptres.rsforgetpackageerror
-msgctxt "uwaptres.rsforgetpackageerror"
-msgid "Error while forgetting package %s: %s"
-msgstr "Erreur lors de l'oubli du paquet %s : %s"
-
-#: uwaptres.rshostconfigeditcaption
-msgctxt "uwaptres.rshostconfigeditcaption"
-msgid "Edit host configuration"
-msgstr "Editer la configuration de la machine"
-
-#: uwaptres.rsignoredconfictingpackages
-msgctxt "uwaptres.rsignoredconfictingpackages"
-msgid "Warning : couldn't find package(s) %s ; conflicting package(s) have been ignored."
-msgstr "Attention, le(s) paquet(s) %s n'ont pu être trouvés ; les paquets en conflit ont été ignorés."
-
-#: uwaptres.rsignoredpackages
-msgctxt "uwaptres.rsignoredpackages"
-msgid "Warning : couldn't find package(s) %s ; ignoring them."
-msgstr "Attention, le(s) paquet(s) %s n'ont pu être trouvés et ont été ignorés."
-
-#: uwaptres.rsimportingfile
-msgctxt "uwaptres.rsimportingfile"
-msgid "Importing %s"
-msgstr "Importation de %s"
-
-#: uwaptres.rsincorrectoldpwerror
-msgctxt "uwaptres.rsincorrectoldpwerror"
-msgid "Old password is incorrect."
-msgstr "L'ancien mot de passe est incorrect."
-
-#: uwaptres.rsincorrectpassword
-msgctxt "uwaptres.rsincorrectpassword"
-msgid "Incorrect password."
-msgstr "Le mot de passe est incorrect."
-
-#: uwaptres.rsinnosetupunavailable
-msgctxt "uwaptres.rsinnosetupunavailable"
-msgid "Innosetup is unavailable (path : %s), please install it first."
-msgstr "Innosetup n'est pas disponible (emplacement : %s), veuillez l'installer en premier lieu."
-
-#: uwaptres.rsinputkeyname
-msgctxt "uwaptres.rsinputkeyname"
-msgid "Please input a key name."
-msgstr "Veuillez spécifier le nom de la clé"
-
-#: uwaptres.rsinputpubkeypath
-msgctxt "uwaptres.rsinputpubkeypath"
-msgid "Please input path to public key"
-msgstr "Veuillez spécifier l'emplacement de la clé publique"
-
-#: uwaptres.rsinstalling
-msgctxt "uwaptres.rsinstalling"
-msgid "Installing %s..."
-msgstr "Installation de %s..."
-
-#: uwaptres.rsinstallon
-msgctxt "uwaptres.rsinstallon"
-msgid "  install on c:\\wapt : --setup -s"
-msgstr "  installation sur c:\\wapt : --setup -s"
-
-#: uwaptres.rsinvaliddns
-msgid "Invalid DNS"
-msgstr "DNS invalide"
-
-#: uwaptres.rsinvaliddnsfallback
-msgid "This DNS name is not valid, would you like to use the IP address instead ?"
-msgstr "Ce nom DNS n'est pas valide, souhaitez-vous utiliser l'adresse IP à la place ?"
-
-#: uwaptres.rsinvalidwaptsetupdir
-msgctxt "uwaptres.rsinvalidwaptsetupdir"
-msgid "WAPTsetup directory is not valid : %s"
-msgstr "Le répertoire de WAPTsetup n'est pas valide : %s"
-
-#: uwaptres.rskeyalreadyexists
-msgctxt "uwaptres.rskeyalreadyexists"
-msgid "Key %s already exists, please pick another name."
-msgstr "La clé %s existe déjà, merci de choisir un nom différent."
-
-#: uwaptres.rslongtaskerror
-msgctxt "uwaptres.rslongtaskerror"
-msgid "Error launching longtask: %s"
-msgstr "Erreur lors du lancement de longtask : %s"
-
-#: uwaptres.rsmainrepourl
-msgctxt "uwaptres.rsmainrepourl"
-msgid "Main repo url: %s"
-msgstr "URL du dépôt principal : %s"
-
-#: uwaptres.rsnbmodifiedhosts
-msgctxt "uwaptres.rsnbmodifiedhosts"
-msgid "%s hosts affected."
-msgstr "%s machines modifiées."
-
-#: uwaptres.rsnobundle
-msgctxt "uwaptres.rsnobundle"
-msgid "There is no package bundle."
-msgstr "Il n'y a pas de groupe de paquets."
-
-#: uwaptres.rsnorunningtask
-msgctxt "uwaptres.rsnorunningtask"
-msgid "No running tasks"
-msgstr "Aucune tâche en cours"
-
-#: uwaptres.rsnotaskcanceled
-msgid "No task canceled"
-msgstr "Aucune tâche annulée"
-
-#: uwaptres.rsopeningfirewall
-msgid "Opening firewall for WaptServer"
-msgstr "Ouverture du firewall pour WAPTserver"
-
-#: uwaptres.rsoptrepo
-msgctxt "uwaptres.rsoptrepo"
-msgid " -r --repo : URL of dependencies libs"
-msgstr " -r --repo : URL des librairies des dépendances"
-
-#: uwaptres.rspackageconfigdone
-msgid "Done configuring packages for the current user session"
-msgstr "Configuration des paquets pour la session utilisateur terminée"
-
-#: uwaptres.rspackageconfigerror
-msgid "Error while configuring packages for the current user session"
-msgstr "Erreur lors de la configuration des paquets pour la session utilisateur"
-
-#: uwaptres.rspackagecreationerror
-msgctxt "uwaptres.rspackagecreationerror"
-msgid "Error while creating package : %s"
-msgstr "Erreur lors de la création du paquet : %s"
-
-#: uwaptres.rspackageduplicateconfirm
-msgctxt "uwaptres.rspackageduplicateconfirm"
-msgid ""
-"Are you sure you want to duplicate the package(s)\n"
-"%s\n"
-" into your repository ?\n"
-msgstr ""
-"Êtes vous sûr de vouloir dupliquer le(s) paquet(s)\n"
-"%s\n"
-" dans votre dépôt ?\n"
-
-#: uwaptres.rspackageduplicateconfirmcaption
-msgctxt "uwaptres.rspackageduplicateconfirmcaption"
-msgid "Confirm duplication of package"
-msgstr "Confirmer la duplication du paquet"
-
-#: uwaptres.rspackageremoveerror
-msgctxt "uwaptres.rspackageremoveerror"
-msgid "Error while removing package %s: %s"
-msgstr "Erreur lors de la suppression du paquet %s : %s"
-
-#: uwaptres.rspackagesneededcaption
-msgctxt "uwaptres.rspackagesneededcaption"
-msgid "Packages needed in package bundle"
-msgstr "Paquets nécessaires dans le groupe de paquets"
-
-#: uwaptres.rspackagesneededonhostcaption
-msgctxt "uwaptres.rspackagesneededonhostcaption"
-msgid "Packages needed on host"
-msgstr "Paquets nécessaires sur la machine"
-
-#: uwaptres.rspasswordchangeerror
-msgctxt "uwaptres.rspasswordchangeerror"
-msgid "Error : %s"
-msgstr "Erreur : %s"
-
-#: uwaptres.rspasswordchangesuccess
-msgctxt "uwaptres.rspasswordchangesuccess"
-msgid "Password successfully updated !"
-msgstr "Le mot de passe a bien été changé !"
-
-#: uwaptres.rspending
-msgctxt "uwaptres.rspending"
-msgid "Pending : "
-msgstr "En attente :"
-
-#: uwaptres.rsprivatekeydoesntexist
-msgctxt "uwaptres.rsprivatekeydoesntexist"
-msgid "Private key doesn't exist : %s"
-msgstr "La clé privée n'existe pas : %s"
-
-#: uwaptres.rsprogresstitle
-msgctxt "uwaptres.rsprogresstitle"
-msgid "Started uploading to WAPT server..."
-msgstr "Téléchargement vers le serveur WAPT en cours..."
-
-#: uwaptres.rspublickeygenerror
-msgctxt "uwaptres.rspublickeygenerror"
-msgid "Error during key generation : %s"
-msgstr "Erreur lors de la création de la clé : %s"
-
-#: uwaptres.rspublickeygenfailure
-msgctxt "uwaptres.rspublickeygenfailure"
-msgid "The generation of the public key has failed."
-msgstr "La création de la clé publique a échoué."
-
-#: uwaptres.rspublickeygensuccess
-msgctxt "uwaptres.rspublickeygensuccess"
-msgid "Key %s has been successfully created."
-msgstr "La clé %s a bien été créée."
-
-#: uwaptres.rsreallowpackagesonhost
-msgctxt "uwaptres.rsreallowpackagesonhost"
-msgid "Selection of package(s) to remove from conflict list"
-msgstr "Choix du/des paquet(s) à supprimer de la liste de conflit"
-
-#: uwaptres.rsregisteringhostonserver
-msgid "Registering host on server"
-msgstr "Enregistrement de la machine sur le serveur"
-
-#: uwaptres.rsreplacingtiscertificate
-msgid "Deleting TIS certificate and copying new certificate"
-msgstr "Suppression du certificat TIS et copie du nouveau certificat"
-
-#: uwaptres.rsrestartingwaptserver
-msgid "RedÃ©marrage service waptserver"
-msgstr ""
-
-#: uwaptres.rsrestartingwaptservice
-msgid "RedÃ©marrage waptservice"
-msgstr ""
-
-#: uwaptres.rsretryregisteringhostonserver
-msgid "Retry %D registering host on server"
-msgstr "Réessayer l'enregistrement %D de la machine sur le serveur"
-
-#: uwaptres.rsrmbundlefromhosts
-msgctxt "uwaptres.rsrmbundlefromhosts"
-msgid "Selection of package bundles for removing from the selected hosts"
-msgstr "Choix des groupes de paquets à supprimer des machines sélectionnées"
-
-#: uwaptres.rsrunningtask
-msgctxt "uwaptres.rsrunningtask"
-msgid "Running task %d: %s, status:%s"
-msgstr "Exécution de la tâche %d : %s, statut :%s"
-
-#: uwaptres.rssavemods
-msgctxt "uwaptres.rssavemods"
-msgid "Save changes ?"
-msgstr "Enregistrer les modifications ?"
-
-#: uwaptres.rssettingserverpassword
-msgid "Setting up server password"
-msgstr "Mise en place du mot de passe du serveur"
-
-#: uwaptres.rssrv
-msgctxt "uwaptres.rssrv"
-msgid "SRV: %s"
-msgstr "SRV: %s"
-
-#: uwaptres.rsstoplistening
-msgctxt "uwaptres.rsstoplistening"
-msgid "Stop listening to events"
-msgstr "Interruption "
-
-#: uwaptres.rssuccessfullyimported
-msgctxt "uwaptres.rssuccessfullyimported"
-msgid "%s successfully imported."
-msgstr "%s importé avec succès."
-
-#: uwaptres.rstaskcanceled
-msgctxt "uwaptres.rstaskcanceled"
-msgid "Task canceled."
-msgstr "Tâche annulée."
-
-#: uwaptres.rstaskdone
-msgid ""
-"%s done\n"
-"%s\n"
-msgstr ""
-"%s terminé\n"
-"%s\n"
-
-#: uwaptres.rstasklisterror
-msgctxt "uwaptres.rstasklisterror"
-msgid "Error getting task list: %s"
-msgstr "Erreur lors de l'acquisition de la liste de tâches : %s"
-
-#: uwaptres.rstaskstarted
-msgid "%s started"
-msgstr "%s lancé"
-
-#: uwaptres.rsundefwaptsrvinini
-msgctxt "uwaptres.rsundefwaptsrvinini"
-msgid "wapt_server is not defined in your %s ini file"
-msgstr "wapt_server n'est pas défini dans votre fichier %s ini"
-
-#: uwaptres.rsuninstallingpackage
-msgctxt "uwaptres.rsuninstallingpackage"
-msgid "Uninstalling %s..."
-msgstr "Désinstallation de %s..."
-
-#: uwaptres.rsupdatesavailablefor
-msgid "Available updates for : "
-msgstr "Mises à jour disponibles pour :"
-
-#: uwaptres.rsupdatinglocalpackages
-msgid "Updating local packages"
-msgstr "Mise à jour des paquets locaux"
-
-#: uwaptres.rsupdatingpackageindex
-msgid "Updating package index"
-msgstr "Mise à jour de l'index des paquets"
-
-#: uwaptres.rsupdatingpackagelist
-msgctxt "uwaptres.rsupdatingpackagelist"
-msgid "Updating package list"
-msgstr "Mise à jour de la liste des paquets"
-
-#: uwaptres.rsupgradehosterror
-msgctxt "uwaptres.rsupgradehosterror"
-msgid "Failed to trigger upgrade : %s"
-msgstr "L'upgrade n'a pas pu être lancée : %s"
-
-#: uwaptres.rsupgradinghost
-msgctxt "uwaptres.rsupgradinghost"
-msgid "Upgrade triggered on the remote host."
-msgstr "L'upgrade a bien été lancée sur la machine distante."
-
-#: uwaptres.rsuploading
-msgctxt "uwaptres.rsuploading"
-msgid "Uploading"
-msgstr "Chargement en cours"
-
-#: uwaptres.rsuploadingpackagestowaptsrv
-msgctxt "uwaptres.rsuploadingpackagestowaptsrv"
-msgid "Uploading %s packages to WAPT server..."
-msgstr "Chargement de %s paquet(s) vers le serveur WAPT..."
-
-#: uwaptres.rsurl
-msgctxt "uwaptres.rsurl"
-msgid "Url : %s"
-msgstr "URL : %s"
-
-#: uwaptres.rsusage
-msgctxt "uwaptres.rsusage"
-msgid "Usage: %s -h"
-msgstr "Usage : %s -h"
-
-#: uwaptres.rsversion
-msgctxt "uwaptres.rsversion"
-msgid ""
-"Waptconsole version : %s\n"
-"Wapt-get version: %s\n"
-msgstr ""
-
-#: uwaptres.rswaptagentsetuperror
-msgctxt "uwaptres.rswaptagentsetuperror"
-msgid "Error while creating waptagent.exe: %s"
-msgstr "Erreur lors de la création du waptagent.exe : %s"
-
-#: uwaptres.rswaptagentsetupsuccess
-msgctxt "uwaptres.rswaptagentsetupsuccess"
-msgid "waptagent.exe successfully created : %s"
-msgstr "waptagent.exe a bien été créé : %s"
-
-#: uwaptres.rswaptagentuploaderror
-msgctxt "uwaptres.rswaptagentuploaderror"
-msgid "Error while uploading WAPT agent : %s"
-msgstr "Erreur lors du chargement de l'agent WAPT : %s"
-
-#: uwaptres.rswaptagentuploadsuccess
-msgctxt "uwaptres.rswaptagentuploadsuccess"
-msgid "Successfully uploaded WAPT agent !"
-msgstr "L'agent WAPT a bien été chargé !"
-
-#: uwaptres.rswaptclientupdateonhosts
-msgctxt "uwaptres.rswaptclientupdateonhosts"
-msgid "Updating WAPT client on the hosts"
-msgstr "Mise à jour du client WAPT sur les machines"
-
-#: uwaptres.rswaptgetupgrade
-msgctxt "uwaptres.rswaptgetupgrade"
-msgid "WAPT-GET Upgrade using repository at %s"
-msgstr "Upgrade de WAPT-GET grâce au dépôt de %s"
-
-#: uwaptres.rswaptservicestopping
-msgid "Waptservice stopping"
-msgstr "Arrêt de WAPTservice"
-
-#: uwaptres.rswaptserviceterminated
-msgid "WAPTService terminated"
-msgstr "WAPTService arrêté"
-
-#: uwaptres.rswaptsetuperror
-msgctxt "uwaptres.rswaptsetuperror"
-msgid "Error while creating agent : %s"
-msgstr "Erreur lors de la création de l'agent : %s"
-
-#: uwaptres.rswaptsetupuploadsuccess
-msgctxt "uwaptres.rswaptsetupuploadsuccess"
-msgid "WAPT agent successfully created and uploaded to the repository : %s"
-msgstr "L'agent WAPT a bien été créé et chargé dans le dépôt : %s"
-
-#: uwaptres.rswaptupgrade
-msgctxt "uwaptres.rswaptupgrade"
-msgid " waptupgrade : upgrade wapt-get.exe and database"
-msgstr "waptupgade : upgrade wapt-get.exe et la base de données"
-
-#: uwaptres.rswaptuploaderror
-msgctxt "uwaptres.rswaptuploaderror"
-msgid "Error while uploading WAPT agent to the repository : %s"
-msgstr "Erreur lors du chargement de l'agent WAPT vers le dépôt : %s"
 
