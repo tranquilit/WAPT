@@ -7978,7 +7978,7 @@ object VisWaptGUI: TVisWaptGUI
             Tag = 1
             Text = 'Username'
             Width = 116
-            PropertyName = 'username'
+            PropertyName = 'name'
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
@@ -7997,7 +7997,6 @@ object VisWaptGUI: TVisWaptGUI
             PropertyName = 'issuer_cn'
           end        
           item
-            CheckBox = True
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption, coEditable]
             Position = 4
             Tag = 4
@@ -8006,7 +8005,6 @@ object VisWaptGUI: TVisWaptGUI
             PropertyName = 'admin'
           end        
           item
-            CheckBox = True
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption, coEditable]
             Position = 5
             Tag = 5
@@ -8015,7 +8013,6 @@ object VisWaptGUI: TVisWaptGUI
             PropertyName = 'register_host'
           end        
           item
-            CheckBox = True
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption, coEditable]
             Position = 6
             Tag = 6
@@ -8024,7 +8021,6 @@ object VisWaptGUI: TVisWaptGUI
             PropertyName = 'unregister_host'
           end        
           item
-            CheckBox = True
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption, coEditable]
             Position = 7
             Tag = 7
@@ -8033,7 +8029,6 @@ object VisWaptGUI: TVisWaptGUI
             PropertyName = 'edit_host_package'
           end        
           item
-            CheckBox = True
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption, coEditable]
             Position = 8
             Tag = 8
@@ -8042,7 +8037,6 @@ object VisWaptGUI: TVisWaptGUI
             PropertyName = 'edit_base_package'
           end        
           item
-            CheckBox = True
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption, coEditable]
             Position = 9
             Tag = 9
@@ -8051,7 +8045,6 @@ object VisWaptGUI: TVisWaptGUI
             PropertyName = 'edit_group_package'
           end        
           item
-            CheckBox = True
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption, coEditable]
             Position = 10
             Tag = 10
@@ -8060,7 +8053,6 @@ object VisWaptGUI: TVisWaptGUI
             PropertyName = 'edit_self_service_package'
           end        
           item
-            CheckBox = True
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption, coEditable]
             Position = 11
             Tag = 11
@@ -8069,7 +8061,6 @@ object VisWaptGUI: TVisWaptGUI
             PropertyName = 'edit_wua_package'
           end        
           item
-            CheckBox = True
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption, coEditable]
             Position = 12
             Tag = 12
@@ -8078,7 +8069,6 @@ object VisWaptGUI: TVisWaptGUI
             PropertyName = 'trigger_host_upgrade'
           end        
           item
-            CheckBox = True
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption, coEditable]
             Position = 13
             Tag = 13
@@ -8087,19 +8077,17 @@ object VisWaptGUI: TVisWaptGUI
             PropertyName = 'trigger_host_action'
           end        
           item
-            CheckBox = True
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption, coEditable]
             Position = 14
-            Tag = 16
+            Tag = 14
             Text = 'Edit Reports'
             Width = 70
             PropertyName = 'edit_report'
           end        
           item
-            CheckBox = True
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption, coEditable]
             Position = 15
-            Tag = 17
+            Tag = 15
             Text = 'Run Reports'
             Width = 70
             PropertyName = 'run_report'
@@ -8107,7 +8095,7 @@ object VisWaptGUI: TVisWaptGUI
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
             Position = 16
-            Tag = 18
+            Tag = 16
             Text = 'Certificate Filename'
             Width = 87
             PropertyName = 'public_cert_filename'
@@ -8115,7 +8103,7 @@ object VisWaptGUI: TVisWaptGUI
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coWrapCaption]
             Position = 17
-            Tag = 19
+            Tag = 17
             Text = 'Valid until'
             Width = 90
             PropertyName = 'not_after'
@@ -8123,41 +8111,39 @@ object VisWaptGUI: TVisWaptGUI
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coWrapCaption]
             Position = 18
-            Tag = 20
+            Tag = 18
             Text = 'Serial number'
             Width = 95
             PropertyName = 'serial_number'
           end        
           item
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coWrapCaption]
-            Position = 19
-            Tag = 21
-            Text = 'Fingerprint (sha256)'
-            Width = 178
-            PropertyName = 'fingerprint'
-          end        
-          item
-            CheckBox = True
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
-            Position = 20
-            Tag = 22
+            Position = 19
+            Tag = 19
             Text = 'Code signing'
             Width = 66
             PropertyName = 'is_code_signing'
           end        
           item
-            CheckBox = True
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption]
-            Position = 21
-            Tag = 23
+            Position = 20
+            Tag = 20
             Text = 'CA'
             Width = 58
             PropertyName = 'is_ca'
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coWrapCaption]
+            Position = 21
+            Tag = 21
+            Text = 'Fingerprint (sha256)'
+            Width = 178
+            PropertyName = 'user_fingerprint'
+          end        
+          item
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coWrapCaption]
             Position = 22
-            Tag = 24
+            Tag = 22
             Text = 'subject_dn'
             Width = 77
             PropertyName = 'subject_dn'
@@ -8165,14 +8151,14 @@ object VisWaptGUI: TVisWaptGUI
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coWrapCaption]
             Position = 23
-            Tag = 25
+            Tag = 23
             Text = 'issuer_dn'
             PropertyName = 'issuer_dn'
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coWrapCaption]
             Position = 24
-            Tag = 14
+            Tag = 24
             Text = 'Signed on'
             Width = 70
             PropertyName = 'acl_signed_on'
@@ -8180,7 +8166,7 @@ object VisWaptGUI: TVisWaptGUI
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coWrapCaption]
             Position = 25
-            Tag = 15
+            Tag = 25
             Text = 'Signed by'
             Width = 70
             PropertyName = 'acl_signed_by'
@@ -8205,7 +8191,7 @@ object VisWaptGUI: TVisWaptGUI
         Left = 0
         Height = 50
         Top = 0
-        Width = 1912
+        Width = 1254
         AutoSize = True
         ButtonHeight = 48
         ButtonWidth = 48
@@ -8214,7 +8200,7 @@ object VisWaptGUI: TVisWaptGUI
         ShowCaptions = True
         TabOrder = 1
         object ToolButton12: TToolButton
-          Left = 166
+          Left = 151
           Top = 2
           Action = ActReloadAccounts
         end
@@ -8224,17 +8210,18 @@ object VisWaptGUI: TVisWaptGUI
           Action = ActNewAccount
         end
         object ToolButton10: TToolButton
-          Left = 79
+          Left = 71
           Top = 2
           Action = ActDeleteAccount
         end
         object ToolButton13: TToolButton
-          Left = 261
+          Left = 238
           Top = 2
           Action = ActSaveAccounts
+          ImageIndex = 4
         end
         object PanCertTop: TPanel
-          Left = 344
+          Left = 316
           Height = 48
           Top = 2
           Width = 363
@@ -8244,15 +8231,15 @@ object VisWaptGUI: TVisWaptGUI
           TabOrder = 0
           object Label13: TLabel
             Left = 0
-            Height = 15
+            Height = 13
             Top = 11
-            Width = 145
+            Width = 134
             Caption = 'Certificates and key root dir'
             ParentColor = False
           end
           object EdPKIRootDirectory: TDirectoryEdit
             Left = 144
-            Height = 23
+            Height = 21
             Hint = 'c:\private'
             Top = 8
             Width = 219
@@ -8270,8 +8257,8 @@ object VisWaptGUI: TVisWaptGUI
       object PanCertDetails: TPanel
         Left = 0
         Height = 91
-        Top = 735
-        Width = 1912
+        Top = 552
+        Width = 1254
         Align = alBottom
         BevelOuter = bvNone
         TabOrder = 2
@@ -8353,14 +8340,14 @@ object VisWaptGUI: TVisWaptGUI
             end
             object ToolButtonSep2: TToolButton
               Left = 49
-              Height = 48
+              Height = 5
               Top = 0
               Caption = 'ToolButtonSep2'
               Style = tbsDivider
             end
             object ToolButton1: TToolButton
               Left = 164
-              Height = 48
+              Height = 5
               Top = 0
               Caption = 'ToolButton1'
               Style = tbsDivider
@@ -8637,14 +8624,14 @@ object VisWaptGUI: TVisWaptGUI
             end
             object ToolButton4: TToolButton
               Left = 49
-              Height = 48
+              Height = 5
               Top = 0
               Caption = 'ToolButton4'
               Style = tbsDivider
             end
             object ToolButton14: TToolButton
               Left = 181
-              Height = 48
+              Height = 5
               Top = 0
               Caption = 'ToolButton14'
               Style = tbsDivider

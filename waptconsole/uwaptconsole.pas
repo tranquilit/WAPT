@@ -6440,6 +6440,23 @@ begin
   ;;
 end;
 
+procedure TVisWaptGUI.ActReloadAccountsExecute(Sender: TObject);
+begin
+  ;;
+end;
+
+procedure TVisWaptGUI.GridUsersKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  ;;
+end;
+
+procedure TVisWaptGUI.GridUsersDrawText(Sender: TBaseVirtualTree;
+  TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex;
+  const AText: String; const CellRect: TRect; var DefaultDraw: Boolean);
+begin
+  ;;
+end;
 
 {$endif}
 
