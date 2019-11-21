@@ -1,8 +1,10 @@
 package           : tis-waptupgrade
-version           : 1.7.3.10-22
+version           : 1.7.4.6143-23
 architecture      : all
 section           : base
 priority          : optional
+name              : 
+categories        : 
 maintainer        : Hubert TOUVET
 description       : Install waptagent.exe
 depends           : 
@@ -26,6 +28,9 @@ keywords          :
 licence           : 
 homepage          : 
 package_uuid      : 
+valid_from        : 
+valid_until       : 
+forced_install_on : 
 signer            : 
 signer_fingerprint: 
 signature_date    : 

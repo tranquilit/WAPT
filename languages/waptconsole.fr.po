@@ -1064,6 +1064,7 @@ msgid "md5sum"
 msgstr "Somme MD5"
 
 #: tvisgroupchoice.gridpackages.header.columns[6].text
+msgctxt "tvisgroupchoice.gridpackages.header.columns[6].text"
 msgid "status"
 msgstr "Statut"
 
@@ -1969,6 +1970,32 @@ msgstr "Lancer les mises à jour en attente"
 #: tvistriggerhostsaction.caption
 msgid "Launch actions on hosts"
 msgstr "Lancer les actions sur les macgines"
+
+#: tvistriggerhostsaction.progressgrid.header.columns[0].text
+msgctxt "tvistriggerhostsaction.progressgrid.header.columns[0].text"
+msgid "status"
+msgstr "Statut"
+
+#: tvistriggerhostsaction.progressgrid.header.columns[1].text
+#, fuzzy
+msgctxt "tvistriggerhostsaction.progressgrid.header.columns[1].text"
+msgid "Host"
+msgstr "Machine"
+
+#: tvistriggerhostsaction.progressgrid.header.columns[2].text
+msgctxt "tvistriggerhostsaction.progressgrid.header.columns[2].text"
+msgid "IP"
+msgstr "IP"
+
+#: tvistriggerhostsaction.progressgrid.header.columns[3].text
+msgctxt "tvistriggerhostsaction.progressgrid.header.columns[3].text"
+msgid "Status"
+msgstr "Statut"
+
+#: tvistriggerhostsaction.progressgrid.header.columns[4].text
+msgctxt "tvistriggerhostsaction.progressgrid.header.columns[4].text"
+msgid "Message"
+msgstr "Message"
 
 #: tviswaptconfig.actaddplugin.caption
 msgctxt "tviswaptconfig.actaddplugin.caption"
@@ -2963,6 +2990,11 @@ msgctxt "tviswaptgui.cbadsite.hint"
 msgid "Filter hosts which have this direct package dependency"
 msgstr "Sélectionne les machines qui ont cette dépendance directe"
 
+#: tviswaptgui.cbadvancedmode.caption
+msgctxt "tviswaptgui.cbadvancedmode.caption"
+msgid "Advanced mode"
+msgstr "Mode avancé"
+
 #: tviswaptgui.cbadvancedsearch.caption
 msgid "More options"
 msgstr "Plus d'options"
@@ -3460,8 +3492,8 @@ msgstr "Section"
 
 #: tviswaptgui.gridhostpackages.header.columns[11].text
 msgctxt "tviswaptgui.gridhostpackages.header.columns[11].text"
-msgid "Arch"
-msgstr "Arch"
+msgid "Architecture"
+msgstr "Architecture"
 
 #: tviswaptgui.gridhostpackages.header.columns[12].text
 msgctxt "tviswaptgui.gridhostpackages.header.columns[12].text"
@@ -4004,8 +4036,8 @@ msgstr "Composant système"
 
 #: tviswaptgui.gridhosttasksdone.header.columns[0].text
 msgctxt "tviswaptgui.gridhosttasksdone.header.columns[0].text"
-msgid "id"
-msgstr "id"
+msgid "ID"
+msgstr "ID"
 
 #: tviswaptgui.gridhosttasksdone.header.columns[10].text
 msgctxt "tviswaptgui.gridhosttasksdone.header.columns[10].text"
@@ -4039,7 +4071,7 @@ msgstr "Ordre"
 
 #: tviswaptgui.gridhosttasksdone.header.columns[3].text
 msgctxt "tviswaptgui.gridhosttasksdone.header.columns[3].text"
-msgid "description"
+msgid "Description"
 msgstr "Description"
 
 #: tviswaptgui.gridhosttasksdone.header.columns[4].text
@@ -4064,7 +4096,7 @@ msgstr "Avancement"
 
 #: tviswaptgui.gridhosttasksdone.header.columns[8].text
 msgctxt "tviswaptgui.gridhosttasksdone.header.columns[8].text"
-msgid "summary"
+msgid "Summary"
 msgstr "Résumé"
 
 #: tviswaptgui.gridhosttasksdone.header.columns[9].text
@@ -4074,8 +4106,8 @@ msgstr "Terminée le"
 
 #: tviswaptgui.gridhosttaskserrors.header.columns[0].text
 msgctxt "tviswaptgui.gridhosttaskserrors.header.columns[0].text"
-msgid "id"
-msgstr "id"
+msgid "ID"
+msgstr "ID"
 
 #: tviswaptgui.gridhosttaskserrors.header.columns[10].text
 msgctxt "tviswaptgui.gridhosttaskserrors.header.columns[10].text"
@@ -4109,23 +4141,23 @@ msgstr "Ordre"
 
 #: tviswaptgui.gridhosttaskserrors.header.columns[3].text
 msgctxt "tviswaptgui.gridhosttaskserrors.header.columns[3].text"
-msgid "description"
+msgid "Description"
 msgstr "Description"
 
 #: tviswaptgui.gridhosttaskserrors.header.columns[4].text
 msgctxt "tviswaptgui.gridhosttaskserrors.header.columns[4].text"
-msgid "summary"
+msgid "Summary"
 msgstr "Résumé"
 
 #: tviswaptgui.gridhosttaskserrors.header.columns[5].text
 msgctxt "tviswaptgui.gridhosttaskserrors.header.columns[5].text"
-msgid "start_date"
+msgid "Start on"
 msgstr "Heure de début"
 
 #: tviswaptgui.gridhosttaskserrors.header.columns[6].text
 msgctxt "tviswaptgui.gridhosttaskserrors.header.columns[6].text"
-msgid "logs"
-msgstr "Traces"
+msgid "Logs"
+msgstr "Logs"
 
 #: tviswaptgui.gridhosttaskserrors.header.columns[7].text
 msgctxt "tviswaptgui.gridhosttaskserrors.header.columns[7].text"
@@ -4144,8 +4176,8 @@ msgstr "Avancement"
 
 #: tviswaptgui.gridhosttaskspending.header.columns[0].text
 msgctxt "tviswaptgui.gridhosttaskspending.header.columns[0].text"
-msgid "id"
-msgstr "id"
+msgid "ID"
+msgstr "ID"
 
 #: tviswaptgui.gridhosttaskspending.header.columns[10].text
 msgctxt "tviswaptgui.gridhosttaskspending.header.columns[10].text"
@@ -4179,7 +4211,7 @@ msgstr "Ordre"
 
 #: tviswaptgui.gridhosttaskspending.header.columns[3].text
 msgctxt "tviswaptgui.gridhosttaskspending.header.columns[3].text"
-msgid "description"
+msgid "Description"
 msgstr "Description"
 
 #: tviswaptgui.gridhosttaskspending.header.columns[4].text
@@ -4353,7 +4385,7 @@ msgid "Update ID"
 msgstr "ID de la mise à jour"
 
 #: tviswaptgui.gridhostwinupdates.header.columns[4].text
-msgid "kbids"
+msgid "KBIDS"
 msgstr "KB ids"
 
 #: tviswaptgui.gridhostwinupdates.header.columns[5].text
@@ -5547,6 +5579,11 @@ msgctxt "tviswaptgui.label15.caption"
 msgid "WAPT Groups"
 msgstr "Groupes WAPT"
 
+#: tviswaptgui.label16.caption
+msgctxt "tviswaptgui.label16.caption"
+msgid "Install logs of package %s"
+msgstr "Logs d'installation du paquet %s"
+
 #: tviswaptgui.label17.caption
 msgctxt "tviswaptgui.label17.caption"
 msgid "WSUS Scan Cab Date"
@@ -5619,6 +5656,11 @@ msgstr "Sélectionné / Total : %d / %d"
 msgctxt "tviswaptgui.labfiltersite.caption"
 msgid "AD sites"
 msgstr "Sites AD"
+
+#: tviswaptgui.lablogskb.caption
+msgctxt "tviswaptgui.lablogskb.caption"
+msgid "Install logs of %s"
+msgstr "Logs d'installation de la %s"
 
 #: tviswaptgui.labuser.caption
 msgctxt "tviswaptgui.labuser.caption"
@@ -5976,8 +6018,9 @@ msgid "Status"
 msgstr "Statut"
 
 #: tviswuadownloads.gridwudownloads.header.columns[4].text
+msgctxt "tviswuadownloads.gridwudownloads.header.columns[4].text"
 msgid "Message"
-msgstr ""
+msgstr "Message"
 
 #: tviswuadownloads.gridwudownloads.header.columns[5].text
 msgid "Download URL"
@@ -6547,6 +6590,10 @@ msgstr ""
 msgid "AGENT IP"
 msgstr "IP de l'agent"
 
+#: uwaptconsoleres.rsauditpackages
+msgid "Audit logs of package %s"
+msgstr "Logs d'audit du paquet %s"
+
 #: uwaptconsoleres.rsbuildinprogress
 msgctxt "uwaptconsoleres.rsbuildinprogress"
 msgid "Build in progress."
@@ -7007,6 +7054,11 @@ msgctxt "uwaptconsoleres.rsinstallon"
 msgid "  install on c:\\wapt : --setup -s"
 msgstr "  installation sur c:\\wapt : --setup -s"
 
+#: uwaptconsoleres.rsinstallpackages
+msgctxt "uwaptconsoleres.rsinstallpackages"
+msgid "Install logs of package %s"
+msgstr "Logs d'installation du paquet %s"
+
 #: uwaptconsoleres.rsinvalidservercertificate
 msgid "The https server trusted certificates bundle \"%s\" can not verify the server https connection. Check your bundle"
 msgstr "Le bundle de certificats de confiance %s ne permet pas de vérifier le certificat serveur de la connexion https. Vérifier votre bundle."
@@ -7028,6 +7080,11 @@ msgstr "La clé %s existe déjà, merci de choisir un nom différent."
 #: uwaptconsoleres.rskeypairgensuccess
 msgid "Private key %s and public certificate %s have been successfully created."
 msgstr "La clé privée %s et le certificat %s ont été créés avec succès."
+
+#: uwaptconsoleres.rslablogskb
+msgctxt "uwaptconsoleres.rslablogskb"
+msgid "Install logs of %s"
+msgstr "Logs d'installation de la %s"
 
 #: uwaptconsoleres.rslicencedto
 msgid "Licenced to %s"
@@ -7242,6 +7299,14 @@ msgstr "Exécution de la tâche %d : %s, statut :%s"
 msgctxt "uwaptconsoleres.rssavemods"
 msgid "Save changes ?"
 msgstr "Enregistrer les modifications ?"
+
+#: uwaptconsoleres.rssearch
+msgid "Search hosts..."
+msgstr "Rechercher des machines..."
+
+#: uwaptconsoleres.rssearchou
+msgid "Search OU..."
+msgstr "Rechercher des OU..."
 
 #: uwaptconsoleres.rsselectaddconflicts
 msgid "Select packages to append to hosts conflicts"

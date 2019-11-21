@@ -7,7 +7,6 @@ object VisTriggerHostsAction: TVisTriggerHostsAction
   ClientHeight = 408
   ClientWidth = 669
   OnCreate = FormCreate
-  OnShow = FormShow
   Position = poMainFormCenter
   LCLVersion = '1.8.4.0'
   object ProgressGrid: TSOGrid
@@ -58,7 +57,6 @@ object VisTriggerHostsAction: TVisTriggerHostsAction
         PropertyName = 'message'
       end>
     Header.DefaultHeight = 18
-    
     Header.Height = 18
     Header.MinHeight = 18
     Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]

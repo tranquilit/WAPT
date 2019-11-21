@@ -105,7 +105,7 @@ elif sys.platform.startswith('linux') or sys.platform.startswith('darwin'):
 logger = logging.getLogger()
 
 from waptutils import BaseObjectClass,ensure_list,ensure_unicode,default_http_headers,get_time_delta
-from waptutils import httpdatetime2isodate,datetime2isodate,FileChunks,jsondump,LogOutput,isodate2datetime
+from waptutils import httpdatetime2isodate,datetime2isodate,FileChunks,jsondump,ZipFile,LogOutput,isodate2datetime
 from waptutils import import_code,import_setup,force_utf8_no_bom,format_bytes,wget,merge_dict,remove_encoding_declaration,list_intersection
 from waptutils import _disable_file_system_redirection
 from waptutils import get_requests_client_cert_session,get_main_ip

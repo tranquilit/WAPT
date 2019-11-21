@@ -2300,7 +2300,7 @@ def fix_wmi():
         return False
 
 # from http://stackoverflow.com/questions/580924/python-windows-file-version-attribute
-def get_file_properties(fname):
+def get_file_properties(fname,ignore_warning=True):
     r"""Read all properties of the given file return them as a dictionary.
 
     Args:
@@ -2321,22 +2321,23 @@ def get_file_properties(fname):
     for propName in propNames:
         props[propName] = ''
 
-    try:
-        # \VarFileInfo\Translation returns list of available (language, codepage)
-        # pairs that can be used to retreive string info. We are using only the first pair.
-        lang, codepage = win32api.GetFileVersionInfo(fname, '\\VarFileInfo\\Translation')[0]
 
-        # any other must be of the form \StringfileInfo\%04X%04X\parm_name, middle
-        # two are language/codepage pair returned from above
+    # \VarFileInfo\Translation returns list of available (language, codepage)
+    # pairs that can be used to retreive string info. We are using only the first pair.
+    lang, codepage = win32api.GetFileVersionInfo(fname, '\\VarFileInfo\\Translation')[0]
 
-        for propName in propNames:
+    # any other must be of the form \StringfileInfo\%04X%04X\parm_name, middle
+    # two are language/codepage pair returned from above
+
+    for propName in propNames:
+        try:
             strInfoPath = u'\\StringFileInfo\\%04X%04X\\%s' % (lang, codepage, propName)
             ## print str_info
             props[propName] = (win32api.GetFileVersionInfo(fname, strInfoPath) or '').strip()
-
-    except Exception as e:
-        logger.warning(u"%s" % ensure_unicode(e))
-        # backslash as parm returns dictionary of numeric info corresponding to VS_FIXEDFILEINFO struc
+        except Exception as e:
+            if not ignore_warning:
+                logger.warning(u"%s" % ensure_unicode(e))
+                # backslash as parm returns dictionary of numeric info corresponding to VS_FIXEDFILEINFO struc
 
     if not props['FileVersion']:
         try:
@@ -2866,7 +2867,7 @@ def installed_softwares(keywords='',uninstallkey=None,name=None):
                     appkey = reg_openkey_noredir(_winreg.HKEY_LOCAL_MACHINE,"%s\\%s" % (uninstall,subkey.encode(os_encoding)),noredir=noredir)
                     display_name = reg_getvalue(appkey,'DisplayName','')
                     display_version = reg_getvalue(appkey,'DisplayVersion','')
-                    date = reg_getvalue(appkey,'InstallDate','').replace('\x00','')
+                    date = str(reg_getvalue(appkey,'InstallDate','')).replace('\x00','')
                     try:
                         install_date=datetime.datetime.strptime(date,'%Y%m%d').strftime('%Y-%m-%d %H:%M:%S')
                     except:

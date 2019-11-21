@@ -36,14 +36,19 @@ type
     ActDescendRule: TAction;
     ActDeleteRule: TAction;
     ActEditRule: TAction;
+    ActDisplayDebug: TAction;
     ActRepositoriesGetSecondRepos: TAction;
     ActNewRule: TAction;
     ActRepositoriesGetUpdateRules: TAction;
     ActSaveAccounts: TAction;
     ActReloadAccounts: TAction;
     ActNewAccount: TAction;
+    cbAdvancedMode: TCheckBox;
     EdPKIRootDirectory: TDirectoryEdit;
+    EdSearchOrgUnits: TSearchEdit;
     Label13: TLabel;
+    Label16: TLabel;
+    LabLogsKB: TLabel;
     PanCertTop: TPanel;
     PanCertDetails: TPanel;
     GridRules: TSOGrid;
@@ -51,6 +56,7 @@ type
     MenuItemShowErrors: TMenuItem;
     MenuItemSync: TMenuItem;
     MenuItemSyncForce: TMenuItem;
+    PanelKBLogs: TPanel;
     PanelRules: TPanel;
     PanelAgentRepos: TPanel;
     PanelRepositories: TPanel;
@@ -127,6 +133,7 @@ type
     tbSoftwaresNormalization: TToolButton;
     tbUpRule: TToolButton;
     tbAgentRepos: TToolBar;
+    TimerSearchHosts: TTimer;
     ToolButton1: TToolButton;
     ToolButton10: TToolButton;
     ToolButton11: TToolButton;
@@ -290,7 +297,6 @@ type
     Label18: TLabel;
     Label21: TLabel;
     Label22: TLabel;
-    EdSearchOrgUnits: TEdit;
     EdSearchPackage1: TSearchEdit;
     GridNetworks: TSOGrid;
     Label4: TLabel;
@@ -638,6 +644,7 @@ type
     procedure ActDeletePackageUpdate(Sender: TObject);
     procedure ActDeleteRuleExecute(Sender: TObject);
     procedure ActDescendRuleExecute(Sender: TObject);
+    procedure ActDisplayDebugExecute(Sender: TObject);
     procedure ActDisplayPreferencesExecute(Sender: TObject);
     procedure ActDisplayUserMessageExecute(Sender: TObject);
     procedure ActEditGroupUpdate(Sender: TObject);
@@ -767,6 +774,7 @@ type
     procedure ApplicationProperties1Exception(Sender: TObject; E: Exception);
     procedure cbADOUSelect(Sender: TObject);
     procedure cbADSiteSelect(Sender: TObject);
+    procedure cbAdvancedModeClick(Sender: TObject);
     procedure cbAdvancedSearchClick(Sender: TObject);
     procedure cbAllClassificationsClick(Sender: TObject);
     procedure cbAllproductsClick(Sender: TObject);
@@ -962,12 +970,14 @@ type
     procedure MenuItemShowErrorsClick(Sender: TObject);
     procedure MenuItemSyncClick(Sender: TObject);
     procedure MenuItemSyncForceClick(Sender: TObject);
+    procedure PagesTasksChange(Sender: TObject);
     procedure PopupMenuHostsPopup(Sender: TObject);
     procedure SynEditReportsSQLChange(Sender: TObject);
     procedure tbSyncAllClick(Sender: TObject);
     procedure tbSyncChangelogClick(Sender: TObject);
     procedure tbSyncSelectedClick(Sender: TObject);
     procedure tbUpdateFileSyncClick(Sender: TObject);
+    procedure TimerSearchHostsTimer(Sender: TObject);
     procedure TimerSearchPackagesTimer(Sender: TObject);
     procedure TimerWUALoadWinUpdatesTimer(Sender: TObject);
     procedure WUAConfigPagesChange(Sender: TObject);
@@ -1499,11 +1509,16 @@ end;
 procedure TVisWaptGUI.EdSearchHostKeyPress(Sender: TObject; var Key: char);
 begin
   if key = #13 then
+  begin
+    TimerSearchHosts.Enabled:=False;
     ActSearchHost.execute
+  end
   else
-    if CharIsAlphaNum(Key) then
-      Gridhosts.Clear;
-
+    if CharIsAlphaNum(Key) or  (key = #8) then
+    begin
+      TimerSearchHosts.Enabled:=False;
+      TimerSearchHosts.Enabled:=True;
+    end;
 end;
 
 procedure TVisWaptGUI.EdSoftwaresFilterChange(Sender: TObject);
@@ -2875,6 +2890,11 @@ begin
         AdvancedMode := cbDebugWindow.Checked;
         pgSources.TabVisible := AdvancedMode;
         PanDebug.Visible := AdvancedMode;
+        SplitBottomDebug.Visible:= AdvancedMode;
+        if AdvancedMode then
+            cbAdvancedMode.State:=cbChecked
+        else
+            cbAdvancedMode.State:=cbUnchecked;
 
         Gridhosts.ShowAdvancedColumnsCustomize:= AdvancedMode;
         GridGroups.ShowAdvancedColumnsCustomize:=AdvancedMode;
@@ -2898,6 +2918,11 @@ begin
   finally
     inifile.Free;
   end;
+end;
+
+procedure TVisWaptGUI.cbAdvancedModeClick(Sender: TObject);
+begin
+    ActDisplayDebug.Execute;
 end;
 
 procedure TVisWaptGUI.ActDisplayUserMessageExecute(Sender: TObject);
@@ -3949,7 +3974,6 @@ begin
       else
         ShowMessageFmt('Unable to get hosts list : %s',['Invalid data']);
     end;
-
   finally
     Screen.Cursor:=crDefault;
     inSearchHosts:=False;;
@@ -4038,6 +4062,11 @@ begin
   dmpython.WaptConfigFileName:=AppIniFilename;
   pgSources.TabVisible := AdvancedMode;
   PanDebug.Visible := AdvancedMode;
+  SplitBottomDebug.Visible := AdvancedMode;
+  if AdvancedMode then
+      cbAdvancedMode.State:=cbChecked
+  else
+      cbAdvancedMode.State:=cbUnchecked;
   Gridhosts.ShowAdvancedColumnsCustomize:= AdvancedMode;
   GridGroups.ShowAdvancedColumnsCustomize:=AdvancedMode;
   GridPackages.ShowAdvancedColumnsCustomize:=AdvancedMode;
@@ -4062,7 +4091,38 @@ begin
     GridHostWinUpdates.Data := Nil;
     GridWUUpdates.Data := Nil;
   end;
+end;
 
+procedure TVisWaptGUI.ActDisplayDebugExecute(Sender: TObject);
+var
+  inifile:TIniFile;
+begin
+  try
+    inifile := TIniFile.Create(AppIniFilename);
+    AdvancedMode:=not(AdvancedMode);
+    inifile.WriteBool('global', 'advanced_mode',AdvancedMode);
+    pgSources.TabVisible := AdvancedMode;
+      PanDebug.Visible := AdvancedMode;
+      SplitBottomDebug.Visible := AdvancedMode;
+      if AdvancedMode then
+          cbAdvancedMode.State:=cbChecked
+      else
+          cbAdvancedMode.State:=cbUnchecked;
+      Gridhosts.ShowAdvancedColumnsCustomize:= AdvancedMode;
+      GridGroups.ShowAdvancedColumnsCustomize:=AdvancedMode;
+      GridPackages.ShowAdvancedColumnsCustomize:=AdvancedMode;
+      GridHostPackages.ShowAdvancedColumnsCustomize:=AdvancedMode;
+      GridHostsForPackage.ShowAdvancedColumnsCustomize:=AdvancedMode;
+
+      if IsEnterpriseEdition then
+      begin
+        GridHostWinUpdates.ShowAdvancedColumnsCustomize:=AdvancedMode;
+        GridWUUpdates.ShowAdvancedColumnsCustomize:=AdvancedMode;
+        GridHostsForPackage.ShowAdvancedColumnsCustomize:=AdvancedMode;
+      end;
+  finally
+    FreeAndNil(inifile);
+  end;
 end;
 
 procedure TVisWaptGUI.ActVNCExecute(Sender: TObject);
@@ -4288,6 +4348,8 @@ begin
   cbFilterPackagesArch.Checked[1] := True;
   if cbFilterPackagesLocales.Items.IndexOf(Language)>=0 then
     cbFilterPackagesLocales.Checked[cbFilterPackagesLocales.Items.IndexOf(Language)] := True;
+  EdSearchHost.EmptyText:=rsSearch;
+  EdSearchOrgUnits.EmptyText:=rsSearchOU;
 end;
 
 procedure TVisWaptGUI.FormDestroy(Sender: TObject);
@@ -4546,6 +4608,19 @@ begin
 
         self.cbGroups.Text := ini.ReadString(self.Name,'cbGroups.Text',self.cbGroups.Text);
 
+        pgSources.TabVisible := AdvancedMode;
+        PanDebug.Visible := AdvancedMode;
+        SplitBottomDebug.Visible := AdvancedMode;
+        if AdvancedMode then
+            cbAdvancedMode.State:=cbChecked
+        else
+            cbAdvancedMode.State:=cbUnchecked;
+        Gridhosts.ShowAdvancedColumnsCustomize:= AdvancedMode;
+        GridGroups.ShowAdvancedColumnsCustomize:=AdvancedMode;
+        GridPackages.ShowAdvancedColumnsCustomize:=AdvancedMode;
+        GridHostPackages.ShowAdvancedColumnsCustomize:=AdvancedMode;
+        GridHostsForPackage.ShowAdvancedColumnsCustomize:=AdvancedMode;
+
         {$ifdef ENTERPRISE}
         {$include ..\waptenterprise\includes\uwaptconsole.formshow.inc}
         {$endif}
@@ -4620,30 +4695,30 @@ begin
   end;
     if Screen.PixelsPerInch<>96 then
     begin
-    GridHosts.Header.Height:=trunc((GridHosts.Header.MinHeight*Screen.PixelsPerInch)/96);
-    GridHostPackages.Header.Height:=trunc((GridHostPackages.Header.MinHeight*Screen.PixelsPerInch)/96);
-    GridHostSoftwares.Header.Height:=trunc((GridHostSoftwares.Header.MinHeight*Screen.PixelsPerInch)/96);
-    GridHostWinUpdates.Header.Height:=trunc((GridHostWinUpdates.Header.MinHeight*Screen.PixelsPerInch)/96);
-    GridHostWinUpdatesHistory.Header.Height:=trunc((GridHostWinUpdatesHistory.Header.MinHeight*Screen.PixelsPerInch)/96);
-    GridHostTasksPending.Header.Height:=trunc((GridHostTasksPending.Header.MinHeight*Screen.PixelsPerInch)/96);
-    GridHostTasksDone.Header.Height:=trunc((GridHostTasksDone.Header.MinHeight*Screen.PixelsPerInch)/96);
-    GridHostTasksErrors.Header.Height:=trunc((GridHostTasksErrors.Header.MinHeight*Screen.PixelsPerInch)/96);
-    GridGroups.Header.Height:=trunc((GridGroups.Header.MinHeight*Screen.PixelsPerInch)/96);
-    GridPackages.Header.Height:=trunc((GridPackages.Header.MinHeight*Screen.PixelsPerInch)/96);
-    GridHostsForPackage.Header.Height:=trunc((GridHostsForPackage.Header.MinHeight*Screen.PixelsPerInch)/96);
-    GridWUAPackages.Header.Height:=trunc((GridWUAPackages.Header.MinHeight*Screen.PixelsPerInch)/96);
-    GridWSUSScan.Header.Height:=trunc((GridWSUSScan.Header.MinHeight*Screen.PixelsPerInch)/96);
-    GridWUUpdates.Header.Height:=trunc((GridWUUpdates.Header.MinHeight*Screen.PixelsPerInch)/96);
-    GridSelfServicePackages.Header.Height:=trunc((GridSelfServicePackages.Header.MinHeight*Screen.PixelsPerInch)/96);
-    GridNetworks.Header.Height:=trunc((GridNetworks.Header.MinHeight*Screen.PixelsPerInch)/96);
-    GridReportingResult.Header.Height:=trunc((GridReportingResult.Header.MinHeight*Screen.PixelsPerInch)/96);
-    GridReportingQueries.Header.Height:=trunc((GridReportingQueries.Header.MinHeight*Screen.PixelsPerInch)/96);
-    GridUsers.Header.Height:=trunc((GridUsers.Header.MinHeight*Screen.PixelsPerInch)/96);
-    GridRules.Header.Height:=trunc((GridRules.Header.MinHeight*Screen.PixelsPerInch)/96);
-    GridAgentRepo.Header.Height:=trunc((GridAgentRepo.Header.MinHeight*Screen.PixelsPerInch)/96);
-    GridhostInventory.Header.Height:=trunc((GridhostInventory.Header.MinHeight*Screen.PixelsPerInch)/96);
-    GridOrgUnits.Header.Height:=trunc((GridOrgUnits.Header.MinHeight*Screen.PixelsPerInch)/96);
-    jsonlog.Header.Height:=trunc((jsonlog.Header.MinHeight*Screen.PixelsPerInch)/96);
+        GridHosts.Header.Height:=trunc((GridHosts.Header.MinHeight*Screen.PixelsPerInch)/96);
+        GridHostPackages.Header.Height:=trunc((GridHostPackages.Header.MinHeight*Screen.PixelsPerInch)/96);
+        GridHostSoftwares.Header.Height:=trunc((GridHostSoftwares.Header.MinHeight*Screen.PixelsPerInch)/96);
+        GridHostWinUpdates.Header.Height:=trunc((GridHostWinUpdates.Header.MinHeight*Screen.PixelsPerInch)/96);
+        GridHostWinUpdatesHistory.Header.Height:=trunc((GridHostWinUpdatesHistory.Header.MinHeight*Screen.PixelsPerInch)/96);
+        GridHostTasksPending.Header.Height:=trunc((GridHostTasksPending.Header.MinHeight*Screen.PixelsPerInch)/96);
+        GridHostTasksDone.Header.Height:=trunc((GridHostTasksDone.Header.MinHeight*Screen.PixelsPerInch)/96);
+        GridHostTasksErrors.Header.Height:=trunc((GridHostTasksErrors.Header.MinHeight*Screen.PixelsPerInch)/96);
+        GridGroups.Header.Height:=trunc((GridGroups.Header.MinHeight*Screen.PixelsPerInch)/96);
+        GridPackages.Header.Height:=trunc((GridPackages.Header.MinHeight*Screen.PixelsPerInch)/96);
+        GridHostsForPackage.Header.Height:=trunc((GridHostsForPackage.Header.MinHeight*Screen.PixelsPerInch)/96);
+        GridWUAPackages.Header.Height:=trunc((GridWUAPackages.Header.MinHeight*Screen.PixelsPerInch)/96);
+        GridWSUSScan.Header.Height:=trunc((GridWSUSScan.Header.MinHeight*Screen.PixelsPerInch)/96);
+        GridWUUpdates.Header.Height:=trunc((GridWUUpdates.Header.MinHeight*Screen.PixelsPerInch)/96);
+        GridSelfServicePackages.Header.Height:=trunc((GridSelfServicePackages.Header.MinHeight*Screen.PixelsPerInch)/96);
+        GridNetworks.Header.Height:=trunc((GridNetworks.Header.MinHeight*Screen.PixelsPerInch)/96);
+        GridReportingResult.Header.Height:=trunc((GridReportingResult.Header.MinHeight*Screen.PixelsPerInch)/96);
+        GridReportingQueries.Header.Height:=trunc((GridReportingQueries.Header.MinHeight*Screen.PixelsPerInch)/96);
+        GridUsers.Header.Height:=trunc((GridUsers.Header.MinHeight*Screen.PixelsPerInch)/96);
+        GridRules.Header.Height:=trunc((GridRules.Header.MinHeight*Screen.PixelsPerInch)/96);
+        GridAgentRepo.Header.Height:=trunc((GridAgentRepo.Header.MinHeight*Screen.PixelsPerInch)/96);
+        GridhostInventory.Header.Height:=trunc((GridhostInventory.Header.MinHeight*Screen.PixelsPerInch)/96);
+        GridOrgUnits.Header.Height:=trunc((GridOrgUnits.Header.MinHeight*Screen.PixelsPerInch)/96);
+        jsonlog.Header.Height:=trunc((jsonlog.Header.MinHeight*Screen.PixelsPerInch)/96);
     end;
 end;
 
@@ -4746,12 +4821,18 @@ end;
 procedure TVisWaptGUI.GridHostPackagesChange(Sender: TBaseVirtualTree;
   Node: PVirtualNode);
 begin
-  if (GridHostPackages.FocusedRow <> nil) then
+  if Assigned(GridHostPackages.FocusedRow) then
   begin
     if IsEnterpriseEdition and (GridHostPackages.FocusedColumnObject.PropertyName = 'last_audit_status') then
+    begin
+      Label16.Caption:=Format(rsAuditPackages,[GridHostPackages.FocusedRow.S['package']]);
       MemoInstallOutput.Text := UTF8Encode(GridHostPackages.FocusedRow.S['last_audit_output'])
+    end
     else
+    begin
       MemoInstallOutput.Text := UTF8Encode(GridHostPackages.FocusedRow.S['install_output']);
+      Label16.Caption:=Format(rsInstallPackages,[GridHostPackages.FocusedRow.S['package']]);
+    end;
     MemoInstallOutput.CaretPos := Point(1, 65535);
     MemoInstallOutput.SelStart := 65535;
     MemoInstallOutput.SelLength := 0;
@@ -4759,6 +4840,7 @@ begin
   end
   else
     MemoInstallOutput.Clear;
+  Panel5.Visible:=Assigned(GridHostPackages.FocusedRow);
 end;
 
 procedure TVisWaptGUI.GridHostPackagesFocusChanged(Sender: TBaseVirtualTree;
@@ -4865,6 +4947,7 @@ begin
     LabelComputersNumber.Caption := Format(rsHostsSelectedTotal,[GridHosts.SelectedCount,GridHosts.Data.AsArray.Length])
   else
     LabelComputersNumber.Caption := '';
+  HostPages.Visible:=Assigned(GridHosts.FocusedRow);
 end;
 
 procedure TVisWaptGUI.GridHostsColumnDblClick(Sender: TBaseVirtualTree;
@@ -5215,7 +5298,8 @@ end;
 procedure TVisWaptGUI.GridHostTasksPendingChange(Sender: TBaseVirtualTree;
   Node: PVirtualNode);
 begin
-  if (Sender as TSOGrid).FocusedRow <> nil then
+  PanLog.Visible:=Assigned((Sender as TSOGrid).FocusedRow);
+  if Assigned((Sender as TSOGrid).FocusedRow) then
   begin
     MemoTaskLog.Text := UTF8Encode((Sender as TSOGrid).FocusedRow.S['logs']);
     MemoTaskLog.SelStart := 65535;
@@ -5228,10 +5312,17 @@ end;
 procedure TVisWaptGUI.GridHostWinUpdatesChange(Sender: TBaseVirtualTree;
   Node: PVirtualNode);
 begin
-  if GridHostWinUpdates.FocusedRow <> Nil then
-    GridHostWinUpdatesHistory.Data := GridHostWinUpdates.FocusedRow['local_status_history']
+  if Assigned(GridHostWinUpdates.FocusedRow) then
+  begin
+    GridHostWinUpdatesHistory.Data := GridHostWinUpdates.FocusedRow['local_status_history'];
+    PanelKBLogs.Visible:=GridHostWinUpdatesHistory.Data.AsArray.Length>=1;
+    LabLogsKB.Caption:=Format(rsLabLogsKB,['KB'+soutils.Join(',KB', GridHostWinUpdates.FocusedRow['kbids'])]);
+  end
   else
+  begin
     GridHostWinUpdatesHistory.Data := Nil;
+    PanelKBLogs.Visible:=False;
+  end;
 end;
 
 procedure TVisWaptGUI.GridHostWinUpdatesGetImageIndexEx(
@@ -5615,6 +5706,11 @@ begin
   ActSearchPackage.Execute;
 end;
 
+procedure TVisWaptGUI.TimerSearchHostsTimer(Sender: TObject);
+begin
+   TimerSearchHosts.Enabled:=False;
+   ActSearchHost.execute
+end;
 
 procedure TVisWaptGUI.ActVeyonExecute(Sender: TObject);
 var

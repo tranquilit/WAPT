@@ -18,6 +18,11 @@ resourcestring
   rsActionsErrors = 'errors';
   rsActionsSkipped ='skipped';
   rsActionsServerErrors = 'server errors';
+  rsSearch = 'Search hosts...';
+  rsSearchOU = 'Search OU...';
+  rsInstallPackages = 'Install logs of package %s';
+  rsAuditPackages = 'Audit logs of package %s';
+  rsLabLogsKB = 'Install logs of %s';
 
   rsLicencedTo = 'Licenced to %s';
 
