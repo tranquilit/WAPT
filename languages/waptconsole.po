@@ -5559,6 +5559,11 @@ msgctxt "tviswaptgui.label18.caption"
 msgid "Last scan date"
 msgstr ""
 
+#: tviswaptgui.label19.caption
+msgctxt "tviswaptgui.label19.caption"
+msgid "Logs of task %s (ID %s)"
+msgstr ""
+
 #: tviswaptgui.label2.caption
 msgctxt "tviswaptgui.label2.caption"
 msgid "Manufacturer"
@@ -7064,6 +7069,11 @@ msgstr ""
 
 #: uwaptconsoleres.rsloadsettings
 msgid "Loading application settings"
+msgstr ""
+
+#: uwaptconsoleres.rslogtasks
+msgctxt "uwaptconsoleres.rslogtasks"
+msgid "Logs of task %s (ID %s)"
 msgstr ""
 
 #: uwaptconsoleres.rslongtaskerror

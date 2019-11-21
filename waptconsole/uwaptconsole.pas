@@ -48,6 +48,7 @@ type
     EdSearchOrgUnits: TSearchEdit;
     Label13: TLabel;
     Label16: TLabel;
+    Label19: TLabel;
     LabLogsKB: TLabel;
     PanCertTop: TPanel;
     PanCertDetails: TPanel;
@@ -5298,15 +5299,21 @@ end;
 procedure TVisWaptGUI.GridHostTasksPendingChange(Sender: TBaseVirtualTree;
   Node: PVirtualNode);
 begin
-  PanLog.Visible:=Assigned((Sender as TSOGrid).FocusedRow);
   if Assigned((Sender as TSOGrid).FocusedRow) then
   begin
+    PanLog.Visible:=True;
+    SplitHostTaskLog.Visible:=True;
+    Label19.Caption:=Format(rsLogTasks,[UTF8Encode((Sender as TSOGrid).FocusedRow.S['description']),UTF8Encode((Sender as TSOGrid).FocusedRow.S['id'])]);
     MemoTaskLog.Text := UTF8Encode((Sender as TSOGrid).FocusedRow.S['logs']);
     MemoTaskLog.SelStart := 65535;
     MemoTaskLog.ScrollBy(0, 65535);
   end
   else
+  begin
+    PanLog.Visible:=False;
+    SplitHostTaskLog.Visible:=False;
     MemoTaskLog.Clear;
+  end;
 end;
 
 procedure TVisWaptGUI.GridHostWinUpdatesChange(Sender: TBaseVirtualTree;
@@ -5316,12 +5323,14 @@ begin
   begin
     GridHostWinUpdatesHistory.Data := GridHostWinUpdates.FocusedRow['local_status_history'];
     PanelKBLogs.Visible:=GridHostWinUpdatesHistory.Data.AsArray.Length>=1;
+    SplitWinupdateHost.Visible:=GridHostWinUpdatesHistory.Data.AsArray.Length>=1;;
     LabLogsKB.Caption:=Format(rsLabLogsKB,['KB'+soutils.Join(',KB', GridHostWinUpdates.FocusedRow['kbids'])]);
   end
   else
   begin
     GridHostWinUpdatesHistory.Data := Nil;
     PanelKBLogs.Visible:=False;
+    SplitWinupdateHost.Visible:=False;
   end;
 end;
 
