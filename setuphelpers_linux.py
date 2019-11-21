@@ -35,6 +35,8 @@ import cpuinfo
 import sys
 import subprocess
 import logging
+import glob
+import plistlib
 import datetime
 import platform
 from waptutils import (ensure_unicode, makepath, ensure_dir,currentdate,currentdatetime,_lower,ini2winstr,error,get_main_ip)
@@ -262,6 +264,46 @@ def get_computername():
     return socket.gethostname()
 
 
+def installed_softwares_macos(keywords='', uninstallkey=None, name=None):
+    def get_file_type(file):
+        path_file = file.replace(' ', '\ ')
+        file_output = subprocess.check_output('file ' + path_file, shell=True)
+        file_type = file_output.split(file)[1][2:-1] # Removing ": " and "\n"
+        return file_type
+
+    list_installed_softwares=[]
+
+    app_dirs = [file for file in glob.glob('/Applications/*.app')]
+    plist_files = [dirname + '/Contents/Info.plist' for dirname in app_dirs]
+
+    for plist_file in plist_files:
+        try:
+            file_type = get_file_type(plist_file)
+
+            if file_type == 'Apple binary property list':
+                tmp_plist = '/tmp/info.plist'
+                subprocess.call('plutil -convert xml1 ' + plist_file + ' -o ' + tmp_plist, shell=True)
+                plist_obj = plistlib.readPlist(tmp_plist)
+            else: # regular Plist
+                plist_obj = plistlib.readPlist(plist_file)
+
+            date_last_modif = os.path.getmtime(plist_file)
+            date_last_modif = datetime.datetime.fromtimestamp(date_last_modif).strftime('%Y-%m-%d %H:%M:%S')
+            infodict = {'key': '',
+                        'name': plist_obj['CFBundleName'],
+                        'version': plist_obj['CFBundleShortVersionString'],
+                        'install_date': date_last_modif,
+                        'install_location': plist_file[:plist_file.index('.app') + 4],
+                        'uninstall_string': '',
+                        'publisher': plist_obj['CFBundleIdentifier'].split('.')[1], # "com.publisher.name" => "publisher"
+                        'system_component': ''}
+
+            list_installed_softwares.append(infodict)
+        except:
+            print("Application data acquisition failed for {} :".format(plist_file))
+
+    return list_installed_softwares
+
 def installed_softwares(keywords='',uninstallkey=None,name=None):
     if apt:
         list_installed_softwares=[]
@@ -286,6 +328,8 @@ def installed_softwares(keywords='',uninstallkey=None,name=None):
             pkg_dict={'key':'','name':header['name'],'version':header['version'],'install_date':datetime.datetime.strptime(header.sprintf("%{INSTALLTID:date}"),'%a %b %d %H:%M:%S %Y').strftime('%Y-%m-%d %H:%M:%S'),'install_location':'','uninstall_string':'','publisher':header['url'],'system_component':''}
             list_installed_softwares.append(pkg_dict)
         return list_installed_softwares
+    elif platform.system() == 'Darwin':
+        return installed_softwares_macos(keywords, uninstallkey, name)
     else:
         return [{'key':'Distribution not supported yet', 'name':'Distribution not supported yet', 'version':'Distribution not supported yet', 'install_date':'Distribution not supported yet', 'install_location':'Distribution not supported yet', 'uninstall_string':'Distribution not supported yet', 'publisher':'Distribution not supported yet','system_component':'Distribution not supported yet'}]
 
