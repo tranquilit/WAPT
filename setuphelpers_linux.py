@@ -248,7 +248,7 @@ def host_info():
     info['distrib_version'] = get_distrib_version()
     info['cpu_name'] = cpuinfo.get_cpu_info()['brand']
     if platform.system()=='Darwin':
-        info['os_name']= platform.system()
+        info['os_name']= 'macOS'
         info['os_version']=platform.release()
     else:
         info['os_name'] = platform.linux_distribution()[0]

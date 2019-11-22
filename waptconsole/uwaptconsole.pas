@@ -5127,7 +5127,7 @@ begin
         ImageIndex := 21
       else if (platform.AsString = 'Windows') then
         ImageIndex := 20
-      else if (platform.AsString = 'Darwin') then
+      else if (platform.AsString = 'macOS') then
           ImageIndex := 19;
     end
     else
