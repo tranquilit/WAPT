@@ -5594,6 +5594,11 @@ msgctxt "tviswaptgui.label18.caption"
 msgid "Last scan date"
 msgstr "Dernier scan"
 
+#: tviswaptgui.label19.caption
+msgctxt "tviswaptgui.label19.caption"
+msgid "Logs of task %s (ID %s)"
+msgstr "Logs de la tâche %s (ID %s)"
+
 #: tviswaptgui.label2.caption
 msgctxt "tviswaptgui.label2.caption"
 msgid "Manufacturer"
@@ -7105,6 +7110,11 @@ msgstr "Chargement de l'index des paquest"
 #: uwaptconsoleres.rsloadsettings
 msgid "Loading application settings"
 msgstr "Chargement des paramètres de l'application"
+
+#: uwaptconsoleres.rslogtasks
+msgctxt "uwaptconsoleres.rslogtasks"
+msgid "Logs of task %s (ID %s)"
+msgstr "Logs de la tâche %s (ID %s)"
 
 #: uwaptconsoleres.rslongtaskerror
 msgctxt "uwaptconsoleres.rslongtaskerror"

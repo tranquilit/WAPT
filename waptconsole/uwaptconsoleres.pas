@@ -23,6 +23,7 @@ resourcestring
   rsInstallPackages = 'Install logs of package %s';
   rsAuditPackages = 'Audit logs of package %s';
   rsLabLogsKB = 'Install logs of %s';
+  rsLogTasks = 'Logs of task %s (ID %s)';
 
   rsLicencedTo = 'Licenced to %s';
 

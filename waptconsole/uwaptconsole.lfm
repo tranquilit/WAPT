@@ -41,20 +41,20 @@ object VisWaptGUI: TVisWaptGUI
         Height = 537
         Top = 126
         Width = 648
-        ActivePage = pgHostWUA
+        ActivePage = pgTasks
         Align = alRight
-        TabIndex = 3
+        TabIndex = 4
         TabOrder = 0
         Visible = False
         OnChange = HostPagesChange
         object pgPackages: TTabSheet
           AnchorSideTop.Side = asrBottom
           Caption = 'Overview'
-          ClientHeight = 672
+          ClientHeight = 509
           ClientWidth = 640
           object GridHostPackages: TSOGrid
             Left = 0
-            Height = 352
+            Height = 189
             Top = 137
             Width = 640
             OnGetText = GridHostPackagesGetText
@@ -375,7 +375,7 @@ object VisWaptGUI: TVisWaptGUI
           object Panel5: TPanel
             Left = 0
             Height = 179
-            Top = 493
+            Top = 330
             Width = 640
             Align = alBottom
             BevelOuter = bvNone
@@ -635,11 +635,10 @@ object VisWaptGUI: TVisWaptGUI
             end
           end
           object SplitPackagesStatusLogs: TSplitter
-            AnchorSideTop.Control = Panel5
             Cursor = crVSplit
             Left = 0
             Height = 4
-            Top = 489
+            Top = 326
             Width = 640
             Align = alBottom
             ResizeAnchor = akBottom
@@ -738,11 +737,11 @@ object VisWaptGUI: TVisWaptGUI
         end
         object pgSoftwares: TTabSheet
           Caption = 'Software inventory'
-          ClientHeight = 672
+          ClientHeight = 509
           ClientWidth = 640
           object GridHostSoftwares: TSOGrid
             Left = 0
-            Height = 643
+            Height = 480
             Top = 29
             Width = 640
             ShowAdvancedColumnsCustomize = False
@@ -1516,7 +1515,7 @@ object VisWaptGUI: TVisWaptGUI
         end
         object pgTasks: TTabSheet
           Caption = 'Tasks'
-          ClientHeight = 672
+          ClientHeight = 509
           ClientWidth = 640
           object PanTaskTop: TPanel
             Left = 4
@@ -1598,7 +1597,7 @@ object VisWaptGUI: TVisWaptGUI
           end
           object PagesTasks: TPageControl
             Left = 0
-            Height = 419
+            Height = 256
             Top = 125
             Width = 640
             ActivePage = TabSheet1
@@ -1609,11 +1608,11 @@ object VisWaptGUI: TVisWaptGUI
             OnChange = PagesTasksChange
             object TabSheet1: TTabSheet
               Caption = 'Pending'
-              ClientHeight = 391
+              ClientHeight = 228
               ClientWidth = 632
               object GridHostTasksPending: TSOGrid
                 Left = 0
-                Height = 389
+                Height = 226
                 Top = 2
                 Width = 632
                 ShowAdvancedColumnsCustomize = False
@@ -1755,11 +1754,11 @@ object VisWaptGUI: TVisWaptGUI
             end
             object TabSheet2: TTabSheet
               Caption = 'Done'
-              ClientHeight = 464
+              ClientHeight = 228
               ClientWidth = 632
               object GridHostTasksDone: TSOGrid
                 Left = 0
-                Height = 462
+                Height = 226
                 Top = 2
                 Width = 632
                 ShowAdvancedColumnsCustomize = False
@@ -1900,11 +1899,11 @@ object VisWaptGUI: TVisWaptGUI
             end
             object TabSheet3: TTabSheet
               Caption = 'Errors'
-              ClientHeight = 464
+              ClientHeight = 228
               ClientWidth = 632
               object GridHostTasksErrors: TSOGrid
                 Left = 0
-                Height = 462
+                Height = 226
                 Top = 2
                 Width = 632
                 ShowAdvancedColumnsCustomize = False
@@ -2047,7 +2046,7 @@ object VisWaptGUI: TVisWaptGUI
             Cursor = crVSplit
             Left = 0
             Height = 5
-            Top = 544
+            Top = 381
             Width = 640
             Align = alBottom
             ResizeAnchor = akBottom
@@ -2055,7 +2054,7 @@ object VisWaptGUI: TVisWaptGUI
           object PanLog: TPanel
             Left = 0
             Height = 123
-            Top = 549
+            Top = 386
             Width = 640
             Align = alBottom
             BevelOuter = bvNone
@@ -2063,10 +2062,11 @@ object VisWaptGUI: TVisWaptGUI
             ClientHeight = 123
             ClientWidth = 640
             TabOrder = 4
+            Visible = False
             object MemoTaskLog: TMemo
               Left = 0
-              Height = 123
-              Top = 0
+              Height = 108
+              Top = 15
               Width = 640
               Align = alClient
               Color = clForm
@@ -2074,6 +2074,17 @@ object VisWaptGUI: TVisWaptGUI
               ParentFont = False
               ScrollBars = ssAutoBoth
               TabOrder = 0
+            end
+            object Label19: TLabel
+              Left = 0
+              Height = 15
+              Top = 0
+              Width = 640
+              Align = alTop
+              Caption = 'Logs of task %s (ID %s)'
+              Font.Style = [fsBold]
+              ParentColor = False
+              ParentFont = False
             end
           end
         end
