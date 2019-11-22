@@ -1,12 +1,12 @@
 object VisWaptGUI: TVisWaptGUI
-  Left = 165
-  Height = 854
-  Top = 96
-  Width = 1586
+  Left = -8
+  Height = 1017
+  Top = -8
+  Width = 1920
   AllowDropFiles = True
   Caption = 'WAPT console'
-  ClientHeight = 834
-  ClientWidth = 1586
+  ClientHeight = 997
+  ClientWidth = 1920
   Constraints.MinHeight = 600
   Constraints.MinWidth = 800
   Menu = MainMenu1
@@ -24,9 +24,9 @@ object VisWaptGUI: TVisWaptGUI
   LCLVersion = '1.8.4.0'
   object MainPages: TPageControl
     Left = 0
-    Height = 691
+    Height = 854
     Top = 0
-    Width = 1586
+    Width = 1920
     ActivePage = pgInventory
     Align = alClient
     TabIndex = 0
@@ -34,27 +34,27 @@ object VisWaptGUI: TVisWaptGUI
     OnChange = MainPagesChange
     object pgInventory: TTabSheet
       Caption = 'Inventory'
-      ClientHeight = 663
-      ClientWidth = 1578
+      ClientHeight = 826
+      ClientWidth = 1912
       object HostPages: TPageControl
-        Left = 930
-        Height = 537
+        Left = 1264
+        Height = 700
         Top = 126
         Width = 648
-        ActivePage = pgTasks
+        ActivePage = pgPackages
         Align = alRight
-        TabIndex = 4
+        TabIndex = 0
         TabOrder = 0
         Visible = False
         OnChange = HostPagesChange
         object pgPackages: TTabSheet
           AnchorSideTop.Side = asrBottom
           Caption = 'Overview'
-          ClientHeight = 509
+          ClientHeight = 672
           ClientWidth = 640
           object GridHostPackages: TSOGrid
             Left = 0
-            Height = 188
+            Height = 351
             Top = 137
             Width = 640
             OnGetText = GridHostPackagesGetText
@@ -375,7 +375,7 @@ object VisWaptGUI: TVisWaptGUI
           object Panel5: TPanel
             Left = 0
             Height = 179
-            Top = 330
+            Top = 493
             Width = 640
             Align = alBottom
             BevelOuter = bvNone
@@ -385,8 +385,8 @@ object VisWaptGUI: TVisWaptGUI
             Visible = False
             object MemoInstallOutput: TMemo
               Left = 0
-              Height = 164
-              Top = 15
+              Height = 154
+              Top = 25
               Width = 640
               Align = alClient
               Font.Pitch = fpFixed
@@ -396,14 +396,64 @@ object VisWaptGUI: TVisWaptGUI
             end
             object Label16: TLabel
               Left = 0
-              Height = 15
+              Height = 25
               Top = 0
               Width = 640
               Align = alTop
+              AutoSize = False
               Caption = 'Install logs of package %s'
               Font.Style = [fsBold]
+              Layout = tlCenter
               ParentColor = False
               ParentFont = False
+            end
+            object SpeedButton2: TSpeedButton
+              AnchorSideTop.Control = Label16
+              AnchorSideTop.Side = asrCenter
+              AnchorSideRight.Control = Panel5
+              AnchorSideRight.Side = asrBottom
+              Left = 616
+              Height = 22
+              Top = 1
+              Width = 24
+              Anchors = [akTop, akRight]
+              Glyph.Data = {
+                36040000424D3604000000000000360000002800000010000000100000000100
+                2000000000000004000064000000640000000000000000000000FFFFFF00FFFF
+                FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+                FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+                FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+                FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+                FF00FFFFFF00000080321B2482DE00006D51FFFFFF00FFFFFF00FFFFFF00FFFF
+                FF0000006A52494AC3E600008032FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+                FF00000080321C1F9DF22D32E5FF212380FC00006E50FFFFFF00FFFFFF000000
+                6A52212381FC2E32E5FF1C1F9DF200008032FFFFFF00FFFFFF00FFFFFF00FFFF
+                FF00161E7FDD2A2FE5FF0000F5FF1214EFFF1F236AFD00006E5000006A522023
+                6AFD1315EFFF0000F5FF2C30E5FF2B2B96D7FFFFFF00FFFFFF00FFFFFF00FFFF
+                FF00000080491A21A4FA0F13DFFF0000E3FF1013DBFF1B215BFE1C2159FE1114
+                DBFF0000E3FF1214DFFF1E23A4FA0E0E874BFFFFFF00FFFFFF00FFFFFF00FFFF
+                FF00FFFFFF0000008748131FA4FA0C12D0FF0000D0FF0C12C6FF0C12C7FF0000
+                D0FF0C12D0FF151FA4FA00008748FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+                FF00FFFFFF00FFFFFF0000008A48121EA5FA0A11C1FF0000BDFF0000BEFF0A11
+                C1FF121EA5FA00008A48FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+                FF00FFFFFF00FFFFFF00000091481724ABFA3239C5FF3333C2FF3A3AC3FF3339
+                BFFF101EA6FA00009148FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+                FF00FFFFFF00000098481B27AFFA3F44CBFF3E3EC9FF4A4ECBFF484DC2FF4646
+                CCFF6065D3FF2631B3FA00009848FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+                FF0000009C481F2BB3FB5457D3FF5656D3FF6163D7FF343EA1FC323C7BFD5E62
+                D4FF5656D3FF5D60D6FF3F4ABEFB00009C48FFFFFF00FFFFFF00FFFFFF00FFFF
+                FF000000A2D06168DFFF6D6DE6FF7576E6FF404AC3FB00009C4A00008E4F3A43
+                B2FC7173E5FF6D6DE6FF898DE9FF0000A2D0FFFFFF00FFFFFF00FFFFFF00FFFF
+                FF000000A8322A34BFF48789EFFF4C56CAFB0000AA48FFFFFF00FFFFFF000000
+                A849434CC8FB8A8DF0FF3F47C5F50000A832FFFFFF00FFFFFF00FFFFFF00FFFF
+                FF00FFFFFF000000AD325D60C9EA0404AF49FFFFFF00FFFFFF00FFFFFF00FFFF
+                FF000404AF497578D2E40000AD32FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+                FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+                FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+                FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+                FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00
+              }
+              OnClick = SpeedButton2Click
             end
           end
           object Panel16: TPanel
@@ -638,7 +688,7 @@ object VisWaptGUI: TVisWaptGUI
             Cursor = crVSplit
             Left = 0
             Height = 5
-            Top = 325
+            Top = 488
             Width = 640
             Align = alBottom
             ResizeAnchor = akBottom
@@ -647,7 +697,7 @@ object VisWaptGUI: TVisWaptGUI
         end
         object pgHostInventory: TTabSheet
           Caption = 'Hardware inventory'
-          ClientHeight = 509
+          ClientHeight = 672
           ClientWidth = 640
           object PanTopFilterInventory: TPanel
             Left = 0
@@ -703,7 +753,7 @@ object VisWaptGUI: TVisWaptGUI
           end
           object GridhostInventory: TVirtualJSONInspector
             Left = 0
-            Height = 478
+            Height = 641
             Top = 31
             Width = 640
             PropertyDefs = <>
@@ -738,11 +788,11 @@ object VisWaptGUI: TVisWaptGUI
         end
         object pgSoftwares: TTabSheet
           Caption = 'Software inventory'
-          ClientHeight = 509
+          ClientHeight = 672
           ClientWidth = 640
           object GridHostSoftwares: TSOGrid
             Left = 0
-            Height = 480
+            Height = 643
             Top = 29
             Width = 640
             ShowAdvancedColumnsCustomize = False
@@ -885,11 +935,11 @@ object VisWaptGUI: TVisWaptGUI
         end
         object pgHostWUA: TTabSheet
           Caption = 'Windows updates'
-          ClientHeight = 509
+          ClientHeight = 672
           ClientWidth = 640
           object GridHostWinUpdates: TSOGrid
             Left = 0
-            Height = 229
+            Height = 392
             Top = 110
             Width = 640
             OnGetText = GridHostWinUpdatesGetText
@@ -1396,7 +1446,7 @@ object VisWaptGUI: TVisWaptGUI
             Cursor = crVSplit
             Left = 0
             Height = 5
-            Top = 339
+            Top = 502
             Width = 640
             Align = alBottom
             ResizeAnchor = akBottom
@@ -1405,7 +1455,7 @@ object VisWaptGUI: TVisWaptGUI
           object PanelKBLogs: TPanel
             Left = 0
             Height = 165
-            Top = 344
+            Top = 507
             Width = 640
             Align = alBottom
             BevelColor = clNone
@@ -1416,8 +1466,8 @@ object VisWaptGUI: TVisWaptGUI
             Visible = False
             object GridHostWinUpdatesHistory: TSOGrid
               Left = 0
-              Height = 148
-              Top = 17
+              Height = 138
+              Top = 27
               Width = 640
               OnGetText = GridHostWinUpdatesGetText
               ShowAdvancedColumnsCustomize = False
@@ -1504,20 +1554,70 @@ object VisWaptGUI: TVisWaptGUI
             end
             object LabLogsKB: TLabel
               Left = 0
-              Height = 15
+              Height = 25
               Top = 0
               Width = 640
               Align = alTop
+              AutoSize = False
               Caption = 'Install logs of %s'
               Font.Style = [fsBold]
+              Layout = tlCenter
               ParentColor = False
               ParentFont = False
+            end
+            object SpeedButton3: TSpeedButton
+              AnchorSideTop.Control = Label16
+              AnchorSideTop.Side = asrCenter
+              AnchorSideRight.Control = Panel5
+              AnchorSideRight.Side = asrBottom
+              Left = 616
+              Height = 22
+              Top = 1
+              Width = 24
+              Anchors = [akTop, akRight]
+              Glyph.Data = {
+                36040000424D3604000000000000360000002800000010000000100000000100
+                2000000000000004000064000000640000000000000000000000FFFFFF00FFFF
+                FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+                FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+                FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+                FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+                FF00FFFFFF00000080321B2482DE00006D51FFFFFF00FFFFFF00FFFFFF00FFFF
+                FF0000006A52494AC3E600008032FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+                FF00000080321C1F9DF22D32E5FF212380FC00006E50FFFFFF00FFFFFF000000
+                6A52212381FC2E32E5FF1C1F9DF200008032FFFFFF00FFFFFF00FFFFFF00FFFF
+                FF00161E7FDD2A2FE5FF0000F5FF1214EFFF1F236AFD00006E5000006A522023
+                6AFD1315EFFF0000F5FF2C30E5FF2B2B96D7FFFFFF00FFFFFF00FFFFFF00FFFF
+                FF00000080491A21A4FA0F13DFFF0000E3FF1013DBFF1B215BFE1C2159FE1114
+                DBFF0000E3FF1214DFFF1E23A4FA0E0E874BFFFFFF00FFFFFF00FFFFFF00FFFF
+                FF00FFFFFF0000008748131FA4FA0C12D0FF0000D0FF0C12C6FF0C12C7FF0000
+                D0FF0C12D0FF151FA4FA00008748FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+                FF00FFFFFF00FFFFFF0000008A48121EA5FA0A11C1FF0000BDFF0000BEFF0A11
+                C1FF121EA5FA00008A48FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+                FF00FFFFFF00FFFFFF00000091481724ABFA3239C5FF3333C2FF3A3AC3FF3339
+                BFFF101EA6FA00009148FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+                FF00FFFFFF00000098481B27AFFA3F44CBFF3E3EC9FF4A4ECBFF484DC2FF4646
+                CCFF6065D3FF2631B3FA00009848FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+                FF0000009C481F2BB3FB5457D3FF5656D3FF6163D7FF343EA1FC323C7BFD5E62
+                D4FF5656D3FF5D60D6FF3F4ABEFB00009C48FFFFFF00FFFFFF00FFFFFF00FFFF
+                FF000000A2D06168DFFF6D6DE6FF7576E6FF404AC3FB00009C4A00008E4F3A43
+                B2FC7173E5FF6D6DE6FF898DE9FF0000A2D0FFFFFF00FFFFFF00FFFFFF00FFFF
+                FF000000A8322A34BFF48789EFFF4C56CAFB0000AA48FFFFFF00FFFFFF000000
+                A849434CC8FB8A8DF0FF3F47C5F50000A832FFFFFF00FFFFFF00FFFFFF00FFFF
+                FF00FFFFFF000000AD325D60C9EA0404AF49FFFFFF00FFFFFF00FFFFFF00FFFF
+                FF000404AF497578D2E40000AD32FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+                FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+                FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+                FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+                FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00
+              }
+              OnClick = SpeedButton3Click
             end
           end
         end
         object pgTasks: TTabSheet
           Caption = 'Tasks'
-          ClientHeight = 509
+          ClientHeight = 672
           ClientWidth = 640
           object PanTaskTop: TPanel
             Left = 4
@@ -1599,7 +1699,7 @@ object VisWaptGUI: TVisWaptGUI
           end
           object PagesTasks: TPageControl
             Left = 0
-            Height = 258
+            Height = 421
             Top = 125
             Width = 640
             ActivePage = TabSheet2
@@ -1756,11 +1856,11 @@ object VisWaptGUI: TVisWaptGUI
             end
             object TabSheet2: TTabSheet
               Caption = 'Done'
-              ClientHeight = 230
+              ClientHeight = 393
               ClientWidth = 632
               object GridHostTasksDone: TSOGrid
                 Left = 0
-                Height = 228
+                Height = 391
                 Top = 2
                 Width = 632
                 ShowAdvancedColumnsCustomize = False
@@ -2047,7 +2147,7 @@ object VisWaptGUI: TVisWaptGUI
           object PanLog: TPanel
             Left = 0
             Height = 123
-            Top = 386
+            Top = 549
             Width = 640
             Align = alBottom
             BevelOuter = bvNone
@@ -2058,8 +2158,8 @@ object VisWaptGUI: TVisWaptGUI
             Visible = False
             object MemoTaskLog: TMemo
               Left = 0
-              Height = 108
-              Top = 15
+              Height = 98
+              Top = 25
               Width = 640
               Align = alClient
               Color = clForm
@@ -2070,21 +2170,71 @@ object VisWaptGUI: TVisWaptGUI
             end
             object Label19: TLabel
               Left = 0
-              Height = 15
+              Height = 25
               Top = 0
               Width = 640
               Align = alTop
+              AutoSize = False
               Caption = 'Logs of task %s (ID %s)'
               Font.Style = [fsBold]
+              Layout = tlCenter
               ParentColor = False
               ParentFont = False
+            end
+            object SpeedButton4: TSpeedButton
+              AnchorSideTop.Control = Label16
+              AnchorSideTop.Side = asrCenter
+              AnchorSideRight.Control = Panel5
+              AnchorSideRight.Side = asrBottom
+              Left = 616
+              Height = 22
+              Top = 1
+              Width = 24
+              Anchors = [akTop, akRight]
+              Glyph.Data = {
+                36040000424D3604000000000000360000002800000010000000100000000100
+                2000000000000004000064000000640000000000000000000000FFFFFF00FFFF
+                FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+                FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+                FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+                FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+                FF00FFFFFF00000080321B2482DE00006D51FFFFFF00FFFFFF00FFFFFF00FFFF
+                FF0000006A52494AC3E600008032FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+                FF00000080321C1F9DF22D32E5FF212380FC00006E50FFFFFF00FFFFFF000000
+                6A52212381FC2E32E5FF1C1F9DF200008032FFFFFF00FFFFFF00FFFFFF00FFFF
+                FF00161E7FDD2A2FE5FF0000F5FF1214EFFF1F236AFD00006E5000006A522023
+                6AFD1315EFFF0000F5FF2C30E5FF2B2B96D7FFFFFF00FFFFFF00FFFFFF00FFFF
+                FF00000080491A21A4FA0F13DFFF0000E3FF1013DBFF1B215BFE1C2159FE1114
+                DBFF0000E3FF1214DFFF1E23A4FA0E0E874BFFFFFF00FFFFFF00FFFFFF00FFFF
+                FF00FFFFFF0000008748131FA4FA0C12D0FF0000D0FF0C12C6FF0C12C7FF0000
+                D0FF0C12D0FF151FA4FA00008748FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+                FF00FFFFFF00FFFFFF0000008A48121EA5FA0A11C1FF0000BDFF0000BEFF0A11
+                C1FF121EA5FA00008A48FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+                FF00FFFFFF00FFFFFF00000091481724ABFA3239C5FF3333C2FF3A3AC3FF3339
+                BFFF101EA6FA00009148FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+                FF00FFFFFF00000098481B27AFFA3F44CBFF3E3EC9FF4A4ECBFF484DC2FF4646
+                CCFF6065D3FF2631B3FA00009848FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+                FF0000009C481F2BB3FB5457D3FF5656D3FF6163D7FF343EA1FC323C7BFD5E62
+                D4FF5656D3FF5D60D6FF3F4ABEFB00009C48FFFFFF00FFFFFF00FFFFFF00FFFF
+                FF000000A2D06168DFFF6D6DE6FF7576E6FF404AC3FB00009C4A00008E4F3A43
+                B2FC7173E5FF6D6DE6FF898DE9FF0000A2D0FFFFFF00FFFFFF00FFFFFF00FFFF
+                FF000000A8322A34BFF48789EFFF4C56CAFB0000AA48FFFFFF00FFFFFF000000
+                A849434CC8FB8A8DF0FF3F47C5F50000A832FFFFFF00FFFFFF00FFFFFF00FFFF
+                FF00FFFFFF000000AD325D60C9EA0404AF49FFFFFF00FFFFFF00FFFFFF00FFFF
+                FF000404AF497578D2E40000AD32FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+                FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+                FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+                FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+                FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00
+              }
+              OnClick = SpeedButton4Click
             end
           end
           object SplitHostTaskLog: TSplitter
             Cursor = crVSplit
             Left = 0
             Height = 3
-            Top = 383
+            Top = 546
             Width = 640
             Align = alBottom
             ResizeAnchor = akBottom
@@ -2094,19 +2244,19 @@ object VisWaptGUI: TVisWaptGUI
       end
       object PanHosts: TPanel
         Left = 0
-        Height = 537
+        Height = 700
         Top = 126
-        Width = 925
+        Width = 1259
         Align = alClient
         BevelOuter = bvNone
-        ClientHeight = 537
-        ClientWidth = 925
+        ClientHeight = 700
+        ClientWidth = 1259
         TabOrder = 1
         object Panel15: TPanel
           Left = 0
           Height = 21
-          Top = 516
-          Width = 925
+          Top = 679
+          Width = 1259
           Align = alBottom
           AutoSize = True
           BevelOuter = bvNone
@@ -2115,10 +2265,10 @@ object VisWaptGUI: TVisWaptGUI
           ChildSizing.HorizontalSpacing = 6
           ChildSizing.VerticalSpacing = 6
           ClientHeight = 21
-          ClientWidth = 925
+          ClientWidth = 1259
           TabOrder = 0
           object LabelComputersNumber: TLabel
-            Left = 785
+            Left = 1119
             Height = 15
             Top = 3
             Width = 134
@@ -2129,9 +2279,9 @@ object VisWaptGUI: TVisWaptGUI
         end
         object GridHosts: TSOGrid
           Left = 224
-          Height = 516
+          Height = 679
           Top = 0
-          Width = 701
+          Width = 1035
           OnGetText = GridHostsGetText
           ShowAdvancedColumnsCustomize = False
           KeyFieldsNames = 'uuid'
@@ -2398,11 +2548,11 @@ object VisWaptGUI: TVisWaptGUI
         end
         object PanOrgUnits: TPanel
           Left = 0
-          Height = 516
+          Height = 679
           Top = 0
           Width = 219
           Align = alLeft
-          ClientHeight = 516
+          ClientHeight = 679
           ClientWidth = 219
           TabOrder = 2
           object PanOUFilter: TPanel
@@ -2450,7 +2600,7 @@ object VisWaptGUI: TVisWaptGUI
           end
           object GridOrgUnits: TVirtualDBTreeEx
             Left = 1
-            Height = 468
+            Height = 631
             Top = 47
             Width = 217
             Align = alClient
@@ -2484,7 +2634,7 @@ object VisWaptGUI: TVisWaptGUI
         end
         object SplitGridUnitsHosts: TSplitter
           Left = 219
-          Height = 516
+          Height = 679
           Top = 0
           Width = 5
         end
@@ -2493,12 +2643,12 @@ object VisWaptGUI: TVisWaptGUI
         Left = 0
         Height = 81
         Top = 45
-        Width = 1578
+        Width = 1912
         Align = alTop
         AutoSize = True
         BevelOuter = bvNone
         ClientHeight = 81
-        ClientWidth = 1578
+        ClientWidth = 1912
         TabOrder = 2
         object PanFilterGroups: TPanel
           Left = 446
@@ -2944,15 +3094,15 @@ object VisWaptGUI: TVisWaptGUI
         Left = 0
         Height = 45
         Top = 0
-        Width = 1578
+        Width = 1912
         Align = alTop
         BevelOuter = bvNone
         ClientHeight = 45
-        ClientWidth = 1578
+        ClientWidth = 1912
         TabOrder = 3
         object Image1: TImage
           Cursor = crHandPoint
-          Left = 1398
+          Left = 1732
           Height = 45
           Top = 0
           Width = 180
@@ -3153,7 +3303,7 @@ object VisWaptGUI: TVisWaptGUI
           Left = 0
           Height = 45
           Top = 0
-          Width = 1398
+          Width = 1732
           Align = alClient
           AutoSize = True
           ButtonHeight = 45
@@ -3202,26 +3352,92 @@ object VisWaptGUI: TVisWaptGUI
         end
       end
       object SplitGridUnitsHosts1: TSplitter
-        Left = 925
-        Height = 537
+        Left = 1259
+        Height = 700
         Top = 126
         Width = 5
         Align = alRight
         ResizeAnchor = akRight
+        Visible = False
+      end
+      object Panel1: TPanel
+        AnchorSideTop.Control = HostPages
+        AnchorSideRight.Control = HostPages
+        AnchorSideRight.Side = asrBottom
+        Left = 1889
+        Height = 22
+        Top = 126
+        Width = 23
+        Anchors = [akTop, akRight]
+        AutoSize = True
+        BevelOuter = bvNone
+        Caption = 'Panel1'
+        ClientHeight = 22
+        ClientWidth = 23
+        TabOrder = 5
+        Visible = False
+        object SpeedButton1: TSpeedButton
+          AnchorSideTop.Control = Panel1
+          AnchorSideRight.Control = Panel1
+          AnchorSideRight.Side = asrBottom
+          Left = 0
+          Height = 22
+          Top = 0
+          Width = 23
+          Anchors = [akTop, akRight]
+          Glyph.Data = {
+            36040000424D3604000000000000360000002800000010000000100000000100
+            2000000000000004000064000000640000000000000000000000FFFFFF00FFFF
+            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+            FF00FFFFFF00000080321B2482DE00006D51FFFFFF00FFFFFF00FFFFFF00FFFF
+            FF0000006A52494AC3E600008032FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+            FF00000080321C1F9DF22D32E5FF212380FC00006E50FFFFFF00FFFFFF000000
+            6A52212381FC2E32E5FF1C1F9DF200008032FFFFFF00FFFFFF00FFFFFF00FFFF
+            FF00161E7FDD2A2FE5FF0000F5FF1214EFFF1F236AFD00006E5000006A522023
+            6AFD1315EFFF0000F5FF2C30E5FF2B2B96D7FFFFFF00FFFFFF00FFFFFF00FFFF
+            FF00000080491A21A4FA0F13DFFF0000E3FF1013DBFF1B215BFE1C2159FE1114
+            DBFF0000E3FF1214DFFF1E23A4FA0E0E874BFFFFFF00FFFFFF00FFFFFF00FFFF
+            FF00FFFFFF0000008748131FA4FA0C12D0FF0000D0FF0C12C6FF0C12C7FF0000
+            D0FF0C12D0FF151FA4FA00008748FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+            FF00FFFFFF00FFFFFF0000008A48121EA5FA0A11C1FF0000BDFF0000BEFF0A11
+            C1FF121EA5FA00008A48FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+            FF00FFFFFF00FFFFFF00000091481724ABFA3239C5FF3333C2FF3A3AC3FF3339
+            BFFF101EA6FA00009148FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+            FF00FFFFFF00000098481B27AFFA3F44CBFF3E3EC9FF4A4ECBFF484DC2FF4646
+            CCFF6065D3FF2631B3FA00009848FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+            FF0000009C481F2BB3FB5457D3FF5656D3FF6163D7FF343EA1FC323C7BFD5E62
+            D4FF5656D3FF5D60D6FF3F4ABEFB00009C48FFFFFF00FFFFFF00FFFFFF00FFFF
+            FF000000A2D06168DFFF6D6DE6FF7576E6FF404AC3FB00009C4A00008E4F3A43
+            B2FC7173E5FF6D6DE6FF898DE9FF0000A2D0FFFFFF00FFFFFF00FFFFFF00FFFF
+            FF000000A8322A34BFF48789EFFF4C56CAFB0000AA48FFFFFF00FFFFFF000000
+            A849434CC8FB8A8DF0FF3F47C5F50000A832FFFFFF00FFFFFF00FFFFFF00FFFF
+            FF00FFFFFF000000AD325D60C9EA0404AF49FFFFFF00FFFFFF00FFFFFF00FFFF
+            FF000404AF497578D2E40000AD32FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+            FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00
+          }
+          Transparent = False
+          OnClick = SpeedButton1Click
+        end
       end
     end
     object pgGroups: TTabSheet
       Caption = 'Bundles'
-      ClientHeight = 826
-      ClientWidth = 1912
+      ClientHeight = 663
+      ClientWidth = 1578
       object GridGroups: TSOGrid
         AnchorSideLeft.Side = asrBottom
         AnchorSideTop.Side = asrBottom
         AnchorSideBottom.Side = asrBottom
         Left = 0
-        Height = 786
+        Height = 623
         Top = 40
-        Width = 1912
+        Width = 1578
         OnGetText = GridGroupsGetText
         ShowAdvancedColumnsCustomize = False
         KeyFieldsNames = 'package;version;architecture;locale;maturity'
@@ -3546,7 +3762,7 @@ object VisWaptGUI: TVisWaptGUI
         Left = 0
         Height = 40
         Top = 0
-        Width = 1912
+        Width = 1578
         Align = alTop
         AutoSize = True
         BevelOuter = bvNone
@@ -3556,7 +3772,7 @@ object VisWaptGUI: TVisWaptGUI
         ChildSizing.Layout = cclLeftToRightThenTopToBottom
         ChildSizing.ControlsPerLine = 10
         ClientHeight = 40
-        ClientWidth = 1912
+        ClientWidth = 1578
         TabOrder = 0
         object EdSearchGroups: TSearchEdit
           Left = 6
@@ -8723,29 +8939,29 @@ object VisWaptGUI: TVisWaptGUI
   object PanDebug: TPanel
     Left = 0
     Height = 118
-    Top = 696
-    Width = 1586
+    Top = 859
+    Width = 1920
     Align = alBottom
     ClientHeight = 118
-    ClientWidth = 1586
+    ClientWidth = 1920
     TabOrder = 2
     Visible = False
     object Panel7: TPanel
       Left = 1
       Height = 116
       Top = 1
-      Width = 1584
+      Width = 1918
       Align = alClient
       BevelOuter = bvNone
       Caption = 'Panel7'
       ClientHeight = 116
-      ClientWidth = 1584
+      ClientWidth = 1918
       TabOrder = 0
       object MemoLog: TMemo
         Left = 0
         Height = 97
         Top = 19
-        Width = 973
+        Width = 1307
         Align = alClient
         Font.Pitch = fpFixed
         Lines.Strings = (
@@ -8755,7 +8971,7 @@ object VisWaptGUI: TVisWaptGUI
         TabOrder = 0
       end
       object jsonlog: TVirtualJSONInspector
-        Left = 978
+        Left = 1312
         Height = 97
         Top = 19
         Width = 606
@@ -8786,7 +9002,7 @@ object VisWaptGUI: TVisWaptGUI
         TreeOptions.SelectionOptions = [toExtendedFocus]
       end
       object Splitter2: TSplitter
-        Left = 973
+        Left = 1307
         Height = 97
         Top = 19
         Width = 5
@@ -8797,12 +9013,12 @@ object VisWaptGUI: TVisWaptGUI
         Left = 0
         Height = 19
         Top = 0
-        Width = 1584
+        Width = 1918
         Align = alTop
         AutoSize = True
         BevelOuter = bvNone
         ClientHeight = 19
-        ClientWidth = 1584
+        ClientWidth = 1918
         TabOrder = 3
         object cbShowLog: TCheckBox
           Left = 107
@@ -8831,8 +9047,8 @@ object VisWaptGUI: TVisWaptGUI
     Cursor = crVSplit
     Left = 0
     Height = 5
-    Top = 691
-    Width = 1586
+    Top = 854
+    Width = 1920
     Align = alBottom
     ResizeAnchor = akBottom
     Visible = False
@@ -8840,8 +9056,8 @@ object VisWaptGUI: TVisWaptGUI
   object plStatusBar1: TPanel
     Left = 0
     Height = 20
-    Top = 814
-    Width = 1586
+    Top = 977
+    Width = 1920
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 3

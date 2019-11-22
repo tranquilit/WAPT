@@ -5798,6 +5798,10 @@ msgstr "Sélectionner un fichier d'installation exe ou msi"
 msgid "Select WAPT file"
 msgstr "Sélectionner un fichier WAPT"
 
+#: tviswaptgui.panel1.caption
+msgid "Panel1"
+msgstr ""
+
 #: tviswaptgui.panel7.caption
 msgctxt "tviswaptgui.panel7.caption"
 msgid "Panel7"

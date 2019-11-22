@@ -43,43 +43,46 @@
         <FormatVersion Value="1"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="12">
+    <RequiredPackages Count="13">
       <Item1>
-        <PackageName Value="RunTimeTypeInfoControls"/>
+        <PackageName Value="bgracontrols"/>
       </Item1>
       <Item2>
-        <PackageName Value="pltis_sogrid"/>
+        <PackageName Value="RunTimeTypeInfoControls"/>
       </Item2>
       <Item3>
-        <PackageName Value="pltis_virtualtreesextra"/>
+        <PackageName Value="pltis_sogrid"/>
       </Item3>
       <Item4>
-        <PackageName Value="python4lazarus_package"/>
+        <PackageName Value="pltis_virtualtreesextra"/>
       </Item4>
       <Item5>
-        <PackageName Value="luicontrols"/>
+        <PackageName Value="python4lazarus_package"/>
       </Item5>
       <Item6>
-        <PackageName Value="MemDSLaz"/>
+        <PackageName Value="luicontrols"/>
       </Item6>
       <Item7>
-        <PackageName Value="pltis_wapt"/>
+        <PackageName Value="MemDSLaz"/>
       </Item7>
       <Item8>
-        <PackageName Value="pltis_utils"/>
+        <PackageName Value="pltis_wapt"/>
       </Item8>
       <Item9>
-        <PackageName Value="pltis_superobject"/>
+        <PackageName Value="pltis_utils"/>
       </Item9>
       <Item10>
-        <PackageName Value="FCL"/>
+        <PackageName Value="pltis_superobject"/>
       </Item10>
       <Item11>
-        <PackageName Value="SynEdit"/>
+        <PackageName Value="FCL"/>
       </Item11>
       <Item12>
-        <PackageName Value="LCL"/>
+        <PackageName Value="SynEdit"/>
       </Item12>
+      <Item13>
+        <PackageName Value="LCL"/>
+      </Item13>
     </RequiredPackages>
     <Units Count="29">
       <Unit0>

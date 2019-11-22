@@ -6008,6 +6008,10 @@ msgstr ""
 msgid "Select WAPT file"
 msgstr "WAPT Datei auswählen"
 
+#: tviswaptgui.panel1.caption
+msgid "Panel1"
+msgstr ""
+
 #: tviswaptgui.panel7.caption
 msgctxt "tviswaptgui.panel7.caption"
 msgid "Panel7"
