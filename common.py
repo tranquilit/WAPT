@@ -3534,7 +3534,7 @@ class Wapt(BaseObjectClass):
             raise EWaptCancelled(msg)
 
     def run(self,*arg,**args):
-        return ensure_unicode(setuphelpers.run(*arg,pidlist=self.pidlist,**args))
+        return ensure_unicode(setuphelpers.run(*arg,**args))
 
     def run_notfatal(self,*cmd,**args):
         """Runs the command and wait for it termination
