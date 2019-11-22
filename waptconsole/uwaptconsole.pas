@@ -119,10 +119,12 @@ type
     Splitter1: TSplitter;
     Splitter12: TSplitter;
     Splitter13: TSplitter;
+    Splitter4: TSplitter;
     SplitterRepo: TSplitter;
     SplitTopTaskTaskGrid: TSplitter;
     PgRights: TTabSheet;
     pgRepositories: TTabSheet;
+    SplitHostTaskLog: TSplitter;
     tbDeleteRule: TToolButton;
     tbDownRule: TToolButton;
     tbEditRule: TToolButton;
@@ -422,7 +424,6 @@ type
     MenuItem72: TMenuItem;
     MenuItem73: TMenuItem;
     pgWaptWUAConfig: TTabSheet;
-    SplitPackagesStatusLogs: TSplitter;
     SplitGridUnitsHosts: TSplitter;
     PgReports: TTabSheet;
     SynCompletion1: TSynCompletion;
@@ -563,7 +564,6 @@ type
     pgGroups: TTabSheet;
     Splitter3: TSplitter;
     pgTasks: TTabSheet;
-    SplitHostTaskLog: TSplitter;
     TabSheet1: TTabSheet;
     TabSheet2: TTabSheet;
     TabSheet3: TTabSheet;
@@ -4841,7 +4841,17 @@ begin
   end
   else
     MemoInstallOutput.Clear;
-  Panel5.Visible:=Assigned(GridHostPackages.FocusedRow);
+  if Assigned(GridHostPackages.FocusedRow) then
+  begin
+    Panel5.Visible:=True;
+    Splitter4.Visible:=True;
+    Splitter4.AnchorParallel(akBottom,0,pgPackages);
+  end
+  else
+  begin
+    Panel5.Visible:=False;
+    Splitter4.Visible:=False;
+  end;
 end;
 
 procedure TVisWaptGUI.GridHostPackagesFocusChanged(Sender: TBaseVirtualTree;
@@ -5302,6 +5312,7 @@ begin
   if Assigned((Sender as TSOGrid).FocusedRow) then
   begin
     PanLog.Visible:=True;
+    SplitHostTaskLog.AnchorParallel(akBottom,0,pgTasks);
     SplitHostTaskLog.Visible:=True;
     Label19.Caption:=Format(rsLogTasks,[UTF8Encode((Sender as TSOGrid).FocusedRow.S['description']),UTF8Encode((Sender as TSOGrid).FocusedRow.S['id'])]);
     MemoTaskLog.Text := UTF8Encode((Sender as TSOGrid).FocusedRow.S['logs']);
@@ -5323,7 +5334,8 @@ begin
   begin
     GridHostWinUpdatesHistory.Data := GridHostWinUpdates.FocusedRow['local_status_history'];
     PanelKBLogs.Visible:=GridHostWinUpdatesHistory.Data.AsArray.Length>=1;
-    SplitWinupdateHost.Visible:=GridHostWinUpdatesHistory.Data.AsArray.Length>=1;;
+    SplitWinupdateHost.Visible:=GridHostWinUpdatesHistory.Data.AsArray.Length>=1;
+    SplitWinupdateHost.AnchorParallel(akBottom,0,pgHostWUA);
     LabLogsKB.Caption:=Format(rsLabLogsKB,['KB'+soutils.Join(',KB', GridHostWinUpdates.FocusedRow['kbids'])]);
   end
   else
@@ -5829,7 +5841,6 @@ begin
   end;
 end;
 
-
 procedure TVisWaptGUI.SetGridHostsPlugins(AValue: ISuperObject);
 begin
   FGridHostsPlugins := AValue;
@@ -5837,6 +5848,18 @@ begin
     MenuGridHostsPlugins.Clear;
 end;
 
+procedure TVisWaptGUI.PagesTasksChange(Sender: TObject);
+var
+  agrid:TSOGrid;
+begin
+   case PagesTasks.TabIndex of
+        0:agrid:=GridHostTasksPending;
+        1:agrid:=GridHostTasksDone;
+        2:agrid:=GridHostTasksErrors;
+   end;
+   PanLog.Visible:=Assigned(agrid.FocusedRow);
+   SplitHostTaskLog.Visible:=Assigned(agrid.FocusedRow);
+end;
 
 {$ifdef ENTERPRISE}
 {$include ..\waptenterprise\includes\uwaptconsole.inc}
