@@ -291,15 +291,14 @@ WorkingDirectory=$[ActiveScript-Dir]
 
 [Project\ChildNodes\Node1\ChildNodes\Node3]
 ClassName=TProjectRunConfiguationNode
-Name=wapt-get register on remote
+Name=wapt-get register
 
 [Project\ChildNodes\Node1\ChildNodes\Node3\RunConfig]
-ScriptName=ssh://192.168.154.201//root/wapt/wapt-get.py
-Description=wapt-get register
-EngineType=peSSH
+ScriptName=$[Project-Path]..\wapt-get.py
+EngineType=peRemote
 ReinitializeBeforeRun=TRUE
 Parameters=register -ldebug
-WorkingDir=$[ActiveScript-Dir]
+WorkingDir=$[Project-Path]..\
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log
 AppendToFile=FALSE
