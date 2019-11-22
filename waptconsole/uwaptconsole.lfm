@@ -41,9 +41,9 @@ object VisWaptGUI: TVisWaptGUI
         Height = 700
         Top = 126
         Width = 648
-        ActivePage = pgPackages
+        ActivePage = pgHostInventory
         Align = alRight
-        TabIndex = 0
+        TabIndex = 1
         TabOrder = 0
         Visible = False
         OnChange = HostPagesChange

@@ -6199,11 +6199,6 @@ begin
   ;;
 end;
 
-procedure TVisWaptGUI.LoadHostsForPackage(PackageName: String);
-begin
-  ;;
-end;
-
 procedure TVisWaptGUI.ActReportingQueryDeleteExecute(Sender: TObject);
 begin
   ;;
@@ -6624,6 +6619,16 @@ procedure TVisWaptGUI.GridUsersDrawText(Sender: TBaseVirtualTree;
   const AText: String; const CellRect: TRect; var DefaultDraw: Boolean);
 begin
   ;;
+end;
+
+procedure TVisWAPTGUI.ActSaveAccountsExecute(Sender: TObject);
+begin
+  ;;
+end;
+
+procedure TVisWAPTGUI.MergeUsersCertificates(Users:ISuperObject);
+begin
+   ;;
 end;
 
 {$endif}

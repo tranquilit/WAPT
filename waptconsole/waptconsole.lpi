@@ -323,8 +323,11 @@
       <Verbosity>
         <ShowHints Value="False"/>
       </Verbosity>
-      <CustomOptions Value="-dENTERPRISE
--dDEVMODE"/>
+      <CustomOptions Value="-dDEVMODE"/>
+      <OtherDefines Count="2">
+        <Define0 Value="ENTERPRISE"/>
+        <Define1 Value="DEVMODE"/>
+      </OtherDefines>
     </Other>
   </CompilerOptions>
 </CONFIG>
