@@ -57,6 +57,7 @@ type
     MenuItemShowErrors: TMenuItem;
     MenuItemSync: TMenuItem;
     MenuItemSyncForce: TMenuItem;
+    Panel1: TPanel;
     PanelKBLogs: TPanel;
     PanelRules: TPanel;
     PanelAgentRepos: TPanel;
@@ -114,6 +115,10 @@ type
     PopupMenuReportingQueries: TPopupMenu;
     GridUsers: TSOGrid;
     GridAgentRepo: TSOGrid;
+    SpeedButton1: TSpeedButton;
+    SpeedButton2: TSpeedButton;
+    SpeedButton3: TSpeedButton;
+    SpeedButton4: TSpeedButton;
     SplitGridUnitsHosts1: TSplitter;
     SplitHostsForPackage: TSplitter;
     Splitter1: TSplitter;
@@ -973,6 +978,10 @@ type
     procedure MenuItemSyncForceClick(Sender: TObject);
     procedure PagesTasksChange(Sender: TObject);
     procedure PopupMenuHostsPopup(Sender: TObject);
+    procedure SpeedButton1Click(Sender: TObject);
+    procedure SpeedButton2Click(Sender: TObject);
+    procedure SpeedButton3Click(Sender: TObject);
+    procedure SpeedButton4Click(Sender: TObject);
     procedure SynEditReportsSQLChange(Sender: TObject);
     procedure tbSyncAllClick(Sender: TObject);
     procedure tbSyncChangelogClick(Sender: TObject);
@@ -4952,13 +4961,16 @@ end;
 
 procedure TVisWaptGUI.GridHostsChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
 begin
+  HostPages.Visible:=Assigned(GridHosts.FocusedRow);
+  Panel1.Visible:=Assigned(GridHosts.FocusedRow);
+  SplitGridUnitsHosts1.Visible:=Assigned(GridHosts.FocusedRow);
+  SplitGridUnitsHosts1.AnchorParallel(akRight,0,HostPages);
   UpdateHostPages(Sender);
   UpdateSelectedHostsActions(Sender);
   if GridHosts.Data<>Nil then
     LabelComputersNumber.Caption := Format(rsHostsSelectedTotal,[GridHosts.SelectedCount,GridHosts.Data.AsArray.Length])
   else
     LabelComputersNumber.Caption := '';
-  HostPages.Visible:=Assigned(GridHosts.FocusedRow);
 end;
 
 procedure TVisWaptGUI.GridHostsColumnDblClick(Sender: TBaseVirtualTree;
@@ -5837,8 +5849,28 @@ begin
       AMenuItem.OnClick:= @ExecuteHostsGruidPlugin ;
       MenuGridHostsPlugins.Add(AMenuItem);
     end;
-
   end;
+end;
+
+procedure TVisWaptGUI.SpeedButton1Click(Sender: TObject);
+begin
+   HostPages.Hide;
+   Panel1.Hide;
+end;
+
+procedure TVisWaptGUI.SpeedButton2Click(Sender: TObject);
+begin
+    Panel5.Hide;
+end;
+
+procedure TVisWaptGUI.SpeedButton3Click(Sender: TObject);
+begin
+    PanelKBLogs.Hide;
+end;
+
+procedure TVisWaptGUI.SpeedButton4Click(Sender: TObject);
+begin
+    PanLog.Hide;
 end;
 
 procedure TVisWaptGUI.SetGridHostsPlugins(AValue: ISuperObject);
