@@ -5128,7 +5128,7 @@ begin
       else if (platform.AsString = 'Windows') then
         ImageIndex := 20
       else if (platform.AsString = 'Darwin') then
-          ImageIndex := 22;
+          ImageIndex := 19;
     end
     else
       ImageIndex := -1;
