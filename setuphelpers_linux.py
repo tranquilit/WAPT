@@ -351,7 +351,7 @@ def get_last_logged_on_user():
     return res
 
 def run(*args, **kwargs):
-    return subprocess.check_output(*args, **kwargs)
+    return subprocess.check_output(shell=True,*args, **kwargs)
 
 def apt_install(package,allow_unauthenticated=False):
     if allow_unauthenticated:
