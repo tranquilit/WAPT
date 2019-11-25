@@ -866,6 +866,7 @@ type
       Column: TColumnIndex; TextType: TVSTTextType; var CellText: string);
     procedure GridHostPackagesNodesDelete(Sender: TSOGrid; Nodes: ISuperObject);
     procedure GridHostsChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
+    procedure GridHostsClick(Sender: TObject);
     procedure GridHostsColumnDblClick(Sender: TBaseVirtualTree;
       Column: TColumnIndex; Shift: TShiftState);
     procedure GridHostsDragDrop(Sender: TBaseVirtualTree; Source: TObject;
@@ -4986,6 +4987,14 @@ begin
     LabelComputersNumber.Caption := Format(rsHostsSelectedTotal,[GridHosts.SelectedCount,GridHosts.Data.AsArray.Length])
   else
     LabelComputersNumber.Caption := '';
+end;
+
+procedure TVisWaptGUI.GridHostsClick(Sender: TObject);
+begin
+  HostPages.Visible:=Assigned(GridHosts.FocusedRow);
+  Panel1.Visible:=Assigned(GridHosts.FocusedRow);
+  SplitGridUnitsHosts1.Visible:=Assigned(GridHosts.FocusedRow);
+  SplitGridUnitsHosts1.AnchorParallel(akRight,0,HostPages);
 end;
 
 procedure TVisWaptGUI.GridHostsColumnDblClick(Sender: TBaseVirtualTree;

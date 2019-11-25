@@ -2541,6 +2541,7 @@ object VisWaptGUI: TVisWaptGUI
           TreeOptions.SelectionOptions = [toExtendedFocus, toMultiSelect, toRightClickSelect, toSimpleDrawSelection]
           WantTabs = True
           OnChange = GridHostsChange
+          OnClick = GridHostsClick
           OnColumnDblClick = GridHostsColumnDblClick
           OnDragOver = GridHostsDragOver
           OnDragDrop = GridHostsDragDrop
