@@ -41,9 +41,9 @@ object VisWaptGUI: TVisWaptGUI
         Height = 496
         Top = 126
         Width = 648
-        ActivePage = pgTasks
+        ActivePage = pgPackages
         Align = alRight
-        TabIndex = 4
+        TabIndex = 0
         TabOrder = 0
         Visible = False
         OnChange = HostPagesChange
@@ -8565,7 +8565,7 @@ object VisWaptGUI: TVisWaptGUI
         ClientWidth = 1546
         TabOrder = 0
         object SplitterRepo: TSplitter
-          Left = 787
+          Left = 547
           Height = 620
           Top = 1
           Width = 5
@@ -8575,18 +8575,18 @@ object VisWaptGUI: TVisWaptGUI
           Left = 1
           Height = 620
           Top = 1
-          Width = 786
+          Width = 546
           Align = alLeft
           BevelColor = clNone
           BevelOuter = bvNone
           ClientHeight = 620
-          ClientWidth = 786
+          ClientWidth = 546
           TabOrder = 1
           object TbRepos: TToolBar
             Left = 0
             Height = 48
             Top = 0
-            Width = 786
+            Width = 546
             AutoSize = True
             ButtonHeight = 48
             ButtonWidth = 48
@@ -8626,14 +8626,14 @@ object VisWaptGUI: TVisWaptGUI
             end
             object ToolButtonSep2: TToolButton
               Left = 49
-              Height = 48
+              Height = 5
               Top = 0
               Caption = 'ToolButtonSep2'
               Style = tbsDivider
             end
             object ToolButton1: TToolButton
               Left = 164
-              Height = 48
+              Height = 5
               Top = 0
               Caption = 'ToolButton1'
               Style = tbsDivider
@@ -8649,7 +8649,7 @@ object VisWaptGUI: TVisWaptGUI
             Left = 0
             Height = 572
             Top = 48
-            Width = 786
+            Width = 546
             ShowAdvancedColumnsCustomize = False
             Align = alClient
             Alignment = taCenter
@@ -8738,22 +8738,22 @@ object VisWaptGUI: TVisWaptGUI
           end
         end
         object PanelAgentRepos: TPanel
-          Left = 792
+          Left = 552
           Height = 620
           Top = 1
-          Width = 753
+          Width = 993
           Align = alClient
           BevelColor = clNone
           BevelOuter = bvNone
           Caption = 'PanelAgentRepos'
           ClientHeight = 620
-          ClientWidth = 753
+          ClientWidth = 993
           TabOrder = 2
           object GridAgentRepo: TSOGrid
             Left = 0
             Height = 572
             Top = 48
-            Width = 753
+            Width = 993
             ShowAdvancedColumnsCustomize = False
             Align = alClient
             Alignment = taCenter
@@ -8855,7 +8855,7 @@ object VisWaptGUI: TVisWaptGUI
                 Position = 12
                 Tag = 13
                 Text = 'status_sync_errors'
-                Width = 10
+                Width = 233
                 PropertyName = 'status_sync_errors'
               end>
             Header.DefaultHeight = 18
@@ -8879,7 +8879,7 @@ object VisWaptGUI: TVisWaptGUI
             Left = 0
             Height = 48
             Top = 0
-            Width = 753
+            Width = 993
             AutoSize = True
             ButtonHeight = 48
             ButtonWidth = 48
@@ -8911,14 +8911,14 @@ object VisWaptGUI: TVisWaptGUI
             end
             object ToolButton4: TToolButton
               Left = 49
-              Height = 48
+              Height = 5
               Top = 0
               Caption = 'ToolButton4'
               Style = tbsDivider
             end
             object ToolButton14: TToolButton
               Left = 181
-              Height = 48
+              Height = 5
               Top = 0
               Caption = 'ToolButton14'
               Style = tbsDivider
