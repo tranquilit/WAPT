@@ -3759,6 +3759,11 @@ msgctxt "tviswaptgui.gridhosts.header.columns[27].text"
 msgid "Registration Method"
 msgstr "Méthode d'enregistrement"
 
+#: tviswaptgui.gridhosts.header.columns[28].text
+msgctxt "tviswaptgui.gridhosts.header.columns[28].text"
+msgid "Repositories"
+msgstr "Dépôts"
+
 #: tviswaptgui.gridhosts.header.columns[2].text
 msgctxt "tviswaptgui.gridhosts.header.columns[2].text"
 msgid "Audit status"
@@ -5870,6 +5875,7 @@ msgid "Reports"
 msgstr "Reporting"
 
 #: tviswaptgui.pgrepositories.caption
+msgctxt "tviswaptgui.pgrepositories.caption"
 msgid "Repositories"
 msgstr "Dépôts"
 

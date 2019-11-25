@@ -208,6 +208,10 @@ class Hosts(WaptBaseModel):
     listening_port = IntegerField(null=True)
     listening_timestamp = CharField(null=True)
 
+    # for repo sync
+
+    repositories = CharField(null=True)
+
     # OK, TO-UPGRADE, ERROR, RUNNING
     host_status = CharField(null=True)
     last_seen_on = CharField(null=True)
@@ -1106,6 +1110,7 @@ def wapthosts_json(model_class, instance, created):
             ['productname', 'system_productname'],
             ['os_name', 'os_name'],
             ['platform','platform'],
+            ['repositories','repositories'],
             ['os_version', ('os_version', 'os_name')],
             ['connected_ips', 'connected_ips'],
             ['connected_users', ('connected_users', 'current_user')],
@@ -1116,7 +1121,6 @@ def wapthosts_json(model_class, instance, created):
             ['computer_ad_site', 'computer_ad_site'],
             ['computer_ad_ou', extract_ou],
             ['computer_ad_groups', 'computer_ad_groups'],
-            ['platform','platform'],
         ]
 
         for field, attribute in extractmap:
@@ -1941,6 +1945,8 @@ def upgrade_db_structure():
                 columns = [c.name for c in wapt_db.get_columns('hosts')]
                 if not 'platform' in columns:
                     opes.append(migrator.add_column(Hosts._meta.name, 'platform',Hosts.platform))
+                if not 'repositories' in columns:
+                    opes.append(migrator.add_column(Hosts._meta.name, 'repositories',Hosts.repositories))
 
                 migrate(*opes)
                 (v, created) = ServerAttribs.get_or_create(key='db_version')

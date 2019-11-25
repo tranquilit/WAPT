@@ -5593,6 +5593,8 @@ class Wapt(BaseObjectClass):
         inv['status_revision'] = self.read_param('status_revision',0,'int')
 
         host_info = setuphelpers.host_info()
+        host_info['repositories'] = ";".join([r.as_dict()['repo_url'] for r in self.repositories if not(r.as_dict()['repo_url'].endswith('-host'))])
+
         # optionally forced dn
         host_info['computer_ad_dn'] = self.host_dn
 
@@ -5907,6 +5909,7 @@ class Wapt(BaseObjectClass):
         """
         inv = {}
         inv['host_info'] = setuphelpers.host_info()
+        inv['host_info']['repositories'] = ";".join([r.as_dict()['repo_url'] for r in self.repositories if not(r.as_dict()['repo_url'].endswith('-host'))])
         # optionally forced dn
         inv['computer_ad_dn'] = self.host_dn
 
@@ -5923,6 +5926,7 @@ class Wapt(BaseObjectClass):
             logger.warning('WMI unavailable')
 
         inv['wapt_status'] = self.wapt_status()
+
         inv['installed_softwares'] = setuphelpers.installed_softwares('')
         inv['installed_packages'] = [p.as_dict() for p in self.waptdb.installed(include_errors=True,include_setup=False)]
         return inv

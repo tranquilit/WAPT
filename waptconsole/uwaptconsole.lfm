@@ -1,7 +1,7 @@
 object VisWaptGUI: TVisWaptGUI
-  Left = 268
+  Left = 173
   Height = 813
-  Top = 87
+  Top = 83
   Width = 1554
   AllowDropFiles = True
   Caption = 'WAPT console'
@@ -2523,6 +2523,11 @@ object VisWaptGUI: TVisWaptGUI
               Text = 'Registration Method'
               Width = 10
               PropertyName = 'registration_auth_user'
+            end          
+            item
+              Position = 28
+              Text = 'Repositories'
+              PropertyName = 'repositories'
             end>
           Header.DefaultHeight = 18
           Header.Height = 18
