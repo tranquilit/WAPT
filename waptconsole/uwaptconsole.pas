@@ -50,6 +50,7 @@ type
     Label16: TLabel;
     Label19: TLabel;
     LabLogsKB: TLabel;
+    MenuItem116: TMenuItem;
     PanCertTop: TPanel;
     PanCertDetails: TPanel;
     GridRules: TSOGrid;

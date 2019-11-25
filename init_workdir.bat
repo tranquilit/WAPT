@@ -20,7 +20,7 @@ xcopy /I /E /F /Y /EXCLUDE:%~dp0\libexcludes.txt %PYTHON_PATH%\lib %~dp0\lib
 %~dp0\Scripts\python -m pip install -U pip setuptools wheel
 %PYTHON_PATH%\python.exe %~dp0\pywininstall.py
 %~dp0\Scripts\easy_install.exe %~dp0\..\binaries_cache\pywin_install.exe
-For /D %%A In ("%~dp0\lib\site-packages\pywin32*") Do @Copy "%%A\pythoncom*.dll" "%~dp0"
+For /D %%A In ("%~dp0\lib\site-packages\pywin32-227*") Do @Copy "%%A\pythoncom*.dll" "%~dp0"
 %~dp0\Scripts\pip.exe install -r %~dp0\requirements.txt -r %~dp0\requirements-windows.txt
 
 copy /Y c:\windows\SysWOW64\python27.dll %~dp0\
