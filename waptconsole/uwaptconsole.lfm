@@ -1,7 +1,7 @@
 object VisWaptGUI: TVisWaptGUI
-  Left = 304
+  Left = 268
   Height = 813
-  Top = 113
+  Top = 87
   Width = 1554
   AllowDropFiles = True
   Caption = 'WAPT console'
@@ -41,9 +41,9 @@ object VisWaptGUI: TVisWaptGUI
         Height = 496
         Top = 126
         Width = 648
-        ActivePage = pgSoftwares
+        ActivePage = pgTasks
         Align = alRight
-        TabIndex = 2
+        TabIndex = 4
         TabOrder = 0
         Visible = False
         OnChange = HostPagesChange
@@ -368,6 +368,7 @@ object VisWaptGUI: TVisWaptGUI
             TreeOptions.SelectionOptions = [toDisableDrawSelection, toExtendedFocus, toMultiSelect, toRightClickSelect]
             WantTabs = True
             OnChange = GridHostPackagesChange
+            OnClick = GridHostPackagesClick
             OnFocusChanged = GridHostPackagesFocusChanged
             OnGetImageIndexEx = GridHostPackagesGetImageIndexEx
             ZebraPaint = True
@@ -1238,6 +1239,7 @@ object VisWaptGUI: TVisWaptGUI
             TreeOptions.SelectionOptions = [toDisableDrawSelection, toExtendedFocus, toMultiSelect, toRightClickSelect]
             WantTabs = True
             OnChange = GridHostWinUpdatesChange
+            OnClick = GridHostWinUpdatesClick
             OnGetImageIndexEx = GridHostWinUpdatesGetImageIndexEx
             ZebraPaint = True
           end
@@ -1702,10 +1704,10 @@ object VisWaptGUI: TVisWaptGUI
             Height = 217
             Top = 125
             Width = 640
-            ActivePage = TabSheet1
+            ActivePage = TabSheet3
             Align = alClient
             Anchors = [akTop, akLeft, akBottom]
-            TabIndex = 0
+            TabIndex = 2
             TabOrder = 2
             OnChange = PagesTasksChange
             object TabSheet1: TTabSheet
@@ -1850,17 +1852,18 @@ object VisWaptGUI: TVisWaptGUI
                 TreeOptions.SelectionOptions = [toDisableDrawSelection, toExtendedFocus, toMultiSelect, toRightClickSelect]
                 WantTabs = True
                 OnChange = GridHostTasksPendingChange
+                OnClick = GridHostTasksPendingClick
                 OnGetImageIndexEx = GridHostPackagesGetImageIndexEx
                 ZebraPaint = True
               end
             end
             object TabSheet2: TTabSheet
               Caption = 'Done'
-              ClientHeight = 393
+              ClientHeight = 189
               ClientWidth = 632
               object GridHostTasksDone: TSOGrid
                 Left = 0
-                Height = 391
+                Height = 187
                 Top = 2
                 Width = 632
                 ShowAdvancedColumnsCustomize = False
@@ -1995,17 +1998,18 @@ object VisWaptGUI: TVisWaptGUI
                 TreeOptions.SelectionOptions = [toDisableDrawSelection, toExtendedFocus, toMultiSelect, toRightClickSelect]
                 WantTabs = True
                 OnChange = GridHostTasksPendingChange
+                OnClick = GridHostTasksPendingClick
                 OnGetImageIndexEx = GridHostPackagesGetImageIndexEx
                 ZebraPaint = True
               end
             end
             object TabSheet3: TTabSheet
               Caption = 'Errors'
-              ClientHeight = 393
+              ClientHeight = 189
               ClientWidth = 632
               object GridHostTasksErrors: TSOGrid
                 Left = 0
-                Height = 391
+                Height = 187
                 Top = 2
                 Width = 632
                 ShowAdvancedColumnsCustomize = False
@@ -2139,6 +2143,7 @@ object VisWaptGUI: TVisWaptGUI
                 TreeOptions.SelectionOptions = [toDisableDrawSelection, toExtendedFocus, toMultiSelect, toRightClickSelect]
                 WantTabs = True
                 OnChange = GridHostTasksPendingChange
+                OnClick = GridHostTasksPendingClick
                 OnGetImageIndexEx = GridHostPackagesGetImageIndexEx
                 ZebraPaint = True
               end

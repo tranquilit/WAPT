@@ -854,6 +854,7 @@ type
     procedure GridGroupsSOCompareNodes(Sender: TSOGrid; Node1,
       Node2: ISuperObject; const Columns: array of String; var Result: Integer);
     procedure GridHostPackagesChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
+    procedure GridHostPackagesClick(Sender: TObject);
     procedure GridHostPackagesFocusChanged(Sender: TBaseVirtualTree;
       Node: PVirtualNode; Column: TColumnIndex);
     procedure GridHostPackagesGetImageIndexEx(Sender: TBaseVirtualTree;
@@ -894,10 +895,12 @@ type
       Column: TColumnIndex; const NewText: String);
     procedure GridHostsSOCompareNodes(Sender: TSOGrid; Node1,
       Node2: ISuperObject; const Columns: array of String; var Result: Integer);
+    procedure GridHostTasksPendingClick(Sender: TObject);
     procedure GridHostWinUpdatesChange(Sender: TBaseVirtualTree;
       Node: PVirtualNode);
     procedure GridHostTasksPendingChange(Sender: TBaseVirtualTree;
       Node: PVirtualNode);
+    procedure GridHostWinUpdatesClick(Sender: TObject);
     procedure GridHostWinUpdatesGetImageIndexEx(Sender: TBaseVirtualTree;
       Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
       var Ghosted: Boolean; var ImageIndex: Integer;
@@ -4848,19 +4851,30 @@ begin
     MemoInstallOutput.SelStart := 65535;
     MemoInstallOutput.SelLength := 0;
     MemoInstallOutput.ScrollBy(0, 65535);
-  end
-  else
-    MemoInstallOutput.Clear;
-  if Assigned(GridHostPackages.FocusedRow) then
-  begin
-    Panel5.Visible:=True;
-    Splitter4.Visible:=True;
+    Panel5.Show;
+    Splitter4.Show;
     Splitter4.AnchorParallel(akBottom,0,pgPackages);
   end
   else
   begin
-    Panel5.Visible:=False;
-    Splitter4.Visible:=False;
+    MemoInstallOutput.Clear;
+    Panel5.Hide;
+    Splitter4.Hide;
+  end;
+end;
+
+procedure TVisWaptGUI.GridHostPackagesClick(Sender: TObject);
+begin
+  if Assigned(GridHostPackages.FocusedRow) then
+  begin
+    Panel5.Show;
+    Splitter4.Show;
+    Splitter4.AnchorParallel(akBottom,0,pgPackages);
+  end
+  else
+  begin
+    Panel5.Hide;
+    Splitter4.Hide;
   end;
 end;
 
@@ -5318,15 +5332,30 @@ begin
     Result := 0;
 end;
 
+procedure TVisWaptGUI.GridHostTasksPendingClick(Sender: TObject);
+begin
+  if Assigned((Sender as TSOGrid).FocusedRow) then
+  begin
+    PanLog.Show;
+    SplitHostTaskLog.AnchorParallel(akBottom,0,pgTasks);
+    SplitHostTaskLog.Show;
+  end
+  else
+  begin
+    PanLog.Hide;
+    SplitHostTaskLog.Hide;
+  end;
+end;
+
 
 procedure TVisWaptGUI.GridHostTasksPendingChange(Sender: TBaseVirtualTree;
   Node: PVirtualNode);
 begin
   if Assigned((Sender as TSOGrid).FocusedRow) then
   begin
-    PanLog.Visible:=True;
+    PanLog.Show;
     SplitHostTaskLog.AnchorParallel(akBottom,0,pgTasks);
-    SplitHostTaskLog.Visible:=True;
+    SplitHostTaskLog.Show;
     Label19.Caption:=Format(rsLogTasks,[UTF8Encode((Sender as TSOGrid).FocusedRow.S['description']),UTF8Encode((Sender as TSOGrid).FocusedRow.S['id'])]);
     MemoTaskLog.Text := UTF8Encode((Sender as TSOGrid).FocusedRow.S['logs']);
     MemoTaskLog.SelStart := 65535;
@@ -5334,9 +5363,24 @@ begin
   end
   else
   begin
-    PanLog.Visible:=False;
-    SplitHostTaskLog.Visible:=False;
+    PanLog.Hide;
+    SplitHostTaskLog.Hide;
     MemoTaskLog.Clear;
+  end;
+end;
+
+procedure TVisWaptGUI.GridHostWinUpdatesClick(Sender: TObject);
+begin
+  if Assigned(GridHostWinUpdates.FocusedRow) then
+  begin
+    PanelKBLogs.Visible:=GridHostWinUpdatesHistory.Data.AsArray.Length>=1;
+    SplitWinupdateHost.Visible:=GridHostWinUpdatesHistory.Data.AsArray.Length>=1;
+    SplitWinupdateHost.AnchorParallel(akBottom,0,pgHostWUA);
+  end
+  else
+  begin
+    PanelKBLogs.Hide;
+    SplitWinupdateHost.Hide;
   end;
 end;
 
@@ -5862,16 +5906,19 @@ end;
 procedure TVisWaptGUI.SpeedButton2Click(Sender: TObject);
 begin
     Panel5.Hide;
+    Splitter4.Hide;
 end;
 
 procedure TVisWaptGUI.SpeedButton3Click(Sender: TObject);
 begin
     PanelKBLogs.Hide;
+    SplitWinupdateHost.Hide;
 end;
 
 procedure TVisWaptGUI.SpeedButton4Click(Sender: TObject);
 begin
     PanLog.Hide;
+    SplitHostTaskLog.Hide;
 end;
 
 procedure TVisWaptGUI.SetGridHostsPlugins(AValue: ISuperObject);
