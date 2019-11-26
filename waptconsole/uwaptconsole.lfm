@@ -1,12 +1,12 @@
 object VisWaptGUI: TVisWaptGUI
-  Left = 173
+  Left = -1653
   Height = 813
-  Top = 83
-  Width = 1554
+  Top = 54
+  Width = 1307
   AllowDropFiles = True
   Caption = 'WAPT console'
   ClientHeight = 793
-  ClientWidth = 1554
+  ClientWidth = 1307
   Constraints.MinHeight = 600
   Constraints.MinWidth = 800
   Menu = MainMenu1
@@ -26,7 +26,7 @@ object VisWaptGUI: TVisWaptGUI
     Left = 0
     Height = 650
     Top = 0
-    Width = 1554
+    Width = 1307
     ActivePage = pgInventory
     Align = alClient
     TabIndex = 0
@@ -35,9 +35,9 @@ object VisWaptGUI: TVisWaptGUI
     object pgInventory: TTabSheet
       Caption = 'Inventory'
       ClientHeight = 622
-      ClientWidth = 1546
+      ClientWidth = 1299
       object HostPages: TPageControl
-        Left = 898
+        Left = 651
         Height = 496
         Top = 126
         Width = 648
@@ -2251,17 +2251,17 @@ object VisWaptGUI: TVisWaptGUI
         Left = 0
         Height = 496
         Top = 126
-        Width = 893
+        Width = 646
         Align = alClient
         BevelOuter = bvNone
         ClientHeight = 496
-        ClientWidth = 893
+        ClientWidth = 646
         TabOrder = 1
         object Panel15: TPanel
           Left = 0
           Height = 21
           Top = 475
-          Width = 893
+          Width = 646
           Align = alBottom
           AutoSize = True
           BevelOuter = bvNone
@@ -2270,10 +2270,10 @@ object VisWaptGUI: TVisWaptGUI
           ChildSizing.HorizontalSpacing = 6
           ChildSizing.VerticalSpacing = 6
           ClientHeight = 21
-          ClientWidth = 893
+          ClientWidth = 646
           TabOrder = 0
           object LabelComputersNumber: TLabel
-            Left = 753
+            Left = 506
             Height = 15
             Top = 3
             Width = 134
@@ -2286,7 +2286,7 @@ object VisWaptGUI: TVisWaptGUI
           Left = 224
           Height = 475
           Top = 0
-          Width = 669
+          Width = 422
           OnGetText = GridHostsGetText
           ShowAdvancedColumnsCustomize = False
           KeyFieldsNames = 'uuid'
@@ -2654,12 +2654,12 @@ object VisWaptGUI: TVisWaptGUI
         Left = 0
         Height = 81
         Top = 45
-        Width = 1546
+        Width = 1299
         Align = alTop
         AutoSize = True
         BevelOuter = bvNone
         ClientHeight = 81
-        ClientWidth = 1546
+        ClientWidth = 1299
         TabOrder = 2
         object PanFilterGroups: TPanel
           Left = 446
@@ -3105,15 +3105,15 @@ object VisWaptGUI: TVisWaptGUI
         Left = 0
         Height = 45
         Top = 0
-        Width = 1546
+        Width = 1299
         Align = alTop
         BevelOuter = bvNone
         ClientHeight = 45
-        ClientWidth = 1546
+        ClientWidth = 1299
         TabOrder = 3
         object Image1: TImage
           Cursor = crHandPoint
-          Left = 1366
+          Left = 1119
           Height = 45
           Top = 0
           Width = 180
@@ -3314,7 +3314,7 @@ object VisWaptGUI: TVisWaptGUI
           Left = 0
           Height = 45
           Top = 0
-          Width = 1366
+          Width = 1119
           Align = alClient
           AutoSize = True
           ButtonHeight = 45
@@ -3363,7 +3363,7 @@ object VisWaptGUI: TVisWaptGUI
         end
       end
       object SplitGridUnitsHosts1: TSplitter
-        Left = 893
+        Left = 646
         Height = 496
         Top = 126
         Width = 5
@@ -3375,7 +3375,7 @@ object VisWaptGUI: TVisWaptGUI
         AnchorSideTop.Control = HostPages
         AnchorSideRight.Control = HostPages
         AnchorSideRight.Side = asrBottom
-        Left = 1523
+        Left = 1276
         Height = 22
         Top = 126
         Width = 23
@@ -8952,28 +8952,28 @@ object VisWaptGUI: TVisWaptGUI
     Left = 0
     Height = 118
     Top = 655
-    Width = 1554
+    Width = 1307
     Align = alBottom
     ClientHeight = 118
-    ClientWidth = 1554
+    ClientWidth = 1307
     TabOrder = 2
     Visible = False
     object Panel7: TPanel
       Left = 1
       Height = 116
       Top = 1
-      Width = 1552
+      Width = 1305
       Align = alClient
       BevelOuter = bvNone
       Caption = 'Panel7'
       ClientHeight = 116
-      ClientWidth = 1552
+      ClientWidth = 1305
       TabOrder = 0
       object MemoLog: TMemo
         Left = 0
         Height = 97
         Top = 19
-        Width = 941
+        Width = 694
         Align = alClient
         Font.Pitch = fpFixed
         Lines.Strings = (
@@ -8983,7 +8983,7 @@ object VisWaptGUI: TVisWaptGUI
         TabOrder = 0
       end
       object jsonlog: TVirtualJSONInspector
-        Left = 946
+        Left = 699
         Height = 97
         Top = 19
         Width = 606
@@ -9014,7 +9014,7 @@ object VisWaptGUI: TVisWaptGUI
         TreeOptions.SelectionOptions = [toExtendedFocus]
       end
       object Splitter2: TSplitter
-        Left = 941
+        Left = 694
         Height = 97
         Top = 19
         Width = 5
@@ -9025,12 +9025,12 @@ object VisWaptGUI: TVisWaptGUI
         Left = 0
         Height = 19
         Top = 0
-        Width = 1552
+        Width = 1305
         Align = alTop
         AutoSize = True
         BevelOuter = bvNone
         ClientHeight = 19
-        ClientWidth = 1552
+        ClientWidth = 1305
         TabOrder = 3
         object cbShowLog: TCheckBox
           Left = 107
@@ -9060,7 +9060,7 @@ object VisWaptGUI: TVisWaptGUI
     Left = 0
     Height = 5
     Top = 650
-    Width = 1554
+    Width = 1307
     Align = alBottom
     ResizeAnchor = akBottom
     Visible = False
@@ -9069,7 +9069,7 @@ object VisWaptGUI: TVisWaptGUI
     Left = 0
     Height = 20
     Top = 773
-    Width = 1554
+    Width = 1307
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 3
