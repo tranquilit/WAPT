@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  ExtCtrls, Buttons;
+  ExtCtrls, Buttons, ActnList;
 
 type
 
@@ -27,6 +27,7 @@ type
     procedure ComboBoxConditionChange(Sender: TObject);
     procedure EditNameChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure FormKeyPress(Sender: TObject; var Key: char);
     procedure FormShow(Sender: TObject);
   private
     function CanOK():Boolean;
@@ -96,6 +97,12 @@ begin
   ComboBoxCondition.Items.Add(rsDomain);
   ComboBoxCondition.Items.Add(rsSite);
   ComboBoxCondition.Items.Add(rsPublicIP);
+end;
+
+procedure TFormEditRule.FormKeyPress(Sender: TObject; var Key: char);
+begin
+  if Key=#27 then
+    Close;
 end;
 
 function TFormEditRule.CanOK(): Boolean;

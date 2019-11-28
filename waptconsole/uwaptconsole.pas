@@ -32,8 +32,8 @@ type
     ActInstallLicence: TAction;
     ActAddProfile: TAction;
     ActDeleteAccount: TAction;
-    ActAscendRule: TAction;
-    ActDescendRule: TAction;
+    ActUpRule: TAction;
+    ActDownRule: TAction;
     ActDeleteRule: TAction;
     ActEditRule: TAction;
     ActDisplayDebug: TAction;
@@ -627,7 +627,8 @@ type
     procedure ActAddHWPropertyToGridUpdate(Sender: TObject);
     procedure ActAddNewNetworkExecute(Sender: TObject);
     procedure ActAddProfileExecute(Sender: TObject);
-    procedure ActAscendRuleExecute(Sender: TObject);
+    procedure ActSaveRulesExecute(Sender: TObject);
+    procedure ActUpRuleExecute(Sender: TObject);
     procedure ActCancelRunningTaskExecute(Sender: TObject);
     procedure ActChangePasswordExecute(Sender: TObject);
     procedure ActChangePasswordUpdate(Sender: TObject);
@@ -650,7 +651,7 @@ type
     procedure ActDeletePackageExecute(Sender: TObject);
     procedure ActDeletePackageUpdate(Sender: TObject);
     procedure ActDeleteRuleExecute(Sender: TObject);
-    procedure ActDescendRuleExecute(Sender: TObject);
+    procedure ActDownRuleExecute(Sender: TObject);
     procedure ActDisplayDebugExecute(Sender: TObject);
     procedure ActDisplayPreferencesExecute(Sender: TObject);
     procedure ActDisplayUserMessageExecute(Sender: TObject);
@@ -948,6 +949,9 @@ type
       Node2: ISuperObject; const Columns: array of String; var Result: Integer);
     procedure GridRulesChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
     procedure GridRulesDblClick(Sender: TObject);
+    procedure GridRulesGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
+        RowData, CellData: ISuperObject; Column: TColumnIndex;
+        TextType: TVSTTextType; var CellText: string);
     procedure GridSelfServicePackagesChange(Sender: TBaseVirtualTree;
       Node: PVirtualNode);
     procedure GridSelfServicePackagesColumnDblClick(Sender: TBaseVirtualTree;
@@ -1015,6 +1019,7 @@ type
     procedure ExecuteHostsGruidPlugin(Sender: TObject);
     procedure FillcbADSiteDropDown;
     procedure FillcbGroups;
+    function MaxSeq:Integer;
     procedure FilterDBOrgUnits;
     function FilterHostsForPackage(HostsData: ISuperObject): ISuperObject;
     function FilterSoftwares(softs: ISuperObject): ISuperObject;
@@ -6558,12 +6563,12 @@ begin
 end;
 
 
-procedure TVisWaptGUI.ActAscendRuleExecute(Sender: TObject);
+procedure TVisWaptGUI.ActUpRuleExecute(Sender: TObject);
 begin
   ;;
 end;
 
-procedure TVisWaptGUI.ActDescendRuleExecute(Sender: TObject);
+procedure TVisWaptGUI.ActDownRuleExecute(Sender: TObject);
 begin
   ;;
 end;
@@ -6686,6 +6691,16 @@ end;
 procedure TVisWAPTGUI.MergeUsersCertificates(Users:ISuperObject);
 begin
    ;;
+end;
+
+function TVisWaptGUI.MaxSeq: Integer;
+begin
+    ;;
+end;
+
+procedure ActSaveRulesExecute(Sender: TObject);
+begin
+  ;;
 end;
 
 {$endif}

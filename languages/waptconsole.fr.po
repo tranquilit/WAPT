@@ -2353,10 +2353,6 @@ msgstr "Ajouter un réseau"
 msgid "New host AD profile"
 msgstr "Nouveau profil poste AD"
 
-#: tviswaptgui.actascendrule.caption
-msgid "Up rule"
-msgstr "Monter la règle"
-
 #: tviswaptgui.actcancelrunningtask.caption
 msgctxt "tviswaptgui.actcancelrunningtask.caption"
 msgid "Cancel current task"
@@ -2435,10 +2431,6 @@ msgstr "Supprimer du dépôt"
 msgid "Delete rule"
 msgstr "Supprimer règle"
 
-#: tviswaptgui.actdescendrule.caption
-msgid "Down rule"
-msgstr "Descendre la règle"
-
 #: tviswaptgui.actdisplaypreferences.caption
 msgctxt "tviswaptgui.actdisplaypreferences.caption"
 msgid "Display preferences"
@@ -2447,6 +2439,11 @@ msgstr "Préférences d'affichage"
 #: tviswaptgui.actdisplayusermessage.caption
 msgid "Send a message to users"
 msgstr "Envoyer un message aux utilisateurs"
+
+#: tviswaptgui.actdownrule.caption
+msgctxt "tviswaptgui.actdownrule.caption"
+msgid "Down rule"
+msgstr "Descendre la règle"
 
 #: tviswaptgui.acteditgroup.caption
 msgctxt "tviswaptgui.acteditgroup.caption"
@@ -2727,6 +2724,10 @@ msgstr "Lancer CleanMgr sur la machine"
 msgid "Save accounts"
 msgstr "Enregistrer"
 
+#: tviswaptgui.actsaverules.caption
+msgid "ActSaveRules"
+msgstr ""
+
 #: tviswaptgui.actsearchgroups.caption
 msgctxt "TVISWAPTGUI.ACTSEARCHGROUPS.CAPTION"
 msgid "Search"
@@ -2830,6 +2831,11 @@ msgstr "Lancer la recherche des Mises à jour Windows à appliquer"
 #: tviswaptgui.acttriggerwaptwua_uninstall.caption
 msgid "Trigger the Uninstall of selected Windows Updates"
 msgstr "Lancer la Désinstallation des mises à jour Windows sélectionnées"
+
+#: tviswaptgui.actuprule.caption
+msgctxt "tviswaptgui.actuprule.caption"
+msgid "Up rule"
+msgstr "Monter la règle"
 
 #: tviswaptgui.actveyon.caption
 msgid "Connect via Veyon"
@@ -5929,6 +5935,31 @@ msgctxt "tviswaptgui.tabsheet3.caption"
 msgid "Errors"
 msgstr "Erreurs"
 
+#: tviswaptgui.tbdeleterule.hint
+msgctxt "tviswaptgui.tbdeleterule.hint"
+msgid " "
+msgstr " "
+
+#: tviswaptgui.tbdownrule.hint
+msgctxt "tviswaptgui.tbdownrule.hint"
+msgid " "
+msgstr " "
+
+#: tviswaptgui.tbeditrule.hint
+msgctxt "tviswaptgui.tbeditrule.hint"
+msgid " "
+msgstr " "
+
+#: tviswaptgui.tbnewrule.hint
+msgctxt "tviswaptgui.tbnewrule.hint"
+msgid " "
+msgstr " "
+
+#: tviswaptgui.tbrefresh.hint
+msgctxt "tviswaptgui.tbrefresh.hint"
+msgid " "
+msgstr " "
+
 #: tviswaptgui.tbreport.caption
 msgid "TbReport"
 msgstr ""
@@ -5940,6 +5971,15 @@ msgstr ""
 #: tviswaptgui.tbrepos.caption
 msgid "TbRepos"
 msgstr ""
+
+#: tviswaptgui.tbsaverules.caption
+msgid "Save rules"
+msgstr "Sauvegarder les règles"
+
+#: tviswaptgui.tbsaverules.hint
+msgctxt "tviswaptgui.tbsaverules.hint"
+msgid " "
+msgstr " "
 
 #: tviswaptgui.tbsyncall.caption
 msgid "Sync all"
@@ -5958,6 +5998,11 @@ msgstr "Sync sélectionnés"
 msgctxt "tviswaptgui.tbupdatefilesync.caption"
 msgid "Update index"
 msgstr "Mettre à jour l'index"
+
+#: tviswaptgui.tbuprule.hint
+msgctxt "tviswaptgui.tbuprule.hint"
+msgid " "
+msgstr " "
 
 #: tviswaptgui.toolbar1.caption
 msgid "ToolBar1"

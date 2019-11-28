@@ -1,13 +1,15 @@
 object FormEditRule: TFormEditRule
-  Left = 2193
+  Left = 533
   Height = 164
-  Top = 265
+  Top = 374
   Width = 425
   BorderStyle = bsDialog
   Caption = 'Edit rule'
   ClientHeight = 164
   ClientWidth = 425
+  KeyPreview = True
   OnCreate = FormCreate
+  OnKeyPress = FormKeyPress
   OnShow = FormShow
   Position = poMainFormCenter
   LCLVersion = '1.8.4.0'

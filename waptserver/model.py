@@ -649,6 +649,11 @@ class SiteRules(WaptBaseModel):
     condition = CharField(null=False)
     value = CharField(null=False)
     repo_url = CharField(null=False)
+    signature_date = CharField(null=False)
+    signed_attributes = TextField(null=False)
+    signer = CharField(null=False)
+    signature = TextField(null=False)
+    signer_certificate = TextField(null=False)
 
 class SyncStatus(WaptBaseModel):
     id = PrimaryKeyField(primary_key=True)

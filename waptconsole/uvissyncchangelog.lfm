@@ -6,6 +6,8 @@ object VisSyncChangelog: TVisSyncChangelog
   Caption = 'Changelog synchronization'
   ClientHeight = 538
   ClientWidth = 1115
+  KeyPreview = True
+  OnKeyPress = FormKeyPress
   OnShow = FormShow
   Position = poMainFormCenter
   LCLVersion = '1.8.4.0'
@@ -79,7 +81,6 @@ object VisSyncChangelog: TVisSyncChangelog
         PropertyName = 'created_by'
       end>
     Header.DefaultHeight = 18
-    
     Header.Height = 18
     Header.MinHeight = 18
     Header.Options = [hoAutoResize, hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeightResize, hoHeaderClickAutoSort]
@@ -117,7 +118,6 @@ object VisSyncChangelog: TVisSyncChangelog
         Width = 300
       end>
     Header.DefaultHeight = 18
-    
     Header.Height = 18
     Header.MinHeight = 18
     Header.Options = [hoColumnResize, hoDrag, hoShowSortGlyphs, hoVisible, hoAutoSpring, hoHeaderClickAutoSort]

@@ -2329,10 +2329,6 @@ msgstr ""
 msgid "New host AD profile"
 msgstr ""
 
-#: tviswaptgui.actascendrule.caption
-msgid "Up rule"
-msgstr ""
-
 #: tviswaptgui.actcancelrunningtask.caption
 msgctxt "tviswaptgui.actcancelrunningtask.caption"
 msgid "Cancel current task"
@@ -2411,10 +2407,6 @@ msgstr ""
 msgid "Delete rule"
 msgstr ""
 
-#: tviswaptgui.actdescendrule.caption
-msgid "Down rule"
-msgstr ""
-
 #: tviswaptgui.actdisplaypreferences.caption
 msgctxt "tviswaptgui.actdisplaypreferences.caption"
 msgid "Display preferences"
@@ -2422,6 +2414,11 @@ msgstr ""
 
 #: tviswaptgui.actdisplayusermessage.caption
 msgid "Send a message to users"
+msgstr ""
+
+#: tviswaptgui.actdownrule.caption
+msgctxt "tviswaptgui.actdownrule.caption"
+msgid "Down rule"
 msgstr ""
 
 #: tviswaptgui.acteditgroup.caption
@@ -2702,6 +2699,10 @@ msgstr ""
 msgid "Save accounts"
 msgstr ""
 
+#: tviswaptgui.actsaverules.caption
+msgid "ActSaveRules"
+msgstr ""
+
 #: tviswaptgui.actsearchgroups.caption
 msgctxt "TVISWAPTGUI.ACTSEARCHGROUPS.CAPTION"
 msgid "Search"
@@ -2804,6 +2805,11 @@ msgstr ""
 
 #: tviswaptgui.acttriggerwaptwua_uninstall.caption
 msgid "Trigger the Uninstall of selected Windows Updates"
+msgstr ""
+
+#: tviswaptgui.actuprule.caption
+msgctxt "tviswaptgui.actuprule.caption"
+msgid "Up rule"
 msgstr ""
 
 #: tviswaptgui.actveyon.caption
@@ -5897,6 +5903,31 @@ msgctxt "tviswaptgui.tabsheet3.caption"
 msgid "Errors"
 msgstr ""
 
+#: tviswaptgui.tbdeleterule.hint
+msgctxt "tviswaptgui.tbdeleterule.hint"
+msgid " "
+msgstr ""
+
+#: tviswaptgui.tbdownrule.hint
+msgctxt "tviswaptgui.tbdownrule.hint"
+msgid " "
+msgstr ""
+
+#: tviswaptgui.tbeditrule.hint
+msgctxt "tviswaptgui.tbeditrule.hint"
+msgid " "
+msgstr ""
+
+#: tviswaptgui.tbnewrule.hint
+msgctxt "tviswaptgui.tbnewrule.hint"
+msgid " "
+msgstr ""
+
+#: tviswaptgui.tbrefresh.hint
+msgctxt "tviswaptgui.tbrefresh.hint"
+msgid " "
+msgstr ""
+
 #: tviswaptgui.tbreport.caption
 msgid "TbReport"
 msgstr ""
@@ -5907,6 +5938,15 @@ msgstr ""
 
 #: tviswaptgui.tbrepos.caption
 msgid "TbRepos"
+msgstr ""
+
+#: tviswaptgui.tbsaverules.caption
+msgid "Save rules"
+msgstr ""
+
+#: tviswaptgui.tbsaverules.hint
+msgctxt "tviswaptgui.tbsaverules.hint"
+msgid " "
 msgstr ""
 
 #: tviswaptgui.tbsyncall.caption
@@ -5925,6 +5965,11 @@ msgstr ""
 #: tviswaptgui.tbupdatefilesync.caption
 msgctxt "tviswaptgui.tbupdatefilesync.caption"
 msgid "Update index"
+msgstr ""
+
+#: tviswaptgui.tbuprule.hint
+msgctxt "tviswaptgui.tbuprule.hint"
+msgid " "
 msgstr ""
 
 #: tviswaptgui.toolbar1.caption

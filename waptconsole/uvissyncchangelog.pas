@@ -16,7 +16,7 @@ type
     GridChangelog: TSOGrid;
     GridJSONViewChangelog: TVirtualJSONInspector;
     Splitter1: TSplitter;
-    procedure FormCreate(Sender: TObject);
+    procedure FormKeyPress(Sender: TObject; var Key: char);
     procedure FormShow(Sender: TObject);
     procedure GridChangelogChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
   private
@@ -66,8 +66,10 @@ begin
   MakeFullyVisible();
 end;
 
-procedure TVisSyncChangelog.FormCreate(Sender: TObject);
+procedure TVisSyncChangelog.FormKeyPress(Sender: TObject; var Key: char);
 begin
+    if Key=#27 then
+        Close;
 end;
 
 end.

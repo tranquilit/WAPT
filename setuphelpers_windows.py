@@ -1588,9 +1588,15 @@ def windows_version(members_count=3):
           members_count (int) : default to 3.
     """
     try:
-        return Version(platform.win32_ver()[1],members_count)
+        version=Version(platform.win32_ver()[1],members_count)
     except:
-        return Version(platform.win32_ver()[1])
+        version=Version(platform.win32_ver()[1])
+    if version>='10':
+        try:
+            version=Version(wmi.WMI().Win32_OperatingSystem()[0].version,members_count)
+        except:
+            version=Version(wmi.WMI().Win32_OperatingSystem()[0].version)
+    return version
 
 
 class WindowsVersions(object):

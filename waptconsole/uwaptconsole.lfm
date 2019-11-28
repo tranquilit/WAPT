@@ -1,7 +1,7 @@
 object VisWaptGUI: TVisWaptGUI
-  Left = -1653
+  Left = 260
   Height = 813
-  Top = 54
+  Top = 96
   Width = 1307
   AllowDropFiles = True
   Caption = 'WAPT console'
@@ -27,9 +27,9 @@ object VisWaptGUI: TVisWaptGUI
     Height = 650
     Top = 0
     Width = 1307
-    ActivePage = pgInventory
+    ActivePage = pgRepositories
     Align = alClient
-    TabIndex = 0
+    TabIndex = 9
     TabOrder = 0
     OnChange = MainPagesChange
     object pgInventory: TTabSheet
@@ -3333,7 +3333,7 @@ object VisWaptGUI: TVisWaptGUI
           end
           object ToolButtonSep1: TToolButton
             Left = 48
-            Height = 45
+            Height = 5
             Top = 0
             Caption = 'ToolButtonSep1'
             Style = tbsDivider
@@ -3355,7 +3355,7 @@ object VisWaptGUI: TVisWaptGUI
           end
           object ToolButton6: TToolButton
             Left = 193
-            Height = 45
+            Height = 5
             Top = 0
             Caption = 'ToolButton6'
             Style = tbsDivider
@@ -8244,13 +8244,13 @@ object VisWaptGUI: TVisWaptGUI
     end
     object PgRights: TTabSheet
       Caption = 'Rights management'
-      ClientHeight = 622
-      ClientWidth = 1546
+      ClientHeight = 596
+      ClientWidth = 1299
       object GridUsers: TSOGrid
         Left = 0
-        Height = 481
+        Height = 455
         Top = 50
-        Width = 1546
+        Width = 1299
         ShowAdvancedColumnsCustomize = False
         Align = alClient
         Color = clWhite
@@ -8483,7 +8483,7 @@ object VisWaptGUI: TVisWaptGUI
         Left = 0
         Height = 50
         Top = 0
-        Width = 1546
+        Width = 1299
         AutoSize = True
         ButtonHeight = 48
         ButtonWidth = 48
@@ -8549,8 +8549,8 @@ object VisWaptGUI: TVisWaptGUI
       object PanCertDetails: TPanel
         Left = 0
         Height = 91
-        Top = 531
-        Width = 1546
+        Top = 505
+        Width = 1299
         Align = alBottom
         BevelOuter = bvNone
         TabOrder = 2
@@ -8559,19 +8559,19 @@ object VisWaptGUI: TVisWaptGUI
     object pgRepositories: TTabSheet
       Caption = 'Repositories'
       ClientHeight = 622
-      ClientWidth = 1546
+      ClientWidth = 1299
       TabVisible = False
       object PanelRepositories: TPanel
         Left = 0
         Height = 622
         Top = 0
-        Width = 1546
+        Width = 1299
         Align = alClient
         ClientHeight = 622
-        ClientWidth = 1546
+        ClientWidth = 1299
         TabOrder = 0
         object SplitterRepo: TSplitter
-          Left = 547
+          Left = 659
           Height = 620
           Top = 1
           Width = 5
@@ -8581,18 +8581,18 @@ object VisWaptGUI: TVisWaptGUI
           Left = 1
           Height = 620
           Top = 1
-          Width = 546
+          Width = 658
           Align = alLeft
           BevelColor = clNone
           BevelOuter = bvNone
           ClientHeight = 620
-          ClientWidth = 546
+          ClientWidth = 658
           TabOrder = 1
           object TbRepos: TToolBar
             Left = 0
             Height = 48
             Top = 0
-            Width = 546
+            Width = 658
             AutoSize = True
             ButtonHeight = 48
             ButtonWidth = 48
@@ -8604,58 +8604,73 @@ object VisWaptGUI: TVisWaptGUI
             TabOrder = 0
             object tbRefresh: TToolButton
               Left = 1
+              Hint = ' '
               Top = 0
               Action = ActRepositoriesGetUpdateRules
             end
             object tbUpRule: TToolButton
               Left = 54
+              Hint = ' '
               Top = 0
-              Action = ActAscendRule
+              Action = ActUpRule
               Enabled = False
             end
             object tbDownRule: TToolButton
               Left = 102
+              Hint = ' '
               Top = 0
-              Action = ActDescendRule
+              Action = ActDownRule
               Enabled = False
             end
             object tbNewRule: TToolButton
               Left = 169
+              Hint = ' '
               Top = 0
               Action = ActNewRule
             end
             object tbDeleteRule: TToolButton
               Left = 273
+              Hint = ' '
               Top = 0
               Action = ActDeleteRule
               Enabled = False
             end
             object ToolButtonSep2: TToolButton
               Left = 49
-              Height = 5
+              Height = 48
               Top = 0
               Caption = 'ToolButtonSep2'
               Style = tbsDivider
             end
             object ToolButton1: TToolButton
               Left = 164
-              Height = 5
+              Height = 48
               Top = 0
               Caption = 'ToolButton1'
               Style = tbsDivider
             end
             object tbEditRule: TToolButton
               Left = 222
+              Hint = ' '
               Top = 0
               Action = ActEditRule
               Enabled = False
+            end
+            object tbSaveRules: TToolButton
+              Left = 337
+              Hint = ' '
+              Top = 0
+              Action = ActSaveRules
+              Caption = 'Save rules'
+              ImageIndex = 37
             end
           end
           object GridRules: TSOGrid
             Left = 0
             Height = 572
             Top = 48
-            Width = 546
+            Width = 658
+            OnGetText = GridRulesGetText
             ShowAdvancedColumnsCustomize = False
             Align = alClient
             Alignment = taCenter
@@ -8730,7 +8745,7 @@ object VisWaptGUI: TVisWaptGUI
             Header.Height = 18
             Header.MinHeight = 18
             Header.Options = [hoAutoResize, hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
-            Header.SortDirection = sdDescending
+            Header.SortColumn = 0
             Header.Style = hsFlatButtons
             TabOrder = 1
             TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes, toAutoChangeScale]
@@ -8744,22 +8759,22 @@ object VisWaptGUI: TVisWaptGUI
           end
         end
         object PanelAgentRepos: TPanel
-          Left = 552
+          Left = 664
           Height = 620
           Top = 1
-          Width = 993
+          Width = 634
           Align = alClient
           BevelColor = clNone
           BevelOuter = bvNone
           Caption = 'PanelAgentRepos'
           ClientHeight = 620
-          ClientWidth = 993
+          ClientWidth = 634
           TabOrder = 2
           object GridAgentRepo: TSOGrid
             Left = 0
             Height = 572
             Top = 48
-            Width = 993
+            Width = 634
             ShowAdvancedColumnsCustomize = False
             Align = alClient
             Alignment = taCenter
@@ -8861,7 +8876,7 @@ object VisWaptGUI: TVisWaptGUI
                 Position = 12
                 Tag = 13
                 Text = 'status_sync_errors'
-                Width = 233
+                Width = 10
                 PropertyName = 'status_sync_errors'
               end>
             Header.DefaultHeight = 18
@@ -8885,7 +8900,7 @@ object VisWaptGUI: TVisWaptGUI
             Left = 0
             Height = 48
             Top = 0
-            Width = 993
+            Width = 634
             AutoSize = True
             ButtonHeight = 48
             ButtonWidth = 48
@@ -8917,14 +8932,14 @@ object VisWaptGUI: TVisWaptGUI
             end
             object ToolButton4: TToolButton
               Left = 49
-              Height = 5
+              Height = 48
               Top = 0
               Caption = 'ToolButton4'
               Style = tbsDivider
             end
             object ToolButton14: TToolButton
               Left = 181
-              Height = 5
+              Height = 48
               Top = 0
               Caption = 'ToolButton14'
               Style = tbsDivider
@@ -9598,35 +9613,40 @@ object VisWaptGUI: TVisWaptGUI
       OnExecute = ActRepositoriesGetUpdateRulesExecute
       ShortCut = 116
     end
-    object ActAscendRule: TAction
+    object ActUpRule: TAction
       Category = 'Repositories'
       Caption = 'Up rule'
       ImageIndex = 35
-      OnExecute = ActAscendRuleExecute
+      OnExecute = ActUpRuleExecute
+      ShortCut = 16422
     end
-    object ActDescendRule: TAction
+    object ActDownRule: TAction
       Category = 'Repositories'
       Caption = 'Down rule'
       ImageIndex = 34
-      OnExecute = ActDescendRuleExecute
+      OnExecute = ActDownRuleExecute
+      ShortCut = 16424
     end
     object ActDeleteRule: TAction
       Category = 'Repositories'
       Caption = 'Delete rule'
       ImageIndex = 3
       OnExecute = ActDeleteRuleExecute
+      ShortCut = 46
     end
     object ActNewRule: TAction
       Category = 'Repositories'
       Caption = 'Add rule'
       ImageIndex = 6
       OnExecute = ActNewRuleExecute
+      ShortCut = 16462
     end
     object ActEditRule: TAction
       Category = 'Repositories'
       Caption = 'Edit rule'
       ImageIndex = 8
       OnExecute = ActEditRuleExecute
+      ShortCut = 16453
     end
     object ActRepositoriesGetSecondRepos: TAction
       Category = 'Repositories'
@@ -9639,6 +9659,12 @@ object VisWaptGUI: TVisWaptGUI
       Category = 'Display'
       OnExecute = ActDisplayDebugExecute
       ShortCut = 24644
+    end
+    object ActSaveRules: TAction
+      Category = 'Repositories'
+      Caption = 'ActSaveRules'
+      OnExecute = ActSaveRulesExecute
+      ShortCut = 16467
     end
   end
   object PopupMenuPackages: TPopupMenu
@@ -10975,7 +11001,7 @@ object VisWaptGUI: TVisWaptGUI
     left = 440
     top = 408
     Bitmap = {
-      4C69250000001800000018000000000000000000000000000000000000000000
+      4C69260000001800000018000000000000000000000000000000000000000000
       000000BFFF14000000000000000000AAFF120DD3FF7910CFFFBA0ECEFFDA0ECE
       FFDB10CFFFBB0CD0FF7D00D5FF18000000000000000000BFFF14000000000000
       00000000000000000000000000000000000000000000000000000000000000FF
@@ -13639,7 +13665,79 @@ object VisWaptGUI: TVisWaptGUI
       00B40000000000000000000000000000000000000000000000000000007A0000
       00FE000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
       00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FC0000
-      0074000000000000000000000000
+      0074000000000000000000000000525252FF000000FF000000FF000000FF0000
+      00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+      00FF000000FF000000FF000000FF000000FF000000FF000000FF090909FF9393
+      93FFFDFDFDFFFFFFFFFFFFFFFFFF4F4F4FFF373737FF858585FF888888FF6060
+      60FF181818FF747474FF878787FF868686FF868686FF868686FF868686FF8686
+      86FF868686FF868686FF868686FF868686FF434343FF2A2A2AFF555555FF1A1A
+      1AFF9F9F9FFFFDFDFDFFFFFFFFFF4D4D4DFF6C6C6CFFFEFEFEFFFFFFFFFFB8B8
+      B8FF2E2E2EFFDEDEDEFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+      FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF818181FF4F4F4FFFE9E9E9FF6F6F
+      6FFF171717FF9F9F9FFFFDFDFDFF4D4D4DFF6A6A6AFFFDFDFDFFFFFFFFFFB7B7
+      B7FF2D2D2DFFDDDDDDFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+      FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF808080FF4D4D4DFFF7F7F7FFF2F2
+      F2FF6E6E6EFF191919FF939393FF4D4D4DFF6A6A6AFFFDFDFDFFFFFFFFFFB7B7
+      B7FF2D2D2DFFDDDDDDFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+      FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF808080FF4D4D4DFFF6F6F6FFFFFF
+      FFFFF1F1F1FF6B6B6BFF0E0E0EFF4D4D4DFF6A6A6AFFFDFDFDFFFFFFFFFFB7B7
+      B7FF2D2D2DFFDDDDDDFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+      FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF808080FF4D4D4DFFF6F6F6FFFFFF
+      FFFFFFFFFFFFC9C9C9FF171717FF4D4D4DFF6A6A6AFFFDFDFDFFFFFFFFFFB6B6
+      B6FF2D2D2DFFDDDDDDFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+      FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF818181FF4D4D4DFFF6F6F6FFFFFF
+      FFFFFFFFFFFFCDCDCDFF191919FF4D4D4DFF6A6A6AFFFDFDFDFFFFFFFFFFB7B7
+      B7FF252525FFADADADFFCACACAFFC9C9C9FFC9C9C9FFC9C9C9FFC9C9C9FFC9C9
+      C9FFC9C9C9FFC9C9C9FFC9C9C9FFCACACAFF646464FF4D4D4DFFF6F6F6FFFFFF
+      FFFFFFFFFFFFCDCDCDFF191919FF4D4D4DFF6A6A6AFFFDFDFDFFFFFFFFFFB9B9
+      B9FF0B0B0BFF070707FF090909FF090909FF090909FF090909FF090909FF0909
+      09FF090909FF090909FF090909FF090909FF010101FF4F4F4FFFF6F6F6FFFFFF
+      FFFFFFFFFFFFCDCDCDFF191919FF4D4D4DFF6A6A6AFFFDFDFDFFFFFFFFFFE8E8
+      E8FFB0B0B0FFACACACFFACACACFFACACACFFACACACFFACACACFFACACACFFACAC
+      ACFFACACACFFACACACFFACACACFFACACACFFABABABFFC6C6C6FFFCFCFCFFFFFF
+      FFFFFFFFFFFFCDCDCDFF191919FF4D4D4DFF6A6A6AFFFDFDFDFFFFFFFFFFFFFF
+      FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+      FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+      FFFFFFFFFFFFCDCDCDFF191919FF4D4D4DFF6A6A6AFFFDFDFDFFFFFFFFFFFFFF
+      FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+      FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+      FFFFFFFFFFFFCDCDCDFF191919FF4D4D4DFF6A6A6AFFFEFEFEFFECECECFFB8B8
+      B8FFB5B5B5FFB5B5B5FFB5B5B5FFB5B5B5FFB5B5B5FFB5B5B5FFB5B5B5FFB5B5
+      B5FFB5B5B5FFB5B5B5FFB5B5B5FFB5B5B5FFB5B5B5FFB5B5B5FFB8B8B8FFECEC
+      ECFFFFFFFFFFCDCDCDFF191919FF4D4D4DFF6A6A6AFFFFFFFFFFBEBEBEFF0E0E
+      0EFF060606FF080808FF080808FF080808FF080808FF080808FF080808FF0808
+      08FF080808FF080808FF080808FF080808FF080808FF060606FF0E0E0EFFBDBD
+      BDFFFFFFFFFFCDCDCDFF191919FF4D4D4DFF6A6A6AFFFFFFFFFFBBBBBBFF2424
+      24FFA5A5A5FFBFBFBFFFBABABAFFBABABAFFBABABAFFBDBDBDFFC1C1C1FFC1C1
+      C1FFC1C1C1FFC1C1C1FFC1C1C1FFC1C1C1FFC3C3C3FFA5A5A5FF242424FFBBBB
+      BBFFFFFFFFFFCDCDCDFF191919FF4D4D4DFF6A6A6AFFFFFFFFFFBBBBBBFF2D2D
+      2DFFD9D9D9FF8C8C8CFF383838FF3A3A3AFF373737FF757575FFF7F7F7FFFFFF
+      FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFDBDBDBFF2C2C2CFFBABA
+      BAFFFFFFFFFFCDCDCDFF191919FF4D4D4DFF6A6A6AFFFFFFFFFFBBBBBBFF2C2C
+      2CFFD8D8D8FF9A9A9AFF4C4C4CFF4D4D4DFF4B4B4BFF7F7F7FFFEDEDEDFFF4F4
+      F4FFFBFBFBFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFDADADAFF2C2C2CFFBABA
+      BAFFFFFFFFFFCDCDCDFF191919FF4D4D4DFF6A6A6AFFFFFFFFFFBBBBBBFF2C2C
+      2CFFD7D7D7FF8B8B8BFF2E2E2EFF2F2F2FFF2F2F2FFF2F2F2FFF2E2E2EFF2D2D
+      2DFF8C8C8CFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFDADADAFF2C2C2CFFBABA
+      BAFFFFFFFFFFCDCDCDFF191919FF4D4D4DFF6A6A6AFFFFFFFFFFBBBBBBFF2C2C
+      2CFFD8D8D8FFAAAAAAFF616161FF616161FF616161FF616161FF616161FF6161
+      61FFACACACFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFDADADAFF2C2C2CFFBABA
+      BAFFFFFFFFFFCDCDCDFF191919FF4D4D4DFF6A6A6AFFFFFFFFFFBBBBBBFF2C2C
+      2CFFDADADAFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+      FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFDADADAFF2C2C2CFFBABA
+      BAFFFFFFFFFFCDCDCDFF191919FF4D4D4DFF6A6A6AFFFFFFFFFFBBBBBBFF2C2C
+      2CFFDADADAFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+      FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFDADADAFF2C2C2CFFBABA
+      BAFFFFFFFFFFCDCDCDFF191919FF4D4D4DFF6B6B6BFFFFFFFFFFBBBBBBFF2C2C
+      2CFFDADADAFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+      FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFDADADAFF2C2C2CFFBBBB
+      BBFFFFFFFFFFCDCDCDFF191919FF4E4E4EFF5F5F5FFFE5E5E5FFA7A7A7FF2727
+      27FFC3C3C3FFE6E6E6FFE4E4E4FFE4E4E4FFE4E4E4FFE4E4E4FFE4E4E4FFE4E4
+      E4FFE4E4E4FFE4E4E4FFE4E4E4FFE4E4E4FFE6E6E6FFC3C3C3FF272727FFA7A7
+      A7FFE9E9E9FFB7B7B7FF161616FF515151FF0C0C0CFF232323FF191919FF0606
+      06FF1D1D1DFF232323FF232323FF232323FF232323FF232323FF232323FF2323
+      23FF232323FF232323FF232323FF232323FF232323FF1D1D1DFF060606FF1919
+      19FF232323FF1C1C1CFF030303FF
     }
   end
   object SrcOrgUnits: TDataSource
