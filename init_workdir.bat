@@ -22,8 +22,9 @@ xcopy /I /E /F /Y /EXCLUDE:%~dp0\libexcludes.txt %PYTHON_PATH%\lib %~dp0\lib
 
 %PYTHON_PATH%\python.exe %~dp0\pywininstall.py
 %~dp0\Scripts\easy_install.exe %~dp0\..\binaries_cache\pywin_install.exe
-For /D %%A In ("%~dp0\lib\site-packages\pywin32-227*") Do @Copy "%%A\py*27.dll" "%~dp0"
-
+For /D %%A In ("%~dp0\lib\site-packages\pywin32_system32") Do @Copy "%%A\py*27.dll" "%~dp0"
+For /D %%A In ("%~dp0\lib\site-packages\pywin32_system32") Do @Copy "%%A\py*27.dll" "%~dp0\lib\site-packages\win32"
+For /D %%A In ("%~dp0\lib\site-packages\pywin32_system32") Do @Copy "%%A\py*27.dll" "%~dp0\Scripts"
 
 copy /Y c:\windows\SysWOW64\python27.dll %~dp0\
 
