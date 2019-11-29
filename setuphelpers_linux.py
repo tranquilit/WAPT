@@ -248,14 +248,14 @@ def host_info():
     info['distrib_version'] = get_distrib_version()
     info['cpu_name'] = cpuinfo.get_cpu_info()['brand']
     if platform.system()=='Darwin':
-        info['os_name']= 'macOS'
+        info['os_name']=platform.system()
         info['os_version']=platform.release()
     else:
         info['os_name'] = platform.linux_distribution()[0]
         info['os_version'] = platform.linux_distribution()[1]
     info['environ'] = {k:ensure_unicode(v) for k,v in os.environ.items()}
     info['main_ip'] = get_main_ip()
-    info['platform'] = platform.system()
+    info['platform'] = platform.system() if platform.system()!='Darwin' else 'macOS'
 
     return info
 
