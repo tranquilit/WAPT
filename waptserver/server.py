@@ -162,13 +162,6 @@ def lang(language=None):
     return redirect('/')
 
 
-@babel.timezoneselector
-def get_timezone():
-    user = getattr(g, 'user', None)
-    if user is not None:
-        return user.timezone
-
-
 @app.route('/')
 def index():
     waptagent = os.path.join(app.conf['wapt_folder'], 'waptagent.exe')
@@ -281,6 +274,7 @@ def check_host_cert(host_certificate):
 
 @app.route('/add_host_kerberos',methods=['HEAD','POST'])
 @app.route('/add_host',methods=['HEAD','POST'])
+@requires_auth(methods=['kerb','token','ssl','admin','passwd','ldap'])
 def register_host():
     """Add a new host into database, and return registration info
     If path is add_host_kerberos, assume there is (already validated by NGINX) computer kerberos SPN in the user part of Authorization http header else
@@ -307,6 +301,11 @@ def register_host():
     Returns:
 
     """
+
+    # we have to be sure that nginx has filtered out the bogus authorization header set by nginx kerberos module
+    if session.get('auth_method') == 'kerb' and not request.path in ('/add_host_kerberos'):
+        return authenticate()
+
     with wapt_db.atomic() as trans:
         try:
             starttime = time.time()
@@ -640,7 +639,7 @@ def allowed_file(filename):
 
 
 @app.route('/api/v3/packages')
-@requires_auth
+@requires_auth()
 def localrepo_packages():
     try:
         start_time = time.time()
@@ -656,7 +655,7 @@ def localrepo_packages():
         return make_response_from_exception(e)
 
 @app.route('/api/v3/known_packages')
-@requires_auth
+@requires_auth()
 def known_packages():
     try:
         start_time = time.time()
@@ -705,7 +704,7 @@ def check_valid_signer(package,cabundle):
     return signer_certs
 
 @app.route('/api/v3/upload_packages',methods=['HEAD','POST'])
-@requires_auth
+@requires_auth()
 def upload_packages():
     """Handle the streamed upload of multiple packages
 
@@ -867,7 +866,7 @@ def upload_packages():
 
 @app.route('/upload_host',methods=['HEAD','POST'])
 @app.route('/api/v3/upload_hosts',methods=['HEAD','POST'])
-@requires_auth
+@requires_auth()
 def upload_host():
     """Handle the upload of multiple host packages
 
@@ -958,7 +957,7 @@ def upload_host():
 
 
 @app.route('/upload_waptsetup',methods=['HEAD','POST'])
-@requires_auth
+@requires_auth()
 def upload_waptsetup():
     """Handle the upload of customized waptagent.exe into wapt repository
     """
@@ -997,7 +996,7 @@ def upload_waptsetup():
 
 
 @app.route('/api/v3/change_password',methods=['HEAD','POST'])
-@requires_auth
+@requires_auth()
 def change_password():
     """Handle change of admin master password"""
     if request.method == 'POST':
@@ -1025,7 +1024,7 @@ def change_password():
 
 
 
-@app.route('/api/v3/login',methods=['HEAD','POST'])
+@app.route('/api/v3/login',methods=['HEAD','POST','GET'])
 def login():
     error = ''
     result = None
@@ -1035,47 +1034,39 @@ def login():
         post_data = request.get_json()
         if post_data is not None:
             # json auth from waptconsole
-            user = post_data['user']
-            password = post_data['password']
+            user = post_data.get('user')
+            password = post_data.get('password')
         else:
             # html form auth
-            user = request.args['user']
-            password = request.args['password']
+            user = request.args.get('user')
+            password = request.args.get('password')
 
-        # TODO : sanity check on username
-        if not re.match(r'[a-z0-9]+[a-z0-9_@\.-]+[a-z0-9_@\.-]+$', user, re.IGNORECASE):
-            msg = 'login must be alphanumeric with a dash'
-            raise EWaptAuthenticationFailure(msg)
+        auth_result = check_auth(username = user, password = password, session=session, request = request)
+        if auth_result:
+            try:
+                hosts_count = Hosts.select(fn.COUNT(Hosts.uuid)).tuples().first()[0] # pylint: disable=no-value-for-parameter
+            except:
+                hosts_count = None
 
-        if user is not None and password is not None:
-            auth_result = check_auth(username = user, password = password, session=session, request = request)
-            if auth_result:
-                try:
-                    hosts_count = Hosts.select(fn.COUNT(Hosts.uuid)).tuples().first()[0] # pylint: disable=no-value-for-parameter
-                except:
-                    hosts_count = None
+            token_gen = get_secured_token_generator()
+            auth_result.update({'server_uuid':get_server_uuid()})
 
-                token_gen = get_secured_token_generator()
-                auth_result.update({'server_uuid':get_server_uuid()})
-
-                result = dict(
-                    server_uuid=get_server_uuid(),
-                    version=__version__,
-                    hosts_count = hosts_count,
-                    server_domain = get_dns_domain(),
-                    edition = get_wapt_edition(),
-                    auth_result = auth_result,
-                    token =  token_gen.dumps(auth_result),
-                    client_headers = request.headers
-                )
-                session.update(**auth_result)
-                msg = 'Authentication OK'
-                spenttime = time.time() - starttime
-                return make_response(result=result, msg=msg, status=200,request_time=spenttime)
-            else:
-                raise EWaptAuthenticationFailure('Authentication failed.')
+            result = dict(
+                auth_result = auth_result,
+                token = token_gen.dumps(auth_result),
+                server_uuid = get_server_uuid(),
+                version=__version__,
+                hosts_count = hosts_count,
+                server_domain = get_dns_domain(),
+                edition = get_wapt_edition(),
+                client_headers = request.headers
+            )
+            session.update(**auth_result)
+            msg = 'Authentication OK'
+            spenttime = time.time() - starttime
+            return make_response(result=result, msg=msg, status=200,request_time=spenttime)
         else:
-            raise EWaptMissingParameter('Missing parameter for authentication')
+            raise EWaptAuthenticationFailure('Authentication failed.')
     except Exception as e:
         if 'auth_token' in session:
             del session['auth_token']
@@ -1083,9 +1074,14 @@ def login():
         logger.critical('login failed %s' % (repr(e)))
         return make_response_from_exception(e)
 
+@app.route('/api/v3/logout',methods=['HEAD','POST','GET'])
+def logout():
+    session.clear()
+    return make_response(result=None, msg='logout', status=200)
+
 
 @app.route('/api/v3/packages_delete',methods=['HEAD','POST'])
-@requires_auth
+@requires_auth()
 def packages_delete():
     """Removes a list of packages by filenames
     After removal, the repository package index "Packages" is updated.
@@ -1247,7 +1243,7 @@ def ping():
     )
 
 @app.route('/api/v3/reset_hosts_sid', methods=['GET','HEAD','POST'])
-@requires_auth
+@requires_auth()
 def reset_hosts_sid():
     """Launch a separate thread to check all reachable IP and update database with results.
     """
@@ -1293,7 +1289,7 @@ def reset_hosts_sid():
     return make_response(msg=message)
 
 @app.route('/api/v3/trigger_wakeonlan', methods=['HEAD','POST'])
-@requires_auth
+@requires_auth()
 def trigger_wakeonlan():
     try:
         uuids = request.get_json()['uuids']
@@ -1333,7 +1329,7 @@ def trigger_wakeonlan():
 
 
 @app.route('/api/v2/waptagent_version')
-@requires_auth
+@requires_auth()
 def waptagent_version():
     try:
         start = time.time()
@@ -1382,7 +1378,7 @@ def waptagent_version():
 
 
 @app.route('/api/v3/trigger_cancel_task')
-@requires_auth
+@requires_auth()
 def host_cancel_task():
     if not socketio:
         raise Exception('socketio not available')
@@ -1390,7 +1386,7 @@ def host_cancel_task():
 
 
 @app.route('/api/v1/groups')
-@requires_auth
+@requires_auth()
 def get_groups():
     """List of packages having section == group
     """
@@ -1410,7 +1406,7 @@ def get_groups():
 
 
 @app.route('/api/v3/get_ad_ou')
-@requires_auth
+@requires_auth()
 def get_ad_ou():
     """List all the OU registered by hosts
     """
@@ -1434,7 +1430,7 @@ def get_ad_ou():
         return make_response_from_exception(e)
 
 @app.route('/api/v3/get_ad_sites')
-@requires_auth
+@requires_auth()
 def get_ad_sites():
     """List all the AD Sites registered by hosts
     """
@@ -1506,7 +1502,7 @@ def build_hosts_filter(model, filter_expr):
 
 
 @app.route('/api/v3/hosts_delete',methods=['HEAD','POST'])
-@requires_auth
+@requires_auth()
 def hosts_delete():
     """Remove one or several hosts from Server DB and optionnally the host packages
 
@@ -1606,7 +1602,7 @@ def build_fields_list(model, columns):
 
 
 @app.route('/api/v1/hosts', methods=['HEAD','GET'])
-@requires_auth
+@requires_auth()
 @gzipped
 def get_hosts():
     """Get registration data of one or several hosts
@@ -1800,7 +1796,7 @@ def get_hosts():
 
 
 @app.route('/api/v1/host_data')
-@requires_auth
+@requires_auth()
 def host_data():
     """
         Get additional data for a host
@@ -1899,7 +1895,7 @@ def host_data():
 
 
 @app.route('/api/v3/hosts_for_package')
-@requires_auth
+@requires_auth()
 def hosts_for_package():
     """Returns list of hosts requiring the supplied windows update
 
@@ -1943,7 +1939,7 @@ def packages_install_stats():
 
 
 @app.route('/api/v1/usage_statistics')
-@requires_auth
+@requires_auth()
 def usage_statistics():
     """returns some anonymous usage statistics to give an idea of depth of use"""
     try:
@@ -1988,7 +1984,7 @@ def usage_statistics():
 
 
 @app.route('/api/v3/host_tasks_status')
-@requires_auth
+@requires_auth()
 def host_tasks_status():
     """Proxy the get tasks status action to the client"""
     try:
@@ -2042,7 +2038,7 @@ def host_tasks_status():
 
 
 @app.route('/api/v3/trigger_host_action', methods=['HEAD','POST'])
-@requires_auth
+@requires_auth()
 def trigger_host_action():
     """Proxy some single shot actions to the client using websockets"""
     try:
