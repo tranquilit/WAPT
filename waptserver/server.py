@@ -574,23 +574,27 @@ def get_websocket_auth_token():
         if data.get('purpose') != 'websocket':
             raise EWaptAuthenticationFailure('Bad purpose')
 
-        # get request signature
-        signature_b64 = request.headers.get('X-Signature', None)
-        if signature_b64:
-            signature = signature_b64.decode('base64')
-        else:
-            raise EWaptAuthenticationFailure('No signature in request')
-
         existing_host = Hosts.select(Hosts.uuid, Hosts.host_certificate, Hosts.computer_fqdn).where(Hosts.uuid == uuid).first()
         if not existing_host or not existing_host.host_certificate:
             raise EWaptAuthenticationFailure('Unknown host UUID %s. Please register first.' % (uuid, ))
 
-        auth_result = check_auth(request=request,session=session)
-        host_cert = SSLCertificate(crt_string=existing_host.host_certificate)
-        try:
-            host_cert_cn = host_cert.verify_content(sha256_for_data(raw_data), signature)
-        except Exception as e:
-            raise EWaptAuthenticationFailure(u'Request signature verification failed: %s' % e)
+        auth_result = check_auth(request=request,session=session,methods=['ssl','token'])
+        if not auth_result:
+        # get request signature
+            signature_b64 = request.headers.get('X-Signature', None)
+            if signature_b64:
+                signature = signature_b64.decode('base64')
+            else:
+                raise EWaptAuthenticationFailure('No signature in request')
+            host_cert = SSLCertificate(crt_string=existing_host.host_certificate)
+            try:
+                host_cert_cn = host_cert.verify_content(sha256_for_data(raw_data), signature)
+            except Exception as e:
+                raise EWaptAuthenticationFailure(u'Request signature verification failed: %s' % e)
+        else:
+            user = auth_result['user']
+            if user != uuid:
+                raise EWaptAuthenticationFailure(u'Authentication does not match required uuid %s' % uuid)
 
         token_gen = get_secured_token_generator()
         result = {
@@ -1041,6 +1045,7 @@ def login():
             user = request.args.get('user')
             password = request.args.get('password')
 
+        session.clear()
         auth_result = check_auth(username = user, password = password, session=session, request = request)
         if auth_result:
             try:
@@ -1066,7 +1071,7 @@ def login():
             spenttime = time.time() - starttime
             return make_response(result=result, msg=msg, status=200,request_time=spenttime)
         else:
-            raise EWaptAuthenticationFailure('Authentication failed.')
+            return authenticate()
     except Exception as e:
         if 'auth_token' in session:
             del session['auth_token']
@@ -1403,6 +1408,12 @@ def get_groups():
         return make_response_from_exception(e)
 
     return make_response(result=groups, msg=msg, status=200)
+
+
+@app.route('/testauth')
+@requires_auth(methods=['kerb','admin','passwd','ldap','session','ssl','token'])
+def test():
+    return make_response(result=session, msg='testauth', status=200)
 
 
 @app.route('/api/v3/get_ad_ou')

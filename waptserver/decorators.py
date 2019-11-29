@@ -43,11 +43,11 @@ _ = gettext
 
 logger = logging.getLogger()
 
-def authenticate():
+def authenticate(method='Basic'):
     """Sends a 401 response that enables basic auth"""
     return Response(
         _('You have to login with proper credentials'), 401,
-        {'WWW-Authenticate': 'Basic realm="Login Required"'})
+        {'WWW-Authenticate': '%s realm="Login Required"' % method})
 
 def requires_auth(methods=['session','token','ssl','admin','passwd','ldap']):
     """Flask route decorator which requires Basic Auth http header

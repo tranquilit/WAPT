@@ -72,6 +72,10 @@ def get_token_secret_key(self):
         return open(kfn,'r').read()
 """
 
+
+def valid_username(username):
+    return username is not None and username != '' and len(username)<255
+
 def check_auth( username=None, password = None, request = None,
                 session=None, methods=['admin','passwd','ldap','session','ssl','token']):
     """This function is called to check if a username /
@@ -84,7 +88,7 @@ def check_auth( username=None, password = None, request = None,
         session (Flask.Session) where to lookup session user
 
     Returns:
-        list of (str,str): list of (Auth method,username) or None if bad auth
+        dict (auth_method = auth_method,user=auth_user,auth_date=auth_date)
 
     """
     if not username and not password and request.authorization:
@@ -104,7 +108,7 @@ def check_auth( username=None, password = None, request = None,
                 auth_method = method
                 logger.debug(u'User %s authenticated using session cookie' % (username,))
 
-        elif method == 'password' and username != app.conf['wapt_user']:
+        elif method == 'passwd' and valid_username(username) and username != app.conf['wapt_user'] and password is not None:
                 # local htpasswd user/passwd file for add_host registration action
                 if app.conf.get('htpasswd_path'):
                     htpasswd_users = HtpasswdFile(app.conf.get('htpasswd_path'))
@@ -117,7 +121,7 @@ def check_auth( username=None, password = None, request = None,
                         logger.debug(u'user %s htpasswd %s verification failed' % (username,htpasswd_users))
 
 
-        elif method == 'admin' and app.conf['wapt_user'] == username:
+        elif method == 'admin' and valid_username(username) and app.conf['wapt_user'] == username and password is not None:
                 pbkdf2_sha256_ok = False
                 pass_sha512_crypt_ok = False
                 pass_bcrypt_crypt_ok = False
@@ -151,8 +155,16 @@ def check_auth( username=None, password = None, request = None,
                 # check if there is a valid token in the password
                 try:
                     token_gen = get_secured_token_generator(token_secret_key)
-                    token_data = token_gen.loads(password)
-                    uuid = token_data.get('uuid', None)
+                    # check if there is a Bearer, else use Basic / password
+                    authorization = request.headers.get('Authorization')
+                    if authorization and authorization.startswith('Bearer '):
+                        token_data = token_gen.loads(authorization.split(' ',1)[1])
+                    elif password is not None:
+                        token_data = token_gen.loads(password)
+                    else:
+                        raise EWaptAuthenticationFailure('No token')
+
+                    uuid = token_data.get('uuid', token_data.get('user',None))
                     if not uuid:
                         raise EWaptAuthenticationFailure('Bad token UUID')
                     if token_data['server_uuid'] != get_server_uuid():
@@ -177,7 +189,7 @@ def check_auth( username=None, password = None, request = None,
                 auth_date = datetime.datetime.utcnow().isoformat()
                 logger.debug(u'User %s authenticated using kerberos' % (authenticated_user,))
 
-        elif method == 'ldap':
+        elif method == 'ldap' and valid_username(username) and password is not None:
             if auth_module_ad is not None and (app.conf['wapt_user'] != username and
                     auth_module_ad.check_credentials_ad(app.conf, username, password)):
                 auth_method = method
@@ -190,7 +202,11 @@ def check_auth( username=None, password = None, request = None,
             dn = request.headers.get('X-Ssl-Client-Dn', None)
             if dn:
                 auth_method = method
-                auth_user = dn
+                # strip CN= if no other suffix.
+                if dn.upper().startswith('CN='):
+                    auth_user = dn.split('=',1)[1]
+                else:
+                    auth_user = dn
                 auth_date = datetime.datetime.utcnow().isoformat()
                 logger.debug(u'User %s authenticated using SSL client certificate' % (dn,))
 
