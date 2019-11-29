@@ -39,6 +39,7 @@ interface
       end;
 
   Function GetWaptLocalURL:String;
+  function GetHostFromURL(url:String):String;
 
   function AppLocalDir: String; // returns Users/<user>/local/appdata/<application_name>
   function AppIniFilename(AApplicationName:String=''): String; // returns ConfigFilename parameter or Users/<user>/local/appdata/<application_name>/<application_name>.ini
@@ -68,9 +69,31 @@ interface
   //call url action on waptserver. action can contains formatting chars like %s which will be replaced by args with the Format function.
   function WAPTServerJsonGet(action: String;args:Array of const;method:AnsiString='GET';ConnectTimeout:integer=4000;SendTimeout:integer=60000;ReceiveTimeout:integer=60000): ISuperObject; //use global credentials and proxy settings
   function WAPTServerJsonPost(action: String;args:Array of const;data: ISuperObject;method:AnsiString='POST';ConnectTimeout:integer=4000;SendTimeout:integer=60000;ReceiveTimeout:integer=60000): ISuperObject; //use global credentials and proxy settings
+  function WAPTServerJsonDelete(action: String; args: array of const): ISuperObject;
 
+  // From https://stackoverflow.com/questions/30441377/how-to-verify-server-hostname
+  type
+    THostnameValidationResult = (hvrMatchNotFound, hvrNoSANPresent, hvrMatchFound);
 
+  var
+    X509_get_ext_d2i: Pointer = nil;
+
+  type
+    TSSLVerifyCert = class(TObject)
+      Hostname:AnsiString;
+    protected
+      function Hostmatch(Pattern: String): Boolean;
+      function ValidateHostname(Certificate: TIdX509): THostnameValidationResult;
+      function MatchesSAN(Certificate: TIdX509): THostnameValidationResult;
+      function MatchesCN(Certificate: TIdX509): THostnameValidationResult;
+    public
+      constructor Create(AHostname:AnsiString);
+      function VerifyPeerCertificate(Certificate: TIdX509; AOk: Boolean; ADepth, AError: Integer): Boolean;
+    end;
+
+  // for synapse httpsend auth callback
   type THTTPSendAuthorization=procedure(Sender: THttpSend; var ShouldRetry: Boolean;RetryCount:integer) of object;
+
   function WAPTLocalJsonGet(action:String;user:AnsiString='';password:AnsiString='';timeout:integer=-1;
               OnAuthorization:THTTPSendAuthorization=Nil;RetryCount:Integer=0):ISuperObject;
 
@@ -218,6 +241,86 @@ type
   end;
 
 
+  { TWaptRepo }
+
+  { TWaptServer }
+
+  TWaptServer = class(TPersistent)
+  private
+    FClientCertificatePath: String;
+    FClientPrivateKeyPath: String;
+    FDNSDomain: String;
+    FHttpProxy: String;
+    FIsConfigUpdated: Boolean;
+    FOnGetPrivateKeyPassword: TPasswordEvent;
+    FOnGetUserPassword: TLoginCallback;
+    FUser: String;
+    FUserToken: String;
+    FWaptServerURL: String;
+    FServerCABundle: String;
+    FTimeOut: Double;
+    FCookieManager: TIdCookieManager;
+    FSSLHandler: TIdSSLIOHandlerSocketOpenSSL;
+    FSSLCheckCert: TSSLVerifyCert;
+
+    function GetCookieManager: TIdCookieManager;
+    function GetSSLCheckCert: TSSLVerifyCert;
+    function GetSSLHandler: TIdSSLIOHandlerSocketOpenSSL;
+    function GetUser: String;
+    function GetUserAgent: String;
+    function GetUserToken: String;
+    function GetWaptServerURL: String;
+    procedure SetClientCertificatePath(AValue: String);
+    procedure SetClientPrivateKeyPath(AValue: String);
+    procedure SetDNSDomain(AValue: String);
+    procedure SetHttpProxy(AValue: String);
+    procedure SetIsConfigUpdated(AValue: Boolean);
+    procedure SetOnGetPrivateKeyPassword(AValue: TPasswordEvent);
+    procedure SetOnGetUserPassword(AValue: TLoginCallback);
+    procedure SetServerCABundle(AValue: String);
+    procedure SetTimeOut(AValue: Double);
+    procedure SetUser(AValue: String);
+    procedure SetWaptServerURL(AValue: String);
+  public
+    constructor Create(AWaptServerURL: String);
+    destructor Destroy; Virtual;
+    procedure LoadFromInifile(IniFilename:String;Section:String;Reset:Boolean=False);
+    procedure SaveToInifile(IniFilename:String;Section:String);
+
+    function HttpGetString(action: String; args: array of const;
+      Method: AnsiString = 'GET';AcceptType:String='application/json'): String;
+
+    //;ConnectTimeout:integer=4000;SendTimeout:integer=60000;ReceiveTimeout:integer=60000
+    //call url action on waptserver. action can contains formatting chars like %s which will be replaced by args with the Format function.
+    function JsonGet(action: String;args:Array of const;method:AnsiString='GET'): ISuperObject; //use global credentials and proxy settings
+    function JsonPost(action: String;args:Array of const;data: ISuperObject;method:AnsiString='POST'): ISuperObject; //use global credentials and proxy settings
+    function JsonDelete(action: String; args: array of const): ISuperObject;
+
+    function SOApplyUpdates(const datasets: array of ISuperObject):Boolean;
+    function SOIsUpdated(const datasets: Array of ISuperObject):Boolean;
+
+  published
+    property IsConfigUpdated:Boolean read FIsConfigUpdated write SetIsConfigUpdated;
+    property SSLHandler: TIdSSLIOHandlerSocketOpenSSL read GetSSLHandler;
+    property SSLCheckCert: TSSLVerifyCert read GetSSLCheckCert;
+
+    property UserAgent:String read GetUserAgent;
+    property CookieManager:TIdCookieManager read GetCookieManager;
+
+    property WaptServerURL:String read GetWaptServerURL write SetWaptServerURL;
+    property DNSDomain:String read FDNSDomain write SetDNSDomain;
+    property ServerCABundle:String read FServerCABundle write SetServerCABundle;
+    property ClientCertificatePath:String read FClientCertificatePath write SetClientCertificatePath;
+    property ClientPrivateKeyPath:String read FClientPrivateKeyPath write SetClientPrivateKeyPath;
+    property HttpProxy:String read FHttpProxy write SetHttpProxy;
+    property TimeOut:Double read FTimeOut write SetTimeOut;
+    property User: String read GetUser write SetUser;
+    property UserToken:String read GetUserToken write FUserToken;
+    property OnGetUserPassword:TLoginCallback read FOnGetUserPassword write SetOnGetUserPassword;
+    property OnGetPrivateKeyPassword:TPasswordEvent read FOnGetPrivateKeyPassword write SetOnGetPrivateKeyPassword;
+  end;
+
+
 const
   waptservice_port:integer = 8088;
   waptserver_port:integer = 80;
@@ -283,6 +386,10 @@ const
   CacheWaptServerUrl: String = 'None';
   wapt_config_filename : String = '';
   AppVersion : String = '0.0.0';
+
+type
+  TX509_get_ext_d2i = function(a: PX509; nid: TIdC_INT; var pcrit: PIdC_INT; var pidx: PIdC_INT): PSTACK_OF_GENERAL_NAME cdecl;
+
 
 function DefaultUserAgent:String;
 begin
@@ -390,9 +497,378 @@ type
     procedure OnWork(ASender: TObject; AWorkMode: TWorkMode; AWorkCount: Int64);
   end;
 
-  { TWaptRepo }
+{ TWaptServer }
 
-  procedure TWaptRepo.SetHttpProxy(AValue: String);
+procedure TWaptServer.SetDNSDomain(AValue: String);
+begin
+  if FDNSDomain=AValue then Exit;
+  FDNSDomain := AValue;
+  FIsConfigUpdated := True;
+end;
+
+function TWaptServer.GetWaptServerURL: String;
+begin
+  Result := FWaptServerURL;
+end;
+
+function TWaptServer.GetSSLCheckCert: TSSLVerifyCert;
+begin
+  if (FSSLCheckCert=Nil) or (FSSLCheckCert.Hostname <> GetHostFromURL(WaptServerURL)) then
+  begin
+    If Assigned(FSSLCheckCert) then
+      FreeAndNil(FSSLCheckCert);
+    FSSLCheckCert := TSSLVerifyCert.Create(GetHostFromURL(WaptServerURL));
+  end;
+  Result := FSSLCheckCert;
+end;
+
+function TWaptServer.GetSSLHandler: TIdSSLIOHandlerSocketOpenSSL;
+begin
+  If (FSSLHandler=Nil) or (FSSLHandler.SSLOptions.RootCertFile <> ServerCABundle) Then
+  begin
+    If Assigned(FSSLHandler) then
+      FreeAndNil(FSSLHandler);
+    FSSLHandler := TIdSSLIOHandlerSocketOpenSSL.Create;
+    if (ServerCABundle<>'') and (ServerCABundle <>'0') then
+    begin
+      SSLHandler.SSLOptions.VerifyDepth := 20;
+      SSLHandler.SSLOptions.VerifyMode := [sslvrfPeer];
+      SSLHandler.OnVerifyPeer := @SSLCheckCert.VerifyPeerCertificate;
+      //Self signed
+      if ServerCABundle <> '1' then
+        SSLHandler.SSLOptions.RootCertFile := ServerCABundle
+      else
+      begin
+        if DirectoryExists(CARoot) then
+          SSLHandler.SSLOptions.VerifyDirs := CARoot
+        else
+          SSLHandler.SSLOptions.RootCertFile := CARoot;
+      end
+    end;
+  end;
+  Result := FSSLHandler;
+end;
+
+function TWaptServer.GetCookieManager: TIdCookieManager;
+begin
+  if FCookieManager<>Nil then
+    FCookieManager := TIdCookieManager.Create;
+  Result := FCookieManager;
+end;
+
+function TWaptServer.GetUser: String;
+var
+  password:String;
+begin
+  if (FUser='') then
+  begin
+    //if Assigned(OnGetUserPassword) then
+    //  OnGetUserPassword(WaptServerURL,FUser,Password);
+  end;
+  Result := FUser;
+end;
+
+function TWaptServer.GetUserAgent: String;
+begin
+  Result := ApplicationName+'/'+AppVersion;
+end;
+
+function TWaptServer.GetUserToken: String;
+var
+  SORes,UserPassword:ISuperObject;
+  aUser,aPassword: String;
+begin
+  if (FUserToken='') then
+  begin
+    // Auth using certificates or basic auth
+    if OnGetUserPassword(WaptServerURL+'/api/v3/login',aUser,aPassword) then
+    begin
+      UserPassword := SO();
+      UserPassword.S['user'] := aUser;
+      UserPassword.S['password'] := aPassword;
+
+      sores := JsonPost('/api/v3/login', [],UserPassword);
+      if sores.B['success'] then
+      begin
+        FUserToken := sores.S['token'];
+        WaptServerUUID := UTF8Encode(sores['result'].S['server_uuid']);
+        WaptServerEdition := UTF8Encode(sores['result'].S['edition']);
+      end
+      else
+        Raise Exception.CreateFmt('You have to login with proper Wapt user/password. Error: %s',[sores.S['message']]);
+    end
+    else
+      Raise Exception.Create('You have to login with proper Wapt user/password.');
+  end;
+  Result := FUserToken;
+end;
+
+procedure TWaptServer.SetClientCertificatePath(AValue: String);
+begin
+  if FClientCertificatePath=AValue then Exit;
+  FClientCertificatePath:=AValue;
+  FIsConfigUpdated := True;
+  if (FClientCertificatePath<>'') then
+    SSLHandler.SSLOptions.CertFile := FClientCertificatePath;
+end;
+
+procedure TWaptServer.SetClientPrivateKeyPath(AValue: String);
+begin
+  if FClientPrivateKeyPath=AValue then Exit;
+  FClientPrivateKeyPath:=AValue;
+  FIsConfigUpdated := True;
+  if (FClientPrivateKeyPath<>'') then
+  begin
+    SSLHandler.SSLOptions.KeyFile:=FClientPrivateKeyPath;
+    SSLHandler.OnGetPassword:=OnGetPrivateKeyPassword;
+  end;
+end;
+
+procedure TWaptServer.SetHttpProxy(AValue: String);
+begin
+  if FHttpProxy=AValue then Exit;
+  FHttpProxy:=AValue;
+  FIsConfigUpdated:=True;
+end;
+
+procedure TWaptServer.SetIsConfigUpdated(AValue: Boolean);
+begin
+  if FIsConfigUpdated=AValue then Exit;
+  FIsConfigUpdated:=AValue;
+end;
+
+procedure TWaptServer.SetOnGetPrivateKeyPassword(AValue: TPasswordEvent);
+begin
+  if FOnGetPrivateKeyPassword=AValue then Exit;
+  FOnGetPrivateKeyPassword:=AValue;
+end;
+
+procedure TWaptServer.SetOnGetUserPassword(AValue: TLoginCallback);
+begin
+  if FOnGetUserPassword=AValue then Exit;
+  FOnGetUserPassword:=AValue;
+end;
+
+procedure TWaptServer.SetWaptServerURL(AValue: String);
+begin
+  if FWaptServerURL=AValue then Exit;
+  If Assigned(FSSLCheckCert) then
+    FreeAndNil(FSSLCheckCert);
+  FWaptServerURL:=AValue;
+  FIsConfigUpdated := True;
+end;
+
+procedure TWaptServer.SetServerCABundle(AValue: String);
+begin
+  if FServerCABundle=AValue then Exit;
+  FServerCABundle:=AValue;
+  FIsConfigUpdated := True;
+end;
+
+procedure TWaptServer.SetTimeOut(AValue: Double);
+begin
+  if FTimeOut=AValue then Exit;
+  FTimeOut:=AValue;
+  FIsConfigUpdated := True;
+end;
+
+procedure TWaptServer.SetUser(AValue: String);
+begin
+  if FUser=AValue then Exit;
+  FUser:=AValue;
+end;
+
+
+constructor TWaptServer.Create(AWaptServerURL: String);
+begin
+  inherited Create;
+  WaptServerURL:=AWaptServerURL;
+  TimeOut := 5;
+  IsConfigUpdated:=False;
+end;
+
+destructor TWaptServer.Destroy;
+begin
+  if Assigned(FSSLHandler) then
+    FreeAndNil(FSSLHandler);
+  if Assigned(FSSLCheckCert) then
+    FreeAndNil(FSSLCheckCert);
+  if Assigned(FCookieManager) then
+    FreeAndNil(FCookieManager);
+  inherited;
+end;
+
+procedure TWaptServer.LoadFromInifile(IniFilename: String; Section: String;
+  Reset: Boolean);
+begin
+  if Section ='' then
+    Section := 'global';
+  if Reset then
+  begin
+    WaptServerURL:='';
+    DNSDomain := '';
+    HttpProxy:='';
+    ServerCABundle:='';
+    TimeOut:=5.0;
+  end;
+  if section <> '' then
+    with TIniFile.Create(IniFilename) do
+    try
+      begin
+        WaptServerURL := ReadString(Section,'wapt_server',WaptServerURL);
+        DNSDomain := ReadString(Section,'dnsdomain',ReadString('global','dnsdomain',DNSDomain));
+        HttpProxy:= ReadString(Section,'http_proxy',ReadString('global','http_proxy',HttpProxy));
+        ServerCABundle:=ReadString(Section,'verify_cert',ReadString('global','verify_cert',ServerCABundle));
+        TimeOut:=ReadFloat(Section,'timeout',ReadFloat('global','timeout',TimeOut));
+        ClientCertificatePath :=ReadString(Section,'client_certificate',ReadString('global','client_certificate',ClientCertificatePath));
+        ClientPrivateKeyPath :=ReadString(Section,'client_private_key',ReadString('global','client_private_key',ClientPrivateKeyPath));
+        FIsConfigUpdated:=False;
+      end;
+    finally
+      Free;
+    end;
+end;
+
+procedure TWaptServer.SaveToInifile(IniFilename: String; Section: String);
+begin
+  if Section ='' then
+    Section := 'global';
+
+  if section = '' then
+    Raise Exception.Create('Unable to save Repo settings, Section parameter is empty');
+
+  with TIniFile.Create(IniFilename) do
+  try
+    WriteString(Section,'wapt_server',WaptServerURL);
+    WriteString(Section,'dnsdomain',DNSDomain);
+    WriteString(Section,'http_proxy',HttpProxy);
+    WriteString(Section,'verify_cert',ServerCABundle);
+    WriteString(Section,'client_certificate',ClientCertificatePath);
+    WriteString(Section,'client_private_key',ClientPrivateKeyPath);
+    WriteFloat(Section,'timeout',TimeOut);
+    FIsConfigUpdated:=False;
+  finally
+    Free;
+  end;
+end;
+
+function TWaptServer.HttpGetString(action: String; args: array of const;
+    Method:AnsiString='GET';AcceptType:String='application/json'): String;
+var
+  http:TIdHTTP;
+begin
+  if WaptServerURL = '' then
+    raise Exception.CreateFmt(rsUndefWaptSrvInIni, [WaptIniFilename]);
+  if (StrLeft(action,1)<>'/') and (StrRight(GetWaptServerURL,1)<>'/') then
+    action := '/'+action;
+  if length(args)>0 then
+    action := format(action,args);
+
+  http := TIdHTTP.Create;
+  try
+    http.Compressor :=  TIdCompressorZLib.Create(Nil);
+    http.CookieManager := CookieManager;
+    http.HandleRedirects:=True;
+    http.Request.AcceptLanguage := Language;
+
+    if UserAgent='' then
+      http.Request.UserAgent := DefaultUserAgent
+    else
+      http.Request.UserAgent := userAgent;
+
+    http.IOHandler := SSLHandler;
+    http.Request.Accept := AcceptType;
+
+    try
+      http.ConnectTimeout := round(Timeout*1000);
+
+      if (User <>'') and (FUserToken<>'') then
+      begin
+        http.Request.BasicAuthentication:=True;
+        http.Request.Username:=User;
+        http.Request.Password:=UserToken;
+      end;
+
+      if HttpProxy<>'' then
+        IdConfigureProxy(http,HttpProxy);
+
+      if method = 'GET' then
+        Result := http.Get(WaptServerURL+action)
+      else if method = 'DELETE' then
+        Result := http.Delete(WaptServerURL+action)
+      else raise Exception.CreateFmt('Unsupported method %s',[method]);
+
+    except
+      on E:EIdReadTimeout do Result := '';
+    end;
+  finally
+    if Assigned(http.Compressor) then
+    begin
+      http.Compressor.Free;
+      http.Compressor := Nil;
+    end;
+    http.Free;
+  end;
+end;
+
+function TWaptServer.JsonGet(action: String; args: array of const;
+  method: AnsiString): ISuperObject;
+var
+  StrResult: String;
+begin
+  StrResult := HttpGetString(action,args,method);
+  Result := SO(StrResult);
+end;
+
+function TWaptServer.JsonPost(action: String; args: array of const;
+  data: ISuperObject; method: AnsiString): ISuperObject;
+begin
+
+end;
+
+function TWaptServer.JsonDelete(action: String;
+  args: array of const): ISuperObject;
+var
+  StrResult: String;
+begin
+  StrResult := HttpGetString(action,args,'DELETE');
+  Result := SO(StrResult);
+end;
+
+function TWaptServer.SOApplyUpdates(const datasets: array of ISuperObject
+  ): Boolean;
+var
+  ADataset: ISuperObject;
+begin
+  for ADataset in datasets do
+    if SOIsUpdated([ADataset]) then
+    begin
+
+    end;
+  result := not SOIsUpdated(datasets);
+end;
+
+function TWaptServer.SOIsUpdated(const datasets: array of ISuperObject): Boolean;
+var
+  ADataset,Rec: ISuperObject;
+begin
+  Result := False;
+  for ADataset in datasets do
+  begin
+    if ADataset <> Nil then
+      for Rec in ADataset do
+        if Rec.B['_edited'] then
+        begin
+          Result := True;
+          Exit;
+        end;
+  end;
+end;
+
+
+{ TWaptRepo }
+
+procedure TWaptRepo.SetHttpProxy(AValue: String);
 begin
   if FHttpProxy=AValue then Exit;
   FHttpProxy:=AValue;
@@ -443,14 +919,14 @@ begin
   FIsUpdated:=True;
 end;
 
-  procedure TWaptRepo.SetRepoURL(AValue: String);
+procedure TWaptRepo.SetRepoURL(AValue: String);
 begin
   if FRepoURL=AValue then Exit;
   FRepoURL:=AValue;
   FIsUpdated:=True;
 end;
 
-  procedure TWaptRepo.SetServerCABundle(AValue: String);
+procedure TWaptRepo.SetServerCABundle(AValue: String);
 begin
   if FServerCABundle=AValue then Exit;
   FServerCABundle:=AValue;
@@ -542,13 +1018,13 @@ end;
      Result:=IdWget(fileURL,DestFileName,CBReceiver,progressCallback,HttpProxy,'',ServerCABundle,Nil,ClientCertificatePath,ClientPrivateKeyPath);
   end;
 
-  { HTTPException }
+{ HTTPException }
 
-  constructor EHTTPException.Create(const msg: string; AHTTPStatus: Integer);
-  begin
-    inherited Create(msg);
-    HTTPStatus:=AHTTPStatus;
-  end;
+constructor EHTTPException.Create(const msg: string; AHTTPStatus: Integer);
+begin
+  inherited Create(msg);
+  HTTPStatus:=AHTTPStatus;
+end;
 
 procedure  TIdProgressProxy.OnWorkBegin(ASender: TObject; AWorkMode: TWorkMode; AWorkCountMax: Int64);
 begin
@@ -585,13 +1061,6 @@ begin
   end;
 end;
 
-// From https://stackoverflow.com/questions/30441377/how-to-verify-server-hostname
-type
-  THostnameValidationResult = (hvrMatchNotFound, hvrNoSANPresent, hvrMatchFound);
-  TX509_get_ext_d2i = function(a: PX509; nid: TIdC_INT; var pcrit: PIdC_INT; var pidx: PIdC_INT): PSTACK_OF_GENERAL_NAME cdecl;
-var
-  X509_get_ext_d2i: Pointer = nil;
-
 
 function ExtendIndyCryptoLibrary(): Boolean;
 var
@@ -612,18 +1081,9 @@ begin
   Result := Assigned(X509_get_ext_d2i);
 end;
 
-type
-  TSSLVerifyCert = class(TObject)
-    Hostname:AnsiString;
-  protected
-    function Hostmatch(Pattern: String): Boolean;
-    function ValidateHostname(Certificate: TIdX509): THostnameValidationResult;
-    function MatchesSAN(Certificate: TIdX509): THostnameValidationResult;
-    function MatchesCN(Certificate: TIdX509): THostnameValidationResult;
-  public
-    constructor Create(AHostname:AnsiString);
-    function VerifyPeerCertificate(Certificate: TIdX509; AOk: Boolean; ADepth, AError: Integer): Boolean;
-  end;
+
+/// TSSLVerifycert
+
 
 constructor TSSLVerifyCert.Create(AHostname:AnsiString);
 begin

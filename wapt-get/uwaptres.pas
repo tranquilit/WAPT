@@ -62,6 +62,9 @@ resourcestring
   rsWssRunning =  'WAPTService is running';
   rsWssStopping = 'WAPTService is stopping';
 
+  rsQueryApplyUpdates = 'Some of your changes are not yet saved. Do you want to save your changes ?';
+
+
 
 implementation
 
