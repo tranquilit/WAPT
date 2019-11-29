@@ -186,7 +186,7 @@ def check_auth( username=None, password = None, request = None,
                 logger.debug(u'User %s authenticated using LDAP' % (username,))
 
         # nginx ssl auth.
-        elif request and request.headers.get('X-Ssl-Authenticated', None) == 'SUCCESS':
+        elif method == 'ssl' and request and request.headers.get('X-Ssl-Authenticated', None) == 'SUCCESS':
             dn = request.headers.get('X-Ssl-Client-Dn', None)
             if dn:
                 auth_method = method
