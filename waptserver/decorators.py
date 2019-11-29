@@ -49,25 +49,28 @@ def authenticate():
         _('You have to login with proper credentials'), 401,
         {'WWW-Authenticate': 'Basic realm="Login Required"'})
 
-def requires_auth(f,methods=['session','token','ssl','admin','passwd','ldap']):
+def requires_auth(methods=['session','token','ssl','admin','passwd','ldap']):
     """Flask route decorator which requires Basic Auth http header
     If not header, returns a 401 http status.
     """
-    @functools.wraps(f)
-    def decorated(*args, **kwargs):
-        auth_result = check_auth(request = request, session=session, methods=methods)
-        if not auth_result:
-            return authenticate()
-        logger.info(u'user %s authenticated' % auth_result )
-        session.update(**auth_result)
-        return f(*args, **kwargs)
-    return decorated
+    def decorator(f):
+        @functools.wraps(f)
+        def _auth_wrapper(*args,**kwargs):
+            auth_result = check_auth(request = request, session=session, methods=methods)
+            if not auth_result:
+                return authenticate()
+            logger.info(u'user %s authenticated' % auth_result )
+            session.update(**auth_result)
+            result = f(*args,**kwargs)
+            return result
+        return _auth_wrapper
+    return decorator
 
 def allow_local(f):
     """Restrict access to localhost"""
     @functools.wraps(f)
     def decorated(*args, **kwargs):
-        if request.remote_addr in ['127.0.0.1']:
+        if request.remote_addr in ['127.0.0.1','[::1]','[::ffff:127.0.0.1]']:
             return f(*args, **kwargs)
         else:
             return forbidden()
@@ -78,22 +81,6 @@ def forbidden():
     return Response(
         'Restricted access.\n',
          403)
-
-
-def check_auth_is_provided(f):
-    """Check if there is at least basic-auth or kerberos or ssl signature if
-    allow_unauthenticated_registration is False
-    """
-    @functools.wraps(f)
-    def decorated(*args, **kwargs):
-        auth = session.get('user',None)
-        #if not session_user:
-        #
-        #    auth = check_auth( session=session)
-        if not auth and not app.conf['allow_unauthenticated_registration']:
-            return authenticate()
-        return f(*args, **kwargs)
-    return decorated
 
 def gzipped(f):
     @functools.wraps(f)
