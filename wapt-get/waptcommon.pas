@@ -25,7 +25,8 @@ unit waptcommon;
 interface
   uses
      Classes, SysUtils, Windows,
-     SuperObject,IdComponent,IdCookieManager,IdSSLOpenSSL,DefaultTranslator,httpsend;
+     SuperObject,IdComponent,IdCookieManager,IdSSLOpenSSL,DefaultTranslator,httpsend,
+     IdAuthentication;
 
   type
       TProgressCallback=function(Receiver:TObject;current,total:Integer):Boolean of object;
@@ -193,6 +194,18 @@ function RegisteredAppInstallLocation(UninstallKey:String): String;
 function MakeValidPackageName(st:String):String;
 
 type
+  { IWaptSigner }
+  IWaptSigner = interface
+    ['{3C083083-36B2-487F-A670-932F7EED6254}']
+    function Sign(Data:String): String;
+  end;
+
+
+  { IWaptSignatureChecker}
+  IWaptSignatureChecker = interface
+    ['{A7949187-C3B2-406F-9A97-3D42EBA8EF9F}']
+    function Verify(Data:String;Signature:String): Boolean;
+  end;
 
   { TWaptRepo }
   TWaptRepo = class(TPersistent)
@@ -247,6 +260,7 @@ type
 
   TWaptServer = class(TPersistent)
   private
+    FProgressReceiver: TObject;
     FClientCertificatePath: String;
     FClientPrivateKeyPath: String;
     FDNSDomain: String;
@@ -254,6 +268,8 @@ type
     FIsConfigUpdated: Boolean;
     FOnGetPrivateKeyPassword: TPasswordEvent;
     FOnGetUserPassword: TLoginCallback;
+    FOnHTTPWork: TWorkEvent;
+    FOnProgress: TProgressCallback;
     FUser: String;
     FUserToken: String;
     FWaptServerURL: String;
@@ -277,18 +293,21 @@ type
     procedure SetIsConfigUpdated(AValue: Boolean);
     procedure SetOnGetPrivateKeyPassword(AValue: TPasswordEvent);
     procedure SetOnGetUserPassword(AValue: TLoginCallback);
+    procedure SetOnHTTPWork(AValue: TWorkEvent);
     procedure SetServerCABundle(AValue: String);
     procedure SetTimeOut(AValue: Double);
     procedure SetUser(AValue: String);
     procedure SetWaptServerURL(AValue: String);
   public
     constructor Create(AWaptServerURL: String);
-    destructor Destroy; Virtual;
+    destructor Destroy; Override;
     procedure LoadFromInifile(IniFilename:String;Section:String;Reset:Boolean=False);
     procedure SaveToInifile(IniFilename:String;Section:String);
 
     function HttpGetString(action: String; args: array of const;
       Method: AnsiString = 'GET';AcceptType:String='application/json'): String;
+    function HttpPostData(action: String; args: array of const; Data: String=''; DataStream: TStream=Nil;
+      Method: AnsiString = 'POST';ContentType: String = 'application/json'; AcceptType:String='application/json'): String;
 
     //;ConnectTimeout:integer=4000;SendTimeout:integer=60000;ReceiveTimeout:integer=60000
     //call url action on waptserver. action can contains formatting chars like %s which will be replaced by args with the Format function.
@@ -298,6 +317,7 @@ type
 
     function SOApplyUpdates(const datasets: array of ISuperObject):Boolean;
     function SOIsUpdated(const datasets: Array of ISuperObject):Boolean;
+
 
   published
     property IsConfigUpdated:Boolean read FIsConfigUpdated write SetIsConfigUpdated;
@@ -318,8 +338,10 @@ type
     property UserToken:String read GetUserToken write FUserToken;
     property OnGetUserPassword:TLoginCallback read FOnGetUserPassword write SetOnGetUserPassword;
     property OnGetPrivateKeyPassword:TPasswordEvent read FOnGetPrivateKeyPassword write SetOnGetPrivateKeyPassword;
+    property OnHTTPWork:TWorkEvent read FOnHTTPWork write SetOnHTTPWork;
+    property OnProgress:TProgressCallback read FOnProgress write FOnProgress;
+    property ProgressReceiver:TObject read FProgressReceiver write FProgressReceiver;
   end;
-
 
 const
   waptservice_port:integer = 8088;
@@ -378,7 +400,7 @@ implementation
 uses LazFileUtils, LazUTF8, soutils, Variants,uwaptres,waptwinutils,uwaptcrypto,tisinifiles,tislogging,
   NetworkAdapterInfo, JwaWinsock2, windirs,
   IdHttp,IdMultipartFormData,IdExceptionCore,IdException,IdURI,IdHeaderList,
-  gettext,IdStack,IdCompressorZLib,IdAuthentication,
+  gettext,IdStack,IdCompressorZLib,
   IdSSLOpenSSLHeaders,IdCTypes,
   shfolder,IniFiles,tiscommon,strutils,tisstrings,registry,ssl_openssl;
 
@@ -491,7 +513,7 @@ type
   public
     status:String;
     current,total:Integer;
-    CBReceiver:TObject;
+    ProgressReceiver:TObject;
     progressCallback:TProgressCallback;
     procedure OnWorkBegin(ASender: TObject; AWorkMode: TWorkMode; AWorkCountMax: Int64);
     procedure OnWork(ASender: TObject; AWorkMode: TWorkMode; AWorkCount: Int64);
@@ -649,6 +671,12 @@ begin
   FOnGetUserPassword:=AValue;
 end;
 
+procedure TWaptServer.SetOnHTTPWork(AValue: TWorkEvent);
+begin
+  if FOnHTTPWork=AValue then Exit;
+  FOnHTTPWork:=AValue;
+end;
+
 procedure TWaptServer.SetWaptServerURL(AValue: String);
 begin
   if FWaptServerURL=AValue then Exit;
@@ -756,6 +784,8 @@ function TWaptServer.HttpGetString(action: String; args: array of const;
     Method:AnsiString='GET';AcceptType:String='application/json'): String;
 var
   http:TIdHTTP;
+  url: String;
+  progress:TIdProgressProxy;
 begin
   if WaptServerURL = '' then
     raise Exception.CreateFmt(rsUndefWaptSrvInIni, [WaptIniFilename]);
@@ -763,6 +793,8 @@ begin
     action := '/'+action;
   if length(args)>0 then
     action := format(action,args);
+
+  url := WaptServerURL+action;
 
   http := TIdHTTP.Create;
   try
@@ -779,6 +811,10 @@ begin
     http.IOHandler := SSLHandler;
     http.Request.Accept := AcceptType;
 
+    progress := TIdProgressProxy.Create(Nil);
+    progress.ProgressCallback := OnProgress;
+    progress.ProgressReceiver := ProgressReceiver;
+
     try
       http.ConnectTimeout := round(Timeout*1000);
 
@@ -789,13 +825,22 @@ begin
         http.Request.Password:=UserToken;
       end;
 
+      if Assigned(OnHTTPWork) then
+        http.OnWork:=OnHTTPWork;
+
+      if Assigned(Progress) then
+      begin
+        http.OnWorkBegin:=@progress.OnWorkBegin;
+        http.OnWork:=@progress.OnWork;
+      end;
+
       if HttpProxy<>'' then
         IdConfigureProxy(http,HttpProxy);
 
       if method = 'GET' then
-        Result := http.Get(WaptServerURL+action)
+        Result := http.Get(url)
       else if method = 'DELETE' then
-        Result := http.Delete(WaptServerURL+action)
+        Result := http.Delete(url)
       else raise Exception.CreateFmt('Unsupported method %s',[method]);
 
     except
@@ -808,6 +853,109 @@ begin
       http.Compressor := Nil;
     end;
     http.Free;
+  end;
+end;
+
+function TWaptServer.HttpPostData(action: String; args: array of const;
+  Data: String=''; DataStream: TStream=Nil; Method: AnsiString = 'POST';
+  ContentType: String = 'application/json'; AcceptType: String = 'application/json'): String;
+var
+  http:TIdHTTP;
+  tmpDataStream: Boolean;
+  url: String;
+  progress:TIdProgressProxy;
+begin
+  if WaptServerURL = '' then
+    raise Exception.CreateFmt(rsUndefWaptSrvInIni, [WaptIniFilename]);
+  if (StrLeft(action,1)<>'/') and (StrRight(GetWaptServerURL,1)<>'/') then
+    action := '/'+action;
+  if length(args)>0 then
+    action := format(action,args);
+
+  url := WaptServerURL+action;
+
+  http := TIdHTTP.Create;
+  try
+    if not Assigned(DataStream) then
+    begin
+      DataStream:= TStringStream.Create(Data);
+      tmpDataStream := True;
+    end
+    else
+      tmpDataStream := False;
+
+    http.HandleRedirects:=True;
+    http.Compressor := TIdCompressorZLib.Create;
+    http.CookieManager := CookieManager;
+    http.Request.AcceptLanguage := Language;
+    if userAgent='' then
+      http.Request.UserAgent := DefaultUserAgent
+    else
+      http.Request.UserAgent := userAgent;
+
+    http.Request.ContentType := ContentType;
+    http.Request.ContentEncoding:='UTF-8';
+    http.Request.Accept:=AcceptType;
+
+    HTTP.IOHandler := SSLHandler;
+
+    //Todo : handle authentication in multiple steps
+    // first check with current known credentials, then if 404, try with next in turn
+    // We should get the preferred order of auth methods from server 404 error result
+    // At each step, we ask user with callback for password or key locatio or pwd location
+    if user <> '' then
+    begin
+      http.Request.BasicAuthentication:=True;
+      http.Request.Username := user;
+      http.Request.Password := UserToken;
+    end;
+
+    progress := TIdProgressProxy.Create(Nil);
+    progress.ProgressCallback := OnProgress;
+    progress.ProgressReceiver := ProgressReceiver;
+
+    try
+      http.ConnectTimeout := Round(Timeout*1000);
+      if HttpProxy<>'' then
+        IdConfigureProxy(http,HttpProxy);
+
+      if Assigned(OnHTTPWork) then
+        http.OnWork:=OnHTTPWork;
+
+      if Assigned(progress.progressCallback) then
+      begin
+        http.OnWorkBegin:=@progress.OnWorkBegin;
+        http.OnWork:=@progress.OnWork;
+      end;
+
+      try
+        if Method = 'POST' then
+          Result := http.Post(url,DataStream)
+        else if Method = 'PUT' then
+          Result := http.Put(url,DataStream)
+        else if Method = 'DELETE' then
+          http.Delete(url);
+      except
+        on E:EIdHTTPProtocolException do
+          writeln(E.Message);
+
+      end;
+
+    except
+      // ??? -> handle issue !
+      on E:EIdReadTimeout do
+        Result := '';
+    end;
+  finally
+    FreeAndNil(progress);
+    if tmpDataStream and Assigned(DataStream) then
+      FreeAndNil(DataStream);
+    if Assigned(http.Compressor) then
+    begin
+      http.Compressor.Free;
+      http.Compressor := Nil;
+    end;
+    FreeAndNil(http);
   end;
 end;
 
@@ -1032,9 +1180,9 @@ begin
   current := 0;
   with (ASender as TIdHTTP) do
   begin
-    if Assigned(progressCallback) then
-      if not progressCallback(CBReceiver,current,total) then
-        raise EHTTPException.Create('Download stopped by user',0);
+    if Assigned(progressCallback) and Assigned(ProgressReceiver) then
+      if not progressCallback(ProgressReceiver,current,total) then
+        raise EHTTPException.Create(rsDlStoppedByUser,0);
   end;
 end;
 
@@ -1043,8 +1191,8 @@ begin
   current := AWorkCount;
   with (ASender as TIdHTTP) do
   begin
-    if Assigned(progressCallback) then
-      if not progressCallback(CBReceiver,current,total) then
+    if Assigned(progressCallback) and Assigned(ProgressReceiver)  then
+      if not progressCallback(ProgressReceiver,current,total) then
         raise EHTTPException.Create(rsDlStoppedByUser,0);
   end;
 end;
@@ -1252,7 +1400,7 @@ begin
   OutputFile :=TFileStream.Create(DestFileName,fmCreate);
   progress :=  TIdProgressProxy.Create(Nil);
   progress.progressCallback:=progressCallback;
-  progress.CBReceiver:=CBReceiver;
+  progress.ProgressReceiver:=CBReceiver;
   try
     // init ssl stack
     SSLHandler := TIdSSLIOHandlerSocketOpenSSL.Create;
