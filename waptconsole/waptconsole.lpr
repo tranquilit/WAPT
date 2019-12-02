@@ -19,7 +19,8 @@ uses
   uVisAPropos, uVisImportPackage, uwaptconsoleres, uVisPackageWizard,
   uVisChangeKeyPassword, uvisrepositories, uvisdisplaypreferences,
   uVisHostDelete, waptcommon, tiscommon, uviswuadownloads,
-  uvissoftwaresnormalization, uvisselfservicegroup, uviseditcreaterule, uVisErrorsRepos;
+  uvissoftwaresnormalization, uvisselfservicegroup, uviseditcreaterule,
+  uVisErrorsRepos, uviswaptusers;
 
 {$R *.res}
 

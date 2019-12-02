@@ -31,8 +31,7 @@ type
     ActDeleteNetwork: TAction;
     ActInstallLicence: TAction;
     ActAddProfile: TAction;
-    ActDeleteAccount: TAction;
-    ActSuppr: TAction;
+    ActManageUsers: TAction;
     ActSaveRules: TAction;
     ActUpRule: TAction;
     ActDownRule: TAction;
@@ -42,20 +41,14 @@ type
     ActRepositoriesGetSecondRepos: TAction;
     ActNewRule: TAction;
     ActRepositoriesGetUpdateRules: TAction;
-    ActSaveAccounts: TAction;
-    ActReloadAccounts: TAction;
-    ActNewAccount: TAction;
     cbAdvancedMode: TCheckBox;
-    EdPKIRootDirectory: TDirectoryEdit;
     EdSearchOrgUnits: TSearchEdit;
-    Label13: TLabel;
     Label16: TLabel;
     Label19: TLabel;
     LabLogsKB: TLabel;
     MenuItem116: TMenuItem;
-    PanCertTop: TPanel;
-    PanCertDetails: TPanel;
     GridRules: TSOGrid;
+    MenuItem117: TMenuItem;
     MenuItemCheckFiles: TMenuItem;
     MenuItemShowErrors: TMenuItem;
     MenuItemSync: TMenuItem;
@@ -67,7 +60,6 @@ type
     PanelRepositories: TPanel;
     PopupMenu1: TPopupMenu;
     PopupSecRepo: TPopupMenu;
-    RightsActions: TActionList;
     ActRefreshHostsForPackage: TAction;
     ActTriggerWaptwua_uninstall: TAction;
     ActSoftwaresNormalization: TAction;
@@ -116,7 +108,6 @@ type
     PanLeftReporting: TPanel;
     PanWUASearchClassifications: TPanel;
     PopupMenuReportingQueries: TPopupMenu;
-    GridUsers: TSOGrid;
     GridAgentRepo: TSOGrid;
     SpeedButton1: TSpeedButton;
     SpeedButton2: TSpeedButton;
@@ -130,7 +121,6 @@ type
     Splitter4: TSplitter;
     SplitterRepo: TSplitter;
     SplitTopTaskTaskGrid: TSplitter;
-    PgRights: TTabSheet;
     pgRepositories: TTabSheet;
     SplitHostTaskLog: TSplitter;
     tbDeleteRule: TToolButton;
@@ -139,7 +129,6 @@ type
     TbLeftTopreporting: TToolBar;
     tbNewRule: TToolButton;
     tbRefresh: TToolButton;
-    TbReport1: TToolBar;
     TbRepos: TToolBar;
     tbSaveRules: TToolButton;
     tbSoftwaresNormalization: TToolButton;
@@ -147,10 +136,7 @@ type
     tbAgentRepos: TToolBar;
     TimerSearchHosts: TTimer;
     ToolButton1: TToolButton;
-    ToolButton10: TToolButton;
     ToolButton11: TToolButton;
-    ToolButton12: TToolButton;
-    ToolButton13: TToolButton;
     tbRefeshAgentRepos: TToolButton;
     tbSyncSelected: TToolButton;
     tbSyncAll: TToolButton;
@@ -159,7 +145,6 @@ type
     tbSyncChangelog: TToolButton;
     ToolButton4: TToolButton;
     ToolButton5: TToolButton;
-    ToolButton7: TToolButton;
     ToolButton8: TToolButton;
     ToolButton9: TToolButton;
     ToolButtonReportingQueryDuplicate1: TToolButton;
@@ -630,7 +615,7 @@ type
     procedure ActAddHWPropertyToGridUpdate(Sender: TObject);
     procedure ActAddNewNetworkExecute(Sender: TObject);
     procedure ActAddProfileExecute(Sender: TObject);
-    procedure ActSupprExecute(Sender: TObject);
+    procedure ActManageUsersExecute(Sender: TObject);
     procedure ActSaveRulesExecute(Sender: TObject);
     procedure ActUpRuleExecute(Sender: TObject);
     procedure ActCancelRunningTaskExecute(Sender: TObject);
@@ -669,14 +654,11 @@ type
     procedure ActGermanUpdate(Sender: TObject);
     procedure ActHostsDeletePackageUpdate(Sender: TObject);
     procedure ActHostsDeleteUpdate(Sender: TObject);
-    procedure ActNewAccountExecute(Sender: TObject);
     procedure ActNewRuleExecute(Sender: TObject);
     procedure ActRefreshHostsForPackageExecute(Sender: TObject);
-    procedure ActReloadAccountsExecute(Sender: TObject);
     procedure ActReportingQueryExportExecute(Sender: TObject);
     procedure ActReportingQueryImportExecute(Sender: TObject);
     procedure ActReportingQueryImportUpdate(Sender: TObject);
-    procedure ActSaveAccountsExecute(Sender: TObject);
     procedure ActRepositoriesGetSecondReposExecute(Sender: TObject);
     procedure ActRepositoriesGetUpdateRulesExecute(Sender: TObject);
     procedure ActSelfServiceNewPackageExecute(Sender: TObject);
@@ -1037,7 +1019,6 @@ type
     function GetWUAWinUpdates: ISuperObject;
     procedure GridReportingSaveSettings(Report: ISuperObject);
     Function LoadHostInventory(host:ISuperObject): ISuperObject;
-    Procedure MergeUsersCertificates(Users:ISuperObject);
     function OneHostHasConnectedIP(GridHostsIPs:TSOGrid=Nil): Boolean;
     function OneHostIsConnected(GridHostsReachable:TSOGrid=Nil): Boolean;
     function GetSelectedOrgUnits: TDynStringArray;
@@ -1060,6 +1041,7 @@ type
     procedure UpdateSelectedHostsActions(Sender: TObject);
     procedure PythonOutputSendData(Sender: TObject; const Data: ansistring);
     procedure TreeLoadData(tree: TVirtualJSONInspector; jsondata: ISuperObject);
+
     procedure LoadOrgUnitsTree(Sender: TObject);
 
     function ApplyUpdates(const datasets: array of ISuperObject):Boolean;
@@ -1139,6 +1121,7 @@ type
     procedure Execute; override;
   end;
 
+
 var
   VisWaptGUI: TVisWaptGUI;
 
@@ -1154,7 +1137,8 @@ uses LCLIntf, LCLType, IniFiles, variants, LazFileUtils,FileUtil, base64,
   uVisPackageWizard, uVisChangeKeyPassword, uVisDisplayPreferences,
   uvisrepositories, uVisHostDelete, windirs,winutils,uWaptPythonUtils
   {$ifdef ENTERPRISE}
-  ,uVisWUAGroup,uviswuadownloads,uvissoftwaresnormalization,uvisselfservicegroup,uviseditcreaterule,uvissyncchangelog, uVisErrorsRepos
+  ,uVisWUAGroup,uviswuadownloads,uvissoftwaresnormalization,uvisselfservicegroup,
+  uviseditcreaterule,uvissyncchangelog, uVisErrorsRepos, uviswaptusers
   {$endif}
   {$ifdef wsus},uVisWAPTWUAProducts, uviswuapackageselect,
   uVisWUAClassificationsSelect
@@ -2597,14 +2581,6 @@ begin
     ActPackagesUpdate.Execute;
 end;
 
-procedure TVisWaptGUI.ActSupprExecute(Sender: TObject);
-begin
-  if MainPages.ActivePage= pgPrivateRepo then
-    ActDeletePackage.Execute();
-  if MainPages.ActivePage= pgRepositories then
-    ActDeleteRule.Execute();
-end;
-
 procedure TVisWaptGUI.ActCancelRunningTaskExecute(Sender: TObject);
 var
   uuids: ISuperObject;
@@ -3008,19 +2984,6 @@ end;
 procedure TVisWaptGUI.ActHostsDeleteUpdate(Sender: TObject);
 begin
   (Sender as TAction).Enabled:=(GridHosts.SelectedCount>0);
-end;
-
-procedure TVisWaptGUI.ActNewAccountExecute(Sender: TObject);
-begin
-  with TVisCreateKey.Create(Self) do
-  try
-    if ShowModal = mrOk then
-    begin
-      ActReloadAccounts.Execute;
-    end
-  finally
-    Free;
-  end;
 end;
 
 procedure TVisWaptGUI.ActmakePackageTemplateExecute(Sender: TObject);
@@ -4743,7 +4706,6 @@ begin
         GridNetworks.Header.Height:=trunc((GridNetworks.Header.MinHeight*Screen.PixelsPerInch)/96);
         GridReportingResult.Header.Height:=trunc((GridReportingResult.Header.MinHeight*Screen.PixelsPerInch)/96);
         GridReportingQueries.Header.Height:=trunc((GridReportingQueries.Header.MinHeight*Screen.PixelsPerInch)/96);
-        GridUsers.Header.Height:=trunc((GridUsers.Header.MinHeight*Screen.PixelsPerInch)/96);
         GridRules.Header.Height:=trunc((GridRules.Header.MinHeight*Screen.PixelsPerInch)/96);
         GridAgentRepo.Header.Height:=trunc((GridAgentRepo.Header.MinHeight*Screen.PixelsPerInch)/96);
         GridhostInventory.Header.Height:=trunc((GridhostInventory.Header.MinHeight*Screen.PixelsPerInch)/96);
@@ -5775,9 +5737,7 @@ begin
     if IsUpdated([ADataset]) then
     begin
       if ADataset = GridReportingQueries.Data then
-        ActReportingQuerySaveAll.Execute
-      else if ADataset = GridUsers.Data then
-        ActSaveAccounts.Execute;
+        ActReportingQuerySaveAll.Execute;
     end;
   result := not IsUpdated(datasets);
 end;
@@ -6712,6 +6672,13 @@ procedure ActSaveRulesExecute(Sender: TObject);
 begin
   ;;
 end;
+
+procedure TVisWaptGUI.ActManageUsersExecute(Sender: TObject);
+begin
+  ;;
+end;
+
+
 
 {$endif}
 

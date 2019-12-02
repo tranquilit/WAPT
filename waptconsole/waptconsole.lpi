@@ -35,8 +35,6 @@
     </BuildModes>
     <PublishOptions>
       <Version Value="2"/>
-      <IncludeFileFilter Value="*.(pas|pp|inc|lfm|lpr|lrs|lpi|lpk|sh|xml)"/>
-      <ExcludeFileFilter Value="*.(bak|ppu|o|so);*~;backup"/>
     </PublishOptions>
     <RunParams>
       <local>
@@ -84,7 +82,7 @@
         <PackageName Value="LCL"/>
       </Item13>
     </RequiredPackages>
-    <Units Count="29">
+    <Units Count="31">
       <Unit0>
         <Filename Value="waptconsole.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -291,6 +289,18 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uVisErrorsRepos"/>
       </Unit28>
+      <Unit29>
+        <Filename Value="..\waptenterprise\includes\uviswaptusers.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="VisWaptUsers"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit29>
+      <Unit30>
+        <Filename Value="..\wapt-get\ujwttoken.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="uJWTToken"/>
+      </Unit30>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -301,7 +311,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="..\waptenterprise\includes"/>
+      <OtherUnitFiles Value="..\waptenterprise\includes;..\wapt-get"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <CodeGeneration>
@@ -325,10 +335,18 @@
       </Verbosity>
       <CustomOptions Value="-dENTERPRISE
 -dDEVMODE"/>
-      <OtherDefines Count="2">
-        <Define0 Value="ENTERPRISE"/>
-        <Define1 Value="DEVMODE"/>
+      <OtherDefines Count="3">
+        <Define0 Value="UseCThreads"/>
+        <Define1 Value="ENTERPRISE"/>
+        <Define2 Value="DEVMODE"/>
       </OtherDefines>
     </Other>
   </CompilerOptions>
+  <Debugging>
+    <Exceptions Count="1">
+      <Item1>
+        <Name Value="EPyStopIteration"/>
+      </Item1>
+    </Exceptions>
+  </Debugging>
 </CONFIG>
