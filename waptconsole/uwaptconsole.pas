@@ -31,6 +31,7 @@ type
     ActDeleteNetwork: TAction;
     ActInstallLicence: TAction;
     ActAddProfile: TAction;
+    ActSuppr: TAction;
     ActManageUsers: TAction;
     ActSaveRules: TAction;
     ActUpRule: TAction;
@@ -615,6 +616,7 @@ type
     procedure ActAddHWPropertyToGridUpdate(Sender: TObject);
     procedure ActAddNewNetworkExecute(Sender: TObject);
     procedure ActAddProfileExecute(Sender: TObject);
+    procedure ActSupprExecute(Sender: TObject);
     procedure ActManageUsersExecute(Sender: TObject);
     procedure ActSaveRulesExecute(Sender: TObject);
     procedure ActUpRuleExecute(Sender: TObject);
@@ -2579,6 +2581,14 @@ procedure TVisWaptGUI.ActAddProfileExecute(Sender: TObject);
 begin
   if Assigned(CreateGroup('agroup', AdvancedMode, 'profile')) then
     ActPackagesUpdate.Execute;
+end;
+
+procedure TVisWaptGUI.ActSupprExecute(Sender: TObject);
+begin
+  if MainPages.ActivePage= pgPrivateRepo then
+    ActDeletePackage.Execute();
+  if MainPages.ActivePage= pgRepositories then
+    ActDeleteRule.Execute();
 end;
 
 procedure TVisWaptGUI.ActCancelRunningTaskExecute(Sender: TObject);
