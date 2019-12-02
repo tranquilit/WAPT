@@ -2428,6 +2428,7 @@ msgid "Remove from repository"
 msgstr "Supprimer du dépôt"
 
 #: tviswaptgui.actdeleterule.caption
+msgctxt "tviswaptgui.actdeleterule.caption"
 msgid "Delete rule"
 msgstr "Supprimer règle"
 
@@ -5934,6 +5935,11 @@ msgstr "Terminées"
 msgctxt "tviswaptgui.tabsheet3.caption"
 msgid "Errors"
 msgstr "Erreurs"
+
+#: tviswaptgui.tbdeleterule.caption
+msgctxt "tviswaptgui.tbdeleterule.caption"
+msgid "Delete rule"
+msgstr "Supprimer règle"
 
 #: tviswaptgui.tbdeleterule.hint
 msgctxt "tviswaptgui.tbdeleterule.hint"

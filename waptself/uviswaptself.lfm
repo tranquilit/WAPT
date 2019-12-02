@@ -1,5 +1,5 @@
 object VisWaptSelf: TVisWaptSelf
-  Left = 1912
+  Left = 0
   Height = 1017
   Top = 0
   Width = 1920

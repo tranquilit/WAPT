@@ -2403,6 +2403,7 @@ msgid "Remove from repository"
 msgstr ""
 
 #: tviswaptgui.actdeleterule.caption
+msgctxt "tviswaptgui.actdeleterule.caption"
 msgid "Delete rule"
 msgstr ""
 
@@ -5898,6 +5899,11 @@ msgstr ""
 #: tviswaptgui.tabsheet3.caption
 msgctxt "tviswaptgui.tabsheet3.caption"
 msgid "Errors"
+msgstr ""
+
+#: tviswaptgui.tbdeleterule.caption
+msgctxt "tviswaptgui.tbdeleterule.caption"
+msgid "Delete rule"
 msgstr ""
 
 #: tviswaptgui.tbdeleterule.hint

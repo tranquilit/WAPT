@@ -1035,7 +1035,7 @@ class SSLPrivateKey(BaseObjectClass):
             raise EWaptEmptyPassword(u'Unable to load key %s'%self.private_key_filename)
         return self._rsa
 
-    def sign_content(self,content,md='sha256',block_size=2**20,pre_py3=True):
+    def sign_content(self,content,md='sha256',block_size=2**20,pre_py3=False):
         """ Sign content with the private_key, return the signature
 
         If content is not a raw string, it is first encoded in json or utf8

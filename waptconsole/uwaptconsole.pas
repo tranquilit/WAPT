@@ -32,6 +32,8 @@ type
     ActInstallLicence: TAction;
     ActAddProfile: TAction;
     ActDeleteAccount: TAction;
+    ActSuppr: TAction;
+    ActSaveRules: TAction;
     ActUpRule: TAction;
     ActDownRule: TAction;
     ActDeleteRule: TAction;
@@ -139,6 +141,7 @@ type
     tbRefresh: TToolButton;
     TbReport1: TToolBar;
     TbRepos: TToolBar;
+    tbSaveRules: TToolButton;
     tbSoftwaresNormalization: TToolButton;
     tbUpRule: TToolButton;
     tbAgentRepos: TToolBar;
@@ -627,6 +630,7 @@ type
     procedure ActAddHWPropertyToGridUpdate(Sender: TObject);
     procedure ActAddNewNetworkExecute(Sender: TObject);
     procedure ActAddProfileExecute(Sender: TObject);
+    procedure ActSupprExecute(Sender: TObject);
     procedure ActSaveRulesExecute(Sender: TObject);
     procedure ActUpRuleExecute(Sender: TObject);
     procedure ActCancelRunningTaskExecute(Sender: TObject);
@@ -1056,7 +1060,6 @@ type
     procedure UpdateSelectedHostsActions(Sender: TObject);
     procedure PythonOutputSendData(Sender: TObject; const Data: ansistring);
     procedure TreeLoadData(tree: TVirtualJSONInspector; jsondata: ISuperObject);
-
     procedure LoadOrgUnitsTree(Sender: TObject);
 
     function ApplyUpdates(const datasets: array of ISuperObject):Boolean;
@@ -1135,7 +1138,6 @@ type
     destructor Destroy; override;
     procedure Execute; override;
   end;
-
 
 var
   VisWaptGUI: TVisWaptGUI;
@@ -2593,6 +2595,14 @@ procedure TVisWaptGUI.ActAddProfileExecute(Sender: TObject);
 begin
   if Assigned(CreateGroup('agroup', AdvancedMode, 'profile')) then
     ActPackagesUpdate.Execute;
+end;
+
+procedure TVisWaptGUI.ActSupprExecute(Sender: TObject);
+begin
+  if MainPages.ActivePage= pgPrivateRepo then
+    ActDeletePackage.Execute();
+  if MainPages.ActivePage= pgRepositories then
+    ActDeleteRule.Execute();
 end;
 
 procedure TVisWaptGUI.ActCancelRunningTaskExecute(Sender: TObject);
