@@ -91,7 +91,7 @@ rm -rf /opt/wapt/lib
 rm -rf /opt/wapt/waptservice
 rm -f /usr/bin/waptservice
 rm -f /usr/bin/wapt-get
-rm -f /opt/wapt/waptenterprise
+rm -rf /opt/wapt/waptenterprise
 rm -rf /opt/wapt/bin
 
 %post
