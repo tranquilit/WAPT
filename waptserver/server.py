@@ -682,21 +682,30 @@ def known_packages():
         return make_response_from_exception(e)
 
 
-def read_trusted_certificates(trusted_signers_certificates_folder=None):
-    """
+
+def read_trusted_certificates(trusted_certificates_folder=None):
+    """Loads the certificates files from trusted_certificates_folder.
+    Trusted certificate is the first certificate of each PEM file in trusted_certificates_folder
+    Other certificates in PEM files can be used to build certificate chain
+
     Returns:
         SSLCABundle : trusted certs are in trusted dict attribute (indexed by fingerprint)
     """
-    if not trusted_signers_certificates_folder:
+    if not trusted_certificates_folder:
         return None
-    if not os.path.isdir(trusted_signers_certificates_folder):
-        raise Exception(u'trusted_signers_certificates_folder %s does not exists' % trusted_signers_certificates_folder)
+    if not os.path.isdir(trusted_certificates_folder):
+        raise Exception(u'Trusted certificates folder %s does not exists' % trusted_certificates_folder)
 
     cabundle = SSLCABundle()
-    cabundle.add_pems(trusted_signers_certificates_folder,trust_first=True)
+    cabundle.add_pems(trusted_certificates_folder,trust_first=True)
     return cabundle
 
 def check_valid_signer(package,cabundle):
+    """Check if the signer of package is in the trusted list of certificates in cabundle.
+
+    Returns:
+        list of SSLCertificate : trusted certificate chain.
+    """
     signer_certs = package.package_certificates()
     if package.has_file('setup.py'):
         # check if certificate has code_signing extended attribute

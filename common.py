@@ -1569,14 +1569,17 @@ class WaptServer(BaseObjectClass):
         else:
             return None
 
-    def get_requests_session(self,url=None):
+    def get_requests_session(self,url=None,use_ssl_auth=True):
         if url is None:
             url = self.server_url
-        if self.client_private_key and is_pem_key_encrypted(self.client_private_key):
-            password = self.get_private_key_password(url,self.client_private_key)
+        if use_ssl_auth:
+            if self.client_private_key and is_pem_key_encrypted(self.client_private_key):
+                password = self.get_private_key_password(url,self.client_private_key)
+            else:
+                password = None
+            cert = (self.client_certificate,self.client_private_key,password)
         else:
-            password = None
-        cert = (self.client_certificate,self.client_private_key,password)
+            cert = None
         session = get_requests_client_cert_session(url=url,cert=cert,verify=self.verify_cert,proxies=self.proxies)
         return session
 
@@ -1777,11 +1780,11 @@ class WaptServer(BaseObjectClass):
         self.load_config(ini,section)
         return self
 
-    def get(self,action,auth=None,timeout=None):
+    def get(self,action,auth=None,timeout=None,use_ssl_auth=True):
         """ """
         surl = self.server_url
         if surl:
-            with self.get_requests_session(surl) as session:
+            with self.get_requests_session(surl,use_ssl_auth=use_ssl_auth) as session:
                 req = session.get("%s/%s" % (surl,action),
                     timeout=timeout or self.timeout,
                     auth=auth,
@@ -1797,11 +1800,11 @@ class WaptServer(BaseObjectClass):
         else:
             raise Exception(u'Wapt server url not defined or not found in DNS')
 
-    def head(self,action,auth=None,timeout=None):
+    def head(self,action,auth=None,timeout=None,use_ssl_auth=True):
         """ """
         surl = self.server_url
         if surl:
-            with self.get_requests_session(surl) as session:
+            with self.get_requests_session(surl,use_ssl_auth=use_ssl_auth) as session:
                 req = session.head("%s/%s" % (surl,action),
                     timeout=timeout or self.timeout,
                     auth=auth,
@@ -1821,7 +1824,7 @@ class WaptServer(BaseObjectClass):
         """ """
         surl = self.server_url
 
-    def post(self,action,data=None,files=None,auth=None,timeout=None,signature=None,signer=None,content_length=None):
+    def post(self,action,data=None,files=None,auth=None,timeout=None,signature=None,signer=None,content_length=None,use_ssl_auth=True):
         """Post data to waptserver using http POST method
 
         Add a signature to the posted data using host certificate.
@@ -1836,7 +1839,7 @@ class WaptServer(BaseObjectClass):
         """
         surl = self.server_url
         if surl:
-            with self.get_requests_session(surl) as session:
+            with self.get_requests_session(surl,use_ssl_auth=use_ssl_auth) as session:
                 if data:
                     session.headers.update({
                         'Content-type': 'binary/octet-stream',
@@ -5343,11 +5346,20 @@ class Wapt(BaseObjectClass):
                 urladdhost = 'add_host'
             else:
                 urladdhost = 'add_host_kerberos'
-            result = self.waptserver.post(urladdhost,
-                data = data ,
-                signature = self.sign_host_content(data),
-                signer = self.get_host_certificate().cn
-                )
+            try:
+                result = self.waptserver.post(urladdhost,
+                    data = data ,
+                    signature = self.sign_host_content(data),
+                    signer = self.get_host_certificate().cn
+                    )
+            except Exception as e:
+                # retry without ssl client auth
+                result = self.waptserver.post(urladdhost,
+                    data = data ,
+                    signature = self.sign_host_content(data),
+                    signer = self.get_host_certificate().cn ,
+                    use_ssl_auth = False
+                    )
 
             if result and result['success']:
                 # stores for next round.
@@ -5486,7 +5498,8 @@ class Wapt(BaseObjectClass):
                     dnsname = setuphelpers.get_hostname(),
                     organization = setuphelpers.registered_organization() or None,
                     is_ca=True,
-                    is_code_signing=False)
+                    is_code_signing=False,
+                    is_client_auth=True)
             else:
                 crt = self._host_key.build_sign_certificate(
                     ca_signing_key=None,
@@ -5495,7 +5508,8 @@ class Wapt(BaseObjectClass):
                     dnsname = setuphelpers.get_hostname(),
                     organization = None,
                     is_ca=True,
-                    is_code_signing=False)
+                    is_code_signing=False,
+                    is_client_auth=True)
             crt.save_as_pem(crt_filename)
             self.write_param('host_certificate_fingerprint',crt.fingerprint)
             self.write_param('host_certificate_authority_key_identifier',(crt.authority_key_identifier or '').encode('hex'))
