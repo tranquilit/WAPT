@@ -96,7 +96,8 @@ _defaults = {
     'nginx_http' : 80,
     'nginx_https': 443,
     'remote_repo_support': False,
-    'trusted_signers_certificates_folder':None, # path to trusted certificate directory
+    'trusted_signers_certificates_folder':None, # path to trusted signers certificate directory
+    'trusted_users_certificates_folder':None, # path to trusted users CA certificate directory
 }
 
 DEFAULT_CONFIG_FILE = os.path.join(wapt_root_dir, 'conf', 'waptserver.ini')

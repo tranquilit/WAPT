@@ -48,7 +48,7 @@ from playhouse.signals import Model as SignaledModel, pre_save, post_save
 from waptutils import Version
 from waptutils import ensure_unicode,ensure_list,datetime2isodate,jsondump
 
-from waptcrypto import SSLCABundle
+from waptcrypto import SSLCABundle,SSLCertificate,SSLPrivateKey,serialize_content_for_signature,EWaptCryptoException
 
 from waptserver.utils import setloglevel
 
@@ -298,16 +298,53 @@ class WaptUsers(WaptBaseModel):
     name = CharField(null=True, index=True)
     auth_method = CharField(null=True)
     description = CharField(null=True, index=False)
-    acls = ArrayField(CharField,null=True)
-    user_certificate = TextField(null=True, help_text='User public X509 certificates chain')
-    authorized_certificates_sha256 = ArrayField(CharField, null=True, help_text='Authorized packages signers certificates sha256 fingerprint')
-    signer = CharField(null=True)
-    signature = CharField(null=True)
-    signer_fingerprint = CharField(null=True)
+    user_certificate = TextField(null=True, help_text='User public X509 certificates chain. Root certificate must be approved on server')
+    user_certificate_sha1 = CharField(null=True, index=False)
+    user_certificate_sha256 = CharField(null=True, index=False)
+    acls = ArrayField(CharField,null=True, help_text='List of authorized actions on the perimeters defined by the authorized_perimeters_sha')
+    authorized_perimeters_sha1 = ArrayField(CharField, null=True, help_text='Authorized action on computers sha1 fingerprint')
+    authorized_perimeters_sha256 = ArrayField(CharField, null=True, help_text='Authorized action on  sha256 fingerprint')
+    signer = CharField(null=True, help_text='ACL signer')
+    signature_date = CharField(null=True, help_text='ACL date')
+    signature = CharField(null=True, help_text='ACL signature (serialize as as json dict with sorted keys)')
+    signer_fingerprint = CharField(null=True, help_text='SHA256 signer fingerprint')
 
+    def _signed_attributes(self):
+        return ['name','auth_method','description','acls','user_certificate',
+            'user_certificate_sha1','user_certificate_sha256',
+            'authorized_perimeters_sha1','authorized_perimeters_sha256',
+            'signer','signature_date','signer_fingerprint']
 
     def __repr__(self):
         return '<WaptUsers id=%s name=%s>' % (self.id, self.name)
+
+    def as_user_dict(self):
+        user_dict = {k: getattr(self,k) for k in self._signed_attributes()}
+        return user_dict
+
+
+    def sign(self,key,cert):
+        self.signer = cert.cn
+        self.signer_fingerprint = cert.fingerprint
+        self.signature_date = datetime2isodate()
+        self.signature = key.sign_content(self.as_user_dict(),pre_py3=False)
+        self.save()
+
+    def verify(self,cabundle):
+        """Check that the ACL is properly signed and signed by a trusted user
+        """
+        # get signer certificate
+        signer_cert = cabundle.certificate(self.signer_fingerprint)
+        if not signer_cert:
+            raise EWaptCryptoException('ACL signer is not known')
+        user_dict = self.as_user_dict()
+        # verify signature
+        signer_cert.verify_content(user_dict,self.signature)
+
+        # verify signer is trusted
+        cert_chain = cabundle.check_certificates_chain(signer_cert,check_is_trusted=True)
+        logger.debug('ACL is trusted by %s' % cert_chain[-1])
+        return cert_chain
 
 
 class Packages(WaptBaseModel):

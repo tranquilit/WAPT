@@ -686,7 +686,7 @@ class SSLCABundle(BaseObjectClass):
         * or, if not found, the Issuer Subject Hash
 
         Args:
-            certificate (SSLcertificate)
+            certificate (SSLCertificate)
 
         Returns:
             SSLCertificate : issuer certificate where Subject key Id = certificate.Authority key Id
