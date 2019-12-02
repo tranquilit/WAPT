@@ -363,7 +363,7 @@ def register_host():
                     # assume authenticated user is the fqdn provided in the data
                     logger.debug(u'Authenticated registration for %s with user %s' % (computer_fqdn,auth_result['user']))
                     authenticated_user = computer_fqdn
-                    registration_auth_user = u'%s:%s' % (auth_result['method'],auth_result['user'])
+                    registration_auth_user = u'%s:%s' % (auth_result['auth_method'],auth_result['user'])
                     session.update(**auth_result)
 
                 host_cert = None
