@@ -246,6 +246,9 @@ class SSLCABundle(BaseObjectClass):
         self._certs_subject_hash_idx.clear()
         self._certs_fingerprint_idx.clear()
         del self.crls[:]
+        self.clear_chains_cache()
+
+    def clear_chains_cache(self):
         self._crls_negative_cache.clear()
         self._cert_chains_cache.clear()
 
@@ -258,6 +261,7 @@ class SSLCABundle(BaseObjectClass):
             trust_all (bool): add all certificates of each pem file in the trusted store
 
         """
+        self.clear_chains_cache()
         if cert_pattern_or_dir:
             if os.path.isdir(cert_pattern_or_dir):
                 # load pems from provided directory
@@ -289,7 +293,7 @@ class SSLCABundle(BaseObjectClass):
         Returns:
             list of SSLCertificates actually added
         """
-        self._cert_chains_cache.clear()
+        self.clear_chains_cache()
         if not isinstance(certificates,list):
             certificates = [certificates]
         result = []
@@ -311,6 +315,7 @@ class SSLCABundle(BaseObjectClass):
         Returns:
             (ordered) list of SSLCertificate in pem
         """
+        self.clear_chains_cache()
         if pem_data is None:
             if os.path.isfile(pem_filename):
                 pem_data = open(pem_filename,'rb').read()
@@ -373,6 +378,7 @@ class SSLCABundle(BaseObjectClass):
         return result
 
     def trust_certificates(self,certificates):
+        self.clear_chains_cache()
         if isinstance(certificates,SSLCertificate):
             certificates = [certificates]
         for cert in certificates:
@@ -462,7 +468,7 @@ class SSLCABundle(BaseObjectClass):
         """Check if certificate is issued by one of this certificate bundle CA
         and check certificate signature. Return top most CA.
 
-        Top most CA should be trusted somewhere...
+        Does not presume any of certificate chain member is trusted.
 
         Args:
             certificate: certificate to check
@@ -578,13 +584,13 @@ class SSLCABundle(BaseObjectClass):
                     for issuer in issuer_chain:
                         issuer.verify_signature_with(self)
                         result.append(issuer)
-                        if allow_pinned and issuer in self._certificates and (not check_is_trusted or cert.fingerprint in self.trusted):
+                        if allow_pinned and issuer in self._certificates and (not check_is_trusted or issuer.fingerprint in self.trusted):
                             break
 
-                    if check_is_trusted and not cert.fingerprint in self.trusted:
+                    if check_is_trusted and not result[-1].fingerprint in self.trusted:
                         raise EWaptCertificateUntrustedIssuer(reason)
 
-                    reason = u'Certificate "%s" is trusted' % cert.cn
+                    reason = u'Certificate "%s" is trusted' % result[-1].cn
                     add_chain_cache(cache_key,result,reason)
                     return result
                 except SSLVerifyException as e:
@@ -675,6 +681,16 @@ class SSLCABundle(BaseObjectClass):
         return result
 
     def issuer_cert_for(self,certificate):
+        """Returns the certificate matching either
+        * Authority Key Identifier
+        * or, if not found, the Issuer Subject Hash
+
+        Args:
+            certificate (SSLcertificate)
+
+        Returns:
+            SSLCertificate : issuer certificate where Subject key Id = certificate.Authority key Id
+        """
         return self.certificate_for_subject_key_identifier(certificate.authority_key_identifier) or self.certificate_for_subject_hash(certificate.issuer_subject_hash)
 
 
@@ -1269,16 +1285,16 @@ class SSLPrivateKey(BaseObjectClass):
                          AccessDescription(
                             access_method = x509.AuthorityInformationAccessOID.CA_ISSUERS,
                             access_location = x509.UniformResourceIdentifier(ensure_unicode(issuer_cert_url)))]),
-                    critical=True))
+                    critical=False))
 
-        if crl_url is not None and ca_signing_cert is not None:
+        if crl_url is not None:
             extensions.append(dict(
                     extension=x509.CRLDistributionPoints([
                         DistributionPoint(
                             full_name = [x509.UniformResourceIdentifier(ensure_unicode(crl_url))],
                             crl_issuer = None,
                             relative_name = None, reasons = None)]),
-                    critical=True))
+                    critical=False))
 
         for key_usage in key_usages:
             kwargs = {}
@@ -2272,13 +2288,15 @@ class SSLCertificate(BaseObjectClass):
             verified_by=self.cn,
             )
 
-    def build_certificate_from_csr(self,csr,ca_signing_key,validity_duration=365):
+    def build_certificate_from_csr(self,csr,ca_signing_key,validity_duration=365,crl_urls=None):
         """Build a certificate by signing a CSR with CA certificate (self) and provided key
 
         Args:
             self : CA certificate for issuer.
             csr (SSLCertificateSigningRequest): The certificate signing request to be signed.
             ca_signing_key (SSLPrivateKey): CA Key to sign the resulting certificate.
+            crl_urls (list of str): URLs to a CRLDistributionPoint http location to embed in certificate
+                                    If None, use CDP from CA (self)
 
         Returns:
             SSLCertificate
@@ -2319,6 +2337,23 @@ class SSLCertificate(BaseObjectClass):
             builder = builder.add_extension(
                 ext.get('extension'), ext.get('critical')
             )
+
+        if crl_urls is None:
+            cdp = self.extensions.get('cRLDistributionPoints')
+            if cdp:
+                builder = builder.add_extension(
+                        extension=x509.CRLDistributionPoints(cdp),
+                        critical=False)
+        elif crl_urls:
+            cdp = [ DistributionPoint(
+                        full_name = [x509.UniformResourceIdentifier(ensure_unicode(crl_url))],
+                        crl_issuer = None,
+                        relative_name = None,
+                        reasons = None)
+                    for crl_url in crl_urls ]
+            builder = builder.add_extension(
+                    extension=x509.CRLDistributionPoints(cdp),
+                    critical=False)
 
         crypto_crt = builder.sign(ca_signing_key.rsa,algorithm=hashes.SHA256(), backend=default_backend())
         return SSLCertificate(crt = crypto_crt)
@@ -2465,9 +2500,10 @@ class SSLCRL(BaseObjectClass):
         return self.issuer.get('commonName',None)
 
     def verify_signature_with(self,cabundle=None):
-        """Check validity of CRL signature
+        """Check validity of CRL signature.
+        Lookup the issuer certificate and check CRL signature with public key of issuer.
 
-        Args;
+        Args:
             cabundle: bundle of CA certificates
 
         Returns:
