@@ -56,6 +56,8 @@ import tempfile
 import traceback
 import datetime
 import re
+import glob
+
 from optparse import OptionParser
 
 from werkzeug.utils import secure_filename
@@ -1994,6 +1996,32 @@ def trusted_signers_certificates():
             open(cert_fn,'w').write(raw_data)
             msg = u'Added %s as trusted certificate (cn %s)'% (cert_fn,new_certs[0].cn)
             return make_response(result=trusted, msg=msg, status=200, request_time=time.time() - start_time)
+
+        except Exception as e:
+            logger.debug(traceback.format_exc())
+            logger.critical('trusted_signers_certificates %s' % (repr(e)))
+            return make_response_from_exception(e)
+    elif request.method == 'DELETE':
+        try:
+            start_time = time.time()
+            if request.headers.get('Content-Encoding') == 'gzip':
+                raw_data = zlib.decompress(request.data)
+            else:
+                raw_data = request.data
+
+            # payload is a list of sha1 fingerprints of trusted certificates to remove from  trusted_signers_certificates_folder
+            fingerprints = ujson.loads(raw_data)
+            if not isinstance(fingerprints,list):
+                raise Exception('Bad argument')
+            result = []
+            for cert_fn in glob.glob(os.path.join(app.conf.get('trusted_signers_certificates_folder'),'*.crt')):
+                cert = SSLCertificate(cert_fn)
+                if cert.get_fingerprint('sha1').encode('hex') in fingerprints:
+                    os.unlink(cert_fn)
+                    result.append(cert_fn)
+
+            msg = u'Removed trusted certificates %s'% (', '.join(result),)
+            return make_response(result=result, msg=msg, status=200, request_time=time.time() - start_time)
 
         except Exception as e:
             logger.debug(traceback.format_exc())
