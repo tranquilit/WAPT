@@ -5352,14 +5352,18 @@ class Wapt(BaseObjectClass):
                     signature = self.sign_host_content(data),
                     signer = self.get_host_certificate().cn
                     )
-            except Exception as e:
-                # retry without ssl client auth
-                result = self.waptserver.post(urladdhost,
-                    data = data ,
-                    signature = self.sign_host_content(data),
-                    signer = self.get_host_certificate().cn ,
-                    use_ssl_auth = False
-                    )
+            except requests.HTTPError as e:
+                if e.response.status_code == 400: # could be a bad certificate error, so retry without client side cert
+                    # retry without ssl client auth
+                    result = self.waptserver.post(urladdhost,
+                        data = data ,
+                        signature = self.sign_host_content(data),
+                        signer = self.get_host_certificate().cn ,
+                        use_ssl_auth = False
+                        )
+                else:
+                    raise
+
 
             if result and result['success']:
                 # stores for next round.
