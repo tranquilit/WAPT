@@ -1958,6 +1958,49 @@ def packages_install_stats():
     cur = wapt_db.execute_sql(SQL)
 
 
+@app.route('/api/v3/trusted_signers_certificates',methods=['GET','DELETE','POST'])
+@requires_auth()
+def trusted_signers_certificates():
+    if request.method == 'GET':
+        try:
+            start_time = time.time()
+            # load trusted signers
+            trusted = read_trusted_certificates(app.conf.get('trusted_signers_certificates_folder'))
+            # add other known certificates
+            known_ssl_path = os.path.join(app.conf.get('wapt_folder'),'ssl')
+            if os.path.isdir(known_ssl_path):
+                trusted.add_pems(known_ssl_path)
+
+            msg = u'Trusted: %s, Known: %s' % (','.join([c.cn for c in trusted.trusted.values()]), ','.join([c.cn for c in trusted.certificates()]))
+            return make_response(result=trusted, msg=msg, status=200, request_time=time.time() - start_time)
+
+        except Exception as e:
+            logger.debug(traceback.format_exc())
+            logger.critical('trusted_signers_certificates %s' % (repr(e)))
+            return make_response_from_exception(e)
+    elif request.method == 'POST':
+        # one new trusted certificate in payload
+        try:
+            start_time = time.time()
+
+            if request.headers.get('Content-Encoding') == 'gzip':
+                raw_data = zlib.decompress(request.data)
+            else:
+                raw_data = request.data
+            # try to read it to check consistency
+            trusted = SSLCABundle()
+            new_certs = trusted.add_certificates_from_pem(raw_data)
+            cert_fn = os.path.join(app.conf.get('trusted_signers_certificates_folder'),new_certs[0].get_fingerprint('sha1').encode('hex')+'.crt')
+            open(cert_fn,'w').write(raw_data)
+            msg = u'Added %s as trusted certificate (cn %s)'% (cert_fn,new_certs[0].cn)
+            return make_response(result=trusted, msg=msg, status=200, request_time=time.time() - start_time)
+
+        except Exception as e:
+            logger.debug(traceback.format_exc())
+            logger.critical('trusted_signers_certificates %s' % (repr(e)))
+            return make_response_from_exception(e)
+
+
 @app.route('/api/v1/usage_statistics')
 @requires_auth()
 def usage_statistics():

@@ -834,6 +834,29 @@ class SSLCABundle(BaseObjectClass):
         """
         return ','.join([cert.fingerprint for cert in self.certificates()])
 
+    def as_dict(self):
+        result = dict(
+            certificates = [cert.as_pem() for cert in self.certificates()],
+            trusted = [cert.as_pem() for cert in self.trusted.values()],
+            )
+        return result
+
+    def from_dict(self,ca_dict):
+        """Add certificates and trusted from ca_dict, as exported by as_dict
+
+        Args:
+            ca_dict (dict) : dict with keys
+                    'certificates': list of pem str for certificates to append to known certificates
+                    'trusted': list of pem str for certificates to append to trusted certificates
+        """
+        for pem in ca_dict.get('certificates',[]):
+            self.add_certificates_from_pem(pem)
+        trusted = []
+        for pem in ca_dict.get('trusted',[]):
+            cert = self.add_certificates_from_pem(pem)
+            trusted.append(cert[0])
+        self.trust_certificates(trusted)
+
 
 def get_peer_cert_chain_from_server(url):
     """Returns list of SSLCertificates from initial handshake of https server
