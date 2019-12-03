@@ -291,43 +291,52 @@ class HostPackagesStatus(WaptBaseModel):
     def __repr__(self):
         return '<HostPackageStatus uuid=%s packages=%s (%s) install_status=%s>' % (self.id, self.package, self.version, self.install_status)
 
+
 class WaptUsers(WaptBaseModel):
     """Users
     """
     id = PrimaryKeyField(primary_key=True)
-    name = CharField(null=True, index=True)
-    auth_method = CharField(null=True)
+    name = CharField(null=True, index=True, help_text='Username to authenticate with password')
+    auth_method = CharField(null=True, index=False, help_text='Authorized authentication method')
     description = CharField(null=True, index=False)
     user_certificate = TextField(null=True, help_text='User public X509 certificates chain. Root certificate must be approved on server')
-    user_certificate_sha1 = CharField(null=True, index=False)
-    user_certificate_sha256 = CharField(null=True, index=False)
-    acls = ArrayField(CharField,null=True, help_text='List of authorized actions on the perimeters defined by the authorized_perimeters_sha')
-    authorized_perimeters_sha1 = ArrayField(CharField, null=True, help_text='Authorized action on computers sha1 fingerprint')
-    authorized_perimeters_sha256 = ArrayField(CharField, null=True, help_text='Authorized action on  sha256 fingerprint')
-    signer = CharField(null=True, help_text='ACL signer')
-    signature_date = CharField(null=True, help_text='ACL date')
-    signature = CharField(null=True, help_text='ACL signature (serialize as as json dict with sorted keys)')
-    signer_fingerprint = CharField(null=True, help_text='SHA256 signer fingerprint')
-
-    def _signed_attributes(self):
-        return ['name','auth_method','description','acls','user_certificate',
-            'user_certificate_sha1','user_certificate_sha256',
-            'authorized_perimeters_sha1','authorized_perimeters_sha256',
-            'signer','signature_date','signer_fingerprint']
+    user_fingerprint_sha1 = CharField(null=True, index=True, help_text='Calculated from user_certificate')
+    user_fingerprint_sha256 = CharField(null=True, index=True, help_text='Calculated from user_certificate')
 
     def __repr__(self):
         return '<WaptUsers id=%s name=%s>' % (self.id, self.name)
 
-    def as_user_dict(self):
-        user_dict = {k: getattr(self,k) for k in self._signed_attributes()}
-        return user_dict
 
+class WaptUserAcls(WaptBaseModel):
+    """Users
+    """
+    id = PrimaryKeyField(primary_key=True)
+    user_fingerprint_sha1 = CharField(null=False, index=True, help_text='sha1 fingerprint of user certificate')
+    perimeter_fingerprint = CharField(null=False, index=True, help_text='sha256 fingerprint of CA root for perimeter')
+    acls = ArrayField(CharField,null=True, help_text='List of authorized actions on the perimeter defined by the perimeter_sha256')
+    expiration_date = CharField(null=True, help_text='End of ACL date')
+    signer = CharField(null=True, help_text='ACL signer')
+    signature_date = CharField(null=True, help_text='ACL date')
+    signer_fingerprint = CharField(null=True, help_text='SHA256 signer fingerprint')
+    signature = CharField(null=True, help_text='ACL signature (serialize as as json dict with sorted keys)')
+
+    def _signed_attributes(self):
+        return ['acls','user_fingerprint_sha1',
+            'perimeter_fingerprint','expiration_date',
+            'signer','signature_date','signer_fingerprint']
+
+    def __repr__(self):
+        return '<WaptUserAcls id=%s>' % (self.id,)
+
+    def to_dict(self):
+        _dict = {k: getattr(self,k) for k in self._signed_attributes()}
+        return _dict
 
     def sign(self,key,cert):
         self.signer = cert.cn
         self.signer_fingerprint = cert.fingerprint
         self.signature_date = datetime2isodate()
-        self.signature = key.sign_content(self.as_user_dict(),pre_py3=False)
+        self.signature = key.sign_content(self.to_dict(),pre_py3=False)
         self.save()
 
     def verify(self,cabundle):
@@ -337,7 +346,7 @@ class WaptUsers(WaptBaseModel):
         signer_cert = cabundle.certificate(self.signer_fingerprint)
         if not signer_cert:
             raise EWaptCryptoException('ACL signer is not known')
-        user_dict = self.as_user_dict()
+        user_dict = self.to_dict()
         # verify signature
         signer_cert.verify_content(user_dict,self.signature)
 
@@ -345,6 +354,7 @@ class WaptUsers(WaptBaseModel):
         cert_chain = cabundle.check_certificates_chain(signer_cert,check_is_trusted=True)
         logger.debug('ACL is trusted by %s' % cert_chain[-1])
         return cert_chain
+
 
 
 class Packages(WaptBaseModel):
