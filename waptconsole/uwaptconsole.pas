@@ -27,8 +27,6 @@ type
     ActAddHWPropertyToGrid: TAction;
     ActDisplayUserMessage: TAction;
     ActEditOrgUnitPackage: TAction;
-    ActAddNewNetwork: TAction;
-    ActDeleteNetwork: TAction;
     ActInstallLicence: TAction;
     ActAddProfile: TAction;
     ActSuppr: TAction;
@@ -242,9 +240,6 @@ type
     ButHostSearch: TBitBtn;
     ButPackagesUpdate: TBitBtn;
     butSearchGroups: TBitBtn;
-    butSearchPackages1: TBitBtn;
-    butSearchPackages2: TBitBtn;
-    butSearchPackages3: TBitBtn;
     Button1: TButton;
     cbAdvancedSearch: TCheckBox;
     cbAllClassifications: TCheckBox;
@@ -295,8 +290,6 @@ type
     Label18: TLabel;
     Label21: TLabel;
     Label22: TLabel;
-    EdSearchPackage1: TSearchEdit;
-    GridNetworks: TSOGrid;
     Label4: TLabel;
     LabUser1: TLabel;
     MenuItem100: TMenuItem;
@@ -323,19 +316,15 @@ type
     Panel9: TPanel;
     PanWUALeft: TPanel;
     PanTopWindowsUpdates: TPanel;
-    Panel8: TPanel;
     PanWUAMain: TPanel;
     PanWUASearchProducts: TPanel;
-    PgNetworksConfig: TTabSheet;
     PopupWUAClassifications: TPopupMenu;
     PopupMenuOrgUnits: TPopupMenu;
     PopupHostWUAUpdates: TPopupMenu;
     GridReportingResult: TSOGrid;
-    SOWaptServer: TSOConnection;
     SplitQueriesReport: TSplitter;
     SplitterReportingHorizontal: TSplitter;
     SplitWinupdateHost: TSplitter;
-    SrcNetworks: TSODataSource;
     SrcOrgUnits: TDataSource;
     EdDescription: TEdit;
     EdHardwareFilter: TEdit;
@@ -614,7 +603,6 @@ type
     procedure ActAddDependsUpdate(Sender: TObject);
     procedure ActAddHWPropertyToGridExecute(Sender: TObject);
     procedure ActAddHWPropertyToGridUpdate(Sender: TObject);
-    procedure ActAddNewNetworkExecute(Sender: TObject);
     procedure ActAddProfileExecute(Sender: TObject);
     procedure ActSupprExecute(Sender: TObject);
     procedure ActManageUsersExecute(Sender: TObject);
@@ -638,7 +626,6 @@ type
     procedure ActCreateWaptSetupUpdate(Sender: TObject);
     procedure ActDeleteGroupExecute(Sender: TObject);
     procedure ActDeleteGroupUpdate(Sender: TObject);
-    procedure ActDeleteNetworkExecute(Sender: TObject);
     procedure ActDeletePackageExecute(Sender: TObject);
     procedure ActDeletePackageUpdate(Sender: TObject);
     procedure ActDeleteRuleExecute(Sender: TObject);
@@ -898,8 +885,6 @@ type
     procedure GridHostWinUpdatesGetText(Sender: TBaseVirtualTree;
       Node: PVirtualNode; RowData, CellData: ISuperObject;
       Column: TColumnIndex; TextType: TVSTTextType; var CellText: string);
-    procedure GridNetworksEditing(Sender: TBaseVirtualTree; Node: PVirtualNode;
-      Column: TColumnIndex; var Allowed: Boolean);
     procedure GridOrgUnitsChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
     procedure GridOrgUnitsGetHint(Sender: TBaseVirtualTree; Node: PVirtualNode;
       Column: TColumnIndex; var LineBreakStyle: TVTTooltipLineBreakStyle;
@@ -2572,11 +2557,6 @@ begin
   ActAddHWPropertyToGrid.Enabled := (propname <>'') and (GridHosts.FindColumnByPropertyName(propname) = nil);
 end;
 
-procedure TVisWaptGUI.ActAddNewNetworkExecute(Sender: TObject);
-begin
-  SrcNetworks.AppendRecord(SO());
-end;
-
 procedure TVisWaptGUI.ActAddProfileExecute(Sender: TObject);
 begin
   if Assigned(CreateGroup('agroup', AdvancedMode, 'profile')) then
@@ -2790,11 +2770,6 @@ end;
 procedure TVisWaptGUI.ActDeleteGroupUpdate(Sender: TObject);
 begin
   ActDeleteGroup.Enabled := GridGroups.Focused and (GridGroups.SelectedCount>0);
-end;
-
-procedure TVisWaptGUI.ActDeleteNetworkExecute(Sender: TObject);
-begin
-  SrcNetworks.DeleteRecord(GridNetworks.FocusedRow);
 end;
 
 procedure TVisWaptGUI.ActDeletePackageExecute(Sender: TObject);
@@ -4713,7 +4688,6 @@ begin
         GridWSUSScan.Header.Height:=trunc((GridWSUSScan.Header.MinHeight*Screen.PixelsPerInch)/96);
         GridWUUpdates.Header.Height:=trunc((GridWUUpdates.Header.MinHeight*Screen.PixelsPerInch)/96);
         GridSelfServicePackages.Header.Height:=trunc((GridSelfServicePackages.Header.MinHeight*Screen.PixelsPerInch)/96);
-        GridNetworks.Header.Height:=trunc((GridNetworks.Header.MinHeight*Screen.PixelsPerInch)/96);
         GridReportingResult.Header.Height:=trunc((GridReportingResult.Header.MinHeight*Screen.PixelsPerInch)/96);
         GridReportingQueries.Header.Height:=trunc((GridReportingQueries.Header.MinHeight*Screen.PixelsPerInch)/96);
         GridRules.Header.Height:=trunc((GridRules.Header.MinHeight*Screen.PixelsPerInch)/96);
@@ -5447,12 +5421,6 @@ begin
   end;
 end;
 
-procedure TVisWaptGUI.GridNetworksEditing(Sender: TBaseVirtualTree;
-  Node: PVirtualNode; Column: TColumnIndex; var Allowed: Boolean);
-begin
-  Allowed := True;
-end;
-
 procedure TVisWaptGUI.GridPackagesColumnDblClick(Sender: TBaseVirtualTree;
   Column: TColumnIndex; Shift: TShiftState);
 begin
@@ -5482,7 +5450,6 @@ begin
   ActDisplayUserMessage.Visible:=False;
   ActLaunchWaptExit.Visible:=False;
   ActTISHelp.Visible:=False;
-  PgNetworksConfig.TabVisible:=False;
   PgReports.TabVisible := False;
   pgRepositories.TabVisible:=False;
   pgSelfService.TabVisible:=False;
@@ -5637,11 +5604,6 @@ begin
     if GridGroups.Data = nil then
       ActSearchGroups.Execute;
     EdSearchGroups.SetFocus;
-  end
-  else if MainPages.ActivePage = PgNetworksConfig then
-  begin
-    if not SrcNetworks.Active then
-      SrcNetworks.open;
   end
   else if MainPages.ActivePage = pgWaptWUAConfig then
   begin
