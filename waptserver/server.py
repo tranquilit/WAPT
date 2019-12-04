@@ -57,6 +57,7 @@ import traceback
 import datetime
 import re
 import glob
+import base64
 
 from optparse import OptionParser
 
@@ -1961,7 +1962,7 @@ def packages_install_stats():
 
 
 @app.route('/api/v3/trusted_signers_certificates',methods=['GET','DELETE','POST'])
-@requires_auth()
+@requires_auth(methods=['admin'])
 def trusted_signers_certificates():
     if request.method == 'GET':
         try:
@@ -1972,9 +1973,24 @@ def trusted_signers_certificates():
             known_ssl_path = os.path.join(app.conf.get('wapt_folder'),'ssl')
             if os.path.isdir(known_ssl_path):
                 trusted.add_pems(known_ssl_path)
+            trusted_certs =  [{'cn':c.cn,
+                        'issuer_cn':c.issuer_cn,
+                        'subject_key_identifier':(c.subject_key_identifier or '').encode('hex'),
+                        'authority_key_identifier': (c.authority_key_identifier or '').encode('hex'),
+                        'fingerprint_sha1':c.get_fingerprint('sha1').encode('hex'),
+                        'fingerprint':c.get_fingerprint('sha256').encode('hex'),
+                        'pem':c.as_pem()} for c in trusted.trusted.values()]
+            known_certificates =  [{'cn':c.cn,
+                        'issuer_cn':c.issuer_cn,
+                        'subject_key_identifier':(c.subject_key_identifier or '').encode('hex'),
+                        'authority_key_identifier': (c.authority_key_identifier or '').encode('hex'),
+                        'fingerprint_sha1':c.get_fingerprint('sha1').encode('hex'),
+                        'fingerprint':c.get_fingerprint('sha256').encode('hex'),
+                        'pem':c.as_pem()} for c in trusted.certificates()]
 
             msg = u'Trusted: %s, Known: %s' % (','.join([c.cn for c in trusted.trusted.values()]), ','.join([c.cn for c in trusted.certificates()]))
-            return make_response(result=trusted, msg=msg, status=200, request_time=time.time() - start_time)
+            result = {'trusted':trusted_certs,'certificates':known_certificates}
+            return make_response(result=result, msg=msg, status=200, request_time=time.time() - start_time)
 
         except Exception as e:
             logger.debug(traceback.format_exc())

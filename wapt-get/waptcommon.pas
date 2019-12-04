@@ -99,8 +99,8 @@ interface
               OnAuthorization:THTTPSendAuthorization=Nil;RetryCount:Integer=0):ISuperObject;
 
   Function IdWget(const fileURL, DestFileName: Utf8String; CBReceiver:TObject=Nil;progressCallback:TProgressCallback=Nil;HttpProxy: String='';userAgent:String='';
-              VerifyCertificateFilename:String='';CookieManage:TIdCookieManager=Nil;ClientCertFilename:String='';ClientKeyFilename:String=''): boolean;
-  Function IdWget_Try(const fileURL: Utf8String;HttpProxy: String='';userAgent:String='';VerifyCertificateFilename:String='';CookieManage:TIdCookieManager=Nil;
+              VerifyCertificateFilename:String='';CookieManager:TIdCookieManager=Nil;ClientCertFilename:String='';ClientKeyFilename:String=''): boolean;
+  Function IdWget_Try(const fileURL: Utf8String;HttpProxy: String='';userAgent:String='';VerifyCertificateFilename:String='';CookieManager:TIdCookieManager=Nil;
               ClientCertFilename:String='';
               ClientKeyFilename:String=''): boolean;
 
@@ -1373,7 +1373,7 @@ end;
 function IdWget(const fileURL, DestFileName: Utf8String; CBReceiver: TObject;
   progressCallback: TProgressCallback; HttpProxy: String='';userAgent:String='';
   VerifyCertificateFilename:String='';
-  CookieManage:TIdCookieManager=Nil;
+  CookieManager:TIdCookieManager=Nil;
   ClientCertFilename:String='';ClientKeyFilename:String=''): boolean;
 var
   http:TIdHTTP;
@@ -1389,6 +1389,9 @@ begin
   http := TIdHTTP.Create;
   http.HandleRedirects:=True;
   http.Request.AcceptLanguage := Language;
+
+  if CookieManager<>Nil then
+    http.CookieManager := CookieManager;
 
   if userAgent='' then
     http.Request.UserAgent := DefaultUserAgent
@@ -1476,7 +1479,7 @@ begin
 end;
 
 function IdWget_Try(const fileURL: Utf8String; HttpProxy: String='';userAgent:String='';
-      VerifyCertificateFilename:String='';CookieManage:TIdCookieManager=Nil;
+      VerifyCertificateFilename:String='';CookieManager:TIdCookieManager=Nil;
       ClientCertFilename:String='';
       ClientKeyFilename:String=''): boolean;
 var
@@ -1494,6 +1497,9 @@ begin
     http.Request.UserAgent := DefaultUserAgent
   else
     http.Request.UserAgent := userAgent;
+
+  if CookieManager<>Nil then
+    http.CookieManager := CookieManager;
 
   try
     // init ssl stack
