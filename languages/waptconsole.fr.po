@@ -1372,13 +1372,11 @@ msgid "Private key authentication"
 msgstr "Authentification de la clé privée"
 
 #: tvisprivatekeyauth.labkey.caption
-#, fuzzy
 msgctxt "tvisprivatekeyauth.labkey.caption"
 msgid "For key matching the certificate: "
 msgstr "Pour la clé associée au certificat:"
 
 #: tvisprivatekeyauth.labpassword.caption
-#, fuzzy
 msgctxt "tvisprivatekeyauth.labpassword.caption"
 msgid "Private key password :"
 msgstr "Mot de passe de la clé privée :"
@@ -1977,7 +1975,6 @@ msgid "status"
 msgstr "Statut"
 
 #: tvistriggerhostsaction.progressgrid.header.columns[1].text
-#, fuzzy
 msgctxt "tvistriggerhostsaction.progressgrid.header.columns[1].text"
 msgid "Host"
 msgstr "Machine"
@@ -3324,7 +3321,6 @@ msgid "signed_attributes"
 msgstr "Attributs signés"
 
 #: tviswaptgui.gridgroups.header.columns[21].text
-#, fuzzy
 msgctxt "tviswaptgui.gridgroups.header.columns[21].text"
 msgid "md5sum"
 msgstr "Somme MD5"
@@ -3485,7 +3481,6 @@ msgid "Locale"
 msgstr "Langue"
 
 #: tviswaptgui.gridhostpackages.header.columns[13].text
-#, fuzzy
 msgctxt "tviswaptgui.gridhostpackages.header.columns[13].text"
 msgid "md5sum"
 msgstr "Somme MD5"
@@ -5858,214 +5853,6 @@ msgstr ""
 
 #: tviswaptgui.toolbuttonsep2.caption
 msgid "ToolButtonSep2"
-msgstr ""
-
-#: tviswaptusers.actdeleteaccount.caption
-#, fuzzy
-msgctxt "tviswaptusers.actdeleteaccount.caption"
-msgid "Delete account"
-msgstr "Supprimer le compte"
-
-#: tviswaptusers.actnewaccount.caption
-#, fuzzy
-msgctxt "tviswaptusers.actnewaccount.caption"
-msgid "New account"
-msgstr "Nouveau compte"
-
-#: tviswaptusers.actreloadaccounts.caption
-#, fuzzy
-msgctxt "tviswaptusers.actreloadaccounts.caption"
-msgid "Reload accounts"
-msgstr "Rafraîchir comptes"
-
-#: tviswaptusers.actsaveaccounts.caption
-#, fuzzy
-msgctxt "tviswaptusers.actsaveaccounts.caption"
-msgid "Save accounts"
-msgstr "Enregistrer"
-
-#: tviswaptusers.caption
-msgid "WAPT Users rights"
-msgstr ""
-
-#: tviswaptusers.edpkirootdirectory.hint
-msgctxt "tviswaptusers.edpkirootdirectory.hint"
-msgid "c:\\private"
-msgstr ""
-
-#: tviswaptusers.edpkirootdirectory.text
-msgctxt "tviswaptusers.edpkirootdirectory.text"
-msgid "c:\\private"
-msgstr ""
-
-#: tviswaptusers.gridusers.header.columns[0].text
-#, fuzzy
-msgctxt "tviswaptusers.gridusers.header.columns[0].text"
-msgid "id"
-msgstr "id"
-
-#: tviswaptusers.gridusers.header.columns[10].text
-#, fuzzy
-msgctxt "tviswaptusers.gridusers.header.columns[10].text"
-msgid "Edit self-service"
-msgstr "Editer self-service"
-
-#: tviswaptusers.gridusers.header.columns[11].text
-#, fuzzy
-msgctxt "tviswaptusers.gridusers.header.columns[11].text"
-msgid "Edit WUA"
-msgstr "Editer WUA"
-
-#: tviswaptusers.gridusers.header.columns[12].text
-#, fuzzy
-msgctxt "tviswaptusers.gridusers.header.columns[12].text"
-msgid "Apply upgrades"
-msgstr "Lancer les installations"
-
-#: tviswaptusers.gridusers.header.columns[13].text
-#, fuzzy
-msgctxt "tviswaptusers.gridusers.header.columns[13].text"
-msgid "Remote hosts actions"
-msgstr "Actions clients distants "
-
-#: tviswaptusers.gridusers.header.columns[14].text
-#, fuzzy
-msgctxt "tviswaptusers.gridusers.header.columns[14].text"
-msgid "Edit Reports"
-msgstr "Modifier les requêtes"
-
-#: tviswaptusers.gridusers.header.columns[15].text
-#, fuzzy
-msgctxt "tviswaptusers.gridusers.header.columns[15].text"
-msgid "Run Reports"
-msgstr "Lancer les requêtes"
-
-#: tviswaptusers.gridusers.header.columns[16].text
-#, fuzzy
-msgctxt "tviswaptusers.gridusers.header.columns[16].text"
-msgid "Certificate Filename"
-msgstr "Nom fichier de certificat"
-
-#: tviswaptusers.gridusers.header.columns[17].text
-#, fuzzy
-msgctxt "tviswaptusers.gridusers.header.columns[17].text"
-msgid "Valid until"
-msgstr "Valide jusqu'à"
-
-#: tviswaptusers.gridusers.header.columns[18].text
-#, fuzzy
-msgctxt "tviswaptusers.gridusers.header.columns[18].text"
-msgid "Serial number"
-msgstr "Numéro de série"
-
-#: tviswaptusers.gridusers.header.columns[19].text
-#, fuzzy
-msgctxt "tviswaptusers.gridusers.header.columns[19].text"
-msgid "Code signing"
-msgstr "Signature de code"
-
-#: tviswaptusers.gridusers.header.columns[1].text
-#, fuzzy
-msgctxt "tviswaptusers.gridusers.header.columns[1].text"
-msgid "Username"
-msgstr "Utilisateur"
-
-#: tviswaptusers.gridusers.header.columns[20].text
-#, fuzzy
-#| msgid "Code signing"
-msgctxt "tviswaptusers.gridusers.header.columns[20].text"
-msgid "CA"
-msgstr "Signature de code"
-
-#: tviswaptusers.gridusers.header.columns[21].text
-#, fuzzy
-#| msgid "CA"
-msgctxt "tviswaptusers.gridusers.header.columns[21].text"
-msgid "Fingerprint (sha256)"
-msgstr "CA"
-
-#: tviswaptusers.gridusers.header.columns[22].text
-#, fuzzy
-msgctxt "tviswaptusers.gridusers.header.columns[22].text"
-msgid "subject_dn"
-msgstr "DN Sujet"
-
-#: tviswaptusers.gridusers.header.columns[23].text
-#, fuzzy
-msgctxt "tviswaptusers.gridusers.header.columns[23].text"
-msgid "issuer_dn"
-msgstr "DN de l'émetteur"
-
-#: tviswaptusers.gridusers.header.columns[24].text
-#, fuzzy
-msgctxt "tviswaptusers.gridusers.header.columns[24].text"
-msgid "Signed on"
-msgstr "Signé le"
-
-#: tviswaptusers.gridusers.header.columns[25].text
-#, fuzzy
-msgctxt "tviswaptusers.gridusers.header.columns[25].text"
-msgid "Signed by"
-msgstr "Signé par"
-
-#: tviswaptusers.gridusers.header.columns[2].text
-#, fuzzy
-msgctxt "tviswaptusers.gridusers.header.columns[2].text"
-msgid "Certificate Name"
-msgstr "Nom de cettificat"
-
-#: tviswaptusers.gridusers.header.columns[3].text
-#, fuzzy
-msgctxt "tviswaptusers.gridusers.header.columns[3].text"
-msgid "Issuer"
-msgstr "Emetteur"
-
-#: tviswaptusers.gridusers.header.columns[4].text
-#, fuzzy
-#| msgid "Register hosts"
-msgctxt "tviswaptusers.gridusers.header.columns[4].text"
-msgid "Admin"
-msgstr "Admin"
-
-#: tviswaptusers.gridusers.header.columns[5].text
-#, fuzzy
-msgctxt "tviswaptusers.gridusers.header.columns[5].text"
-msgid "Register hosts"
-msgstr "Enregistrer des clients"
-
-#: tviswaptusers.gridusers.header.columns[6].text
-#, fuzzy
-msgctxt "tviswaptusers.gridusers.header.columns[6].text"
-msgid "Unregister hosts"
-msgstr "Désenregistrer des clients"
-
-#: tviswaptusers.gridusers.header.columns[7].text
-#, fuzzy
-msgctxt "tviswaptusers.gridusers.header.columns[7].text"
-msgid "Edit hosts"
-msgstr "Modifier clients"
-
-#: tviswaptusers.gridusers.header.columns[8].text
-#, fuzzy
-msgctxt "tviswaptusers.gridusers.header.columns[8].text"
-msgid "Edit packages"
-msgstr "Modifier paquets"
-
-#: tviswaptusers.gridusers.header.columns[9].text
-#, fuzzy
-msgctxt "tviswaptusers.gridusers.header.columns[9].text"
-msgid "Edit groups"
-msgstr "Modifier groupes"
-
-#: tviswaptusers.label13.caption
-#, fuzzy
-msgctxt "tviswaptusers.label13.caption"
-msgid "Certificates and key root dir"
-msgstr "Répertoire des certificats et clés"
-
-#: tviswaptusers.tbreport1.caption
-msgctxt "tviswaptusers.tbreport1.caption"
-msgid "TbReport1"
 msgstr ""
 
 #: tviswuadownloads.actwuadownloadsrefresh.caption

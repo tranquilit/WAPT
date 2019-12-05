@@ -51,6 +51,7 @@ except:
     pass
 
 import fnmatch
+import ipaddress
 import whichcraft
 import subprocess
 import platform
@@ -70,6 +71,7 @@ import shlex
 from iniparse import RawConfigParser,INIConfig
 from optparse import OptionParser
 
+from operator import itemgetter
 from collections import namedtuple
 from collections import OrderedDict
 from collections import defaultdict
@@ -1532,6 +1534,7 @@ class WaptServer(BaseObjectClass):
 
         self.private_key_password_callback=None
 
+        self.capture_external_ip_callback = None
         if dnsdomain:
             self.dnsdomain = dnsdomain
         else:
@@ -1796,6 +1799,8 @@ class WaptServer(BaseObjectClass):
                         allow_redirects=True)
 
                 req.raise_for_status()
+                if req.headers.get('X-Remote-IP') and self.capture_external_ip_callback:
+                    self.capture_external_ip_callback(req.headers['X-Remote-IP'])
                 return ujson.loads(req.content)
         else:
             raise Exception(u'Wapt server url not defined or not found in DNS')
@@ -1816,13 +1821,11 @@ class WaptServer(BaseObjectClass):
                         allow_redirects=True)
 
                 req.raise_for_status()
+                if req.headers.get('X-Remote-IP') and self.capture_external_ip_callback:
+                    self.capture_external_ip_callback(req.headers['X-Remote-IP'])
                 return req.headers
         else:
             raise Exception(u'Wapt server url not defined or not found in DNS')
-
-    def wget(self,action,auth=None,timeout=None):
-        """ """
-        surl = self.server_url
 
     def post(self,action,data=None,files=None,auth=None,timeout=None,signature=None,signer=None,content_length=None,use_ssl_auth=True):
         """Post data to waptserver using http POST method
@@ -1903,6 +1906,8 @@ class WaptServer(BaseObjectClass):
                     else:
                         break
                 req.raise_for_status()
+                if req.headers.get('X-Remote-IP') and self.capture_external_ip_callback:
+                    self.capture_external_ip_callback(req.headers['X-Remote-IP'])
                 return ujson.loads(req.content)
         else:
             raise Exception(u'Wapt server url not defined or not found in DNS')
@@ -2034,14 +2039,13 @@ class WaptRepo(WaptRemoteRepo):
     """Gives access to a remote http repository, with a zipped Packages packages index
     Find its repo_url based on
     * repo_url explicit setting in ini config section [<name>]
-    * wapt_server: if repo_url is empty, ask a repo_url at the server
-
+    * if there is some rules use rules
     >>> repo = WaptRepo(name='main',url='http://wapt/wapt',timeout=4)
     >>> packages = repo.packages()
     >>> len(packages)
     """
 
-    def __init__(self,url=None,name='wapt',verify_cert=None,http_proxy=None,timeout=None,cabundle=None,config=None,wapt_server=None,WAPT=None):
+    def __init__(self,url=None,name='wapt',verify_cert=None,http_proxy=None,timeout=None,cabundle=None,config=None,WAPT=None):
         """Initialize a repo at url "url".
 
         Args:
@@ -2062,36 +2066,20 @@ class WaptRepo(WaptRemoteRepo):
         """
         self._WAPT = None
         self.WAPT = WAPT
-        # additional properties
-        self._default_config.update({
-            'wapt_server':'',
-        })
 
         # create additional properties
-        self._wapt_server = None
-        self._cached_wapt_server_repo_url = None
+        self._cached_wapt_repo_url = None
+        self._rules = None
+        self._rulesdb = None
 
         WaptRemoteRepo.__init__(self,url=url,name=name,verify_cert=verify_cert,http_proxy=http_proxy,timeout=timeout,cabundle=cabundle,config=config)
 
-        # force with supplied not None parameters
-        if wapt_server is not None:
-            self.wapt_server = wapt_server
 
     def reset_network(self):
         """called by wapt when network configuration has changed"""
-        self._cached_wapt_server_repo_url = None
+        self.cached_wapt_repo_url = None
         self._packages = None
         self._packages_date = None
-
-    @property
-    def wapt_server(self):
-        return self._wapt_server
-
-    @wapt_server.setter
-    def wapt_server(self,value):
-        if value != self._wapt_server:
-            self._wapt_server = value
-            self._cached_wapt_server_repo_url = None
 
     @property
     def WAPT(self):
@@ -2101,6 +2089,35 @@ class WaptRepo(WaptRemoteRepo):
     def WAPT(self,value):
         if value!=self.WAPT:
             self._WAPT=value
+
+    @property
+    def rulesdb(self):
+        """
+        Get rules from DB (or from _rulesdb if they were set in this instance)
+        """
+        if self._rulesdb is None:
+            self._rulesdb = self.WAPT.waptdb.get_param('rules-%s' %(self.name))
+        return self._rulesdb
+
+    @rulesdb.setter
+    def rulesdb(self,value):
+        if value!=self._rulesdb:
+            self.reset_network()
+            self._rulesdb=value
+
+    @property
+    def cached_wapt_repo_url(self):
+        if self._cached_wapt_repo_url:
+            return self._cached_wapt_repo_url
+        else:
+            return self.find_wapt_repo_url() if self.rulesdb else None
+
+    @cached_wapt_repo_url.setter
+    def cached_wapt_repo_url(self,value):
+        if value!=self._cached_wapt_repo_url:
+            if value:
+                value = value.rstrip('/')
+            self._cached_wapt_repo_url=value
 
     @property
     def repo_url(self):
@@ -2122,14 +2139,7 @@ class WaptRepo(WaptRemoteRepo):
         >>> print repo.repo_url
         http://srvwapt.tranquilit.local/wapt
         """
-        if self._repo_url:
-            return self._repo_url
-        else:
-            if not self._cached_wapt_server_repo_url and self.wapt_server:
-                self._cached_wapt_server_repo_url = self.find_wapt_repo_url()
-            elif not self.wapt_server:
-                raise Exception(u'No wapt_server defined for repo %s'%self.name)
-            return self._cached_wapt_server_repo_url
+        return self.cached_wapt_repo_url if self.cached_wapt_repo_url else self._repo_url
 
     @repo_url.setter
     def repo_url(self,value):
@@ -2137,36 +2147,72 @@ class WaptRepo(WaptRemoteRepo):
             value = value.rstrip('/')
 
         if value != self._repo_url:
+            self.reset_network()
             self._repo_url = value
-            self._packages = None
-            self._packages_date = None
-            self._cached_wapt_server_repo_url = None
 
+    def rules(self):
+        """
+        Return the list of rules in Packages/Rules
+        """
+        if not self.repo_url:
+            raise EWaptException('Repository URL for %s is empty. Add a %s section in ini' % (self.name,self.name))
+
+        if self._rules is None:
+            self._rules = []
+
+        if not self._rules:
+            (_packages_index_str,_packages_index_date) = self._get_packages_index_data()
+            with zipfile.ZipFile(StringIO.StringIO(_packages_index_str)) as waptzip:
+                if 'Rules' in waptzip.namelist():
+                    json_rules = json.loads(codecs.decode(waptzip.read(name='Rules'),'utf-8'))
+                    for rule in json_rules:
+                        try:
+                            signer_cert_ca = SSLCABundle()
+                            signer_cert_ca.add_certificates_from_pem(rule['signer_certificate'])
+                            chain = self.cabundle.check_certificates_chain(signer_cert_ca.certificates())
+                            rule['verified_by'] = chain[0].verify_claim(rule,required_attributes=rule['signed_attributes'])
+                            self._rules.append(rule)
+                        except:
+                            logger.debug('Cert not recognize or bad signature for : \n%s' % (rule))
+                    self._rulesdb=self._rules
+        return self._rules
 
     def find_wapt_repo_url(self):
-        """Ask the server for the url of a repo
+        """Find a wapt_repo_url from rules
         Returns:
             str: URL to the repo.
-
-        >>> repo = WaptRepo(name='wapt',wapt_server='https://wapt/',timeout=4,url=None)
-        >>> repo.repo_url
-        'http://wapt.tranquil.it./wapt'
-        >>> repo = WaptRepo(name='wapt',url='http://wapt/wapt',timeout=4)
-        >>> repo.repo_url
-        'http://wapt/wapt'
         """
-        data = {}
-        data['uuid']=self.WAPT.host_uuid
-        data['host_certificate']= self.WAPT.create_or_update_host_certificate()
-        data['host_certificate_signing_request'] = self.WAPT.get_host_certificate_signing_request().as_pem()
-        data['Agent IP'] = get_main_ip()
-        data['hostname'] = setuphelpers.get_hostname()
-        data['domain'] = setuphelpers.get_domain()
-        data['site'] = self.WAPT.get_host_site()
-        data = jsondump(data)
-        if self.WAPT.waptserver:
-            result = self.WAPT.waptserver.post('api/v3/get_repo_url',data=data)
-        return result.get('REPO_URL')
+        def rule_agent_ip(value):
+            return ipaddress.ip_address(get_main_ip()) in ipaddress.ip_network(value)
+
+        def rule_domain(value):
+            return setuphelpers.get_domain() == value
+
+        def rule_hostname(value):
+            return fnmatch.fnmatch(setuphelpers.get_hostname(),value)
+
+        def rule_public_ip(value):
+            try:
+                return ipaddress.ip_address(self.WAPT.waptdb.get_param('last_external_ip')) in ipaddress.ip_network(value)
+            except:
+                return False
+
+        def rule_site(value):
+            return self.WAPT.get_host_site() == value
+
+        def check_rule(rule,value):
+            return {
+                    'AGENT IP':rule_agent_ip,
+                    'DOMAIN':rule_domain,
+                    'HOSTNAME':rule_hostname,
+                    'PUBLIC IP':rule_public_ip,
+                    'SITE':rule_site
+                    }[rule](value)
+
+        for rule in sorted(self.rulesdb,key=itemgetter('sequence')):
+            if check_rule(rule['condition'],rule['value']) and self.is_available(url=rule['repo_url']) is not None:
+                    return rule['repo_url']
+        return None
 
     def load_config(self,config,section=None):
         """Load waptrepo configuration from inifile section.
@@ -2186,27 +2232,18 @@ class WaptRepo(WaptRemoteRepo):
             section = 'global'
 
         WaptRemoteRepo.load_config(self,config,section)
-        if config.has_section(section) and config.has_option(section,'wapt_server'):
-            self.wapt_server = config.get(section,'wapt_server')
         return self
 
     def as_dict(self):
         result = super(WaptRepo,self).as_dict()
         result.update(
             {
-            'repo_url':self._repo_url or self._cached_wapt_server_repo_url,
-            'wapt_server':self.wapt_server,
+            'repo_url':self.repo_url,
             })
         return result
 
     def __repr__(self):
-        try:
-            if self.wapt_server:
-                return '<WaptRepo %s for wapt_server %s>' % (self.repo_url,self.wapt_server)
-            else:
-                return '<WaptRepo %s>' % (self.repo_url,)
-        except:
-            return '<WaptRepo %s for wapt_server %s>' % ('unknown',self.wapt_server)
+        return '<WaptRepo %s>' % (self.repo_url,)
 
 class WaptHostRepo(WaptRepo):
     """Dummy http repository for host packages
@@ -2218,10 +2255,10 @@ class WaptHostRepo(WaptRepo):
      PackageEntry('4C4C4544-004E-3510-8051-C7C04F325131','30') ]
     """
 
-    def __init__(self,url=None,name='wapt-host',verify_cert=None,http_proxy=None,timeout = None,wapt_server=None,host_id=None,cabundle=None,config=None,host_key=None,WAPT=None):
+    def __init__(self,url=None,name='wapt-host',verify_cert=None,http_proxy=None,timeout = None,host_id=None,cabundle=None,config=None,host_key=None,WAPT=None):
         self._host_id = None
         self.host_key = None
-        WaptRepo.__init__(self,url=url,name=name,verify_cert=verify_cert,http_proxy=http_proxy,timeout = timeout,wapt_server=wapt_server,cabundle=cabundle,config=config,WAPT=WAPT)
+        WaptRepo.__init__(self,url=url,name=name,verify_cert=verify_cert,http_proxy=http_proxy,timeout = timeout,cabundle=cabundle,config=config,WAPT=WAPT)
         self.host_id = host_id
 
         if host_key:
@@ -2427,34 +2464,8 @@ class WaptHostRepo(WaptRepo):
 
         return {"downloaded":downloaded,"skipped":[],"errors":[],"packages":self.packages()}
 
-    @property
-    def repo_url(self):
-        if self._repo_url:
-            return self._repo_url
-        else:
-            self._cached_wapt_server_repo_url = None
-            return self._cached_wapt_server_repo_url
-
-    @repo_url.setter
-    def repo_url(self,value):
-        if value:
-            value = value.rstrip('/')
-
-        if value != self._repo_url:
-            self._repo_url = value
-            self._packages = None
-            self._packages_date = None
-            self._cached_wapt_server_repo_url = None
-
     def __repr__(self):
-        try:
-            if self.wapt_server:
-                return '<WaptHostRepo %s for server %s and host_id %s >' % (self.repo_url,self.wapt_server,self.host_id)
-            else:
-                return '<WaptHostRepo %s for host_id %s >' % (self.repo_url,self.host_id)
-        except:
-            return '<WaptHostRepo %s for server %s and host id %s >' % ('unknown',self.wapt_server,self.host_id)
-
+        return '<WaptHostRepo %s for host_id %s >' % (self.repo_url,self.host_id)
 
 class WaptPackageInstallLogger(LogOutput):
     """Context handler to log all print messages to a wapt package install log
@@ -2544,7 +2555,7 @@ class WaptPackageAuditLogger(LogOutput):
             exit_status=exit_status,
             error_status=error_status)
 
-######################"""
+######################
 
 class Wapt(BaseObjectClass):
     """Global WAPT engine"""
@@ -2758,6 +2769,8 @@ class Wapt(BaseObjectClass):
         except Exception as e:
             logger.debug(u'Unable to use client certificate auth: %s' % ensure_unicode(e))
 
+    def save_external_ip(self,ip):
+        self.waptdb.set_param('last_external_ip',ip)
 
     def load_config(self,config_filename=None):
         """Load configuration parameters from supplied inifilename
@@ -2878,6 +2891,7 @@ class Wapt(BaseObjectClass):
 
         if self.config.has_option('global','wapt_server'):
             self.waptserver = WaptServer().load_config(self.config)
+            self.waptserver.capture_external_ip_callback=self.save_external_ip
             self.set_client_cert_auth(self.waptserver)
         else:
             # force reset to None if config file is changed at runtime
@@ -4117,6 +4131,15 @@ class Wapt(BaseObjectClass):
                     self.waptdb.set_param('last-url-%s' % repo.name, repo.repo_url)
                     self.waptdb.set_param('last-discarded-%s' % repo.name, [p.as_key() for p in discarded])
                     self.waptdb.set_param('next-update-%s' % repo.name,next_update_on)
+
+                    # get rules to put them into DB
+                    if not(isinstance(repo,WaptHostRepo)):
+                        rules=repo.rules()
+                    else:
+                        rules=[]
+
+                    self.waptdb.set_param('rules-%s' % repo.name,rules)
+
                     return (last_modified,next_update_on)
                 except Exception as e:
                     logger.info(u'Unable to update repository status of %s, error %s'%(repo._repo_url,e))
@@ -7220,8 +7243,6 @@ class Wapt(BaseObjectClass):
 
     def network_reconfigure(self):
         """Called whenever the network configuration has changed
-
-
         """
         try:
             for repo in self.repositories:

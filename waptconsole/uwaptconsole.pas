@@ -10,9 +10,8 @@ uses
   Dialogs, Buttons, LazUTF8, SynEdit, SynHighlighterPython, SynHighlighterSQL,
   SynCompletion, vte_json, vte_dbtreeex, ExtCtrls, StdCtrls, ComCtrls, ActnList,
   Menus, jsonparser, superobject, VirtualTrees, VarPyth, ImgList, SOGrid,
-  uvisloading, IdComponent, DefaultTranslator, IniPropStorage, DBGrids,
-  ShellCtrls, CheckLst, EditBtn, GetText, uWaptConsoleRes, db,
-  BufDataset, SearchEdit, MenuButton, ToggleLabel, tisstrings;
+  uvisloading, IdComponent, DefaultTranslator, DBGrids, CheckLst, EditBtn, GetText, uWaptConsoleRes, db,
+  BufDataset, SearchEdit, tisstrings;
 
 type
 
@@ -21,7 +20,9 @@ type
   { TVisWaptGUI }
 
   TVisWaptGUI = class(TForm)
+    ActAddNewNetwork: TAction;
     ActCancelRunningTask: TAction;
+    ActDeleteNetwork: TAction;
     ActDisplayPreferences: TAction;
     ActExternalRepositoriesSettings: TAction;
     ActAddHWPropertyToGrid: TAction;
@@ -2141,10 +2142,10 @@ begin
       ActReportingQueryExecute.Execute
     else
     if MainPages.ActivePage = pgRepositories then
+    begin
        ActRepositoriesGetSecondRepos.Execute;
-
-
-
+       ActRepositoriesGetUpdateRules.Execute;
+    end;
   finally
     Screen.Cursor := crDefault;
   end;

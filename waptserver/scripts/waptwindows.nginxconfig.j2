@@ -124,6 +124,8 @@ http {
                    return 401;
                 }
     {% endif %}
+				add_header X-Forwarded-List $http_x_forwarded_for;
+				add_header X-Remote-IP $remote_addr;
                 proxy_pass http://127.0.0.1:{{waptserver_port}};
             }
 

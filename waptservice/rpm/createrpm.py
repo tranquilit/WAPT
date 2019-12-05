@@ -240,7 +240,6 @@ mkdir_p('builddir/opt/wapt/lib')
 mkdir_p('builddir/opt/wapt/log')
 mkdir_p('builddir/opt/wapt/db')
 mkdir_p('builddir/opt/wapt/lib/python2.7/site-packages')
-mkdir_p('builddir/opt/wapt/waptagent')
 mkdir_p('builddir/usr/bin')
 mkdir_p('builddir/opt/wapt/templates')
 
@@ -339,16 +338,16 @@ eprint('copying systemd startup script')
 systemd_build_dest_dir = './builddir/usr/lib/systemd/system/'
 try:
     mkdir_p(systemd_build_dest_dir)
-    copyfile('../scripts/waptagent.service', os.path.join(systemd_build_dest_dir, 'waptagent.service'))
+    copyfile('../scripts/waptservice.service', os.path.join(systemd_build_dest_dir, 'waptagent.service'))
 except Exception as e:
     eprint('error: \n%s' % e)
     exit(1)
 
-eprint('copying logrotate script /etc/logrotate.d/waptagent')
+eprint('copying logrotate script /etc/logrotate.d/waptservice')
 try:
     mkdir_p('./builddir/etc/logrotate.d/')
     shutil.copyfile('../scripts/waptservice-logrotate',
-                    './builddir/etc/logrotate.d/waptagent')
+                    './builddir/etc/logrotate.d/waptservice')
     #eprint(run('chown root:root ./builddir/etc/logrotate.d/waptserver'))
 except Exception as e:
     eprint('error: \n%s' % e)

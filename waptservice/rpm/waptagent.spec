@@ -37,20 +37,17 @@ mkdir -p %{buildroot}/opt/wapt/log
 mkdir -p %{buildroot}/opt/wapt/conf
 mkdir -p %{buildroot}/opt/wapt/bin
 
-mkdir -p %{buildroot}/opt/wapt/waptagent
-mkdir -p %{buildroot}/opt/wapt/waptagent/scripts
-
 mkdir -p %{buildroot}/usr/lib/systemd/
 
 (cd .. && python ./createrpm.py)
 
 %files
 %defattr(644,root,root,755)
-/usr/lib/systemd/system/waptagent.service
+/usr/lib/systemd/system/waptservice.service
 /opt/wapt/waptservice/*
 /opt/wapt/lib/*
 /opt/wapt/lib64
-/etc/logrotate.d/waptagent
+/etc/logrotate.d/waptservice
 /etc/rsyslog.d/waptservice.conf
 /opt/wapt/waptpackage.py
 /opt/wapt/waptcrypto.py
@@ -95,11 +92,11 @@ rm -rf /opt/wapt/waptenterprise
 rm -rf /opt/wapt/bin
 
 %post
-systemctl enable  waptagent
-touch /var/log/waptagent.log
-touch /var/run/waptagent.pid
-chown wapt:root /var/log/waptagent.log
-chmod 640 /var/log/waptagent.log
+systemctl enable  waptservice
+touch /var/log/waptservice.log
+touch /var/run/waptservice.pid
+chown wapt:root /var/log/waptservice.log
+chmod 640 /var/log/waptservice.log
 
 find /opt/wapt -type f -exec chmod 644 {} +
 find /opt/wapt -type d ! -name conf ! -name log -exec chmod 755 {} +
@@ -130,7 +127,7 @@ systemctl restart rsyslog
 FILE=/opt/wapt/wapt-get.ini
 if [[ -f "$FILE" ]]; then
 	wapt-get register
-    systemctl restart waptagent.service
+    systemctl restart waptservice.service
 fi
 
 ### end

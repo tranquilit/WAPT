@@ -10,13 +10,13 @@ import time
 def run(*args, **kwargs):
     return subprocess.check_output(*args, shell=True, **kwargs)
 
-run('systemctl enable  waptagent')
+run('systemctl enable waptservice')
 
 print("Setting up pid and log files")
-run('touch /var/log/waptagent.log')
-run('touch /var/run/waptagent.pid')
-run('chown wapt:root /var/log/waptagent.log')
-run('chmod 640 /var/log/waptagent.log')
+run('touch /var/log/waptservice.log')
+run('touch /var/run/waptservice.pid')
+run('chown wapt:root /var/log/waptservice.log')
+run('chmod 640 /var/log/waptservice.log')
 
 # minimal .profile script to setup python path
 open('/opt/wapt/.profile','w').write("""#
@@ -25,12 +25,7 @@ export PYTHONPATH=/opt/wapt
 export PATH=/opt/wapt/bin:$PATH
 """)
 
-#run('rm -f /opt/wapt/*.pyc')
-#run('rm -f /opt/wapt/waptserver/*.pyc')
-
 # relocating waptserver.ini config file to the new location
-
-NEW_CFG_PATH = '/opt/wapt/conf/waptagent.ini'
 
 print("Tightening up permissions")
 run('find /opt/wapt -type f -exec chmod 644 {} +')
@@ -63,4 +58,4 @@ if os.path.exists('/opt/wapt/wapt-get.ini'):
     print("Register")
     run('wapt-get register')
     print("Restarting Agent")
-    run('systemctl restart waptagent.service')
+    run('systemctl restart waptservice.service')

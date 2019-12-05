@@ -3434,7 +3434,7 @@ class WaptRemoteRepo(WaptBaseRepo):
 
 
     @property
-    def packages_url(self):
+    def packages_url(self,url=None):
         """return url of Packages index file
 
         >>> repo = WaptRemoteRepo(name='main',url='http://wapt/wapt',timeout=4)
@@ -3443,7 +3443,7 @@ class WaptRemoteRepo(WaptBaseRepo):
 
         hardcoded path to the Packages index.
         """
-        return self.repo_url + '/Packages'
+        return (self.repo_url + '/Packages') if url is None else (url + '/Packages')
 
     def client_auth(self):
         """Return SSL trio filenames for client side SSL auth
@@ -3460,8 +3460,8 @@ class WaptRemoteRepo(WaptBaseRepo):
         else:
             return None
 
-    def is_available(self):
-        """Check if repo is reachable an return createion date of Packages.
+    def is_available(self,url=None):
+        """Check if repo is reachable an return creation date of Packages.
 
         Try to access the repo and return last modified date of repo index or None if not accessible
 
@@ -3476,10 +3476,10 @@ class WaptRemoteRepo(WaptBaseRepo):
         True
         """
         try:
-            with self.get_requests_session() as session:
-                logger.debug(u'Checking availability of %s' % (self.packages_url,))
+            with self.get_requests_session(url) as session:
+                logger.debug(u'Checking availability of %s' % (self.packages_url(url)))
                 req = session.head(
-                    self.packages_url,
+                    self.packages_url(url),
                     timeout=self.timeout,
                     allow_redirects=True,
                     )

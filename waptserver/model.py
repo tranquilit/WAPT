@@ -697,7 +697,7 @@ class SiteRules(WaptBaseModel):
     value = CharField(null=False)
     repo_url = CharField(null=False)
     signature_date = CharField(null=False)
-    signed_attributes = TextField(null=False)
+    signed_attributes = JSONField(null=False)
     signer = CharField(null=False)
     signature = TextField(null=False)
     signer_certificate = TextField(null=False)

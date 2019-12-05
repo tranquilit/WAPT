@@ -338,7 +338,7 @@ systemd_build_dest_dir = './tmpbuild/payload/usr/local/lib/systemd/system/'
 
 try:
     mkdir_p(systemd_build_dest_dir)
-    copyfile('../Scripts/waptagent.service', os.path.join(systemd_build_dest_dir, 'waptagent.service'))
+    copyfile('../Scripts/waptservice.service', os.path.join(systemd_build_dest_dir, 'waptservice.service'))
 except Exception as e:
     eprint('error: \n%s' % e)
     exit(1)
