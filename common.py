@@ -2211,6 +2211,7 @@ class WaptRepo(WaptRemoteRepo):
 
         for rule in sorted(self.rulesdb,key=itemgetter('sequence')):
             if check_rule(rule['condition'],rule['value']) and self.is_available(url=rule['repo_url']) is not None:
+                    self._cached_wapt_repo_url=rule['repo_url']
                     return rule['repo_url']
         return None
 
