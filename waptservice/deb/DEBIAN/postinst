@@ -56,6 +56,9 @@ except subprocess.CalledProcessError:
 
 if os.path.exists('/opt/wapt/wapt-get.ini'):
     print("Register")
-    run('wapt-get register')
+    try:
+        run('wapt-get register')
+    except:
+        print('Cannot register')
     print("Restarting Agent")
     run('systemctl restart waptservice.service')

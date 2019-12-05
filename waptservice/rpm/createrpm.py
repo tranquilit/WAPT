@@ -338,7 +338,7 @@ eprint('copying systemd startup script')
 systemd_build_dest_dir = './builddir/usr/lib/systemd/system/'
 try:
     mkdir_p(systemd_build_dest_dir)
-    copyfile('../scripts/waptservice.service', os.path.join(systemd_build_dest_dir, 'waptagent.service'))
+    copyfile('../scripts/waptservice.service', os.path.join(systemd_build_dest_dir, 'waptservice.service'))
 except Exception as e:
     eprint('error: \n%s' % e)
     exit(1)
