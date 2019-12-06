@@ -3336,14 +3336,12 @@ class WaptRemoteRepo(WaptBaseRepo):
             requests.Session
 
         """
-        if url is None:
-            url = self.repo_url
         if self.client_private_key and is_pem_key_encrypted(self.client_private_key):
-            password = self.get_private_key_password(self.repo_url,self.client_private_key)
+            password = self.get_private_key_password(location=self.repo_url if url is None else url,identity=self.client_private_key)
         else:
             password = None
         cert = (self.client_certificate,self.client_private_key,password)
-        session = get_requests_client_cert_session(url=self.repo_url,cert=cert,verify=self.verify_cert,proxies=self.proxies)
+        session = get_requests_client_cert_session(url=self.repo_url if url is None else url,cert=cert,verify=self.verify_cert,proxies=self.proxies)
         return session
 
     @property
@@ -3432,8 +3430,6 @@ class WaptRemoteRepo(WaptBaseRepo):
 
         return self
 
-
-    @property
     def packages_url(self,url=None):
         """return url of Packages index file
 
@@ -3477,9 +3473,9 @@ class WaptRemoteRepo(WaptBaseRepo):
         """
         try:
             with self.get_requests_session(url) as session:
-                logger.debug(u'Checking availability of %s' % (self.packages_url(url)))
+                logger.debug(u'Checking availability of %s' % (self.packages_url(url=url)))
                 req = session.head(
-                    self.packages_url(url),
+                    self.packages_url(url=url),
                     timeout=self.timeout,
                     allow_redirects=True,
                     )
@@ -3487,10 +3483,10 @@ class WaptRemoteRepo(WaptBaseRepo):
                 packages_last_modified = req.headers.get('last-modified')
                 return httpdatetime2isodate(packages_last_modified)
         except requests.exceptions.SSLError as e:
-            print(u'Certificate check failed for %s and verify_cert %s'%(self.packages_url,self.verify_cert))
+            print(u'Certificate check failed for %s and verify_cert %s'%(self.packages_url(url=url),self.verify_cert))
             raise
         except requests.RequestException as e:
-            logger.info(u'Repo packages index %s is not available : %s'%(self.packages_url,e))
+            logger.info(u'Repo packages index %s is not available : %s'%(self.packages_url(url=url),e))
 
             return None
 
@@ -3515,7 +3511,7 @@ class WaptRemoteRepo(WaptBaseRepo):
         self.discarded = []
 
         new_packages = []
-        logger.debug(u'Read remote Packages zip file %s' % self.packages_url)
+        logger.debug(u'Read remote Packages zip file %s' % self.packages_url())
 
         (_packages_index_str,_packages_index_date) = self._get_packages_index_data()
         with zipfile.ZipFile(StringIO.StringIO(_packages_index_str)) as waptzip:
@@ -3577,7 +3573,7 @@ class WaptRemoteRepo(WaptBaseRepo):
         """
         with self.get_requests_session() as session:
             packages_answer = session.get(
-                self.packages_url,
+                self.packages_url(),
                 timeout=self.timeout,
                 allow_redirects=True,
                 )

@@ -333,7 +333,8 @@
       <Verbosity>
         <ShowHints Value="False"/>
       </Verbosity>
-      <CustomOptions Value="-dDEVMODE"/>
+      <CustomOptions Value="-dENTERPRISE
+-dDEVMODE"/>
       <OtherDefines Count="2">
         <Define0 Value="ENTERPRISE"/>
         <Define1 Value="DEVMODE"/>

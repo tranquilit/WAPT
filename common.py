@@ -2072,6 +2072,8 @@ class WaptRepo(WaptRemoteRepo):
         self._rules = None
         self._rulesdb = None
 
+
+
         WaptRemoteRepo.__init__(self,url=url,name=name,verify_cert=verify_cert,http_proxy=http_proxy,timeout=timeout,cabundle=cabundle,config=config)
 
 
@@ -2107,7 +2109,7 @@ class WaptRepo(WaptRemoteRepo):
 
     @property
     def cached_wapt_repo_url(self):
-        if self._cached_wapt_repo_url:
+        if self._cached_wapt_repo_url is not None:
             return self._cached_wapt_repo_url
         else:
             return self.find_wapt_repo_url() if self.rulesdb else None
@@ -2139,7 +2141,8 @@ class WaptRepo(WaptRemoteRepo):
         >>> print repo.repo_url
         http://srvwapt.tranquilit.local/wapt
         """
-        return self.cached_wapt_repo_url if self.cached_wapt_repo_url else self._repo_url
+        calculated_repo = self.cached_wapt_repo_url
+        return calculated_repo if (calculated_repo is not None and calculated_repo!='') else self._repo_url
 
     @repo_url.setter
     def repo_url(self,value):
@@ -2192,10 +2195,8 @@ class WaptRepo(WaptRemoteRepo):
             return fnmatch.fnmatch(setuphelpers.get_hostname(),value)
 
         def rule_public_ip(value):
-            try:
-                return ipaddress.ip_address(self.WAPT.waptdb.get_param('last_external_ip')) in ipaddress.ip_network(value)
-            except:
-                return False
+            ip=self.WAPT.waptdb.get_param('last_external_ip')
+            return ip and ipaddress.ip_address(ip) in ipaddress.ip_network(value)
 
         def rule_site(value):
             return self.WAPT.get_host_site() == value
@@ -2210,9 +2211,10 @@ class WaptRepo(WaptRemoteRepo):
                     }[rule](value)
 
         for rule in sorted(self.rulesdb,key=itemgetter('sequence')):
-            if check_rule(rule['condition'],rule['value']) and self.is_available(url=rule['repo_url']) is not None:
-                    self._cached_wapt_repo_url=rule['repo_url']
-                    return rule['repo_url']
+            if check_rule(rule['condition'],rule['value']) and (self.is_available(url=rule['repo_url']) is not None):
+                self.cached_wapt_repo_url=rule['repo_url']
+                return rule['repo_url']
+        self.cached_wapt_repo_url=''
         return None
 
     def load_config(self,config,section=None):
@@ -2231,6 +2233,9 @@ class WaptRepo(WaptRemoteRepo):
 
         if not config.has_section(section):
             section = 'global'
+
+        if config.has_option(section,'repo_url'):
+            self._repo_url = config.get(section,'repo_url')
 
         WaptRemoteRepo.load_config(self,config,section)
         return self
@@ -4099,7 +4104,7 @@ class Wapt(BaseObjectClass):
 
             with self.waptdb:
                 try:
-                    logger.debug(u'Read remote Packages index file %s' % repo.packages_url)
+                    logger.debug(u'Read remote Packages index file %s' % repo.packages_url())
                     last_modified = repo.packages_date()
 
                     self.waptdb.purge_repo(repo.name)

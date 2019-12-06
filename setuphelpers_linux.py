@@ -167,14 +167,15 @@ def get_domain_batch():
     """
 
     try:
-        dom =  socket.getfqdn().split('.', 1)[1]
+        return socket.getfqdn().split('.', 1)[1]
     except:
-        dom = ""
-
-    return dom
+        return ""
 
 def get_hostname():
-    return socket.getfqdn().lower()
+    try:
+        return socket.getfqdn().lower()
+    except:
+        return ""
 
 def is_valid_ipv4_address(address):
     try:
