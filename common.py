@@ -2178,6 +2178,7 @@ class WaptRepo(WaptRemoteRepo):
                         except:
                             logger.debug('Cert not recognize or bad signature for : \n%s' % (rule))
                     self._rulesdb=self._rules
+                    self.reset_network()
         return self._rules
 
     def find_wapt_repo_url(self):
