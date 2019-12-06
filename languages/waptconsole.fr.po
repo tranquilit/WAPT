@@ -2421,6 +2421,7 @@ msgid "Remove from repository"
 msgstr "Supprimer du dépôt"
 
 #: tviswaptgui.actdeleterule.caption
+msgctxt "tviswaptgui.actdeleterule.caption"
 msgid "Delete rule"
 msgstr "Supprimer règle"
 
@@ -2966,11 +2967,6 @@ msgstr "Créer un paquet de règles self-service"
 #: tviswaptgui.butdownloadwsusscn2cab.caption
 msgid "Download index and missing cabs from Microsoft Web site"
 msgstr "Télécharger l'index et les cabs manquants depuis le site de MS"
-
-#: tviswaptgui.butsearchpackages1.caption
-msgctxt "tviswaptgui.butsearchpackages1.caption"
-msgid "Search"
-msgstr "Rechercher"
 
 #: tviswaptgui.caption
 msgid "WAPT console"
@@ -4433,41 +4429,6 @@ msgstr "Description"
 msgid "update_id"
 msgstr "ID de mise à jour"
 
-#: tviswaptgui.gridnetworks.header.columns[0].text
-msgctxt "tviswaptgui.gridnetworks.header.columns[0].text"
-msgid "Repository"
-msgstr "Dépôt"
-
-#: tviswaptgui.gridnetworks.header.columns[1].text
-msgid "Network name"
-msgstr "Nom de sous-réseau"
-
-#: tviswaptgui.gridnetworks.header.columns[2].text
-msgid "Network prefix"
-msgstr "Préfix de sous-réseau"
-
-#: tviswaptgui.gridnetworks.header.columns[3].text
-msgid "Network mask"
-msgstr "Masque de sous-réseau"
-
-#: tviswaptgui.gridnetworks.header.columns[4].text
-msgid "DNS Domain"
-msgstr "Domaine DNS"
-
-#: tviswaptgui.gridnetworks.header.columns[5].text
-msgctxt "tviswaptgui.gridnetworks.header.columns[5].text"
-msgid "Repository URL"
-msgstr "URL du dépôt"
-
-#: tviswaptgui.gridnetworks.header.columns[6].text
-msgctxt "tviswaptgui.gridnetworks.header.columns[6].text"
-msgid "WAPT Server URL"
-msgstr "URL du serveur"
-
-#: tviswaptgui.gridnetworks.header.columns[7].text
-msgid "Preference"
-msgstr "Préférence"
-
 #: tviswaptgui.gridpackages.header.columns[0].text
 msgctxt "tviswaptgui.gridpackages.header.columns[0].text"
 msgid "Section"
@@ -5695,10 +5656,6 @@ msgstr "Mises à jour Windows"
 msgid "Inventory"
 msgstr "Inventaire"
 
-#: tviswaptgui.pgnetworksconfig.caption
-msgid "Sites / networks configuration"
-msgstr "Configuration Sites / Réseaux"
-
 #: tviswaptgui.pgpackages.caption
 msgid "Overview"
 msgstr "Général"
@@ -5762,10 +5719,10 @@ msgctxt "tviswaptgui.tabsheet3.caption"
 msgid "Errors"
 msgstr "Erreurs"
 
-#: tviswaptgui.tbdeleterule.hint
-msgctxt "tviswaptgui.tbdeleterule.hint"
-msgid " "
-msgstr " "
+#: tviswaptgui.tbdeleterule.caption
+msgctxt "tviswaptgui.tbdeleterule.caption"
+msgid "Delete rule"
+msgstr "Supprimer règle"
 
 #: tviswaptgui.tbdownrule.hint
 msgctxt "tviswaptgui.tbdownrule.hint"
@@ -5853,6 +5810,160 @@ msgstr ""
 
 #: tviswaptgui.toolbuttonsep2.caption
 msgid "ToolButtonSep2"
+msgstr ""
+
+#: tviswaptusers.actdeleteaccount.caption
+msgid "Delete account"
+msgstr ""
+
+#: tviswaptusers.actnewaccount.caption
+msgid "New account"
+msgstr ""
+
+#: tviswaptusers.actreloadaccounts.caption
+msgid "Reload accounts"
+msgstr ""
+
+#: tviswaptusers.actsaveaccounts.caption
+msgid "Save accounts"
+msgstr ""
+
+#: tviswaptusers.caption
+msgid "WAPT Users rights"
+msgstr ""
+
+#: tviswaptusers.edpkirootdirectory.hint
+msgctxt "tviswaptusers.edpkirootdirectory.hint"
+msgid "c:\\private"
+msgstr ""
+
+#: tviswaptusers.edpkirootdirectory.text
+msgctxt "tviswaptusers.edpkirootdirectory.text"
+msgid "c:\\private"
+msgstr ""
+
+#: tviswaptusers.gridusers.header.columns[0].text
+msgctxt "tviswaptusers.gridusers.header.columns[0].text"
+msgid "id"
+msgstr "id"
+
+#: tviswaptusers.gridusers.header.columns[10].text
+msgid "Edit self-service"
+msgstr ""
+
+#: tviswaptusers.gridusers.header.columns[11].text
+msgid "Edit WUA"
+msgstr ""
+
+#: tviswaptusers.gridusers.header.columns[12].text
+msgctxt "tviswaptusers.gridusers.header.columns[12].text"
+msgid "Apply upgrades"
+msgstr "Lancer les installations"
+
+#: tviswaptusers.gridusers.header.columns[13].text
+msgid "Remote hosts actions"
+msgstr ""
+
+#: tviswaptusers.gridusers.header.columns[14].text
+msgid "Edit Reports"
+msgstr ""
+
+#: tviswaptusers.gridusers.header.columns[15].text
+msgid "Run Reports"
+msgstr ""
+
+#: tviswaptusers.gridusers.header.columns[16].text
+msgid "Certificate Filename"
+msgstr ""
+
+#: tviswaptusers.gridusers.header.columns[17].text
+msgctxt "tviswaptusers.gridusers.header.columns[17].text"
+msgid "Valid until"
+msgstr "Valide jusqu'à"
+
+#: tviswaptusers.gridusers.header.columns[18].text
+msgctxt "tviswaptusers.gridusers.header.columns[18].text"
+msgid "Serial number"
+msgstr "Numéro de série"
+
+#: tviswaptusers.gridusers.header.columns[19].text
+msgctxt "tviswaptusers.gridusers.header.columns[19].text"
+msgid "Code signing"
+msgstr "Signature de code"
+
+#: tviswaptusers.gridusers.header.columns[1].text
+msgid "Username"
+msgstr ""
+
+#: tviswaptusers.gridusers.header.columns[20].text
+msgctxt "tviswaptusers.gridusers.header.columns[20].text"
+msgid "CA"
+msgstr "CA"
+
+#: tviswaptusers.gridusers.header.columns[21].text
+msgctxt "tviswaptusers.gridusers.header.columns[21].text"
+msgid "Fingerprint (sha256)"
+msgstr "Empreinte (sha256)"
+
+#: tviswaptusers.gridusers.header.columns[22].text
+msgctxt "tviswaptusers.gridusers.header.columns[22].text"
+msgid "subject_dn"
+msgstr "DN Sujet"
+
+#: tviswaptusers.gridusers.header.columns[23].text
+msgctxt "tviswaptusers.gridusers.header.columns[23].text"
+msgid "issuer_dn"
+msgstr "DN émetteur"
+
+#: tviswaptusers.gridusers.header.columns[24].text
+msgctxt "tviswaptusers.gridusers.header.columns[24].text"
+msgid "Signed on"
+msgstr "Signé le"
+
+#: tviswaptusers.gridusers.header.columns[25].text
+msgid "Signed by"
+msgstr ""
+
+#: tviswaptusers.gridusers.header.columns[2].text
+msgctxt "tviswaptusers.gridusers.header.columns[2].text"
+msgid "Certificate Name"
+msgstr "Nom de certificat"
+
+#: tviswaptusers.gridusers.header.columns[3].text
+msgctxt "tviswaptusers.gridusers.header.columns[3].text"
+msgid "Issuer"
+msgstr "Emetteur"
+
+#: tviswaptusers.gridusers.header.columns[4].text
+msgid "Admin"
+msgstr ""
+
+#: tviswaptusers.gridusers.header.columns[5].text
+msgid "Register hosts"
+msgstr ""
+
+#: tviswaptusers.gridusers.header.columns[6].text
+msgid "Unregister hosts"
+msgstr ""
+
+#: tviswaptusers.gridusers.header.columns[7].text
+msgid "Edit hosts"
+msgstr ""
+
+#: tviswaptusers.gridusers.header.columns[8].text
+msgid "Edit packages"
+msgstr ""
+
+#: tviswaptusers.gridusers.header.columns[9].text
+msgid "Edit groups"
+msgstr ""
+
+#: tviswaptusers.label13.caption
+msgid "Certificates and key root dir"
+msgstr ""
+
+#: tviswaptusers.tbreport1.caption
+msgid "TbReport1"
 msgstr ""
 
 #: tviswuadownloads.actwuadownloadsrefresh.caption

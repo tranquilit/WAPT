@@ -333,12 +333,10 @@
       <Verbosity>
         <ShowHints Value="False"/>
       </Verbosity>
-      <CustomOptions Value="-dENTERPRISE
--dDEVMODE"/>
-      <OtherDefines Count="3">
-        <Define0 Value="UseCThreads"/>
-        <Define1 Value="ENTERPRISE"/>
-        <Define2 Value="DEVMODE"/>
+      <CustomOptions Value="-dDEVMODE"/>
+      <OtherDefines Count="2">
+        <Define0 Value="ENTERPRISE"/>
+        <Define1 Value="DEVMODE"/>
       </OtherDefines>
     </Other>
   </CompilerOptions>

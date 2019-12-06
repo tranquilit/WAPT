@@ -6608,11 +6608,6 @@ begin
   ;;
 end;
 
-procedure TVisWaptGUI.ActReloadAccountsExecute(Sender: TObject);
-begin
-  ;;
-end;
-
 procedure TVisWaptGUI.GridUsersKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
@@ -6624,16 +6619,6 @@ procedure TVisWaptGUI.GridUsersDrawText(Sender: TBaseVirtualTree;
   const AText: String; const CellRect: TRect; var DefaultDraw: Boolean);
 begin
   ;;
-end;
-
-procedure TVisWAPTGUI.ActSaveAccountsExecute(Sender: TObject);
-begin
-  ;;
-end;
-
-procedure TVisWAPTGUI.MergeUsersCertificates(Users:ISuperObject);
-begin
-   ;;
 end;
 
 function TVisWaptGUI.MaxSeq: Integer;
@@ -6651,7 +6636,17 @@ begin
   ;;
 end;
 
+procedure TvisWaptGUI.ActSaveRulesExecute(Sender: TObject);
+begin
+  ;;
+end;
 
+procedure TVisWaptGUI.GridRulesGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
+    RowData, CellData: ISuperObject; Column: TColumnIndex;
+    TextType: TVSTTextType; var CellText: string);
+begin
+  ;;
+end;
 
 {$endif}
 

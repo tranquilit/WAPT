@@ -2400,6 +2400,7 @@ msgid "Remove from repository"
 msgstr ""
 
 #: tviswaptgui.actdeleterule.caption
+msgctxt "tviswaptgui.actdeleterule.caption"
 msgid "Delete rule"
 msgstr ""
 
@@ -2943,11 +2944,6 @@ msgstr ""
 
 #: tviswaptgui.butdownloadwsusscn2cab.caption
 msgid "Download index and missing cabs from Microsoft Web site"
-msgstr ""
-
-#: tviswaptgui.butsearchpackages1.caption
-msgctxt "tviswaptgui.butsearchpackages1.caption"
-msgid "Search"
 msgstr ""
 
 #: tviswaptgui.caption
@@ -4414,41 +4410,6 @@ msgstr ""
 msgid "update_id"
 msgstr ""
 
-#: tviswaptgui.gridnetworks.header.columns[0].text
-msgctxt "tviswaptgui.gridnetworks.header.columns[0].text"
-msgid "Repository"
-msgstr ""
-
-#: tviswaptgui.gridnetworks.header.columns[1].text
-msgid "Network name"
-msgstr ""
-
-#: tviswaptgui.gridnetworks.header.columns[2].text
-msgid "Network prefix"
-msgstr ""
-
-#: tviswaptgui.gridnetworks.header.columns[3].text
-msgid "Network mask"
-msgstr ""
-
-#: tviswaptgui.gridnetworks.header.columns[4].text
-msgid "DNS Domain"
-msgstr ""
-
-#: tviswaptgui.gridnetworks.header.columns[5].text
-msgctxt "tviswaptgui.gridnetworks.header.columns[5].text"
-msgid "Repository URL"
-msgstr ""
-
-#: tviswaptgui.gridnetworks.header.columns[6].text
-msgctxt "tviswaptgui.gridnetworks.header.columns[6].text"
-msgid "WAPT Server URL"
-msgstr ""
-
-#: tviswaptgui.gridnetworks.header.columns[7].text
-msgid "Preference"
-msgstr ""
-
 #: tviswaptgui.gridpackages.header.columns[0].text
 msgctxt "tviswaptgui.gridpackages.header.columns[0].text"
 msgid "Section"
@@ -5678,10 +5639,6 @@ msgstr ""
 msgid "Inventory"
 msgstr ""
 
-#: tviswaptgui.pgnetworksconfig.caption
-msgid "Sites / networks configuration"
-msgstr ""
-
 #: tviswaptgui.pgpackages.caption
 msgid "Overview"
 msgstr ""
@@ -5745,9 +5702,9 @@ msgctxt "tviswaptgui.tabsheet3.caption"
 msgid "Errors"
 msgstr ""
 
-#: tviswaptgui.tbdeleterule.hint
-msgctxt "tviswaptgui.tbdeleterule.hint"
-msgid " "
+#: tviswaptgui.tbdeleterule.caption
+msgctxt "tviswaptgui.tbdeleterule.caption"
+msgid "Delete rule"
 msgstr ""
 
 #: tviswaptgui.tbdownrule.hint
