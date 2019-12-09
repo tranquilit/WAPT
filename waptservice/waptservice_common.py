@@ -436,7 +436,7 @@ class WaptServiceConfig(object):
                 self.enable_remote_repo = config.getboolean('global','enable_remote_repo')
                 if self.enable_remote_repo:
                     if config.has_option('global','remote_repo_dirs'):
-                        self.remote_repo_dirs=config.get('remote_repo_dirs').replace(' ','').split(',')
+                        self.remote_repo_dirs=config.get('global','remote_repo_dirs').replace(' ','').split(',')
                     else:
                         self.remote_repo_dirs=['wapt','waptwua']
                     if config.has_option('global','local_repo_path'):
