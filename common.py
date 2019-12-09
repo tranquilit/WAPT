@@ -2072,8 +2072,6 @@ class WaptRepo(WaptRemoteRepo):
         self._rules = None
         self._rulesdb = None
 
-
-
         WaptRemoteRepo.__init__(self,url=url,name=name,verify_cert=verify_cert,http_proxy=http_proxy,timeout=timeout,cabundle=cabundle,config=config)
 
 
@@ -2098,7 +2096,7 @@ class WaptRepo(WaptRemoteRepo):
         Get rules from DB (or from _rulesdb if they were set in this instance)
         """
         if self._rulesdb is None:
-            self._rulesdb = self.WAPT.waptdb.get_param('rules-%s' %(self.name))
+            self._rulesdb = self.WAPT.waptdb.get_param('rules-%s' %(self.name)) if self.WAPT is not None else None
         return self._rulesdb
 
     @rulesdb.setter

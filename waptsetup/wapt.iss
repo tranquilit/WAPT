@@ -16,9 +16,9 @@ Source: "..\waptpythonw.exe"; DestDir: "{app}\Scripts"; DestName: "pythonw.exe"
 Source: "..\DLLs\*"; DestDir: "{app}\DLLs"; Flags: createallsubdirs recursesubdirs
 Source: "..\libs\*"; DestDir: "{app}\libs"; Flags: createallsubdirs recursesubdirs  ; Excludes: "*.pyc,*.pyo,test,*.~*,pydoc_data,tests,demos,testsuite,doc,samples,pil" 
 Source: "..\python27.dll"; DestDir: "{app}";
-;Source: "..\pythoncom27.dll"; DestDir: "{app}";
-;Source: "..\pythoncomloader27.dll"; DestDir: "{app}";
-;Source: "..\pywintypes27.dll"; DestDir: "{app}";
+Source: "..\pythoncom27.dll"; DestDir: "{app}";
+Source: "..\pythoncomloader27.dll"; DestDir: "{app}";
+Source: "..\pywintypes27.dll"; DestDir: "{app}";
 ;Source: "..\sqlite3.dll"; DestDir: "{app}"; 
 
 Source: "..\Scripts\*"; DestDir: "{app}\Scripts"; Flags: createallsubdirs recursesubdirs ;
