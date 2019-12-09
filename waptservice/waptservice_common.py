@@ -432,30 +432,30 @@ class WaptServiceConfig(object):
             if config.has_option('global','signature_clockskew'):
                 self.signature_clockskew = config.getint('global','signature_clockskew')
 
-            if config.has_option('global','enable_remote_repo'):
-                self.enable_remote_repo = config.getboolean('global','enable_remote_repo')
+            if config.has_option('repo-sync','enable_remote_repo'):
+                self.enable_remote_repo = config.getboolean('repo-sync','enable_remote_repo')
                 if self.enable_remote_repo:
-                    if config.has_option('global','remote_repo_dirs'):
-                        self.remote_repo_dirs=config.get('global','remote_repo_dirs').replace(' ','').split(',')
+                    if config.has_option('repo-sync','remote_repo_dirs'):
+                        self.remote_repo_dirs=config.get('repo-sync','remote_repo_dirs').replace(' ','').split(',')
                     else:
                         self.remote_repo_dirs=['wapt','waptwua']
-                    if config.has_option('global','local_repo_path'):
-                        self.local_repo_path = config.get('global','local_repo_path')
-                    if config.has_option('global','local_repo_time_for_sync_start'):
+                    if config.has_option('repo-sync','local_repo_path'):
+                        self.local_repo_path = config.get('repo-sync','local_repo_path')
+                    if config.has_option('repo-sync','local_repo_time_for_sync_start'):
                         regex = re.compile('([0-1][0-9]|2[0-3]):[0-5][0-9]')
-                        timeforsync_start = config.get('global','local_repo_time_for_sync_start') or None
+                        timeforsync_start = config.get('repo-sync','local_repo_time_for_sync_start') or None
                         if regex.match(timeforsync_start):
                             self.local_repo_time_for_sync_start = timeforsync_start
-                            if config.has_option('global','local_repo_time_for_sync_end') and regex.match(config.get('global','local_repo_time_for_sync_end')):
-                                self.local_repo_time_for_sync_end=config.get('global','local_repo_time_for_sync_end') or None
+                            if config.has_option('repo-sync','local_repo_time_for_sync_end') and regex.match(config.get('repo-sync','local_repo_time_for_sync_end')):
+                                self.local_repo_time_for_sync_end=config.get('repo-sync','local_repo_time_for_sync_end') or None
                             else:
                                 self.local_repo_time_for_sync_end='%d:%s' % (int(timeforsync_start.split(':')[0])+1, timeforsync_start.split(':')[1])
-                    elif config.has_option('global','local_repo_sync_task_period'):
-                        self.local_repo_sync_task_period = config.get('global','local_repo_sync_task_period') or None
+                    elif config.has_option('repo-sync','local_repo_sync_task_period'):
+                        self.local_repo_sync_task_period = config.get('repo-sync','local_repo_sync_task_period') or None
                     else:
                         self.local_repo_sync_task_period = '10m'
-                    if config.has_option('global','local_repo_limit_bandwidth'):
-                        self.local_repo_limit_bandwidth = config.getfloat('global','local_repo_limit_bandwidth') or None
+                    if config.has_option('repo-sync','local_repo_limit_bandwidth'):
+                        self.local_repo_limit_bandwidth = config.getfloat('repo-sync','local_repo_limit_bandwidth') or None
 
             # settings for waptexit / shutdown policy
             #   recommended settings :
