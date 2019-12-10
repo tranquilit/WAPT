@@ -693,6 +693,7 @@ class SiteRules(WaptBaseModel):
     id = PrimaryKeyField(primary_key=True)
     sequence = IntegerField(null=False)
     name = CharField(null=True)
+    repositories = JSONField(null=False)
     condition = CharField(null=False)
     value = CharField(null=False)
     repo_url = CharField(null=False)
@@ -1993,7 +1994,8 @@ def upgrade_db_structure():
                     opes.append(migrator.add_column(SiteRules._meta.name, 'value',SiteRules.value))
                 if not 'repo_url' in columns:
                     opes.append(migrator.add_column(SiteRules._meta.name, 'repo_url',SiteRules.repo_url))
-
+                if not 'repositories' in columns:
+                    opes.append(migrator.add_column(SiteRules._meta.name, 'repositories',SiteRules.repositories))
                 columns = [c.name for c in wapt_db.get_columns('hosts')]
                 if not 'platform' in columns:
                     opes.append(migrator.add_column(Hosts._meta.name, 'platform',Hosts.platform))

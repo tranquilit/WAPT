@@ -8086,6 +8086,7 @@ object VisWaptGUI: TVisWaptGUI
               Top = 0
               Action = ActSuppr
               Caption = 'Delete rule'
+              Enabled = False
               ImageIndex = 3
             end
             object ToolButtonSep2: TToolButton
@@ -8169,29 +8170,36 @@ object VisWaptGUI: TVisWaptGUI
               item
                 Position = 5
                 Tag = 5
+                Text = 'Repositories'
+                Width = 97
+                PropertyName = 'repositories'
+              end            
+              item
+                Position = 6
+                Tag = 6
                 Text = 'Created by'
                 Width = 100
                 PropertyName = 'created_by'
               end            
               item
-                Position = 6
-                Tag = 6
+                Position = 7
+                Tag = 7
                 Text = 'Created on'
                 Width = 157
                 PropertyName = 'created_on'
               end            
               item
-                Position = 7
-                Tag = 7
+                Position = 8
+                Tag = 8
                 Text = 'Updated by'
                 Width = 100
                 PropertyName = 'updated_by'
               end            
               item
-                Position = 8
-                Tag = 8
+                Position = 9
+                Tag = 9
                 Text = 'Updated on'
-                Width = 10
+                Width = 78
                 PropertyName = 'updated_on'
               end>
             Header.DefaultHeight = 18

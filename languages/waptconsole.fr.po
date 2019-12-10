@@ -21,6 +21,19 @@ msgctxt "tformeditrule.caption"
 msgid "Edit rule"
 msgstr "Editer la règle"
 
+#: tformeditrule.checkboxhost.caption
+msgid "HOST"
+msgstr "MACHINE"
+
+#: tformeditrule.checkboxwapt.caption
+msgid "WAPT"
+msgstr "WAPT"
+
+#: tformeditrule.checkboxwua.caption
+msgctxt "tformeditrule.checkboxwua.caption"
+msgid "WUA"
+msgstr "WUA"
+
 #: tformeditrule.labcondition.caption
 msgid "Condition :"
 msgstr "Condition :"
@@ -28,6 +41,10 @@ msgstr "Condition :"
 #: tformeditrule.labname.caption
 msgid "Name : "
 msgstr "Nom : "
+
+#: tformeditrule.labpackagetype.caption
+msgid "Package type :"
+msgstr "Type de paquet :"
 
 #: tformeditrule.labrepourl.caption
 msgid "Repository URL :"
@@ -3745,6 +3762,7 @@ msgid "Audit status"
 msgstr "Statut d'audit"
 
 #: tviswaptgui.gridhosts.header.columns[3].text
+msgctxt "tviswaptgui.gridhosts.header.columns[3].text"
 msgid "WUA"
 msgstr "WUA"
 
@@ -4685,23 +4703,28 @@ msgstr "URL du dépôt"
 
 #: tviswaptgui.gridrules.header.columns[5].text
 msgctxt "tviswaptgui.gridrules.header.columns[5].text"
-msgid "Created by"
+msgid "Repositories"
 msgstr "Créé par"
 
 #: tviswaptgui.gridrules.header.columns[6].text
 msgctxt "tviswaptgui.gridrules.header.columns[6].text"
-msgid "Created on"
+msgid "Created by"
 msgstr "Créé le"
 
 #: tviswaptgui.gridrules.header.columns[7].text
 msgctxt "tviswaptgui.gridrules.header.columns[7].text"
-msgid "Updated by"
+msgid "Created on"
 msgstr "Modifié par"
 
 #: tviswaptgui.gridrules.header.columns[8].text
 msgctxt "tviswaptgui.gridrules.header.columns[8].text"
-msgid "Updated on"
+msgid "Updated by"
 msgstr "Modifié le"
+
+#: tviswaptgui.gridrules.header.columns[9].text
+msgctxt "tviswaptgui.gridrules.header.columns[9].text"
+msgid "Updated on"
+msgstr "Dépôts"
 
 #: tviswaptgui.gridselfservicepackages.header.columns[0].text
 msgctxt "tviswaptgui.gridselfservicepackages.header.columns[0].text"

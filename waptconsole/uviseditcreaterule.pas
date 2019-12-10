@@ -15,11 +15,15 @@ type
   TFormEditRule = class(TForm)
     BitBtnOk: TBitBtn;
     BitBtnCancel: TBitBtn;
+    CheckBoxWAPT: TCheckBox;
+    CheckBoxWUA: TCheckBox;
+    CheckBoxHost: TCheckBox;
     ComboBoxUrl: TComboBox;
     ComboBoxCondition: TComboBox;
     ComboBoxSites: TComboBox;
     EditName: TEdit;
     EditValue: TEdit;
+    LabPackageType: TLabel;
     LabValue: TLabel;
     LabName: TLabel;
     LabCondition: TLabel;

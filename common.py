@@ -2066,12 +2066,11 @@ class WaptRepo(WaptRemoteRepo):
         """
         self._WAPT = None
         self.WAPT = WAPT
-
         # create additional properties
         self._cached_wapt_repo_url = None
         self._rules = None
         self._rulesdb = None
-
+        self.iswaptwua = True if name='waptwua' else False
         WaptRemoteRepo.__init__(self,url=url,name=name,verify_cert=verify_cert,http_proxy=http_proxy,timeout=timeout,cabundle=cabundle,config=config)
 
 
@@ -2209,8 +2208,11 @@ class WaptRepo(WaptRemoteRepo):
                     'SITE':rule_site
                     }[rule](value)
 
+        def check_instance_of_repo(value):
+            return (self.iswaptwua and 'waptwua' in value) or (isinstance(self,WaptHostRepo) and 'wapt-host' in value) or (isinstance(self,WaptRepo) and 'wapt' in value)
+
         for rule in sorted(self.rulesdb,key=itemgetter('sequence')):
-            if check_rule(rule['condition'],rule['value']) and (self.is_available(url=rule['repo_url']) is not None):
+            if check_instance_of_repo(rule['repositories']) and check_rule(rule['condition'],rule['value']) and (self.is_available(url=rule['repo_url']) is not None):
                 self.cached_wapt_repo_url=rule['repo_url']
                 return rule['repo_url']
         self.cached_wapt_repo_url=''
