@@ -5878,8 +5878,8 @@ class Wapt(BaseObjectClass):
         result['authorized_certificates_cn'] = trusted_certs_cn
         result['maturities'] = self.maturities
         result['locales'] = self.locales
-        if self.config.has_option('global','enable_remote_repo'):
-            result['is_remote_repo']=self.config.getboolean('global','enable_remote_repo')
+        if self.config.has_option('repo-sync','enable_remote_repo'):
+            result['is_remote_repo']=self.config.getboolean('repo-sync','enable_remote_repo')
         else:
             result['is_remote_repo']=False
         if sys.platform == 'win32':
