@@ -13,7 +13,7 @@ URL:            https://wapt.fr
 Source0:        ./waptagent/
 Prefix:         /opt
 
-Requires:  nginx dialog cabextract policycoreutils-python
+Requires: dialog policycoreutils-python
 
 # Turn off the brp-python-bytecompile script
 %global __os_install_post %(echo '%{__os_install_post}' | sed -e 's!/usr/lib[^[:space:]]*/brp-python-bytecompile[[:space:]].*$!!g')
@@ -110,6 +110,7 @@ chmod 755 /opt/wapt/bin/*
 chmod 755 /opt/wapt/runwaptagent.sh
 chmod 755 /usr/bin/waptpython
 chmod 755 /opt/wapt/wapt-get.sh
+mkdir /opt/wapt/ssl
 
 ln -s /opt/wapt/runwaptagent.sh /usr/bin/waptservice
 ln -s /opt/wapt/wapt-get.sh /usr/bin/wapt-get

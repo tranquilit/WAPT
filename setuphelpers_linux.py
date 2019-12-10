@@ -239,7 +239,7 @@ def host_info():
             info['workgroup_name'] = config.get('global','workgroup')
 
     info['networking'] = networking()
-    info['gateways'] = get_default_gateways()
+    info['gateways'] = [get_default_gateways()]
     info['dns_servers'] = get_dns_servers()
     info['connected_ips'] = [get_main_ip()]
     info['mac'] = [ c['mac'] for c in networking() if 'mac' in c and 'addr' in c and c['addr'] in info['connected_ips']]

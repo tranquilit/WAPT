@@ -38,6 +38,8 @@ run('chown -R wapt:root /opt/wapt/log')
 run('chmod 755 /opt/wapt/log')
 run('chmod 755 /opt/wapt/bin/*')
 
+os.mkdir('/opt/wapt/ssl')
+
 os.chmod('/opt/wapt/runwaptagent.sh',0o755)
 os.chmod('/usr/bin/waptpython',0o755)
 os.chmod('/opt/wapt/wapt-get.sh',0o755)
