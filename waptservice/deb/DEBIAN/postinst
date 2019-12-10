@@ -39,7 +39,7 @@ run('chmod 755 /opt/wapt/log')
 run('chmod 755 /opt/wapt/bin/*')
 
 
-if not(os.path.isdir('/opt/wapt/ssl'):
+if not(os.path.isdir('/opt/wapt/ssl')):
     os.mkdir('/opt/wapt/ssl')
 
 os.chmod('/opt/wapt/runwaptagent.sh',0o755)
