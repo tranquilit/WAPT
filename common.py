@@ -2184,7 +2184,7 @@ class WaptRepo(WaptRemoteRepo):
             str: URL to the repo.
         """
         def rule_agent_ip(value):
-            return ipaddress.ip_address(get_main_ip()) in ipaddress.ip_network(value)
+            return ipaddress.ip_address(unicode(get_main_ip()) in ipaddress.ip_network(unicode(value))
 
         def rule_domain(value):
             return setuphelpers.get_domain() == value
@@ -2194,7 +2194,7 @@ class WaptRepo(WaptRemoteRepo):
 
         def rule_public_ip(value):
             ip=self.WAPT.waptdb.get_param('last_external_ip')
-            return ip and ipaddress.ip_address(ip) in ipaddress.ip_network(value)
+            return ip and ipaddress.ip_address(unicode(ip)) in ipaddress.ip_network(unicode(value))
 
         def rule_site(value):
             return self.WAPT.get_host_site() == value
@@ -2212,9 +2212,12 @@ class WaptRepo(WaptRemoteRepo):
             return (self.iswaptwua and 'waptwua' in value) or (isinstance(self,WaptHostRepo) and 'wapt-host' in value) or (isinstance(self,WaptRepo) and 'wapt' in value)
 
         for rule in sorted(self.rulesdb,key=itemgetter('sequence')):
-            if check_instance_of_repo(rule['repositories']) and check_rule(rule['condition'],rule['value']) and (self.is_available(url=rule['repo_url']) is not None):
-                self.cached_wapt_repo_url=rule['repo_url']
-                return rule['repo_url']
+            try:
+                if check_instance_of_repo(rule['repositories']) and check_rule(rule['condition'],rule['value']) and (self.is_available(url=rule['repo_url']) is not None):
+                    self.cached_wapt_repo_url=rule['repo_url']
+                    return rule['repo_url']
+            except Exception as e:
+                logger.warning("Warning a rule failed %s\n, exception :%s" % (rule,str(e)))
         self.cached_wapt_repo_url=''
         return None
 
