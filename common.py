@@ -102,6 +102,7 @@ if sys.platform=='win32':
     except:
         has_kerberos = False
 elif sys.platform.startswith('linux') or sys.platform.startswith('darwin'):
+    has_kerberos=False
     pass
 
 logger = logging.getLogger()
