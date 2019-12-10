@@ -2070,7 +2070,7 @@ class WaptRepo(WaptRemoteRepo):
         self._cached_wapt_repo_url = None
         self._rules = None
         self._rulesdb = None
-        self.iswaptwua = True if name='waptwua' else False
+        self.iswaptwua = True if name=='waptwua' else False
         WaptRemoteRepo.__init__(self,url=url,name=name,verify_cert=verify_cert,http_proxy=http_proxy,timeout=timeout,cabundle=cabundle,config=config)
 
 
