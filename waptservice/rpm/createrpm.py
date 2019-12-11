@@ -290,11 +290,7 @@ copyfile(makepath(wapt_source_dir, 'waptpackage.py'),'./builddir/opt/wapt/waptpa
 copyfile(makepath(wapt_source_dir, 'setuphelpers.py'),'./builddir/opt/wapt/setuphelpers.py')
 copyfile(makepath(wapt_source_dir, 'setuphelpers_linux.py'),'./builddir/opt/wapt/setuphelpers_linux.py')
 copyfile(makepath(wapt_source_dir, 'setuphelpers_windows.py'),'./builddir/opt/wapt/setuphelpers_windows.py')
-copyfile(makepath(wapt_source_dir, 'wapt-scanpackages.py'),'./builddir/opt/wapt/wapt-scanpackages.py')
-copyfile(makepath(wapt_source_dir, 'wapt-signpackages.py'),'./builddir/opt/wapt/wapt-signpackages.py')
 copyfile(makepath(wapt_source_dir, 'wapt-get.py'),'./builddir/opt/wapt/wapt-get.py')
-copyfile(makepath(wapt_source_dir, 'wapt-scanpackages'),'./builddir/usr/bin/wapt-scanpackages')
-copyfile(makepath(wapt_source_dir, 'wapt-signpackages'),'./builddir/usr/bin/wapt-signpackages')
 
 # a voir si c'est encore necessaire
 eprint('cryptography patches')
@@ -332,6 +328,7 @@ for lib in ('dialog.py', ):
           './builddir/opt/wapt/lib/python2.7/site-packages/')
           
 eprint(run(r'python -m compileall -f %(pth)s/waptenterprise/enterprise_common.py %(pth)s/waptenterprise/__init__.py %(pth)s/lib/python2.7/site-packages/cryptography/x509/verification.py' % {'pth':'./builddir/opt/wapt'}))
+eprint(run(r'python -m compilall -l ./builddir/opt/wapt/'))
 
 eprint(run(r'find ./builddir/opt/wapt/ -type f -exec chmod 644 {} \;'))
 eprint(run(r'find ./builddir/opt/wapt/ -type d -exec chmod 755 {} \;'))
