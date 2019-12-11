@@ -9266,6 +9266,7 @@ object VisWaptGUI: TVisWaptGUI
       end
       object MenuItem117: TMenuItem
         Action = ActManageUsers
+        Visible = False
       end
     end
     object MenuItem26: TMenuItem
