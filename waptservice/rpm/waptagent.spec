@@ -86,7 +86,6 @@ rm -f /usr/bin/waptservice
 rm -f /usr/bin/wapt-get
 
 %preun
-find . -name "*.pyc" -type f -delete
 
 %post
 systemctl enable  waptservice
