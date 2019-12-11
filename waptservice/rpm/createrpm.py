@@ -330,6 +330,9 @@ copyfile(makepath(wapt_source_dir, 'waptpython'),'./builddir/usr/bin/waptpython'
 for lib in ('dialog.py', ):
     rsync(makepath(wapt_source_dir, 'lib', 'site-packages', lib),
           './builddir/opt/wapt/lib/python2.7/site-packages/')
+          
+eprint(run(r'python -m compileall -f %(pth)s/waptenterprise/enterprise_common.py %(pth)s/waptenterprise/__init__.py' % {'pth':'./builddir/opt/wapt'}))
+eprint(run(r'python -m compileall -l ./builddir/opt/wapt/'))
 
 eprint(run(r'find ./builddir/opt/wapt/ -type f -exec chmod 644 {} \;'))
 eprint(run(r'find ./builddir/opt/wapt/ -type d -exec chmod 755 {} \;'))
