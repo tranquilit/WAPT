@@ -79,7 +79,8 @@ rm -f /usr/bin/waptservice
 rm -f /usr/bin/wapt-get
 
 %preun
-
+rm -f /usr/bin/waptservice
+rm -f /usr/bin/wapt-get
 %post
 systemctl enable  waptservice
 touch /var/log/waptservice.log
@@ -101,8 +102,12 @@ chmod 755 /usr/bin/waptpython
 chmod 755 /opt/wapt/wapt-get.sh
 mkdir -p /opt/wapt/ssl
 
-ln -s /opt/wapt/runwaptagent.sh /usr/bin/waptservice
-ln -s /opt/wapt/wapt-get.sh /usr/bin/wapt-get
+if [ ! -f /usr/bin/waptservice ]; then
+	ln -s /opt/wapt/runwaptagent.sh /usr/bin/waptservice
+fi
+if [ ! -f /usr/bin/wapt-get ]; then
+	ln -s /opt/wapt/wapt-get.sh /usr/bin/wapt-get
+fi
 
 cat << EOF > /opt/wapt/.profile
 # for python virtualenv
