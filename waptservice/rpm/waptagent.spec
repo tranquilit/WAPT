@@ -33,9 +33,6 @@ echo "No clean"
 set -e
 
 mkdir -p %{buildroot}/opt/wapt
-mkdir -p %{buildroot}/opt/wapt/log
-mkdir -p %{buildroot}/opt/wapt/conf
-mkdir -p %{buildroot}/opt/wapt/bin
 
 mkdir -p %{buildroot}/usr/lib/systemd/
 
@@ -46,6 +43,7 @@ mkdir -p %{buildroot}/usr/lib/systemd/
 /usr/lib/systemd/system/waptservice.service
 /opt/wapt/waptservice
 /opt/wapt/lib/*
+/opt/wapt/lib
 /opt/wapt/lib64
 /etc/logrotate.d/waptservice
 /etc/rsyslog.d/waptservice.conf
