@@ -57,7 +57,7 @@ object FormEditRule: TFormEditRule
       FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00
     }
     ModalResult = 1
-    TabOrder = 5
+    TabOrder = 8
   end
   object BitBtnCancel: TBitBtn
     Left = 296
@@ -102,7 +102,7 @@ object FormEditRule: TFormEditRule
       FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00
     }
     ModalResult = 2
-    TabOrder = 6
+    TabOrder = 9
   end
   object ComboBoxCondition: TComboBox
     Left = 112
@@ -209,7 +209,7 @@ object FormEditRule: TFormEditRule
     Caption = 'WAPT'
     Checked = True
     State = cbChecked
-    TabOrder = 7
+    TabOrder = 5
   end
   object CheckBoxWUA: TCheckBox
     Left = 312
@@ -217,7 +217,7 @@ object FormEditRule: TFormEditRule
     Top = 116
     Width = 47
     Caption = 'WUA'
-    TabOrder = 8
+    TabOrder = 7
   end
   object CheckBoxHost: TCheckBox
     Left = 216
@@ -225,7 +225,7 @@ object FormEditRule: TFormEditRule
     Top = 116
     Width = 50
     Caption = 'HOST'
-    TabOrder = 9
+    TabOrder = 6
   end
   object LabPackageType: TLabel
     Left = 24
