@@ -602,6 +602,12 @@ def main():
         if check_mongo2pgsql_upgrade_needed(options.configfile):
             upgrade2postgres(options.configfile)
 
+    # Create sync.json file for all installations
+    sync_json = os.path.join(os.path.abspath(os.path.join(wapt_folder, os.pardir)),'sync.json')
+    if not os.path.isfile(sync_json):
+        with open(sync_json,'w'): pass
+        os.chown(sync_json,pwd.getpwnam('wapt'),NGINX_GID)
+
     # Final message
     if not quiet:
         width = 4 + max(10, len(max(final_msg, key=len)))
