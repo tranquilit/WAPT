@@ -304,7 +304,7 @@ copyfile(makepath(wapt_source_dir,'utils','patch-socketio-client-2','transports.
 
 eprint('copying the waptservice files')
 rsync(source_dir, './builddir/opt/wapt/',
-      excludes=['postconf', 'repository', 'rpm', 'deb', 'spnego-http-auth-nginx-module', '*.bat'])
+      excludes=['postconf', 'repository', 'rpm', 'deb','pkg', 'spnego-http-auth-nginx-module', '*.bat'])
       
 eprint('copying the templates files')
 rsync(makepath(wapt_source_dir,'templates/'),'./builddir/opt/wapt/templates/', excludes=[])
