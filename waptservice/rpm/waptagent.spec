@@ -44,7 +44,6 @@ mkdir -p %{buildroot}/usr/lib/systemd/
 /opt/wapt/waptservice
 /opt/wapt/lib
 /opt/wapt/lib64
-/opt/wapt/bin
 /etc/logrotate.d/waptservice
 /etc/rsyslog.d/waptservice.conf
 /opt/wapt/waptpackage.py*
@@ -58,7 +57,7 @@ mkdir -p %{buildroot}/usr/lib/systemd/
 /opt/wapt/waptenterprise
 %endif
 
-%attr(755,root,root)/opt/wapt/bin/*
+%attr(755,root,root)/opt/wapt/bin/
 %attr(755,root,root)/opt/wapt/runwaptagent.sh
 %attr(755,root,root)/opt/wapt/wapt-get.sh
 %attr(755,root,root)/opt/wapt/setuphelpers.py*
