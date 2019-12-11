@@ -42,7 +42,6 @@ mkdir -p %{buildroot}/usr/lib/systemd/
 %defattr(644,root,root,755)
 /usr/lib/systemd/system/waptservice.service
 /opt/wapt/waptservice
-/opt/wapt/lib/*
 /opt/wapt/lib
 /opt/wapt/lib64
 /etc/logrotate.d/waptservice
