@@ -110,7 +110,7 @@ chmod 755 /opt/wapt/bin/*
 chmod 755 /opt/wapt/runwaptagent.sh
 chmod 755 /usr/bin/waptpython
 chmod 755 /opt/wapt/wapt-get.sh
-mkdir /opt/wapt/ssl
+mkdir -p /opt/wapt/ssl
 
 ln -s /opt/wapt/runwaptagent.sh /usr/bin/waptservice
 ln -s /opt/wapt/wapt-get.sh /usr/bin/wapt-get
