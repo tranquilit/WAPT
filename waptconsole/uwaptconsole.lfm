@@ -8163,16 +8163,16 @@ object VisWaptGUI: TVisWaptGUI
               item
                 Position = 4
                 Tag = 4
-                Text = 'Repository URL'
-                Width = 100
-                PropertyName = 'repo_url'
+                Text = 'Repositories'
+                Width = 97
+                PropertyName = 'repositories'
               end            
               item
                 Position = 5
                 Tag = 5
-                Text = 'Repositories'
-                Width = 97
-                PropertyName = 'repositories'
+                Text = 'Repository URL'
+                Width = 100
+                PropertyName = 'repo_url'
               end            
               item
                 Position = 6

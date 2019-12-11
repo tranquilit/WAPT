@@ -4681,13 +4681,14 @@ msgstr ""
 
 #: tviswaptgui.gridrules.header.columns[4].text
 msgctxt "tviswaptgui.gridrules.header.columns[4].text"
-msgid "Repository URL"
+msgid "Repositories"
 msgstr ""
 
 #: tviswaptgui.gridrules.header.columns[5].text
 #, fuzzy
+#| msgid "Repositories"
 msgctxt "tviswaptgui.gridrules.header.columns[5].text"
-msgid "Repositories"
+msgid "Repository URL"
 msgstr "repozytoria"
 
 #: tviswaptgui.gridrules.header.columns[6].text
