@@ -2185,7 +2185,7 @@ class WaptRepo(WaptRemoteRepo):
             str: URL to the repo.
         """
         def rule_agent_ip(value):
-            return ipaddress.ip_address(unicode(get_main_ip()) in ipaddress.ip_network(unicode(value))
+            return ipaddress.ip_address(unicode(get_main_ip()) in ipaddress.ip_network(unicode(value)))
 
         def rule_domain(value):
             return setuphelpers.get_domain() == value
