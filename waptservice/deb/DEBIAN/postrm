@@ -11,9 +11,5 @@ def run(*args, **kwargs):
     return subprocess.check_output(*args, shell=True, **kwargs)
 
 run('rm -f /opt/wapt/*.pyc')
-run('rm -rf /opt/wapt/cache')
-run('rm -rf /opt/wapt/lib')
-run('rm -rf /opt/wapt/waptservice')
 run('rm -f /usr/bin/waptservice')
 run('rm -f /usr/bin/wapt-get')
-run('rm -rf /opt/wapt/waptenterprise')

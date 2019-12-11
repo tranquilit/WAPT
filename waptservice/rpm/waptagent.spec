@@ -83,13 +83,8 @@ exit 0
 
 %postun
 rm -f /opt/wapt/*.pyc
-rm -rf /opt/wapt/cache
-rm -rf /opt/wapt/lib
-rm -rf /opt/wapt/waptservice
 rm -f /usr/bin/waptservice
 rm -f /usr/bin/wapt-get
-rm -rf /opt/wapt/waptenterprise
-rm -rf /opt/wapt/bin
 
 %post
 systemctl enable  waptservice
