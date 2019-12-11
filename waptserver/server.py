@@ -277,7 +277,6 @@ def check_host_cert(host_certificate):
 
 @app.route('/add_host_kerberos',methods=['HEAD','POST'])
 @app.route('/add_host',methods=['HEAD','POST'])
-@requires_auth(methods=['kerb','token','ssl','admin','passwd','ldap'])
 def register_host():
     """Add a new host into database, and return registration info
     If path is add_host_kerberos, assume there is (already validated by NGINX) computer kerberos SPN in the user part of Authorization http header else
