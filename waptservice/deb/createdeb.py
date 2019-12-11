@@ -331,6 +331,7 @@ copyfile('./DEBIAN/control', './builddir/DEBIAN/control')
 copyfile('./DEBIAN/postinst', './builddir/DEBIAN/postinst')
 copyfile('./DEBIAN/preinst', './builddir/DEBIAN/preinst')
 copyfile('./DEBIAN/postrm','./builddir/DEBIAN/postrm')
+copyfile('./DEBIAN/prerm','./builddir/DEBIAN/prerm')
 
 eprint(run(r'find ./builddir/opt/wapt/ -type f -exec chmod 644 {} \;'))
 eprint(run(r'find ./builddir/opt/wapt/ -type d -exec chmod 755 {} \;'))
@@ -377,6 +378,7 @@ open(control_file,'w').write(re.sub('Version: .*','Version: %s' % full_version,c
 os.chmod('./builddir/DEBIAN/postinst', 0o755)
 os.chmod('./builddir/DEBIAN/preinst', 0o755)
 os.chmod('./builddir/DEBIAN/postrm', 0o755)
+os.chmod('./builddir/DEBIAN/prerm', 0o755)
 
 #delete locale
 if os.path.exists(makepath('builddir','opt','wapt', 'local/')):
