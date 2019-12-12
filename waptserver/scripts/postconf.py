@@ -48,7 +48,7 @@ import psutil
 import datetime
 import string
 import random
-import pwd
+import pwd as good_pwd
 import grp
 import ConfigParser
 from optparse import OptionParser
@@ -606,7 +606,7 @@ def main():
     sync_json = os.path.join(os.path.abspath(os.path.join(wapt_folder, os.pardir)),'sync.json')
     if not os.path.isfile(sync_json):
         with open(sync_json,'w'): pass
-    os.chown(sync_json,pwd.getpwnam('wapt').pw_uid,NGINX_GID)
+    os.chown(sync_json,good_pwd.getpwnam('wapt').pw_uid,NGINX_GID)
 
     # Final message
     if not quiet:
