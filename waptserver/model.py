@@ -2006,6 +2006,22 @@ def upgrade_db_structure():
                 (v, created) = ServerAttribs.get_or_create(key='db_version')
                 v.value = next_version
                 v.save()
+
+        next_version = '1.7.6.5'
+        if get_db_version() <= next_version:
+            with wapt_db.atomic():
+                logger.info("Migrating from %s to %s" % (get_db_version(), next_version))
+                opes = []
+
+                columns = [c.name for c in wapt_db.get_columns('siterules')]
+                if not 'repositories' in columns:
+                    opes.append(migrator.add_column(SiteRules._meta.name, 'repositories',SiteRules.repositories))
+
+                migrate(*opes)
+                (v, created) = ServerAttribs.get_or_create(key='db_version')
+                v.value = next_version
+                v.save()
+
     finally:
         if not wapt_db.is_closed():
             wapt_db.close()

@@ -4697,13 +4697,17 @@ msgid "Value"
 msgstr "Valeur"
 
 #: tviswaptgui.gridrules.header.columns[4].text
+#, fuzzy
+#| msgid "Repositories"
 msgctxt "tviswaptgui.gridrules.header.columns[4].text"
-msgid "Repositories"
+msgid "Repository URL"
 msgstr "URL du dépôt"
 
 #: tviswaptgui.gridrules.header.columns[5].text
+#, fuzzy
+#| msgid "Repository URL"
 msgctxt "tviswaptgui.gridrules.header.columns[5].text"
-msgid "Repository URL"
+msgid "Repositories"
 msgstr "Créé par"
 
 #: tviswaptgui.gridrules.header.columns[6].text
