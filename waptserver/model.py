@@ -691,22 +691,22 @@ class StoreUsage(SignaledModel):
 
 class SiteRules(WaptBaseModel):
     id = PrimaryKeyField(primary_key=True)
-    sequence = IntegerField(null=False)
+    sequence = IntegerField(null=True)
     name = CharField(null=True)
-    repositories = JSONField(null=False)
-    condition = CharField(null=False)
-    value = CharField(null=False)
-    repo_url = CharField(null=False)
-    signature_date = CharField(null=False)
-    signed_attributes = JSONField(null=False)
-    signer = CharField(null=False)
-    signature = TextField(null=False)
-    signer_certificate = TextField(null=False)
+    repositories = JSONField(null=True)
+    condition = CharField(null=True)
+    value = CharField(null=True)
+    repo_url = CharField(null=True)
+    signature_date = CharField(null=True)
+    signed_attributes = JSONField(null=True)
+    signer = CharField(null=True)
+    signature = TextField(null=True)
+    signer_certificate = TextField(null=True)
 
 class SyncStatus(WaptBaseModel):
     id = PrimaryKeyField(primary_key=True)
-    version = IntegerField(null=False)
-    changelog = JSONField(null=False)
+    version = IntegerField(null=True)
+    changelog = JSONField(null=True)
 
 
 def dictgetpath(adict, pathstr):
