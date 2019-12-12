@@ -440,7 +440,7 @@ class WaptServiceConfig(object):
                     else:
                         self.remote_repo_dirs=['wapt','waptwua']
                     if config.has_option('repo-sync','local_repo_path'):
-                        self.local_repo_path = config.get('repo-sync','local_repo_path')
+                        self.local_repo_path = config.get('repo-sync','local_repo_path').decode('utf-8')
                     if config.has_option('repo-sync','local_repo_time_for_sync_start'):
                         regex = re.compile('([0-1][0-9]|2[0-3]):[0-5][0-9]')
                         timeforsync_start = config.get('repo-sync','local_repo_time_for_sync_start') or None
