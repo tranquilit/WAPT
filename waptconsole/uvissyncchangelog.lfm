@@ -122,6 +122,7 @@ object VisSyncChangelog: TVisSyncChangelog
     Header.MinHeight = 18
     Header.Options = [hoColumnResize, hoDrag, hoShowSortGlyphs, hoVisible, hoAutoSpring, hoHeaderClickAutoSort]
     Header.Style = hsFlatButtons
+    ScrollBarOptions.AlwaysVisible = True
     ScrollBarOptions.ScrollBars = ssAutoBoth
     TabOrder = 2
     TreeOptions.AutoOptions = [toAutoScrollOnExpand, toAutoSort, toAutoSpanColumns, toAutoTristateTracking, toAutoDeleteMovedNodes, toAutoChangeScale]

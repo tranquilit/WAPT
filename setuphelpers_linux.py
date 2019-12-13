@@ -232,11 +232,14 @@ def host_info():
     info['computer_fqdn'] = socket.getfqdn()
     info['dnsdomain'] = get_domain_batch()
 
-    if os.path.isfile('/etc/samba/smb.conf'):
-        config = configparser.RawConfigParser(strict=False)
-        config.read('/etc/samba/smb.conf')
-        if config.has_option('global','workgroup'):
-            info['workgroup_name'] = config.get('global','workgroup')
+    try:
+        if os.path.isfile('/etc/samba/smb.conf'):
+            config = configparser.RawConfigParser(strict=False)
+            config.read('/etc/samba/smb.conf')
+            if config.has_option('global','workgroup'):
+                info['workgroup_name'] = config.get('global','workgroup')
+    except:
+        info['workgroup_name'] = ''
 
     info['networking'] = networking()
     info['gateways'] = [get_default_gateways()]
