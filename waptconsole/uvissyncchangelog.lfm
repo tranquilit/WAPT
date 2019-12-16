@@ -123,7 +123,6 @@ object VisSyncChangelog: TVisSyncChangelog
     Header.Options = [hoColumnResize, hoDrag, hoShowSortGlyphs, hoVisible, hoAutoSpring, hoHeaderClickAutoSort]
     Header.Style = hsFlatButtons
     ScrollBarOptions.AlwaysVisible = True
-    ScrollBarOptions.ScrollBars = ssAutoBoth
     TabOrder = 2
     TreeOptions.AutoOptions = [toAutoScrollOnExpand, toAutoSort, toAutoSpanColumns, toAutoTristateTracking, toAutoDeleteMovedNodes, toAutoChangeScale]
     TreeOptions.MiscOptions = [toEditable, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toEditOnClick]

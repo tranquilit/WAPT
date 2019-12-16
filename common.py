@@ -2155,6 +2155,9 @@ class WaptRepo(WaptRemoteRepo):
         """
         Return the list of rules in Packages/Rules
         """
+        def check_instance_of_repo(value):
+            return (self.iswaptwua and 'waptwua' in value) or (isinstance(self,WaptHostRepo) and 'wapt-host' in value) or (isinstance(self,WaptRepo) and 'wapt' in value)
+
         if not self.repo_url:
             raise EWaptException('Repository URL for %s is empty. Add a %s section in ini' % (self.name,self.name))
 
@@ -2173,11 +2176,13 @@ class WaptRepo(WaptRemoteRepo):
                     json_rules = json.loads(codecs.decode(waptzip.read(name='Rules'),'utf-8'))
                     for rule in json_rules:
                         try:
-                            signer_cert_ca = SSLCABundle()
-                            signer_cert_ca.add_certificates_from_pem(rule['signer_certificate'])
-                            chain = self.cabundle.check_certificates_chain(signer_cert_ca.certificates())
-                            rule['verified_by'] = chain[0].verify_claim(rule,required_attributes=rule['signed_attributes'])
-                            self._rules.append(rule)
+                            if check_instance_of_repo(rule['repositories']):
+                                signer_cert_ca = SSLCABundle()
+                                signer_cert_ca.add_certificates_from_pem(rule['signer_certificate'])
+                                chain = self.cabundle.check_certificates_chain(signer_cert_ca.certificates())
+                                rule['verified_by'] = chain[0].verify_claim(rule,required_attributes=rule['signed_attributes'])
+                                self._rules.append(rule)
+								rule['active_rule'] = False
                         except:
                             logger.debug('Cert not recognize or bad signature for : \n%s' % (rule))
                     self._rulesdb=self._rules
@@ -2214,16 +2219,15 @@ class WaptRepo(WaptRemoteRepo):
                     'SITE':rule_site
                     }[rule](value)
 
-        def check_instance_of_repo(value):
-            return (self.iswaptwua and 'waptwua' in value) or (isinstance(self,WaptHostRepo) and 'wapt-host' in value) or (isinstance(self,WaptRepo) and 'wapt' in value)
-
         for rule in sorted(self.rulesdb,key=itemgetter('sequence')):
             try:
-                if check_instance_of_repo(rule['repositories']) and check_rule(rule['condition'],rule['value']) and (super(WaptRepo,self).is_available(url=rule['repo_url']) is not None):
+                if check_rule(rule['condition'],rule['value']) and (super(WaptRepo,self).is_available(url=rule['repo_url']) is not None):
                     self.cached_wapt_repo_url=rule['repo_url']+'-host' if isinstance(self,WaptHostRepo) else rule['repo_url']
+                    rule['active_rule']=True
                     return self.cached_wapt_repo_url
             except Exception as e:
                 logger.warning("Warning a rule failed %s\n, exception :%s" % (rule,str(e)))
+                rule['exception']=str(e)
         self.cached_wapt_repo_url=''
         return None
 
@@ -2252,9 +2256,11 @@ class WaptRepo(WaptRemoteRepo):
 
     def as_dict(self):
         result = super(WaptRepo,self).as_dict()
+        rules={}
         result.update(
             {
             'repo_url':self.repo_url,
+            'rules':self._rules,
             })
         return result
 

@@ -12,7 +12,6 @@ binaries_cache = os.path.abspath(os.path.join(wapt_base_dir,'..','binaries_cache
 
 exe_location = os.path.join(binaries_cache,'pywin_install.exe')
 
-
 proxy = urllib2.ProxyHandler(urllib.getproxies())
 
 opener = urllib2.build_opener(proxy)
