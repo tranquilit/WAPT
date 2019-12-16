@@ -2161,8 +2161,13 @@ class WaptRepo(WaptRemoteRepo):
         if self._rules is None:
             self._rules = []
 
+        if isinstance(self,WaptHostRepo) and self.repo_url.endswith('-host'):
+            url=self.repo_url[:-5]
+        else:
+            url=None
+
         if not self._rules:
-            (_packages_index_str,_packages_index_date) = self._get_packages_index_data()
+            (_packages_index_str,_packages_index_date) = self._get_packages_index_data(url)
             with zipfile.ZipFile(StringIO.StringIO(_packages_index_str)) as waptzip:
                 if 'Rules' in waptzip.namelist():
                     json_rules = json.loads(codecs.decode(waptzip.read(name='Rules'),'utf-8'))
@@ -2214,9 +2219,9 @@ class WaptRepo(WaptRemoteRepo):
 
         for rule in sorted(self.rulesdb,key=itemgetter('sequence')):
             try:
-                if check_instance_of_repo(rule['repositories']) and check_rule(rule['condition'],rule['value']) and (self.is_available(url=rule['repo_url']) is not None):
-                    self.cached_wapt_repo_url=rule['repo_url']
-                    return rule['repo_url']
+                if check_instance_of_repo(rule['repositories']) and check_rule(rule['condition'],rule['value']) and (super(WaptRepo,self).is_available(url=rule['repo_url']) is not None):
+                    self.cached_wapt_repo_url=rule['repo_url']+'-host' if isinstance(self,WaptHostRepo) else rule['repo_url']
+                    return self.cached_wapt_repo_url
             except Exception as e:
                 logger.warning("Warning a rule failed %s\n, exception :%s" % (rule,str(e)))
         self.cached_wapt_repo_url=''
@@ -4148,7 +4153,7 @@ class Wapt(BaseObjectClass):
                     if rules:
                         self.waptdb.set_param('rules-%s' % repo.name,repo.rules())
                     else:
-                        self.waptdb.remove_param('rules-%s' % repo.name)
+                        self.waptdb.delete_param('rules-%s' % repo.name)
 
                     return (last_modified,next_update_on)
                 except Exception as e:

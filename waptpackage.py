@@ -3565,15 +3565,15 @@ class WaptRemoteRepo(WaptBaseRepo):
         self._packages_date = datetime2isodate(_packages_index_date)
         return {'added':added,'removed':removed,'last-modified': self.packages_date(), 'discarded':self.discarded }
 
-    def _get_packages_index_data(self):
+    def _get_packages_index_data(self,url=None):
         """Download or load local Packages index raw zipped data
 
         Returns:
             (str,datetime.datetime): Packages data (local or remote) and last update date
         """
-        with self.get_requests_session() as session:
+        with self.get_requests_session(url) as session:
             packages_answer = session.get(
-                self.packages_url(),
+                self.packages_url(url=url),
                 timeout=self.timeout,
                 allow_redirects=True,
                 )

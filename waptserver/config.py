@@ -39,7 +39,7 @@ def type_windows():
     return platform.win32_ver()[0] != ''
 
 def type_debian():
-    return platform.dist()[0].lower() in ('debian','ubuntu')
+    return platform.dist()[0].lower() in ('debian','ubuntu','linuxmint')
 
 def type_redhat():
     return platform.dist()[0].lower() in ('redhat','centos','fedora')
