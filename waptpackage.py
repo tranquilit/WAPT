@@ -3207,6 +3207,18 @@ class WaptLocalRepo(WaptBaseRepo):
                     zi.compress_type = zipfile.ZIP_DEFLATED
                     myzipfile.writestr(zi,crl.as_der())
 
+                # Add rules from DB
+                try:
+                    from waptenterprise.waptserver.repositories import recreate_rules_from_db
+                    rules=recreate_rules_from_db()
+                    if rules:
+                        rules=json.dumps(rules)
+                    zi = zipfile.ZipInfo(u'Rules',date_time=time.localtime())
+                    zi.compress_type = zipfile.ZIP_DEFLATED
+                    myzipfile.writestr(zi,rules)
+                except:
+                    print('rules failed')
+
             if os.path.isfile(packages_fname):
                 os.unlink(packages_fname)
             os.rename(tmp_packages_fname,packages_fname)
