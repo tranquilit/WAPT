@@ -33,13 +33,14 @@ import argparse
 import stat
 import glob
 import types
+import time
 
 from git import Repo
 
 makepath = os.path.join
 from shutil import copyfile
 
-
+start_time = time.time()
 def run(*args, **kwargs):
     return subprocess.check_output(*args, shell=True, **kwargs)
 
@@ -255,6 +256,9 @@ open(os.path.join('./builddir/opt/wapt/waptserver','VERSION'),'w').write(full_ve
 
 # for some reason the virtualenv does not build itself right if we don't
 # have pip systemwide...
+
+print('Time before virtualenv : %f' (time.time()-start_time))
+
 eprint(run('sudo apt-get install -y python-virtualenv python-setuptools python-pip python-dev libpq-dev libffi-dev libldap2-dev libsasl2-dev'))
 
 eprint('Create a build environment virtualenv. May need to download a few libraries, it may take some time')
@@ -267,6 +271,8 @@ run_verbose('./builddir/opt/wapt/bin/pip install pip setuptools --upgrade')
 run('./builddir/opt/wapt/bin/pip install -r ../../requirements-server.txt -t ./builddir/opt/wapt/lib/python2.7/site-packages')
 
 run_verbose(r'virtualenv ./builddir/opt/wapt --relocatable')
+
+print('Time after virtualenv : %f' (time.time()-start_time))
 
 eprint('copying the waptrepo files')
 copyfile(makepath(wapt_source_dir, 'waptcrypto.py'),'./builddir/opt/wapt/waptcrypto.py')
@@ -367,6 +373,7 @@ os.chmod('./builddir/DEBIAN/postinst', stat.S_IRWXU |
 os.chmod('./builddir/DEBIAN/preinst', stat.S_IRWXU |
          stat.S_IXGRP | stat.S_IRGRP | stat.S_IROTH | stat.S_IXOTH)
 
+print('Time before dpkg-build : %f' (time.time()-start_time))
 # build
 if WAPTEDITION=='enterprise':
     package_filename = 'tis-waptserver-enterprise-%s.deb' % full_version
@@ -374,4 +381,5 @@ else:
     package_filename = 'tis-waptserver-%s.deb' % full_version
 eprint(subprocess.check_output(['dpkg-deb','--build','builddir',package_filename]))
 shutil.rmtree("builddir")
+print('Time after dpkg-build : %f' (time.time()-start_time))
 print(package_filename)

@@ -34,11 +34,13 @@ import argparse
 import stat
 import glob
 import types
+import time
 
 makepath = os.path.join
 from shutil import copyfile
 
 
+start_time = time.time()
 def run(*args, **kwargs):
     return subprocess.check_output(*args, shell=True, **kwargs)
 
@@ -263,6 +265,9 @@ else:
     eprint(platform.linux_distribution())
     sys.exit(1)
 
+
+print('Time before virtualenv : %f' (time.time()-start_time))
+
 run_verbose('pip install distribute')
 eprint('Create a build environment virtualenv. May need to download a few libraries, it may take some time')
 run_verbose(r'virtualenv ./builddir/opt/wapt --always-copy')
@@ -273,6 +278,8 @@ run('./builddir/opt/wapt/bin/pip install -r ../../requirements.txt -r ../../requ
 run_verbose(r'virtualenv ./builddir/opt/wapt --relocatable')
 
 run('cp -ruf /usr/lib/python2.7/dist-packages/apt* ./builddir/opt/wapt/lib/python2.7/site-packages')
+
+print('Time after virtualenv : %f' (time.time()-start_time))
 
 eprint('copying the waptrepo files')
 copyfile(makepath(wapt_source_dir, 'waptcrypto.py'),'./builddir/opt/wapt/waptcrypto.py')
@@ -389,10 +396,14 @@ if os.path.exists(makepath('builddir','opt','wapt', 'include/')):
 	shutil.rmtree(makepath('builddir','opt','wapt', 'include/'))
 
 # build
+
+print('Time before dpkg-build : %f' (time.time()-start_time))
 if WAPTEDITION=='enterprise':
     package_filename = 'tis-waptagent-enterprise-%s.deb' % full_version
 else:
     package_filename = 'tis-waptagent-%s.deb' % full_version
 eprint(subprocess.check_output(['dpkg-deb','--build','builddir',package_filename]))
 shutil.rmtree("builddir")
+print('Time after dpkg-build : %f' (time.time()-start_time))
 print(package_filename)
+
