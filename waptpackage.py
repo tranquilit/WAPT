@@ -3400,11 +3400,6 @@ class WaptRemoteRepo(WaptBaseRepo):
         if not config.has_section(section):
             section = 'global'
 
-        WaptBaseRepo.load_config(self,config,section)
-
-        if config.has_option(section,'repo_url'):
-            self.repo_url = config.get(section,'repo_url')
-
         if config.has_option(section,'verify_cert'):
             try:
                 self.verify_cert = config.getboolean(section,'verify_cert')
@@ -3414,6 +3409,11 @@ class WaptRemoteRepo(WaptBaseRepo):
                     self.verify_cert = '0'
         #else:
         #    self.verify_cert = self._default_config['verify_cert']
+
+        WaptBaseRepo.load_config(self,config,section)
+
+        if config.has_option(section,'repo_url'):
+            self.repo_url = config.get(section,'repo_url')
 
         if config.has_option(section,'http_proxy'):
             if not config.has_option(section,'use_http_proxy_for_repo') or config.getboolean(section,'use_http_proxy_for_repo'):

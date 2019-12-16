@@ -46,7 +46,6 @@ type
     Label16: TLabel;
     Label19: TLabel;
     LabLogsKB: TLabel;
-    MenuItem116: TMenuItem;
     GridRules: TSOGrid;
     MenuItem117: TMenuItem;
     MenuItemCheckFiles: TMenuItem;

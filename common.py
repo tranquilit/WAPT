@@ -4144,12 +4144,11 @@ class Wapt(BaseObjectClass):
                     self.waptdb.set_param('next-update-%s' % repo.name,next_update_on)
 
                     # get rules to put them into DB
-                    if not(isinstance(repo,WaptHostRepo)):
-                        rules=repo.rules()
+                    rules = repo.rules()
+                    if rules:
+                        self.waptdb.set_param('rules-%s' % repo.name,repo.rules())
                     else:
-                        rules=[]
-
-                    self.waptdb.set_param('rules-%s' % repo.name,rules)
+                        self.waptdb.remove_param('rules-%s' % repo.name)
 
                     return (last_modified,next_update_on)
                 except Exception as e:

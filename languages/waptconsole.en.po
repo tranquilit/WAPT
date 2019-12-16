@@ -5523,10 +5523,6 @@ msgstr ""
 msgid "Save as"
 msgstr ""
 
-#: tviswaptgui.menuitem116.caption
-msgid "MenuItem116"
-msgstr ""
-
 #: tviswaptgui.menuitem12.caption
 msgid "&Close"
 msgstr ""
