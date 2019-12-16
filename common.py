@@ -2182,7 +2182,7 @@ class WaptRepo(WaptRemoteRepo):
                                 chain = self.cabundle.check_certificates_chain(signer_cert_ca.certificates())
                                 rule['verified_by'] = chain[0].verify_claim(rule,required_attributes=rule['signed_attributes'])
                                 self._rules.append(rule)
-								rule['active_rule'] = False
+                                rule['active_rule'] = False
                         except:
                             logger.debug('Cert not recognize or bad signature for : \n%s' % (rule))
                     self._rulesdb=self._rules
