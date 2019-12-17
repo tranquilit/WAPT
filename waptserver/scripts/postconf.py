@@ -591,6 +591,21 @@ def main():
                 traceback.format_exc()
                 ]
 
+    #Migrate file for new version waptwua
+    wuafolder = server_config['waptwua_folder']
+    for (root,dirs,files) in list(os.walk(wuafolder,topdown=False)):
+        for f in files:
+            oldpath = os.path.join(root,f)
+            newpath = os.path.join(wuafolder,f)
+            if os.path.isfile(newpath):
+                continue
+            print('Move %s --> %s' % (oldpath,newpath))
+            os.rename(oldpath,newpath)
+        for d in dirs:
+            print('Delete folder %s' % os.path.join(root,d))
+            shutil.rmtree(os.path.join(root,d))
+
+
     final_msg.append('Please connect to https://' + fqdn + '/ to access the server.')
 
     # Check if Mongodb > PostgreSQL migration is necessary
