@@ -2998,7 +2998,7 @@ class Wapt(BaseObjectClass):
                 logger.info(u'Other repositories : %s' % (repository_names,))
                 for name in repository_names:
                     if name:
-                        w = WaptRepo(name=name,WAPT=self).load_config(self.config,section=name)
+                        w = WaptRepo(name=name,WAPT=self,config=self.config,section=name)
                         if w.cabundle is None:
                             w.cabundle = self.cabundle
                         self.set_client_cert_auth(w)
@@ -3010,7 +3010,7 @@ class Wapt(BaseObjectClass):
 
             # last is main repository so it overrides the secondary repositories
             if self.config.has_option('global','repo_url') and not 'wapt' in repository_names:
-                w = WaptRepo(name='wapt',WAPT=self).load_config(self.config)
+                w = WaptRepo(name='wapt',WAPT=self,config=self.config)
                 self._repositories.append(w)
                 if w.cabundle is None:
                     w.cabundle = self.cabundle
