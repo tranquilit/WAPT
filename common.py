@@ -2330,8 +2330,6 @@ class WaptHostRepo(WaptRepo):
                 section = 'wapt-main'
             else:
                 section = 'global'
-        self._section = section
-
         WaptRepo.load_config(self,config,section)
         return self
 
@@ -3013,7 +3011,7 @@ class Wapt(BaseObjectClass):
                 logger.info(u'Other repositories : %s' % (repository_names,))
                 for name in repository_names:
                     if name:
-                        w = WaptRepo(name=name,WAPT=self,config=self.config,section=name)
+                        w = WaptRepo(name=name,WAPT=self,config=self.config)
                         if w.cabundle is None:
                             w.cabundle = self.cabundle
                         self.set_client_cert_auth(w)

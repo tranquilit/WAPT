@@ -2427,6 +2427,7 @@ class WaptBaseRepo(BaseObjectClass):
         """
 
         self.name = name
+        self._section = None
         self._packages = None
         self._index = {}
         self._packages_date = None
@@ -2523,6 +2524,7 @@ class WaptBaseRepo(BaseObjectClass):
             if not self.maturities:
                 self.maturities = None
 
+        self._section = section
         return self
 
     def config_fingerprint(self):
