@@ -3087,7 +3087,7 @@ class WaptLocalRepo(WaptBaseRepo):
         else:
             return None
 
-    def update_packages_index(self,force_all=False,proxies=None,canonical_filenames=False):
+    def update_packages_index(self,force_all=False,proxies=None,canonical_filenames=False,include_host_packages=False):
         """Scan self.localpath directory for WAPT packages and build a Packages (utf8) zip file with control data and MD5 hash
 
         Extract icons from packages (WAPT/icon.png) and stores them in <repo path>/icons/<package name>.png
@@ -3137,7 +3137,6 @@ class WaptLocalRepo(WaptBaseRepo):
                 entry = PackageEntry()
                 if package_filename in old_entries:
                     entry.load_control_from_wapt(fname,calc_md5=False)
-
                     if self.cabundle is not None:
                         try:
                             entry.check_control_signature(self.cabundle)
@@ -3162,9 +3161,10 @@ class WaptLocalRepo(WaptBaseRepo):
                     if canonical_filenames:
                         self._ensure_canonical_package_filename(entry)
 
-                packages_lines.append(entry.ascontrol(with_non_control_attributes=True))
-                # add a blank line between each package control
-                packages_lines.append('')
+                if include_host_packages or entry.section != 'host':
+                    packages_lines.append(entry.ascontrol(with_non_control_attributes=True))
+                    # add a blank line between each package control
+                    packages_lines.append('')
 
                 self._packages.append(entry)
                 # index last version
