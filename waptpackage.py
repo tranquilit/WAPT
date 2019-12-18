@@ -2524,7 +2524,6 @@ class WaptBaseRepo(BaseObjectClass):
             if not self.maturities:
                 self.maturities = None
 
-        self._section = section
         return self
 
     def config_fingerprint(self):
@@ -2668,8 +2667,6 @@ class WaptBaseRepo(BaseObjectClass):
         Returns:
             str: date/time of Packages index in iso format (string)
         """
-        if self._index_config_fingerprint != self.config_fingerprint():
-            self.invalidate_packages_cache()
         if self._packages is None:
             self._load_packages_index()
             self._index_config_fingerprint = self.config_fingerprint()
@@ -3160,7 +3157,6 @@ class WaptLocalRepo(WaptBaseRepo):
                     processed.append(fname)
                     if canonical_filenames:
                         self._ensure_canonical_package_filename(entry)
-
                 if include_host_packages or entry.section != 'host':
                     packages_lines.append(entry.ascontrol(with_non_control_attributes=True))
                     # add a blank line between each package control

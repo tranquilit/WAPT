@@ -2222,11 +2222,12 @@ class WaptRepo(WaptRemoteRepo):
         for rule in sorted(self.rulesdb,key=itemgetter('sequence')):
             try:
                 if check_rule(rule['condition'],rule['value']) and (super(WaptRepo,self).is_available(url=rule['repo_url']) is not None):
-                    self.cached_wapt_repo_url=rule['repo_url']+'-host' if isinstance(self,WaptHostRepo) else rule['repo_url']
+                    self.cached_wapt_repo_url=rule['repo_url'].rstrip('/')+'-host' if isinstance(self,WaptHostRepo) else rule['repo_url']
                     rule['active_rule']=True
                     return self.cached_wapt_repo_url
             except Exception as e:
-                logger.warning("Warning a rule failed %s\n, exception :%s" % (rule,str(e)))
+                logger.warning("The rule %s failed for repo %s with repo_url %s.\n" % (rule['name'],self.name,rule['repo_url']))
+                logger.debug("Exception : %s", str(e))
                 rule['exception']=str(e)
         self.cached_wapt_repo_url=''
         return None
@@ -2330,26 +2331,14 @@ class WaptHostRepo(WaptRepo):
                 section = 'wapt-main'
             else:
                 section = 'global'
+
         WaptRepo.load_config(self,config,section)
-        return self
 
-    @property
-    def repo_url(self):
         # hack to get implicit repo_url from main repo_url
-        repo_url = super(WaptHostRepo,self).repo_url
-        if repo_url and self._section in ['wapt-main','global'] and not repo_url.endswith('-host'):
-            return repo_url+'-host'
-        else:
-            return repo_url
+        if self._repo_url and section in ['wapt-main','global'] and not self._repo_url.endswith('-host'):
+            self._repo_url = self._repo_url + '-host'
 
-    @repo_url.setter
-    def repo_url(self,value):
-        if value:
-            value = value.rstrip('/')
-
-        if value != self._repo_url:
-            self.reset_network()
-            self._repo_url = value
+        return self
 
     @property
     def host_id(self):
@@ -3011,7 +3000,7 @@ class Wapt(BaseObjectClass):
                 logger.info(u'Other repositories : %s' % (repository_names,))
                 for name in repository_names:
                     if name:
-                        w = WaptRepo(name=name,WAPT=self,config=self.config)
+                        w = WaptRepo(name=name,WAPT=self).load_config(config=self.config,section=name)
                         if w.cabundle is None:
                             w.cabundle = self.cabundle
                         self.set_client_cert_auth(w)
@@ -3023,7 +3012,7 @@ class Wapt(BaseObjectClass):
 
             # last is main repository so it overrides the secondary repositories
             if self.config.has_option('global','repo_url') and not 'wapt' in repository_names:
-                w = WaptRepo(name='wapt',WAPT=self,config=self.config)
+                w = WaptRepo(name='wapt',WAPT=self).load_config(config=self.config)
                 self._repositories.append(w)
                 if w.cabundle is None:
                     w.cabundle = self.cabundle
@@ -3087,7 +3076,7 @@ class Wapt(BaseObjectClass):
         if self.config.has_section('wapt-host'):
             section = 'wapt-host'
         else:
-            section = 'global'
+            section = None
 
         if self.waptserver or section:
             try:
@@ -3104,10 +3093,7 @@ class Wapt(BaseObjectClass):
 
             # in case host repo is calculated from server url (no specific section) and main repor_url is set
             if section is None and self.waptserver:
-                # host_repo.repo_url=self.waptserver.server_url+'/wapt-host'
-                host_repo._section = 'global'
-            else:
-                host_repo._section = section
+                host_repo.repo_url=self.waptserver.server_url+'/wapt-host'
 
             self.set_client_cert_auth(host_repo)
 
