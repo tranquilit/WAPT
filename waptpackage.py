@@ -2523,9 +2523,6 @@ class WaptBaseRepo(BaseObjectClass):
             if not self.maturities:
                 self.maturities = None
 
-        if self.config_fingerprint() != self._index_config_fingerprint:
-            self.invalidate_packages_cache()
-
         return self
 
     def config_fingerprint(self):
@@ -2669,6 +2666,8 @@ class WaptBaseRepo(BaseObjectClass):
         Returns:
             str: date/time of Packages index in iso format (string)
         """
+        if self._index_config_fingerprint != self.config_fingerprint():
+            self.invalidate_packages_cache()
         if self._packages is None:
             self._load_packages_index()
             self._index_config_fingerprint = self.config_fingerprint()
