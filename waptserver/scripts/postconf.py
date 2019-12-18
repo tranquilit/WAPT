@@ -48,7 +48,7 @@ import psutil
 import datetime
 import string
 import random
-import pwd
+import pwd as good_pwd
 import grp
 import ConfigParser
 from optparse import OptionParser
@@ -67,7 +67,7 @@ def run(*args, **kwargs):
 
 def run_verbose(*args, **kwargs):
     output = subprocess.check_output(*args, shell=True, **kwargs)
-    print output
+    print(output)
     return output
 
 if type_debian():
@@ -83,7 +83,7 @@ elif type_redhat():
     wapt_folder = '/var/www/html/wapt'
     NGINX_GID= grp.getgrnam('nginx').gr_gid
 else:
-    print "distrib type unknown"
+    print("distrib type unknown")
     sys.exit(1)
 
 quiet = False
@@ -385,7 +385,7 @@ def main():
 
     if not quiet:
         if postconf.yesno("Do you want to launch post configuration tool ?") != postconf.DIALOG_OK:
-            print "canceling wapt postconfiguration"
+            print("canceling wapt postconfiguration")
             sys.exit(1)
     else:
         print('WAPT silent post-configuration')
@@ -591,6 +591,21 @@ def main():
                 traceback.format_exc()
                 ]
 
+    #Migrate file for new version waptwua
+    wuafolder = server_config['waptwua_folder']
+    for (root,dirs,files) in list(os.walk(wuafolder,topdown=False)):
+        for f in files:
+            oldpath = os.path.join(root,f)
+            newpath = os.path.join(wuafolder,f)
+            if os.path.isfile(newpath):
+                continue
+            print('Move %s --> %s' % (oldpath,newpath))
+            os.rename(oldpath,newpath)
+        for d in dirs:
+            print('Delete folder %s' % os.path.join(root,d))
+            shutil.rmtree(os.path.join(root,d))
+
+
     final_msg.append('Please connect to https://' + fqdn + '/ to access the server.')
 
     # Check if Mongodb > PostgreSQL migration is necessary
@@ -616,6 +631,6 @@ def main():
 
 if __name__ == "__main__":
     if not type_debian() and not type_redhat():
-        print "unsupported distrib"
+        print("unsupported distrib")
         sys.exit(1)
     main()
