@@ -2046,7 +2046,7 @@ class WaptRepo(WaptRemoteRepo):
     >>> len(packages)
     """
 
-    def __init__(self,url=None,name='wapt',verify_cert=None,http_proxy=None,timeout=None,cabundle=None,config=None,WAPT=None):
+    def __init__(self,url=None,name='wapt',verify_cert=None,http_proxy=None,timeout=None,cabundle=None,config=None,section=None,WAPT=None):
         """Initialize a repo at url "url".
 
         Args:
@@ -2072,7 +2072,7 @@ class WaptRepo(WaptRemoteRepo):
         self._rules = None
         self._rulesdb = None
         self.iswaptwua = True if name=='waptwua' else False
-        WaptRemoteRepo.__init__(self,url=url,name=name,verify_cert=verify_cert,http_proxy=http_proxy,timeout=timeout,cabundle=cabundle,config=config)
+        WaptRemoteRepo.__init__(self,url=url,name=name,verify_cert=verify_cert,http_proxy=http_proxy,timeout=timeout,cabundle=cabundle,config=config,section=section)
 
 
     def reset_network(self):
@@ -2278,10 +2278,10 @@ class WaptHostRepo(WaptRepo):
      PackageEntry('4C4C4544-004E-3510-8051-C7C04F325131','30') ]
     """
 
-    def __init__(self,url=None,name='wapt-host',verify_cert=None,http_proxy=None,timeout = None,host_id=None,cabundle=None,config=None,host_key=None,WAPT=None):
+    def __init__(self,url=None,name='wapt-host',verify_cert=None,http_proxy=None,timeout = None,host_id=None,cabundle=None,config=None,section=None,host_key=None,WAPT=None):
         self._host_id = None
         self.host_key = None
-        WaptRepo.__init__(self,url=url,name=name,verify_cert=verify_cert,http_proxy=http_proxy,timeout = timeout,cabundle=cabundle,config=config,WAPT=WAPT)
+        WaptRepo.__init__(self,url=url,name=name,verify_cert=verify_cert,http_proxy=http_proxy,timeout = timeout,cabundle=cabundle,config=config,section=section,WAPT=WAPT)
         self.host_id = host_id
 
         if host_key:
@@ -2333,12 +2333,25 @@ class WaptHostRepo(WaptRepo):
                 section = 'global'
 
         WaptRepo.load_config(self,config,section)
-
-        # hack to get implicit repo_url from main repo_url
-        if self._repo_url and section in ['wapt-main','global'] and not self._repo_url.endswith('-host'):
-            self._repo_url = self._repo_url + '-host'
-
         return self
+
+    @property
+    def repo_url(self):
+        # hack to get implicit repo_url from main repo_url
+        repo_url = super(WaptHostRepo,self).repo_url
+        if repo_url and self._section in ['wapt-main','global'] and not repo_url.endswith('-host'):
+            return repo_url+'-host'
+        else:
+            return repo_url
+
+    @repo_url.setter
+    def repo_url(self,value):
+        if value:
+            value = value.rstrip('/')
+
+        if value != self._repo_url:
+            self.reset_network()
+            self._repo_url = value
 
     @property
     def host_id(self):

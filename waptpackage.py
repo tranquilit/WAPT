@@ -2414,7 +2414,7 @@ class WaptBaseRepo(BaseObjectClass):
         'check_certificates_validity':'True',
     }
 
-    def __init__(self,name='abstract',cabundle=None,config=None):
+    def __init__(self,name='abstract',cabundle=None,config=None,section=None):
         """Init properties, get default values from _default_config, and override them
                 with constructor paramaters
 
@@ -2443,7 +2443,7 @@ class WaptBaseRepo(BaseObjectClass):
 
         self.maturities = None
 
-        self.load_config(config=config)
+        self.load_config(config=config,section=section)
 
         # if not None, control's signature will be check against this certificates list
         if cabundle is not None:
@@ -2481,12 +2481,12 @@ class WaptBaseRepo(BaseObjectClass):
 
     def load_config(self,config=None,section=None):
         """Load configuration from inifile section.
-                Use name of repo as section name if section is not provided.
-                Use 'global' if no section named section in ini file
-                Value not defined in ini file are taken from class _default_config
+        Use name of repo as section name if section is not provided.
+        Use 'global' if no section named section in ini file
+        Value not defined in ini file are taken from class _default_config dict
 
-                load_config is called at __init__, eventually with config = None.
-                In this case, all parameters are initialized from defaults
+        load_config is called at __init__, eventually with config = None.
+        In this case, all parameters are initialized from defaults
 
         Args:
             config (RawConfigParser): ini configuration
@@ -2524,6 +2524,8 @@ class WaptBaseRepo(BaseObjectClass):
             if not self.maturities:
                 self.maturities = None
 
+        self._section = section
+
         return self
 
     def config_fingerprint(self):
@@ -2551,8 +2553,11 @@ class WaptBaseRepo(BaseObjectClass):
         return self
 
     def _load_packages_index(self):
+        """Must be overriden to set _packages and _packages_date to something
+        different than None
+        """
         self._packages = []
-        self._packages_date = None
+        self._packages_date = datetime2isodate()
         self.discarded = []
 
     def _get_packages_index_data(self):
@@ -2599,6 +2604,7 @@ class WaptBaseRepo(BaseObjectClass):
 
     def invalidate_packages_cache(self):
         """Reset in memory packages index
+        Returns the old content of cached (packages, packages index date, discarded packages)
 
         Returns:
             dict : old cache status dict(_packages=self._packages,_packages_date=self._packages_date,discarded=self.discarded)
@@ -2667,7 +2673,7 @@ class WaptBaseRepo(BaseObjectClass):
         Returns:
             str: date/time of Packages index in iso format (string)
         """
-        if self._packages is None:
+        if self._packages_date is None:
             self._load_packages_index()
             self._index_config_fingerprint = self.config_fingerprint()
 
@@ -2907,13 +2913,13 @@ class WaptLocalRepo(WaptBaseRepo):
     >>> localrepo.update()
     """
 
-    def __init__(self,localpath=None,name='waptlocal',cabundle=None,config=None):
+    def __init__(self,localpath=None,name='waptlocal',cabundle=None,config=None,section=None):
         # store defaults at startup
         self._default_config.update({
             'localpath':'',
         })
 
-        WaptBaseRepo.__init__(self,name=name,cabundle=cabundle,config=None)
+        WaptBaseRepo.__init__(self,name=name,cabundle=cabundle,config=None,section=section)
 
         # override defaults and config with supplied parameters
         if localpath is not None:
@@ -3276,7 +3282,7 @@ class WaptRemoteRepo(WaptBaseRepo):
     True
     """
 
-    def __init__(self,url=None,name='',verify_cert=None,http_proxy=None,timeout=None,cabundle=None,config=None):
+    def __init__(self,url=None,name='',verify_cert=None,http_proxy=None,timeout=None,cabundle=None,config=None,section=None):
         """Initialize a repo at url "url".
 
         Args:
@@ -3315,7 +3321,7 @@ class WaptRemoteRepo(WaptBaseRepo):
         self.timeout = None
 
         # this load and empty config
-        WaptBaseRepo.__init__(self,name=name,cabundle=cabundle,config=config)
+        WaptBaseRepo.__init__(self,name=name,cabundle=cabundle,config=config,section=section)
 
         # forced URL
         if url is not None:
