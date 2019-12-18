@@ -4,6 +4,7 @@
 
 #include "wapt.iss"
 
+#define ssl_dir AddBackslash(SourcePath)+'ssl'
 
 [InstallDelete]
 #ifndef FastDebug
@@ -41,9 +42,9 @@ Source: "{#wapt_base_dir}waptdevutils.py"; DestDir: "{app}";
 
 ; authorized public keys
 #if set_install_certs == ""
-Source: "{#wapt_base_dir}ssl\*"; DestDir: "{app}\ssl"; Tasks: installCertificates; Flags: createallsubdirs recursesubdirs
+Source: "{#ssl_dir}\*"; DestDir: "{app}\ssl"; Tasks: installCertificates; Flags: createallsubdirs recursesubdirs
 #else
-Source: "{#wapt_base_dir}ssl\*"; DestDir: "{app}\ssl"; Flags: createallsubdirs recursesubdirs; Check: InstallCertCheck();
+Source: "{#ssl_dir}\*"; DestDir: "{app}\ssl"; Flags: createallsubdirs recursesubdirs; Check: InstallCertCheck();
 #endif
 
 ; local management console wapt selfservice

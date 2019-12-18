@@ -218,7 +218,7 @@ begin
   if (crtfilename<>'') and FileExistsUTF8(crtfilename) then
   begin
     vcrt_filename := PyUTF8Decode(crtfilename);
-    crt := dmpython.waptcrypto.SSLCertificate(crt_filename:=vcrt_filename);
+    crt := dmpython.waptcrypto.SSLCertificate(vcrt_filename);
     result := VarPythonAsString(crt.has_usage('code_signing')) <> '';
   end
   else
@@ -675,7 +675,7 @@ begin
   if FileExistsUTF8(cert_filename) = false then
     exit;
 
-  crt := dmpython.waptcrypto.SSLCertificate(crt_filename:=cert_filename);
+  crt := dmpython.waptcrypto.SSLCertificate(cert_filename);
 
   if VarIsNone( crt ) then
     exit;

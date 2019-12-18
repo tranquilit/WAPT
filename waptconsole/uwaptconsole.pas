@@ -10,7 +10,8 @@ uses
   Dialogs, Buttons, LazUTF8, SynEdit, SynHighlighterPython, SynHighlighterSQL,
   SynCompletion, vte_json, vte_dbtreeex, ExtCtrls, StdCtrls, ComCtrls, ActnList,
   Menus, jsonparser, superobject, VirtualTrees, VarPyth, ImgList, SOGrid,
-  uvisloading, IdComponent, DefaultTranslator, DBGrids, CheckLst, EditBtn, GetText, uWaptConsoleRes, db,
+  uvisloading, IdComponent, DefaultTranslator, IniPropStorage, DBGrids,
+  ShellCtrls, CheckLst, EditBtn, GetText, uWaptConsoleRes, db,
   BufDataset, SearchEdit, tisstrings;
 
 type
@@ -20,9 +21,7 @@ type
   { TVisWaptGUI }
 
   TVisWaptGUI = class(TForm)
-    ActAddNewNetwork: TAction;
     ActCancelRunningTask: TAction;
-    ActDeleteNetwork: TAction;
     ActDisplayPreferences: TAction;
     ActExternalRepositoriesSettings: TAction;
     ActAddHWPropertyToGrid: TAction;
@@ -2141,10 +2140,10 @@ begin
       ActReportingQueryExecute.Execute
     else
     if MainPages.ActivePage = pgRepositories then
-    begin
        ActRepositoriesGetSecondRepos.Execute;
-       ActRepositoriesGetUpdateRules.Execute;
-    end;
+
+
+
   finally
     Screen.Cursor := crDefault;
   end;
@@ -2337,7 +2336,8 @@ end;
 
 procedure TVisWaptGUI.ActCreateWaptSetupExecute(Sender: TObject);
 var
-  WAPTSetupPath: string;
+  WAPTSetupPath,
+  TmpBuildDir: string;
 begin
   if not IsWindowsAdminLoggedIn then
     ShowMessage(rsNotRunningAsAdmin);
@@ -2360,12 +2360,13 @@ begin
   try
     if ShowModal = mrOk then
     try
+      TmpBuildDir := GetTempFileNameUTF8('','wapt'+FormatDateTime('yyyymmdd"T"hhnnss',Now));
       try
         CurrentVisLoading.Start;
         CurrentVisLoading.ExceptionOnStop := True;
 
-        WAPTSetupPath := BuildWaptSetup;
-        BuildWaptUpgrade(WAPTSetupPath);
+        WAPTSetupPath := BuildWaptSetup(TmpBuildDir);
+        BuildWaptUpgrade(AppendPathDelim(TmpBuildDir)+'waptupgrade');
         UploadWaptSetup(WAPTSetupPath);
         ActPackagesUpdate.Execute;
       except
@@ -2373,6 +2374,8 @@ begin
           ShowMessageFmt(rsWaptAgentSetupError,[E.Message]);
       end;
     finally
+      if DirectoryExistsUTF8(TmpBuildDir) then
+        DeleteDirectory(TmpBuildDir,False);
       CurrentVisLoading.Finish;
     end;
   finally
@@ -6607,6 +6610,11 @@ begin
   ;;
 end;
 
+procedure TVisWaptGUI.ActReloadAccountsExecute(Sender: TObject);
+begin
+  ;;
+end;
+
 procedure TVisWaptGUI.GridUsersKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
@@ -6618,6 +6626,16 @@ procedure TVisWaptGUI.GridUsersDrawText(Sender: TBaseVirtualTree;
   const AText: String; const CellRect: TRect; var DefaultDraw: Boolean);
 begin
   ;;
+end;
+
+procedure TVisWAPTGUI.ActSaveAccountsExecute(Sender: TObject);
+begin
+  ;;
+end;
+
+procedure TVisWAPTGUI.MergeUsersCertificates(Users:ISuperObject);
+begin
+   ;;
 end;
 
 function TVisWaptGUI.MaxSeq: Integer;
@@ -6635,17 +6653,7 @@ begin
   ;;
 end;
 
-procedure TvisWaptGUI.ActSaveRulesExecute(Sender: TObject);
-begin
-  ;;
-end;
 
-procedure TVisWaptGUI.GridRulesGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
-    RowData, CellData: ISuperObject; Column: TColumnIndex;
-    TextType: TVSTTextType; var CellText: string);
-begin
-  ;;
-end;
 
 {$endif}
 

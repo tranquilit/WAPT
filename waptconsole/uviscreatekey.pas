@@ -254,7 +254,7 @@ begin
     if FileExistsUTF8(crtfn) then
     begin
       fnraw := UTF8Decode(crtfn);
-      edCommonName.text := utf8encode(VarPythonAsString(dmpython.waptcrypto.SSLCertificate(crt_filename := fnraw).cn))
+      edCommonName.text := utf8encode(VarPythonAsString(dmpython.waptcrypto.SSLCertificate(fnraw).cn))
     end
     // use file basename as CommonName
     else if edCommonName.text='' then

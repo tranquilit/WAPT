@@ -350,7 +350,7 @@ def duplicate_from_file(package_filename,new_prefix='test',target_directory=None
     return result
 
 
-def build_waptupgrade_package(waptconfigfile,target_directory=None,wapt_server_user=None,wapt_server_passwd=None,key_password=None,sign_digests=None,priority='critical'):
+def build_waptupgrade_package(waptconfigfile,sources_directory=None, target_directory=None,wapt_server_user=None,wapt_server_passwd=None,key_password=None,sign_digests=None,priority='critical'):
     if target_directory is None:
         target_directory = tempfile.gettempdir()
 
@@ -386,7 +386,9 @@ def build_waptupgrade_package(waptconfigfile,target_directory=None,wapt_server_u
         raise Exception(u'No personal certificate provided or not found (%s) for signing waptupgrade package' % wapt.personal_certificate_path)
 
     waptget = get_file_properties('wapt-get.exe')
-    entry = PackageEntry(waptfile = makepath(wapt.wapt_base_dir,'waptupgrade'))
+    if sources_directory is None:
+        sources_directory = makepath(wapt.wapt_base_dir,'waptupgrade')
+    entry = PackageEntry(waptfile = sources_directory)
     patchs_dir = makepath(entry.sourcespath,'patchs')
     mkdirs(patchs_dir)
     filecopyto(makepath(wapt.wapt_base_dir,'waptdeploy.exe'),makepath(patchs_dir,'waptdeploy.exe'))

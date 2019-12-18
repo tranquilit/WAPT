@@ -36,7 +36,6 @@ type
     EdServerCertificate: TFileNameEdit;
     edWaptServerUrl: TEdit;
     EdWUAInstallDelay: TEdit;
-    fnWaptDirectory: TDirectoryEdit;
     edRepoUrl: TEdit;
     edOrgName: TEdit;
     fnPublicCert: TFileNameEdit;
@@ -45,7 +44,6 @@ type
     Label1: TLabel;
     Label2: TLabel;
     Label3: TLabel;
-    Label4: TLabel;
     Label5: TLabel;
     Label6: TLabel;
     Label7: TLabel;
@@ -84,9 +82,9 @@ type
     function GetWUAParams: ISuperObject;
     procedure SaveWAPTAgentSettings;
 
-    Function BuildWaptSetup: String;
+    Function BuildWaptSetup(BuildDir: String): String;
     procedure UploadWaptSetup(SetupFilename:String);
-    Function BuildWaptUpgrade(SetupFilename: String):String;
+    Function BuildWaptUpgrade(WaptUpgradeSources: String):String;
 
   end;
 
@@ -116,12 +114,6 @@ begin
       showMessage(rsInputPubKeyPath);
       CanClose:=False;
     end;
-    if not DirectoryExists(fnWaptDirectory.Caption) then
-    begin
-      ShowMessageFmt(rsInvalidWaptSetupDir, [fnWaptDirectory.Directory]);
-      CanClose:=False;
-    end;
-
     if pos(lowercase(WaptBaseDir),lowercase(EdServerCertificate.Text))=1 then
     begin
       EdServerCertificate.Text := ExtractRelativepath(WaptBaseDir,EdServerCertificate.Text);
@@ -325,12 +317,11 @@ begin
     CBDualSign.Checked:= (ini.ReadString('global', 'sign_digests','') = 'sha256,sha1');
     CBUseFQDNAsUUID.Checked:= ini.ReadBool('global', 'use_fqdn_as_uuid',False);
     CBUseADGroups.Checked:= ini.ReadBool('global', 'use_ad_groups',False);
-    fnWaptDirectory.Directory := WaptBaseDir()+'\waptupgrade';
 
     fnPublicCert.FileName := UTF8Encode(ActiveCertBundle);
     if FileExistsUtf8(ActiveCertBundle) then
       fnPublicCertEditingDone(Sender);
-        //edOrgName.text := VarPythonAsString(dmpython.waptcrypto.SSLCertificate(crt_filename := fnPublicCert.FileName).cn);
+        //edOrgName.text := VarPythonAsString(dmpython.waptcrypto.SSLCertificate(fnPublicCert.FileName).cn);
         //edOrgName.text := dmwaptpython.DMPython.PythonEng.EvalStringAsStr(Format('common.SSLCertificate(r"""%s""").cn',[fnPublicCert.FileName]));
 
     CBVerifyCert.Checked:=(EdServerCertificate.Text<>'') and (EdServerCertificate.Text<>'0');
@@ -443,7 +434,7 @@ begin
 end;
 
 
-function TVisCreateWaptSetup.BuildWaptSetup: String;
+function TVisCreateWaptSetup.BuildWaptSetup(BuildDir:String): String;
 var
   WAPTSetupPath: string;
 begin
@@ -454,7 +445,7 @@ begin
     ProgressTitle(rsBuildInProgress);
     waptsetupPath := CreateWaptSetup(UTF8Encode(ActiveCertBundle),
       edRepoUrl.Text, edWaptServerUrl.Text,
-      fnWaptDirectory.Directory,
+      BuildDir,
       edOrgName.Text, @DoProgress, 'waptagent',
       EdServerCertificate.Text,
       CBUseKerberos.Checked,
@@ -500,9 +491,9 @@ begin
 end;
 
 // Return base filename of built package. Empty string if no package built.
-function TVisCreateWaptSetup.BuildWaptUpgrade(SetupFilename: String): String;
+function TVisCreateWaptSetup.BuildWaptUpgrade(WaptUpgradeSources: String): String;
 var
-  BuildDir, SignDigests: String;
+  SignDigests: String;
   BuildResult: Variant;
 begin
   // create waptupgrade package (after waptagent as we need the updated waptagent.sha1 file)
@@ -516,14 +507,12 @@ begin
         SignDigests := 'sha256';
 
       BuildResult := Nil;
-      BuildDir := GetTempDir(False);
 
-      if RightStr(buildDir,1) = '\' then
-        buildDir := copy(buildDir,1,length(buildDir)-1);
 
       //BuildResult is a PackageEntry instance
       BuildResult := DMPython.waptdevutils.build_waptupgrade_package(
           waptconfigfile := AppIniFilename(),
+          sources_directory := WaptUpgradeSources,
           wapt_server_user := WaptServerUser,
           wapt_server_passwd := WaptServerPassword,
           key_password := dmpython.privateKeyPassword,
@@ -561,10 +550,12 @@ begin
     Result := TSuperObject.Create(stObject);
     //Result.S['filter'] := 'Type=''Software'' or Type=''Driver''';
 
-    if CBWUAEnabled.State = cbGrayed then
-      Result['enabled'] := Nil
-    else
-      Result.B['enabled'] := CBWUAEnabled.Checked;
+    if CBWUAEnabled.Checked then
+      Result.B['enabled'] := True
+    else if CBWUADisable.Checked then
+        Result.B['enabled'] := False
+    else if CBWUADontchange.Checked then
+      Result['enabled'] := Nil;
 
     if CBWUADefaultAllow.State = cbGrayed then
       Result['default_allow'] := Nil

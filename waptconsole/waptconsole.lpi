@@ -27,7 +27,7 @@
       <MajorVersionNr Value="1"/>
       <MinorVersionNr Value="7"/>
       <RevisionNr Value="4"/>
-      <BuildNr Value="6140"/>
+      <BuildNr Value="6142"/>
       <StringTable LegalCopyright="Tranquil IT Systems 2012-2019" ProductName="WAPT Enterprise Edition" ProductVersion="1.7.4"/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -311,7 +311,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="..\waptenterprise\includes;..\wapt-get"/>
+      <OtherUnitFiles Value="..\waptenterprise\includes"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <CodeGeneration>
@@ -319,7 +319,7 @@
     </CodeGeneration>
     <Linking>
       <Debugging>
-        <UseLineInfoUnit Value="False"/>
+        <DebugInfoType Value="dsDwarf2Set"/>
         <StripSymbols Value="True"/>
         <UseExternalDbgSyms Value="True"/>
       </Debugging>
@@ -335,9 +335,10 @@
       </Verbosity>
       <CustomOptions Value="-dENTERPRISE
 -dDEVMODE"/>
-      <OtherDefines Count="2">
-        <Define0 Value="ENTERPRISE"/>
-        <Define1 Value="DEVMODE"/>
+      <OtherDefines Count="3">
+        <Define0 Value="UseCThreads"/>
+        <Define1 Value="ENTERPRISE"/>
+        <Define2 Value="DEVMODE"/>
       </OtherDefines>
     </Other>
   </CompilerOptions>
