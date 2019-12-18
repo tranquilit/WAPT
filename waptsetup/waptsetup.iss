@@ -5,6 +5,7 @@
 #define wapt_server ""
 #define AppId "WAPT"
 #define AppName "WAPTSetup"
+#define wapt_base_dir "..\"
 #define output_dir "."
 #define Company "Tranquil IT Systems"
 #define send_usage_report 1

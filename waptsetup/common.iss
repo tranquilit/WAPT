@@ -18,36 +18,36 @@ Type: filesandordirs; Name: "{app}\waptenterprise"
 #if edition != "waptstarter"
 
 #ifndef FastDebug
-Source: "innosetup\*"; DestDir: "{app}\waptsetup\innosetup"; Flags: createallsubdirs recursesubdirs ignoreversion;
+Source: "{#wapt_base_dir}waptsetup\innosetup\*"; DestDir: "{app}\waptsetup\innosetup"; Flags: createallsubdirs recursesubdirs ignoreversion;
 #endif
 
-Source: "common.iss"; DestDir: "{app}\waptsetup";
-Source: "wapt.iss"; DestDir: "{app}\waptsetup";
-Source: "waptsetup.iss"; DestDir: "{app}\waptsetup";
-Source: "waptagent.iss"; DestDir: "{app}\waptsetup";
-Source: "services.iss"; DestDir: "{app}\waptsetup";
-Source: "..\wapt.ico"; DestDir: "{app}";
+Source: "{#wapt_base_dir}waptsetup\common.iss"; DestDir: "{app}\waptsetup";
+Source: "{#wapt_base_dir}waptsetup\wapt.iss"; DestDir: "{app}\waptsetup";
+Source: "{#wapt_base_dir}waptsetup\waptsetup.iss"; DestDir: "{app}\waptsetup";
+Source: "{#wapt_base_dir}waptsetup\waptagent.iss"; DestDir: "{app}\waptsetup";
+Source: "{#wapt_base_dir}waptsetup\services.iss"; DestDir: "{app}\waptsetup";
+Source: "{#wapt_base_dir}wapt.ico"; DestDir: "{app}";
 
 ; sources to regenerate waptupgrade package
-Source: "..\waptupgrade\setup.py"; DestDir: "{app}\waptupgrade"; Flags: ignoreversion;
-Source: "..\waptupgrade\WAPT\*"; DestDir: "{app}\waptupgrade\WAPT"; Flags: createallsubdirs recursesubdirs ignoreversion;
+Source: "{#wapt_base_dir}waptupgrade\setup.py"; DestDir: "{app}\waptupgrade"; Flags: ignoreversion;
+Source: "{#wapt_base_dir}waptupgrade\WAPT\*"; DestDir: "{app}\waptupgrade\WAPT"; Flags: createallsubdirs recursesubdirs ignoreversion;
 
 ; global management console
-Source: "..\waptconsole.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\waptconsole.exe.manifest"; DestDir: "{app}";
+Source: "{#wapt_base_dir}waptconsole.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#wapt_base_dir}waptconsole.exe.manifest"; DestDir: "{app}";
 
-Source: "..\waptdevutils.py"; DestDir: "{app}";
+Source: "{#wapt_base_dir}waptdevutils.py"; DestDir: "{app}";
 #endif
 
 ; authorized public keys
 #if set_install_certs == ""
-Source: "..\ssl\*"; DestDir: "{app}\ssl"; Tasks: installCertificates; Flags: createallsubdirs recursesubdirs
+Source: "{#wapt_base_dir}ssl\*"; DestDir: "{app}\ssl"; Tasks: installCertificates; Flags: createallsubdirs recursesubdirs
 #else
-Source: "..\ssl\*"; DestDir: "{app}\ssl"; Flags: createallsubdirs recursesubdirs; Check: InstallCertCheck();
+Source: "{#wapt_base_dir}ssl\*"; DestDir: "{app}\ssl"; Flags: createallsubdirs recursesubdirs; Check: InstallCertCheck();
 #endif
 
 ; local management console wapt selfservice
-Source: "..\waptself.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#wapt_base_dir}waptself.exe"; DestDir: "{app}"; Flags: ignoreversion
 
 Source: "{param:CopyPackagesTrustedCA}"; DestDir: "{app}\ssl"; Flags: external; Check: CopyPackagesTrustedCACheck();
 Source: "{param:CopyServersTrustedCA}"; DestDir: "{app}\ssl\server"; Flags: external; Check: CopyServersTrustedCACheck();
@@ -65,7 +65,7 @@ DefaultDirName={pf32}\wapt
 #endif
 
 #if edition != 'waptagent' 
-WizardImageFile=..\tranquilit.bmp
+WizardImageFile={#wapt_base_dir}tranquilit.bmp
 #endif
 
 DisableProgramGroupPage=yes

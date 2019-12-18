@@ -7,6 +7,7 @@
 #define AppName "WAPTAgent"
 #define AppId "WAPT"
 #define output_dir "."
+#define wapt_base_dir "..\"
 #define Company "Tranquil IT Systems"
 #define send_usage_report 1
 ; if not empty, set value 0 or 1 will be defined in wapt-get.ini
@@ -84,4 +85,4 @@
   #endif
 #endif
 
-#include "common.iss"
+#include wapt_base_dir+"\waptsetup\common.iss"

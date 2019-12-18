@@ -1,4 +1,4 @@
-#define SrcApp AddBackslash(SourcePath) + "..\wapt-get.exe"
+#define SrcApp AddBackslash(SourcePath) + "{#wapt_base_dir}wapt-get.exe"
 #define FileVerStr GetFileVersion(SrcApp)
 #define AppVerStr FileVerStr
 
@@ -9,117 +9,117 @@
 #ifndef FastDebug
 [Files]
 ; local python interpreter
-Source: "..\waptpython.exe"; DestDir: "{app}";
-Source: "..\waptpythonw.exe"; DestDir: "{app}";
-Source: "..\waptpython.exe"; DestDir: "{app}\Scripts"; DestName: "python.exe"
-Source: "..\waptpythonw.exe"; DestDir: "{app}\Scripts"; DestName: "pythonw.exe"
-Source: "..\DLLs\*"; DestDir: "{app}\DLLs"; Flags: createallsubdirs recursesubdirs
-Source: "..\libs\*"; DestDir: "{app}\libs"; Flags: createallsubdirs recursesubdirs  ; Excludes: "*.pyc,*.pyo,test,*.~*,pydoc_data,tests,demos,testsuite,doc,samples,pil" 
-Source: "..\python27.dll"; DestDir: "{app}";
-Source: "..\pythoncom27.dll"; DestDir: "{app}";
-Source: "..\pythoncomloader27.dll"; DestDir: "{app}";
-Source: "..\pywintypes27.dll"; DestDir: "{app}";
-;Source: "..\sqlite3.dll"; DestDir: "{app}"; 
+Source: "{#wapt_base_dir}waptpython.exe"; DestDir: "{app}";
+Source: "{#wapt_base_dir}waptpythonw.exe"; DestDir: "{app}";
+Source: "{#wapt_base_dir}waptpython.exe"; DestDir: "{app}\Scripts"; DestName: "python.exe"
+Source: "{#wapt_base_dir}waptpythonw.exe"; DestDir: "{app}\Scripts"; DestName: "pythonw.exe"
+Source: "{#wapt_base_dir}DLLs\*"; DestDir: "{app}\DLLs"; Flags: createallsubdirs recursesubdirs
+Source: "{#wapt_base_dir}libs\*"; DestDir: "{app}\libs"; Flags: createallsubdirs recursesubdirs  ; Excludes: "*.pyc,*.pyo,test,*.~*,pydoc_data,tests,demos,testsuite,doc,samples,pil" 
+Source: "{#wapt_base_dir}python27.dll"; DestDir: "{app}";
+Source: "{#wapt_base_dir}pythoncom27.dll"; DestDir: "{app}";
+Source: "{#wapt_base_dir}pythoncomloader27.dll"; DestDir: "{app}";
+Source: "{#wapt_base_dir}pywintypes27.dll"; DestDir: "{app}";
+;Source: "{#wapt_base_dir}sqlite3.dll"; DestDir: "{app}"; 
 
-Source: "..\Scripts\*"; DestDir: "{app}\Scripts"; Flags: createallsubdirs recursesubdirs ;
+Source: "{#wapt_base_dir}Scripts\*"; DestDir: "{app}\Scripts"; Flags: createallsubdirs recursesubdirs ;
 
 ; additional python modules
-Source: "..\lib\*"; DestDir: "{app}\lib"; Flags: createallsubdirs recursesubdirs ; Excludes: "*.dist-info,*.pyc,*.pyo,test,*.~*,bson,*.chm,testsuite,Demos,tests,examples,HTML,scintilla,idle,idlelib,pylint,isort,mccabe*,*.whl,pydoc_data"
+Source: "{#wapt_base_dir}lib\*"; DestDir: "{app}\lib"; Flags: createallsubdirs recursesubdirs ; Excludes: "*.dist-info,*.pyc,*.pyo,test,*.~*,bson,*.chm,testsuite,Demos,tests,examples,HTML,scintilla,idle,idlelib,pylint,isort,mccabe*,*.whl,pydoc_data"
 
 ; workaround for Windows XP openssl
 Source: "{app}\lib\site-packages\cryptography\hazmat\bindings242\*"; DestDir: "{app}\lib\site-packages\cryptography\hazmat\bindings"; OnlyBelowVersion: 6.0; Flags: external createallsubdirs recursesubdirs ; 
 
 ; wapt sources
-Source: "..\waptutils.py"; DestDir: "{app}"; 
-Source: "..\waptcrypto.py"; DestDir: "{app}"; 
-Source: "..\common.py"; DestDir: "{app}"; 
-Source: "..\waptpackage.py"; DestDir: "{app}"; 
-Source: "..\wapt-get.py"; DestDir: "{app}"; 
-Source: "..\keyfinder.py"; DestDir: "{app}"; 
-Source: "..\setuphelpers.py"; DestDir: "{app}"; 
-Source: "..\setuphelpers_windows.py"; DestDir: "{app}"; 
-Source: "..\setuphelpers_linux.py"; DestDir: "{app}"; 
-Source: "..\windnsquery.py"; DestDir: "{app}"; 
-Source: "..\custom_zip.py"; DestDir: "{app}"; 
+Source: "{#wapt_base_dir}waptutils.py"; DestDir: "{app}"; 
+Source: "{#wapt_base_dir}waptcrypto.py"; DestDir: "{app}"; 
+Source: "{#wapt_base_dir}common.py"; DestDir: "{app}"; 
+Source: "{#wapt_base_dir}waptpackage.py"; DestDir: "{app}"; 
+Source: "{#wapt_base_dir}wapt-get.py"; DestDir: "{app}"; 
+Source: "{#wapt_base_dir}keyfinder.py"; DestDir: "{app}"; 
+Source: "{#wapt_base_dir}setuphelpers.py"; DestDir: "{app}"; 
+Source: "{#wapt_base_dir}setuphelpers_windows.py"; DestDir: "{app}"; 
+Source: "{#wapt_base_dir}setuphelpers_linux.py"; DestDir: "{app}"; 
+Source: "{#wapt_base_dir}windnsquery.py"; DestDir: "{app}"; 
+Source: "{#wapt_base_dir}custom_zip.py"; DestDir: "{app}"; 
 #ifdef waptenterprise
-Source: "..\waptenterprise\COPYING.txt"; DestDir: "{app}";
-Source: "..\waptenterprise\COPYING.txt"; DestDir: "{app}\waptenterprise";
-Source: "..\wapt-enterprise.ico"; DestDir: "{app}";
+Source: "{#wapt_base_dir}waptenterprise\COPYING.txt"; DestDir: "{app}";
+Source: "{#wapt_base_dir}waptenterprise\COPYING.txt"; DestDir: "{app}\waptenterprise";
+Source: "{#wapt_base_dir}wapt-enterprise.ico"; DestDir: "{app}";
 #else
-Source: "..\COPYING.txt"; DestDir: "{app}";
+Source: "{#wapt_base_dir}COPYING.txt"; DestDir: "{app}";
 #endif
-Source: "..\version"; DestDir: "{app}";
-Source: "..\revision.txt"; DestDir: "{app}";
-Source: "..\templates\*"; DestDir: "{app}\templates"; Flags: createallsubdirs recursesubdirs
+Source: "{#wapt_base_dir}version"; DestDir: "{app}";
+Source: "{#wapt_base_dir}revision.txt"; DestDir: "{app}";
+Source: "{#wapt_base_dir}templates\*"; DestDir: "{app}\templates"; Flags: createallsubdirs recursesubdirs
 
 ; for openssl get dll in path
-Source: "..\libeay32.dll" ; DestDir: "{app}"; 
-Source: "..\ssleay32.dll" ; DestDir: "{app}";
-Source: "..\openssl.exe" ; DestDir: "{app}";
+Source: "{#wapt_base_dir}libeay32.dll" ; DestDir: "{app}"; 
+Source: "{#wapt_base_dir}ssleay32.dll" ; DestDir: "{app}";
+Source: "{#wapt_base_dir}openssl.exe" ; DestDir: "{app}";
 
 ; for local waptservice
-Source: "..\waptservice\win32\*"; DestDir: "{app}\waptservice\win32\";  Flags: createallsubdirs recursesubdirs;
-Source: "..\waptservice\win64\*"; DestDir: "{app}\waptservice\win64\";  Flags: createallsubdirs recursesubdirs;
-Source: "..\waptservice\*.py"; DestDir: "{app}\waptservice\"; 
-Source: "..\waptservice\static\*"; DestDir: "{app}\waptservice\static"; Flags: createallsubdirs recursesubdirs; Tasks: 
-Source: "..\waptservice\ssl\*"; DestDir: "{app}\waptservice\ssl"; Flags: createallsubdirs recursesubdirs;
-Source: "..\waptservice\templates\*"; DestDir: "{app}\waptservice\templates"; Flags: createallsubdirs recursesubdirs; 
-Source: "..\waptservice\translations\*"; DestDir: "{app}\waptservice\translations"; Flags: createallsubdirs recursesubdirs; 
-Source: "..\waptservice\plugins\*"; DestDir: "{app}\waptservice\plugins"; Flags: createallsubdirs recursesubdirs; 
+Source: "{#wapt_base_dir}waptservice\win32\*"; DestDir: "{app}\waptservice\win32\";  Flags: createallsubdirs recursesubdirs;
+Source: "{#wapt_base_dir}waptservice\win64\*"; DestDir: "{app}\waptservice\win64\";  Flags: createallsubdirs recursesubdirs;
+Source: "{#wapt_base_dir}waptservice\*.py"; DestDir: "{app}\waptservice\"; 
+Source: "{#wapt_base_dir}waptservice\static\*"; DestDir: "{app}\waptservice\static"; Flags: createallsubdirs recursesubdirs; Tasks: 
+Source: "{#wapt_base_dir}waptservice\ssl\*"; DestDir: "{app}\waptservice\ssl"; Flags: createallsubdirs recursesubdirs;
+Source: "{#wapt_base_dir}waptservice\templates\*"; DestDir: "{app}\waptservice\templates"; Flags: createallsubdirs recursesubdirs; 
+Source: "{#wapt_base_dir}waptservice\translations\*"; DestDir: "{app}\waptservice\translations"; Flags: createallsubdirs recursesubdirs; 
+Source: "{#wapt_base_dir}waptservice\plugins\*"; DestDir: "{app}\waptservice\plugins"; Flags: createallsubdirs recursesubdirs; 
 
 ; waptenterprise only
 #ifdef waptenterprise
-Source: "..\waptenterprise\waptservice\*"; DestDir: "{app}\waptenterprise\waptservice\";  Flags: createallsubdirs recursesubdirs;
-Source: "..\waptenterprise\waptconsole\*"; DestDir: "{app}\waptenterprise\waptconsole\";  Flags: createallsubdirs recursesubdirs;
-Source: "..\waptenterprise\waptwua\*"; DestDir: "{app}\waptenterprise\waptwua\";  Flags: createallsubdirs recursesubdirs;
-Source: "..\waptenterprise\__init__.py"; DestDir: "{app}\waptenterprise\";
-Source: "..\waptenterprise\licencing.py"; DestDir: "{app}\waptenterprise\";
-Source: "..\waptenterprise\enterprise_common.py"; DestDir: "{app}\waptenterprise\";
+Source: "{#wapt_base_dir}waptenterprise\waptservice\*"; DestDir: "{app}\waptenterprise\waptservice\";  Flags: createallsubdirs recursesubdirs;
+Source: "{#wapt_base_dir}waptenterprise\waptconsole\*"; DestDir: "{app}\waptenterprise\waptconsole\";  Flags: createallsubdirs recursesubdirs;
+Source: "{#wapt_base_dir}waptenterprise\waptwua\*"; DestDir: "{app}\waptenterprise\waptwua\";  Flags: createallsubdirs recursesubdirs;
+Source: "{#wapt_base_dir}waptenterprise\__init__.py"; DestDir: "{app}\waptenterprise\";
+Source: "{#wapt_base_dir}waptenterprise\licencing.py"; DestDir: "{app}\waptenterprise\";
+Source: "{#wapt_base_dir}waptenterprise\enterprise_common.py"; DestDir: "{app}\waptenterprise\";
 #endif
 
 
 ; user feedback of waptservice activity
-Source: "..\wapttray.exe"; DestDir: "{app}"; BeforeInstall: killtask('wapttray.exe'); Flags: ignoreversion 
+Source: "{#wapt_base_dir}wapttray.exe"; DestDir: "{app}"; BeforeInstall: killtask('wapttray.exe'); Flags: ignoreversion 
 
 ; command line tools
-Source: "..\wapt-scanpackages.bat"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\wapt-scanpackages.py"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\wapt-signpackages.bat"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\wapt-signpackages.py"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#wapt_base_dir}wapt-scanpackages.bat"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#wapt_base_dir}wapt-scanpackages.py"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#wapt_base_dir}wapt-signpackages.bat"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#wapt_base_dir}wapt-signpackages.py"; DestDir: "{app}"; Flags: ignoreversion
 
-Source: "..\runwaptservice.bat"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#wapt_base_dir}runwaptservice.bat"; DestDir: "{app}"; Flags: ignoreversion
 
-Source: "..\wapt-get.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\waptguihelper.pyd"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\wapt-get.exe.manifest"; DestDir: "{app}";
-Source: "..\dmidecode.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\waptexit.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#wapt_base_dir}wapt-get.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#wapt_base_dir}waptguihelper.pyd"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#wapt_base_dir}wapt-get.exe.manifest"; DestDir: "{app}";
+Source: "{#wapt_base_dir}dmidecode.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#wapt_base_dir}waptexit.exe"; DestDir: "{app}"; Flags: ignoreversion
 
 ; for local debugging and pyscripter
-Source: "..\wapt.psproj"; DestDir: "{app}"; 
-Source: "..\devwapt.bat"; DestDir: "{app}"; 
-Source: "..\waptpyscripter.bat"; DestDir: "{app}"; 
+Source: "{#wapt_base_dir}wapt.psproj"; DestDir: "{app}"; 
+Source: "{#wapt_base_dir}devwapt.bat"; DestDir: "{app}"; 
+Source: "{#wapt_base_dir}waptpyscripter.bat"; DestDir: "{app}"; 
 
 ; deployment/upgrade tool
-Source: "..\waptdeploy.exe"; DestDir: "{app}"; Flags: ignoreversion restartreplace; 
+Source: "{#wapt_base_dir}waptdeploy.exe"; DestDir: "{app}"; Flags: ignoreversion restartreplace; 
 
 ; translations
-Source: "..\languages\*"; DestDir: "{app}\languages\"; Flags: createallsubdirs recursesubdirs;
+Source: "{#wapt_base_dir}languages\*"; DestDir: "{app}\languages\"; Flags: createallsubdirs recursesubdirs;
 
 ; local package cache
-Source: "..\cache\icons\unknown.png"; DestDir: "{app}\cache\icons";
+Source: "{#wapt_base_dir}cache\icons\unknown.png"; DestDir: "{app}\cache\icons";
 
 ; for python : Visual C++ 2008 redistributable
 #ifdef vcredist
-Source: "..\vc_redist\*"; DestDir: "{app}\vc_redist";
+Source: "{#wapt_base_dir}vc_redist\*"; DestDir: "{app}\vc_redist";
 #endif
 #ifdef msvcrt90
-Source: "..\msvc*90.dll"; DestDir: "{app}";
-Source: "..\Microsoft.VC90.CRT.manifest"; DestDir: "{app}";
+Source: "{#wapt_base_dir}msvc*90.dll"; DestDir: "{app}";
+Source: "{#wapt_base_dir}Microsoft.VC90.CRT.manifest"; DestDir: "{app}";
 #endif
 
 ; config file sample
-Source: "..\wapt-get.ini.tmpl"; DestDir: "{app}"; 
+Source: "{#wapt_base_dir}wapt-get.ini.tmpl"; DestDir: "{app}"; 
 
 #endif
 
@@ -163,12 +163,12 @@ PrivilegesRequired=admin
 MinVersion=0,5.0sp4
 
 #ifdef waptenterprise
-LicenseFile=..\waptenterprise\COPYING.txt
-SetupIconFile=..\wapt-enterprise.ico
+LicenseFile={#wapt_base_dir}waptenterprise\COPYING.txt
+SetupIconFile={#wapt_base_dir}wapt-enterprise.ico
 AppVerName={#AppName} Enterprise {#AppVerStr}
 #else
-LicenseFile=..\COPYING.txt
-SetupIconFile=..\wapt.ico
+LicenseFile={#wapt_base_dir}COPYING.txt
+SetupIconFile={#wapt_base_dir}wapt.ico
 AppVerName={#AppName} Community {#AppVerStr}
 #endif
 RestartIfNeededByRun=False

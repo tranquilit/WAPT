@@ -6,7 +6,7 @@
 
 #define repo_url ""
 #define wapt_server ""
-
+#define wapt_base_dir "{#wapt_base_dir}"
 #define output_dir "."
 #define Company "Tranquil IT Systems"
 
@@ -73,45 +73,45 @@
 
 #ifndef FastDebug
 ; deployment/upgrade tool
-Source: "..\waptdeploy.exe"; DestDir: "{app}\waptserver\repository\wapt\"; Flags: ignoreversion
+Source: "{#wapt_base_dir}waptdeploy.exe"; DestDir: "{app}\waptserver\repository\wapt\"; Flags: ignoreversion
 
-Source: "..\runwaptservice.bat"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\runwaptserver.bat"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#wapt_base_dir}runwaptservice.bat"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#wapt_base_dir}runwaptserver.bat"; DestDir: "{app}"; Flags: ignoreversion
 
 #ifdef choose_components
-Source: "..\waptserver\waptserver.ini.template"; DestDir: "{app}\conf"; DestName: "waptserver.ini.template"; Tasks: InstallWaptserver
-Source: "..\waptserver\*.py"; DestDir: "{app}\waptserver"; Tasks: InstallWaptserver       
-Source: "..\waptserver\*.bat"; DestDir: "{app}\waptserver"; Tasks: InstallWaptserver       
-Source: "..\waptserver\*.template"; DestDir: "{app}\waptserver"; Tasks: InstallWaptserver
-Source: "..\waptserver\static\*"; DestDir: "{app}\waptserver\static"; Flags: createallsubdirs recursesubdirs; Tasks: InstallWaptserver
-Source: "..\waptserver\templates\*"; DestDir: "{app}\waptserver\templates"; Flags: createallsubdirs recursesubdirs; Tasks: InstallWaptserver
-Source: "..\waptserver\translations\*"; DestDir: "{app}\waptserver\translations"; Flags: createallsubdirs recursesubdirs; Tasks: InstallWaptserver
-Source: "..\waptserver\scripts\*"; DestDir: "{app}\waptserver\scripts"; Flags: createallsubdirs recursesubdirs; Tasks: InstallWaptserver
-Source: "..\waptserver\pgsql-9.6\*"; DestDir: "{app}\waptserver\pgsql-9.6"; Flags: createallsubdirs recursesubdirs; Tasks: InstallPostgreSQL
-Source: "..\waptserver\nginx\*"; DestDir: "{app}\waptserver\nginx"; Flags: createallsubdirs recursesubdirs; Tasks: InstallNGINX
-Source: "..\waptserver\mongodb\mongoexport.exe"; DestDir: "{app}\waptserver\mongodb"; Check: DirExists(ExpandConstant('{app}\waptserver\mongodb'));  Tasks: InstallWaptserver
+Source: "{#wapt_base_dir}waptserver\waptserver.ini.template"; DestDir: "{app}\conf"; DestName: "waptserver.ini.template"; Tasks: InstallWaptserver
+Source: "{#wapt_base_dir}waptserver\*.py"; DestDir: "{app}\waptserver"; Tasks: InstallWaptserver       
+Source: "{#wapt_base_dir}waptserver\*.bat"; DestDir: "{app}\waptserver"; Tasks: InstallWaptserver       
+Source: "{#wapt_base_dir}waptserver\*.template"; DestDir: "{app}\waptserver"; Tasks: InstallWaptserver
+Source: "{#wapt_base_dir}waptserver\static\*"; DestDir: "{app}\waptserver\static"; Flags: createallsubdirs recursesubdirs; Tasks: InstallWaptserver
+Source: "{#wapt_base_dir}waptserver\templates\*"; DestDir: "{app}\waptserver\templates"; Flags: createallsubdirs recursesubdirs; Tasks: InstallWaptserver
+Source: "{#wapt_base_dir}waptserver\translations\*"; DestDir: "{app}\waptserver\translations"; Flags: createallsubdirs recursesubdirs; Tasks: InstallWaptserver
+Source: "{#wapt_base_dir}waptserver\scripts\*"; DestDir: "{app}\waptserver\scripts"; Flags: createallsubdirs recursesubdirs; Tasks: InstallWaptserver
+Source: "{#wapt_base_dir}waptserver\pgsql-9.6\*"; DestDir: "{app}\waptserver\pgsql-9.6"; Flags: createallsubdirs recursesubdirs; Tasks: InstallPostgreSQL
+Source: "{#wapt_base_dir}waptserver\nginx\*"; DestDir: "{app}\waptserver\nginx"; Flags: createallsubdirs recursesubdirs; Tasks: InstallNGINX
+Source: "{#wapt_base_dir}waptserver\mongodb\mongoexport.exe"; DestDir: "{app}\waptserver\mongodb"; Check: DirExists(ExpandConstant('{app}\waptserver\mongodb'));  Tasks: InstallWaptserver
 
 ; waptenterprise only
 #ifdef waptenterprise
-Source: "..\waptenterprise\waptserver\*"; DestDir: "{app}\waptenterprise\waptserver\";  Flags: createallsubdirs recursesubdirs;Tasks: InstallWaptserver
+Source: "{#wapt_base_dir}waptenterprise\waptserver\*"; DestDir: "{app}\waptenterprise\waptserver\";  Flags: createallsubdirs recursesubdirs;Tasks: InstallWaptserver
 #endif
 
 #else
-Source: "..\waptserver\waptserver.ini.template"; DestDir: "{app}\conf"; DestName: "waptserver.ini.template";
-Source: "..\waptserver\*.py"; DestDir: "{app}\waptserver";   
-Source: "..\waptserver\*.bat"; DestDir: "{app}\waptserver";   
-Source: "..\waptserver\*.template"; DestDir: "{app}\waptserver"; 
-Source: "..\waptserver\static\*"; DestDir: "{app}\waptserver\static"; Flags: createallsubdirs recursesubdirs;
-Source: "..\waptserver\templates\*"; DestDir: "{app}\waptserver\templates"; Flags: createallsubdirs recursesubdirs;
-Source: "..\waptserver\translations\*"; DestDir: "{app}\waptserver\translations"; Flags: createallsubdirs recursesubdirs; 
-Source: "..\waptserver\scripts\*"; DestDir: "{app}\waptserver\scripts"; Flags: createallsubdirs recursesubdirs;
-Source: "..\waptserver\pgsql-9.6\*"; DestDir: "{app}\waptserver\pgsql-9.6"; Flags: createallsubdirs recursesubdirs;
-Source: "..\waptserver\nginx\*"; DestDir: "{app}\waptserver\nginx"; Flags: createallsubdirs recursesubdirs;
-Source: "..\waptserver\mongodb\mongoexport.exe"; DestDir: "{app}\waptserver\mongodb"; Check: DirExists(ExpandConstant('{app}\waptserver\mongodb'))
+Source: "{#wapt_base_dir}waptserver\waptserver.ini.template"; DestDir: "{app}\conf"; DestName: "waptserver.ini.template";
+Source: "{#wapt_base_dir}waptserver\*.py"; DestDir: "{app}\waptserver";   
+Source: "{#wapt_base_dir}waptserver\*.bat"; DestDir: "{app}\waptserver";   
+Source: "{#wapt_base_dir}waptserver\*.template"; DestDir: "{app}\waptserver"; 
+Source: "{#wapt_base_dir}waptserver\static\*"; DestDir: "{app}\waptserver\static"; Flags: createallsubdirs recursesubdirs;
+Source: "{#wapt_base_dir}waptserver\templates\*"; DestDir: "{app}\waptserver\templates"; Flags: createallsubdirs recursesubdirs;
+Source: "{#wapt_base_dir}waptserver\translations\*"; DestDir: "{app}\waptserver\translations"; Flags: createallsubdirs recursesubdirs; 
+Source: "{#wapt_base_dir}waptserver\scripts\*"; DestDir: "{app}\waptserver\scripts"; Flags: createallsubdirs recursesubdirs;
+Source: "{#wapt_base_dir}waptserver\pgsql-9.6\*"; DestDir: "{app}\waptserver\pgsql-9.6"; Flags: createallsubdirs recursesubdirs;
+Source: "{#wapt_base_dir}waptserver\nginx\*"; DestDir: "{app}\waptserver\nginx"; Flags: createallsubdirs recursesubdirs;
+Source: "{#wapt_base_dir}waptserver\mongodb\mongoexport.exe"; DestDir: "{app}\waptserver\mongodb"; Check: DirExists(ExpandConstant('{app}\waptserver\mongodb'))
 
 ; waptenterprise only
 #ifdef waptenterprise
-Source: "..\waptenterprise\waptserver\*"; DestDir: "{app}\waptenterprise\waptserver\";  Flags: createallsubdirs recursesubdirs;
+Source: "{#wapt_base_dir}waptenterprise\waptserver\*"; DestDir: "{app}\waptenterprise\waptserver\";  Flags: createallsubdirs recursesubdirs;
 #endif
 
 #endif
@@ -321,7 +321,7 @@ de.StartWaptconsole=Run Waptconsole
 Type: files; Name: "{app}\waptserver\waptserver.py*"
 
 [Files]
-Source: "..\waptsetuputil.dll"; Flags: dontcopy
+Source: "{#wapt_base_dir}waptsetuputil.dll"; Flags: dontcopy
 
 [Code]
 var
