@@ -2330,13 +2330,28 @@ class WaptHostRepo(WaptRepo):
                 section = 'wapt-main'
             else:
                 section = 'global'
+        self._section = section
 
         WaptRepo.load_config(self,config,section)
-        # hack to get implicit repo_url from main repo_url
-        if self.repo_url and section in ['wapt-main','global'] and not self.repo_url.endswith('-host'):
-            self.repo_url = self.repo_url + '-host'
-
         return self
+
+    @property
+    def repo_url(self):
+        # hack to get implicit repo_url from main repo_url
+        repo_url = super(WaptHostRepo,self).repo_url
+        if repo_url and self._section in ['wapt-main','global'] and not repo_url.endswith('-host'):
+            return repo_url+'-host'
+        else:
+            return repo_url
+
+    @repo_url.setter
+    def repo_url(self,value):
+        if value:
+            value = value.rstrip('/')
+
+        if value != self._repo_url:
+            self.reset_network()
+            self._repo_url = value
 
     @property
     def host_id(self):
@@ -3074,7 +3089,7 @@ class Wapt(BaseObjectClass):
         if self.config.has_section('wapt-host'):
             section = 'wapt-host'
         else:
-            section = None
+            section = 'global'
 
         if self.waptserver or section:
             try:
@@ -3091,7 +3106,10 @@ class Wapt(BaseObjectClass):
 
             # in case host repo is calculated from server url (no specific section) and main repor_url is set
             if section is None and self.waptserver:
-                host_repo.repo_url=self.waptserver.server_url+'/wapt-host'
+                # host_repo.repo_url=self.waptserver.server_url+'/wapt-host'
+                host_repo._section = 'global'
+            else:
+                host_repo._section = section
 
             self.set_client_cert_auth(host_repo)
 
