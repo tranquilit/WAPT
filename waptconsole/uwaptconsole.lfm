@@ -1,7 +1,7 @@
 object VisWaptGUI: TVisWaptGUI
-  Left = 2141
+  Left = 365
   Height = 831
-  Top = 27
+  Top = 163
   Width = 1211
   AllowDropFiles = True
   Caption = 'WAPT console'
@@ -351,6 +351,7 @@ object VisWaptGUI: TVisWaptGUI
               end>
             Header.DefaultHeight = 18
             Header.Height = 18
+            Header.MaxHeight = 100
             Header.MinHeight = 18
             Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
             Header.SortDirection = sdDescending
@@ -805,6 +806,7 @@ object VisWaptGUI: TVisWaptGUI
               end>
             Header.DefaultHeight = 18
             Header.Height = 18
+            Header.MaxHeight = 100
             Header.MinHeight = 18
             Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
             Header.SortDirection = sdDescending
@@ -1156,6 +1158,7 @@ object VisWaptGUI: TVisWaptGUI
               end>
             Header.DefaultHeight = 18
             Header.Height = 18
+            Header.MaxHeight = 100
             Header.MinHeight = 18
             Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
             Header.SortDirection = sdDescending
@@ -1439,6 +1442,7 @@ object VisWaptGUI: TVisWaptGUI
               end>
             Header.DefaultHeight = 18
             Header.Height = 18
+            Header.MaxHeight = 100
             Header.MinHeight = 18
             Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
             Header.SortDirection = sdDescending
@@ -1684,6 +1688,7 @@ object VisWaptGUI: TVisWaptGUI
                   end>
                 Header.DefaultHeight = 18
                 Header.Height = 18
+                Header.MaxHeight = 100
                 Header.MinHeight = 18
                 Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
                 Header.SortDirection = sdDescending
@@ -1828,6 +1833,7 @@ object VisWaptGUI: TVisWaptGUI
                   end>
                 Header.DefaultHeight = 18
                 Header.Height = 18
+                Header.MaxHeight = 100
                 Header.MinHeight = 18
                 Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
                 Header.SortDirection = sdDescending
@@ -1971,6 +1977,7 @@ object VisWaptGUI: TVisWaptGUI
                   end>
                 Header.DefaultHeight = 18
                 Header.Height = 18
+                Header.MaxHeight = 100
                 Header.MinHeight = 18
                 Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
                 Header.SortDirection = sdDescending
@@ -2295,6 +2302,7 @@ object VisWaptGUI: TVisWaptGUI
             end>
           Header.DefaultHeight = 18
           Header.Height = 18
+          Header.MaxHeight = 100
           Header.MinHeight = 18
           Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
           Header.ParentFont = True
@@ -3444,6 +3452,7 @@ object VisWaptGUI: TVisWaptGUI
           end>
         Header.DefaultHeight = 18
         Header.Height = 18
+        Header.MaxHeight = 100
         Header.MinHeight = 18
         Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
         Header.SortDirection = sdDescending
@@ -4068,6 +4077,7 @@ object VisWaptGUI: TVisWaptGUI
           end>
         Header.DefaultHeight = 18
         Header.Height = 18
+        Header.MaxHeight = 100
         Header.MinHeight = 18
         Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
         Header.SortDirection = sdDescending
@@ -4433,6 +4443,7 @@ object VisWaptGUI: TVisWaptGUI
             end>
           Header.DefaultHeight = 18
           Header.Height = 18
+          Header.MaxHeight = 100
           Header.MinHeight = 18
           Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
           Header.SortDirection = sdDescending
@@ -5167,6 +5178,7 @@ object VisWaptGUI: TVisWaptGUI
               end>
             Header.DefaultHeight = 18
             Header.Height = 18
+            Header.MaxHeight = 100
             Header.MinHeight = 18
             Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
             Header.SortDirection = sdDescending
@@ -5344,6 +5356,7 @@ object VisWaptGUI: TVisWaptGUI
               end>
             Header.DefaultHeight = 18
             Header.Height = 18
+            Header.MaxHeight = 100
             Header.MinHeight = 18
             Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
             Header.SortDirection = sdDescending
@@ -5732,6 +5745,7 @@ object VisWaptGUI: TVisWaptGUI
                 end>
               Header.DefaultHeight = 18
               Header.Height = 18
+              Header.MaxHeight = 100
               Header.MinHeight = 18
               Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
               Header.SortDirection = sdDescending
@@ -6335,6 +6349,7 @@ object VisWaptGUI: TVisWaptGUI
           end>
         Header.DefaultHeight = 18
         Header.Height = 18
+        Header.MaxHeight = 100
         Header.MinHeight = 18
         Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
         Header.SortDirection = sdDescending
@@ -7136,6 +7151,7 @@ object VisWaptGUI: TVisWaptGUI
           end>
         Header.DefaultHeight = 18
         Header.Height = 18
+        Header.MaxHeight = 100
         Header.MinHeight = 18
         Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
         Header.SortDirection = sdDescending
@@ -7197,6 +7213,7 @@ object VisWaptGUI: TVisWaptGUI
             Header.DefaultHeight = 18
             Header.Height = 18
             Header.MainColumn = -1
+            Header.MaxHeight = 100
             Header.MinHeight = 18
             Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
             Header.SortDirection = sdDescending
@@ -7862,6 +7879,7 @@ object VisWaptGUI: TVisWaptGUI
             end>
           Header.DefaultHeight = 18
           Header.Height = 18
+          Header.MaxHeight = 100
           Header.MinHeight = 18
           Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
           Header.SortDirection = sdDescending
@@ -8044,6 +8062,7 @@ object VisWaptGUI: TVisWaptGUI
           end>
         Header.DefaultHeight = 18
         Header.Height = 18
+        Header.MaxHeight = 100
         Header.MinHeight = 18
         Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
         Header.SortDirection = sdDescending
@@ -12510,7 +12529,6 @@ object VisWaptGUI: TVisWaptGUI
   object SrcNetworks: TSODataSource
     ParamsJSON = 'Nil'
     Root = 'content'
-    Active = True
     left = 584
     top = 168
   end

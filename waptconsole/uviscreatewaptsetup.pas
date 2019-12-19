@@ -559,10 +559,12 @@ begin
     Result := TSuperObject.Create(stObject);
     //Result.S['filter'] := 'Type=''Software'' or Type=''Driver''';
 
-    if CBWUAEnabled.State = cbGrayed then
-      Result['enabled'] := Nil
-    else
-      Result.B['enabled'] := CBWUAEnabled.Checked;
+    if CBWUAEnabled.Checked then
+      Result.B['enabled'] := True
+    else if CBWUADisable.Checked then
+        Result.B['enabled'] := False
+    else if CBWUADontchange.Checked then
+      Result['enabled'] := Nil;
 
     if CBWUADefaultAllow.State = cbGrayed then
       Result['default_allow'] := Nil
