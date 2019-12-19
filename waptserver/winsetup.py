@@ -23,7 +23,7 @@
 
 # old function to install waptserver on windows. need to be rewritten (switch to nginx, websocket, etc.)
 from __future__ import absolute_import
-
+import shutil
 import os
 import sys
 from win32api import GetUserName
