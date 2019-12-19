@@ -253,15 +253,6 @@ msgctxt "tviscreatewaptsetup.caption"
 msgid "Create WAPT agent"
 msgstr "Créer un agent WAPT"
 
-#: tviscreatewaptsetup.cbcheckcertificatesvalidity.caption
-msgid "Check packages certificates validity"
-msgstr "Vérifier la validité des certificats des paquets"
-
-#: tviscreatewaptsetup.cbcheckcertificatesvalidity.hint
-msgctxt "tviscreatewaptsetup.cbcheckcertificatesvalidity.hint"
-msgid "Check that certificate dates are valid and  issuer is a know one."
-msgstr "Vérifier que les dates des certificats sont correctes et que l'émetteur est bien connu"
-
 #: tviscreatewaptsetup.cbdualsign.caption
 msgid "Sign waptupgrade with both sha256 and sha1"
 msgstr "Signer waptupgrade avec sha256 ET sha1"
@@ -416,6 +407,12 @@ msgctxt "tviscreatewaptsetup.gridcertificates.header.columns[0].text"
 msgid "id"
 msgstr "id"
 
+#: tviscreatewaptsetup.gridcertificates.header.columns[10].text
+
+msgctxt "tviscreatewaptsetup.gridcertificates.header.columns[10].text"
+msgid "issuer_dn"
+msgstr "DN émetteur"
+
 #: tviscreatewaptsetup.gridcertificates.header.columns[1].text
 msgctxt "tviscreatewaptsetup.gridcertificates.header.columns[1].text"
 msgid "Certificate Name"
@@ -452,13 +449,16 @@ msgid "CA"
 msgstr "CA"
 
 #: tviscreatewaptsetup.gridcertificates.header.columns[8].text
+
 msgctxt "tviscreatewaptsetup.gridcertificates.header.columns[8].text"
-msgid "subject_dn"
-msgstr "DN Sujet"
+msgid "Filename"
+msgstr "Nom de fichier"
 
 #: tviscreatewaptsetup.gridcertificates.header.columns[9].text
+
+
 msgctxt "tviscreatewaptsetup.gridcertificates.header.columns[9].text"
-msgid "issuer_dn"
+msgid "subject_dn"
 msgstr "DN émetteur"
 
 #: tviscreatewaptsetup.label1.caption

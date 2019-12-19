@@ -138,7 +138,7 @@ interface
 
   function CreateWaptSetup(default_public_cert:Utf8String='';default_repo_url:Utf8String='';
             default_wapt_server:Utf8String='';BuildDir:Utf8String='';company:Utf8String='';OnProgress:TNotifyEvent = Nil;WaptEdition:Utf8String='waptagent';
-            VerifyCert:Utf8String='0'; UseKerberos:Boolean=False; CheckCertificatesValidity:Boolean=True;
+            VerifyCert:Utf8String='0'; UseKerberos:Boolean=False;
             EnterpriseEdition:Boolean=False; OverwriteRepoURL:Boolean=True;OverwriteWaptServerURL:Boolean=True;
             UseFQDNAsUUID:Boolean=False;
             UseRandomUUID:Boolean=False;
@@ -2685,7 +2685,7 @@ function CreateWaptSetup(default_public_cert: Utf8String;
   default_repo_url: Utf8String; default_wapt_server: Utf8String;
   BuildDir: Utf8String; company: Utf8String; OnProgress: TNotifyEvent;
   WaptEdition: Utf8String; VerifyCert: Utf8String; UseKerberos: Boolean;
-  CheckCertificatesValidity: Boolean; EnterpriseEdition: Boolean;
+  EnterpriseEdition: Boolean;
   OverwriteRepoURL: Boolean; OverwriteWaptServerURL: Boolean;
   UseFQDNAsUUID:Boolean=False; UseRandomUUID:Boolean=False; UseADGroups:Boolean=False; AppendHostProfiles:String='';
   WUAParams:ISuperObject=Nil;
@@ -2778,13 +2778,6 @@ begin
               new_iss.AsArray.Add(format('#define set_use_kerberos "1"' ,[]))
             else
               new_iss.AsArray.Add(format('#define set_use_kerberos "0"' ,[]))
-        end
-        else if startswith(line,'#define check_certificates_validity') then
-        begin
-            if CheckCertificatesValidity then
-              new_iss.AsArray.Add(format('#define check_certificates_validity 1' ,[]))
-            else
-              new_iss.AsArray.Add(format('#define check_certificates_validity 0' ,[]))
         end
         else if startswith(line,'#define set_verify_cert') then
           new_iss.AsArray.Add(format('#define set_verify_cert "%s"',[VerifyCert]))

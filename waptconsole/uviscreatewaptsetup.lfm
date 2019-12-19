@@ -1,13 +1,13 @@
 object VisCreateWaptSetup: TVisCreateWaptSetup
-  Left = 763
-  Height = 646
-  Top = 0
-  Width = 573
+  Left = 729
+  Height = 669
+  Top = 113
+  Width = 594
   AutoSize = True
   BorderStyle = bsDialog
   Caption = 'Create WAPT agent'
-  ClientHeight = 646
-  ClientWidth = 573
+  ClientHeight = 669
+  ClientWidth = 594
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnDestroy = FormDestroy
@@ -18,16 +18,16 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
   LCLVersion = '1.8.4.0'
   object PanClient: TPanel
     Left = 4
-    Height = 460
+    Height = 415
     Top = 4
-    Width = 565
+    Width = 586
     Align = alClient
     AutoSize = True
     BorderSpacing.Around = 4
     BevelOuter = bvNone
-    ClientHeight = 460
-    ClientWidth = 565
-    Constraints.MinHeight = 460
+    ClientHeight = 415
+    ClientWidth = 586
+    Constraints.MinHeight = 415
     Constraints.MinWidth = 560
     TabOrder = 0
     object Label1: TLabel
@@ -40,7 +40,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       ParentColor = False
     end
     object edRepoUrl: TEdit
-      Left = 302
+      Left = 232
       Height = 20
       Hint = 'E.g. : https://wapt.mydomain.lan/wapt If empty, use dnsdomain setting'
       Top = 214
@@ -60,19 +60,19 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
     end
     object edOrgName: TEdit
       AnchorSideRight.Side = asrBottom
-      Left = 302
+      Left = 232
       Height = 21
       Hint = 'E.g. : Tranquil IT Systems.'
-      Top = 347
-      Width = 258
+      Top = 328
+      Width = 279
       Anchors = [akTop, akLeft, akRight]
-      TabOrder = 9
+      TabOrder = 8
     end
     object Label3: TLabel
       Left = 2
       Height = 13
       Hint = 'Your company name.'
-      Top = 350
+      Top = 331
       Width = 68
       Alignment = taRightJustify
       Caption = 'Organization :'
@@ -80,7 +80,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
     end
     object edWaptServerUrl: TEdit
       AnchorSideRight.Side = asrBottom
-      Left = 302
+      Left = 232
       Height = 21
       Hint = 'E.g. : https://wapt.mydomain.lan'
       Top = 238
@@ -108,11 +108,11 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
     end
     object EdServerCertificate: TFileNameEdit
       AnchorSideRight.Side = asrBottom
-      Left = 302
+      Left = 232
       Height = 21
       Hint = 'E.g. : c:\wapt\ssl\server\tranquilit.crt  Path to trusted certificates bundle for https connections'
       Top = 279
-      Width = 258
+      Width = 279
       Filter = 'CA Certificates bundles PEM|*.crt;*.pem|Tous les fichiers|*.*'
       FilterIndex = 0
       HideDirectories = False
@@ -125,7 +125,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       TabOrder = 6
     end
     object CBVerifyCert: TCheckBox
-      Left = 302
+      Left = 232
       Height = 16
       Top = 261
       Width = 385
@@ -136,7 +136,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       TabOrder = 5
     end
     object CBUseKerberos: TCheckBox
-      Left = 302
+      Left = 232
       Height = 17
       Hint = 'When first registering to waptserver, host will try to authenticate using their kerberos account'
       Top = 306
@@ -144,30 +144,20 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       Caption = 'Use Kerberos for initial registration'
       TabOrder = 7
     end
-    object CBCheckCertificatesValidity: TCheckBox
-      Left = 302
-      Height = 17
-      Hint = 'Check that certificate dates are valid and  issuer is a know one.'
-      Top = 325
-      Width = 190
-      Caption = 'Check packages certificates validity'
-      TabOrder = 8
-      Visible = False
-    end
     object CBDualSign: TCheckBox
-      Left = 302
+      Left = 232
       Height = 17
       Hint = 'Check that certificate dates are valid and  issuer is a know one.'
-      Top = 396
+      Top = 357
       Width = 240
       Caption = 'Sign waptupgrade with both sha256 and sha1'
-      TabOrder = 10
+      TabOrder = 9
     end
     object GridCertificates: TSOGrid
       Left = 1
       Height = 159
       Top = 45
-      Width = 555
+      Width = 576
       ShowAdvancedColumnsCustomize = False
       Anchors = [akTop, akLeft, akRight]
       BorderSpacing.Top = 2
@@ -233,13 +223,20 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
         item
           Position = 8
           Tag = 8
+          Text = 'Filename'
+          Width = 109
+          PropertyName = '_public_cert_filename'
+        end      
+        item
+          Position = 9
+          Tag = 9
           Text = 'subject_dn'
           Width = 77
           PropertyName = 'subject_dn'
         end      
         item
-          Position = 9
-          Tag = 9
+          Position = 10
+          Tag = 10
           Text = 'issuer_dn'
           PropertyName = 'issuer_dn'
         end>
@@ -256,6 +253,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages, toAlwaysHideSelection]
       TreeOptions.SelectionOptions = [toDisableDrawSelection, toExtendedFocus, toMultiSelect, toRightClickSelect]
       WantTabs = True
+      OnDblClick = GridCertificatesDblClick
       ZebraPaint = True
     end
     object Label7: TLabel
@@ -270,11 +268,11 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       AnchorSideLeft.Control = edRepoUrl
       AnchorSideLeft.Side = asrBottom
       AnchorSideRight.Side = asrBottom
-      Left = 575
+      Left = 505
       Height = 17
       Hint = 'Overwrite the URL when installing on the client even if there is a diffrent current setting in wapt-get.ini'
-      Top = 228
-      Width = 0
+      Top = 217
+      Width = 238
       Anchors = [akTop, akLeft, akRight]
       Caption = 'Overwrite'
       Checked = True
@@ -285,11 +283,11 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       AnchorSideLeft.Control = edWaptServerUrl
       AnchorSideLeft.Side = asrBottom
       AnchorSideRight.Side = asrBottom
-      Left = 576
+      Left = 506
       Height = 17
       Hint = 'Overwrite the URL when installing on the client even if there is a diffrent current setting in wapt-get.ini'
-      Top = 255
-      Width = 0
+      Top = 240
+      Width = 232
       Anchors = [akTop, akLeft, akRight]
       Caption = 'Overwrite'
       Checked = True
@@ -297,31 +295,31 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       TabOrder = 4
     end
     object CBUseFQDNAsUUID: TCheckBox
-      Left = 302
+      Left = 232
       Height = 17
       Hint = 'Ask Wapt agent to use the computer Fully Qualified Domain Name (name.domaine.lan) instead of BIOD unique ID.'#13#10'This can be useful if Wapt is not used as asset management, but only as a deployment solutioN.'
-      Top = 415
+      Top = 376
       Width = 164
       Caption = 'Use Computer FQDN for UUID'
       OnChange = CBUseFQDNAsUUIDChange
-      TabOrder = 11
+      TabOrder = 10
     end
     object CBUseRandomUUID: TCheckBox
-      Left = 302
+      Left = 232
       Height = 17
       Hint = 'Ask Wapt agent to generate a random UUID instead of BIOS unique ID.'#13#10'This can be useful if BIOS returns non unique UUID'
-      Top = 434
+      Top = 395
       Width = 214
       Caption = 'Use random host UUID (for buggy BIOS)'
       OnChange = CBUseRandomUUIDChange
-      TabOrder = 12
+      TabOrder = 11
     end
     object edPublicCertDir: TDirectoryEdit
       Left = 302
       Height = 21
       Hint = 'Directory of X509 PEM trusted CA certificates'
       Top = 0
-      Width = 258
+      Width = 279
       OnAcceptDirectory = edPublicCertDirAcceptDirectory
       ShowHidden = False
       ButtonWidth = 23
@@ -329,30 +327,30 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       Flat = True
       Anchors = [akTop, akLeft, akRight]
       MaxLength = 0
-      TabOrder = 13
+      TabOrder = 12
       OnEditingDone = edPublicCertDirEditingDone
       OnExit = edPublicCertDirExit
     end
   end
   object PanAgentEnterprise: TPanel
-    Left = 0
-    Height = 224
-    Top = 387
-    Width = 573
+    Left = 3
+    Height = 208
+    Top = 423
+    Width = 588
     Align = alBottom
-    AutoSize = True
+    BorderSpacing.Around = 3
     BevelOuter = bvNone
-    ClientHeight = 224
-    ClientWidth = 573
+    ClientHeight = 208
+    ClientWidth = 588
     TabOrder = 1
     object GBWUA: TGroupBox
       Left = 0
-      Height = 116
-      Top = 108
-      Width = 567
+      Height = 120
+      Top = 80
+      Width = 586
       Caption = 'WAPTWUA Windows Updates '
-      ClientHeight = 98
-      ClientWidth = 563
+      ClientHeight = 102
+      ClientWidth = 582
       TabOrder = 2
       object CBWUADefaultAllow: TCheckBox
         Left = 8
@@ -415,12 +413,14 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       end
     end
     object Label8: TLabel
+      AnchorSideTop.Control = edAppendHostProfiles
       Left = 3
       Height = 13
       Hint = 'Comma separated list of profile packages to add for hosts. Host will belongs to these additional profiles'
-      Top = 3
+      Top = 5
       Width = 106
       Alignment = taRightJustify
+      BorderSpacing.Top = 3
       Caption = 'Append host''s profiles'
       ParentColor = False
     end
@@ -428,26 +428,28 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       Left = 3
       Height = 13
       Hint = 'Comma separated list of profile packages to add for hosts. Host will belongs to these additional profiles'
-      Top = 32
+      Top = 34
       Width = 216
       Caption = 'Automatic periodic packages audit scheduling'
       ParentColor = False
     end
     object edAppendHostProfiles: TEdit
+      AnchorSideLeft.Control = EdAuditScheduling
+      AnchorSideTop.Control = PanAgentEnterprise
       AnchorSideRight.Side = asrBottom
-      Left = 251
+      Left = 233
       Height = 21
       Hint = 'E.g. : socle,accounting'
-      Top = 0
-      Width = 181
-      Anchors = [akTop, akLeft, akRight]
+      Top = 2
+      Width = 202
+      BorderSpacing.Top = 2
       TabOrder = 0
     end
     object EdAuditScheduling: TComboBox
-      Left = 251
+      Left = 233
       Height = 21
       Hint = 'eg 2h or 120m or 1d'
-      Top = 27
+      Top = 29
       Width = 100
       ItemHeight = 13
       Items.Strings = (
@@ -464,7 +466,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       AnchorSideTop.Side = asrBottom
       Left = 3
       Height = 17
-      Top = 58
+      Top = 60
       Width = 202
       BorderSpacing.Top = 10
       Caption = 'Manage Windows Updates with WAPT'
@@ -478,7 +480,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       AnchorSideTop.Side = asrCenter
       Left = 350
       Height = 17
-      Top = 58
+      Top = 60
       Width = 108
       BorderSpacing.Left = 16
       Caption = 'Dont'' set anything'
@@ -492,7 +494,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       AnchorSideTop.Side = asrCenter
       Left = 221
       Height = 17
-      Top = 58
+      Top = 60
       Width = 113
       BorderSpacing.Left = 16
       Caption = 'Disable WAPT WUA'
@@ -500,11 +502,16 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       TabOrder = 5
     end
     object CBUseADGroups: TCheckBox
-      Left = 448
+      AnchorSideLeft.Control = edAppendHostProfiles
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = edAppendHostProfiles
+      Left = 442
       Height = 17
       Hint = 'Enable automatic AD groups based packages on Hots.'#13#10'Be careful, this introduce load on the AD servers and slow down the whole Wapt process'
-      Top = 2
+      Top = 3
       Width = 106
+      BorderSpacing.Left = 7
+      BorderSpacing.Top = 1
       Caption = 'Enable AD Groups'
       TabOrder = 6
     end
@@ -512,19 +519,19 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
   object PanBottom: TPanel
     Left = 0
     Height = 35
-    Top = 611
-    Width = 573
+    Top = 634
+    Width = 594
     Align = alBottom
     AutoSize = True
     BorderSpacing.InnerBorder = 2
     BevelOuter = bvNone
     ClientHeight = 35
-    ClientWidth = 573
+    ClientWidth = 594
     TabOrder = 2
     object ButOK: TBitBtn
       AnchorSideTop.Control = PanBottom
       AnchorSideRight.Control = ButCancel
-      Left = 415
+      Left = 436
       Height = 26
       Top = 5
       Width = 60
@@ -542,7 +549,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       AnchorSideTop.Control = PanBottom
       AnchorSideRight.Control = PanBottom
       AnchorSideRight.Side = asrBottom
-      Left = 485
+      Left = 506
       Height = 26
       Top = 5
       Width = 83

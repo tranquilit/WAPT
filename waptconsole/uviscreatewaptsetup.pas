@@ -6,8 +6,8 @@ interface
 
 uses
   Classes, SysUtils, LazFileUtils, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  EditBtn, ExtCtrls, Buttons, ActnList, DefaultTranslator, Menus, sogrid,
-  uVisLoading,IdComponent,superobject;
+  LCLIntf,EditBtn, ExtCtrls, Buttons, ActnList, DefaultTranslator, Menus, sogrid,
+  uVisLoading,IdComponent,superobject, VirtualTrees;
 
 type
 
@@ -17,7 +17,6 @@ type
     ActionList1: TActionList;
     ButOK: TBitBtn;
     ButCancel: TBitBtn;
-    CBCheckCertificatesValidity: TCheckBox;
     CBDualSign: TCheckBox;
     CBInstallWUAUpdatesAtShutdown: TCheckBox;
     CBUseFQDNAsUUID: TCheckBox;
@@ -72,11 +71,13 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure GridCertificatesDblClick(Sender: TObject);
   private
     FCurrentVisLoading: TVisLoading;
     function GetCurrentVisLoading: TVisLoading;
     { private declarations }
     procedure IdHTTPWork(ASender: TObject; AWorkMode: TWorkMode; AWorkCount: int64);
+    procedure LoadTrustedCertificates(TrustedDirectory: String);
   public
     { public declarations }
     ActiveCertBundle: String;
@@ -149,21 +150,21 @@ begin
   PanAgentEnterprise.Visible := DMPython.IsEnterpriseEdition;
 end;
 
-procedure TVisCreateWaptSetup.edPublicCertDirEditingDone(Sender: TObject);
+procedure TVisCreateWaptSetup.LoadTrustedCertificates(TrustedDirectory:String);
 var
   id: Integer;
   NewCertDir,CABundle,CertIter,Cert,CertList: Variant;
   SOCert,SOCerts: ISuperObject;
   att:String;
-  atts: Array[0..8] of String=('cn','issuer_cn','subject_dn','issuer_dn','fingerprint','not_after','is_ca','is_code_signing','serial_number');
+  atts: Array[0..9] of String=('cn','issuer_cn','subject_dn','issuer_dn','fingerprint',
+      'not_after','is_ca','is_code_signing','serial_number','_public_cert_filename');
 
 begin
-  NewCertDir := UTF8Decode(edPublicCertDir.Directory);
-  //if FileExistsUTF8(NewCertDir) and ((ActiveCertBundle <> NewCertDir) or (GridCertificates.Data = Nil) )  then
+  NewCertDir := UTF8Decode(TrustedDirectory);
   try
     SOCerts := TSuperObject.Create(stArray);
     CABundle:=dmpython.waptcrypto.SSLCABundle('--noarg--');
-    if DirectoryExistsUTF8(edPublicCertDir.Directory) then
+    if DirectoryExistsUTF8(TrustedDirectory) then
       CABundle.add_pems(cert_pattern_or_dir := NewCertDir,trust_first := True);
 
     CertList := CABundle.trusted.values('--noarg--');
@@ -183,14 +184,19 @@ begin
         on EPyStopIteration do Break;
       end;
     GridCertificates.Data := SOCerts;
-    ActiveCertBundle := edPublicCertDir.Directory;
+    ActiveCertBundle := TrustedDirectory;
   finally
   end;
 end;
 
+procedure TVisCreateWaptSetup.edPublicCertDirEditingDone(Sender: TObject);
+begin
+  LoadTrustedCertificates(edPublicCertDir.Directory);
+end;
+
 procedure TVisCreateWaptSetup.edPublicCertDirExit(Sender: TObject);
 begin
-  edPublicCertDirEditingDone(Sender);
+  LoadTrustedCertificates(edPublicCertDir.Directory);
 end;
 
 procedure TVisCreateWaptSetup.CBVerifyCertClick(Sender: TObject);
@@ -242,7 +248,7 @@ end;
 procedure TVisCreateWaptSetup.edPublicCertDirAcceptDirectory(Sender: TObject;
   var Value: String);
 begin
-  edPublicCertDirEditingDone(Sender);
+  LoadTrustedCertificates(Value);
 end;
 
 procedure TVisCreateWaptSetup.ActGetServerCertificateExecute(Sender: TObject);
@@ -316,7 +322,6 @@ begin
     edRepoUrl.Text := ini.ReadString('global', 'repo_url', '');
     EdServerCertificate.Text := ini.ReadString('global', 'verify_cert', '0'); ;
     CBUseKerberos.Checked:=ini.ReadBool('global', 'use_kerberos', False );
-    CBCheckCertificatesValidity.Checked:=ini.ReadBool('global', 'check_certificates_validity',True );
     CBDualSign.Checked:= (ini.ReadString('global', 'sign_digests','') = 'sha256,sha1');
     CBUseFQDNAsUUID.Checked:= ini.ReadBool('global', 'use_fqdn_as_uuid',False);
     CBUseADGroups.Checked:= ini.ReadBool('global', 'use_ad_groups',False);
@@ -329,9 +334,6 @@ begin
 
     CBVerifyCert.Checked:=(EdServerCertificate.Text<>'') and (EdServerCertificate.Text<>'0');
     CBVerifyCertClick(Sender);
-
-    if not CBCheckCertificatesValidity.Checked then
-      CBCheckCertificatesValidity.Visible := True;
 
     if not DMPython.IsEnterpriseEdition then
       CBWUADontchange.Checked := True
@@ -386,6 +388,10 @@ begin
     GridCertificates.Header.Height:=trunc((GridCertificates.Header.MinHeight*Screen.PixelsPerInch)/96);
 end;
 
+procedure TVisCreateWaptSetup.GridCertificatesDblClick(Sender: TObject);
+begin
+  OpenDocument(UTF8Encode(GridCertificates.FocusedRow.S['_public_cert_filename']));
+end;
 
 procedure TVisCreateWaptSetup.SaveWAPTAgentSettings;
 var
@@ -452,7 +458,6 @@ begin
       edOrgName.Text, @DoProgress, 'waptagent',
       EdServerCertificate.Text,
       CBUseKerberos.Checked,
-      CBCheckCertificatesValidity.Checked,
       DMPython.IsEnterpriseEdition,
       CBForceRepoURL.Checked,
       CBForceWaptServerURL.Checked,
