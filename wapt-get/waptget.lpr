@@ -939,7 +939,6 @@ begin
       ini.ReadString('global', 'verify_cert', '0'),
       ini.ReadBool('global', 'use_kerberos'
       , False ),
-      ini.ReadBool('global', 'check_certificates_validity',True ),
       IsEnterpriseEdition,
       True,
       True,
