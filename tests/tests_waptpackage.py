@@ -643,7 +643,7 @@ def test_openssl():
     except Exception as e:
         print e
 
-def test_crl():
+def test_list_crl():
     w = Wapt(config_filename='c:/wapt/wapt-get.ini')
     for crl in w.update_crls(force=True):
         print crl.crl
@@ -990,6 +990,31 @@ def test_crl():
         raise Exception('ERROR should be revoked...')
     except EWaptCertificateRevoked as e:
         print('OK revoked')
+
+def test_csr_crl():
+    cakey = SSLPrivateKey().create()
+    cacert = cakey.build_sign_certificate(cn='testca',crl_url='http://127.0.0.1/wapt/cacrl.crl')
+    mykey = SSLPrivateKey().create()
+    mycsr = mykey.build_csr(cn='Myself')
+    mycert = cacert.build_certificate_from_csr(mycsr,cakey)
+    serial = mycert.serial_number
+
+    ca = SSLCABundle(certificates=[cacert])
+    print ca.check_certificates_chain(mycert)
+
+    cacrl = cacert.build_crl(cakey,[serial])
+    cacrl_pem = cacrl.as_pem()
+    print cacrl_pem
+    root = cacrl.verify_signature_with(ca)
+
+    ca.add_crl(cacrl)
+    try:
+        print ca.check_certificates_chain(mycert)
+        raise Exception('ERROR should be revoked...')
+    except EWaptCertificateRevoked as e:
+        print('OK revoked')
+
+
 
 
 def start_waptserver():
@@ -1384,20 +1409,44 @@ def test_update_perf():
     w = Wapt()
     print(len(w.repositories[0].packages()))
     previous = w.waptdb.known_packages()
-    current_uuid = [p.package_uuid for p in w.waptdb.known_packages()]
-    previous_uuid = [p.package_uuid for p in w.waptdb.known_packages()]
-    print([ p for p in previous if not p in current])
-    print(len(current))
-    print([r.repo_url for r in self.repositories])
-    print(self.list_upgrade())
+    current_uuid = w.waptdb.known_packages().keys()
+    previous_uuid = w.waptdb.known_packages().keys()
+    print([ p for p in previous_uuid if not p in current_uuid])
+    print(len(current_uuid))
+    print([r.repo_url for r in w.repositories])
+    print(w.list_upgrade())
+
+def check_ca_trusted():
+    ca = SSLCABundle('c:/private/tranquilit2-fullchain.crt')
+    crt = SSLCertificate('c:/wapt/ssl/tranquilit2-fullchain.crt')
+
+    try:
+        print(ca.check_certificates_chain(crt,check_is_trusted=True))
+        raise Exception('Should not')
+    except EWaptCryptoException:
+        pass
+
+    t = ca.certificates()[2]
+    ca.trust_certificates(t)
+    print(ca.check_certificates_chain(crt,check_is_trusted=True))
+
+    t = ca.certificates()[1]
+    ca.trust_certificates(t)
+    print(ca.check_certificates_chain(crt,check_is_trusted=True))
+
+    t = ca.certificates()[0]
+    ca.trust_certificates(t)
+    print(ca.check_certificates_chain(crt,check_is_trusted=True))
 
 
 if __name__ == '__main__':
-    test_update_perf()
+    #check_ca_trusted()
+    #test_update_perf()
     #test_register()
     #test_client_auth_download()
     #test_update_crl()
     #test_crl()
+    test_csr_crl()
     #test_client_auth_cert()
     #test_wua_uninstall()
     #test_localurl()

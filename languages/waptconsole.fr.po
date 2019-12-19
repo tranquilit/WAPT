@@ -2,59 +2,63 @@ msgid ""
 msgstr "Content-Type: text/plain; charset=UTF-8"
 
 #: tform1.caption
-msgctxt "tform1.caption"
 msgid "Form1"
 msgstr ""
 
 #: tformeditrule.bitbtncancel.caption
+#, fuzzy
 msgctxt "tformeditrule.bitbtncancel.caption"
 msgid "Cancel"
 msgstr "Annuler"
 
 #: tformeditrule.bitbtnok.caption
+#, fuzzy
 msgctxt "tformeditrule.bitbtnok.caption"
 msgid "Save"
-msgstr "Enregistrer"
+msgstr "Enregister"
 
 #: tformeditrule.caption
+#, fuzzy
 msgctxt "tformeditrule.caption"
 msgid "Edit rule"
 msgstr "Editer la règle"
 
 #: tformeditrule.checkboxhost.caption
 msgid "HOST"
-msgstr "MACHINE"
+msgstr ""
 
 #: tformeditrule.checkboxwapt.caption
 msgid "WAPT"
-msgstr "WAPT"
+msgstr ""
 
 #: tformeditrule.checkboxwua.caption
+#, fuzzy
 msgctxt "tformeditrule.checkboxwua.caption"
 msgid "WUA"
 msgstr "WUA"
 
 #: tformeditrule.labcondition.caption
 msgid "Condition :"
-msgstr "Condition :"
+msgstr ""
 
 #: tformeditrule.labname.caption
 msgid "Name : "
-msgstr "Nom : "
+msgstr ""
 
 #: tformeditrule.labpackagetype.caption
 msgid "Package type :"
-msgstr "Type de paquet :"
+msgstr ""
 
 #: tformeditrule.labrepourl.caption
 msgid "Repository URL :"
-msgstr "URL du dépôt :"
+msgstr ""
 
 #: tformeditrule.labvalue.caption
 msgid "Value :"
-msgstr "Valeur : "
+msgstr ""
 
 #: tformerrorsrepos.caption
+#, fuzzy
 msgctxt "tformerrorsrepos.caption"
 msgid "Errors"
 msgstr "Erreurs"
@@ -300,6 +304,10 @@ msgid "Enable AD Groups"
 msgstr "Activer les groupes AD"
 
 #: tviscreatewaptsetup.cbuseadgroups.hint
+#, fuzzy
+#| msgid ""
+#| "Enable automatic AD groups based packages on Hots.\n"
+#| "Be careful, this introduce load on the AD servers and slow down the whole Wapt process\n"
 msgid ""
 "Enable automatic AD groups based packages on Hots.\n"
 "Be careful, this introduce load on the AD servers and slow down the whole Wapt process\n"
@@ -312,6 +320,10 @@ msgid "Use Computer FQDN for UUID"
 msgstr "Utiliser le nom FQDN comme UUID pour les clients"
 
 #: tviscreatewaptsetup.cbusefqdnasuuid.hint
+#, fuzzy
+#| msgid ""
+#| "Ask Wapt agent to use the computer Fully Qualified Domain Name (name.domaine.lan) instead of BIOD unique ID.\n"
+#| "This can be useful if Wapt is not used as asset management, but only as a deployment solutioN.\n"
 msgctxt "tviscreatewaptsetup.cbusefqdnasuuid.hint"
 msgid ""
 "Ask Wapt agent to use the computer Fully Qualified Domain Name (name.domaine.lan) instead of BIOD unique ID.\n"
@@ -373,8 +385,11 @@ msgstr "Par exemple 2h ou 120m ou 1d"
 msgid "E.g. : Tranquil IT Systems."
 msgstr "Par exemple : Tranquil IT Systems"
 
+#: tviscreatewaptsetup.edpubliccertdir.hint
+msgid "Directory of X509 PEM trusted CA certificates"
+msgstr ""
+
 #: tviscreatewaptsetup.edrepourl.hint
-#| msgid "E.g. : https://wapt.mydomain.lan/wapt"
 msgid "E.g. : https://wapt.mydomain.lan/wapt If empty, use dnsdomain setting"
 msgstr "Par exemple : https://wapt.mondomaine.lan/wapt."
 
@@ -384,7 +399,6 @@ msgid "E.g. : c:\\wapt\\ssl\\server\\tranquilit.crt  Path to trusted certificate
 msgstr "Par ex. c:\\private\\tranquilit.crt"
 
 #: tviscreatewaptsetup.edwaptserverurl.hint
-#| msgid "E.g. : http://wapt:8080."
 msgid "E.g. : https://wapt.mydomain.lan"
 msgstr "Par exemple : https://wapt.mondomaine.lan"
 
@@ -392,10 +406,6 @@ msgstr "Par exemple : https://wapt.mondomaine.lan"
 msgctxt "tviscreatewaptsetup.edwuadownloadscheduling.hint"
 msgid "eg 2h or 120m or 1d"
 msgstr "Par exemple 2h ou 120m ou 1d"
-
-#: tviscreatewaptsetup.fnpubliccert.hint
-msgid "X509 PEM encoded file with CA certificates which are trusted"
-msgstr "Fichier X509 au format PEM avec les certificats auxquels on fait confiance "
 
 #: tviscreatewaptsetup.gbwua.caption
 msgid "WAPTWUA Windows Updates "
@@ -452,7 +462,6 @@ msgid "issuer_dn"
 msgstr "DN émetteur"
 
 #: tviscreatewaptsetup.label1.caption
-#| msgid "Authorized Packages Certificate / CA bundle"
 msgid "Authorized Packages Certificates Bundle"
 msgstr "Certificats / CA autorisés pour les paquets"
 
@@ -472,14 +481,6 @@ msgstr "Organisation :"
 msgid "Your company name."
 msgstr "Nom de votre entreprise."
 
-#: tviscreatewaptsetup.label4.caption
-msgid "Save waptagent.exe as...  "
-msgstr "Enregistrer waptagent.exe sous..."
-
-#: tviscreatewaptsetup.label4.hint
-msgid "Where waptagent.exe will be saved."
-msgstr "Emplacement où waptagent.exe sera enregistré."
-
 #: tviscreatewaptsetup.label5.caption
 msgid "WAPT server address :"
 msgstr "Adresse du serveur WAPT :"
@@ -489,7 +490,6 @@ msgid "Your WAPT server address (http://wapt:8080)."
 msgstr "L'adresse de votre serveur WAPT (par exemple http://wapt:8080)."
 
 #: tviscreatewaptsetup.label6.caption
-#| msgid "Path to Servers CA certificates bundle"
 msgctxt "tviscreatewaptsetup.label6.caption"
 msgid "Path to https Servers CA certificates bundle"
 msgstr "Chemin vers le bundle de CA serveurs https"
@@ -543,7 +543,13 @@ msgid "Make rdp, vnc, remoteassist... features visible"
 msgstr "Faire apparaître les fonctions RDP, VNC et Remote Assist"
 
 #: tvisdisplaypreferences.cbenablemanagementfeatures.hint
-#| msgid "Make change server password, create certificate, create waptagent features visible"
+#, fuzzy
+#| msgid ""
+#| "Enable the following actions: \n"
+#| "- Create new key / certificate\n"
+#| "- Create custom waptagent.exe\n"
+#| "- Modify key password\n"
+#| "- Create / Modify / delete reporting queries\n"
 msgctxt "tvisdisplaypreferences.cbenablemanagementfeatures.hint"
 msgid ""
 "Enable the following actions: \n"
@@ -582,6 +588,13 @@ msgid "Enable management features"
 msgstr "Activer les fonctionalités d'administration"
 
 #: tvisdisplaypreferences.label11.hint
+#, fuzzy
+#| msgid ""
+#| "Enable the following actions: \n"
+#| "- Create new key / certificate\n"
+#| "- Create custom waptagent.exe\n"
+#| "- Modify key password\n"
+#| "- Create / Modify / delete reporting queries\n"
 msgctxt "tvisdisplaypreferences.label11.hint"
 msgid ""
 "Enable the following actions: \n"
@@ -749,9 +762,10 @@ msgid "signed_attributes"
 msgstr "Attributs signés"
 
 #: tviseditpackage.gridpackages.header.columns[12].text
+#, fuzzy
 msgctxt "tviseditpackage.gridpackages.header.columns[12].text"
 msgid "md5sum"
-msgstr ""
+msgstr "Somme MD5"
 
 #: tviseditpackage.gridpackages.header.columns[13].text
 msgctxt "tviseditpackage.gridpackages.header.columns[13].text"
@@ -1003,79 +1017,93 @@ msgid "Use keywords to narrow your search."
 msgstr "Affinez la recherche à l'aide de mots-clés."
 
 #: tvisgroupchoice.gridpackages.header.columns[0].text
+#, fuzzy
 msgctxt "tvisgroupchoice.gridpackages.header.columns[0].text"
 msgid "Package"
 msgstr "Paquet"
 
 #: tvisgroupchoice.gridpackages.header.columns[10].text
 msgid "Author"
-msgstr "Auteur"
+msgstr ""
 
 #: tvisgroupchoice.gridpackages.header.columns[11].text
+#, fuzzy
 msgctxt "tvisgroupchoice.gridpackages.header.columns[11].text"
 msgid "conflicts"
 msgstr "Conflits"
 
 #: tvisgroupchoice.gridpackages.header.columns[12].text
+#, fuzzy
 msgctxt "tvisgroupchoice.gridpackages.header.columns[12].text"
 msgid "installed_size"
-msgstr "Taille installée"
+msgstr "Taille installé"
 
 #: tvisgroupchoice.gridpackages.header.columns[13].text
+#, fuzzy
 msgctxt "tvisgroupchoice.gridpackages.header.columns[13].text"
 msgid "id"
-msgstr "ID"
+msgstr "id"
 
 #: tvisgroupchoice.gridpackages.header.columns[14].text
+#, fuzzy
 msgctxt "tvisgroupchoice.gridpackages.header.columns[14].text"
 msgid "repo_url"
 msgstr "URL du dépôt"
 
 #: tvisgroupchoice.gridpackages.header.columns[15].text
 msgid "installed"
-msgstr "installé"
+msgstr ""
 
 #: tvisgroupchoice.gridpackages.header.columns[16].text
+#, fuzzy
 msgctxt "tvisgroupchoice.gridpackages.header.columns[16].text"
 msgid "size"
 msgstr "Taille"
 
 #: tvisgroupchoice.gridpackages.header.columns[17].text
+#, fuzzy
 msgctxt "tvisgroupchoice.gridpackages.header.columns[17].text"
 msgid "repo"
 msgstr "Dépôt"
 
 #: tvisgroupchoice.gridpackages.header.columns[18].text
+#, fuzzy
 msgctxt "tvisgroupchoice.gridpackages.header.columns[18].text"
 msgid "localpath"
 msgstr "Chemin local"
 
 #: tvisgroupchoice.gridpackages.header.columns[19].text
+#, fuzzy
 msgctxt "tvisgroupchoice.gridpackages.header.columns[19].text"
 msgid "architecture"
 msgstr "Architecture"
 
 #: tvisgroupchoice.gridpackages.header.columns[1].text
+#, fuzzy
 msgctxt "tvisgroupchoice.gridpackages.header.columns[1].text"
 msgid "Description"
 msgstr "Description"
 
 #: tvisgroupchoice.gridpackages.header.columns[2].text
+#, fuzzy
 msgctxt "tvisgroupchoice.gridpackages.header.columns[2].text"
 msgid "Dependencies"
 msgstr "Dépendances"
 
 #: tvisgroupchoice.gridpackages.header.columns[3].text
+#, fuzzy
 msgctxt "tvisgroupchoice.gridpackages.header.columns[3].text"
 msgid "priority"
 msgstr "Priorité"
 
 #: tvisgroupchoice.gridpackages.header.columns[4].text
+#, fuzzy
 msgctxt "tvisgroupchoice.gridpackages.header.columns[4].text"
 msgid "sources"
 msgstr "Sources"
 
 #: tvisgroupchoice.gridpackages.header.columns[5].text
+#, fuzzy
 msgctxt "tvisgroupchoice.gridpackages.header.columns[5].text"
 msgid "md5sum"
 msgstr "Somme MD5"
@@ -1083,18 +1111,20 @@ msgstr "Somme MD5"
 #: tvisgroupchoice.gridpackages.header.columns[6].text
 msgctxt "tvisgroupchoice.gridpackages.header.columns[6].text"
 msgid "status"
-msgstr "Statut"
+msgstr ""
 
 #: tvisgroupchoice.gridpackages.header.columns[7].text
+#, fuzzy
 msgctxt "tvisgroupchoice.gridpackages.header.columns[7].text"
 msgid "filename"
 msgstr "Nom de fichier"
 
 #: tvisgroupchoice.gridpackages.header.columns[8].text
 msgid "section"
-msgstr "Section"
+msgstr ""
 
 #: tvisgroupchoice.gridpackages.header.columns[9].text
+#, fuzzy
 msgctxt "tvisgroupchoice.gridpackages.header.columns[9].text"
 msgid "Version"
 msgstr "Version"
@@ -1207,6 +1237,7 @@ msgid "md5sum"
 msgstr "Somme MD5"
 
 #: tvisimportpackage.gridexternalpackages.header.columns[19].text
+#, fuzzy
 msgctxt "tvisimportpackage.gridexternalpackages.header.columns[19].text"
 msgid "Categories"
 msgstr "Catégories"
@@ -1217,6 +1248,7 @@ msgid "Package"
 msgstr "Paquet"
 
 #: tvisimportpackage.gridexternalpackages.header.columns[20].text
+#, fuzzy
 msgctxt "tvisimportpackage.gridexternalpackages.header.columns[20].text"
 msgid "Name"
 msgstr "Nom"
@@ -1386,17 +1418,15 @@ msgstr "Installeur"
 
 #: tvisprivatekeyauth.caption
 msgid "Private key authentication"
-msgstr "Authentification de la clé privée"
+msgstr ""
 
 #: tvisprivatekeyauth.labkey.caption
-msgctxt "tvisprivatekeyauth.labkey.caption"
 msgid "For key matching the certificate: "
-msgstr "Pour la clé associée au certificat:"
+msgstr ""
 
 #: tvisprivatekeyauth.labpassword.caption
-msgctxt "tvisprivatekeyauth.labpassword.caption"
 msgid "Private key password :"
-msgstr "Mot de passe de la clé privée :"
+msgstr ""
 
 #: tvisprivatekeyauth.lakeypath.caption
 msgid "laKeyPath"
@@ -1499,6 +1529,10 @@ msgid "If remote repository is using Client side SSL Authentication"
 msgstr "Si le dépôt distant utilise l'authentification SSL des clients"
 
 #: tvisrepositories.edhttpproxy.hint
+#, fuzzy
+#| msgid ""
+#| "E.g. : http://proxy.tranquilit.local:3128\n"
+#| "Only required if a proxy is needed for templates access\n"
 msgctxt "tvisrepositories.edhttpproxy.hint"
 msgid ""
 "E.g. : http://proxy.tranquilit.local:3128\n"
@@ -1506,6 +1540,10 @@ msgid ""
 msgstr "Par exemple : http://proxy.tranquilit.local:3128"
 
 #: tvisrepositories.edname.hint
+#, fuzzy
+#| msgid ""
+#| "E.g. : https://store.wapt.fr/wapt\n"
+#| "Used by WAPT console for duplicating packages.\n"
 msgctxt "tvisrepositories.edname.hint"
 msgid ""
 "E.g. : https://store.wapt.fr/wapt\n"
@@ -1513,6 +1551,10 @@ msgid ""
 msgstr "Par exemple : https://store.tranquil.it/wapt"
 
 #: tvisrepositories.edrepourl.hint
+#, fuzzy
+#| msgid ""
+#| "E.g. : https://store.wapt.fr/wapt\n"
+#| "Used by WAPT console for duplicating packages.\n"
 msgctxt "tvisrepositories.edrepourl.hint"
 msgid ""
 "E.g. : https://store.wapt.fr/wapt\n"
@@ -1520,6 +1562,14 @@ msgid ""
 msgstr "Par exemple : http://store.tranquil.it/wapt"
 
 #: tvisrepositories.edservercabundle.hint
+#, fuzzy
+#| msgid ""
+#| "E.g. : c:\\wapt\\ssl\\server\\cacert.pem\n"
+#| "Path to certificate bundle with https servers CA certificates\n"
+#| "The bundle must contain intermediate and root certificates\n"
+#| "\n"
+#| "If 0: no check on https server certificates issuers\n"
+#| "If 1 : use default wapt cacert.pem bundle\n"
 msgctxt "tvisrepositories.edservercabundle.hint"
 msgid ""
 "E.g. : c:\\wapt\\ssl\\server\\cacert.pem\n"
@@ -1915,17 +1965,18 @@ msgid "Normalizes sofware titles"
 msgstr "Normaliser le nom des logiciels"
 
 #: tvissoftwaresnormalization.gridnormalization.header.columns[0].text
+#, fuzzy
 msgctxt "tvissoftwaresnormalization.gridnormalization.header.columns[0].text"
 msgid "Name"
 msgstr "Nom"
 
 #: tvissoftwaresnormalization.gridnormalization.header.columns[1].text
 msgid "Normalized"
-msgstr "Normalisé"
+msgstr ""
 
 #: tvissoftwaresnormalization.gridnormalization.header.columns[2].text
 msgid "Key"
-msgstr "Clé"
+msgstr ""
 
 #: tvissoftwaresnormalization.gridnormalization.header.columns[3].text
 msgid "Windows update"
@@ -1933,17 +1984,18 @@ msgstr ""
 
 #: tvissoftwaresnormalization.gridnormalization.header.columns[4].text
 msgid "Banned"
-msgstr "Banni"
+msgstr ""
 
 #: tvissyncchangelog.caption
 msgid "Changelog synchronization"
-msgstr "Changelog de la synchronisation"
+msgstr ""
 
 #: tvissyncchangelog.gridchangelog.header.columns[0].text
 msgid "version"
 msgstr ""
 
 #: tvissyncchangelog.gridchangelog.header.columns[1].text
+#, fuzzy
 msgctxt "tvissyncchangelog.gridchangelog.header.columns[1].text"
 msgid "id"
 msgstr "id"
@@ -1953,21 +2005,25 @@ msgid "changelog"
 msgstr ""
 
 #: tvissyncchangelog.gridchangelog.header.columns[3].text
+#, fuzzy
 msgctxt "tvissyncchangelog.gridchangelog.header.columns[3].text"
 msgid "updated_on"
 msgstr "Modifié le"
 
 #: tvissyncchangelog.gridchangelog.header.columns[4].text
+#, fuzzy
 msgctxt "tvissyncchangelog.gridchangelog.header.columns[4].text"
 msgid "updated_by"
 msgstr "Modifié par"
 
 #: tvissyncchangelog.gridchangelog.header.columns[5].text
+#, fuzzy
 msgctxt "tvissyncchangelog.gridchangelog.header.columns[5].text"
 msgid "created_on"
 msgstr "Créé le"
 
 #: tvissyncchangelog.gridchangelog.header.columns[6].text
+#, fuzzy
 msgctxt "tvissyncchangelog.gridchangelog.header.columns[6].text"
 msgid "created_by"
 msgstr "Créé par"
@@ -1989,24 +2045,28 @@ msgstr "Lancer les actions sur les macgines"
 #: tvistriggerhostsaction.progressgrid.header.columns[0].text
 msgctxt "tvistriggerhostsaction.progressgrid.header.columns[0].text"
 msgid "status"
-msgstr "Statut"
+msgstr ""
 
 #: tvistriggerhostsaction.progressgrid.header.columns[1].text
+#, fuzzy
 msgctxt "tvistriggerhostsaction.progressgrid.header.columns[1].text"
 msgid "Host"
 msgstr "Machine"
 
 #: tvistriggerhostsaction.progressgrid.header.columns[2].text
+#, fuzzy
 msgctxt "tvistriggerhostsaction.progressgrid.header.columns[2].text"
 msgid "IP"
 msgstr "IP"
 
 #: tvistriggerhostsaction.progressgrid.header.columns[3].text
+#, fuzzy
 msgctxt "tvistriggerhostsaction.progressgrid.header.columns[3].text"
 msgid "Status"
 msgstr "Statut"
 
 #: tvistriggerhostsaction.progressgrid.header.columns[4].text
+#, fuzzy
 msgctxt "tvistriggerhostsaction.progressgrid.header.columns[4].text"
 msgid "Message"
 msgstr "Message"
@@ -2040,6 +2100,11 @@ msgid "New  private key and certificate"
 msgstr "Nouvelle clé et certificat"
 
 #: tviswaptconfig.actcreatekeycert.hint
+#, fuzzy
+#| msgid ""
+#| "Generate a new private key and personal certificate.\n"
+#| "This must be done only once per Wapt amdin user.\n"
+#| "When upgrading, you must not recreate a private key and certificate.\n"
 msgid ""
 "Generate a new private key and personal certificate.\n"
 "This must be done only once per Wapt amdin user.\n"
@@ -2065,6 +2130,10 @@ msgid "Get Server https Certificate"
 msgstr "Récupération certificat serveur https"
 
 #: tviswaptconfig.actgetservercertificate.hint
+#, fuzzy
+#| msgid ""
+#| "Connect to the server and get the https certificate blundle from it.\n"
+#| "You must check that the certificate fingerprint is the expected one.\n"
 msgid ""
 "Connect to the server and get the https certificate blundle from it.\n"
 "You must check that the certificate fingerprint is the expected one.\n"
@@ -2087,6 +2156,11 @@ msgid "Show statistics"
 msgstr "Afficher les statistiques"
 
 #: tviswaptconfig.button5.hint
+#, fuzzy
+#| msgid ""
+#| "Click to retrieve the https certificate chain from server.\n"
+#| "This works only if chain contain full certificate validation chain.\n"
+#| "If not, you must add the missing root and intermediate certificates.\n"
 msgid ""
 "Click to retrieve the https certificate chain from server.\n"
 "This works only if chain contain full certificate validation chain.\n"
@@ -2094,6 +2168,10 @@ msgid ""
 msgstr "Cliquer pour récupérer la chaîne de certificats pour le serveur https "
 
 #: tviswaptconfig.button6.hint
+#, fuzzy
+#| msgid ""
+#| "Try to find a private key (pem encoded RSA key) in same directory as certificate.\n"
+#| "This will ask for the password for decrypting the key.\n"
 msgid ""
 "Try to find a private key (pem encoded RSA key) in same directory as certificate.\n"
 "This will ask for the password for decrypting the key.\n"
@@ -2128,6 +2206,10 @@ msgid "Verify https server certificate"
 msgstr "Vérifier le certificat https serveur"
 
 #: tviswaptconfig.cbverifycert.hint
+#, fuzzy
+#| msgid ""
+#| "Check to enable the check of https server certificates\n"
+#| "(Main repository access and wapt server)\n"
 msgid ""
 "Check to enable the check of https server certificates\n"
 "(Main repository access and wapt server)\n"
@@ -2159,6 +2241,10 @@ msgid "WAPT packages prefix"
 msgstr "Préfixe des paquets WAPT"
 
 #: tviswaptconfig.eddefaultpackageprefix.hint
+#, fuzzy
+#| msgid ""
+#| "E.g. : tis\n"
+#| "Which prefix to use when naming created or duplicated packages\n"
 msgctxt "tviswaptconfig.eddefaultpackageprefix.hint"
 msgid ""
 "E.g. : tis\n"
@@ -2168,6 +2254,10 @@ msgstr ""
 "Préfixe à utiliser lors de la création ou la duplication de paquets\n"
 
 #: tviswaptconfig.eddefault_sources_root.hint
+#, fuzzy
+#| msgid ""
+#| "E.g. : c:\\waptdev\n"
+#| "Local directory for saving package development projects\n"
 msgid ""
 "E.g. : c:\\waptdev\n"
 "Local directory for saving package development projects\n"
@@ -2179,6 +2269,10 @@ msgid "http proxy to use (if needed)"
 msgstr "Proxy http à utiliser"
 
 #: tviswaptconfig.edhttp_proxy.hint
+#, fuzzy
+#| msgid ""
+#| "E.g. : http://proxy.tranquilit.local:3128\n"
+#| "Only required if a proxy is needed for waptserver and main waptrepo\n"
 msgctxt "tviswaptconfig.edhttp_proxy.hint"
 msgid ""
 "E.g. : http://proxy.tranquilit.local:3128\n"
@@ -2190,6 +2284,11 @@ msgid "c:\\wapt\\licences"
 msgstr ""
 
 #: tviswaptconfig.edpersonalcertificatepath.hint
+#, fuzzy
+#| msgid ""
+#| "E.g. : c:\\private\\tranquilit.crt\n"
+#| "Path to certificate for signing new packages.\n"
+#| "Only suitable for development hosts.\n"
 msgctxt "tviswaptconfig.edpersonalcertificatepath.hint"
 msgid ""
 "E.g. : c:\\private\\tranquilit.crt\n"
@@ -2203,6 +2302,12 @@ msgid "URL to the main repository"
 msgstr "URL du dépôt principal"
 
 #: tviswaptconfig.edrepourl.hint
+#, fuzzy
+#| msgid ""
+#| "E.g. : https://wapt.tranquilit.local/wapt\n"
+#| "Leave empty for auto DNS discovery\n"
+#| "\n"
+#| "Don't forget the path to packages (/wapt) in the URL !\n"
 msgctxt "tviswaptconfig.edrepourl.hint"
 msgid ""
 "E.g. : https://wapt.tranquilit.local/wapt\n"
@@ -2218,12 +2323,24 @@ msgid "WAPT Server address or name"
 msgstr "Adresse du serveur WAPT :"
 
 #: tviswaptconfig.edserveraddress.hint
+#, fuzzy
+#| msgid ""
+#| "E.g. : wapt.tranquilit.local\n"
+#| "Leave empty for auto discovery with DNS queries\n"
 msgid ""
 "E.g. : wapt.tranquilit.local\n"
 "Leave empty for auto discovery with DNS queries\n"
 msgstr "Exemple : srvwapt.tranquilit.local"
 
 #: tviswaptconfig.edservercertificate.hint
+#, fuzzy
+#| msgid ""
+#| "E.g. : c:\\wapt\\ssl\\server\\cacert.pem\n"
+#| "Path to certificate bundle with https servers CA certificates\n"
+#| "The bundle must contain intermediate and root certificates\n"
+#| "\n"
+#| "If 0: no check on https server certificates issuers\n"
+#| "If 1 : use default wapt cacert.pem bundle\n"
 msgctxt "tviswaptconfig.edservercertificate.hint"
 msgid ""
 "E.g. : c:\\wapt\\ssl\\server\\cacert.pem\n"
@@ -2235,12 +2352,15 @@ msgid ""
 msgstr "Par ex. c:\\wapt\\ssl\\server\\cacert.pem"
 
 #: tviswaptconfig.edwaptserver.editlabel.caption
-#| msgid "URL du serveur WAPT"
 msgctxt "tviswaptconfig.edwaptserver.editlabel.caption"
 msgid "WAPT Server URL"
 msgstr "URL du serveur WAPT"
 
 #: tviswaptconfig.edwaptserver.hint
+#, fuzzy
+#| msgid ""
+#| "E.g. : https://wapt.tranquilit.local\n"
+#| "Leave empty if you don't want a central management server.\n"
 msgctxt "tviswaptconfig.edwaptserver.hint"
 msgid ""
 "E.g. : https://wapt.tranquilit.local\n"
@@ -2678,7 +2798,6 @@ msgid "Export to Excel"
 msgstr "Exporter vers excel"
 
 #: tviswaptgui.actreportingqueryimport.caption
-#| msgid "Import queries from file..."
 msgid "Import queries..."
 msgstr "Importer..."
 
@@ -3050,7 +3169,6 @@ msgid "Needs updating"
 msgstr "A mettre à jour"
 
 #: tviswaptgui.cbhostsreachable.caption
-#| msgid "Reachables only"
 msgctxt "tviswaptgui.cbhostsreachable.caption"
 msgid "Connected only"
 msgstr "Connectés"
@@ -5410,6 +5528,7 @@ msgid "WAPT Groups"
 msgstr "Groupes WAPT"
 
 #: tviswaptgui.label16.caption
+#, object-pascal-format
 msgctxt "tviswaptgui.label16.caption"
 msgid "Install logs of package %s"
 msgstr "Logs d'installation du paquet %s"
@@ -5425,6 +5544,7 @@ msgid "Last scan date"
 msgstr "Dernier scan"
 
 #: tviswaptgui.label19.caption
+#, object-pascal-format
 msgctxt "tviswaptgui.label19.caption"
 msgid "Logs of task %s (ID %s)"
 msgstr "Logs de la tâche %s (ID %s)"
@@ -5478,11 +5598,13 @@ msgid "Last seen"
 msgstr "Dernière connexion"
 
 #: tviswaptgui.labelcomputersnumber.caption
+#, object-pascal-format
 msgctxt "TVISWAPTGUI.LABELCOMPUTERSNUMBER.CAPTION"
 msgid "Selected / Total : %d / %d"
 msgstr "Sélectionnés / Total : %d / %d"
 
 #: tviswaptgui.labelreportingnumber.caption
+#, object-pascal-format
 msgctxt "tviswaptgui.labelreportingnumber.caption"
 msgid "Selected / Total : %d / %d"
 msgstr "Sélectionné / Total : %d / %d"
@@ -5493,6 +5615,7 @@ msgid "AD sites"
 msgstr "Sites AD"
 
 #: tviswaptgui.lablogskb.caption
+#, object-pascal-format
 msgctxt "tviswaptgui.lablogskb.caption"
 msgid "Install logs of %s"
 msgstr "Logs d'installation de la %s"
@@ -5629,6 +5752,7 @@ msgid "Select WAPT file"
 msgstr "Sélectionner un fichier WAPT"
 
 #: tviswaptgui.panel1.caption
+msgctxt "tviswaptgui.panel1.caption"
 msgid "Panel1"
 msgstr ""
 
@@ -5743,6 +5867,7 @@ msgid "Errors"
 msgstr "Erreurs"
 
 #: tviswaptgui.tbdeleterule.caption
+#, fuzzy
 msgctxt "tviswaptgui.tbdeleterule.caption"
 msgid "Delete rule"
 msgstr "Supprimer règle"
@@ -5835,6 +5960,10 @@ msgstr ""
 msgid "ToolButtonSep2"
 msgstr ""
 
+#: tviswaptusers.actapplyupdates.caption
+msgid "Apply updates"
+msgstr ""
+
 #: tviswaptusers.actdeleteaccount.caption
 msgid "Delete account"
 msgstr ""
@@ -5865,53 +5994,216 @@ msgctxt "tviswaptusers.edpkirootdirectory.text"
 msgid "c:\\private"
 msgstr ""
 
+#: tviswaptusers.gridtrustedcerts.header.columns[0].text
+#, fuzzy
+msgctxt "tviswaptusers.gridtrustedcerts.header.columns[0].text"
+msgid "id"
+msgstr "id"
+
+#: tviswaptusers.gridtrustedcerts.header.columns[1].text
+#, fuzzy
+msgctxt "tviswaptusers.gridtrustedcerts.header.columns[1].text"
+msgid "Certificate Name"
+msgstr "Nom de certificat"
+
+#: tviswaptusers.gridtrustedcerts.header.columns[2].text
+#, fuzzy
+msgctxt "tviswaptusers.gridtrustedcerts.header.columns[2].text"
+msgid "Issuer"
+msgstr "Emetteur"
+
+#: tviswaptusers.gridtrustedcerts.header.columns[3].text
+#, fuzzy
+msgctxt "tviswaptusers.gridtrustedcerts.header.columns[3].text"
+msgid "CA"
+msgstr "CA"
+
+#: tviswaptusers.gridtrustedcerts.header.columns[4].text
+#, fuzzy
+msgctxt "tviswaptusers.gridtrustedcerts.header.columns[4].text"
+msgid "Code signing"
+msgstr "Signature de code"
+
+#: tviswaptusers.gridtrustedcerts.header.columns[5].text
+#, fuzzy
+msgctxt "tviswaptusers.gridtrustedcerts.header.columns[5].text"
+msgid "Serial number"
+msgstr "Numéro de série"
+
+#: tviswaptusers.gridtrustedcerts.header.columns[6].text
+msgctxt "tviswaptusers.gridtrustedcerts.header.columns[6].text"
+msgid "Certificate expire"
+msgstr ""
+
+#: tviswaptusers.gridtrustedcerts.header.columns[7].text
+#, fuzzy
+msgctxt "tviswaptusers.gridtrustedcerts.header.columns[7].text"
+msgid "Fingerprint (sha256)"
+msgstr "Empreinte (sha256)"
+
+#: tviswaptusers.gridtrustedcerts.header.columns[8].text
+msgctxt "tviswaptusers.gridtrustedcerts.header.columns[8].text"
+msgid "Subject DN"
+msgstr ""
+
+#: tviswaptusers.gridtrustedcerts.header.columns[9].text
+msgctxt "tviswaptusers.gridtrustedcerts.header.columns[9].text"
+msgid "Issuer DN"
+msgstr ""
+
+#: tviswaptusers.griduseracls.header.columns[0].text
+#, fuzzy
+msgctxt "tviswaptusers.griduseracls.header.columns[0].text"
+msgid "id"
+msgstr "id"
+
+#: tviswaptusers.griduseracls.header.columns[10].text
+#, fuzzy
+msgctxt "tviswaptusers.griduseracls.header.columns[10].text"
+msgid "Apply upgrades"
+msgstr "Lancer les installations"
+
+#: tviswaptusers.griduseracls.header.columns[11].text
+msgctxt "tviswaptusers.griduseracls.header.columns[11].text"
+msgid "Remote hosts actions"
+msgstr ""
+
+#: tviswaptusers.griduseracls.header.columns[12].text
+msgctxt "tviswaptusers.griduseracls.header.columns[12].text"
+msgid "Edit Reports"
+msgstr ""
+
+#: tviswaptusers.griduseracls.header.columns[13].text
+msgctxt "tviswaptusers.griduseracls.header.columns[13].text"
+msgid "Run Reports"
+msgstr ""
+
+#: tviswaptusers.griduseracls.header.columns[14].text
+#, fuzzy
+msgctxt "tviswaptusers.griduseracls.header.columns[14].text"
+msgid "Signed on"
+msgstr "Signé le"
+
+#: tviswaptusers.griduseracls.header.columns[15].text
+msgctxt "tviswaptusers.griduseracls.header.columns[15].text"
+msgid "Signed by"
+msgstr ""
+
+#: tviswaptusers.griduseracls.header.columns[16].text
+msgid "Signer fingerprint"
+msgstr ""
+
+#: tviswaptusers.griduseracls.header.columns[17].text
+msgid "Signature"
+msgstr ""
+
+#: tviswaptusers.griduseracls.header.columns[1].text
+msgid "Perimeter"
+msgstr ""
+
+#: tviswaptusers.griduseracls.header.columns[2].text
+msgctxt "tviswaptusers.griduseracls.header.columns[2].text"
+msgid "Admin"
+msgstr ""
+
+#: tviswaptusers.griduseracls.header.columns[3].text
+msgctxt "tviswaptusers.griduseracls.header.columns[3].text"
+msgid "Register hosts"
+msgstr ""
+
+#: tviswaptusers.griduseracls.header.columns[4].text
+msgctxt "tviswaptusers.griduseracls.header.columns[4].text"
+msgid "Unregister hosts"
+msgstr ""
+
+#: tviswaptusers.griduseracls.header.columns[5].text
+msgctxt "tviswaptusers.griduseracls.header.columns[5].text"
+msgid "Edit hosts"
+msgstr ""
+
+#: tviswaptusers.griduseracls.header.columns[6].text
+msgctxt "tviswaptusers.griduseracls.header.columns[6].text"
+msgid "Edit packages"
+msgstr ""
+
+#: tviswaptusers.griduseracls.header.columns[7].text
+msgctxt "tviswaptusers.griduseracls.header.columns[7].text"
+msgid "Edit groups"
+msgstr ""
+
+#: tviswaptusers.griduseracls.header.columns[8].text
+msgctxt "tviswaptusers.griduseracls.header.columns[8].text"
+msgid "Edit self-service"
+msgstr ""
+
+#: tviswaptusers.griduseracls.header.columns[9].text
+msgctxt "tviswaptusers.griduseracls.header.columns[9].text"
+msgid "Edit WUA"
+msgstr ""
+
 #: tviswaptusers.gridusers.header.columns[0].text
 msgctxt "tviswaptusers.gridusers.header.columns[0].text"
 msgid "id"
 msgstr "id"
 
 #: tviswaptusers.gridusers.header.columns[10].text
-msgid "Edit self-service"
-msgstr ""
+#, fuzzy
+msgctxt "tviswaptusers.gridusers.header.columns[10].text"
+msgid "Fingerprint (sha256)"
+msgstr "Empreinte (sha256)"
 
 #: tviswaptusers.gridusers.header.columns[11].text
-msgid "Edit WUA"
+msgctxt "tviswaptusers.gridusers.header.columns[11].text"
+msgid "Subject DN"
 msgstr ""
 
 #: tviswaptusers.gridusers.header.columns[12].text
+#, fuzzy
+#| msgid "Apply upgrades"
 msgctxt "tviswaptusers.gridusers.header.columns[12].text"
-msgid "Apply upgrades"
+msgid "Issuer DN"
 msgstr "Lancer les installations"
 
 #: tviswaptusers.gridusers.header.columns[13].text
-msgid "Remote hosts actions"
+msgctxt "tviswaptusers.gridusers.header.columns[13].text"
+msgid "user_fingerprint_sha1"
 msgstr ""
 
 #: tviswaptusers.gridusers.header.columns[14].text
-msgid "Edit Reports"
-msgstr ""
+#, fuzzy
+msgctxt "tviswaptusers.gridusers.header.columns[14].text"
+msgid "updated_on"
+msgstr "Modifié le"
 
 #: tviswaptusers.gridusers.header.columns[15].text
-msgid "Run Reports"
-msgstr ""
+#, fuzzy
+msgctxt "tviswaptusers.gridusers.header.columns[15].text"
+msgid "updated_by"
+msgstr "Modifié par"
 
 #: tviswaptusers.gridusers.header.columns[16].text
-msgid "Certificate Filename"
+msgid "user_fingerprint_sha256"
 msgstr ""
 
 #: tviswaptusers.gridusers.header.columns[17].text
+#, fuzzy
+#| msgid "Valid until"
 msgctxt "tviswaptusers.gridusers.header.columns[17].text"
-msgid "Valid until"
+msgid "auth_method"
 msgstr "Valide jusqu'à"
 
 #: tviswaptusers.gridusers.header.columns[18].text
+#, fuzzy
+#| msgid "Serial number"
 msgctxt "tviswaptusers.gridusers.header.columns[18].text"
-msgid "Serial number"
+msgid "created_on"
 msgstr "Numéro de série"
 
 #: tviswaptusers.gridusers.header.columns[19].text
+#, fuzzy
+#| msgid "Code signing"
 msgctxt "tviswaptusers.gridusers.header.columns[19].text"
-msgid "Code signing"
+msgid "created_by"
 msgstr "Signature de code"
 
 #: tviswaptusers.gridusers.header.columns[1].text
@@ -5919,70 +6211,79 @@ msgid "Username"
 msgstr ""
 
 #: tviswaptusers.gridusers.header.columns[20].text
+#, fuzzy
+#| msgid "CA"
 msgctxt "tviswaptusers.gridusers.header.columns[20].text"
-msgid "CA"
+msgid "user_certificate"
 msgstr "CA"
 
-#: tviswaptusers.gridusers.header.columns[21].text
-msgctxt "tviswaptusers.gridusers.header.columns[21].text"
-msgid "Fingerprint (sha256)"
-msgstr "Empreinte (sha256)"
-
-#: tviswaptusers.gridusers.header.columns[22].text
-msgctxt "tviswaptusers.gridusers.header.columns[22].text"
-msgid "subject_dn"
-msgstr "DN Sujet"
-
-#: tviswaptusers.gridusers.header.columns[23].text
-msgctxt "tviswaptusers.gridusers.header.columns[23].text"
-msgid "issuer_dn"
-msgstr "DN émetteur"
-
-#: tviswaptusers.gridusers.header.columns[24].text
-msgctxt "tviswaptusers.gridusers.header.columns[24].text"
-msgid "Signed on"
-msgstr "Signé le"
-
-#: tviswaptusers.gridusers.header.columns[25].text
-msgid "Signed by"
-msgstr ""
-
 #: tviswaptusers.gridusers.header.columns[2].text
+#, fuzzy
+#| msgid "Certificate Name"
 msgctxt "tviswaptusers.gridusers.header.columns[2].text"
-msgid "Certificate Name"
+msgid "Description"
 msgstr "Nom de certificat"
 
 #: tviswaptusers.gridusers.header.columns[3].text
+#, fuzzy
+#| msgid "Issuer"
 msgctxt "tviswaptusers.gridusers.header.columns[3].text"
-msgid "Issuer"
+msgid "Certificate Name"
 msgstr "Emetteur"
 
 #: tviswaptusers.gridusers.header.columns[4].text
-msgid "Admin"
+msgctxt "tviswaptusers.gridusers.header.columns[4].text"
+msgid "Certificate expire"
 msgstr ""
 
 #: tviswaptusers.gridusers.header.columns[5].text
-msgid "Register hosts"
-msgstr ""
+#, fuzzy
+msgctxt "tviswaptusers.gridusers.header.columns[5].text"
+msgid "Issuer"
+msgstr "Emetteur"
 
 #: tviswaptusers.gridusers.header.columns[6].text
-msgid "Unregister hosts"
+msgctxt "tviswaptusers.gridusers.header.columns[6].text"
+msgid "Admin"
 msgstr ""
 
 #: tviswaptusers.gridusers.header.columns[7].text
-msgid "Edit hosts"
-msgstr ""
+#, fuzzy
+msgctxt "tviswaptusers.gridusers.header.columns[7].text"
+msgid "Serial number"
+msgstr "Numéro de série"
 
 #: tviswaptusers.gridusers.header.columns[8].text
-msgid "Edit packages"
-msgstr ""
+#, fuzzy
+msgctxt "tviswaptusers.gridusers.header.columns[8].text"
+msgid "Code signing"
+msgstr "Signature de code"
 
 #: tviswaptusers.gridusers.header.columns[9].text
-msgid "Edit groups"
+#, fuzzy
+msgctxt "tviswaptusers.gridusers.header.columns[9].text"
+msgid "CA"
+msgstr "CA"
+
+#: tviswaptusers.label1.caption
+msgid "Allowed perimeters and roles"
 msgstr ""
 
 #: tviswaptusers.label13.caption
 msgid "Certificates and key root dir"
+msgstr ""
+
+#: tviswaptusers.label2.caption
+msgid "Available perimeters trusted by the server"
+msgstr ""
+
+#: tviswaptusers.panel1.caption
+msgctxt "tviswaptusers.panel1.caption"
+msgid "Panel1"
+msgstr ""
+
+#: tviswaptusers.panel2.caption
+msgid "Panel2"
 msgstr ""
 
 #: tviswaptusers.tbreport1.caption
@@ -6573,6 +6874,7 @@ msgid "Forbidden Windows updates"
 msgstr "Mises à jour interdites"
 
 #: uvisloading.rscanceledbyuser
+#, object-pascal-format
 msgctxt "uvisloading.rscanceledbyuser"
 msgid "Task %s has been canceled by the user"
 msgstr "La tâche %s a été interrompue par l'utilisateur"
@@ -6594,6 +6896,13 @@ msgid "skipped"
 msgstr ""
 
 #: uwaptconsoleres.rsaddadsgroups
+#, fuzzy
+#| msgid ""
+#| "This will get the Active Directory groups of each selected host and \n"
+#| "add the matching Wapt packages to dependencies of the host\n"
+#| "if the package exists.\n"
+#| "\n"
+#| "Are you sure to continue ?\n"
 msgid ""
 "This will get the Active Directory groups of each selected host and \n"
 "add the matching Wapt packages to dependencies of the host\n"
@@ -6612,6 +6921,7 @@ msgid "AGENT IP"
 msgstr "IP de l'agent"
 
 #: uwaptconsoleres.rsauditpackages
+#, object-pascal-format
 msgid "Audit logs of package %s"
 msgstr "Logs d'audit du paquet %s"
 
@@ -6631,24 +6941,29 @@ msgid "canceled"
 msgstr "annulé"
 
 #: uwaptconsoleres.rscanceledtask
+#, object-pascal-format
 msgctxt "uwaptconsoleres.rscanceledtask"
 msgid "Cancelled %s"
 msgstr "%s annulé"
 
 #: uwaptconsoleres.rscertificatecopyfailure
+#, object-pascal-format
 msgctxt "uwaptconsoleres.rscertificatecopyfailure"
 msgid "Couldn't copy certificate %s to %s."
 msgstr "Echec de la copie du certificat %s vers %s."
 
 #: uwaptconsoleres.rscertificateerror
+#, object-pascal-format
 msgid "Error : No private key in directory %s could be decrypted with supplied password, or none matches the certificate."
 msgstr "Erreur : Pas de clé privée dans le dossier %s qui peut être déchiffrée avec le mot de passe donnée ou aucune ne correspond au certificat."
 
 #: uwaptconsoleres.rscertificatesuccess
+#, object-pascal-format
 msgid "Success: Matching private key %s decrypted properly and matching the certificate."
 msgstr "Succès : Clé privée correspondate (%s) déchiffrée correctement. Elle correspond bien au certificat."
 
 #: uwaptconsoleres.rscertificatesuccessnopasskey
+#, object-pascal-format
 msgid "Success: Matching private key %s found. Warning, key is not encrypted"
 msgstr "Succès : Correspondance avec la clé privée %s trouvée. Attention, la clé n'est pas chiffrée."
 
@@ -6657,20 +6972,24 @@ msgid "Remove temporary files"
 msgstr "Suppression des fichiers temporaires"
 
 #: uwaptconsoleres.rscname
+#, object-pascal-format
 msgctxt "uwaptconsoleres.rscname"
 msgid "CNAME: %s"
 msgstr "CNAME : %s"
 
 #: uwaptconsoleres.rscompletionprogress
+#, object-pascal-format
 msgctxt "uwaptconsoleres.rscompletionprogress"
 msgid "%s : %.0f%% completed"
 msgstr "%s : %.0f%% terminé"
 
 #: uwaptconsoleres.rsconfirmburstupdate
+#, object-pascal-format
 msgid "Are you sure you want to trigger Status Update on %d hosts ?"
 msgstr "Êtes vous sûr de vouloir déclencher la vérification des mises à jour sur %d machines ?"
 
 #: uwaptconsoleres.rsconfirmburstupgrades
+#, object-pascal-format
 msgid "Are you sure you want to Apply Upgrades on %d hosts ?"
 msgstr "Êtes vous sûr de vouloir installer les mises à jour sur %d machines ?"
 
@@ -6680,14 +6999,17 @@ msgid "Confirm"
 msgstr "Confirmer"
 
 #: uwaptconsoleres.rsconfirmcleanmgr
+#, object-pascal-format
 msgid "Are you sure you want to run CleanMgr on %d hosts ?"
 msgstr "Êtes-vous sûr de vouloir lancer CleanMgr sur %d machines ?"
 
 #: uwaptconsoleres.rsconfirmdeletequeries
+#, object-pascal-format
 msgid "Delete %d queries ?"
 msgstr "Supprimer %d requêtes ?"
 
 #: uwaptconsoleres.rsconfirmdeletequery
+#, object-pascal-format
 msgid "Delete query %s ?"
 msgstr "Effacer la requête %s ?"
 
@@ -6696,14 +7018,17 @@ msgid "Delete download log record ?"
 msgstr "Effacer l'enregistrement de log de téléchargement ?"
 
 #: uwaptconsoleres.rsconfirmdeletewudownloads
+#, object-pascal-format
 msgid "Delete %d download log records ?"
 msgstr "Effacer %d enregistrements de log de téléchargement ?"
 
 #: uwaptconsoleres.rsconfirmdeletewuupdate
+#, object-pascal-format
 msgid "Delete windows update %s associated cached files on server ?"
 msgstr "Supprimer du serveur les fichiers associés à la mise à jour Windows %s ?"
 
 #: uwaptconsoleres.rsconfirmdeletewuupdates
+#, object-pascal-format
 msgid "Delete %d windows updates cached files on server ?"
 msgstr "Supprimer du serveur les fichiers associés à %d mises à jour Windows ?"
 
@@ -6713,35 +7038,47 @@ msgid "Confirm removal"
 msgstr "Confirmer la suppression"
 
 #: uwaptconsoleres.rsconfirmgpupdate
+#, object-pascal-format
 msgid "Are you sure you want to update Group Policies status on %d hosts ?"
 msgstr "Êtes-vous sûr de vouloir mettre à jour les Group Policies sur %d machines ?"
 
 #: uwaptconsoleres.rsconfirmhostforgetspackages
+#, object-pascal-format
 msgctxt "uwaptconsoleres.rsconfirmhostforgetspackages"
 msgid "Are you sure you want to forget %s packages from host %s ?"
 msgstr "Êtes-vous sûr(e) de vouloir oublier %s paquets de la machine %s ?"
 
 #: uwaptconsoleres.rsconfirmhostsaudit
+#, object-pascal-format
 msgid "Are you sure you want to run packages Audit on %d hosts ?"
 msgstr "Êtes-vous sûr de vouloir lancer l'audit de paquets sur %d machines ?"
 
 #: uwaptconsoleres.rsconfirmhostswaptwuadownload
+#, object-pascal-format
 msgid "Are you sure you want to scan and download Windows updates on %d hosts ?"
 msgstr "Êtes-vous sûr de vouloir lancer le scan et téléchargement des mises à jour Windows sur %d machines ?"
 
 #: uwaptconsoleres.rsconfirmhostswaptwuainstall
+#, object-pascal-format
 msgid "Are you sure you want to scan and install Windows updates on %d hosts ?"
 msgstr "Êtes-vous sûr de vouloir lancer le scan et l'installation des mises à jour Windows sur %d machines ?"
 
 #: uwaptconsoleres.rsconfirmhostswaptwuascan
+#, object-pascal-format
 msgid "Are you sure you want to scan pending Windows updates on %d hosts ?"
 msgstr "Êtes-vous sûr de vouloir lancer le scan des mises à jour Windows sur %d machines ?"
 
 #: uwaptconsoleres.rsconfirmhostswaptwuauninstall
+#, object-pascal-format
 msgid "Are you sure you want to Uninstall %d Windows updates on %d hosts ?"
 msgstr "Êtes-vous sûr de vouloir Désinstaller %d mises à jour sur %d machines ?"
 
 #: uwaptconsoleres.rsconfirmimport
+#, object-pascal-format,fuzzy
+#| msgid ""
+#| "Are you sure you want to import\n"
+#| "%s\n"
+#| " to your repository ?\n"
 msgctxt "uwaptconsoleres.rsconfirmimport"
 msgid ""
 "Are you sure you want to import\n"
@@ -6755,27 +7092,33 @@ msgid "Confirm import"
 msgstr "Confirmer l'import"
 
 #: uwaptconsoleres.rsconfirmpackageaudit
+#, object-pascal-format
 msgid "Are you sure you want to audit %s package(s) for the selected host(s) %s ?"
 msgstr "Êtes-vous sûr de vouloir auditer %s paquet(s) pour les machines sélectionnées %s ?"
 
 #: uwaptconsoleres.rsconfirmpackageedit
+#, object-pascal-format
 msgid "Do you want to download and edit the package %s ?"
 msgstr "Voulez-vous télécharger et éditer le paquet %s ?"
 
 #: uwaptconsoleres.rsconfirmpackageinstall
+#, object-pascal-format
 msgid "Are you sure you want to install/upgrade %s package(s) for the selected host(s) %s ?"
 msgstr "Êtes vus sûr de vouloir installer/mettre à jour %s paquet(s) pour les machines sélectionnée(s) %s ?"
 
 #: uwaptconsoleres.rsconfirmrmhostsfromlist
+#, object-pascal-format
 msgctxt "uwaptconsoleres.rsconfirmrmhostsfromlist"
 msgid "Are you sure you want to remove %s hosts from the list ?"
 msgstr "Êtes-vous sûr(e) de vouloir supprimer %s machines de la liste ?"
 
 #: uwaptconsoleres.rsconfirmrmhostspackagesfromlist
+#, object-pascal-format
 msgid "Are you sure you want to remove %s hosts and matching configuration packages from the server ?"
 msgstr "Êtes vous sûr de vouloir enlever du serveur %s machines et leur paquet de configuration ?"
 
 #: uwaptconsoleres.rsconfirmrmmultiplepackages
+#, object-pascal-format
 msgctxt "uwaptconsoleres.rsconfirmrmmultiplepackages"
 msgid "Are you sure you want to remove %d selected packages from the server ?"
 msgstr "Êtes-vous sûr(e) de vouloir supprimer %d paquets du serveur ?"
@@ -6791,19 +7134,23 @@ msgid "Confirm removal"
 msgstr "Confirmer la suppression"
 
 #: uwaptconsoleres.rsconfirmrmpackagesfromhost
+#, object-pascal-format, fuzzy, badformat
 msgctxt "uwaptconsoleres.rsconfirmrmpackagesfromhost"
 msgid "Are you sure you want to remove %s package(s) from the selected host(s) %s ?"
 msgstr "Êtes-vous sûr(e) de vouloir supprimer %s paquet(s) de la/des machine(s) sélectionnée(s) ?"
 
 #: uwaptconsoleres.rsconfirmwaptexit
+#, object-pascal-format
 msgid "Are you sure you want to propose Packages Upgrades on %d hosts ?"
 msgstr "Êtes-vous sûr de vouloir proposer l'installation des paquets sur %d machines ?"
 
 #: uwaptconsoleres.rsconfirmwaptservicerestart
+#, object-pascal-format
 msgid "Are you sure you want to restart waptservice on %d hosts ?"
 msgstr "Êtes vous sûr de vouloir redémarrer waptservice sur %d machines ?"
 
 #: uwaptconsoleres.rsconfirmwuadownload
+#, object-pascal-format
 msgid "Are you sure you want to download %d Windows updates on the server ?"
 msgstr "Êtes-vous sûr de vouloir télécharger %d Mises à jour Windows sur le serveur ?"
 
@@ -6825,6 +7172,7 @@ msgid "Please select a directory on your package development host before editing
 msgstr "Veuillez sélectionner un répertoire sur votre machine de développement de paquets pour pouvoir éditer un groupe de paquets."
 
 #: uwaptconsoleres.rsdeletingelement
+#, object-pascal-format
 msgctxt "uwaptconsoleres.rsdeletingelement"
 msgid "Removing %s"
 msgstr "Suppression de %s"
@@ -6860,11 +7208,13 @@ msgid "Download stopped by the user"
 msgstr "Téléchargement interrompu par l'utilisateur."
 
 #: uwaptconsoleres.rsdnsdomain
+#, object-pascal-format
 msgctxt "uwaptconsoleres.rsdnsdomain"
 msgid "DNS Domain : %s"
 msgstr "Domaine DNS : %s"
 
 #: uwaptconsoleres.rsdnsserver
+#, object-pascal-format
 msgctxt "uwaptconsoleres.rsdnsserver"
 msgid "DNS Server : %s"
 msgstr "Serveur DNS : %s"
@@ -6874,6 +7224,7 @@ msgid "DOMAIN"
 msgstr "Domaine"
 
 #: uwaptconsoleres.rsdownloadcurrupted
+#, object-pascal-format
 msgid "Downloaded file %s is corrupted. MD5 mismatch."
 msgstr "Le fichier %s téléchargé est corrompu, la somme MD5 ne correspond pas."
 
@@ -6883,6 +7234,7 @@ msgid "Downloading"
 msgstr "Téléchargement en cours"
 
 #: uwaptconsoleres.rsdownloadingpackage
+#, object-pascal-format
 msgctxt "uwaptconsoleres.rsdownloadingpackage"
 msgid "Package(s) %s is being downloaded."
 msgstr "Paquet(s) %s en cours de téléchargement."
@@ -6893,11 +7245,13 @@ msgid "Error while duplicating the package(s)."
 msgstr "Erreur lors de la duplication du/des paquet(s)."
 
 #: uwaptconsoleres.rsduplicatesuccess
+#, object-pascal-format
 msgctxt "uwaptconsoleres.rsduplicatesuccess"
 msgid "Package(s) %s successfully duplicated."
 msgstr "Paquet(s) %s dupliqué avec succès."
 
 #: uwaptconsoleres.rsduplicating
+#, object-pascal-format
 msgctxt "uwaptconsoleres.rsduplicating"
 msgid "Package(s) %s is being duplicated."
 msgstr "Paquet(s) %s en cours de duplication."
@@ -6908,11 +7262,16 @@ msgid "Edit package bundle."
 msgstr "Editer un groupe de paquets."
 
 #: uwaptconsoleres.rsedithostcaption
+#, object-pascal-format
 msgctxt "uwaptconsoleres.rsedithostcaption"
 msgid "Edit host profile %s"
 msgstr "Editer la machine %s"
 
 #: uwaptconsoleres.rsedithosterror
+#, object-pascal-format,fuzzy,badformat
+#| msgid ""
+#| "Unable to edit the host profile %s.\n"
+#| "If package is signed with a foreign key, you may want to delete host package first to workaround the issue...\n"
 msgid ""
 "Unable to edit the host profile %s.\n"
 "If package is signed with a foreign key, you may want to delete host package first to workaround the issue...\n"
@@ -6946,25 +7305,30 @@ msgid "Old password must not be empty."
 msgstr "L'ancien mot de passe ne doit pas être vide."
 
 #: uwaptconsoleres.rserrorbuildinguploadpackage
+#, object-pascal-format
 msgid "Error building or uploading package %s"
 msgstr "Erreur lors du build ou de l'upload du paquet %s"
 
 #: uwaptconsoleres.rserrorcanceling
+#, object-pascal-format
 msgctxt "uwaptconsoleres.rserrorcanceling"
 msgid "Error cancelling: %s"
 msgstr "Erreur de l'annulation : %s"
 
 #: uwaptconsoleres.rserrorlaunchingupdate
+#, object-pascal-format
 msgctxt "uwaptconsoleres.rserrorlaunchingupdate"
 msgid "Error launching update: %s"
 msgstr "Erreur lors du lancement de la mise à jour : %s"
 
 #: uwaptconsoleres.rserrorlaunchingupgrade
+#, object-pascal-format
 msgctxt "uwaptconsoleres.rserrorlaunchingupgrade"
 msgid "Error launching upgrade: %s"
 msgstr "Erreur lors du lancement de la mise à jour : %s"
 
 #: uwaptconsoleres.rserrorwithmessage
+#, object-pascal-format
 msgctxt "uwaptconsoleres.rserrorwithmessage"
 msgid "Error : %s"
 msgstr "Erreur : %s"
@@ -6979,6 +7343,7 @@ msgid "Error during import."
 msgstr "Erreur lors de l'importation."
 
 #: uwaptconsoleres.rsfailedtocancel
+#, object-pascal-format
 msgctxt "uwaptconsoleres.rsfailedtocancel"
 msgid "Could not cancel : %s."
 msgstr "Impossible d'annuler : %s."
@@ -6999,6 +7364,7 @@ msgid "Selection of packages to force-remove from the hosts"
 msgstr "Choix des paquets à désinstaller explicitement sur les machines."
 
 #: uwaptconsoleres.rsforgetpackageerror
+#, object-pascal-format
 msgctxt "uwaptconsoleres.rsforgetpackageerror"
 msgid "Error while forgetting package %s: %s"
 msgstr "Erreur lors de l'oubli du paquet %s : %s"
@@ -7013,21 +7379,25 @@ msgid "HOSTNAME"
 msgstr "Nom d'hôte"
 
 #: uwaptconsoleres.rshostsselectedtotal
+#, object-pascal-format
 msgctxt "uwaptconsoleres.rshostsselectedtotal"
 msgid "Selected / Total : %d / %d"
 msgstr "Sélectionné / Total : %d / %d"
 
 #: uwaptconsoleres.rsignoredconfictingpackages
+#, object-pascal-format
 msgctxt "uwaptconsoleres.rsignoredconfictingpackages"
 msgid "Warning : couldn't find package(s) %s ; conflicting package(s) have been ignored."
 msgstr "Attention, le(s) paquet(s) %s n'ont pu être trouvés ; les paquets en conflit ont été ignorés."
 
 #: uwaptconsoleres.rsignoredpackages
+#, object-pascal-format
 msgctxt "uwaptconsoleres.rsignoredpackages"
 msgid "Warning : couldn't find package(s) %s ; ignoring them."
 msgstr "Attention, le(s) paquet(s) %s n'ont pu être trouvés et ont été ignorés."
 
 #: uwaptconsoleres.rsimportingfile
+#, object-pascal-format
 msgctxt "uwaptconsoleres.rsimportingfile"
 msgid "Importing %s"
 msgstr "Importation de %s"
@@ -7043,6 +7413,7 @@ msgid "Incorrect password."
 msgstr "Le mot de passe est incorrect."
 
 #: uwaptconsoleres.rsinnosetupunavailable
+#, object-pascal-format
 msgctxt "uwaptconsoleres.rsinnosetupunavailable"
 msgid "Innosetup is unavailable (path : %s), please install it first."
 msgstr "Innosetup n'est pas disponible (emplacement : %s), veuillez l'installer en premier lieu."
@@ -7062,10 +7433,12 @@ msgid "Please input path to public key"
 msgstr "Veuillez spécifier l'emplacement de la clé publique"
 
 #: uwaptconsoleres.rsinstallerfilenotfound
+#, object-pascal-format
 msgid "The installer filename %s does not exists !"
 msgstr "Le fichier d'installation %s n'existe pas"
 
 #: uwaptconsoleres.rsinstalling
+#, object-pascal-format
 msgctxt "uwaptconsoleres.rsinstalling"
 msgid "Installing %s..."
 msgstr "Installation de %s..."
@@ -7076,42 +7449,51 @@ msgid "  install on c:\\wapt : --setup -s"
 msgstr "  installation sur c:\\wapt : --setup -s"
 
 #: uwaptconsoleres.rsinstallpackages
+#, object-pascal-format
 msgctxt "uwaptconsoleres.rsinstallpackages"
 msgid "Install logs of package %s"
 msgstr "Logs d'installation du paquet %s"
 
 #: uwaptconsoleres.rsinvalidservercertificate
+#, object-pascal-format
 msgid "The https server trusted certificates bundle \"%s\" can not verify the server https connection. Check your bundle"
 msgstr "Le bundle de certificats de confiance %s ne permet pas de vérifier le certificat serveur de la connexion https. Vérifier votre bundle."
 
 #: uwaptconsoleres.rsinvalidservercertificatedir
+#, object-pascal-format
 msgid "The https server trusted certificates bundle \"%s\" is not located in a valid directory. It should be in \"<waptbasedir>\\ssl\\server\" directory"
 msgstr "Le bundle de certificats de confiance %s n'est pas dans un répertoire valide. Il devrait se trouver de préférence dans \"<waptbasedir>\\ssl\\server\""
 
 #: uwaptconsoleres.rsinvalidwaptsetupdir
+#, object-pascal-format
 msgctxt "uwaptconsoleres.rsinvalidwaptsetupdir"
 msgid "WAPTsetup directory is not valid : %s"
 msgstr "Le répertoire de WAPTsetup n'est pas valide : %s"
 
 #: uwaptconsoleres.rskeyalreadyexists
+#, object-pascal-format
 msgctxt "uwaptconsoleres.rskeyalreadyexists"
 msgid "Key %s already exists, please pick another name."
 msgstr "La clé %s existe déjà, merci de choisir un nom différent."
 
 #: uwaptconsoleres.rskeypairgensuccess
+#, object-pascal-format
 msgid "Private key %s and public certificate %s have been successfully created."
 msgstr "La clé privée %s et le certificat %s ont été créés avec succès."
 
 #: uwaptconsoleres.rslablogskb
+#, object-pascal-format
 msgctxt "uwaptconsoleres.rslablogskb"
 msgid "Install logs of %s"
 msgstr "Logs d'installation de la %s"
 
 #: uwaptconsoleres.rslicencedto
+#, object-pascal-format
 msgid "Licenced to %s"
 msgstr "Licence concédée à %s"
 
 #: uwaptconsoleres.rsloadinghosttasks
+#, object-pascal-format
 msgid "Downloading %s tasks..."
 msgstr "Téléchargement de %s tâches..."
 
@@ -7128,16 +7510,19 @@ msgid "Loading application settings"
 msgstr "Chargement des paramètres de l'application"
 
 #: uwaptconsoleres.rslogtasks
+#, object-pascal-format
 msgctxt "uwaptconsoleres.rslogtasks"
 msgid "Logs of task %s (ID %s)"
 msgstr "Logs de la tâche %s (ID %s)"
 
 #: uwaptconsoleres.rslongtaskerror
+#, object-pascal-format
 msgctxt "uwaptconsoleres.rslongtaskerror"
 msgid "Error launching longtask: %s"
 msgstr "Erreur lors du lancement de longtask : %s"
 
 #: uwaptconsoleres.rsmainrepourl
+#, object-pascal-format
 msgctxt "uwaptconsoleres.rsmainrepourl"
 msgid "Main repo url: %s"
 msgstr "URL du dépôt principal : %s"
@@ -7151,6 +7536,11 @@ msgid "Missing personal certificate"
 msgstr "Certificat personnel manquant"
 
 #: uwaptconsoleres.rsmissingpersonalcertificatequestion
+#, fuzzy
+#| msgid ""
+#| "No personal certificate defined.\n"
+#| "You need one certificate and matching private key to be able to sign actions and configurations\n"
+#| "Do you want to pick or create one now in preferences ?\n"
 msgid ""
 "No personal certificate defined.\n"
 "You need one certificate and matching private key to be able to sign actions and configurations\n"
@@ -7162,6 +7552,7 @@ msgstr ""
 "Voulez-vous en définir / créer un maintenant dans les préférences ?\n"
 
 #: uwaptconsoleres.rsnbmodifiedhosts
+#, object-pascal-format
 msgctxt "uwaptconsoleres.rsnbmodifiedhosts"
 msgid "%d hosts affected. %d hosts discarded (errors). %d hosts unchanged"
 msgstr "%d machines modifiées, %d machines ignorées (erreur), %d machines inchangées"
@@ -7185,6 +7576,7 @@ msgid "No running tasks"
 msgstr "Aucune tâche en cours"
 
 #: uwaptconsoleres.rsnotavalidqueriesfile
+#, object-pascal-format
 msgid "The file %s does not looks like a valid WAPT json Queries file"
 msgstr "Le fichier %s ne ressemble pas à une fichier de requêtes WAPT json"
 
@@ -7193,6 +7585,7 @@ msgid "Waptconsole is not running with Admin priviledges. Please restart with el
 msgstr "La console Wapt ne dispose pas des privilèges Administrateur. Merci de la rédemarrer avec des droits plus élevés"
 
 #: uwaptconsoleres.rsnotrunningasadmincannotssl
+#, object-pascal-format
 msgid "Waptconsole is not running with Admin priviledges. Will not be able to copy certificate to %s"
 msgstr "La console Wapt ne dispose pas des privilèges Administrateur. Il ne sera pas possible de déposer le certificat dans %s"
 
@@ -7202,19 +7595,27 @@ msgid " -r --repo : URL of dependencies libs"
 msgstr " -r --repo : URL des librairies des dépendances"
 
 #: uwaptconsoleres.rspackageauditerror
+#, object-pascal-format
 msgid "Error while triggering package audit %s: %s"
 msgstr "Erreur lors du déclenchement de l'audit de paquet %s: %s"
 
 #: uwaptconsoleres.rspackagebuiltsourcesavailable
+#, object-pascal-format
 msgid "The package is built and uploaded and sources are available in %s"
 msgstr "Le paquet est généré et envoyé. Les sources sont disponible dans %s"
 
 #: uwaptconsoleres.rspackagecreationerror
+#, object-pascal-format
 msgctxt "uwaptconsoleres.rspackagecreationerror"
 msgid "Error while building package : %s"
 msgstr "Erreur lors de la compilation du paquet : %s"
 
 #: uwaptconsoleres.rspackageduplicateconfirm
+#, object-pascal-format,fuzzy
+#| msgid ""
+#| "Are you sure you want to duplicate the package(s)\n"
+#| "%s\n"
+#| " into your repository ?\n"
 msgctxt "uwaptconsoleres.rspackageduplicateconfirm"
 msgid ""
 "Are you sure you want to duplicate the package(s)\n"
@@ -7231,10 +7632,12 @@ msgid "Confirm duplication of package"
 msgstr "Confirmer la duplication du paquet"
 
 #: uwaptconsoleres.rspackageinstallerror
+#, object-pascal-format
 msgid "Error while triggering package install/upgrade %s: %s"
 msgstr "Erreur lors de l'appel de l'installation/mise à jour de paquet : %s: %s"
 
 #: uwaptconsoleres.rspackageremoveerror
+#, object-pascal-format
 msgctxt "uwaptconsoleres.rspackageremoveerror"
 msgid "Error while removing package %s: %s"
 msgstr "Erreur lors de la suppression du paquet %s : %s"
@@ -7250,10 +7653,12 @@ msgid "Packages needed on host"
 msgstr "Paquets nécessaires sur la machine"
 
 #: uwaptconsoleres.rspackagesourcesavailable
+#, object-pascal-format
 msgid "The package sources are available in %s"
 msgstr "Les sources du paquet sont disponibles dans %s"
 
 #: uwaptconsoleres.rspasswordchangeerror
+#, object-pascal-format
 msgctxt "uwaptconsoleres.rspasswordchangeerror"
 msgid "Error : %s"
 msgstr "Erreur : %s"
@@ -7269,6 +7674,7 @@ msgid "Pending : "
 msgstr "En attente :"
 
 #: uwaptconsoleres.rsprivatekeydoesntexist
+#, object-pascal-format
 msgctxt "uwaptconsoleres.rsprivatekeydoesntexist"
 msgid "Private key doesn't exist : %s"
 msgstr "La clé privée n'existe pas : %s"
@@ -7278,6 +7684,7 @@ msgid "PUBLIC IP"
 msgstr "IP publique"
 
 #: uwaptconsoleres.rspublickeygenerror
+#, object-pascal-format
 msgctxt "uwaptconsoleres.rspublickeygenerror"
 msgid "Error during key generation : %s"
 msgstr "Erreur lors de la création de la clé : %s"
@@ -7288,6 +7695,7 @@ msgid "The generation of the public certificate has failed."
 msgstr "La création de la clé publique a échoué."
 
 #: uwaptconsoleres.rspublickeygensuccess
+#, object-pascal-format
 msgctxt "uwaptconsoleres.rspublickeygensuccess"
 msgid "Public certificate %s has been successfully created."
 msgstr "La clé %s a bien été créée."
@@ -7305,6 +7713,7 @@ msgid "Reloading WaptService configuration"
 msgstr "Recharger la configuration du service Wapt"
 
 #: uwaptconsoleres.rsrepositoryunregisterconfirm
+#, object-pascal-format
 msgid "Confirm the unregistration of repository %s"
 msgstr "Confirmer le retrait du dépôt %s"
 
@@ -7317,6 +7726,7 @@ msgid "Running GPUpdate"
 msgstr "Lancement de GPUpdate"
 
 #: uwaptconsoleres.rsrunningtask
+#, object-pascal-format
 msgctxt "uwaptconsoleres.rsrunningtask"
 msgid "Running task %d: %s, status:%s"
 msgstr "Exécution de la tâche %d : %s, statut :%s"
@@ -7363,6 +7773,7 @@ msgid "Please specify a personal certificate in configuration first, in order to
 msgstr "Spécifier un certificat personnel dans la configuration de la console pour pouvoir filtrer les machines gérables"
 
 #: uwaptconsoleres.rssrv
+#, object-pascal-format
 msgctxt "uwaptconsoleres.rssrv"
 msgid "SRV: %s"
 msgstr "SRV: %s"
@@ -7373,6 +7784,7 @@ msgid "Stop listening to events"
 msgstr "Interruption "
 
 #: uwaptconsoleres.rssuccessfullyimported
+#, object-pascal-format
 msgctxt "uwaptconsoleres.rssuccessfullyimported"
 msgid "%s successfully imported."
 msgstr "%s importé avec succès."
@@ -7387,6 +7799,7 @@ msgid "Task canceled."
 msgstr "Tâche annulée."
 
 #: uwaptconsoleres.rstasklisterror
+#, object-pascal-format
 msgctxt "uwaptconsoleres.rstasklisterror"
 msgid "Error getting task list: %s"
 msgstr "Erreur lors de l'acquisition de la liste de tâches : %s"
@@ -7417,11 +7830,13 @@ msgid "Trigger the scan of missing Windows Updates"
 msgstr "Lancer la recherche des mises à jour Windows manquantes"
 
 #: uwaptconsoleres.rsundefwaptsrvinini
+#, object-pascal-format
 msgctxt "uwaptconsoleres.rsundefwaptsrvinini"
 msgid "wapt_server is not defined in your %s ini file"
 msgstr "wapt_server n'est pas défini dans votre fichier %s ini"
 
 #: uwaptconsoleres.rsuninstallingpackage
+#, object-pascal-format
 msgctxt "uwaptconsoleres.rsuninstallingpackage"
 msgid "Uninstalling %s..."
 msgstr "Désinstallation de %s..."
@@ -7441,6 +7856,7 @@ msgid "Updating package list"
 msgstr "Mise à jour de la liste des paquets"
 
 #: uwaptconsoleres.rsupgradehosterror
+#, object-pascal-format
 msgctxt "uwaptconsoleres.rsupgradehosterror"
 msgid "Failed to trigger upgrade : %s"
 msgstr "L'upgrade n'a pas pu être lancée : %s"
@@ -7456,6 +7872,7 @@ msgid "Uploading"
 msgstr "Chargement en cours"
 
 #: uwaptconsoleres.rsuploadingpackagestowaptsrv
+#, object-pascal-format
 msgctxt "uwaptconsoleres.rsuploadingpackagestowaptsrv"
 msgid "Uploading %s packages to WAPT server..."
 msgstr "Chargement de %s paquet(s) vers le serveur WAPT..."
@@ -7466,16 +7883,19 @@ msgid "Started uploading to WAPT server..."
 msgstr "Téléchargement vers le serveur WAPT en cours..."
 
 #: uwaptconsoleres.rsurl
+#, object-pascal-format
 msgctxt "uwaptconsoleres.rsurl"
 msgid "Url : %s"
 msgstr "URL : %s"
 
 #: uwaptconsoleres.rsusage
+#, object-pascal-format
 msgctxt "uwaptconsoleres.rsusage"
 msgid "Usage: %s -h"
 msgstr "Usage : %s -h"
 
 #: uwaptconsoleres.rsversion
+#, object-pascal-format
 msgctxt "uwaptconsoleres.rsversion"
 msgid ""
 "Waptconsole version : %s\n"
@@ -7487,6 +7907,11 @@ msgid "WaptAgent version check"
 msgstr "Vérification de la version de WaptAgent"
 
 #: uwaptconsoleres.rswaptagentnotpresent
+#, fuzzy
+#| msgid ""
+#| "waptagent.exe installer is not present on server\n"
+#| "\n"
+#| "Do you want to build waptagent.exe installer for the deployment of Wapt on client hosts ?\n"
 msgid ""
 "waptagent.exe installer is not present on server\n"
 "\n"
@@ -7497,6 +7922,13 @@ msgstr ""
 "Voulez-vous générer l'installeur waptagent pour le déploiement de Wapt sur les clients ?\n"
 
 #: uwaptconsoleres.rswaptagentoldversion
+#, object-pascal-format,fuzzy
+#| msgid ""
+#| "waptagent.exe needs to be upgraded\n"
+#| "Current waptagent.exe version: %s\n"
+#| "Required version: %s\n"
+#| "\n"
+#| "Do you want to rebuild a waptagent.exe installer now ?\n"
 msgid ""
 "waptagent.exe needs to be upgraded\n"
 "Current waptagent.exe version: %s\n"
@@ -7511,16 +7943,22 @@ msgstr ""
 "Souhaitez-vous reconstruire un installeur waptagent.exe maintenant ?\n"
 
 #: uwaptconsoleres.rswaptagentsetuperror
+#, object-pascal-format
 msgctxt "uwaptconsoleres.rswaptagentsetuperror"
 msgid "Error while creating waptagent.exe: %s"
 msgstr "Erreur lors de la création du waptagent.exe : %s"
 
 #: uwaptconsoleres.rswaptagentsetupsuccess
+#, object-pascal-format
 msgctxt "uwaptconsoleres.rswaptagentsetupsuccess"
 msgid "waptagent.exe successfully built : %s"
 msgstr "waptagent.exe a été compilé avec succès : %s"
 
 #: uwaptconsoleres.rswaptagentunabletocheck
+#, object-pascal-format,fuzzy
+#| msgid ""
+#| "Warning, unable to check waptagent.exe installer on server\n"
+#| "Error: %s\n"
 msgid ""
 "Warning, unable to check waptagent.exe installer on server\n"
 "Error: %s\n"
@@ -7529,6 +7967,7 @@ msgstr ""
 "Erreur: %s\n"
 
 #: uwaptconsoleres.rswaptagentuploaderror
+#, object-pascal-format
 msgctxt "uwaptconsoleres.rswaptagentuploaderror"
 msgid "Error while uploading WAPT agent : %s"
 msgstr "Erreur lors du chargement de l'agent WAPT : %s"
@@ -7544,6 +7983,7 @@ msgid "Updating WAPT client on the hosts"
 msgstr "Mise à jour du client WAPT sur les machines"
 
 #: uwaptconsoleres.rswaptgetupgrade
+#, object-pascal-format
 msgctxt "uwaptconsoleres.rswaptgetupgrade"
 msgid "WAPT-GET Upgrade using repository at %s"
 msgstr "Upgrade de WAPT-GET grâce au dépôt de %s"
@@ -7557,6 +7997,10 @@ msgid "You must first define the Package prefix in preferences"
 msgstr "Vous devez d'abord définir le préfixe des paquets dans les préférences"
 
 #: uwaptconsoleres.rswaptpackageprefixmissingquestion
+#, fuzzy
+#| msgid ""
+#| "A Package prefix is needed to visually identify your packages.\n"
+#| "Do you want to define one now ?\n"
 msgid ""
 "A Package prefix is needed to visually identify your packages.\n"
 "Do you want to define one now ?\n"
@@ -7565,6 +8009,10 @@ msgstr ""
 "Voulez-vous en définir un maintenant ?\n"
 
 #: uwaptconsoleres.rswaptservererror
+#, object-pascal-format,fuzzy
+#| msgid ""
+#| "Error on WAPT server:\n"
+#| "%s\n"
 msgid ""
 "Error on WAPT server:\n"
 "%s\n"
@@ -7573,6 +8021,11 @@ msgstr ""
 "%s\n"
 
 #: uwaptconsoleres.rswaptserveroldversion
+#, object-pascal-format,fuzzy
+#| msgid ""
+#| "Warning, the version of the server is too old.\n"
+#| "Current server version: %s\n"
+#| "Required server version: %s\n"
 msgid ""
 "Warning, the version of the server is too old.\n"
 "Current server version: %s\n"
@@ -7583,15 +8036,21 @@ msgstr ""
 "Version requise : %s\n"
 
 #: uwaptconsoleres.rswaptsetuperror
+#, object-pascal-format
 msgctxt "uwaptconsoleres.rswaptsetuperror"
 msgid "Error while creating agent : %s"
 msgstr "Erreur lors de la création de l'agent : %s"
 
 #: uwaptconsoleres.rswaptsetupfilenotfound
+#, object-pascal-format
 msgid "WAPTSetup file %s has not been found"
 msgstr "Le fichier WAPTSetup %s n'a pas été trouvé"
 
 #: uwaptconsoleres.rswaptsetupuploadsuccess
+#, fuzzy
+#| msgid ""
+#| "WAPT agent and upgrade package successfully created and uploaded to the main repository\n"
+#| "Don't forget to change the hash of waptagent.exe in your GPO\n"
 msgctxt "uwaptconsoleres.rswaptsetupuploadsuccess"
 msgid ""
 "WAPT agent and upgrade package successfully created and uploaded to the main repository\n"
@@ -7614,11 +8073,13 @@ msgid "WAPT Upgrade package built and uploaded successfully"
 msgstr "Paquet de mise à jour WAPT créé correctement et envoyé sur le serveur"
 
 #: uwaptconsoleres.rswaptuploaderror
+#, object-pascal-format
 msgctxt "uwaptconsoleres.rswaptuploaderror"
 msgid "Error while uploading WAPT agent to the repository : %s"
 msgstr "Erreur lors du chargement de l'agent WAPT vers le dépôt : %s"
 
 #: uwaptconsoleres.rswin32exewrapper
+#, object-pascal-format
 msgctxt "uwaptconsoleres.rswin32exewrapper"
 msgid "Win32 Exe wrapper: %s %s"
 msgstr "Wrapper Win32 Exe  : %s %s"
@@ -7629,6 +8090,7 @@ msgid "W: interrupt received, killing server…"
 msgstr "W : interruption reçue, arrêt du serveur"
 
 #: uwaptconsoleres.rswritecertonlocalmachine
+#, object-pascal-format
 msgid "Do you want to copy this certificate to ssl Authorized Package Certificate store (%s) ?"
 msgstr "Voulez vous copier ce certificat vers le répertoire des certificats autorisés pour les paquets (%s) ?"
 

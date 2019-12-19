@@ -38,7 +38,7 @@ type
     EdWUAInstallDelay: TEdit;
     edRepoUrl: TEdit;
     edOrgName: TEdit;
-    fnPublicCert: TFileNameEdit;
+    edPublicCertDir: TDirectoryEdit;
     GBWUA: TGroupBox;
     GridCertificates: TSOGrid;
     Label1: TLabel;
@@ -64,8 +64,10 @@ type
     procedure CBWUADisableClick(Sender: TObject);
     procedure CBWUADontchangeClick(Sender: TObject);
     procedure CBWUAEnabledClick(Sender: TObject);
-    procedure fnPublicCertEditingDone(Sender: TObject);
-    procedure fnPublicCertExit(Sender: TObject);
+    procedure edPublicCertDirAcceptDirectory(Sender: TObject; var Value: String
+      );
+    procedure edPublicCertDirEditingDone(Sender: TObject);
+    procedure edPublicCertDirExit(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -147,29 +149,24 @@ begin
   PanAgentEnterprise.Visible := DMPython.IsEnterpriseEdition;
 end;
 
-procedure TVisCreateWaptSetup.fnPublicCertEditingDone(Sender: TObject);
+procedure TVisCreateWaptSetup.edPublicCertDirEditingDone(Sender: TObject);
 var
   id: Integer;
-  CABundle,CertIter,Cert,CertList: Variant;
+  NewCertDir,CABundle,CertIter,Cert,CertList: Variant;
   SOCert,SOCerts: ISuperObject;
   att:String;
-  NewCertFilename:String;
   atts: Array[0..8] of String=('cn','issuer_cn','subject_dn','issuer_dn','fingerprint','not_after','is_ca','is_code_signing','serial_number');
 
 begin
-  NewCertFilename:=fnPublicCert.FileName;
-  //if FileExistsUTF8(NewCertFilename) and ((ActiveCertBundle <> NewCertFilename) or (GridCertificates.Data = Nil) )  then
+  NewCertDir := UTF8Decode(edPublicCertDir.Directory);
+  //if FileExistsUTF8(NewCertDir) and ((ActiveCertBundle <> NewCertDir) or (GridCertificates.Data = Nil) )  then
   try
     SOCerts := TSuperObject.Create(stArray);
     CABundle:=dmpython.waptcrypto.SSLCABundle('--noarg--');
-    CABundle.add_pems(IncludeTrailingPathDelimiter(WaptBaseDir)+'ssl\*.crt');
-    if FileExistsUTF8(NewCertFilename) then
-    begin
-      CABundle.add_pems(NewCertFilename);
-      edOrgName.text := VarPythonAsString(dmpython.waptcrypto.SSLCertificate(crt_filename := NewCertFilename).cn);
-    end;
+    if DirectoryExistsUTF8(edPublicCertDir.Directory) then
+      CABundle.add_pems(cert_pattern_or_dir := NewCertDir,trust_first := True);
 
-    CertList := CABundle.certificates('--noarg--');
+    CertList := CABundle.trusted.values('--noarg--');
     CertIter := iter(CertList);
     id := 0;
     While VarIsPythonIterator(CertIter)  do
@@ -186,14 +183,14 @@ begin
         on EPyStopIteration do Break;
       end;
     GridCertificates.Data := SOCerts;
-    ActiveCertBundle := fnPublicCert.FileName;
+    ActiveCertBundle := edPublicCertDir.Directory;
   finally
   end;
 end;
 
-procedure TVisCreateWaptSetup.fnPublicCertExit(Sender: TObject);
+procedure TVisCreateWaptSetup.edPublicCertDirExit(Sender: TObject);
 begin
-  fnPublicCertEditingDone(Sender);
+  edPublicCertDirEditingDone(Sender);
 end;
 
 procedure TVisCreateWaptSetup.CBVerifyCertClick(Sender: TObject);
@@ -240,6 +237,12 @@ begin
   end
   else
     GBWUA.Enabled := False;
+end;
+
+procedure TVisCreateWaptSetup.edPublicCertDirAcceptDirectory(Sender: TObject;
+  var Value: String);
+begin
+  edPublicCertDirEditingDone(Sender);
 end;
 
 procedure TVisCreateWaptSetup.ActGetServerCertificateExecute(Sender: TObject);
@@ -318,11 +321,11 @@ begin
     CBUseFQDNAsUUID.Checked:= ini.ReadBool('global', 'use_fqdn_as_uuid',False);
     CBUseADGroups.Checked:= ini.ReadBool('global', 'use_ad_groups',False);
 
-    fnPublicCert.FileName := UTF8Encode(ActiveCertBundle);
-    if FileExistsUtf8(ActiveCertBundle) then
-      fnPublicCertEditingDone(Sender);
-        //edOrgName.text := VarPythonAsString(dmpython.waptcrypto.SSLCertificate(fnPublicCert.FileName).cn);
-        //edOrgName.text := dmwaptpython.DMPython.PythonEng.EvalStringAsStr(Format('common.SSLCertificate(r"""%s""").cn',[fnPublicCert.FileName]));
+    edPublicCertDir.Directory := IncludeTrailingPathDelimiter(WaptBaseDir)+'ssl';
+    if DirectoryExistsUTF8(edPublicCertDir.Directory) then
+      edPublicCertDirEditingDone(Sender);
+        //edOrgName.text := VarPythonAsString(dmpython.waptcrypto.SSLCertificate(edPublicCertDir.FileName).cn);
+        //edOrgName.text := dmwaptpython.DMPython.PythonEng.EvalStringAsStr(Format('common.SSLCertificate(r"""%s""").cn',[edPublicCertDir.FileName]));
 
     CBVerifyCert.Checked:=(EdServerCertificate.Text<>'') and (EdServerCertificate.Text<>'0');
     CBVerifyCertClick(Sender);

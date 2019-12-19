@@ -147,8 +147,12 @@ FileName=C:\tranquilit\wapt\waptenterprise\waptwua\utils.py
 [Project\ChildNodes\Node0\ChildNodes\Node2\ChildNodes\Node3\ChildNodes]
 Count=5
 
+[Project\ChildNodes\Node0\ChildNodes\Node2\ChildNodes\Node4]
+ClassName=TProjectFileNode
+FileName=C:\tranquilit\wapt\waptenterprise\licencing.py
+
 [Project\ChildNodes\Node0\ChildNodes\Node2\ChildNodes]
-Count=4
+Count=5
 
 [Project\ChildNodes\Node0\ChildNodes\Node3]
 ClassName=TProjectFileNode
@@ -248,7 +252,7 @@ Name=debug
 ScriptName=$[Project-Path]server.py
 EngineType=peRemote
 ReinitializeBeforeRun=TRUE
-Parameters=-ldebug
+Parameters=-linfo -c c:\wapt\conf\waptserver.ini
 WorkingDir=$[Project-Dir]\..
 WriteOutputToFile=FALSE
 OutputFileName=$[ActiveScript-NoExt].log
