@@ -464,6 +464,8 @@ def install_waptserver_service(options,conf=None):
     #Migrate file for new version waptwua
     wuafolder = conf['waptwua_folder']
     for (root,dirs,files) in list(os.walk(wuafolder,topdown=False)):
+        if root == os.path.join(wuafolder,'.stfolder'):
+            continue
         for f in files:
             oldpath = os.path.join(root,f)
             newpath = os.path.join(wuafolder,f)
@@ -472,6 +474,8 @@ def install_waptserver_service(options,conf=None):
             print('Move %s --> %s' % (oldpath,newpath))
             os.rename(oldpath,newpath)
         for d in dirs:
+            if d == '.stfolder':
+                continue
             print('Delete folder %s' % os.path.join(root,d))
             shutil.rmtree(os.path.join(root,d))
 
