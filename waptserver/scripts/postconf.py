@@ -594,6 +594,8 @@ def main():
     #Migrate file for new version waptwua
     wuafolder = server_config['waptwua_folder']
     for (root,dirs,files) in list(os.walk(wuafolder,topdown=False)):
+        if root == os.path.join(wuafolder,'.stfolder'):
+            continue
         for f in files:
             oldpath = os.path.join(root,f)
             newpath = os.path.join(wuafolder,f)
@@ -602,6 +604,8 @@ def main():
             print('Move %s --> %s' % (oldpath,newpath))
             os.rename(oldpath,newpath)
         for d in dirs:
+            if d == os.path.join(wuafolder,'.stfolder'):
+                continue
             print('Delete folder %s' % os.path.join(root,d))
             shutil.rmtree(os.path.join(root,d))
 
