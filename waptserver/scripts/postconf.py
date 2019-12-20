@@ -604,7 +604,7 @@ def main():
             print('Move %s --> %s' % (oldpath,newpath))
             os.rename(oldpath,newpath)
         for d in dirs:
-            if d == os.path.join(wuafolder,'.stfolder'):
+            if d == '.stfolder':
                 continue
             print('Delete folder %s' % os.path.join(root,d))
             shutil.rmtree(os.path.join(root,d))
