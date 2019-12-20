@@ -2716,6 +2716,9 @@ begin
     if not DirectoryExistsUTF8(SSLDir) then
       mkdir(SSLDir);
 
+    if (default_public_cert<>'') and DirectoryExistsUTF8(Source) and (default_public_cert <> SSLDir) then
+      CopyDirTree(Source,SSLDir,[cffCreateDestDirectory,cffPreserveTime]);
+
     Destination := MakePath([BuildDir,'waptupgrade']);
     //  upgrade package sources
     CopyDirTree(MakePath([wapt_base_dir,'waptupgrade']),Destination,
@@ -2805,10 +2808,6 @@ begin
         else if not startswith(line,'#define signtool') then
             new_iss.AsArray.Add(line);
     end;
-
-    source := default_public_cert;
-    if (Source<>'') and DirectoryExistsUTF8(Source) then
-      CopyDirTree(Source,SSLDir,[cffCreateDestDirectory,cffPreserveTime]);
 
     StringToFile(custom_iss,Utf8Encode(SOUtils.Join(#13#10,new_iss)));
 

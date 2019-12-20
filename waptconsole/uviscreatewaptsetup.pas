@@ -5,7 +5,7 @@ unit uVisCreateWaptSetup;
 interface
 
 uses
-  Classes, SysUtils, LazFileUtils, Forms, Controls, Graphics, Dialogs, StdCtrls,
+  Classes, SysUtils, LazFileUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
   LCLIntf,EditBtn, ExtCtrls, Buttons, ActnList, DefaultTranslator, Menus, sogrid,
   uVisLoading,IdComponent,superobject, VirtualTrees;
 
@@ -67,25 +67,29 @@ type
       );
     procedure edPublicCertDirEditingDone(Sender: TObject);
     procedure edPublicCertDirExit(Sender: TObject);
+    procedure EdServerCertificateDblClick(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure FormDropFiles(Sender: TObject; const FileNames: array of String);
     procedure FormShow(Sender: TObject);
     procedure GridCertificatesDblClick(Sender: TObject);
+    procedure GridCertificatesNodesDelete(Sender: TSOGrid; Rows: ISuperObject);
   private
     FCurrentVisLoading: TVisLoading;
     function GetCurrentVisLoading: TVisLoading;
     { private declarations }
     procedure IdHTTPWork(ASender: TObject; AWorkMode: TWorkMode; AWorkCount: int64);
-    procedure LoadTrustedCertificates(TrustedDirectory: String);
+    procedure LoadTrustedCertificates(TrustedDirectory: String='');
   public
     { public declarations }
+    BuildDir: String;
     ActiveCertBundle: String;
     property CurrentVisLoading: TVisLoading read GetCurrentVisLoading;
     function GetWUAParams: ISuperObject;
     procedure SaveWAPTAgentSettings;
 
-    Function BuildWaptSetup(BuildDir: String): String;
+    Function BuildWaptSetup: String;
     procedure UploadWaptSetup(SetupFilename:String);
     Function BuildWaptUpgrade(WaptUpgradeSources: String):String;
 
@@ -117,7 +121,7 @@ begin
       showMessage(rsInputPubKeyPath);
       CanClose:=False;
     end;
-    if pos(lowercase(WaptBaseDir),lowercase(EdServerCertificate.Text))=1 then
+    if pos(lowercase(BuildDir),lowercase(EdServerCertificate.Text))=1 then
     begin
       EdServerCertificate.Text := ExtractRelativepath(WaptBaseDir,EdServerCertificate.Text);
       AbsVerifyCertPath := ExpandFileName(AppendPathDelim(WaptBaseDir)+EdServerCertificate.Text);
@@ -150,22 +154,55 @@ begin
   PanAgentEnterprise.Visible := DMPython.IsEnterpriseEdition;
 end;
 
+function Dir(Directory,Pattern:String):TStringArray;
+var
+  Files:TStringList;
+  i:Integer;
+begin
+  Files := FindAllFiles(Directory,Pattern,False);
+  try
+    SetLength(Result,Files.Count);
+    for i:= 0 to Files.Count-1 do
+      Result[i] := Files[i];
+  finally
+    FreeAndNil(Files);
+  end;
+end;
+
 procedure TVisCreateWaptSetup.LoadTrustedCertificates(TrustedDirectory:String);
 var
   id: Integer;
   NewCertDir,CABundle,CertIter,Cert,CertList: Variant;
   SOCert,SOCerts: ISuperObject;
+  FN,SSLDir: String;
   att:String;
   atts: Array[0..9] of String=('cn','issuer_cn','subject_dn','issuer_dn','fingerprint',
       'not_after','is_ca','is_code_signing','serial_number','_public_cert_filename');
 
 begin
-  NewCertDir := UTF8Decode(TrustedDirectory);
+  if TrustedDirectory='' then
+    TrustedDirectory:=ActiveCertBundle;
+  // temprary build ssldir where to copy trusted certs
+  SSLDir := MakePath([BuildDir,'ssl']);
+  if not DirectoryExistsUTF8(SSLDir) then
+    ForceDirectoriesUTF8(SSLDir);
+
+  // replace certs in target ssl builddir
+  if (TrustedDirectory <> ActiveCertBundle) and (SSLDir <> TrustedDirectory) then
+  begin
+    for FN in Dir(SSLDir,'*.crt') do
+      DeleteFileUTF8(MakePath([SSLDir,ExtractFileName(FN)]));
+
+    for FN in Dir(TrustedDirectory,'*.crt') do
+        CopyFile(FN,MakePath([SSLDir,ExtractFileName(FN)]),[cffOverWriteFile]);
+  end;
+
+  // load cert details in grid
+  NewCertDir := UTF8Decode(SSLDir);
   try
     SOCerts := TSuperObject.Create(stArray);
     CABundle:=dmpython.waptcrypto.SSLCABundle('--noarg--');
-    if DirectoryExistsUTF8(TrustedDirectory) then
-      CABundle.add_pems(cert_pattern_or_dir := NewCertDir,trust_first := True);
+    CABundle.add_pems(cert_pattern_or_dir := NewCertDir,trust_first := True);
 
     CertList := CABundle.trusted.values('--noarg--');
     CertIter := iter(CertList);
@@ -197,6 +234,11 @@ end;
 procedure TVisCreateWaptSetup.edPublicCertDirExit(Sender: TObject);
 begin
   LoadTrustedCertificates(edPublicCertDir.Directory);
+end;
+
+procedure TVisCreateWaptSetup.EdServerCertificateDblClick(Sender: TObject);
+begin
+  OpenDocument(EdServerCertificate.FileName);
 end;
 
 procedure TVisCreateWaptSetup.CBVerifyCertClick(Sender: TObject);
@@ -265,7 +307,7 @@ begin
       if not VarIsNull(pem_data) then
       begin
         cert := certchain.__getitem__(0);
-        certfn:= AppendPathDelim(WaptBaseDir)+'ssl\server\'+cert.cn+'.crt';
+        certfn:= AppendPathDelim(BuildDir)+'ssl\server\'+cert.cn+'.crt';
         if not DirectoryExists(ExtractFileDir(certfn)) then
           ForceDirectory(ExtractFileDir(certfn));
         StringToFile(certfn,UTF8Encode(VarPythonAsString(pem_data)));
@@ -300,6 +342,16 @@ procedure TVisCreateWaptSetup.FormDestroy(Sender: TObject);
 begin
   if FCurrentVisLoading <> Nil then
     FreeAndNil(FCurrentVisLoading);
+end;
+
+procedure TVisCreateWaptSetup.FormDropFiles(Sender: TObject;
+  const FileNames: array of String);
+var
+  fn: String;
+begin
+  for fn in Filenames do
+    CopyFile(fn,MakePath([BuildDir,'ssl',ExtractFileName(fn)]));
+  LoadTrustedCertificates();
 end;
 
 procedure TVisCreateWaptSetup.FormShow(Sender: TObject);
@@ -393,6 +445,16 @@ begin
   OpenDocument(UTF8Encode(GridCertificates.FocusedRow.S['_public_cert_filename']));
 end;
 
+procedure TVisCreateWaptSetup.GridCertificatesNodesDelete(Sender: TSOGrid;
+  Rows: ISuperObject);
+var
+  cert: ISuperObject;
+begin
+  for cert in Rows do
+    DeleteFileUTF8(UTF8Encode(cert.S['_public_cert_filename']));
+  LoadTrustedCertificates(ActiveCertBundle);
+end;
+
 procedure TVisCreateWaptSetup.SaveWAPTAgentSettings;
 var
   ini: TIniFile;
@@ -443,11 +505,17 @@ begin
 end;
 
 
-function TVisCreateWaptSetup.BuildWaptSetup(BuildDir:String): String;
+function TVisCreateWaptSetup.BuildWaptSetup: String;
 var
   WAPTSetupPath: string;
 begin
+  if BuildDir='' then
+    BuildDir := GetTempFileNameUTF8('','wapt'+FormatDateTime('yyyymmdd"T"hhnnss',Now));
   SaveWAPTAgentSettings;
+
+  // Copy selected trusted package certificates
+
+
   with CurrentVisLoading do
   try
     Screen.Cursor := crHourGlass;

@@ -2184,10 +2184,6 @@ begin
           DevPath := AppendPathDelim(DevRoot)+VarPythonAsString(Result.make_package_edit_directory('--noarg--'))
         else
           DevPath := GetTempFileNameUTF8('',VarPythonAsString(Result.package));
-        vDevPath:= PyUTF8Decode(DevPath);
-        Result.unzip_package(cabundle := cabundle, target_dir := vDevPath);
-        //DMPython.WAPT.add_pyscripter_project(vDevPath);
-        //DMPython.common.wapt_sources_edit( wapt_sources_dir := vDevPath);
       except
         ShowMessage(rsDlCanceled);
         if FileExistsUTF8(filePath) then
@@ -2336,11 +2332,9 @@ end;
 
 procedure TVisWaptGUI.ActCreateWaptSetupExecute(Sender: TObject);
 var
-  WAPTSetupPath,
-  TmpBuildDir: string;
+  WAPTSetupPath,WaptUpgradePackagePath: String;
 begin
-  if not IsWindowsAdminLoggedIn then
-    ShowMessage(rsNotRunningAsAdmin);
+
 
   if (waptcommon.DefaultPackagePrefix = '') then
   begin
@@ -2358,15 +2352,15 @@ begin
 
   with TVisCreateWaptSetup.Create(self) do
   try
+    BuildDir := GetTempFileNameUTF8('','wapt'+FormatDateTime('yyyymmdd"T"hhnnss',Now));
     if ShowModal = mrOk then
     try
-      TmpBuildDir := GetTempFileNameUTF8('','wapt'+FormatDateTime('yyyymmdd"T"hhnnss',Now));
       try
         CurrentVisLoading.Start;
         CurrentVisLoading.ExceptionOnStop := True;
 
-        WAPTSetupPath := BuildWaptSetup(TmpBuildDir);
-        BuildWaptUpgrade(AppendPathDelim(TmpBuildDir)+'waptupgrade');
+        WAPTSetupPath := BuildWaptSetup;
+        WaptUpgradePackagePath := BuildWaptUpgrade(AppendPathDelim(BuildDir)+'waptupgrade');
         UploadWaptSetup(WAPTSetupPath);
         ActPackagesUpdate.Execute;
       except
@@ -2374,11 +2368,11 @@ begin
           ShowMessageFmt(rsWaptAgentSetupError,[E.Message]);
       end;
     finally
-      if DirectoryExistsUTF8(TmpBuildDir) then
-        DeleteDirectory(TmpBuildDir,False);
       CurrentVisLoading.Finish;
     end;
   finally
+    if DirectoryExistsUTF8(BuildDir) then
+      DeleteDirectory(BuildDir,False);
     Free;
   end;
 end;

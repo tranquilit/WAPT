@@ -3,6 +3,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
   Height = 669
   Top = 113
   Width = 594
+  AllowDropFiles = True
   AutoSize = True
   BorderStyle = bsDialog
   Caption = 'Create WAPT agent'
@@ -11,6 +12,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnDestroy = FormDestroy
+  OnDropFiles = FormDropFiles
   OnShow = FormShow
   ParentFont = True
   Position = poMainFormCenter
@@ -123,6 +125,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       MaxLength = 0
       PopupMenu = PopupMenu1
       TabOrder = 6
+      OnDblClick = EdServerCertificateDblClick
     end
     object CBVerifyCert: TCheckBox
       Left = 232
@@ -158,6 +161,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       Height = 159
       Top = 45
       Width = 576
+      OnNodesDelete = GridCertificatesNodesDelete
       ShowAdvancedColumnsCustomize = False
       Anchors = [akTop, akLeft, akRight]
       BorderSpacing.Top = 2
