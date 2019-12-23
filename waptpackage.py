@@ -3210,18 +3210,6 @@ class WaptLocalRepo(WaptBaseRepo):
                     zi.compress_type = zipfile.ZIP_DEFLATED
                     myzipfile.writestr(zi,crl.as_der())
 
-                # Add rules from DB
-                try:
-                    from waptenterprise.waptserver.repositories import recreate_rules_from_db
-                    rules=recreate_rules_from_db()
-                    if rules:
-                        rules=json.dumps(rules)
-                    zi = zipfile.ZipInfo(u'Rules',date_time=time.localtime())
-                    zi.compress_type = zipfile.ZIP_DEFLATED
-                    myzipfile.writestr(zi,rules)
-                except:
-                    print('rules failed')
-
             if os.path.isfile(packages_fname):
                 os.unlink(packages_fname)
             os.rename(tmp_packages_fname,packages_fname)
@@ -3415,6 +3403,11 @@ class WaptRemoteRepo(WaptBaseRepo):
         if not config.has_section(section):
             section = 'global'
 
+        WaptBaseRepo.load_config(self,config,section)
+
+        if config.has_option(section,'repo_url'):
+            self.repo_url = config.get(section,'repo_url')
+
         if config.has_option(section,'verify_cert'):
             try:
                 self.verify_cert = config.getboolean(section,'verify_cert')
@@ -3424,8 +3417,6 @@ class WaptRemoteRepo(WaptBaseRepo):
                     self.verify_cert = '0'
         #else:
         #    self.verify_cert = self._default_config['verify_cert']
-
-        WaptBaseRepo.load_config(self,config,section)
 
         if config.has_option(section,'repo_url'):
             self.repo_url = config.get(section,'repo_url')
@@ -3580,15 +3571,15 @@ class WaptRemoteRepo(WaptBaseRepo):
         self._packages_date = datetime2isodate(_packages_index_date)
         return {'added':added,'removed':removed,'last-modified': self.packages_date(), 'discarded':self.discarded }
 
-    def _get_packages_index_data(self,url=None):
+    def _get_packages_index_data(self):
         """Download or load local Packages index raw zipped data
 
         Returns:
             (str,datetime.datetime): Packages data (local or remote) and last update date
         """
-        with self.get_requests_session(url) as session:
+        with self.get_requests_session() as session:
             packages_answer = session.get(
-                self.packages_url(url=url),
+                self.packages_url(),
                 timeout=self.timeout,
                 allow_redirects=True,
                 )

@@ -621,11 +621,20 @@ def main():
         if check_mongo2pgsql_upgrade_needed(options.configfile):
             upgrade2postgres(options.configfile)
 
-    # Create sync.json file for all installations
+    # Create empty sync.json and rules.json file for all installations
+
+    WAPT_UID = good_pwd.getpwnam('wapt').pw_uid
+
+    def set_good_rights_nginx(files=[]):
+        for afile in files:
+            if not os.path.isfile(afile):
+                with open(afile,'w'): pass
+            os.chown(afile,WAPT_UID,NGINX_GID)
+
     sync_json = os.path.join(os.path.abspath(os.path.join(wapt_folder, os.pardir)),'sync.json')
-    if not os.path.isfile(sync_json):
-        with open(sync_json,'w'): pass
-    os.chown(sync_json,good_pwd.getpwnam('wapt').pw_uid,NGINX_GID)
+    rules_json = os.path.join(os.path.abspath(os.path.join(wapt_folder, os.pardir)),'rules.json')
+
+    set_good_rights_nginx([sync_json,rules_json])
 
     # Final message
     if not quiet:
