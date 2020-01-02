@@ -264,6 +264,15 @@ msgctxt "tviscreatewaptsetup.caption"
 msgid "Create WAPT agent"
 msgstr "WAPT Agent erstellen"
 
+#: tviscreatewaptsetup.cbcheckcertificatesvalidity.caption
+msgid "Check packages certificates validity"
+msgstr ""
+
+#: tviscreatewaptsetup.cbcheckcertificatesvalidity.hint
+msgctxt "tviscreatewaptsetup.cbcheckcertificatesvalidity.hint"
+msgid "Check that certificate dates are valid and  issuer is a know one."
+msgstr ""
+
 #: tviscreatewaptsetup.cbdualsign.caption
 msgid "Sign waptupgrade with both sha256 and sha1"
 msgstr ""
@@ -376,10 +385,6 @@ msgstr ""
 msgid "E.g. : Tranquil IT Systems."
 msgstr "z. B. : Tranquil IT Systems"
 
-#: tviscreatewaptsetup.edpubliccertdir.hint
-msgid "Directory of X509 PEM trusted CA certificates"
-msgstr ""
-
 #: tviscreatewaptsetup.edrepourl.hint
 #, fuzzy
 #| msgid "E.g. : https://wapt.mydomain.lan/wapt"
@@ -402,6 +407,10 @@ msgctxt "tviscreatewaptsetup.edwuadownloadscheduling.hint"
 msgid "eg 2h or 120m or 1d"
 msgstr ""
 
+#: tviscreatewaptsetup.fnpubliccert.hint
+msgid "X509 PEM encoded file with CA certificates which are trusted"
+msgstr ""
+
 #: tviscreatewaptsetup.gbwua.caption
 msgid "WAPTWUA Windows Updates "
 msgstr ""
@@ -409,11 +418,6 @@ msgstr ""
 #: tviscreatewaptsetup.gridcertificates.header.columns[0].text
 msgctxt "tviscreatewaptsetup.gridcertificates.header.columns[0].text"
 msgid "id"
-msgstr ""
-
-#: tviscreatewaptsetup.gridcertificates.header.columns[10].text
-msgctxt "tviscreatewaptsetup.gridcertificates.header.columns[10].text"
-msgid "issuer_dn"
 msgstr ""
 
 #: tviscreatewaptsetup.gridcertificates.header.columns[1].text
@@ -453,12 +457,12 @@ msgstr ""
 
 #: tviscreatewaptsetup.gridcertificates.header.columns[8].text
 msgctxt "tviscreatewaptsetup.gridcertificates.header.columns[8].text"
-msgid "Filename"
+msgid "subject_dn"
 msgstr ""
 
 #: tviscreatewaptsetup.gridcertificates.header.columns[9].text
 msgctxt "tviscreatewaptsetup.gridcertificates.header.columns[9].text"
-msgid "subject_dn"
+msgid "issuer_dn"
 msgstr ""
 
 #: tviscreatewaptsetup.label1.caption
@@ -484,6 +488,14 @@ msgstr "Organisation:"
 #: tviscreatewaptsetup.label3.hint
 msgid "Your company name."
 msgstr "Ihr Firmenname."
+
+#: tviscreatewaptsetup.label4.caption
+msgid "Save waptagent.exe as...  "
+msgstr "Speichern waptagent.exe als..."
+
+#: tviscreatewaptsetup.label4.hint
+msgid "Where waptagent.exe will be saved."
+msgstr "Wo wird waptagent.exe gespeichert."
 
 #: tviscreatewaptsetup.label5.caption
 msgid "WAPT server address :"
@@ -5840,7 +5852,6 @@ msgid "Select WAPT file"
 msgstr "WAPT Datei auswählen"
 
 #: tviswaptgui.panel1.caption
-msgctxt "tviswaptgui.panel1.caption"
 msgid "Panel1"
 msgstr ""
 
@@ -6050,10 +6061,6 @@ msgstr ""
 msgid "ToolButtonSep2"
 msgstr ""
 
-#: tviswaptusers.actapplyupdates.caption
-msgid "Apply updates"
-msgstr ""
-
 #: tviswaptusers.actdeleteaccount.caption
 msgctxt "tviswaptusers.actdeleteaccount.caption"
 msgid "Delete account"
@@ -6088,147 +6095,6 @@ msgctxt "tviswaptusers.edpkirootdirectory.text"
 msgid "c:\\private"
 msgstr ""
 
-#: tviswaptusers.gridtrustedcerts.header.columns[0].text
-msgctxt "tviswaptusers.gridtrustedcerts.header.columns[0].text"
-msgid "id"
-msgstr ""
-
-#: tviswaptusers.gridtrustedcerts.header.columns[1].text
-msgctxt "tviswaptusers.gridtrustedcerts.header.columns[1].text"
-msgid "Certificate Name"
-msgstr ""
-
-#: tviswaptusers.gridtrustedcerts.header.columns[2].text
-msgctxt "tviswaptusers.gridtrustedcerts.header.columns[2].text"
-msgid "Issuer"
-msgstr ""
-
-#: tviswaptusers.gridtrustedcerts.header.columns[3].text
-msgctxt "tviswaptusers.gridtrustedcerts.header.columns[3].text"
-msgid "CA"
-msgstr ""
-
-#: tviswaptusers.gridtrustedcerts.header.columns[4].text
-msgctxt "tviswaptusers.gridtrustedcerts.header.columns[4].text"
-msgid "Code signing"
-msgstr ""
-
-#: tviswaptusers.gridtrustedcerts.header.columns[5].text
-msgctxt "tviswaptusers.gridtrustedcerts.header.columns[5].text"
-msgid "Serial number"
-msgstr ""
-
-#: tviswaptusers.gridtrustedcerts.header.columns[6].text
-msgctxt "tviswaptusers.gridtrustedcerts.header.columns[6].text"
-msgid "Certificate expire"
-msgstr ""
-
-#: tviswaptusers.gridtrustedcerts.header.columns[7].text
-msgctxt "tviswaptusers.gridtrustedcerts.header.columns[7].text"
-msgid "Fingerprint (sha256)"
-msgstr ""
-
-#: tviswaptusers.gridtrustedcerts.header.columns[8].text
-msgctxt "tviswaptusers.gridtrustedcerts.header.columns[8].text"
-msgid "Subject DN"
-msgstr ""
-
-#: tviswaptusers.gridtrustedcerts.header.columns[9].text
-msgctxt "tviswaptusers.gridtrustedcerts.header.columns[9].text"
-msgid "Issuer DN"
-msgstr ""
-
-#: tviswaptusers.griduseracls.header.columns[0].text
-msgctxt "tviswaptusers.griduseracls.header.columns[0].text"
-msgid "id"
-msgstr ""
-
-#: tviswaptusers.griduseracls.header.columns[10].text
-#, fuzzy
-#| msgid "Apply upgrade"
-msgctxt "tviswaptusers.griduseracls.header.columns[10].text"
-msgid "Apply upgrades"
-msgstr "Updates anwenden"
-
-#: tviswaptusers.griduseracls.header.columns[11].text
-msgctxt "tviswaptusers.griduseracls.header.columns[11].text"
-msgid "Remote hosts actions"
-msgstr ""
-
-#: tviswaptusers.griduseracls.header.columns[12].text
-msgctxt "tviswaptusers.griduseracls.header.columns[12].text"
-msgid "Edit Reports"
-msgstr ""
-
-#: tviswaptusers.griduseracls.header.columns[13].text
-msgctxt "tviswaptusers.griduseracls.header.columns[13].text"
-msgid "Run Reports"
-msgstr ""
-
-#: tviswaptusers.griduseracls.header.columns[14].text
-msgctxt "tviswaptusers.griduseracls.header.columns[14].text"
-msgid "Signed on"
-msgstr ""
-
-#: tviswaptusers.griduseracls.header.columns[15].text
-msgctxt "tviswaptusers.griduseracls.header.columns[15].text"
-msgid "Signed by"
-msgstr ""
-
-#: tviswaptusers.griduseracls.header.columns[16].text
-msgid "Signer fingerprint"
-msgstr ""
-
-#: tviswaptusers.griduseracls.header.columns[17].text
-msgid "Signature"
-msgstr ""
-
-#: tviswaptusers.griduseracls.header.columns[1].text
-msgid "Perimeter"
-msgstr ""
-
-#: tviswaptusers.griduseracls.header.columns[2].text
-msgctxt "tviswaptusers.griduseracls.header.columns[2].text"
-msgid "Admin"
-msgstr ""
-
-#: tviswaptusers.griduseracls.header.columns[3].text
-msgctxt "tviswaptusers.griduseracls.header.columns[3].text"
-msgid "Register hosts"
-msgstr ""
-
-#: tviswaptusers.griduseracls.header.columns[4].text
-msgctxt "tviswaptusers.griduseracls.header.columns[4].text"
-msgid "Unregister hosts"
-msgstr ""
-
-#: tviswaptusers.griduseracls.header.columns[5].text
-msgctxt "tviswaptusers.griduseracls.header.columns[5].text"
-msgid "Edit hosts"
-msgstr ""
-
-#: tviswaptusers.griduseracls.header.columns[6].text
-#, fuzzy
-#| msgid "Apply upgrades"
-msgctxt "tviswaptusers.griduseracls.header.columns[6].text"
-msgid "Edit packages"
-msgstr "Updates anwenden"
-
-#: tviswaptusers.griduseracls.header.columns[7].text
-msgctxt "tviswaptusers.griduseracls.header.columns[7].text"
-msgid "Edit groups"
-msgstr ""
-
-#: tviswaptusers.griduseracls.header.columns[8].text
-msgctxt "tviswaptusers.griduseracls.header.columns[8].text"
-msgid "Edit self-service"
-msgstr ""
-
-#: tviswaptusers.griduseracls.header.columns[9].text
-msgctxt "tviswaptusers.griduseracls.header.columns[9].text"
-msgid "Edit WUA"
-msgstr ""
-
 #: tviswaptusers.gridusers.header.columns[0].text
 msgctxt "tviswaptusers.gridusers.header.columns[0].text"
 msgid "id"
@@ -6236,54 +6102,54 @@ msgstr ""
 
 #: tviswaptusers.gridusers.header.columns[10].text
 msgctxt "tviswaptusers.gridusers.header.columns[10].text"
-msgid "Fingerprint (sha256)"
+msgid "Edit self-service"
 msgstr ""
 
 #: tviswaptusers.gridusers.header.columns[11].text
 msgctxt "tviswaptusers.gridusers.header.columns[11].text"
-msgid "Subject DN"
+msgid "Edit WUA"
 msgstr ""
 
 #: tviswaptusers.gridusers.header.columns[12].text
 #, fuzzy
-#| msgid "Apply upgrades"
+#| msgid "Signed by"
 msgctxt "tviswaptusers.gridusers.header.columns[12].text"
-msgid "Issuer DN"
+msgid "Apply upgrades"
 msgstr "Updates anwenden"
 
 #: tviswaptusers.gridusers.header.columns[13].text
 msgctxt "tviswaptusers.gridusers.header.columns[13].text"
-msgid "user_fingerprint_sha1"
+msgid "Remote hosts actions"
 msgstr ""
 
 #: tviswaptusers.gridusers.header.columns[14].text
 msgctxt "tviswaptusers.gridusers.header.columns[14].text"
-msgid "updated_on"
+msgid "Edit Reports"
 msgstr ""
 
 #: tviswaptusers.gridusers.header.columns[15].text
 msgctxt "tviswaptusers.gridusers.header.columns[15].text"
-msgid "updated_by"
+msgid "Run Reports"
 msgstr ""
 
 #: tviswaptusers.gridusers.header.columns[16].text
 msgctxt "tviswaptusers.gridusers.header.columns[16].text"
-msgid "user_fingerprint_sha256"
+msgid "Certificate Filename"
 msgstr ""
 
 #: tviswaptusers.gridusers.header.columns[17].text
 msgctxt "tviswaptusers.gridusers.header.columns[17].text"
-msgid "auth_method"
+msgid "Valid until"
 msgstr ""
 
 #: tviswaptusers.gridusers.header.columns[18].text
 msgctxt "tviswaptusers.gridusers.header.columns[18].text"
-msgid "created_on"
+msgid "Serial number"
 msgstr ""
 
 #: tviswaptusers.gridusers.header.columns[19].text
 msgctxt "tviswaptusers.gridusers.header.columns[19].text"
-msgid "created_by"
+msgid "Code signing"
 msgstr ""
 
 #: tviswaptusers.gridusers.header.columns[1].text
@@ -6293,73 +6159,79 @@ msgstr ""
 
 #: tviswaptusers.gridusers.header.columns[20].text
 msgctxt "tviswaptusers.gridusers.header.columns[20].text"
-msgid "user_certificate"
+msgid "CA"
+msgstr ""
+
+#: tviswaptusers.gridusers.header.columns[21].text
+msgctxt "tviswaptusers.gridusers.header.columns[21].text"
+msgid "Fingerprint (sha256)"
+msgstr ""
+
+#: tviswaptusers.gridusers.header.columns[22].text
+msgctxt "tviswaptusers.gridusers.header.columns[22].text"
+msgid "subject_dn"
+msgstr ""
+
+#: tviswaptusers.gridusers.header.columns[23].text
+msgctxt "tviswaptusers.gridusers.header.columns[23].text"
+msgid "issuer_dn"
+msgstr ""
+
+#: tviswaptusers.gridusers.header.columns[24].text
+msgctxt "tviswaptusers.gridusers.header.columns[24].text"
+msgid "Signed on"
+msgstr ""
+
+#: tviswaptusers.gridusers.header.columns[25].text
+msgctxt "tviswaptusers.gridusers.header.columns[25].text"
+msgid "Signed by"
 msgstr ""
 
 #: tviswaptusers.gridusers.header.columns[2].text
-#, fuzzy
-#| msgid "status_sync_progress"
 msgctxt "tviswaptusers.gridusers.header.columns[2].text"
-msgid "Description"
-msgstr "Beschreibung"
+msgid "Certificate Name"
+msgstr ""
 
 #: tviswaptusers.gridusers.header.columns[3].text
 msgctxt "tviswaptusers.gridusers.header.columns[3].text"
-msgid "Certificate Name"
+msgid "Issuer"
 msgstr ""
 
 #: tviswaptusers.gridusers.header.columns[4].text
 msgctxt "tviswaptusers.gridusers.header.columns[4].text"
-msgid "Certificate expire"
+msgid "Admin"
 msgstr ""
 
 #: tviswaptusers.gridusers.header.columns[5].text
 msgctxt "tviswaptusers.gridusers.header.columns[5].text"
-msgid "Issuer"
+msgid "Register hosts"
 msgstr ""
 
 #: tviswaptusers.gridusers.header.columns[6].text
 msgctxt "tviswaptusers.gridusers.header.columns[6].text"
-msgid "Admin"
+msgid "Unregister hosts"
 msgstr ""
 
 #: tviswaptusers.gridusers.header.columns[7].text
 msgctxt "tviswaptusers.gridusers.header.columns[7].text"
-msgid "Serial number"
+msgid "Edit hosts"
 msgstr ""
 
 #: tviswaptusers.gridusers.header.columns[8].text
 #, fuzzy
-#| msgid "Edit packages"
+#| msgid "Apply upgrades"
 msgctxt "tviswaptusers.gridusers.header.columns[8].text"
-msgid "Code signing"
+msgid "Edit packages"
 msgstr "Updates anwenden"
 
 #: tviswaptusers.gridusers.header.columns[9].text
 msgctxt "tviswaptusers.gridusers.header.columns[9].text"
-msgid "CA"
-msgstr ""
-
-#: tviswaptusers.label1.caption
-msgid "Allowed perimeters and roles"
+msgid "Edit groups"
 msgstr ""
 
 #: tviswaptusers.label13.caption
 msgctxt "tviswaptusers.label13.caption"
 msgid "Certificates and key root dir"
-msgstr ""
-
-#: tviswaptusers.label2.caption
-msgid "Available perimeters trusted by the server"
-msgstr ""
-
-#: tviswaptusers.panel1.caption
-msgctxt "tviswaptusers.panel1.caption"
-msgid "Panel1"
-msgstr ""
-
-#: tviswaptusers.panel2.caption
-msgid "Panel2"
 msgstr ""
 
 #: tviswaptusers.tbreport1.caption
