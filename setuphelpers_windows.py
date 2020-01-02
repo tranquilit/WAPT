@@ -252,6 +252,30 @@ def iswin64():
     return win32process.IsWow64Process()
     #return 'PROGRAMW6432' in os.environ and 'ProgramFiles(x86)' in os.environ and os.environ['PROGRAMW6432'] != os.environ['ProgramFiles(x86)']
 
+def get_all_scheduled_tasks(enable_only=True):
+    scheduler = win32com.client.Dispatch("Schedule.Service")
+
+    scheduler.Connect()
+    objTaskFolder = scheduler.GetFolder("\\")
+    colTasks = objTaskFolder.GetTasks(1)
+
+    dict_tasks = {}
+
+    for task in colTasks:
+        if enable_only :
+            if task.Enabled == False:
+                continue
+        dict_tasks[task.Name] = {'Name':task.Name,
+                                'Enabled':task.Enabled,
+                                'LastRunTime':task.LastRunTime,
+                                'LastTaskResult':task.LastTaskResult,
+                                'NextRunTime':task.NextRunTime,
+                                'NumberOfMissedRuns':task.NumberOfMissedRuns,
+                                'State':task.State,
+                                'Path':task.Path}
+
+    return dict_tasks
+
 class disable_file_system_redirection(object):
     r"""Context manager to disable temporarily the wow3264 file redirector
 

@@ -2414,7 +2414,7 @@ class WaptBaseRepo(BaseObjectClass):
         'check_certificates_validity':'True',
     }
 
-    def __init__(self,name='abstract',cabundle=None,config=None):
+    def __init__(self,name='abstract',cabundle=None,config=None,section=None):
         """Init properties, get default values from _default_config, and override them
                 with constructor paramaters
 
@@ -2427,6 +2427,7 @@ class WaptBaseRepo(BaseObjectClass):
         """
 
         self.name = name
+        self._section = None
         self._packages = None
         self._index = {}
         self._packages_date = None
@@ -2442,7 +2443,7 @@ class WaptBaseRepo(BaseObjectClass):
 
         self.maturities = None
 
-        self.load_config(config=config)
+        self.load_config(config=config,section=section)
 
         # if not None, control's signature will be check against this certificates list
         if cabundle is not None:
@@ -2480,12 +2481,12 @@ class WaptBaseRepo(BaseObjectClass):
 
     def load_config(self,config=None,section=None):
         """Load configuration from inifile section.
-                Use name of repo as section name if section is not provided.
-                Use 'global' if no section named section in ini file
-                Value not defined in ini file are taken from class _default_config
+        Use name of repo as section name if section is not provided.
+        Use 'global' if no section named section in ini file
+        Value not defined in ini file are taken from class _default_config dict
 
-                load_config is called at __init__, eventually with config = None.
-                In this case, all parameters are initialized from defaults
+        load_config is called at __init__, eventually with config = None.
+        In this case, all parameters are initialized from defaults
 
         Args:
             config (RawConfigParser): ini configuration
@@ -2523,8 +2524,7 @@ class WaptBaseRepo(BaseObjectClass):
             if not self.maturities:
                 self.maturities = None
 
-        if self.config_fingerprint() != self._index_config_fingerprint:
-            self.invalidate_packages_cache()
+        self._section = section
 
         return self
 
@@ -2553,8 +2553,11 @@ class WaptBaseRepo(BaseObjectClass):
         return self
 
     def _load_packages_index(self):
+        """Must be overriden to set _packages and _packages_date to something
+        different than None
+        """
         self._packages = []
-        self._packages_date = None
+        self._packages_date = datetime2isodate()
         self.discarded = []
 
     def _get_packages_index_data(self):
@@ -2601,6 +2604,7 @@ class WaptBaseRepo(BaseObjectClass):
 
     def invalidate_packages_cache(self):
         """Reset in memory packages index
+        Returns the old content of cached (packages, packages index date, discarded packages)
 
         Returns:
             dict : old cache status dict(_packages=self._packages,_packages_date=self._packages_date,discarded=self.discarded)
@@ -2669,7 +2673,7 @@ class WaptBaseRepo(BaseObjectClass):
         Returns:
             str: date/time of Packages index in iso format (string)
         """
-        if self._packages is None:
+        if self._packages_date is None:
             self._load_packages_index()
             self._index_config_fingerprint = self.config_fingerprint()
 
@@ -2909,13 +2913,13 @@ class WaptLocalRepo(WaptBaseRepo):
     >>> localrepo.update()
     """
 
-    def __init__(self,localpath=None,name='waptlocal',cabundle=None,config=None):
+    def __init__(self,localpath=None,name='waptlocal',cabundle=None,config=None,section=None):
         # store defaults at startup
         self._default_config.update({
             'localpath':'',
         })
 
-        WaptBaseRepo.__init__(self,name=name,cabundle=cabundle,config=None)
+        WaptBaseRepo.__init__(self,name=name,cabundle=cabundle,config=None,section=section)
 
         # override defaults and config with supplied parameters
         if localpath is not None:
@@ -3086,7 +3090,7 @@ class WaptLocalRepo(WaptBaseRepo):
         else:
             return None
 
-    def update_packages_index(self,force_all=False,proxies=None,canonical_filenames=False):
+    def update_packages_index(self,force_all=False,proxies=None,canonical_filenames=False,include_host_packages=False):
         """Scan self.localpath directory for WAPT packages and build a Packages (utf8) zip file with control data and MD5 hash
 
         Extract icons from packages (WAPT/icon.png) and stores them in <repo path>/icons/<package name>.png
@@ -3136,7 +3140,6 @@ class WaptLocalRepo(WaptBaseRepo):
                 entry = PackageEntry()
                 if package_filename in old_entries:
                     entry.load_control_from_wapt(fname,calc_md5=False)
-
                     if self.cabundle is not None:
                         try:
                             entry.check_control_signature(self.cabundle)
@@ -3160,10 +3163,10 @@ class WaptLocalRepo(WaptBaseRepo):
                     processed.append(fname)
                     if canonical_filenames:
                         self._ensure_canonical_package_filename(entry)
-
-                packages_lines.append(entry.ascontrol(with_non_control_attributes=True))
-                # add a blank line between each package control
-                packages_lines.append('')
+                if include_host_packages or entry.section != 'host':
+                    packages_lines.append(entry.ascontrol(with_non_control_attributes=True))
+                    # add a blank line between each package control
+                    packages_lines.append('')
 
                 self._packages.append(entry)
                 # index last version
@@ -3206,18 +3209,6 @@ class WaptLocalRepo(WaptBaseRepo):
                     zi = zipfile.ZipInfo(u"crl/%s.crl" % aki.encode('hex'),date_time = crl.last_update.timetuple())
                     zi.compress_type = zipfile.ZIP_DEFLATED
                     myzipfile.writestr(zi,crl.as_der())
-
-                # Add rules from DB
-                try:
-                    from waptenterprise.waptserver.repositories import recreate_rules_from_db
-                    rules=recreate_rules_from_db()
-                    if rules:
-                        rules=json.dumps(rules)
-                    zi = zipfile.ZipInfo(u'Rules',date_time=time.localtime())
-                    zi.compress_type = zipfile.ZIP_DEFLATED
-                    myzipfile.writestr(zi,rules)
-                except:
-                    print('rules failed')
 
             if os.path.isfile(packages_fname):
                 os.unlink(packages_fname)
@@ -3279,7 +3270,7 @@ class WaptRemoteRepo(WaptBaseRepo):
     True
     """
 
-    def __init__(self,url=None,name='',verify_cert=None,http_proxy=None,timeout=None,cabundle=None,config=None):
+    def __init__(self,url=None,name='',verify_cert=None,http_proxy=None,timeout=None,cabundle=None,config=None,section=None):
         """Initialize a repo at url "url".
 
         Args:
@@ -3318,7 +3309,7 @@ class WaptRemoteRepo(WaptBaseRepo):
         self.timeout = None
 
         # this load and empty config
-        WaptBaseRepo.__init__(self,name=name,cabundle=cabundle,config=config)
+        WaptBaseRepo.__init__(self,name=name,cabundle=cabundle,config=config,section=section)
 
         # forced URL
         if url is not None:
@@ -3412,6 +3403,11 @@ class WaptRemoteRepo(WaptBaseRepo):
         if not config.has_section(section):
             section = 'global'
 
+        WaptBaseRepo.load_config(self,config,section)
+
+        if config.has_option(section,'repo_url'):
+            self.repo_url = config.get(section,'repo_url')
+
         if config.has_option(section,'verify_cert'):
             try:
                 self.verify_cert = config.getboolean(section,'verify_cert')
@@ -3421,8 +3417,6 @@ class WaptRemoteRepo(WaptBaseRepo):
                     self.verify_cert = '0'
         #else:
         #    self.verify_cert = self._default_config['verify_cert']
-
-        WaptBaseRepo.load_config(self,config,section)
 
         if config.has_option(section,'repo_url'):
             self.repo_url = config.get(section,'repo_url')
@@ -3577,15 +3571,15 @@ class WaptRemoteRepo(WaptBaseRepo):
         self._packages_date = datetime2isodate(_packages_index_date)
         return {'added':added,'removed':removed,'last-modified': self.packages_date(), 'discarded':self.discarded }
 
-    def _get_packages_index_data(self,url=None):
+    def _get_packages_index_data(self):
         """Download or load local Packages index raw zipped data
 
         Returns:
             (str,datetime.datetime): Packages data (local or remote) and last update date
         """
-        with self.get_requests_session(url) as session:
+        with self.get_requests_session() as session:
             packages_answer = session.get(
-                self.packages_url(url=url),
+                self.packages_url(),
                 timeout=self.timeout,
                 allow_redirects=True,
                 )

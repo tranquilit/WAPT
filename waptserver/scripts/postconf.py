@@ -591,6 +591,25 @@ def main():
                 traceback.format_exc()
                 ]
 
+    #Migrate file for new version waptwua
+    wuafolder = server_config['waptwua_folder']
+    for (root,dirs,files) in list(os.walk(wuafolder,topdown=False)):
+        if root == os.path.join(wuafolder,'.stfolder'):
+            continue
+        for f in files:
+            oldpath = os.path.join(root,f)
+            newpath = os.path.join(wuafolder,f)
+            if os.path.isfile(newpath):
+                continue
+            print('Move %s --> %s' % (oldpath,newpath))
+            os.rename(oldpath,newpath)
+        for d in dirs:
+            if d == '.stfolder':
+                continue
+            print('Delete folder %s' % os.path.join(root,d))
+            shutil.rmtree(os.path.join(root,d))
+
+
     final_msg.append('Please connect to https://' + fqdn + '/ to access the server.')
 
     # Check if Mongodb > PostgreSQL migration is necessary
@@ -602,11 +621,20 @@ def main():
         if check_mongo2pgsql_upgrade_needed(options.configfile):
             upgrade2postgres(options.configfile)
 
-    # Create sync.json file for all installations
+    # Create empty sync.json and rules.json file for all installations
+
+    WAPT_UID = good_pwd.getpwnam('wapt').pw_uid
+
+    def set_good_rights_nginx(files=[]):
+        for afile in files:
+            if not os.path.isfile(afile):
+                with open(afile,'w'): pass
+            os.chown(afile,WAPT_UID,NGINX_GID)
+
     sync_json = os.path.join(os.path.abspath(os.path.join(wapt_folder, os.pardir)),'sync.json')
-    if not os.path.isfile(sync_json):
-        with open(sync_json,'w'): pass
-    os.chown(sync_json,good_pwd.getpwnam('wapt').pw_uid,NGINX_GID)
+    rules_json = os.path.join(os.path.abspath(os.path.join(wapt_folder, os.pardir)),'rules.json')
+
+    set_good_rights_nginx([sync_json,rules_json])
 
     # Final message
     if not quiet:

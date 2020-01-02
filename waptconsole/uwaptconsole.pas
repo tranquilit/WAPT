@@ -10,7 +10,8 @@ uses
   Dialogs, Buttons, LazUTF8, SynEdit, SynHighlighterPython, SynHighlighterSQL,
   SynCompletion, vte_json, vte_dbtreeex, ExtCtrls, StdCtrls, ComCtrls, ActnList,
   Menus, jsonparser, superobject, VirtualTrees, VarPyth, ImgList, SOGrid,
-  uvisloading, IdComponent, DefaultTranslator, DBGrids, CheckLst, EditBtn, GetText, uWaptConsoleRes, db,
+  uvisloading, IdComponent, DefaultTranslator, IniPropStorage, DBGrids,
+  ShellCtrls, CheckLst, EditBtn, GetText, uWaptConsoleRes, db,
   BufDataset, SearchEdit, tisstrings;
 
 type
@@ -20,9 +21,7 @@ type
   { TVisWaptGUI }
 
   TVisWaptGUI = class(TForm)
-    ActAddNewNetwork: TAction;
     ActCancelRunningTask: TAction;
-    ActDeleteNetwork: TAction;
     ActDisplayPreferences: TAction;
     ActExternalRepositoriesSettings: TAction;
     ActAddHWPropertyToGrid: TAction;
@@ -2141,10 +2140,10 @@ begin
       ActReportingQueryExecute.Execute
     else
     if MainPages.ActivePage = pgRepositories then
-    begin
        ActRepositoriesGetSecondRepos.Execute;
-       ActRepositoriesGetUpdateRules.Execute;
-    end;
+
+
+
   finally
     Screen.Cursor := crDefault;
   end;
@@ -2185,10 +2184,6 @@ begin
           DevPath := AppendPathDelim(DevRoot)+VarPythonAsString(Result.make_package_edit_directory('--noarg--'))
         else
           DevPath := GetTempFileNameUTF8('',VarPythonAsString(Result.package));
-        vDevPath:= PyUTF8Decode(DevPath);
-        Result.unzip_package(cabundle := cabundle, target_dir := vDevPath);
-        //DMPython.WAPT.add_pyscripter_project(vDevPath);
-        //DMPython.common.wapt_sources_edit( wapt_sources_dir := vDevPath);
       except
         ShowMessage(rsDlCanceled);
         if FileExistsUTF8(filePath) then
@@ -2337,10 +2332,9 @@ end;
 
 procedure TVisWaptGUI.ActCreateWaptSetupExecute(Sender: TObject);
 var
-  WAPTSetupPath: string;
+  WAPTSetupPath,WaptUpgradePackagePath: String;
 begin
-  if not IsWindowsAdminLoggedIn then
-    ShowMessage(rsNotRunningAsAdmin);
+
 
   if (waptcommon.DefaultPackagePrefix = '') then
   begin
@@ -2358,6 +2352,7 @@ begin
 
   with TVisCreateWaptSetup.Create(self) do
   try
+    BuildDir := GetTempFileNameUTF8('','wapt'+FormatDateTime('yyyymmdd"T"hhnnss',Now));
     if ShowModal = mrOk then
     try
       try
@@ -2365,7 +2360,7 @@ begin
         CurrentVisLoading.ExceptionOnStop := True;
 
         WAPTSetupPath := BuildWaptSetup;
-        BuildWaptUpgrade(WAPTSetupPath);
+        WaptUpgradePackagePath := BuildWaptUpgrade(AppendPathDelim(BuildDir)+'waptupgrade');
         UploadWaptSetup(WAPTSetupPath);
         ActPackagesUpdate.Execute;
       except
@@ -2376,6 +2371,8 @@ begin
       CurrentVisLoading.Finish;
     end;
   finally
+    if DirectoryExistsUTF8(BuildDir) then
+      DeleteDirectory(BuildDir,False);
     Free;
   end;
 end;
@@ -6607,6 +6604,11 @@ begin
   ;;
 end;
 
+procedure TVisWaptGUI.ActReloadAccountsExecute(Sender: TObject);
+begin
+  ;;
+end;
+
 procedure TVisWaptGUI.GridUsersKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
@@ -6618,6 +6620,16 @@ procedure TVisWaptGUI.GridUsersDrawText(Sender: TBaseVirtualTree;
   const AText: String; const CellRect: TRect; var DefaultDraw: Boolean);
 begin
   ;;
+end;
+
+procedure TVisWAPTGUI.ActSaveAccountsExecute(Sender: TObject);
+begin
+  ;;
+end;
+
+procedure TVisWAPTGUI.MergeUsersCertificates(Users:ISuperObject);
+begin
+   ;;
 end;
 
 function TVisWaptGUI.MaxSeq: Integer;
@@ -6635,17 +6647,7 @@ begin
   ;;
 end;
 
-procedure TvisWaptGUI.ActSaveRulesExecute(Sender: TObject);
-begin
-  ;;
-end;
 
-procedure TVisWaptGUI.GridRulesGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
-    RowData, CellData: ISuperObject; Column: TColumnIndex;
-    TextType: TVSTTextType; var CellText: string);
-begin
-  ;;
-end;
 
 {$endif}
 

@@ -30,7 +30,7 @@ uses
   Classes, SysUtils, CustApp,
   { you can add units after this }
   Interfaces, Windows, PythonEngine, VarPyth, superobject, soutils, tislogging, uWaptRes,
-  waptcommon, waptwinutils, tiscommon, tisstrings, LazFileUtils,
+  waptcommon, waptwinutils, tiscommon, tisstrings, LazFileUtils, FileUtil,
   IdAuthentication, Variants, IniFiles,uwaptcrypto,uWaptPythonUtils,
   tisinifiles,base64,IdComponent,httpsend,uWAPTPollThreads;
 
@@ -84,10 +84,10 @@ type
     function GetCommonNameFromCmdLine(): String;
 
     function CheckPersonalCertificateIsCodeSigning(PersonalCertificatePath,PrivateKeyPassword:String): Boolean;
-    function BuildWaptUpgrade(SetupFilename: String): String;
+    function BuildWaptUpgrade(BuildDir,SetupFilename: String): String;
     procedure UploadWaptAgentUpgrade(SetupFilename, WaptUpgradeFilename: String);
 
-    function CreateWaptAgent(TargetDir: String; Edition: String='waptagent'
+    function CreateWaptAgent(BuildDir: String; Edition: String='waptagent'
       ): String;
 
     function CreateKeycert(commonname: String; basedir: String='';keypassword: String='';
@@ -377,7 +377,7 @@ end;
 procedure PWaptGet.DoRun;
 var
   MainModule : TStringList;
-  WaptAgentTargetDir, WaptAgentFilename, WaptUpgradeFilename, logleveloption : String;
+  WaptAgentFilename, WaptUpgradeFilename, TmpBuildDir, logleveloption : String;
   Res,task:ISuperobject;
   package,sopackages:ISuperObject;
 
@@ -486,52 +486,56 @@ begin
   begin
     ReadWaptConfig(AppIniFilename('waptconsole'));
     Writeln(rsBuildWaptAgent);
-    WaptAgentTargetDir := WaptBaseDir+'\waptupgrade';
-    WaptAgentFilename := CreateWaptagent(WaptAgentTargetDir);
-    //WaptAgentFilename := WaptAgentTargetDir+'\waptagent.exe';
-    WaptUpgradeFilename := BuildWaptUpgrade(WaptAgentFilename);
-    if FindCmdLineSwitch('DeployWaptAgentLocally') then
-    begin
-      if not DirectoryExistsUTF8(GetLocalWaptserverRepositoryPath) then
-        Raise Exception.CreateFmt('Local repository %s does not exist',[GetLocalWaptserverRepositoryPath]);
+    TmpBuildDir := GetTempFileNameUTF8('','wapt'+FormatDateTime('yyyymmdd"T"hhnnss',Now));
+    try
+      WaptAgentFilename := CreateWaptagent(TmpBuildDir);
+      WaptUpgradeFilename := BuildWaptUpgrade(TmpBuildDir,WaptAgentFilename);
+      if FindCmdLineSwitch('DeployWaptAgentLocally') then
+      begin
+        if not DirectoryExistsUTF8(GetLocalWaptserverRepositoryPath) then
+          Raise Exception.CreateFmt('Local repository %s does not exist',[GetLocalWaptserverRepositoryPath]);
 
-      if CopyFileW(
-          PWideChar(UTF8Decode(WaptAgentFilename)),
-          PWideChar(UTF8Decode(AppendPathDelim(GetLocalWaptserverRepositoryPath)+'waptagent.exe')),
-          False) then
-        Writeln('waptagent copied to: '+AppendPathDelim(GetLocalWaptserverRepositoryPath)+'waptagent.exe')
-      else
-      begin
-        Writeln('Fails to copy waptagent to repository location');
-        ExitProcess(3);
-      end;
-      if CopyFileW(
-          PWideChar(UTF8Decode(WaptUpgradeFilename)),
-          PWideChar(UTF8Decode(AppendPathDelim(GetLocalWaptserverRepositoryPath)+ExtractFileName(WaptUpgradeFilename))),
-          False) then
-      begin
-        Writeln('waptupgrade package copied to repository: '+WaptUpgradeFilename);
-        ScanLocalWaptrepo(GetLocalWaptserverRepositoryPath);
-        Writeln('local repository packages scan: OK');
+        if CopyFileW(
+            PWideChar(UTF8Decode(WaptAgentFilename)),
+            PWideChar(UTF8Decode(AppendPathDelim(GetLocalWaptserverRepositoryPath)+'waptagent.exe')),
+            False) then
+          Writeln('waptagent copied to: '+AppendPathDelim(GetLocalWaptserverRepositoryPath)+'waptagent.exe')
+        else
+        begin
+          Writeln('Fails to copy waptagent to repository location');
+          ExitProcess(3);
+        end;
+        if CopyFileW(
+            PWideChar(UTF8Decode(WaptUpgradeFilename)),
+            PWideChar(UTF8Decode(AppendPathDelim(GetLocalWaptserverRepositoryPath)+ExtractFileName(WaptUpgradeFilename))),
+            False) then
+        begin
+          Writeln('waptupgrade package copied to repository: '+WaptUpgradeFilename);
+          ScanLocalWaptrepo(GetLocalWaptserverRepositoryPath);
+          Writeln('local repository packages scan: OK');
+        end
+        else
+        begin
+          Writeln('Fails to copy waptagent to repository location');
+          ExitProcess(3);
+        end;
+        Terminate;
+        Exit;
       end
       else
       begin
-        Writeln('Fails to copy waptagent to repository location');
-        ExitProcess(3);
+        Writeln(rsBuildWaptUpgradePackage);
+        GetWaptServerUser;
+        GetWaptServerPassword;
+        Writeln(rsUploadWaptAgent);
+        UploadWaptAgentUpgrade(WaptAgentFilename,WaptUpgradeFilename);
+        Terminate;
+        Exit;
       end;
-      Terminate;
-      Exit;
+    finally
+      If DirectoryExistsUTF8(TmpBuildDir) then
+        DeleteDirectory(TmpBuildDir,False);
     end
-    else
-    begin
-      Writeln(rsBuildWaptUpgradePackage);
-      GetWaptServerUser;
-      GetWaptServerPassword;
-      Writeln(rsUploadWaptAgent);
-      UploadWaptAgentUpgrade(WaptAgentFilename,WaptUpgradeFilename);
-      Terminate;
-      Exit;
-    end;
   end
   else
   if (action = 'waptupgrade') then
@@ -921,22 +925,20 @@ begin
   end;
 end;
 
-function PWaptGet.CreateWaptAgent(TargetDir:String;Edition:String='waptagent'): String;
+function PWaptGet.CreateWaptAgent(BuildDir:String;Edition:String='waptagent'): String;
 var
   Ini:TInifile;
 begin
   try
-
     ini := TIniFile.Create(AppIniFilename('waptconsole'));
     Result := CreateWaptSetup(UTF8Encode(AuthorizedCertsDir),
       ini.ReadString('global', 'repo_url', ''),
       ini.ReadString('global', 'wapt_server', ''),
-      TargetDir,
+      BuildDir,
       'Wapt', @DoOnProgress, Edition,
       ini.ReadString('global', 'verify_cert', '0'),
       ini.ReadBool('global', 'use_kerberos'
       , False ),
-      ini.ReadBool('global', 'check_certificates_validity',True ),
       IsEnterpriseEdition,
       True,
       True,
@@ -1069,21 +1071,18 @@ begin
   Result := LocalRepo.update_packages_index('--noarg--');
 end;
 
-function PWaptGet.BuildWaptUpgrade(SetupFilename: String): String;
+function PWaptGet.BuildWaptUpgrade(BuildDir,SetupFilename: String): String;
 var
-  BuildDir: String;
   KeyPassword, SourcesDir, UpgradePackage,BuildResult,Certificate,PrivateKey: Variant;
 begin
   // create waptupgrade package (after waptagent as we need the updated waptagent.sha1 file)
   BuildResult := Nil;
-  BuildDir := GetTempDir(False);
-
   if RightStr(buildDir,1) = '\' then
     buildDir := copy(buildDir,1,length(buildDir)-1);
   KeyPassword := GetPrivateKeyPassword;
 
   //BuildResult is a PackageEntry instance
-  SourcesDir := PyUTF8Decode(WaptBaseDir+'waptupgrade');
+  SourcesDir := PyUTF8Decode(BuildDir+'\waptupgrade');
 
   UpgradePackage := waptpackage.PackageEntry(waptfile := SourcesDir);
   UpgradePackage.package := DefaultPackagePrefix+'-waptupgrade';

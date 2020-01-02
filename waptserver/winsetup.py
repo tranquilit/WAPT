@@ -23,7 +23,7 @@
 
 # old function to install waptserver on windows. need to be rewritten (switch to nginx, websocket, etc.)
 from __future__ import absolute_import
-
+import shutil
 import os
 import sys
 from win32api import GetUserName
@@ -460,6 +460,24 @@ def install_waptserver_service(options,conf=None):
     # ensure Packages index
     repo = WaptLocalRepo(conf['wapt_folder'])
     repo.update_packages_index()
+
+    #Migrate file for new version waptwua
+    wuafolder = conf['waptwua_folder']
+    for (root,dirs,files) in list(os.walk(wuafolder,topdown=False)):
+        if root == os.path.join(wuafolder,'.stfolder'):
+            continue
+        for f in files:
+            oldpath = os.path.join(root,f)
+            newpath = os.path.join(wuafolder,f)
+            if os.path.isfile(newpath):
+                continue
+            print('Move %s --> %s' % (oldpath,newpath))
+            os.rename(oldpath,newpath)
+        for d in dirs:
+            if d == '.stfolder':
+                continue
+            print('Delete folder %s' % os.path.join(root,d))
+            shutil.rmtree(os.path.join(root,d))
 
     if setuphelpers.service_installed('WAPTServer'):
         if not setuphelpers.service_is_running('WAPTServer'):

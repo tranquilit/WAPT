@@ -161,6 +161,7 @@ if sys.platform == 'win32':
      'enable_task',
      'EnsureWUAUServRunning',
      'fix_wmi',
+     'get_all_scheduled_tasks',
      'get_app_install_location',
      'get_app_path',
      'get_appath',

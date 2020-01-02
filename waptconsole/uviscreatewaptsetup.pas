@@ -5,9 +5,9 @@ unit uVisCreateWaptSetup;
 interface
 
 uses
-  Classes, SysUtils, LazFileUtils, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  EditBtn, ExtCtrls, Buttons, ActnList, DefaultTranslator, Menus, sogrid,
-  uVisLoading,IdComponent,superobject;
+  Classes, SysUtils, LazFileUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
+  LCLIntf,EditBtn, ExtCtrls, Buttons, ActnList, DefaultTranslator, Menus, sogrid,
+  uVisLoading,IdComponent,superobject, VirtualTrees;
 
 type
 
@@ -17,7 +17,6 @@ type
     ActionList1: TActionList;
     ButOK: TBitBtn;
     ButCancel: TBitBtn;
-    CBCheckCertificatesValidity: TCheckBox;
     CBDualSign: TCheckBox;
     CBInstallWUAUpdatesAtShutdown: TCheckBox;
     CBUseFQDNAsUUID: TCheckBox;
@@ -36,16 +35,14 @@ type
     EdServerCertificate: TFileNameEdit;
     edWaptServerUrl: TEdit;
     EdWUAInstallDelay: TEdit;
-    fnWaptDirectory: TDirectoryEdit;
     edRepoUrl: TEdit;
     edOrgName: TEdit;
-    fnPublicCert: TFileNameEdit;
+    edPublicCertDir: TDirectoryEdit;
     GBWUA: TGroupBox;
     GridCertificates: TSOGrid;
     Label1: TLabel;
     Label2: TLabel;
     Label3: TLabel;
-    Label4: TLabel;
     Label5: TLabel;
     Label6: TLabel;
     Label7: TLabel;
@@ -66,19 +63,27 @@ type
     procedure CBWUADisableClick(Sender: TObject);
     procedure CBWUADontchangeClick(Sender: TObject);
     procedure CBWUAEnabledClick(Sender: TObject);
-    procedure fnPublicCertEditingDone(Sender: TObject);
-    procedure fnPublicCertExit(Sender: TObject);
+    procedure edPublicCertDirAcceptDirectory(Sender: TObject; var Value: String
+      );
+    procedure edPublicCertDirEditingDone(Sender: TObject);
+    procedure edPublicCertDirExit(Sender: TObject);
+    procedure EdServerCertificateDblClick(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure FormDropFiles(Sender: TObject; const FileNames: array of String);
     procedure FormShow(Sender: TObject);
+    procedure GridCertificatesDblClick(Sender: TObject);
+    procedure GridCertificatesNodesDelete(Sender: TSOGrid; Rows: ISuperObject);
   private
     FCurrentVisLoading: TVisLoading;
     function GetCurrentVisLoading: TVisLoading;
     { private declarations }
     procedure IdHTTPWork(ASender: TObject; AWorkMode: TWorkMode; AWorkCount: int64);
+    procedure LoadTrustedCertificates(TrustedDirectory: String='');
   public
     { public declarations }
+    BuildDir: String;
     ActiveCertBundle: String;
     property CurrentVisLoading: TVisLoading read GetCurrentVisLoading;
     function GetWUAParams: ISuperObject;
@@ -86,7 +91,7 @@ type
 
     Function BuildWaptSetup: String;
     procedure UploadWaptSetup(SetupFilename:String);
-    Function BuildWaptUpgrade(SetupFilename: String):String;
+    Function BuildWaptUpgrade(WaptUpgradeSources: String):String;
 
   end;
 
@@ -116,13 +121,7 @@ begin
       showMessage(rsInputPubKeyPath);
       CanClose:=False;
     end;
-    if not DirectoryExists(fnWaptDirectory.Caption) then
-    begin
-      ShowMessageFmt(rsInvalidWaptSetupDir, [fnWaptDirectory.Directory]);
-      CanClose:=False;
-    end;
-
-    if pos(lowercase(WaptBaseDir),lowercase(EdServerCertificate.Text))=1 then
+    if pos(lowercase(BuildDir),lowercase(EdServerCertificate.Text))=1 then
     begin
       EdServerCertificate.Text := ExtractRelativepath(WaptBaseDir,EdServerCertificate.Text);
       AbsVerifyCertPath := ExpandFileName(AppendPathDelim(WaptBaseDir)+EdServerCertificate.Text);
@@ -155,29 +154,57 @@ begin
   PanAgentEnterprise.Visible := DMPython.IsEnterpriseEdition;
 end;
 
-procedure TVisCreateWaptSetup.fnPublicCertEditingDone(Sender: TObject);
+function Dir(Directory,Pattern:String):TStringArray;
+var
+  Files:TStringList;
+  i:Integer;
+begin
+  Files := FindAllFiles(Directory,Pattern,False);
+  try
+    SetLength(Result,Files.Count);
+    for i:= 0 to Files.Count-1 do
+      Result[i] := Files[i];
+  finally
+    FreeAndNil(Files);
+  end;
+end;
+
+procedure TVisCreateWaptSetup.LoadTrustedCertificates(TrustedDirectory:String);
 var
   id: Integer;
-  CABundle,CertIter,Cert,CertList: Variant;
+  NewCertDir,CABundle,CertIter,Cert,CertList: Variant;
   SOCert,SOCerts: ISuperObject;
+  FN,SSLDir: String;
   att:String;
-  NewCertFilename:String;
-  atts: Array[0..8] of String=('cn','issuer_cn','subject_dn','issuer_dn','fingerprint','not_after','is_ca','is_code_signing','serial_number');
+  atts: Array[0..9] of String=('cn','issuer_cn','subject_dn','issuer_dn','fingerprint',
+      'not_after','is_ca','is_code_signing','serial_number','_public_cert_filename');
 
 begin
-  NewCertFilename:=fnPublicCert.FileName;
-  //if FileExistsUTF8(NewCertFilename) and ((ActiveCertBundle <> NewCertFilename) or (GridCertificates.Data = Nil) )  then
+  if TrustedDirectory='' then
+    TrustedDirectory:=ActiveCertBundle;
+  // temprary build ssldir where to copy trusted certs
+  SSLDir := MakePath([BuildDir,'ssl']);
+  if not DirectoryExistsUTF8(SSLDir) then
+    ForceDirectoriesUTF8(SSLDir);
+
+  // replace certs in target ssl builddir
+  if (TrustedDirectory <> ActiveCertBundle) and (SSLDir <> TrustedDirectory) then
+  begin
+    for FN in Dir(SSLDir,'*.crt') do
+      DeleteFileUTF8(MakePath([SSLDir,ExtractFileName(FN)]));
+
+    for FN in Dir(TrustedDirectory,'*.crt') do
+        CopyFile(FN,MakePath([SSLDir,ExtractFileName(FN)]),[cffOverWriteFile]);
+  end;
+
+  // load cert details in grid
+  NewCertDir := UTF8Decode(SSLDir);
   try
     SOCerts := TSuperObject.Create(stArray);
     CABundle:=dmpython.waptcrypto.SSLCABundle('--noarg--');
-    CABundle.add_pems(IncludeTrailingPathDelimiter(WaptBaseDir)+'ssl\*.crt');
-    if FileExistsUTF8(NewCertFilename) then
-    begin
-      CABundle.add_pems(NewCertFilename);
-      edOrgName.text := VarPythonAsString(dmpython.waptcrypto.SSLCertificate(crt_filename := NewCertFilename).cn);
-    end;
+    CABundle.add_pems(cert_pattern_or_dir := NewCertDir,trust_first := True);
 
-    CertList := CABundle.certificates('--noarg--');
+    CertList := CABundle.trusted.values('--noarg--');
     CertIter := iter(CertList);
     id := 0;
     While VarIsPythonIterator(CertIter)  do
@@ -194,14 +221,24 @@ begin
         on EPyStopIteration do Break;
       end;
     GridCertificates.Data := SOCerts;
-    ActiveCertBundle := fnPublicCert.FileName;
+    ActiveCertBundle := TrustedDirectory;
   finally
   end;
 end;
 
-procedure TVisCreateWaptSetup.fnPublicCertExit(Sender: TObject);
+procedure TVisCreateWaptSetup.edPublicCertDirEditingDone(Sender: TObject);
 begin
-  fnPublicCertEditingDone(Sender);
+  LoadTrustedCertificates(edPublicCertDir.Directory);
+end;
+
+procedure TVisCreateWaptSetup.edPublicCertDirExit(Sender: TObject);
+begin
+  LoadTrustedCertificates(edPublicCertDir.Directory);
+end;
+
+procedure TVisCreateWaptSetup.EdServerCertificateDblClick(Sender: TObject);
+begin
+  OpenDocument(EdServerCertificate.FileName);
 end;
 
 procedure TVisCreateWaptSetup.CBVerifyCertClick(Sender: TObject);
@@ -250,6 +287,12 @@ begin
     GBWUA.Enabled := False;
 end;
 
+procedure TVisCreateWaptSetup.edPublicCertDirAcceptDirectory(Sender: TObject;
+  var Value: String);
+begin
+  LoadTrustedCertificates(Value);
+end;
+
 procedure TVisCreateWaptSetup.ActGetServerCertificateExecute(Sender: TObject);
 var
   certfn: String;
@@ -264,7 +307,7 @@ begin
       if not VarIsNull(pem_data) then
       begin
         cert := certchain.__getitem__(0);
-        certfn:= AppendPathDelim(WaptBaseDir)+'ssl\server\'+cert.cn+'.crt';
+        certfn:= AppendPathDelim(BuildDir)+'ssl\server\'+cert.cn+'.crt';
         if not DirectoryExists(ExtractFileDir(certfn)) then
           ForceDirectory(ExtractFileDir(certfn));
         StringToFile(certfn,UTF8Encode(VarPythonAsString(pem_data)));
@@ -301,6 +344,16 @@ begin
     FreeAndNil(FCurrentVisLoading);
 end;
 
+procedure TVisCreateWaptSetup.FormDropFiles(Sender: TObject;
+  const FileNames: array of String);
+var
+  fn: String;
+begin
+  for fn in Filenames do
+    CopyFile(fn,MakePath([BuildDir,'ssl',ExtractFileName(fn)]));
+  LoadTrustedCertificates();
+end;
+
 procedure TVisCreateWaptSetup.FormShow(Sender: TObject);
 var
   ini: TIniFile;
@@ -321,23 +374,18 @@ begin
     edRepoUrl.Text := ini.ReadString('global', 'repo_url', '');
     EdServerCertificate.Text := ini.ReadString('global', 'verify_cert', '0'); ;
     CBUseKerberos.Checked:=ini.ReadBool('global', 'use_kerberos', False );
-    CBCheckCertificatesValidity.Checked:=ini.ReadBool('global', 'check_certificates_validity',True );
     CBDualSign.Checked:= (ini.ReadString('global', 'sign_digests','') = 'sha256,sha1');
     CBUseFQDNAsUUID.Checked:= ini.ReadBool('global', 'use_fqdn_as_uuid',False);
     CBUseADGroups.Checked:= ini.ReadBool('global', 'use_ad_groups',False);
-    fnWaptDirectory.Directory := WaptBaseDir()+'\waptupgrade';
 
-    fnPublicCert.FileName := UTF8Encode(ActiveCertBundle);
-    if FileExistsUtf8(ActiveCertBundle) then
-      fnPublicCertEditingDone(Sender);
-        //edOrgName.text := VarPythonAsString(dmpython.waptcrypto.SSLCertificate(crt_filename := fnPublicCert.FileName).cn);
-        //edOrgName.text := dmwaptpython.DMPython.PythonEng.EvalStringAsStr(Format('common.SSLCertificate(r"""%s""").cn',[fnPublicCert.FileName]));
+    edPublicCertDir.Directory := IncludeTrailingPathDelimiter(WaptBaseDir)+'ssl';
+    if DirectoryExistsUTF8(edPublicCertDir.Directory) then
+      edPublicCertDirEditingDone(Sender);
+        //edOrgName.text := VarPythonAsString(dmpython.waptcrypto.SSLCertificate(edPublicCertDir.FileName).cn);
+        //edOrgName.text := dmwaptpython.DMPython.PythonEng.EvalStringAsStr(Format('common.SSLCertificate(r"""%s""").cn',[edPublicCertDir.FileName]));
 
     CBVerifyCert.Checked:=(EdServerCertificate.Text<>'') and (EdServerCertificate.Text<>'0');
     CBVerifyCertClick(Sender);
-
-    if not CBCheckCertificatesValidity.Checked then
-      CBCheckCertificatesValidity.Visible := True;
 
     if not DMPython.IsEnterpriseEdition then
       CBWUADontchange.Checked := True
@@ -392,6 +440,20 @@ begin
     GridCertificates.Header.Height:=trunc((GridCertificates.Header.MinHeight*Screen.PixelsPerInch)/96);
 end;
 
+procedure TVisCreateWaptSetup.GridCertificatesDblClick(Sender: TObject);
+begin
+  OpenDocument(UTF8Encode(GridCertificates.FocusedRow.S['_public_cert_filename']));
+end;
+
+procedure TVisCreateWaptSetup.GridCertificatesNodesDelete(Sender: TSOGrid;
+  Rows: ISuperObject);
+var
+  cert: ISuperObject;
+begin
+  for cert in Rows do
+    DeleteFileUTF8(UTF8Encode(cert.S['_public_cert_filename']));
+  LoadTrustedCertificates(ActiveCertBundle);
+end;
 
 procedure TVisCreateWaptSetup.SaveWAPTAgentSettings;
 var
@@ -447,18 +509,23 @@ function TVisCreateWaptSetup.BuildWaptSetup: String;
 var
   WAPTSetupPath: string;
 begin
+  if BuildDir='' then
+    BuildDir := GetTempFileNameUTF8('','wapt'+FormatDateTime('yyyymmdd"T"hhnnss',Now));
   SaveWAPTAgentSettings;
+
+  // Copy selected trusted package certificates
+
+
   with CurrentVisLoading do
   try
     Screen.Cursor := crHourGlass;
     ProgressTitle(rsBuildInProgress);
     waptsetupPath := CreateWaptSetup(UTF8Encode(ActiveCertBundle),
       edRepoUrl.Text, edWaptServerUrl.Text,
-      fnWaptDirectory.Directory,
+      BuildDir,
       edOrgName.Text, @DoProgress, 'waptagent',
       EdServerCertificate.Text,
       CBUseKerberos.Checked,
-      CBCheckCertificatesValidity.Checked,
       DMPython.IsEnterpriseEdition,
       CBForceRepoURL.Checked,
       CBForceWaptServerURL.Checked,
@@ -500,9 +567,9 @@ begin
 end;
 
 // Return base filename of built package. Empty string if no package built.
-function TVisCreateWaptSetup.BuildWaptUpgrade(SetupFilename: String): String;
+function TVisCreateWaptSetup.BuildWaptUpgrade(WaptUpgradeSources: String): String;
 var
-  BuildDir, SignDigests: String;
+  SignDigests: String;
   BuildResult: Variant;
 begin
   // create waptupgrade package (after waptagent as we need the updated waptagent.sha1 file)
@@ -516,14 +583,12 @@ begin
         SignDigests := 'sha256';
 
       BuildResult := Nil;
-      BuildDir := GetTempDir(False);
 
-      if RightStr(buildDir,1) = '\' then
-        buildDir := copy(buildDir,1,length(buildDir)-1);
 
       //BuildResult is a PackageEntry instance
       BuildResult := DMPython.waptdevutils.build_waptupgrade_package(
           waptconfigfile := AppIniFilename(),
+          sources_directory := WaptUpgradeSources,
           wapt_server_user := WaptServerUser,
           wapt_server_passwd := WaptServerPassword,
           key_password := dmpython.privateKeyPassword,
@@ -561,10 +626,12 @@ begin
     Result := TSuperObject.Create(stObject);
     //Result.S['filter'] := 'Type=''Software'' or Type=''Driver''';
 
-    if CBWUAEnabled.State = cbGrayed then
-      Result['enabled'] := Nil
-    else
-      Result.B['enabled'] := CBWUAEnabled.Checked;
+    if CBWUAEnabled.Checked then
+      Result.B['enabled'] := True
+    else if CBWUADisable.Checked then
+        Result.B['enabled'] := False
+    else if CBWUADontchange.Checked then
+      Result['enabled'] := Nil;
 
     if CBWUADefaultAllow.State = cbGrayed then
       Result['default_allow'] := Nil
