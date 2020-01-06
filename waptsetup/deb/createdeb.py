@@ -120,7 +120,12 @@ WAPTEDITION=os.environ.get('WAPTEDITION','community')
 #########################################
 logger.debug('Getting version from executable')
 pe = pefile.PE(WAPTSETUP)
-version = pe.FileInfo[0].StringTable[0].entries['ProductVersion'].strip()
+try:
+    version = pe.FileInfo[0].StringTable[0].entries['ProductVersion'].strip()
+except:
+    # why ??
+    version = pe.FileInfo[0][0].StringTable[0].entries['ProductVersion'].strip()
+
 logger.debug('%s version: %s', WAPTSETUP, version)
 
 if options.revision:
