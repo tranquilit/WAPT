@@ -4012,8 +4012,7 @@ object VisWaptGUI: TVisWaptGUI
           ChildSizing.ShrinkVertical = crsScaleChilds
           ChildSizing.Layout = cclLeftToRightThenTopToBottom
           ChildSizing.ControlsPerLine = 5
-          ClientHeight = 29
-          ClientWidth = 98
+          ClientHeight = 31          ClientWidth = 98
           Columns = 5
           Items.Strings = (
             'x86'
@@ -4046,9 +4045,7 @@ object VisWaptGUI: TVisWaptGUI
           ChildSizing.ShrinkVertical = crsScaleChilds
           ChildSizing.Layout = cclLeftToRightThenTopToBottom
           ChildSizing.ControlsPerLine = 6
-          ClientHeight = 29
-          ClientWidth = 201
-          Columns = 6
+          ClientWidth = 204          Columns = 6
           Items.Strings = (
             'en'
             'fr'
@@ -8437,6 +8434,7 @@ object VisWaptGUI: TVisWaptGUI
     ClientWidth = 1307
     TabOrder = 2
     Visible = False
+    OnClick = PanDebugClick
     object Panel7: TPanel
       Left = 1
       Height = 116
