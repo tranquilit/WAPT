@@ -6,7 +6,7 @@
 
 #define repo_url ""
 #define wapt_server ""
-#define wapt_base_dir "{#wapt_base_dir}"
+#define wapt_base_dir "..\"
 #define output_dir "."
 #define Company "Tranquil IT Systems"
 
