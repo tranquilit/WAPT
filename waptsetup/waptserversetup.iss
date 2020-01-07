@@ -202,42 +202,42 @@ fr.ConfirmPassword=Confirmer le mot de passe
 fr.OpenWaptDocumentation=Afficher la documentation d'installation
 fr.InstallDocURL=https://doc.wapt.fr
 fr.SetupRegisterThisComputer=Enregistrer cette machine sur ce nouveau serveur Wapt
-fr.CreatePackageRSAKeyCert=CrÃ©er une clÃ© et un certificat pour les paquets
-fr.CreateWaptAgentInstaller=Compilation d'un installeur WaptAgent personnalisÃ© pour les postes clients (peut durer quelques minutes...)
-fr.WaptServerHostName=Nom d'hÃ´te du serveur WAPT
-fr.PackagesPrefix=PrÃ©fixe de paquets
-fr.PersonalKeyname=Nom de clÃ© personnelle
-fr.PersonalEmail=Courriel Ã  intÃ©grer au certificat
-fr.PersonalKeyPassword=Mot de passe de la clÃ© privÃ©e
+fr.CreatePackageRSAKeyCert=Créer une clé et un certificat pour les paquets
+fr.CreateWaptAgentInstaller=Compilation d'un installeur WaptAgent personnalisé pour les postes clients (peut durer quelques minutes...)
+fr.WaptServerHostName=Nom d'hôte du serveur WAPT
+fr.PackagesPrefix=Préfixe de paquets
+fr.PersonalKeyname=Nom de clé personnelle
+fr.PersonalEmail=Courriel à intégrer au certificat
+fr.PersonalKeyPassword=Mot de passe de la clé privée
 fr.PersonalKeyConfirmPassword=Confirmer le mot de passe
 fr.StartWaptconsole=Lancer Waptconsole
-fr.MustSpecifyServerPassword=Vous devez spÃ©cifier un mot de passe pour le serveur
-fr.MustSpecifyAServerName=Vous devez spÃ©cifier un nom ou une IP pour le serveur
+fr.MustSpecifyServerPassword=Vous devez spécifier un mot de passe pour le serveur
+fr.MustSpecifyAServerName=Vous devez spécifier un nom ou une IP pour le serveur
 fr.PasswordsDontMatch=Les mots de passe serveur ne correspondent pas
-fr.SpecifyKeyName=Vous devez spÃ©cifier un nom pour la clÃ©/certificat personnel
-fr.SpecifyPrivateKeyPassword=Merci de spÃ©cifier un mot de passe pour chiffrer la clÃ©
+fr.SpecifyKeyName=Vous devez spécifier un nom pour la clé/certificat personnel
+fr.SpecifyPrivateKeyPassword=Merci de spécifier un mot de passe pour chiffrer la clé
 fr.KeyPasswordsDontMatch=les mots de passe ne correspondent pas
-fr.KeyExists=Une clÃ© avec ce nom existe dans c:\private. Merci de choisir un autre nom.
-fr.WaptParameters=ParamÃ¨tres WAPT
-fr.SpecifyWaptInstallParameters=Merci de spÃ©cifier vos paramÃ¨tres de serveur Wapt puis cliquer sur suivant.
+fr.KeyExists=Une clé avec ce nom existe dans c:\private. Merci de choisir un autre nom.
+fr.WaptParameters=Paramètres WAPT
+fr.SpecifyWaptInstallParameters=Merci de spécifier vos paramètres de serveur Wapt puis cliquer sur suivant.
 fr.Skip=Ne rien faire
-fr.PickCertificate=SÃ©lectionner un certificat existant (.crt)
-fr.CreateNewCert=CrÃ©er une nouvelle clÃ© / certificat personnel
-fr.PersonalKeyCert=ClÃ© / certificat personnel
-fr.SelectExistingCertificate=SÃ©lectionner votre certificat personnel existant
+fr.PickCertificate=Sélectionner un certificat existant (.crt)
+fr.CreateNewCert=Créer une nouvelle clé / certificat personnel
+fr.PersonalKeyCert=Clé / certificat personnel
+fr.SelectExistingCertificate=Sélectionner votre certificat personnel existant
 fr.PersonalCertificateLocation=Emplacement de votre certificat existant
-fr.PersonalKeyCertParams=ParamÃ¨tres de ClÃ© / certificat personnel
-fr.PersonalKeyCertParamsRequest=merci de prÃ©ciser les paramÃ¨tres pour la gÃ©nÃ©ration des ClÃ© / Certificat personnel.
-fr.PackageDesignParams=ParamÃ¨tres de crÃ©ation des paquets
-fr.PackageDesignParamsDesc=ParamÃ¨tres utilisÃ©s lors de la crÃ©ation et l'import de paquets.
-; fr.PackageDesignParamsRequest=Le prÃ©fixe de paquet est une chaÃ®ne simple (comme test) qui est prÃ©sente au dÃ©but de vos noms de paquets pour les identifier visuellement%nLe mot de passe de la clÃ© sera utilisÃ© pour signer un paquet de mises Ã  jour Wapt
-fr.PackageDesignParamsRequest=Le prÃ©fixe de paquet est une chaÃ®ne simple (comme test) qui est prÃ©sente au dÃ©but de vos noms de paquets pour les identifier visuellement
+fr.PersonalKeyCertParams=Paramètres de Clé / certificat personnel
+fr.PersonalKeyCertParamsRequest=merci de préciser les paramètres pour la génération des Clé / Certificat personnel.
+fr.PackageDesignParams=Paramètres de création des paquets
+fr.PackageDesignParamsDesc=Paramètres utilisés lors de la création et l'import de paquets.
+; fr.PackageDesignParamsRequest=Le préfixe de paquet est une chaîne simple (comme test) qui est présente au début de vos noms de paquets pour les identifier visuellement%nLe mot de passe de la clé sera utilisé pour signer un paquet de mises à jour Wapt
+fr.PackageDesignParamsRequest=Le préfixe de paquet est une chaîne simple (comme test) qui est présente au début de vos noms de paquets pour les identifier visuellement
 fr.WaptAgentBuild=Compilation de Waptagent
-fr.WaptAgentBuildChoice=SpÃ©cifier si vous voulez (re)crÃ©er un installeur personnalisÃ© waptagent pour cette version de Wapt
+fr.WaptAgentBuildChoice=Spécifier si vous voulez (re)créer un installeur personnalisé waptagent pour cette version de Wapt
 fr.WaptAgentDoBuild=Compiler un nouveau waptagent.exe
-fr.ShowWaptServerHomePage=Ouvre la page d'accueil du serveur Wapt dans votre navigateur (Vous devrez vraisemblement accepter le certificat https auto-signÃ©)
-fr.MustSpecifyPackagePrefix=Vous devez spÃ©cifier un prÃ©fixe de paquet
-fr.MustSpecifyPrivateKeyPassword=Vous devez fournir le mot de passe de la clÃ© privÃ©e pour signer le paquet waptupgrade
+fr.ShowWaptServerHomePage=Ouvre la page d'accueil du serveur Wapt dans votre navigateur (Vous devrez vraisemblement accepter le certificat https auto-signé)
+fr.MustSpecifyPackagePrefix=Vous devez spécifier un préfixe de paquet
+fr.MustSpecifyPrivateKeyPassword=Vous devez fournir le mot de passe de la clé privée pour signer le paquet waptupgrade
 fr.OpenFirewallPort443=Autorise les connections TCP sur les port 80 et 443
 
 en.RegisteringService=Setup WaptServer Service
@@ -604,7 +604,7 @@ begin
     RaiseException(ExpandConstant('{cm:MustSpecifyPackagePrefix}'));
   if pgPackagesParams.Values[2] = '' then 
     RaiseException(ExpandConstant('{cm:MustSpecifyPrivateKeyPassword}'));
-  //MsgBox('Lancement vÃ©rification de la clÃ© pour le certificat '+GetPersonalCertificatePath('')+' and prefix '+pgPackagesParams.Values[0], mbInformation, MB_OK);  
+  //MsgBox('Lancement vérification de la clé pour le certificat '+GetPersonalCertificatePath('')+' and prefix '+pgPackagesParams.Values[0], mbInformation, MB_OK);  
   Result := True;
 end;
 
