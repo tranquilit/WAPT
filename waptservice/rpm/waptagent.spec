@@ -75,12 +75,11 @@ getent passwd wapt >/dev/null || \
 exit 0
 
 %postun
-rm -f /usr/bin/waptservice
-rm -f /usr/bin/wapt-get
+if [ $1 != 0 ] ; then
+	rm -f /usr/bin/waptservice
+	rm -f /usr/bin/wapt-get
+fi
 
-%preun
-rm -f /usr/bin/waptservice
-rm -f /usr/bin/wapt-get
 %post
 systemctl enable  waptservice
 touch /var/log/waptservice.log
