@@ -5908,7 +5908,7 @@ class Wapt(BaseObjectClass):
         result['maturities'] = self.maturities
         result['locales'] = self.locales
         result['is_remote_repo']=self.config.getboolean('repo-sync','enable_remote_repo') if (self.config.has_section('repo-sync') and self.config.has_option('repo-sync','enable_remote_repo')) else False
-        result['remote_repo_url']='' if result['is_remote_repo'] else self.config.get('repo-sync','remote_repo_url') if (self.config.has_section('repo-sync') and self.config.has_option('repo-sync','remote_repo_url')) else u'https://'+setuphelpers.get_fqdn()+u'/wapt'
+        result['remote_repo_url']='' if not(result['is_remote_repo']) else self.config.get('repo-sync','remote_repo_url') if (self.config.has_section('repo-sync') and self.config.has_option('repo-sync','remote_repo_url')) else u'https://'+setuphelpers.get_fqdn()+u'/wapt'
         if sys.platform == 'win32':
             result['pending_reboot_reasons']= setuphelpers.pending_reboot_reasons()
 
