@@ -2119,7 +2119,7 @@ class WaptRepo(WaptRemoteRepo):
         if self._cached_wapt_repo_url is not None:
             return self._cached_wapt_repo_url
         else:
-            return self.find_wapt_repo_url() if self.rules is not None else None
+            return self.find_wapt_repo_url() if self.WAPT is not None and self.WAPT.use_repo_rules and self.rules else None
 
     @cached_wapt_repo_url.setter
     def cached_wapt_repo_url(self,value):
