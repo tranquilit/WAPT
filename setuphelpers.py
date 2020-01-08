@@ -89,6 +89,7 @@ __all__.extend([
      'get_dns_servers',
      'get_main_ip',
      'get_hostname',
+     'get_fqdn',
      'get_language',
      'get_last_logged_on_user',
      'get_loggedinusers',
@@ -730,8 +731,8 @@ def inifile_writestring(inifilename,section,key,value):
     inifile.set(section,key,value)
     inifile.write(open(inifilename,'w'))
 
-
-
+def get_fqdn():
+    return ensure_unicode(get_hostname()) if os.name == 'nt' else ensure_unicode(socket.getfqdn())
 
 def get_language():
     """Get the default locale like fr, en, pl etc..  etc

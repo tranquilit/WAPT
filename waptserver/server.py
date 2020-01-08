@@ -775,7 +775,8 @@ def upload_packages():
             if entry.section == 'host':
                 target = os.path.join(wapt_folder+'-host', entry.make_package_filename())
             else:
-                target = os.path.join(wapt_folder, entry.make_package_filename())
+                entry.filename = entry.make_package_filename()
+                target = os.path.join(wapt_folder, entry.filename)
 
             if os.path.isfile(target):
                 os.unlink(target)

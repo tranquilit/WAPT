@@ -411,7 +411,7 @@ class Packages(WaptBaseModel):
         """Create or update a single package entry in database given a PackageEntry
 
         """
-        key = {'package':entry.package,'version':entry.version,'architecture':entry.architecture,'locale':entry.locale,'maturity':entry.maturity,'filename':entry.make_package_filename()}
+        key = {'package_uuid':entry.package_uuid}
         (rec,_isnew) = Packages.get_or_create(**key)
         for (a,v) in entry.as_dict().iteritems():
             if a in cls._meta.columns and not a in key:
@@ -422,7 +422,6 @@ class Packages(WaptBaseModel):
         if not rec.package_uuid:
             rec.package_uuid = entry.make_fallback_uuid()
         if rec.is_dirty():
-            Packages.delete().where(Packages.package_uuid == entry.package_uuid).execute()
             rec.save()
         return (rec,_isnew)
 
