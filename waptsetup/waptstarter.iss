@@ -26,7 +26,7 @@
 #define default_dnsdomain ""
 
 ; if not empty, a task will propose to install this package or list of packages (comma separated)
-#define set_start_packages "waptstarter,socle"
+#define set_start_packages "waptstarter"
 
 ; if not empty, the host will inherit these (comma separated) list of profile packages.
 #define append_host_profiles ""
