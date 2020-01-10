@@ -2068,7 +2068,7 @@ if __name__ == "__main__":
 
         port_config = []
         if waptconfig.waptservice_port:
-            server = serve(app ,host='127.0.0.1' , port=waptconfig.waptservice_port)
+            serve(app ,host='127.0.0.1' , port=waptconfig.waptservice_port)
             waitress_logger = logging.getLogger('waitress')
             if options.loglevel:
                 setloglevel(waitress_logger ,options.loglevel)

@@ -197,14 +197,14 @@ type
   { IWaptSigner }
   IWaptSigner = interface
     ['{3C083083-36B2-487F-A670-932F7EED6254}']
-    function Sign(Data:String): String;
+    function SignData(Data:String): String;
   end;
 
 
   { IWaptSignatureChecker}
   IWaptSignatureChecker = interface
     ['{A7949187-C3B2-406F-9A97-3D42EBA8EF9F}']
-    function Verify(Data:String;Signature:String): Boolean;
+    function VerifyDataSignature(Data:String;Signature:String): Boolean;
   end;
 
   { TWaptRepo }
@@ -237,7 +237,7 @@ type
     constructor Create(AName:String='';ARepoURL:String='');
     procedure LoadFromInifile(IniFilename:String;Section:String;Reset:Boolean=False);
     procedure SaveToInifile(IniFilename:String;Section:String);
-    function IdWgetFromRepo(const fileURL, DestFileName: Utf8String; CBReceiver:TObject=Nil;progressCallback:TProgressCallback=Nil;CookieManage:TIdCookieManager=Nil): boolean;
+    function IdWgetFromRepo(const fileURL, DestFileName: String; CBReceiver:TObject=Nil;progressCallback:TProgressCallback=Nil;CookieManage:TIdCookieManager=Nil): boolean;
     property Packages:ISuperObject read FPackages write SetPackages;
 
   published
@@ -1161,7 +1161,7 @@ end;
     end;
   end;
 
-  function TWaptRepo.IdWgetFromRepo(const fileURL, DestFileName: Utf8String; CBReceiver:TObject=Nil;progressCallback:TProgressCallback=Nil;CookieManage:TIdCookieManager=Nil): boolean;
+  function TWaptRepo.IdWgetFromRepo(const fileURL, DestFileName: String; CBReceiver:TObject=Nil;progressCallback:TProgressCallback=Nil;CookieManage:TIdCookieManager=Nil): boolean;
   begin
      Result:=IdWget(fileURL,DestFileName,CBReceiver,progressCallback,HttpProxy,'',ServerCABundle,Nil,ClientCertificatePath,ClientPrivateKeyPath);
   end;
