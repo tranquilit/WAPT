@@ -684,7 +684,7 @@ end;
 
 procedure TVisEditPackage.ActBuildUploadExecute(Sender: TObject);
 var
-  vprivatekeypassword, vbuildfilename,vsourcepath,packages: Variant;
+  vprivatekeypassword, VWaptServerPassword, vbuildfilename,vsourcepath,packages: Variant;
   res: ISuperObject;
 
 begin
@@ -714,11 +714,12 @@ begin
         certificate := DMPython.WAPT.personal_certificate('--noarg--'),
         private_key := DMPython.WAPT.private_key(private_key_password := vprivatekeypassword));
 
+      VWaptServerPassword := PyUTF8Decode(WaptServerPassword);
       packages := VarPythonCreate([PackageEdited]);
       res := PyVarToSuperObject(DMPython.WAPT.http_upload_package(
           packages := packages,
           wapt_server_user := waptServerUser,
-          wapt_server_passwd := waptServerPassword));
+          wapt_server_passwd := VWaptServerPassword));
 
       if (res=Nil) or not Res.B['success']  then
         raise Exception.Create('Error when uploading package');

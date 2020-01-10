@@ -397,9 +397,9 @@ def build_waptupgrade_package(waptconfigfile,sources_directory=None, target_dire
     rev = entry.version.split('-')[1]
     entry.version = '%s-%s' % (waptget['FileVersion'],rev)
     entry.inc_build()
+    entry.priority = priority
     entry.save_control_to_wapt()
     entry.build_package(target_directory=target_directory)
-    entry.priority = priority
     certs = wapt.personal_certificate()
     key = wapt.private_key(private_key_password=key_password)
     if not certs[0].is_code_signing:

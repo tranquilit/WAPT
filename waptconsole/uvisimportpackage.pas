@@ -8,7 +8,7 @@ uses
   Classes, SysUtils, LazUTF8, RTTICtrls, RTTIGrids, Forms,
   Controls, Graphics, Dialogs, ExtCtrls, Buttons, ComCtrls, StdCtrls, ActnList,
   Menus, sogrid, DefaultTranslator, VirtualTrees, superobject, SearchEdit,
-  waptcommon;
+  waptcommon,uvisloading,IdComponent;
 
 type
 
@@ -66,6 +66,7 @@ type
     procedure EdSearchPackageKeyPress(Sender: TObject; var Key: char);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure GridExternalPackagesGetText(Sender: TBaseVirtualTree;
       Node: PVirtualNode; RowData, CellData: ISuperObject;
@@ -81,19 +82,24 @@ type
   private
     FRepoName: String;
     FWaptrepo: TWaptRepo;
+    FCurrentVisLoading: TVisLoading;
+    FUploadSize: LongInt;
     procedure FillReposList;
+    function GetCurrentVisLoading: TVisLoading;
     function GetRepoName: String;
     function GetWaptrepo: TWaptRepo;
     procedure SetRepoName(AValue: String);
     procedure SetWaptrepo(AValue: TWaptRepo);
     function updateprogress(receiver: TObject; current, total: integer
       ): boolean;
+    procedure IdHTTPWork(ASender: TObject; AWorkMode: TWorkMode; AWorkCount: int64);
     { private declarations }
     function GetRequestFilter:Variant;
   public
     { public declarations }
     property RepoName:String read GetRepoName write SetRepoName;
     property Waptrepo:TWaptRepo read GetWaptrepo write SetWaptrepo;
+    property CurrentVisLoading: TVisLoading read GetCurrentVisLoading;
   end;
 
 var
@@ -102,7 +108,7 @@ var
 implementation
 
 uses Variants, VarPyth, PythonEngine, uwaptconsole, tiscommon, soutils,
-  dmwaptpython, uvisloading, uvisprivatekeyauth, uWaptRes, md5,
+  dmwaptpython, uvisprivatekeyauth, uWaptRes, md5,
   uWaptConsoleRes, uvisrepositories, inifiles, tisstrings,
   tisinifiles,LCLIntf,LazFileUtils,FileUtil, uWaptPythonUtils;
 
@@ -154,6 +160,12 @@ begin
   EdMaturity.Text:=DefaultMaturity;
 end;
 
+procedure TVisImportPackage.FormDestroy(Sender: TObject);
+begin
+  if FCurrentVisLoading <> Nil then
+    FreeAndNil(FCurrentVisLoading);
+end;
+
 procedure TVisImportPackage.FillReposList;
 var
   inifile: TIniFile;
@@ -170,6 +182,13 @@ begin
   finally
     inifile.Free;
   end;
+end;
+
+function TVisImportPackage.GetCurrentVisLoading: TVisLoading;
+begin
+  if FCurrentVisLoading=Nil then
+    FCurrentVisLoading:=TVisLoading.Create(Nil);
+  Result := FCurrentVisLoading;
 end;
 
 function TVisImportPackage.GetRepoName: String;
@@ -483,14 +502,13 @@ end;
 procedure TVisImportPackage.ActPackageDuplicateExecute(Sender: TObject);
 var
   target,sourceDir,http_proxy: string;
-  package,uploadResult, FileName, FileNames, ListPackages,Sources,aDir: ISuperObject;
-  SourcesVar,SignersCABundle,ListPackagesVar: Variant;
+  NewPackagesFilenames,package,FileName, FileNames, ListPackages,Sources,aDir: ISuperObject;
+  PackageEdited,VPackageFilePath,VCABundle,VPrivateKeyPassword, vbuildfilename,
+  SignersCABundle,ListPackagesVar: Variant;
   RequestFilter: Variant;
   PackageFilename:String;
 begin
   Sources := Nil;
-  uploadResult := Nil;
-
   http_proxy:=Waptrepo.HttpProxy;
 
   if not FileExistsUTF8(WaptPersonalCertificatePath) then
@@ -498,6 +516,8 @@ begin
     ShowMessageFmt(rsPrivateKeyDoesntExist, [WaptPersonalCertificatePath]);
     exit;
   end;
+
+  VPrivateKeyPassword := PyUTF8Decode(dmpython.privateKeyPassword);
 
   if DefaultPackagePrefix='' then
   begin
@@ -527,9 +547,10 @@ begin
     mkdir(AppLocalDir + 'cache');
 
   try
-    with  TVisLoading.Create(Self) do
+    with CurrentVisLoading do
     try
       Sources := TSuperObject.Create(stArray) ;
+      NewPackagesFilenames := TSuperObject.create(stArray);
       //Téléchargement en batchs
       for Filename in FileNames do
       begin
@@ -565,51 +586,59 @@ begin
         ProgressTitle(format(rsDuplicating, [Filename.AsArray[0].AsString]));
         Application.ProcessMessages;
         if (Waptrepo.SignersCABundle ='') or (Waptrepo.SignersCABundle ='0') then
-          SignersCABundle := None()
+        begin
+          SignersCABundle := None();
+          VCABundle := None();
+        end
         else
+        begin
           SignersCABundle := Waptrepo.SignersCABundle;
+          VCABundle := DMPython.waptcrypto.SSLCABundle('--noargs--');
+          VCABundle.add_pems(SignersCABundle);
+        end;
 
+        // bundle to check downloaded packages when unzipping
         PackageFilename := AppLocalDir + 'cache\' + UTF8Encode(Filename.AsArray[0].AsString);
+        VPackageFilePath := PyUTF8Decode(PackageFilename);
+        PackageEdited := DMPython.waptpackage.PackageEntry(waptfile := VPackageFilePath);
+        ProgressTitle(format(rsUnzipping, [Filename.AsArray[0].AsString]));
+        sourceDir := PackageEdited.unzip_package(cabundle := VCABundle);
+        PackageEdited.invalidate_signature('--noarg--');
 
-        sourceDir := VarPyth.VarPythonAsString(
-          DMPython.waptdevutils.duplicate_from_file(
-            package_filename := PackageFilename,
-            new_prefix := DefaultPackagePrefix,
-            authorized_certs := SignersCABundle,
-            set_maturity := EdMaturity.Text
-
-            ));
         sources.AsArray.Add(sourceDir);
+        PackageEdited.change_prefix(DefaultPackagePrefix);
+        PackageEdited.change_depends_conflicts_prefix(DefaultPackagePrefix);
+        PackageEdited.maturity := EdMaturity.Text;
+        ProgressTitle(format(rsBuilding, [Filename.AsArray[0].AsString]));
+        PackageEdited.
+        vbuildfilename := PackageEdited.build_package('--noarg--');
+        NewPackagesFilenames.AsArray.Add(VarToStr(vbuildfilename));
+        ProgressTitle(format(rsSigning, [sourceDir]));
+        PackageEdited.sign_package(
+          certificate := DMPython.WAPT.personal_certificate('--noarg--'),
+          private_key := DMPython.WAPT.private_key(private_key_password := VPrivateKeyPassword));
+        FUploadSize:=FileSize(vbuildfilename);
+        ProgressTitle(format(rsUploadingFile, [vbuildfilename]));
+        WAPTServerJsonMultipartFilePost(
+          GetWaptServerURL, 'api/v3/upload_packages', [], 'file',vbuildfilename ,
+          WaptServerUser, WaptServerPassword, @IdHTTPWork,GetWaptServerCertificateFilename);
       end;
 
-      ProgressTitle(format(rsUploadingPackagesToWaptSrv, [IntToStr(Sources.AsArray.Length)]));
-      Application.ProcessMessages;
-
-      SourcesVar := SuperObjectToPyVar(sources);
-      { TODO : Remove use of WAPT instance, use waptpackage.PackageEntry instead }
-      uploadResult := PyVarToSuperObject(
-        DMPython.WAPT.build_upload(
-          sources_directories := SourcesVar,
-          private_key_passwd := dmpython.privateKeyPassword,
-          wapt_server_user := waptServerUser,
-          wapt_server_passwd := waptServerPassword,
-          inc_package_release := False));
-
-      if (uploadResult <> Nil) and (uploadResult.AsArray.length=Sources.AsArray.Length) then
+      if (NewPackagesFilenames <> Nil) and (NewPackagesFilenames.AsArray.length=Sources.AsArray.Length) then
       begin
-        ShowMessageFmt(rsDuplicateSuccess, [ Join(',', ExtractField(FileNames,'0'))]);
+        ShowMessageFmt(rsDuplicateSuccess, [ Join(',', NewPackagesFilenames)]);
         ModalResult := mrOk;
       end
       else
         ShowMessage(rsDuplicateFailure);
     finally
-      if aDir <> Nil then
+      if Sources <> Nil then
         for aDir in Sources do
           DeleteDirectory(UTF8Encode(aDir.AsString),False);
-      if uploadResult <> Nil then
-        for aDir in uploadResult do
+      if NewPackagesFilenames <> Nil then
+        for aDir in NewPackagesFilenames do
           DeleteFileUTF8(UTF8Encode(aDir.AsString));
-      Free;
+      Finish;
     end;
     ModalResult:=mrOK;
 
@@ -754,6 +783,18 @@ begin
     end
   else
     Result := True;
+end;
+
+procedure TVisImportPackage.IdHTTPWork(ASender: TObject; AWorkMode: TWorkMode;
+  AWorkCount: int64);
+begin
+  if CurrentVisLoading <> nil then
+  begin
+    CurrentVisLoading.ProgressStep(AWorkCount,FUploadSize);
+    if CurrentVisLoading.StopRequired then
+      raise Exception.Create('Canceled');
+  end;
+
 end;
 
 

@@ -570,7 +570,7 @@ end;
 function TVisCreateWaptSetup.BuildWaptUpgrade(WaptUpgradeSources: String): String;
 var
   SignDigests: String;
-  BuildResult: Variant;
+  BuildResult,VWaptServerPassword: Variant;
 begin
   // create waptupgrade package (after waptagent as we need the updated waptagent.sha1 file)
   with CurrentVisLoading do
@@ -584,13 +584,14 @@ begin
 
       BuildResult := Nil;
 
+      VWaptServerPassword := PyUTF8Decode(WaptServerPassword);
 
       //BuildResult is a PackageEntry instance
       BuildResult := DMPython.waptdevutils.build_waptupgrade_package(
           waptconfigfile := AppIniFilename(),
           sources_directory := WaptUpgradeSources,
           wapt_server_user := WaptServerUser,
-          wapt_server_passwd := WaptServerPassword,
+          wapt_server_passwd := VWaptServerPassword,
           key_password := dmpython.privateKeyPassword,
           sign_digests := SignDigests
           );

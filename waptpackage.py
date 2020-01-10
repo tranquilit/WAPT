@@ -1992,6 +1992,51 @@ class PackageEntry(BaseObjectClass):
         else:
             return False
 
+    def change_depends_conflicts_prefix(self,new_prefix):
+        """Change prefix of package name to new_prefix
+        in depends and conflicts csv lists and return True if
+        it was really changed.
+
+        Args:
+            new_prefix (str): new prefix to put in package names
+
+        Returns:
+            bool
+        """
+        result = False
+
+        def rename_package(package,new_prefix):
+            if '-' in package:
+                (old_prefix,name) = package.split('-',1)
+                if old_prefix != new_prefix:
+                    package = '%s-%s' % (new_prefix,name)
+            return package
+
+        # renames dependencies
+        if self.depends:
+            newdepends = []
+            depends = ensure_list(self.depends)
+            for dependname in depends:
+                newname = rename_package(dependname,new_prefix)
+                newdepends.append(newname)
+            if package.depends != ','.join(newdepends):
+                package.depends = ','.join(newdepends)
+                result = True
+
+        # renames conflicts
+        if package.conflicts:
+            newconflicts = []
+            conflicts = ensure_list(package.conflicts)
+            for dependname in conflicts:
+                newname = rename_package(dependname,new_prefix)
+                newconflicts.append(newname)
+            if package.conflicts != ','.join(conflicts):
+                package.conflicts = ','.join(newconflicts)
+                result = True
+
+        return result
+
+
     def invalidate_signature(self):
         """Remove all signature informations from control and unzipped package directory
         Package must be in unzipped state.
