@@ -69,6 +69,7 @@ from peewee import *
 from playhouse.postgres_ext import *
 
 from waptserver.model import Hosts, HostSoftwares, HostPackagesStatus, HostGroups, HostWsus, WsusUpdates, Packages
+from waptserver.model import WaptUsers,WaptUserAcls
 from waptserver.model import get_db_version, init_db, wapt_db, model_to_dict, update_host_data
 from waptserver.model import upgrade_db_structure
 from waptserver.model import load_db_config
@@ -1045,12 +1046,16 @@ def login():
     result = None
     starttime = time.time()
     try:
-        # TODO use session...
-        post_data = request.get_json()
-        if post_data is not None:
-            # json auth from waptconsole
-            user = post_data.get('user')
-            password = post_data.get('password')
+        user = None,
+        password = None
+
+        # legacy
+        if request.method == 'POST' :
+            post_data = request.get_json()
+            if post_data is not None:
+                # json auth from waptconsole
+                user = post_data.get('user')
+                password = post_data.get('password')
         else:
             # html form auth
             user = request.args.get('user')
@@ -1059,13 +1064,36 @@ def login():
         session.clear()
         auth_result = check_auth(username = user, password = password, session=session, request = request)
         if auth_result:
+            # if basic auth, user was in authorization header
+            user = auth_result['user']
+            token_gen = get_secured_token_generator()
+
+            # add ACL
+            user_data = WaptUsers.get(name=user)
+            #if not user_data:
+            #    raise EWaptAuthenticationFailure('Bad user %s' % user)
+            user_acls = list(WaptUserAcls.select().where(
+                (WaptUserAcls.user_fingerprint_sha1 == user_data.user_fingerprint_sha1) &
+                (WaptUserAcls.expiration_date <= datetime2isodate())
+                ))
+            #if not user_acls:
+            #    raise EWaptAuthenticationFailure('No access rights for %s' % user)
+
+            acls = []
+            for a in user_acls:
+                for acl in a.acls:
+                    if not acl in acls:
+                        acls.append(acl)
+
+            auth_result.update({
+                'server_uuid':get_server_uuid(),
+                'acls': acls,
+                })
+
             try:
                 hosts_count = Hosts.select(fn.COUNT(Hosts.uuid)).tuples().first()[0] # pylint: disable=no-value-for-parameter
             except:
                 hosts_count = None
-
-            token_gen = get_secured_token_generator()
-            auth_result.update({'server_uuid':get_server_uuid()})
 
             result = dict(
                 auth_result = auth_result,
@@ -1075,7 +1103,7 @@ def login():
                 hosts_count = hosts_count,
                 server_domain = get_dns_domain(),
                 edition = get_wapt_edition(),
-                client_headers = request.headers
+                #client_headers = request.headers,
             )
             session.update(**auth_result)
             msg = 'Authentication OK'
@@ -2325,7 +2353,11 @@ if __name__ == '__main__':
     logger.info(u'Load database configuration')
     load_db_config(app.conf)
     try:
-        upgrade_db_structure()
+        wapt_db.connect()
+        try:
+            upgrade_db_structure()
+        finally:
+            wapt_db.close()
     except Exception as e:
         logger.critical('Unable to upgrade DB structure, init instead: %s' % (repr(e)))
         init_db()
