@@ -50,9 +50,10 @@ from waptutils import (Version, __version__, all_files, dateof,
 
 if os.name == 'nt':
     from setuphelpers_windows import *
+elif platform.system() == 'Darwin':
+    from setuphelpers_macos import *
 else:
     from setuphelpers_linux import *
-
 
 __all__ = []
 

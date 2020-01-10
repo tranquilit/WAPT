@@ -281,16 +281,10 @@ else:
     eprint(platform.linux_distribution())
     sys.exit(1)
 
-eprint('copying the waptrepo files')
-copyfile(makepath(wapt_source_dir, 'waptcrypto.py'),'./builddir/opt/wapt/waptcrypto.py')
-copyfile(makepath(wapt_source_dir, 'waptutils.py'),'./builddir/opt/wapt/waptutils.py')
-copyfile(makepath(wapt_source_dir, 'common.py'),'./builddir/opt/wapt/common.py')
-copyfile(makepath(wapt_source_dir, 'custom_zip.py'),'./builddir/opt/wapt/custom_zip.py')
-copyfile(makepath(wapt_source_dir, 'waptpackage.py'),'./builddir/opt/wapt/waptpackage.py')
-copyfile(makepath(wapt_source_dir, 'setuphelpers.py'),'./builddir/opt/wapt/setuphelpers.py')
-copyfile(makepath(wapt_source_dir, 'setuphelpers_linux.py'),'./builddir/opt/wapt/setuphelpers_linux.py')
-copyfile(makepath(wapt_source_dir, 'setuphelpers_windows.py'),'./builddir/opt/wapt/setuphelpers_windows.py')
-copyfile(makepath(wapt_source_dir, 'wapt-get.py'),'./builddir/opt/wapt/wapt-get.py')
+eprint('copying the waptservice files')
+files_to_copy = ['waptcrypto.py','waptutils.py','common.py','custom_zip.py','waptpackage.py','setuphelpers.py','setuphelpers_linux.py','setuphelpers_windows.py','setuphelpers_unix.py','setuphelpers_macos.py','wapt-get.py']
+for afile in files_to_copy:
+    copyfile(makepath(wapt_source_dir, afile),os.path.join('./builddir/opt/wapt/',afile))
 
 # a voir si c'est encore necessaire
 eprint('cryptography patches')

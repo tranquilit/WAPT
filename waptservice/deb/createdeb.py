@@ -281,21 +281,11 @@ run('cp -ruf /usr/lib/python2.7/dist-packages/apt* ./builddir/opt/wapt/lib/pytho
 
 eprint('Time after virtualenv : %f\n' % (time.time()-start_time))
 
-eprint('copying the waptrepo files')
-copyfile(makepath(wapt_source_dir, 'waptcrypto.py'),'./builddir/opt/wapt/waptcrypto.py')
-copyfile(makepath(wapt_source_dir, 'waptutils.py'),'./builddir/opt/wapt/waptutils.py')
-copyfile(makepath(wapt_source_dir, 'common.py'),'./builddir/opt/wapt/common.py')
-copyfile(makepath(wapt_source_dir, 'custom_zip.py'),'./builddir/opt/wapt/custom_zip.py')
-copyfile(makepath(wapt_source_dir, 'waptpackage.py'),'./builddir/opt/wapt/waptpackage.py')
-copyfile(makepath(wapt_source_dir, 'setuphelpers.py'),'./builddir/opt/wapt/setuphelpers.py')
-copyfile(makepath(wapt_source_dir, 'setuphelpers_linux.py'),'./builddir/opt/wapt/setuphelpers_linux.py')
-copyfile(makepath(wapt_source_dir, 'setuphelpers_windows.py'),'./builddir/opt/wapt/setuphelpers_windows.py')
-copyfile(makepath(wapt_source_dir, 'wapt-scanpackages.py'),'./builddir/opt/wapt/wapt-scanpackages.py')
-copyfile(makepath(wapt_source_dir, 'wapt-signpackages.py'),'./builddir/opt/wapt/wapt-signpackages.py')
-copyfile(makepath(wapt_source_dir, 'wapt-get.py'),'./builddir/opt/wapt/wapt-get.py')
-copyfile(makepath(wapt_source_dir, 'wapt-scanpackages'),'./builddir/usr/bin/wapt-scanpackages')
-copyfile(makepath(wapt_source_dir, 'wapt-signpackages'),'./builddir/usr/bin/wapt-signpackages')
-
+eprint('copying the waptservice files')
+files_to_copy = ['waptcrypto.py','waptutils.py','common.py','custom_zip.py','waptpackage.py','setuphelpers.py','setuphelpers_linux.py','setuphelpers_windows.py','setuphelpers_unix.py','setuphelpers_macos.py','wapt-get.py']
+for afile in files_to_copy:
+    copyfile(makepath(wapt_source_dir, afile),os.path.join('./builddir/opt/wapt/',afile))
+    
 # delete pythonwheels
 if os.path.exists(makepath('builddir','opt','wapt', 'share/')):
 	shutil.rmtree(makepath('builddir','opt','wapt', 'share/'))

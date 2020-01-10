@@ -38,7 +38,9 @@ Source: "{#wapt_base_dir}wapt-get.py"; DestDir: "{app}";
 Source: "{#wapt_base_dir}keyfinder.py"; DestDir: "{app}"; 
 Source: "{#wapt_base_dir}setuphelpers.py"; DestDir: "{app}"; 
 Source: "{#wapt_base_dir}setuphelpers_windows.py"; DestDir: "{app}"; 
-Source: "{#wapt_base_dir}setuphelpers_linux.py"; DestDir: "{app}"; 
+Source: "{#wapt_base_dir}setuphelpers_linux.py"; DestDir: "{app}";
+Source: "{#wapt_base_dir}setuphelpers_unix.py"; DestDir: "{app}";
+Source: "{#wapt_base_dir}setuphelpers_macos.py"; DestDir: "{app}";   
 Source: "{#wapt_base_dir}windnsquery.py"; DestDir: "{app}"; 
 Source: "{#wapt_base_dir}custom_zip.py"; DestDir: "{app}"; 
 #ifdef waptenterprise

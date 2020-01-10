@@ -281,18 +281,10 @@ run('./tmpbuild/payload/opt/wapt/bin/pip{} install -r ../../requirements.txt -r 
 
 run_verbose(r'virtualenv ./tmpbuild/payload/opt/wapt --relocatable')
 
-eprint('copying the waptrepo files')
-waptrepo_files_opt_wapt = ['waptcrypto.py', 'waptutils.py', 'common.py',    \
-                'custom_zip.py', 'waptpackage.py', 'setuphelpers.py',       \
-                'setuphelpers_linux.py', 'setuphelpers_windows.py',         \
-                'wapt-scanpackages.py', 'wapt-signpackages.py', 'wapt-get.py']
-waptrepo_files_bin = ['wapt-scanpackages', 'wapt-signpackages']
-
-for filename in waptrepo_files_opt_wapt:
-    copyfile(makepath(wapt_source_dir, filename), './tmpbuild/payload/opt/wapt/{}'.format(filename))
-
-for filename in waptrepo_files_bin:
-    copyfile(makepath(wapt_source_dir, filename), './tmpbuild/payload/usr/local/bin/{}'.format(filename))
+eprint('copying the waptservice files')
+files_to_copy = ['waptcrypto.py','waptutils.py','common.py','custom_zip.py','waptpackage.py','setuphelpers.py','setuphelpers_linux.py','setuphelpers_windows.py','setuphelpers_unix.py','setuphelpers_macos.py','wapt-get.py']
+for afile in files_to_copy:
+    copyfile(makepath(wapt_source_dir, afile),os.path.join('./builddir/opt/wapt/',afile))
 
 # delete pythonwheels
 if os.path.exists(makepath('./tmpbuild/payload', 'opt', 'wapt', 'share/')):
@@ -332,16 +324,6 @@ copyfile('./preinstall', './tmpbuild/scripts/preinstall')
 
 eprint(run(r'find ./tmpbuild/payload/opt/wapt -type f -exec chmod 644 tmpbuild \;'))
 eprint(run(r'find ./tmpbuild/payload/opt/wapt -type d -exec chmod 755 tmpbuild \;'))
-
-eprint('copying systemd startup script')
-systemd_build_dest_dir = './tmpbuild/payload/usr/local/lib/systemd/system/'
-
-try:
-    mkdir_p(systemd_build_dest_dir)
-    copyfile('../Scripts/waptservice.service', os.path.join(systemd_build_dest_dir, 'waptservice.service'))
-except Exception as e:
-    eprint('error: \n%s' % e)
-    exit(1)
 
 eprint('copying logrotate script /etc/logrotate.d/waptagent')
 try:
@@ -401,5 +383,3 @@ run_verbose("cp tmpbuild/build/{} .".format(package_filename))
 run_verbose("cp ./wapt.plist /Library/LaunchDaemons")
 
 print("Package created.")
-print("Reminder : A reboot is required for the WAPT daemon to be launched after installation.")
-print("Remember to create wapt-get.ini and the certificate")
