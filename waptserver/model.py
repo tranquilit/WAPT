@@ -411,7 +411,8 @@ class Packages(WaptBaseModel):
         """Create or update a single package entry in database given a PackageEntry
 
         """
-        key = {'package_uuid':entry.package_uuid}
+        key = {'package_uuid':entry.package_uuid,
+                'package':entry.package,'version':entry.version}
         (rec,_isnew) = Packages.get_or_create(**key)
         for (a,v) in entry.as_dict().iteritems():
             if a in cls._meta.columns and not a in key:
@@ -1454,12 +1455,12 @@ def init_db(drop=False):
             wapt_db.rollback()
         if drop:
             for table in reversed([ServerAttribs, Hosts, HostPackagesStatus, HostSoftwares, HostGroups,WsusUpdates,
-                HostWsus,WsusDownloadTasks,Packages, ReportingQueries, Normalization, StoreDownload]):
+                HostWsus,WsusDownloadTasks,Packages, ReportingQueries, Normalization, StoreDownload,ReportingQueries,ReportingSnapshots,WaptUsers,WaptUserAcls]):
                 table.drop_table(fail_silently=True)
 
         try:
             wapt_db.create_tables([ServerAttribs, Hosts, HostPackagesStatus, HostSoftwares, HostGroups,WsusUpdates,
-                HostWsus,WsusDownloadTasks,Packages, ReportingQueries, Normalization, StoreDownload
+                HostWsus,WsusDownloadTasks,Packages, ReportingQueries, Normalization, StoreDownload,ReportingQueries,ReportingSnapshots,WaptUsers,WaptUserAcls
                 ], safe=True)
         except Exception as e:
             wapt_db.rollback()
@@ -1487,7 +1488,6 @@ def upgrade_db_structure():
     """Upgrade the tables version by version"""
     from playhouse.migrate import PostgresqlMigrator, migrate
     try:
-        wapt_db.connect()
         migrator = PostgresqlMigrator(wapt_db)
         logger.info('Current DB: %s version: %s' % (wapt_db.connect_params, get_db_version()))
         # from 1.4.1 to 1.4.2
@@ -2022,9 +2022,32 @@ def upgrade_db_structure():
                 v.value = next_version
                 v.save()
 
+        next_version = '1.7.6.6'
+        if get_db_version() <= next_version:
+            with wapt_db.atomic():
+                logger.info("Migrating from %s to %s" % (get_db_version(), next_version))
+                opes = []
+                WaptUsers.create_table()
+                WaptUserAcls.create_table()
+
+                (admin,_) = WaptUsers.get_or_create(name='admin',user_fingerprint_sha1='admin')
+                admin.save()
+
+                (user,_) = WaptUsers.get_or_create(name='user',user_fingerprint_sha1='user')
+                user.save()
+
+                (acl,_) = WaptUserAcls.get_or_create(user_fingerprint_sha1='admin',acls=['admin'],perimeter_fingerprint='')
+                acl.save()
+                (acl,_) = WaptUserAcls.get_or_create(user_fingerprint_sha1='user',acls=['view'],perimeter_fingerprint='')
+                acl.save()
+
+                migrate(*opes)
+                (v, created) = ServerAttribs.get_or_create(key='db_version')
+                v.value = next_version
+                v.save()
+
     finally:
-        if not wapt_db.is_closed():
-            wapt_db.close()
+        pass
 
 
 if __name__ == '__main__':
