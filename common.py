@@ -169,16 +169,16 @@ def host_ipv4():
             res.append( iface )
     return res
 
-
 def tryurl(url,proxies=None,timeout=5.0,auth=None,verify_cert=False,cert=None):
     # try to get header for the supplied URL, returns None if no answer within the specified timeout
     # else return time to get he answer.
-    with get_requests_client_cert_session(url=url,cert=cert,verify=verify_cert,proxies=proxies,auth=auth) as session:
+    with get_requests_client_cert_session(url=url,cert=cert,verify=verify_cert,proxies=proxies) as session:
         try:
             logger.debug(u'  trying %s' % url)
             starttime = time.time()
             headers = session.head(url=url,
                 timeout=timeout,
+                auth=auth,
                 allow_redirects=True)
             if headers.ok:
                 logger.debug(u'  OK')
@@ -1578,7 +1578,7 @@ class WaptServer(BaseObjectClass):
         else:
             return None
 
-    def get_requests_session(self,url=None,use_ssl_auth=True,auth=None):
+    def get_requests_session(self,url=None,use_ssl_auth=True):
         if url is None:
             url = self.server_url
         if use_ssl_auth:
@@ -1589,8 +1589,7 @@ class WaptServer(BaseObjectClass):
             cert = (self.client_certificate,self.client_private_key,password)
         else:
             cert = None
-            auth = self.auth()
-        session = get_requests_client_cert_session(url=url,cert=cert,verify=self.verify_cert,proxies=self.proxies,auth=auth)
+        session = get_requests_client_cert_session(url=url,cert=cert,verify=self.verify_cert,proxies=self.proxies)
         return session
 
     def save_server_certificate(self,server_ssl_dir=None,overwrite=False):

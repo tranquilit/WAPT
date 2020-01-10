@@ -44,7 +44,7 @@ from waptserver.utils import EWaptMissingParameter,EWaptSignalReceived,EWaptTime
 from waptserver.common import get_secured_token_generator,get_server_uuid
 from waptserver.common import make_response,make_response_from_exception
 
-from waptserver.model import wapt_db,Hosts,SyncStatus,fn
+from waptserver.model import wapt_db,Hosts
 
 from flask import request, session
 from flask_socketio import SocketIO
