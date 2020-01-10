@@ -5878,6 +5878,7 @@ msgid "Serial number"
 msgstr ""
 
 #: tviswaptusers.gridtrustedcerts.header.columns[6].text
+msgctxt "tviswaptusers.gridtrustedcerts.header.columns[6].text"
 msgid "Certificate expire"
 msgstr ""
 
@@ -5887,10 +5888,12 @@ msgid "Fingerprint (sha256)"
 msgstr ""
 
 #: tviswaptusers.gridtrustedcerts.header.columns[8].text
+msgctxt "tviswaptusers.gridtrustedcerts.header.columns[8].text"
 msgid "Subject DN"
 msgstr ""
 
 #: tviswaptusers.gridtrustedcerts.header.columns[9].text
+msgctxt "tviswaptusers.gridtrustedcerts.header.columns[9].text"
 msgid "Issuer DN"
 msgstr ""
 
@@ -6734,6 +6737,10 @@ msgstr ""
 msgid "Audit logs of package %s"
 msgstr ""
 
+#: uwaptconsoleres.rsbuilding
+msgid "%s is being built."
+msgstr ""
+
 #: uwaptconsoleres.rsbuildinprogress
 msgctxt "uwaptconsoleres.rsbuildinprogress"
 msgid "Build in progress."
@@ -7466,6 +7473,10 @@ msgstr ""
 msgid "Send message to users"
 msgstr ""
 
+#: uwaptconsoleres.rssigning
+msgid "%s is being signed."
+msgstr ""
+
 #: uwaptconsoleres.rssite
 msgid "SITE"
 msgstr ""
@@ -7542,6 +7553,10 @@ msgstr ""
 msgid "Unknown version"
 msgstr ""
 
+#: uwaptconsoleres.rsunzipping
+msgid "%s is being unzipped."
+msgstr ""
+
 #: uwaptconsoleres.rsupdatesyncjson
 msgctxt "uwaptconsoleres.rsupdatesyncjson"
 msgid "Update index"
@@ -7565,6 +7580,10 @@ msgstr ""
 #: uwaptconsoleres.rsuploading
 msgctxt "uwaptconsoleres.rsuploading"
 msgid "Uploading"
+msgstr ""
+
+#: uwaptconsoleres.rsuploadingfile
+msgid "%s is being uploaded."
 msgstr ""
 
 #: uwaptconsoleres.rsuploadingpackagestowaptsrv

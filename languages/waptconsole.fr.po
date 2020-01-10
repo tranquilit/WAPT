@@ -411,7 +411,6 @@ msgid "id"
 msgstr "id"
 
 #: tviscreatewaptsetup.gridcertificates.header.columns[10].text
-
 msgctxt "tviscreatewaptsetup.gridcertificates.header.columns[10].text"
 msgid "issuer_dn"
 msgstr "DN émetteur"
@@ -6800,6 +6799,10 @@ msgstr "IP de l'agent"
 msgid "Audit logs of package %s"
 msgstr "Logs d'audit du paquet %s"
 
+#: uwaptconsoleres.rsbuilding
+msgid "%s is being built."
+msgstr "Construction de %s en cours."
+
 #: uwaptconsoleres.rsbuildinprogress
 msgctxt "uwaptconsoleres.rsbuildinprogress"
 msgid "Build in progress."
@@ -7611,6 +7614,10 @@ msgstr "Sélectionner les paquets à enlever des dépendances des machines"
 msgid "Send message to users"
 msgstr "Envoyer un message aux utilisateurs"
 
+#: uwaptconsoleres.rssigning
+msgid "%s is being signed."
+msgstr "Signature de %s en cours."
+
 #: uwaptconsoleres.rssite
 msgid "SITE"
 msgstr "Site"
@@ -7692,6 +7699,10 @@ msgstr "Désinstallation de %s..."
 msgid "Unknown version"
 msgstr "Version inconnue"
 
+#: uwaptconsoleres.rsunzipping
+msgid "%s is being unzipped."
+msgstr "Décompression de %s en cours."
+
 #: uwaptconsoleres.rsupdatesyncjson
 msgctxt "uwaptconsoleres.rsupdatesyncjson"
 msgid "Update index"
@@ -7717,6 +7728,10 @@ msgstr "L'upgrade a bien été lancée sur la machine distante."
 msgctxt "uwaptconsoleres.rsuploading"
 msgid "Uploading"
 msgstr "Chargement en cours"
+
+#: uwaptconsoleres.rsuploadingfile
+msgid "%s is being uploaded."
+msgstr "Upload de %s en cours."
 
 #: uwaptconsoleres.rsuploadingpackagestowaptsrv
 #, object-pascal-format

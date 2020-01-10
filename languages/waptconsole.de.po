@@ -6119,6 +6119,7 @@ msgid "Serial number"
 msgstr ""
 
 #: tviswaptusers.gridtrustedcerts.header.columns[6].text
+msgctxt "tviswaptusers.gridtrustedcerts.header.columns[6].text"
 msgid "Certificate expire"
 msgstr ""
 
@@ -6128,10 +6129,12 @@ msgid "Fingerprint (sha256)"
 msgstr ""
 
 #: tviswaptusers.gridtrustedcerts.header.columns[8].text
+msgctxt "tviswaptusers.gridtrustedcerts.header.columns[8].text"
 msgid "Subject DN"
 msgstr ""
 
 #: tviswaptusers.gridtrustedcerts.header.columns[9].text
+msgctxt "tviswaptusers.gridtrustedcerts.header.columns[9].text"
 msgid "Issuer DN"
 msgstr ""
 
@@ -6294,9 +6297,10 @@ msgid "user_certificate"
 msgstr ""
 
 #: tviswaptusers.gridusers.header.columns[2].text
+#, fuzzy
 msgctxt "tviswaptusers.gridusers.header.columns[2].text"
 msgid "Description"
-msgstr ""
+msgstr "Beschreibung"
 
 #: tviswaptusers.gridusers.header.columns[3].text
 msgctxt "tviswaptusers.gridusers.header.columns[3].text"
@@ -8207,6 +8211,10 @@ msgstr ""
 
 #: uwaptconsoleres.rsauditpackages
 msgid "Audit logs of package %s"
+msgstr ""
+
+#: uwaptconsoleres.rsbuilding
+msgid "%s is being built."
 msgstr ""
 
 #: uwaptconsoleres.rsbuildinprogress
@@ -10395,6 +10403,10 @@ msgstr ""
 msgid "Send message to users"
 msgstr ""
 
+#: uwaptconsoleres.rssigning
+msgid "%s is being signed."
+msgstr ""
+
 #: uwaptconsoleres.rssite
 msgid "SITE"
 msgstr ""
@@ -10471,6 +10483,10 @@ msgstr "Deinstallation %s..."
 msgid "Unknown version"
 msgstr "Unbekannte Version"
 
+#: uwaptconsoleres.rsunzipping
+msgid "%s is being unzipped."
+msgstr ""
+
 #: uwaptconsoleres.rsupdatesyncjson
 msgctxt "uwaptconsoleres.rsupdatesyncjson"
 msgid "Update index"
@@ -10495,6 +10511,10 @@ msgstr "Update auf dem Remote Host einleiten."
 msgctxt "uwaptconsoleres.rsuploading"
 msgid "Uploading"
 msgstr "Hochladen"
+
+#: uwaptconsoleres.rsuploadingfile
+msgid "%s is being uploaded."
+msgstr ""
 
 #: uwaptconsoleres.rsuploadingpackagestowaptsrv
 msgctxt "uwaptconsoleres.rsuploadingpackagestowaptsrv"
