@@ -111,7 +111,8 @@ uses
 procedure TVisCreateWaptSetup.FormCloseQuery(Sender: TObject; var CanClose: boolean);
 var
   pingResult: ISuperobject;
-  AbsVerifyCertPath:String;
+  AbsVerifyCertPath,
+  ServerSSLPath  :String;
 begin
   CanClose:= True;
   if (ModalResult=mrOk) then
@@ -121,22 +122,24 @@ begin
       showMessage(rsInputPubKeyPath);
       CanClose:=False;
     end;
-    if pos(lowercase(BuildDir),lowercase(EdServerCertificate.Text))=1 then
-    begin
-      EdServerCertificate.Text := ExtractRelativepath(WaptBaseDir,EdServerCertificate.Text);
-      AbsVerifyCertPath := ExpandFileName(AppendPathDelim(WaptBaseDir)+EdServerCertificate.Text);
-    end
-    else
-      AbsVerifyCertPath := ExpandFileName(EdServerCertificate.Text);
 
-    if (CBVerifyCert.Checked) and (pos(lowercase(WaptBaseDir),lowercase(AbsVerifyCertPath))<>1) then
-    begin
-      ShowMessageFmt(rsInvalidServerCertificateDir, [EdServerCertificate.Text]);
-      CanClose:=False;
-    end;
+    EdServerCertificate.Text := ExpandFileName(EdServerCertificate.Text);
+    ServerSSLPath := MakePath([BuildDir,'ssl','server']);
+    if not DirectoryExistsUTF8(ServerSSLPath) then
+      mkdir(ServerSSLPath);
+
     // check ssl cert is OK
     if (CBVerifyCert.Checked) then
     try
+      // if server bundle is not in buildir, copy it
+      if pos(lowercase(ServerSSLPath),lowercase(EdServerCertificate.Text)) <= 0 then
+      begin
+        AbsVerifyCertPath := MakePath([ServerSSLPath,ExtractFileName(EdServerCertificate.Text)]);
+        CopyFile(EdServerCertificate.Text,AbsVerifyCertPath,[cffOverwriteFile],True);
+      end
+      else
+        AbsVerifyCertPath := ExpandFileName(EdServerCertificate.Text);
+
       PingResult := SO(IdhttpGetString(edWaptServerUrl.Text+'/ping','',4000,60000,60000,'','','GET','',AbsVerifyCertPath,
         'application/json',Nil,WaptClientCertFilename,WaptClientKeyFilename));
     except
