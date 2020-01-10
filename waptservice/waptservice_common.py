@@ -287,6 +287,7 @@ class WaptServiceConfig(object):
 
         self.notify_user = False
         self.enable_remote_repo = False
+        self.enable_diff_repo = False
         self.local_repo_path = os.path.join(wapt_root_dir,'repository')
         self.local_repo_sync_task_period = None
         self.local_repo_time_for_sync_start = None
@@ -435,6 +436,8 @@ class WaptServiceConfig(object):
             if config.has_option('repo-sync','enable_remote_repo'):
                 self.enable_remote_repo = config.getboolean('repo-sync','enable_remote_repo')
                 if self.enable_remote_repo:
+                    if config.has_option('repo-sync','enable_diff_repo'):
+                        self.enable_diff_repo=config.getboolean('repo-sync','enable_diff_repo')
                     if config.has_option('repo-sync','remote_repo_dirs'):
                         self.remote_repo_dirs=config.get('repo-sync','remote_repo_dirs').replace(' ','').split(',')
                     else:

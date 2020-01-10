@@ -634,6 +634,11 @@ def main():
     sync_json = os.path.join(os.path.abspath(os.path.join(wapt_folder, os.pardir)),'sync.json')
     rules_json = os.path.join(os.path.abspath(os.path.join(wapt_folder, os.pardir)),'rules.json')
 
+    diff_rules_dir = wapt_folder+u'-diff-repos'
+    if not(os.path.isdir(diff_rules_dir)):
+        os.mkdir(diff_rules_dir)
+        os.chown(diff_rules_dir,WAPT_UID,NGINX_GID)
+
     set_good_rights_nginx([sync_json,rules_json])
 
     # Final message

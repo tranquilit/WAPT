@@ -1125,6 +1125,13 @@ def update_host_data(data,server_conf=None):
                 if 'authorized_certificates' in supplied_hashes:
                     updhost.status_hashes['authorized_certificates'] = supplied_hashes['authorized_certificates']
 
+            if server_conf['diff_repo']:
+                try:
+                    from waptenterprise.waptserver.repositories import update_file_tree_of_files
+                    update_file_tree_of_files()
+                except:
+                    logger.critical(u"Something went wrong with diff repo : can't launch")
+
             # merge new known hashes for properly applied data, for next round
             updhost.status_hashes.update(applied_status_hashes)
             updhost.save()
