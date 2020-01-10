@@ -831,7 +831,7 @@ def update_installed_packages(uuid, data, applied_status_hashes):
 
     last_update_status = data.get('last_update_status',None)
     if last_update_status is None:
-        last_update_status = Hosts.select(Hosts.last_update_status).where(uuid=uuid).dicts().first()
+        last_update_status = Hosts.select(Hosts.last_update_status).where(Hosts.uuid == uuid).dicts().first()
     pending = last_update_status.get('pending',{})
 
     missing = [ package_version_from_prequest(pr) for pr in ((pending.get('install',[]) or []) + (pending.get('additional',[]) or []))]
