@@ -1536,7 +1536,7 @@ class PackageEntry(BaseObjectClass):
         Args:
             excludes (list) : list of patterns for source files to exclude from built package.
             target_directory (str): target directory where to store built package.
-                                 If None, use parent directory of package sources dircetory.
+                                    If None, use parent directory of package sources dircetory.
             excludes_full (list) : list of exact (relative to package root) filepathes to exclude from Zip.
 
         Returns:
