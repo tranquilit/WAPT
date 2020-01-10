@@ -4110,6 +4110,7 @@ class Wapt(BaseObjectClass):
                 try:
                     logger.debug(u'Read remote Packages index file %s' % repo.packages_url() if not(isinstance(repo,WaptHostRepo)) else repo.host_package_url())
                     last_modified = repo.packages_date()
+                    current_datetime = datetime2isodate()
 
                     self.waptdb.purge_repo(repo.name)
                     repo_packages =  repo.packages()
@@ -4119,15 +4120,15 @@ class Wapt(BaseObjectClass):
 
                     for package in repo_packages:
                         # if there are time related restriction, we should check again at that time in the future.
-                        if package.valid_from:
+                        if package.valid_from and package.valid_from > current_datetime:
                             next_update_on = min(next_update_on,package.valid_from)
-                        if package.valid_until:
+                        if package.valid_until and package.valid_from > current_datetime:
                             next_update_on = min(next_update_on,package.valid_until)
-                        if package.forced_install_on:
+                        if package.forced_install_on and package.valid_from > current_datetime:
                             next_update_on = min(next_update_on,package.forced_install_on)
 
                         if self.filter_on_host_cap:
-                            if not host_capabilities.is_matching_package(package,datetime2isodate()):
+                            if not host_capabilities.is_matching_package(package,current_datetime):
                                 discarded.append(package)
                                 continue
                         try:
