@@ -501,9 +501,9 @@ end;
 
 procedure TVisImportPackage.ActPackageDuplicateExecute(Sender: TObject);
 var
-  target,sourceDir,http_proxy: string;
+  target,sourceDir,buildfilename,http_proxy: string;
   NewPackagesFilenames,package,FileName, FileNames, ListPackages,Sources,aDir: ISuperObject;
-  PackageEdited,VPackageFilePath,VCABundle,VPrivateKeyPassword, vbuildfilename,
+  PackageEdited,VPackageFilePath,VCABundle,VPrivateKeyPassword,
   SignersCABundle,ListPackagesVar: Variant;
   RequestFilter: Variant;
   PackageFilename:String;
@@ -582,7 +582,10 @@ begin
       end;
 
       for Filename in FileNames do
-      begin
+      try
+        sourceDir := '';
+        buildfilename := '';
+
         ProgressTitle(format(rsDuplicating, [Filename.AsArray[0].AsString]));
         Application.ProcessMessages;
         if (Waptrepo.SignersCABundle ='') or (Waptrepo.SignersCABundle ='0') then
@@ -610,18 +613,23 @@ begin
         PackageEdited.change_depends_conflicts_prefix(DefaultPackagePrefix);
         PackageEdited.maturity := EdMaturity.Text;
         ProgressTitle(format(rsBuilding, [Filename.AsArray[0].AsString]));
-        PackageEdited.
-        vbuildfilename := PackageEdited.build_package('--noarg--');
-        NewPackagesFilenames.AsArray.Add(VarToStr(vbuildfilename));
+        buildfilename := VarPyth.VarPythonAsString(PackageEdited.build_package('--noarg--'));
+        NewPackagesFilenames.AsArray.Add(buildfilename);
         ProgressTitle(format(rsSigning, [sourceDir]));
         PackageEdited.sign_package(
           certificate := DMPython.WAPT.personal_certificate('--noarg--'),
           private_key := DMPython.WAPT.private_key(private_key_password := VPrivateKeyPassword));
-        FUploadSize:=FileSize(vbuildfilename);
-        ProgressTitle(format(rsUploadingFile, [vbuildfilename]));
+        FUploadSize:=FileSize(buildfilename);
+        ProgressTitle(format(rsUploadingFile, [buildfilename]));
         WAPTServerJsonMultipartFilePost(
-          GetWaptServerURL, 'api/v3/upload_packages', [], 'file',vbuildfilename ,
+          GetWaptServerURL, 'api/v3/upload_packages', [], 'file',buildfilename ,
           WaptServerUser, WaptServerPassword, @IdHTTPWork,GetWaptServerCertificateFilename);
+
+      finally
+        if DirectoryExistsUTF8(sourceDir) then
+          DeleteDirectory(sourceDir,False);
+        if FileExistsUTF8(buildfilename) then
+          DeleteFileUTF8(buildfilename);
       end;
 
       if (NewPackagesFilenames <> Nil) and (NewPackagesFilenames.AsArray.length=Sources.AsArray.Length) then
@@ -631,15 +639,11 @@ begin
       end
       else
         ShowMessage(rsDuplicateFailure);
+
     finally
-      if Sources <> Nil then
-        for aDir in Sources do
-          DeleteDirectory(UTF8Encode(aDir.AsString),False);
-      if NewPackagesFilenames <> Nil then
-        for aDir in NewPackagesFilenames do
-          DeleteFileUTF8(UTF8Encode(aDir.AsString));
       Finish;
     end;
+
     ModalResult:=mrOK;
 
   except

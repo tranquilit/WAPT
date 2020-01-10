@@ -268,6 +268,10 @@ resourcestring
   rsDuplicateSuccess = 'Package(s) %s successfully duplicated.';
   rsDuplicateFailure = 'Error while duplicating the package(s).';
   rsNoPackage = 'No package found. Check authorized certificates';
+  rsUnzipping = '%s is being unzipped.';
+  rsBuilding = '%s is being built.';
+  rsSigning = '%s is being signed.';
+  rsUploadingFile = '%s is being uploaded.';
 
   rsRepositoryUnregisterConfirm = 'Confirm the unregistration of repository %s';
 

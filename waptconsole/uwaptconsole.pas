@@ -1616,13 +1616,16 @@ begin
       try
         stats_report_url:=ini.ReadString('global','usage_report_url',rsDefaultUsageStatsURL);
         stats := WAPTServerJsonGet('api/v1/usage_statistics',[])['result'];
-        {$ifdef ENTERPRISE}
-        stats.S['edition'] := 'enterprise';
-        {$else}
-        stats.S['edition'] := 'community';
-        {$endif}
-        IdHttpPostData(stats_report_url,UTF8Encode(stats.AsJSon),'POST',Proxy,4000,60000,60000,'','','Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko');
-        ini.WriteDateTime('global','last_usage_report',Now);
+        if stats<>Nil then
+        begin
+          {$ifdef ENTERPRISE}
+          stats.S['edition'] := 'enterprise';
+          {$else}
+          stats.S['edition'] := 'community';
+          {$endif}
+          IdHttpPostData(stats_report_url,UTF8Encode(stats.AsJSon),'POST',Proxy,4000,60000,60000,'','','Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko');
+          ini.WriteDateTime('global','last_usage_report',Now);
+        end;
       except
         ini.WriteDateTime('global','last_usage_report',Now);
       end;
@@ -2386,7 +2389,7 @@ end;
 procedure TVisWaptGUI.ActAddConflictsExecute(Sender: TObject);
 var
   Res, packages, hosts: ISuperObject;
-  VHosts,VPackages,VWaptIniFilename,VPrivateKeyPassword,ResVar: Variant;
+  VHosts,VPackages,VWaptIniFilename,VPrivateKeyPassword,VWaptServerPassword,ResVar: Variant;
 begin
   if GridHosts.Focused then
   begin
@@ -2405,6 +2408,7 @@ begin
         VPackages := SuperObjectToPyVar(packages);
         VWaptIniFilename := PyUTF8Decode(AppIniFilename);
         VPrivateKeyPassword := PyUTF8Decode(dmpython.privateKeyPassword);
+        VWaptServerPassword := PyUTF8Decode(WaptServerPassword);
 
         resVar := DMPython.waptdevutils.edit_hosts_depends(
            waptconfigfile := VWaptIniFilename,
@@ -2413,7 +2417,7 @@ begin
            sign_certs := DMPython.WAPT.personal_certificate('--noarg--'),
            sign_key := DMPython.WAPT.private_key(private_key_password := VPrivateKeyPassword),
            wapt_server_user := waptServerUser,
-           wapt_server_passwd := waptServerPassword,
+           wapt_server_passwd := VWaptServerPassword,
            cabundle := DMPython.WaptHostRepo.cabundle
            );
 
@@ -2433,7 +2437,7 @@ end;
 procedure TVisWaptGUI.ActAddADSGroupsExecute(Sender: TObject);
 var
   Res, hosts, host,HostMin: ISuperObject;
-  VHosts,VWaptIniFilename,VPrivateKeyPassword,ResVar: Variant;
+  VHosts,VWaptIniFilename,VPrivateKeyPassword,VWaptServerPassword,ResVar: Variant;
 begin
   if GridHosts.Focused and (MessageDlg(rsAddADSGroups, mtConfirmation, [mbYes, mbNo, mbCancel],0) = mrYes) then
   try
@@ -2453,14 +2457,15 @@ begin
     VHosts := SuperObjectToPyVar(Hosts);
     VWaptIniFilename := PyUTF8Decode(AppIniFilename);
     VPrivateKeyPassword := PyUTF8Decode(dmpython.privateKeyPassword);
+    VWaptServerPassword := PyUTF8Decode(WaptServerPassword);
 
     resVar := DMPython.waptdevutils.add_ads_groups(
        waptconfigfile := VWaptIniFilename,
        hostdicts_list := VHosts,
        sign_certs := DMPython.WAPT.personal_certificate('--noarg--'),
        sign_key := DMPython.WAPT.private_key(private_key_password := VPrivateKeyPassword),
-       wapt_server_user := waptServerUser,
-       wapt_server_passwd := waptServerPassword,
+       wapt_server_user := WaptServerUser,
+       wapt_server_passwd := VWaptServerPassword,
        cabundle := DMPython.WaptHostRepo.cabundle
        );
 
@@ -2475,7 +2480,7 @@ end;
 procedure TVisWaptGUI.ActAddDependsExecute(Sender: TObject);
 var
   Res, packages, hosts: ISuperObject;
-  VHosts,VPackages,VWaptIniFilename,VPrivateKeyPassword,ResVar: Variant;
+  VHosts,VPackages,VWaptIniFilename,VPrivateKeyPassword,VWaptServerPassword,ResVar: Variant;
 begin
   if GridHosts.Focused then
   begin
@@ -2494,6 +2499,7 @@ begin
         VPackages := SuperObjectToPyVar(packages);
         VWaptIniFilename := PyUTF8Decode(AppIniFilename);
         VPrivateKeyPassword := PyUTF8Decode(dmpython.privateKeyPassword);
+        VWaptServerPassword := PyUTF8Decode(WaptServerPassword);
 
         resVar := DMPython.waptdevutils.edit_hosts_depends(
            waptconfigfile := VWaptIniFilename,
@@ -2502,7 +2508,7 @@ begin
            sign_certs := DMPython.WAPT.personal_certificate('--noarg--'),
            sign_key := DMPython.WAPT.private_key(private_key_password := VPrivateKeyPassword),
            wapt_server_user := waptServerUser,
-           wapt_server_passwd := waptServerPassword,
+           wapt_server_passwd := VWaptServerPassword,
            cabundle := DMPython.WaptHostRepo.cabundle
            );
 
@@ -3385,7 +3391,7 @@ var
   i: integer;
   sourceDir: string;
   Sources, uploadResult: ISuperObject;
-  SourcesVar: Variant;
+  SourcesVar,VWaptServerPassword: Variant;
 
 begin
   if MessageDlg(rsConfirmImportCaption,
@@ -3410,12 +3416,13 @@ begin
     Application.ProcessMessages;
 
     SourcesVar := SuperObjectToPyVar(sources);
+    VWaptServerPassword := PyUTF8Decode(WaptServerPassword);
     { TODO : Remove use of WAPT instance, use waptpackage.PackageEntry instead }
     uploadResult := PyVarToSuperObject(DMPython.WAPT.build_upload(
       sources_directories := SourcesVar,
       private_key_passwd := dmpython.privateKeyPassword,
       wapt_server_user := waptServerUser,
-      wapt_server_passwd := waptServerPassword,
+      wapt_server_passwd := VwaptServerPassword,
       inc_package_release := False));
 
     if (uploadResult <> nil) and
@@ -3588,7 +3595,7 @@ end;
 procedure TVisWaptGUI.ActRemoveConflictsExecute(Sender: TObject);
 var
   Res, packages, hosts: ISuperObject;
-  VHosts,VPackages,VWaptIniFilename,VPrivateKeyPassword,ResVar: Variant;
+  VHosts,VPackages,VWaptIniFilename,VPrivateKeyPassword,VWaptServerPassword,ResVar: Variant;
 begin
   if GridHosts.Focused then
   begin
@@ -3607,7 +3614,7 @@ begin
         VPackages := SuperObjectToPyVar(packages);
         VWaptIniFilename := PyUTF8Decode(AppIniFilename);
         VPrivateKeyPassword := PyUTF8Decode(dmpython.privateKeyPassword);
-
+        VWaptServerPassword := PyUTF8Decode(WaptServerPassword);
         resVar := DMPython.waptdevutils.edit_hosts_depends(
            waptconfigfile := VWaptIniFilename,
            hosts_list := VHosts,
@@ -3615,7 +3622,7 @@ begin
            sign_certs := DMPython.WAPT.personal_certificate('--noarg--'),
            sign_key := DMPython.WAPT.private_key(private_key_password := VPrivateKeyPassword),
            wapt_server_user := waptServerUser,
-           wapt_server_passwd := waptServerPassword,
+           wapt_server_passwd := VWaptServerPassword,
            cabundle := DMPython.WaptHostRepo.cabundle
            );
 
@@ -3634,7 +3641,8 @@ end;
 procedure TVisWaptGUI.ActRemoveDependsExecute(Sender: TObject);
 var
   Res, packages, hosts: ISuperObject;
-  VHosts,VPackages,VWaptIniFilename,VPrivateKeyPassword,ResVar: Variant;
+  VHosts,VPackages,VWaptIniFilename,VPrivateKeyPassword,
+  VWaptServerPassword,ResVar: Variant;
 begin
   if GridHosts.Focused then
   begin
@@ -3653,6 +3661,7 @@ begin
         VPackages := SuperObjectToPyVar(packages);
         VWaptIniFilename := PyUTF8Decode(AppIniFilename);
         VPrivateKeyPassword := PyUTF8Decode(dmpython.privateKeyPassword);
+        VWaptServerPassword := PyUTF8Decode(WaptServerPassword);
 
         resVar := DMPython.waptdevutils.edit_hosts_depends(
            waptconfigfile := VWaptIniFilename,
@@ -3661,7 +3670,7 @@ begin
            sign_certs := DMPython.WAPT.personal_certificate('--noarg--'),
            sign_key := DMPython.WAPT.private_key(private_key_password := VPrivateKeyPassword),
            wapt_server_user := waptServerUser,
-           wapt_server_passwd := waptServerPassword,
+           wapt_server_passwd := VWaptServerPassword,  // potentially with non ascii
            cabundle := DMPython.WaptHostRepo.cabundle
            );
 

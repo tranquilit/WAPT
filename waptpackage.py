@@ -2019,19 +2019,19 @@ class PackageEntry(BaseObjectClass):
             for dependname in depends:
                 newname = rename_package(dependname,new_prefix)
                 newdepends.append(newname)
-            if package.depends != ','.join(newdepends):
-                package.depends = ','.join(newdepends)
+            if self.depends != ','.join(newdepends):
+                self.depends = ','.join(newdepends)
                 result = True
 
         # renames conflicts
-        if package.conflicts:
+        if self.conflicts:
             newconflicts = []
-            conflicts = ensure_list(package.conflicts)
+            conflicts = ensure_list(self.conflicts)
             for dependname in conflicts:
                 newname = rename_package(dependname,new_prefix)
                 newconflicts.append(newname)
-            if package.conflicts != ','.join(conflicts):
-                package.conflicts = ','.join(newconflicts)
+            if self.conflicts != ','.join(conflicts):
+                self.conflicts = ','.join(newconflicts)
                 result = True
 
         return result

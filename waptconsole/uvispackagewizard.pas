@@ -93,7 +93,7 @@ procedure TVisPackageWizard.ActMakeUploadExecute(Sender: TObject);
 var
   packageSources,PackageName,Version,Description,Section,UninstallKey,Maturity,
     Architecture: Variant;
-  wapt,SilentFlags,VInstallerFilename:Variant;
+  wapt,SilentFlags,VWaptServerPassword,VInstallerFilename:Variant;
   UploadResult : ISuperObject;
 begin
   Screen.cursor := crHourGlass;
@@ -115,6 +115,7 @@ begin
     Maturity := PyUTF8Decode(EdMaturity.Text);;
 
     VInstallerFilename := PyUTF8Decode(InstallerFilename);
+    VWaptServerPassword := PyUTF8Decode(WaptServerPassword);
 
     packageSources := VarPythonAsString(wapt.make_package_template(
       installer_path := VInstallerFilename,
@@ -139,7 +140,7 @@ begin
         sources_directories := packageSources,
         private_key_passwd := dmpython.privateKeyPassword,
         wapt_server_user := waptServerUser,
-        wapt_server_passwd := waptServerPassword,
+        wapt_server_passwd := VWaptServerPassword,
         inc_package_release := True));
 
       if (uploadResult.AsArray=nil) or (uploadResult.AsArray.Length <=0) then
