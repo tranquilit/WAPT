@@ -21,7 +21,7 @@ Source: "{#wapt_base_dir}pythoncomloader27.dll"; DestDir: "{app}";
 Source: "{#wapt_base_dir}pywintypes27.dll"; DestDir: "{app}";
 ;Source: "{#wapt_base_dir}sqlite3.dll"; DestDir: "{app}"; 
 
-Source: "{#wapt_base_dir}Scripts\*"; DestDir: "{app}\Scripts"; Flags: createallsubdirs recursesubdirs ;
+Source: "{#wapt_base_dir}Scripts\*"; DestDir: "{app}\Scripts"; Flags: createallsubdirs recursesubdirs skipifsourcedoesntexist;
 
 ; additional python modules
 Source: "{#wapt_base_dir}lib\*"; DestDir: "{app}\lib"; Flags: createallsubdirs recursesubdirs ; Excludes: "*.dist-info,*.pyc,*.pyo,test,*.~*,bson,*.chm,testsuite,Demos,tests,examples,HTML,scintilla,idle,idlelib,pylint,isort,mccabe*,*.whl,pydoc_data"
@@ -52,7 +52,7 @@ Source: "{#wapt_base_dir}COPYING.txt"; DestDir: "{app}";
 #endif
 Source: "{#wapt_base_dir}version"; DestDir: "{app}";
 Source: "{#wapt_base_dir}revision.txt"; DestDir: "{app}";
-Source: "{#wapt_base_dir}templates\*"; DestDir: "{app}\templates"; Flags: createallsubdirs recursesubdirs
+Source: "{#wapt_base_dir}templates\*"; DestDir: "{app}\templates"; Flags: createallsubdirs recursesubdirs skipifsourcedoesntexist
 
 ; for openssl get dll in path
 Source: "{#wapt_base_dir}libeay32.dll" ; DestDir: "{app}"; 
@@ -64,10 +64,10 @@ Source: "{#wapt_base_dir}waptservice\win32\*"; DestDir: "{app}\waptservice\win32
 Source: "{#wapt_base_dir}waptservice\win64\*"; DestDir: "{app}\waptservice\win64\";  Flags: createallsubdirs recursesubdirs;
 Source: "{#wapt_base_dir}waptservice\*.py"; DestDir: "{app}\waptservice\"; 
 Source: "{#wapt_base_dir}waptservice\static\*"; DestDir: "{app}\waptservice\static"; Flags: createallsubdirs recursesubdirs; Tasks: 
-Source: "{#wapt_base_dir}waptservice\ssl\*"; DestDir: "{app}\waptservice\ssl"; Flags: createallsubdirs recursesubdirs;
-Source: "{#wapt_base_dir}waptservice\templates\*"; DestDir: "{app}\waptservice\templates"; Flags: createallsubdirs recursesubdirs; 
+Source: "{#wapt_base_dir}waptservice\ssl\*"; DestDir: "{app}\waptservice\ssl"; Flags: createallsubdirs recursesubdirs skipifsourcedoesntexist;
+Source: "{#wapt_base_dir}waptservice\templates\*"; DestDir: "{app}\waptservice\templates"; Flags: createallsubdirs recursesubdirs skipifsourcedoesntexist; 
 Source: "{#wapt_base_dir}waptservice\translations\*"; DestDir: "{app}\waptservice\translations"; Flags: createallsubdirs recursesubdirs; 
-Source: "{#wapt_base_dir}waptservice\plugins\*"; DestDir: "{app}\waptservice\plugins"; Flags: createallsubdirs recursesubdirs; 
+Source: "{#wapt_base_dir}waptservice\plugins\*"; DestDir: "{app}\waptservice\plugins"; Flags: createallsubdirs recursesubdirs skipifsourcedoesntexist; 
 
 ; waptenterprise only
 #ifdef waptenterprise
