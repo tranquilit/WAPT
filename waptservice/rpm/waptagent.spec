@@ -118,9 +118,6 @@ export PYTHONPATH=/opt/wapt
 export PATH=/opt/wapt/bin:$PATH
 EOF
 
-systemctl restart syslog-nginx
-systemctl restart rsyslog
-
 FILE=/opt/wapt/wapt-get.ini
 if [[ -f "$FILE" ]]; then
 	wapt-get register
