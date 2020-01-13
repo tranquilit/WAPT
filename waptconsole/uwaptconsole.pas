@@ -2156,11 +2156,8 @@ end;
 function TVisWaptGUI.DownloadPackage(RepoUrl,Filename:String):Variant;
 var
   filePath, proxy: string;
-  vFilePath,vDevPath: Variant;
-  cabundle: Variant;
-  DevRoot,Devpath : String;
+  vFilePath, cabundle: Variant;
 begin
-  DevRoot:=IniReadString(AppIniFilename,'global','default_sources_root');
   try
     with TVisLoading.Create(Self) do
     try
@@ -2183,10 +2180,6 @@ begin
 
         vFilePath := PyUTF8Decode(filePath);
         Result := DMPython.waptpackage.PackageEntry(waptfile := vFilePath);
-        if devroot <> '' then
-          DevPath := AppendPathDelim(DevRoot)+VarPythonAsString(Result.make_package_edit_directory('--noarg--'))
-        else
-          DevPath := GetTempFileNameUTF8('',VarPythonAsString(Result.package));
       except
         ShowMessage(rsDlCanceled);
         if FileExistsUTF8(filePath) then
@@ -6641,6 +6634,17 @@ begin
   ;;
 end;
 
+procedure TVisWaptGUI.ActSaveRulesExecute(Sender: TObject);
+begin
+  ;;
+end;
+
+procedure TVisWaptGUI.GridRulesGetText(Sender: TBaseVirtualTree;
+    Node: PVirtualNode; RowData, CellData: ISuperObject; Column: TColumnIndex;
+    TextType: TVSTTextType; var CellText: string);
+begin
+  ;;
+end;
 
 
 {$endif}
