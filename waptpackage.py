@@ -2030,7 +2030,7 @@ class PackageEntry(BaseObjectClass):
             for dependname in conflicts:
                 newname = rename_package(dependname,new_prefix)
                 newconflicts.append(newname)
-            if self.conflicts != ','.join(conflicts):
+            if self.conflicts != ','.join(newconflicts):
                 self.conflicts = ','.join(newconflicts)
                 result = True
 
