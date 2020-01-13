@@ -77,6 +77,7 @@ getent passwd wapt >/dev/null || \
 exit 0
 
 %postun
+
 if [ "$1" = 0 ] ; then
 	rm -f /usr/bin/waptservice
 	rm -f /usr/bin/wapt-get
