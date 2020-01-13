@@ -19,7 +19,7 @@ Type: filesandordirs; Name: "{app}\waptenterprise"
 #if edition != "waptstarter"
 
 #ifndef FastDebug
-Source: "{#wapt_base_dir}waptsetup\innosetup\*"; DestDir: "{app}\waptsetup\innosetup"; Flags: createallsubdirs recursesubdirs ignoreversion;
+Source: "{#wapt_base_dir}waptsetup\innosetup\*"; DestDir: "{app}\waptsetup\innosetup"; Flags: createallsubdirs recursesubdirs ignoreversion skipifsourcedoesntexist;
 #endif
 
 Source: "{#wapt_base_dir}waptsetup\common.iss"; DestDir: "{app}\waptsetup";
@@ -31,7 +31,7 @@ Source: "{#wapt_base_dir}wapt.ico"; DestDir: "{app}";
 
 ; sources to regenerate waptupgrade package
 Source: "{#wapt_base_dir}waptupgrade\setup.py"; DestDir: "{app}\waptupgrade"; Flags: ignoreversion;
-Source: "{#wapt_base_dir}waptupgrade\WAPT\*"; DestDir: "{app}\waptupgrade\WAPT"; Flags: createallsubdirs recursesubdirs ignoreversion;
+Source: "{#wapt_base_dir}waptupgrade\WAPT\*"; DestDir: "{app}\waptupgrade\WAPT"; Flags: createallsubdirs recursesubdirs ignoreversion skipifsourcedoesntexist;
 
 ; global management console
 Source: "{#wapt_base_dir}waptconsole.exe"; DestDir: "{app}"; Flags: ignoreversion
@@ -42,16 +42,16 @@ Source: "{#wapt_base_dir}waptdevutils.py"; DestDir: "{app}";
 
 ; authorized public keys
 #if set_install_certs == ""
-Source: "{#ssl_dir}\*"; DestDir: "{app}\ssl"; Tasks: installCertificates; Flags: createallsubdirs recursesubdirs
+Source: "{#ssl_dir}\*"; DestDir: "{app}\ssl"; Tasks: installCertificates; Flags: createallsubdirs recursesubdirs skipifsourcedoesntexist 
 #else
-Source: "{#ssl_dir}\*"; DestDir: "{app}\ssl"; Flags: createallsubdirs recursesubdirs; Check: InstallCertCheck();
+Source: "{#ssl_dir}\*"; DestDir: "{app}\ssl"; Flags: createallsubdirs recursesubdirs skipifsourcedoesntexist; Check: InstallCertCheck();
 #endif
 
 ; local management console wapt selfservice
 Source: "{#wapt_base_dir}waptself.exe"; DestDir: "{app}"; Flags: ignoreversion
 
-Source: "{param:CopyPackagesTrustedCA}"; DestDir: "{app}\ssl"; Flags: external; Check: CopyPackagesTrustedCACheck();
-Source: "{param:CopyServersTrustedCA}"; DestDir: "{app}\ssl\server"; Flags: external; Check: CopyServersTrustedCACheck();
+Source: "{param:CopyPackagesTrustedCA}"; DestDir: "{app}\ssl"; Flags: external createallsubdirs recursesubdirs; Check: CopyPackagesTrustedCACheck();
+Source: "{param:CopyServersTrustedCA}"; DestDir: "{app}\ssl\server"; Flags: external createallsubdirs recursesubdirs; Check: CopyServersTrustedCACheck();
 
 [Setup]
 #ifdef waptenterprise
