@@ -6634,6 +6634,17 @@ begin
   ;;
 end;
 
+procedure TVisWaptGUI.ActSaveRulesExecute(Sender: TObject);
+begin
+  ;;
+end;
+
+procedure TVisWaptGUI.GridRulesGetText(Sender: TBaseVirtualTree;
+    Node: PVirtualNode; RowData, CellData: ISuperObject; Column: TColumnIndex;
+    TextType: TVSTTextType; var CellText: string);
+begin
+  ;;
+end;
 
 
 {$endif}
