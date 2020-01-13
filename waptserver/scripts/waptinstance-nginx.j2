@@ -23,7 +23,7 @@ location /{{ application_root }}/ {
         root "{{ wapt_repository_path }}";
     }
 
-    location ~ ^/{{ application_root }}/(wapt/.*|wapt-host/.*|waptwua/.*)$ {
+    location ~ ^/{{ application_root }}/(wapt/.*|wapt-host/.*|waptwua/.*|wapt-diff-repos/.*)$ {
         root "{{ wapt_repository_path }}";
     }
 

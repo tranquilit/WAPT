@@ -85,7 +85,7 @@ http {
                 root "{{ wapt_repository_path }}";
             }
 
-            location ~ ^/(wapt/.*|wapt-host/.*|waptwua/.*)$ {
+            location ~ ^/(wapt/.*|wapt-host/.*|waptwua/.*|wapt-diff-repos/.*)$ {
     {% if use_ssl_client_auth %}
                 proxy_set_header X-Ssl-Authenticated $ssl_client_verify;
                 proxy_set_header X-Ssl-Client-DN $ssl_client_s_dn;

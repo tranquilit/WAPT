@@ -46,7 +46,7 @@ server {
 
         include /opt/wapt/conf/wapt.d/*.conf;
 
-        location ~ ^/(wapt|wapt-host|waptwua)/(.*)$ {
+        location ~ ^/(wapt|wapt-host|waptwua|wapt-diff-repos)/(.*)$ {
             proxy_set_header Cache-Control "store, no-cache, must-revalidate, post-check=0, pre-check=0";
             proxy_set_header Pragma "no-cache";
             proxy_set_header Expires "Sun, 19 Nov 1978 05:00:00 GMT";

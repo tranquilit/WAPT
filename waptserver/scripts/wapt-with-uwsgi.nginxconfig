@@ -55,7 +55,7 @@ server {
             root "/var/www";
         }
 
-        location ~ ^/(wapt/.*|wapt-host/.*|waptwua/.*)$ {
+        location ~ ^/(wapt/.*|wapt-host/.*|waptwua/.*|wapt-diff-repos/.*)$ {
 
             root "/var/www";
         }
