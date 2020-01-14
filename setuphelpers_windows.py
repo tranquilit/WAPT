@@ -1622,6 +1622,25 @@ def windows_version(members_count=3):
             version=Version(wmi.WMI().Win32_OperatingSystem()[0].version)
     return version
 
+def windows_version_from_registry(members_count=3):
+    """Same than windows_version() but get information for windows 10 in registry (it's faster)
+
+    .. versionadded:: 1.3.5
+
+    .. versionchanged:: 1.6.2.5
+          members_count (int) : default to 3.
+    """
+    try:
+        version=Version(platform.win32_ver()[1],members_count)
+    except:
+        version=Version(platform.win32_ver()[1])
+    if version>='10':
+        try:
+            version=Version(str(registry_readstring(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows NT\CurrentVersion','CurrentMajorVersionNumber'))+'.'+str(registry_readstring(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows NT\CurrentVersion','CurrentMinorVersionNumber'))+'.'+registry_readstring(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows NT\CurrentVersion','CurrentBuild'),members_count)
+        except:
+            version=Version(str(registry_readstring(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows NT\CurrentVersion','CurrentMajorVersionNumber'))+'.'+str(registry_readstring(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows NT\CurrentVersion','CurrentMinorVersionNumber'))+'.'+registry_readstring(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows NT\CurrentVersion','CurrentBuild'))
+    return version
+
 
 class WindowsVersions(object):
     """Helper class to get numbered windows version from windows name version

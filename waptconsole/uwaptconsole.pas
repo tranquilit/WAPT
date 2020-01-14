@@ -985,6 +985,7 @@ type
     FReportingLoadingQuery : boolean;
     FReportingQueryTmpId: Integer;
     FGridHostsPlugins: ISuperObject;
+    IsRulesUpdated:Boolean;
 
     procedure DoProgress(ASender: TObject);
     function EditHostPackageEntry(host: ISuperObject): Variant;

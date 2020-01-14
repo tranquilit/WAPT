@@ -7268,6 +7268,10 @@ msgctxt "uwaptconsoleres.rsmainrepourl"
 msgid "Main repo url: %s"
 msgstr ""
 
+#: uwaptconsoleres.rsmessageconfirmactualize
+msgid "There are rules which aren't saved, do you want to save them before updating?"
+msgstr ""
+
 #: uwaptconsoleres.rsmessagetosend
 msgid "Message to send"
 msgstr ""

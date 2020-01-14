@@ -334,6 +334,7 @@ resourcestring
   rsSyncJson = 'You have to first create the index of files for the server';
   rsCreateSyncJson = 'Create index';
   rsUpdateSyncJson = 'Update index';
+  rsMessageConfirmActualize = 'There are rules which aren''t saved, do you want to save them before updating?';
 
 implementation
 
