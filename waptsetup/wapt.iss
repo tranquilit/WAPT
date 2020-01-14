@@ -50,7 +50,7 @@ Source: "{#wapt_base_dir}wapt-enterprise.ico"; DestDir: "{app}";
 #else
 Source: "{#wapt_base_dir}COPYING.txt"; DestDir: "{app}";
 #endif
-Source: "{#wapt_base_dir}version"; DestDir: "{app}";
+Source: "{#wapt_base_dir}version-full"; DestDir: "{app}";
 Source: "{#wapt_base_dir}revision.txt"; DestDir: "{app}";
 Source: "{#wapt_base_dir}templates\*"; DestDir: "{app}\templates"; Flags: createallsubdirs recursesubdirs skipifsourcedoesntexist
 

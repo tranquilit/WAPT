@@ -3626,7 +3626,7 @@ class Wapt(BaseObjectClass):
 
             # we setup a redirection of stdout to catch print output from install scripts
             with WaptPackageInstallLogger(sys.stderr,wapt_context=self,install_id=install_id,user=self.user,exit_status=None) as dblogger:
-                if entry.min_wapt_version and Version(entry.min_wapt_version)>Version(setuphelpers.__version__):
+                if entry.min_wapt_version and Version(entry.min_wapt_version)>Version(__version__):
                     raise EWaptNeedsNewerAgent('This package requires a newer Wapt agent. Minimum version: %s' % entry.min_wapt_version)
 
                 depends = ensure_list(entry.depends)
@@ -4209,7 +4209,7 @@ class Wapt(BaseObjectClass):
             dn=self.host_dn,
             fqdn=setuphelpers.get_hostname(),
             site=self.get_host_site(),
-            wapt_version=Version(setuphelpers.__version__,3),
+            wapt_version=Version(__version__,3),
             wapt_edition=self.get_wapt_edition(),
             packages_trusted_ca_fingerprints=[c.fingerprint for c in self.authorized_certificates()],
             packages_blacklist=self.packages_blacklist,
@@ -5877,16 +5877,13 @@ class Wapt(BaseObjectClass):
         }
         """
         result = {}
-        waptexe = os.path.join(self.wapt_base_dir,'wapt-get.exe')
-        if os.path.isfile(waptexe):
-            result['wapt-exe-version'] = setuphelpers.get_file_properties(waptexe)['FileVersion']
-        waptservice =  os.path.join( os.path.dirname(sys.argv[0]),'waptservice.exe')
-        if os.path.isfile(waptservice):
-            result['waptservice-version'] = setuphelpers.get_file_properties(waptservice)['FileVersion']
-        result['setuphelpers-version'] = setuphelpers.__version__
-        result['wapt-py-version'] = __version__
-        result['common-version'] = __version__
-
+        if os.name=='nt':
+            waptexe = os.path.join(self.wapt_base_dir,'wapt-get.exe')
+            if os.path.isfile(waptexe):
+                result['wapt-get-version'] = setuphelpers.get_file_properties(waptexe)['FileVersion']
+        with open(os.path.join(self.wapt_base_dir,'version-full'),'r') as wapt-version-full:
+            result['wapt-version-full']=wapt-version-full.readline().rstrip()
+        result['waptutils-version'] = __version__
         trusted_certs_sha256 = []
         trusted_certs_cn = []
         invalid_certs_sha256 = []

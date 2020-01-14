@@ -39,5 +39,8 @@ REM Patch x509 certificate signature checking
 copy /Y %~dp0\utils\patch-cryptography\__init__.py  %~dp0\lib\site-packages\cryptography\x509\
 copy /Y %~dp0\utils\patch-cryptography\verification.py  %~dp0\lib\site-packages\cryptography\x509\
 
+REM create full_version file
+%~dp0\waptpython.exe %~dp0\create_version_full.py
+
 REM get iscc nginx and pgsql binaries
 %~dp0\waptpython.exe %~dp0\update_binaries.py

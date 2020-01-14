@@ -48,6 +48,7 @@ mkdir -p %{buildroot}/usr/lib/systemd/
 /etc/logrotate.d/waptservice
 /etc/rsyslog.d/waptservice.conf
 /opt/wapt/waptpackage.py*
+/opt/wapt/version-full
 /opt/wapt/waptcrypto.py*
 /opt/wapt/common.py*
 /opt/wapt/waptutils.py*

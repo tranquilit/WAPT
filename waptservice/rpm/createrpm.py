@@ -222,6 +222,9 @@ rev_count = '%04d' % (r.active_branch.commit.count(),)
 
 wapt_version = wapt_version +'.'+rev_count
 
+with open(os.path.join(wapt_source_dir,'version-full'),'w') as file_version:
+    file_version.write(wapt_version)
+
 if options.revision:
     full_version = wapt_version + '-' + options.revision
 else:
@@ -282,7 +285,7 @@ else:
     sys.exit(1)
 
 eprint('copying the waptservice files')
-files_to_copy = ['waptcrypto.py','waptutils.py','common.py','custom_zip.py','waptpackage.py','setuphelpers.py','setuphelpers_linux.py','setuphelpers_windows.py','setuphelpers_unix.py','setuphelpers_macos.py','wapt-get.py']
+files_to_copy = ['version-full','waptcrypto.py','waptutils.py','common.py','custom_zip.py','waptpackage.py','setuphelpers.py','setuphelpers_linux.py','setuphelpers_windows.py','setuphelpers_unix.py','setuphelpers_macos.py','wapt-get.py']
 for afile in files_to_copy:
     copyfile(makepath(wapt_source_dir, afile),os.path.join('./builddir/opt/wapt/',afile))
 

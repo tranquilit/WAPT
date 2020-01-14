@@ -331,7 +331,7 @@ end;
 
 procedure TDMWaptTray.PopupMenu1Popup(Sender: TObject);
 begin
-  MenuWaptVersion.Caption:=GetApplicationVersion(WaptgetPath);
+  MenuWaptVersion.Caption:=FileToString(ExtractFilePath(ParamStr(0))+'version-full');
   if FileExists(ExtractFilePath(ParamStr(0))+'revision.txt') then
     MenuWaptVersion.Caption:=MenuWaptVersion.Caption+' rev '+FileToString(ExtractFilePath(ParamStr(0))+'revision.txt');
 

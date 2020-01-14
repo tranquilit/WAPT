@@ -46,7 +46,7 @@ def run(*args, **kwargs):
 
 def eprint(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)
-    
+
 eprint(run('sudo pip install gitpython'))
 from git import Repo
 
@@ -228,6 +228,9 @@ rev_count = '%04d' % (r.active_branch.commit.count(),)
 
 wapt_version = wapt_version +'.'+rev_count
 
+with open(os.path.join(wapt_source_dir,'version-full'),'w') as file_version:
+    file_version.write(wapt_version)
+
 if options.revision:
     full_version = wapt_version + '-' + options.revision
 else:
@@ -282,10 +285,10 @@ run('cp -ruf /usr/lib/python2.7/dist-packages/apt* ./builddir/opt/wapt/lib/pytho
 eprint('Time after virtualenv : %f\n' % (time.time()-start_time))
 
 eprint('copying the waptservice files')
-files_to_copy = ['waptcrypto.py','waptutils.py','common.py','custom_zip.py','waptpackage.py','setuphelpers.py','setuphelpers_linux.py','setuphelpers_windows.py','setuphelpers_unix.py','setuphelpers_macos.py','wapt-get.py']
+files_to_copy = ['version-full','waptcrypto.py','waptutils.py','common.py','custom_zip.py','waptpackage.py','setuphelpers.py','setuphelpers_linux.py','setuphelpers_windows.py','setuphelpers_unix.py','setuphelpers_macos.py','wapt-get.py']
 for afile in files_to_copy:
     copyfile(makepath(wapt_source_dir, afile),os.path.join('./builddir/opt/wapt/',afile))
-    
+
 # delete pythonwheels
 if os.path.exists(makepath('builddir','opt','wapt', 'share/')):
 	shutil.rmtree(makepath('builddir','opt','wapt', 'share/'))
@@ -302,7 +305,7 @@ copyfile(makepath(wapt_source_dir,'utils','patch-socketio-client-2','transports.
 eprint('copying the waptservice files')
 rsync(source_dir, './builddir/opt/wapt/',
       excludes=['postconf', 'repository', 'rpm', 'deb','pkg', 'spnego-http-auth-nginx-module', '*.bat'])
-      
+
 eprint('copying the templates files')
 rsync(makepath(wapt_source_dir,'templates/'),'./builddir/opt/wapt/templates/', excludes=[])
 
@@ -320,7 +323,7 @@ copyfile(makepath(wapt_source_dir, 'waptpython'),'./builddir/usr/bin/waptpython'
 for lib in ('dialog.py', ):
     rsync(makepath(wapt_source_dir, 'lib', 'site-packages', lib),
           './builddir/opt/wapt/lib/python2.7/site-packages/')
-          
+
 
 eprint('copying control and postinst package metadata')
 
