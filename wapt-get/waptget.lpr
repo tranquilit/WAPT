@@ -1085,7 +1085,7 @@ begin
   SourcesDir := PyUTF8Decode(BuildDir+'\waptupgrade');
 
   // we put new waptdeploy for automatisation of install
-  ForceDirectoriesUTF8(SourcesDir);
+  ForceDirectoriesUTF8(MakePath([SourcesDir,'patchs']));
   CopyFile(makepath([WaptBaseDir,'waptdeploy.exe']),MakePath([SourcesDir,'patchs','waptdeploy.exe']));
 
   UpgradePackage := waptpackage.PackageEntry(waptfile := SourcesDir);
