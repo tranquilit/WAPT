@@ -2328,10 +2328,8 @@ end;
 
 procedure TVisWaptGUI.ActCreateWaptSetupExecute(Sender: TObject);
 var
-  WAPTSetupPath,WaptUpgradePackagePath: String;
+  WAPTSetupPath, WaptUpgradePackagePath: String;
 begin
-
-
   if (waptcommon.DefaultPackagePrefix = '') then
   begin
     ShowMessage(rsWaptPackagePrefixMissing);
@@ -6485,7 +6483,7 @@ end;
 
 procedure TVisWaptGUI.ActRefreshHostsForPackageExecute(Sender: TObject);
 begin
-;;
+  ActSearchHost.Execute;
 end;
 
 procedure TVisWaptGUI.SetCurrentPackageForGridHostsForPackage(AValue: String);
