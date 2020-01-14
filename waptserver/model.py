@@ -884,7 +884,7 @@ def update_installed_packages(uuid, data, applied_status_hashes):
                     version=pv[1],
                     created_on=datetime.datetime.utcnow(),
                     install_status='NEED-INSTALL',
-                    package_uuid='fb-%s' % (hashlib.sha256(package['package'].encode('utf8')+'-'+package['version'])),
+                    package_uuid='fb-%s' % (hashlib.sha256(package['package'].encode('utf8')+'-'+package['version']).hexdigest()),
                     ).save()
 
         applied_status_hashes['installed_packages'] = data.get('status_hashes',{}).get('installed_packages')
