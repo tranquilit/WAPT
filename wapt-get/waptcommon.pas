@@ -1914,7 +1914,7 @@ begin
       end
       else
         Raise EIdHTTPProtocolException.CreateError(http.ResultCode,strresult,http.ResultString);
-
+      http.Clear;
     End;
     Result := SO(strresult);
     Logger(Format('url: %s : OK Duration: %d',[url,(GetTickCount-StartTime)]),DEBUG);
