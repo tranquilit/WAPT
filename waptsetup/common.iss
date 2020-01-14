@@ -48,7 +48,7 @@ Source: "{#ssl_dir}\*"; DestDir: "{app}\ssl"; Flags: createallsubdirs recursesub
 #endif
 
 ; local management console wapt selfservice
-Source: "{#wapt_base_dir}waptself.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#wapt_base_dir}waptself.exe"; DestDir: "{app}"; Flags: ignoreversion;  BeforeInstall: killtask('waptself.exe');
 
 Source: "{param:CopyPackagesTrustedCA}"; DestDir: "{app}\ssl"; Flags: external createallsubdirs recursesubdirs; Check: CopyPackagesTrustedCACheck();
 Source: "{param:CopyServersTrustedCA}"; DestDir: "{app}\ssl\server"; Flags: external createallsubdirs recursesubdirs; Check: CopyServersTrustedCACheck();
@@ -750,3 +750,9 @@ end;
 #endif
 
 
+procedure killtask(name:String);
+var
+  errorcode:integer;
+begin
+  shellexec('','taskkill','/t /im "'+name+'" /f','',sw_Hide,ewWaitUntilTerminated,Errorcode);
+end;

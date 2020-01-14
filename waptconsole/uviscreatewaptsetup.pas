@@ -529,7 +529,7 @@ begin
       edOrgName.Text, @DoProgress, 'waptagent',
       EdServerCertificate.Text,
       CBUseKerberos.Checked,
-      DMPython.IsEnterpriseEdition,
+      FileExists(MakePath([WaptBaseDir,'waptenterprise','licencing.py'])),
       CBForceRepoURL.Checked,
       CBForceWaptServerURL.Checked,
       CBUseFQDNAsUUID.Checked,

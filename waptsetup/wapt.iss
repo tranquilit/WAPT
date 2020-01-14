@@ -402,13 +402,6 @@ begin
   end;
 end;
 
-procedure killtask(name:String);
-var
-  errorcode:integer;
-begin
-  shellexec('','taskkill','/t /im "'+name+'" /f','',sw_Hide,ewWaitUntilTerminated,Errorcode);
-end;
-
 function NeedsAddPath(Param: String): boolean;
 var
   OrigPath: string;

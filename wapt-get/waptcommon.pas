@@ -2698,8 +2698,6 @@ var
   //WuaKey,WuaParams: ISuperObject;
 
   wapt_base_dir,inno_fn,p12keypath,signtool:  Utf8String;
-  // for windows copyfilew
-  source,target: String;
 
   function startswith(st:ISuperObject;subst:Utf8String):Boolean;
   begin
@@ -2716,8 +2714,8 @@ begin
     if not DirectoryExistsUTF8(SSLDir) then
       mkdir(SSLDir);
 
-    if (default_public_cert<>'') and DirectoryExistsUTF8(Source) and (default_public_cert <> SSLDir) then
-      CopyDirTree(Source,SSLDir,[cffCreateDestDirectory,cffPreserveTime]);
+    if (default_public_cert<>'') and DirectoryExistsUTF8(default_public_cert) and (default_public_cert <> SSLDir) then
+      CopyDirTree(default_public_cert,SSLDir,[cffCreateDestDirectory,cffPreserveTime]);
 
     Destination := MakePath([BuildDir,'waptupgrade']);
     //  upgrade package sources

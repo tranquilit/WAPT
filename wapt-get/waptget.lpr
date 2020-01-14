@@ -935,11 +935,11 @@ begin
       ini.ReadString('global', 'repo_url', ''),
       ini.ReadString('global', 'wapt_server', ''),
       BuildDir,
-      'Wapt', @DoOnProgress, Edition,
+      'Wapt', @DoOnProgress,
+      Edition,
       ini.ReadString('global', 'verify_cert', '0'),
-      ini.ReadBool('global', 'use_kerberos'
-      , False ),
-      IsEnterpriseEdition,
+      ini.ReadBool('global', 'use_kerberos', False ),
+      FileExists(MakePath([WaptBaseDir,'waptenterprise','licencing.py'])),
       True,
       True,
       ini.ReadBool('global', 'use_fqdn_as_uuid',False),
@@ -1083,6 +1083,10 @@ begin
 
   //BuildResult is a PackageEntry instance
   SourcesDir := PyUTF8Decode(BuildDir+'\waptupgrade');
+
+  // we put new waptdeploy for automatisation of install
+  ForceDirectoriesUTF8(SourcesDir);
+  CopyFile(makepath([WaptBaseDir,'waptdeploy.exe']),MakePath([SourcesDir,'patchs','waptdeploy.exe']));
 
   UpgradePackage := waptpackage.PackageEntry(waptfile := SourcesDir);
   UpgradePackage.package := DefaultPackagePrefix+'-waptupgrade';
