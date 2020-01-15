@@ -88,6 +88,8 @@ if sys.platform=='win32':
     import ntsecuritycon
     import win32security
     import win32net
+    import win32con
+    from win32com.shell import shell, shellcon
     import pywintypes
     import pythoncom
     from ntsecuritycon import DOMAIN_GROUP_RID_ADMINS,DOMAIN_GROUP_RID_USERS
@@ -7368,6 +7370,16 @@ def check_user_authorisation_for_self_service(rules,packagename,user_groups):
                 return True
     return False
 
+def run_as_administrator(afile,params=None):
+    """Launch with a runas verb to trigger a privileges elevation.
+    """
+    #pylint: disable=no-name-in-module,import-error
+    ret = shell.ShellExecuteEx(
+        lpVerb='runas',
+        lpFile=afile,
+        lpParameters=params)
+    return ret
+
 def wapt_sources_edit(wapt_sources_dir):
     """Utility to open Pyscripter with package source if it is installed
         else open the development directory in Shell Explorer.
@@ -7393,15 +7405,13 @@ def wapt_sources_edit(wapt_sources_dir):
             VIRTUAL_ENV=wapt_base_dir
             ))
 
-        if os.path.isfile(pyscripter_filename) and os.path.isfile(psproj_filename):
-            p = psutil.Popen((u'"%s" --PYTHONDLLPATH "%s" --python27 -N --project "%s" "%s" "%s"' % (
-                            pyscripter_filename,
+        if sys.platform=='win32' and os.path.isfile(pyscripter_filename) and os.path.isfile(psproj_filename):
+            run_as_administrator(pyscripter_filename,
+                '--PYTHONDLLPATH "%s" --python27 -N --project "%s" "%s" "%s"' % (
                             wapt_base_dir,
                             psproj_filename,
                             setup_filename,
-                            control_filename)).encode(sys.getfilesystemencoding()),
-                            cwd=wapt_sources_dir.encode(sys.getfilesystemencoding()),
-                            env=env)
+                            control_filename))
         else:
             os.startfile(wapt_sources_dir)
     else:
