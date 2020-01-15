@@ -877,17 +877,36 @@ def update_installed_packages(uuid, data, applied_status_hashes):
         if packages:
             HostPackagesStatus.insert_many(packages).execute() # pylint: disable=no-value-for-parameter
 
-        for pv in missing+upgrades:
-            HostPackagesStatus(
-                    host = uuid,
-                    package=pv[0],
-                    version=pv[1],
-                    created_on=datetime.datetime.utcnow(),
-                    install_status='NEED-INSTALL',
-                    package_uuid='fb-%s' % (hashlib.sha256(package['package'].encode('utf8')+'-'+package['version']).hexdigest()),
-                    ).save()
-
         applied_status_hashes['installed_packages'] = data.get('status_hashes',{}).get('installed_packages')
+
+    else:
+        # merge last_update_status in current records
+        # errors
+        for pv in errors:
+            HostPackagesStatus.update(install_status='ERROR').where(
+                (HostPackagesStatus.host==uuid) & (HostPackagesStatus.package==pv[0].encode('utf8')) & (HostPackagesStatus.version==pv[1].encode('utf8'))).execute()
+        # removes
+        for pv in removes:
+            HostPackagesStatus.update(install_status='NEED-REMOVE').where(
+                (HostPackagesStatus.host==uuid) & (HostPackagesStatus.package==pv.encode('utf8')) ).execute()
+        # upgrades
+        for pv in upgrades:
+            HostPackagesStatus.update(install_status='NEED-UPGRADE').where(
+                (HostPackagesStatus.host==uuid) & (HostPackagesStatus.package==pv[0].encode('utf8')) & (HostPackagesStatus.version != pv[1].encode('utf8'))).execute()
+
+
+    # add missing
+    for pv in missing+upgrades:
+        (ps,_created) = HostPackagesStatus.get_or_create(
+                host = uuid,
+                package_uuid='fb-%s' % (hashlib.sha256(pv[0].encode('utf8')+'-'+pv[1]).hexdigest()),
+                package=pv[0],
+                version=pv[1],
+                )
+        if _created:
+            ps.created_on=datetime.datetime.utcnow()
+            ps.install_status='NEED-INSTALL'
+            ps.save()
 
 
 def update_installed_softwares(uuid, data,applied_status_hashes):
