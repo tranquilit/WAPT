@@ -3225,6 +3225,9 @@ class WaptLocalRepo(WaptBaseRepo):
                     kept.append(fname)
                     entry = old_entries[package_filename]
 
+                if not entry.md5sum:
+                    entry.md5sum = md5_for_file(entry.localpath)
+
                 if include_host_packages or entry.section != 'host':
                     packages_lines.append(entry.ascontrol(with_non_control_attributes=True))
                     # add a blank line between each package control
