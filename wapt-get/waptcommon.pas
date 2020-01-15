@@ -1868,6 +1868,7 @@ begin
   try
     http.Headers.Add('Accept-Language: '+Language);
     http.UserAgent := DefaultUserAgent;
+    http.MimeType  := 'application/json';
 
     if timeout<=0 then
       timeout := waptservice_timeout * 1000;
@@ -1915,6 +1916,9 @@ begin
       else
         Raise EIdHTTPProtocolException.CreateError(http.ResultCode,strresult,http.ResultString);
       http.Clear;
+      http.Headers.Add('Accept-Language: '+Language);
+      http.UserAgent := DefaultUserAgent;
+      http.MimeType  := 'application/json';
     End;
     Result := SO(strresult);
     Logger(Format('url: %s : OK Duration: %d',[url,(GetTickCount-StartTime)]),DEBUG);
