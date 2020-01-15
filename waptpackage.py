@@ -975,6 +975,21 @@ class PackageEntry(BaseObjectClass):
         self.package_uuid = str(uuid.uuid4())
         return self.package_uuid
 
+    def _md5sum_from_filename(self,filename):
+        """Returns the md5sum in
+
+        >>> pe = PackageEntry(waptfile='c:/tranquilit/tis-disable-telemetry_6.wapt')
+        >>> pe.make_package_filename()
+        u'tis-disable-telemetry_6_3519b9e9b1d116dccd9514c209bb84ab.wapt'
+        >>> pe._md5sum_from_filename_(pe.make_package_filename())
+        u'3519b9e9b1d116dccd9514c209bb84ab'
+        """
+        if filename and isinstance(filename,(str,unicode)) and filename.endswith('.wapt') and len(filename)>37 and filename[-38] == '_':
+            md5sum = filename[-37:-5]  # remove ending .wapt
+            return md5sum
+        else:
+            return ''
+
     def as_package_request(self):
         return PackageRequest(
             package = self.package,
@@ -1225,7 +1240,7 @@ class PackageEntry(BaseObjectClass):
                                     If fname is a file path, it must be Wapt zipped file, and try to load control data from it
                                     If fname is a directory path, it must be root dir of unzipped package file and load control from <fname>/WAPT/control
 
-            calc_md5 (boolean): if True and fname is a zipped file, initialize md5sum attribute with md5 sum of Zipped file/
+            calc_md5 (boolean): if True and fname is a zipped file, initialize md5sum attribute with md5 part of filename or calc from Zipped file
 
         Returns:
             PackageEntry: self
@@ -1251,14 +1266,10 @@ class PackageEntry(BaseObjectClass):
 
         self._load_control(control)
 
-        self.filename = self.make_package_filename()
-        self.localpath = ''
-
         if os.path.isfile(fname):
-            if calc_md5:
+            self.md5sum = self._md5sum_from_filename(fname)
+            if calc_md5 and not self.md5sum:
                 self.md5sum = md5_for_file(fname)
-            else:
-                self.md5sum = ''
             self.size = os.path.getsize(fname)
             self.filename = os.path.basename(fname)
             self.localpath = os.path.abspath(fname)
@@ -1266,6 +1277,9 @@ class PackageEntry(BaseObjectClass):
             self.filename = None
             self.localpath = None
             self.sourcespath = os.path.abspath(fname)
+        else:
+            self.filename = self.make_package_filename()
+            self.localpath = ''
         return self
 
     def save_control_to_wapt(self,fname=None,force=True):
@@ -1400,10 +1414,10 @@ class PackageEntry(BaseObjectClass):
             return package_name+'.wapt'
         else:
             if package_name.lower().endswith('-waptupgrade'):
-                return '_'.join([f for f in (self.package,self.version,self.architecture,self.maturity,self.locale) if f]) + '.wapt'
+                return '_'.join([f for f in (self.package,self.version,self.architecture,self.maturity,self.locale,self.md5sum) if f]) + '.wapt'
 
             # includes only non empty fields
-            att= u'_'.join([f for f in (self.architecture,self.maturity,'-'.join(ensure_list(self.locale))) if (f and f != 'all')])
+            att= u'_'.join([f for f in (self.architecture,self.maturity,'-'.join(ensure_list(self.locale)),self.md5sum) if (f and f != 'all')])
             if att:
                 att = '_'+att
             return package_name+'_'+self.version+att+'.wapt'
@@ -3151,7 +3165,10 @@ class WaptLocalRepo(WaptBaseRepo):
             self._packages = []
 
         # A bundle for package signers certificates
-        signer_certificates = SSLCABundle()
+        if force_all:
+            signer_certificates = SSLCABundle()
+        else:
+            signer_certificates = self.get_certificates()
 
         old_entries = {}
 
@@ -3182,9 +3199,10 @@ class WaptLocalRepo(WaptBaseRepo):
         for fname in waptlist:
             try:
                 package_filename = os.path.basename(fname)
-                entry = PackageEntry()
-                if package_filename in old_entries:
-                    entry.load_control_from_wapt(fname,calc_md5=False)
+                if force_all or not package_filename in old_entries or canonical_filenames:
+                    logger.info(u"  Processing new %s" % fname)
+                    entry = PackageEntry()
+                    entry.load_control_from_wapt(fname,calc_md5=force_all or canonical_filenames)
                     if self.cabundle is not None:
                         try:
                             entry.check_control_signature(self.cabundle)
@@ -3192,22 +3210,21 @@ class WaptLocalRepo(WaptBaseRepo):
                             logger.info(u'Package %s discarded because: %s'% (package_filename,e))
                             continue
 
-                    if not force_all and entry == old_entries[package_filename] and \
-                                entry.signature == old_entries[package_filename].signature and \
-                                entry.signature_date == old_entries[package_filename].signature_date:
-                        logger.debug(u"  Keeping %s" % package_filename)
-                        kept.append(fname)
-                        entry = old_entries[package_filename]
-                    else:
-                        logger.info(u"  Reprocessing %s" % fname)
-                        entry.load_control_from_wapt(fname)
-                        processed.append(fname)
-                else:
-                    logger.info(u"  Processing new %s" % fname)
-                    entry.load_control_from_wapt(fname)
                     processed.append(fname)
                     if canonical_filenames:
                         self._ensure_canonical_package_filename(entry)
+
+                    # looks for the signer certificate and add it to Packages if not already
+                    certs = entry.package_certificates()
+                    if certs:
+                        signer_certificates.add_certificates(certs)
+
+                    self._extract_icon(entry)
+                else:
+                    logger.debug(u"  Keeping %s" % package_filename)
+                    kept.append(fname)
+                    entry = old_entries[package_filename]
+
                 if include_host_packages or entry.section != 'host':
                     packages_lines.append(entry.ascontrol(with_non_control_attributes=True))
                     # add a blank line between each package control
@@ -3218,12 +3235,6 @@ class WaptLocalRepo(WaptBaseRepo):
                 if entry.package not in self._index or self._index[entry.package] < entry:
                     self._index[entry.package] = entry
 
-                # looks for the signer certificate and add it to Packages if not already
-                certs = entry.package_certificates()
-                if certs:
-                    signer_certificates.add_certificates(certs)
-
-                self._extract_icon(entry)
 
             except Exception as e:
                 logger.critical(u"package %s: %s" % (fname,ensure_unicode(e)))
