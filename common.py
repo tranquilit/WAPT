@@ -5881,8 +5881,8 @@ class Wapt(BaseObjectClass):
             waptexe = os.path.join(self.wapt_base_dir,'wapt-get.exe')
             if os.path.isfile(waptexe):
                 result['wapt-get-version'] = setuphelpers.get_file_properties(waptexe)['FileVersion']
-        with open(os.path.join(self.wapt_base_dir,'version-full'),'r') as wapt-version-full:
-            result['wapt-version-full']=wapt-version-full.readline().rstrip()
+        with open(os.path.join(self.wapt_base_dir,'version-full'),'r') as wapt_version_full:
+            result['wapt-version-full']= wapt_version_full.readline().rstrip()
         result['waptutils-version'] = __version__
         trusted_certs_sha256 = []
         trusted_certs_cn = []
