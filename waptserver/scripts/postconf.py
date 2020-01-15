@@ -621,9 +621,16 @@ def main():
         if check_mongo2pgsql_upgrade_needed(options.configfile):
             upgrade2postgres(options.configfile)
 
-    # Create empty sync.json and rules.json file for all installations
-
     WAPT_UID = good_pwd.getpwnam('wapt').pw_uid
+
+    # CHOWN of waptservertasks.sqlite it seems to be created before
+
+    location_waptservertasks = os.path.join(wapt_root_dir,'db','waptservertasks.sqlite')
+
+    if os.path.isfile(location_waptservertasks):
+        os.chown(location_waptservertasks,WAPT_UID,os.stat(location_waptservertasks).st_gid)
+
+    # Create empty sync.json and rules.json file for all installations
 
     def set_good_rights_nginx(files=[]):
         for afile in files:
