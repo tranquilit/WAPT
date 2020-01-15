@@ -1460,15 +1460,16 @@ def init_db(drop=False):
             wapt_db.execute_sql('CREATE EXTENSION hstore;')
         except:
             wapt_db.rollback()
+
+        list_tables = [ServerAttribs, Hosts, HostPackagesStatus, HostSoftwares, HostGroups,WsusUpdates,
+                HostWsus,WsusDownloadTasks,Packages, ReportingQueries, Normalization, StoreDownload,ReportingQueries,
+                ReportingSnapshots,WaptUsers,WaptUserAcls,SyncStatus,SiteRules]
         if drop:
-            for table in reversed([ServerAttribs, Hosts, HostPackagesStatus, HostSoftwares, HostGroups,WsusUpdates,
-                HostWsus,WsusDownloadTasks,Packages, ReportingQueries, Normalization, StoreDownload,ReportingQueries,ReportingSnapshots,WaptUsers,WaptUserAcls]):
+            for table in reversed(list_tables):
                 table.drop_table(fail_silently=True)
 
         try:
-            wapt_db.create_tables([ServerAttribs, Hosts, HostPackagesStatus, HostSoftwares, HostGroups,WsusUpdates,
-                HostWsus,WsusDownloadTasks,Packages, ReportingQueries, Normalization, StoreDownload,ReportingQueries,ReportingSnapshots,WaptUsers,WaptUserAcls
-                ], safe=True)
+            wapt_db.create_tables(list_tables, safe=True)
         except Exception as e:
             wapt_db.rollback()
             print(u'Unable to create tables, will try to upgrade step by step instead... : %s' % (repr(e),))
