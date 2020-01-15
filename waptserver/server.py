@@ -1069,7 +1069,9 @@ def login():
             token_gen = get_secured_token_generator()
 
             # add ACL
-            user_data = WaptUsers.get(name=user)
+            (user_data,_created) = WaptUsers.get_or_create(name=user)
+            if _created:
+                user_data.save()
             #if not user_data:
             #    raise EWaptAuthenticationFailure('Bad user %s' % user)
             user_acls = list(WaptUserAcls.select().where(
