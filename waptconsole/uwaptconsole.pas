@@ -21,7 +21,9 @@ type
   { TVisWaptGUI }
 
   TVisWaptGUI = class(TForm)
+    ActAddNewNetwork: TAction;
     ActCancelRunningTask: TAction;
+    ActDeleteNetwork: TAction;
     ActDisplayPreferences: TAction;
     ActExternalRepositoriesSettings: TAction;
     ActAddHWPropertyToGrid: TAction;
@@ -29,6 +31,7 @@ type
     ActEditOrgUnitPackage: TAction;
     ActInstallLicence: TAction;
     ActAddProfile: TAction;
+    ActTriggerSafeHostUpgrade: TAction;
     ActSuppr: TAction;
     ActManageUsers: TAction;
     ActSaveRules: TAction;
@@ -46,6 +49,7 @@ type
     Label19: TLabel;
     LabLogsKB: TLabel;
     GridRules: TSOGrid;
+    MenuItem116: TMenuItem;
     MenuItem117: TMenuItem;
     MenuItemCheckFiles: TMenuItem;
     MenuItemShowErrors: TMenuItem;
@@ -606,6 +610,7 @@ type
     procedure ActSupprExecute(Sender: TObject);
     procedure ActManageUsersExecute(Sender: TObject);
     procedure ActSaveRulesExecute(Sender: TObject);
+    procedure ActTriggerSafeHostUpgradeExecute(Sender: TObject);
     procedure ActUpRuleExecute(Sender: TObject);
     procedure ActCancelRunningTaskExecute(Sender: TObject);
     procedure ActChangePasswordExecute(Sender: TObject);
@@ -6645,6 +6650,10 @@ begin
   ;;
 end;
 
+procedure TVisWaptGUI.ActTriggerSafeHostUpgradeExecute(Sender: TObject);
+begin
+  ;;
+end;
 
 {$endif}
 

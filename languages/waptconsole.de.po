@@ -2918,6 +2918,10 @@ msgctxt "TVISWAPTGUI.ACTTRIGGERHOSTUPGRADE.HINT"
 msgid "Launch pending packages upgrades"
 msgstr "Updates anwenden"
 
+#: tviswaptgui.acttriggersafehostupgrade.caption
+msgid "Apply upgrades for not running applications"
+msgstr ""
+
 #: tviswaptgui.acttriggertestlongtask.caption
 msgid "Trigger test long task"
 msgstr ""
@@ -8273,6 +8277,10 @@ msgstr "CNAME: %s"
 msgctxt "uwaptconsoleres.rscompletionprogress"
 msgid "%s : %.0f%% completed"
 msgstr "%s : %.0f%% beendet"
+
+#: uwaptconsoleres.rsconfirmburstsafeupgrades
+msgid "Are you sure you want to Apply Upgrades for not running applications on %d hosts ?"
+msgstr ""
 
 #: uwaptconsoleres.rsconfirmburstupdate
 msgid "Are you sure you want to trigger Status Update on %d hosts ?"

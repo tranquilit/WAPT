@@ -27,9 +27,9 @@ object VisWaptGUI: TVisWaptGUI
     Height = 794
     Top = 0
     Width = 1388
-    ActivePage = pgPrivateRepo
+    ActivePage = pgInventory
     Align = alClient
-    TabIndex = 2
+    TabIndex = 0
     TabOrder = 0
     OnChange = MainPagesChange
     object pgInventory: TTabSheet
@@ -41,21 +41,21 @@ object VisWaptGUI: TVisWaptGUI
         Height = 648
         Top = 120
         Width = 648
-        ActivePage = pgHostInventory
+        ActivePage = pgPackages
         Align = alRight
-        TabIndex = 1
+        TabIndex = 0
         TabOrder = 0
         Visible = False
         OnChange = HostPagesChange
         object pgPackages: TTabSheet
           AnchorSideTop.Side = asrBottom
           Caption = 'Overview'
-          ClientHeight = 468
+          ClientHeight = 622
           ClientWidth = 640
           object GridHostPackages: TSOGrid
             Left = 0
-            Height = 147
-            Top = 137
+            Height = 311
+            Top = 127
             Width = 640
             OnGetText = GridHostPackagesGetText
             OnNodesDelete = GridHostPackagesNodesDelete
@@ -376,7 +376,7 @@ object VisWaptGUI: TVisWaptGUI
           object Panel5: TPanel
             Left = 0
             Height = 179
-            Top = 289
+            Top = 443
             Width = 640
             Align = alBottom
             BevelOuter = bvNone
@@ -459,7 +459,7 @@ object VisWaptGUI: TVisWaptGUI
           end
           object Panel16: TPanel
             Left = 0
-            Height = 135
+            Height = 125
             Top = 0
             Width = 640
             Align = alTop
@@ -475,14 +475,14 @@ object VisWaptGUI: TVisWaptGUI
             ChildSizing.ShrinkVertical = crsHomogenousSpaceResize
             ChildSizing.Layout = cclLeftToRightThenTopToBottom
             ChildSizing.ControlsPerLine = 4
-            ClientHeight = 135
+            ClientHeight = 125
             ClientWidth = 640
             TabOrder = 2
             object Label6: TLabel
               Left = 6
-              Height = 23
+              Height = 21
               Top = 6
-              Width = 122
+              Width = 116
               Alignment = taRightJustify
               Caption = 'Name'
               Layout = tlCenter
@@ -490,10 +490,10 @@ object VisWaptGUI: TVisWaptGUI
               ParentColor = False
             end
             object EdHostname: TEdit
-              Left = 134
-              Height = 23
+              Left = 128
+              Height = 21
               Top = 6
-              Width = 197
+              Width = 203
               Color = clForm
               Constraints.MinWidth = 150
               ReadOnly = True
@@ -501,19 +501,19 @@ object VisWaptGUI: TVisWaptGUI
             end
             object Label2: TLabel
               Left = 337
-              Height = 23
+              Height = 21
               Top = 6
-              Width = 94
+              Width = 88
               Alignment = taRightJustify
               Caption = 'Manufacturer'
               Layout = tlCenter
               ParentColor = False
             end
             object EdManufacturer: TEdit
-              Left = 437
-              Height = 23
+              Left = 431
+              Height = 21
               Top = 6
-              Width = 197
+              Width = 203
               Color = clForm
               Constraints.MinWidth = 150
               ReadOnly = True
@@ -521,9 +521,9 @@ object VisWaptGUI: TVisWaptGUI
             end
             object Label8: TLabel
               Left = 6
-              Height = 23
-              Top = 31
-              Width = 122
+              Height = 21
+              Top = 29
+              Width = 116
               Alignment = taRightJustify
               Caption = 'Description'
               Layout = tlCenter
@@ -531,10 +531,10 @@ object VisWaptGUI: TVisWaptGUI
               ParentColor = False
             end
             object EdDescription: TEdit
-              Left = 134
-              Height = 23
-              Top = 31
-              Width = 197
+              Left = 128
+              Height = 21
+              Top = 29
+              Width = 203
               Constraints.MinWidth = 150
               OnExit = EdDescriptionExit
               OnKeyPress = EdDescriptionKeyPress
@@ -542,19 +542,19 @@ object VisWaptGUI: TVisWaptGUI
             end
             object Label3: TLabel
               Left = 337
-              Height = 23
-              Top = 31
-              Width = 94
+              Height = 21
+              Top = 29
+              Width = 88
               Alignment = taRightJustify
               Caption = 'Model'
               Layout = tlCenter
               ParentColor = False
             end
             object EdModelName: TEdit
-              Left = 437
-              Height = 23
-              Top = 31
-              Width = 197
+              Left = 431
+              Height = 21
+              Top = 29
+              Width = 203
               Color = clForm
               Constraints.MinWidth = 150
               ReadOnly = True
@@ -562,9 +562,9 @@ object VisWaptGUI: TVisWaptGUI
             end
             object Label7: TLabel
               Left = 6
-              Height = 23
-              Top = 56
-              Width = 122
+              Height = 21
+              Top = 52
+              Width = 116
               Alignment = taRightJustify
               Caption = 'Operating system'
               Layout = tlCenter
@@ -572,10 +572,10 @@ object VisWaptGUI: TVisWaptGUI
               ParentColor = False
             end
             object EdOS: TEdit
-              Left = 134
-              Height = 23
-              Top = 56
-              Width = 197
+              Left = 128
+              Height = 21
+              Top = 52
+              Width = 203
               Color = clForm
               Constraints.MinWidth = 150
               ReadOnly = True
@@ -583,19 +583,19 @@ object VisWaptGUI: TVisWaptGUI
             end
             object Label9: TLabel
               Left = 337
-              Height = 23
-              Top = 56
-              Width = 94
+              Height = 21
+              Top = 52
+              Width = 88
               Alignment = taRightJustify
               Caption = 'Last seen'
               Layout = tlCenter
               ParentColor = False
             end
             object EdUpdateDate: TEdit
-              Left = 437
-              Height = 23
-              Top = 56
-              Width = 197
+              Left = 431
+              Height = 21
+              Top = 52
+              Width = 203
               Color = clForm
               Constraints.MinWidth = 150
               ReadOnly = True
@@ -603,9 +603,9 @@ object VisWaptGUI: TVisWaptGUI
             end
             object Label1: TLabel
               Left = 6
-              Height = 23
-              Top = 81
-              Width = 122
+              Height = 21
+              Top = 75
+              Width = 116
               Alignment = taRightJustify
               Caption = 'IP address'
               Layout = tlCenter
@@ -613,10 +613,10 @@ object VisWaptGUI: TVisWaptGUI
               ParentColor = False
             end
             object EdIPAddress: TEdit
-              Left = 134
-              Height = 23
-              Top = 81
-              Width = 197
+              Left = 128
+              Height = 21
+              Top = 75
+              Width = 203
               Color = clForm
               Constraints.MinWidth = 150
               ReadOnly = True
@@ -624,19 +624,19 @@ object VisWaptGUI: TVisWaptGUI
             end
             object LabUser: TLabel
               Left = 337
-              Height = 23
-              Top = 81
-              Width = 94
+              Height = 21
+              Top = 75
+              Width = 88
               Alignment = taRightJustify
               Caption = 'User'
               Layout = tlCenter
               ParentColor = False
             end
             object EdUser: TEdit
-              Left = 437
-              Height = 23
-              Top = 81
-              Width = 197
+              Left = 431
+              Height = 21
+              Top = 75
+              Width = 203
               Color = clForm
               Constraints.MinWidth = 150
               ReadOnly = True
@@ -644,9 +644,9 @@ object VisWaptGUI: TVisWaptGUI
             end
             object Label12: TLabel
               Left = 6
-              Height = 23
-              Top = 106
-              Width = 122
+              Height = 21
+              Top = 98
+              Width = 116
               Alignment = taRightJustify
               Caption = 'Last task'
               Layout = tlCenter
@@ -654,10 +654,10 @@ object VisWaptGUI: TVisWaptGUI
               ParentColor = False
             end
             object EdRunningStatus: TEdit
-              Left = 134
-              Height = 23
-              Top = 106
-              Width = 197
+              Left = 128
+              Height = 21
+              Top = 98
+              Width = 203
               Color = clForm
               Constraints.MinWidth = 150
               ReadOnly = True
@@ -665,9 +665,9 @@ object VisWaptGUI: TVisWaptGUI
             end
             object Label11: TLabel
               Left = 337
-              Height = 23
-              Top = 106
-              Width = 94
+              Height = 21
+              Top = 98
+              Width = 88
               Alignment = taRightJustify
               Caption = 'UUID'
               Layout = tlCenter
@@ -675,10 +675,10 @@ object VisWaptGUI: TVisWaptGUI
               ParentColor = False
             end
             object EdUUID: TEdit
-              Left = 437
-              Height = 23
-              Top = 106
-              Width = 197
+              Left = 431
+              Height = 21
+              Top = 98
+              Width = 203
               Color = clForm
               Constraints.MinWidth = 150
               ReadOnly = True
@@ -689,7 +689,7 @@ object VisWaptGUI: TVisWaptGUI
             Cursor = crVSplit
             Left = 0
             Height = 5
-            Top = 284
+            Top = 438
             Width = 640
             Align = alBottom
             ResizeAnchor = akBottom
@@ -8636,42 +8636,6 @@ object VisWaptGUI: TVisWaptGUI
       OnUpdate = ActHostsActionsUpdate
       ShortCut = 16464
     end
-    object ActAddDepends: TAction
-      Category = 'hosts'
-      Caption = 'Add package to host dependencies'
-      ImageIndex = 6
-      OnExecute = ActAddDependsExecute
-      OnUpdate = ActAddDependsUpdate
-      ShortCut = 24655
-    end
-    object ActRemoveDepends: TAction
-      Category = 'hosts'
-      Caption = 'Remove packages from host dependencies'
-      ImageIndex = 7
-      OnExecute = ActRemoveDependsExecute
-      OnUpdate = ActAddDependsUpdate
-    end
-    object ActAddConflicts: TAction
-      Category = 'hosts'
-      Caption = 'Add package to hosts conflicts'
-      OnExecute = ActAddConflictsExecute
-      OnUpdate = ActAddDependsUpdate
-    end
-    object ActRemoveConflicts: TAction
-      Category = 'hosts'
-      Caption = 'Remove package from hosts conflicts'
-      OnExecute = ActRemoveConflictsExecute
-      OnUpdate = ActAddDependsUpdate
-    end
-    object ActDeleteHostsPackageAndInventory: TAction
-      Category = 'hosts'
-      Caption = 'Remove host'
-      Hint = 'Remove from inventory'
-      ImageIndex = 3
-      OnExecute = ActDeleteHostsPackageAndInventoryExecute
-      OnUpdate = ActAddDependsUpdate
-      ShortCut = 16430
-    end
     object ActDeletePackage: TAction
       Category = 'packages'
       Caption = 'Remove from repository'
@@ -8716,12 +8680,6 @@ object VisWaptGUI: TVisWaptGUI
       Category = 'Tools'
       Caption = 'Preferences'
       OnExecute = ActWAPTConsoleConfigExecute
-    end
-    object ActGotoHost: TAction
-      Category = 'hosts'
-      Caption = 'Search for host'
-      OnExecute = ActGotoHostExecute
-      ShortCut = 16454
     end
     object ActSearchGroups: TAction
       Category = 'Bundles'
@@ -8841,14 +8799,6 @@ object VisWaptGUI: TVisWaptGUI
       Caption = 'Clean local cache'
       Hint = 'Remove all packages locall cached by WaptConsole'
       OnExecute = ActCleanCacheExecute
-    end
-    object ActAddADSGroups: TAction
-      Category = 'hosts'
-      Caption = 'Add ADS Groups as packages'
-      Hint = 'Add the WAPT group packages matching the ADS groups of the machines'
-      ImageIndex = 9
-      OnExecute = ActAddADSGroupsExecute
-      OnUpdate = ActAddDependsUpdate
     end
     object ActRefreshHostInventory: TAction
       Category = 'Display'
@@ -9027,13 +8977,6 @@ object VisWaptGUI: TVisWaptGUI
       OnExecute = ActTriggerUpgradesOrgUnitExecute
       OnUpdate = ActTriggerUpgradesOrgUnitUpdate
     end
-    object ActTriggerHostAudit: TAction
-      Category = 'hosts'
-      Caption = 'Run packages audit '
-      ImageIndex = 30
-      OnExecute = ActTriggerHostAuditExecute
-      OnUpdate = ActHostsActionsUpdate
-    end
     object ActPackagesAudit: TAction
       Category = 'Host'
       Caption = 'Audit package'
@@ -9070,12 +9013,6 @@ object VisWaptGUI: TVisWaptGUI
       Caption = 'New host AD profile'
       ImageIndex = 9
       OnExecute = ActAddProfileExecute
-    end
-    object ActRefreshHostsForPackage: TAction
-      Category = 'hosts'
-      Caption = 'Refresh'
-      OnExecute = ActRefreshHostsForPackageExecute
-      ShortCut = 116
     end
     object ActRepositoriesGetUpdateRules: TAction
       Category = 'Repositories'
@@ -9144,6 +9081,76 @@ object VisWaptGUI: TVisWaptGUI
     object ActSuppr: TAction
       OnExecute = ActSupprExecute
       ShortCut = 46
+    end
+    object ActTriggerSafeHostUpgrade: TAction
+      Category = 'hosts'
+      Caption = 'Apply upgrades for not running applications'
+      ImageIndex = 16
+      OnExecute = ActTriggerSafeHostUpgradeExecute
+      OnUpdate = ActHostsActionsUpdate
+    end
+    object ActAddDepends: TAction
+      Category = 'hosts'
+      Caption = 'Add package to host dependencies'
+      ImageIndex = 6
+      OnExecute = ActAddDependsExecute
+      OnUpdate = ActAddDependsUpdate
+      ShortCut = 24655
+    end
+    object ActRemoveDepends: TAction
+      Category = 'hosts'
+      Caption = 'Remove packages from host dependencies'
+      ImageIndex = 7
+      OnExecute = ActRemoveDependsExecute
+      OnUpdate = ActAddDependsUpdate
+    end
+    object ActAddConflicts: TAction
+      Category = 'hosts'
+      Caption = 'Add package to hosts conflicts'
+      OnExecute = ActAddConflictsExecute
+      OnUpdate = ActAddDependsUpdate
+    end
+    object ActRemoveConflicts: TAction
+      Category = 'hosts'
+      Caption = 'Remove package from hosts conflicts'
+      OnExecute = ActRemoveConflictsExecute
+      OnUpdate = ActAddDependsUpdate
+    end
+    object ActDeleteHostsPackageAndInventory: TAction
+      Category = 'hosts'
+      Caption = 'Remove host'
+      Hint = 'Remove from inventory'
+      ImageIndex = 3
+      OnExecute = ActDeleteHostsPackageAndInventoryExecute
+      OnUpdate = ActAddDependsUpdate
+      ShortCut = 16430
+    end
+    object ActGotoHost: TAction
+      Category = 'hosts'
+      Caption = 'Search for host'
+      OnExecute = ActGotoHostExecute
+      ShortCut = 16454
+    end
+    object ActAddADSGroups: TAction
+      Category = 'hosts'
+      Caption = 'Add ADS Groups as packages'
+      Hint = 'Add the WAPT group packages matching the ADS groups of the machines'
+      ImageIndex = 9
+      OnExecute = ActAddADSGroupsExecute
+      OnUpdate = ActAddDependsUpdate
+    end
+    object ActTriggerHostAudit: TAction
+      Category = 'hosts'
+      Caption = 'Run packages audit '
+      ImageIndex = 30
+      OnExecute = ActTriggerHostAuditExecute
+      OnUpdate = ActHostsActionsUpdate
+    end
+    object ActRefreshHostsForPackage: TAction
+      Category = 'hosts'
+      Caption = 'Refresh'
+      OnExecute = ActRefreshHostsForPackageExecute
+      ShortCut = 116
     end
   end
   object PopupMenuPackages: TPopupMenu
@@ -9372,6 +9379,9 @@ object VisWaptGUI: TVisWaptGUI
       }
       ImageIndex = 19
       Visible = False
+    end
+    object MenuItem116: TMenuItem
+      Action = ActTriggerSafeHostUpgrade
     end
     object MenuItem82: TMenuItem
       Action = ActTriggerBurstUpgrades

@@ -114,6 +114,7 @@ resourcestring
 
   rsConfirmBurstUpdate = 'Are you sure you want to trigger Status Update on %d hosts ?';
   rsConfirmBurstUpgrades = 'Are you sure you want to Apply Upgrades on %d hosts ?';
+  rsConfirmBurstSafeUpgrades = 'Are you sure you want to Apply Upgrades for not running applications on %d hosts ?';
   rsConfirmWaptServiceRestart = 'Are you sure you want to restart waptservice on %d hosts ?';
 
   rsConfirmHostsAudit = 'Are you sure you want to run packages Audit on %d hosts ?';
