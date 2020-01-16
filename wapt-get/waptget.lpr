@@ -54,6 +54,9 @@ type
     function Getwaptpackage: Variant;
     function Getwaptdevutils: Variant;
     procedure HTTPLogin(Sender: THttpSend; var ShouldRetry: Boolean;RetryCount:integer);
+    function NextPackageVersion(RepoPath, PackageName, BaseVersion: String
+      ): String;
+    function PackageVersion(RepoPath,PackageName: String): String;
     function ScanLocalWaptrepo(RepoPath: String): Variant;
     procedure SetRepoURL(AValue: String);
   protected
@@ -84,7 +87,7 @@ type
     function GetCommonNameFromCmdLine(): String;
 
     function CheckPersonalCertificateIsCodeSigning(PersonalCertificatePath,PrivateKeyPassword:String): Boolean;
-    function BuildWaptUpgrade(BuildDir,SetupFilename: String): String;
+    function BuildWaptUpgrade(PackageName,Version,BuildDir,SetupFilename: String): String;
     procedure UploadWaptAgentUpgrade(SetupFilename, WaptUpgradeFilename: String);
 
     function CreateWaptAgent(BuildDir: String; Edition: String='waptagent'
@@ -178,6 +181,45 @@ begin
   localuser := Sender.Username;
   localpassword := Sender.Password;
   ShouldRetry := (Sender.Password <> '') and (Sender.Password <> '');
+end;
+
+// return the version for new waptupgrade package, be sure it is higer version than current one in repo
+function PWaptGet.NextPackageVersion(RepoPath,PackageName,BaseVersion:String):String;
+var
+  LocalRepo,Package:Variant;
+  OldVersion, OldBaseVersion: String;
+  OldBuild: integer;
+begin
+  if PackageName = '' then
+    PackageName := DefaultPackagePrefix+'-waptupgrade';
+  LocalRepo := waptpackage.WaptLocalRepo(RepoPath);
+  Package := LocalRepo.get(PackageName);
+  if VarIsNone(Package) then
+    Result := BaseVersion+'-0'
+  else
+  begin
+    OldVersion := VarPythonAsString(Package.version);
+    OldBaseVersion := StrSplit(OldVersion,'-',True,2)[0];
+    if OldBaseVersion=BaseVersion then
+    begin
+      OldBuild := StrToInt(StrSplit(OldVersion,'-',True,2)[1]);
+      Result := BaseVersion+'-'+IntToStr(OldBuild+1);
+    end
+    else
+      Result := BaseVersion+'-0';
+  end;
+end;
+
+function PWaptGet.PackageVersion(RepoPath,PackageName: String): String;
+var
+  LocalRepo,Package:Variant;
+begin
+  LocalRepo := waptpackage.WaptLocalRepo(RepoPath);
+  Package := LocalRepo.get(PackageName);
+  if VarIsNone(Package) then
+    Result := ''
+  else
+    Result := VarPythonAsString(Package.version);
 end;
 
 function PWaptGet.GetWaptServerUser: String;
@@ -489,7 +531,10 @@ begin
     TmpBuildDir := GetTempFileNameUTF8('','wapt'+FormatDateTime('yyyymmdd"T"hhnnss',Now));
     try
       WaptAgentFilename := CreateWaptagent(TmpBuildDir);
-      WaptUpgradeFilename := BuildWaptUpgrade(TmpBuildDir,WaptAgentFilename);
+      WaptUpgradeFilename := BuildWaptUpgrade(DefaultPackagePrefix+'-waptupgrade',
+            NextPackageVersion(GetLocalWaptserverRepositoryPath,DefaultPackagePrefix+'-waptupgrade',
+                  GetApplicationVersion(WaptAgentFilename)),
+            TmpBuildDir,WaptAgentFilename);
       if FindCmdLineSwitch('DeployWaptAgentLocally') then
       begin
         if not DirectoryExistsUTF8(GetLocalWaptserverRepositoryPath) then
@@ -1071,7 +1116,7 @@ begin
   Result := LocalRepo.update_packages_index('--noarg--');
 end;
 
-function PWaptGet.BuildWaptUpgrade(BuildDir,SetupFilename: String): String;
+function PWaptGet.BuildWaptUpgrade(PackageName,Version,BuildDir,SetupFilename: String): String;
 var
   KeyPassword, SourcesDir, UpgradePackage,BuildResult,Certificate,PrivateKey: Variant;
 begin
@@ -1089,8 +1134,9 @@ begin
   CopyFile(makepath([WaptBaseDir,'waptdeploy.exe']),MakePath([SourcesDir,'patchs','waptdeploy.exe']));
 
   UpgradePackage := waptpackage.PackageEntry(waptfile := SourcesDir);
-  UpgradePackage.package := DefaultPackagePrefix+'-waptupgrade';
-  UpgradePackage.version := GetApplicationVersion(SetupFilename)+'-0';
+  UpgradePackage.package := PackageName;
+  UpgradePackage.version := Version;
+
   BuildResult := UpgradePackage.build_package(target_directory := BuildDir);
   Certificate := waptcrypto.SSLCertificate(PyUTF8Decode(WaptPersonalCertificatePath));
   if VarPythonAsString(Certificate.is_code_signing)<>'True' then
