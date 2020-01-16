@@ -428,7 +428,7 @@ def build_waptupgrade_package(waptconfigfile,sources_directory=None, target_dire
     entry.package = '%s-waptupgrade' % wapt.config.get('global','default_package_prefix')
     existing = wapt.packages_matching(PackageRequest(entry.package))
     if existing:
-        rev = existing[-1].version.split('-')[1]
+        rev = sorted(existing)[-1].version.split('-')[1]
     else:
         rev = entry.version.split('-')[1]
     entry.version = '%s-%s' % (waptget['FileVersion'],rev)
