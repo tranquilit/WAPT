@@ -488,8 +488,10 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       Width = 108
       BorderSpacing.Left = 16
       Caption = 'Dont'' set anything'
+      Checked = True
       OnClick = CBWUADontchangeClick
       TabOrder = 4
+      TabStop = True
     end
     object CBWUADisable: TRadioButton
       AnchorSideLeft.Control = CBWUAEnabled
@@ -569,16 +571,16 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
     end
   end
   object ActionList1: TActionList
-    left = 368
-    top = 459
+    left = 392
+    top = 427
     object ActGetServerCertificate: TAction
       Caption = 'Get Server https Certificate'
       OnExecute = ActGetServerCertificateExecute
     end
   end
   object PopupMenu1: TPopupMenu
-    left = 464
-    top = 456
+    left = 488
+    top = 424
     object MenuItem1: TMenuItem
       Action = ActGetServerCertificate
     end
