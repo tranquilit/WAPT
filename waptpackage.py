@@ -2639,6 +2639,7 @@ class WaptBaseRepo(BaseObjectClass):
         Returns :
             SSLCABundle or None if Packages does not exists
         """
+        packages_index_data=None
         signer_certificates = SSLCABundle()
         if packages_zipfile is None:
             (packages_index_data,_dummy_date) = self._get_packages_index_data()
