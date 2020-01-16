@@ -2639,14 +2639,13 @@ class WaptBaseRepo(BaseObjectClass):
         Returns :
             SSLCABundle or None if Packages does not exists
         """
-        packages_index_data=None
         signer_certificates = SSLCABundle()
         if packages_zipfile is None:
             (packages_index_data,_dummy_date) = self._get_packages_index_data()
             if packages_index_data:
                 packages_zipfile = zipfile.ZipFile(StringIO.StringIO(packages_index_data))
 
-        if packages_zipfile and packages_index_data:
+        if packages_zipfile:
             filenames = packages_zipfile.namelist()
             for fn in filenames:
                 if fn.startswith('ssl/'):
