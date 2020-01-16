@@ -381,7 +381,8 @@ def duplicate_from_file(package_filename,new_prefix='test',target_directory=None
     return result
 
 
-def build_waptupgrade_package(waptconfigfile,sources_directory=None, target_directory=None,wapt_server_user=None,wapt_server_passwd=None,key_password=None,sign_digests=None,priority='critical'):
+def build_waptupgrade_package(waptconfigfile,sources_directory=None, target_directory=None,
+        wapt_server_user=None,wapt_server_passwd=None,key_password=None,sign_digests=None,priority='critical'):
     if target_directory is None:
         target_directory = tempfile.gettempdir()
 
@@ -425,7 +426,11 @@ def build_waptupgrade_package(waptconfigfile,sources_directory=None, target_dire
     filecopyto(makepath(wapt.wapt_base_dir,'waptdeploy.exe'),makepath(patchs_dir,'waptdeploy.exe'))
 
     entry.package = '%s-waptupgrade' % wapt.config.get('global','default_package_prefix')
-    rev = entry.version.split('-')[1]
+    existing = wapt.packages_matching(PackageRequest(entry.package))
+    if existing:
+        rev = existing[-1].version.split('-')[1]
+    else:
+        rev = entry.version.split('-')[1]
     entry.version = '%s-%s' % (waptget['FileVersion'],rev)
     entry.inc_build()
     entry.priority = priority
