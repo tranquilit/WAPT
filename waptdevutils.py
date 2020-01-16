@@ -218,7 +218,21 @@ def update_external_repo(repourl,search_string,proxy=None,myrepo=None,my_prefix=
     else:
         return [p.as_dict() for p in packages]
 
-def get_packages_filenames(packages,with_depends=True,waptconfigfile=None,repo_name='wapt-templates',remoterepo=None,package_request=None):
+
+def change_prefix(package_name,new_prefix):
+    """Change prefix of package name to new_prefix
+    """
+    if '-' in package_name:
+        (old_prefix,name) = package_name.split('-',1)
+        if old_prefix != new_prefix:
+            return '%s-%s' % (new_prefix,name)
+        else:
+            return package_name
+    else:
+        return package_name
+
+def get_packages_filenames(packages,with_depends=True,waptconfigfile=None,repo_name='wapt-templates',remoterepo=None,package_request=None,
+        privaterepo=None,local_prefix=None):
     """Returns list of package filenames (latest version) and md5 matching comma separated list of packages names and their dependencies
     helps to batch download a list of selected packages using tools like curl or wget
 
@@ -229,6 +243,7 @@ def get_packages_filenames(packages,with_depends=True,waptconfigfile=None,repo_n
         repo_name : section name in wapt ini file for repo parameters (repo_url, http_proxy, timeout, verify_cert)
         remoterepo (WaptRemoteRepo) : remote repo to query.
                                       Mutually exclusive with waptconfigfile and repo_name
+        privaterepo (WaptRemoteRepo) : local private repo where to check if dependencies already exists
     Returns:
         list: list of (wapt file basename,md5)
 
@@ -248,6 +263,13 @@ def get_packages_filenames(packages,with_depends=True,waptconfigfile=None,repo_n
 
         remoterepo = WaptRemoteRepo(name=repo_name,config=config)
         remoterepo.update()
+
+    if privaterepo is None and waptconfigfile:
+        config = RawConfigParser(defaults=defaults)
+        config.read(waptconfigfile)
+
+        privaterepo = WaptRemoteRepo(name='wapt',config=config)
+        privaterepo.update()
 
     if package_request is not None and isinstance(package_request,dict):
         package_request = PackageRequest(**package_request)
@@ -270,17 +292,26 @@ def get_packages_filenames(packages,with_depends=True,waptconfigfile=None,repo_n
         else:
             request_filter = package_request
 
-        result.append((pe.filename,pe.md5sum,))
-        if with_depends and pe.depends:
-            depends_list = []
-            for depname in ensure_list(pe.depends):
-                request_filter.request = depname
-                pe_dep = remoterepo.packages_matching(request_filter)
-                if pe_dep:
-                    depends_list.append(pe_dep[-1])
-            for (fn,md5) in get_packages_filenames(depends_list,remoterepo = remoterepo):
-                if not fn in result:
-                    result.append((fn,md5,))
+        if pe.filename:
+            result.append((pe.filename,pe.md5sum,))
+            if with_depends and pe.depends:
+                depends_list = []
+                for depname in ensure_list(pe.depends):
+                    request_filter.request = depname
+                    pe_dep = remoterepo.packages_matching(request_filter)
+
+                    if privaterepo and local_prefix:
+                        request_filter.request = change_prefix(depname,local_prefix)
+                        pe_local = privaterepo.packages_matching(request_filter)
+                    else:
+                        pe_local = None
+
+                    if pe_dep and not pe_local:
+                        depends_list.append(pe_dep[-1])
+
+                for (fn,md5) in get_packages_filenames(depends_list,remoterepo = remoterepo):
+                    if not (fn,md5) in result:
+                        result.append((fn,md5,))
     return result
 
 def duplicate_from_file(package_filename,new_prefix='test',target_directory=None,authorized_certs=None,set_maturity=None):

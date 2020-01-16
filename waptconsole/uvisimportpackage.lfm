@@ -1,11 +1,11 @@
 object VisImportPackage: TVisImportPackage
-  Left = 50
+  Left = 215
   Height = 540
-  Top = 158
-  Width = 1235
+  Top = 226
+  Width = 1109
   Caption = 'Import packages'
   ClientHeight = 540
-  ClientWidth = 1235
+  ClientWidth = 1109
   OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
@@ -16,7 +16,7 @@ object VisImportPackage: TVisImportPackage
     Left = 0
     Height = 38
     Top = 502
-    Width = 1235
+    Width = 1109
     Align = alBottom
     AutoSize = True
     BevelOuter = bvNone
@@ -24,10 +24,10 @@ object VisImportPackage: TVisImportPackage
     ChildSizing.TopBottomSpacing = 2
     ChildSizing.HorizontalSpacing = 6
     ClientHeight = 38
-    ClientWidth = 1235
+    ClientWidth = 1109
     TabOrder = 0
     object BitBtn2: TBitBtn
-      Left = 1151
+      Left = 1025
       Height = 34
       Top = 2
       Width = 78
@@ -40,7 +40,7 @@ object VisImportPackage: TVisImportPackage
       TabOrder = 0
     end
     object ButPackageDuplicate: TBitBtn
-      Left = 835
+      Left = 709
       Height = 34
       Top = 2
       Width = 143
@@ -50,7 +50,7 @@ object VisImportPackage: TVisImportPackage
       TabOrder = 1
     end
     object ButPackageDuplicate1: TBitBtn
-      Left = 984
+      Left = 858
       Height = 34
       Top = 2
       Width = 161
@@ -63,7 +63,7 @@ object VisImportPackage: TVisImportPackage
       AnchorSideTop.Control = PanBas
       AnchorSideTop.Side = asrCenter
       AnchorSideRight.Control = EdMaturity
-      Left = 361
+      Left = 305
       Height = 13
       Top = 13
       Width = 121
@@ -75,12 +75,13 @@ object VisImportPackage: TVisImportPackage
     object EdMaturity: TComboBox
       AnchorSideTop.Control = PanBas
       AnchorSideTop.Side = asrCenter
-      AnchorSideRight.Control = ButPackageDuplicate
-      Left = 488
+      AnchorSideRight.Control = CBImportDependencies
+      Left = 432
       Height = 21
       Top = 9
-      Width = 341
-      Anchors = [akTop, akLeft, akRight]
+      Width = 92
+      Anchors = [akTop, akRight]
+      BorderSpacing.Right = 19
       ItemHeight = 13
       ItemIndex = 0
       Items.Strings = (
@@ -91,12 +92,27 @@ object VisImportPackage: TVisImportPackage
       )
       TabOrder = 3
     end
+    object CBImportDependencies: TCheckBox
+      AnchorSideTop.Control = PanBas
+      AnchorSideTop.Side = asrCenter
+      AnchorSideRight.Control = ButPackageDuplicate
+      Left = 543
+      Height = 17
+      Top = 11
+      Width = 140
+      Anchors = [akTop, akRight]
+      BorderSpacing.Right = 26
+      Caption = 'Import dependencies too'
+      Checked = True
+      State = cbChecked
+      TabOrder = 4
+    end
   end
   object GridExternalPackages: TSOGrid
     Left = 0
     Height = 439
     Top = 63
-    Width = 1235
+    Width = 1109
     OnGetText = GridExternalPackagesGetText
     ShowAdvancedColumnsCustomize = False
     OnSOCompareNodes = GridExternalPackagesSOCompareNodes
@@ -281,12 +297,12 @@ object VisImportPackage: TVisImportPackage
     Left = 0
     Height = 63
     Top = 0
-    Width = 1235
+    Width = 1109
     Align = alTop
     AutoSize = True
     BevelOuter = bvNone
     ClientHeight = 63
-    ClientWidth = 1235
+    ClientWidth = 1109
     TabOrder = 2
     object PanSearch: TPanel
       Left = 0

@@ -32,6 +32,7 @@ type
     cbFilterPackagesLocales: TCheckGroup;
     cbNewerThanMine: TCheckBox;
     cbNewestOnly: TCheckBox;
+    CBImportDependencies: TCheckBox;
     EdMaturity: TComboBox;
     EdRepoName: TComboBox;
     EdSearchPackage: TSearchEdit;
@@ -151,8 +152,8 @@ begin
   IniWriteInteger(Appuserinipath,Name,'Width',Width);
   IniWriteInteger(Appuserinipath,Name,'Height',Height);
   IniWriteInteger(Appuserinipath,Name,'EdRepoName.ItemIndex',EdRepoName.ItemIndex);
+  IniWriteBool(Appuserinipath,Name,'CBImportDependencies',CBImportDependencies.Checked);
   GridExternalPackages.SaveSettingsToIni(Appuserinipath);
-
 end;
 
 procedure TVisImportPackage.FormCreate(Sender: TObject);
@@ -249,6 +250,8 @@ begin
   Left := IniReadInteger(Appuserinipath,Name,'Left',Left);
   Width := IniReadInteger(Appuserinipath,Name,'Width',Width);
   Height := IniReadInteger(Appuserinipath,Name,'Height',Height);
+
+  CBImportDependencies.Checked:=IniReadBool(Appuserinipath,Name,'CBImportDependencies',CBImportDependencies.Checked);
 
   if Screen.PixelsPerInch<>96 then
     GridExternalPackages.Header.Height:=trunc((GridExternalPackages.Header.MinHeight*Screen.PixelsPerInch)/96);
@@ -504,7 +507,7 @@ var
   target,sourceDir,buildfilename,http_proxy: string;
   NewPackagesFilenames,package,FileName, FileNames, ListPackages,Sources,aDir: ISuperObject;
   PackageEdited,VPackageFilePath,VCABundle,VPrivateKeyPassword,
-  SignersCABundle,ListPackagesVar: Variant;
+  SignersCABundle,ListPackagesVar,WithDependencies,PrivateRepo,RemoteRepo: Variant;
   RequestFilter: Variant;
   PackageFilename:String;
 begin
@@ -532,12 +535,16 @@ begin
 
   ListPackagesVar := SuperObjectToPyVar(ListPackages);
   RequestFilter := GetRequestFilter();
-
+  WithDependencies := Integer(CBImportDependencies.Checked);
+  PrivateRepo := dmpython.MainWaptRepo;
   FileNames := PyVarToSuperObject(DMPython.waptdevutils.get_packages_filenames(
         packages := ListPackagesVar,
         waptconfigfile := AppIniFilename,
         repo_name := RepoName,
-        package_request := RequestFilter ));
+        package_request := RequestFilter,
+        with_depends := WithDependencies,
+        privaterepo := PrivateRepo,
+        local_prefix := DefaultPackagePrefix ));
 
   if MessageDlg(rsPackageDuplicateConfirmCaption, format(rsPackageDuplicateConfirm, [Join(',',ExtractField(FileNames,'0')) + ' '+intToStr(Filenames.AsArray.Length)+' packages']),
         mtConfirmation, mbYesNoCancel, 0) <> mrYes then
@@ -662,7 +669,7 @@ var
   http_proxy:String;
   SourceDir,target,DevDirectory: string;
   package,FileName, FileNames, listPackages: ISuperObject;
-  RequestFilter: Variant;
+  RequestFilter,WithDepends,PrivateRepo,RemoteRepo: Variant;
   ListPackagesVar: Variant;
 
 begin
@@ -681,11 +688,16 @@ begin
 
   ListPackagesVar := SuperObjectToPyVar(ListPackages);
   RequestFilter := GetRequestFilter;
+  WithDepends := Integer(CBImportDependencies.Checked);
+  PrivateRepo := dmpython.MainWaptRepo;
   FileNames := PyVarToSuperObject(DMPython.waptdevutils.get_packages_filenames(
         packages := ListPackagesVar,
         waptconfigfile := AppIniFilename,
         repo_name := RepoName,
-        package_request := RequestFilter
+        package_request := RequestFilter,
+        with_depends := WithDepends,
+        local_prefix := DefaultPackagePrefix,
+        privaterepo := PrivateRepo
         ));
 
   if not DirectoryExists(AppLocalDir + 'cache') then

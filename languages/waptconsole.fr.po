@@ -1146,6 +1146,10 @@ msgctxt "tvisimportpackage.cbfilterpackageslocales.caption"
 msgid "Locale"
 msgstr "Langue"
 
+#: tvisimportpackage.cbimportdependencies.caption
+msgid "Import dependencies too"
+msgstr "Importer également les dépendances"
+
 #: tvisimportpackage.cbnewerthanmine.caption
 msgid "Newer packages than mine only"
 msgstr "Paquets plus récents seulement"
