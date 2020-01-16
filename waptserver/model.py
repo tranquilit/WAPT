@@ -899,14 +899,14 @@ def update_installed_packages(uuid, data, applied_status_hashes):
     for pv in missing+upgrades:
         (ps,_created) = HostPackagesStatus.get_or_create(
                 host = uuid,
-                package_uuid='fb-%s' % (hashlib.sha256(pv[0].encode('utf8')+'-'+pv[1]).hexdigest()),
-                package=pv[0],
-                version=pv[1],
+                package_uuid='fb-%s' % (hashlib.sha256(pv[0].encode('utf8')).hexdigest()),
                 )
+        ps.package=pv[0]
+        ps.version=pv[1]
         if _created:
             ps.created_on=datetime.datetime.utcnow()
-            ps.install_status='NEED-INSTALL'
-            ps.save()
+        ps.install_status='NEED-INSTALL'
+        ps.save()
 
 
 def update_installed_softwares(uuid, data,applied_status_hashes):
