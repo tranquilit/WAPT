@@ -5464,6 +5464,8 @@ begin
   ActWUANewPackage.Visible := False;
   ActSoftwaresNormalization.Visible := False;
   ActAddProfile.Visible:=False;
+  ActTriggerSafeHostUpgrade.Visible := False;
+
   SetSOGridVisible(GridHosts,'audit_status',False);
   SetSOGridVisible(GridHosts,'waptwua.status',False);
 
