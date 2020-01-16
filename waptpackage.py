@@ -2637,26 +2637,28 @@ class WaptBaseRepo(BaseObjectClass):
             packages_zipfile (zipfile): if None, donwload it from repo
 
         Returns :
-            SSLCABundle
+            SSLCABundle or None if Packages does not exists
         """
         signer_certificates = SSLCABundle()
         if packages_zipfile is None:
             (packages_index_data,_dummy_date) = self._get_packages_index_data()
-            packages_zipfile = zipfile.ZipFile(StringIO.StringIO(packages_index_data))
+            if packages_index_data:
+                packages_zipfile = zipfile.ZipFile(StringIO.StringIO(packages_index_data))
 
-        filenames = packages_zipfile.namelist()
-        for fn in filenames:
-            if fn.startswith('ssl/'):
-                cert = SSLCertificate(crt_string=packages_zipfile.read(name=fn))
-                if not self.check_certificates_validity or cert.is_valid():
-                    signer_certificates.add_certificates(cert)
-            if fn.startswith('crl/'):
-                try:
-                    data = packages_zipfile.read(name=fn)
-                    crl = SSLCRL(der_data=data)
-                except:
-                    crl = SSLCRL(pem_data=data)
-                signer_certificates.add_crl(crl)
+        if packages_zipfile and packages_index_data:
+            filenames = packages_zipfile.namelist()
+            for fn in filenames:
+                if fn.startswith('ssl/'):
+                    cert = SSLCertificate(crt_string=packages_zipfile.read(name=fn))
+                    if not self.check_certificates_validity or cert.is_valid():
+                        signer_certificates.add_certificates(cert)
+                if fn.startswith('crl/'):
+                    try:
+                        data = packages_zipfile.read(name=fn)
+                        crl = SSLCRL(der_data=data)
+                    except:
+                        crl = SSLCRL(pem_data=data)
+                    signer_certificates.add_crl(crl)
 
         #logger.debug('Packages embedded certificates : %s' % signer_certificates.certificates())
         return signer_certificates
@@ -2994,7 +2996,10 @@ class WaptLocalRepo(WaptBaseRepo):
         Returns:
             file: File like object for Packages Zipped data (local or remote)
         """
-        return (open(self.packages_path,mode='rb').read(),fileutcdate(self.packages_path))
+        if os.path.isfile(self.packages_path):
+            return (open(self.packages_path,mode='rb').read(),fileutcdate(self.packages_path))
+        else:
+            return (None,None)
 
     def _load_packages_index(self):
         """Parse Packages index from local repo Packages file
