@@ -6499,7 +6499,7 @@ begin
   ActSearchHost.Execute;
 end;
 
-procedure TVisWaptGUI.SetCurrentPackageForGridHostsForPackage(AValue: String);
+procedure TVisWaptGUI.SetCurrentPackageForGridHostsForPackage(AValue: ISuperObject);
 begin
 ;;
 end;
