@@ -399,6 +399,7 @@ def build_waptupgrade_package(waptconfigfile,sources_directory=None, target_dire
     try:
         import waptconsole
         progress_hook = waptconsole.UpdateProgress
+        private_key_password_callback = waptconsole.GetPrivateKeyPassword
     except ImportError:
         def print_progress(show=False,n=0,max=100,msg=''):
             if show:
@@ -408,8 +409,10 @@ def build_waptupgrade_package(waptconfigfile,sources_directory=None, target_dire
                     msg='Done'
                 print("%s%s"%(msg,' '*(80-len(msg))))
         progress_hook = print_progress
+        private_key_password_callback = None
 
     wapt.progress_hook = progress_hook
+    wapt.private_key_password_callback = private_key_password_callback
 
     if sign_digests is None:
         sign_digests = wapt.sign_digests
