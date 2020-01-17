@@ -4720,31 +4720,29 @@ msgid "Repository URL"
 msgstr "URL du dépôt"
 
 #: tviswaptgui.gridrules.header.columns[5].text
-#, fuzzy
-#| msgid "Repository URL"
 msgctxt "tviswaptgui.gridrules.header.columns[5].text"
 msgid "Repositories"
-msgstr "Créé par"
+msgstr "Dépôts"
 
 #: tviswaptgui.gridrules.header.columns[6].text
 msgctxt "tviswaptgui.gridrules.header.columns[6].text"
 msgid "Created by"
-msgstr "Créé le"
+msgstr "Créé par"
 
 #: tviswaptgui.gridrules.header.columns[7].text
 msgctxt "tviswaptgui.gridrules.header.columns[7].text"
 msgid "Created on"
-msgstr "Modifié par"
+msgstr "Crée le"
 
 #: tviswaptgui.gridrules.header.columns[8].text
 msgctxt "tviswaptgui.gridrules.header.columns[8].text"
 msgid "Updated by"
-msgstr "Modifié le"
+msgstr "Modifié par"
 
 #: tviswaptgui.gridrules.header.columns[9].text
 msgctxt "tviswaptgui.gridrules.header.columns[9].text"
 msgid "Updated on"
-msgstr "Dépôts"
+msgstr "Modifié le"
 
 #: tviswaptgui.gridselfservicepackages.header.columns[0].text
 msgctxt "tviswaptgui.gridselfservicepackages.header.columns[0].text"
