@@ -1946,39 +1946,50 @@ def host_data():
                          error_code=error_code, status=200, request_time=time.time() - start_time)
 
 
-@app.route('/api/v3/hosts_for_package')
+@app.route('/api/v3/hosts_for_package',methods=['GET','POST'])
 @requires_auth()
 def hosts_for_package():
     """Returns list of hosts requiring the supplied windows update
 
     Args:
-        package (str)
+        package (str) : (can be a csv list of package names)
         limit (int)
 
     Returns:
         list of Hosts
 
     """
-    limit = int(request.args.get('limit','1000'))
-    package = request.args.get('package')
+    if request.method=='GET':
+        limit = int(request.args.get('limit','1000'))
+        packages = ensure_list(request.args.get('package'))
+    else:
+        # unzip if post data is gzipped
+        if request.headers.get('Content-Encoding') == 'gzip':
+            raw_data = zlib.decompress(request.data)
+        else:
+            raw_data = request.data
+
+        post_data = ujson.loads(raw_data)
+        limit = post_data.get('limit','1000')
+        packages = post_data.get('package')
 
     result = list(
             HostPackagesStatus.select(
                 HostPackagesStatus,
-                Hosts.computer_name,
-                Hosts.computer_fqdn,
-                Hosts.description,
-                Hosts.connected_ips,
+                Hosts.computer_name.alias('host_computer_name'),
+                Hosts.computer_fqdn.alias('host_computer_fqdn'),
+                Hosts.description.alias('host_description'),
+                Hosts.connected_ips.alias('host_connected_ips'),
                 Hosts.reachable,
-                Hosts.connected_users,
+                Hosts.connected_users.alias('host_connected_users'),
             )
             .where(
-                HostPackagesStatus.package == package)
+                HostPackagesStatus.package.in_(packages))
                 .join(Hosts,'RIGHT OUTER')
                 .limit(limit)
                 .dicts())
 
-    return make_response(msg = _('Hosts for package %s, limit %s') % (package,limit), result = result)
+    return make_response(msg = _('Hosts for packages %s, limit %s') % (packages,limit), result = result)
 
 
 def packages_install_stats():

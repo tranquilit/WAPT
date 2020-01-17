@@ -343,13 +343,16 @@
     </Other>
   </CompilerOptions>
   <Debugging>
-    <Exceptions Count="2">
+    <Exceptions Count="3">
       <Item1>
         <Name Value="EPyStopIteration"/>
       </Item1>
       <Item2>
         <Name Value="EConvertError"/>
       </Item2>
+      <Item3>
+        <Name Value="EIdConnClosedGracefully"/>
+      </Item3>
     </Exceptions>
   </Debugging>
 </CONFIG>

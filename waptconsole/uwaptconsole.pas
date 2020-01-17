@@ -981,7 +981,7 @@ type
   private
     { private declarations }
     CurrentVisLoading: TVisLoading;
-    FCurrentPackageForGridHostsForPackage: String;
+    FCurrentPackageForGridHostsForPackage: ISuperObject;
     FReportingEditMode: Boolean;
     FWUAClassifications: ISuperObject;
     FWUAProducts: ISuperObject;
@@ -1016,8 +1016,9 @@ type
     function GetSelectedOrgUnits: TDynStringArray;
     function ReportingQueryAppend(AName: String='New query'; sql: String='SELEC'
       +'T 1'): ISuperObject;
+    function SelectedPackages(Grid: TSOGrid): ISuperObject;
     procedure SelectOrgUnits(Search: String);
-    procedure SetCurrentPackageForGridHostsForPackage(AValue: String);
+    procedure SetCurrentPackageForGridHostsForPackage(AValue: ISuperObject);
     procedure SetGridHostsPlugins(AValue: ISuperObject);
     procedure SetIsEnterpriseEdition(AValue: Boolean);
     function GetIsEnterpriseEdition: Boolean;
@@ -1087,7 +1088,7 @@ type
     function EditPackageEntry(Entry: ISuperObject): Variant;
     procedure ImportPackageFromFiles(Filenames: TStrings);
 
-    property CurrentPackageForGridHostsForPackage:String read FCurrentPackageForGridHostsForPackage write SetCurrentPackageForGridHostsForPackage;
+    property CurrentPackageForGridHostsForPackage:ISuperObject read FCurrentPackageForGridHostsForPackage write SetCurrentPackageForGridHostsForPackage;
 
 
   end;
@@ -5650,24 +5651,28 @@ begin
     Result := True;
 end;
 
+function TVisWaptGUI.SelectedPackages(Grid:TSOGrid):ISuperObject;
+begin
+  If (Grid<>Nil) and (Grid.SelectedRows<>Nil) and (Grid.SelectedRows.AsArray.Length>0) then
+  begin
+    Result := ExtractField(Grid.SelectedRows,'package');
+  end
+  else
+    Result := Nil;
+end;
+
 procedure TVisWaptGUI.GridPackagesChange(Sender: TBaseVirtualTree;
   Node: PVirtualNode);
 begin
   if (MainPages.ActivePage = pgPrivateRepo) and CBShowHostsForPackages.Checked then
-    if (GridPackages.FocusedRow <> Nil) then
-      CurrentPackageForGridHostsForPackage := UTF8Encode(GridPackages.FocusedRow.S['package'])
-    else
-      CurrentPackageForGridHostsForPackage := '';
+    CurrentPackageForGridHostsForPackage := SelectedPackages(GridPackages)
 end;
 
 procedure TVisWaptGUI.GridGroupsChange(Sender: TBaseVirtualTree;
   Node: PVirtualNode);
 begin
   if (MainPages.ActivePage = pgGroups) and CBShowHostsForGroups.Checked then
-    if (GridGroups.FocusedRow <> Nil) then
-      CurrentPackageForGridHostsForPackage := UTF8Encode(GridGroups.FocusedRow.S['package'])
-    else
-      CurrentPackageForGridHostsForPackage := '';
+    CurrentPackageForGridHostsForPackage := SelectedPackages(GridGroups)
 end;
 
 function TVisWaptGUI.IsUpdated(const datasets: array of ISuperObject): Boolean;

@@ -3787,52 +3787,52 @@ msgstr ""
 
 #: tviswaptgui.gridhostsforpackage.header.columns[10].text
 msgctxt "tviswaptgui.gridhostsforpackage.header.columns[10].text"
-msgid "sources"
+msgid "Install date"
 msgstr ""
 
 #: tviswaptgui.gridhostsforpackage.header.columns[11].text
 msgctxt "tviswaptgui.gridhostsforpackage.header.columns[11].text"
-msgid "Installed by"
+msgid "priority"
 msgstr ""
 
 #: tviswaptgui.gridhostsforpackage.header.columns[12].text
 msgctxt "tviswaptgui.gridhostsforpackage.header.columns[12].text"
-msgid "Section"
+msgid "sources"
 msgstr ""
 
 #: tviswaptgui.gridhostsforpackage.header.columns[13].text
 msgctxt "tviswaptgui.gridhostsforpackage.header.columns[13].text"
-msgid "Arch"
+msgid "Installed by"
 msgstr ""
 
 #: tviswaptgui.gridhostsforpackage.header.columns[14].text
 msgctxt "tviswaptgui.gridhostsforpackage.header.columns[14].text"
-msgid "Locale"
+msgid "Section"
 msgstr ""
 
 #: tviswaptgui.gridhostsforpackage.header.columns[15].text
 msgctxt "tviswaptgui.gridhostsforpackage.header.columns[15].text"
-msgid "md5sum"
+msgid "Arch"
 msgstr ""
 
 #: tviswaptgui.gridhostsforpackage.header.columns[16].text
 msgctxt "tviswaptgui.gridhostsforpackage.header.columns[16].text"
-msgid "File name"
+msgid "Locale"
 msgstr ""
 
 #: tviswaptgui.gridhostsforpackage.header.columns[17].text
 msgctxt "tviswaptgui.gridhostsforpackage.header.columns[17].text"
-msgid "Parameters"
+msgid "md5sum"
 msgstr ""
 
 #: tviswaptgui.gridhostsforpackage.header.columns[18].text
 msgctxt "tviswaptgui.gridhostsforpackage.header.columns[18].text"
-msgid "Log install"
+msgid "File name"
 msgstr ""
 
 #: tviswaptgui.gridhostsforpackage.header.columns[19].text
 msgctxt "tviswaptgui.gridhostsforpackage.header.columns[19].text"
-msgid "maintainer"
+msgid "Parameters"
 msgstr ""
 
 #: tviswaptgui.gridhostsforpackage.header.columns[1].text
@@ -3842,140 +3842,152 @@ msgstr ""
 
 #: tviswaptgui.gridhostsforpackage.header.columns[20].text
 msgctxt "tviswaptgui.gridhostsforpackage.header.columns[20].text"
-msgid "conflicts"
+msgid "Log install"
 msgstr ""
 
 #: tviswaptgui.gridhostsforpackage.header.columns[21].text
 msgctxt "tviswaptgui.gridhostsforpackage.header.columns[21].text"
-msgid "Size after install"
+msgid "maintainer"
 msgstr ""
 
 #: tviswaptgui.gridhostsforpackage.header.columns[22].text
 msgctxt "tviswaptgui.gridhostsforpackage.header.columns[22].text"
-msgid "URL of repository"
+msgid "conflicts"
 msgstr ""
 
 #: tviswaptgui.gridhostsforpackage.header.columns[23].text
 msgctxt "tviswaptgui.gridhostsforpackage.header.columns[23].text"
-msgid "Size"
+msgid "Size after install"
 msgstr ""
 
 #: tviswaptgui.gridhostsforpackage.header.columns[24].text
 msgctxt "tviswaptgui.gridhostsforpackage.header.columns[24].text"
-msgid "Name of repository"
+msgid "URL of repository"
 msgstr ""
 
 #: tviswaptgui.gridhostsforpackage.header.columns[25].text
 msgctxt "tviswaptgui.gridhostsforpackage.header.columns[25].text"
-msgid "localpath"
+msgid "Size"
 msgstr ""
 
 #: tviswaptgui.gridhostsforpackage.header.columns[26].text
 msgctxt "tviswaptgui.gridhostsforpackage.header.columns[26].text"
-msgid "Maturity"
+msgid "Name of repository"
 msgstr ""
 
 #: tviswaptgui.gridhostsforpackage.header.columns[27].text
-msgid "Connected IPs"
+msgctxt "tviswaptgui.gridhostsforpackage.header.columns[27].text"
+msgid "localpath"
 msgstr ""
 
 #: tviswaptgui.gridhostsforpackage.header.columns[28].text
 msgctxt "tviswaptgui.gridhostsforpackage.header.columns[28].text"
-msgid "Audited on"
+msgid "Maturity"
 msgstr ""
 
 #: tviswaptgui.gridhostsforpackage.header.columns[29].text
 msgctxt "tviswaptgui.gridhostsforpackage.header.columns[29].text"
-msgid "Next audit"
+msgid "Connected IPs"
 msgstr ""
 
 #: tviswaptgui.gridhostsforpackage.header.columns[2].text
 msgctxt "tviswaptgui.gridhostsforpackage.header.columns[2].text"
-msgid "Status"
+msgid "Host description"
 msgstr ""
 
 #: tviswaptgui.gridhostsforpackage.header.columns[30].text
 msgctxt "tviswaptgui.gridhostsforpackage.header.columns[30].text"
-msgid "uninstall_key"
+msgid "Audited on"
 msgstr ""
 
 #: tviswaptgui.gridhostsforpackage.header.columns[31].text
 msgctxt "tviswaptgui.gridhostsforpackage.header.columns[31].text"
-msgid "updated_on"
+msgid "Next audit"
 msgstr ""
 
 #: tviswaptgui.gridhostsforpackage.header.columns[32].text
 msgctxt "tviswaptgui.gridhostsforpackage.header.columns[32].text"
-msgid "updated_by"
+msgid "uninstall_key"
 msgstr ""
 
 #: tviswaptgui.gridhostsforpackage.header.columns[33].text
 msgctxt "tviswaptgui.gridhostsforpackage.header.columns[33].text"
-msgid "signer"
+msgid "updated_on"
 msgstr ""
 
 #: tviswaptgui.gridhostsforpackage.header.columns[34].text
 msgctxt "tviswaptgui.gridhostsforpackage.header.columns[34].text"
-msgid "package"
+msgid "updated_by"
 msgstr ""
 
 #: tviswaptgui.gridhostsforpackage.header.columns[35].text
 msgctxt "tviswaptgui.gridhostsforpackage.header.columns[35].text"
-msgid "created_on"
+msgid "signer"
 msgstr ""
 
 #: tviswaptgui.gridhostsforpackage.header.columns[36].text
 msgctxt "tviswaptgui.gridhostsforpackage.header.columns[36].text"
-msgid "created_by"
+msgid "created_on"
 msgstr ""
 
 #: tviswaptgui.gridhostsforpackage.header.columns[37].text
 msgctxt "tviswaptgui.gridhostsforpackage.header.columns[37].text"
-msgid "last_audit_output"
+msgid "created_by"
 msgstr ""
 
 #: tviswaptgui.gridhostsforpackage.header.columns[38].text
 msgctxt "tviswaptgui.gridhostsforpackage.header.columns[38].text"
-msgid "id"
+msgid "last_audit_output"
 msgstr ""
 
 #: tviswaptgui.gridhostsforpackage.header.columns[39].text
 msgctxt "tviswaptgui.gridhostsforpackage.header.columns[39].text"
-msgid "signer_fingerprint"
+msgid "id"
 msgstr ""
 
 #: tviswaptgui.gridhostsforpackage.header.columns[3].text
 msgctxt "tviswaptgui.gridhostsforpackage.header.columns[3].text"
-msgid "Audit status"
+msgid "Status"
+msgstr ""
+
+#: tviswaptgui.gridhostsforpackage.header.columns[40].text
+msgctxt "tviswaptgui.gridhostsforpackage.header.columns[40].text"
+msgid "signer_fingerprint"
+msgstr ""
+
+#: tviswaptgui.gridhostsforpackage.header.columns[41].text
+msgctxt "tviswaptgui.gridhostsforpackage.header.columns[41].text"
+msgid "Connected users"
 msgstr ""
 
 #: tviswaptgui.gridhostsforpackage.header.columns[4].text
-msgid "Host UUID"
+msgctxt "tviswaptgui.gridhostsforpackage.header.columns[4].text"
+msgid "Audit status"
 msgstr ""
 
 #: tviswaptgui.gridhostsforpackage.header.columns[5].text
 msgctxt "tviswaptgui.gridhostsforpackage.header.columns[5].text"
-msgid "Version"
+msgid "Host UUID"
 msgstr ""
 
 #: tviswaptgui.gridhostsforpackage.header.columns[6].text
 msgctxt "tviswaptgui.gridhostsforpackage.header.columns[6].text"
-msgid "Description"
+msgid "Package"
 msgstr ""
 
 #: tviswaptgui.gridhostsforpackage.header.columns[7].text
 msgctxt "tviswaptgui.gridhostsforpackage.header.columns[7].text"
-msgid "Dependencies"
+msgid "Version"
 msgstr ""
 
 #: tviswaptgui.gridhostsforpackage.header.columns[8].text
 msgctxt "tviswaptgui.gridhostsforpackage.header.columns[8].text"
-msgid "Install date"
+msgid "Package description"
 msgstr ""
 
 #: tviswaptgui.gridhostsforpackage.header.columns[9].text
 msgctxt "tviswaptgui.gridhostsforpackage.header.columns[9].text"
-msgid "priority"
+msgid "Dependencies"
 msgstr ""
 
 #: tviswaptgui.gridhostsoftwares.header.columns[0].text
