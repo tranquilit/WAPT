@@ -990,6 +990,7 @@ begin
       ini.ReadBool('global', 'use_fqdn_as_uuid',False),
       False,
       ini.ReadBool('global', 'use_ad_groups',False),
+      ini.ReadBool('global', 'use_repo_rules',False),
       GetCmdParams('AppendHostProfiles',ini.ReadString('global', 'append_host_profiles',''))
       );
     Writeln('');
