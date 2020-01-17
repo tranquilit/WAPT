@@ -19,6 +19,7 @@ type
     ButCancel: TBitBtn;
     CBDualSign: TCheckBox;
     CBInstallWUAUpdatesAtShutdown: TCheckBox;
+    CBUseRepoRules: TCheckBox;
     CBUseFQDNAsUUID: TCheckBox;
     CBForceWaptServerURL: TCheckBox;
     CBUseRandomUUID: TCheckBox;
@@ -391,6 +392,14 @@ begin
     CBVerifyCertClick(Sender);
 
     if not DMPython.IsEnterpriseEdition then
+    begin
+      CBUseRepoRules.Visible:=False;
+      CBUseRepoRules.Checked:=False;
+    end
+    else
+      CBUseRepoRules.Checked:= ini.ReadBool('global', 'use_repo_rules',False);
+
+    if not DMPython.IsEnterpriseEdition then
       CBWUADontchange.Checked := True
     else
     begin
@@ -469,6 +478,11 @@ begin
     ini.WriteBool('global', 'use_kerberos', CBUseKerberos.Checked);
     ini.WriteBool('global', 'use_fqdn_as_uuid',CBUseFQDNAsUUID.Checked);
     ini.WriteBool('global', 'use_ad_groups',CBUseADGroups.Checked);
+    if CBUseRepoRules.Visible then
+      ini.WriteBool('global', 'use_repo_rules',CBUseRepoRules.Checked)
+    else
+      ini.DeleteKey('global', 'use_repo_rules');
+
 
     if DMPython.IsEnterpriseEdition then
     begin
@@ -535,6 +549,7 @@ begin
       CBUseFQDNAsUUID.Checked,
       CBUseRandomUUID.Checked,
       CBUseADGroups.Checked,
+      CBUseRepoRules.Checked,
       edAppendHostProfiles.Text,
       GetWUAParams(),
       EdAuditScheduling.Text

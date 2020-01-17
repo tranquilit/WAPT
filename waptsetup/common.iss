@@ -140,6 +140,9 @@ Filename: {app}\wapt-get.ini; Section: global; Key: use_fqdn_as_uuid; String: {#
 Filename: {app}\wapt-get.ini; Section: global; Key: use_ad_groups; String: {#use_ad_groups};
 #endif
 
+#if use_repo_rules != ""
+Filename: {app}\wapt-get.ini; Section: global; Key: use_repo_rules; String: {#use_repo_rules};
+#endif
 
 Filename: {app}\wapt-get.ini; Section: global; Key: uuid; String: {code:GenerateHostUUID}; Check: MustChangeHostUUID;
 

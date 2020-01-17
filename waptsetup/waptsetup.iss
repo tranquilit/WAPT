@@ -37,6 +37,8 @@
 
 #define use_ad_groups ""
 
+#define use_repo_rules ""
+
 #define use_random_uuid ""
 
 ;#define waptenterprise

@@ -46,7 +46,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       Height = 20
       Hint = 'E.g. : https://wapt.mydomain.lan/wapt If empty, use dnsdomain setting'
       Top = 214
-      Width = 273
+      Width = 226
       AutoSize = False
       TabOrder = 1
     end
@@ -86,7 +86,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       Height = 21
       Hint = 'E.g. : https://wapt.mydomain.lan'
       Top = 238
-      Width = 274
+      Width = 226
       TabOrder = 3
     end
     object Label5: TLabel
@@ -129,10 +129,9 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
     end
     object CBVerifyCert: TCheckBox
       Left = 232
-      Height = 16
+      Height = 17
       Top = 261
-      Width = 385
-      AutoSize = False
+      Width = 161
       Caption = 'Verify https server certificate'
       OnClick = CBVerifyCertClick
       PopupMenu = PopupMenu1
@@ -272,11 +271,11 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       AnchorSideLeft.Control = edRepoUrl
       AnchorSideLeft.Side = asrBottom
       AnchorSideRight.Side = asrBottom
-      Left = 505
+      Left = 458
       Height = 17
       Hint = 'Overwrite the URL when installing on the client even if there is a diffrent current setting in wapt-get.ini'
       Top = 217
-      Width = 238
+      Width = 285
       Anchors = [akTop, akLeft, akRight]
       Caption = 'Overwrite'
       Checked = True
@@ -287,11 +286,11 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       AnchorSideLeft.Control = edWaptServerUrl
       AnchorSideLeft.Side = asrBottom
       AnchorSideRight.Side = asrBottom
-      Left = 506
+      Left = 458
       Height = 17
       Hint = 'Overwrite the URL when installing on the client even if there is a diffrent current setting in wapt-get.ini'
       Top = 240
-      Width = 232
+      Width = 280
       Anchors = [akTop, akLeft, akRight]
       Caption = 'Overwrite'
       Checked = True
@@ -334,6 +333,20 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       TabOrder = 12
       OnEditingDone = edPublicCertDirEditingDone
       OnExit = edPublicCertDirExit
+    end
+    object CBUseRepoRules: TCheckBox
+      AnchorSideLeft.Control = CBVerifyCert
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = CBVerifyCert
+      Left = 409
+      Height = 17
+      Hint = 'If checked, when the client lookups packages index, it first requests the URL rules from the server to automatically choose the best repository.'
+      Top = 262
+      Width = 151
+      BorderSpacing.Left = 16
+      BorderSpacing.Top = 1
+      Caption = 'Use repository access rules'
+      TabOrder = 13
     end
   end
   object PanAgentEnterprise: TPanel
@@ -571,16 +584,16 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
     end
   end
   object ActionList1: TActionList
-    left = 392
-    top = 427
+    left = 104
+    top = 299
     object ActGetServerCertificate: TAction
       Caption = 'Get Server https Certificate'
       OnExecute = ActGetServerCertificateExecute
     end
   end
   object PopupMenu1: TPopupMenu
-    left = 488
-    top = 424
+    left = 200
+    top = 296
     object MenuItem1: TMenuItem
       Action = ActGetServerCertificate
     end

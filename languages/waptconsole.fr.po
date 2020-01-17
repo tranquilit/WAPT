@@ -291,6 +291,7 @@ msgid "Enable AD Groups"
 msgstr "Activer les groupes AD"
 
 #: tviscreatewaptsetup.cbuseadgroups.hint
+msgctxt "tviscreatewaptsetup.cbuseadgroups.hint"
 msgid ""
 "Enable automatic AD groups based packages on Hots.\n"
 "Be careful, this introduce load on the AD servers and slow down the whole Wapt process\n"
@@ -328,6 +329,15 @@ msgid ""
 "Ask Wapt agent to generate a random UUID instead of BIOS unique ID.\n"
 "This can be useful if BIOS returns non unique UUID\n"
 msgstr ""
+
+#: tviscreatewaptsetup.cbusereporules.caption
+msgid "Use repository access rules"
+msgstr "Utiliser les règles d'accès aux dépôts"
+
+#: tviscreatewaptsetup.cbusereporules.hint
+msgctxt "tviscreatewaptsetup.cbusereporules.hint"
+msgid "If checked, when the client lookups packages index, it first requests the URL rules from the server to automatically choose the best repository."
+msgstr "Si coché, le client recherche les règles d'accès aux dépôts lors des updates d'index de paquets pour choisir automatiquement le dépôt approprié."
 
 #: tviscreatewaptsetup.cbverifycert.caption
 msgctxt "tviscreatewaptsetup.cbverifycert.caption"
