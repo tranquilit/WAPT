@@ -314,13 +314,12 @@ begin
   if WAPTServiceRunning then
   begin
     args := TSuperObject.Create(stArray);
-    if OnlyIfNotProcessRunning then
-      args.AsArray.Add('only_if_not_process_running=1');
+    args.AsArray.Add('only_if_not_process_running='+BoolToStr(OnlyIfNotProcessRunning,'1','0'));
     if Priorities <> '' then
       args.AsArray.Add(Format('only_priorities=%s',[Priorities]));
     {$ifdef enterprise}
-    if InstallWUAUpdates and not CBSkipWindowsUpdates.Checked then
-      args.AsArray.Add(Format('install_wua_updates=1',[]));
+    args.AsArray.Add(Format('install_wua_updates=%s',[
+      BoolToStr(InstallWUAUpdates and not CBSkipWindowsUpdates.Checked,'1','0')]));
     {$endif}
     ProgressBar.Style:=pbstMarquee;
     EdRunning.Text:=rsLaunchSoftwareUpdate;

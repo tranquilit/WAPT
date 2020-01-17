@@ -432,8 +432,11 @@ object VisWaptExit: TVisWaptExit
             Width = 12
             PropertyName = 'packagenames'
           end>
-        Header.DefaultHeight = 17
+        Header.DefaultHeight = 18
+        Header.Height = 18
         Header.Images = ImageList1
+        Header.MaxHeight = 100
+        Header.MinHeight = 18
         Header.Options = [hoAutoResize, hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs]
         Header.SortColumn = 0
         Header.Style = hsFlatButtons
@@ -480,8 +483,11 @@ object VisWaptExit: TVisWaptExit
             Width = 197
             PropertyName = 'package'
           end>
-        Header.DefaultHeight = 17
+        Header.DefaultHeight = 18
+        Header.Height = 18
         Header.Images = ImageList1
+        Header.MaxHeight = 100
+        Header.MinHeight = 18
         Header.Options = [hoAutoResize, hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs]
         Header.SortColumn = 0
         Header.Style = hsFlatButtons
