@@ -2697,7 +2697,8 @@ function CreateWaptSetup(default_public_cert: Utf8String;
   WUAParams:ISuperObject=Nil;
   WaptauditTaskPeriod:String=''): Utf8String;
 var
-  iss_template,custom_iss,FN,SSLDir,Destination : String;
+  iss_template,custom_iss,FN,SSLDir,SSLServerDir,
+  DestVerifyCert,Destination : String;
   iss,new_iss,line : ISuperObject;
   akey : ISuperObject;
 
@@ -2734,9 +2735,19 @@ begin
     iss := SplitLines(FileToString(iss_template));
     new_iss := TSuperObject.Create(stArray);
 
-    // translate to relative path if possible
-    if pos(lowercase(WaptBaseDir),lowercase(VerifyCert))=1 then
-      VerifyCert := ExtractRelativepath(WaptBaseDir,VerifyCert); ;
+    // copy server check cert to build dir
+    SSLServerDir:=MakePath([SSLDir,'server']);
+    if not DirectoryExistsUTF8(SSLServerDir) then
+      mkdir(SSLServerDir);
+
+    If (VerifyCert<>'') and (VerifyCert<>'0') and (VerifyCert<>'1') then
+    begin
+      // copy ca bundle to build dest ssl\server dir
+      CopyFile(VerifyCert,MakePath([SSLServerDir,ExtractFileName(VerifyCert)]) ,[cffOverwriteFile,cffPreserveTime],True);
+      DestVerifyCert:=MakePath(['{app}\ssl\server',ExtractFileName(VerifyCert)]);
+    end
+    else
+      DestVerifyCert := VerifyCert;
 
     for line in iss do
     begin
@@ -2794,7 +2805,7 @@ begin
               new_iss.AsArray.Add(format('#define set_use_kerberos "0"' ,[]))
         end
         else if startswith(line,'#define set_verify_cert') then
-          new_iss.AsArray.Add(format('#define set_verify_cert "%s"',[VerifyCert]))
+          new_iss.AsArray.Add(format('#define set_verify_cert "%s"',[DestVerifyCert]))
         else if startswith(line,';#define waptenterprise') then
         begin
             if EnterpriseEdition then

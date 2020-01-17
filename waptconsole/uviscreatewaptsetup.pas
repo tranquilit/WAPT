@@ -537,7 +537,7 @@ begin
   try
     Screen.Cursor := crHourGlass;
     ProgressTitle(rsBuildInProgress);
-    waptsetupPath := CreateWaptSetup(UTF8Encode(ActiveCertBundle),
+    waptsetupPath := CreateWaptSetup(MakePath([BuildDir,'ssl']),
       edRepoUrl.Text, edWaptServerUrl.Text,
       BuildDir,
       edOrgName.Text, @DoProgress, 'waptagent',
