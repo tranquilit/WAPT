@@ -93,6 +93,7 @@ object VisSyncChangelog: TVisSyncChangelog
     TreeOptions.SelectionOptions = [toExtendedFocus, toRightClickSelect, toSimpleDrawSelection]
     WantTabs = True
     OnChange = GridChangelogChange
+    ZebraPaint = True
   end
   object GridJSONViewChangelog: TVirtualJSONInspector
     Left = 565

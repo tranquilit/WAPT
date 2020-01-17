@@ -8232,6 +8232,7 @@ object VisWaptGUI: TVisWaptGUI
             WantTabs = True
             OnChange = GridRulesChange
             OnDblClick = GridRulesDblClick
+            ZebraPaint = True
           end
         end
         object PanelAgentRepos: TPanel
@@ -8372,6 +8373,7 @@ object VisWaptGUI: TVisWaptGUI
             WantTabs = True
             OnChange = GridAgentRepoChange
             OnGetImageIndexEx = GridAgentRepoGetImageIndexEx
+            ZebraPaint = True
           end
           object tbAgentRepos: TToolBar
             Left = 0
