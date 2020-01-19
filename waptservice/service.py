@@ -100,6 +100,10 @@ if sys.platform == 'win32':
     else:
         waptwua_api = None
         enterprise_common = None
+else:
+    enterprise_common = None
+    waptwua_api = None
+
 
 if os.path.isdir(os.path.join(wapt_root_dir,'waptenterprise')):
     from waptenterprise.waptservice.repositories import WaptSyncRepo,waptrepositories_api
@@ -232,7 +236,8 @@ def wapt():
 
 @app.before_first_request
 def before_first_request():
-    pythoncom.CoInitializeEx(pythoncom.COINIT_MULTITHREADED)
+    if sys.platform == 'win32':
+        pythoncom.CoInitializeEx(pythoncom.COINIT_MULTITHREADED)
 
 @app.teardown_appcontext
 def close_connection(exception):
