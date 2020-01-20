@@ -381,7 +381,7 @@ def duplicate_from_file(package_filename,new_prefix='test',target_directory=None
     return result
 
 
-def build_waptupgrade_package(waptconfigfile,sources_directory=None, target_directory=None,
+def build_waptupgrade_package(wapt,sources_directory=None, target_directory=None,
         wapt_server_user=None,wapt_server_passwd=None,key_password=None,sign_digests=None,priority='critical'):
     if target_directory is None:
         target_directory = tempfile.gettempdir()
@@ -390,29 +390,6 @@ def build_waptupgrade_package(waptconfigfile,sources_directory=None, target_dire
         wapt_server_user = raw_input('WAPT Server user :')
     if not wapt_server_passwd:
         wapt_server_passwd = getpass.getpass('WAPT Server password :').encode('ascii')
-
-    wapt = common.Wapt(config_filename=waptconfigfile,disable_update_server_status=True)
-    wapt.dbpath = r':memory:'
-    wapt.use_hostpackages = False
-
-    # try to get a progress hook inside waptconsole
-    try:
-        import waptconsole
-        progress_hook = waptconsole.UpdateProgress
-        private_key_password_callback = waptconsole.GetPrivateKeyPassword
-    except ImportError:
-        def print_progress(show=False,n=0,max=100,msg=''):
-            if show:
-                print('%s %s/%s\r' % (msg,n,max),end='')
-            else:
-                if not msg:
-                    msg='Done'
-                print("%s%s"%(msg,' '*(80-len(msg))))
-        progress_hook = print_progress
-        private_key_password_callback = None
-
-    wapt.progress_hook = progress_hook
-    wapt.private_key_password_callback = private_key_password_callback
 
     if sign_digests is None:
         sign_digests = wapt.sign_digests
@@ -427,7 +404,7 @@ def build_waptupgrade_package(waptconfigfile,sources_directory=None, target_dire
     patchs_dir = makepath(entry.sourcespath,'patchs')
     mkdirs(patchs_dir)
     filecopyto(makepath(wapt.wapt_base_dir,'waptdeploy.exe'),makepath(patchs_dir,'waptdeploy.exe'))
-
+    wapt.update()
     entry.package = '%s-waptupgrade' % wapt.config.get('global','default_package_prefix')
     existing = wapt.packages_matching(PackageRequest(entry.package))
     if existing:
@@ -445,7 +422,8 @@ def build_waptupgrade_package(waptconfigfile,sources_directory=None, target_dire
         raise Exception(u'%s is not a code signing certificate' % wapt.personal_certificate_path)
     entry.sign_package(private_key=key,certificate = certs,private_key_password=key_password,mds = ensure_list(sign_digests))
 
-    wapt.http_upload_package(entry.localpath,wapt_server_user=wapt_server_user,wapt_server_passwd=wapt_server_passwd,progress_hook=progress_hook)
+    wapt.http_upload_package(entry.localpath,wapt_server_user=wapt_server_user,wapt_server_passwd=wapt_server_passwd,progress_hook=wapt.progress_hook)
+    wapt.update()
     return entry.as_dict()
 
 

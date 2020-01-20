@@ -81,7 +81,7 @@ type
     function GetCurrentVisLoading: TVisLoading;
     { private declarations }
     procedure IdHTTPWork(ASender: TObject; AWorkMode: TWorkMode; AWorkCount: int64);
-    procedure LoadTrustedCertificates(TrustedDirectory: String='');
+    procedure LoadTrustedCertificates(TrustedDirectory: String='';ForceRefresh:Boolean=False);
   public
     { public declarations }
     BuildDir: String;
@@ -124,7 +124,6 @@ begin
       CanClose:=False;
     end;
 
-    EdServerCertificate.Text := ExpandFileName(EdServerCertificate.Text);
     ServerSSLPath := MakePath([BuildDir,'ssl','server']);
     if not DirectoryExistsUTF8(ServerSSLPath) then
       mkdir(ServerSSLPath);
@@ -132,23 +131,30 @@ begin
     // check ssl cert is OK
     if (CBVerifyCert.Checked) then
     try
-      // if server bundle is not in buildir, copy it
-      if pos(lowercase(ServerSSLPath),lowercase(EdServerCertificate.Text)) <= 0 then
+      if not StrIsOneOf(EdServerCertificate.Text,['0','1']) then
       begin
-        AbsVerifyCertPath := MakePath([ServerSSLPath,ExtractFileName(EdServerCertificate.Text)]);
-        CopyFile(EdServerCertificate.Text,AbsVerifyCertPath,[cffOverwriteFile],True);
+        EdServerCertificate.Text := ExpandFileName(EdServerCertificate.Text);
+
+        // if server bundle is not in buildir, copy it
+        if pos(lowercase(ServerSSLPath),lowercase(EdServerCertificate.Text)) <= 0 then
+        begin
+          AbsVerifyCertPath := MakePath([ServerSSLPath,ExtractFileName(EdServerCertificate.Text)]);
+          CopyFile(EdServerCertificate.Text,AbsVerifyCertPath,[cffOverwriteFile],True);
+        end
+        else
+          AbsVerifyCertPath := EdServerCertificate.Text;
       end
       else
-        AbsVerifyCertPath := ExpandFileName(EdServerCertificate.Text);
+        AbsVerifyCertPath := EdServerCertificate.Text;
 
       PingResult := SO(IdhttpGetString(edWaptServerUrl.Text+'/ping','',4000,60000,60000,'','','GET','',AbsVerifyCertPath,
         'application/json',Nil,WaptClientCertFilename,WaptClientKeyFilename));
-    except
-      on E:EIdOpenSSLAPICryptoError do
-      begin
-        ShowMessageFmt(rsInvalidServerCertificate, [EdServerCertificate.Text]);
-        CanClose:=False;
-      end;
+      except
+        on E:EIdOpenSSLAPICryptoError do
+        begin
+          ShowMessageFmt(rsInvalidServerCertificate, [EdServerCertificate.Text]);
+          CanClose:=False;
+        end;
     end;
   end;
 end;
@@ -173,7 +179,7 @@ begin
   end;
 end;
 
-procedure TVisCreateWaptSetup.LoadTrustedCertificates(TrustedDirectory:String);
+procedure TVisCreateWaptSetup.LoadTrustedCertificates(TrustedDirectory:String;ForceRefresh:Boolean=False);
 var
   id: Integer;
   NewCertDir,CABundle,CertIter,Cert,CertList: Variant;
@@ -192,7 +198,7 @@ begin
     ForceDirectoriesUTF8(SSLDir);
 
   // replace certs in target ssl builddir
-  if (TrustedDirectory <> ActiveCertBundle) and (SSLDir <> TrustedDirectory) then
+  if Forcerefresh or ((TrustedDirectory <> ActiveCertBundle) and (SSLDir <> TrustedDirectory)) then
   begin
     for FN in Dir(SSLDir,'*.crt') do
       DeleteFileUTF8(MakePath([SSLDir,ExtractFileName(FN)]));
@@ -214,13 +220,16 @@ begin
     While VarIsPythonIterator(CertIter)  do
       try
         Cert := CertIter.next('--noarg--');
-        SOCert := TSuperObject.Create(stObject) ; // PyVarToSuperObject(Cert.as_dict('--noarg--'));
-        SOCert.I['id'] := id;
-        inc(id);
-        for att in atts do
-          SOCert[att] := PyVarToSuperObject(Cert.__getattribute__(att));
-        SOCert.S['x509_pem'] := VarPythonAsString(Cert.as_pem('--noarg--'));
-        SOCerts.AsArray.Add(SOCert);
+        If VarIsTrue(Cert.is_valid('--noarg--')) then
+        begin
+          SOCert := TSuperObject.Create(stObject) ; // PyVarToSuperObject(Cert.as_dict('--noarg--'));
+          SOCert.I['id'] := id;
+          inc(id);
+          for att in atts do
+            SOCert[att] := PyVarToSuperObject(Cert.__getattribute__(att));
+          SOCert.S['x509_pem'] := VarPythonAsString(Cert.as_pem('--noarg--'));
+          SOCerts.AsArray.Add(SOCert);
+        end;
       except
         on EPyStopIteration do Break;
       end;
@@ -385,8 +394,12 @@ begin
     edPublicCertDir.Directory := IncludeTrailingPathDelimiter(WaptBaseDir)+'ssl';
     if DirectoryExistsUTF8(edPublicCertDir.Directory) then
       edPublicCertDirEditingDone(Sender);
-        //edOrgName.text := VarPythonAsString(dmpython.waptcrypto.SSLCertificate(edPublicCertDir.FileName).cn);
-        //edOrgName.text := dmwaptpython.DMPython.PythonEng.EvalStringAsStr(Format('common.SSLCertificate(r"""%s""").cn',[edPublicCertDir.FileName]));
+    // we get user private certificate
+    if (GridCertificates.Data = Nil) or (GridCertificates.Data.AsArray.Length<=0) then
+    begin
+      edPublicCertDir.Directory := IncludeTrailingPathDelimiter(ExtractFileDir(WaptPersonalCertificatePath));
+      edPublicCertDirEditingDone(Sender);
+    end;
 
     CBVerifyCert.Checked:=(EdServerCertificate.Text<>'') and (EdServerCertificate.Text<>'0');
     CBVerifyCertClick(Sender);
@@ -399,9 +412,11 @@ begin
     else
       CBUseRepoRules.Checked:= ini.ReadBool('global', 'use_repo_rules',False);
 
-    if not DMPython.IsEnterpriseEdition then
-      CBWUADontchange.Checked := True
-    else
+    CBWUADisable.Checked := False;
+    CBWUAEnabled.Checked := False;
+    CBWUADontchange.Checked := True;
+
+    if DMPython.IsEnterpriseEdition then
     begin
       if ini.ValueExists('global','waptaudit_task_period') then
         EdAuditScheduling.Text:= ini.ReadString('global','waptaudit_task_period','');
@@ -409,10 +424,12 @@ begin
       if ini.SectionExists('waptwua') then
       begin
         // no key -> don't change anything -> grayed
-        if not ini.ValueExists('waptwua','enabled') then
-          CBWUADontchange.Checked:=True
-        else
-          CBWUAEnabled.Checked:=ini.ReadBool('waptwua','enabled',False);
+        CBWUADontchange.Checked := not ini.ValueExists('waptwua','enabled');
+        if not CBWUADontchange.Checked then
+          if ini.ReadBool('waptwua','enabled',False) then
+            CBWUAEnabled.Checked := True
+          else
+            CBWUADisable.Checked := True;
 
         if not ini.ValueExists('waptwua','default_allow') then
           CBWUADefaultAllow.State:=cbGrayed
@@ -439,7 +456,6 @@ begin
       end
       else
       begin
-        CBWUAEnabled.State:=cbGrayed;
         CBWUADefaultAllow.State:=cbGrayed;
         EdWUAInstallDelay.Text := '';
       end;
@@ -454,7 +470,8 @@ end;
 
 procedure TVisCreateWaptSetup.GridCertificatesDblClick(Sender: TObject);
 begin
-  OpenDocument(UTF8Encode(GridCertificates.FocusedRow.S['_public_cert_filename']));
+  if GridCertificates.FocusedRow <> Nil then
+    OpenDocument(UTF8Encode(GridCertificates.FocusedRow.S['_public_cert_filename']));
 end;
 
 procedure TVisCreateWaptSetup.GridCertificatesNodesDelete(Sender: TSOGrid;
@@ -588,7 +605,7 @@ end;
 function TVisCreateWaptSetup.BuildWaptUpgrade(WaptUpgradeSources: String): String;
 var
   SignDigests: String;
-  BuildResult,VWaptServerPassword: Variant;
+  BuildResult,VWaptServerPassword,WAPT: Variant;
 begin
   // create waptupgrade package (after waptagent as we need the updated waptagent.sha1 file)
   with CurrentVisLoading do
@@ -604,9 +621,11 @@ begin
 
       VWaptServerPassword := PyUTF8Decode(WaptServerPassword);
 
+      //AppIniFilename(),
+      WAPT := DMPython.WAPT;
       //BuildResult is a PackageEntry instance
       BuildResult := DMPython.waptdevutils.build_waptupgrade_package(
-          waptconfigfile := AppIniFilename(),
+          wapt := WAPT,
           sources_directory := WaptUpgradeSources,
           wapt_server_user := WaptServerUser,
           wapt_server_passwd := VWaptServerPassword,
