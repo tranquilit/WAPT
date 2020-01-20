@@ -4777,6 +4777,7 @@ class Wapt(BaseObjectClass):
         apackages = self._ensure_package_requests_list(apackages,keep_package_entries=True)
 
         # ensure that apackages is a list of package requirements (strings)
+        logger.info(u'Trying to install %s with force=%s, only_priorities=%s, only_if_not_process_running=%s' % (repr(apackages),force,only_priorities,only_if_not_process_running))
 
         actions = self.check_depends(apackages,force=force or download_only,forceupgrade=True)
         actions['errors']=[]
@@ -4784,6 +4785,8 @@ class Wapt(BaseObjectClass):
         packages = actions['install']
         skipped = actions['skipped']
         missing = actions['unavailable']
+        not_allowed = []
+        actions['not_allowed'] = not_allowed
 
         if process_dependencies:
             to_upgrade = actions['upgrade']
@@ -4797,12 +4800,17 @@ class Wapt(BaseObjectClass):
         for (request,pe) in to_remove:
             logger.info('Removing conflicting package %s'%request)
             try:
-                res = self.remove(request,force=True)
+                res = self.remove(request,force=True,only_priorities=only_priorities,only_if_not_process_running=only_if_not_process_running)
                 actions['errors'].extend(res['errors'])
+                actions['not_allowed'].extend(res.get('not_allowed',[]))
                 if res['errors']:
                     logger.warning(u'Error removing %s:%s'%(request,ensure_unicode(res['errors'])))
+                if res['not_allowed']:
+                    raise Exception(u'Removal of %s is not allowed' % repr(res['not_allowed']))
             except Exception as e:
                 logger.critical(u'Error removing %s:%s'%(request,ensure_unicode(e)))
+                if not force:
+                    raise
 
         to_install = []
 
@@ -4814,13 +4822,33 @@ class Wapt(BaseObjectClass):
             return False
 
         def is_allowed(package):
-            return ((only_priorities is None or package.priority in only_priorities) and
-                   (not only_if_not_process_running or not package.impacted_process or not is_process_running(package.impacted_process))
-                   )
+            prio_allowed = only_priorities is None or package.priority in only_priorities
+            if not prio_allowed:
+                print(u'Install of %s is not allowed at this stage because priority %s is not selected.' % (package,package.priority))
+                return False
+            running_allowed = not only_if_not_process_running or not package.impacted_process or not is_process_running(package.impacted_process)
+            if not running_allowed:
+                print(u'Install of %s is not allowed at this stage because any of %s is running.' % (package,package.impacted_process))
+                return False
+            return True
 
-        to_install.extend([p for p in additional_install if is_allowed(p[1])])
-        to_install.extend([p for p in to_upgrade if is_allowed(p[1])])
-        to_install.extend([p for p in packages if is_allowed(p[1])] )
+        for p in additional_install:
+            if is_allowed(p[1]):
+                to_install.append(p)
+            else:
+                not_allowed.append(p)
+
+        for p in to_upgrade:
+            if is_allowed(p[1]):
+                to_install.append(p)
+            else:
+                not_allowed.append(p)
+
+        for p in packages:
+            if is_allowed(p[1]):
+                to_install.append(p)
+            else:
+                not_allowed.append(p)
 
         # get package entries to install to_install is a list of (request,package)
         packages = [ p[1] for p in to_install ]
@@ -4986,7 +5014,11 @@ class Wapt(BaseObjectClass):
         else:
             return []
 
-    def remove(self,packages_list,force=False):
+    def remove(self,
+            packages_list,
+            force=False,
+            only_priorities=None,
+            only_if_not_process_running=False):
         """Removes a package giving its package name, unregister from local status DB
 
         Args:
@@ -4998,9 +5030,27 @@ class Wapt(BaseObjectClass):
             dict: {'errors': [], 'removed': []}
 
         """
-        result = {'removed':[],'errors':[]}
+        result = {'removed':[],'errors':[],'not_allowed':[]}
         if not isinstance(packages_list,list):
             packages_list = [packages_list]
+
+        logger.info(u'Trying to remove %s with force=%s, only_priorities=%s, only_if_not_process_running=%s' % (','.join(packages_list),force,only_priorities,only_if_not_process_running))
+        def is_process_running(processes):
+            processes = ensure_list(processes)
+            for p in processes:
+                if setuphelpers.isrunning(p):
+                    return True
+            return False
+
+        def is_allowed(dict_package):
+            if only_priorities is not None and dict_package.get('priority') in only_priorities:
+                print(u'Uninstall of %s not allowed because priority %s is not selected.' % (dict_package.get('package'),dict_package('priority')))
+                return False
+            if only_if_not_process_running and dict_package.get('impacted_process') and is_process_running(dict_package.get('impacted_process')):
+                print(u'Uninstall of %s not allowed because %s is running.' % (dict_package.get('package'),dict_package.get('impacted_process')))
+                return False
+
+            return True
 
         for package in packages_list:
             try:
@@ -5025,14 +5075,28 @@ class Wapt(BaseObjectClass):
 
                 # several versions installed of the same package... ?
                 for mydict in q:
+                    # check that removal is allowed...
+                    if not is_allowed(mydict):
+                        result['not_allowed'].append(mydict['package'])
+                        continue
                     self.runstatus = u"Removing package %s version %s from computer..." % (mydict['package'],mydict['version'])
 
                     # removes recursively meta packages which are not satisfied anymore
                     additional_removes = self.check_remove(package)
 
+                    cant_remove = False
+                    for parent_package in additional_removes:
+                        if not is_allowed(parent_package):
+                            cant_remove = True
+                            result['not_allowed'].append(mydict['package'])
+                            break
+                    if cant_remove:
+                        logger.info(u'Removal of %s is not allowed at this stage because one parent package can not be removed' % mydict['package'])
+                        result['not_allowed'].append(mydict['package'])
+                        continue
+
                     if mydict.get('impacted_process',None):
                         setuphelpers.killalltasks(ensure_list(mydict['impacted_process']))
-
 
                     if mydict['uninstall_key']:
                         # cook the uninstall_key because could be either repr of python list or string

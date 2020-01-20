@@ -1243,7 +1243,7 @@ def remove():
     data = []
     if authorized_packages:
         for package in authorized_packages:
-            data.append(app.task_manager.add_task(WaptPackageRemove(package,force=force,created_by=username),notify_user=notify_user).as_dict())
+            data.append(app.task_manager.add_task(WaptPackageRemove(package,force=force,created_by=username,only_if_not_process_running=only_if_not_process_running,only_priorities=only_priorities),notify_user=notify_user).as_dict())
 
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')

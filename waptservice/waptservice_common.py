@@ -1077,7 +1077,11 @@ class WaptPackageRemove(WaptPackageInstall):
         def cjoin(l):
             return u','.join([u'%s' % ensure_unicode(p) for p in l])
 
-        self.result = self.wapt.remove(self.packagenames,force=self.force)
+        self.result = self.wapt.remove(self.packagenames,
+            force=self.force,
+            only_if_not_process_running=self.only_if_not_process_running,
+            only_priorities = self.only_priorities)
+
         s = []
         if self.result['removed']:
             s.append(_(u'Removed : {}').format(cjoin(self.result['removed'])))
