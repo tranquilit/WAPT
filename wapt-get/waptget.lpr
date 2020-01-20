@@ -22,6 +22,7 @@ program waptget;
 }
 
 {$mode objfpc}{$H+}
+{$modeswitch typehelpers}
 
 uses
   {$IFDEF UNIX}{$IFDEF UseCThreads}
@@ -34,7 +35,17 @@ uses
   IdAuthentication, Variants, IniFiles,uwaptcrypto,uWaptPythonUtils,
   tisinifiles,base64,IdComponent,httpsend,uWAPTPollThreads;
 
+
 type
+
+  { TDynStringArrayHelper }
+
+  TDynStringArrayHelper = type helper for TDynStringArray
+      procedure Add(const a:String);
+    end;
+
+
+
   { PWaptGet }
 
   PWaptGet = class(TCustomApplication)
@@ -153,6 +164,7 @@ var
       SetConsoleMode(GetStdHandle(STD_INPUT_HANDLE), OldMode);
     end;
   end;
+
 
 procedure PWaptGet.HTTPLogin(Sender: THttpSend; var ShouldRetry: Boolean; RetryCount:integer);
 var
@@ -445,6 +457,7 @@ var
   i:integer;
   NextIsParamValue:Boolean;
   NewCertificateFilename,DestCertPath:String;
+  Args: TDynStringArray;
 
 begin
   Action:='';
@@ -630,17 +643,25 @@ begin
       try
         res := Nil;
         //test longtask
+        Args := TDynStringArray.Create(Format('notify_user=%s',[GetCmdParams('notify_user','1')]));
+        if HasOption('notify_server_on_start') then
+          Args.Add('notify_server_on_start='+GetCmdParams('notify_server_on_start','0'));
+        if HasOption('notify_server_on_finish') then
+          Args.Add('notify_server_on_finish='+GetCmdParams('notify_server_on_finish','0'));
+        if HasOption('f','force') then
+          Args.Add('force=1');
+
         if action='longtask' then
         begin
           Logger('Call longtask URL...',DEBUG);
-          res := WAPTLocalJsonGet('longtask.json?notify_user=1','admin','',-1,@HTTPLogin,3);
+          res := WAPTLocalJsonGet(Format('longtask.json?%s',[StrJoin('&',Args)]),'admin','',-1,@HTTPLogin,3);
           tasks.AsArray.Add(res);
           Logger('Task '+res.S['id']+' added to queue',DEBUG);
         end
         else
         if action='tasks' then
         begin
-          res := WAPTLocalJsonGet('tasks.json');
+          res := WAPTLocalJsonGet(Format('tasks.json?%s',[StrJoin('&',Args)]));
           if (res<>Nil) then
           begin
             if (res['running'].DataType<>stNull) then
@@ -651,14 +672,14 @@ begin
             begin
               writeln(utf8decode(rsPending));
               for task in res['pending'] do
-                writeln(utf8decode('  '+task.S['id']+' '+task.S['description']));
+                writeln(utf8encode('  '+task.S['id']+' '+task.S['description']));
             end;
           end;
         end
         else
         if action='cancel' then
         begin
-          res := WAPTLocalJsonGet('cancel_running_task.json');
+          res := WAPTLocalJsonGet(Format('cancel_running_task.json?%s',[StrJoin('&',Args)]));
           if res.DataType<>stNull then
             writeln(utf8decode(format(rsCanceledTask, [res.S['description']])))
           else
@@ -667,7 +688,7 @@ begin
         else
         if (action='cancel-all') or (action='cancelall') then
         begin
-          res := WAPTLocalJsonGet('cancel_all_tasks.json');
+          res := WAPTLocalJsonGet(Format('cancel_all_tasks.json?%s',[StrJoin('&',Args)]));
           if res.DataType<>stNull then
           begin
             for task in res do
@@ -680,22 +701,16 @@ begin
         if action='update' then
         begin
           Logger('Call update URL...',DEBUG);
-          if FindCmdLineSwitch('Force',['/','-'],True) or FindCmdLineSwitch('F',['/','-'],True) then
-            res := WAPTLocalJsonGet('update.json?notify_user=0&force=1')
-          else
-            res := WAPTLocalJsonGet('update.json?notify_user=0');
+          res := WAPTLocalJsonGet(Format('update.json?%s',[StrJoin('&',Args)]));
           tasks.AsArray.Add(res);
-          Logger('Task '+res.S['id']+' added to queue',DEBUG);
+          Logger(UTF8Encode('Task '+res.S['id']+' added to queue'),DEBUG);
         end
         else
         if action='audit' then
         begin
           Logger('Call audit URL...',DEBUG);
-          if HasOption('f','force') then
-            res := WAPTLocalJsonGet('audit.json?notify_user=0&force=1')
-          else
-            res := WAPTLocalJsonGet('audit.json?notify_user=0');
-          WriteLn(utf8decode(res.S['message']));
+          res := WAPTLocalJsonGet(Format('audit.json?%s',[StrJoin('&',Args)]));
+          WriteLn(utf8encode(res.S['message']));
           for task in res['content'] do
           begin
             tasks.AsArray.Add(task);
@@ -706,20 +721,20 @@ begin
         if action='register' then
         begin
           Logger('Call register URL...',DEBUG);
-          res := WAPTLocalJsonGet('register.json?notify_user=0&notify_server=1','admin','',-1,@HTTPLogin,3);
+          res := WAPTLocalJsonGet(Format('register.json?%s',[StrJoin('&',Args)]),'admin','',-1,@HTTPLogin,3);
           tasks.AsArray.Add(res);
           Logger('Task '+res.S['id']+' added to queue',DEBUG);
         end
         else
         if (action='install') or (action='remove') or (action='forget') then
         begin
+          if HasOption('only_if_not_process_running') then
+            Args.Add('only_if_not_process_running='+GetOptionValue('only_if_not_process_running'));
           for package in sopackages do
           begin
             Logger('Call '+action+'?package='+package.AsString,DEBUG);
-            if HasOption('f','force') then
-              res := WAPTLocalJsonGet(Action+'.json?package='+package.AsString+'&force=1&notify_user=0','admin','',-1,@HTTPLogin,3)
-            else
-              res := WAPTLocalJsonGet(Action+'.json?package='+package.AsString+'&notify_user=0','admin','',-1,@HTTPLogin,3);
+            Args.Add(utf8encode('package='+package.AsString));
+            res := WAPTLocalJsonGet(Format(Action+'.json?%s',[StrJoin('&',Args)]),'admin','',-1,@HTTPLogin,3);
             if (action='install') or (action='forget')  then
             begin
               // single action
@@ -746,7 +761,11 @@ begin
         else if action='upgrade' then
         begin
           Logger('Call upgrade URL...',DEBUG);
-          res := WAPTLocalJsonGet('upgrade.json?notify_user=1');
+          if HasOption('only_priorities') then
+            Args.Add('only_priorities='+GetOptionValue('only_priorities'));
+          if HasOption('only_if_not_process_running') then
+            Args.Add('only_if_not_process_running='+GetOptionValue('only_if_not_process_running'));
+          res := WAPTLocalJsonGet(Format('upgrade.json?%s',[StrJoin('&',args)]));
           Logger('Upgrade triggered...',DEBUG);
           if res.S['result']<>'OK' then
             WriteLn(utf8decode(format(rsErrorLaunchingUpgrade, [res.S['message']])))
@@ -760,21 +779,21 @@ begin
         else
         if action='wuascan' then
         begin
-          res := WAPTLocalJsonGet('waptwua_scan?notify_user=1');
+          res := WAPTLocalJsonGet(Format('waptwua_scan?%s',[StrJoin('&',Args)]));
           tasks.AsArray.Add(res);
           Logger('Task '+res.S['id']+' added to queue',DEBUG);
         end
         else
         if action='wuadownload' then
         begin
-          res := WAPTLocalJsonGet('waptwua_download?notify_user=1');
+          res := WAPTLocalJsonGet(Format('waptwua_download?%s',[StrJoin('&',Args)]));
           tasks.AsArray.Add(res);
           Logger('Task '+res.S['id']+' added to queue',DEBUG);
         end
         else
         if action='wuainstall' then
         begin
-          res := WAPTLocalJsonGet('waptwua_install?notify_user=1');
+          res := WAPTLocalJsonGet(Format('waptwua_install?%s',[StrJoin('&',Args)]));
           tasks.AsArray.Add(res);
           Logger('Task '+res.S['id']+' added to queue',DEBUG);
         end;
@@ -1199,6 +1218,14 @@ begin
   if VarIsEmpty(Fwaptdevutils) or VarIsNull(Fwaptdevutils) then
     Fwaptdevutils:= VarPyth.Import('waptdevutils');
   Result := Fwaptdevutils;
+end;
+
+
+{ TDynStringArrayHelper }
+procedure TDynStringArrayHelper.Add(const a: String);
+begin
+  SetLength(self,Length(Self)+1);
+  Self[Length(Self)-1] := a;
 end;
 
 {$R *.res}
