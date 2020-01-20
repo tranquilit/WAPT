@@ -4,8 +4,8 @@ object VisWaptSelf: TVisWaptSelf
   Top = 0
   Width = 1920
   Caption = 'WAPT Self-service'
-  ClientHeight = 1017
-  ClientWidth = 1920
+  ClientHeight = 0
+  ClientWidth = 0
   Constraints.MinHeight = 602
   Constraints.MinWidth = 640
   OnClose = FormClose
@@ -1529,13 +1529,14 @@ object VisWaptSelf: TVisWaptSelf
           Position = 21
           Tag = 21
           Text = 'force'
-          Width = 37
+          Width = 29
           PropertyName = 'force'
         end>
       Header.DefaultHeight = 18
       Header.Height = 18
+      Header.MaxHeight = 100
       Header.MinHeight = 18
-      Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
+      Header.Options = [hoAutoResize, hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
       Header.Style = hsFlatButtons
       Images = ImageListTaskStatus
       TabOrder = 0

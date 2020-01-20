@@ -1,9 +1,8 @@
 object VisLogin: TVisLogin
-  Left = 2285
+  Left = 435
   Height = 201
-  Top = 345
+  Top = 248
   Width = 327
-  AutoSize = True
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'Sign in'
@@ -26,6 +25,8 @@ object VisLogin: TVisLogin
     Top = 102
     Width = 297
     Align = alCustom
+    Anchors = [akTop, akLeft, akRight]
+    AutoSize = True
     BorderSpacing.Top = 5
     BorderSpacing.Right = 15
     BevelColor = clForm
@@ -94,27 +95,27 @@ object VisLogin: TVisLogin
     AnchorSideLeft.Side = asrCenter
     AnchorSideTop.Control = PanelLogin
     AnchorSideTop.Side = asrBottom
-    AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
-    Left = 15
+    Left = 0
     Height = 27
     Top = 164
-    Width = 297
+    Width = 327
     Align = alCustom
     Anchors = [akTop, akLeft, akBottom]
+    AutoSize = True
     BorderSpacing.Top = 10
-    BorderSpacing.Right = 15
     BorderSpacing.Bottom = 10
     BevelOuter = bvNone
     ClientHeight = 27
-    ClientWidth = 297
+    ClientWidth = 327
     TabOrder = 1
     object Panel2: TPanel
       AnchorSideLeft.Control = Panel1
       AnchorSideLeft.Side = asrCenter
-      Left = 61
+      AnchorSideTop.Control = Panel1
+      Left = 76
       Height = 28
       Top = 0
       Width = 174
@@ -123,6 +124,7 @@ object VisLogin: TVisLogin
       ClientWidth = 174
       TabOrder = 0
       object ButOk: TBitBtn
+        AnchorSideTop.Control = Panel2
         AnchorSideTop.Side = asrCenter
         Left = 0
         Height = 28
@@ -140,13 +142,13 @@ object VisLogin: TVisLogin
       object ButCancel: TBitBtn
         AnchorSideLeft.Control = ButOk
         AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = Panel2
         AnchorSideTop.Side = asrCenter
         AnchorSideRight.Side = asrBottom
         Left = 92
         Height = 28
         Top = 0
         Width = 82
-        Anchors = [akLeft]
         BorderSpacing.Left = 10
         Cancel = True
         Caption = 'Cancel'
@@ -171,6 +173,8 @@ object VisLogin: TVisLogin
     Top = 81
     Width = 297
     Align = alCustom
+    Anchors = [akTop, akLeft, akRight]
+    AutoSize = True
     BorderSpacing.Top = 5
     BevelOuter = bvNone
     ClientHeight = 16

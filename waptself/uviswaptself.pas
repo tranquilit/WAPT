@@ -905,6 +905,8 @@ begin
       CheckEventsThread.Start;
 
       EdSearch.Button.Enabled:=False;
+      if Screen.PixelsPerInch<>96 then
+         SOGridTasks.Header.Height:=trunc((SOGridTasks.Header.MinHeight*Screen.PixelsPerInch)/96)
     end;
   finally
     Screen.Cursor := crDefault;
