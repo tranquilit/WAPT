@@ -15,10 +15,10 @@ Source: "{#wapt_base_dir}waptpython.exe"; DestDir: "{app}\Scripts"; DestName: "p
 Source: "{#wapt_base_dir}waptpythonw.exe"; DestDir: "{app}\Scripts"; DestName: "pythonw.exe"
 Source: "{#wapt_base_dir}DLLs\*"; DestDir: "{app}\DLLs"; Flags: createallsubdirs recursesubdirs
 Source: "{#wapt_base_dir}libs\*"; DestDir: "{app}\libs"; Flags: createallsubdirs recursesubdirs  ; Excludes: "*.pyc,*.pyo,test,*.~*,pydoc_data,tests,demos,testsuite,doc,samples,pil" 
-Source: "{#wapt_base_dir}python27.dll"; DestDir: "{app}";
-Source: "{#wapt_base_dir}pythoncom27.dll"; DestDir: "{app}";
-Source: "{#wapt_base_dir}pythoncomloader27.dll"; DestDir: "{app}";
-Source: "{#wapt_base_dir}pywintypes27.dll"; DestDir: "{app}";
+Source: "{#wapt_base_dir}python27.dll"; DestDir: "{app}"; Flags: ignoreversion;
+Source: "{#wapt_base_dir}pythoncom27.dll"; DestDir: "{app}"; Flags: ignoreversion;
+Source: "{#wapt_base_dir}pythoncomloader27.dll"; DestDir: "{app}"; Flags: ignoreversion;
+Source: "{#wapt_base_dir}pywintypes27.dll"; DestDir: "{app}"; Flags: ignoreversion;
 ;Source: "{#wapt_base_dir}sqlite3.dll"; DestDir: "{app}"; 
 
 Source: "{#wapt_base_dir}Scripts\*"; DestDir: "{app}\Scripts"; Flags: createallsubdirs recursesubdirs skipifsourcedoesntexist;
