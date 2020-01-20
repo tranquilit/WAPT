@@ -559,7 +559,7 @@ class SSLCABundle(BaseObjectClass):
         if isinstance(cert_chain,SSLCertificate):
             cert_chain = [cert_chain]
         if not cert_chain:
-            raise Exception('No certificates to check')
+            raise EWaptCryptoException('No certificates to check')
 
         cert = cert_chain[0]
 

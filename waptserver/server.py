@@ -382,7 +382,8 @@ def register_host():
                                 authenticated_user = computer_fqdn
                                 registration_auth_user = u'Cert:%s' % host_cert.cn
 
-                    except EWaptCryptoException:
+                    except Exception as e:
+                        logger.warning(u'Unable to trust supplied host certificate: %s' % (repr(e),))
                         host_cert = None
 
                 if not host_cert and not authenticated_user:
