@@ -225,6 +225,8 @@ end;
 function PWaptGet.GetWaptServerUser: String;
 begin
   Result := GetCmdParams('WaptServerUser','');
+  if Result = '' then
+     Result := GetCmdParams('wapt-server-user','');
   while Result='' do
   begin
     Write('Waptserver '+GetWaptServerURL+' Admin User ('+WaptServerUser+') :');
@@ -287,6 +289,14 @@ begin
     result := DecodeStringBase64(GetCmdParams('PrivateKeyPassword64'));
   if result='' then
     result := GetCmdParams('PrivateKeyPassword','');
+  if result='' then
+  begin
+    try
+       result := FileToString(GetCmdParams('w',''));
+    except
+      result:=GetCmdParams('w','');
+    end;
+  end;
   while Result='' do
   begin
     Write('Private key Password for '+crtname+' : ');
