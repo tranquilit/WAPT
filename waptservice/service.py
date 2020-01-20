@@ -983,12 +983,14 @@ def audit():
     notify_server_on_finish = int(request.args.get('notify_server','1')) != 0
     force = int(request.args.get('force','0')) != 0
 
-    packagenames = []
-
     now = setuphelpers.currentdatetime()
-    for package_status in wapt().installed():
-        if force or not package_status.next_audit_on or (now >= package_status.next_audit_on):
-            packagenames.append(package_status.package)
+
+    packagenames = ensure_list(request.args.get('package',None),allow_none=True)
+    if packagenames is None:
+        packagenames = []
+        for package_status in wapt().installed():
+            if force or not package_status.next_audit_on or (now >= package_status.next_audit_on):
+                packagenames.append(package_status.package)
 
     if packagenames:
         task = WaptAuditPackage(packagenames,force=force)
@@ -1227,8 +1229,7 @@ def remove():
                     logger.debug(u'User %s not allowed' % (auth.username))
                     return authenticate()
         except:
-            logger.debug(u'User %s wrong authentication' % (auth.username))
-            return authenticate
+            return authenticate()
 
     authorized_packages = []
     for apackage in package_requests:
