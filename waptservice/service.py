@@ -89,17 +89,13 @@ from waptservice.waptservice_common import WaptEvents
 
 from waptservice.waptservice_socketio import WaptSocketIOClient
 
-if sys.platform == 'win32':
-    if os.path.isdir(os.path.join(wapt_root_dir,'waptenterprise')):
-        from waptenterprise.waptservice.enterprise import get_active_sessions,start_interactive_process  # pylint: disable=import-error
-        from waptenterprise.waptservice.enterprise import WaptGPUpdate,WaptWUAScanTask,WaptWUADowloadTask,WaptWUAInstallTask  # pylint: disable=import-error
-        from waptenterprise.waptservice.enterprise import run_cleanmgr,WaptRunCleanMgr # pylint: disable=import-error
-        from waptenterprise.waptservice.enterprise import run_scheduled_wua_scan,run_scheduled_wua_downloads,run_scheduled_wua_installs # pylint: disable=import-error
-        from waptenterprise.waptservice.enterprise import waptwua_api
-        from waptenterprise import enterprise_common
-    else:
-        waptwua_api = None
-        enterprise_common = None
+if sys.platform == 'win32' and os.path.isdir(os.path.join(wapt_root_dir,'waptenterprise')):
+    from waptenterprise.waptservice.enterprise import get_active_sessions,start_interactive_process  # pylint: disable=import-error
+    from waptenterprise.waptservice.enterprise import WaptGPUpdate,WaptWUAScanTask,WaptWUADowloadTask,WaptWUAInstallTask  # pylint: disable=import-error
+    from waptenterprise.waptservice.enterprise import run_cleanmgr,WaptRunCleanMgr # pylint: disable=import-error
+    from waptenterprise.waptservice.enterprise import run_scheduled_wua_scan,run_scheduled_wua_downloads,run_scheduled_wua_installs # pylint: disable=import-error
+    from waptenterprise.waptservice.enterprise import waptwua_api
+    from waptenterprise import enterprise_common
 else:
     enterprise_common = None
     waptwua_api = None
