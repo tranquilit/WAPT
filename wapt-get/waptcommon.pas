@@ -2743,7 +2743,8 @@ begin
     If (VerifyCert<>'') and (VerifyCert<>'0') and (VerifyCert<>'1') then
     begin
       // copy ca bundle to build dest ssl\server dir
-      CopyFile(VerifyCert,MakePath([SSLServerDir,ExtractFileName(VerifyCert)]) ,[cffOverwriteFile,cffPreserveTime],True);
+      if VerifyCert<>MakePath([SSLServerDir,ExtractFileName(VerifyCert)]) then
+        CopyFile(VerifyCert,MakePath([SSLServerDir,ExtractFileName(VerifyCert)]) ,[cffOverwriteFile,cffPreserveTime],True);
       DestVerifyCert:=MakePath(['{app}\ssl\server',ExtractFileName(VerifyCert)]);
     end
     else

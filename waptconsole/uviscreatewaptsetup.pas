@@ -149,6 +149,8 @@ begin
 
       PingResult := SO(IdhttpGetString(edWaptServerUrl.Text+'/ping','',4000,60000,60000,'','','GET','',AbsVerifyCertPath,
         'application/json',Nil,WaptClientCertFilename,WaptClientKeyFilename));
+
+      EdServerCertificate.Text := AbsVerifyCertPath;
       except
         on E:EIdOpenSSLAPICryptoError do
         begin
