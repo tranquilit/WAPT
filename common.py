@@ -5034,7 +5034,7 @@ class Wapt(BaseObjectClass):
         if not isinstance(packages_list,list):
             packages_list = [packages_list]
 
-        logger.info(u'Trying to remove %s with force=%s, only_priorities=%s, only_if_not_process_running=%s' % (','.join(packages_list),force,only_priorities,only_if_not_process_running))
+        logger.info(u'Trying to remove %s with force=%s, only_priorities=%s, only_if_not_process_running=%s' % (repr(packages_list),force,only_priorities,only_if_not_process_running))
         def is_process_running(processes):
             processes = ensure_list(processes)
             for p in processes:
