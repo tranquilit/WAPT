@@ -981,7 +981,7 @@ class PackageEntry(BaseObjectClass):
         >>> pe = PackageEntry(waptfile='c:/tranquilit/tis-disable-telemetry_6.wapt')
         >>> pe.make_package_filename()
         u'tis-disable-telemetry_6_3519b9e9b1d116dccd9514c209bb84ab.wapt'
-        >>> pe._md5sum_from_filename_(pe.make_package_filename())
+        >>> pe._md5sum_from_filename(pe.make_package_filename())
         u'3519b9e9b1d116dccd9514c209bb84ab'
         """
         if filename and isinstance(filename,(str,unicode)) and filename.endswith('.wapt') and len(filename)>37 and filename[-38] == '_':
@@ -1072,7 +1072,7 @@ class PackageEntry(BaseObjectClass):
         >>> print p._calculated_attributes
         []
         >>> p.install_date = u'2017-06-09 12:00:00'
-        >>> print p._calculated_attributes
+        >>> print(p._calculated_attributes)
         []
         """
         setattr(self,name,value)
@@ -1133,6 +1133,9 @@ class PackageEntry(BaseObjectClass):
                     if result == 0:
                         # when migrating from <1.5.1.21, maturity is None...
                         result = cmp(self.maturity or '',entry_or_version.maturity or '')
+                    if result == 0 and self.signature_date != '' and entry_or_version.signature_date != '':
+                        # compare signature date
+                        result = cmp(self.signature_date,entry_or_version.signature_date)
                     return result
                 else:
                     return result
@@ -1497,7 +1500,6 @@ class PackageEntry(BaseObjectClass):
         >>> key = SSLPrivateKey('c:/private/htouvet.pem',password='monmotdepasse')
         >>> crt = SSLCertificate('c:/private/htouvet.crt')
         >>> pe.sign_package(crt,key)
-        'qrUUQeNJ3RSSeXQERrP9vD7H/Hfvw8kmBXZvczq0b2PVRKPdjMCElYKzryAbQ+2nYVDWAGSGrXxs\ny2WzhOhrdMfGfcy6YLaY5muApoArBn3CjKP5G6HypOGD5agznLEKkcUg5/Y3aIR8bL55Ylmp3RaS\nWKnezUcuA2yuNuKwHsXr9CdihK5pRyYrm5KhCNy8S7+kAJvayrUj5q8ur6z0nNMQCHEnWGN+V3MI\n84PymR1eXsuauKeYNqIESWCyyD/lFZv0JEYfrfml8rirC6yd6iTJW0OqH7gKwCEl03JpRaF91vWB\nOXN65S1j2oV8Jgjq43oa7lyywKC01a/ehQF5Jw==\n'
         >>> pe.unzip_package()
         'c:\\users\\htouvet\\appdata\\local\\temp\\waptob4gcd'
         >>> ca = SSLCABundle('c:/wapt/ssl')
