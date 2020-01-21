@@ -32,7 +32,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
     Constraints.MinHeight = 415
     Constraints.MinWidth = 560
     TabOrder = 0
-    object Label1: TLabel
+    object LabAuthCertsBundle: TLabel
       Left = 0
       Height = 13
       Top = 0
@@ -42,7 +42,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       ParentColor = False
     end
     object edRepoUrl: TEdit
-      Left = 232
+      Left = 233
       Height = 20
       Hint = 'E.g. : https://wapt.mydomain.lan/wapt If empty, use dnsdomain setting'
       Top = 214
@@ -51,7 +51,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       TabOrder = 1
     end
     object Label2: TLabel
-      Left = 2
+      Left = 3
       Height = 13
       Hint = 'Your WAPT repository address (http://wapt/wapt).'
       Top = 219
@@ -62,16 +62,16 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
     end
     object edOrgName: TEdit
       AnchorSideRight.Side = asrBottom
-      Left = 232
+      Left = 233
       Height = 21
       Hint = 'E.g. : Tranquil IT Systems.'
       Top = 328
-      Width = 279
+      Width = 278
       Anchors = [akTop, akLeft, akRight]
       TabOrder = 8
     end
     object Label3: TLabel
-      Left = 2
+      Left = 3
       Height = 13
       Hint = 'Your company name.'
       Top = 331
@@ -82,7 +82,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
     end
     object edWaptServerUrl: TEdit
       AnchorSideRight.Side = asrBottom
-      Left = 232
+      Left = 233
       Height = 21
       Hint = 'E.g. : https://wapt.mydomain.lan'
       Top = 238
@@ -90,7 +90,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       TabOrder = 3
     end
     object Label5: TLabel
-      Left = 2
+      Left = 3
       Height = 13
       Hint = 'Your WAPT server address (http://wapt:8080).'
       Top = 243
@@ -100,7 +100,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       ParentColor = False
     end
     object Label6: TLabel
-      Left = 2
+      Left = 3
       Height = 13
       Top = 286
       Width = 211
@@ -110,11 +110,11 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
     end
     object EdServerCertificate: TFileNameEdit
       AnchorSideRight.Side = asrBottom
-      Left = 232
+      Left = 233
       Height = 21
       Hint = 'E.g. : c:\wapt\ssl\server\tranquilit.crt  Path to trusted certificates bundle for https connections'
       Top = 279
-      Width = 279
+      Width = 278
       Filter = 'CA Certificates bundles PEM|*.crt;*.pem|Tous les fichiers|*.*'
       FilterIndex = 0
       HideDirectories = False
@@ -128,7 +128,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       OnDblClick = EdServerCertificateDblClick
     end
     object CBVerifyCert: TCheckBox
-      Left = 232
+      Left = 233
       Height = 17
       Top = 261
       Width = 161
@@ -138,7 +138,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       TabOrder = 5
     end
     object CBUseKerberos: TCheckBox
-      Left = 232
+      Left = 233
       Height = 17
       Hint = 'When first registering to waptserver, host will try to authenticate using their kerberos account'
       Top = 306
@@ -147,7 +147,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       TabOrder = 7
     end
     object CBDualSign: TCheckBox
-      Left = 232
+      Left = 233
       Height = 17
       Hint = 'Check that certificate dates are valid and  issuer is a know one.'
       Top = 357
@@ -156,10 +156,10 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       TabOrder = 9
     end
     object GridCertificates: TSOGrid
-      Left = 1
+      Left = 2
       Height = 159
       Top = 45
-      Width = 576
+      Width = 575
       OnNodesDelete = GridCertificatesNodesDelete
       ShowAdvancedColumnsCustomize = False
       Anchors = [akTop, akLeft, akRight]
@@ -260,9 +260,11 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       ZebraPaint = True
     end
     object Label7: TLabel
-      Left = 1
+      AnchorSideTop.Control = CBIncludeNonCA
+      AnchorSideTop.Side = asrBottom
+      Left = 2
       Height = 13
-      Top = 24
+      Top = 30
       Width = 407
       Caption = 'Authorized packages Certificates which will be bundled with the Wapt Agent  installer'
       ParentColor = False
@@ -271,11 +273,11 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       AnchorSideLeft.Control = edRepoUrl
       AnchorSideLeft.Side = asrBottom
       AnchorSideRight.Side = asrBottom
-      Left = 458
+      Left = 459
       Height = 17
       Hint = 'Overwrite the URL when installing on the client even if there is a diffrent current setting in wapt-get.ini'
       Top = 217
-      Width = 285
+      Width = 284
       Anchors = [akTop, akLeft, akRight]
       Caption = 'Overwrite'
       Checked = True
@@ -286,11 +288,11 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       AnchorSideLeft.Control = edWaptServerUrl
       AnchorSideLeft.Side = asrBottom
       AnchorSideRight.Side = asrBottom
-      Left = 458
+      Left = 459
       Height = 17
       Hint = 'Overwrite the URL when installing on the client even if there is a diffrent current setting in wapt-get.ini'
       Top = 240
-      Width = 280
+      Width = 279
       Anchors = [akTop, akLeft, akRight]
       Caption = 'Overwrite'
       Checked = True
@@ -298,7 +300,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       TabOrder = 4
     end
     object CBUseFQDNAsUUID: TCheckBox
-      Left = 232
+      Left = 233
       Height = 17
       Hint = 'Ask Wapt agent to use the computer Fully Qualified Domain Name (name.domaine.lan) instead of BIOD unique ID.'#13#10'This can be useful if Wapt is not used as asset management, but only as a deployment solutioN.'
       Top = 376
@@ -308,7 +310,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       TabOrder = 10
     end
     object CBUseRandomUUID: TCheckBox
-      Left = 232
+      Left = 233
       Height = 17
       Hint = 'Ask Wapt agent to generate a random UUID instead of BIOS unique ID.'#13#10'This can be useful if BIOS returns non unique UUID'
       Top = 395
@@ -318,11 +320,11 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       TabOrder = 11
     end
     object edPublicCertDir: TDirectoryEdit
-      Left = 302
+      Left = 303
       Height = 21
       Hint = 'Directory of X509 PEM trusted CA certificates'
       Top = 0
-      Width = 279
+      Width = 278
       OnAcceptDirectory = edPublicCertDirAcceptDirectory
       ShowHidden = False
       ButtonWidth = 23
@@ -338,7 +340,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       AnchorSideLeft.Control = CBVerifyCert
       AnchorSideLeft.Side = asrBottom
       AnchorSideTop.Control = CBVerifyCert
-      Left = 409
+      Left = 410
       Height = 17
       Hint = 'If checked, when the client lookups packages index, it first requests the URL rules from the server to automatically choose the best repository.'
       Top = 262
@@ -347,6 +349,18 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       BorderSpacing.Top = 1
       Caption = 'Use repository access rules'
       TabOrder = 13
+    end
+    object CBIncludeNonCA: TCheckBox
+      AnchorSideLeft.Control = LabAuthCertsBundle
+      AnchorSideTop.Control = LabAuthCertsBundle
+      AnchorSideTop.Side = asrBottom
+      Left = 0
+      Height = 17
+      Top = 13
+      Width = 112
+      Caption = 'Include non CA too'
+      OnClick = CBIncludeNonCAClick
+      TabOrder = 14
     end
   end
   object PanAgentEnterprise: TPanel

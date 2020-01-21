@@ -278,6 +278,10 @@ msgctxt "tviscreatewaptsetup.cbforcewaptserverurl.hint"
 msgid "Overwrite the URL when installing on the client even if there is a diffrent current setting in wapt-get.ini"
 msgstr "Force la valeur de l'URL lors de l'installation même si il y a déjà une valeur différente dans wapt-get.ini"
 
+#: tviscreatewaptsetup.cbincludenonca.caption
+msgid "Include non CA too"
+msgstr "Inclure les certificats pas CA"
+
 #: tviscreatewaptsetup.cbinstallwuaupdatesatshutdown.caption
 msgid "Install Pending Windows at Shutdown"
 msgstr "Installer les mises à jour Windows à l'arrêt"
@@ -457,7 +461,8 @@ msgctxt "tviscreatewaptsetup.gridcertificates.header.columns[9].text"
 msgid "subject_dn"
 msgstr "DN Sujet"
 
-#: tviscreatewaptsetup.label1.caption
+#: tviscreatewaptsetup.labauthcertsbundle.caption
+msgctxt "tviscreatewaptsetup.labauthcertsbundle.caption"
 msgid "Authorized Packages Certificates Bundle"
 msgstr "Certificats / CA autorisés pour les paquets"
 

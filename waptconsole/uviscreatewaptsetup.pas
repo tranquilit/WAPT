@@ -30,6 +30,7 @@ type
     CBWUADisable: TRadioButton;
     CBWUADontchange: TRadioButton;
     CBUseADGroups: TCheckBox;
+    CBIncludeNonCA: TCheckBox;
     EdAuditScheduling: TComboBox;
     edAppendHostProfiles: TEdit;
     EdWUADownloadScheduling: TComboBox;
@@ -41,7 +42,7 @@ type
     edPublicCertDir: TDirectoryEdit;
     GBWUA: TGroupBox;
     GridCertificates: TSOGrid;
-    Label1: TLabel;
+    LabAuthCertsBundle: TLabel;
     Label2: TLabel;
     Label3: TLabel;
     Label5: TLabel;
@@ -58,6 +59,7 @@ type
     PopupMenu1: TPopupMenu;
     CBWUAEnabled: TRadioButton;
     procedure ActGetServerCertificateExecute(Sender: TObject);
+    procedure CBIncludeNonCAClick(Sender: TObject);
     procedure CBUseFQDNAsUUIDChange(Sender: TObject);
     procedure CBUseRandomUUIDChange(Sender: TObject);
     procedure CBVerifyCertClick(Sender: TObject);
@@ -81,7 +83,7 @@ type
     function GetCurrentVisLoading: TVisLoading;
     { private declarations }
     procedure IdHTTPWork(ASender: TObject; AWorkMode: TWorkMode; AWorkCount: int64);
-    procedure LoadTrustedCertificates(TrustedDirectory: String='');
+    procedure LoadTrustedCertificates(TrustedDirectory: String='';IncludeNonCA:Boolean=False);
   public
     { public declarations }
     BuildDir: String;
@@ -174,7 +176,7 @@ begin
   end;
 end;
 
-procedure TVisCreateWaptSetup.LoadTrustedCertificates(TrustedDirectory:String);
+procedure TVisCreateWaptSetup.LoadTrustedCertificates(TrustedDirectory:String;IncludeNonCA:Boolean=False);
 var
   id: Integer;
   NewCertDir,CABundle,CertIter,Cert,CertList: Variant;
@@ -213,7 +215,7 @@ begin
     While VarIsPythonIterator(CertIter)  do
       try
         Cert := CertIter.next('--noarg--');
-        If VarIsTrue(Cert.is_valid('--noarg--')) then
+        If VarIsTrue(Cert.is_valid('--noarg--')) and (IncludeNonCA or VarIsTrue(Cert.is_ca)) then
         begin
           SOCert := TSuperObject.Create(stObject) ; // PyVarToSuperObject(Cert.as_dict('--noarg--'));
           SOCert.I['id'] := id;
@@ -235,12 +237,12 @@ end;
 
 procedure TVisCreateWaptSetup.edPublicCertDirEditingDone(Sender: TObject);
 begin
-  LoadTrustedCertificates(edPublicCertDir.Directory);
+  LoadTrustedCertificates(edPublicCertDir.Directory,CBIncludeNonCA.Checked);
 end;
 
 procedure TVisCreateWaptSetup.edPublicCertDirExit(Sender: TObject);
 begin
-  LoadTrustedCertificates(edPublicCertDir.Directory);
+  LoadTrustedCertificates(edPublicCertDir.Directory,CBIncludeNonCA.Checked);
 end;
 
 procedure TVisCreateWaptSetup.EdServerCertificateDblClick(Sender: TObject);
@@ -297,7 +299,7 @@ end;
 procedure TVisCreateWaptSetup.edPublicCertDirAcceptDirectory(Sender: TObject;
   var Value: String);
 begin
-  LoadTrustedCertificates(Value);
+  LoadTrustedCertificates(Value,CBIncludeNonCA.Checked);
 end;
 
 procedure TVisCreateWaptSetup.ActGetServerCertificateExecute(Sender: TObject);
@@ -331,6 +333,11 @@ begin
   end;
 end;
 
+procedure TVisCreateWaptSetup.CBIncludeNonCAClick(Sender: TObject);
+begin
+  LoadTrustedCertificates(edPublicCertDir.Directory,CBIncludeNonCA.Checked);
+end;
+
 procedure TVisCreateWaptSetup.CBUseFQDNAsUUIDChange(Sender: TObject);
 begin
   If CBUseFQDNAsUUID.Checked and CBUseRandomUUID.Checked then
@@ -358,18 +365,19 @@ var
 begin
   for fn in Filenames do
     CopyFile(fn,MakePath([BuildDir,'ssl',ExtractFileName(fn)]));
-  LoadTrustedCertificates();
+  LoadTrustedCertificates('',CBIncludeNonCA.Checked);
 end;
 
 procedure TVisCreateWaptSetup.FormShow(Sender: TObject);
 var
   ini: TIniFile;
-  DefaultCA,PersonalCertificate:String;
+  WaptSSL,DefaultCA,PersonalCertificate:String;
 begin
   try
     ini := TIniFile.Create(AppIniFilename);
     DefaultCA := ini.ReadString('global', 'default_ca_cert_path', '');
     PersonalCertificate := ini.ReadString('global', 'personal_certificate_path', '');
+    WaptSSL := IncludeTrailingPathDelimiter(WaptBaseDir)+'ssl';
     if (DefaultCA <> '') then
     begin
       if FileExistsUTF8(DefaultCA) then
@@ -377,12 +385,18 @@ begin
       else if DirectoryExistsUTF8(DefaultCA) then
           edPublicCertDir.Directory := DefaultCA
     end
-    else if (PersonalCertificate <> '') and FileExistsUTF8(PersonalCertificate) then
-      edPublicCertDir.Directory := ExtractFileDir(PersonalCertificate)
-    else
-      edPublicCertDir.Directory := IncludeTrailingPathDelimiter(WaptBaseDir)+'ssl';
+    else 
+      edPublicCertDir.Directory := WaptSSL;
+ 
     if DirectoryExistsUTF8(edPublicCertDir.Directory) then
       edPublicCertDirEditingDone(Sender);
+
+    // we get user private certificate
+    if (GridCertificates.Data = Nil) or (GridCertificates.Data.AsArray.Length<=0) then
+    begin
+      edPublicCertDir.Directory := ExtractFileDir(WaptPersonalCertificatePath);
+      edPublicCertDirEditingDone(Sender);
+    end;
 
     edWaptServerUrl.Text := ini.ReadString('global', 'wapt_server', '');
     edRepoUrl.Text := ini.ReadString('global', 'repo_url', '');
@@ -391,13 +405,6 @@ begin
     CBDualSign.Checked:= (ini.ReadString('global', 'sign_digests','') = 'sha256,sha1');
     CBUseFQDNAsUUID.Checked:= ini.ReadBool('global', 'use_fqdn_as_uuid',False);
     CBUseADGroups.Checked:= ini.ReadBool('global', 'use_ad_groups',False);
-
-    // we get user private certificate
-    if (GridCertificates.Data = Nil) or (GridCertificates.Data.AsArray.Length<=0) then
-    begin
-      edPublicCertDir.Directory := IncludeTrailingPathDelimiter(ExtractFileDir(WaptPersonalCertificatePath));
-      edPublicCertDirEditingDone(Sender);
-    end;
 
     CBVerifyCert.Checked:=(EdServerCertificate.Text<>'') and (EdServerCertificate.Text<>'0');
     CBVerifyCertClick(Sender);
@@ -480,7 +487,7 @@ begin
   for cert in Rows do
     DeleteFileUTF8(UTF8Encode(cert.S['_public_cert_filename']));
   edPublicCertDir.Directory:='';
-  LoadTrustedCertificates();
+  LoadTrustedCertificates('',CBIncludeNonCA.Checked);
 end;
 
 procedure TVisCreateWaptSetup.SaveWAPTAgentSettings;
@@ -568,7 +575,8 @@ begin
       CBUseRepoRules.Checked,
       edAppendHostProfiles.Text,
       GetWUAParams(),
-      EdAuditScheduling.Text
+      EdAuditScheduling.Text,
+      dmpython.privateKeyPassword
       );
     Result := WAPTSetupPath;
   finally

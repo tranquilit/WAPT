@@ -146,7 +146,8 @@ interface
             UseRepoRules:Boolean=False;
             AppendHostProfiles:String='';
             WUAParams:ISuperObject=Nil;
-            WaptauditTaskPeriod:String=''
+            WaptauditTaskPeriod:String='';
+            PrivateKeyPassword:String=''
             ):Utf8String;
 
   function pyformat(template:String;params:ISuperobject):String;
@@ -2695,10 +2696,11 @@ function CreateWaptSetup(default_public_cert: Utf8String;
   UseFQDNAsUUID:Boolean=False; UseRandomUUID:Boolean=False; UseADGroups:Boolean=False;
   UseRepoRules:Boolean=False; AppendHostProfiles:String='';
   WUAParams:ISuperObject=Nil;
-  WaptauditTaskPeriod:String=''): Utf8String;
+  WaptauditTaskPeriod:String='';
+  PrivateKeyPassword:String=''): Utf8String;
 var
   iss_template,custom_iss,FN,SSLDir,SSLServerDir,
-  DestVerifyCert,Destination : String;
+  DestVerifyCert,Destination,SignArg: String;
   iss,new_iss,line : ISuperObject;
   akey : ISuperObject;
 
@@ -2842,8 +2844,15 @@ begin
     signtool :=  AppendPathDelim(wapt_base_dir) + 'utils\signtool.exe';
     p12keyPath := ChangeFileExt(WaptPersonalCertificatePath,'.p12');
     if FileExists(signtool) and FileExists(p12keypath) then
-      Run(format('"%s" sign /f "%s" "%s"',[signtool,p12keypath,Result]),'',3600000,'','','',OnProgress);
-
+    try
+      SignArg := '';
+      If PrivateKeyPassword<>'' then
+        SignArg := Format('/p "%s"',[PrivateKeyPassword]);
+      Run(format('"%s" sign /f "%s" %s "%s"',[signtool,p12keypath,SignArg, Result]),'',3600000,'','','',OnProgress);
+    except
+      on E:Exception do
+        Logger('Unable to sign waptagent:'+E.Message);
+    end;
     // Create waptagent.sha256
     StringToFile(AppendPathDelim(BuildDir) + 'waptupgrade\waptagent.sha256',SHA256Hash(Result)+'  waptagent.exe');
   except
