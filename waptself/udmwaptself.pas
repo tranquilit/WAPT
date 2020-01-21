@@ -71,6 +71,8 @@ begin
           LoginDlg.WarningText.Caption:=result;
       LoginDlg.ImageWarning.Show;
       LoginDlg.WarningText.Show;
+      if Screen.PixelsPerInch<>96 then
+         LoginDlg.Height:=LoginDlg.Height+(LoginDlg.WarningText.Height-trunc((LoginDlg.WarningText.Height*96)/Screen.PixelsPerInch));
     end
     else
       LoginDlg.Height:=LoginDlg.Height;
