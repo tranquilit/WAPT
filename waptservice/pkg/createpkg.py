@@ -289,7 +289,7 @@ run_verbose(r'virtualenv ./tmpbuild/payload/opt/wapt --relocatable')
 eprint('copying the waptservice files')
 files_to_copy = ['version-full','waptcrypto.py','waptutils.py','common.py','custom_zip.py','waptpackage.py','setuphelpers.py','setuphelpers_linux.py','setuphelpers_windows.py','setuphelpers_unix.py','setuphelpers_macos.py','wapt-get.py']
 for afile in files_to_copy:
-    copyfile(makepath(wapt_source_dir, afile),os.path.join('./builddir/opt/wapt/',afile))
+    copyfile(makepath(wapt_source_dir, afile),os.path.join('./tmpbuild/payload/opt/wapt/',afile))
 
 # delete pythonwheels
 if os.path.exists(makepath('./tmpbuild/payload', 'opt', 'wapt', 'share/')):
