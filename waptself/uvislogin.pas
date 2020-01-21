@@ -21,7 +21,6 @@ type
     ImageWarning: TImage;
     ImgWarning: TImage;
     Panel1: TPanel;
-    Panel2: TPanel;
     WarningPanel: TPanel;
     PanelLogin: TPanel;
     StaticText1: TStaticText;
