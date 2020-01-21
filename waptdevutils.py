@@ -381,7 +381,7 @@ def duplicate_from_file(package_filename,new_prefix='test',target_directory=None
     return result
 
 
-def build_waptupgrade_package(wapt,sources_directory=None, target_directory=None,
+def build_waptupgrade_package(wapt,mainrepo,sources_directory=None, target_directory=None,
         wapt_server_user=None,wapt_server_passwd=None,key_password=None,sign_digests=None,priority='critical'):
     if target_directory is None:
         target_directory = tempfile.gettempdir()
@@ -404,9 +404,9 @@ def build_waptupgrade_package(wapt,sources_directory=None, target_directory=None
     patchs_dir = makepath(entry.sourcespath,'patchs')
     mkdirs(patchs_dir)
     filecopyto(makepath(wapt.wapt_base_dir,'waptdeploy.exe'),makepath(patchs_dir,'waptdeploy.exe'))
-    wapt.update()
+    mainrepo.update()
     entry.package = '%s-waptupgrade' % wapt.config.get('global','default_package_prefix')
-    existing = wapt.packages_matching(PackageRequest(entry.package))
+    existing = mainrepo.packages_matching(PackageRequest(entry.package))
     if existing:
         rev = sorted(existing)[-1].version.split('-')[1]
     else:
@@ -423,7 +423,7 @@ def build_waptupgrade_package(wapt,sources_directory=None, target_directory=None
     entry.sign_package(private_key=key,certificate = certs,private_key_password=key_password,mds = ensure_list(sign_digests))
 
     wapt.http_upload_package(entry.localpath,wapt_server_user=wapt_server_user,wapt_server_passwd=wapt_server_passwd,progress_hook=wapt.progress_hook)
-    wapt.update()
+    mainrepo.update()
     return entry.as_dict()
 
 

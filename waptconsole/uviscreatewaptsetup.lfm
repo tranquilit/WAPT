@@ -558,7 +558,6 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       AutoSize = True
       BorderSpacing.Top = 5
       BorderSpacing.Right = 10
-      Default = True
       DefaultCaption = True
       Kind = bkOK
       ModalResult = 1

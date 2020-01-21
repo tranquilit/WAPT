@@ -81,11 +81,10 @@ type
     function GetCurrentVisLoading: TVisLoading;
     { private declarations }
     procedure IdHTTPWork(ASender: TObject; AWorkMode: TWorkMode; AWorkCount: int64);
-    procedure LoadTrustedCertificates(TrustedDirectory: String='';ForceRefresh:Boolean=False);
+    procedure LoadTrustedCertificates(TrustedDirectory: String='');
   public
     { public declarations }
     BuildDir: String;
-    ActiveCertBundle: String;
     property CurrentVisLoading: TVisLoading read GetCurrentVisLoading;
     function GetWUAParams: ISuperObject;
     procedure SaveWAPTAgentSettings;
@@ -118,12 +117,6 @@ begin
   CanClose:= True;
   if (ModalResult=mrOk) then
   begin
-    if ActiveCertBundle = '' then
-    begin
-      showMessage(rsInputPubKeyPath);
-      CanClose:=False;
-    end;
-
     ServerSSLPath := MakePath([BuildDir,'ssl','server']);
     if not DirectoryExistsUTF8(ServerSSLPath) then
       mkdir(ServerSSLPath);
@@ -181,7 +174,7 @@ begin
   end;
 end;
 
-procedure TVisCreateWaptSetup.LoadTrustedCertificates(TrustedDirectory:String;ForceRefresh:Boolean=False);
+procedure TVisCreateWaptSetup.LoadTrustedCertificates(TrustedDirectory:String);
 var
   id: Integer;
   NewCertDir,CABundle,CertIter,Cert,CertList: Variant;
@@ -192,15 +185,13 @@ var
       'not_after','is_ca','is_code_signing','serial_number','_public_cert_filename');
 
 begin
-  if TrustedDirectory='' then
-    TrustedDirectory:=ActiveCertBundle;
-  // temprary build ssldir where to copy trusted certs
+  // temporary build ssldir where to copy trusted certs
   SSLDir := MakePath([BuildDir,'ssl']);
   if not DirectoryExistsUTF8(SSLDir) then
     ForceDirectoriesUTF8(SSLDir);
 
   // replace certs in target ssl builddir
-  if Forcerefresh or ((TrustedDirectory <> ActiveCertBundle) and (SSLDir <> TrustedDirectory)) then
+  if (TrustedDirectory<>'') and (SSLDir <> TrustedDirectory) then
   begin
     for FN in Dir(SSLDir,'*.crt') do
       DeleteFileUTF8(MakePath([SSLDir,ExtractFileName(FN)]));
@@ -231,12 +222,13 @@ begin
             SOCert[att] := PyVarToSuperObject(Cert.__getattribute__(att));
           SOCert.S['x509_pem'] := VarPythonAsString(Cert.as_pem('--noarg--'));
           SOCerts.AsArray.Add(SOCert);
-        end;
+        end
+        else if FileExistsUTF8(VarPythonAsString(Cert._public_cert_filename)) then
+          DeleteFileUTF8(VarPythonAsString(Cert._public_cert_filename));
       except
         on EPyStopIteration do Break;
       end;
     GridCertificates.Data := SOCerts;
-    ActiveCertBundle := TrustedDirectory;
   finally
   end;
 end;
@@ -378,12 +370,19 @@ begin
     ini := TIniFile.Create(AppIniFilename);
     DefaultCA := ini.ReadString('global', 'default_ca_cert_path', '');
     PersonalCertificate := ini.ReadString('global', 'personal_certificate_path', '');
-    if (DefaultCA <> '') and FileExistsUTF8(DefaultCA) then
-      ActiveCertBundle := DefaultCA
+    if (DefaultCA <> '') then
+    begin
+      if FileExistsUTF8(DefaultCA) then
+        edPublicCertDir.Directory := ExtractFileDir(DefaultCA)
+      else if DirectoryExistsUTF8(DefaultCA) then
+          edPublicCertDir.Directory := DefaultCA
+    end
     else if (PersonalCertificate <> '') and FileExistsUTF8(PersonalCertificate) then
-      ActiveCertBundle := PersonalCertificate
+      edPublicCertDir.Directory := ExtractFileDir(PersonalCertificate)
     else
-      ActiveCertBundle := '';
+      edPublicCertDir.Directory := IncludeTrailingPathDelimiter(WaptBaseDir)+'ssl';
+    if DirectoryExistsUTF8(edPublicCertDir.Directory) then
+      edPublicCertDirEditingDone(Sender);
 
     edWaptServerUrl.Text := ini.ReadString('global', 'wapt_server', '');
     edRepoUrl.Text := ini.ReadString('global', 'repo_url', '');
@@ -393,9 +392,6 @@ begin
     CBUseFQDNAsUUID.Checked:= ini.ReadBool('global', 'use_fqdn_as_uuid',False);
     CBUseADGroups.Checked:= ini.ReadBool('global', 'use_ad_groups',False);
 
-    edPublicCertDir.Directory := IncludeTrailingPathDelimiter(WaptBaseDir)+'ssl';
-    if DirectoryExistsUTF8(edPublicCertDir.Directory) then
-      edPublicCertDirEditingDone(Sender);
     // we get user private certificate
     if (GridCertificates.Data = Nil) or (GridCertificates.Data.AsArray.Length<=0) then
     begin
@@ -483,7 +479,8 @@ var
 begin
   for cert in Rows do
     DeleteFileUTF8(UTF8Encode(cert.S['_public_cert_filename']));
-  LoadTrustedCertificates(ActiveCertBundle);
+  edPublicCertDir.Directory:='';
+  LoadTrustedCertificates();
 end;
 
 procedure TVisCreateWaptSetup.SaveWAPTAgentSettings;
@@ -492,7 +489,7 @@ var
 begin
   try
     ini := TIniFile.Create(AppIniFilename);
-    ini.WriteString('global', 'default_ca_cert_path',ActiveCertBundle );
+    ini.WriteString('global', 'default_ca_cert_path',edPublicCertDir.Directory );
 
     ini.WriteBool('global', 'use_kerberos', CBUseKerberos.Checked);
     ini.WriteBool('global', 'use_fqdn_as_uuid',CBUseFQDNAsUUID.Checked);
@@ -607,7 +604,7 @@ end;
 function TVisCreateWaptSetup.BuildWaptUpgrade(WaptUpgradeSources: String): String;
 var
   SignDigests: String;
-  BuildResult,VWaptServerPassword,WAPT: Variant;
+  BuildResult,VWaptServerPassword,WAPT,Mainrepo: Variant;
 begin
   // create waptupgrade package (after waptagent as we need the updated waptagent.sha1 file)
   with CurrentVisLoading do
@@ -625,9 +622,11 @@ begin
 
       //AppIniFilename(),
       WAPT := DMPython.WAPT;
+      MainRepo := DMPython.MainWaptRepo;
       //BuildResult is a PackageEntry instance
       BuildResult := DMPython.waptdevutils.build_waptupgrade_package(
           wapt := WAPT,
+          mainrepo := MainRepo,
           sources_directory := WaptUpgradeSources,
           wapt_server_user := WaptServerUser,
           wapt_server_passwd := VWaptServerPassword,
