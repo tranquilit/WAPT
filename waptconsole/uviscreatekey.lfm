@@ -196,7 +196,6 @@ object VisCreateKey: TVisCreateKey
           Flat = True
           MaxLength = 0
           TabOrder = 1
-          OnExit = EdCACertificateExit
         end
         object PanCASize1: TPanel
           Left = 6

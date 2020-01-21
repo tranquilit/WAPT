@@ -83,7 +83,6 @@ type
     procedure DirectoryCertAcceptDirectory(Sender: TObject; var Value: String);
     procedure DirectoryCertAcceptFileName(Sender: TObject; var Value: String);
     procedure DirectoryCertExit(Sender: TObject);
-    procedure EdCACertificateExit(Sender: TObject);
     procedure edCommonNameExit(Sender: TObject);
     procedure EdKeyFilenameAcceptFileName(Sender: TObject; var Value: String);
     procedure EdKeyFilenameExit(Sender: TObject);
@@ -328,11 +327,6 @@ begin
   EdCAKeyFilename.InitialDir:=DirectoryCert.Directory;
 end;
 
-procedure TVisCreateKey.EdCACertificateExit(Sender: TObject);
-begin
-  CBIsCA.Checked := not ((EdCACertificate.Text<>'') or (EdCAKeyFilename.Text<>''));
-end;
-
 procedure TVisCreateKey.DirectoryCertAcceptDirectory(Sender: TObject;
   var Value: String);
 begin
@@ -389,7 +383,15 @@ begin
   with TINIFile.Create(AppIniFilename) do
   try
     EdCAKeyFilename.Text := ReadString('global', 'default_ca_key_path', '');
+    EdCAKeyFilename.InitialDir:=ExtractFileDir(EdCAKeyFilename.Text);
+    if not FileExistsUTF8(EdCAKeyFilename.Text) then
+      EdCAKeyFilename.Text := '';
+
     EdCACertificate.Text := ReadString('global', 'default_ca_cert_path', '');
+    EdCACertificate.InitialDir:=ExtractFileDir(EdCACertificate.Text);
+    if not FileExistsUTF8(EdCACertificate.Text) then
+      EdCACertificate.Text := '';
+
   finally
     Free;
   end;
