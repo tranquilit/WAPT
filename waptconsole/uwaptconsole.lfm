@@ -54,7 +54,7 @@ object VisWaptGUI: TVisWaptGUI
           ClientWidth = 640
           object GridHostPackages: TSOGrid
             Left = 0
-            Height = 228
+            Height = 227
             Top = 127
             Width = 640
             OnGetText = GridHostPackagesGetText
@@ -688,10 +688,11 @@ object VisWaptGUI: TVisWaptGUI
           object Splitter4: TSplitter
             Cursor = crVSplit
             Left = 0
-            Height = 5
-            Top = 355
+            Height = 6
+            Top = 354
             Width = 640
             Align = alBottom
+            Beveled = True
             ResizeAnchor = akBottom
             Visible = False
           end
@@ -1619,7 +1620,7 @@ object VisWaptGUI: TVisWaptGUI
         end
         object pgTasks: TTabSheet
           Caption = 'Tasks'
-          ClientHeight = 468
+          ClientHeight = 539
           ClientWidth = 640
           object PanTaskTop: TPanel
             Left = 4
@@ -1636,7 +1637,7 @@ object VisWaptGUI: TVisWaptGUI
             TabOrder = 1
             object HostRunningTask: TLabeledEdit
               Left = 0
-              Height = 23
+              Height = 21
               Top = 16
               Width = 264
               Color = clForm
@@ -1645,8 +1646,8 @@ object VisWaptGUI: TVisWaptGUI
               EditLabel.AnchorSideRight.Side = asrBottom
               EditLabel.AnchorSideBottom.Control = HostRunningTask
               EditLabel.Left = 0
-              EditLabel.Height = 15
-              EditLabel.Top = -2
+              EditLabel.Height = 13
+              EditLabel.Top = 0
               EditLabel.Width = 264
               EditLabel.Caption = 'Current task'
               EditLabel.ParentColor = False
@@ -1657,7 +1658,7 @@ object VisWaptGUI: TVisWaptGUI
               AnchorSideTop.Side = asrBottom
               Left = 0
               Height = 20
-              Top = 43
+              Top = 41
               Width = 264
               BorderSpacing.Top = 4
               TabOrder = 1
@@ -1667,7 +1668,7 @@ object VisWaptGUI: TVisWaptGUI
               AnchorSideTop.Side = asrBottom
               Left = 0
               Height = 25
-              Top = 67
+              Top = 65
               Width = 156
               Action = ActCancelRunningTask
               BorderSpacing.Top = 4
@@ -1701,22 +1702,22 @@ object VisWaptGUI: TVisWaptGUI
           end
           object PagesTasks: TPageControl
             Left = 0
-            Height = 217
+            Height = 286
             Top = 125
             Width = 640
-            ActivePage = TabSheet3
+            ActivePage = TabSheet1
             Align = alClient
             Anchors = [akTop, akLeft, akBottom]
-            TabIndex = 2
+            TabIndex = 0
             TabOrder = 2
             OnChange = PagesTasksChange
             object TabSheet1: TTabSheet
               Caption = 'Pending'
-              ClientHeight = 189
+              ClientHeight = 260
               ClientWidth = 632
               object GridHostTasksPending: TSOGrid
                 Left = 0
-                Height = 187
+                Height = 258
                 Top = 2
                 Width = 632
                 ShowAdvancedColumnsCustomize = False
@@ -2005,11 +2006,11 @@ object VisWaptGUI: TVisWaptGUI
             end
             object TabSheet3: TTabSheet
               Caption = 'Errors'
-              ClientHeight = 189
+              ClientHeight = 260
               ClientWidth = 632
               object GridHostTasksErrors: TSOGrid
                 Left = 0
-                Height = 187
+                Height = 258
                 Top = 2
                 Width = 632
                 ShowAdvancedColumnsCustomize = False
@@ -2152,7 +2153,7 @@ object VisWaptGUI: TVisWaptGUI
           object PanLog: TPanel
             Left = 0
             Height = 123
-            Top = 345
+            Top = 416
             Width = 640
             Align = alBottom
             BevelOuter = bvNone
@@ -2238,10 +2239,11 @@ object VisWaptGUI: TVisWaptGUI
           object SplitHostTaskLog: TSplitter
             Cursor = crVSplit
             Left = 0
-            Height = 3
-            Top = 342
+            Height = 5
+            Top = 411
             Width = 640
             Align = alBottom
+            Beveled = True
             ResizeAnchor = akBottom
             Visible = False
           end
@@ -2648,6 +2650,7 @@ object VisWaptGUI: TVisWaptGUI
           Height = 546
           Top = 0
           Width = 5
+          Beveled = True
         end
       end
       object PanHostsFilters: TPanel
@@ -3369,6 +3372,7 @@ object VisWaptGUI: TVisWaptGUI
         Top = 120
         Width = 5
         Align = alRight
+        Beveled = True
         ResizeAnchor = akRight
         Visible = False
       end
