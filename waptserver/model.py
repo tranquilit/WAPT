@@ -2057,21 +2057,14 @@ def upgrade_db_structure():
                 WaptUsers.create_table()
                 WaptUserAcls.create_table()
 
-                (admin,_) = WaptUsers.get_or_create(name='admin',user_fingerprint_sha1='admin')
+                (admin,_) = WaptUsers.get_or_create(name='admin')
                 admin.save()
-
-                (user,_) = WaptUsers.get_or_create(name='user',user_fingerprint_sha1='user')
-                user.save()
-
-                (acl,_) = WaptUserAcls.get_or_create(user_fingerprint_sha1='admin',acls=['admin'],perimeter_fingerprint='')
-                acl.save()
-                (acl,_) = WaptUserAcls.get_or_create(user_fingerprint_sha1='user',acls=['view'],perimeter_fingerprint='')
-                acl.save()
 
                 migrate(*opes)
                 (v, created) = ServerAttribs.get_or_create(key='db_version')
                 v.value = next_version
                 v.save()
+
 
     finally:
         pass
