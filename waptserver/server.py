@@ -312,7 +312,6 @@ def register_host():
     with wapt_db.atomic() as trans:
         try:
             starttime = time.time()
-            valid_auth = False
 
             # unzip if post data is gzipped
             if request.headers.get('Content-Encoding') == 'gzip':
@@ -356,7 +355,6 @@ def register_host():
                         authenticated_user = '%s.%s' % (authenticated_user, dns_domain)
                         logger.debug(u'Kerberos authenticated user %s for %s' % (authenticated_user,computer_fqdn))
                         registration_auth_user = u'kerb:%s' % authenticated_user
-                        valid_auth = True
                 else:
                     authenticated_user = None
 
@@ -369,9 +367,7 @@ def register_host():
                     logger.debug(u'Authenticated registration for %s with user %s' % (computer_fqdn,auth_result['user']))
                     authenticated_user = computer_fqdn
                     session.update(**auth_result)
-                    valid_auth = auth_result in ['admin','passwd','ldap']
-                    if valid_auth:
-                        registration_auth_user = u'%s:%s' % (auth_result['auth_method'],auth_result['user'])
+                    registration_auth_user = u'%s:%s' % (auth_result['auth_method'],auth_result['user'])
 
 
                 host_cert = None
@@ -387,7 +383,6 @@ def register_host():
                                 host_cert = untrusted_host_cert
                                 authenticated_user = computer_fqdn
                                 registration_auth_user = u'Cert:%s' % host_cert.cn
-                                valid_auth = True
 
                     except Exception as e:
                         logger.warning(u'Unable to trust supplied host certificate: %s' % (repr(e),))
@@ -411,7 +406,6 @@ def register_host():
                     # assume authenticated user is the fqdn provided in the data
                     authenticated_user = computer_fqdn #request.headers.get('X-Forwarded-For',None)
                     registration_auth_user = 'None:%s' % request.headers.get('X-Forwarded-For',None)
-                    valid_auth = False
 
                 if not authenticated_user:
                     # use basic auth
@@ -432,6 +426,7 @@ def register_host():
             data['last_seen_on'] = datetime2isodate()
 
             # sign the CSR if present
+            valid_auth = auth_result and auth_result['auth_method'] in ['admin','passwd','ldap']
             if 'host_certificate_signing_request' in data and valid_auth:
                 host_certificate_csr = SSLCertificateSigningRequest(csr_pem_string=data['host_certificate_signing_request'])
                 if host_certificate_csr.cn.lower() == computer_fqdn.lower() or host_certificate_csr.cn.lower() == uuid.lower():
