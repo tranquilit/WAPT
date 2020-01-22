@@ -312,6 +312,7 @@ def register_host():
     with wapt_db.atomic() as trans:
         try:
             starttime = time.time()
+            valid_auth = False
 
             # unzip if post data is gzipped
             if request.headers.get('Content-Encoding') == 'gzip':
@@ -355,32 +356,38 @@ def register_host():
                         authenticated_user = '%s.%s' % (authenticated_user, dns_domain)
                         logger.debug(u'Kerberos authenticated user %s for %s' % (authenticated_user,computer_fqdn))
                         registration_auth_user = u'kerb:%s' % authenticated_user
+                        valid_auth = True
                 else:
                     authenticated_user = None
 
             # kerberos has failed or kerberos is not enabled
             if not authenticated_user:
                 # get authentication from basic auth. Check against waptserver admins
-                auth_result = check_auth(request = request, session=session)
+                auth_result = check_auth(request = request, session=session, methods=['admin','passwd','ldap'])
                 if auth_result:
                     # assume authenticated user is the fqdn provided in the data
                     logger.debug(u'Authenticated registration for %s with user %s' % (computer_fqdn,auth_result['user']))
                     authenticated_user = computer_fqdn
-                    registration_auth_user = u'%s:%s' % (auth_result['auth_method'],auth_result['user'])
                     session.update(**auth_result)
+                    valid_auth = auth_result in ['admin','passwd','ldap']
+                    if valid_auth:
+                        registration_auth_user = u'%s:%s' % (auth_result['auth_method'],auth_result['user'])
+
 
                 host_cert = None
                 # if certificate is properly signed, we can trust it without using database
                 if 'host_certificate' in data:
                     try:
                         untrusted_host_cert = SSLCertificate(crt_string=data['host_certificate'])
-                        if untrusted_host_cert.issuer_subject_hash != untrusted_host_cert.subject_hash:
+                        if (untrusted_host_cert.issuer_subject_hash != untrusted_host_cert.subject_hash and
+                                (untrusted_host_cert.cn.lower() == computer_fqdn.lower() or untrusted_host_cert.cn.lower() == uuid.lower())):
                             # we can check if issuer is myself...
                             cert_chain = check_host_cert(untrusted_host_cert)
                             if cert_chain:
                                 host_cert = untrusted_host_cert
                                 authenticated_user = computer_fqdn
                                 registration_auth_user = u'Cert:%s' % host_cert.cn
+                                valid_auth = True
 
                     except Exception as e:
                         logger.warning(u'Unable to trust supplied host certificate: %s' % (repr(e),))
@@ -404,6 +411,7 @@ def register_host():
                     # assume authenticated user is the fqdn provided in the data
                     authenticated_user = computer_fqdn #request.headers.get('X-Forwarded-For',None)
                     registration_auth_user = 'None:%s' % request.headers.get('X-Forwarded-For',None)
+                    valid_auth = False
 
                 if not authenticated_user:
                     # use basic auth
@@ -411,14 +419,6 @@ def register_host():
 
             if not authenticated_user:
                 raise EWaptAuthenticationFailure('register_host : Missing authentication header')
-
-            # sign the CSR if present
-            if 'host_certificate_signing_request' in data:
-                host_certificate_csr = SSLCertificateSigningRequest(csr_pem_string=data['host_certificate_signing_request'])
-                if host_certificate_csr.cn.lower() == computer_fqdn.lower() or host_certificate_csr.cn.lower() == uuid.lower():
-                    host_cert = sign_host_csr(host_certificate_csr)
-                else:
-                    host_cert = None
 
             if not app.conf['allow_unauthenticated_registration']:
                 logger.debug(u'Authenticated computer %s with user %s ' % (computer_fqdn,authenticated_user,))
@@ -430,12 +430,22 @@ def register_host():
                 supplied_host_cert = None
 
             data['last_seen_on'] = datetime2isodate()
-            data['registration_auth_user'] = registration_auth_user
-            db_data = update_host_data(data,app.conf)
 
-            if 'host_certificate_signing_request' in data and host_cert:
+            # sign the CSR if present
+            if 'host_certificate_signing_request' in data and valid_auth:
+                host_certificate_csr = SSLCertificateSigningRequest(csr_pem_string=data['host_certificate_signing_request'])
+                if host_certificate_csr.cn.lower() == computer_fqdn.lower() or host_certificate_csr.cn.lower() == uuid.lower():
+                    host_cert = sign_host_csr(host_certificate_csr)
+                else:
+                    host_cert = None
                 # return back signed host certificate
-                db_data['host_certificate'] = host_cert.as_pem()
+                data['host_certificate'] = host_cert.as_pem()
+                if registration_auth_user:
+                    data['registration_auth_user'] = registration_auth_user
+
+            db_data = update_host_data(data,app.conf)
+            if 'host_certificate_signing_request' in data and valid_auth:
+                db_data['host_certificate'] = data['host_certificate']
 
             result = db_data
             message = 'register_host'
@@ -1020,7 +1030,7 @@ def change_password():
         try:
             post_data = request.get_json()
             if 'user' in post_data and 'password' in post_data:
-                if check_auth(username = post_data['user'], password = post_data['password'], session=session):
+                if check_auth(username = post_data['user'], password = post_data['password'], session=session, methods='admin'):
                     # change master password
                     if 'new_password' in post_data and post_data['user'] == 'admin':
                         if len(post_data['new_password']) < app.conf.get('min_password_length',10):
@@ -1063,16 +1073,19 @@ def login():
             password = request.args.get('password')
 
         session.clear()
-        auth_result = check_auth(username = user, password = password, session=session, request = request)
+        auth_result = check_auth(username = user, password = password, session=session, request = request, methods=['admin','ldap'])
         if auth_result:
             # if basic auth, user was in authorization header
             user = auth_result['user']
             token_gen = get_secured_token_generator()
 
-            # add ACL
-            (user_data,_created) = WaptUsers.get_or_create(name=user)
-            if _created:
-                user_data.save()
+            if auth_result['auth_method'] == 'ldap':
+                # add ACL
+                (user_data,_created) = WaptUsers.get_or_create(name=user)
+                if _created:
+                    user_data.save()
+            else:
+                user_data = WaptUsers.get(name=user)
             #if not user_data:
             #    raise EWaptAuthenticationFailure('Bad user %s' % user)
             user_acls = list(WaptUserAcls.select().where(
@@ -1450,12 +1463,6 @@ def get_groups():
         return make_response_from_exception(e)
 
     return make_response(result=groups, msg=msg, status=200)
-
-
-@app.route('/testauth')
-@requires_auth(methods=['kerb','admin','passwd','ldap','session','ssl','token'])
-def test():
-    return make_response(result=session, msg='testauth', status=200)
 
 
 @app.route('/api/v3/get_ad_ou')

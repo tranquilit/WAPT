@@ -49,7 +49,7 @@ def authenticate(method='Basic'):
         _('You have to login with proper credentials'), 401,
         {'WWW-Authenticate': '%s realm="Login Required"' % method})
 
-def requires_auth(methods=['session','token','ssl','admin','passwd','ldap']):
+def requires_auth(methods=['session','ssl','admin','ldap']):
     """Flask route decorator which requires Basic Auth http header
     If not header, returns a 401 http status.
     """
