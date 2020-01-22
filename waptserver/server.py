@@ -2411,7 +2411,7 @@ if __name__ == '__main__':
     # initialize socketio layer
     if socketio:
         logger.info(u'Starting socketio/wsgi server on port %s' % (port,))
-        socketio.run(app, host='0.0.0.0', log=logger,  port=port, debug=options.devel, log_output = True, use_reloader=options.devel, max_size=app.conf['max_clients'])
+        socketio.run(app, host='127.0.0.1', log=logger,  port=port, debug=options.devel, log_output = True, use_reloader=options.devel, max_size=app.conf['max_clients'])
     else:
         # debug wsgi mode mode
         logger.info(u'Starting wsgi debug server...')
