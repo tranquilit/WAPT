@@ -2057,13 +2057,15 @@ def upgrade_db_structure():
                 WaptUsers.create_table()
                 WaptUserAcls.create_table()
 
-                (admin,_) = WaptUsers.get_or_create(name='admin')
-                admin.save()
-
                 migrate(*opes)
                 (v, created) = ServerAttribs.get_or_create(key='db_version')
                 v.value = next_version
                 v.save()
+
+        # be sure to have at least admin
+        with wapt_db.atomic():
+            (admin,_) = WaptUsers.get_or_create(name='admin')
+            admin.save()
 
 
     finally:
