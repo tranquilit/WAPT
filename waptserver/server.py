@@ -426,7 +426,7 @@ def register_host():
             data['last_seen_on'] = datetime2isodate()
 
             # sign the CSR if present
-            valid_auth = auth_result and auth_result['auth_method'] in ['admin','passwd','ldap']
+            valid_auth = auth_result and auth_result['auth_method'] in ['admin','passwd','ldap','kerb']
             if 'host_certificate_signing_request' in data and valid_auth:
                 host_certificate_csr = SSLCertificateSigningRequest(csr_pem_string=data['host_certificate_signing_request'])
                 if host_certificate_csr.cn.lower() == computer_fqdn.lower() or host_certificate_csr.cn.lower() == uuid.lower():
