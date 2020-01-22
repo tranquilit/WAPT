@@ -156,13 +156,15 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       TabOrder = 9
     end
     object GridCertificates: TSOGrid
+      AnchorSideTop.Control = LabAuthor
+      AnchorSideTop.Side = asrBottom
       Left = 2
       Height = 159
-      Top = 45
+      Top = 47
       Width = 575
       OnNodesDelete = GridCertificatesNodesDelete
       ShowAdvancedColumnsCustomize = False
-      Anchors = [akTop, akLeft, akRight]
+      Anchors = [akTop, akRight]
       BorderSpacing.Top = 2
       Color = clWhite
       Colors.UnfocusedColor = clMedGray
@@ -259,13 +261,14 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       OnDblClick = GridCertificatesDblClick
       ZebraPaint = True
     end
-    object Label7: TLabel
+    object LabAuthor: TLabel
       AnchorSideTop.Control = CBIncludeNonCA
       AnchorSideTop.Side = asrBottom
-      Left = 2
+      Left = 0
       Height = 13
-      Top = 30
+      Top = 32
       Width = 407
+      BorderSpacing.Top = 1
       Caption = 'Authorized packages Certificates which will be bundled with the Wapt Agent  installer'
       ParentColor = False
     end
@@ -356,8 +359,9 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       AnchorSideTop.Side = asrBottom
       Left = 0
       Height = 17
-      Top = 13
+      Top = 14
       Width = 112
+      BorderSpacing.Top = 1
       Caption = 'Include non CA too'
       OnClick = CBIncludeNonCAClick
       TabOrder = 14

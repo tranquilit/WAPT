@@ -466,6 +466,11 @@ msgctxt "tviscreatewaptsetup.labauthcertsbundle.caption"
 msgid "Authorized Packages Certificates Bundle"
 msgstr "Certificats / CA autorisés pour les paquets"
 
+#: tviscreatewaptsetup.labauthor.caption
+msgctxt "tviscreatewaptsetup.labauthor.caption"
+msgid "Authorized packages Certificates which will be bundled with the Wapt Agent  installer"
+msgstr "Certificats de paquets qui vont être déployés avec l'agent Wapt"
+
 #: tviscreatewaptsetup.label2.caption
 msgid "Main WAPT repository address :"
 msgstr "Adresse du dépôt WAPT principal"
@@ -495,10 +500,6 @@ msgstr "L'adresse de votre serveur WAPT (par exemple http://wapt:8080)."
 msgctxt "tviscreatewaptsetup.label6.caption"
 msgid "Path to https Servers CA certificates bundle"
 msgstr "Chemin vers le bundle de CA serveurs https"
-
-#: tviscreatewaptsetup.label7.caption
-msgid "Authorized packages Certificates which will be bundled with the Wapt Agent  installer"
-msgstr "Certificats de paquets qui vont être déployés avec l'agent Wapt"
 
 #: tviscreatewaptsetup.label8.caption
 msgctxt "tviscreatewaptsetup.label8.caption"

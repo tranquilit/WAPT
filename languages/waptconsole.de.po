@@ -482,6 +482,11 @@ msgctxt "tviscreatewaptsetup.labauthcertsbundle.caption"
 msgid "Authorized Packages Certificates Bundle"
 msgstr "Öffentlicher Key:"
 
+#: tviscreatewaptsetup.labauthor.caption
+msgctxt "tviscreatewaptsetup.labauthor.caption"
+msgid "Authorized packages Certificates which will be bundled with the Wapt Agent  installer"
+msgstr ""
+
 #: tviscreatewaptsetup.label2.caption
 msgid "Main WAPT repository address :"
 msgstr "Haupt WAPT Repository Adresse:"
@@ -511,10 +516,6 @@ msgstr "Ihre WAPT Server Adresse (http://wapt:8080)."
 #: tviscreatewaptsetup.label6.caption
 msgctxt "tviscreatewaptsetup.label6.caption"
 msgid "Path to https Servers CA certificates bundle"
-msgstr ""
-
-#: tviscreatewaptsetup.label7.caption
-msgid "Authorized packages Certificates which will be bundled with the Wapt Agent  installer"
 msgstr ""
 
 #: tviscreatewaptsetup.label8.caption

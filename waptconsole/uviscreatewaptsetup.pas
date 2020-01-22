@@ -47,7 +47,7 @@ type
     Label3: TLabel;
     Label5: TLabel;
     Label6: TLabel;
-    Label7: TLabel;
+    LabAuthor: TLabel;
     Label8: TLabel;
     Label9: TLabel;
     LabWUAInstallDelay: TLabel;
