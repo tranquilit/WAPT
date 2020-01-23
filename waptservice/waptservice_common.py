@@ -219,7 +219,8 @@ class WaptServiceConfig(object):
          'dbpath','loglevel','log_directory','waptserver',
          'hiberboot_enabled','max_gpo_script_wait','pre_shutdown_timeout','log_to_windows_events',
          'allow_user_service_restart','signature_clockskew','waptwua_enabled','notify_user','waptservice_admin_auth_allow',
-		'local_repo_path','local_repo_sync_task_period','local_repo_time_for_sync_start','local_repo_time_for_sync_end','local_repo_limit_bandwidth']
+         'enable_remote_repo','local_repo_path','local_repo_sync_task_period','local_repo_time_for_sync_start',
+         'local_repo_time_for_sync_end','local_repo_limit_bandwidth']
 
     def __init__(self,config_filename=None):
         if not config_filename:
@@ -290,6 +291,7 @@ class WaptServiceConfig(object):
         self.enable_diff_repo = False
         self.local_repo_path = os.path.join(wapt_root_dir,'repository')
         self.local_repo_sync_task_period = None
+        self.remote_repo_dirs = ['wapt','waptwua']
         self.local_repo_time_for_sync_start = None
         self.local_repo_time_for_sync_end = None
         self.local_repo_limit_bandwidth = None
@@ -440,8 +442,6 @@ class WaptServiceConfig(object):
                         self.enable_diff_repo=config.getboolean('repo-sync','enable_diff_repo')
                     if config.has_option('repo-sync','remote_repo_dirs'):
                         self.remote_repo_dirs=config.get('repo-sync','remote_repo_dirs').replace(' ','').split(',')
-                    else:
-                        self.remote_repo_dirs=['wapt','waptwua']
                     if config.has_option('repo-sync','local_repo_path'):
                         self.local_repo_path = config.get('repo-sync','local_repo_path').decode('utf-8')
                     if config.has_option('repo-sync','local_repo_time_for_sync_start'):
