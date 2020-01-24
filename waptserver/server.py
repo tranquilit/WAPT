@@ -345,6 +345,8 @@ def register_host():
             # 'host' is for pre wapt pre 1.4
             computer_fqdn =  (data.get('host_info',None) or data.get('host',{})).get('computer_fqdn',None)
 
+            auth_result = None
+
             # with nginx kerberos module, auth user name is stored as Basic auth in the
             # 'Authorisation' header with password 'bogus_auth_gss_passwd'
             if request.path=='/add_host_kerberos' and (app.conf['use_kerberos'] or not app.conf['allow_unauthenticated_registration']):
@@ -355,6 +357,9 @@ def register_host():
                         authenticated_user = '%s.%s' % (authenticated_user, dns_domain)
                         logger.debug(u'Kerberos authenticated user %s for %s' % (authenticated_user,computer_fqdn))
                         registration_auth_user = u'kerb:%s' % authenticated_user
+                        auth_date = datetime.datetime.utcnow().isoformat()
+                        logger.debug(u'User %s authenticated using kerberos' % (authenticated_user,))
+                        auth_result = dict(auth_method = 'kerb',user=authenticated_user,auth_date=auth_date)
                 else:
                     authenticated_user = None
 
