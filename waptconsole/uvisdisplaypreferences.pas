@@ -18,6 +18,7 @@ type
     cbDebugWindow: TCheckBox;
     cbEnableExternalTools: TCheckBox;
     cbEnableManagementFeatures: TCheckBox;
+    cbAutoHidePanels: TCheckBox;
     cbHideUnavailableActions: TCheckBox;
     cbEnableWAPTWUAFeatures: TCheckBox;
     cbLanguage: TComboBox;
@@ -27,6 +28,7 @@ type
     Label11: TLabel;
     Label12: TLabel;
     Label13: TLabel;
+    Label14: TLabel;
     Label3: TLabel;
     Label7: TLabel;
     Panel1: TPanel;

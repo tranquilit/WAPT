@@ -1086,20 +1086,8 @@ def login():
                     user_data.save()
             else:
                 user_data = WaptUsers.get(name=user)
-            #if not user_data:
-            #    raise EWaptAuthenticationFailure('Bad user %s' % user)
-            user_acls = list(WaptUserAcls.select().where(
-                (WaptUserAcls.user_fingerprint_sha1 == user_data.user_fingerprint_sha1) &
-                (WaptUserAcls.expiration_date <= datetime2isodate())
-                ))
-            #if not user_acls:
-            #    raise EWaptAuthenticationFailure('No access rights for %s' % user)
 
             acls = []
-            for a in user_acls:
-                for acl in a.acls:
-                    if not acl in acls:
-                        acls.append(acl)
 
             auth_result.update({
                 'server_uuid':get_server_uuid(),
@@ -1957,7 +1945,7 @@ def host_data():
 @app.route('/api/v3/hosts_for_package',methods=['GET','POST'])
 @requires_auth()
 def hosts_for_package():
-    """Returns list of hosts requiring the supplied windows update
+    """Returns list of hosts having the supplied package names
 
     Args:
         package (str) : (can be a csv list of package names)
@@ -1998,6 +1986,65 @@ def hosts_for_package():
                 .dicts())
 
     return make_response(msg = _('Hosts for packages %s, limit %s') % (packages,limit), result = result)
+
+
+@app.route('/api/v3/packages_for_hosts',methods=['GET','POST'])
+@requires_auth()
+def packages_for_hosts():
+    """Returns list of aggregated packages status
+
+    Args:
+        host_uuids (str) : (can be a csv list of hosts uuid)
+        install_status (str): csv list of install_status to return
+        reachable : if set and =1, returns only reachable hosts status
+
+        limit (int)
+
+    Returns:
+        list of Hosts
+
+    """
+    if request.method=='GET':
+        limit = int(request.args.get('limit','1000'))
+        host_uuids = ensure_list(request.args.get('host_uuids'))
+        reachable = request.args.get('reachable','') == '1'
+        install_status = ensure_list(request.args.get('install_status'))
+    else:
+        # unzip if post data is gzipped
+        if request.headers.get('Content-Encoding') == 'gzip':
+            raw_data = zlib.decompress(request.data)
+        else:
+            raw_data = request.data
+
+        post_data = ujson.loads(raw_data)
+        limit = post_data.get('limit','1000')
+        host_uuids = post_data.get('host_uuids')
+        reachable = str(post_data.get('reachable','')) == '1'
+        install_status = ensure_list(post_data.get('install_status'))
+
+    query = HostPackagesStatus.select(
+                Hosts.reachable,
+                #HostPackagesStatus.name,
+                HostPackagesStatus.package,
+                HostPackagesStatus.version,
+                HostPackagesStatus.install_status,
+                fn.COUNT(Hosts.uuid)
+            )
+
+    where = HostPackagesStatus.host.in_(host_uuids)
+    if reachable:
+        where = where & (Hosts.reachable =='OK')
+    if install_status:
+        where = where & HostPackagesStatus.install_status.in_(install_status)
+
+    result = list(
+            query.where(where)
+            .join(Hosts,'RIGHT OUTER')
+            .group_by(SQL('1,2,3,4'))
+            .limit(limit)
+            .dicts())
+
+    return make_response(msg = _('Packages status for %s hosts, limit %s') % (len(host_uuids),limit), result = result)
 
 
 def packages_install_stats():
@@ -2320,7 +2367,11 @@ def get_revision_hash():
     if os.path.isfile(fn):
         return open(fn,'r').read()
     else:
-        return ''
+        fn = os.path.join(wapt_root_dir,'waptserver','VERSION')
+        if os.path.isfile(fn):
+            return open(fn,'r').read()
+        else:
+            return ''
 
 # app mode
 if __name__ == '__main__':

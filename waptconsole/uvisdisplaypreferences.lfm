@@ -1,18 +1,18 @@
 object VisDisplayPreferences: TVisDisplayPreferences
   Left = 862
-  Height = 278
+  Height = 297
   Top = 236
   Width = 359
   AutoSize = True
   BorderStyle = bsDialog
   Caption = 'Display preferences'
-  ClientHeight = 278
+  ClientHeight = 297
   ClientWidth = 359
   Position = poMainFormCenter
   LCLVersion = '1.8.4.0'
   object Panel2: TPanel
     Left = 0
-    Height = 243
+    Height = 262
     Top = 0
     Width = 359
     Align = alClient
@@ -26,13 +26,13 @@ object VisDisplayPreferences: TVisDisplayPreferences
     ChildSizing.ShrinkVertical = crsHomogenousSpaceResize
     ChildSizing.Layout = cclLeftToRightThenTopToBottom
     ChildSizing.ControlsPerLine = 2
-    ClientHeight = 243
+    ClientHeight = 262
     ClientWidth = 359
     TabOrder = 0
     object Label1: TLabel
       Left = 6
       Height = 21
-      Top = 15
+      Top = 14
       Width = 208
       Alignment = taRightJustify
       Caption = 'Maximum number of hosts to display'
@@ -41,7 +41,7 @@ object VisDisplayPreferences: TVisDisplayPreferences
     object EdHostsLimit: TEdit
       Left = 220
       Height = 21
-      Top = 15
+      Top = 14
       Width = 100
       TabOrder = 0
       Text = 'EdHostsLimit'
@@ -49,7 +49,7 @@ object VisDisplayPreferences: TVisDisplayPreferences
     object Label3: TLabel
       Left = 6
       Height = 21
-      Top = 51
+      Top = 49
       Width = 208
       Alignment = taRightJustify
       Caption = 'Language'
@@ -58,7 +58,7 @@ object VisDisplayPreferences: TVisDisplayPreferences
     object cbLanguage: TComboBox
       Left = 220
       Height = 21
-      Top = 51
+      Top = 49
       Width = 100
       ItemHeight = 13
       ItemIndex = 0
@@ -74,7 +74,7 @@ object VisDisplayPreferences: TVisDisplayPreferences
     object Label7: TLabel
       Left = 6
       Height = 17
-      Top = 87
+      Top = 84
       Width = 208
       Alignment = taRightJustify
       AutoSize = False
@@ -86,14 +86,14 @@ object VisDisplayPreferences: TVisDisplayPreferences
       Left = 220
       Height = 17
       Hint = 'Activates proxy when accessing the main repository'
-      Top = 87
+      Top = 84
       Width = 100
       TabOrder = 2
     end
     object Label10: TLabel
       Left = 6
       Height = 17
-      Top = 119
+      Top = 115
       Width = 208
       Alignment = taRightJustify
       AutoSize = False
@@ -105,7 +105,7 @@ object VisDisplayPreferences: TVisDisplayPreferences
       Left = 220
       Height = 17
       Hint = 'Make rdp, vnc, remoteassist... features visible'
-      Top = 119
+      Top = 115
       Width = 100
       Checked = True
       State = cbChecked
@@ -115,7 +115,7 @@ object VisDisplayPreferences: TVisDisplayPreferences
       Left = 6
       Height = 17
       Hint = 'Enable the following actions: '#13#10'- Create new key / certificate'#13#10'- Create custom waptagent.exe'#13#10'- Modify key password'#13#10'- Create / Modify / delete reporting queries'
-      Top = 151
+      Top = 146
       Width = 208
       Alignment = taRightJustify
       AutoSize = False
@@ -127,7 +127,7 @@ object VisDisplayPreferences: TVisDisplayPreferences
       Left = 220
       Height = 17
       Hint = 'Enable the following actions: '#13#10'- Create new key / certificate'#13#10'- Create custom waptagent.exe'#13#10'- Modify key password'#13#10'- Create / Modify / delete reporting queries'
-      Top = 151
+      Top = 146
       Width = 100
       Checked = True
       State = cbChecked
@@ -136,7 +136,7 @@ object VisDisplayPreferences: TVisDisplayPreferences
     object Label12: TLabel
       Left = 6
       Height = 17
-      Top = 183
+      Top = 177
       Width = 208
       Alignment = taRightJustify
       AutoSize = False
@@ -147,14 +147,14 @@ object VisDisplayPreferences: TVisDisplayPreferences
     object cbHideUnavailableActions: TCheckBox
       Left = 220
       Height = 17
-      Top = 183
+      Top = 177
       Width = 100
       TabOrder = 5
     end
     object Label13: TLabel
       Left = 6
       Height = 17
-      Top = 215
+      Top = 208
       Width = 208
       Alignment = taRightJustify
       AutoSize = False
@@ -166,15 +166,34 @@ object VisDisplayPreferences: TVisDisplayPreferences
       Left = 220
       Height = 17
       Hint = 'Make change server password, create certificate, create waptagent features visible'
-      Top = 215
+      Top = 208
       Width = 100
       TabOrder = 6
+    end
+    object Label14: TLabel
+      Left = 6
+      Height = 17
+      Top = 239
+      Width = 208
+      Alignment = taRightJustify
+      AutoSize = False
+      BorderSpacing.Right = 3
+      Caption = 'Auto hide panels'
+      ParentColor = False
+    end
+    object cbAutoHidePanels: TCheckBox
+      Left = 220
+      Height = 17
+      Hint = 'Hide log / grid panels when nothing is selected'
+      Top = 239
+      Width = 100
+      TabOrder = 7
     end
   end
   object Panel1: TPanel
     Left = 0
     Height = 35
-    Top = 243
+    Top = 262
     Width = 359
     Align = alBottom
     AutoSize = True

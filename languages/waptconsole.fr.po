@@ -535,6 +535,10 @@ msgctxt "tvisdisplaypreferences.caption"
 msgid "Display preferences"
 msgstr "Préférences d'affichage"
 
+#: tvisdisplaypreferences.cbautohidepanels.hint
+msgid "Hide log / grid panels when nothing is selected"
+msgstr "Cacher les panneaux log et grilles détails quand rien n'est sélectionné"
+
 #: tvisdisplaypreferences.cbdebugwindow.hint
 msgctxt "tvisdisplaypreferences.cbdebugwindow.hint"
 msgid "Activates proxy when accessing the main repository"
@@ -612,6 +616,10 @@ msgstr "Cacher les actions non disponibles"
 #: tvisdisplaypreferences.label13.caption
 msgid "Enable WAPTWUA features"
 msgstr "Activer les fonctionnalités WAPTWUA"
+
+#: tvisdisplaypreferences.label14.caption
+msgid "Auto hide panels"
+msgstr "Cacher automatiquement les panneaux"
 
 #: tvisdisplaypreferences.label3.caption
 msgctxt "tvisdisplaypreferences.label3.caption"
@@ -2642,6 +2650,12 @@ msgctxt "tviswaptgui.actrefreshhostinventory.caption"
 msgid "Refresh host inventory"
 msgstr "Actualiser l'inventaire des postes"
 
+#: tviswaptgui.actrefreshhostpackagesoverview.caption
+#, fuzzy
+msgctxt "tviswaptgui.actrefreshhostpackagesoverview.caption"
+msgid "Refresh"
+msgstr "Actualiser"
+
 #: tviswaptgui.actrefreshhostsforpackage.caption
 msgctxt "tviswaptgui.actrefreshhostsforpackage.caption"
 msgid "Refresh"
@@ -3117,6 +3131,29 @@ msgstr "Dernière version seulement"
 msgctxt "tviswaptgui.cbnewestonlywua.caption"
 msgid "Last version only"
 msgstr "Dernière version seulement"
+
+#: tviswaptgui.cboverviewconnected.caption
+msgctxt "tviswaptgui.cboverviewconnected.caption"
+msgid "Connected only"
+msgstr "Connectés seulement"
+
+#: tviswaptgui.cboverviewstatuserror.caption
+#, fuzzy
+msgctxt "tviswaptgui.cboverviewstatuserror.caption"
+msgid "Errors"
+msgstr "Erreurs"
+
+#: tviswaptgui.cboverviewstatusinstall.caption
+msgid "To install"
+msgstr "à installer"
+
+#: tviswaptgui.cboverviewstatusremove.caption
+msgid "To remove"
+msgstr "à enlever "
+
+#: tviswaptgui.cboverviewstatusupgrade.caption
+msgid "To upgrade"
+msgstr "à mettre à jour"
 
 #: tviswaptgui.cbreachable.caption
 msgctxt "tviswaptgui.cbreachable.caption"
@@ -3636,6 +3673,7 @@ msgid "signer_fingerprint"
 msgstr "Empreinte du signataire"
 
 #: tviswaptgui.gridhostpackages.header.columns[35].text
+msgctxt "tviswaptgui.gridhostpackages.header.columns[35].text"
 msgid "host"
 msgstr "Machine"
 
@@ -3645,6 +3683,7 @@ msgid "signer"
 msgstr "Signataire"
 
 #: tviswaptgui.gridhostpackages.header.columns[37].text
+msgctxt "tviswaptgui.gridhostpackages.header.columns[37].text"
 msgid "Package UUID"
 msgstr "UUID du paquet"
 
@@ -3682,6 +3721,7 @@ msgstr "Sources"
 msgctxt "tviswaptgui.gridhostpackages.header.columns[9].text"
 msgid "Installed by"
 msgstr "Installé par"
+
 
 #: tviswaptgui.gridhosts.header.columns[0].text
 msgctxt "tviswaptgui.gridhosts.header.columns[0].text"
@@ -3734,6 +3774,7 @@ msgid "attributes"
 msgstr "Attributs"
 
 #: tviswaptgui.gridhosts.header.columns[1].text
+msgctxt "tviswaptgui.gridhosts.header.columns[1].text"
 msgid "Reachable"
 msgstr "Joignable"
 
@@ -5442,12 +5483,6 @@ msgctxt "tviswaptgui.label15.caption"
 msgid "WAPT Groups"
 msgstr "Groupes WAPT"
 
-#: tviswaptgui.label16.caption
-#, object-pascal-format
-msgctxt "tviswaptgui.label16.caption"
-msgid "Install logs of package %s"
-msgstr "Logs d'installation du paquet %s"
-
 #: tviswaptgui.label17.caption
 msgctxt "tviswaptgui.label17.caption"
 msgid "WSUS Scan Cab Date"
@@ -5457,12 +5492,6 @@ msgstr "Date du fichier index WSUS"
 msgctxt "tviswaptgui.label18.caption"
 msgid "Last scan date"
 msgstr "Dernier scan"
-
-#: tviswaptgui.label19.caption
-#, object-pascal-format
-msgctxt "tviswaptgui.label19.caption"
-msgid "Logs of task %s (ID %s)"
-msgstr "Logs de la tâche %s (ID %s)"
 
 #: tviswaptgui.label2.caption
 msgctxt "tviswaptgui.label2.caption"
@@ -5529,11 +5558,21 @@ msgctxt "tviswaptgui.labfiltersite.caption"
 msgid "AD sites"
 msgstr "Sites AD"
 
+#: tviswaptgui.labinstalllogtitle.caption
+msgctxt "tviswaptgui.labinstalllogtitle.caption"
+msgid "Install logs of package %s"
+msgstr "Logs d'installation du paquet %s"
+
 #: tviswaptgui.lablogskb.caption
 #, object-pascal-format
 msgctxt "tviswaptgui.lablogskb.caption"
 msgid "Install logs of %s"
 msgstr "Logs d'installation de la %s"
+
+#: tviswaptgui.labtasklog.caption
+msgctxt "tviswaptgui.labtasklog.caption"
+msgid "Logs of task %s (ID %s)"
+msgstr "Logs de la tâche %s (ID %s)"
 
 #: tviswaptgui.labuser.caption
 msgctxt "tviswaptgui.labuser.caption"
@@ -5593,10 +5632,6 @@ msgstr "&Outils"
 #: tviswaptgui.menuitem2.caption
 msgid "&View"
 msgstr "&Affichage"
-
-#: tviswaptgui.menuitem24.caption
-msgid "&Actions"
-msgstr "&Actions"
 
 #: tviswaptgui.menuitem26.caption
 msgid "?"
@@ -5666,11 +5701,6 @@ msgstr "Sélectionner un fichier d'installation exe ou msi"
 msgid "Select WAPT file"
 msgstr "Sélectionner un fichier WAPT"
 
-#: tviswaptgui.panel1.caption
-msgctxt "tviswaptgui.panel1.caption"
-msgid "Panel1"
-msgstr ""
-
 #: tviswaptgui.panel7.caption
 msgctxt "tviswaptgui.panel7.caption"
 msgid "Panel7"
@@ -5686,6 +5716,10 @@ msgstr ""
 
 #: tviswaptgui.panelreportinggrid.caption
 msgid "PanelReportingGrid"
+msgstr ""
+
+#: tviswaptgui.panhostdetails.caption
+msgid "PanHostDetails"
 msgstr ""
 
 #: tviswaptgui.panhostsforpackage.caption
@@ -5709,6 +5743,11 @@ msgstr "Groupes de paquets"
 msgctxt "TVISWAPTGUI.PGHOSTINVENTORY.CAPTION"
 msgid "Hardware inventory"
 msgstr "Inventaire matériel"
+
+#: tviswaptgui.pghostpackagesoverview.caption
+msgctxt "tviswaptgui.pghostpackagesoverview.caption"
+msgid "Packages overview"
+msgstr ""
 
 #: tviswaptgui.pghostwua.caption
 msgid "Windows updates"

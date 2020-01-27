@@ -31,6 +31,7 @@ type
     ActEditOrgUnitPackage: TAction;
     ActInstallLicence: TAction;
     ActAddProfile: TAction;
+    ActRefreshHostPackagesOverview: TAction;
     ActTriggerSafeHostUpgrade: TAction;
     ActSuppr: TAction;
     ActManageUsers: TAction;
@@ -43,10 +44,22 @@ type
     ActRepositoriesGetSecondRepos: TAction;
     ActNewRule: TAction;
     ActRepositoriesGetUpdateRules: TAction;
+    BitBtn1: TBitBtn;
     cbAdvancedMode: TCheckBox;
+    cbOverviewStatusRemove: TCheckBox;
+    cbOverviewConnected: TCheckBox;
+    cbOverviewStatusError: TCheckBox;
+    cbOverviewStatusUpgrade: TCheckBox;
+    cbOverviewStatusInstall: TCheckBox;
     EdSearchOrgUnits: TSearchEdit;
-    Label16: TLabel;
-    Label19: TLabel;
+    GridHostPackagesOverview: TSOGrid;
+    Image5: TImage;
+    Image6: TImage;
+    Image7: TImage;
+    Image8: TImage;
+    Image9: TImage;
+    LabInstallLogTitle: TLabel;
+    LabTaskLog: TLabel;
     LabLogsKB: TLabel;
     GridRules: TSOGrid;
     MenuItem116: TMenuItem;
@@ -55,7 +68,9 @@ type
     MenuItemShowErrors: TMenuItem;
     MenuItemSync: TMenuItem;
     MenuItemSyncForce: TMenuItem;
-    Panel1: TPanel;
+    panFilterPackagesOverviewStatus: TPanel;
+    PanTopPackagesOverview: TPanel;
+    PanHostDetails: TPanel;
     PanelKBLogs: TPanel;
     PanelRules: TPanel;
     PanelAgentRepos: TPanel;
@@ -111,7 +126,7 @@ type
     PanWUASearchClassifications: TPanel;
     PopupMenuReportingQueries: TPopupMenu;
     GridAgentRepo: TSOGrid;
-    SpeedButton1: TSpeedButton;
+    SButHideHostDetails: TSpeedButton;
     SpeedButton2: TSpeedButton;
     SpeedButton3: TSpeedButton;
     SpeedButton4: TSpeedButton;
@@ -125,6 +140,7 @@ type
     SplitTopTaskTaskGrid: TSplitter;
     pgRepositories: TTabSheet;
     SplitHostTaskLog: TSplitter;
+    pgHostPackagesOverview: TTabSheet;
     tbDeleteRule: TToolButton;
     tbDownRule: TToolButton;
     tbEditRule: TToolButton;
@@ -567,7 +583,6 @@ type
     MenuItem18: TMenuItem;
     MenuItem21: TMenuItem;
     MenuItem22: TMenuItem;
-    MenuItem24: TMenuItem;
     MenuItem26: TMenuItem;
     MenuItem27: TMenuItem;
     MenuItem29: TMenuItem;
@@ -607,6 +622,7 @@ type
     procedure ActAddHWPropertyToGridExecute(Sender: TObject);
     procedure ActAddHWPropertyToGridUpdate(Sender: TObject);
     procedure ActAddProfileExecute(Sender: TObject);
+    procedure ActRefreshHostPackagesOverviewExecute(Sender: TObject);
     procedure ActSupprExecute(Sender: TObject);
     procedure ActManageUsersExecute(Sender: TObject);
     procedure ActSaveRulesExecute(Sender: TObject);
@@ -777,6 +793,7 @@ type
     procedure cbNewestOnlyClick(Sender: TObject);
     procedure cbNewestOnlySelfServiceClick(Sender: TObject);
     procedure cbNewestOnlyWUAClick(Sender: TObject);
+    procedure cbOverviewStatusErrorClick(Sender: TObject);
     procedure cbSearchAllClick(Sender: TObject);
     procedure CBShowHostsForGroupsClick(Sender: TObject);
     procedure CBShowHostsForPackagesClick(Sender: TObject);
@@ -846,7 +863,6 @@ type
       Column: TColumnIndex; TextType: TVSTTextType; var CellText: string);
     procedure GridHostPackagesNodesDelete(Sender: TSOGrid; Nodes: ISuperObject);
     procedure GridHostsChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
-    procedure GridHostsClick(Sender: TObject);
     procedure GridHostsColumnDblClick(Sender: TBaseVirtualTree;
       Column: TColumnIndex; Shift: TShiftState);
     procedure GridHostsDragDrop(Sender: TBaseVirtualTree; Source: TObject;
@@ -964,7 +980,7 @@ type
     procedure MenuItemSyncForceClick(Sender: TObject);
     procedure PagesTasksChange(Sender: TObject);
     procedure PopupMenuHostsPopup(Sender: TObject);
-    procedure SpeedButton1Click(Sender: TObject);
+    procedure SButHideHostDetailsClick(Sender: TObject);
     procedure SpeedButton2Click(Sender: TObject);
     procedure SpeedButton3Click(Sender: TObject);
     procedure SpeedButton4Click(Sender: TObject);
@@ -1053,6 +1069,8 @@ type
 
     AppLoading:Boolean;
     inSearchHosts:Boolean;
+
+    AutoHidePanels:Boolean;
 
     OrgUnitsHash:Integer;
     OrgUnitsSelectionHash:Integer;
@@ -1577,6 +1595,7 @@ begin
 
     ini.WriteInteger(self.name,'HostsLimit',HostsLimit);
     ini.WriteInteger(self.name,HostPages.Name+'.width',HostPages.Width);
+    ini.WriteBool(self.name,'AutoHidePanels',AutoHidePanels);
 
     ini.WriteInteger(self.name,'WindowState',Integer(Self.WindowState));
 
@@ -1845,7 +1864,10 @@ var
   waptwua_status,wuauserv_status,wsusupdates: ISuperObject;
   sores: ISuperObject;
 begin
-  RowSO := Gridhosts.FocusedRow;
+  if GridHosts.SelectedCount<>1 then
+    RowSO := SO()
+  else
+    RowSO := Gridhosts.FocusedRow;
 
   if (RowSO <> nil) then
   begin
@@ -1856,9 +1878,9 @@ begin
     pgTasks.TabVisible := RowSO.S['reachable'] = 'OK';
 
     if not ((RowSO.S['platform'] = 'Windows') or (RowSO.S['platform'] = '')) and pgHostWUA.TabVisible and (HostPages.ActivePage = pgHostWUA) then
-        HostPages.ActivePage:= pgPackages;
+        HostPages.ActivePage := pgPackages;
 
-    pgHostWUA.TabVisible:=EnableWaptWUAFeatures and ((RowSO.S['platform'] = 'Windows') or (RowSO.S['platform'] = ''));
+    pgHostWUA.TabVisible := EnableWaptWUAFeatures and ((RowSO.S['platform'] = 'Windows') or (RowSO.S['platform'] = ''));
 
     if HostPages.ActivePage = pgPackages then
     begin
@@ -1878,14 +1900,14 @@ begin
       EdHostname.Text := UTF8Encode(RowSO.S['computer_name']);
       EdDescription.Text := UTF8Encode(RowSO.S['description']);
       EdOS.Text := UTF8Encode(RowSO.S['os_name']);
-      if RowSO['connected_ips'].DataType=stArray then
+      if (RowSO['connected_ips']<>Nil) and (RowSO['connected_ips'].DataType=stArray) then
         EdIPAddress.Text := soutils.join(',',RowSO['connected_ips'])
       else
         EdIPAddress.Text := Utf8Encode(RowSO.S['connected_ips']);
       EdManufacturer.Text := UTF8Encode(RowSO.S['manufacturer']);
       EdModelName.Text := UTF8Encode(RowSO.S['productname']);
       EdUpdateDate.Text :=  Copy(StrReplaceChar(UTF8Encode(RowSO.S['last_seen_on']),'T',' '),1,16);
-      If RowSO['connected_users'].DataType=stArray then
+      If (RowSO['connected_users']<>Nil) and (RowSO['connected_users'].DataType=stArray) then
         EdUser.Text := UTF8Encode(soutils.join(',',RowSO['connected_users']))
       else
         EdUser.Text := UTF8Encode(RowSO.S['connected_users']);
@@ -1993,7 +2015,11 @@ begin
         Application.ProcessMessages;
         PollTasksThread := TPollTasksThread.Create(Self,CurrHost);
       end;
-    end;
+    end
+    else if HostPages.ActivePage = pgHostPackagesOverview then
+    begin
+      ActRefreshHostPackagesOverview.Execute;
+    end
   end
   else
   begin
@@ -2564,6 +2590,45 @@ begin
     ActPackagesUpdate.Execute;
 end;
 
+procedure TVisWaptGUI.ActRefreshHostPackagesOverviewExecute(Sender: TObject);
+var
+  PackagesStatusForHostsData,HostPackagesStatus,Args : ISuperObject;
+  InstallStatus: String;
+begin
+  try
+    Screen.Cursor := crHourGlass;
+
+    Args := SO();
+    Args.I['limit'] := HostsLimit;
+    Args['host_uuids'] := ExtractField(GridHosts.SelectedRows,'uuid');
+    if cbOverviewConnected.Checked then
+      Args.I['reachable'] := 1;
+    if cbOverviewConnected.Checked then
+      Args.I['reachable'] := 1;
+
+    InstallStatus:='';
+    if cbOverviewStatusError.Checked then
+      InstallStatus:=InstallStatus+','+'ERROR';
+    if cbOverviewStatusInstall.Checked then
+      InstallStatus:=InstallStatus+','+'NEED-INSTALL';
+    if cbOverviewStatusUpgrade.Checked then
+      InstallStatus:=InstallStatus+','+'NEED-UPGRADE';
+    if cbOverviewStatusRemove.Checked then
+      InstallStatus:=InstallStatus+','+'NEED-REMOVE';
+    If InstallStatus<>'' then
+       Args.S['install_status'] := Copy(InstallStatus,2,length(InstallStatus)-1);
+
+    HostPackagesStatus := WAPTServerJsonPost('api/v3/packages_for_hosts',[],Args);
+    if HostPackagesStatus.B['success'] then
+      PackagesStatusForHostsData := HostPackagesStatus['result']
+    else
+      PackagesStatusForHostsData := Nil;
+    GridHostPackagesOverview.Data := PackagesStatusForHostsData; //FilterHostsForPackage(HostsForPackageData);
+  finally
+    Screen.Cursor := crDefault;
+  end
+end;
+
 procedure TVisWaptGUI.ActSupprExecute(Sender: TObject);
 begin
   if MainPages.ActivePage= pgPrivateRepo then
@@ -2826,6 +2891,10 @@ begin
       cbHideUnavailableActions.Checked :=
         inifile.ReadBool('global', 'hide_unavailable_actions', HideUnavailableActions);
 
+      cbAutoHidePanels.Checked :=
+        inifile.ReadBool('global', 'AutoHidePanels', AutoHidePanels);
+
+
       {$ifdef enterprise}
       cbEnableWAPTWUAFeatures.Checked :=
         inifile.ReadBool('global', 'waptwua_enabled', EnableWaptWUAFeatures);
@@ -2858,6 +2927,9 @@ begin
 
         inifile.WriteBool('global', 'hide_unavailable_actions',
           cbHideUnavailableActions.Checked);
+
+        inifile.WriteBool('global', 'AutoHidePanels',
+          cbAutoHidePanels.Checked);
 
         {$ifdef enterprise}
         inifile.WriteBool('global', 'waptwua_enabled',
@@ -2899,6 +2971,8 @@ begin
         HideUnavailableActions := cbHideUnavailableActions.Checked;
         EnableWaptWUAFeatures := cbEnableWAPTWUAFeatures.Checked;
         SetIsEnterpriseEdition(GetIsEnterpriseEdition);
+
+        AutoHidePanels:=cbAutoHidePanels.Checked;
 
         if HostsLimit>oldlimit then
           ActSearchHost.Execute;
@@ -4192,6 +4266,8 @@ begin
   begin
     //PanHostsFilters.Parent := pgInventory;
     panFilterStatus.ChildSizing.ControlsPerLine:=2;
+    if MainPages.ActivePage = pgInventory then
+      ActSearchHost.Execute
   end;
 end;
 
@@ -4285,6 +4361,11 @@ end;
 procedure TVisWaptGUI.cbNewestOnlyWUAClick(Sender: TObject);
 begin
   ActWUASearchPackage.Execute;
+end;
+
+procedure TVisWaptGUI.cbOverviewStatusErrorClick(Sender: TObject);
+begin
+  ActRefreshHostPackagesOverview.Execute;
 end;
 
 procedure TVisWaptGUI.cbSearchAllClick(Sender: TObject);
@@ -4587,8 +4668,9 @@ begin
 
         Self.WindowState := TWindowState(ini.ReadInteger(self.Name,'WindowState',Integer(Self.WindowState)));
 
+        Self.cbGroups.Text := ini.ReadString(Self.Name,'cbGroups.Text',self.cbGroups.Text);
 
-        self.cbGroups.Text := ini.ReadString(self.Name,'cbGroups.Text',self.cbGroups.Text);
+        Self.AutoHidePanels := ini.ReadBool(self.Name,'AutoHidePanels',AutoHidePanels);
 
         pgSources.TabVisible := AdvancedMode;
         PanDebug.Visible := AdvancedMode;
@@ -4801,17 +4883,17 @@ end;
 procedure TVisWaptGUI.GridHostPackagesChange(Sender: TBaseVirtualTree;
   Node: PVirtualNode);
 begin
-  if Assigned(GridHostPackages.FocusedRow) then
+  if GridHostPackages.SelectedCount>=1 then
   begin
     if IsEnterpriseEdition and (GridHostPackages.FocusedColumnObject.PropertyName = 'last_audit_status') then
     begin
-      Label16.Caption:=Format(rsAuditPackages,[GridHostPackages.FocusedRow.S['package']]);
+      LabInstallLogTitle.Caption:=Format(rsAuditPackages,[GridHostPackages.FocusedRow.S['package']]);
       MemoInstallOutput.Text := UTF8Encode(GridHostPackages.FocusedRow.S['last_audit_output'])
     end
     else
     begin
       MemoInstallOutput.Text := UTF8Encode(GridHostPackages.FocusedRow.S['install_output']);
-      Label16.Caption:=Format(rsInstallPackages,[GridHostPackages.FocusedRow.S['package']]);
+      LabInstallLogTitle.Caption:=Format(rsInstallPackages,[GridHostPackages.FocusedRow.S['package']]);
     end;
     MemoInstallOutput.CaretPos := Point(1, 65535);
     MemoInstallOutput.SelStart := 65535;
@@ -4823,15 +4905,19 @@ begin
   end
   else
   begin
+    LabInstallLogTitle.Caption := '';
     MemoInstallOutput.Clear;
-    Panel5.Hide;
-    Splitter4.Hide;
+    if AutoHidePanels then
+    begin
+      Panel5.Hide;
+      Splitter4.Hide;
+    end;
   end;
 end;
 
 procedure TVisWaptGUI.GridHostPackagesClick(Sender: TObject);
 begin
-  if Assigned(GridHostPackages.FocusedRow) then
+  if GridHostPackages.SelectedCount>=1 then
   begin
     Panel5.Show;
     Splitter4.Show;
@@ -4839,8 +4925,13 @@ begin
   end
   else
   begin
-    Panel5.Hide;
-    Splitter4.Hide;
+    LabInstallLogTitle.Caption := '';
+    MemoInstallOutput.Clear;
+    if AutoHidePanels then
+    begin
+      Panel5.Hide;
+      Splitter4.Hide;
+    end;
   end;
 end;
 
@@ -4942,24 +5033,26 @@ end;
 
 procedure TVisWaptGUI.GridHostsChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
 begin
-  HostPages.Visible:=Assigned(GridHosts.FocusedRow);
-  Panel1.Visible:=Assigned(GridHosts.FocusedRow);
-  SplitGridUnitsHosts1.Visible:=Assigned(GridHosts.FocusedRow);
-  SplitGridUnitsHosts1.AnchorParallel(akRight,0,HostPages);
+  if GridHosts.SelectedCount>=1 then
+  begin
+    HostPages.Visible:=True;
+    PanHostDetails.Visible:=True;
+    SplitGridUnitsHosts1.Visible:=True;
+    SplitGridUnitsHosts1.AnchorParallel(akRight,0,HostPages);
+  end
+  else If AutoHidePanels then
+  begin
+    HostPages.Visible:=False;
+    PanHostDetails.Visible:=False;
+    SplitGridUnitsHosts1.Visible:=False;
+  end;
+
   UpdateHostPages(Sender);
   UpdateSelectedHostsActions(Sender);
   if GridHosts.Data<>Nil then
     LabelComputersNumber.Caption := Format(rsHostsSelectedTotal,[GridHosts.SelectedCount,GridHosts.Data.AsArray.Length])
   else
     LabelComputersNumber.Caption := '';
-end;
-
-procedure TVisWaptGUI.GridHostsClick(Sender: TObject);
-begin
-  HostPages.Visible:=Assigned(GridHosts.FocusedRow);
-  Panel1.Visible:=Assigned(GridHosts.FocusedRow);
-  SplitGridUnitsHosts1.Visible:=Assigned(GridHosts.FocusedRow);
-  SplitGridUnitsHosts1.AnchorParallel(akRight,0,HostPages);
 end;
 
 procedure TVisWaptGUI.GridHostsColumnDblClick(Sender: TBaseVirtualTree;
@@ -5308,7 +5401,7 @@ end;
 
 procedure TVisWaptGUI.GridHostTasksPendingClick(Sender: TObject);
 begin
-  if Assigned((Sender as TSOGrid).FocusedRow) then
+  if (Sender as TSOGrid).SelectedCount>=1 then
   begin
     PanLog.Show;
     SplitHostTaskLog.AnchorParallel(akBottom,0,pgTasks);
@@ -5316,8 +5409,13 @@ begin
   end
   else
   begin
-    PanLog.Hide;
-    SplitHostTaskLog.Hide;
+    MemoTaskLog.Clear;
+    LabTaskLog.Caption := '';
+    if AutoHidePanels then
+    begin
+      PanLog.Hide;
+      SplitHostTaskLog.Hide;
+    end;
   end;
 end;
 
@@ -5325,27 +5423,31 @@ end;
 procedure TVisWaptGUI.GridHostTasksPendingChange(Sender: TBaseVirtualTree;
   Node: PVirtualNode);
 begin
-  if Assigned((Sender as TSOGrid).FocusedRow) then
+  if (Sender as TSOGrid).SelectedCount>=1 then
   begin
     PanLog.Show;
     SplitHostTaskLog.AnchorParallel(akBottom,0,pgTasks);
     SplitHostTaskLog.Show;
-    Label19.Caption:=Format(rsLogTasks,[UTF8Encode((Sender as TSOGrid).FocusedRow.S['description']),UTF8Encode((Sender as TSOGrid).FocusedRow.S['id'])]);
+    LabTaskLog.Caption:=Format(rsLogTasks,[UTF8Encode((Sender as TSOGrid).FocusedRow.S['description']),UTF8Encode((Sender as TSOGrid).FocusedRow.S['id'])]);
     MemoTaskLog.Text := UTF8Encode((Sender as TSOGrid).FocusedRow.S['logs']);
     MemoTaskLog.SelStart := 65535;
     MemoTaskLog.ScrollBy(0, 65535);
   end
   else
   begin
-    PanLog.Hide;
-    SplitHostTaskLog.Hide;
+    LabTaskLog.Caption := '';
     MemoTaskLog.Clear;
+    if AutoHidePanels then
+    begin
+      PanLog.Hide;
+      SplitHostTaskLog.Hide;
+    end;
   end;
 end;
 
 procedure TVisWaptGUI.GridHostWinUpdatesClick(Sender: TObject);
 begin
-  if Assigned(GridHostWinUpdates.FocusedRow) then
+  if GridHostWinUpdates.SelectedCount>=1 then
   begin
     PanelKBLogs.Visible:=GridHostWinUpdatesHistory.Data.AsArray.Length>=1;
     SplitWinupdateHost.Visible:=GridHostWinUpdatesHistory.Data.AsArray.Length>=1;
@@ -5353,8 +5455,12 @@ begin
   end
   else
   begin
-    PanelKBLogs.Hide;
-    SplitWinupdateHost.Hide;
+    GridHostWinUpdatesHistory.Clear;
+    if AutoHidePanels then
+    begin
+      PanelKBLogs.Hide;
+      SplitWinupdateHost.Hide;
+    end;
   end;
 end;
 
@@ -5577,7 +5683,6 @@ begin
   if MainPages.ActivePage = pgInventory then
   try
     Screen.Cursor:=crHourGlass;
-    CopyMenu(PopupMenuHosts, MenuItem24);
     if GridHosts.Data = nil then
       ActSearchHost.Execute;
     EdSearchHost.SetFocus;
@@ -5586,7 +5691,6 @@ begin
   end
   else if MainPages.ActivePage = pgPrivateRepo then
   begin
-    CopyMenu(PopupMenuPackages, MenuItem24);
     CBShowHostsForPackagesClick(Self);
     if GridPackages.Data = nil then
       ActSearchPackage.Execute;
@@ -5598,7 +5702,6 @@ begin
   end
   else if MainPages.ActivePage = pgSelfService then
   begin
-    CopyMenu(PopupMenuPackages, MenuItem24);
     if GridSelfServicePackages.Data = nil then
        ActSelfServiceSearchPackage.Execute;
     EdSelfServiceSearchPackage.SetFocus;
@@ -5606,7 +5709,6 @@ begin
   else if MainPages.ActivePage = pgGroups then
   begin
     CBShowHostsForGroupsClick(Self);
-    CopyMenu(PopupMenuGroups, MenuItem24);
     if GridGroups.Data = nil then
       ActSearchGroups.Execute;
     EdSearchGroups.SetFocus;
@@ -5863,10 +5965,10 @@ begin
   end;
 end;
 
-procedure TVisWaptGUI.SpeedButton1Click(Sender: TObject);
+procedure TVisWaptGUI.SButHideHostDetailsClick(Sender: TObject);
 begin
    HostPages.Hide;
-   Panel1.Hide;
+   PanHostDetails.Hide;
 end;
 
 procedure TVisWaptGUI.SpeedButton2Click(Sender: TObject);
