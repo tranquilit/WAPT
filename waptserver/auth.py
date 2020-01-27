@@ -79,19 +79,22 @@ def valid_username(username):
 def check_auth( username=None, password = None, request = None,
                 session=None, methods=['admin','ldap','session']):
     """This function is called to check if a username /
-    password combination is valid.
+    password combination is valid or to get already authenticated username
+    from session argument.
+
+    If no username or password, use session.authorization header if available.
 
     Args:
         username (str):
         password (str):
-        request (Flask.Request) : request where to looup authrization basic header
+        request (Flask.Request) : request where to lookup authrization basic header
         session (Flask.Session) where to lookup session user
 
     Returns:
         dict (auth_method = auth_method,user=auth_user,auth_date=auth_date)
 
     """
-    if not username and not password and request.authorization:
+    if username is None and password is None and request is not None and request.authorization:
         username = request.authorization.username
         password = request.authorization.password
 
@@ -177,7 +180,7 @@ def check_auth( username=None, password = None, request = None,
                     logger.debug(u'Token verification failed : %s' % repr(e))
                     pass
 
-        elif method == 'kerb':
+        elif method == 'kerb' and app.conf['use_kerberos']:
             # with nginx kerberos module, auth user name is stored as Basic auth in the
             # 'Authorisation' header with password 'bogus_auth_gss_passwd'
 
@@ -198,7 +201,7 @@ def check_auth( username=None, password = None, request = None,
                 logger.debug(u'User %s authenticated using LDAP' % (username,))
 
         # nginx ssl auth.
-        elif method == 'ssl' and request and request.headers.get('X-Ssl-Authenticated', None) == 'SUCCESS':
+        elif method == 'ssl' and request and app.conf['use_ssl_client_auth'] and request.headers.get('X-Ssl-Authenticated', None) == 'SUCCESS':
             dn = request.headers.get('X-Ssl-Client-Dn', None)
             if dn:
                 auth_method = method
