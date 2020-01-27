@@ -51,21 +51,22 @@ try:
 except:
     rpm=None
 
-
 logger = logging.getLogger()
-
 
 def isLinux64():
     return platform.machine().endswith('64')
 
-
 def get_distrib_version():
     return platform.linux_distribution()[1]
-
 
 def get_distrib_linux():
     return platform.linux_distribution()[0]
 
+def type_debian():
+    return platform.dist()[0].lower() in ('debian','linuxmint','ubuntu')
+
+def type_redhat():
+    return platform.dist()[0].lower() in ('redhat','centos','fedora')
 
 def get_default_gateways():
     """Read the default gateway directly from /proc."""
@@ -76,7 +77,6 @@ def get_default_gateways():
                 continue
             return socket.inet_ntoa(struct.pack("<L", int(fields[2], 16)))
 
-
 def host_info():
     info = host_info_common()
     info['platform'] = platform.system()
@@ -86,7 +86,6 @@ def host_info():
     info['distrib'] = get_distrib_linux()
     info['distrib_version'] = get_distrib_version()
     return info
-
 
 def installed_softwares(keywords='',uninstallkey=None,name=None):
     if apt:
@@ -114,7 +113,6 @@ def installed_softwares(keywords='',uninstallkey=None,name=None):
         return list_installed_softwares
     else:
         return [{'key':'Distribution not supported yet', 'name':'Distribution not supported yet', 'version':'Distribution not supported yet', 'install_date':'Distribution not supported yet', 'install_location':'Distribution not supported yet', 'uninstall_string':'Distribution not supported yet', 'publisher':'Distribution not supported yet','system_component':'Distribution not supported yet'}]
-
 
 def apt_install(package,allow_unauthenticated=False):
     if allow_unauthenticated:
