@@ -48,13 +48,6 @@ from waptutils import (Version, __version__, all_files, dateof,
                        time2display, wget, wgets, makepath,killtree,isfile,isdir,
                        CalledProcessErrorOutput,remove_file,mkdirs,get_main_ip)
 
-if os.name == 'nt':
-    from setuphelpers_windows import *
-elif platform.system() == 'Darwin':
-    from setuphelpers_macos import *
-else:
-    from setuphelpers_linux import *
-
 __all__ = []
 
 __all__.extend([
@@ -129,7 +122,12 @@ __all__.extend([
      'wgets',
      ])
 
-if sys.platform == 'win32':
+
+# Conditionnal imports for setuphelpers
+if platform.system() == 'Windows':
+
+    from setuphelpers_windows import *
+
     __all__.extend([
      'add_double_quotes_around',
      'add_shutdown_script',
@@ -306,25 +304,77 @@ if sys.platform == 'win32':
      'wua_agent_version',
      ])
 
-elif sys.platform.startswith('linux'):
-    __all__.extend(
-    [
-     'apt_install',
-     'apt_remove',
-     'dpkg_install',
-     'dpkg_purge',
-     'get_distrib_version',
-     'get_distrib_linux',
+else:
+
+    __all__.extend([
      'get_kernel_version',
-     'apt_install_required_dependencies',
-     'apt_autoremove',
-     'yum_install',
-     'yum_remove',
-     'yum_autoremove',
-     'apt_update',
-     'apt_upgrade',
-     'yum_update',
-     'yum_upgrade'])
+     'get_default_gateways',
+     'user_local_appdata',
+     'local_drives',
+     'host_metrics',
+     'default_gateway',
+     'networking',
+     'get_hostname',
+     'get_current_user',
+     'is_valid_ipv4_address',
+     'get_dns_servers',
+     'get_loggedinusers',
+     'get_last_logged_on_user',
+     'get_domain_batch',
+     'host_info_common_unix',
+     'get_computername',
+     'dmi_info',
+    ])
+
+    if platform.system() == 'Darwin':
+
+        from setuphelpers_macos import *
+
+        __all__.extend([
+         'get_info_plist_path',
+         'get_plist_obj',
+         'get_applications_info_files',
+         'mount_dmg',
+         'unmount_dmg',
+         'is_local_app_installed',
+         'get_installed_pkgs',
+         'get_pkg_info',
+         'is_local_pkg_installed',
+         'is_dmg_installed',
+         'install_pkg',
+         'uninstall_pkg',
+         'install_app',
+         'uninstall_app',
+         'install_dmg',
+         'installed_softwares',
+         'brew_install',
+         'brew_uninstall',
+        ])
+
+    elif platform.system() == 'Linux':
+
+        from setuphelpers_linux import *
+
+        __all__.extend([
+         'isLinux64',
+         'apt_install',
+         'apt_remove',
+         'dpkg_install',
+         'dpkg_purge',
+         'get_distrib_version',
+         'get_distrib_linux',
+         'get_kernel_version',
+         'apt_install_required_dependencies',
+         'apt_autoremove',
+         'yum_install',
+         'yum_remove',
+         'yum_autoremove',
+         'apt_update',
+         'apt_upgrade',
+         'yum_update',
+         'yum_upgrade',
+         'type_debian',
+         'type_redhat'])
 
 logger = logging.getLogger()
 

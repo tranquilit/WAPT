@@ -46,7 +46,7 @@ def get_kernel_version():
 
 
 def get_default_gateways():
-    if sys.platform.startswith('linux'):
+    if platform.system() == 'Linux':
         """Read the default gateway directly from /proc."""
         with open("/proc/net/route") as fh:
             for line in fh:
@@ -54,9 +54,20 @@ def get_default_gateways():
                 if fields[1] != '00000000' or not int(fields[3], 16) & 2:
                     continue
                 return socket.inet_ntoa(struct.pack("<L", int(fields[2], 16)))
-    else:
-        #TODO: Darwin
-        pass
+    elif platform.system() == 'Darwin':
+        route_output = run('route get default').rstrip().split('\n')
+        route_output = [line.strip() for line in route_output]
+        route_dict = {}
+
+        for line in route_output:
+            split_l = line.split(':')
+            try:
+                route_dict[split_l[0]] = split_l[1].strip()
+            except:
+                pass
+        gateway_ip = route_dict['gateway']
+        gateway_hex = '{:02X}{:02X}{:02X}{:02X}'.format(*map(int, gateway_ip.split('.')))
+        return socket.inet_ntoa(struct.pack("<L", int(gateway_hex, 16)))
 
 
 def user_local_appdata():
@@ -207,7 +218,7 @@ def get_domain_batch():
         return ""
 
 
-def host_info_common():
+def host_info_common_unix():
     """Read main workstation informations, returned as a dict
 
     Returns:

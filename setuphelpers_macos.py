@@ -69,29 +69,11 @@ desinstallation d'un pkg
 
 def host_info():
     """ Read main workstation informations, returned as a dict """
-    info = host_info_common()
+    info = host_info_common_unix()
     info['os_name']=platform.system()
     info['os_version']=platform.release()
     info['platform'] = 'macOS'
     return info
-
-
-def get_default_gateways():
-    """Read the default gateway."""
-    route_output = run('route get default').rstrip().split('\n')
-    route_output = [line.strip() for line in route_output]
-    route_dict = {}
-
-    for line in route_output:
-        split_l = line.split(':')
-        try:
-            route_dict[split_l[0]] = split_l[1].strip()
-        except:
-            pass
-    gateway_ip = route_dict['gateway']
-    gateway_hex = '{:02X}{:02X}{:02X}{:02X}'.format(*map(int, gateway_ip.split('.')))
-    return socket.inet_ntoa(struct.pack("<L", int(gateway_hex, 16)))
-
 
 def get_info_plist_path(app_dir):
     """ Applications typically contain an Info.plist file that shows information

@@ -68,17 +68,8 @@ def type_debian():
 def type_redhat():
     return platform.dist()[0].lower() in ('redhat','centos','fedora')
 
-def get_default_gateways():
-    """Read the default gateway directly from /proc."""
-    with open("/proc/net/route") as fh:
-        for line in fh:
-            fields = line.strip().split()
-            if fields[1] != '00000000' or not int(fields[3], 16) & 2:
-                continue
-            return socket.inet_ntoa(struct.pack("<L", int(fields[2], 16)))
-
 def host_info():
-    info = host_info_common()
+    info = host_info_common_unix()
     info['platform'] = platform.system()
     info['os_name'] = platform.linux_distribution()[0]
     info['os_version'] = platform.linux_distribution()[1]
