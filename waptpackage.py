@@ -336,8 +336,13 @@ class HostCapabilities(BaseObjectClass):
 
         if self.wapt_version is not None and package_entry.min_wapt_version and Version(package_entry.min_wapt_version) > Version(self.wapt_version):
             return False
-        if self.os is not None and package_entry.target_os and package_entry.target_os != self.os:
-            return False
+
+        if self.os is not None and package_entry.target_os:
+            if self.os in ['Darwin','Linux']:
+                if package_entry.target_os.lower() not in [self.os.lower(),'unix']:
+                    return False
+            elif package_entry.target_os.lower() != self.os.lower():
+                return False
 
         package_request = self.get_package_request_filter()
         return package_request.is_matched_by(package_entry)
