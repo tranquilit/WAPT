@@ -232,45 +232,54 @@ object VisImportPackage: TVisImportPackage
       item
         Position = 14
         Tag = 14
+        Text = 'Target OS'
+        Width = 76
+        PropertyName = 'target_os'
+      end    
+      item
+        Position = 15
+        Tag = 15
         Text = 'Min OS version'
         Width = 60
         PropertyName = 'min_os_version'
       end    
       item
-        Position = 15
-        Tag = 15
+        Position = 16
+        Tag = 16
         Text = 'Max OS version'
         Width = 63
         PropertyName = 'max_os_version'
       end    
       item
-        Position = 16
-        Tag = 16
+        Position = 17
+        Tag = 17
         Text = 'Min Wapt version'
         Width = 69
         PropertyName = 'min_wapt_version'
       end    
       item
-        Position = 17
-        Tag = 17
+        Position = 18
+        Tag = 18
         Text = 'Filename'
         Width = 179
         PropertyName = 'filename'
       end    
       item
         Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-        Position = 18
-        Tag = 18
+        Position = 19
+        Tag = 19
         Text = 'md5sum'
         PropertyName = 'md5sum'
       end    
       item
-        Position = 19
+        Position = 20
+        Tag = 20
         Text = 'Categories'
         PropertyName = 'categories'
       end    
       item
-        Position = 20
+        Position = 21
+        Tag = 21
         Text = 'Name'
         PropertyName = 'name'
       end>

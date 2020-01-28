@@ -2022,15 +2022,19 @@ def packages_for_hosts():
         reachable = str(post_data.get('reachable','')) == '1'
         install_status = ensure_list(post_data.get('install_status'))
 
-    query = HostPackagesStatus.select(
-                Hosts.reachable,
-                #HostPackagesStatus.name,
-                HostPackagesStatus.package,
-                HostPackagesStatus.version,
-                HostPackagesStatus.install_status,
-                fn.COUNT(Hosts.uuid)
-            )
-
+    fields = []
+    fields.extend([
+                    HostPackagesStatus.package,
+                    HostPackagesStatus.version,
+                    HostPackagesStatus.section,
+                    HostPackagesStatus.priority,
+                    HostPackagesStatus.install_status,
+        ])
+    if reachable == '':
+        fields.append(Hosts.reachable)
+    fields.append(SQL('json_agg(uuid) as host_uuids'))
+    fields.append(fn.COUNT(Hosts.uuid))
+    query = HostPackagesStatus.select(*fields)
     where = HostPackagesStatus.host.in_(host_uuids)
     if reachable:
         where = where & (Hosts.reachable =='OK')
@@ -2040,7 +2044,7 @@ def packages_for_hosts():
     result = list(
             query.where(where)
             .join(Hosts,'RIGHT OUTER')
-            .group_by(SQL('1,2,3,4'))
+            .group_by(SQL(','.join([str(i) for i in range(1,len(fields)-1)])))  # 1,2,3,4
             .limit(limit)
             .dicts())
 

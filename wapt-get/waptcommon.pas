@@ -24,7 +24,7 @@ unit waptcommon;
 {$mode objfpc}{$H+}
 interface
   uses
-     Classes, SysUtils, Windows,
+     Classes, SysUtils, Windows, Interfaces,
      SuperObject,IdComponent,IdCookieManager,IdSSLOpenSSL,DefaultTranslator,httpsend,
      IdAuthentication;
 
@@ -200,6 +200,7 @@ type
   IWaptSigner = interface
     ['{3C083083-36B2-487F-A670-932F7EED6254}']
     function SignData(Data:String): String;
+    function SignJsonData(Data:ISuperObject): ISuperObject;
   end;
 
 
@@ -207,6 +208,24 @@ type
   IWaptSignatureChecker = interface
     ['{A7949187-C3B2-406F-9A97-3D42EBA8EF9F}']
     function VerifyDataSignature(Data:String;Signature:String): Boolean;
+    function VerifyJsonSignature(Data:ISuperObject): Boolean;
+  end;
+
+
+  { IWaptSignedDataSerializer }
+  IWaptSignedDataSerializer = interface
+    ['{75FB5F2A-8CEE-409C-9610-9C3D8B4E16F5}']
+    function Serialize(Data: ISuperObject):String;
+    function Deserialize(Data: String):ISuperObject;
+  end;
+
+  // sorted keys, no space, no indent
+
+  { TJsonWaptSignedDataSerializer }
+
+  TJsonWaptSignedDataSerializer = class(TInterfacedObject,IWaptSignedDataSerializer)
+    function Serialize(Data: ISuperObject):String;
+    function Deserialize(Data: String):ISuperObject;
   end;
 
   { TWaptRepo }
@@ -255,12 +274,85 @@ type
     property TimeOut:Double read FTimeOut write SetTimeOut;
   end;
 
+  IPackageInstallStatus = interface
+    ['{DC25E5CF-0E2D-4B47-9BC7-E1590C39B090}']
+    property PackageUUID:String;
+    property InstallStatus:String;
+    property InstallDate:String;
+    property UninstallKeys:TStringArray;
+    property InstallLog:String;
+  end;
+
+  IWaptPackage = interface
+
+    procedure FromControl(ControlString: String);
+    function AsControl:String;
+    procedure LoadFromFile(Filename: String);
+    procedure SaveToFile(Filename: String);
+
+    // check the signature of the metadata of packages. Returns DN of signer
+    // raise Exception if the sognature can not be matched properly.
+    function CheckControlSignature(SignatureChecker:IWaptSignatureChecker):String;
+    // check the files. Returns DN of signer
+    // raise Exception if the sognature can not be matched properly.
+    function CheckPackageSignature(SIgnatureChecker:IWaptSignatureChecker):String;
+
+    // construct a filename based on package attributes
+    function MakePackageFilename:String;
+
+    procedure SignControl(Signer:IWaptSigner);
+    procedure BuildManifest;
+    procedure SignPackage(Signer:IWaptSigner);
+    // Build zip file
+    Function BuildPackage:String;
+
+    // unzip the content of "filename" into TargetDir or a temporary dir. Return the
+    // base dir of package files.
+    function UnzipPackage(TargetDir: String=''):String;
+
+    property SourcesDir:String;
+    property Filename:String;
+
+    function InstallPackage(Context:IUnknown):IPackageInstallStatus;
+    function RemovePackage(Context:IUnknown):IPackageInstallStatus;
+    function SessionSetup(Context:IUnknown):IPackageInstallStatus;
+    function SessionRemove(Context:IUnknown):IPackageInstallStatus;
+
+  end;
+
+  // maintain http session, cookies, authentication data.
+  IWaptSession = interface
+    ['{9DB69479-296C-4494-8A66-570F1ED5442A}']
+    property Cookies: TIdCookieManager;
+    property UserCertificate: String;
+    property UserPrivateKey: String;
+    function GetPrivateKeyPassword(Keyname:String): String;
+  end;
+
+  IWaptServer = interface
+     ['{EB9A7025-7612-4ADD-B8A3-D2C4F0EA2833}']
+     //function Login(WaptSession:IWaptSession):ISuperObject;
+     function Ping:ISuperObject;
+
+     function JsonGet(action: String;args:Array of const;method:AnsiString='GET'): ISuperObject; //use global credentials and proxy settings
+     function JsonPost(action: String;args:Array of const;data: ISuperObject;method:AnsiString='POST'): ISuperObject; //use global credentials and proxy settings
+     function JsonDelete(action: String; args: array of const): ISuperObject;
+
+     function SOApplyUpdates(const datasets: array of ISuperObject):Boolean;
+     function SOIsUpdated(const datasets: Array of ISuperObject):Boolean;
+
+     // upload the build packages to the server
+     //procedure UploadPackages(PackageEntries:array of IWaptPackage);
+     // download packages into TargetDir and set the filename property of Packages
+     //procedure DownloadPackages(PackageEntries:array of IWaptPackage;TargetDir:String='');
+
+  end;
 
   { TWaptRepo }
 
-  { TWaptServer }
 
-  TWaptServer = class(TPersistent)
+  { TWaptServer }
+  TWaptServer = class(TInterfacedObject,IWaptServer)
   private
     FProgressReceiver: TObject;
     FClientCertificatePath: String;
@@ -305,6 +397,8 @@ type
     destructor Destroy; Override;
     procedure LoadFromInifile(IniFilename:String;Section:String;Reset:Boolean=False);
     procedure SaveToInifile(IniFilename:String;Section:String);
+
+    function Ping:ISuperObject;
 
     function HttpGetString(action: String; args: array of const;
       Method: AnsiString = 'GET';AcceptType:String='application/json'): String;
@@ -520,6 +614,18 @@ type
     procedure OnWorkBegin(ASender: TObject; AWorkMode: TWorkMode; AWorkCountMax: Int64);
     procedure OnWork(ASender: TObject; AWorkMode: TWorkMode; AWorkCount: Int64);
   end;
+
+{ TJsonWaptSignedDataSerializer }
+
+function TJsonWaptSignedDataSerializer.Serialize(Data: ISuperObject): String;
+begin
+  Result := Data.AsJSon(False,False);
+end;
+
+function TJsonWaptSignedDataSerializer.Deserialize(Data: String): ISuperObject;
+begin
+  Result := SO(data);
+end;
 
 { TWaptServer }
 
@@ -780,6 +886,11 @@ begin
   finally
     Free;
   end;
+end;
+
+function TWaptServer.Ping: ISuperObject;
+begin
+  Result := JsonGet('ping',[]);
 end;
 
 function TWaptServer.HttpGetString(action: String; args: array of const;
@@ -2997,8 +3108,8 @@ end;
 
 function GetWaptServerSession(server_url:String = '';user: String=''; password: String=''): TIdCookieManager;
 begin
-  if  (server_url='') and (user<>'') and (password<>'') and
-      ((server_url <> GetWaptServerURL) or (user <> WaptServerUser)  or (password<> WaptServerPassword)) and
+  if  (server_url='') and (user<>'') and
+      ((server_url <> GetWaptServerURL) or (user <> WaptServerUser)) and
       Assigned(WaptServerSession) then
     FreeAndNil(WaptServerSession);
   if WaptServerSession = Nil then

@@ -1,7 +1,7 @@
 object VisWaptGUI: TVisWaptGUI
-  Left = 364
+  Left = 329
   Height = 873
-  Top = 124
+  Top = 83
   Width = 1388
   AllowDropFiles = True
   Caption = 'WAPT console'
@@ -41,9 +41,9 @@ object VisWaptGUI: TVisWaptGUI
         Height = 565
         Top = 120
         Width = 648
-        ActivePage = pgHostPackagesOverview
+        ActivePage = pgPackages
         Align = alRight
-        TabIndex = 5
+        TabIndex = 0
         TabOrder = 0
         Visible = False
         OnChange = HostPagesChange
@@ -54,8 +54,8 @@ object VisWaptGUI: TVisWaptGUI
           ClientWidth = 640
           object GridHostPackages: TSOGrid
             Left = 0
-            Height = 227
-            Top = 127
+            Height = 191
+            Top = 163
             Width = 640
             OnGetText = GridHostPackagesGetText
             OnNodesDelete = GridHostPackagesNodesDelete
@@ -368,7 +368,6 @@ object VisWaptGUI: TVisWaptGUI
             TreeOptions.SelectionOptions = [toDisableDrawSelection, toExtendedFocus, toMultiSelect, toRightClickSelect]
             WantTabs = True
             OnChange = GridHostPackagesChange
-            OnClick = GridHostPackagesClick
             OnFocusChanged = GridHostPackagesFocusChanged
             OnGetImageIndexEx = GridHostPackagesGetImageIndexEx
             ZebraPaint = True
@@ -457,7 +456,7 @@ object VisWaptGUI: TVisWaptGUI
               OnClick = SpeedButton2Click
             end
           end
-          object Panel16: TPanel
+          object PanelHostOverview: TPanel
             Left = 0
             Height = 125
             Top = 0
@@ -694,6 +693,300 @@ object VisWaptGUI: TVisWaptGUI
             Align = alBottom
             Beveled = True
             ResizeAnchor = akBottom
+          end
+          object panFilterPackagesStatus: TPanel
+            Left = 0
+            Height = 36
+            Top = 125
+            Width = 640
+            Align = alTop
+            AutoSize = True
+            BevelOuter = bvNone
+            ChildSizing.LeftRightSpacing = 12
+            ChildSizing.TopBottomSpacing = 6
+            ChildSizing.HorizontalSpacing = 6
+            ChildSizing.VerticalSpacing = 6
+            ChildSizing.ControlsPerLine = 12
+            ClientHeight = 36
+            ClientWidth = 640
+            TabOrder = 4
+            object EdSearchStatusPackages: TSearchEdit
+              AnchorSideLeft.Control = panFilterPackagesStatus
+              AnchorSideTop.Control = panFilterPackagesStatus
+              AnchorSideTop.Side = asrCenter
+              Left = 12
+              Height = 21
+              Hint = 'Regular expressions allowed'
+              Top = 8
+              Width = 120
+              EmptyText = 'Search keywords'
+              ExecuteDelay = 650
+              Options = [seoExecuteEmpty, seoExecuteOnKillFocus]
+              BorderSpacing.Top = 2
+              Constraints.MaxHeight = 21
+              Constraints.MinWidth = 120
+              Font.Color = clGray
+              OnKeyPress = EdSearchHostKeyPress
+              ParentFont = False
+              TabOrder = 0
+            end
+            object ImgStatusErrors: TImage
+              AnchorSideLeft.Control = EdSearchStatusPackages
+              AnchorSideLeft.Side = asrBottom
+              AnchorSideTop.Control = panFilterPackagesStatus
+              AnchorSideTop.Side = asrCenter
+              Left = 149
+              Height = 17
+              Top = 10
+              Width = 16
+              AntialiasingMode = amOn
+              AutoSize = True
+              BorderSpacing.Left = 17
+              Constraints.MinHeight = 17
+              Constraints.MinWidth = 16
+              Picture.Data = {
+                07544269746D617036040000424D360400000000000036000000280000001000
+                0000100000000100200000000000000400006400000064000000000000000000
+                0000FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+                FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+                FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00334DC823314BC67D2F48C4DB2C46
+                C2F32A44C0F32842BEDB2640BC7D243EBA23FFFFFF00FFFFFF00FFFFFF00FFFF
+                FF00FFFFFF00FFFFFF00FFFFFF003A54CF533852CCE65264D4FF8490E7FF95A0
+                EEFF959FEDFF838EE5FF4C5DCEFF2841BDE6263FBB53FFFFFF00FFFFFF00FFFF
+                FF00FFFFFF00FFFFFF00425CD5533F59D3F47584E3FFA1ACF4FF7F8BECFF5C67
+                E4FF5B66E3FF7D87EAFF9FA8F1FF6F7CDDFF2943BFF42741BD53FFFFFF00FFFF
+                FF00FFFFFF004963DC224660DAE57888E6FFA3B0F5FF5767E7FF5665E6FF8992
+                EDFF8892ECFF535FE2FF525DE1FF9FA9F2FF6F7DDDFF2B44C0E52942BE22FFFF
+                FF00FFFFFF004E68E17E6073E0FFA4B3F7FF5A6EEBFF596CEAFF5869E8FFFFFF
+                FFFFFFFFFFFF5562E5FF5461E3FF535FE2FF9FA9F2FF5061D1FF2D46C27EFFFF
+                FF00FFFFFF00526DE5DB8E9FF0FF8499F4FF5C73EEFF5B70ECFF5A6EEBFF909D
+                F1FFA6AFF3FF5767E7FF5665E6FF5562E5FF7D89EBFF8591E7FF314AC6DBFFFF
+                FF00FFFFFF005771E9F6A0B3F7FF6580F2FF5F78F0FF5D76EFFF5C73EEFFD3D9
+                FAFFFFFFFFFF596CEAFF5869E8FF5767E7FF5D6CE7FF99A5F1FF354FCAF6FFFF
+                FF00FFFFFF005B76EDF6A1B6F8FF6784F4FF607CF3FF5F7AF1FF5F78F0FFFFFF
+                FFFFFFFFFFFF5B70ECFF5A6EEBFF596CEAFF5F6FE9FF9BA8F1FF3A53CEF6FFFF
+                FF00FFFFFF005F7AF1DB91A6F3FF88A1F8FF6280F4FF617EF3FF607CF3FFFFFF
+                FFFFFFFFFFFF5D76EFFF5C73EEFF5B70ECFF8293F1FF8998ECFF3E58D2DBFFFF
+                FF00FFFFFF00637EF57E6C81ECFFA9BDFBFF6382F5FF6281F5FF6280F4FFFFFF
+                FFFFFFFFFFFF5F7AF1FF5F78F0FF5D76EFFFA5B5F8FF5D70DDFF435DD77EFFFF
+                FF00FFFFFF006781F822657FF6E58397F0FFA9BDFBFF6382F5FF6382F5FFFFFF
+                FFFFFFFFFFFF617EF3FF607CF3FFA6B9F9FF7B8DEAFF4A64DEE54862DB22FFFF
+                FF00FFFFFF00FFFFFF006883F9536681F8F48497F1FFA9BDFBFF8AA3F8FF6B89
+                F6FF6B89F6FF89A2F8FFA8BCFAFF7F92ECFF526CE4F44F69E253FFFFFF00FFFF
+                FF00FFFFFF00FFFFFF00FFFFFF006984FA536882F9E66E83EEFF92A6F4FFA0B4
+                F8FFA0B4F8FF91A6F3FF687DE9FF5973EBE65671E953FFFFFF00FFFFFF00FFFF
+                FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF006A85FC236984FA7D6782F9DB6580
+                F7F3637EF5F3617CF3DB5F7AF17D5D77EF23FFFFFF00FFFFFF00FFFFFF00FFFF
+                FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+                FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+                FF00
+              }
+              Proportional = True
+              Stretch = True
+            end
+            object cbStatusErrors: TCheckBox
+              AnchorSideLeft.Control = ImgStatusErrors
+              AnchorSideLeft.Side = asrBottom
+              AnchorSideTop.Control = panFilterPackagesStatus
+              AnchorSideTop.Side = asrCenter
+              Left = 171
+              Height = 17
+              Top = 10
+              Width = 49
+              Caption = 'Errors'
+              OnClick = cbOverviewStatusErrorClick
+              TabOrder = 1
+            end
+            object ImgStatusUpgrade: TImage
+              AnchorSideLeft.Control = cbStatusErrors
+              AnchorSideLeft.Side = asrBottom
+              AnchorSideTop.Control = panFilterPackagesStatus
+              AnchorSideTop.Side = asrCenter
+              Left = 230
+              Height = 17
+              Top = 10
+              Width = 16
+              AntialiasingMode = amOn
+              AutoSize = True
+              BorderSpacing.Left = 10
+              Constraints.MinHeight = 17
+              Constraints.MinWidth = 16
+              Picture.Data = {
+                07544269746D617036040000424D360400000000000036000000280000001000
+                0000100000000100200000000000000400006400000064000000000000000000
+                0000000000000000000000000000000000000000000000000000000000000000
+                0000000000000000000000000000000000000000000000000000000000000000
+                00003677B2730054B6E0045EBCDC0D69C0DB1B72C2DA2C7AC3DA3A81C4DA4686
+                C3D94786C4DA3C81C1DB2F79BEDB1E70BADC0E6CC3E60565C4EA0364C7EC487A
+                A76B175CAA7A0072F0FF007DFDFF058DFFFF1A9DFFFF33ADFFFF50BBFFFF63C5
+                FFFF64C6FFFF53BEFFFF37B0FFFF1D9FFFFF078FFFFF0389FFFF0182F3FF415D
+                8757000000000E67C6FB0078F7FF0185FFFF0E94FFFF22A1FFFF33ACFFFF83CF
+                FFFF7ACBFFFF36ADFFFF25A4FFFF1196FFFF098FFFFF0893FFFF0751A3DF0000
+                00000000000008337D6834A5F9FF0B88FCFF0186FFFF0D93FFFF0C95FFFFF8FC
+                FEFFDEF0FEFF1099FFFF1094FFFF078DFFFF0990FFFF1087E8FF00094A3F0025
+                6A0000000000000000003076BCE82D9FF6FF1C98FCFF0386FEFF068CFFFF168D
+                F5FF118BF6FF068DFFFF0186FFFF048AFFFF0B95FFFF10519DC6000000000000
+                000000000000001763000018624846A5ECFF2E9DF3FF269DF9FF0481FBFFE2F5
+                FFFFCFE7FFFF0076FBFF0080FEFF0288FFFF1585E0FF00003424002164000000
+                00000000000000000000000000003E76B2D1349AECFF2E98EDFF188EEFFFE3F4
+                FEFFC5DFFBFF006EF1FF007EFCFF0891FFFF12519AA800000000000000000000
+                00000000000000000000001963000000472C54A2E0FF3799E6FF218CE5FFE5F3
+                FDFFCEE7FBFF0984F3FF007FFDFF1A82D9FF0000000F001D5E00000000000000
+                0000000000000000000000000000000000004473ABB542A1E9FF2A8FE2FFE5F3
+                FCFFCEE7FCFF1796FAFF30B0FFFF1247908F0000000000000000000000000000
+                0000000000000000000000000000001F6900000016165B9FD6FF3A98E2FF91C8
+                F0FF80C0F2FF24A3FEFF3A8FD3FF00000000001B550000000000000000000000
+                00000000000000000000000000000000000000000000406CA79954ACEBFF41A8
+                F3FF39ACFDFF4BBDFFFF13438E75000000000000000000000000000000000000
+                000000000000000000000000000000000000002A700000000007599ED8FF4AB0
+                F8FF41B3FFFF4293D2F300000000000000000000000000000000000000000000
+                00000000000000000000000000000000000000000000000000002F61A48160C6
+                FFFF5EC7FFFF0D3F8B5B00000000000000000000000000000000000000000000
+                00000000000000000000000000000000000000000000000000000000000056A4
+                DCFD408ECDE30000000000000000000000000000000000000000000000000000
+                000000000000000000000000000000000000000000000000000013509A010000
+                000000000000002E7C0000000000000000000000000000000000000000000000
+                0000
+              }
+              Proportional = True
+              Stretch = True
+            end
+            object cbStatusUpgrade: TCheckBox
+              AnchorSideLeft.Control = ImgStatusUpgrade
+              AnchorSideLeft.Side = asrBottom
+              AnchorSideTop.Control = panFilterPackagesStatus
+              AnchorSideTop.Side = asrCenter
+              Left = 252
+              Height = 17
+              Top = 10
+              Width = 75
+              Caption = 'To upgrade'
+              TabOrder = 2
+            end
+            object ImgStatusInstall: TImage
+              AnchorSideLeft.Control = cbStatusUpgrade
+              AnchorSideLeft.Side = asrBottom
+              AnchorSideTop.Control = panFilterPackagesStatus
+              AnchorSideTop.Side = asrCenter
+              Left = 337
+              Height = 17
+              Top = 10
+              Width = 16
+              AntialiasingMode = amOn
+              AutoSize = True
+              BorderSpacing.Left = 10
+              Constraints.MinHeight = 17
+              Constraints.MinWidth = 16
+              Picture.Data = {
+                1754506F727461626C654E6574776F726B47726170686963E802000089504E47
+                0D0A1A0A0000000D49484452000000100000001008060000001FF3FF61000002
+                AF49444154789C8D535D48D37114FD11BD0561D4DAB45237DDD6744BB7F995FB
+                B226739A58A126852E7AB1D0A56ECEB5FD759F6E4E9332F98B18440EC9EF4CC5
+                1C9A535782652F12462A410FBD440D1FA49ED6E6ED37F34DC15D384FE7DC732F
+                977311DA57164415DB515639F92E5B456EA69674ACD2156DE4118161BFF4C04A
+                BC8FE2F35ADC46F787907D640DACC39F80A37AB67D4A4C601222309059103DAF
+                D92326A621DBBE04C9864560DFEE0D9CCE34EE6E7778656950BCC2E111D64F41
+                0AE183F3FA0560850DC496C30CC26429424916C4C873CEF0B553C0C5D399F5F3
+                C054F506289226CC57FED7EC62CF2C4A6640D44B5644919A51340645626E8B57
+                D8BFA6D44D021B4FA76BBCC0AC781E8CC921A66939265BB4DC8CCEC8AC2846EE
+                4047A5F8B049C51D2BE955030141D560907F6F20C8BBDB1F92EA4677B8BA59A0
+                6BBD105BE7054ECD04C8B4232199763424D78F05F389F160817EE44F5CBE8344
+                19777AB69ECE7F03DBF826585E6D80F9E53A54BBD780B1D71C469AE92D1886BE
+                40FD8BCF601C5E07EBD806D8865621F18AD38B926F923FD28D73C027E681A7F7
+                025B37070CCD2C9CAB7DB3DB1C5737079C062F08312FB6FA40D1B204571FBD87
+                A2E6D91D56A1CB83E8056D6EF68DAEEFAC52F217B384F42714776EB1CAC84082
+                7A0A37E3F5F11DF8EA61482EEBFCCDBBD5E5E79777FB85AA9E9F828AEEF5B8CB
+                4E7CC5B31A749CEB40C7F804A2619C909A506CAE6D85553D0EAC86051034F940
+                50D9F797266E7A42C97880683850616D14DF8190B0F2E01C3094CE195EED24A4
+                36FA4084C39459D51FA08A4D91072921DF3993A67B0D176D4B90DBBA0C223536
+                10456A80A3CC503A3C22C334C85DCB50F4780564B58301AA24D228E367A22B5D
+                6E997E22A86CF6C2F5D645C851F76D53248D111A60D1498913B10ADB2738450F
+                3F72AFB52F730A5C5DB40B3507AAFF0123FF3B817AC372FE0000000049454E44
+                AE426082
+              }
+              Proportional = True
+              Stretch = True
+            end
+            object cbStatusInstall: TCheckBox
+              AnchorSideLeft.Control = ImgStatusInstall
+              AnchorSideLeft.Side = asrBottom
+              AnchorSideTop.Control = panFilterPackagesStatus
+              AnchorSideTop.Side = asrCenter
+              Left = 359
+              Height = 17
+              Top = 10
+              Width = 62
+              Caption = 'To install'
+              TabOrder = 3
+            end
+            object ImgStatusRemove: TImage
+              AnchorSideLeft.Control = cbStatusInstall
+              AnchorSideLeft.Side = asrBottom
+              AnchorSideTop.Control = panFilterPackagesStatus
+              AnchorSideTop.Side = asrCenter
+              Left = 431
+              Height = 17
+              Top = 10
+              Width = 16
+              AntialiasingMode = amOn
+              AutoSize = True
+              BorderSpacing.Left = 10
+              Constraints.MinHeight = 17
+              Constraints.MinWidth = 16
+              Picture.Data = {
+                1754506F727461626C654E6574776F726B477261706869638502000089504E47
+                0D0A1A0A0000000D49484452000000100000001008060000001FF3FF61000002
+                4C49444154789CA5534B4F935110FDFE8789029A684C2C6D7C122C86888D1284
+                A64690B6342296FAC090F0A8A0C56A1337266C8C2ED485E2C2A5B4286011426B
+                5BD492B6BA50095DCA9E082E2A8FEF78CF7C586567C24D26F73173EE3D77E68C
+                562814E6D78C81D5C22F7D712EAFE7875EE81FAFF9F5D8198F18D73CA38F318C
+                2580584D906AAC2EFFC4F7C81852AE768C9AAD08979911DE6132ACD4A2CEAA94
+                CF2B318CE520565B5B5F9783FCE321442B4F6278FB3E0C97941BB3325E206BCE
+                25264C1C3D85FC93E78221562325DE1A77B420D1D486E9DA46241A5B315A6E45
+                64D77EC4EA9D62F4BF737890387B1E71BBCB60A2B0DAE2DCBC9E72B663CAE640
+                B637886CCF0032DD014C56D7E3D59E43F81CB88BAF830F94EF1666AFF6E27D6B
+                07C60F5423E9F482588DC9E16BD10A1B522D3EC44E378B73CC720C919D166194
+                6CBE88A462176F70E16D551D46761F1486C46AE9CE7E3DA61C7C39D71F1216B9
+                BE3BB2CF760FC8CB7276FDB618F799AE805C46AC9670FB742670E5C712569696
+                FFCF542C31C46EFD02D2209D4CD74DA1FA497DC3A01A942FE56E848CB92F54FC
+                1A638B5F90242AE1BCDCB6576A3CE3F62179AE4D95F482246FC67349D96529F1
+                076FA72497B1C44812A58C4A7D3C8C3538A584597F10DF061F227DA50769553A
+                EE673BFCF872EF3E26ACB5124B8C949162581819C79BC335881EB1C9AB2C65DC
+                EEC6D4713B266BECC288629AAE6BC26B53A5C41223422A4AF9D153D142B8D46C
+                C8F64F1F288B945910DE9077B4E2848A7DF657CAFF36D3029B4989888DB3B999
+                CC1BCDD42E319B9A69ABEDFC1B1222E362F7D6056C0000000049454E44AE4260
+                82
+              }
+              Proportional = True
+              Stretch = True
+            end
+            object cbStatusRemove: TCheckBox
+              AnchorSideLeft.Control = ImgStatusRemove
+              AnchorSideLeft.Side = asrBottom
+              AnchorSideTop.Control = panFilterPackagesStatus
+              AnchorSideTop.Side = asrCenter
+              Left = 453
+              Height = 17
+              Top = 10
+              Width = 71
+              Caption = 'To remove'
+              TabOrder = 4
+            end
+            object ButStatusPackagesAll: TButton
+              AnchorSideLeft.Control = cbStatusRemove
+              AnchorSideLeft.Side = asrBottom
+              AnchorSideTop.Control = panFilterPackagesStatus
+              AnchorSideTop.Side = asrCenter
+              Left = 532
+              Height = 23
+              Top = 7
+              Width = 37
+              AutoSize = True
+              BorderSpacing.Left = 8
+              Caption = 'All'
+              OnClick = ButStatusPackagesAllClick
+              TabOrder = 5
+            end
           end
         end
         object pgHostInventory: TTabSheet
@@ -2265,111 +2558,55 @@ object VisWaptGUI: TVisWaptGUI
             Header.AutoSizeIndex = -1
             Header.Columns = <            
               item
-                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
                 Position = 0
-                Text = 'created_on'
-                Width = 100
-                PropertyName = 'created_on'
-              end            
-              item
-                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-                Position = 1
-                Tag = 1
-                Text = 'created_by'
-                Width = 100
-                PropertyName = 'created_by'
-              end            
-              item
-                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-                Position = 2
                 Tag = 2
-                Text = 'last_audit_output'
-                Width = 100
-                PropertyName = 'last_audit_output'
-              end            
-              item
-                Alignment = taRightJustify
-                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-                Position = 3
-                Tag = 3
-                Text = 'id'
-                Width = 100
-                PropertyName = 'id'
-              end            
-              item
-                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-                Position = 4
-                Tag = 4
-                Text = 'signer_fingerprint'
-                Width = 100
-                PropertyName = 'signer_fingerprint'
-              end            
-              item
-                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-                Position = 5
-                Tag = 5
-                Text = 'host'
-                Width = 100
-                PropertyName = 'host'
-              end            
-              item
-                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-                Position = 6
-                Tag = 6
-                Text = 'signer'
-                Width = 13
-                PropertyName = 'signer'
-              end            
-              item
-                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-                Position = 7
-                Tag = 7
-                Text = 'Package UUID'
-                Width = 10
-                PropertyName = 'package_uuid'
-              end            
-              item
-                Position = 8
-                Tag = 8
                 Text = 'Status'
-                Width = 47
+                Width = 76
                 PropertyName = 'install_status'
               end            
               item
-                Position = 9
-                Tag = 9
+                Position = 1
+                Tag = 3
                 Text = 'Name'
                 Width = 86
                 PropertyName = 'name'
               end            
               item
-                Position = 10
-                Tag = 10
+                Position = 2
+                Tag = 4
                 Text = 'Package'
                 Width = 100
                 PropertyName = 'package'
               end            
               item
-                Position = 11
-                Tag = 11
+                Position = 3
+                Tag = 5
                 Text = 'Version'
                 Width = 100
                 PropertyName = 'version'
               end            
               item
                 Alignment = taRightJustify
-                Position = 12
-                Tag = 12
+                Position = 4
+                Tag = 6
                 Text = 'Count'
                 Width = 57
                 PropertyName = 'count'
               end            
               item
-                Position = 13
-                Tag = 13
+                Position = 5
+                Tag = 7
                 Text = 'Reachable'
-                Width = 58
+                Width = 62
                 PropertyName = 'reachable'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                Position = 6
+                Tag = 8
+                Text = 'Hosts'
+                Width = 100
+                PropertyName = 'host_uuids'
               end>
             Header.DefaultHeight = 18
             Header.Height = 18
@@ -2379,15 +2616,13 @@ object VisWaptGUI: TVisWaptGUI
             Header.SortDirection = sdDescending
             Header.Style = hsFlatButtons
             Images = ImageList1
-            PopupMenu = PopupHostPackages
+            PopupMenu = PopupHostPackagesOverview
             TabOrder = 0
             TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes, toAutoChangeScale]
             TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toVariableNodeHeight, toFullRowDrag, toNodeHeightResize, toNodeHeightDblClickResize, toEditOnClick]
             TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages, toAlwaysHideSelection]
             TreeOptions.SelectionOptions = [toDisableDrawSelection, toExtendedFocus, toMultiSelect, toRightClickSelect]
             WantTabs = True
-            OnChange = GridHostPackagesChange
-            OnClick = GridHostPackagesClick
             OnFocusChanged = GridHostPackagesFocusChanged
             OnGetImageIndexEx = GridHostPackagesGetImageIndexEx
             ZebraPaint = True
@@ -4541,10 +4776,17 @@ object VisWaptGUI: TVisWaptGUI
             PropertyName = 'section'
           end        
           item
-            MaxWidth = 400
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption, coEditable]
             Position = 1
             Tag = 1
+            Text = 'Name'
+            Width = 76
+            PropertyName = 'name'
+          end        
+          item
+            MaxWidth = 400
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption, coEditable]
+            Position = 2
+            Tag = 2
             Text = 'Package'
             Width = 180
             PropertyName = 'package'
@@ -4552,22 +4794,22 @@ object VisWaptGUI: TVisWaptGUI
           item
             MaxWidth = 200
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption, coEditable]
-            Position = 2
-            Tag = 2
+            Position = 3
+            Tag = 3
             Text = 'Version'
             Width = 94
             PropertyName = 'version'
           end        
           item
-            Position = 3
-            Tag = 3
+            Position = 4
+            Tag = 4
             Text = 'Arch'
             Width = 48
             PropertyName = 'architecture'
           end        
           item
-            Position = 4
-            Tag = 4
+            Position = 5
+            Tag = 5
             Text = 'Locale'
             Width = 46
             PropertyName = 'locale'
@@ -4575,271 +4817,296 @@ object VisWaptGUI: TVisWaptGUI
           item
             MaxWidth = 400
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption, coEditable]
-            Position = 5
-            Tag = 5
+            Position = 6
+            Tag = 6
             Text = 'Description'
-            Width = 333
+            Width = 308
             PropertyName = '_localized_description'
           end        
           item
             MaxWidth = 400
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption, coEditable]
-            Position = 6
-            Tag = 6
+            Position = 7
+            Tag = 7
             Text = 'Dependencies'
-            Width = 345
+            Width = 259
             PropertyName = 'depends'
           end        
           item
-            Position = 7
-            Tag = 7
+            Position = 8
+            Tag = 8
             Text = 'Conflicts'
             Width = 205
             PropertyName = 'conflicts'
           end        
           item
-            Position = 8
-            Tag = 8
+            Position = 9
+            Tag = 9
             Text = 'Licence'
-            Width = 48
+            Width = 60
             PropertyName = 'licence'
           end        
           item
             Alignment = taRightJustify
-            Position = 9
-            Tag = 9
+            Position = 10
+            Tag = 10
             Text = 'Size'
             Width = 92
             PropertyName = 'size'
           end        
           item
             Alignment = taRightJustify
-            Position = 10
-            Tag = 10
+            Position = 11
+            Tag = 11
             Text = 'Installed size'
             Width = 106
             PropertyName = 'installed_size'
           end        
           item
-            Position = 11
-            Tag = 11
+            Position = 12
+            Tag = 12
             Text = 'Signer'
             Width = 122
             PropertyName = 'signer'
           end        
           item
-            Position = 12
-            Tag = 12
+            Position = 13
+            Tag = 13
             Text = 'Signed on'
             Width = 109
             PropertyName = 'signature_date'
           end        
           item
-            Position = 13
-            Tag = 13
+            Position = 14
+            Tag = 14
             Text = 'Editor'
             Width = 90
             PropertyName = 'editor'
           end        
           item
-            Position = 14
-            Tag = 14
+            Position = 15
+            Tag = 15
             Text = 'Maturity'
             Width = 59
             PropertyName = 'maturity'
           end        
           item
-            Position = 15
-            Tag = 15
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+            Position = 39
+            Tag = 16
+            Text = 'Target OS'
+            Width = 100
+            PropertyName = 'target_os'
+          end        
+          item
+            Position = 16
+            Tag = 17
             Text = 'Min OS version'
             Width = 60
             PropertyName = 'min_os_version'
           end        
           item
-            Position = 16
-            Tag = 16
+            Position = 17
+            Tag = 18
             Text = 'Max OS version'
             Width = 63
             PropertyName = 'max_os_version'
           end        
           item
-            Position = 17
-            Tag = 17
+            Position = 18
+            Tag = 19
             Text = 'Min Wapt version'
             Width = 69
             PropertyName = 'min_wapt_version'
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 18
-            Tag = 18
+            Position = 19
+            Tag = 20
             Text = 'Filename'
             Width = 142
             PropertyName = 'filename'
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 19
-            Tag = 19
+            Position = 20
+            Tag = 21
             Text = 'md5sum'
             PropertyName = 'md5sum'
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 20
-            Tag = 20
+            Position = 21
+            Tag = 22
             Text = 'Repository'
             PropertyName = 'repo_url'
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 21
+            Position = 22
+            Tag = 23
             Text = 'priority'
             Width = 100
             PropertyName = 'priority'
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 22
+            Position = 23
+            Tag = 24
             Text = 'signature'
             Width = 100
             PropertyName = 'signature'
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 23
+            Position = 24
+            Tag = 25
             Text = 'sources'
             Width = 100
             PropertyName = 'sources'
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 24
+            Position = 25
+            Tag = 26
             Text = 'audit_schedule'
             Width = 100
             PropertyName = 'audit_schedule'
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 25
+            Position = 26
+            Tag = 27
             Text = 'signed_attributes'
             Width = 100
             PropertyName = 'signed_attributes'
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 26
+            Position = 27
+            Tag = 28
             Text = 'description_pl'
             Width = 100
             PropertyName = 'description_pl'
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 27
+            Position = 28
+            Tag = 29
             Text = 'description_fr'
             Width = 100
             PropertyName = 'description_fr'
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 28
+            Position = 29
+            Tag = 30
             Text = 'description_es'
             Width = 100
             PropertyName = 'description_es'
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 29
+            Position = 30
+            Tag = 31
             Text = 'description_de'
             Width = 100
             PropertyName = 'description_de'
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 30
+            Position = 31
+            Tag = 32
             Text = 'maintainer'
             Width = 100
             PropertyName = 'maintainer'
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 31
+            Position = 32
+            Tag = 33
             Text = 'package_uuid'
             Width = 100
             PropertyName = 'package_uuid'
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 32
+            Position = 33
+            Tag = 34
             Text = 'description'
             Width = 100
             PropertyName = 'description'
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 33
+            Position = 34
+            Tag = 35
             Text = 'impacted_process'
             Width = 100
             PropertyName = 'impacted_process'
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 34
+            Position = 35
+            Tag = 36
             Text = 'signer_fingerprint'
             Width = 100
             PropertyName = 'signer_fingerprint'
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 35
+            Position = 36
+            Tag = 37
             Text = 'keywords'
             Width = 100
             PropertyName = 'keywords'
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 36
+            Position = 37
+            Tag = 38
             Text = 'repo'
             Width = 100
             PropertyName = 'repo'
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 37
+            Position = 38
+            Tag = 39
             Text = 'target_os'
             Width = 100
             PropertyName = 'target_os'
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 38
+            Position = 40
+            Tag = 40
             Text = 'localpath'
             Width = 100
             PropertyName = 'localpath'
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 39
+            Position = 41
+            Tag = 41
             Text = 'homepage'
             Width = 100
             PropertyName = 'homepage'
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 40
+            Position = 42
+            Tag = 42
             Text = 'sourcespath'
             Width = 10
             PropertyName = 'sourcespath'
           end        
           item
-            Position = 41
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+            Position = 43
+            Tag = 43
             Text = 'Categories'
             PropertyName = 'categories'
-          end        
-          item
-            Position = 42
-            Text = 'Name'
-            PropertyName = 'name'
           end>
         Header.DefaultHeight = 18
         Header.Height = 18
@@ -9195,20 +9462,6 @@ object VisWaptGUI: TVisWaptGUI
       Enabled = False
       OnExecute = ActCancelRunningTaskExecute
     end
-    object ActPackagesRemove: TAction
-      Category = 'Host'
-      Caption = 'Uninstall package'
-      Hint = 'Forces remote uninstall of package'
-      ImageIndex = 3
-      OnExecute = ActPackagesRemoveExecute
-      OnUpdate = ActPackagesRemoveUpdate
-    end
-    object ActPackagesForget: TAction
-      Category = 'Host'
-      Caption = 'Forget packages'
-      OnExecute = ActPackagesForgetExecute
-      OnUpdate = ActPackagesRemoveUpdate
-    end
     object ActSearchSoftwares: TAction
       Category = 'Host'
       Caption = 'ActSearchSoftware'
@@ -9266,10 +9519,24 @@ object VisWaptGUI: TVisWaptGUI
       OnExecute = ActPackagesInstallExecute
       OnUpdate = ActPackagesRemoveUpdate
     end
+    object ActPackagesRemove: TAction
+      Category = 'Host'
+      Caption = 'Uninstall package'
+      Hint = 'Forces remote uninstall of package'
+      ImageIndex = 3
+      OnExecute = ActPackagesRemoveExecute
+      OnUpdate = ActPackagesRemoveUpdate
+    end
+    object ActPackagesForget: TAction
+      Category = 'Host'
+      Caption = 'Forget packages'
+      OnExecute = ActPackagesForgetExecute
+      OnUpdate = ActPackagesRemoveUpdate
+    end
     object ActCleanCache: TAction
       Category = 'Tools'
       Caption = 'Clean local cache'
-      Hint = 'Remove all packages locall cached by WaptConsole'
+      Hint = 'Remove all packages local cached by WaptConsole'
       OnExecute = ActCleanCacheExecute
     end
     object ActRefreshHostInventory: TAction
@@ -9630,6 +9897,12 @@ object VisWaptGUI: TVisWaptGUI
       Caption = 'Refresh'
       ImageIndex = 5
       OnExecute = ActRefreshHostPackagesOverviewExecute
+    end
+    object ActTriggerPendingActions: TAction
+      Category = 'hosts'
+      Caption = 'Apply selected install'
+      ImageIndex = 16
+      OnExecute = ActTriggerPendingActionsExecute
     end
   end
   object PopupMenuPackages: TPopupMenu
@@ -10695,7 +10968,85 @@ object VisWaptGUI: TVisWaptGUI
     left = 664
     top = 344
     object MenuItem20: TMenuItem
-      Action = ActPackagesInstall
+      Caption = 'Install package'
+      Bitmap.Data = {
+        36090000424D3609000000000000360000002800000018000000180000000100
+        2000000000000009000064000000640000000000000000000000000000000000
+        0000000000000000000000000000CCFF990F0000000000000000F3FF8B2CF6FF
+        8F70F5FF919BF6FF8FB0F6FF8FB0F7FF919BF6FF8E6FF9FF8C28000000000000
+        0000FFFF800C0000000000000000000000000000000000000000000000000000
+        000000000000FFFF000600FF000600000000F1FF8735F5FF907CF6FF8FA2F6FF
+        8FB0F6FF90B3F6FF90B3F6FF90B3F5FF90B3F8FF8FAAF7FF8D9CF6FF8D77F5FF
+        8F320000000000000000FFFF0006000000000000000000000000000000000000
+        0000FFFF00060000000000000000F6FF8F74F5FF8FB6F6FF90BEF7FF90B7F7FF
+        91B4F6FF90B3F7FF92B4F7FF92B4F6FF8DAFF8FF8EADF6FF8FB1F7FF8EB7F6FF
+        8DAFF6FF8E6F0000000000000000FFFF0006000000000000000000000000FFFF
+        0006FFFF0006E6FF7314F6FF908FF6FF90BEF6FF90B3F5FF90B1F5FF90B3F6FF
+        90B3F7FF92B4F5FF87B1F5FF87AEF6FF91AEF6FF8EADF6FF8EACF8FF8FAAF6FF
+        8EADF7FF8EB7F6FF8D89FFFF8012FFFF0006FFFF000600000000FFFF0006FFFF
+        AA09FFFFFF06F8FF908EF6FF90BEF6FF8FB0F6FF90B3F6FF90B3F6FF90B3F7FF
+        93B5F5FF82AFFAFFB8C6FAFFB9C1F4FF80A8F6FF92AFF6FF8EADF6FF8EADF6FF
+        8EADF8FF8FAAF7FF8EB7F6FF8D89FFFF0006FFFFAA09FFFF0006CCFF990F0000
+        0000F6FF8D72F6FF90BEF6FF8FB0F6FF90B3F6FF90B3F6FF90B3F7FF91B4F5FF
+        8BB2F7FF96B6FFFFFAF8FFFFFBF7F6FF97B0F6FF89ABF6FF91AEF6FF8EADF6FF
+        8EADF6FF8EADF8FF8DAAF7FF8EB7F6FF8F6D00000000FFFF800CFFFF0006FAFF
+        8A30F4FF8EB7F6FF90B3F6FF90B3F6FF90B3F6FF90B3F6FF90B3F7FF92B4F5FF
+        83AFFEFFEBE9FFFFFFFFFFFFFFFFFEFFECE8F4FF80A9F6FF8EAEF6FF8EADF6FF
+        8EADF6FF8EADF6FF8EADF6FF8EADF8FF8DAFFFFF932DFFFF000600000000F5FF
+        8F7BF6FF90BEF6FF90B1F6FF90B3F6FF90B3F6FF90B3F7FF94B5F3FF7CADFBFF
+        D7DAFFFFFFFFFFFFFEFEFFFFFEFEFFFFFFFFFBFFD9D7F7FF7CA5F6FF93AFF6FF
+        8EADF6FF8EADF6FF8EADF6FF8EABF7FF8EB7F8FF8E7500000000F9FF8C28F6FF
+        8FA2F7FF90B7F5FF90B3F6FF90B3F6FF90B3F7FF93B5F5FF81AEFAFFBEC9FFFF
+        FFFFFFFFFEFEFFFFFFFFFFFFFFFFFFFFFEFEFFFFFFFFFBFFBEC5F4FF7FA7F6FF
+        92AFF6FF8EADF6FF8EADF6FF8EACF6FF8FB1F7FF8D9BF1FF8A25F6FF906EF8FF
+        90AFF7FF8FB4F6FF90B3F6FF90B3F7FF92B4F6FF87B0F7FFA1BBFEFFFAF9FFFF
+        FFFEFFFFFFFEFFFFFFFFFFFFFFFFFFFFFFFEFFFFFFFEFFFFFAF8F8FFA1B5F5FF
+        84AAF6FF91AEF6FF8EADF6FF8EADF6FF8EADF6FF8EABF6FF906EF7FF8E9AF6FF
+        90B3F6FF90B3F6FF90B3F6FF91B3F6FF8EB3F7FF93B5FEFFF1F1FFFFFFFFFFFF
+        FFFEFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFFFFFEFFF2F0F6FF
+        92AFF5FF8CADF6FF8FADF6FF8EADF6FF8EAEF5FF90B3F5FF8D9BF6FF8FB0F6FF
+        90B3F6FF90B3F6FF90B3F6FF91B3F4FF8AB3F7FF9CB9F9FFBAC7FAFFB7C5FFFF
+        F8F7FFFFFFFFFFFFFFFEFFFFFFFEFFFFFFFFFEFFF8F7F8FFB8C1F8FFBAC3F8FF
+        9BB3F6FF8BABF6FF8FADF6FF8EADF5FF8EB3F6FF90B3F6FF8FB0F6FF8FB0F6FF
+        90B3F6FF90B3F6FF90B3F6FF90B3F6FF91B3F5FF8DB3F5FF82AFF6FF85B0FEFF
+        F6F4FFFFFFFFFFFFFFFEFFFFFFFEFFFFFFFFFFFFF6F3F5FF84AAF6FF7EA8F5FF
+        8AACF6FF8FADF6FF8EADF5FF8FB2F5FF8FB4F6FF90B3F6FF8FB0F5FF8E9AF6FF
+        90B3F6FF90B3F6FF90B3F6FF90B3F6FF90B3F6FF90B3F7FF91B4F7FF93B5FEFF
+        F6F5FFFFFFFFFFFFFFFEFFFFFFFEFFFFFFFFFEFFF6F4F6FF92AFF6FF8EAEF6FF
+        8EADF8FF8EACF5FF8FB1F5FF8FB4F6FF90B3F6FF90B3F7FF8E9AF6FF8F6DF8FF
+        90AFF7FF8FB4F6FF90B3F6FF90B3F6FF90B3F6FF90B3F6FF8EB3F7FF91B4FEFF
+        F6F5FFFFFFFFFFFFFFFEFFFFFFFEFFFFFFFFFEFFF6F4F6FF8EAEF6FF8CADF6FF
+        8EADF8FF90AFF5FF8FB4F6FF90B3F7FF8FB4F8FF90AFF6FF906EFFFF9825F5FF
+        90A1F5FF8FB8F5FF90B3F6FF90B3F6FF90B3F6FF90B3F6FF8EB3F7FF91B4FEFF
+        F6F5FFFFFFFFFFFFFFFEFFFFFFFEFFFFFFFFFEFFF6F4F6FF8EAEF6FF8DACF6FF
+        8DAFF6FF90B3F6FF90B3F5FF90B3F5FF8FB8F5FF90A1F2FF902700000000F7FF
+        9179F6FF90BEF6FF90B1F6FF90B3F6FF90B3F6FF90B3F6FF8EB3F7FF91B4FEFF
+        F5F5FEFFFEFFFFFFFFFEFFFFFFFEFEFFFEFFFEFFF6F4F6FF8EAEF5FF8DAEF6FF
+        90B3F6FF90B3F6FF90B3F6FF90B1F6FF90BEF7FF917900000000FFFF0006F4FF
+        8D2FF5FF8FB6F6FF90B3F6FF90B3F6FF90B3F6FF90B3F6FF8EB3F7FF91B4FEFF
+        F7F6FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFF7F5F6FF8EAEF5FF8FB2F7FF
+        91B4F6FF90B3F6FF90B3F6FF90B3F5FF8FB6F4FF8D2FFFFF0006CCFF990F0000
+        0000F6FF8F70F6FF90BEF6FF8FB0F6FF90B3F6FF90B3F6FF8EB3F7FF91B4FDFF
+        F0F1FFFFFAFAFEFFFAFAFEFFFAFAFFFFFAFAFEFFF1EFF6FF91B2F6FF90B3F6FF
+        90B3F6FF90B3F6FF8FB0F6FF90BEF6FF8F7000000000CCFF990FFFFF0006FFFF
+        AA09FFFF0006F6FF918DF6FF90BEF6FF8FB0F6FF90B3F6FF90B3F6FF90B3F7FF
+        9AB8F7FF9CB9F8FF9DB8F8FF9DB8F7FF9CB9F7FF9AB8F6FF90B3F6FF90B3F6FF
+        90B3F6FF8FB0F6FF90BEF6FF918DFFFF0006FFFFAA09FFFF000600000000FFFF
+        0006FFFF0006FFFF8012F6FF908EF6FF90BEF6FF90B3F5FF90B1F5FF90B3F5FF
+        8BB2F5FF8BB2F5FF8BB2F5FF8BB2F5FF8BB2F5FF8BB2F5FF90B3F5FF90B1F6FF
+        90B3F6FF90BEF8FF918DFFFF8012FFFF0006FFFF000600000000000000000000
+        0000FFFF00060000000000000000F6FF9172F7FF90B5F6FF90BEF5FF8FB8F7FF
+        90B5F7FF91B4F6FF91B3F6FF91B3F7FF91B4F7FF90B5F7FF90B7F6FF90BEF7FF
+        90B5F6FF90730000000000000000FFFF00060000000000000000000000000000
+        000000000000FFFF0006FFFF000600000000F5FF8F32F7FF907AF5FF90A1F8FF
+        90AFF6FF90B3F6FF90B3F6FF90B3F6FF90B3F6FF8FB0F6FF8FA2F5FF8F7BF0FF
+        8C3300000000FFFF0006FFFF0006000000000000000000000000000000000000
+        0000000000000000000000000000CCFF990F0000000000000000F9FF8C28F6FF
+        8E6FF7FF8E9AF6FF8FB0F6FF8FB0F7FF919BF6FF8D70F3FF922A000000000000
+        0000CCFF990F0000000000000000000000000000000000000000
+      }
+      Hint = 'Force remote install or upgrade of package'
+      ImageIndex = 2
     end
     object MenuItem53: TMenuItem
       Action = ActPackagesForceInstall
@@ -10723,7 +11074,7 @@ object VisWaptGUI: TVisWaptGUI
   end
   object PopupWUAUpdates: TPopupMenu
     left = 800
-    top = 440
+    top = 512
     object MenuItem58: TMenuItem
       Action = ActWUAAllowSelectedUpdates
     end
@@ -10743,7 +11094,7 @@ object VisWaptGUI: TVisWaptGUI
   end
   object PopupWUAProducts: TPopupMenu
     left = 800
-    top = 376
+    top = 448
     object MenuItem63: TMenuItem
       Action = ActWUAProductAllow
     end
@@ -13837,7 +14188,7 @@ object VisWaptGUI: TVisWaptGUI
   end
   object PopupWUAClassifications: TPopupMenu
     left = 800
-    top = 296
+    top = 368
     object MenuItem103CheckAll: TMenuItem
       Caption = 'Check all'
       Hint = 'Add the WAPT group packages matching the ADS groups of the machines'
@@ -14043,7 +14394,7 @@ object VisWaptGUI: TVisWaptGUI
   object PopupSecRepo: TPopupMenu
     Images = ActionsImages24
     left = 800
-    top = 504
+    top = 576
     object MenuItemSync: TMenuItem
       Caption = 'Sync selected'
       Bitmap.Data = {
@@ -14374,5 +14725,17 @@ object VisWaptGUI: TVisWaptGUI
     OnTimer = TimerSearchHostsTimer
     left = 522
     top = 620
+  end
+  object PopupHostPackagesOverview: TPopupMenu
+    Images = ActionsImages24
+    left = 800
+    top = 640
+    object MenuItem118: TMenuItem
+      Action = ActTriggerPendingActions
+      Caption = 'Apply selected install / remove'
+    end
+    object MenuItem24: TMenuItem
+      Action = ActRefreshHostPackagesOverview
+    end
   end
 end

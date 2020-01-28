@@ -31,6 +31,7 @@ type
     ActEditOrgUnitPackage: TAction;
     ActInstallLicence: TAction;
     ActAddProfile: TAction;
+    ActTriggerPendingActions: TAction;
     ActRefreshHostPackagesOverview: TAction;
     ActTriggerSafeHostUpgrade: TAction;
     ActSuppr: TAction;
@@ -45,14 +46,24 @@ type
     ActNewRule: TAction;
     ActRepositoriesGetUpdateRules: TAction;
     BitBtn1: TBitBtn;
+    ButStatusPackagesAll: TButton;
     cbAdvancedMode: TCheckBox;
+    cbStatusErrors: TCheckBox;
+    cbStatusInstall: TCheckBox;
     cbOverviewStatusRemove: TCheckBox;
     cbOverviewConnected: TCheckBox;
     cbOverviewStatusError: TCheckBox;
+    cbStatusRemove: TCheckBox;
     cbOverviewStatusUpgrade: TCheckBox;
     cbOverviewStatusInstall: TCheckBox;
+    cbStatusUpgrade: TCheckBox;
+    EdSearchStatusPackages: TSearchEdit;
     EdSearchOrgUnits: TSearchEdit;
     GridHostPackagesOverview: TSOGrid;
+    ImgStatusErrors: TImage;
+    ImgStatusUpgrade: TImage;
+    ImgStatusInstall: TImage;
+    ImgStatusRemove: TImage;
     Image5: TImage;
     Image6: TImage;
     Image7: TImage;
@@ -64,18 +75,21 @@ type
     GridRules: TSOGrid;
     MenuItem116: TMenuItem;
     MenuItem117: TMenuItem;
+    MenuItem118: TMenuItem;
+    MenuItem24: TMenuItem;
     MenuItemCheckFiles: TMenuItem;
     MenuItemShowErrors: TMenuItem;
     MenuItemSync: TMenuItem;
     MenuItemSyncForce: TMenuItem;
     panFilterPackagesOverviewStatus: TPanel;
+    panFilterPackagesStatus: TPanel;
     PanTopPackagesOverview: TPanel;
     PanHostDetails: TPanel;
     PanelKBLogs: TPanel;
     PanelRules: TPanel;
     PanelAgentRepos: TPanel;
     PanelRepositories: TPanel;
-    PopupMenu1: TPopupMenu;
+    PopupHostPackagesOverview: TPopupMenu;
     PopupSecRepo: TPopupMenu;
     ActRefreshHostsForPackage: TAction;
     ActTriggerWaptwua_uninstall: TAction;
@@ -415,7 +429,7 @@ type
     PanHostsFilters: TPanel;
     PanTopFilterInventory: TPanel;
     Panel15: TPanel;
-    Panel16: TPanel;
+    PanelHostOverview: TPanel;
     PanFilterGroups: TPanel;
     PanHostsSubFilters: TPanel;
     PanHosts: TPanel;
@@ -731,6 +745,7 @@ type
     procedure ActEnglishExecute(Sender: TObject);
     procedure ActEnglishUpdate(Sender: TObject);
     procedure ActPackagesForgetExecute(Sender: TObject);
+    procedure ActTriggerPendingActionsExecute(Sender: TObject);
     procedure ActFrenchExecute(Sender: TObject);
     procedure ActFrenchUpdate(Sender: TObject);
     procedure ActGotoHostExecute(Sender: TObject);
@@ -775,6 +790,7 @@ type
     procedure ActWUAShowDownloadTasksExecute(Sender: TObject);
     procedure ActWUAShowMSUpdatesHelpExecute(Sender: TObject);
     procedure ApplicationProperties1Exception(Sender: TObject; E: Exception);
+    procedure ButStatusPackagesAllClick(Sender: TObject);
     procedure cbADOUSelect(Sender: TObject);
     procedure cbADSiteSelect(Sender: TObject);
     procedure cbAdvancedModeClick(Sender: TObject);
@@ -851,7 +867,6 @@ type
     procedure GridGroupsSOCompareNodes(Sender: TSOGrid; Node1,
       Node2: ISuperObject; const Columns: array of String; var Result: Integer);
     procedure GridHostPackagesChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
-    procedure GridHostPackagesClick(Sender: TObject);
     procedure GridHostPackagesFocusChanged(Sender: TBaseVirtualTree;
       Node: PVirtualNode; Column: TColumnIndex);
     procedure GridHostPackagesGetImageIndexEx(Sender: TBaseVirtualTree;
@@ -1013,6 +1028,8 @@ type
     procedure ExecuteHostsGruidPlugin(Sender: TObject);
     procedure FillcbADSiteDropDown;
     procedure FillcbGroups;
+    function GetPackagesOverviewForHosts(Hosts: ISuperObject; InstallStatus: String='';
+      ConnectedOnly: Boolean=False): ISuperObject;
     function MaxSeq:Integer;
     procedure FilterDBOrgUnits;
     function FilterHostsForPackage(HostsData: ISuperObject): ISuperObject;
@@ -1098,6 +1115,7 @@ type
     function updateprogress(receiver: TObject; current, total: integer): boolean;
     function TriggerActionOnHosts(uuids: ISuperObject;AAction:String;Args:ISuperObject;title,errortitle:String;Force:Boolean=False;NotifyServer:Boolean=True):ISuperObject;
     procedure TriggerActionOnHostPackages(APackagesStatusGrid:TSOGrid;HostUUIDs:ISuperObject;AAction, title, errortitle: String;Force:Boolean=False);
+    procedure TriggerPendingActions(APackagesStatusGrid:TSOGrid;title,errortitle:String;Force:Boolean=False);
     function DownloadPackage(RepoUrl, Filename: String): Variant;
 
     property IsEnterpriseEdition:Boolean read GetIsEnterpriseEdition write SetIsEnterpriseEdition;
@@ -1869,7 +1887,7 @@ begin
   else
     RowSO := Gridhosts.FocusedRow;
 
-  if (RowSO <> nil) then
+  if (RowSO <> nil) and (GridHosts.SelectedCount=1) then
   begin
     currhost := UTF8Encode(RowSO.S['uuid']);
 
@@ -2032,6 +2050,9 @@ begin
     GridHostTasksPending.Data := nil;
     GridHostTasksDone.Data := nil;
     GridHostTasksErrors.Data := nil;
+
+    If HostPages.ActivePage = pgPackages then
+      GridHostPackages.Data := GetPackagesOverviewForHosts(ExtractField(GridHosts.SelectedRows,'uuid'));
   end;
 end;
 
@@ -2590,6 +2611,28 @@ begin
     ActPackagesUpdate.Execute;
 end;
 
+function TVisWaptGUI.GetPackagesOverviewForHosts(Hosts:ISuperObject;InstallStatus:String='';ConnectedOnly:Boolean=False):ISuperObject;
+var
+  HostPackagesStatus,Args : ISuperObject;
+begin
+  try
+    Args := SO();
+    Args.I['limit'] := HostsLimit;
+    Args['host_uuids'] := Hosts;
+    if ConnectedOnly then
+      Args.I['reachable'] := 1;
+    If InstallStatus<>'' then
+       Args.S['install_status'] := InstallStatus;
+
+    HostPackagesStatus := WAPTServerJsonPost('api/v3/packages_for_hosts',[],Args);
+    if HostPackagesStatus.B['success'] then
+      Result := HostPackagesStatus['result']
+    else
+      Result := Nil;
+  finally
+  end
+end;
+
 procedure TVisWaptGUI.ActRefreshHostPackagesOverviewExecute(Sender: TObject);
 var
   PackagesStatusForHostsData,HostPackagesStatus,Args : ISuperObject;
@@ -2597,15 +2640,6 @@ var
 begin
   try
     Screen.Cursor := crHourGlass;
-
-    Args := SO();
-    Args.I['limit'] := HostsLimit;
-    Args['host_uuids'] := ExtractField(GridHosts.SelectedRows,'uuid');
-    if cbOverviewConnected.Checked then
-      Args.I['reachable'] := 1;
-    if cbOverviewConnected.Checked then
-      Args.I['reachable'] := 1;
-
     InstallStatus:='';
     if cbOverviewStatusError.Checked then
       InstallStatus:=InstallStatus+','+'ERROR';
@@ -2616,14 +2650,10 @@ begin
     if cbOverviewStatusRemove.Checked then
       InstallStatus:=InstallStatus+','+'NEED-REMOVE';
     If InstallStatus<>'' then
-       Args.S['install_status'] := Copy(InstallStatus,2,length(InstallStatus)-1);
+       InstallStatus := Copy(InstallStatus,2,length(InstallStatus)-1);
 
-    HostPackagesStatus := WAPTServerJsonPost('api/v3/packages_for_hosts',[],Args);
-    if HostPackagesStatus.B['success'] then
-      PackagesStatusForHostsData := HostPackagesStatus['result']
-    else
-      PackagesStatusForHostsData := Nil;
-    GridHostPackagesOverview.Data := PackagesStatusForHostsData; //FilterHostsForPackage(HostsForPackageData);
+    GridHostPackagesOverview.Data := GetPackagesOverviewForHosts(ExtractField(GridHosts.SelectedRows,'uuid'),InstallStatus,cbReachable.Checked);
+        //FilterHostsForPackage(HostsForPackageData);
   finally
     Screen.Cursor := crDefault;
   end
@@ -3334,6 +3364,103 @@ begin
   Result := TSuperObject.Create(stArray);
   for s in A do
     Result.AsArray.Add(s);
+end;
+
+function MergeSOArrays(A,B:ISuperObject):ISuperObject;
+var
+  item,itemA:ISuperObject;
+  DoAppend: Boolean;
+begin
+  result := A.Clone;
+  for item in B do
+  begin
+    DoAppend := True;
+    for itemA in result do
+      if itemA.Compare(item) = cpEqu then
+      begin
+        DoAppend := False;
+        break;
+      end;
+    if DoAppend then
+      result.AsArray.Add(item);
+  end;
+end;
+
+procedure TVisWaptGUI.TriggerPendingActions(APackagesStatusGrid:TSOGrid;title,errortitle:String;Force:Boolean=False);
+var
+  sel : ISuperObject;
+  PackageStatus, SOAction, SOActions,res,HostUUID:ISuperObject;
+  AAction,PackageReq,actions_json,
+  signed_actions_json:String;
+  VPrivateKeyPassword:Variant;
+begin
+  if APackagesStatusGrid.Focused then
+  begin
+    sel := APackagesStatusGrid.SelectedRows;
+    if Dialogs.MessageDlg(
+       rsConfirmCaption,
+       format(title, [IntToStr(sel.AsArray.Length)]),
+       mtConfirmation,
+       mbYesNoCancel,
+       0) = mrYes then
+    begin
+      try
+        SOActions := TSuperObject.Create(stArray);
+        // create one signed action per host / package / install_status
+        for PackageStatus in sel do
+        begin
+          case PackageStatus.S['install_status'] of
+            'OK','NEED-INSTALL': begin AAction := 'trigger_install_packages';PackageReq := Format('%s(=%s)',[PackageStatus.S['package'],PackageStatus.S['version']]); end;
+            'ERROR','NEED-UPGRADE': begin AAction := 'trigger_install_packages';PackageReq := PackageStatus.S['package']; end;
+            'NEED-REMOVE': begin AAction := 'trigger_remove_packages';PackageReq := PackageStatus.S['package']; end;
+          else
+            AAction := '';
+          end;
+
+          if (AAction<> '') and (PackageStatus['host_uuids']<>Nil) then
+            for HostUUID in PackageStatus['host_uuids'] do
+            begin
+              SOAction := SO();
+              SOAction.S['action'] := AAction;
+              SOAction['uuid'] := HostUUID;
+              SOAction.B['notify_server'] := True;
+              SOAction.B['force'] := Force;
+              SOAction['packages'] := SA([PackageReq]);
+              SOActions.AsArray.Add(SOAction);
+            end;
+        end;
+
+        if SOActions.AsArray.Length>0 then
+        begin
+          //transfer actions as json string to python
+          actions_json := UTF8Encode(SOActions.AsString);
+
+          VPrivateKeyPassword := PyUTF8Decode(dmpython.privateKeyPassword);
+
+          signed_actions_json := VarPythonAsString(DMPython.waptdevutils.sign_actions(
+              actions:=actions_json,
+              sign_certs := DMPython.WAPT.personal_certificate('--noarg--'),
+              sign_key := DMPython.WAPT.private_key(private_key_password := VPrivateKeyPassword)));
+          SOActions := SO(signed_actions_json);
+
+          res := WAPTServerJsonPost('/api/v3/trigger_host_action?timeout=%D',[waptservice_timeout],SOActions);
+          if (res<>Nil) and res.AsObject.Exists('success') then
+          begin
+            MemoLog.Append(UTF8Encode(res.AsString));
+            if res.AsObject.Exists('msg') then
+              ShowMessage(UTF8Encode(res.S['msg']));
+          end
+          else
+            if not res.B['success'] or (res['result'].A['errors'].Length>0) then
+              Raise Exception.Create(UTF8Encode(res.S['msg']));
+        end
+      except
+        on E:Exception do
+          ShowMessage(Format(errortitle,
+              [e.Message]));
+      end;
+    end;
+  end;
 end;
 
 
@@ -4237,6 +4364,15 @@ begin
   MessageDlg('Error in application',E.Message,mtError,[mbOK],'');
 end;
 
+procedure TVisWaptGUI.ButStatusPackagesAllClick(Sender: TObject);
+begin
+  EdSearchStatusPackages.Text:='';
+  cbStatusErrors.Checked:=False;
+  cbStatusInstall.Checked:=False;
+  cbStatusRemove.Checked:=False;
+  cbStatusUpgrade.Checked:=False;
+end;
+
 
 procedure TVisWaptGUI.cbAdvancedSearchClick(Sender: TObject);
 begin
@@ -4883,7 +5019,7 @@ end;
 procedure TVisWaptGUI.GridHostPackagesChange(Sender: TBaseVirtualTree;
   Node: PVirtualNode);
 begin
-  if GridHostPackages.SelectedCount>=1 then
+  if GridHostPackages.SelectedCount=1 then
   begin
     if IsEnterpriseEdition and (GridHostPackages.FocusedColumnObject.PropertyName = 'last_audit_status') then
     begin
@@ -4901,33 +5037,13 @@ begin
     MemoInstallOutput.ScrollBy(0, 65535);
     Panel5.Show;
     Splitter4.Show;
-    Splitter4.AnchorParallel(akBottom,0,pgPackages);
+    //Splitter4.AnchorParallel(akBottom,0,pgPackages);
   end
   else
   begin
     LabInstallLogTitle.Caption := '';
     MemoInstallOutput.Clear;
-    if AutoHidePanels then
-    begin
-      Panel5.Hide;
-      Splitter4.Hide;
-    end;
-  end;
-end;
-
-procedure TVisWaptGUI.GridHostPackagesClick(Sender: TObject);
-begin
-  if GridHostPackages.SelectedCount>=1 then
-  begin
-    Panel5.Show;
-    Splitter4.Show;
-    Splitter4.AnchorParallel(akBottom,0,pgPackages);
-  end
-  else
-  begin
-    LabInstallLogTitle.Caption := '';
-    MemoInstallOutput.Clear;
-    if AutoHidePanels then
+    if AutoHidePanels and (GridHostPackages.SelectedCount=0) then
     begin
       Panel5.Hide;
       Splitter4.Hide;
@@ -6008,6 +6124,12 @@ begin
    PanLog.Visible:=Assigned(agrid.FocusedRow);
    SplitHostTaskLog.Visible:=Assigned(agrid.FocusedRow);
 end;
+
+procedure TVisWaptGUI.ActTriggerPendingActionsExecute(Sender: TObject);
+begin
+  TriggerPendingActions(GridHostPackagesOverview,rsConfirmPendingActions,rsPendingActionsError);
+end;
+
 
 {$ifdef ENTERPRISE}
 {$include ..\waptenterprise\includes\uwaptconsole.inc}
