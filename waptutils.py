@@ -1551,15 +1551,18 @@ def makepath(*p):
     'C:\\Program Files'
     """
     parts = []
-    for part in p:
-        # workaround for bad designed functions
-        if hasattr(part,'__call__'):
-            part = part()
-        part = part.lstrip(os.path.sep)
-        if part.endswith(':'):
-            part += os.path.sep
-        parts.append(part)
-    return os.path.join(*parts)
+    if platform.system == 'Windows':
+        for part in p:
+            # workaround for bad designed functions
+            if hasattr(part,'__call__'):
+                part = part()
+            part = part.lstrip(os.path.sep)
+            if part.endswith(':'):
+                part += os.path.sep
+            parts.append(part)
+        return os.path.join(*parts)
+    else:
+        return os.path.join(*p)
 
 def killtree(pid, including_parent=True):
     try:

@@ -40,7 +40,6 @@ import datetime
 import platform
 from waptutils import (ensure_unicode, makepath, ensure_dir,currentdate,currentdatetime,_lower,ini2winstr,error,get_main_ip)
 
-
 def get_kernel_version():
     return os.uname()[2]
 

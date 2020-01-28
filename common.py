@@ -2615,8 +2615,8 @@ class Wapt(BaseObjectClass):
         try:
             self.wapt_base_dir = os.path.abspath(os.path.dirname(__file__))
         except NameError:
-            self.wapt_base_dir = os.getcwdu()
-
+            dir_wapt = os.getcwdu()
+            self.wapt_base_dir = dir_wapt if not(dir_wapt.endswith('waptservice')) else os.path.abspath(os.path.join(dir_wapt, os.pardir))
         self.private_dir = os.path.join(self.wapt_base_dir,'private')
         self.persistent_root_dir = os.path.join(self.wapt_base_dir,'private','persistent')
         self.token_lifetime = 24*60*60

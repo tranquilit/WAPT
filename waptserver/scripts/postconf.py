@@ -293,8 +293,7 @@ def setup_firewall():
         output = run('firewall-cmd --list-ports')
         if '443/tcp' in output and '80/tcp' in output:
             print("[*] Firewall already configured, skipping firewalld configuration")
-            return
-        if subprocess.call(['firewall-cmd', '--state'], stdout=open(os.devnull, 'w')) == 0:
+        elif subprocess.call(['firewall-cmd', '--state'], stdout=open(os.devnull, 'w')) == 0:
             run('firewall-cmd --permanent --add-port=443/tcp')
             run('firewall-cmd --permanent --add-port=80/tcp')
             run('firewall-cmd --reload')
