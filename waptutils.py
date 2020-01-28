@@ -1551,7 +1551,7 @@ def makepath(*p):
     'C:\\Program Files'
     """
     parts = []
-    if platform.system == 'Windows':
+    if platform.system() == 'Windows':
         for part in p:
             # workaround for bad designed functions
             if hasattr(part,'__call__'):
