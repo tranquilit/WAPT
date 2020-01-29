@@ -1508,6 +1508,10 @@ msgctxt "tvisimportpackage.gridexternalpackages.header.columns[21].text"
 msgid "Name"
 msgstr "Nom"
 
+#: tvisimportpackage.gridexternalpackages.header.columns[21].text
+msgid "Target OS"
+msgstr "OS Cible"
+
 #: tvisimportpackage.gridexternalpackages.header.columns[2].text
 msgctxt "tvisimportpackage.gridexternalpackages.header.columns[2].text"
 msgid "Version"
@@ -2915,7 +2919,6 @@ msgid "Refresh host inventory"
 msgstr "Actualiser l'inventaire des postes"
 
 #: tviswaptgui.actrefreshhostpackagesoverview.caption
-#, fuzzy
 msgctxt "tviswaptgui.actrefreshhostpackagesoverview.caption"
 msgid "Refresh"
 msgstr "Actualiser"

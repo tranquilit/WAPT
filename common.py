@@ -2971,6 +2971,10 @@ class Wapt(BaseObjectClass):
         if self.config.has_option('global','host_ad_site'):
             self.host_ad_site = self.config.get('global','host_ad_site')
 
+        self.editor_for_packages = None
+        if self.config.has_option('global','editor_for_packages'):
+            self.editor_for_packages = self.config.get('global','editor_for_packages')
+
         # clear host key cache
         self._host_key = None
 
@@ -7439,7 +7443,7 @@ def run_as_administrator(afile,params=None):
         lpParameters=params)
     return ret
 
-def wapt_sources_edit(wapt_sources_dir):
+def wapt_sources_edit(wapt_sources_dir,editor_for_packages = None):
     """Utility to open Pyscripter with package source if it is installed
         else open the development directory in Shell Explorer.
 
@@ -7474,7 +7478,10 @@ def wapt_sources_edit(wapt_sources_dir):
         else:
             os.startfile(wapt_sources_dir)
     else:
-        if whichcraft.which('nano'):
+        if editor_for_packages is not None and whichcraft.which(editor_for_packages):
+            command = [editor_for_packages, setup_filename]
+            subprocess.call(command)
+        elif whichcraft.which('nano'):
             command = ['nano', setup_filename]
             subprocess.call(command)
         elif whichcraft.which('vim'):

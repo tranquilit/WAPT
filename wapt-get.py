@@ -885,7 +885,7 @@ def main():
                     sys.exit(1)
                 result = mywapt.get_sources(args[1])
                 os.startfile(result)
-                common.wapt_sources_edit(result)
+                common.wapt_sources_edit(result,mywapt.editor_for_packages)
 
             elif action == 'update-package-sources':
                 if len(args) < 2:
@@ -902,7 +902,7 @@ def main():
                 else:
                     print(u"Packages updated :\n%s" % ' '.join(result))
                     if len(result) == 1:
-                        common.wapt_sources_edit(result[0])
+                        common.wapt_sources_edit(result[0],mywapt.editor_for_packages)
 
             elif action == 'make-template':
                 if len(args) < 2:
@@ -921,7 +921,7 @@ def main():
                     print(u"Template created. You can build the WAPT package by launching\n  %s build-package %s" % (sys.argv[0],result))
                     if mywapt.upload_cmd or mywapt.waptserver:
                         print(u"You can build and upload the WAPT package by launching\n  %s build-upload %s" % (sys.argv[0],result))
-                    common.wapt_sources_edit(result)
+                    common.wapt_sources_edit(result,mywapt.editor_for_packages)
 
             elif action in ('make-host-template','make-group-template'):
                 if action == 'make-host-template':
@@ -934,7 +934,7 @@ def main():
                     print(u"Template created. You can build the WAPT package by launching\n  %s build-package %s" % (sys.argv[0],result.sourcespath))
                     if mywapt.upload_cmd or mywapt.waptserver:
                         print(u"You can build and upload the WAPT package by launching\n  %s build-upload %s" % (sys.argv[0],result.sourcespath))
-                    common.wapt_sources_edit(result.sourcespath)
+                    common.wapt_sources_edit(result.sourcespath,mywapt.editor_for_packages)
 
             elif action == 'duplicate':
                 if len(args) < 3:
@@ -948,7 +948,7 @@ def main():
                         print(u"Package duplicated. You can build the new WAPT package by launching\n  %s build-package %s" % (sys.argv[0],result.sourcespath))
                         if mywapt.upload_cmd or mywapt.waptserver:
                             print(u"You can build and upload the new WAPT package by launching\n  %s build-upload %s" % (sys.argv[0],result.sourcespath))
-                        common.wapt_sources_edit(result.sourcespath)
+                        common.wapt_sources_edit(result.sourcespath,mywapt.editor_for_packages)
                     else:
                         print(u"Package duplicated. You can upload the new WAPT package to repository by launching\n  %s upload-package %s" % (sys.argv[0],result.sourcespath))
                         print(u"You can rebuild and upload the new WAPT package by launching\n  %s build-upload %s" % (sys.argv[0],result.sourcespath))
@@ -966,7 +966,7 @@ def main():
                     jsonresult['result'] = result
                 else:
                     if os.path.isdir(result.sourcespath):
-                        common.wapt_sources_edit(result.sourcespath)
+                        common.wapt_sources_edit(result.sourcespath,mywapt.editor_for_packages)
                         if mywapt.upload_cmd or mywapt.waptserver:
                             print(u"Package edited. You can build and upload the new WAPT package by launching\n  %s -i build-upload %s" % (sys.argv[0],result.sourcespath))
                         else:
@@ -985,7 +985,7 @@ def main():
                     jsonresult['result'] = result
                 else:
                     if os.path.isdir(result.sourcespath):
-                        common.wapt_sources_edit(result.sourcespath)
+                        common.wapt_sources_edit(result.sourcespath,mywapt.editor_for_packages)
                         if mywapt.upload_cmd or mywapt.waptserver:
                             print(u"Package edited. You can build and upload the new WAPT package by launching\n  %s -i build-upload %s" % (sys.argv[0],result.sourcespath))
                         else:

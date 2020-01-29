@@ -1488,6 +1488,10 @@ msgctxt "tvisimportpackage.gridexternalpackages.header.columns[21].text"
 msgid "Name"
 msgstr ""
 
+#: tvisimportpackage.gridexternalpackages.header.columns[21].text
+msgid "Target OS"
+msgstr ""
+
 #: tvisimportpackage.gridexternalpackages.header.columns[2].text
 msgctxt "tvisimportpackage.gridexternalpackages.header.columns[2].text"
 msgid "Version"
