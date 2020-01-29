@@ -5469,19 +5469,20 @@ class Wapt(BaseObjectClass):
                 urladdhost = 'add_host'
             else:
                 urladdhost = 'add_host_kerberos'
+            signature = self.sign_host_content(data)
             try:
                 result = self.waptserver.post(urladdhost,
                     data = data ,
-                    signature = self.sign_host_content(data),
+                    signature = signature,
                     signer = self.get_host_certificate().cn
                     )
             except requests.HTTPError as e:
-                if e.response.status_code == 400: # could be a bad certificate error, so retry without client side cert
+                if e.response.status_code in (400,401): # could be a bad certificate error, so retry without client side cert
                     # retry without ssl client auth
                     result = self.waptserver.post(urladdhost,
                         data = data ,
-                        signature = self.sign_host_content(data),
-                        signer = self.get_host_certificate().cn ,
+                        signature = signature,
+                        signer = self.get_host_certificate().cn,
                         use_ssl_auth = False
                         )
                 else:
@@ -5500,6 +5501,8 @@ class Wapt(BaseObjectClass):
                     new_host_cert = SSLCertificate(crt_string=result_data['host_certificate'])
                     logger.info('Got signed certificate from server. Issuer: %s. CN: %s' % (new_host_cert.issuer_cn,new_host_cert.cn))
                     if new_host_cert.cn == self.host_uuid and new_host_cert.match_key(self.get_host_key()):
+                        # be sure we have on disk the current host key.
+                        self.get_host_key().save_as_pem(filename = self.get_host_key_filename())
                         new_host_cert.save_as_pem(self.get_host_certificate_filename())
                         self._host_certificate = None
                         self._host_certificate_timestamp = None
