@@ -431,19 +431,21 @@ def register_host():
             data['last_seen_on'] = datetime2isodate()
 
             # sign the CSR if present
-            valid_auth = auth_result and auth_result['auth_method'] in ['admin','passwd','ldap','kerb']
+            valid_auth = authenticated_user is not None # auth_result and auth_result['auth_method'] in ['admin','passwd','ldap','kerb']
             if 'host_certificate_signing_request' in data and valid_auth:
                 host_certificate_csr = SSLCertificateSigningRequest(csr_pem_string=data['host_certificate_signing_request'])
                 if host_certificate_csr.cn.lower() == computer_fqdn.lower() or host_certificate_csr.cn.lower() == uuid.lower():
-                    host_cert = sign_host_csr(host_certificate_csr)
+                    logger.info(u'Authenticated user: %s , Registration auth user: %s Issuing a signed certificate for %s' % (authenticated_user,registration_auth_user,host_certificate_csr.cn))
+                    signed_host_cert = sign_host_csr(host_certificate_csr)
+                    data['host_certificate'] = signed_host_cert.as_pem()
                 else:
-                    host_cert = None
-                # return back signed host certificate
-                data['host_certificate'] = host_cert.as_pem()
+                    logger.warning(u'Authenticated user: %s , Registration auth user %s asking a signed certificate for %s but registering as %s or %s. Refused.' % (authenticated_user,registration_auth_user,host_certificate_csr.cn,computer_fqdn,uuid))
+
                 if registration_auth_user:
                     data['registration_auth_user'] = registration_auth_user
 
             db_data = update_host_data(data,app.conf)
+            # return back signed host certificate
             if 'host_certificate_signing_request' in data and valid_auth:
                 db_data['host_certificate'] = data['host_certificate']
 
