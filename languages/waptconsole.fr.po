@@ -205,6 +205,7 @@ msgid "Maturity"
 msgstr "Maturité"
 
 #: tfrmhostpackages.gridhostpackages.header.columns[25].text
+msgctxt "tfrmhostpackages.gridhostpackages.header.columns[25].text"
 msgid "Audited on"
 msgstr "Audité le"
 
@@ -1453,6 +1454,7 @@ msgid "Maturity"
 msgstr "Maturité"
 
 #: tvisimportpackage.gridexternalpackages.header.columns[12].text
+msgctxt "tvisimportpackage.gridexternalpackages.header.columns[12].text"
 msgid "Signer"
 msgstr "Signataire"
 
@@ -1542,6 +1544,7 @@ msgid "Dependencies"
 msgstr "Dépendances"
 
 #: tvisimportpackage.gridexternalpackages.header.columns[9].text
+msgctxt "tvisimportpackage.gridexternalpackages.header.columns[9].text"
 msgid "Size"
 msgstr "Taille"
 
@@ -2607,6 +2610,7 @@ msgid "Advanced"
 msgstr "Avancé"
 
 #: tviswaptconfig.pgbase.caption
+msgctxt "tviswaptconfig.pgbase.caption"
 msgid "Base"
 msgstr "Basique"
 
@@ -3285,6 +3289,12 @@ msgstr "Créer un paquet de règles self-service"
 msgid "Download index and missing cabs from Microsoft Web site"
 msgstr "Télécharger l'index et les cabs manquants depuis le site de MS"
 
+#: tviswaptgui.butoverviewstatuspackagesall.caption
+
+msgctxt "tviswaptgui.butoverviewstatuspackagesall.caption"
+msgid "All"
+msgstr "Tout"
+
 #: tviswaptgui.butstatuspackagesall.caption
 msgctxt "tviswaptgui.butstatuspackagesall.caption"
 msgid "All"
@@ -3401,14 +3411,41 @@ msgctxt "tviswaptgui.cbnewestonlywua.caption"
 msgid "Last version only"
 msgstr "Dernière version seulement"
 
-#: tviswaptgui.cboverviewconnected.caption
-msgctxt "tviswaptgui.cboverviewconnected.caption"
-msgid "Connected only"
-msgstr "Connectés seulement"
+#: tviswaptgui.cboverviewsectionbase.caption
 
-#: tviswaptgui.cboverviewstatuserror.caption
-#, fuzzy
-msgctxt "tviswaptgui.cboverviewstatuserror.caption"
+msgctxt "tviswaptgui.cboverviewsectionbase.caption"
+msgid "Base"
+msgstr "Base"
+
+#: tviswaptgui.cboverviewsectiongroup.caption
+msgid "Group"
+msgstr "Groupe"
+
+#: tviswaptgui.cboverviewsectionhost.caption
+
+msgctxt "tviswaptgui.cboverviewsectionhost.caption"
+msgid "Host"
+msgstr "Machine"
+
+#: tviswaptgui.cboverviewsectionprofile.caption
+msgid "Profiles"
+msgstr "Profiles"
+
+#: tviswaptgui.cboverviewsectionselfservice.caption
+msgid "Self-service"
+msgstr "Self-Service"
+
+#: tviswaptgui.cboverviewsectionunit.caption
+msgid "Unit"
+msgstr "Unité Org"
+
+#: tviswaptgui.cboverviewsectionwsus.caption
+msgid "Updates"
+msgstr "Mises à jour"
+
+#: tviswaptgui.cboverviewstatuserrors.caption
+
+msgctxt "tviswaptgui.cboverviewstatuserrors.caption"
 msgid "Errors"
 msgstr "Erreurs"
 
@@ -3541,6 +3578,11 @@ msgstr "En attente"
 msgctxt "tviswaptgui.cbwucritical.caption"
 msgid "Critical only"
 msgstr "Critiques seulement"
+
+#: tviswaptgui.edoverviewsearchhostpackages.hint
+msgctxt "tviswaptgui.edoverviewsearchhostpackages.hint"
+msgid "Regular expressions allowed"
+msgstr "Expressions régulières autorisées"
 
 #: tviswaptgui.edrun.text
 msgid "mywapt.update()"
@@ -5023,9 +5065,10 @@ msgid "repo"
 msgstr "Dépôt"
 
 #: tviswaptgui.gridpackages.header.columns[39].text
+
 msgctxt "tviswaptgui.gridpackages.header.columns[39].text"
-msgid "target_os"
-msgstr "OS cible"
+msgid "localpath"
+msgstr "Chemin local"
 
 #: tviswaptgui.gridpackages.header.columns[3].text
 msgctxt "tviswaptgui.gridpackages.header.columns[3].text"
@@ -5033,22 +5076,20 @@ msgid "Version"
 msgstr "Version"
 
 #: tviswaptgui.gridpackages.header.columns[40].text
-msgctxt "tviswaptgui.gridpackages.header.columns[40].text"
-msgid "localpath"
-msgstr "Chemin local"
 
-#: tviswaptgui.gridpackages.header.columns[41].text
-msgctxt "tviswaptgui.gridpackages.header.columns[41].text"
+msgctxt "tviswaptgui.gridpackages.header.columns[40].text"
 msgid "homepage"
 msgstr "Page d'accueil"
 
-#: tviswaptgui.gridpackages.header.columns[42].text
-msgctxt "tviswaptgui.gridpackages.header.columns[42].text"
-msgid "sourcespath"
-msgstr "Chemin des sources"
+#: tviswaptgui.gridpackages.header.columns[41].text
 
-#: tviswaptgui.gridpackages.header.columns[43].text
-msgctxt "tviswaptgui.gridpackages.header.columns[43].text"
+msgctxt "tviswaptgui.gridpackages.header.columns[41].text"
+msgid "sourcespath"
+msgstr "Chemin sources"
+
+#: tviswaptgui.gridpackages.header.columns[42].text
+
+msgctxt "tviswaptgui.gridpackages.header.columns[42].text"
 msgid "Categories"
 msgstr "Catégories"
 
@@ -5510,9 +5551,10 @@ msgid "md5sum"
 msgstr "Somme MD5"
 
 #: tviswaptgui.gridwuapackages.header.columns[22].text
+
 msgctxt "tviswaptgui.gridwuapackages.header.columns[22].text"
 msgid "description_pl"
-msgstr ""
+msgstr "Description polonaise"
 
 #: tviswaptgui.gridwuapackages.header.columns[23].text
 msgctxt "tviswaptgui.gridwuapackages.header.columns[23].text"
@@ -5820,6 +5862,10 @@ msgctxt "tviswaptgui.label12.caption"
 msgid "Last task"
 msgstr "Dernière tâche"
 
+#: tviswaptgui.label13.caption
+msgid "Installation status"
+msgstr "Statuts d'installation"
+
 #: tviswaptgui.label14.caption
 msgctxt "tviswaptgui.label14.caption"
 msgid "Filter : "
@@ -5829,6 +5875,10 @@ msgstr "Filtre :"
 msgctxt "tviswaptgui.label15.caption"
 msgid "WAPT Groups"
 msgstr "Groupes WAPT"
+
+#: tviswaptgui.label16.caption
+msgid "Types :"
+msgstr "Types :"
 
 #: tviswaptgui.label17.caption
 msgctxt "tviswaptgui.label17.caption"

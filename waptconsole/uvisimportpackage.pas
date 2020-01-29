@@ -444,21 +444,10 @@ end;
 procedure TVisImportPackage.ActSearchExternalPackageExecute(Sender: TObject);
 var
   prefix,expr: String;
-  http_proxy,packages_python,verify_cert,myrepo,RequestFilter: Variant;
+  TemplatesRepoName,packages_python,myrepo,RequestFilter: Variant;
 
 begin
   EdSearchPackage.Modified:=False;
-  http_proxy := Waptrepo.HttpProxy;
-  if (Waptrepo.ServerCABundle='') or (Waptrepo.ServerCABundle='0') or (LowerCase(Waptrepo.ServerCABundle)='false') then
-    verify_cert:=False
-  else if (Waptrepo.ServerCABundle='1') or (LowerCase(Waptrepo.ServerCABundle)='true') then
-    verify_cert:=CARoot()
-  else
-    verify_cert:=Waptrepo.ServerCABundle;
-
-  if http_proxy = '' then
-    http_proxy := None;
-
   if Waptrepo.RepoURL <>'' then
   try
     try
@@ -476,19 +465,18 @@ begin
         prefix := '';
       end;
 
+      TemplatesRepoName := Waptrepo.Name;
       RequestFilter := GetRequestFilter;
 
       packages_python := DMPython.waptdevutils.update_external_repo(
-        repourl := Waptrepo.RepoURL,
+        config_filename := WaptIniFilename,
+        repo_name := TemplatesRepoName,
         search_string := expr,
-        proxy := http_proxy,
         myrepo := myrepo,
         my_prefix := prefix,
         newer_only := cbNewerThanMine.Checked,
         newest_only := cbNewestOnly.Checked,
-        verify_cert := verify_cert,
         description_locale := Language,
-        timeout := Waptrepo.timeout,
         package_request := RequestFilter);
 
       GridExternalPackages.Data := PyVarToSuperObject(packages_python);

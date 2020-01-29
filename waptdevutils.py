@@ -187,16 +187,17 @@ def diff_computer_wapt_ad(wapt,wapt_server_user='admin',wapt_server_passwd=None)
     return result
 
 
-def update_external_repo(repourl,search_string,proxy=None,myrepo=None,my_prefix='',newer_only=False,newest_only=False,
+def update_external_repo(config_filename,repo_name='wapt-templates',search_string='',
+    myrepo=None, my_prefix='',newer_only=False,newest_only=False,
     package_request=None,
-    verify_cert=True,repo_name='wapt-templates',description_locale=None,timeout=30):
+    description_locale=None):
     """Get a list of entries from external templates public repository matching search_string
     >>> firefox = update_tis_repo(r"c:\users\htouvet\AppData\Local\waptconsole\waptconsole.ini","tis-firefox-esr")
     >>> isinstance(firefox,list) and firefox[-1].package == 'tis-firefox-esr'
     True
     """
-    repo = WaptRemoteRepo(url=repourl,http_proxy=proxy,name=repo_name,timeout=timeout)
-
+    repo = WaptRemoteRepo(name=repo_name)
+    repo.load_config_from_file(config_filename,section=repo_name)
     try:
         import waptconsole
         progress_hook = waptconsole.UpdateProgress
@@ -209,14 +210,13 @@ def update_external_repo(repourl,search_string,proxy=None,myrepo=None,my_prefix=
                 if not msg:
                     msg='Done'
                 print("%s%s"%(msg,' '*(80-len(msg))))
+        def private_key_callback(location,identity):
+            raise Exception(u'A password is required for private key %s when accessing %s' % (identity,location))
+
         progress_hook = print_progress
-        private_key_password_callback = None
+        private_key_password_callback = private_key_callback
 
     repo.private_key_password_callback = private_key_password_callback
-
-    if verify_cert == '' or verify_cert == '0':
-        verify_cert = False
-    repo.verify_cert = verify_cert
     packages = repo.search(search_string,newest_only=newest_only,description_locale=description_locale,package_request=package_request)
     if newer_only and myrepo:
         result = []
@@ -275,11 +275,27 @@ def get_packages_filenames(packages,with_depends=True,waptconfigfile=None,repo_n
         'verify_cert':'0',
         }
 
+    try:
+        import waptconsole
+        progress_hook = waptconsole.UpdateProgress
+        private_key_password_callback = waptconsole.GetPrivateKeyPassword
+    except ImportError as e:
+        def print_progress(show=False,n=0,max=100,msg=''):
+            if show:
+                print('%s %s/%s\r' % (msg,n,max),end='')
+            else:
+                if not msg:
+                    msg='Done'
+                print("%s%s"%(msg,' '*(80-len(msg))))
+        progress_hook = print_progress
+        private_key_password_callback = None
+
     if remoterepo is None:
         config = RawConfigParser(defaults=defaults)
         config.read(waptconfigfile)
 
         remoterepo = WaptRemoteRepo(name=repo_name,config=config)
+        remoterepo.private_key_password_callback = private_key_password_callback
         remoterepo.update()
 
     if privaterepo is None and waptconfigfile:
@@ -287,6 +303,7 @@ def get_packages_filenames(packages,with_depends=True,waptconfigfile=None,repo_n
         config.read(waptconfigfile)
 
         privaterepo = WaptRemoteRepo(name='wapt',config=config)
+        privaterepo.private_key_password_callback = private_key_password_callback
         privaterepo.update()
 
     if package_request is not None and isinstance(package_request,dict):
