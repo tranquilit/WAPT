@@ -1805,6 +1805,19 @@ class WaptServer(BaseObjectClass):
                         auth=self.auth(action=action),
                         allow_redirects=True)
 
+                # if ssl auth has issue, retry without ssl_auth
+                if req.status_code == 400 and use_ssl_auth:
+                    with self.get_requests_session(surl,use_ssl_auth=False) as session2:
+                        req = session2.get("%s/%s" % (surl,action),
+                            timeout=timeout or self.timeout,
+                            auth=auth,
+                            allow_redirects=True)
+                        if req.status_code == 401:
+                            req = session2.get("%s/%s" % (surl,action),
+                                timeout=timeout or self.timeout,
+                                auth=self.auth(action=action),
+                                allow_redirects=True)
+
                 req.raise_for_status()
                 if req.headers.get('X-Remote-IP') and self.capture_external_ip_callback:
                     self.capture_external_ip_callback(req.headers['X-Remote-IP'])
@@ -1948,6 +1961,19 @@ class WaptServer(BaseObjectClass):
                             timeout=self.timeout,
                             auth=self.auth(action='ping'),
                             allow_redirects=True)
+                    # try without ssl_auth (self signed client cert)
+                    if req.status_code == 400:
+                        with self.get_requests_session(use_ssl_auth=False) as session2:
+                            req = session2.head("%s/ping" % (self.server_url),
+                                timeout=self.timeout,
+                                auth=self.auth(action='ping'),
+                                allow_redirects=True)
+                        if req.status_code == 401:
+                            req = session2.head("%s/ping" % (self.server_url),
+                                timeout=self.timeout,
+                                auth=self.auth(action='ping'),
+                                allow_redirects=True)
+
                     req.raise_for_status()
                     return True
                 except Exception as e:
@@ -5830,6 +5856,7 @@ class Wapt(BaseObjectClass):
         """
         result = None
         sys.stdout.flush()
+        try_register = False
         if self.waptserver_available():
             # avoid sending data to the server if it has not been updated.
             try:
@@ -5860,6 +5887,14 @@ class Wapt(BaseObjectClass):
                 else:
                     logger.info(u'Error updating Status on server %s: %s' % (self.waptserver.server_url,result and result['msg'] or 'No message'))
 
+            except requests.HTTPError as e:
+                logger.warning(u'Unable to update server status : %s' % ensure_unicode(e))
+                logger.debug(traceback.format_exc())
+                if e.response.status_code in (400,401):
+                    try_register = True
+                else:
+                    raise e
+
             except Exception as e:
                 logger.warning(u'Unable to update server status : %s' % ensure_unicode(e))
                 logger.debug(traceback.format_exc())
@@ -5867,8 +5902,11 @@ class Wapt(BaseObjectClass):
             # force register if computer has not been registered or hostname has changed
             # this should work only if computer can authenticate on wapt server using
             # kerberos (if enabled...)
-            if result and not result['success']:
-                db_data = result.get('result',None)
+            if try_register or (result and not result['success']):
+                if result:
+                    db_data = result.get('result',None)
+                else:
+                    db_data = None
                 if not db_data or db_data.get('computer_fqdn',None) != setuphelpers.get_hostname():
                     logger.warning(u'Host on the server is not known or not known under this FQDN name (known as %s). Trying to register the computer...'%(db_data and db_data.get('computer_fqdn',None) or None))
                     result = self.register_computer()
