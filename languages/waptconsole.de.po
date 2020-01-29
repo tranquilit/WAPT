@@ -1494,26 +1494,26 @@ msgstr "Bereich"
 
 #: tvisimportpackage.gridexternalpackages.header.columns[10].text
 msgctxt "tvisimportpackage.gridexternalpackages.header.columns[10].text"
-msgid "Maturity"
+msgid "Installed Size"
 msgstr ""
 
 #: tvisimportpackage.gridexternalpackages.header.columns[11].text
 msgctxt "tvisimportpackage.gridexternalpackages.header.columns[11].text"
-msgid "Signer"
+msgid "Maturity"
 msgstr ""
 
 #: tvisimportpackage.gridexternalpackages.header.columns[12].text
-msgid "Sign on"
+msgid "Signer"
 msgstr ""
 
 #: tvisimportpackage.gridexternalpackages.header.columns[13].text
 msgctxt "tvisimportpackage.gridexternalpackages.header.columns[13].text"
-msgid "Editor"
+msgid "Sign on"
 msgstr ""
 
 #: tvisimportpackage.gridexternalpackages.header.columns[14].text
 msgctxt "tvisimportpackage.gridexternalpackages.header.columns[14].text"
-msgid "Target OS"
+msgid "Editor"
 msgstr ""
 
 #: tvisimportpackage.gridexternalpackages.header.columns[15].text
@@ -1556,9 +1556,9 @@ msgstr "Name"
 
 #: tvisimportpackage.gridexternalpackages.header.columns[21].text
 #, fuzzy
-#| msgid "Section"
+#| msgid "Name"
 msgctxt "tvisimportpackage.gridexternalpackages.header.columns[21].text"
-msgid "Name"
+msgid "Target OS"
 msgstr "Bereich"
 
 #: tvisimportpackage.gridexternalpackages.header.columns[2].text
@@ -1579,27 +1579,28 @@ msgstr ""
 
 #: tvisimportpackage.gridexternalpackages.header.columns[5].text
 #, fuzzy
+#| msgid "Description"
 msgctxt "tvisimportpackage.gridexternalpackages.header.columns[5].text"
-msgid "Description"
+msgid "Name"
 msgstr "Beschreibung"
 
 #: tvisimportpackage.gridexternalpackages.header.columns[6].text
 msgctxt "tvisimportpackage.gridexternalpackages.header.columns[6].text"
-msgid "Licence"
+msgid "Description"
 msgstr ""
 
 #: tvisimportpackage.gridexternalpackages.header.columns[7].text
 msgctxt "tvisimportpackage.gridexternalpackages.header.columns[7].text"
-msgid "Dependencies"
+msgid "Licence"
 msgstr ""
 
 #: tvisimportpackage.gridexternalpackages.header.columns[8].text
 msgctxt "tvisimportpackage.gridexternalpackages.header.columns[8].text"
-msgid "Size"
+msgid "Dependencies"
 msgstr ""
 
 #: tvisimportpackage.gridexternalpackages.header.columns[9].text
-msgid "Installed Size"
+msgid "Size"
 msgstr ""
 
 #: tvisimportpackage.label7.caption

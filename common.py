@@ -6591,7 +6591,7 @@ class Wapt(BaseObjectClass):
             logger.info(u'control file already exists, skip create')
 
         self.add_pyscripter_project(directoryname)
-
+        self.add_vscode_project(directoryname)
         return directoryname
 
     def make_host_template(self,packagename='',depends=None,conflicts=None,directoryname=None,description=None):
@@ -6729,6 +6729,7 @@ class Wapt(BaseObjectClass):
         entry.save_control_to_wapt(directoryname)
         if entry.section != 'host':
             self.add_pyscripter_project(directoryname)
+            self.add_vscode_project(directoryname)
         return entry
 
     def is_installed(self,packagename,include_errors=False):
@@ -6803,7 +6804,7 @@ class Wapt(BaseObjectClass):
         """Add a pyscripter project file to package development directory.
 
         Args:
-            target_directory (str): path to location where to create the wa^t.psproj file.
+            target_directory (str): path to location where to create the wapt.psproj file.
 
         Returns:
             None
@@ -6815,6 +6816,28 @@ class Wapt(BaseObjectClass):
         datas['target_directory'] = target_directory
         proj_template = codecs.open(os.path.join(self.wapt_base_dir,'templates','wapt.psproj'),encoding='utf8').read()%datas
         codecs.open(psproj_filename,'w',encoding='utf8').write(proj_template)
+
+    def add_vscode_project(self,target_directory):
+        """Add a .vscode project to package development directory.
+
+        Args:
+            target_directory (str): path to location where to create the .vscode directory.
+
+        Returns:
+            None
+        """
+        vscode_dir = os.path.join(target_directory,'.vscode')
+        if not(os.path.isdir(vscode_dir)):
+            os.mkdir(vscode_dir)
+        shutil.copyfile(os.path.join(self.wapt_base_dir,'templates','vscode_launch.json'),os.path.join(vscode_dir,'launch.json'))
+        with open(os.path.join(self.wapt_base_dir,'templates','vscode_settings.json'),'r') as settings_json_file:
+            settings_json=json.load(settings_json_file)
+            if (PackageEntry(waptfile=target_directory).target_os.lower() in ['linux','macos','unix']) or not(os.path.isfile(os.path.join(self.wapt_base_dir,'waptpython.exe'))):
+                settings_json['python.pythonPath']='/opt/wapt/bin/python'
+            else:
+                settings_json['python.pythonPath']=os.path.join(self.wapt_base_dir,'waptpython.exe')
+            with open(os.path.join(vscode_dir,'settings.json'),'w+') as settings_json_outfile:
+                json.dump(settings_json,settings_json_outfile,indent=4)
 
     def edit_package(self,packagerequest,
             target_directory='',
@@ -6919,6 +6942,7 @@ class Wapt(BaseObjectClass):
 
             if entry.section != 'host':
                 self.add_pyscripter_project(target_directory)
+                self.add_vscode_project(directoryname)
             return local_dev_entry
         else:
             raise Exception(u'Unable to unzip package in %s' % target_directory)
@@ -7258,6 +7282,7 @@ class Wapt(BaseObjectClass):
 
         if dest_control.section != 'host':
             self.add_pyscripter_project(target_directory)
+            self.add_vscode_project(target_directory)
         dest_control.invalidate_signature()
         return dest_control
 
