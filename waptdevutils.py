@@ -62,7 +62,7 @@ from setuphelpers import uac_enabled,inifile_readstring,shell_launch
 if sys.platform == 'win32':
     from setuphelpers import registered_organization
 
-from waptutils import ensure_list,ensure_unicode,Version
+from waptutils import ensure_list,ensure_unicode,Version,default_http_headers
 from waptcrypto import check_key_password,SSLCABundle,SSLCertificate,SSLPrivateKey
 from waptcrypto import NOPASSWORD_CALLBACK,sha256_for_file
 from waptpackage import PackageEntry,WaptRemoteRepo,PackageVersion,HostCapabilities,PackageRequest
@@ -155,7 +155,7 @@ def upload_wapt_setup(wapt,waptsetup_path, wapt_server_user, wapt_server_passwd,
     auth =  (wapt_server_user, wapt_server_passwd)
     with open(waptsetup_path,'rb') as afile:
         req = requests.post("%s/upload_waptsetup" % (wapt.waptserver.server_url,),files={'file':afile},proxies=wapt.waptserver.proxies,
-            verify=verify_cert,auth=auth,headers=common.default_http_headers())
+            verify=verify_cert,auth=auth,headers=default_http_headers())
         req.raise_for_status()
         res = json.loads(req.content)
     return res
@@ -196,6 +196,24 @@ def update_external_repo(repourl,search_string,proxy=None,myrepo=None,my_prefix=
     True
     """
     repo = WaptRemoteRepo(url=repourl,http_proxy=proxy,name=repo_name,timeout=timeout)
+
+    try:
+        import waptconsole
+        progress_hook = waptconsole.UpdateProgress
+        private_key_password_callback = waptconsole.GetPrivateKeyPassword
+    except ImportError as e:
+        def print_progress(show=False,n=0,max=100,msg=''):
+            if show:
+                print('%s %s/%s\r' % (msg,n,max),end='')
+            else:
+                if not msg:
+                    msg='Done'
+                print("%s%s"%(msg,' '*(80-len(msg))))
+        progress_hook = print_progress
+        private_key_password_callback = None
+
+    repo.private_key_password_callback = private_key_password_callback
+
     if verify_cert == '' or verify_cert == '0':
         verify_cert = False
     repo.verify_cert = verify_cert
@@ -492,6 +510,7 @@ def edit_hosts_depends(waptconfigfile,hosts_list,
     try:
         import waptconsole
         progress_hook = waptconsole.UpdateProgress
+        private_key_password_callback = waptconsole.GetPrivateKeyPassword
     except ImportError as e:
         def print_progress(show=False,n=0,max=100,msg=''):
             if show:
@@ -501,12 +520,15 @@ def edit_hosts_depends(waptconfigfile,hosts_list,
                     msg='Done'
                 print("%s%s"%(msg,' '*(80-len(msg))))
         progress_hook = print_progress
+        private_key_password_callback = None
+
 
     hosts_list = ensure_list(hosts_list)
 
     progress_hook(True,0,len(hosts_list),'Loading %s hosts packages' % len(hosts_list))
 
     host_repo = WaptHostRepo(name='wapt-host',host_id=hosts_list,cabundle = cabundle)
+    host_repo.private_key_password_callback = private_key_password_callback
     host_repo.load_config_from_file(waptconfigfile)
     total_hosts = len(host_repo.packages())
     discarded_uuids = [p.package for p in host_repo.discarded]
@@ -567,7 +589,9 @@ def edit_hosts_depends(waptconfigfile,hosts_list,
         # upload all in one step...
         progress_hook(True,3,3,'Upload %s host packages' % len(packages))
         server = WaptServer().load_config_from_file(waptconfigfile)
+        server.private_key_password_callback = private_key_password_callback
         server.upload_packages(packages,auth=(wapt_server_user,wapt_server_passwd),progress_hook=progress_hook)
+
         return dict(updated = [p.package for p in packages],
                     discarded = discarded,
                     unchanged = unchanged)
@@ -626,19 +650,11 @@ def add_ads_groups(waptconfigfile,
     if sign_key is None:
         sign_key = sign_certs[0].matching_key_in_dirs(private_key_password=key_password)
 
-    main_repo = WaptRemoteRepo(name='wapt',cabundle = cabundle)
-    main_repo.load_config_from_file(waptconfigfile)
-
-    host_repo = WaptHostRepo(name='wapt-host',host_id=[h['uuid'] for h in hostdicts_list],cabundle = cabundle)
-    host_repo.load_config_from_file(waptconfigfile)
-
-    total_hosts = len(host_repo.packages())
-    discarded_uuids = [p.package for p in host_repo.discarded]
-
 
     try:
         import waptconsole
         progress_hook = waptconsole.UpdateProgress
+        private_key_password_callback = waptconsole.GetPrivateKeyPassword
     except ImportError as e:
         def print_progress(show=False,n=0,max=100,msg=''):
             if show:
@@ -648,6 +664,19 @@ def add_ads_groups(waptconfigfile,
                     msg='Done'
                 print("%s%s"%(msg,' '*(80-len(msg))))
         progress_hook = print_progress
+        private_key_password_callback = None
+
+
+    main_repo = WaptRemoteRepo(name='wapt',cabundle = cabundle)
+    main_repo.load_config_from_file(waptconfigfile)
+    main_repo.private_key_password_callback = private_key_password_callback
+
+    host_repo = WaptHostRepo(name='wapt-host',host_id=[h['uuid'] for h in hostdicts_list],cabundle = cabundle)
+    host_repo.load_config_from_file(waptconfigfile)
+    host_repo.private_key_password_callback = private_key_password_callback
+
+    total_hosts = len(host_repo.packages())
+    discarded_uuids = [p.package for p in host_repo.discarded]
 
     packages = []
     discarded = []
@@ -689,6 +718,7 @@ def add_ads_groups(waptconfigfile,
         # upload all in one step...
         progress_hook(True,3,3,'Upload %s host packages' % len(packages))
         server = WaptServer().load_config_from_file(waptconfigfile)
+        server.private_key_password_callback = private_key_password_callback
         server.upload_packages(packages,auth=(wapt_server_user,wapt_server_passwd),progress_hook=progress_hook)
         return dict(updated = packages,
                     discarded = discarded,
@@ -712,12 +742,31 @@ def create_waptwua_package(waptconfigfile,wuagroup='default',wapt_server_user=No
     """Create/update - upload a package to enable waptwua and set windows_updates_rules
     based on the content of database.
     """
+
+    try:
+        import waptconsole
+        progress_hook = waptconsole.UpdateProgress
+        private_key_password_callback = waptconsole.GetPrivateKeyPassword
+    except ImportError as e:
+        def print_progress(show=False,n=0,max=100,msg=''):
+            if show:
+                print('%s %s/%s\r' % (msg,n,max),end='')
+            else:
+                if not msg:
+                    msg='Done'
+                print("%s%s"%(msg,' '*(80-len(msg))))
+        progress_hook = print_progress
+        private_key_password_callback = None
+
+
     wapt = common.Wapt(config_filename=waptconfigfile,disable_update_server_status=True)
     wapt.dbpath = r':memory:'
     wapt.use_hostpackages = False
     wapt.filter_on_host_cap = False
     # be sure to be up to date
     wapt.update(register=False)
+    wapt.private_key_password_callback = private_key_password_callback
+
     packagename = '{}-waptwua-{}'.format(wapt.config.get('global','default_package_prefix'),wuagroup)
     """
     packages = wapt.is_available(packagename)
