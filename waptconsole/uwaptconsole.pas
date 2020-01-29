@@ -2,6 +2,8 @@ unit uwaptconsole;
 
 {$mode objfpc}{$H+}
 {$modeswitch ADVANCEDRECORDS}
+{$modeswitch typehelpers}
+
 
 interface
 
@@ -45,30 +47,41 @@ type
     ActRepositoriesGetSecondRepos: TAction;
     ActNewRule: TAction;
     ActRepositoriesGetUpdateRules: TAction;
-    BitBtn1: TBitBtn;
+    ButOverviewStatusPackagesAll: TButton;
     ButStatusPackagesAll: TButton;
     cbAdvancedMode: TCheckBox;
+    cbMaskSystemComponents: TCheckBox;
+    cbOverviewSectionProfile: TCheckBox;
+    cbOverviewSectionWSUS: TCheckBox;
+    cbOverviewSectionSelfService: TCheckBox;
+    cbOverviewStatusErrors: TCheckBox;
+    cbOverviewSectionHost: TCheckBox;
+    cbOverviewStatusInstall: TCheckBox;
+    cbOverviewSectionBase: TCheckBox;
+    cbOverviewStatusRemove: TCheckBox;
+    cbOverviewSectionUnit: TCheckBox;
+    cbOverviewStatusUpgrade: TCheckBox;
+    cbOverviewSectionGroup: TCheckBox;
     cbStatusErrors: TCheckBox;
     cbStatusInstall: TCheckBox;
-    cbOverviewStatusRemove: TCheckBox;
-    cbOverviewConnected: TCheckBox;
-    cbOverviewStatusError: TCheckBox;
     cbStatusRemove: TCheckBox;
-    cbOverviewStatusUpgrade: TCheckBox;
-    cbOverviewStatusInstall: TCheckBox;
     cbStatusUpgrade: TCheckBox;
+    EdOverViewSearchHostPackages: TSearchEdit;
     EdSearchStatusPackages: TSearchEdit;
     EdSearchOrgUnits: TSearchEdit;
+    EdSoftwaresFilter: TEdit;
     GridHostPackagesOverview: TSOGrid;
     ImgStatusErrors: TImage;
+    ImgStatusErrors1: TImage;
+    ImgStatusInstall1: TImage;
+    ImgStatusRemove1: TImage;
     ImgStatusUpgrade: TImage;
     ImgStatusInstall: TImage;
     ImgStatusRemove: TImage;
-    Image5: TImage;
-    Image6: TImage;
-    Image7: TImage;
-    Image8: TImage;
-    Image9: TImage;
+    ImgStatusUpgrade1: TImage;
+    Label13: TLabel;
+    Label14: TLabel;
+    Label16: TLabel;
     LabInstallLogTitle: TLabel;
     LabTaskLog: TLabel;
     LabLogsKB: TLabel;
@@ -81,7 +94,10 @@ type
     MenuItemShowErrors: TMenuItem;
     MenuItemSync: TMenuItem;
     MenuItemSyncForce: TMenuItem;
-    panFilterPackagesOverviewStatus: TPanel;
+    Panel1: TPanel;
+    Panel12: TPanel;
+    panOverviewHostPackages1: TPanel;
+    panOverviewHostPackages2: TPanel;
     panFilterPackagesStatus: TPanel;
     PanTopPackagesOverview: TPanel;
     PanHostDetails: TPanel;
@@ -166,6 +182,8 @@ type
     tbSoftwaresNormalization: TToolButton;
     tbUpRule: TToolButton;
     tbAgentRepos: TToolBar;
+    TimerPackagesStatusFilter: TTimer;
+    TimerPackagesSummaryUpdate: TTimer;
     TimerSearchHosts: TTimer;
     ToolButton1: TToolButton;
     ToolButton11: TToolButton;
@@ -281,7 +299,6 @@ type
     cbHasErrors: TCheckBox;
     CBIncludeSubOU: TCheckBox;
     CBInverseSelect: TCheckBox;
-    cbMaskSystemComponents: TCheckBox;
     cbNeedUpgrade: TCheckBox;
     cbReachable: TCheckBox;
     cbAuthorizedHosts: TCheckBox;
@@ -370,7 +387,6 @@ type
     EdRunningStatus: TEdit;
     EdSearchGroups: TSearchEdit;
     EdSearchHost: TSearchEdit;
-    EdSoftwaresFilter: TEdit;
     EdUpdateDate: TEdit;
     EdUser: TEdit;
     GridhostInventory: TVirtualJSONInspector;
@@ -523,7 +539,6 @@ type
     GridHostTasksPending: TSOGrid;
     GridHostTasksDone: TSOGrid;
     GridHostTasksErrors: TSOGrid;
-    Label14: TLabel;
     MemoTaskLog: TMemo;
     MemoInstallOutput: TMemo;
     MenuItem19: TMenuItem;
@@ -565,7 +580,6 @@ type
     OpenDialogWapt: TOpenDialog;
     PagesTasks: TPageControl;
     PanTopGroups: TPanel;
-    Panel12: TPanel;
     PopupWUAProducts: TPopupMenu;
     Panel3: TPanel;
     Panel5: TPanel;
@@ -790,6 +804,7 @@ type
     procedure ActWUAShowDownloadTasksExecute(Sender: TObject);
     procedure ActWUAShowMSUpdatesHelpExecute(Sender: TObject);
     procedure ApplicationProperties1Exception(Sender: TObject; E: Exception);
+    procedure ButOverviewStatusPackagesAllClick(Sender: TObject);
     procedure ButStatusPackagesAllClick(Sender: TObject);
     procedure cbADOUSelect(Sender: TObject);
     procedure cbADSiteSelect(Sender: TObject);
@@ -809,6 +824,7 @@ type
     procedure cbNewestOnlyClick(Sender: TObject);
     procedure cbNewestOnlySelfServiceClick(Sender: TObject);
     procedure cbNewestOnlyWUAClick(Sender: TObject);
+    procedure cbOverviewSectionHostClick(Sender: TObject);
     procedure cbOverviewStatusErrorClick(Sender: TObject);
     procedure cbSearchAllClick(Sender: TObject);
     procedure CBShowHostsForGroupsClick(Sender: TObject);
@@ -838,6 +854,7 @@ type
     procedure EdSearchGroupsKeyPress(Sender: TObject; var Key: char);
     procedure EdSearchHostExecute(Sender: TObject);
     procedure EdSearchHostKeyPress(Sender: TObject; var Key: char);
+    procedure EdSearchStatusPackagesExecute(Sender: TObject);
     procedure EdSoftwaresFilterChange(Sender: TObject);
     procedure EdWUASearchPackageKeyPress(Sender: TObject; var Key: char);
     procedure EdWUASearchWindowsUpdateKeyPress(Sender: TObject; var Key: char);
@@ -1004,6 +1021,8 @@ type
     procedure tbSyncChangelogClick(Sender: TObject);
     procedure tbSyncSelectedClick(Sender: TObject);
     procedure tbUpdateFileSyncClick(Sender: TObject);
+    procedure TimerPackagesStatusFilterTimer(Sender: TObject);
+    procedure TimerPackagesSummaryUpdateTimer(Sender: TObject);
     procedure TimerSearchHostsTimer(Sender: TObject);
     procedure TimerSearchPackagesTimer(Sender: TObject);
     procedure TimerWUALoadWinUpdatesTimer(Sender: TObject);
@@ -1013,6 +1032,7 @@ type
     { private declarations }
     CurrentVisLoading: TVisLoading;
     FCurrentPackageForGridHostsForPackage: ISuperObject;
+    SelectedHostsPackagesStatus: ISuperObject;
     FReportingEditMode: Boolean;
     FWUAClassifications: ISuperObject;
     FWUAProducts: ISuperObject;
@@ -1028,7 +1048,12 @@ type
     procedure ExecuteHostsGruidPlugin(Sender: TObject);
     procedure FillcbADSiteDropDown;
     procedure FillcbGroups;
-    function GetPackagesOverviewForHosts(Hosts: ISuperObject; InstallStatus: String='';
+    function FilterPackagesForHosts(Data: ISuperObject; Keywords: String
+      ): ISuperObject;
+    function FilterPackagesStatus(Data: ISuperObject): ISuperObject;
+    function GetPackagesOverviewForHosts(Hosts: ISuperObject;
+      InstallStatus: String='';
+      Sections: String='';
       ConnectedOnly: Boolean=False): ISuperObject;
     function MaxSeq:Integer;
     procedure FilterDBOrgUnits;
@@ -1556,6 +1581,12 @@ begin
     end;
 end;
 
+procedure TVisWaptGUI.EdSearchStatusPackagesExecute(Sender: TObject);
+begin
+  TimerPackagesStatusFilter.Enabled := False;
+  TimerPackagesStatusFilter.Enabled := True;
+end;
+
 procedure TVisWaptGUI.EdSoftwaresFilterChange(Sender: TObject);
 begin
   if (Gridhosts.FocusedRow <> nil) then
@@ -1878,7 +1909,7 @@ end;
 procedure TVisWaptGUI.UpdateHostPages(Sender: TObject);
 var
   currhost : String;
-  RowSO, packages, softwares: ISuperObject;
+  RowSO,softwares: ISuperObject;
   waptwua_status,wuauserv_status,wsusupdates: ISuperObject;
   sores: ISuperObject;
 begin
@@ -1887,7 +1918,7 @@ begin
   else
     RowSO := Gridhosts.FocusedRow;
 
-  if (RowSO <> nil) and (GridHosts.SelectedCount=1) then
+  if (RowSO <> nil) then
   begin
     currhost := UTF8Encode(RowSO.S['uuid']);
 
@@ -1902,17 +1933,27 @@ begin
 
     if HostPages.ActivePage = pgPackages then
     begin
-      packages := RowSO['installed_packages'];
-      if (packages = nil) or (packages.AsArray = nil) then
-      try
-        sores := WAPTServerJsonGet('api/v1/host_data?field=installed_packages&uuid=%S',[currhost]);
-        if sores.B['success'] then
-          RowSO['installed_packages'] := sores['result']
-        else
+      if GridHosts.SelectedCount = 1 then
+      begin
+        SelectedHostsPackagesStatus := RowSO['installed_packages'];
+        if (SelectedHostsPackagesStatus = nil) or (SelectedHostsPackagesStatus.AsArray = nil) then
+        try
+          sores := WAPTServerJsonGet('api/v1/host_data?field=installed_packages&uuid=%S',[currhost]);
+          if sores.B['success'] then
+            RowSO['installed_packages'] := sores['result']
+          else
+            RowSO['installed_packages'] := nil;
+        except
           RowSO['installed_packages'] := nil;
-      except
-        RowSO['installed_packages'] := nil;
-      end;
+        end;
+        SelectedHostsPackagesStatus := RowSO['installed_packages'];
+      end
+      else if GridHosts.SelectedCount > 1 then
+        SelectedHostsPackagesStatus := GetPackagesOverviewForHosts(ExtractField(Gridhosts.SelectedRows,'uuid'))
+      else
+        SelectedHostsPackagesStatus := Nil;
+
+      GridHostPackages.Data := FilterPackagesStatus(SelectedHostsPackagesStatus);
 
       EdUUID.Text := UTF8Encode(RowSO.S['uuid']);
       EdHostname.Text := UTF8Encode(RowSO.S['computer_name']);
@@ -1939,7 +1980,6 @@ begin
         LabUser.Caption := 'Logged in users';
       end;
       EdRunningStatus.Text := UTF8Encode(RowSO.S['last_update_status.runstatus']);
-      GridHostPackages.Data := RowSO['installed_packages'];
     end
     else if HostPages.ActivePage = pgSoftwares then
     begin
@@ -2052,7 +2092,7 @@ begin
     GridHostTasksErrors.Data := nil;
 
     If HostPages.ActivePage = pgPackages then
-      GridHostPackages.Data := GetPackagesOverviewForHosts(ExtractField(GridHosts.SelectedRows,'uuid'));
+      cbOverviewSectionHostClick(Sender);
   end;
 end;
 
@@ -2611,7 +2651,9 @@ begin
     ActPackagesUpdate.Execute;
 end;
 
-function TVisWaptGUI.GetPackagesOverviewForHosts(Hosts:ISuperObject;InstallStatus:String='';ConnectedOnly:Boolean=False):ISuperObject;
+function TVisWaptGUI.GetPackagesOverviewForHosts(Hosts:ISuperObject;InstallStatus:String='';
+  Sections: String='';
+  ConnectedOnly:Boolean=False):ISuperObject;
 var
   HostPackagesStatus,Args : ISuperObject;
 begin
@@ -2623,6 +2665,8 @@ begin
       Args.I['reachable'] := 1;
     If InstallStatus<>'' then
        Args.S['install_status'] := InstallStatus;
+    If Sections<>'' then
+       Args.S['sections'] := Sections;
 
     HostPackagesStatus := WAPTServerJsonPost('api/v3/packages_for_hosts',[],Args);
     if HostPackagesStatus.B['success'] then
@@ -2635,13 +2679,14 @@ end;
 
 procedure TVisWaptGUI.ActRefreshHostPackagesOverviewExecute(Sender: TObject);
 var
-  PackagesStatusForHostsData,HostPackagesStatus,Args : ISuperObject;
-  InstallStatus: String;
+  InstallStatus,
+  Sections: String;
 begin
   try
+    TimerPackagesSummaryUpdate.Enabled := False;
     Screen.Cursor := crHourGlass;
     InstallStatus:='';
-    if cbOverviewStatusError.Checked then
+    if cbOverviewStatusErrors.Checked then
       InstallStatus:=InstallStatus+','+'ERROR';
     if cbOverviewStatusInstall.Checked then
       InstallStatus:=InstallStatus+','+'NEED-INSTALL';
@@ -2649,15 +2694,116 @@ begin
       InstallStatus:=InstallStatus+','+'NEED-UPGRADE';
     if cbOverviewStatusRemove.Checked then
       InstallStatus:=InstallStatus+','+'NEED-REMOVE';
+
     If InstallStatus<>'' then
        InstallStatus := Copy(InstallStatus,2,length(InstallStatus)-1);
 
-    GridHostPackagesOverview.Data := GetPackagesOverviewForHosts(ExtractField(GridHosts.SelectedRows,'uuid'),InstallStatus,cbReachable.Checked);
-        //FilterHostsForPackage(HostsForPackageData);
+    Sections := '';
+    if cbOverviewSectionBase.Checked then
+      Sections:=Sections+','+'base';
+    if cbOverviewSectionGroup.Checked then
+      Sections:=Sections+','+'group';
+    if cbOverviewSectionUnit.Checked then
+      Sections:=Sections+','+'unit';
+    if cbOverviewSectionHost.Checked then
+      Sections:=Sections+','+'host';
+    if cbOverviewSectionProfile.Checked then
+      Sections:=Sections+','+'profile';
+    if cbOverviewSectionSelfService.Checked then
+      Sections:=Sections+','+'selfservice';
+    if cbOverviewSectionWSUS.Checked then
+      Sections:=Sections+','+'wsus';
+
+    If Sections<>'' then
+       Sections := Copy(Sections,2,length(Sections)-1);
+
+    GridHostPackagesOverview.Data := FilterPackagesForHosts(
+        GetPackagesOverviewForHosts(ExtractField(GridHosts.SelectedRows,'uuid'),
+        InstallStatus,
+        Sections,cbReachable.Checked),
+        EdOverViewSearchHostPackages.Text);
   finally
     Screen.Cursor := crDefault;
   end
 end;
+
+function TVisWaptGUI.FilterPackagesForHosts(Data:ISuperObject;Keywords:String):ISuperObject;
+var
+  Allowed: Boolean;
+  Row:ISuperObject;
+begin
+  Keywords := LowerCase(Trim(Keywords));
+  If Keywords = '' then
+    result := Data
+  else
+  begin
+    Result := TSuperObject.Create(stArray);
+    for row in Data do
+    begin
+      Allowed := True;
+      Allowed := Allowed and ((Keywords='') or (
+          pos(Keywords,LowerCase(row.S['package']+' '+row.S['name']+' '+row.S['']))>0));
+      if Allowed then
+        Result.AsArray.Add(row);
+    end;
+  end;
+end;
+
+function TVisWaptGUI.FilterPackagesStatus(Data:ISuperObject):ISuperObject;
+var
+  Allowed: Boolean;
+  Row:ISuperObject;
+  Keywords:String;
+  Sections,InstallStatus:TDynStringArray;
+begin
+  Keywords := LowerCase(Trim(EdSearchStatusPackages.Text));
+
+  InstallStatus:=TDynStringArray.Create;
+  if cbStatusErrors.Checked then
+    StrAppend(InstallStatus,'ERROR');
+  if cbStatusInstall.Checked then
+    StrAppend(InstallStatus,'NEED-INSTALL');
+  if cbStatusUpgrade.Checked then
+    StrAppend(InstallStatus,'NEED-UPGRADE');
+  if cbStatusRemove.Checked then
+    StrAppend(InstallStatus,'NEED-REMOVE');
+
+  Sections := TDynStringArray.Create;
+  {if cbSectionBase.Checked then
+    StrAppend(Sections,'base');
+  if cbOSectionGroup.Checked then
+    StrAppend(Sections,'group';
+  if cbSectionUnit.Checked then
+    StrAppend(Sections,'unit';
+  if cbSectionHost.Checked then
+    StrAppend(Sections,'host';
+  if cbSectionProfile.Checked then
+    StrAppend(Sections,'profile';
+  if cbSectionSelfService.Checked then
+    StrAppend(Sections,'selfservice';
+  if cbSectionWSUS.Checked then
+    StrAppend(Sections,'wsus';
+  }
+
+  If (Keywords = '') and (Length(InstallStatus)=0) and (Length(Sections)=0) then
+    result := Data
+  else
+  begin
+    Result := TSuperObject.Create(stArray);
+    for row in Data do
+    begin
+      Allowed := True;
+      Allowed := Allowed and ((Keywords='') or (
+          pos(Keywords,LowerCase(row.S['package']+' '+row.S['name']+' '+row.S['']))>0));
+      Allowed := Allowed and ((Length(Sections)=0) or StrIsOneOf(row.S['section'],Sections));
+      Allowed := Allowed and ((Length(InstallStatus)=0) or StrIsOneOf(row.S['install_status'],InstallStatus));
+      if Allowed then
+        Result.AsArray.Add(row);
+    end;
+  end;
+end;
+
+
 
 procedure TVisWaptGUI.ActSupprExecute(Sender: TObject);
 begin
@@ -4364,6 +4510,25 @@ begin
   MessageDlg('Error in application',E.Message,mtError,[mbOK],'');
 end;
 
+procedure TVisWaptGUI.ButOverviewStatusPackagesAllClick(Sender: TObject);
+begin
+  EdOverViewSearchHostPackages.Text:='';
+  cbOverviewStatusErrors.Checked:=False;
+  cbOverviewStatusInstall.Checked:=False;
+  cbOverviewStatusRemove.Checked:=False;
+  cbOverviewStatusUpgrade.Checked:=False;
+
+  cbOverviewSectionHost.Checked:=False;
+  cbOverviewSectionGroup.Checked:=False;
+  cbOverviewSectionBase.Checked:=False;
+  cbOverviewSectionProfile.Checked:=False;
+  cbOverviewSectionUnit.Checked:=False;
+  cbOverviewSectionWSUS.Checked:=False;
+  cbOverviewSectionSelfService.Checked:=False;
+
+  ActRefreshHostPackagesOverview.Execute;
+end;
+
 procedure TVisWaptGUI.ButStatusPackagesAllClick(Sender: TObject);
 begin
   EdSearchStatusPackages.Text:='';
@@ -4371,6 +4536,7 @@ begin
   cbStatusInstall.Checked:=False;
   cbStatusRemove.Checked:=False;
   cbStatusUpgrade.Checked:=False;
+  EdSearchStatusPackagesExecute(Sender);
 end;
 
 
@@ -4379,6 +4545,7 @@ begin
   PanSearchIn.Visible:=cbAdvancedSearch.Checked;
   PanFilterGroups.Visible:=cbAdvancedSearch.Checked;
   CBInverseSelect.Visible:=cbAdvancedSearch.Checked;
+  panFilterPackagesStatus.Visible:=cbAdvancedSearch.Checked;
 
   if not cbAdvancedSearch.Checked then
   begin
@@ -4388,6 +4555,9 @@ begin
     cbSearchDMI.Checked:=False;
     cbSearchPackages.Checked:=False;
     cbSearchSoftwares.Checked:=False;
+
+    // uncheck all
+    ButStatusPackagesAllClick(Sender);
 
     cbGroups.ItemIndex:=-1;
     cbGroups.Text:='';
@@ -4497,6 +4667,12 @@ end;
 procedure TVisWaptGUI.cbNewestOnlyWUAClick(Sender: TObject);
 begin
   ActWUASearchPackage.Execute;
+end;
+
+procedure TVisWaptGUI.cbOverviewSectionHostClick(Sender: TObject);
+begin
+  TimerPackagesSummaryUpdate.Enabled := False;
+  TimerPackagesSummaryUpdate.Enabled := True;
 end;
 
 procedure TVisWaptGUI.cbOverviewStatusErrorClick(Sender: TObject);
@@ -6129,6 +6305,24 @@ procedure TVisWaptGUI.ActTriggerPendingActionsExecute(Sender: TObject);
 begin
   TriggerPendingActions(GridHostPackagesOverview,rsConfirmPendingActions,rsPendingActionsError);
 end;
+
+procedure TVisWaptGUI.TimerPackagesSummaryUpdateTimer(Sender: TObject);
+begin
+  TimerPackagesSummaryUpdate.Enabled := False;
+  ActRefreshHostPackagesOverview.Execute;
+end;
+
+procedure TVisWaptGUI.TimerPackagesStatusFilterTimer(Sender: TObject);
+begin
+  TimerPackagesStatusFilter.Enabled := False;
+  try
+    Screen.Cursor:= crHourglass;
+    GridHostPackages.Data := FilterPackagesStatus(SelectedHostsPackagesStatus);
+  finally
+    Screen.Cursor:= crDefault;
+  end;
+end;
+
 
 
 {$ifdef ENTERPRISE}

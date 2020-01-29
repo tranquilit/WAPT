@@ -721,12 +721,12 @@ object VisWaptGUI: TVisWaptGUI
               Width = 120
               EmptyText = 'Search keywords'
               ExecuteDelay = 650
+              OnExecute = EdSearchStatusPackagesExecute
               Options = [seoExecuteEmpty, seoExecuteOnKillFocus]
               BorderSpacing.Top = 2
               Constraints.MaxHeight = 21
               Constraints.MinWidth = 120
               Font.Color = clGray
-              OnKeyPress = EdSearchHostKeyPress
               ParentFont = False
               TabOrder = 0
             end
@@ -794,7 +794,7 @@ object VisWaptGUI: TVisWaptGUI
               Top = 10
               Width = 49
               Caption = 'Errors'
-              OnClick = cbOverviewStatusErrorClick
+              OnClick = EdSearchStatusPackagesExecute
               TabOrder = 1
             end
             object ImgStatusUpgrade: TImage
@@ -861,6 +861,7 @@ object VisWaptGUI: TVisWaptGUI
               Top = 10
               Width = 75
               Caption = 'To upgrade'
+              OnClick = EdSearchStatusPackagesExecute
               TabOrder = 2
             end
             object ImgStatusInstall: TImage
@@ -917,6 +918,7 @@ object VisWaptGUI: TVisWaptGUI
               Top = 10
               Width = 62
               Caption = 'To install'
+              OnClick = EdSearchStatusPackagesExecute
               TabOrder = 3
             end
             object ImgStatusRemove: TImage
@@ -970,6 +972,7 @@ object VisWaptGUI: TVisWaptGUI
               Top = 10
               Width = 71
               Caption = 'To remove'
+              OnClick = EdSearchStatusPackagesExecute
               TabOrder = 4
             end
             object ButStatusPackagesAll: TButton
@@ -2544,8 +2547,8 @@ object VisWaptGUI: TVisWaptGUI
           ClientWidth = 640
           object GridHostPackagesOverview: TSOGrid
             Left = 0
-            Height = 503
-            Top = 36
+            Height = 491
+            Top = 48
             Width = 640
             OnGetText = GridHostPackagesGetText
             OnNodesDelete = GridHostPackagesNodesDelete
@@ -2629,8 +2632,8 @@ object VisWaptGUI: TVisWaptGUI
           end
           object PanTopPackagesOverview: TPanel
             Left = 0
-            Height = 34
-            Top = 0
+            Height = 0
+            Top = 46
             Width = 640
             Align = alTop
             AutoSize = True
@@ -2638,34 +2641,42 @@ object VisWaptGUI: TVisWaptGUI
             ChildSizing.LeftRightSpacing = 3
             ChildSizing.Layout = cclLeftToRightThenTopToBottom
             ChildSizing.ControlsPerLine = 2
-            ClientHeight = 34
-            ClientWidth = 640
             TabOrder = 1
-            object panFilterPackagesOverviewStatus: TPanel
-              Left = 3
-              Height = 34
+          end
+          object Panel1: TPanel
+            Left = 0
+            Height = 46
+            Top = 0
+            Width = 640
+            Align = alTop
+            AutoSize = True
+            BevelOuter = bvNone
+            ClientHeight = 46
+            ClientWidth = 640
+            TabOrder = 2
+            object panOverviewHostPackages1: TPanel
+              Left = 0
+              Height = 24
               Top = 0
-              Width = 510
+              Width = 640
+              Align = alTop
               AutoSize = True
               BevelOuter = bvNone
-              ChildSizing.LeftRightSpacing = 12
-              ChildSizing.TopBottomSpacing = 6
-              ChildSizing.HorizontalSpacing = 6
-              ChildSizing.VerticalSpacing = 6
-              ChildSizing.EnlargeHorizontal = crsHomogenousSpaceResize
-              ChildSizing.EnlargeVertical = crsHomogenousSpaceResize
-              ChildSizing.Layout = cclLeftToRightThenTopToBottom
-              ChildSizing.ControlsPerLine = 10
-              ClientHeight = 34
-              ClientWidth = 510
+              ClientHeight = 24
+              ClientWidth = 640
               TabOrder = 0
-              object Image5: TImage
-                Left = 12
+              object ImgStatusErrors1: TImage
+                AnchorSideLeft.Control = Label13
+                AnchorSideLeft.Side = asrBottom
+                AnchorSideTop.Control = panOverviewHostPackages1
+                AnchorSideTop.Side = asrCenter
+                Left = 96
                 Height = 17
-                Top = 9
+                Top = 4
                 Width = 16
                 AntialiasingMode = amOn
                 AutoSize = True
+                BorderSpacing.Left = 10
                 Constraints.MinHeight = 17
                 Constraints.MinWidth = 16
                 Picture.Data = {
@@ -2708,22 +2719,32 @@ object VisWaptGUI: TVisWaptGUI
                 Proportional = True
                 Stretch = True
               end
-              object cbOverviewStatusError: TCheckBox
-                Left = 34
+              object cbOverviewStatusErrors: TCheckBox
+                AnchorSideLeft.Control = ImgStatusErrors1
+                AnchorSideLeft.Side = asrBottom
+                AnchorSideTop.Control = panOverviewHostPackages1
+                AnchorSideTop.Side = asrCenter
+                Left = 117
                 Height = 17
-                Top = 9
+                Top = 4
                 Width = 49
+                BorderSpacing.Left = 5
                 Caption = 'Errors'
-                OnClick = cbOverviewStatusErrorClick
+                OnClick = cbOverviewSectionHostClick
                 TabOrder = 0
               end
-              object Image6: TImage
-                Left = 89
+              object ImgStatusUpgrade1: TImage
+                AnchorSideLeft.Control = cbOverviewStatusErrors
+                AnchorSideLeft.Side = asrBottom
+                AnchorSideTop.Control = panOverviewHostPackages1
+                AnchorSideTop.Side = asrCenter
+                Left = 176
                 Height = 17
-                Top = 9
+                Top = 4
                 Width = 16
                 AntialiasingMode = amOn
                 AutoSize = True
+                BorderSpacing.Left = 10
                 Constraints.MinHeight = 17
                 Constraints.MinWidth = 16
                 Picture.Data = {
@@ -2767,21 +2788,31 @@ object VisWaptGUI: TVisWaptGUI
                 Stretch = True
               end
               object cbOverviewStatusUpgrade: TCheckBox
-                Left = 111
+                AnchorSideLeft.Control = ImgStatusUpgrade1
+                AnchorSideLeft.Side = asrBottom
+                AnchorSideTop.Control = panOverviewHostPackages1
+                AnchorSideTop.Side = asrCenter
+                Left = 197
                 Height = 17
-                Top = 9
+                Top = 4
                 Width = 75
+                BorderSpacing.Left = 5
                 Caption = 'To upgrade'
-                OnClick = cbOverviewStatusErrorClick
+                OnClick = cbOverviewSectionHostClick
                 TabOrder = 1
               end
-              object Image7: TImage
-                Left = 192
+              object ImgStatusInstall1: TImage
+                AnchorSideLeft.Control = cbOverviewStatusUpgrade
+                AnchorSideLeft.Side = asrBottom
+                AnchorSideTop.Control = panOverviewHostPackages1
+                AnchorSideTop.Side = asrCenter
+                Left = 282
                 Height = 17
-                Top = 9
+                Top = 4
                 Width = 16
                 AntialiasingMode = amOn
                 AutoSize = True
+                BorderSpacing.Left = 10
                 Constraints.MinHeight = 17
                 Constraints.MinWidth = 16
                 Picture.Data = {
@@ -2815,21 +2846,31 @@ object VisWaptGUI: TVisWaptGUI
                 Stretch = True
               end
               object cbOverviewStatusInstall: TCheckBox
-                Left = 214
+                AnchorSideLeft.Control = ImgStatusInstall1
+                AnchorSideLeft.Side = asrBottom
+                AnchorSideTop.Control = panOverviewHostPackages1
+                AnchorSideTop.Side = asrCenter
+                Left = 304
                 Height = 17
-                Top = 9
+                Top = 4
                 Width = 62
+                BorderSpacing.Left = 6
                 Caption = 'To install'
-                OnClick = cbOverviewStatusErrorClick
+                OnClick = cbOverviewSectionHostClick
                 TabOrder = 2
               end
-              object Image8: TImage
-                Left = 282
+              object ImgStatusRemove1: TImage
+                AnchorSideLeft.Control = cbOverviewStatusInstall
+                AnchorSideLeft.Side = asrBottom
+                AnchorSideTop.Control = panOverviewHostPackages1
+                AnchorSideTop.Side = asrCenter
+                Left = 376
                 Height = 17
-                Top = 9
+                Top = 4
                 Width = 16
                 AntialiasingMode = amOn
                 AutoSize = True
+                BorderSpacing.Left = 10
                 Constraints.MinHeight = 17
                 Constraints.MinWidth = 16
                 Picture.Data = {
@@ -2860,80 +2901,187 @@ object VisWaptGUI: TVisWaptGUI
                 Stretch = True
               end
               object cbOverviewStatusRemove: TCheckBox
-                Left = 304
+                AnchorSideLeft.Control = ImgStatusRemove1
+                AnchorSideLeft.Side = asrBottom
+                AnchorSideTop.Control = panOverviewHostPackages1
+                AnchorSideTop.Side = asrCenter
+                Left = 398
                 Height = 17
-                Top = 9
+                Top = 4
                 Width = 71
+                BorderSpacing.Left = 6
                 Caption = 'To remove'
-                OnClick = cbOverviewStatusErrorClick
+                OnClick = cbOverviewSectionHostClick
                 TabOrder = 3
               end
-              object Image9: TImage
-                Left = 381
-                Height = 17
-                Top = 9
-                Width = 16
-                AntialiasingMode = amOn
+              object ButOverviewStatusPackagesAll: TButton
+                AnchorSideLeft.Control = cbOverviewStatusRemove
+                AnchorSideLeft.Side = asrBottom
+                AnchorSideTop.Control = panOverviewHostPackages1
+                AnchorSideTop.Side = asrCenter
+                Left = 477
+                Height = 23
+                Top = 1
+                Width = 37
                 AutoSize = True
-                Constraints.MinHeight = 17
-                Constraints.MinWidth = 16
-                Picture.Data = {
-                  07544269746D617036040000424D360400000000000036000000280000001000
-                  0000100000000100200000000000000400006400000064000000000000000000
-                  0000FFFFFF00FFFFFF00FFFFFF00FFFFFF0000603000005E2E85015D2DC50156
-                  29F2015127F2014F26C50045218500452200FFFFFF00FFFFFF00FFFFFF00FFFF
-                  FF00FFFFFF00FFFFFF00008000000070370009713AF551A77BFC75C09AFF95D4
-                  B4FF94D4B3FF74BD98FF509D75FC094F2BF50046210000800000FFFFFF00FFFF
-                  FF00FFFFFF0000800000017D3CC42D955EF690D3B1FF7FD0A7FF65C695FF4EBE
-                  86FF48BA80FF57C18BFF73CC9FFF8FD1AFFF2D754FF6014923C400800000FFFF
-                  FF00FFFFFF00008840002D9E62F696DCB9FF70CB9EFF58C28CFF51BF88FF4BBB
-                  82FF43BA7EFF3DB779FF36B574FF4CBD84FF93D7B5FF2D7650F600462100FFFF
-                  FF000091450009934BF592DBB5FF7BD0A5FF6BCA99FF69C999FF64C795FF5DC4
-                  8FFF51BF87FF44BA7EFF3DB679FF36B574FF4DBE85FF8FD1AFFF09532DF50045
-                  22000092458553BE88FC8FDCB5FF7FD3A9FF82D5ABFF82D4ABFF7FD2A7FF76D0
-                  A3FF6BCC9BFF5CC690FF4ABE83FF3EB97AFF37B676FF74CC9FFF509F76FC004B
-                  2485019447C57BD3A6FF93DDB8FF95DCB7FF99DDBBFF99DEBCFF97DCBAFF8FD9
-                  B4FF83D6ADFF75D0A1FF62C995FF4CC286FF3FBC7DFF58C48DFF74BF99FF0157
-                  29C5019247F298E2BDFF9EE1C0FFA7E3C5FFADE5C9FFAFE6CAFFADE4C8FFA4E2
-                  C3FF99DEBCFF89D8B1FF77D2A3FF61CA95FF48C183FF4BC386FF94D6B4FF015B
-                  2BF2019247F298E4BEFFA9E4C6FFB7E9D0FFC0EBD6FFC3ECD8FFC0ECD6FFB9E9
-                  D1FFACE5C9FF9CE0BEFF89DAB1FF72D1A1FF57C890FF51C78CFF95D9B6FF0161
-                  2EF2019448C57CD7A8FFACE8CAFFC3EDD8FFD0F1E0FFD5F3E4FFD3F2E3FFCBEF
-                  DDFFBDECD4FFABE6C9FF96E0BCFF7FD8ABFF63D099FF68D09BFF77C99FFF016A
-                  34C50092458553C58BFCA2E9C5FFC9F0DDFFDDF5E9FFE5F8EFFFE3F7EDFFD9F4
-                  E7FFCAF0DDFFB6EAD0FFA0E4C2FF88DDB2FF6ED4A1FF82DBAEFF52B281FC006D
-                  34850091450009974DF595E7BDFFBBEED4FFE1F7ECFFF3FCF7FFF0FBF5FFE2F7
-                  ECFFD0F2E1FFBCECD4FFA4E6C5FF8CDFB5FF7BDAABFF91DEB7FF097E42F5006E
-                  3700FFFFFF00029346002DAD6BF69CEBC4FFC2EFD8FFF0FBF6FFF1FBF6FFE0F7
-                  ECFFCEF2E0FFB9EDD3FFA2E6C4FF8FE1B7FF98E6BFFF2DA266F600803E00FFFF
-                  FF00FFFFFF0000808000019448C42DAD6BF695E7BDFFA9ECCAFFC1F0D8FFCAF1
-                  DDFFB9EDD4FFA9EACAFF97E8C0FF93E5BCFF2DAC6AF6018D44C400800000FFFF
-                  FF00FFFFFF00FFFFFF00008080000293460009974DF553C58CFC7CDAAAFF99E8
-                  C0FF99E8C0FF7CDAAAFF53C58CFC09974DF50093460000808000FFFFFF00FFFF
-                  FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF000091450000924585019548C50192
-                  47F2019247F2019548C50092458500914500FFFFFF00FFFFFF00FFFFFF00FFFF
-                  FF00
-                }
-                Proportional = True
-                Stretch = True
-              end
-              object cbOverviewConnected: TCheckBox
-                Left = 403
-                Height = 17
-                Top = 9
-                Width = 95
-                Caption = 'Connected only'
-                OnClick = cbOverviewStatusErrorClick
+                BorderSpacing.Left = 8
+                Caption = 'All'
+                OnClick = ButOverviewStatusPackagesAllClick
                 TabOrder = 4
               end
+              object Label13: TLabel
+                AnchorSideLeft.Control = panOverviewHostPackages1
+                AnchorSideTop.Control = panOverviewHostPackages1
+                AnchorSideTop.Side = asrCenter
+                Left = 0
+                Height = 13
+                Top = 6
+                Width = 86
+                Caption = 'Installation status'
+                ParentColor = False
+              end
             end
-            object BitBtn1: TBitBtn
-              Left = 513
-              Height = 34
-              Top = 0
-              Width = 92
-              Action = ActRefreshHostPackagesOverview
+            object panOverviewHostPackages2: TPanel
+              Left = 0
+              Height = 22
+              Top = 24
+              Width = 640
+              Align = alClient
+              AutoSize = True
+              BevelOuter = bvNone
+              ClientHeight = 22
+              ClientWidth = 640
               TabOrder = 1
+              object cbOverviewSectionHost: TCheckBox
+                AnchorSideLeft.Control = Label16
+                AnchorSideLeft.Side = asrBottom
+                AnchorSideTop.Control = panOverviewHostPackages2
+                AnchorSideTop.Side = asrCenter
+                Left = 176
+                Height = 17
+                Top = 3
+                Width = 42
+                BorderSpacing.Left = 5
+                Caption = 'Host'
+                OnClick = cbOverviewSectionHostClick
+                TabOrder = 0
+              end
+              object cbOverviewSectionGroup: TCheckBox
+                AnchorSideLeft.Control = cbOverviewSectionHost
+                AnchorSideLeft.Side = asrBottom
+                AnchorSideTop.Control = panOverviewHostPackages2
+                AnchorSideTop.Side = asrCenter
+                Left = 228
+                Height = 17
+                Top = 3
+                Width = 49
+                BorderSpacing.Left = 10
+                Caption = 'Group'
+                OnClick = cbOverviewSectionHostClick
+                TabOrder = 1
+              end
+              object cbOverviewSectionBase: TCheckBox
+                AnchorSideLeft.Control = cbOverviewSectionGroup
+                AnchorSideLeft.Side = asrBottom
+                AnchorSideTop.Control = panOverviewHostPackages2
+                AnchorSideTop.Side = asrCenter
+                Left = 287
+                Height = 17
+                Top = 3
+                Width = 43
+                BorderSpacing.Left = 10
+                Caption = 'Base'
+                OnClick = cbOverviewSectionHostClick
+                TabOrder = 2
+              end
+              object cbOverviewSectionUnit: TCheckBox
+                AnchorSideLeft.Control = cbOverviewSectionBase
+                AnchorSideLeft.Side = asrBottom
+                AnchorSideTop.Control = panOverviewHostPackages2
+                AnchorSideTop.Side = asrCenter
+                Left = 340
+                Height = 17
+                Top = 3
+                Width = 39
+                BorderSpacing.Left = 10
+                Caption = 'Unit'
+                OnClick = cbOverviewSectionHostClick
+                TabOrder = 3
+              end
+              object cbOverviewSectionWSUS: TCheckBox
+                AnchorSideLeft.Control = cbOverviewSectionUnit
+                AnchorSideLeft.Side = asrBottom
+                AnchorSideTop.Control = panOverviewHostPackages2
+                AnchorSideTop.Side = asrCenter
+                Left = 389
+                Height = 17
+                Top = 3
+                Width = 60
+                BorderSpacing.Left = 10
+                Caption = 'Updates'
+                OnClick = cbOverviewSectionHostClick
+                TabOrder = 4
+              end
+              object cbOverviewSectionSelfService: TCheckBox
+                AnchorSideLeft.Control = cbOverviewSectionWSUS
+                AnchorSideLeft.Side = asrBottom
+                AnchorSideTop.Control = panOverviewHostPackages2
+                AnchorSideTop.Side = asrCenter
+                Left = 459
+                Height = 17
+                Top = 3
+                Width = 76
+                BorderSpacing.Left = 10
+                Caption = 'Self-service'
+                OnClick = cbOverviewSectionHostClick
+                TabOrder = 5
+              end
+              object cbOverviewSectionProfile: TCheckBox
+                AnchorSideLeft.Control = cbOverviewSectionSelfService
+                AnchorSideLeft.Side = asrBottom
+                AnchorSideTop.Control = panOverviewHostPackages2
+                AnchorSideTop.Side = asrCenter
+                Left = 545
+                Height = 17
+                Top = 3
+                Width = 55
+                BorderSpacing.Left = 10
+                Caption = 'Profiles'
+                OnClick = cbOverviewSectionHostClick
+                TabOrder = 6
+              end
+              object EdOverViewSearchHostPackages: TSearchEdit
+                AnchorSideLeft.Control = panOverviewHostPackages2
+                AnchorSideTop.Control = panOverviewHostPackages2
+                AnchorSideTop.Side = asrCenter
+                Left = 0
+                Height = 21
+                Hint = 'Regular expressions allowed'
+                Top = 1
+                Width = 120
+                EmptyText = 'Search package'
+                ExecuteDelay = 650
+                OnExecute = cbOverviewSectionHostClick
+                Options = [seoExecuteEmpty, seoExecuteOnKillFocus]
+                Constraints.MaxHeight = 21
+                Constraints.MinWidth = 120
+                Font.Color = clGray
+                ParentFont = False
+                TabOrder = 7
+              end
+              object Label16: TLabel
+                AnchorSideLeft.Control = EdOverViewSearchHostPackages
+                AnchorSideLeft.Side = asrBottom
+                AnchorSideTop.Control = panOverviewHostPackages2
+                AnchorSideTop.Side = asrCenter
+                Left = 135
+                Height = 13
+                Top = 5
+                Width = 36
+                BorderSpacing.Left = 15
+                Caption = 'Types :'
+                ParentColor = False
+              end
             end
           end
         end
@@ -4891,8 +5039,7 @@ object VisWaptGUI: TVisWaptGUI
             PropertyName = 'maturity'
           end        
           item
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 39
+            Position = 38
             Tag = 16
             Text = 'Target OS'
             Width = 100
@@ -5071,15 +5218,7 @@ object VisWaptGUI: TVisWaptGUI
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 38
-            Tag = 39
-            Text = 'target_os'
-            Width = 100
-            PropertyName = 'target_os'
-          end        
-          item
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 40
+            Position = 39
             Tag = 40
             Text = 'localpath'
             Width = 100
@@ -5087,7 +5226,7 @@ object VisWaptGUI: TVisWaptGUI
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 41
+            Position = 40
             Tag = 41
             Text = 'homepage'
             Width = 100
@@ -5095,7 +5234,7 @@ object VisWaptGUI: TVisWaptGUI
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 42
+            Position = 41
             Tag = 42
             Text = 'sourcespath'
             Width = 10
@@ -5103,7 +5242,7 @@ object VisWaptGUI: TVisWaptGUI
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 43
+            Position = 42
             Tag = 43
             Text = 'Categories'
             PropertyName = 'categories'
@@ -11093,8 +11232,8 @@ object VisWaptGUI: TVisWaptGUI
     end
   end
   object PopupWUAProducts: TPopupMenu
-    left = 800
-    top = 448
+    left = 808
+    top = 496
     object MenuItem63: TMenuItem
       Action = ActWUAProductAllow
     end
@@ -14737,5 +14876,19 @@ object VisWaptGUI: TVisWaptGUI
     object MenuItem24: TMenuItem
       Action = ActRefreshHostPackagesOverview
     end
+  end
+  object TimerPackagesSummaryUpdate: TTimer
+    Enabled = False
+    Interval = 200
+    OnTimer = TimerPackagesSummaryUpdateTimer
+    left = 1032
+    top = 376
+  end
+  object TimerPackagesStatusFilter: TTimer
+    Enabled = False
+    Interval = 200
+    OnTimer = TimerPackagesStatusFilterTimer
+    left = 1032
+    top = 432
   end
 end
