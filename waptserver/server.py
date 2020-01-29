@@ -1996,6 +1996,7 @@ def packages_for_hosts():
     Args:
         host_uuids (str) : (can be a csv list of hosts uuid)
         install_status (str): csv list of install_status to return
+        sections (str): csv list of packages section to return. If empty, all sections
         reachable : if set and =1, returns only reachable hosts status
 
         limit (int)
@@ -2009,6 +2010,7 @@ def packages_for_hosts():
         host_uuids = ensure_list(request.args.get('host_uuids'))
         reachable = request.args.get('reachable','') == '1'
         install_status = ensure_list(request.args.get('install_status'))
+        sections = ensure_list(request.args.get('sections'))
     else:
         # unzip if post data is gzipped
         if request.headers.get('Content-Encoding') == 'gzip':
@@ -2021,6 +2023,7 @@ def packages_for_hosts():
         host_uuids = post_data.get('host_uuids')
         reachable = str(post_data.get('reachable','')) == '1'
         install_status = ensure_list(post_data.get('install_status'))
+        sections = ensure_list(post_data.get('sections'))
 
     fields = []
     fields.extend([
@@ -2040,6 +2043,8 @@ def packages_for_hosts():
         where = where & (Hosts.reachable =='OK')
     if install_status:
         where = where & HostPackagesStatus.install_status.in_(install_status)
+    if sections:
+        where = where & HostPackagesStatus.section.in_(sections)
 
     result = list(
             query.where(where)
