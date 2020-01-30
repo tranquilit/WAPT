@@ -78,7 +78,7 @@ from waptserver.config import get_http_proxies
 from waptpackage import PackageEntry,WaptLocalRepo,EWaptBadSignature,EWaptMissingCertificate
 from waptcrypto import SSLCertificate,SSLVerifyException,SSLCertificateSigningRequest,InvalidSignature,SSLPrivateKey,EWaptCryptoException
 from waptcrypto import sha256_for_file,sha256_for_data
-from waptcrypto import SSLCABundle
+from waptcrypto import SSLCABundle,SSLCRL
 
 from waptutils import datetime2isodate,ensure_list,Version,setloglevel
 
@@ -274,6 +274,22 @@ def check_host_cert(host_certificate):
     if app.conf['clients_signing_certificate'] and os.path.isfile(app.conf['clients_signing_certificate']):
         server_ca = SSLCABundle(app.conf['clients_signing_certificate'])
         return server_ca.check_certificates_chain(host_certificate)
+    return None
+
+def revoke_cert(host_certificate):
+    if (app.conf['clients_signing_key'] and app.conf['clients_signing_certificate'] and app.conf['clients_signing_crl'] and \
+            os.path.isfile(app.conf['clients_signing_key']) and os.path.isfile(app.conf['clients_signing_certificate'])):
+        signing_key = SSLPrivateKey(app.conf['clients_signing_key'])
+        signing_cert = SSLCertificate(app.conf['clients_signing_certificate'])
+        server_ca = SSLCABundle(app.conf['clients_signing_certificate'])
+        if server_ca.check_certificates_chain(host_certificate):
+            crl = SSLCRL(app.conf['clients_signing_crl'],cakey=signing_key,cacert=signing_cert)
+            crl.revoke_cert(host_certificate)
+            crl.save_as_pem()
+        else:
+            logger.warning('certificate can not be revoked by this CA')
+
+
     return None
 
 @app.route('/add_host_kerberos',methods=['HEAD','POST'])
@@ -1616,6 +1632,13 @@ def hosts_delete():
                         '{} files removed from host repository'.format(len(result['files'])))
 
                 if 'delete_inventory' in post_data and post_data['delete_inventory']:
+                    if app.conf['clients_signing_crl']:
+                        host_certs = Hosts.select(Hosts.host_certificate).where(query)
+                        for host in host_certs:
+                            if host.host_certificate:
+                                cert = SSLCertificate(crt_string=host.host_certificate)
+                                revoke_cert(cert)
+
                     remove_result = Hosts.delete().where(query).execute()
                     msg.append('{} hosts removed from DB'.format(remove_result))
 

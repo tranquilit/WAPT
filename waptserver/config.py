@@ -82,6 +82,7 @@ _defaults = {
     'allow_unauthenticated_connect':None,
     'clients_signing_key':None,
     'clients_signing_certificate':None,
+    'clients_signing_crl':None,
     'client_certificate_lifetime':3650,
     'use_ssl_client_auth':False,
     'signature_clockskew':5*60,
@@ -204,6 +205,9 @@ def load_config(cfgfile=DEFAULT_CONFIG_FILE):
 
     if _config.has_option('options', 'clients_signing_key'):
         conf['clients_signing_key'] = _config.get('options', 'clients_signing_key')
+
+    if _config.has_option('options', 'clients_signing_crl'):
+        conf['clients_signing_crl'] = _config.get('options', 'clients_signing_crl')
 
     if _config.has_option('options', 'client_certificate_lifetime'):
         conf['client_certificate_lifetime'] = _config.getint('options', 'client_certificate_lifetime')
