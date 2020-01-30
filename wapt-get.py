@@ -384,7 +384,7 @@ def main():
         development_actions = ['sources','make-template',
             'make-host-template','make-group-template','build-package',
             'sign-package','build-upload','duplicate','edit','edit-host',
-            'upload-package','scan-packages','update-packages','update-package-sources']
+            'upload-package','update-package-sources']
         if not options.config:
             if action in development_actions and os.path.isfile(default_waptconsole_ini):
                 config_file = default_waptconsole_ini
