@@ -2420,13 +2420,19 @@ class SSLCRL(BaseObjectClass):
 
     """
 
-    def __init__(self,filename=None,pem_data=None,der_data=None,crl=None):
+    def __init__(self,filename=None,pem_data=None,der_data=None,crl=None,cacert=None,cakey=None):
         self._crl = crl
         self.filename = filename
         if pem_data is not None:
             self._load_pem_data(pem_data)
         elif der_data is not None:
             self._load_der_data(der_data)
+        if cacert:
+            self.cacert=cacert
+        if cakey:
+            self.cakey=cakey
+        if self.crl and self.cacert:
+            self.verify_signature_with(self.cacert)
 
     def _load_pem_data(self,data):
         self._crl = x509.load_pem_x509_crl(data,default_backend())
@@ -2459,9 +2465,9 @@ class SSLCRL(BaseObjectClass):
 
         if (cert.authority_key_identifier is not None and cert.authority_key_identifier == self.authority_key_identifier) or \
             (cert.issuer_subject_hash is not None and cert.issuer_subject_hash == self.issuer_subject_hash):
-            for rev_cert in self.crl:
-                if rev_cert.serial_number == cert.serial_number:
-                    return rev_cert.revocation_date
+            rev_cert = self.crl.get_revoked_certificate_by_serial_number(cert)
+            if rev_cert:
+                return rev_cert.revocation_date
         return False
 
     @property
@@ -2580,6 +2586,33 @@ class SSLCRL(BaseObjectClass):
     def __repr__(self):
         return '<SSLCRL %s>' % self.issuer
 
+    def revoke_cert(self,cert,cacert=None,cakey=None):
+        if cacert is None:
+            cacert = self.cacert
+        if cakey is None:
+            cakey = self.cakey
+        if self.crl is not None:
+            self.verify_signature_with(cacert)
+            revoked_certs = self.revoked_certs()
+        else:
+            revoked_certs = []
+        revoked_certs.append( dict(serial_number=cert.serial_number,revocation_date=datetime.datetime.utcnow()) )
+
+        builder = x509.CertificateRevocationListBuilder()
+        builder = builder.issuer_name(x509.Name([
+            x509.NameAttribute(x509.NameOID.COMMON_NAME, cacert.cn),
+        ]))
+        builder = builder.last_update(datetime.datetime.utcnow())
+        builder = builder.next_update(datetime.datetime.utcnow() +  datetime.timedelta(1, 0, 0))
+
+        for revoked in revoked_certs:
+            revoked_cert = x509.RevokedCertificateBuilder().serial_number(revoked['serial_number']).revocation_date(revoked['revocation_date']).build(default_backend())
+            builder = builder.add_revoked_certificate(revoked_cert)
+        self._crl = builder.sign(
+            private_key=cakey.rsa, algorithm=hashes.SHA256(),
+            backend=default_backend()
+            )
+        return self._crl
 
 class SSLPKCS12(object):
     """Encapsulate a PKCS#12 key/certificate/ca certs store
