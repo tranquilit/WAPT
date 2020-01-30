@@ -134,13 +134,13 @@ Name: "{app}\waptserver\nginx\ssl"
 Type: files; Name: "{app}\waptserver\*.pyc"
 
 [INI]
-Filename: {app}\conf\waptserver.ini; Section: options; Key: allow_unauthenticated_registration; String: True;
+Filename: {app}\conf\waptserver.ini; Section: options; Key: allow_unauthenticated_registration; String: "{code:GetAllowUnauthenticatedRegistration}"; 
 Filename: {app}\wapt-get.ini; Section: Global; Key: default_package_prefix; String: "{code:GetDefaultPackagePrefix}"; Check: CheckSetDefaultPackagePrefix(); 
 Filename: {app}\wapt-get.ini; Section: Global; Key: personal_certificate_path; String: "{code:GetPersonalCertificatePath}"; Check: CheckSetPersonalCertificatePath(); 
 
 [RUN]
 Filename: "{app}\waptserver\pgsql-9.6\vcredist_x64.exe"; Parameters: "/passive /quiet"; StatusMsg: {cm:InstallMSVC2013}; Description: "{cm:InstallMSVC2013}";  
-Filename: "{app}\wapt-get.exe"; Parameters: " update-packages {app}\waptserver\repository\wapt"; Flags: runhidden; StatusMsg: {cm:ScanPackages}; Description: "{cm:ScanPackages}"; BeforeInstall: SetMarqueeProgress(True); AfterInstall: SetMarqueeProgress(False)
+Filename: "{app}\wapt-get.exe"; Parameters: " update-packages {app}\waptserver\repository\wapt --config={app}\wapt-get.ini"; Flags: runhidden; StatusMsg: {cm:ScanPackages}; Description: "{cm:ScanPackages}"; BeforeInstall: SetMarqueeProgress(True); AfterInstall: SetMarqueeProgress(False)
 Filename: "{app}\waptpython.exe"; Parameters: "{app}\waptserver\winsetup.py all -c {app}\conf\waptserver.ini -f --setpassword={code:GetWaptServerPassword64}"; StatusMsg: {cm:InstallingServerServices}; Description: "{cm:InstallingServerServices}"; BeforeInstall: SetMarqueeProgress(True); AfterInstall: SetMarqueeProgress(False)
 
 Filename: "{sys}\netsh.exe"; Parameters: "advfirewall firewall del rule name=""WaptServer"""; StatusMsg: {cm:OpenFirewallPort443}; Description: "{cm:OpenFirewallPort443}"; Flags: runhidden;
@@ -168,6 +168,7 @@ Name: InstallPostgreSQL; Description: "{cm:InstallPostgreSQL}"; GroupDescription
 Name: InstallWaptserver; Description: "{cm:InstallWaptServer}"; GroupDescription: "WAPT Server"
 #endif
 Name: RegisterComputerOnLocalServer; Description: "{cm:SetupRegisterThisComputer}";
+Name: AllowUnauthenticatedRegistration; Description: "{cm:AllowUnauthenticatedRegistration}";
 
 [UninstallRun]
 #ifdef waptenterprise
@@ -241,6 +242,7 @@ fr.ShowWaptServerHomePage=Ouvre la page d'accueil du serveur Wapt dans votre nav
 fr.MustSpecifyPackagePrefix=Vous devez spécifier un préfixe de paquet
 fr.MustSpecifyPrivateKeyPassword=Vous devez fournir le mot de passe de la clé privée pour signer le paquet waptupgrade
 fr.OpenFirewallPort443=Autorise les connections TCP sur les port 80 et 443
+fr.AllowUnauthenticatedRegistration=Autoriser les machines à s'enregistrer sur le serveur sans authentification
 
 en.RegisteringService=Setup WaptServer Service
 en.InstallMSVC2013=Installing MSVC++ 2013 Redistribuable
@@ -294,6 +296,7 @@ en.ShowWaptServerHomePage=Open WaptServer homepage in Web browser (You may need 
 en.MustSpecifyPackagePrefix=You must specify a packages prefix
 en.MustSpecifyPrivateKeyPassword=You must specify the private key's password to sign the waptupgrade package
 en.OpenFirewallPort443=Enable TCP inbound on port 443 and 80 for https connections
+en.AllowUnauthenticatedRegistration=Allow computers to register themselves on wapt server without authentication
 
 de.RegisteringService=Setup WaptServer Service
 de.InstallMSVC2013=MSVC++ 2013 Redistribuable installieren
@@ -439,6 +442,14 @@ begin
     Result := AddQuotes(pgPersonalKeyParams.Values[1])
   else
     Result := '';
+end;
+
+function GetAllowUnauthenticatedRegistration(Param:String):String;
+begin
+	if IsTaskSelected('AllowUnauthenticatedRegistration') then
+		Result := 'True'
+	else
+		Result := 'False';
 end;
 
 function GetPrivateKeyPassword64(Param: String):String;

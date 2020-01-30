@@ -186,9 +186,10 @@ Root: HKLM; Subkey: "SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\wapt-ge
 
 [Run]
 #ifdef vcredist
-Filename: "{app}\vc_redist\vcredist_x86.exe"; Parameters: "/q"; WorkingDir: "{tmp}"; StatusMsg: "{cm:InstallingVCpp}"; Description: "{cm:InstallingVCpp}"; Tasks: installredist2008
+Filename: "{app}\vc_redist\vcredist_x86.exe"; Parameters: "/q"; WorkingDir: "{tmp}"; StatusMsg: "{cm:InstallingVCpp}"; Description: "{cm:InstallingVCpp}"; Check: VCRedistNeedsInstall 
+;Filename: "{app}\vc_redist\vcredist_x86.exe"; Parameters: "/q"; WorkingDir: "{tmp}"; StatusMsg: "{cm:InstallingVCpp}"; Description: "{cm:InstallingVCpp}"; Tasks: installredist2008
 ; Duplication necessaire, cf. [Tasks]
-Filename: "{app}\vc_redist\vcredist_x86.exe"; Parameters: "/q"; WorkingDir: "{tmp}"; StatusMsg: "{cm:InstallingVCpp}"; Description: "{cm:InstallingVCpp}"; Tasks: installredist2008unchecked
+;Filename: "{app}\vc_redist\vcredist_x86.exe"; Parameters: "/q"; WorkingDir: "{tmp}"; StatusMsg: "{cm:InstallingVCpp}"; Description: "{cm:InstallingVCpp}"; Tasks: installredist2008unchecked
 #endif
 
 ; rights rw for Admins and System, ro for users and authenticated users on wapt directory
@@ -220,12 +221,12 @@ Name: EnableWaptServiceNoPassword; Description: "{cm:EnableWaptServiceNoPassword
 #endif
 
 #ifdef vcredist
-Name: installredist2008; Description: "{cm:InstallVCpp}";  Check: VCRedistNeedsInstall();  GroupDescription: "Base";
+;Name: installredist2008; Description: "{cm:InstallVCpp}";  Check: VCRedistNeedsInstall();  GroupDescription: "Base";
 ; Duplication helas necessaire.
 ; On souhaite seulement changer les actions a realiser par defaut, pas a empecher
 ; l'utilisateur de forcer la reinstallation de VC++, et il n'existe pas de moyen
 ; de modifier dynamiquement le flag "unchecked" 
-Name: installredist2008unchecked; Description: "{cm:ForceVCppReinstall}"; Check: not VCRedistNeedsInstall(); Flags: unchecked;  GroupDescription: "Base";
+;Name: installredist2008unchecked; Description: "{cm:ForceVCppReinstall}"; Check: not VCRedistNeedsInstall(); Flags: unchecked;  GroupDescription: "Base";
 #endif
 
 [InstallDelete]
@@ -473,17 +474,9 @@ begin
   Result := MsiQueryProductState(ProductID) = INSTALLSTATE_DEFAULT;
 end; { VCVersionInstalled }
 
-function VCRedistNeedsInstall: Boolean;
+function VCRedistNeedsInstall(): Boolean;
 begin
-	      // here the Result must be True when you need to install your VCRedist
-	      // or False when you don't need to, so now it's upon you how you build
-	      // this statement, the following won't install your VC redist only when
-  // the Visual C++ 2010 Redist (x86) and Visual C++ 2010 SP1 Redist(x86)
-  // are installed for the current user
-
-
-  // Note : on ne tient pas compte des versions plus anciennes de VC++ 2008
-  Result := not VCVersionInstalled(VC_2008_SP1_MFC_SEC_UPD_REDIST_X86);
+  Result := not (ExpandConstant('{param:VCRedistInstall|}') = '0') and (not VCVersionInstalled(VC_2008_SP1_MFC_SEC_UPD_REDIST_X86) or (ExpandConstant('{param:VCRedistInstall|}') = '1'));
 end;
 #endif
 
