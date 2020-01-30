@@ -33,9 +33,10 @@ type
     ActEditOrgUnitPackage: TAction;
     ActInstallLicence: TAction;
     ActAddProfile: TAction;
+    ActTriggerPendingActionsSafe: TAction;
     ActTriggerPendingActions: TAction;
     ActRefreshHostPackagesOverview: TAction;
-    ActTriggerSafeHostUpgrade: TAction;
+    ActTriggerHostUpgradeSafe: TAction;
     ActSuppr: TAction;
     ActManageUsers: TAction;
     ActSaveRules: TAction;
@@ -89,6 +90,7 @@ type
     MenuItem116: TMenuItem;
     MenuItem117: TMenuItem;
     MenuItem118: TMenuItem;
+    MenuItem119: TMenuItem;
     MenuItem24: TMenuItem;
     MenuItemCheckFiles: TMenuItem;
     MenuItemShowErrors: TMenuItem;
@@ -654,7 +656,9 @@ type
     procedure ActSupprExecute(Sender: TObject);
     procedure ActManageUsersExecute(Sender: TObject);
     procedure ActSaveRulesExecute(Sender: TObject);
-    procedure ActTriggerSafeHostUpgradeExecute(Sender: TObject);
+    procedure ActTriggerHostUpgradeSafeExecute(Sender: TObject);
+    procedure ActTriggerPendingActionsSafeExecute(Sender: TObject);
+    procedure ActTriggerPendingActionsUpdate(Sender: TObject);
     procedure ActUpRuleExecute(Sender: TObject);
     procedure ActCancelRunningTaskExecute(Sender: TObject);
     procedure ActChangePasswordExecute(Sender: TObject);
@@ -1140,7 +1144,7 @@ type
     function updateprogress(receiver: TObject; current, total: integer): boolean;
     function TriggerActionOnHosts(uuids: ISuperObject;AAction:String;Args:ISuperObject;title,errortitle:String;Force:Boolean=False;NotifyServer:Boolean=True):ISuperObject;
     procedure TriggerActionOnHostPackages(APackagesStatusGrid:TSOGrid;HostUUIDs:ISuperObject;AAction, title, errortitle: String;Force:Boolean=False);
-    procedure TriggerPendingActions(APackagesStatusGrid:TSOGrid;title,errortitle:String;Force:Boolean=False);
+    procedure TriggerPendingActions(APackagesStatusGrid:TSOGrid;title,errortitle:String;Force:Boolean=False;Args:ISuperObject=Nil);
     function DownloadPackage(RepoUrl, Filename: String): Variant;
 
     property IsEnterpriseEdition:Boolean read GetIsEnterpriseEdition write SetIsEnterpriseEdition;
@@ -3532,7 +3536,8 @@ begin
   end;
 end;
 
-procedure TVisWaptGUI.TriggerPendingActions(APackagesStatusGrid:TSOGrid;title,errortitle:String;Force:Boolean=False);
+procedure TVisWaptGUI.TriggerPendingActions(APackagesStatusGrid:TSOGrid;title,errortitle:String;
+    Force:Boolean=False;Args:ISuperObject=Nil);
 var
   sel : ISuperObject;
   PackageStatus, SOAction, SOActions,res,HostUUID:ISuperObject;
@@ -3573,6 +3578,8 @@ begin
               SOAction.B['force'] := Force;
               SOAction['packages'] := SA([PackageReq]);
               SOActions.AsArray.Add(SOAction);
+              if Args<>Nil then
+                SOAction.Merge(Args);
             end;
         end;
 
@@ -5863,7 +5870,8 @@ begin
   ActWUANewPackage.Visible := False;
   ActSoftwaresNormalization.Visible := False;
   ActAddProfile.Visible:=False;
-  ActTriggerSafeHostUpgrade.Visible := False;
+  ActTriggerHostUpgradeSafe.Visible := False;
+  ActTriggerPendingActionsSafe.Visible := False;
 
   SetSOGridVisible(GridHosts,'audit_status',False);
   SetSOGridVisible(GridHosts,'waptwua.status',False);
@@ -7079,6 +7087,12 @@ procedure TVisWaptGUI.ActTriggerSafeHostUpgradeExecute(Sender: TObject);
 begin
   ;;
 end;
+
+procedure TVisWaptGUI.ActTriggerPendingActionsSafeExecute(Sender: TObject);
+begin
+  ;;
+end;
+
 
 {$endif}
 

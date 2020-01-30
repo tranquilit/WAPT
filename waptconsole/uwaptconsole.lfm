@@ -1,7 +1,7 @@
 object VisWaptGUI: TVisWaptGUI
-  Left = 329
+  Left = 352
   Height = 873
-  Top = 83
+  Top = 145
   Width = 1388
   AllowDropFiles = True
   Caption = 'WAPT console'
@@ -9960,11 +9960,11 @@ object VisWaptGUI: TVisWaptGUI
       OnExecute = ActSupprExecute
       ShortCut = 46
     end
-    object ActTriggerSafeHostUpgrade: TAction
+    object ActTriggerHostUpgradeSafe: TAction
       Category = 'hosts'
       Caption = 'Apply upgrades for not running applications'
       ImageIndex = 16
-      OnExecute = ActTriggerSafeHostUpgradeExecute
+      OnExecute = ActTriggerHostUpgradeSafeExecute
       OnUpdate = ActHostsActionsUpdate
     end
     object ActAddDepends: TAction
@@ -10042,6 +10042,14 @@ object VisWaptGUI: TVisWaptGUI
       Caption = 'Apply selected install'
       ImageIndex = 16
       OnExecute = ActTriggerPendingActionsExecute
+      OnUpdate = ActTriggerPendingActionsUpdate
+    end
+    object ActTriggerPendingActionsSafe: TAction
+      Category = 'hosts'
+      Caption = 'Apply install / remove for not running applications'
+      ImageIndex = 26
+      OnExecute = ActTriggerPendingActionsSafeExecute
+      OnUpdate = ActTriggerPendingActionsUpdate
     end
   end
   object PopupMenuPackages: TPopupMenu
@@ -10269,7 +10277,7 @@ object VisWaptGUI: TVisWaptGUI
       Visible = False
     end
     object MenuItem116: TMenuItem
-      Action = ActTriggerSafeHostUpgrade
+      Action = ActTriggerHostUpgradeSafe
     end
     object MenuItem82: TMenuItem
       Action = ActTriggerBurstUpgrades
@@ -11232,8 +11240,8 @@ object VisWaptGUI: TVisWaptGUI
     end
   end
   object PopupWUAProducts: TPopupMenu
-    left = 808
-    top = 496
+    left = 800
+    top = 432
     object MenuItem63: TMenuItem
       Action = ActWUAProductAllow
     end
@@ -14872,6 +14880,9 @@ object VisWaptGUI: TVisWaptGUI
     object MenuItem118: TMenuItem
       Action = ActTriggerPendingActions
       Caption = 'Apply selected install / remove'
+    end
+    object MenuItem119: TMenuItem
+      Action = ActTriggerPendingActionsSafe
     end
     object MenuItem24: TMenuItem
       Action = ActRefreshHostPackagesOverview

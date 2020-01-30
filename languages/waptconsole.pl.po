@@ -3059,12 +3059,17 @@ msgctxt "TVISWAPTGUI.ACTTRIGGERHOSTUPGRADE.HINT"
 msgid "Launch pending packages upgrades"
 msgstr ""
 
+#: tviswaptgui.acttriggerhostupgradesafe.caption
+msgctxt "tviswaptgui.acttriggerhostupgradesafe.caption"
+msgid "Apply upgrades for not running applications"
+msgstr ""
+
 #: tviswaptgui.acttriggerpendingactions.caption
 msgid "Apply selected install"
 msgstr ""
 
-#: tviswaptgui.acttriggersafehostupgrade.caption
-msgid "Apply upgrades for not running applications"
+#: tviswaptgui.acttriggerpendingactionssafe.caption
+msgid "Apply install / remove for not running applications"
 msgstr ""
 
 #: tviswaptgui.acttriggertestlongtask.caption

@@ -3092,13 +3092,18 @@ msgctxt "TVISWAPTGUI.ACTTRIGGERHOSTUPGRADE.HINT"
 msgid "Launch pending packages upgrades"
 msgstr "Lancer les installations en attente"
 
+#: tviswaptgui.acttriggerhostupgradesafe.caption
+msgctxt "tviswaptgui.acttriggerhostupgradesafe.caption"
+msgid "Apply upgrades for not running applications"
+msgstr "Lancer les installations en attente pour les applications non lancées"
+
 #: tviswaptgui.acttriggerpendingactions.caption
 msgid "Apply selected install"
 msgstr "Appliquer les installations sélectionnées"
 
-#: tviswaptgui.acttriggersafehostupgrade.caption
-msgid "Apply upgrades for not running applications"
-msgstr "Lancer les installations en attente pour les applications non lancées"
+#: tviswaptgui.acttriggerpendingactionssafe.caption
+msgid "Apply install / remove for not running applications"
+msgstr "Lancer les les installations en attente pour les applications non lancées"
 
 #: tviswaptgui.acttriggertestlongtask.caption
 msgid "Trigger test long task"
@@ -3290,7 +3295,6 @@ msgid "Download index and missing cabs from Microsoft Web site"
 msgstr "Télécharger l'index et les cabs manquants depuis le site de MS"
 
 #: tviswaptgui.butoverviewstatuspackagesall.caption
-
 msgctxt "tviswaptgui.butoverviewstatuspackagesall.caption"
 msgid "All"
 msgstr "Tout"
@@ -3412,7 +3416,6 @@ msgid "Last version only"
 msgstr "Dernière version seulement"
 
 #: tviswaptgui.cboverviewsectionbase.caption
-
 msgctxt "tviswaptgui.cboverviewsectionbase.caption"
 msgid "Base"
 msgstr "Base"
@@ -3422,7 +3425,6 @@ msgid "Group"
 msgstr "Groupe"
 
 #: tviswaptgui.cboverviewsectionhost.caption
-
 msgctxt "tviswaptgui.cboverviewsectionhost.caption"
 msgid "Host"
 msgstr "Machine"
@@ -3444,7 +3446,6 @@ msgid "Updates"
 msgstr "Mises à jour"
 
 #: tviswaptgui.cboverviewstatuserrors.caption
-
 msgctxt "tviswaptgui.cboverviewstatuserrors.caption"
 msgid "Errors"
 msgstr "Erreurs"
@@ -5065,7 +5066,6 @@ msgid "repo"
 msgstr "Dépôt"
 
 #: tviswaptgui.gridpackages.header.columns[39].text
-
 msgctxt "tviswaptgui.gridpackages.header.columns[39].text"
 msgid "localpath"
 msgstr "Chemin local"
@@ -5076,19 +5076,16 @@ msgid "Version"
 msgstr "Version"
 
 #: tviswaptgui.gridpackages.header.columns[40].text
-
 msgctxt "tviswaptgui.gridpackages.header.columns[40].text"
 msgid "homepage"
 msgstr "Page d'accueil"
 
 #: tviswaptgui.gridpackages.header.columns[41].text
-
 msgctxt "tviswaptgui.gridpackages.header.columns[41].text"
 msgid "sourcespath"
 msgstr "Chemin sources"
 
 #: tviswaptgui.gridpackages.header.columns[42].text
-
 msgctxt "tviswaptgui.gridpackages.header.columns[42].text"
 msgid "Categories"
 msgstr "Catégories"
@@ -5270,17 +5267,17 @@ msgstr ""
 #: tviswaptgui.gridselfservicepackages.header.columns[23].text
 msgctxt "tviswaptgui.gridselfservicepackages.header.columns[23].text"
 msgid "description_fr"
-msgstr ""
+msgstr "Description française"
 
 #: tviswaptgui.gridselfservicepackages.header.columns[24].text
 msgctxt "tviswaptgui.gridselfservicepackages.header.columns[24].text"
 msgid "description_es"
-msgstr ""
+msgstr "Description espagnole"
 
 #: tviswaptgui.gridselfservicepackages.header.columns[25].text
 msgctxt "tviswaptgui.gridselfservicepackages.header.columns[25].text"
 msgid "description_de"
-msgstr ""
+msgstr "Description allemande"
 
 #: tviswaptgui.gridselfservicepackages.header.columns[26].text
 msgctxt "tviswaptgui.gridselfservicepackages.header.columns[26].text"
@@ -5551,7 +5548,6 @@ msgid "md5sum"
 msgstr "Somme MD5"
 
 #: tviswaptgui.gridwuapackages.header.columns[22].text
-
 msgctxt "tviswaptgui.gridwuapackages.header.columns[22].text"
 msgid "description_pl"
 msgstr "Description polonaise"
@@ -5559,12 +5555,12 @@ msgstr "Description polonaise"
 #: tviswaptgui.gridwuapackages.header.columns[23].text
 msgctxt "tviswaptgui.gridwuapackages.header.columns[23].text"
 msgid "description_fr"
-msgstr ""
+msgstr "Description française"
 
 #: tviswaptgui.gridwuapackages.header.columns[24].text
 msgctxt "tviswaptgui.gridwuapackages.header.columns[24].text"
 msgid "description_es"
-msgstr ""
+msgstr "Description espagnole"
 
 #: tviswaptgui.gridwuapackages.header.columns[25].text
 msgctxt "tviswaptgui.gridwuapackages.header.columns[25].text"
@@ -6158,7 +6154,7 @@ msgstr "Inventaire matériel"
 #: tviswaptgui.pghostpackagesoverview.caption
 msgctxt "tviswaptgui.pghostpackagesoverview.caption"
 msgid "Packages overview"
-msgstr ""
+msgstr "Synthèse états des paquets"
 
 #: tviswaptgui.pghostwua.caption
 msgid "Windows updates"

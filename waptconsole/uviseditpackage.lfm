@@ -20,8 +20,8 @@ object VisEditPackage: TVisEditPackage
   LCLVersion = '1.8.4.0'
   object PageControl1: TPageControl
     Left = 0
-    Height = 332
-    Top = 36
+    Height = 334
+    Top = 34
     Width = 630
     ActivePage = pgDepends
     Align = alClient
@@ -30,11 +30,11 @@ object VisEditPackage: TVisEditPackage
     OnChange = PageControl1Change
     object pgDepends: TTabSheet
       Caption = 'Edit dependencies'
-      ClientHeight = 304
+      ClientHeight = 308
       ClientWidth = 622
       object GridDepends: TSOGrid
         Left = 0
-        Height = 304
+        Height = 308
         Top = 0
         Width = 622
         OnBeforePaste = GridDependsBeforePaste
@@ -79,8 +79,8 @@ object VisEditPackage: TVisEditPackage
             PropertyName = 'depends'
           end>
         Header.DefaultHeight = 18
-        
         Header.Height = 18
+        Header.MaxHeight = 100
         Header.MinHeight = 18
         Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
         Header.Style = hsPlates
@@ -147,8 +147,8 @@ object VisEditPackage: TVisEditPackage
             PropertyName = 'depends'
           end>
         Header.DefaultHeight = 18
-        
         Header.Height = 18
+        Header.MaxHeight = 100
         Header.MinHeight = 18
         Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
         Header.Style = hsPlates
@@ -754,7 +754,6 @@ object VisEditPackage: TVisEditPackage
             Width = 456
           end>
         Header.DefaultHeight = 17
-        
         Header.Height = 18
         Header.MinHeight = 18
         Header.Options = [hoColumnResize, hoDrag, hoShowSortGlyphs, hoVisible, hoAutoSpring]
@@ -785,7 +784,7 @@ object VisEditPackage: TVisEditPackage
   end
   object Panel2: TPanel
     Left = -3
-    Height = 30
+    Height = 28
     Top = 3
     Width = 935
     Align = alTop
@@ -796,7 +795,7 @@ object VisEditPackage: TVisEditPackage
     ChildSizing.TopBottomSpacing = 3
     ChildSizing.HorizontalSpacing = 6
     ChildSizing.VerticalSpacing = 6
-    ClientHeight = 30
+    ClientHeight = 28
     ClientWidth = 935
     Constraints.MinWidth = 935
     TabOrder = 0
@@ -805,9 +804,9 @@ object VisEditPackage: TVisEditPackage
       AnchorSideTop.Control = Panel2
       AnchorSideTop.Side = asrCenter
       Left = 6
-      Height = 15
+      Height = 13
       Top = 8
-      Width = 44
+      Width = 40
       Caption = 'Package'
       Layout = tlCenter
       ParentColor = False
@@ -815,7 +814,7 @@ object VisEditPackage: TVisEditPackage
     object EdPackage: TEdit
       AnchorSideLeft.Control = labPackage
       AnchorSideLeft.Side = asrBottom
-      Left = 56
+      Left = 52
       Height = 21
       Top = 3
       Width = 180
@@ -828,10 +827,10 @@ object VisEditPackage: TVisEditPackage
       AnchorSideLeft.Side = asrBottom
       AnchorSideTop.Control = Panel2
       AnchorSideTop.Side = asrCenter
-      Left = 302
-      Height = 15
+      Left = 298
+      Height = 13
       Top = 8
-      Width = 60
+      Width = 53
       BorderSpacing.Left = 8
       Caption = 'Description'
       Layout = tlCenter
@@ -840,8 +839,8 @@ object VisEditPackage: TVisEditPackage
     object EdDescription: TEdit
       AnchorSideLeft.Control = LabDescription
       AnchorSideLeft.Side = asrBottom
-      Left = 368
-      Height = 23
+      Left = 357
+      Height = 21
       Top = 3
       Width = 381
       TabOrder = 1
@@ -849,18 +848,18 @@ object VisEditPackage: TVisEditPackage
     object EdVersion: TLabeledEdit
       AnchorSideLeft.Control = EdPackage
       AnchorSideLeft.Side = asrBottom
-      Left = 242
-      Height = 23
+      Left = 238
+      Height = 21
       Top = 3
       Width = 52
       EditLabel.AnchorSideTop.Control = EdVersion
       EditLabel.AnchorSideTop.Side = asrCenter
       EditLabel.AnchorSideRight.Control = EdVersion
       EditLabel.AnchorSideBottom.Side = asrBottom
-      EditLabel.Left = 198
-      EditLabel.Height = 15
+      EditLabel.Left = 197
+      EditLabel.Height = 13
       EditLabel.Top = 7
-      EditLabel.Width = 38
+      EditLabel.Width = 35
       EditLabel.Caption = 'Version'
       EditLabel.ParentColor = False
       Enabled = False
@@ -874,10 +873,10 @@ object VisEditPackage: TVisEditPackage
       AnchorSideLeft.Side = asrBottom
       AnchorSideTop.Control = Panel2
       AnchorSideTop.Side = asrCenter
-      Left = 762
-      Height = 15
+      Left = 751
+      Height = 13
       Top = 8
-      Width = 39
+      Width = 35
       Alignment = taRightJustify
       BorderSpacing.Left = 13
       Caption = 'Section'
@@ -886,12 +885,12 @@ object VisEditPackage: TVisEditPackage
     object EdSection: TComboBox
       AnchorSideLeft.Control = LabSection
       AnchorSideLeft.Side = asrBottom
-      Left = 807
-      Height = 23
+      Left = 792
+      Height = 21
       Top = 4
       Width = 140
       Enabled = False
-      ItemHeight = 15
+      ItemHeight = 13
       ItemIndex = 1
       Items.Strings = (
         'host'
@@ -930,11 +929,11 @@ object VisEditPackage: TVisEditPackage
       TabOrder = 0
     end
     object butBUApply: TBitBtn
-      Left = 654
+      Left = 659
       Height = 26
       Hint = 'Build the package, upload to the server and trigger Upgrade on the target host.'
       Top = 3
-      Width = 125
+      Width = 120
       Action = ActBUApply
       Align = alRight
       AutoSize = True
@@ -952,9 +951,9 @@ object VisEditPackage: TVisEditPackage
     end
     object cbShowLog: TCheckBox
       Left = 1
-      Height = 19
+      Height = 17
       Top = 6
-      Width = 86
+      Width = 79
       Caption = 'Show debug'
       OnClick = cbShowLogClick
       TabOrder = 3
@@ -963,12 +962,12 @@ object VisEditPackage: TVisEditPackage
   end
   object PanRight: TPanel
     Left = 635
-    Height = 332
-    Top = 36
+    Height = 334
+    Top = 34
     Width = 300
     Align = alRight
     BevelOuter = bvNone
-    ClientHeight = 332
+    ClientHeight = 334
     ClientWidth = 300
     TabOrder = 2
     object Panel9: TPanel
@@ -983,7 +982,7 @@ object VisEditPackage: TVisEditPackage
       TabOrder = 0
       object EdSearch: TSearchEdit
         Left = 2
-        Height = 23
+        Height = 21
         Hint = 'Use keywords to narrow search.'
         Top = 17
         Width = 136
@@ -1000,23 +999,23 @@ object VisEditPackage: TVisEditPackage
         Left = 149
         Height = 26
         Top = 15
-        Width = 81
+        Width = 79
         Action = ActEditSearch
         AutoSize = True
         TabOrder = 1
       end
       object Label2: TLabel
         Left = 2
-        Height = 15
+        Height = 13
         Top = 0
-        Width = 109
+        Width = 101
         Caption = 'Available packages : '
         ParentColor = False
       end
     end
     object GridPackages: TSOGrid
       Left = 0
-      Height = 259
+      Height = 261
       Top = 44
       Width = 300
       OnGetText = GridPackagesGetText
@@ -1326,8 +1325,8 @@ object VisEditPackage: TVisEditPackage
           PropertyName = 'signer'
         end>
       Header.DefaultHeight = 18
-      
       Header.Height = 18
+      Header.MaxHeight = 100
       Header.MinHeight = 18
       Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
       Header.SortColumn = 0
@@ -1344,7 +1343,7 @@ object VisEditPackage: TVisEditPackage
     object Panel3: TPanel
       Left = 0
       Height = 29
-      Top = 303
+      Top = 305
       Width = 300
       Align = alBottom
       BevelOuter = bvNone
@@ -1355,7 +1354,7 @@ object VisEditPackage: TVisEditPackage
         Left = 8
         Height = 26
         Top = 3
-        Width = 205
+        Width = 190
         Action = ActAddDepends
         AutoSize = True
         TabOrder = 0
@@ -1364,8 +1363,8 @@ object VisEditPackage: TVisEditPackage
   end
   object Splitter3: TSplitter
     Left = 630
-    Height = 332
-    Top = 36
+    Height = 334
+    Top = 34
     Width = 5
     Align = alRight
     ResizeAnchor = akRight

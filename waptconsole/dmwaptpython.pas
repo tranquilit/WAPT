@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, FileUtil, LazFileUtils, LazUTF8, PythonEngine, PythonGUIInputOutput, WrapDelphi,
   VarPyth, vte_json, superobject, fpjson, jsonparser, DefaultTranslator,LCLTranslator,
-  Controls;
+  Controls,tisstrings;
 
 type
 
@@ -112,6 +112,8 @@ type
     {$endif}
     function CheckLicence(domain: String; var LicencesLog: String): Integer;
     procedure CheckPySources;
+    function GetUserAllowedPerimetersSHA256: TDynStringArray;
+    function UserCertAllowedOnHost(Host:ISuperObject):Boolean;
 
   end;
 
@@ -123,7 +125,7 @@ var
 
 implementation
 uses variants, waptcommon, uWaptPythonUtils, uWaptRes, uwaptcrypto, uvisprivatekeyauth, inifiles,
-    forms,Dialogs,uvisloading,dateutils,tisstrings,gettext;
+    forms,Dialogs,uvisloading,dateutils,gettext,soutils;
 {$R *.lfm}
 {$ifdef ENTERPRISE }
 {$R res_enterprise.rc}
@@ -710,6 +712,37 @@ begin
     end;
   end;
   Result := FPersonalCertificate;
+end;
+
+function TDMPython.GetUserAllowedPerimetersSHA256:TDynStringArray;
+begin
+  if not VarIsEmpty(DMPython.PersonalCertificate) and not VarIsNull(DMPython.PersonalCertificate) then
+    result := StrSplit(DMPython.PersonalCertificate.certificates_sha256_fingerprints('--noarg--'),',')
+  else
+    result := TDynStringArray.Create;
+end;
+
+function TDMPython.UserCertAllowedOnHost(Host:ISuperObject):Boolean;
+var
+  Fingerprint:String;
+  UserPerimeters: TDynStringArray;
+  HostPerimeters: ISuperobject;
+begin
+  Result := False;
+  If (Host = Nil) or not Assigned(Host['host_capabilities']) or
+      not Assigned(Host['host_capabilities.packages_trusted_ca_fingerprints']) then
+    Result := True
+  else
+  begin
+    UserPerimeters := GetUserAllowedPerimetersSHA256;
+    HostPerimeters := Host['host_capabilities.packages_trusted_ca_fingerprints'];
+    for Fingerprint in UserPerimeters do
+      If StrIn(Fingerprint,HostPerimeters) then
+      begin
+        Result := True;
+        Break;
+      end;
+  end;
 end;
 
 function TDMPython.GetWaptconsoleFacade: Variant;

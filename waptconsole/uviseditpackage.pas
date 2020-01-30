@@ -150,6 +150,7 @@ type
     IsNewPackage: boolean;
     PackageEdited: Variant;
     ApplyUpdatesImmediately:Boolean;
+    CurrentHost: ISuperObject;
     HostCapabilities: Variant;
     property isAdvancedMode: boolean read FisAdvancedMode write SetisAdvancedMode;
     procedure EditPackage;
@@ -250,11 +251,12 @@ var
 begin
   with TVisEditPackage.Create(nil) do
     try
+      CurrentHost := Host;
       computer_fqdn_hint := UTF8Encode(host.S['computer_fqdn']);
       hostuuid := UTF8Encode(host.S['uuid']);
       description := UTF8Encode(host.S['description']);
 
-      // TO filte rout available packages
+      // TO filter out available packages and rights
       HostCapabilities := SuperObjectToPyVar(host['host_capabilities']);
 
       EdSection.Text:='host';
@@ -663,7 +665,8 @@ end;
 
 procedure TVisEditPackage.ActEditSavePackageUpdate(Sender: TObject);
 begin
-  (Sender as TAction).Enabled := (EdPackage.Text<>'') and IsUpdated;
+  (Sender as TAction).Enabled := (EdPackage.Text<>'') and IsUpdated and
+     DMPython.UserCertAllowedOnHost(CurrentHost);
 end;
 
 function TVisEditPackage.GetIsUpdated: boolean;
