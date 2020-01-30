@@ -7083,7 +7083,7 @@ begin
   ;;
 end;
 
-procedure TVisWaptGUI.ActTriggerSafeHostUpgradeExecute(Sender: TObject);
+procedure TVisWaptGUI.ActTriggerHostUpgradeSafeExecute(Sender: TObject);
 begin
   ;;
 end;

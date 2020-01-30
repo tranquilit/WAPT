@@ -341,7 +341,8 @@
       <Verbosity>
         <ShowHints Value="False"/>
       </Verbosity>
-      <CustomOptions Value="-dENTERPRISE"/>
+      <CustomOptions Value="-dENTERPRISE
+-dDEVMODE"/>
       <OtherDefines Count="3">
         <Define0 Value="UseCThreads"/>
         <Define1 Value="ENTERPRISE"/>
