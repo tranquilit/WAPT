@@ -1966,7 +1966,7 @@ class WaptServer(BaseObjectClass):
                         with self.get_requests_session(use_ssl_auth=False) as session2:
                             req = session2.head("%s/ping" % (self.server_url),
                                 timeout=self.timeout,
-                                auth=self.auth(action='ping'),
+                                auth=None,
                                 allow_redirects=True)
                         if req.status_code == 401:
                             req = session2.head("%s/ping" % (self.server_url),
