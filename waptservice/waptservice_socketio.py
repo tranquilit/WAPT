@@ -311,8 +311,12 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
                                 priority=200)).as_dict()
 
                 elif name == 'trigger_waptservicerestart':
-                    msg = setuphelpers.create_onetime_task('waptservicerestart','cmd.exe','/C net stop waptservice & net start waptservice')
-                    result.append(dict(success=True,msg = msg,result = msg))
+                    try:
+                        msg = setuphelpers.create_onetime_task('waptservicerestart','cmd.exe','/C net stop waptservice & net start waptservice')
+                        result.append(dict(success=True,msg = msg,result = msg))
+                    except:
+                        # restart by nssm
+                        os._exit(10)
                 elif name == 'trigger_longtask':
                     task = WaptLongTask()
                     task.force = args.get('force',False)
