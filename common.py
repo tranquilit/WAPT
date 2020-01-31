@@ -3684,7 +3684,7 @@ class Wapt(BaseObjectClass):
                     if entry.target_os and entry.target_os != 'windows':
                         raise EWaptBadTargetOS('This package is designed for OS %s' % entry.target_os)
 
-                    os_version = setuphelpers.windows_version()
+                    os_version = setuphelpers.get_os_version()
                     if entry.min_os_version and os_version < Version(entry.min_os_version):
                         raise EWaptBadTargetOS('This package requires that OS be at least %s' % entry.min_os_version)
                     if entry.max_os_version and os_version > Version(entry.max_os_version):
@@ -4124,7 +4124,7 @@ class Wapt(BaseObjectClass):
         if force or repo.repo_url != last_url or repo.need_update(last_modified):
             #TODOLINUX
             if sys.platform == 'win32':
-                os_version = setuphelpers.windows_version()
+                os_version = setuphelpers.get_os_version()
             old_status = repo.invalidate_packages_cache()
             discarded = []
 
@@ -6983,7 +6983,7 @@ class Wapt(BaseObjectClass):
 
             if entry.section != 'host':
                 self.add_pyscripter_project(target_directory)
-                self.add_vscode_project(directoryname)
+                self.add_vscode_project(target_directory)
             return local_dev_entry
         else:
             raise Exception(u'Unable to unzip package in %s' % target_directory)
