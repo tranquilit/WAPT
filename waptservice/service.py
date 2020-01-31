@@ -1787,7 +1787,11 @@ class WaptTaskManager(threading.Thread):
                 logger.debug(u"{} i'm still alive... but nothing to do".format(datetime.datetime.now()))
 
             except Exception as e:
-                logger.critical(u'Unhandled error in task manager loop: %s' % ensure_unicode(e))
+                logger.critical(u'Unhandled error in task manager loop: %s. Sleeping 120s before restarting the service' % ensure_unicode(e))
+                time.sleep(120)
+                # ask nssm to restart service
+                logger.critical(u'Forced restart waptservice by nssm')
+                os._exit(10)
 
 
     def current_task_counter(self):
@@ -1952,6 +1956,10 @@ def install_service():
         "Parameters\\AppRotateFiles": 1,
         "Parameters\\AppRotateBytes": 10*1024*1024,
         "Parameters\\AppNoConsole":1,
+        "Parameters\\AppRestartDelay ":2*1000, # 2 s
+        "Parameters\\AppExit\\0":'Exit',
+        "Parameters\\AppExit\\10":'Restart',
+
         }
 
     root = setuphelpers.HKEY_LOCAL_MACHINE
