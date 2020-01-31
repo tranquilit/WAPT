@@ -61,7 +61,7 @@ logger.info('tasks db : %s'% tasks_db)
 load_db_config(conf)
 
 @huey.task(include_task=True,name='resign_crl')
-@huey.periodic_task(crontab(hour='*/1'))
+@huey.periodic_task(crontab(minute='0',hour='*/1'))
 def resign_crl():
     """Check validity of CRL and resign it if it will expire before next round.
     """
