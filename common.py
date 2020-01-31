@@ -4219,11 +4219,21 @@ class Wapt(BaseObjectClass):
         Returns:
             dict
         """
+        waptos = sys.platform
+
+        if waptos == "win32":
+            waptos = "windows"
+
+        if waptos.startswith('linux') :
+            waptos = "linux"
+
+        if waptos.startswith('darwin') :
+            waptos = "mac"
 
         host_capa = HostCapabilities(
             uuid=self.host_uuid,
             language=self.language,
-            os=platform.system(),
+            os=waptos,
             os_version=setuphelpers.get_os_version(),
             architecture=self.get_host_architecture(),
             dn=self.host_dn,
