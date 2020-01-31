@@ -225,6 +225,7 @@ def make_nginx_config(wapt_root_dir, wapt_folder, force = False):
     template = jinja_env.get_template('waptwindows.nginxconfig.j2')
     template_variables = {
         'wapt_repository_path': os.path.dirname(conf['wapt_folder']).replace('\\','/'),
+        'wapt_folder': os.path.dirname(conf['wapt_folder']).replace('\\','/'),
         'waptserver_port': conf['waptserver_port'],
         'windows': True,
         'ssl': True,
@@ -236,8 +237,11 @@ def make_nginx_config(wapt_root_dir, wapt_folder, force = False):
         'wapt_root_dir' : wapt_root_dir.replace('\\','/'),
         'nginx_http'  : conf['nginx_http'],
         'nginx_https' : conf['nginx_https'],
+        'use_ssl_client_auth' : conf.get('use_ssl_client_auth',False),
         'clients_signing_certificate' : conf.get('clients_signing_certificate') and conf.get('clients_signing_certificate').replace('\\','/'),
-        'use_ssl_client_auth' : conf.get('use_ssl_client_auth',False)
+        'known_certificates_folder': conf.get('known_certificates_folder',None) and conf.get('known_certificates_folder',None).replace('\\','/'),
+        'clients_signing_crl': conf.get('clients_signing_crl',None) and  conf.get('clients_signing_crl',None).replace('\\','/'),
+        'htpasswd_path': conf.get('htpasswd_path',None) and  conf.get('htpasswd_path',None).replace('\\','/'),
     }
 
     config_string = template.render(template_variables)

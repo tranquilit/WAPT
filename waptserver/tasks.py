@@ -36,6 +36,7 @@ from waptserver.config import __version__
 from waptserver.config import DEFAULT_CONFIG_FILE,load_config
 from waptserver.utils import *
 from waptserver.model import *
+from waptcrypto import SSLCABundle,SSLPrivateKey,SSLCRL,SSLCertificate
 
 from huey.contrib.sqlitedb import SqliteHuey,SqliteStorage
 from huey.api import Huey, create_task
@@ -58,3 +59,23 @@ huey.flush_locks()
 logger.info('tasks db : %s'% tasks_db)
 
 load_db_config(conf)
+
+@huey.task(include_task=True,name='resign_crl')
+@huey.periodic_task(crontab(hour='*/1'))
+def resign_crl():
+    """Check validity of CRL and resign it if it will expire before next round.
+    """
+    if (conf['clients_signing_key'] and conf['clients_signing_certificate'] and conf['clients_signing_crl'] and \
+            os.path.isfile(conf['clients_signing_key']) and os.path.isfile(conf['clients_signing_certificate'])):
+        signing_key = SSLPrivateKey(conf['clients_signing_key'])
+        signing_cert = SSLCertificate(conf['clients_signing_certificate'])
+        server_ca = SSLCABundle(conf['clients_signing_certificate'])
+        logger.info('Resigning CRL %s' % conf['clients_signing_crl'])
+        try:
+            crl = SSLCRL(conf['clients_signing_crl'],cakey=signing_key,cacert=signing_cert)
+            if not crl.crl or crl.next_update <= datetime.datetime.utcnow() + datetime.timedelta(hours=1):
+                crl.revoke_cert(crl_ttl_days = conf['clients_signing_crl_days'])
+            crl.save_as_pem()
+        except Exception as e:
+            logger.warning('Unable to sign CRL %s: %s' % (conf['clients_signing_crl'],repr(e)))
+

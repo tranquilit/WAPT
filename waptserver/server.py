@@ -257,7 +257,11 @@ def sign_host_csr(host_certificate_csr):
         signing_key = SSLPrivateKey(app.conf['clients_signing_key'])
         signing_cert = SSLCertificate(app.conf['clients_signing_certificate'])
         host_cert_lifetime = app.conf['client_certificate_lifetime']
-        host_cert = signing_cert.build_certificate_from_csr(host_certificate_csr,signing_key,host_cert_lifetime)
+        if app.conf['clients_signing_crl_url']:
+            crl_urls = ensure_list(app.conf['clients_signing_crl_url'])
+        else:
+            crl_urls = None
+        host_cert = signing_cert.build_certificate_from_csr(host_certificate_csr,signing_key,host_cert_lifetime,crl_urls=crl_urls)
     return host_cert
 
 def check_host_cert(host_certificate):
@@ -284,7 +288,7 @@ def revoke_cert(host_certificate):
         server_ca = SSLCABundle(app.conf['clients_signing_certificate'])
         if server_ca.check_certificates_chain(host_certificate):
             crl = SSLCRL(app.conf['clients_signing_crl'],cakey=signing_key,cacert=signing_cert)
-            crl.revoke_cert(host_certificate)
+            crl.revoke_cert(host_certificate,crl_ttl_days = app.conf['clients_signing_crl_days'])
             crl.save_as_pem()
         else:
             logger.warning('certificate can not be revoked by this CA')
@@ -2099,7 +2103,7 @@ def trusted_signers_certificates():
             # load trusted signers
             trusted = read_trusted_certificates(app.conf.get('trusted_signers_certificates_folder'))
             # add other known certificates
-            known_ssl_path = os.path.join(app.conf.get('wapt_folder'),'ssl')
+            known_ssl_path = app.conf.get('known_certificates_folder')
             if os.path.isdir(known_ssl_path):
                 trusted.add_pems(known_ssl_path)
             trusted_certs =  [{'cn':c.cn,

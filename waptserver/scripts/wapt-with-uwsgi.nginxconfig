@@ -54,12 +54,17 @@ server {
             alias "/opt/wapt/waptserver/static";
         }
 
+        {% if known_certificates_folder %}
+        location /ssl {
+            root "{{ known_certificates_folder }}";
+        }
+        {% endif %}
+
         location ~ ^/(wapt/waptsetup-tis.exe|wapt/waptagent.exe|wapt/waptdeploy.exe)$ {
             root "/var/www";
         }
 
         location ~ ^/(wapt/.*|wapt-host/.*|waptwua/.*|wapt-diff-repos/.*)$ {
-
             root "/var/www";
         }
 

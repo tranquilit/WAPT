@@ -84,6 +84,12 @@ http {
                 alias "{{ wapt_root_dir}}/waptserver/static";
             }
 
+            {% if known_certificates_folder %}
+            location /ssl {
+                root "{{ known_certificates_folder }}";
+            }
+            {% endif %}
+
             location ~ ^/(wapt/waptsetup-tis.exe|wapt/waptagent.exe|wapt/waptdeploy.exe)$ {
                 root "{{ wapt_repository_path }}";
             }
@@ -127,8 +133,8 @@ http {
                    return 401;
                 }
     {% endif %}
-				add_header X-Forwarded-List $http_x_forwarded_for;
-				add_header X-Remote-IP $remote_addr;
+                add_header X-Forwarded-List $http_x_forwarded_for;
+                add_header X-Remote-IP $remote_addr;
                 proxy_pass http://127.0.0.1:{{waptserver_port}};
             }
 

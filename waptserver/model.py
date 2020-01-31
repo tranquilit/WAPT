@@ -1000,8 +1000,8 @@ def update_waptwua(uuid,data,applied_status_hashes):
         applied_status_hashes['waptwua_updates_localstatus'] = data.get('status_hashes',{}).get('waptwua_updates_localstatus')
 
 def update_known_ssl_certificates(data,server_conf):
-    """Append supplied sertificates_pems to the local ssl known certificates directory
-    (<waptrepodir>/wapt/ssl/<sha256 of cert>.crt)
+    """Append supplied certificates_pems to the local ssl known certificates directory
+    (<waptrepodir>/ssl/<sha256 of cert>.crt)
 
     Args:
         server_conf (dict)
@@ -1018,7 +1018,7 @@ def update_known_ssl_certificates(data,server_conf):
     if not certificates:
         return False
 
-    ssl_dir = os.path.join(server_conf['wapt_folder'],'ssl')
+    ssl_dir = server_conf['known_certificates_folder']
     if not os.path.isdir(ssl_dir):
         os.makedirs(ssl_dir)
 

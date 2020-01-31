@@ -2422,6 +2422,8 @@ class SSLCRL(BaseObjectClass):
 
     def __init__(self,filename=None,pem_data=None,der_data=None,crl=None,cacert=None,cakey=None):
         self._crl = crl
+        self.cacert = None
+        self.cakey = None
         self.filename = filename
         if pem_data is not None:
             self._load_pem_data(pem_data)
@@ -2586,7 +2588,7 @@ class SSLCRL(BaseObjectClass):
     def __repr__(self):
         return '<SSLCRL %s>' % self.issuer
 
-    def revoke_cert(self,cert,cacert=None,cakey=None):
+    def revoke_cert(self,cert=None,cacert=None,cakey=None,crl_ttl_days = 1):
         if cacert is None:
             cacert = self.cacert
         if cakey is None:
@@ -2596,14 +2598,15 @@ class SSLCRL(BaseObjectClass):
             revoked_certs = self.revoked_certs()
         else:
             revoked_certs = []
-        revoked_certs.append( dict(serial_number=cert.serial_number,revocation_date=datetime.datetime.utcnow()) )
+        if cert:
+            revoked_certs.append( dict(serial_number=cert.serial_number,revocation_date=datetime.datetime.utcnow()) )
 
         builder = x509.CertificateRevocationListBuilder()
         builder = builder.issuer_name(x509.Name([
             x509.NameAttribute(x509.NameOID.COMMON_NAME, cacert.cn),
         ]))
         builder = builder.last_update(datetime.datetime.utcnow())
-        builder = builder.next_update(datetime.datetime.utcnow() +  datetime.timedelta(1, 0, 0))
+        builder = builder.next_update(datetime.datetime.utcnow() + datetime.timedelta(crl_ttl_days, 0, 0))
 
         for revoked in revoked_certs:
             revoked_cert = x509.RevokedCertificateBuilder().serial_number(revoked['serial_number']).revocation_date(revoked['revocation_date']).build(default_backend())

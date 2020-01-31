@@ -83,6 +83,8 @@ _defaults = {
     'clients_signing_key':None,
     'clients_signing_certificate':None,
     'clients_signing_crl':None,
+    'clients_signing_crl_url':None,
+    'clients_signing_crl_days':1,
     'client_certificate_lifetime':3650,
     'use_ssl_client_auth':False,
     'signature_clockskew':5*60,
@@ -100,6 +102,7 @@ _defaults = {
     'diff_repo': False,
     'trusted_signers_certificates_folder':None, # path to trusted signers certificate directory
     'trusted_users_certificates_folder':None, # path to trusted users CA certificate directory
+    'known_certificates_folder': os.path.join(os.path.dirname(DEFAULT_WAPT_FOLDER),'ssl'),
 }
 
 DEFAULT_CONFIG_FILE = os.path.join(wapt_root_dir, 'conf', 'waptserver.ini')
@@ -209,6 +212,12 @@ def load_config(cfgfile=DEFAULT_CONFIG_FILE):
     if _config.has_option('options', 'clients_signing_crl'):
         conf['clients_signing_crl'] = _config.get('options', 'clients_signing_crl')
 
+    if _config.has_option('options', 'clients_signing_crl_days'):
+        conf['clients_signing_crl_days'] = _config.getint('options', 'clients_signing_crl_days')
+
+    if _config.has_option('options', 'clients_signing_crl_url'):
+        conf['clients_signing_crl_url'] = _config.get('options', 'clients_signing_crl_url')
+
     if _config.has_option('options', 'client_certificate_lifetime'):
         conf['client_certificate_lifetime'] = _config.getint('options', 'client_certificate_lifetime')
 
@@ -244,6 +253,12 @@ def load_config(cfgfile=DEFAULT_CONFIG_FILE):
     # path to X509 certificates file of trusted signers to restrict access to upload packages / actions proxying
     if _config.has_option('options', 'trusted_signers_certificates_folder'):
         conf['trusted_signers_certificates_folder'] = _config.get('options', 'trusted_signers_certificates_folder')
+
+    # path to collected known certificates and associated CRL
+    if _config.has_option('options', 'known_certificates_folder'):
+        conf['known_certificates_folder'] = _config.get('options', 'known_certificates_folder')
+    else:
+        conf['known_certificates_folder'] = os.path.join(os.path.dirname(conf['wapt_folder']),'ssl')
 
     return conf
 
