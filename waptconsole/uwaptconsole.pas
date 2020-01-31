@@ -7093,6 +7093,11 @@ begin
   ;;
 end;
 
+procedure TVisWaptGUI.ActTriggerPendingActionsUpdate(Sender: TObject);
+begin
+  ;;
+end;
+
 
 {$endif}
 
