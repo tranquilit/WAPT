@@ -3170,16 +3170,9 @@ class Wapt(BaseObjectClass):
     @runstatus.setter
     def runstatus(self,waptstatus):
         """Stores in local db the current run status for tray display"""
-        #if self._runstatus is None or self._runstatus != waptstatus:
-        logger.info(u'Status : %s' % ensure_unicode(waptstatus))
-        self.write_param('runstatus',waptstatus)
-        #self._runstatus = waptstatus
-        #if not self.disable_update_server_status and self.waptserver_available():
-        #    try:
-        #        self.update_server_status()
-        #    except Exception as e:
-        #        logger.warning(u'Unable to contact server to register current status')
-        #        logger.debug(u'Unable to update server with current status : %s' % ensure_unicode(e))
+        if self.runstatus != waptstatus:
+            logger.info(u'Status : %s' % ensure_unicode(waptstatus))
+            self.write_param('runstatus',waptstatus)
 
     @property
     def host_uuid(self):
