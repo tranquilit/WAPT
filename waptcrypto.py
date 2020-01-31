@@ -2608,6 +2608,13 @@ class SSLCRL(BaseObjectClass):
         builder = builder.last_update(datetime.datetime.utcnow())
         builder = builder.next_update(datetime.datetime.utcnow() + datetime.timedelta(crl_ttl_days, 0, 0))
 
+        for ext in self.crl.extensions:
+            builder = builder.add_extension(ext,ext.critical)
+        if not 'authorityKeyIdentifier' in self.extensions:
+            builder = builder.add_extension(x509.AuthorityKeyIdentifier.from_issuer_subject_key_identifier(
+                cacert.crt.extensions.get_extension_for_oid(x509.OID_SUBJECT_KEY_IDENTIFIER)),
+                critical=False)
+
         for revoked in revoked_certs:
             revoked_cert = x509.RevokedCertificateBuilder().serial_number(revoked['serial_number']).revocation_date(revoked['revocation_date']).build(default_backend())
             builder = builder.add_revoked_certificate(revoked_cert)
