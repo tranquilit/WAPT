@@ -84,7 +84,7 @@ _defaults = {
     'clients_signing_certificate':None,
     'clients_signing_crl':None,
     'clients_signing_crl_url':None,
-    'clients_signing_crl_days':1,
+    'clients_signing_crl_days':30,
     'client_certificate_lifetime':3650,
     'use_ssl_client_auth':False,
     'signature_clockskew':5*60,

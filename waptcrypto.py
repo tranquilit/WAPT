@@ -2588,7 +2588,7 @@ class SSLCRL(BaseObjectClass):
     def __repr__(self):
         return '<SSLCRL %s>' % self.issuer
 
-    def revoke_cert(self,cert=None,cacert=None,cakey=None,crl_ttl_days = 1):
+    def revoke_cert(self,cert=None,cacert=None,cakey=None,crl_ttl_days = 30):
         if cacert is None:
             cacert = self.cacert
         if cakey is None:
