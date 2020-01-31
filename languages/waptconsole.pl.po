@@ -6004,16 +6004,6 @@ msgstr ""
 msgid "&View"
 msgstr ""
 
-#: tviswaptgui.menuitem20.caption
-msgctxt "tviswaptgui.menuitem20.caption"
-msgid "Install package"
-msgstr ""
-
-#: tviswaptgui.menuitem20.hint
-msgctxt "tviswaptgui.menuitem20.hint"
-msgid "Force remote install or upgrade of package"
-msgstr ""
-
 #: tviswaptgui.menuitem26.caption
 msgid "?"
 msgstr ""

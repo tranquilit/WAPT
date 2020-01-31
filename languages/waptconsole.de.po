@@ -6322,18 +6322,6 @@ msgstr "&Tools"
 msgid "&View"
 msgstr ""
 
-#: tviswaptgui.menuitem20.caption
-#, fuzzy
-msgctxt "tviswaptgui.menuitem20.caption"
-msgid "Install package"
-msgstr "Packet installieren"
-
-#: tviswaptgui.menuitem20.hint
-#, fuzzy
-msgctxt "tviswaptgui.menuitem20.hint"
-msgid "Force remote install or upgrade of package"
-msgstr "Erzwinge Installation zu entfernen oder aktualisiere das Paket"
-
 #: tviswaptgui.menuitem26.caption
 msgid "?"
 msgstr "?"
@@ -7166,9 +7154,11 @@ msgid "requires_network_connectivity"
 msgstr ""
 
 #: tviswuagroup.gridallowedwu.header.columns[15].text
+#, fuzzy
+#| msgid "Status"
 msgctxt "tviswuagroup.gridallowedwu.header.columns[15].text"
 msgid "created_on"
-msgstr ""
+msgstr "Beschreibung"
 
 #: tviswuagroup.gridallowedwu.header.columns[16].text
 msgctxt "tviswuagroup.gridallowedwu.header.columns[16].text"
