@@ -2788,8 +2788,8 @@ begin
   if cbSectionWSUS.Checked then
     StrAppend(Sections,'wsus';
   }
-
-  If (Keywords = '') and (Length(InstallStatus)=0) and (Length(Sections)=0) then
+  If not Assigned(Data) or
+      ((Keywords = '') and (Length(InstallStatus)=0) and (Length(Sections)=0)) then
     result := Data
   else
   begin
