@@ -2062,7 +2062,7 @@ def packages_for_hosts():
                     HostPackagesStatus.priority,
                     HostPackagesStatus.install_status,
         ])
-    if reachable == '':
+    if not reachable:
         fields.append(Hosts.reachable)
     fields.append(SQL('json_agg(uuid) as host_uuids'))
     fields.append(fn.COUNT(Hosts.uuid))
