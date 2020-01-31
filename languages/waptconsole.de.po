@@ -3455,6 +3455,18 @@ msgctxt "tviswaptgui.butoverviewstatuspackagesall.caption"
 msgid "All"
 msgstr "Alles"
 
+#: tviswaptgui.butoverviewstatuspackagespending.caption
+#, fuzzy
+msgctxt "tviswaptgui.butoverviewstatuspackagespending.caption"
+msgid "Pending"
+msgstr "Ausstehend"
+
+#: tviswaptgui.butoverviewstatuspackagespending1.caption
+#, fuzzy
+msgctxt "tviswaptgui.butoverviewstatuspackagespending1.caption"
+msgid "Pending"
+msgstr "Ausstehend"
+
 #: tviswaptgui.butstatuspackagesall.caption
 #, fuzzy
 msgctxt "tviswaptgui.butstatuspackagesall.caption"

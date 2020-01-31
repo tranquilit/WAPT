@@ -1,7 +1,7 @@
 object VisWaptGUI: TVisWaptGUI
   Left = 352
   Height = 873
-  Top = 145
+  Top = 100
   Width = 1388
   AllowDropFiles = True
   Caption = 'WAPT console'
@@ -368,7 +368,6 @@ object VisWaptGUI: TVisWaptGUI
             TreeOptions.SelectionOptions = [toDisableDrawSelection, toExtendedFocus, toMultiSelect, toRightClickSelect]
             WantTabs = True
             OnChange = GridHostPackagesChange
-            OnFocusChanged = GridHostPackagesFocusChanged
             OnGetImageIndexEx = GridHostPackagesGetImageIndexEx
             ZebraPaint = True
           end
@@ -990,6 +989,21 @@ object VisWaptGUI: TVisWaptGUI
               OnClick = ButStatusPackagesAllClick
               TabOrder = 5
             end
+            object ButOverviewStatusPackagesPending1: TButton
+              AnchorSideLeft.Control = ButStatusPackagesAll
+              AnchorSideLeft.Side = asrBottom
+              AnchorSideTop.Control = panFilterPackagesStatus
+              AnchorSideTop.Side = asrCenter
+              Left = 577
+              Height = 23
+              Top = 7
+              Width = 64
+              AutoSize = True
+              BorderSpacing.Left = 8
+              Caption = 'Pending'
+              OnClick = ButOverviewStatusPackagesPending1Click
+              TabOrder = 6
+            end
           end
         end
         object pgHostInventory: TTabSheet
@@ -1535,7 +1549,6 @@ object VisWaptGUI: TVisWaptGUI
             TreeOptions.SelectionOptions = [toDisableDrawSelection, toExtendedFocus, toMultiSelect, toRightClickSelect]
             WantTabs = True
             OnChange = GridHostWinUpdatesChange
-            OnClick = GridHostWinUpdatesClick
             OnGetImageIndexEx = GridHostWinUpdatesGetImageIndexEx
             ZebraPaint = True
           end
@@ -2551,7 +2564,6 @@ object VisWaptGUI: TVisWaptGUI
             Top = 48
             Width = 640
             OnGetText = GridHostPackagesGetText
-            OnNodesDelete = GridHostPackagesNodesDelete
             ShowAdvancedColumnsCustomize = False
             KeyFieldsNames = 'package;version;architecture;maturity;locale'
             Align = alClient
@@ -2626,7 +2638,6 @@ object VisWaptGUI: TVisWaptGUI
             TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages, toAlwaysHideSelection]
             TreeOptions.SelectionOptions = [toDisableDrawSelection, toExtendedFocus, toMultiSelect, toRightClickSelect]
             WantTabs = True
-            OnFocusChanged = GridHostPackagesFocusChanged
             OnGetImageIndexEx = GridHostPackagesGetImageIndexEx
             ZebraPaint = True
           end
@@ -2939,6 +2950,21 @@ object VisWaptGUI: TVisWaptGUI
                 Width = 86
                 Caption = 'Installation status'
                 ParentColor = False
+              end
+              object ButOverviewStatusPackagesPending: TButton
+                AnchorSideLeft.Control = ButOverviewStatusPackagesAll
+                AnchorSideLeft.Side = asrBottom
+                AnchorSideTop.Control = panOverviewHostPackages1
+                AnchorSideTop.Side = asrCenter
+                Left = 522
+                Height = 23
+                Top = 1
+                Width = 64
+                AutoSize = True
+                BorderSpacing.Left = 8
+                Caption = 'Pending'
+                OnClick = ButOverviewStatusPackagesPendingClick
+                TabOrder = 5
               end
             end
             object panOverviewHostPackages2: TPanel

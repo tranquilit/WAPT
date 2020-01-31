@@ -49,6 +49,8 @@ type
     ActNewRule: TAction;
     ActRepositoriesGetUpdateRules: TAction;
     ButOverviewStatusPackagesAll: TButton;
+    ButOverviewStatusPackagesPending: TButton;
+    ButOverviewStatusPackagesPending1: TButton;
     ButStatusPackagesAll: TButton;
     cbAdvancedMode: TCheckBox;
     cbMaskSystemComponents: TCheckBox;
@@ -809,6 +811,8 @@ type
     procedure ActWUAShowMSUpdatesHelpExecute(Sender: TObject);
     procedure ApplicationProperties1Exception(Sender: TObject; E: Exception);
     procedure ButOverviewStatusPackagesAllClick(Sender: TObject);
+    procedure ButOverviewStatusPackagesPending1Click(Sender: TObject);
+    procedure ButOverviewStatusPackagesPendingClick(Sender: TObject);
     procedure ButStatusPackagesAllClick(Sender: TObject);
     procedure cbADOUSelect(Sender: TObject);
     procedure cbADSiteSelect(Sender: TObject);
@@ -888,8 +892,6 @@ type
     procedure GridGroupsSOCompareNodes(Sender: TSOGrid; Node1,
       Node2: ISuperObject; const Columns: array of String; var Result: Integer);
     procedure GridHostPackagesChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
-    procedure GridHostPackagesFocusChanged(Sender: TBaseVirtualTree;
-      Node: PVirtualNode; Column: TColumnIndex);
     procedure GridHostPackagesGetImageIndexEx(Sender: TBaseVirtualTree;
       Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
       var Ghosted: boolean; var ImageIndex: integer;
@@ -2721,6 +2723,13 @@ begin
     If Sections<>'' then
        Sections := Copy(Sections,2,length(Sections)-1);
 
+    if not cbReachable.Checked then
+      GridHostPackagesOverview.FindColumnByPropertyName('reachable').Options:=
+              GridHostPackagesOverview.FindColumnByPropertyName('reachable').Options + [coVisible]
+    else
+      GridHostPackagesOverview.FindColumnByPropertyName('reachable').Options:=
+            GridHostPackagesOverview.FindColumnByPropertyName('reachable').Options - [coVisible];
+
     GridHostPackagesOverview.Data := FilterPackagesForHosts(
         GetPackagesOverviewForHosts(ExtractField(GridHosts.SelectedRows,'uuid'),
         InstallStatus,
@@ -4536,6 +4545,36 @@ begin
   ActRefreshHostPackagesOverview.Execute;
 end;
 
+procedure TVisWaptGUI.ButOverviewStatusPackagesPending1Click(Sender: TObject);
+begin
+  EdSearchStatusPackages.Text:='';
+  cbStatusErrors.Checked:=False;
+  cbStatusInstall.Checked:=True;
+  cbStatusRemove.Checked:=True;
+  cbStatusUpgrade.Checked:=False;
+  EdSearchStatusPackagesExecute(Sender);
+end;
+
+procedure TVisWaptGUI.ButOverviewStatusPackagesPendingClick(Sender: TObject);
+begin
+  EdOverViewSearchHostPackages.Text:='';
+  cbOverviewStatusErrors.Checked:=False;
+  cbOverviewStatusInstall.Checked:=True;
+  cbOverviewStatusRemove.Checked:=True;
+  cbOverviewStatusUpgrade.Checked:=False;
+
+  cbOverviewSectionHost.Checked:=False;
+  cbOverviewSectionGroup.Checked:=False;
+  cbOverviewSectionBase.Checked:=False;
+  cbOverviewSectionProfile.Checked:=False;
+  cbOverviewSectionUnit.Checked:=False;
+  cbOverviewSectionWSUS.Checked:=False;
+  cbOverviewSectionSelfService.Checked:=False;
+
+  ActRefreshHostPackagesOverview.Execute;
+
+end;
+
 procedure TVisWaptGUI.ButStatusPackagesAllClick(Sender: TObject);
 begin
   EdSearchStatusPackages.Text:='';
@@ -5018,7 +5057,7 @@ begin
         DeleteFileUTF8(Appuserinipath);
 
     plStatusBar1.Caption := WaptServerUser+' on '+ApplicationName+' '+
-      GetApplicationVersion+' WAPT '+WaptEdition+' Edition, (c) 2012-2019 Tranquil IT. (Conf:'+
+      GetApplicationVersion+' WAPT '+WaptEdition+' Edition, (c) 2012-2020 Tranquil IT. (Conf:'+
       AppIniFilename+')';
     {$ifdef ENTERPRISE}
     plStatusBar1.Caption := plStatusBar1.Caption + ' ' + Format(rsLicencedTo,[dmPython.LicensedTo]);
@@ -5233,13 +5272,6 @@ begin
     end;
   end;
 end;
-
-procedure TVisWaptGUI.GridHostPackagesFocusChanged(Sender: TBaseVirtualTree;
-  Node: PVirtualNode; Column: TColumnIndex);
-begin
-  GridHostPackagesChange(Sender,Node);
-end;
-
 
 procedure TVisWaptGUI.GridHostPackagesGetImageIndexEx(Sender: TBaseVirtualTree;
   Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
@@ -5769,16 +5801,28 @@ begin
   if Assigned(GridHostWinUpdates.FocusedRow) then
   begin
     GridHostWinUpdatesHistory.Data := GridHostWinUpdates.FocusedRow['local_status_history'];
-    PanelKBLogs.Visible:=GridHostWinUpdatesHistory.Data.AsArray.Length>=1;
-    SplitWinupdateHost.Visible:=GridHostWinUpdatesHistory.Data.AsArray.Length>=1;
-    SplitWinupdateHost.AnchorParallel(akBottom,0,pgHostWUA);
+    if AutoHidePanels then
+    begin
+      PanelKBLogs.Visible:=GridHostWinUpdatesHistory.Data.AsArray.Length>=1;
+      SplitWinupdateHost.Visible:=GridHostWinUpdatesHistory.Data.AsArray.Length>=1;
+      SplitWinupdateHost.AnchorParallel(akBottom,0,pgHostWUA);
+    end
+    else
+    begin
+      PanelKBLogs.Visible:=True;
+      SplitWinupdateHost.Visible:=True;
+      SplitWinupdateHost.AnchorParallel(akBottom,0,pgHostWUA);
+    end;
     LabLogsKB.Caption:=Format(rsLabLogsKB,['KB'+soutils.Join(',KB', GridHostWinUpdates.FocusedRow['kbids'])]);
   end
   else
   begin
     GridHostWinUpdatesHistory.Data := Nil;
-    PanelKBLogs.Visible:=False;
-    SplitWinupdateHost.Visible:=False;
+    if AutoHidePanels then
+    begin
+      PanelKBLogs.Visible:=False;
+      SplitWinupdateHost.Visible:=False;
+    end;
   end;
 end;
 
