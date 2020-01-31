@@ -87,6 +87,7 @@ __all__.extend([
      'get_language',
      'get_last_logged_on_user',
      'get_loggedinusers',
+     'get_os_version',
      'glob',
      'host_info',
      'host_metrics',
@@ -723,7 +724,7 @@ def inifile_deleteoption(inifilename,section,key):
 
 def get_os_version():
     if sys.platform == 'win32':
-        return windows_version()
+        return windows_version_from_registry()
     if sys.platform.startswith('linux'):
         return get_distrib_linux()
 
