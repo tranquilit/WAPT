@@ -535,7 +535,7 @@ msgstr "Force la valeur de l'URL lors de l'installation même si il y a déjà u
 
 #: tviscreatewaptsetup.cbincludenonca.caption
 msgid "Include non CA too"
-msgstr "Inclure les certificats pas CA"
+msgstr "Inclure les certificats qui ne sont pas Autorité"
 
 #: tviscreatewaptsetup.cbinstallwuaupdatesatshutdown.caption
 msgid "Install Pending Windows at Shutdown"
@@ -5573,7 +5573,6 @@ msgid "description_es"
 msgstr "Description espagnole"
 
 #: tviswaptgui.gridwuapackages.header.columns[25].text
-
 msgctxt "tviswaptgui.gridwuapackages.header.columns[25].text"
 msgid "description_de"
 msgstr "Description allemande"
@@ -8240,6 +8239,10 @@ msgstr "URL : %s"
 msgctxt "uwaptconsoleres.rsusage"
 msgid "Usage: %s -h"
 msgstr "Usage : %s -h"
+
+#: uwaptconsoleres.rsusercertificatenotallowed
+msgid "User certificate %s is not allowed on the selection"
+msgstr "Le certificat utilisateur %s n'est pas autorisé sur la sélection"
 
 #: uwaptconsoleres.rsversion
 #, object-pascal-format

@@ -2493,31 +2493,36 @@ begin
       try
         Screen.Cursor := crHourGlass;
         packages := SelectedPackages;
-        Hosts := ExtractField(GridHosts.SelectedRows,'uuid');
+        Hosts := dmpython.AllowedHostsForUser(GridHosts.SelectedRows,['uuid','computer_fqdn']);
 
-        VHosts := SuperObjectToPyVar(Hosts);
-        VPackages := SuperObjectToPyVar(packages);
-        VWaptIniFilename := PyUTF8Decode(AppIniFilename);
-        VPrivateKeyPassword := PyUTF8Decode(dmpython.privateKeyPassword);
-        VWaptServerPassword := PyUTF8Decode(WaptServerPassword);
+        If Hosts.AsArray.Length > 0 then
+        begin
+          VHosts := SuperObjectToPyVar(Hosts);
+          VPackages := SuperObjectToPyVar(packages);
+          VWaptIniFilename := PyUTF8Decode(AppIniFilename);
+          VPrivateKeyPassword := PyUTF8Decode(dmpython.privateKeyPassword);
+          VWaptServerPassword := PyUTF8Decode(WaptServerPassword);
 
-        resVar := DMPython.waptdevutils.edit_hosts_depends(
-           waptconfigfile := VWaptIniFilename,
-           hosts_list := VHosts,
-           append_conflicts := VPackages,
-           sign_certs := DMPython.WAPT.personal_certificate('--noarg--'),
-           sign_key := DMPython.WAPT.private_key(private_key_password := VPrivateKeyPassword),
-           wapt_server_user := waptServerUser,
-           wapt_server_passwd := VWaptServerPassword,
-           cabundle := DMPython.WaptHostRepo.cabundle
-           );
+          resVar := DMPython.waptdevutils.edit_hosts_depends(
+             waptconfigfile := VWaptIniFilename,
+             hosts_list := VHosts,
+             append_conflicts := VPackages,
+             sign_certs := DMPython.WAPT.personal_certificate('--noarg--'),
+             sign_key := DMPython.WAPT.private_key(private_key_password := VPrivateKeyPassword),
+             wapt_server_user := waptServerUser,
+             wapt_server_passwd := VWaptServerPassword,
+             cabundle := DMPython.WaptHostRepo.cabundle
+             );
 
-        res := PyVarToSuperObject(ResVar);
+          res := PyVarToSuperObject(ResVar);
+          if res <> Nil then
+            ShowMessageFmt(rsNbModifiedHosts, [res.A['updated'].Length,res.A['discarded'].Length,res.A['unchanged'].Length]);
+        end
+        else
+          ShowMessageFmt(rsUsercertificateNotAllowed, [waptcommon.WaptPersonalCertificatePath]);
       finally
         Screen.cursor := crDefault;
-        if res <> Nil then
-          ShowMessageFmt(rsNbModifiedHosts, [res.A['updated'].Length,res.A['discarded'].Length,res.A['unchanged'].Length]);
-      end;
+      end
     finally
       Free;
     end;
@@ -2584,31 +2589,35 @@ begin
       try
         Screen.Cursor := crHourGlass;
         packages := SelectedPackages;
-        Hosts := ExtractField(GridHosts.SelectedRows,'uuid');
+        Hosts := DMPython.AllowedHostsForUser(GridHosts.SelectedRows,['uuid','computer_fqdn']);
 
-        VHosts := SuperObjectToPyVar(Hosts);
-        VPackages := SuperObjectToPyVar(packages);
-        VWaptIniFilename := PyUTF8Decode(AppIniFilename);
-        VPrivateKeyPassword := PyUTF8Decode(dmpython.privateKeyPassword);
-        VWaptServerPassword := PyUTF8Decode(WaptServerPassword);
+        If Hosts.AsArray.Length > 0 then
+        begin
+          VHosts := SuperObjectToPyVar(Hosts);
+          VPackages := SuperObjectToPyVar(packages);
+          VWaptIniFilename := PyUTF8Decode(AppIniFilename);
+          VPrivateKeyPassword := PyUTF8Decode(dmpython.privateKeyPassword);
+          VWaptServerPassword := PyUTF8Decode(WaptServerPassword);
 
-        resVar := DMPython.waptdevutils.edit_hosts_depends(
-           waptconfigfile := VWaptIniFilename,
-           hosts_list := VHosts,
-           append_depends := VPackages,
-           sign_certs := DMPython.WAPT.personal_certificate('--noarg--'),
-           sign_key := DMPython.WAPT.private_key(private_key_password := VPrivateKeyPassword),
-           wapt_server_user := waptServerUser,
-           wapt_server_passwd := VWaptServerPassword,
-           cabundle := DMPython.WaptHostRepo.cabundle
-           );
-
-        res := PyVarToSuperObject(ResVar);
+          resVar := DMPython.waptdevutils.edit_hosts_depends(
+             waptconfigfile := VWaptIniFilename,
+             hosts_list := VHosts,
+             append_depends := VPackages,
+             sign_certs := DMPython.WAPT.personal_certificate('--noarg--'),
+             sign_key := DMPython.WAPT.private_key(private_key_password := VPrivateKeyPassword),
+             wapt_server_user := waptServerUser,
+             wapt_server_passwd := VWaptServerPassword,
+             cabundle := DMPython.WaptHostRepo.cabundle
+             );
+          res := PyVarToSuperObject(ResVar);
+          if res <> Nil then
+            ShowMessageFmt(rsNbModifiedHosts, [res.A['updated'].Length,res.A['discarded'].Length,res.A['unchanged'].Length]);
+        end
+        else
+          ShowMessageFmt(rsUsercertificateNotAllowed, [waptcommon.WaptPersonalCertificatePath]);
       finally
         Screen.cursor := crDefault;
-        if res <> Nil then
-          ShowMessageFmt(rsNbModifiedHosts, [res.A['updated'].Length,res.A['discarded'].Length,res.A['unchanged'].Length]);
-      end;
+      end
     finally
       Free;
     end;
@@ -3969,25 +3978,32 @@ begin
       try
         Screen.Cursor := crHourGlass;
         packages := SelectedPackages;
-        Hosts := ExtractField(GridHosts.SelectedRows,'uuid');
+        Hosts := DMPython.AllowedHostsForUser(GridHosts.SelectedRows,['uuid','computer_fqdn']);
 
-        VHosts := SuperObjectToPyVar(Hosts);
-        VPackages := SuperObjectToPyVar(packages);
-        VWaptIniFilename := PyUTF8Decode(AppIniFilename);
-        VPrivateKeyPassword := PyUTF8Decode(dmpython.privateKeyPassword);
-        VWaptServerPassword := PyUTF8Decode(WaptServerPassword);
-        resVar := DMPython.waptdevutils.edit_hosts_depends(
-           waptconfigfile := VWaptIniFilename,
-           hosts_list := VHosts,
-           remove_conflicts := VPackages,
-           sign_certs := DMPython.WAPT.personal_certificate('--noarg--'),
-           sign_key := DMPython.WAPT.private_key(private_key_password := VPrivateKeyPassword),
-           wapt_server_user := waptServerUser,
-           wapt_server_passwd := VWaptServerPassword,
-           cabundle := DMPython.WaptHostRepo.cabundle
-           );
+        If Hosts.AsArray.Length > 0 then
+        begin
+          VHosts := SuperObjectToPyVar(Hosts);
+          VPackages := SuperObjectToPyVar(packages);
+          VWaptIniFilename := PyUTF8Decode(AppIniFilename);
+          VPrivateKeyPassword := PyUTF8Decode(dmpython.privateKeyPassword);
+          VWaptServerPassword := PyUTF8Decode(WaptServerPassword);
+          resVar := DMPython.waptdevutils.edit_hosts_depends(
+             waptconfigfile := VWaptIniFilename,
+             hosts_list := VHosts,
+             remove_conflicts := VPackages,
+             sign_certs := DMPython.WAPT.personal_certificate('--noarg--'),
+             sign_key := DMPython.WAPT.private_key(private_key_password := VPrivateKeyPassword),
+             wapt_server_user := waptServerUser,
+             wapt_server_passwd := VWaptServerPassword,
+             cabundle := DMPython.WaptHostRepo.cabundle
+             );
 
-        res := PyVarToSuperObject(ResVar);
+          res := PyVarToSuperObject(ResVar);
+          if res <> Nil then
+            ShowMessageFmt(rsNbModifiedHosts, [res.A['updated'].Length,res.A['discarded'].Length,res.A['unchanged'].Length]);
+        end
+        else
+          ShowMessageFmt(rsUsercertificateNotAllowed, [waptcommon.WaptPersonalCertificatePath]);
       finally
         Screen.cursor := crDefault;
         if res <> Nil then
@@ -4016,31 +4032,36 @@ begin
       try
         Screen.Cursor := crHourGlass;
         packages := SelectedPackages;
-        Hosts := ExtractField(GridHosts.SelectedRows,'uuid');
+        Hosts := DMPython.AllowedHostsForUser(GridHosts.SelectedRows,['uuid','computer_fqdn']);
 
-        VHosts := SuperObjectToPyVar(Hosts);
-        VPackages := SuperObjectToPyVar(packages);
-        VWaptIniFilename := PyUTF8Decode(AppIniFilename);
-        VPrivateKeyPassword := PyUTF8Decode(dmpython.privateKeyPassword);
-        VWaptServerPassword := PyUTF8Decode(WaptServerPassword);
+        If Hosts.AsArray.Length > 0 then
+        begin
+          VHosts := SuperObjectToPyVar(Hosts);
+          VPackages := SuperObjectToPyVar(packages);
+          VWaptIniFilename := PyUTF8Decode(AppIniFilename);
+          VPrivateKeyPassword := PyUTF8Decode(dmpython.privateKeyPassword);
+          VWaptServerPassword := PyUTF8Decode(WaptServerPassword);
 
-        resVar := DMPython.waptdevutils.edit_hosts_depends(
-           waptconfigfile := VWaptIniFilename,
-           hosts_list := VHosts,
-           remove_depends := VPackages,
-           sign_certs := DMPython.WAPT.personal_certificate('--noarg--'),
-           sign_key := DMPython.WAPT.private_key(private_key_password := VPrivateKeyPassword),
-           wapt_server_user := waptServerUser,
-           wapt_server_passwd := VWaptServerPassword,  // potentially with non ascii
-           cabundle := DMPython.WaptHostRepo.cabundle
-           );
+          resVar := DMPython.waptdevutils.edit_hosts_depends(
+             waptconfigfile := VWaptIniFilename,
+             hosts_list := VHosts,
+             remove_depends := VPackages,
+             sign_certs := DMPython.WAPT.personal_certificate('--noarg--'),
+             sign_key := DMPython.WAPT.private_key(private_key_password := VPrivateKeyPassword),
+             wapt_server_user := waptServerUser,
+             wapt_server_passwd := VWaptServerPassword,  // potentially with non ascii
+             cabundle := DMPython.WaptHostRepo.cabundle
+             );
 
-        res := PyVarToSuperObject(ResVar);
+          res := PyVarToSuperObject(ResVar);
+          if res <> Nil then
+            ShowMessageFmt(rsNbModifiedHosts, [res.A['updated'].Length,res.A['discarded'].Length,res.A['unchanged'].Length]);
+        end
+        else
+          ShowMessageFmt(rsUsercertificateNotAllowed, [waptcommon.WaptPersonalCertificatePath]);
       finally
         Screen.cursor := crDefault;
-        if res <> Nil then
-          ShowMessageFmt(rsNbModifiedHosts, [res.A['updated'].Length,res.A['discarded'].Length,res.A['unchanged'].Length]);
-      end;
+      end
     finally
       Free;
     end;
@@ -4204,9 +4225,9 @@ var
   prop: string;
   HostsCount,i: integer;
 const
-  DefaultColumns:Array[0..14] of String = ('uuid','os_name','connected_ips','computer_fqdn',
+  DefaultColumns:Array[0..15] of String = ('uuid','os_name','connected_ips','computer_fqdn',
     'computer_name','manufacturer','description','productname','serialnr','mac_addresses','connected_users','last_logged_on_user',
-    'computer_ad_ou','computer_ad_site','platform');
+    'computer_ad_ou','computer_ad_site','platform','host_capabilities');
 begin
   if AppLoading then
     Exit;

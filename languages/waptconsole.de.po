@@ -11123,6 +11123,10 @@ msgctxt "uwaptconsoleres.rsusage"
 msgid "Usage: %s -h"
 msgstr "Anwendung: %s -h "
 
+#: uwaptconsoleres.rsusercertificatenotallowed
+msgid "User certificate %s is not allowed on the selection"
+msgstr ""
+
 #: uwaptconsoleres.rsversion
 #, fuzzy
 #| msgid ""

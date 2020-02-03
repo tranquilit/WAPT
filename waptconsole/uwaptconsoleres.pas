@@ -62,6 +62,7 @@ resourcestring
   rsNbModifiedHosts = '%d hosts affected. %d hosts discarded (errors). %d hosts unchanged';
   rsTaskCanceled = 'Task canceled.';
   rsFailedToCancel = 'Could not cancel : %s.';
+  rsUsercertificateNotAllowed = 'User certificate %s is not allowed on the selection';
 
   rsNoReachableIP = 'None IP reachable for this host. Check firewall, routes and remote service status';
 

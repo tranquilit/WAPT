@@ -114,6 +114,7 @@ type
     procedure CheckPySources;
     function GetUserAllowedPerimetersSHA256: TDynStringArray;
     function UserCertAllowedOnHost(Host:ISuperObject):Boolean;
+    function AllowedHostsForUser(Hosts:ISuperObject;Const Fields:Array of String):ISuperObject;
 
   end;
 
@@ -742,6 +743,30 @@ begin
         Result := True;
         Break;
       end;
+  end;
+end;
+
+function TDMPython.AllowedHostsForUser(Hosts:ISuperObject;Const Fields:Array of String):ISuperObject;
+var
+  Fingerprint:String;
+  UserPerimeters: TDynStringArray;
+  Host,HostPerimeters: ISuperobject;
+begin
+  Result := TSuperObject.Create(stArray);
+  UserPerimeters := GetUserAllowedPerimetersSHA256;
+  For Host in Hosts do
+  begin
+    If Assigned(Host['host_capabilities']) and
+       Assigned(Host['host_capabilities.packages_trusted_ca_fingerprints']) then
+    begin
+      HostPerimeters := Host['host_capabilities.packages_trusted_ca_fingerprints'];
+      for Fingerprint in UserPerimeters do
+        If StrIn(Fingerprint,HostPerimeters) then
+        begin
+          Result.AsArray.Add(SOExtractFields(Host,Fields));
+          Break;
+        end;
+    end;
   end;
 end;
 

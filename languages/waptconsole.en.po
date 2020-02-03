@@ -8095,6 +8095,10 @@ msgctxt "uwaptconsoleres.rsusage"
 msgid "Usage: %s -h"
 msgstr ""
 
+#: uwaptconsoleres.rsusercertificatenotallowed
+msgid "User certificate %s is not allowed on the selection"
+msgstr ""
+
 #: uwaptconsoleres.rsversion
 msgctxt "uwaptconsoleres.rsversion"
 msgid ""

@@ -521,9 +521,6 @@ def edit_hosts_depends(waptconfigfile,hosts_list,
     if not sign_certs:
         raise Exception(u'No personal signer certificate found in %s' % sign_bundle_fn)
 
-    if sign_key is None:
-        sign_key = sign_certs[0].matching_key_in_dirs(private_key_password=key_password)
-
     try:
         import waptconsole
         progress_hook = waptconsole.UpdateProgress
@@ -539,18 +536,17 @@ def edit_hosts_depends(waptconfigfile,hosts_list,
         progress_hook = print_progress
         private_key_password_callback = None
 
-
-    hosts_list = ensure_list(hosts_list)
+    if sign_key is None:
+        sign_key = sign_certs[0].matching_key_in_dirs(private_key_password=key_password,password_callback=private_key_password_callback)
 
     progress_hook(True,0,len(hosts_list),'Loading %s hosts packages' % len(hosts_list))
 
-    host_repo = WaptHostRepo(name='wapt-host',host_id=hosts_list,cabundle = cabundle)
+    host_repo = WaptHostRepo(name='wapt-host',host_id=[h['uuid'] for h in hosts_list],cabundle = cabundle)
     host_repo.private_key_password_callback = private_key_password_callback
     host_repo.load_config_from_file(waptconfigfile)
     total_hosts = len(host_repo.packages())
     discarded_uuids = [p.package for p in host_repo.discarded]
 
-    hosts_list = ensure_list(hosts_list)
     append_depends = ensure_list(append_depends)
     remove_depends = ensure_list(remove_depends)
     append_conflicts = ensure_list(append_conflicts)
@@ -563,7 +559,8 @@ def edit_hosts_depends(waptconfigfile,hosts_list,
     progress_hook(True,0,len(hosts_list),'Editing %s hosts' % len(hosts_list))
     i = 0
     try:
-        for host_id in hosts_list:
+        for hostrec in hosts_list:
+            host_id = hostrec['uuid']
             i+=1
             # don't change discarded packages.
             if host_id in discarded_uuids:
