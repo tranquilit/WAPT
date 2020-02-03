@@ -3664,8 +3664,9 @@ class WaptRemoteRepo(WaptBaseRepo):
         result = super(WaptRemoteRepo,self).as_dict()
         result.update({
             'repo_url':self._repo_url,
-            'proxies':self.proxies,
+            'http_proxy':self.http_proxy,
             'timeout':self.timeout,
+            'verify_cert':self.verify_cert,
              })
         return result
 

@@ -745,11 +745,27 @@ def check_valid_signer(package,cabundle):
     signer_certs = package.package_certificates()
     if package.has_file('setup.py'):
         # check if certificate has code_signing extended attribute
-        signer_certs = package.package_certificates()
         if not signer_certs or not signer_certs[0].is_code_signing:
             raise EWaptForbiddden(u'The package %s contains setup.py code but has not been signed with a proper code_signing certificate' % package.package)
     if cabundle is not None:
         trusted = cabundle.check_certificates_chain(signer_certs,check_is_trusted=True)
+
+    # If it's host package, check if host is known to trust one of the signer cert in cert chain.
+    if package.section == 'host':
+        host = Hosts.select(Hosts.host_capabilities).where(Hosts.uuid==package.package)
+        # get the list of trusted packages signers for this host
+        packages_trusted_ca_fingerprints = Hosts.host_capabilities['packages_trusted_ca_fingerprints']
+        if packages_trusted_ca_fingerprints:
+            trusted_cert = None
+            for signer_cert in signer_certs:
+                #SSLCertificate.get_fingerprint('sha256').hexdigest()
+                if signer_cert.fingerprint in packages_trusted_ca_fingerprints:
+                    trusted_cert = signer_cert
+                    logger.info('Package %s trusted for signer %s issued by %s' % (package.package,signer_cert.cn,signer_cert.issuer_dn))
+                    break
+            if not trusted_cert:
+                raise EWaptForbiddden('Host matching package %s does not trusted signer certificate %s' % (package.package,trusted[0].fingerprint))
+
     return signer_certs
 
 @app.route('/api/v3/upload_packages',methods=['HEAD','POST'])
@@ -864,6 +880,8 @@ def upload_packages():
                         logger.debug(u'uploading file : %s' % fkey)
                         if packagefile and allowed_file(packagefile.filename):
                             new_package = read_package(packagefile)
+                            # check if package signer is auhtorized for the hos
+                            check_valid_signer(new_package,trusted_signers)
                             done.append(new_package)
                     except Exception as e:
                         logger.critical(u'Error uploading %s : %s' % (fkey,e))
@@ -935,6 +953,10 @@ def upload_host():
         done = []
         errors = []
         if request.method == 'POST':
+            # load trusted signers
+            trusted_signers = read_trusted_certificates(app.conf.get('trusted_signers_certificates_folder'))
+
+            #
             files = list(request.files.keys())
             logger.info(u'Upload of %s host packages' % len(files))
             for fkey in files:
@@ -958,6 +980,7 @@ def upload_host():
                                 hostpackagefile.save(tmp_target)
                                 entry = PackageEntry(waptfile=tmp_target)
 
+                            check_valid_signer(entry,trusted_signers)
                             HostGroups.sync_from_host_package(entry)
 
                             # get host cert to encrypt package with public key
@@ -1742,6 +1765,7 @@ def get_hosts():
                                'registration_auth_user',
                                'platform',
                                'repositories',
+                               'host_capabilities'
                                ]
 
             # keep only top tree nodes (mongo doesn't want fields like {'wapt':1,'wapt.listening_address':1} !
@@ -1762,6 +1786,7 @@ def get_hosts():
                        'connected_users',
                        'registration_auth_user',
                        'wapt_version',
+                       'host_capabilities'
                        ]
             other_columns = ensure_list(
                 request.args.get(
