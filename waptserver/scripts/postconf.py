@@ -118,11 +118,11 @@ def make_httpd_config(waptserver_root_dir, fqdn, force_https, server_config):
         'use_kerberos': server_config.get('use_kerberos',False),
         'KRB5_REALM': krb5_realm,
         'wapt_root_dir': wapt_root_dir,
-        'use_ssl_client_auth' : conf.get('use_ssl_client_auth',False),
-        'clients_signing_certificate' : conf.get('clients_signing_certificate'),
-        'known_certificates_folder': conf.get('known_certificates_folder',None),
-        'clients_signing_crl': conf.get('clients_signing_crl',None),
-        'htpasswd_path': conf.get('htpasswd_path',None),
+        'use_ssl_client_auth' : server_config.get('use_ssl_client_auth',False),
+        'clients_signing_certificate' : server_config.get('clients_signing_certificate'),
+        'known_certificates_folder': server_config.get('known_certificates_folder',None),
+        'clients_signing_crl': server_config.get('clients_signing_crl',None),
+        'htpasswd_path': server_config.get('htpasswd_path',None),
         }
 
     if quiet:
