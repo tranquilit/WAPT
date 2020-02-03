@@ -781,9 +781,9 @@ def host_info():
 
     info['registered_organization'] =  ensure_unicode(registry_readstring(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows NT\CurrentVersion','RegisteredOrganization'))
     info['registered_owner'] =  ensure_unicode(registry_readstring(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows NT\CurrentVersion','RegisteredOwner'))
-    info['windows_version'] =  windows_version_from_registry()
+    info['windows_version'] =  windows_version()
     info['windows_product_infos'] =  keyfinder.windows_product_infos()
-    info['os_version'] = windows_version_from_registry()
+    info['os_version'] = windows_version()
     info['os_name'] = keyfinder.windows_product_infos()['version']
     info['installation_date'] = datetime.datetime.fromtimestamp(int(registry_readstring(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows NT\CurrentVersion','InstallDate','0'))).isoformat()
 
@@ -1605,7 +1605,7 @@ def create_daily_task(name,cmd,parameters, max_runtime=10, repeat_minutes=None, 
     #exit_code, startup_error_code = task.GetExitCode()
     return task
 
-def windows_version(members_count=3):
+def windows_version_from_WMI(members_count=3):
     """see https://msdn.microsoft.com/en-us/library/windows/desktop/ms724832(v=vs.85).aspx
 
     .. versionadded:: 1.3.5
@@ -1624,8 +1624,8 @@ def windows_version(members_count=3):
             version=Version(wmi.WMI().Win32_OperatingSystem()[0].version)
     return version
 
-def windows_version_from_registry(members_count=3):
-    """Same than windows_version() but get information for windows 10 in registry (it's faster)
+def windows_version(members_count=3):
+    """Same than windows_version_from_WMI() but get information for windows 10 in registry (it's faster)
 
     .. versionadded:: 1.3.5
 

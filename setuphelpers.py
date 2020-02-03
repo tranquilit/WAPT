@@ -724,9 +724,9 @@ def inifile_deleteoption(inifilename,section,key):
 
 def get_os_version():
     if sys.platform == 'win32':
-        return windows_version_from_registry()
+        return windows_version()
     if sys.platform.startswith('linux'):
-        return get_distrib_linux()
+        return get_distrib_version()
 
 def is64():
     return platform.machine().endswith('64')

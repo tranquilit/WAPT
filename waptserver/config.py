@@ -103,6 +103,7 @@ _defaults = {
     'trusted_signers_certificates_folder':None, # path to trusted signers certificate directory
     'trusted_users_certificates_folder':None, # path to trusted users CA certificate directory
     'known_certificates_folder': os.path.join(os.path.dirname(DEFAULT_WAPT_FOLDER),'ssl'),
+    'wol_port':'9'
 }
 
 DEFAULT_CONFIG_FILE = os.path.join(wapt_root_dir, 'conf', 'waptserver.ini')
@@ -259,6 +260,9 @@ def load_config(cfgfile=DEFAULT_CONFIG_FILE):
         conf['known_certificates_folder'] = _config.get('options', 'known_certificates_folder')
     else:
         conf['known_certificates_folder'] = os.path.join(os.path.dirname(conf['wapt_folder']),'ssl')
+
+    if _config.has_option('options', 'wol_port'):
+        conf['wol_port'] = _config.get('options', 'wol_port')
 
     return conf
 

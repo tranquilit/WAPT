@@ -3008,7 +3008,6 @@ class Wapt(BaseObjectClass):
         # clear host filter for packages
         self._packages_filter_for_host = None
 
-
         return self
 
     @property
@@ -4220,21 +4219,11 @@ class Wapt(BaseObjectClass):
         Returns:
             dict
         """
-        waptos = sys.platform
-
-        if waptos == "win32":
-            waptos = "windows"
-
-        if waptos.startswith('linux') :
-            waptos = "linux"
-
-        if waptos.startswith('darwin') :
-            waptos = "mac"
 
         host_capa = HostCapabilities(
             uuid=self.host_uuid,
             language=self.language,
-            os=waptos,
+            os=platform.system(),
             os_version=setuphelpers.get_os_version(),
             architecture=self.get_host_architecture(),
             dn=self.host_dn,
@@ -7524,38 +7513,65 @@ def wapt_sources_edit(wapt_sources_dir,editor_for_packages = None):
         str: sources path
     """
     wapt_sources_dir = ensure_unicode(wapt_sources_dir)
-    psproj_filename = os.path.join(wapt_sources_dir,u'WAPT',u'wapt.psproj')
-    control_filename = os.path.join(wapt_sources_dir,u'WAPT',u'control')
-    setup_filename = os.path.join(wapt_sources_dir,u'setup.py')
-    if os.name == 'nt':
-        pyscripter_filename = os.path.join(setuphelpers.programfiles32,
-                                           'PyScripter', 'PyScripter.exe')
-        wapt_base_dir = os.path.dirname(__file__)
-        env = os.environ
-        env.update(dict(
-            PYTHONHOME=wapt_base_dir,
-            PYTHONPATH=wapt_base_dir,
-            VIRTUAL_ENV=wapt_base_dir
-            ))
+    params = {
+        "wapt_base_dir":os.path.dirname(__file__),
+        "wapt_sources_dir":wapt_sources_dir,
+        "setup_filename":os.path.join(wapt_sources_dir,u'setup.py'),
+        "control_filename":os.path.join(wapt_sources_dir,u'WAPT',u'control')}
 
-        if sys.platform=='win32' and os.path.isfile(pyscripter_filename) and os.path.isfile(psproj_filename):
-            run_as_administrator(pyscripter_filename,
-                '--PYTHONDLLPATH "%s" --python27 -N --project "%s" "%s" "%s"' % (
-                            wapt_base_dir,
-                            psproj_filename,
-                            setup_filename,
-                            control_filename))
+    # in edit_for_packages you can specify {key_params} to replace for launch the editor
+
+    if os.name == 'nt':
+        if editor_for_packages is None:
+            params["psproj_filename"]=os.path.join(wapt_sources_dir,u'WAPT',u'wapt.psproj')
+            pyscripter_filename = os.path.join(setuphelpers.programfiles32,
+                                               'PyScripter', 'PyScripter.exe')
+            env = os.environ
+            env.update(dict(
+                PYTHONHOME=params['wapt_base_dir'],
+                PYTHONPATH=params['wapt_base_dir'],
+                VIRTUAL_ENV=params['wapt_base_dir']
+                ))
+
+            if sys.platform=='win32' and os.path.isfile(pyscripter_filename) and os.path.isfile(params["psproj_filename"]):
+                run_as_administrator(pyscripter_filename,
+                    '--PYTHONDLLPATH "{wapt_base_dir}" --python27 -N --project "{psproj_filename}" "{setup_filename}" "{control_filename}"'.format(**params))
+            else:
+                os.startfile(params['wapt_sources_dir'])
         else:
-            os.startfile(wapt_sources_dir)
+            try:
+                if editor_for_packages in ['code','codium','vscode','vscodium']:
+                    editor_for_packages = editor_for_packages.strip('vs')
+                    exe_file = whichcraft.which(editor_for_packages)
+                    params_string = params['wapt_sources_dir'] + ' ' + params['setup_filename']
+                else:
+                    exe_position = editor_for_packages.find('.exe')
+                    if exe_position == -1:
+                        raise Exception('No exe file')
+                    exe_file = editor_for_packages[:exe_position+4]
+                    params_string = editor_for_packages[exe_position+4:].format(**params).lstrip()
+                run_as_administrator(exe_file,params_string)
+            except:
+                os.startfile(params['wapt_sources_dir'])
     else:
-        if editor_for_packages is not None and whichcraft.which(editor_for_packages):
-            command = [editor_for_packages, setup_filename]
-            subprocess.call(command)
-        elif whichcraft.which('nano'):
-            command = ['nano', setup_filename]
-            subprocess.call(command)
-        elif whichcraft.which('vim'):
-            command = ['vim', setup_filename]
+        command = []
+        list_supported_editor = ['codium','vscodium','vscode','code','nano','vim','vi']
+        if (editor_for_packages is not None) and (editor_for_packages not in list_supported_editor):
+            space_sep = editor_for_packages.find(' ')
+            cmd = editor_for_packages[:space_sep]
+            params_string = editor_for_packages[space_sep+1:].format(**params)
+            command = [editor_for_packages, params_string]
+        elif whichcraft.which('codium') and ((editor_for_packages is None) or (editor_for_packages in ['codium','vscodium'])):
+            command = ['codium', params['wapt_sources_dir'], params['setup_filename']]
+        elif whichcraft.which('code') and ((editor_for_packages is None) or (editor_for_packages in ['code','vscode'])):
+            command = ['code', params['wapt_sources_dir'], params['setup_filename']]
+        elif whichcraft.which('nano') and ((editor_for_packages is None) or (editor_for_packages == 'nano')):
+            command = ['nano', params['setup_filename']]
+        elif whichcraft.which('vim') and ((editor_for_packages is None) or (editor_for_packages == 'vim')):
+            command = ['vim', params['setup_filename']]
+        elif whichcraft.which('vi') and ((editor_for_packages is None) or (editor_for_packages == 'vi')):
+            command = ['vi', params['setup_filename']]
+        if command:
             subprocess.call(command)
     return wapt_sources_dir
 
