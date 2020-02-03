@@ -47,11 +47,11 @@ object VisWAPTConfig: TVisWAPTConfig
     object pgBase: TTabSheet
       Caption = 'Base'
       ChildSizing.TopBottomSpacing = 15
-      ClientHeight = 294
+      ClientHeight = 296
       ClientWidth = 606
       object edDefaultPackagePrefix: TLabeledEdit
         Left = 167
-        Height = 23
+        Height = 21
         Hint = 'E.g. : tis'#13#10'Which prefix to use when naming created or duplicated packages'
         Top = 164
         Width = 80
@@ -60,10 +60,10 @@ object VisWAPTConfig: TVisWAPTConfig
         EditLabel.AnchorSideRight.Control = edDefaultPackagePrefix
         EditLabel.AnchorSideBottom.Control = edDefaultPackagePrefix
         EditLabel.AnchorSideBottom.Side = asrBottom
-        EditLabel.Left = 47
-        EditLabel.Height = 15
+        EditLabel.Left = 56
+        EditLabel.Height = 13
         EditLabel.Top = 168
-        EditLabel.Width = 117
+        EditLabel.Width = 108
         EditLabel.Caption = 'WAPT packages prefix'
         EditLabel.ParentColor = False
         LabelPosition = lpLeft
@@ -72,7 +72,7 @@ object VisWAPTConfig: TVisWAPTConfig
       end
       object edPersonalCertificatePath: TFileNameEdit
         Left = 167
-        Height = 23
+        Height = 21
         Hint = 'E.g. : c:\private\tranquilit.crt'#13#10'Path to certificate for signing new packages.'#13#10'Only suitable for development hosts.'
         Top = 188
         Width = 220
@@ -90,7 +90,7 @@ object VisWAPTConfig: TVisWAPTConfig
         AnchorSideTop.Side = asrCenter
         AnchorSideRight.Control = edPersonalCertificatePath
         Left = 0
-        Height = 15
+        Height = 13
         Top = 192
         Width = 164
         Alignment = taRightJustify
@@ -102,7 +102,7 @@ object VisWAPTConfig: TVisWAPTConfig
       end
       object edServerAddress: TLabeledEdit
         Left = 167
-        Height = 23
+        Height = 21
         Hint = 'E.g. : wapt.tranquilit.local'#13#10'Leave empty for auto discovery with DNS queries'
         Top = 6
         Width = 220
@@ -111,10 +111,10 @@ object VisWAPTConfig: TVisWAPTConfig
         EditLabel.AnchorSideRight.Control = edServerAddress
         EditLabel.AnchorSideBottom.Control = edServerAddress
         EditLabel.AnchorSideBottom.Side = asrBottom
-        EditLabel.Left = 7
-        EditLabel.Height = 15
+        EditLabel.Left = 17
+        EditLabel.Height = 13
         EditLabel.Top = 10
-        EditLabel.Width = 157
+        EditLabel.Width = 147
         EditLabel.Caption = 'WAPT Server address or name'
         EditLabel.ParentColor = False
         LabelPosition = lpLeft
@@ -128,7 +128,7 @@ object VisWAPTConfig: TVisWAPTConfig
         AnchorSideRight.Control = pgBase
         AnchorSideRight.Side = asrBottom
         Left = 421
-        Height = 25
+        Height = 24
         Top = 6
         Width = 185
         Action = ActCheckAndSetwaptserver
@@ -145,9 +145,9 @@ object VisWAPTConfig: TVisWAPTConfig
         AnchorSideTop.Control = ImgStatusRepo
         AnchorSideTop.Side = asrCenter
         Left = 415
-        Height = 15
+        Height = 13
         Top = 57
-        Width = 32
+        Width = 31
         BorderSpacing.Left = 4
         Caption = 'Status'
         ParentColor = False
@@ -158,16 +158,16 @@ object VisWAPTConfig: TVisWAPTConfig
         AnchorSideTop.Control = ImgStatusServer
         AnchorSideTop.Side = asrCenter
         Left = 415
-        Height = 15
+        Height = 13
         Top = 81
-        Width = 32
+        Width = 31
         BorderSpacing.Left = 4
         Caption = 'Status'
         ParentColor = False
       end
       object EdRepoURL: TLabeledEdit
         Left = 167
-        Height = 23
+        Height = 21
         Hint = 'E.g. : https://wapt.tranquilit.local/wapt'#13#10'Leave empty for auto DNS discovery'#13#10#13#10'Don''t forget the path to packages (/wapt) in the URL !'
         Top = 53
         Width = 220
@@ -176,10 +176,10 @@ object VisWAPTConfig: TVisWAPTConfig
         EditLabel.AnchorSideRight.Control = EdRepoURL
         EditLabel.AnchorSideBottom.Control = EdRepoURL
         EditLabel.AnchorSideBottom.Side = asrBottom
-        EditLabel.Left = 23
-        EditLabel.Height = 15
+        EditLabel.Left = 36
+        EditLabel.Height = 13
         EditLabel.Top = 57
-        EditLabel.Width = 141
+        EditLabel.Width = 128
         EditLabel.Caption = 'URL to the main repository'
         EditLabel.ParentColor = False
         Enabled = False
@@ -189,7 +189,7 @@ object VisWAPTConfig: TVisWAPTConfig
       end
       object EdWaptServer: TLabeledEdit
         Left = 167
-        Height = 23
+        Height = 21
         Hint = 'E.g. : https://wapt.tranquilit.local'#13#10'Leave empty if you don''t want a central management server.'
         Top = 77
         Width = 220
@@ -198,10 +198,10 @@ object VisWAPTConfig: TVisWAPTConfig
         EditLabel.AnchorSideRight.Control = EdWaptServer
         EditLabel.AnchorSideBottom.Control = EdWaptServer
         EditLabel.AnchorSideBottom.Side = asrBottom
-        EditLabel.Left = 73
-        EditLabel.Height = 15
+        EditLabel.Left = 78
+        EditLabel.Height = 13
         EditLabel.Top = 81
-        EditLabel.Width = 91
+        EditLabel.Width = 86
         EditLabel.Caption = 'WAPT Server URL'
         EditLabel.ParentColor = False
         Enabled = False
@@ -211,9 +211,9 @@ object VisWAPTConfig: TVisWAPTConfig
       end
       object cbManual: TCheckBox
         Left = 18
-        Height = 19
+        Height = 17
         Top = 34
-        Width = 110
+        Width = 101
         Caption = 'Manual overrride'
         OnClick = cbManualClick
         TabOrder = 2
@@ -223,29 +223,33 @@ object VisWAPTConfig: TVisWAPTConfig
         AnchorSideLeft.Side = asrBottom
         AnchorSideTop.Control = EdRepoURL
         AnchorSideTop.Side = asrCenter
+        Cursor = crHandPoint
         Left = 391
         Height = 21
-        Top = 54
+        Top = 53
         Width = 20
         BorderSpacing.Left = 4
+        OnClick = ImgStatusRepoClick
       end
       object ImgStatusServer: TImage
         AnchorSideLeft.Control = EdWaptServer
         AnchorSideLeft.Side = asrBottom
         AnchorSideTop.Control = EdWaptServer
         AnchorSideTop.Side = asrCenter
+        Cursor = crHandPoint
         Left = 391
         Height = 21
-        Top = 78
+        Top = 77
         Width = 20
         BorderSpacing.Left = 4
+        OnClick = ImgStatusServerClick
       end
       object Label6: TLabel
         AnchorSideTop.Control = EdServerCertificate
         AnchorSideTop.Side = asrCenter
         AnchorSideRight.Control = EdServerCertificate
         Left = 0
-        Height = 15
+        Height = 13
         Top = 132
         Width = 164
         Alignment = taRightJustify
@@ -257,7 +261,7 @@ object VisWAPTConfig: TVisWAPTConfig
       end
       object EdServerCertificate: TFileNameEdit
         Left = 167
-        Height = 23
+        Height = 21
         Hint = 'E.g. : c:\wapt\ssl\server\cacert.pem'#13#10'Path to certificate bundle with https servers CA certificates'#13#10'The bundle must contain intermediate and root certificates'#13#10#13#10'If 0: no check on https server certificates issuers'#13#10'If 1 : use default wapt cacert.pem bundle'
         Top = 128
         Width = 220
@@ -274,7 +278,7 @@ object VisWAPTConfig: TVisWAPTConfig
         AnchorSideRight.Control = pgBase
         AnchorSideRight.Side = asrBottom
         Left = 421
-        Height = 25
+        Height = 24
         Hint = 'Click to retrieve the https certificate chain from server.'#13#10'This works only if chain contain full certificate validation chain.'#13#10'If not, you must add the missing root and intermediate certificates.'
         Top = 128
         Width = 185
@@ -287,10 +291,10 @@ object VisWAPTConfig: TVisWAPTConfig
       end
       object CBVerifyCert: TCheckBox
         Left = 167
-        Height = 19
+        Height = 17
         Hint = 'Check to enable the check of https server certificates'#13#10'(Main repository access and wapt server)'
         Top = 106
-        Width = 169
+        Width = 161
         Caption = 'Verify https server certificate'
         OnClick = CBVerifyCertClick
         TabOrder = 5
@@ -299,7 +303,7 @@ object VisWAPTConfig: TVisWAPTConfig
         AnchorSideRight.Control = pgBase
         AnchorSideRight.Side = asrBottom
         Left = 421
-        Height = 25
+        Height = 24
         Hint = 'Try to find a private key (pem encoded RSA key) in same directory as certificate.'#13#10'This will ask for the password for decrypting the key.'
         Top = 176
         Width = 185
@@ -314,7 +318,7 @@ object VisWAPTConfig: TVisWAPTConfig
         AnchorSideRight.Control = pgBase
         AnchorSideRight.Side = asrBottom
         Left = 421
-        Height = 25
+        Height = 24
         Top = 208
         Width = 185
         Action = ActCreateKeyCert
@@ -331,7 +335,7 @@ object VisWAPTConfig: TVisWAPTConfig
         AnchorSideRight.Control = EdLicencesDirectory
         Left = 1
         Height = 13
-        Top = 253
+        Top = 252
         Width = 164
         Alignment = taRightJustify
         Anchors = [akTop, akRight]
@@ -344,7 +348,7 @@ object VisWAPTConfig: TVisWAPTConfig
       end
       object EdLicencesDirectory: TDirectoryEdit
         Left = 168
-        Height = 23
+        Height = 21
         Hint = 'c:\wapt\licences'
         Top = 248
         Width = 219
@@ -361,7 +365,7 @@ object VisWAPTConfig: TVisWAPTConfig
         AnchorSideTop.Side = asrCenter
         Left = 251
         Height = 21
-        Top = 165
+        Top = 164
         Width = 20
         BorderSpacing.Left = 4
       end
@@ -370,31 +374,35 @@ object VisWAPTConfig: TVisWAPTConfig
         AnchorSideLeft.Side = asrBottom
         AnchorSideTop.Control = edPersonalCertificatePath
         AnchorSideTop.Side = asrCenter
+        Cursor = crHandPoint
         Left = 391
         Height = 21
-        Top = 189
+        Top = 188
         Width = 20
         BorderSpacing.Left = 4
+        OnClick = ImgStatusPersonalCertificateClick
       end
       object ImgStatusLicences: TImage
         AnchorSideLeft.Control = EdLicencesDirectory
         AnchorSideLeft.Side = asrBottom
         AnchorSideTop.Control = EdLicencesDirectory
         AnchorSideTop.Side = asrCenter
+        Cursor = crHandPoint
         Left = 391
         Height = 21
-        Top = 249
+        Top = 248
         Width = 20
         BorderSpacing.Left = 4
+        OnClick = ImgStatusLicencesClick
       end
     end
     object pgAdvanced: TTabSheet
       Caption = 'Advanced'
-      ClientHeight = 294
+      ClientHeight = 296
       ClientWidth = 606
       object eddefault_sources_root: TDirectoryEdit
         Left = 296
-        Height = 23
+        Height = 21
         Hint = 'E.g. : c:\waptdev'#13#10'Local directory for saving package development projects'
         Top = 16
         Width = 172
@@ -409,7 +417,7 @@ object VisWAPTConfig: TVisWAPTConfig
         AnchorSideTop.Side = asrCenter
         AnchorSideRight.Control = eddefault_sources_root
         Left = 8
-        Height = 15
+        Height = 13
         Top = 20
         Width = 283
         Alignment = taRightJustify
@@ -421,10 +429,10 @@ object VisWAPTConfig: TVisWAPTConfig
       object Label4: TLabel
         AnchorSideTop.Control = cbUseProxyForRepo
         AnchorSideRight.Control = eddefault_sources_root
-        Left = 20
-        Height = 15
-        Top = 74
-        Width = 273
+        Left = 43
+        Height = 13
+        Top = 70
+        Width = 250
         Alignment = taRightJustify
         Anchors = [akTop, akRight]
         BorderSpacing.Right = 3
@@ -434,10 +442,10 @@ object VisWAPTConfig: TVisWAPTConfig
       object Label5: TLabel
         AnchorSideTop.Control = cbUseProxyForServer
         AnchorSideRight.Control = eddefault_sources_root
-        Left = 42
-        Height = 15
-        Top = 99
-        Width = 251
+        Left = 59
+        Height = 13
+        Top = 93
+        Width = 234
         Alignment = taRightJustify
         Anchors = [akTop, akRight]
         BorderSpacing.Right = 3
@@ -449,9 +457,9 @@ object VisWAPTConfig: TVisWAPTConfig
         AnchorSideTop.Control = edhttp_proxy
         AnchorSideTop.Side = asrBottom
         Left = 296
-        Height = 19
+        Height = 17
         Hint = 'Activates proxy when accessing the main repository'
-        Top = 74
+        Top = 70
         Width = 20
         BorderSpacing.Top = 6
         TabOrder = 2
@@ -461,9 +469,9 @@ object VisWAPTConfig: TVisWAPTConfig
         AnchorSideTop.Control = cbUseProxyForRepo
         AnchorSideTop.Side = asrBottom
         Left = 296
-        Height = 19
+        Height = 17
         Hint = 'Activate proxy when accessing the WAPT server'
-        Top = 99
+        Top = 93
         Width = 20
         BorderSpacing.Top = 6
         TabOrder = 3
@@ -473,9 +481,9 @@ object VisWAPTConfig: TVisWAPTConfig
         AnchorSideTop.Control = eddefault_sources_root
         AnchorSideTop.Side = asrBottom
         Left = 296
-        Height = 23
+        Height = 21
         Hint = 'E.g. : http://proxy.tranquilit.local:3128'#13#10'Only required if a proxy is needed for waptserver and main waptrepo'
-        Top = 45
+        Top = 43
         Width = 220
         BorderSpacing.Top = 6
         EditLabel.AnchorSideTop.Control = edhttp_proxy
@@ -483,10 +491,10 @@ object VisWAPTConfig: TVisWAPTConfig
         EditLabel.AnchorSideRight.Control = edhttp_proxy
         EditLabel.AnchorSideBottom.Control = edhttp_proxy
         EditLabel.AnchorSideBottom.Side = asrBottom
-        EditLabel.Left = 143
-        EditLabel.Height = 15
-        EditLabel.Top = 49
-        EditLabel.Width = 150
+        EditLabel.Left = 153
+        EditLabel.Height = 13
+        EditLabel.Top = 47
+        EditLabel.Width = 140
         EditLabel.Caption = 'http proxy to use (if needed)'
         EditLabel.ParentColor = False
         LabelPosition = lpLeft
@@ -498,9 +506,9 @@ object VisWAPTConfig: TVisWAPTConfig
         AnchorSideTop.Control = cbSendStats
         AnchorSideTop.Side = asrCenter
         Left = 323
-        Height = 25
-        Top = 121
-        Width = 103
+        Height = 23
+        Top = 113
+        Width = 97
         AutoSize = True
         BorderSpacing.Left = 7
         Caption = 'Show statistics'
@@ -513,8 +521,8 @@ object VisWAPTConfig: TVisWAPTConfig
         AnchorSideTop.Control = cbUseProxyForServer
         AnchorSideTop.Side = asrBottom
         Left = 296
-        Height = 19
-        Top = 124
+        Height = 17
+        Top = 116
         Width = 20
         BorderSpacing.Top = 6
         Checked = True
@@ -525,10 +533,10 @@ object VisWAPTConfig: TVisWAPTConfig
       object Label8: TLabel
         AnchorSideTop.Control = cbSendStats
         AnchorSideRight.Control = eddefault_sources_root
-        Left = 48
-        Height = 15
-        Top = 124
-        Width = 245
+        Left = 67
+        Height = 13
+        Top = 116
+        Width = 226
         Alignment = taRightJustify
         Anchors = [akTop, akRight]
         BorderSpacing.Right = 3
@@ -540,10 +548,10 @@ object VisWAPTConfig: TVisWAPTConfig
         AnchorSideTop.Control = EdMaturity
         AnchorSideTop.Side = asrCenter
         AnchorSideRight.Control = EdMaturity
-        Left = 160
-        Height = 15
-        Top = 159
-        Width = 133
+        Left = 172
+        Height = 13
+        Top = 149
+        Width = 121
         Alignment = taRightJustify
         Anchors = [akTop, akRight]
         BorderSpacing.Right = 3
@@ -555,11 +563,11 @@ object VisWAPTConfig: TVisWAPTConfig
         AnchorSideTop.Control = cbSendStats
         AnchorSideTop.Side = asrBottom
         Left = 296
-        Height = 23
-        Top = 155
+        Height = 21
+        Top = 145
         Width = 120
         BorderSpacing.Top = 12
-        ItemHeight = 15
+        ItemHeight = 13
         ItemIndex = 0
         Items.Strings = (
           ''
@@ -573,10 +581,10 @@ object VisWAPTConfig: TVisWAPTConfig
         AnchorSideTop.Control = EdClientCertificatePath
         AnchorSideTop.Side = asrCenter
         AnchorSideRight.Control = EdClientCertificatePath
-        Left = 153
-        Height = 15
-        Top = 186
-        Width = 140
+        Left = 165
+        Height = 13
+        Top = 174
+        Width = 128
         Alignment = taRightJustify
         Anchors = [akTop, akRight]
         BorderSpacing.Right = 3
@@ -588,10 +596,10 @@ object VisWAPTConfig: TVisWAPTConfig
         AnchorSideTop.Control = EdClientPrivateKeyPath
         AnchorSideTop.Side = asrCenter
         AnchorSideRight.Control = EdClientPrivateKeyPath
-        Left = 187
-        Height = 15
-        Top = 213
-        Width = 106
+        Left = 196
+        Height = 13
+        Top = 199
+        Width = 97
         Alignment = taRightJustify
         Anchors = [akTop, akRight]
         BorderSpacing.Right = 3
@@ -604,9 +612,9 @@ object VisWAPTConfig: TVisWAPTConfig
         AnchorSideTop.Control = EdMaturity
         AnchorSideTop.Side = asrBottom
         Left = 296
-        Height = 23
+        Height = 21
         Hint = 'If remote repository is using Client side SSL Authentication'
-        Top = 182
+        Top = 170
         Width = 220
         Filter = 'X509 Certificates|*.crt|All files|*.*'
         FilterIndex = 0
@@ -623,9 +631,9 @@ object VisWAPTConfig: TVisWAPTConfig
         AnchorSideTop.Control = EdClientCertificatePath
         AnchorSideTop.Side = asrBottom
         Left = 296
-        Height = 23
+        Height = 21
         Hint = 'If remote repository is using Client side SSL Authentication'
-        Top = 209
+        Top = 195
         Width = 220
         Filter = 'RSA pem encoded key|*.pem|All files|*.*'
         FilterIndex = 0
@@ -640,9 +648,8 @@ object VisWAPTConfig: TVisWAPTConfig
     end
     object pgPlugins: TTabSheet
       Caption = 'Plugins'
-      ClientHeight = 294
+      ClientHeight = 296
       ClientWidth = 606
-      OnShow = pgPluginsShow
       object GridPlugins: TSOGrid
         Left = 8
         Height = 208
@@ -673,8 +680,8 @@ object VisWAPTConfig: TVisWAPTConfig
             PropertyName = 'arguments'
           end>
         Header.DefaultHeight = 18
-        
         Header.Height = 18
+        Header.MaxHeight = 100
         Header.MinHeight = 18
         Header.Options = [hoAutoResize, hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeightResize, hoHeaderClickAutoSort]
         Header.Style = hsFlatButtons

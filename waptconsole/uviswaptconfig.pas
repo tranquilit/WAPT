@@ -102,8 +102,11 @@ type
     procedure GridPluginsEditing(Sender: TBaseVirtualTree; Node: PVirtualNode;
       Column: TColumnIndex; var Allowed: Boolean);
     procedure HelpButtonClick(Sender: TObject);
+    procedure ImgStatusLicencesClick(Sender: TObject);
+    procedure ImgStatusPersonalCertificateClick(Sender: TObject);
+    procedure ImgStatusRepoClick(Sender: TObject);
+    procedure ImgStatusServerClick(Sender: TObject);
     procedure OKButtonClick(Sender: TObject);
-    procedure pgPluginsShow(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
   private
     FIniFilename: String;
@@ -702,13 +705,29 @@ begin
   OpenDocument(FIniFilename);
 end;
 
+procedure TVisWAPTConfig.ImgStatusLicencesClick(Sender: TObject);
+begin
+  OpenDocument(EdLicencesDirectory.Directory);
+end;
+
+procedure TVisWAPTConfig.ImgStatusPersonalCertificateClick(Sender: TObject);
+begin
+  OpenDocument(edPersonalCertificatePath.FileName);
+end;
+
+procedure TVisWAPTConfig.ImgStatusRepoClick(Sender: TObject);
+begin
+  OpenDocument(EdRepoURL.Text);
+end;
+
+procedure TVisWAPTConfig.ImgStatusServerClick(Sender: TObject);
+begin
+  OpenDocument(EdWaptServer.Text+'/ping');
+end;
+
 procedure TVisWAPTConfig.OKButtonClick(Sender: TObject);
 begin
   ActSaveConfig.Execute;
-end;
-
-procedure TVisWAPTConfig.pgPluginsShow(Sender: TObject);
-begin
 end;
 
 procedure TVisWAPTConfig.Timer1Timer(Sender: TObject);
