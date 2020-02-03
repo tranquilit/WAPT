@@ -697,6 +697,16 @@ def localrepo_packages():
 @app.route('/api/v3/known_packages')
 @requires_auth()
 def known_packages():
+    """Returns list of known packages metadata from database
+
+    Args:
+        exclude_sections (csv str): packages section to exclude from result.
+                                    default 'unit,host,profile' are excluded
+
+    Returns:
+        dict : result
+
+    """
     try:
         start_time = time.time()
         exclude_sections = ensure_list(request.args.get('exclude_sections','unit,host,profile'))
@@ -717,8 +727,6 @@ def known_packages():
         logger.critical('known_packages failed %s' % (repr(e)))
         return make_response_from_exception(e)
 
-
-
 def read_trusted_certificates(trusted_certificates_folder=None):
     """Loads the certificates files from trusted_certificates_folder.
     Trusted certificate is the first certificate of each PEM file in trusted_certificates_folder
@@ -738,6 +746,10 @@ def read_trusted_certificates(trusted_certificates_folder=None):
 
 def check_valid_signer(package,cabundle):
     """Check if the signer of package is in the trusted list of certificates in cabundle.
+
+    Args:
+        package (PackageEntry): package to check signer
+        cabundle (SSLCABundle) : buncle of CA trusted certificate.
 
     Returns:
         list of SSLCertificate : trusted certificate chain.
@@ -1108,6 +1120,11 @@ def login():
         # legacy
         if request.method == 'POST' :
             post_data = request.get_json()
+            if request.headers.get('Content-Encoding') == 'gzip':
+                raw_data = zlib.decompress(request.data)
+            else:
+                raw_data = request.data
+            post_data = ujson.loads(raw_data)
             if post_data is not None:
                 # json auth from waptconsole
                 user = post_data.get('user')
@@ -1395,20 +1412,23 @@ def trigger_wakeonlan():
             macs = host['mac_addresses']
             msg = u''
             if macs:
-                logger.debug(
-                    _('Sending magic wakeonlan packets to {} for machine {}').format(
-                        macs,
-                        host['computer_fqdn']
-                    ))
-                wakeonlan.wol.send_magic_packet(*macs)
-                for line in host['host_info']['networking']:
-                    if 'broadcast' in line:
-                        broadcast = line['broadcast']
-                        wakeonlan.wol.send_magic_packet(
-                            *
+                for port in app.conf['wol_port'].split(','):
+                    logger.debug(
+                        _('Sending magic wakeonlan packets to {} for machine {} on port {} ').format(
                             macs,
-                            ip_address='%s' %
-                            broadcast)
+                            host['computer_fqdn'],
+                            str(port.strip())
+                        ))
+                    wakeonlan.wol.send_magic_packet(*macs,port=int(port))
+                    for line in host['host_info']['networking']:
+                        if 'broadcast' in line:
+                            broadcast = line['broadcast']
+                            wakeonlan.wol.send_magic_packet(
+                                *
+                                macs,
+                                ip_address='%s' %
+                                broadcast,
+                                port=int(port.strip()))
                 result.append(dict(uuid=host['uuid'], computer_fqdn=host['computer_fqdn'], mac_addresses=host['mac_addresses']))
         msg = _(u'Wakeonlan packets sent to {} machines.').format(len(result))
         result = result
