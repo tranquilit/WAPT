@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # -----------------------------------------------------------------------
 #    This file is part of WAPT
-#    Copyright (C) 2013  Tranquil IT Systems http://www.tranquil.it
+#    Copyright (C) 2020  Tranquil IT Systems http://www.tranquil.it
 #    WAPT aims to help Windows systems administrators to deploy
 #    setup and update applications on users PC.
 #
@@ -760,7 +760,9 @@ def check_valid_signer(package,cabundle):
         if not signer_certs or not signer_certs[0].is_code_signing:
             raise EWaptForbiddden(u'The package %s contains setup.py code but has not been signed with a proper code_signing certificate' % package.package)
     if cabundle is not None:
-        trusted = cabundle.check_certificates_chain(signer_certs,check_is_trusted=True)
+        trusted_chain = cabundle.check_certificates_chain(signer_certs,check_is_trusted=True)
+    else:
+        trusted_chain = signer_certs
 
     # If it's host package, check if host is known to trust one of the signer cert in cert chain.
     if package.section == 'host':
@@ -769,16 +771,16 @@ def check_valid_signer(package,cabundle):
         packages_trusted_ca_fingerprints = Hosts.host_capabilities['packages_trusted_ca_fingerprints']
         if packages_trusted_ca_fingerprints:
             trusted_cert = None
-            for signer_cert in signer_certs:
+            for signer_cert in trusted_chain:
                 #SSLCertificate.get_fingerprint('sha256').hexdigest()
                 if signer_cert.fingerprint in packages_trusted_ca_fingerprints:
                     trusted_cert = signer_cert
                     logger.info('Package %s trusted for signer %s issued by %s' % (package.package,signer_cert.cn,signer_cert.issuer_dn))
                     break
             if not trusted_cert:
-                raise EWaptForbiddden('Host matching package %s does not trusted signer certificate %s' % (package.package,trusted[0].fingerprint))
+                raise EWaptForbiddden('Host matching package %s does not trusted signer certificate %s' % (package.package,trusted_chains[0].fingerprint))
 
-    return signer_certs
+    return trusted_chain
 
 @app.route('/api/v3/upload_packages',methods=['HEAD','POST'])
 @requires_auth()
