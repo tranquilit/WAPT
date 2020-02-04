@@ -86,7 +86,7 @@ http {
 
             {% if known_certificates_folder %}
             location /ssl {
-                root "{{ known_certificates_folder }}";
+                alias "{{ known_certificates_folder }}";
             }
             {% endif %}
 

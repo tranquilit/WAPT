@@ -51,7 +51,7 @@ server {
         # be sure these headers are not forwarded
         proxy_set_header X-Ssl-Client-Dn  "";
         proxy_set_header X-Ssl-Authenticated  "";
-        
+
         client_max_body_size 4096m;
         client_body_timeout 1800;
 
@@ -61,7 +61,7 @@ server {
 
         {% if known_certificates_folder %}
         location /ssl {
-            root "{{ known_certificates_folder }}";
+            alias "{{ known_certificates_folder }}";
         }
         {% endif %}
 
