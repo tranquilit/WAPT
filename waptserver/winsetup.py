@@ -461,6 +461,12 @@ def install_waptserver_service(options,conf=None):
         print('Create X509 cert %s' % clients_signing_certificate)
         crt.save_as_pem(clients_signing_certificate)
 
+    # known certificates
+    ssl_dir = conf['known_certificates_folder']
+    if not os.path.isdir(ssl_dir):
+        os.makedirs(ssl_dir)
+    run(r'icacls "%s" /grant  "*S-1-5-20":(OI)(CI)(M)' % ssl_dir)
+
     # ensure Packages index
     repo = WaptLocalRepo(conf['wapt_folder'])
     repo.update_packages_index()
