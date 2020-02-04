@@ -47,11 +47,6 @@ def run(*args, **kwargs):
 def eprint(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)
 
-def run_verbose(*args, **kwargs):
-    output = subprocess.check_output(*args, shell=True, **kwargs)
-    eprint(output)
-    return output
-
 def mkdir_p(path):
     if not os.path.isdir(path):
         os.makedirs(path)
@@ -197,8 +192,8 @@ if platform.system() != 'Darwin':
 revision = options.revision
 python_version = options.python_version
 
-run_verbose('pip{} install gitpython'.format(python_version))
-run_verbose('pip{} install virtualenv'.format(python_version))
+run('pip{} install gitpython'.format(python_version))
+run('pip{} install virtualenv'.format(python_version))
 
 ####################
 # wapt
@@ -242,21 +237,15 @@ eprint('creating the package tree')
 WAPTEDITION=os.environ.get('WAPTEDITION','community')
 if WAPTEDITION=='enterprise':
     tmp_dir_name = 'tis-waptagent-enterprise'
-    mkdir_p('./tmpbuild/payload/opt/wapt/waptenterprise')
+    mkdir_p('tmpbuild/payload/opt/wapt/waptenterprise')
 else:
     tmp_dir_name = 'tis-waptagent'
 
 if os.path.exists('tmpbuild'):
     shutil.rmtree('tmpbuild')
 
-# dmidecode : installé avec homebrew (cavalier/dmidecode/dmidecode)
-dependencies = ['dmidecode']
-for dep in dependencies:
-    if subprocess.call("which " + dep, shell=True) != 0:
-        shutil.copy(makepath(os.path.abspath('.'), dep), '/usr/local/bin/' + dep)
-
 # munkipkg : https://github.com/munki/munki-pkg
-run_verbose('./munkipkg --create tmpbuild')
+run('./munkipkg --create tmpbuild')
 
 opt_dirs = ['conf', 'lib', 'log', 'db', 'waptagent']
 if python_version == '3':
@@ -265,98 +254,80 @@ else:
     opt_dirs.append('usr/local/lib/python2.7/site-packages')
 
 for d in opt_dirs:
-    mkdir_p('./tmpbuild/payload/opt/wapt/' + d)
-mkdir_p('./tmpbuild/payload/usr/local/bin/')
+    mkdir_p('tmpbuild/payload/opt/wapt/' + d)
+mkdir_p('tmpbuild/payload/usr/local/bin/')
 
 
 # for some reason the virtualenv does not build itself right if we don't
 # have pip systemwide...
 
-run_verbose('pip{} install setuptools'.format(python_version))
+run('pip{} install setuptools'.format(python_version))
 eprint('Create a build environment virtualenv. May need to download a few libraries, it may take some time')
 if python_version=='3':
-    run_verbose(r'virtualenv -p /usr/local/bin/python3 ./tmpbuild/payload/opt/wapt --always-copy')
+    run(r'virtualenv -p /usr/local/bin/python3 tmpbuild/payload/opt/wapt --always-copy')
 else:
-    run_verbose(r'virtualenv -p /usr/bin/python2.7 ./tmpbuild/payload/opt/wapt') #--always-copy')
+    run(r'virtualenv -p /usr/bin/python2.7 tmpbuild/payload/opt/wapt') #--always-copy')
 eprint('Install additional libraries in build environment virtualenv')
-run_verbose('./tmpbuild/payload/opt/wapt/bin/pip install pip setuptools --upgrade')
+run('tmpbuild/payload/opt/wapt/bin/pip install pip setuptools --upgrade')
 # qq libs a rajouter
-lib_python=next(os.walk('./tmpbuild/payload/opt/wapt/lib/'))[1][0]
-run('./tmpbuild/payload/opt/wapt/bin/pip{} install -r ../../requirements.txt -r ../../requirements-linux.txt -t ./tmpbuild/payload/opt/wapt/lib/{}/site-packages'.format(python_version, lib_python))
+lib_python=next(os.walk('tmpbuild/payload/opt/wapt/lib/'))[1][0]
+run('tmpbuild/payload/opt/wapt/bin/pip{} install -r ../../requirements.txt -r ../../requirements-linux.txt -t tmpbuild/payload/opt/wapt/lib/{}/site-packages'.format(python_version, lib_python))
 
-run_verbose(r'virtualenv ./tmpbuild/payload/opt/wapt --relocatable')
+run(r'virtualenv tmpbuild/payload/opt/wapt --relocatable')
 
 eprint('copying the waptservice files')
 files_to_copy = ['version-full','waptcrypto.py','waptutils.py','common.py','custom_zip.py','waptpackage.py','setuphelpers.py','setuphelpers_linux.py','setuphelpers_windows.py','setuphelpers_unix.py','setuphelpers_macos.py','wapt-get.py']
 for afile in files_to_copy:
-    copyfile(makepath(wapt_source_dir, afile),os.path.join('./tmpbuild/payload/opt/wapt/',afile))
+    copyfile(makepath(wapt_source_dir, afile),os.path.join('tmpbuild/payload/opt/wapt/',afile))
 
 # delete pythonwheels
-if os.path.exists(makepath('./tmpbuild/payload', 'opt', 'wapt', 'share/')):
-    shutil.rmtree(makepath('./tmpbuild/payload', 'opt', 'wapt', 'share/'))
+if os.path.exists(makepath('tmpbuild/payload', 'opt', 'wapt', 'share/')):
+    shutil.rmtree(makepath('tmpbuild/payload', 'opt', 'wapt', 'share/'))
 
 # a voir si c'est encore necessaire
 eprint('cryptography patches')
-copyfile(makepath(wapt_source_dir, 'utils', 'patch-cryptography', '__init__.py'), './tmpbuild/payload/opt/wapt/lib/{}/site-packages/cryptography/x509/__init__.py'.format(lib_python))
-copyfile(makepath(wapt_source_dir, 'utils', 'patch-cryptography', 'verification.py'), './tmpbuild/payload/opt/wapt/lib/{}/site-packages/cryptography/x509/verification.py'.format(lib_python))
+copyfile(makepath(wapt_source_dir, 'utils', 'patch-cryptography', '__init__.py'), 'tmpbuild/payload/opt/wapt/lib/{}/site-packages/cryptography/x509/__init__.py'.format(lib_python))
+copyfile(makepath(wapt_source_dir, 'utils', 'patch-cryptography', 'verification.py'), 'tmpbuild/payload/opt/wapt/lib/{}/site-packages/cryptography/x509/verification.py'.format(lib_python))
 
 eprint('Patch memory leak')
-copyfile(makepath(wapt_source_dir, 'utils', 'patch-socketio-client-2', '__init__.py'), './tmpbuild/payload/opt/wapt/lib/{}/site-packages/socketIO_client/__init__.py'.format(lib_python))
-copyfile(makepath(wapt_source_dir, 'utils', 'patch-socketio-client-2', 'transports.py'), './tmpbuild/payload/opt/wapt/lib/{}/site-packages/socketIO_client/transports.py'.format(lib_python))
+copyfile(makepath(wapt_source_dir, 'utils', 'patch-socketio-client-2', '__init__.py'), 'tmpbuild/payload/opt/wapt/lib/{}/site-packages/socketIO_client/__init__.py'.format(lib_python))
+copyfile(makepath(wapt_source_dir, 'utils', 'patch-socketio-client-2', 'transports.py'), 'tmpbuild/payload/opt/wapt/lib/{}/site-packages/socketIO_client/transports.py'.format(lib_python))
 
 eprint('copying the waptserver files')
-rsync(source_dir, './tmpbuild/payload/opt/wapt',
+rsync(source_dir, 'tmpbuild/payload/opt/wapt',
       excludes=['postconf', 'repository', 'rpm', 'deb', 'spnego-http-auth-nginx-module', '*.bat'])
 
 if WAPTEDITION=='enterprise':
     eprint('copying the waptserver enterprise files')
-    rsync(wapt_source_dir + '/waptenterprise/', './tmpbuild/payload/opt/wapt/waptenterprise/',
+    rsync(wapt_source_dir + '/waptenterprise/', 'tmpbuild/payload/opt/wapt/waptenterprise/',
           excludes = [' ','waptwua', 'waptconsole', 'includes', 'waptserver'])
 
 # script to run waptagent in foreground mode
-copyfile(makepath(wapt_source_dir, 'runwaptagent.sh'),'./tmpbuild/payload/opt/wapt/runwaptagent.sh')
-copyfile(makepath(wapt_source_dir, 'wapt-get.sh'),'./tmpbuild/payload/opt/wapt/wapt-get.sh')
-copyfile(makepath(wapt_source_dir, 'waptpython'),'./tmpbuild/payload/usr/local/bin/waptpython')
+copyfile(makepath(wapt_source_dir, 'runwaptagent.sh'),'tmpbuild/payload/opt/wapt/runwaptagent.sh')
+copyfile(makepath(wapt_source_dir, 'wapt-get.sh'),'tmpbuild/payload/opt/wapt/wapt-get.sh')
+copyfile(makepath(wapt_source_dir, 'waptpython'),'tmpbuild/payload/usr/local/bin/waptpython')
+os.chmod('tmpbuild/payload/opt/wapt/wapt-get.sh', 0o755)
 
 for lib in ('dialog.py', ):
     rsync(makepath(wapt_source_dir, 'lib', 'site-packages', lib),
-          './tmpbuild/payload/opt/wapt/lib/{}/site-packages/'.format(lib_python))
+          'tmpbuild/payload/opt/wapt/lib/{}/site-packages/'.format(lib_python))
 
 eprint('copying preinst and postinst package metadata')
-copyfile('./postinstall', './tmpbuild/scripts/postinstall')
-copyfile('./preinstall', './tmpbuild/scripts/preinstall')
+copyfile('postinstall', 'tmpbuild/scripts/postinstall')
+copyfile('preinstall', 'tmpbuild/scripts/preinstall')
 
 
-eprint(run(r'find ./tmpbuild/payload/opt/wapt -type f -exec chmod 644 tmpbuild \;'))
-eprint(run(r'find ./tmpbuild/payload/opt/wapt -type d -exec chmod 755 tmpbuild \;'))
+eprint(run(r'find tmpbuild/payload/opt/wapt -type f -exec chmod 644 {} +'))
+eprint(run(r'find tmpbuild/payload/opt/wapt -type d -exec chmod 755 {} +'))
 
-eprint('copying logrotate script /etc/logrotate.d/waptagent')
-try:
-    mkdir_p('./tmpbuild/payload/etc/logrotate.d/')
-    shutil.copyfile('../Scripts/waptservice-logrotate',
-                    './tmpbuild/payload/etc/logrotate.d/waptagent')
-    #eprint(run('chown root:root ./tmpbuild/payload/etc/logrotate.d/waptserver'))
-except Exception as e:
-    eprint('error: \n%s' % e)
-    exit(1)
 
-eprint('copying logrotate script /etc/rsyslog.d/waptservice.conf')
-try:
-    mkdir_p('./tmpbuild/payload/etc/rsyslog.d/')
-    shutil.copyfile('../Scripts/waptservice-rsyslog',
-                    './tmpbuild/payload/etc/rsyslog.d/waptservice.conf')
-    #eprint(run('chown root:root ./tis-waptagent/payload/etc/rsyslog.d/waptserver.conf'))
-except Exception as e:
-    eprint('error: \n%s' % e)
-    exit(1)
-
-for fn in glob.glob('./tmpbuild/payload/opt/wapt/bin/*'):
+for fn in glob.glob('tmpbuild/payload/opt/wapt/bin/*'):
     os.chmod(fn, 0o755)
 
-shutil.copytree(makepath(wapt_source_dir, 'templates'), './tmpbuild/payload/opt/wapt/templates/')
+shutil.copytree(makepath(wapt_source_dir, 'templates'), 'tmpbuild/payload/opt/wapt/templates/')
 
-os.chmod('./tmpbuild/scripts/postinstall', 0o755)
-os.chmod('./tmpbuild/scripts/preinstall', 0o755)
+os.chmod('tmpbuild/scripts/postinstall', 0o755)
+os.chmod('tmpbuild/scripts/preinstall', 0o755)
 
 # build
 if WAPTEDITION=='enterprise':
@@ -365,16 +336,19 @@ else:
     package_filename = 'tis-waptagent-{}.pkg'.format(full_version)
 
 
-package_info_file = './tmpbuild/build-info.plist'
+package_info_file = 'tmpbuild/build-info.plist'
 plist_obj = plistlib.readPlist(package_info_file)
 plist_obj['name'] = package_filename
 plist_obj['version'] = full_version
 plistlib.writePlist(plist_obj, package_info_file)
 
+run("mkdir -p tmpbuild/payload/Library/LaunchDaemons && cp wapt.plist tmpbuild/payload/Library/LaunchDaemons")
+
+run("cp dmidecode tmpbuild/payload/usr/local/bin/")
 
 # The pkgbuild solution :
 '''
-run_verbose(['pkgbuild','--root','builddir',
+run(['pkgbuild','--root','builddir',
                         '--identifier', package_filename,
                         '--version', full_version,
                         '--scripts', scripts,
@@ -382,9 +356,9 @@ run_verbose(['pkgbuild','--root','builddir',
                         package_filename + '.pkg']))
 '''
 
-run_verbose("./munkipkg ./tmpbuild")
+run("./munkipkg tmpbuild")
 
-run_verbose("cp tmpbuild/build/{} .".format(package_filename))
-run_verbose("cp ./wapt.plist /Library/LaunchDaemons")
+run("cp tmpbuild/build/{} .".format(package_filename))
+shutil.rmtree('tmpbuild')
 
-print("Package created.")
+print(package_filename)

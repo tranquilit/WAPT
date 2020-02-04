@@ -55,15 +55,3 @@ def force_symlink(target, link_name):
 
 force_symlink('/opt/wapt/runwaptagent.sh', '/usr/local/bin/waptservice')
 force_symlink('/opt/wapt/wapt-get.sh', '/usr/local/bin/wapt-get')
-
-#try:
-#    print "Restarting syslog-ng"
-#    run('systemctl restart syslog-ng')
-#except subprocess.CalledProcessError:
-#    print "Restarting rsyslog"
-#    run('systemctl restart rsyslog')
-
-# restart server if conf file is there and if it was already running
-#if os.path.exists('/opt/wapt/conf/wapt-get.ini'):
-#    print("Restarting Agent")
-#    run('systemctl restart waptservice.service')
