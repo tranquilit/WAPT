@@ -811,7 +811,7 @@ def upload_packages():
                     f.write(chunk)
                     chunk = self.stream.read(self.chunk_size)
 
-    def read_package(packagefile):
+    def read_package(packagefile,trusted_signers):
         """Reads the stream of a zipped package file and return the entry
 
         Args:
@@ -832,7 +832,8 @@ def upload_packages():
                 raise EWaptForbiddden(u'Package filename / name is forbidden : %s' % entry.make_package_filename())
 
             # check if package signer is authorized
-            check_valid_signer(entry,trusted_signers)
+            trusted_chain = check_valid_signer(entry,trusted_signers)
+            logger.info(u'Package is trusted: %s' % trusted_chain)
 
             logger.debug(u'Saved package %s into %s' % (entry.asrequirement(),tmp_target))
 
@@ -891,11 +892,10 @@ def upload_packages():
                 for fkey in files:
                     try:
                         packagefile = request.files[fkey]
-                        logger.debug(u'uploading file : %s' % fkey)
+                        logger.info(u'Uploading package file : %s' % fkey)
                         if packagefile and allowed_file(packagefile.filename):
-                            new_package = read_package(packagefile)
+                            new_package = read_package(packagefile,trusted_signers)
                             # check if package signer is auhtorized for the hos
-                            check_valid_signer(new_package,trusted_signers)
                             done.append(new_package)
                     except Exception as e:
                         logger.critical(u'Error uploading %s : %s' % (fkey,e))
@@ -904,9 +904,8 @@ def upload_packages():
             else:
                 # streamed upload
                 packagefile = PackageStream(request.stream)
-                new_package = read_package(packagefile)
                 # check if package signer is auhtorized for the hos
-                check_valid_signer(new_package,trusted_signers)
+                new_package = read_package(packagefile,trusted_signers)
                 done.append(new_package)
 
 
@@ -995,6 +994,8 @@ def upload_host():
                                 entry = PackageEntry(waptfile=tmp_target)
 
                             check_valid_signer(entry,trusted_signers)
+
+                            # update database for filtering on direct dependencies of a host
                             HostGroups.sync_from_host_package(entry)
 
                             # get host cert to encrypt package with public key
