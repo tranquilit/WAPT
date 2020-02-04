@@ -2608,9 +2608,10 @@ class SSLCRL(BaseObjectClass):
         builder = builder.last_update(datetime.datetime.utcnow())
         builder = builder.next_update(datetime.datetime.utcnow() + datetime.timedelta(crl_ttl_days, 0, 0))
 
-        for ext in self.crl.extensions:
-            builder = builder.add_extension(ext,ext.critical)
-        if not 'authorityKeyIdentifier' in self.extensions:
+        if self.crl:
+            for ext in self.crl.extensions:
+                builder = builder.add_extension(ext,ext.critical)
+        if not self.crl or not 'authorityKeyIdentifier' in self.extensions:
             builder = builder.add_extension(x509.AuthorityKeyIdentifier.from_issuer_subject_key_identifier(
                 cacert.crt.extensions.get_extension_for_oid(x509.OID_SUBJECT_KEY_IDENTIFIER)),
                 critical=False)
