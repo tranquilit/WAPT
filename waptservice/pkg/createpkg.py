@@ -57,7 +57,7 @@ def git_hash():
     return '%s' % (r.active_branch.object.name_rev[:8],)
 
 def dev_revision():
-    return 'tismacos-%s' % (git_hash())
+    return 'macos-%s' % (git_hash())
 
 def setloglevel(alogger,loglevel):
     """set loglevel as string"""
