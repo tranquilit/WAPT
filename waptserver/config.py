@@ -68,7 +68,7 @@ _defaults = {
     'db_port': 5432,
     'db_user': 'wapt',
     'db_password': None,
-    'db_max_connections': 100,
+    'db_max_connections': 90,
     'db_stale_timeout': 300,
     'db_connect_timeout': 3,
     'use_kerberos': False,
