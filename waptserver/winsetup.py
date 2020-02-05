@@ -579,6 +579,5 @@ if __name__ == '__main__':
         elif action == 'install_waptserver':
             print('Installing WAPT Server as a service managed by nssm')
             install_waptserver_service(options,conf)
-            if os.path.isfile(os.path.join(wapt_root_dir,'waptenterprise','waptserver','wsus_tasks.py')):
-                install_wapttasks_service(options,conf)
+            install_wapttasks_service(options,conf)
 
