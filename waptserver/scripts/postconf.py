@@ -593,6 +593,15 @@ def main():
                 traceback.format_exc()
                 ]
 
+    # known certificates
+    ssl_dir = server_config['known_certificates_folder']
+    if not os.path.isdir(ssl_dir):
+        # move existing ssl dir in wapt repo to parent dir (default location)
+        if os.path.isdir(os.path.join(server_config['wapt_folder'],'ssl')):
+            os.rename(os.path.join(server_config['wapt_folder'],'ssl'),ssl_dir)
+        else:
+            os.makedirs(ssl_dir)
+
     #Migrate file for new version waptwua
     wuafolder = server_config['waptwua_folder']
     for (root,dirs,files) in list(os.walk(wuafolder,topdown=False)):

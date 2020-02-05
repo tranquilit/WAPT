@@ -464,7 +464,11 @@ def install_waptserver_service(options,conf=None):
     # known certificates
     ssl_dir = conf['known_certificates_folder']
     if not os.path.isdir(ssl_dir):
-        os.makedirs(ssl_dir)
+        # move existing ssl dir in wapt repo to parent dir (default location)
+        if os.path.isdir(os.path.join(conf['wapt_folder'],'ssl')):
+            os.rename(os.path.join(conf['wapt_folder'],'ssl'),ssl_dir)
+        else:
+            os.makedirs(ssl_dir)
     run(r'icacls "%s" /grant  "*S-1-5-20":(OI)(CI)(M)' % ssl_dir)
 
     # ensure Packages index
