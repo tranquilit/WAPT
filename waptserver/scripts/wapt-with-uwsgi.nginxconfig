@@ -25,6 +25,7 @@ server {
 
 
     ssl_client_certificate "/opt/wapt/conf/ca-srvwapt.demo.lan.crt";
+    ssl_crl "/var/www/ssl/ca-srvwapt.demo.lan.crl";
     ssl_verify_client optional;
 
 

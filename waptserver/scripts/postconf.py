@@ -60,7 +60,7 @@ from waptpackage import WaptLocalRepo
 import waptserver.config
 from waptserver.config import type_debian,type_redhat
 from waptserver.model import init_db,upgrade_db_structure,load_db_config
-from waptcrypto import SSLCertificate,SSLPrivateKey
+from waptcrypto import SSLCertificate,SSLPrivateKey,SSLCRL
 
 def run(*args, **kwargs):
     return subprocess.check_output(*args, shell=True, **kwargs)
@@ -494,6 +494,7 @@ def main():
 
     clients_signing_certificate =  server_config.get('clients_signing_certificate')
     clients_signing_key = server_config.get('clients_signing_key')
+    clients_signing_crl = server_config.get('clients_signing_crl')
 
     if not clients_signing_certificate or not clients_signing_key:
         clients_signing_certificate = os.path.join(wapt_root_dir,'conf','ca-%s.crt' % fqdn)
@@ -514,6 +515,15 @@ def main():
         crt = key.build_sign_certificate(cn=fqdn,is_code_signing=False,is_ca=True)
         print('Create X509 cert %s' % clients_signing_certificate)
         crt.save_as_pem(clients_signing_certificate)
+
+
+    if clients_signing_certificate is not None and clients_signing_key is not None and clients_signing_crl is not None and not os.path.isfile(clients_signing_crl):
+        print('Create a CRL for clients certificate signing')
+        key = SSLPrivateKey(clients_signing_key)
+        crt = SSLCertificate(clients_signing_certificate)
+        crl = SSLCRL(clients_signing_crl,cacert=crt,cakey=key)
+        crl.revoke_cert()
+        crl.save_as_pem()
 
     waptserver.config.write_config_file(cfgfile=options.configfile,server_config=server_config,non_default_values_only=True)
 

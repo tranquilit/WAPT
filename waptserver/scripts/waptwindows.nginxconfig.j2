@@ -54,9 +54,16 @@ http {
         ssl_session_cache           none;
         ssl_session_tickets         off;
 
-    {% if clients_signing_certificate %}
+    {% if use_ssl_client_auth %}
         ssl_client_certificate "{{ clients_signing_certificate }}";
+      {% if clients_signing_crl %}
+        ssl_crl "{{ clients_signing_crl }}";
+      {% endif %}
         ssl_verify_client optional;
+    {% elif clients_signing_certificate %}
+        #ssl_client_certificate "{{ clients_signing_certificate }}";
+        #ssl_crl "{{ clients_signing_crl }}";
+        #ssl_verify_client optional;
     {% endif %}
 
         gzip_min_length     1000;

@@ -38,6 +38,7 @@ server {
     gzip_vary           on;
 
     ssl_client_certificate "/opt/wapt/conf/wapt-serverauth-ca.crt";
+    ssl_crl  "/var/www/ssl/wapt-serverauth-ca.crl";
     ssl_verify_client optional;
 
     index index.html;

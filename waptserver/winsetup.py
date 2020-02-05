@@ -50,7 +50,7 @@ import uuid
 
 from setuphelpers import run
 from waptutils import setloglevel,ensure_unicode
-from waptcrypto import SSLPrivateKey,SSLCertificate
+from waptcrypto import SSLPrivateKey,SSLCertificate,SSLCRL
 from passlib.hash import pbkdf2_sha256
 
 import waptserver.config
@@ -172,19 +172,17 @@ def install_windows_nssm_service(
         # registry_set(root,path,keyname,service_dependencies,REG_MULTI_SZ)
 
 
-def make_nginx_config(wapt_root_dir, wapt_folder, force = False):
+def make_nginx_config(wapt_root_dir, conf, force = False):
     """Create a nginx default config file to server wapt_folder and reverse proxy waptserver
     Create a key and self signed certificate.
 
     Args:
         wapt_root_dir (str)
-        wapt_folder (str) : local path to wapt rdirectory for packages
-                             wapt-host and waptwua are derived from this.
+        conf (dict) : waptserver config file
 
     Returns:
         str: path to nginx conf file
     """
-
     ap_conf_dir = os.path.join(
         wapt_root_dir,
         'waptserver',
@@ -266,7 +264,7 @@ def install_nginx_service(options,conf=None):
     run(r'icacls "%s" /grant  "*S-1-5-20":(OI)(CI)(M)' % os.path.join(wapt_root_dir,'waptserver','nginx','logs'))
     run(r'icacls "%s" /grant  "*S-1-5-20":(OI)(CI)(M)' % os.path.join(wapt_root_dir,'log'))
 
-    make_nginx_config(wapt_root_dir, conf['wapt_folder'],force=options.force)
+    make_nginx_config(wapt_root_dir, conf,force=options.force)
     service_binary = os.path.abspath(os.path.join(wapt_root_dir,'waptserver','nginx','nginx.exe'))
     service_parameters = ''
     service_logfile = os.path.join(log_directory, 'nssm_nginx.log')
@@ -439,6 +437,7 @@ def install_waptserver_service(options,conf=None):
 
     clients_signing_certificate =  conf.get('clients_signing_certificate')
     clients_signing_key = conf.get('clients_signing_key')
+    clients_signing_crl = conf.get('clients_signing_crl')
 
     if not clients_signing_certificate or not clients_signing_key:
         clients_signing_certificate = os.path.join(wapt_root_dir,'conf','ca-%s.crt' % fqdn())
@@ -471,7 +470,16 @@ def install_waptserver_service(options,conf=None):
             os.makedirs(ssl_dir)
     run(r'icacls "%s" /grant  "*S-1-5-20":(OI)(CI)(M)' % ssl_dir)
 
-    # ensure Packages index
+    if clients_signing_certificate is not None and clients_signing_key is not None and clients_signing_crl is not None and not os.path.isfile(clients_signing_crl):
+        print('Create a CRL for clients certificate signing')
+        key = SSLPrivateKey(clients_signing_key)
+        crt = SSLCertificate(clients_signing_certificate)
+        crl = SSLCRL(clients_signing_crl,cacert=crt,cakey=key)
+        crl.revoke_cert()    # ensure Packages index
+        crl.save_as_pem()
+
+
+
     repo = WaptLocalRepo(conf['wapt_folder'])
     repo.update_packages_index()
 
