@@ -1935,7 +1935,7 @@ begin
     if not ((RowSO.S['platform'] = 'Windows') or (RowSO.S['platform'] = '')) and pgHostWUA.TabVisible and (HostPages.ActivePage = pgHostWUA) then
         HostPages.ActivePage := pgPackages;
 
-    pgHostWUA.TabVisible := EnableWaptWUAFeatures and ((RowSO.S['platform'] = 'Windows') or (RowSO.S['platform'] = ''));
+    pgHostWUA.TabVisible := IsEnterpriseEdition and EnableWaptWUAFeatures and ((RowSO.S['platform'] = 'Windows') or (RowSO.S['platform'] = ''));
 
     if HostPages.ActivePage = pgPackages then
     begin

@@ -2167,11 +2167,11 @@ object VisWaptGUI: TVisWaptGUI
             end
             object TabSheet2: TTabSheet
               Caption = 'Done'
-              ClientHeight = 189
+              ClientHeight = 259
               ClientWidth = 632
               object GridHostTasksDone: TSOGrid
                 Left = 0
-                Height = 187
+                Height = 257
                 Top = 2
                 Width = 632
                 ShowAdvancedColumnsCustomize = False
@@ -2313,11 +2313,11 @@ object VisWaptGUI: TVisWaptGUI
             end
             object TabSheet3: TTabSheet
               Caption = 'Errors'
-              ClientHeight = 260
+              ClientHeight = 259
               ClientWidth = 632
               object GridHostTasksErrors: TSOGrid
                 Left = 0
-                Height = 258
+                Height = 257
                 Top = 2
                 Width = 632
                 ShowAdvancedColumnsCustomize = False
