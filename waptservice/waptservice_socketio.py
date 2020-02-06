@@ -180,12 +180,12 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
             actions = args
             if not isinstance(actions,list):
                 actions =[actions]
-            logger.debug('Host actions "%s" triggered by SocketIO' % ",".join([action['action'] for action in actions]))
             # check signatures
             if not self.wapt:
                 raise Exception('Wapt not available')
             verified_by = None
             for action in actions:
+                logger.info('Host actions "%s" triggered by SocketIO by %s' % (action['action'],action['signer']))
                 name = action['action']
                 verified_by = None
                 # full cert chain provided with the signed action
@@ -413,7 +413,7 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
             self.emit("synchronization_not_a_local_remote_repo")
 
     def on_wapt_force_reconnect(self,args):
-        logger.debug('Force disconnect from server... %s'% (args,))
+        logger.info('Force disconnect from server... %s'% (args,))
         self.disconnect()
 
     def on_message(self,message):
@@ -533,7 +533,7 @@ class WaptSocketIOClient(threading.Thread):
                         if self.socketio_client:
                             self.socketio_client = None
                     finally:
-                        logger.debug(u'Exception %s, Socket IO Stopped, waiting %ss before retrying' %
+                        logger.info(u'Exception %s, Socket IO Stopped, waiting %ss before retrying' %
                             (repr(e),self.config.websockets_retry_delay))
                         time.sleep(self.config.websockets_retry_delay)
 

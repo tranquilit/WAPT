@@ -57,8 +57,17 @@ from flask import request, Response, send_from_directory, send_file, session, re
 
 logger = logging.getLogger('waptservice')
 
-import babel
-import babel.support
+try:
+    import babel
+    import babel.support
+
+    def babel_translations(lang = ''):
+        dirname = os.path.join(os.path.dirname(__file__), 'translations')
+        return babel.support.Translations.load(dirname, [lang])
+
+except ImportError:
+    babel = None
+
 
 
 class WaptServiceRemoteAction(object):
@@ -715,8 +724,12 @@ class WaptServiceRestart(WaptTask):
 
     def _run(self):
         """Launch an external 'wapt-get waptupgrade' process to upgrade local copy of wapt client"""
-        output = _(u'WaptService restart planned: %s' % setuphelpers.create_onetime_task('waptservicerestart','cmd.exe','/C net stop waptservice & net start waptservice'))
+        #output = _(u'WaptService restart planned: %s' % setuphelpers.create_onetime_task('waptservicerestart','cmd.exe','/C net stop waptservice & net start waptservice'))
+        output = u'Forced restart waptservice by %s on %s' % (self.created_by,self.create_date)
+        logger.warning(output)
+        time.sleep(2)
         self.result = {'result':'OK','message':output}
+        os._exit(10)
 
     def __unicode__(self):
         return _(u"Restarting local WAPT service")
@@ -1159,13 +1172,23 @@ class WaptAuditPackage(WaptTask):
         return (self.__class__ == other.__class__) and (self.packagenames == other.packagenames)
 
 
-def babel_translations(lang = ''):
-    dirname = os.path.join(os.path.dirname(__file__), 'translations')
-    return babel.support.Translations.load(dirname, [lang])
-
 # init translations
 waptconfig = WaptServiceConfig()
-tr = babel_translations(waptconfig.language)
-gettext = tr.ugettext
-_ = tr.ugettext
+if babel:
+    tr = babel_translations(waptconfig.language)
+    gettext = tr.ugettext
+    _ = tr.ugettext
+else:
+    gettext = (lambda s:s)
+    _ = gettext
 
+
+def render_wapt_template(template_name_or_list, **context):
+    global _
+    global gettext
+
+    if not '_' in context:
+        context['_'] = _
+    if not 'gettext' in context:
+        context['gettext'] = gettext
+    return render_template(template_name_or_list, **context)

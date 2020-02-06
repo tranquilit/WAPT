@@ -47,7 +47,7 @@ from waitress import serve
 import hashlib
 
 # flask
-from flask import request, Flask,Response, send_from_directory, session, g, redirect, url_for, render_template
+from flask import request, Flask,Response, send_from_directory, session, g, redirect, url_for
 from flask.logging import default_handler
 
 
@@ -83,7 +83,7 @@ from setuphelpers import Version
 from waptpackage import PackageEntry,WaptLocalRepo
 
 from waptservice.waptservice_common import waptconfig
-from waptservice.waptservice_common import forbidden,authenticate,allow_local
+from waptservice.waptservice_common import forbidden,authenticate,allow_local,render_wapt_template
 from waptservice.waptservice_common import WaptClientUpgrade,WaptServiceRestart,WaptNetworkReconfig,WaptPackageInstall
 from waptservice.waptservice_common import WaptUpgrade,WaptUpdate,WaptUpdateServerStatus,WaptCleanup,WaptDownloadPackage,WaptLongTask,WaptAuditPackage
 from waptservice.waptservice_common import WaptRegisterComputer,WaptPackageRemove,WaptPackageForget
@@ -110,11 +110,28 @@ else:
 
 from waptservice.plugins import *
 
-from flask_babel import Babel
 try:
-    from flask_babel import gettext
-except ImportError:
+    from flask_babel import Babel
+    try:
+        from flask_babel import gettext
+    except ImportError:
+        gettext = (lambda s:s)
+
+    @app_babel.localeselector
+    def get_locale():
+        browser_lang = request.accept_languages.best_match(['en', 'fr'])
+        user_lang = session.get('lang',browser_lang)
+        return user_lang
+
+    @app_babel.timezoneselector
+    def get_timezone():
+        user = getattr(g, 'user', None)
+        if user is not None:
+            return user.timezone
+
+except:
     gettext = (lambda s:s)
+    Babel = None
 
 # i18n
 _ = gettext
@@ -187,7 +204,8 @@ if waptrepositories_api is not None:
 app.jinja_env.filters['beautify'] = beautify # pylint: disable=no-member
 app.waptconfig = waptconfig
 
-app_babel = Babel(app)
+if Babel:
+    app_babel = Babel(app)
 
 def apply_host_settings(waptconfig):
     """Apply waptservice / waptexit specific settings
@@ -415,23 +433,10 @@ def allow_local_auth(f):
     return decorated
 
 
-@app_babel.localeselector
-def get_locale():
-    browser_lang = request.accept_languages.best_match(['en', 'fr'])
-    user_lang = session.get('lang',browser_lang)
-    return user_lang
-
 @app.route('/lang/<language>')
 def lang(language=None):
     session['lang'] = language
     return redirect('/')
-
-@app_babel.timezoneselector
-def get_timezone():
-    user = getattr(g, 'user', None)
-    if user is not None:
-        return user.timezone
-
 
 @app.route('/ping')
 @allow_local
@@ -532,7 +537,7 @@ def status():
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(rows), mimetype='application/json')
     else:
-        return render_template('status.html',packages=rows,format_isodate=format_isodate,Version=setuphelpers.Version)
+        return render_wapt_template('status.html',packages=rows,format_isodate=format_isodate,Version=setuphelpers.Version)
 
 
 def latest_only(packages):
@@ -693,7 +698,7 @@ def all_packages(page=1):
         _max = _min + per_page
         #pagination = Pagination(css_framework='bootstrap', page=page, total=total, search=search, per_page=per_page)
         pagination = None
-        return render_template(
+        return render_wapt_template(
             'list.html',
             packages=rows, #[_min:_max],
             format_isodate=format_isodate,
@@ -794,7 +799,7 @@ def package_details():
     if request.args.get('format','html')=='json':
         return Response(common.jsondump(dict(result=data,errors=[])), mimetype='application/json')
     else:
-        return render_template('package_details.html',data=data)
+        return render_wapt_template('package_details.html',data=data)
 
 
 @app.route('/runstatus')
@@ -864,7 +869,7 @@ def get_checkupgrades():
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
     else:
-        return render_template('default.html',data=data,title=_(u'Update status'))
+        return render_wapt_template('default.html',data=data,title=_(u'Update status'))
 
 
 @app.route('/waptupgrade')
@@ -876,7 +881,7 @@ def waptclientupgrade():
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
     else:
-        return render_template('default.html',data=data,title='Upgrade')
+        return render_wapt_template('default.html',data=data,title='Upgrade')
 
 
 @app.route('/waptservicerestart')
@@ -888,7 +893,7 @@ def waptservicerestart():
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
     else:
-        return render_template('default.html',data=data,title='Upgrade')
+        return render_wapt_template('default.html',data=data,title='Upgrade')
 
 
 @app.route('/reload_config')
@@ -902,7 +907,7 @@ def reload_config():
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
     else:
-        return render_template('default.html',data=data,title=_('Reload configuration'))
+        return render_wapt_template('default.html',data=data,title=_('Reload configuration'))
 
 
 
@@ -940,7 +945,7 @@ def upgrade():
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
     else:
-        return render_template('default.html',data=data,title='Upgrade')
+        return render_wapt_template('default.html',data=data,title='Upgrade')
 
 
 @app.route('/download_upgrades')
@@ -958,7 +963,7 @@ def download_upgrades():
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
     else:
-        return render_template('default.html',data=data,title=_(u'Download upgrades'))
+        return render_wapt_template('default.html',data=data,title=_(u'Download upgrades'))
 
 
 @app.route('/update')
@@ -973,7 +978,7 @@ def update():
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
     else:
-        return render_template('default.html',data=data,title=_(u'Installed software update'))
+        return render_wapt_template('default.html',data=data,title=_(u'Installed software update'))
 
 
 @app.route('/audit')
@@ -1005,7 +1010,7 @@ def audit():
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
     else:
-        return render_template('default.html',data=data,title=_(u'Triggered packages audits'))
+        return render_wapt_template('default.html',data=data,title=_(u'Triggered packages audits'))
 
 
 @app.route('/update_status')
@@ -1017,7 +1022,7 @@ def update_status():
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
     else:
-        return render_template('default.html',data=data,title=task)
+        return render_wapt_template('default.html',data=data,title=task)
 
 
 @app.route('/longtask')
@@ -1035,7 +1040,7 @@ def longtask():
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
     else:
-        return render_template('default.html',data=data,title=_('LongTask'))
+        return render_wapt_template('default.html',data=data,title=_('LongTask'))
 
 
 @app.route('/cleanup')
@@ -1050,7 +1055,7 @@ def cleanup():
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
     else:
-        return render_template('default.html',data=data.as_dict(),title=_('Cleanup'))
+        return render_wapt_template('default.html',data=data.as_dict(),title=_('Cleanup'))
 
 
 @app.route('/install_log')
@@ -1066,7 +1071,7 @@ def install_log():
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
     else:
-        return render_template('default.html',data=data,title=_('Trace of the installation of {}').format(packagename))
+        return render_wapt_template('default.html',data=data,title=_('Trace of the installation of {}').format(packagename))
 
 
 @app.route('/enable')
@@ -1096,7 +1101,7 @@ def register():
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
     else:
-        return render_template('default.html',data=data,title=_('Saving host to the WAPT server'))
+        return render_wapt_template('default.html',data=data,title=_('Saving host to the WAPT server'))
 
 
 @app.route('/inventory')
@@ -1109,7 +1114,7 @@ def inventory():
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
     else:
-        return render_template('default.html',data=data,title=_('Inventory of the host'))
+        return render_wapt_template('default.html',data=data,title=_('Inventory of the host'))
 
 @app.route('/install', methods=['GET'])
 @app.route('/install.json', methods=['GET'])
@@ -1172,7 +1177,7 @@ def install():
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
     else:
-        return render_template('install.html',data=data)
+        return render_wapt_template('install.html',data=data)
 
 
 @app.route('/package_download')
@@ -1188,7 +1193,7 @@ def package_download():
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
     else:
-        return render_template('default.html',data=data)
+        return render_wapt_template('default.html',data=data)
 
 
 @app.route('/remove', methods=['GET'])
@@ -1250,7 +1255,7 @@ def remove():
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
     else:
-        return render_template('remove.html',data=data)
+        return render_wapt_template('remove.html',data=data)
 
 
 @app.route('/forget', methods=['GET'])
@@ -1266,7 +1271,7 @@ def forget():
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
     else:
-        return render_template('install.html',data=data)
+        return render_wapt_template('install.html',data=data)
 
 @app.route('/', methods=['GET'])
 @allow_local
@@ -1276,11 +1281,12 @@ def index():
         host_info=host_info,
         wapt=wapt(),
         wapt_info=wapt().wapt_status(),
-        update_status=wapt().get_last_update_status(),)
+        update_status=wapt().get_last_update_status(),
+        _ = _)
     if request.args.get('format','html')=='json'  or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
     else:
-        return render_template('index.html',**data)
+        return render_wapt_template('index.html',**data)
 
 
 @app.route('/tasks')
@@ -1312,7 +1318,7 @@ def tasks():
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
     else:
-        return render_template('tasks.html',data=data)
+        return render_wapt_template('tasks.html',data=data)
 
 
 @app.route('/tasks_status')
@@ -1355,7 +1361,7 @@ def tasks_status():
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(result), mimetype='application/json')
     else:
-        return render_template('tasks.html',data=result)
+        return render_wapt_template('tasks.html',data=result)
 
 
 @app.route('/task')
@@ -1376,7 +1382,7 @@ def task():
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(task), mimetype='application/json')
     else:
-        return render_template('task.html',task=task)
+        return render_wapt_template('task.html',task=task)
 
 
 @app.route('/cancel_all_tasks')
@@ -1388,7 +1394,7 @@ def cancel_all_tasks():
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
     else:
-        return render_template('default.html',data=data)
+        return render_wapt_template('default.html',data=data)
 
 
 @app.route('/cancel_running_task')
@@ -1399,7 +1405,7 @@ def cancel_running_task():
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
     else:
-        return render_template('default.html',data=data)
+        return render_wapt_template('default.html',data=data)
 
 @app.route('/cancel_task')
 @app.route('/cancel_task.json')
@@ -1410,7 +1416,7 @@ def cancel_task():
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         return Response(common.jsondump(data), mimetype='application/json')
     else:
-        return render_template('default.html',data=data)
+        return render_wapt_template('default.html',data=data)
 
 
 @app.route('/wapt/<string:input_package_name>')

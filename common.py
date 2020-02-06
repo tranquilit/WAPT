@@ -3026,9 +3026,8 @@ class Wapt(BaseObjectClass):
                         if w.cabundle is None:
                             w.cabundle = self.cabundle
                         self.set_client_cert_auth(w)
-
                         self._repositories.append(w)
-                        logger.debug(u'    %s:%s' % (w.name,w._repo_url))
+                        logger.info(u'    %s:%s' % (w.name,w._repo_url))
             else:
                 repository_names = []
 
@@ -3039,6 +3038,7 @@ class Wapt(BaseObjectClass):
                 if w.cabundle is None:
                     w.cabundle = self.cabundle
                 self.set_client_cert_auth(w)
+                logger.info(u'Main repository: %s' % (w.repo_url,))
 
             if self.use_hostpackages:
                 self.add_hosts_repo()
