@@ -55,7 +55,7 @@ from setuphelpers import Version
 
 from flask import request, Response, send_from_directory, send_file, session, redirect, url_for, abort, render_template, flash, stream_with_context
 
-logger = logging.getLogger()
+logger = logging.getLogger('waptservice')
 
 import babel
 import babel.support
@@ -220,7 +220,7 @@ class WaptServiceConfig(object):
          'hiberboot_enabled','max_gpo_script_wait','pre_shutdown_timeout','log_to_windows_events',
          'allow_user_service_restart','signature_clockskew','waptwua_enabled','notify_user','waptservice_admin_auth_allow',
          'enable_remote_repo','local_repo_path','local_repo_sync_task_period','local_repo_time_for_sync_start',
-         'local_repo_time_for_sync_end','local_repo_limit_bandwidth']
+         'local_repo_time_for_sync_end','local_repo_limit_bandwidth','wol_port']
 
     def __init__(self,config_filename=None):
         if not config_filename:
@@ -295,6 +295,7 @@ class WaptServiceConfig(object):
         self.local_repo_time_for_sync_start = None
         self.local_repo_time_for_sync_end = None
         self.local_repo_limit_bandwidth = None
+        self.wol_port = '7,9'
 
     def load(self):
         """Load waptservice parameters from global wapt-get.ini file"""
@@ -376,6 +377,9 @@ class WaptServiceConfig(object):
 
             if config.has_option('global','notify_user'):
                 self.notify_user = config.getboolean('global','notify_user')
+
+            if config.has_option('global','wol_port'):
+                self.wol_port = config.get('global','wol_port')
 
             if config.has_option('global','wapt_server'):
                 self.waptserver = common.WaptServer().load_config(config)

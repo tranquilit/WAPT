@@ -25,7 +25,7 @@ PROGID_EventSubscription = "EventSystem.EventSubscription"
 # the event.
 
 
-service_logger = logging.getLogger()
+service_logger = logging.getLogger('waptservice')
 
 SUBSCRIPTION_NETALIVE = ('{cd1dcbd6-a14d-4823-a0d2-8473afde360f}',
                          'WaptService Network Alive',

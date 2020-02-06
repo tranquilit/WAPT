@@ -107,7 +107,7 @@ elif sys.platform.startswith('linux') or sys.platform.startswith('darwin'):
     has_kerberos=False
     pass
 
-logger = logging.getLogger()
+logger = logging.getLogger('waptcore')
 
 from waptutils import BaseObjectClass,ensure_list,ensure_unicode,default_http_headers,get_time_delta
 from waptutils import httpdatetime2isodate,datetime2isodate,FileChunks,jsondump,ZipFile,LogOutput,isodate2datetime
@@ -1691,7 +1691,7 @@ class WaptServer(BaseObjectClass):
                                 url = 'http://%s:%i' % (wapthost,port)
                                 servers.append((priority,-weight,url))
                         except Exception as e:
-                            logging.debug('Unable to resolve : error %s' % (ensure_unicode(e),))
+                            logger.debug('Unable to resolve : error %s' % (ensure_unicode(e),))
 
                     if servers:
                         servers.sort()

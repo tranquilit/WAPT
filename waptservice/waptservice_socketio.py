@@ -75,7 +75,7 @@ except:
 
 from waptservice.plugins import *
 
-logger = logging.getLogger()
+logger = logging.getLogger('waptws')
 
 # Websocket stuff
 ##### API V2 #####

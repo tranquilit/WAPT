@@ -51,7 +51,7 @@ try:
 except:
     rpm=None
 
-logger = logging.getLogger()
+logger = logging.getLogger('waptcore')
 
 def isLinux64():
     return platform.machine().endswith('64')

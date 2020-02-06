@@ -117,8 +117,7 @@ except ImportError:
 # i18n
 _ = gettext
 
-logger = logging.getLogger()
-logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s')
+logger = logging.getLogger('waptservice')
 
 def format_isodate(isodate):
     """Pretty format iso date like : 2014-01-21T17:36:15.652000
@@ -296,7 +295,7 @@ def check_auth(logon_name, password,check_token_in_password=True,for_group='wapt
                     return False
                 if not for_group in token_content.get('groups',[]):
                     return False
-                logging.info("authenticated with token : %s. groups: %s" % (logon_name,token_content.get('groups')))
+                logger.info("authenticated with token : %s. groups: %s" % (logon_name,token_content.get('groups')))
                 return logon_name
             except:
                 # password is not a token or token is invalid
@@ -397,13 +396,13 @@ def allow_local_auth(f):
         if request.remote_addr in ['127.0.0.1']:
             auth = request.authorization
             if not auth:
-                logging.info('no credential given')
+                logger.info('no credential given')
                 return authenticate()
-            logging.info("authenticating : %s" % auth.username)
+            logger.info("authenticating : %s" % auth.username)
             try:
                 huser = check_auth(auth.username, auth.password)
                 if huser is None:
-                    logging.info("user %s authenticated" % auth.username)
+                    logger.info("user %s authenticated" % auth.username)
                     return authenticate()
             except:
                 return authenticate()
@@ -1158,7 +1157,7 @@ def install():
         else:
             return authenticate()
 
-    logging.info("user %s authenticated" % username)
+    logger.info("user %s authenticated" % username)
 
     if authorized_packages:
         data = app.task_manager.add_task(WaptPackageInstall(authorized_packages,force=force,installed_by=username,
@@ -1238,7 +1237,7 @@ def remove():
         else:
             return authenticate()
 
-    logging.info("user %s authenticated" % username)
+    logger.info("user %s authenticated" % username)
 
     data = []
     if authorized_packages:
@@ -1985,7 +1984,20 @@ def install_service():
     else:
         setuphelpers.run('sc sdset waptservice D:(A;;CCLCSWRPLORC;;;AU)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;BA)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;SY)S:(AU;FA;CCDCLCSWRPWPDTLOSDRCWDWO;;;WD)')
 
+def setup_logging(options=None):
+    loglevel = options.loglevel
+    for log in('waptcore','waptservice','waptws','waptdb'):
+        sublogger = logging.getLogger(log)
+        if sublogger:
+            if hasattr(options,'loglevel_%s' % log) and getattr(options,'loglevel_%s' % log):
+                setloglevel(sublogger,getattr(options,'loglevel_%s' % log))
+            else:
+                setloglevel(sublogger,loglevel)
 
+            hdlr = logging.StreamHandler()
+            hdlr.setFormatter(
+                logging.Formatter('%(asctime)s [%(name)-15s] %(levelname)s %(message)s'))
+            sublogger.addHandler(hdlr)
 
 if __name__ == "__main__":
     usage="""\
@@ -2004,6 +2016,12 @@ if __name__ == "__main__":
     parser.add_option("-l","--loglevel", dest="loglevel", default=None, type='choice',  choices=['debug','warning','info','error','critical'], metavar='LOGLEVEL',help="Loglevel (default: warning)")
     parser.add_option("-d","--devel", dest="devel", default=False,action='store_true', help="Enable debug mode (for development only)")
 
+    for log in ('waptcore','waptservice','waptws','waptdb'):
+        parser.add_option('--loglevel-%s' % log,dest='loglevel_%s' % log,default=None,type='choice',
+                choices=['debug','warning','info','error','critical'],
+                metavar='LOGLEVEL',help='Loglevel %s (default: warning)' % log)
+
+
     (options,args)=parser.parse_args()
 
     if args  and args[0] == 'doctest':
@@ -2019,12 +2037,9 @@ if __name__ == "__main__":
 
     # force loglevel
     if options.loglevel:
-        setloglevel(logger,options.loglevel)
-        setloglevel(app.logger,options.loglevel)
-
-    elif waptconfig.loglevel is not None:
-        setloglevel(logger,waptconfig.loglevel)
-        setloglevel(app.logger,waptconfig.loglevel)
+        setup_logging(options)
+    else:
+        setup_logging(waptconfig)
 
     if waptconfig.log_to_windows_events:
         try:
@@ -2058,7 +2073,10 @@ if __name__ == "__main__":
     if waptconfig.waptserver:
         sio = WaptSocketIOClient(waptconfig.config_filename,task_manager=task_manager)
         sio_logger = logging.getLogger('socketIO-client-2')
-        sio_logger.addHandler(logging.StreamHandler())
+        hdlr = logging.StreamHandler()
+        hdlr.setFormatter(
+            logging.Formatter('%(asctime)s [%(name)-15s] %(levelname)s %(message)s'))
+        sio_logger.addHandler(hdlr)
 
         sio.start()
         if options.loglevel:

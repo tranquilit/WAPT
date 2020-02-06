@@ -84,7 +84,7 @@ except:
     wmi = None
 
 
-logger = logging.getLogger()
+logger = logging.getLogger('waptcore')
 
 
 

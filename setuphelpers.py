@@ -377,7 +377,7 @@ else:
          'type_debian',
          'type_redhat'])
 
-logger = logging.getLogger()
+logger = logging.getLogger('waptcore')
 
 
 
