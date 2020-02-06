@@ -75,7 +75,10 @@ def user_local_appdata():
     Returns:
         str: path like u'C:\\Users\\user\\AppData\\Local'
     """
-    return ensure_unicode(makepath(os.environ['HOME'],'.config'))
+    if 'HOME' in os.environ:
+        return ensure_unicode(makepath(os.environ['HOME'],'.config/'))
+    else:
+        return ''
 
 
 def local_drives():

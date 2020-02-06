@@ -42,16 +42,3 @@ run('chmod 755 /opt/wapt/bin/*')
 os.chmod('/opt/wapt/runwaptagent.sh',0o755)
 os.chmod('/usr/local/bin/waptpython',0o755)
 os.chmod('/opt/wapt/wapt-get.sh',0o755)
-
-def force_symlink(target, link_name):
-    try:
-        os.symlink(target, link_name)
-    except OSError, e:
-        if e.errno == errno.EEXIST:
-            os.remove(link_name)
-            os.symlink(target, link_name)
-        else:
-            raise e
-
-force_symlink('/opt/wapt/runwaptagent.sh', '/usr/local/bin/waptservice')
-force_symlink('/opt/wapt/wapt-get.sh', '/usr/local/bin/wapt-get')

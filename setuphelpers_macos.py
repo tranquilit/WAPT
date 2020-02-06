@@ -357,9 +357,7 @@ def installed_softwares(keywords='', uninstallkey=None, name=None):
     for plist_file in plist_files:
         try:
             plist_obj = get_plist_obj(plist_file)
-
-            date_last_modif = os.path.getmtime(plist_file)
-            date_last_modif = datetime.datetime.fromtimestamp(date_last_modif).strftime('%Y-%m-%d %H:%M:%S')
+            date_last_modif = datetime.datetime.fromtimestamp(os.path.getmtime(plist_file)).strftime('%Y-%m-%d %H:%M:%S')
             infodict = {'key': '',
                         'name': plist_obj['CFBundleName'],
                         'version': plist_obj['CFBundleShortVersionString'],
