@@ -2051,15 +2051,15 @@ if __name__ == "__main__":
             logger.warning('Unable to initialize windows log Event handler: %s' % e)
 
 
-    #app.logger.removeHandler(default_handler)
-    #app.logger.addHandler(
-
     hdlr = logging.StreamHandler()
     hdlr.setFormatter(
         logging.Formatter('%(asctime)s [%(name)-15s] %(levelname)s %(message)s'))
     rootlogger = logging.getLogger()
     rootlogger.addHandler(hdlr)
     setloglevel(rootlogger,options.loglevel)
+
+    #app.logger.removeHandler(default_handler)
+    #app.logger.addHandler(hdlr)
 
     # setup basic settings
     if sys.platform == 'win32':
@@ -2099,13 +2099,9 @@ if __name__ == "__main__":
             waptrepositories_api.sio = sio
 
     if options.devel:
-        #socketio_server.run(app,host='127.0.0.1', port=8088)
-
         logger.info('Starting local dev waptservice...')
         app.run(host='127.0.0.1',port=8088,debug=False)
     else:
-        #wsgi.server(eventlet.listen(('', 8088)), app)
-
         port_config = []
         if waptconfig.waptservice_port:
             waitress_logger = logging.getLogger('waitress')
@@ -2113,4 +2109,4 @@ if __name__ == "__main__":
                 setloglevel(waitress_logger ,options.loglevel)
             else:
                 setloglevel(waitress_logger ,waptconfig.loglevel)
-            serve(app ,host='127.0.0.1' , port=waptconfig.waptservice_port, threads = 8)
+            serve(app ,host='127.0.0.1' , port=waptconfig.waptservice_port, threads = 10)
