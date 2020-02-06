@@ -77,7 +77,7 @@ def make_response_from_exception(exception, error_code='', status=200):
         error_code=error_code
     )
 
-    logger.debug(traceback.format_exc())
+    logger.info(traceback.format_exc())
 
     data['msg'] = u'Error on server:\n%s' % (repr(exception))
     return Response(

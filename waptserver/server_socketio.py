@@ -51,7 +51,7 @@ from flask_socketio import SocketIO
 from flask_socketio import disconnect, send, emit
 
 
-logger = logging.getLogger()
+logger = logging.getLogger('waptws')
 
 # chain SocketIO server
 socketio = SocketIO(app, logger = logger, engineio_logger = logger, cors_allowed_origins = '*')
@@ -238,9 +238,7 @@ def on_waptclient_connect():
         else:
             logger.info(u'Unauthenticated Socket.IO connection from wapt client sid %s (uuid: %s)' % (request.sid,uuid))
 
-        try:
-            if wapt_db.is_closed():
-                wapt_db.connect()
+        with WaptDB():
             # update the db
             with wapt_db.atomic() as trans:
                 # stores sid in database
@@ -256,9 +254,6 @@ def on_waptclient_connect():
                     raise EWaptForbiddden('Host is not registered')
 
             session['uuid'] = uuid
-        finally:
-            if not wapt_db.is_closed():
-                wapt_db.close()
         return True
 
     except Exception as e:
@@ -281,9 +276,7 @@ def on_wapt_pong():
         else:
             logger.debug(u'Socket.IO pong from wapt client sid %s (uuid: %s)' % (request.sid, session.get('uuid',None)))
             # stores sid in database
-            try:
-                if wapt_db.is_closed():
-                    wapt_db.connect()
+            with WaptDB():
                 with wapt_db.atomic() as trans:
                     hostcount = Hosts.update(
                         server_uuid=get_server_uuid(),
@@ -297,9 +290,6 @@ def on_wapt_pong():
                         logger.warning(u'SocketIO sid %s connected but no match in database for uuid %s : asking to reconnect' % (request.sid,uuid))
                         emit('wapt_force_reconnect')
                         return False
-            finally:
-                if not wapt_db.is_closed():
-                    wapt_db.close()
             return True
     except Exception as e:
         logger.critical(u'SocketIO pong error for uuid %s and sid %s : %s, instance: %s' % (uuid,request.sid,traceback.format_exc(),app.conf.get('application_root')))
@@ -310,9 +300,7 @@ def on_waptclient_disconnect():
     uuid = session.get('uuid', None)
     logger.info(u'Socket.IO disconnection from wapt client sid %s (uuid: %s)' % (request.sid, uuid))
     # clear sid in database
-    try:
-        if wapt_db.is_closed():
-            wapt_db.connect()
+    with WaptDB():
         with wapt_db.atomic() as trans:
             Hosts.update(
                 listening_timestamp=datetime2isodate(),
@@ -320,9 +308,6 @@ def on_waptclient_disconnect():
                 listening_address=None,
                 reachable='DISCONNECTED',
             ).where((Hosts.uuid == uuid) & (Hosts.listening_address == request.sid)).execute()
-    finally:
-        if not wapt_db.is_closed():
-            wapt_db.close()
     return True
 
 @socketio.on_error()

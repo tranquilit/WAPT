@@ -55,7 +55,7 @@ import ssl
 from waptutils import BaseObjectClass,wgets,jsondump,ensure_unicode,ensure_list,isodate2datetime
 
 
-logger = logging.getLogger()
+logger = logging.getLogger('waptcore')
 
 class EWaptCryptoException(Exception):
     pass

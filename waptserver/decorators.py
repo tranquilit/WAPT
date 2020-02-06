@@ -41,7 +41,7 @@ except ImportError:
     gettext = (lambda s: s)
 _ = gettext
 
-logger = logging.getLogger()
+logger = logging.getLogger('waptserver')
 
 def authenticate(method='Basic'):
     """Sends a 401 response that enables basic auth"""
@@ -118,6 +118,8 @@ def gzipped(f):
 def wapt_db_readonly(f):
     @functools.wraps(f)
     def decorated(*args, **kwargs):
+        if wapt_db and wapt_db.is_closed():
+            wapt_db.connect()
         cnx = wapt_db.connection();
         b = cnx.readonly;
         if not b:
@@ -128,4 +130,20 @@ def wapt_db_readonly(f):
         finally:
             if not b:
                 cnx.set_session( readonly=False );
+            if wapt_db and not wapt_db.is_closed():
+                wapt_db.close()
+    return decorated;
+
+def require_wapt_db(f):
+    @functools.wraps(f)
+    def decorated(*args, **kwargs):
+        if wapt_db and wapt_db.is_closed():
+            logger.info('connecting to waptdb before request')
+            wapt_db.connect()
+        try:
+            r = f(*args,**kwargs);
+            return r;
+        finally:
+            if wapt_db and not wapt_db.is_closed():
+                wapt_db.close()
     return decorated;

@@ -101,7 +101,7 @@ from waptcrypto import SSLCABundle,SSLCertificate,SSLPrivateKey,SSLCRL
 from waptcrypto import SSLVerifyException,hexdigest_for_data,hexdigest_for_file,serialize_content_for_signature
 from waptcrypto import is_pem_key_encrypted
 
-logger = logging.getLogger()
+logger = logging.getLogger('waptcore')
 
 def md5_for_file(fname, block_size=2**20):
     """Calculate the md5 hash of file.

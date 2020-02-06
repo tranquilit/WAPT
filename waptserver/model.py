@@ -65,7 +65,7 @@ import waptserver.config
 # You must be sure your database is an instance of PostgresqlExtDatabase in order to use the JSONField.
 
 import logging
-logger = logging.getLogger()
+logger = logging.getLogger('waptdb')
 
 wapt_db = Proxy()
 
@@ -96,6 +96,40 @@ def load_db_config(server_config=None):
         autoconnect=False)
     wapt_db.initialize(pgdb)
     return pgdb
+
+def wapt_db_connect():
+    if wapt_db and wapt_db.is_closed():
+        logger.info('connecting to waptdb explicitely')
+        wapt_db.connect()
+
+def wapt_db_close():
+    if wapt_db and not wapt_db.is_closed():
+        if wapt_db.in_transaction():
+            try:
+                logger.critical('Transaction is active, but DB must be closed. Rollbacking')
+                wapt_db.rollback()
+            except Exception as e:
+                logger.critical(u'Unable to rollback: ' % repr(e))
+                logger.critical(traceback.format_exc())
+        wapt_db.close()
+
+class WaptDB:
+    def __enter__(self):
+        wapt_db_connect()
+
+    def __exit__(self, type, value, traceback):
+        if not value:
+            #logger.debug(u'DB exit %i' % self.transaction_depth)
+            wapt_db_close()
+        else:
+            try:
+                logger.debug(u'Error at DB exit %s, rollbacking\n%s' % (value,ensure_unicode(traceback.format_tb(traceback))))
+                wapt_db.rollback()
+                wapt_db_close()
+            except Exception as e:
+                logger.critical(u'Unable to rollback or close DB: ' % repr(e))
+                logger.critical(traceback.format_exc())
+
 
 class WaptBaseModel(SignaledModel):
     """A base model that will use our Postgresql database"""
@@ -1471,10 +1505,8 @@ def get_db_version():
         wapt_db.rollback()
         return None
 
-
 def init_db(drop=False):
-    try:
-        wapt_db.connect()
+    with WaptDB():
         try:
             wapt_db.execute_sql('CREATE EXTENSION hstore;')
         except:
@@ -1506,9 +1538,6 @@ def init_db(drop=False):
                 v.value = __version__
                 v.save()
         return get_db_version()
-    finally:
-        if not wapt_db.is_closed():
-            wapt_db.close()
 
 
 def upgrade_db_structure():

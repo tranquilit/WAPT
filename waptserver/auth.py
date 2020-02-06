@@ -50,7 +50,7 @@ from waptserver.config import DEFAULT_CONFIG_FILE,rewrite_config_item
 
 from itsdangerous import TimedJSONWebSignatureSerializer
 
-logger = logging.getLogger()
+logger = logging.getLogger('waptserver')
 
 try:
     from waptenterprise.waptserver import auth_module_ad

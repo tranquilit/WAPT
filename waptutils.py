@@ -89,7 +89,7 @@ def setloglevel(logger,loglevel):
             raise ValueError('Invalid log level: {}'.format(loglevel))
         logger.setLevel(numeric_level)
 
-logger = logging.getLogger()
+logger = logging.getLogger('waptcore')
 
 if platform.system() == 'Windows':
     try:

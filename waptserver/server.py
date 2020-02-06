@@ -72,7 +72,7 @@ from waptserver.model import Hosts, HostSoftwares, HostPackagesStatus, HostGroup
 from waptserver.model import WaptUsers,WaptUserAcls
 from waptserver.model import get_db_version, init_db, wapt_db, model_to_dict, update_host_data
 from waptserver.model import upgrade_db_structure
-from waptserver.model import load_db_config
+from waptserver.model import load_db_config,wapt_db_connect,wapt_db_close,WaptDB
 from waptserver.config import get_http_proxies
 
 from waptpackage import PackageEntry,WaptLocalRepo,EWaptBadSignature,EWaptMissingCertificate
@@ -92,7 +92,7 @@ from waptserver.common import make_response,make_response_from_exception
 
 from waptserver.app import app
 from waptserver.auth import check_auth,change_admin_password
-from waptserver.decorators import requires_auth,authenticate,gzipped
+from waptserver.decorators import requires_auth,authenticate,gzipped,require_wapt_db,wapt_db_readonly
 
 import waptserver.config
 
@@ -128,7 +128,7 @@ ALLOWED_EXTENSIONS = set(['.wapt'])
 
 babel = Babel(app)
 
-logger = logging.getLogger()
+logger = logging.getLogger('waptserver')
 
 try:
     from waptenterprise.waptserver import wsus,enterprise,store,repositories
@@ -142,16 +142,12 @@ except Exception as e:
     wsus = False
     repositories = False
 
-@app.before_request
-def _db_connect():
-    if wapt_db and wapt_db.is_closed():
-        wapt_db.connect()
-
 @app.teardown_request
 def _db_close(error):
     """Closes the database again at the end of the request."""
     if wapt_db and not wapt_db.is_closed():
-        wapt_db.close()
+        logger.warning('waptdb was not closed')
+        wapt_db_close()
 
 @babel.localeselector
 def get_locale():
@@ -329,90 +325,92 @@ def register_host():
     if session.get('auth_method') == 'kerb' and not request.path in ('/add_host_kerberos'):
         return authenticate()
 
-    with wapt_db.atomic() as trans:
-        try:
-            starttime = time.time()
+    try:
+        starttime = time.time()
 
-            # unzip if post data is gzipped
-            if request.headers.get('Content-Encoding') == 'gzip':
-                raw_data = zlib.decompress(request.data)
+        # unzip if post data is gzipped
+        if request.headers.get('Content-Encoding') == 'gzip':
+            raw_data = zlib.decompress(request.data)
+        else:
+            raw_data = request.data
+
+        data = ujson.loads(raw_data)
+        if not data:
+            raise Exception('register_host: No data supplied')
+
+        uuid = data['uuid']
+        if not uuid:
+            raise Exception('register_host: No uuid supplied')
+        logger.info(u'Trying to register host %s' % (uuid,))
+
+        # get request signature
+        signature_b64 = request.headers.get('X-Signature', None)
+        if signature_b64:
+            signature = signature_b64.decode('base64')
+        else:
+            signature = None
+        if not signature and not app.conf['allow_unsigned_status_data']:
+            raise Exception('register_host: Missing signature')
+        signer = request.headers.get('X-Signer', None)
+
+        # Registering a host requires authentication; Either signatue is Ok or Kerberos or basic
+        authenticated_user = None
+        registration_auth_user = None
+
+        # 'host' is for pre wapt pre 1.4
+        computer_fqdn =  (data.get('host_info',None) or data.get('host',{})).get('computer_fqdn',None)
+
+        auth_result = None
+
+        # with nginx kerberos module, auth user name is stored as Basic auth in the
+        # 'Authorisation' header with password 'bogus_auth_gss_passwd'
+        if request.path=='/add_host_kerberos' and (app.conf['use_kerberos'] or not app.conf['allow_unauthenticated_registration']):
+            auth = request.authorization
+            if auth and auth.password == 'bogus_auth_gss_passwd' and auth.username:
+                    authenticated_user = auth.username.lower().replace('$', '')
+                    dns_domain = '.'.join(socket.getfqdn().split('.')[1:])
+                    authenticated_user = '%s.%s' % (authenticated_user, dns_domain)
+                    logger.debug(u'Kerberos authenticated user %s for %s' % (authenticated_user,computer_fqdn))
+                    registration_auth_user = u'kerb:%s' % authenticated_user
+                    auth_date = datetime.datetime.utcnow().isoformat()
+                    logger.debug(u'User %s authenticated using kerberos' % (authenticated_user,))
+                    auth_result = dict(auth_method = 'kerb',user=authenticated_user,auth_date=auth_date)
             else:
-                raw_data = request.data
+                authenticated_user = None
 
-            data = ujson.loads(raw_data)
-            if not data:
-                raise Exception('register_host: No data supplied')
-
-            uuid = data['uuid']
-            if not uuid:
-                raise Exception('register_host: No uuid supplied')
-            logger.info(u'Trying to register host %s' % (uuid,))
-
-            # get request signature
-            signature_b64 = request.headers.get('X-Signature', None)
-            if signature_b64:
-                signature = signature_b64.decode('base64')
-            else:
-                signature = None
-            if not signature and not app.conf['allow_unsigned_status_data']:
-                raise Exception('register_host: Missing signature')
-            signer = request.headers.get('X-Signer', None)
-
-            # Registering a host requires authentication; Either signatue is Ok or Kerberos or basic
-            authenticated_user = None
-            registration_auth_user = None
-
-            # 'host' is for pre wapt pre 1.4
-            computer_fqdn =  (data.get('host_info',None) or data.get('host',{})).get('computer_fqdn',None)
-
-            auth_result = None
-
-            # with nginx kerberos module, auth user name is stored as Basic auth in the
-            # 'Authorisation' header with password 'bogus_auth_gss_passwd'
-            if request.path=='/add_host_kerberos' and (app.conf['use_kerberos'] or not app.conf['allow_unauthenticated_registration']):
-                auth = request.authorization
-                if auth and auth.password == 'bogus_auth_gss_passwd' and auth.username:
-                        authenticated_user = auth.username.lower().replace('$', '')
-                        dns_domain = '.'.join(socket.getfqdn().split('.')[1:])
-                        authenticated_user = '%s.%s' % (authenticated_user, dns_domain)
-                        logger.debug(u'Kerberos authenticated user %s for %s' % (authenticated_user,computer_fqdn))
-                        registration_auth_user = u'kerb:%s' % authenticated_user
-                        auth_date = datetime.datetime.utcnow().isoformat()
-                        logger.debug(u'User %s authenticated using kerberos' % (authenticated_user,))
-                        auth_result = dict(auth_method = 'kerb',user=authenticated_user,auth_date=auth_date)
-                else:
-                    authenticated_user = None
-
-            # kerberos has failed or kerberos is not enabled
-            if not authenticated_user:
-                # get authentication from basic auth. Check against waptserver admins
-                auth_result = check_auth(request = request, session=session, methods=['admin','passwd','ldap'])
-                if auth_result:
-                    # assume authenticated user is the fqdn provided in the data
-                    logger.debug(u'Authenticated registration for %s with user %s' % (computer_fqdn,auth_result['user']))
-                    authenticated_user = computer_fqdn
-                    session.update(**auth_result)
-                    registration_auth_user = u'%s:%s' % (auth_result['auth_method'],auth_result['user'])
+        # kerberos has failed or kerberos is not enabled
+        if not authenticated_user:
+            # get authentication from basic auth. Check against waptserver admins
+            auth_result = check_auth(request = request, session=session, methods=['admin','passwd','ldap'])
+            if auth_result:
+                # assume authenticated user is the fqdn provided in the data
+                logger.debug(u'Authenticated registration for %s with user %s' % (computer_fqdn,auth_result['user']))
+                authenticated_user = computer_fqdn
+                session.update(**auth_result)
+                registration_auth_user = u'%s:%s' % (auth_result['auth_method'],auth_result['user'])
 
 
-                host_cert = None
-                # if certificate is properly signed, we can trust it without using database
-                if 'host_certificate' in data:
-                    try:
-                        untrusted_host_cert = SSLCertificate(crt_string=data['host_certificate'])
-                        if (untrusted_host_cert.issuer_subject_hash != untrusted_host_cert.subject_hash and
-                                (untrusted_host_cert.cn.lower() == computer_fqdn.lower() or untrusted_host_cert.cn.lower() == uuid.lower())):
-                            # we can check if issuer is myself...
-                            cert_chain = check_host_cert(untrusted_host_cert)
-                            if cert_chain:
-                                host_cert = untrusted_host_cert
-                                authenticated_user = computer_fqdn
-                                registration_auth_user = u'Cert:%s' % host_cert.cn
+            host_cert = None
+            # if certificate is properly signed, we can trust it without using database
+            if 'host_certificate' in data:
+                try:
+                    untrusted_host_cert = SSLCertificate(crt_string=data['host_certificate'])
+                    if (untrusted_host_cert.issuer_subject_hash != untrusted_host_cert.subject_hash and
+                            (untrusted_host_cert.cn.lower() == computer_fqdn.lower() or untrusted_host_cert.cn.lower() == uuid.lower())):
+                        # we can check if issuer is myself...
+                        cert_chain = check_host_cert(untrusted_host_cert)
+                        if cert_chain:
+                            host_cert = untrusted_host_cert
+                            authenticated_user = computer_fqdn
+                            registration_auth_user = u'Cert:%s' % host_cert.cn
 
-                    except Exception as e:
-                        logger.warning(u'Unable to trust supplied host certificate: %s' % (repr(e),))
-                        host_cert = None
+                except Exception as e:
+                    logger.warning(u'Unable to trust supplied host certificate: %s' % (repr(e),))
+                    host_cert = None
 
+        # db stuff
+        with WaptDB():
+            with wapt_db.atomic() as trans:
                 if not host_cert and not authenticated_user:
                     existing_host = Hosts.select(Hosts.host_certificate, Hosts.computer_fqdn).where(Hosts.uuid == uuid).first()
                     if existing_host and existing_host.host_certificate:
@@ -473,14 +471,14 @@ def register_host():
             message = 'register_host'
             return make_response(result=result, msg=message, request_time=time.time() - starttime)
 
-        except Exception as e:
-            logger.debug(traceback.format_exc())
-            logger.critical('add_host failed %s' % (repr(e)))
-            trans.rollback()
-            return make_response_from_exception(e)
+    except Exception as e:
+        logger.debug(traceback.format_exc())
+        logger.critical('add_host failed %s' % (repr(e)))
+        return make_response_from_exception(e)
 
 
 @app.route('/update_host',methods=['HEAD','POST'])
+@require_wapt_db
 def update_host():
     """Update localstatus of computer, and return known registration info
     Requires a base64 encoded signature in X-Signature http header (unless allow_unsigned_status_data config is True)
@@ -610,43 +608,44 @@ def get_websocket_auth_token():
         if data.get('purpose') != 'websocket':
             raise EWaptAuthenticationFailure('Bad purpose')
 
-        existing_host = Hosts.select(Hosts.uuid, Hosts.host_certificate, Hosts.computer_fqdn).where(Hosts.uuid == uuid).first()
-        if not existing_host or not existing_host.host_certificate:
-            raise EWaptAuthenticationFailure('Unknown host UUID %s. Please register first.' % (uuid, ))
+        with WaptDB():
+            existing_host = Hosts.select(Hosts.uuid, Hosts.host_certificate, Hosts.computer_fqdn).where(Hosts.uuid == uuid).first()
+            if not existing_host or not existing_host.host_certificate:
+                raise EWaptAuthenticationFailure('Unknown host UUID %s. Please register first.' % (uuid, ))
 
-        auth_result = check_auth(request=request,session=session,methods=['ssl','token'])
-        if not auth_result:
-        # get request signature
-            signature_b64 = request.headers.get('X-Signature', None)
-            if signature_b64:
-                signature = signature_b64.decode('base64')
+            auth_result = check_auth(request=request,session=session,methods=['ssl','token'])
+            if not auth_result:
+            # get request signature
+                signature_b64 = request.headers.get('X-Signature', None)
+                if signature_b64:
+                    signature = signature_b64.decode('base64')
+                else:
+                    raise EWaptAuthenticationFailure('No signature in request')
+                host_cert = SSLCertificate(crt_string=existing_host.host_certificate)
+                try:
+                    host_cert_cn = host_cert.verify_content(sha256_for_data(raw_data), signature)
+                except Exception as e:
+                    raise EWaptAuthenticationFailure(u'Request signature verification failed: %s' % e)
             else:
-                raise EWaptAuthenticationFailure('No signature in request')
-            host_cert = SSLCertificate(crt_string=existing_host.host_certificate)
-            try:
-                host_cert_cn = host_cert.verify_content(sha256_for_data(raw_data), signature)
-            except Exception as e:
-                raise EWaptAuthenticationFailure(u'Request signature verification failed: %s' % e)
-        else:
-            user = auth_result['user']
-            if user != uuid:
-                raise EWaptAuthenticationFailure(u'Authentication does not match required uuid %s' % uuid)
+                user = auth_result['user']
+                if user != uuid:
+                    raise EWaptAuthenticationFailure(u'Authentication does not match required uuid %s' % uuid)
 
-        token_gen = get_secured_token_generator()
-        result = {
-            'authorization_token': token_gen.dumps({'uuid':uuid,'server_uuid':get_server_uuid()}),
-            }
+            token_gen = get_secured_token_generator()
+            result = {
+                'authorization_token': token_gen.dumps({'uuid':uuid,'server_uuid':get_server_uuid()}),
+                }
 
-        with wapt_db.atomic() as trans:
-            # stores sid in database
-            Hosts.update(
-                server_uuid=get_server_uuid(),
-                listening_timestamp=datetime2isodate(),
-                last_seen_on=datetime2isodate()
-            ).where(Hosts.uuid == uuid).execute()
+            with wapt_db.atomic() as trans:
+                # stores sid in database
+                Hosts.update(
+                    server_uuid=get_server_uuid(),
+                    listening_timestamp=datetime2isodate(),
+                    last_seen_on=datetime2isodate()
+                ).where(Hosts.uuid == uuid).execute()
 
-        message = 'Authorization token'
-        return make_response(result=result, msg=message, request_time=time.time() - starttime)
+            message = 'Authorization token'
+            return make_response(result=result, msg=message, request_time=time.time() - starttime)
 
     except Exception as e:
         logger.debug(traceback.format_exc())
@@ -696,6 +695,7 @@ def localrepo_packages():
 
 @app.route('/api/v3/known_packages')
 @requires_auth()
+@require_wapt_db
 def known_packages():
     """Returns list of known packages metadata from database
 
@@ -754,36 +754,38 @@ def check_valid_signer(package,cabundle):
     Returns:
         list of SSLCertificate : trusted certificate chain.
     """
-    signer_certs = package.package_certificates()
-    if package.has_file('setup.py'):
-        # check if certificate has code_signing extended attribute
-        if not signer_certs or not signer_certs[0].is_code_signing:
-            raise EWaptForbiddden(u'The package %s contains setup.py code but has not been signed with a proper code_signing certificate' % package.package)
-    if cabundle is not None:
-        trusted_chain = cabundle.check_certificates_chain(signer_certs,check_is_trusted=True)
-    else:
-        trusted_chain = signer_certs
+    with WaptDB():
+        signer_certs = package.package_certificates()
+        if package.has_file('setup.py'):
+            # check if certificate has code_signing extended attribute
+            if not signer_certs or not signer_certs[0].is_code_signing:
+                raise EWaptForbiddden(u'The package %s contains setup.py code but has not been signed with a proper code_signing certificate' % package.package)
+        if cabundle is not None:
+            trusted_chain = cabundle.check_certificates_chain(signer_certs,check_is_trusted=True)
+        else:
+            trusted_chain = signer_certs
 
-    # If it's host package, check if host is known to trust one of the signer cert in cert chain.
-    if package.section == 'host':
-        host = Hosts.select(Hosts.host_capabilities).where(Hosts.uuid==package.package)
-        # get the list of trusted packages signers for this host
-        packages_trusted_ca_fingerprints = Hosts.host_capabilities['packages_trusted_ca_fingerprints']
-        if packages_trusted_ca_fingerprints:
-            trusted_cert = None
-            for signer_cert in trusted_chain:
-                #SSLCertificate.get_fingerprint('sha256').hexdigest()
-                if signer_cert.fingerprint in packages_trusted_ca_fingerprints:
-                    trusted_cert = signer_cert
-                    logger.info('Package %s trusted for signer %s issued by %s' % (package.package,signer_cert.cn,signer_cert.issuer_dn))
-                    break
-            if not trusted_cert:
-                raise EWaptForbiddden('Host matching package %s does not trusted signer certificate %s' % (package.package,trusted_chains[0].fingerprint))
+        # If it's host package, check if host is known to trust one of the signer cert in cert chain.
+        if package.section == 'host':
+            host = Hosts.select(Hosts.host_capabilities).where(Hosts.uuid==package.package)
+            # get the list of trusted packages signers for this host
+            packages_trusted_ca_fingerprints = Hosts.host_capabilities['packages_trusted_ca_fingerprints']
+            if packages_trusted_ca_fingerprints:
+                trusted_cert = None
+                for signer_cert in trusted_chain:
+                    #SSLCertificate.get_fingerprint('sha256').hexdigest()
+                    if signer_cert.fingerprint in packages_trusted_ca_fingerprints:
+                        trusted_cert = signer_cert
+                        logger.info('Package %s trusted for signer %s issued by %s' % (package.package,signer_cert.cn,signer_cert.issuer_dn))
+                        break
+                if not trusted_cert:
+                    raise EWaptForbiddden('Host matching package %s does not trusted signer certificate %s' % (package.package,trusted_chains[0].fingerprint))
 
-    return trusted_chain
+        return trusted_chain
 
 @app.route('/api/v3/upload_packages',methods=['HEAD','POST'])
 @requires_auth()
+@require_wapt_db
 def upload_packages():
     """Handle the streamed upload of multiple packages
 
@@ -883,7 +885,6 @@ def upload_packages():
 
         # load trusted signers
         trusted_signers = read_trusted_certificates(app.conf.get('trusted_signers_certificates_folder'))
-
         if request.method == 'POST':
             if request.files:
                 files = request.files
@@ -948,6 +949,7 @@ def upload_packages():
 @app.route('/upload_host',methods=['HEAD','POST'])
 @app.route('/api/v3/upload_hosts',methods=['HEAD','POST'])
 @requires_auth()
+@require_wapt_db
 def upload_host():
     """Handle the upload of multiple host packages
 
@@ -1144,25 +1146,29 @@ def login():
             user = auth_result['user']
             token_gen = get_secured_token_generator()
 
-            if auth_result['auth_method'] == 'ldap':
-                # add ACL
-                (user_data,_created) = WaptUsers.get_or_create(name=user)
-                if _created:
-                    user_data.save()
-            else:
-                user_data = WaptUsers.get(name=user)
+            with WaptDB():
+                if auth_result['auth_method'] == 'ldap':
+                    # add ACL
+                    (user_data,_created) = WaptUsers.get_or_create(name=user)
+                    if _created:
+                        user_data.save()
+                else:
+                    user_data = WaptUsers.get(name=user)
 
-            acls = []
+                if auth_result['auth_method'] == 'passwd':
+                    acls = ['register_host','unregister_host']
+                else:
+                    acls = ['admin']
 
-            auth_result.update({
-                'server_uuid':get_server_uuid(),
-                'acls': acls,
-                })
+                auth_result.update({
+                    'server_uuid':get_server_uuid(),
+                    'acls': acls,
+                    })
 
-            try:
-                hosts_count = Hosts.select(fn.COUNT(Hosts.uuid)).tuples().first()[0] # pylint: disable=no-value-for-parameter
-            except:
-                hosts_count = None
+                try:
+                    hosts_count = Hosts.select(fn.COUNT(Hosts.uuid)).tuples().first()[0] # pylint: disable=no-value-for-parameter
+                except:
+                    hosts_count = None
 
             result = dict(
                 auth_result = auth_result,
@@ -1195,6 +1201,7 @@ def logout():
 
 @app.route('/api/v3/packages_delete',methods=['HEAD','POST'])
 @requires_auth()
+@require_wapt_db
 def packages_delete():
     """Removes a list of packages by filenames
     After removal, the repository package index "Packages" is updated.
@@ -1376,9 +1383,7 @@ def reset_hosts_sid():
             message = _(u'Hosts connection reset launched for all hosts')
 
         def target(uuids):
-            try:
-                if wapt_db.is_closed():
-                    wapt_db.connect()
+            with wapt_db:
                 logger.debug(u'Reset wsocket.io SID and timestamps of hosts')
                 if uuids:
                     where_clause = Hosts.uuid.in_(uuids)
@@ -1389,9 +1394,6 @@ def reset_hosts_sid():
                 else:
                     Hosts.update(reachable=None,listening_timestamp=None, listening_protocol=None).where(Hosts.server_uuid == get_server_uuid()).execute()
                     socketio.emit('wapt_ping')
-            finally:
-                if not wapt_db.is_closed():
-                    wapt_db.close()
 
         socketio.start_background_task(target=target, uuids=uuids)
 
@@ -1403,6 +1405,7 @@ def reset_hosts_sid():
 
 @app.route('/api/v3/trigger_wakeonlan', methods=['HEAD','POST'])
 @requires_auth()
+@require_wapt_db
 def trigger_wakeonlan():
     try:
         uuids = request.get_json()['uuids']
@@ -1503,16 +1506,12 @@ def host_cancel_task():
 
 @app.route('/api/v1/groups')
 @requires_auth()
+@require_wapt_db
 def get_groups():
     """List of packages having section == group
     """
     try:
         groups = list(HostGroups.select(fn.DISTINCT(HostGroups.group_name).alias('package')).order_by(1).dicts())
-        """
-        packages = WaptLocalRepo(app.conf['wapt_folder'])
-        groups = [p.as_dict()
-                  for p in packages.packages if p.section == 'group']
-        """
         msg = '{} Packages for section group'.format(len(groups))
 
     except Exception as e:
@@ -1523,6 +1522,7 @@ def get_groups():
 
 @app.route('/api/v3/get_ad_ou')
 @requires_auth()
+@require_wapt_db
 def get_ad_ou():
     """List all the OU registered by hosts
     """
@@ -1547,6 +1547,7 @@ def get_ad_ou():
 
 @app.route('/api/v3/get_ad_sites')
 @requires_auth()
+@require_wapt_db
 def get_ad_sites():
     """List all the AD Sites registered by hosts
     """
@@ -1619,6 +1620,7 @@ def build_hosts_filter(model, filter_expr):
 
 @app.route('/api/v3/hosts_delete',methods=['HEAD','POST'])
 @requires_auth()
+@require_wapt_db
 def hosts_delete():
     """Remove one or several hosts from Server DB and optionnally the host packages
 
@@ -1726,6 +1728,7 @@ def build_fields_list(model, columns):
 
 @app.route('/api/v1/hosts', methods=['HEAD','GET'])
 @requires_auth()
+@require_wapt_db
 @gzipped
 def get_hosts():
     """Get registration data of one or several hosts
@@ -1922,6 +1925,7 @@ def get_hosts():
 
 @app.route('/api/v1/host_data')
 @requires_auth()
+@require_wapt_db
 def host_data():
     """
         Get additional data for a host
@@ -1931,6 +1935,7 @@ def host_data():
     """
     try:
         start_time = time.time()
+
         # build filter
         if 'uuid' in request.args:
             uuid = request.args['uuid']
@@ -2021,6 +2026,7 @@ def host_data():
 
 @app.route('/api/v3/hosts_for_package',methods=['GET','POST'])
 @requires_auth()
+@require_wapt_db
 def hosts_for_package():
     """Returns list of hosts having the supplied package names
 
@@ -2067,6 +2073,7 @@ def hosts_for_package():
 
 @app.route('/api/v3/packages_for_hosts',methods=['GET','POST'])
 @requires_auth()
+@require_wapt_db
 def packages_for_hosts():
     """Returns list of aggregated packages status
 
@@ -2228,6 +2235,7 @@ def trusted_signers_certificates():
 
 @app.route('/api/v1/usage_statistics')
 @requires_auth()
+@require_wapt_db
 def usage_statistics():
     """returns some anonymous usage statistics to give an idea of depth of use"""
     try:
@@ -2273,6 +2281,7 @@ def usage_statistics():
 
 @app.route('/api/v3/host_tasks_status')
 @requires_auth()
+@require_wapt_db
 def host_tasks_status():
     """Proxy the get tasks status action to the client"""
     try:
@@ -2327,6 +2336,7 @@ def host_tasks_status():
 
 @app.route('/api/v3/trigger_host_action', methods=['HEAD','POST'])
 @requires_auth()
+@require_wapt_db
 def trigger_host_action():
     """Proxy some single shot actions to the client using websockets"""
     try:
@@ -2423,29 +2433,27 @@ def trigger_host_action():
         return make_response_from_exception(e)
 
 
-def setup_logging(loglevel=None):
-    logger =  logging.getLogger()
-    logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s')
-    if loglevel is not None:
-        setloglevel(logger, loglevel)
-    else:
-        setloglevel(logger, app.conf['loglevel'])
-
-    for log in ('flask.app','wapt','peewee'):
+def setup_logging(options=None):
+    loglevel = options.loglevel
+    for log in ('waptcore','waptserver','waptws','waptdb'):
         sublogger = logging.getLogger(log)
         if sublogger:
-            setloglevel(sublogger,logger.level)
-
-            if platform.system() == 'Linux':
-                hdlr = logging.handlers.SysLogHandler('/dev/log')
+            if getattr(options,'loglevel_%s' % log):
+                setloglevel(sublogger,getattr(options,'loglevel_%s' % log))
             else:
-                log_directory = os.path.join(wapt_root_dir, 'log')
-                if not os.path.exists(log_directory):
-                    os.mkdir(log_directory)
-                hdlr = logging.FileHandler(os.path.join(log_directory, 'waptserver.log'))
+                setloglevel(sublogger,loglevel)
 
+            #if platform.system() == 'Linux':
+            #    hdlr = logging.handlers.SysLogHandler('/dev/log')
+            #else:
+                #log_directory = os.path.join(wapt_root_dir, 'log')
+                #if not os.path.exists(log_directory):
+                #    os.mkdir(log_directory)
+            #    hdlr = logging.FileHandler(os.path.join(log_directory, 'waptserver.log'))
+
+            hdlr = logging.StreamHandler()
             hdlr.setFormatter(
-                logging.Formatter('%(name)s %(asctime)s %(levelname)s %(message)s'))
+                logging.Formatter('%(asctime)s [%(name)-15s] %(levelname)s %(message)s'))
             sublogger.addHandler(hdlr)
 
 def get_revision_hash():
@@ -2486,8 +2494,13 @@ if __name__ == '__main__':
     parser.add_option('-d','--devel',dest='devel',default=False,action='store_true',
             help='Enable debug mode (for development only)')
 
+    for log in ('waptcore','waptserver','waptws','waptdb'):
+        parser.add_option('--loglevel-%s' % log,dest='loglevel_%s' % log,default=None,type='choice',
+                choices=['debug','warning','info','error','critical'],
+                metavar='LOGLEVEL',help='Loglevel %s (default: warning)' % log)
+
     (options, args) = parser.parse_args()
-    setup_logging(options.loglevel)
+    setup_logging(options)
     logger.info(u'Using config file %s' % options.configfile)
 
     app.config['CONFIG_FILE'] = options.configfile
@@ -2511,11 +2524,8 @@ if __name__ == '__main__':
     logger.info(u'Load database configuration')
     load_db_config(app.conf)
     try:
-        wapt_db.connect()
-        try:
+        with WaptDB():
             upgrade_db_structure()
-        finally:
-            wapt_db.close()
     except Exception as e:
         logger.critical('Unable to upgrade DB structure, init instead: %s' % (repr(e)))
         init_db()
@@ -2528,8 +2538,7 @@ if __name__ == '__main__':
 
     logger.info(u'Waptserver starting...')
     port = app.conf['waptserver_port']
-    try:
-        wapt_db.connect()
+    with WaptDB():
         with wapt_db.atomic() as trans:
             while True:
                 try:
@@ -2546,9 +2555,6 @@ if __name__ == '__main__':
                     trans.rollback()
                     logger.critical('Trying to upgrade database structure, error was : %s' % repr(e))
                     upgrade_db_structure()
-    finally:
-        if not wapt_db.is_closed():
-            wapt_db.close()
 
     # initialize socketio layer
     if socketio:

@@ -27,7 +27,7 @@ from flask import Flask
 from waptserver.config import load_config
 import logging
 
-logger = logging.getLogger()
+logger = logging.getLogger('waptserver')
 
 # allow chunked uploads when no nginx reverse proxy server server (see https://github.com/pallets/flask/issues/367)
 class FlaskApp(Flask):
