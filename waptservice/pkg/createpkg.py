@@ -225,7 +225,7 @@ wapt_version = wapt_version + '.' + rev_count
 
 with open(os.path.join(wapt_source_dir,'version-full'),'w') as file_version:
     file_version.write(wapt_version)
-    
+
 if options.revision:
     full_version = wapt_version + '-' + options.revision
 else:
@@ -311,9 +311,9 @@ if WAPTEDITION=='enterprise':
 
 # script to run waptagent in foreground mode
 copyfile(makepath(wapt_source_dir, 'runwaptagent.sh'),'tmpbuild/payload/opt/wapt/runwaptagent.sh')
-os.symlink('tmpbuild/payload/usr/local/bin/waptservice','/opt/wapt/runwaptagent.sh')
+os.symlink('/opt/wapt/runwaptagent.sh','tmpbuild/payload/usr/local/bin/waptservice')
 copyfile(makepath(wapt_source_dir, 'wapt-get.sh'),'tmpbuild/payload/opt/wapt/wapt-get.sh')
-os.symlink('tmpbuild/payload/usr/local/bin/wapt-get','/opt/wapt/wapt-get.sh')
+os.symlink('/opt/wapt/wapt-get.sh','tmpbuild/payload/usr/local/bin/wapt-get')
 copyfile(makepath(wapt_source_dir, 'waptpython'),'tmpbuild/payload/usr/local/bin/waptpython')
 os.chmod('tmpbuild/payload/opt/wapt/wapt-get.sh', 0o755)
 
