@@ -539,6 +539,7 @@ class WaptTask(object):
         self.notify_server_on_finish = True
         self.notify_user = True
         self.created_by = None
+        self.force = False
         for k in args:
             setattr(self,k,args[k])
         self.lang = None
@@ -629,6 +630,7 @@ class WaptTask(object):
             classname=self.__class__.__name__,
             priority = self.priority,
             order=self.order,
+            force = self.force,
             create_date = self.create_date and self.create_date.isoformat(),
             start_date = self.start_date and self.start_date.isoformat(),
             finish_date = self.finish_date and self.finish_date.isoformat(),
@@ -1054,15 +1056,6 @@ class WaptPackageInstall(WaptTask):
             raise Exception(_('Error during install of {}: errors in packages {}').format(
                     self.packagenames,
                     self.result.get('errors',[])))
-
-    def as_dict(self):
-        d = WaptTask.as_dict(self)
-        d.update(
-            dict(
-                packagenames = self.packagenames,
-                force = self.force)
-            )
-        return d
 
     def __unicode__(self):
         return _(u"Installation of {packagenames} (task #{id})").format(classname=self.__class__.__name__,id=self.id,packagenames=','.join(self.packagenames))

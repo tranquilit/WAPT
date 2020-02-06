@@ -48,6 +48,8 @@ import hashlib
 
 # flask
 from flask import request, Flask,Response, send_from_directory, session, g, redirect, url_for, render_template
+from flask.logging import default_handler
+
 
 import jinja2
 from werkzeug.utils import secure_filename
@@ -164,6 +166,7 @@ def beautify(c):
 app = Flask(__name__)
 app.config['PROPAGATE_EXCEPTIONS'] = True
 app.config['SECRET_KEY'] = waptconfig.secret_key
+app.name = 'waptservice'
 
 try:
     from waptenterprise.waptwua.client import WaptWUA,WaptWUAParams,WaptWUARules # pylint: disable=no-name-in-module
@@ -1988,7 +1991,7 @@ def install_service():
 
 def setup_logging(options=None):
     loglevel = options.loglevel
-    for log in('flask.app','waptcore','waptservice','waptws','waptdb'):
+    for log in('flask.app','waptcore','waptservice','waptws','waptdb','websocket','waitress'):
         sublogger = logging.getLogger(log)
         if sublogger:
             if hasattr(options,'loglevel_%s' % log) and getattr(options,'loglevel_%s' % log):
@@ -1996,10 +1999,6 @@ def setup_logging(options=None):
             else:
                 setloglevel(sublogger,loglevel)
 
-            hdlr = logging.StreamHandler()
-            hdlr.setFormatter(
-                logging.Formatter('%(asctime)s [%(name)-15s] %(levelname)s %(message)s'))
-            sublogger.addHandler(hdlr)
 
 if __name__ == "__main__":
     usage="""\
@@ -2051,6 +2050,17 @@ if __name__ == "__main__":
         except Exception as e:
             logger.warning('Unable to initialize windows log Event handler: %s' % e)
 
+
+    #app.logger.removeHandler(default_handler)
+    #app.logger.addHandler(
+
+    hdlr = logging.StreamHandler()
+    hdlr.setFormatter(
+        logging.Formatter('%(asctime)s [%(name)-15s] %(levelname)s %(message)s'))
+    rootlogger = logging.getLogger()
+    rootlogger.addHandler(hdlr)
+    setloglevel(rootlogger,options.loglevel)
+
     # setup basic settings
     if sys.platform == 'win32':
         apply_host_settings(waptconfig)
@@ -2061,8 +2071,8 @@ if __name__ == "__main__":
     # starts one WaptTasksManager
     logger.info('Starting task queue')
     task_manager = WaptTaskManager(config_filename = waptconfig.config_filename)
-    #task_manager.daemon = True
-    #task_manager.start()
+    task_manager.daemon = True
+    task_manager.start()
     app.task_manager = task_manager
     if sys.platform == 'win32':
         if waptwua_api is not None:
@@ -2103,4 +2113,4 @@ if __name__ == "__main__":
                 setloglevel(waitress_logger ,options.loglevel)
             else:
                 setloglevel(waitress_logger ,waptconfig.loglevel)
-            serve(app ,host='127.0.0.1' , port=waptconfig.waptservice_port)
+            serve(app ,host='127.0.0.1' , port=waptconfig.waptservice_port, threads = 8)
