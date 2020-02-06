@@ -179,7 +179,7 @@ if sys.platform == 'win32':
         app.register_blueprint(waptwua_api)
 
 if waptrepositories_api is not None:
-        app.register_blueprint(waptrepositories_api)
+    app.register_blueprint(waptrepositories_api)
 
 app.jinja_env.filters['beautify'] = beautify # pylint: disable=no-member
 app.waptconfig = waptconfig
@@ -1484,6 +1484,8 @@ class WaptTaskManager(threading.Thread):
         self.last_audit = None
         self.last_sync = None
 
+        self.logger = logging.getLogger('wapttasks')
+
     def setup_event_queue(self):
         self.events = WaptEvents()
         return self.events
@@ -1502,11 +1504,11 @@ class WaptTaskManager(threading.Thread):
                 if result and result['success'] and result['result']['uuid']:
                     self.last_update_server_date = datetime.datetime.now()
                 elif result and not result['success']:
-                    logger.critical('Unable to update server status: %s' % result['msg'])
+                    self.logger.critical('Unable to update server status: %s' % result['msg'])
                 else:
                     raise Exception('No answer')
             except Exception as e:
-                logger.debug('Unable to update server status: %s' % repr(e))
+                self.logger.debug('Unable to update server status: %s' % repr(e))
 
     def broadcast_tasks_status(self,event_type,task):
         """event_type : TASK_ADD TASK_START TASK_STATUS TASK_FINISH TASK_CANCEL TASK_ERROR
@@ -1560,9 +1562,9 @@ class WaptTaskManager(threading.Thread):
     def check_configuration(self):
         """Check wapt configuration, reload ini file if changed"""
         try:
-            logger.debug(u"Checking if config file has changed")
+            self.logger.debug(u"Checking if config file has changed")
             if waptconfig.reload_if_updated():
-                logger.info(u"Wapt config file has changed, reloading")
+                self.logger.info(u"Wapt config file has changed, reloading")
                 self.wapt.reload_config_if_updated()
 
         except:
@@ -1606,7 +1608,7 @@ class WaptTaskManager(threading.Thread):
 
     def check_scheduled_tasks(self):
         """Add update/upgrade tasks if elapsed time since last update/upgrade is over"""
-        logger.debug(u'Check scheduled tasks')
+        self.logger.debug(u'Check scheduled tasks')
 
         if datetime.datetime.now() - self.start_time >= datetime.timedelta(days=1):
             self.start_time = datetime.datetime.now()
@@ -1623,14 +1625,14 @@ class WaptTaskManager(threading.Thread):
                         self.add_task(WaptDownloadPackage(req.asrequirement(),notify_user=True,created_by='SCHEDULER'))
                     self.add_task(WaptUpdate(notify_user=False,notify_server_on_finish=True,created_by='SCHEDULER'))
                 except Exception as e:
-                    logger.debug(u'Error for update in check_scheduled_tasks: %s'%e)
+                    self.logger.debug(u'Error for update in check_scheduled_tasks: %s'%e)
 
         if waptconfig.waptupgrade_task_period is not None and setuphelpers.running_on_ac():
             if self.last_upgrade is None or (datetime.datetime.now() - self.last_upgrade) > get_time_delta(waptconfig.waptupgrade_task_period,'m'):
                 try:
                     self.add_task(WaptUpgrade(notifyuser=False,created_by='SCHEDULER',only_if_no_process_running=True))
                 except Exception as e:
-                    logger.debug(u'Error for upgrade in check_scheduled_tasks: %s'%e)
+                    self.logger.debug(u'Error for upgrade in check_scheduled_tasks: %s'%e)
                 self.add_task(WaptCleanup(notifyuser=False,created_by='SCHEDULER'))
 
         if waptconfig.waptaudit_task_period:
@@ -1638,24 +1640,24 @@ class WaptTaskManager(threading.Thread):
                 try:
                     self.run_scheduled_audits()
                 except Exception as e:
-                    logger.debug(u'Error checking audit: %s' % e)
+                    self.logger.debug(u'Error checking audit: %s' % e)
 
         if waptrepositories_api and waptconfig.enable_remote_repo:
             if waptconfig.local_repo_sync_task_period:
                 if self.last_sync is None or (datetime.datetime.now() - self.last_sync > get_time_delta(waptconfig.local_repo_sync_task_period,'m')):
                     try:
-                        logger.debug(u'Add_task for sync with local_repo_sync_task_period')
+                        self.logger.debug(u'Add_task for sync with local_repo_sync_task_period')
                         self.add_task(WaptSyncRepo(notifyuser=False,created_by='SCHEDULER'))
                     except Exception as e:
-                        logger.debug(u'Error syncing local repo with server repo : %s' % e)
+                        self.logger.debug(u'Error syncing local repo with server repo : %s' % e)
             elif waptconfig.local_repo_time_for_sync_start:
                 time_now = datetime.datetime.now()
                 if common.is_between_two_times(waptconfig.local_repo_time_for_sync_start,waptconfig.local_repo_time_for_sync_end) and (self.last_sync is None or (datetime.datetime.now() - self.last_sync > get_time_delta('10m','m'))):
                     try:
-                        logger.debug(u'Add_task for sync with local_repo_time_for_sync')
+                        self.logger.debug(u'Add_task for sync with local_repo_time_for_sync')
                         self.add_task(WaptSyncRepo(notifyuser=False,created_by='SCHEDULER'))
                     except Exception as e:
-                        logger.debug(u'Error syncing local repo with server repo : %s' % e)
+                        self.logger.debug(u'Error syncing local repo with server repo : %s' % e)
 
 
         if WaptWUAParams is not None and self.wapt.waptwua_enabled:
@@ -1688,13 +1690,13 @@ class WaptTaskManager(threading.Thread):
         self.wapt = Wapt(config_filename=self.config_filename)
         self.setup_event_queue()
 
-        logger.info(u'Wapt tasks management initialized with {} configuration, thread ID {}'.format(self.config_filename,threading.current_thread().ident))
+        self.logger.info(u'Wapt tasks management initialized with {} configuration, thread ID {}'.format(self.config_filename,threading.current_thread().ident))
 
         if self.wapt.config.has_option('global','reconfig_on_network_change') and self.wapt.config.getboolean('global','reconfig_on_network_change'):
             self.start_network_monitoring()
             self.start_ipaddr_monitoring()
 
-        logger.debug(u"Wapt tasks queue started")
+        self.logger.debug(u"Wapt tasks queue started")
         while True:
             try:
                 # check wapt configuration, reload ini file if changed
@@ -1704,7 +1706,7 @@ class WaptTaskManager(threading.Thread):
                 new_capa = self.wapt.host_capabilities_fingerprint()
                 old_capa = self.wapt.read_param('host_capabilities_fingerprint')
                 if old_capa != new_capa:
-                    logger.info('Host capabilities have changed since last update, forcing update')
+                    self.logger.info('Host capabilities have changed since last update, forcing update')
                     task = WaptUpdate()
                     task.created_by = 'TASK MANAGER'
                     task.force = True
@@ -1752,9 +1754,9 @@ class WaptTaskManager(threading.Thread):
                             self.running_task.summary = u"{}".format(ensure_unicode(e))
                             self.tasks_error.append(self.running_task)
                             self.broadcast_tasks_status('TASK_ERROR',self.running_task)
-                        logger.critical(ensure_unicode(e))
+                        self.logger.critical(ensure_unicode(e))
                         try:
-                            logger.debug(ensure_unicode(traceback.format_exc()))
+                            self.logger.debug(ensure_unicode(traceback.format_exc()))
                         except:
                             print("Traceback error")
                 finally:
@@ -1762,7 +1764,7 @@ class WaptTaskManager(threading.Thread):
                     try:
                         self.update_runstatus('')
                	    except Exception as e:
-                        logger.warning(u'Error reset runstatus : %s' % ensure_unicode(traceback.format_exc()))
+                        self.logger.warning(u'Error reset runstatus : %s' % ensure_unicode(traceback.format_exc()))
 
                     self.running_task = None
                     # trim history lists
@@ -1777,19 +1779,19 @@ class WaptTaskManager(threading.Thread):
                 try:
                     self.update_runstatus('')
                 except Exception as e:
-                    logger.warning(u'Error reset runstatus : %s' % ensure_unicode(traceback.format_exc()))
+                    self.logger.warning(u'Error reset runstatus : %s' % ensure_unicode(traceback.format_exc()))
 
                 try:
                     self.check_scheduled_tasks()
                 except Exception as e:
-                    logger.warning(u'Error checking scheduled tasks : %s' % ensure_unicode(traceback.format_exc()))
-                logger.debug(u"{} i'm still alive... but nothing to do".format(datetime.datetime.now()))
+                    self.logger.warning(u'Error checking scheduled tasks : %s' % ensure_unicode(traceback.format_exc()))
+                self.logger.debug(u"{} i'm still alive... but nothing to do".format(datetime.datetime.now()))
 
             except Exception as e:
-                logger.critical(u'Unhandled error in task manager loop: %s. Sleeping 120s before restarting the service' % ensure_unicode(e))
+                self.logger.critical(u'Unhandled error in task manager loop: %s. Sleeping 120s before restarting the service' % ensure_unicode(e))
                 time.sleep(120)
                 # ask nssm to restart service
-                logger.critical(u'Forced restart waptservice by nssm')
+                self.logger.critical(u'Forced restart waptservice by nssm')
                 os._exit(10)
 
 
@@ -1889,7 +1891,7 @@ class WaptTaskManager(threading.Thread):
         nm = threading.Thread(target=addr_change,args=(self,),name='ip_monitoring')
         nm.daemon = True
         nm.start()
-        logger.debug(u"Wapt network address monitoring started")
+        self.logger.debug(u"Wapt network address monitoring started")
 
     def start_network_monitoring(self):
         nrc = ctypes.windll.iphlpapi.NotifyRouteChange
@@ -1901,7 +1903,7 @@ class WaptTaskManager(threading.Thread):
         nm = threading.Thread(target=connected_change,args=(self,),name='network_monitoring')
         nm.daemon = True
         nm.start()
-        logger.debug(u"Wapt connection monitor started")
+        self.logger.debug(u"Wapt connection monitor started")
 
     def __unicode__(self):
         return "\n".join(self.tasks_status())
@@ -1986,7 +1988,7 @@ def install_service():
 
 def setup_logging(options=None):
     loglevel = options.loglevel
-    for log in('waptcore','waptservice','waptws','waptdb'):
+    for log in('flask.app','waptcore','waptservice','waptws','waptdb'):
         sublogger = logging.getLogger(log)
         if sublogger:
             if hasattr(options,'loglevel_%s' % log) and getattr(options,'loglevel_%s' % log):
@@ -2059,8 +2061,8 @@ if __name__ == "__main__":
     # starts one WaptTasksManager
     logger.info('Starting task queue')
     task_manager = WaptTaskManager(config_filename = waptconfig.config_filename)
-    task_manager.daemon = True
-    task_manager.start()
+    #task_manager.daemon = True
+    #task_manager.start()
     app.task_manager = task_manager
     if sys.platform == 'win32':
         if waptwua_api is not None:
@@ -2096,9 +2098,9 @@ if __name__ == "__main__":
 
         port_config = []
         if waptconfig.waptservice_port:
-            serve(app ,host='127.0.0.1' , port=waptconfig.waptservice_port)
             waitress_logger = logging.getLogger('waitress')
             if options.loglevel:
                 setloglevel(waitress_logger ,options.loglevel)
             else:
                 setloglevel(waitress_logger ,waptconfig.loglevel)
+            serve(app ,host='127.0.0.1' , port=waptconfig.waptservice_port)
