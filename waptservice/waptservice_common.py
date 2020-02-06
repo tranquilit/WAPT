@@ -724,12 +724,16 @@ class WaptServiceRestart(WaptTask):
 
     def _run(self):
         """Launch an external 'wapt-get waptupgrade' process to upgrade local copy of wapt client"""
-        #output = _(u'WaptService restart planned: %s' % setuphelpers.create_onetime_task('waptservicerestart','cmd.exe','/C net stop waptservice & net start waptservice'))
-        output = u'Forced restart waptservice by %s on %s' % (self.created_by,self.create_date)
-        logger.warning(output)
-        time.sleep(2)
-        self.result = {'result':'OK','message':output}
-        os._exit(10)
+        try:
+            output = _(u'WaptService restart planned: %s' % setuphelpers.create_onetime_task('waptservicerestart','cmd.exe','/C net stop waptservice & net start waptservice'))
+            logger.warning(output)
+            self.result = {'result':'OK','message':output}
+        except:
+            output = u'Forced restart waptservice by %s on %s' % (self.created_by,self.create_date)
+            logger.warning(output)
+            self.result = {'result':'OK','message':output}
+            time.sleep(2)
+            os._exit(10)
 
     def __unicode__(self):
         return _(u"Restarting local WAPT service")
