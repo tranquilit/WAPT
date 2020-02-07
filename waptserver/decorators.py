@@ -33,12 +33,15 @@ import gzip
 from waptserver.app import app
 from waptserver.auth import check_auth
 from waptserver.model import wapt_db
-# i18n
-from flask_babel import Babel
+
 try:
+    # i18n
+    from flask_babel import Babel
     from flask_babel import gettext
 except ImportError:
     gettext = (lambda s: s)
+    Babel = None
+
 _ = gettext
 
 logger = logging.getLogger('waptserver')

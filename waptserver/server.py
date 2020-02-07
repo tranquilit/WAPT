@@ -108,14 +108,7 @@ except ImportError as e:
 
 import wakeonlan.wol
 
-# i18n
-from flask_babel import Babel
-try:
-    from flask_babel import gettext
-except ImportError:
-    gettext = (lambda s: s)
-_ = gettext
-
+logger = logging.getLogger('waptserver')
 
 # Ensure that any created files have sane permissions.
 # uWSGI implicitely sets umask(0).
@@ -126,9 +119,24 @@ except Exception:
 
 ALLOWED_EXTENSIONS = set(['.wapt'])
 
-babel = Babel(app)
+# i18n
+try:
+    from flask_babel import Babel
+    from flask_babel import gettext
 
-logger = logging.getLogger('waptserver')
+    babel = Babel(app)
+
+    @babel.localeselector
+    def get_locale():
+        browser_lang = request.accept_languages.best_match(['en', 'fr'])
+        user_lang = session.get('lang', browser_lang)
+        return user_lang
+
+except ImportError:
+    gettext = (lambda s: s)
+    Babel = None
+_ = gettext
+
 
 try:
     from waptenterprise.waptserver import wsus,enterprise,store,repositories
@@ -148,13 +156,6 @@ def _db_close(error):
     if wapt_db and not wapt_db.is_closed():
         logger.warning('waptdb was not closed')
         wapt_db_close()
-
-@babel.localeselector
-def get_locale():
-    browser_lang = request.accept_languages.best_match(['en', 'fr'])
-    user_lang = session.get('lang', browser_lang)
-    return user_lang
-
 
 @app.route('/lang/<language>')
 def lang(language=None):
@@ -779,7 +780,7 @@ def check_valid_signer(package,cabundle):
                         logger.info('Package %s trusted for signer %s issued by %s' % (package.package,signer_cert.cn,signer_cert.issuer_dn))
                         break
                 if not trusted_cert:
-                    raise EWaptForbiddden('Host matching package %s does not trusted signer certificate %s' % (package.package,trusted_chains[0].fingerprint))
+                    raise EWaptForbiddden('Host matching package %s does not trusted signer certificate %s' % (package.package,trusted_chain[0].fingerprint))
 
         return trusted_chain
 
@@ -2432,14 +2433,13 @@ def trigger_host_action():
         logger.critical('trigger_host_action failed %s' % (repr(e)))
         return make_response_from_exception(e)
 
-
-def setup_logging(options=None):
-    loglevel = options.loglevel
+def setup_logging(config=None):
+    loglevel = config['loglevel']
     for log in ('waptcore','waptserver','waptws','waptdb'):
         sublogger = logging.getLogger(log)
         if sublogger:
-            if getattr(options,'loglevel_%s' % log):
-                setloglevel(sublogger,getattr(options,'loglevel_%s' % log))
+            if 'loglevel_%s' % log in config:
+                setloglevel(sublogger,config['loglevel_%s' % log])
             else:
                 setloglevel(sublogger,loglevel)
 
@@ -2500,13 +2500,17 @@ if __name__ == '__main__':
                 metavar='LOGLEVEL',help='Loglevel %s (default: warning)' % log)
 
     (options, args) = parser.parse_args()
-    setup_logging(options)
-    logger.info(u'Using config file %s' % options.configfile)
 
     app.config['CONFIG_FILE'] = options.configfile
     app.conf.update(**waptserver.config.load_config(options.configfile))
+    for att in options.__dict__:
+        if att in app.conf and getattr(options,att) is not None:
+            app.conf[att] = getattr(options,att)
+
     app.config['SECRET_KEY'] = app.conf.get('secret_key')
     app.config['APPLICATION_ROOT'] = app.conf.get('application_root','')
+    setup_logging(app.conf)
+    logger.info(u'Using config file %s' % options.configfile)
 
     # monkey patch for greenlet and define a socketio on top of app
     from waptserver.server_socketio import socketio,proxy_host_request

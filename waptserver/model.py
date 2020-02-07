@@ -114,22 +114,26 @@ def wapt_db_close():
         wapt_db.close()
 
 class WaptDB:
+    def __init__(self):
+        self.must_close = True
+
     def __enter__(self):
+        self.must_close = wapt_db and wapt_db.is_closed()
         wapt_db_connect()
 
     def __exit__(self, type, value, traceback):
-        if not value:
-            #logger.debug(u'DB exit %i' % self.transaction_depth)
-            wapt_db_close()
-        else:
-            try:
-                logger.debug(u'Error at DB exit %s, rollbacking\n%s' % (value,ensure_unicode(traceback.format_tb(traceback))))
-                wapt_db.rollback()
+        if self.must_close:
+            if not value:
+                #logger.debug(u'DB exit %i' % self.transaction_depth)
                 wapt_db_close()
-            except Exception as e:
-                logger.critical(u'Unable to rollback or close DB: ' % repr(e))
-                logger.critical(traceback.format_exc())
-
+            else:
+                try:
+                    logger.debug(u'Error at DB exit %s, rollbacking\n%s' % (value,ensure_unicode(traceback.format_tb(traceback))))
+                    wapt_db.rollback()
+                    wapt_db_close()
+                except Exception as e:
+                    logger.critical(u'Unable to rollback or close DB: ' % repr(e))
+                    logger.critical(traceback.format_exc())
 
 class WaptBaseModel(SignaledModel):
     """A base model that will use our Postgresql database"""
