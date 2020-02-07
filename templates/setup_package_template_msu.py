@@ -19,16 +19,17 @@ def waiting_for_reboot():
     return False
 
 def install():
-    kb_files = [
-        '%(installer)s',
-        ]
-    for kb_file in kb_files:
-        kb_guess = re.findall(r'^.*-(KB.*)-',kb_file)
-        if not kb_guess or not is_kb_installed(kb_guess[0]):
-            print('Installing {}'.format(kb_file))
-            run('wusa.exe "{}" /quiet /norestart'.format(kb_file),accept_returncodes=[0,3010,2359302,-2145124329],timeout=3600)
-        else:
-            print('{} already installed'.format(kb_file))
+    with EnsureWUAUServRunning():
+        kb_files = [
+            '%(installer)s',
+            ]
+        for kb_file in kb_files:
+            kb_guess = re.findall(r'^.*-(KB.*)-',kb_file)
+            if not kb_guess or not is_kb_installed(kb_guess[0]):
+                print('Installing {}'.format(kb_file))
+                run('wusa.exe "{}" /quiet /norestart'.format(kb_file),accept_returncodes=[0,3010,2359302,-2145124329],timeout=3600)
+            else:
+                print('{} already installed'.format(kb_file))
 
     if waiting_for_reboot():
         print('A reboot is needed !')
