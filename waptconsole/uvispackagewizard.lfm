@@ -246,7 +246,7 @@ object VisPackageWizard: TVisPackageWizard
       Width = 368
       OnAcceptFileName = EdInstallerPathAcceptFileName
       DialogTitle = 'Select installer file'
-      Filter = 'Installer files (*.exe, *.msi)|*.exe;*.msi|All files (*.*)|*.*'
+      Filter = 'Installer files (*.exe, *.msi, *.msu,*.msix)|*.exe;*.msi, *.msu,*.msix|All files (*.*)|*.*'
       FilterIndex = 0
       HideDirectories = False
       ButtonWidth = 23

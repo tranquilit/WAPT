@@ -57,7 +57,7 @@ var
 implementation
 
 uses Dialogs,dmwaptpython,superobject,uWaptRes,uWaptConsoleRes,waptcommon,
-  VarPyth, uWaptPythonUtils;
+  VarPyth, uWaptPythonUtils,tisstrings;
 
 {$R *.lfm}
 
@@ -74,9 +74,14 @@ begin
   EdMaturity.Text:=DefaultMaturity;
 end;
 
+operator in (const x: String;const y: Array of String):Boolean;
+begin
+  Result := StrIsOneOf(x,y);
+end;
+
 procedure TVisPackageWizard.ActMakeUploadUpdate(Sender: TObject);
 begin
-  ActMakeUpload.Enabled := ExtractFileExt(FInstallerFilename) = '.msi'
+  ActMakeUpload.Enabled := StrIsOneOf(ExtractFileExt(FInstallerFilename),['.msi','.msu'])
 end;
 
 procedure TVisPackageWizard.ActMakeAndEditUpdate(Sender: TObject);
