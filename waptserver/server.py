@@ -2562,8 +2562,8 @@ else:
     # initialize WSGI app only
     # config filename is defined in  uwsgi config file (so refer to himself...)
     app.config['CONFIG_FILE'] = os.environ['CONFIG_FILE']
-    setup_logging(app.conf.get('loglevel'))
     app.conf.update(**waptserver.config.load_config(app.config['CONFIG_FILE']))
+    setup_logging(app.conf)
     app.config['SECRET_KEY'] = app.conf.get('secret_key')
     app.config['APPLICATION_ROOT'] = app.conf.get('application_root','')
     load_db_config(app.conf)
