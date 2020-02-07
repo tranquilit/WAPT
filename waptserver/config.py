@@ -51,7 +51,7 @@ elif type_redhat():
 else:
     DEFAULT_WAPT_FOLDER = os.path.join(wapt_root_dir, 'waptserver', 'repository', 'wapt')
 
-WAPTLOGGERS = ['waptcore','waptserver','waptws','waptdb']
+WAPTLOGGERS = ['waptcore','waptserver','waptserver.app','waptws','waptdb']
 
 _defaults = {
     'client_tasks_timeout': 5,
