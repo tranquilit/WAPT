@@ -44,7 +44,7 @@
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
-        <CommandLineParams Value="--waptbasedir=c:\wapt /debug"/>
+        <CommandLineParams Value="/debug"/>
       </local>
     </RunParams>
     <RequiredPackages Count="6">

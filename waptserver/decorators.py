@@ -141,7 +141,7 @@ def require_wapt_db(f):
     @functools.wraps(f)
     def decorated(*args, **kwargs):
         if wapt_db and wapt_db.is_closed():
-            logger.info('connecting to waptdb before request')
+            logger.info('Connecting to waptdb before request. Count: %s' % len(wapt_db._in_use))
             wapt_db.connect()
         try:
             r = f(*args,**kwargs);
