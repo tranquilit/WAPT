@@ -255,7 +255,7 @@ def install_nginx_service(options,conf=None):
 
     print("register nginx frontend")
     repository_path = os.path.join(wapt_root_dir,'waptserver','repository')
-    for repo_path in ('wapt','wapt-host','waptwua'):
+    for repo_path in ('.','wapt','wapt-host','waptwua'):
         mkdir_p(os.path.join(repository_path,repo_path))
         run(r'icacls "%s" /grant  "*S-1-5-20":(OI)(CI)(M)' % os.path.join(repository_path,repo_path))
     mkdir_p(os.path.join(wapt_root_dir,'waptserver','nginx','temp'))
