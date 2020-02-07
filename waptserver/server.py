@@ -2495,7 +2495,7 @@ if __name__ == '__main__':
             help='Enable debug mode (for development only)')
 
     for log in ('waptcore','waptserver','waptws','waptdb'):
-        parser.add_option('--loglevel-%s' % log,dest='loglevel_%s' % log,default=None,type='choice',
+        parser.add_option('--loglevel_%s' % log,dest='loglevel_%s' % log,default=None,type='choice',
                 choices=['debug','warning','info','error','critical'],
                 metavar='LOGLEVEL',help='Loglevel %s (default: warning)' % log)
 

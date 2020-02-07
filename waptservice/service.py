@@ -82,7 +82,7 @@ import setuphelpers
 from setuphelpers import Version
 from waptpackage import PackageEntry,WaptLocalRepo
 
-from waptservice.waptservice_common import waptconfig
+from waptservice.waptservice_common import waptconfig,WAPTLOGGERS
 from waptservice.waptservice_common import forbidden,authenticate,allow_local,render_wapt_template
 from waptservice.waptservice_common import WaptClientUpgrade,WaptServiceRestart,WaptNetworkReconfig,WaptPackageInstall
 from waptservice.waptservice_common import WaptUpgrade,WaptUpdate,WaptUpdateServerStatus,WaptCleanup,WaptDownloadPackage,WaptLongTask,WaptAuditPackage
@@ -1995,13 +1995,13 @@ def install_service():
     else:
         setuphelpers.run('sc sdset waptservice D:(A;;CCLCSWRPLORC;;;AU)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;BA)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;SY)S:(AU;FA;CCDCLCSWRPWPDTLOSDRCWDWO;;;WD)')
 
-def setup_logging(options=None):
-    loglevel = options.loglevel
-    for log in('flask.app','waptcore','waptservice','waptws','waptdb','websocket','waitress'):
+def setup_logging(config=None):
+    loglevel = config.loglevel
+    for log in WAPTLOGGERS:
         sublogger = logging.getLogger(log)
         if sublogger:
-            if hasattr(options,'loglevel_%s' % log) and getattr(options,'loglevel_%s' % log):
-                setloglevel(sublogger,getattr(options,'loglevel_%s' % log))
+            if hasattr(config,'loglevel_%s' % log) and getattr(config,'loglevel_%s' % log):
+                setloglevel(sublogger,getattr(config,'loglevel_%s' % log))
             else:
                 setloglevel(sublogger,loglevel)
 
@@ -2024,7 +2024,7 @@ if __name__ == "__main__":
     parser.add_option("-d","--devel", dest="devel", default=False,action='store_true', help="Enable debug mode (for development only)")
 
     for log in ('waptcore','waptservice','waptws','waptdb'):
-        parser.add_option('--loglevel-%s' % log,dest='loglevel_%s' % log,default=None,type='choice',
+        parser.add_option('--loglevel_%s' % log,dest='loglevel_%s' % log,default=None,type='choice',
                 choices=['debug','warning','info','error','critical'],
                 metavar='LOGLEVEL',help='Loglevel %s (default: warning)' % log)
 
@@ -2042,11 +2042,11 @@ if __name__ == "__main__":
     waptconfig.config_filename = options.config
     waptconfig.load()
 
-    # force loglevel
-    if options.loglevel:
-        setup_logging(options)
-    else:
-        setup_logging(waptconfig)
+    for att in options.__dict__:
+        if hasattr(waptconfig,att) and getattr(options,att) is not None:
+            setattr(waptconfig,att,getattr(options,att))
+
+    setup_logging(waptconfig)
 
     if waptconfig.log_to_windows_events:
         try:
