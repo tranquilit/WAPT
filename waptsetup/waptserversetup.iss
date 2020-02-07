@@ -25,7 +25,7 @@
 ; if not empty, the 0, 1 or path to a CA bundle will be defined in wapt-get.ini for checking of https certificates
 #define set_verify_cert "0"
 
-; default value for detection server and repo URL using dns 
+; default value for detection server and repo URL using dns
 #define default_dnsdomain ""
 
 ; if not empty, a task will propose to install this package or list of packages (comma separated)
@@ -82,8 +82,8 @@ Source: "{#wapt_base_dir}runwaptserver.bat"; DestDir: "{app}"; Flags: ignorevers
 
 #ifdef choose_components
 Source: "{#wapt_base_dir}waptserver\waptserver.ini.template"; DestDir: "{app}\conf"; DestName: "waptserver.ini.template"; Tasks: InstallWaptserver
-Source: "{#wapt_base_dir}waptserver\*.py"; DestDir: "{app}\waptserver"; Tasks: InstallWaptserver       
-Source: "{#wapt_base_dir}waptserver\*.bat"; DestDir: "{app}\waptserver"; Tasks: InstallWaptserver       
+Source: "{#wapt_base_dir}waptserver\*.py"; DestDir: "{app}\waptserver"; Tasks: InstallWaptserver
+Source: "{#wapt_base_dir}waptserver\*.bat"; DestDir: "{app}\waptserver"; Tasks: InstallWaptserver
 Source: "{#wapt_base_dir}waptserver\*.template"; DestDir: "{app}\waptserver"; Tasks: InstallWaptserver
 Source: "{#wapt_base_dir}waptserver\static\*"; DestDir: "{app}\waptserver\static"; Flags: createallsubdirs recursesubdirs; Tasks: InstallWaptserver
 Source: "{#wapt_base_dir}waptserver\templates\*"; DestDir: "{app}\waptserver\templates"; Flags: createallsubdirs recursesubdirs; Tasks: InstallWaptserver
@@ -100,12 +100,12 @@ Source: "{#wapt_base_dir}waptenterprise\waptserver\*"; DestDir: "{app}\waptenter
 
 #else
 Source: "{#wapt_base_dir}waptserver\waptserver.ini.template"; DestDir: "{app}\conf"; DestName: "waptserver.ini.template";
-Source: "{#wapt_base_dir}waptserver\*.py"; DestDir: "{app}\waptserver";   
-Source: "{#wapt_base_dir}waptserver\*.bat"; DestDir: "{app}\waptserver";   
-Source: "{#wapt_base_dir}waptserver\*.template"; DestDir: "{app}\waptserver"; 
+Source: "{#wapt_base_dir}waptserver\*.py"; DestDir: "{app}\waptserver";
+Source: "{#wapt_base_dir}waptserver\*.bat"; DestDir: "{app}\waptserver";
+Source: "{#wapt_base_dir}waptserver\*.template"; DestDir: "{app}\waptserver";
 Source: "{#wapt_base_dir}waptserver\static\*"; DestDir: "{app}\waptserver\static"; Flags: createallsubdirs recursesubdirs;
 Source: "{#wapt_base_dir}waptserver\templates\*"; DestDir: "{app}\waptserver\templates"; Flags: createallsubdirs recursesubdirs;
-Source: "{#wapt_base_dir}waptserver\translations\*"; DestDir: "{app}\waptserver\translations"; Flags: createallsubdirs recursesubdirs; 
+Source: "{#wapt_base_dir}waptserver\translations\*"; DestDir: "{app}\waptserver\translations"; Flags: createallsubdirs recursesubdirs;
 Source: "{#wapt_base_dir}waptserver\scripts\*"; DestDir: "{app}\waptserver\scripts"; Flags: createallsubdirs recursesubdirs;
 Source: "{#wapt_base_dir}waptserver\pgsql-9.6\*"; DestDir: "{app}\waptserver\pgsql-9.6"; Flags: createallsubdirs recursesubdirs;
 Source: "{#wapt_base_dir}waptserver\nginx\*"; DestDir: "{app}\waptserver\nginx"; Flags: createallsubdirs recursesubdirs;
@@ -117,29 +117,28 @@ Source: "{#wapt_base_dir}waptenterprise\waptserver\*"; DestDir: "{app}\waptenter
 #endif
 
 #endif
-#endif  
+#endif
  ;fastdebug
 
 
 [Dirs]
-Name: "{app}\waptserver\repository"
-Name: "{app}\waptserver\log"
-Name: "{app}\waptserver\repository\wapt"
-Name: "{app}\waptserver\repository\wapt-host"
-Name: "{app}\waptserver\repository\wapt-group"
-Name: "{app}\waptserver\repository\waptwua"
+Name: "{app}\waptserver\repository";
+Name: "{app}\waptserver\repository\ssl";
+Name: "{app}\waptserver\repository\wapt";
+Name: "{app}\waptserver\repository\wapt-host";
+Name: "{app}\waptserver\repository\waptwua";
 Name: "{app}\waptserver\nginx\ssl"
 
 [InstallDelete]
 Type: files; Name: "{app}\waptserver\*.pyc"
 
 [INI]
-Filename: {app}\conf\waptserver.ini; Section: options; Key: allow_unauthenticated_registration; String: "{code:GetAllowUnauthenticatedRegistration}"; 
-Filename: {app}\wapt-get.ini; Section: Global; Key: default_package_prefix; String: "{code:GetDefaultPackagePrefix}"; Check: CheckSetDefaultPackagePrefix(); 
-Filename: {app}\wapt-get.ini; Section: Global; Key: personal_certificate_path; String: "{code:GetPersonalCertificatePath}"; Check: CheckSetPersonalCertificatePath(); 
+Filename: {app}\conf\waptserver.ini; Section: options; Key: allow_unauthenticated_registration; String: "{code:GetAllowUnauthenticatedRegistration}";
+Filename: {app}\wapt-get.ini; Section: Global; Key: default_package_prefix; String: "{code:GetDefaultPackagePrefix}"; Check: CheckSetDefaultPackagePrefix();
+Filename: {app}\wapt-get.ini; Section: Global; Key: personal_certificate_path; String: "{code:GetPersonalCertificatePath}"; Check: CheckSetPersonalCertificatePath();
 
 [RUN]
-Filename: "{app}\waptserver\pgsql-9.6\vcredist_x64.exe"; Parameters: "/passive /quiet"; StatusMsg: {cm:InstallMSVC2013}; Description: "{cm:InstallMSVC2013}";  
+Filename: "{app}\waptserver\pgsql-9.6\vcredist_x64.exe"; Parameters: "/passive /quiet"; StatusMsg: {cm:InstallMSVC2013}; Description: "{cm:InstallMSVC2013}";
 Filename: "{app}\wapt-get.exe"; Parameters: " update-packages {app}\waptserver\repository\wapt --config={app}\wapt-get.ini"; Flags: runhidden; StatusMsg: {cm:ScanPackages}; Description: "{cm:ScanPackages}"; BeforeInstall: SetMarqueeProgress(True); AfterInstall: SetMarqueeProgress(False)
 Filename: "{app}\waptpython.exe"; Parameters: "{app}\waptserver\winsetup.py all -c {app}\conf\waptserver.ini -f --setpassword={code:GetWaptServerPassword64}"; StatusMsg: {cm:InstallingServerServices}; Description: "{cm:InstallingServerServices}"; BeforeInstall: SetMarqueeProgress(True); AfterInstall: SetMarqueeProgress(False)
 
@@ -456,7 +455,7 @@ function GetPrivateKeyPassword64(Param: String):String;
 begin
   if (pgPackagesParams.Values[2]<>'') then
     Result := Encode64(pgPackagesParams.Values[2])
-  else 
+  else
   if (pgPersonalKeyParams.Values[2]<>'') then
     Result := Encode64(pgPersonalKeyParams.Values[2])
   else
@@ -509,13 +508,13 @@ function IsServerPasswordDefined():Boolean;
 var
   ServerPassword:String;
 begin
-  ServerPassword :=  GetIniString('options', 'wapt_password', '',ExpandConstant('{app}\conf\waptserver.ini')); 
+  ServerPassword :=  GetIniString('options', 'wapt_password', '',ExpandConstant('{app}\conf\waptserver.ini'));
   Result := (ServerPassword<>'') and (pos('$pbkdf2',ServerPassword)>0);
 end;
 
 function GetPersonalCertificatePath(Param: String):String;
 begin
-  case pgPersonalKeyOptions.SelectedValueIndex of 
+  case pgPersonalKeyOptions.SelectedValueIndex of
     0: Result := GetIniString('global','personal_certificate_path','',ExpandConstant('{app}\wapt-get.ini'));
     1: Result := pgPersonalKeyChoose.Values[0];
     2: Result := 'c:\private\'+pgPersonalKeyParams.Values[0]+'.crt';
@@ -526,7 +525,7 @@ end;
 
 function CheckSetPersonalCertificatePath:Boolean;
 begin
-  result := (GetPersonalCertificatePath('') <> '') and (ExtractFiledir(GetPersonalCertificatePath(''))<>ExpandConstant('{app}\ssl')) 
+  result := (GetPersonalCertificatePath('') <> '') and (ExtractFiledir(GetPersonalCertificatePath(''))<>ExpandConstant('{app}\ssl'))
 end;
 
 function CheckCreatePersonalcertificate:Boolean;
@@ -541,7 +540,7 @@ end;
 
 
 procedure SetControlCursor(oCtrl: TControl; oCurs: TCursor);
-var 
+var
   i     : Integer;
   oCmp  : TComponent;
 begin
@@ -571,26 +570,26 @@ end;
 
 function OnPersonalKeyChooseShouldSkipPage(Sender: TWizardPage): Boolean;
 begin
-  Result := pgPersonalKeyOptions.SelectedValueIndex<>1; 
+  Result := pgPersonalKeyOptions.SelectedValueIndex<>1;
 end;
 
 function OnPersonalKeyParamsNextButtonClick(Sender: TWizardPage): Boolean;
 begin
-  if (pgPersonalKeyParams.Values[0] = '') then 
+  if (pgPersonalKeyParams.Values[0] = '') then
       RaiseException(ExpandConstant('{cm:SpecifyKeyName}'));
 
-  if (pgPersonalKeyParams.Values[2] = '') then 
+  if (pgPersonalKeyParams.Values[2] = '') then
       RaiseException(ExpandConstant('{cm:SpecifyPrivateKeyPassword}'));
 
-  if (pgPersonalKeyParams.Values[2] <> pgPersonalKeyParams.Values[3]) then 
+  if (pgPersonalKeyParams.Values[2] <> pgPersonalKeyParams.Values[3]) then
       RaiseException(ExpandConstant('{cm:KeyPasswordsDontMatch}'));
 
-  if FileExists(ExpandConstant('c:\private\'+pgPersonalKeyParams.Values[0]+'.pem')) or 
-     FileExists(ExpandConstant('c:\private\'+pgPersonalKeyParams.Values[0]+'.crt')) then 
+  if FileExists(ExpandConstant('c:\private\'+pgPersonalKeyParams.Values[0]+'.pem')) or
+     FileExists(ExpandConstant('c:\private\'+pgPersonalKeyParams.Values[0]+'.crt')) then
       RaiseException(ExpandConstant('{cm:KeyExists}'));
-  
 
-  // Generate 
+
+  // Generate
   Result := True;
 end;
 
@@ -608,27 +607,27 @@ end;
 
 function OnPersonalKeyParamsShouldSkipPage(Sender: TWizardPage): Boolean;
 begin
-  Result := pgPersonalKeyOptions.SelectedValueIndex<>2; 
+  Result := pgPersonalKeyOptions.SelectedValueIndex<>2;
 end;
 
 function OnPackagesParamsNextButtonClick(Sender: TWizardPage): Boolean;
 begin
-  if pgPackagesParams.Values[0] = '' then 
+  if pgPackagesParams.Values[0] = '' then
     RaiseException(ExpandConstant('{cm:MustSpecifyPackagePrefix}'));
-  if pgPackagesParams.Values[2] = '' then 
+  if pgPackagesParams.Values[2] = '' then
     RaiseException(ExpandConstant('{cm:MustSpecifyPrivateKeyPassword}'));
-  //MsgBox('Lancement vérification de la clé pour le certificat '+GetPersonalCertificatePath('')+' and prefix '+pgPackagesParams.Values[0], mbInformation, MB_OK);  
+  //MsgBox('Lancement vérification de la clé pour le certificat '+GetPersonalCertificatePath('')+' and prefix '+pgPackagesParams.Values[0], mbInformation, MB_OK);
   Result := True;
 end;
 
 
 function OnServerParamsNextButtonClick(Sender: TWizardPage): Boolean;
-begin                                         
-  if pgServerParams.Values[0] = '' then 
+begin
+  if pgServerParams.Values[0] = '' then
     RaiseException(ExpandConstant('{cm:MustSpecifyAServerName}'));
-  if not IsServerPasswordDefined and (pgServerParams.Values[1] = '') then 
+  if not IsServerPasswordDefined and (pgServerParams.Values[1] = '') then
     RaiseException(ExpandConstant('{cm:MustSpecifyServerPassword}'));
-  if pgServerParams.Values[1] <> pgServerParams.Values[2]  then 
+  if pgServerParams.Values[1] <> pgServerParams.Values[2]  then
     RaiseException(ExpandConstant('{cm:PasswordsDontMatch}'));
   Result := True;
 end;
@@ -636,7 +635,7 @@ end;
 function OnPackagesParamsShouldSkipPage(Sender: TWizardPage): Boolean;
 begin
   // todo skip if no install
-  Result := pgBuildWaptAgentOptions.SelectedValueIndex=0 ; 
+  Result := pgBuildWaptAgentOptions.SelectedValueIndex=0 ;
 end;
 
 procedure OnPackagesParamsActivate(Sender: TWizardPage);
@@ -674,7 +673,7 @@ begin
   pgPersonalKeyOptions.OnActivate := @OnPersonalKeyOptionsActivate;
 
 
-   
+
   // Choose an existing certificate
   pgPersonalKeyChoose := CreateInputFilePage(pgPersonalKeyOptions.ID,ExpandConstant('{cm:PersonalKeyCert}'),ExpandConstant('{cm:SelectExistingCertificate}'),'');
   pgPersonalKeyChoose.Add(ExpandConstant('{cm:PersonalCertificateLocation}'),'X509 PEM encoded certificates|*.crt|All files|*.*','.crt');
@@ -728,13 +727,13 @@ begin
         pgServerParams.Values[0] := GetWaptServerOrComputerDNSNameOrIP;
 
         CertFilename := GetIniString('global','personal_certificate_path','',ExpandConstant('{app}\wapt-get.ini'));
-        if (CertFilename<>'') and (FileExists(CertFilename)) then 
+        if (CertFilename<>'') and (FileExists(CertFilename)) then
           pgPersonalKeyOptions.SelectedValueIndex := 0
-        else if (CertFilename = '') and (GetFirstSSLCertificate<>'') then 
+        else if (CertFilename = '') and (GetFirstSSLCertificate<>'') then
           pgPersonalKeyOptions.SelectedValueIndex := 1
         else
           pgPersonalKeyOptions.SelectedValueIndex := 2;
-        
+
         pgPersonalKeyParams.Values[0] := GetUserNameString;
 
         if CertFilename <> '' then
@@ -756,4 +755,4 @@ begin
     Result := True;
   end;
 end;
-   
+
