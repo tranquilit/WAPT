@@ -56,6 +56,8 @@ from setuphelpers import Version
 from flask import request, Response, send_from_directory, send_file, session, redirect, url_for, abort, render_template, flash, stream_with_context
 
 logger = logging.getLogger('waptservice')
+WAPTLOGGERS = ['flask.app','waptcore','waptservice','waptws','waptdb','websocket','waitress']
+
 
 try:
     import babel
@@ -258,6 +260,10 @@ class WaptServiceConfig(object):
 
         self.dbpath = os.path.join(wapt_root_dir,'db','waptdb.sqlite')
         self.loglevel = "warning"
+        for log in WAPTLOGGERS:
+            setattr(self,'loglevel_%s'%log,None)
+            self.global_attributes.append(log)
+
         self.log_directory = os.path.join(wapt_root_dir,'log')
         if not os.path.exists(self.log_directory):
             os.mkdir(self.log_directory)
@@ -377,6 +383,10 @@ class WaptServiceConfig(object):
 
             if config.has_option('global','loglevel'):
                 self.loglevel = config.get('global','loglevel')
+
+            for log in WAPTLOGGERS:
+                if config.has_option('global','loglevel_%s'%log):
+                    setattr(self,log,config.get('global','loglevel_%s' % log))
 
             if config.has_option('global','log_to_windows_events'):
                 self.log_to_windows_events = config.getboolean('global','log_to_windows_events')
