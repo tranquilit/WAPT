@@ -362,6 +362,7 @@ def register_host():
         computer_fqdn =  (data.get('host_info',None) or data.get('host',{})).get('computer_fqdn',None)
 
         auth_result = None
+        host_cert = None
 
         # with nginx kerberos module, auth user name is stored as Basic auth in the
         # 'Authorisation' header with password 'bogus_auth_gss_passwd'
@@ -391,7 +392,6 @@ def register_host():
                 registration_auth_user = u'%s:%s' % (auth_result['auth_method'],auth_result['user'])
 
 
-            host_cert = None
             # if certificate is properly signed, we can trust it without using database
             if 'host_certificate' in data:
                 try:

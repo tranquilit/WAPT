@@ -109,7 +109,7 @@ def wapt_db_close():
                 logger.critical('Transaction is active, but DB must be closed. Rollbacking')
                 wapt_db.rollback()
             except Exception as e:
-                logger.critical(u'Unable to rollback: ' % repr(e))
+                logger.critical(u'Unable to rollback:\n%s' % repr(e))
                 logger.critical(traceback.format_exc())
         wapt_db.close()
 
@@ -121,18 +121,19 @@ class WaptDB:
         self.must_close = wapt_db and wapt_db.is_closed()
         wapt_db_connect()
 
-    def __exit__(self, type, value, traceback):
+    def __exit__(self, type, value, tb):
         if self.must_close:
             if not value:
                 #logger.debug(u'DB exit %i' % self.transaction_depth)
                 wapt_db_close()
             else:
                 try:
-                    logger.debug(u'Error at DB exit %s, rollbacking\n%s' % (value,ensure_unicode(traceback.format_tb(traceback))))
-                    wapt_db.rollback()
+                    logger.debug(u'Error at DB exit %s, rollbacking\n%s' % (value,ensure_unicode(traceback.format_tb(tb))))
+                    if wapt_db.in_transaction():
+                        wapt_db.rollback()
                     wapt_db_close()
                 except Exception as e:
-                    logger.critical(u'Unable to rollback or close DB: ' % repr(e))
+                    logger.critical(u'Unable to rollback or close DB:\n%s' % repr(e))
                     logger.critical(traceback.format_exc())
 
 class WaptBaseModel(SignaledModel):
