@@ -51,6 +51,8 @@ elif type_redhat():
 else:
     DEFAULT_WAPT_FOLDER = os.path.join(wapt_root_dir, 'waptserver', 'repository', 'wapt')
 
+WAPTLOGGERS = ['waptcore','waptserver','waptws','waptdb']
+
 _defaults = {
     'client_tasks_timeout': 5,
     'clients_read_timeout': 5,
@@ -106,6 +108,9 @@ _defaults = {
     'wol_port':'9'
 }
 
+for log in WAPTLOGGERS:
+    _defaults['loglevel_%s' % log] = None
+
 DEFAULT_CONFIG_FILE = os.path.join(wapt_root_dir, 'conf', 'waptserver.ini')
 
 def load_config(cfgfile=DEFAULT_CONFIG_FILE):
@@ -131,6 +136,10 @@ def load_config(cfgfile=DEFAULT_CONFIG_FILE):
 
     if _config.has_option('options', 'loglevel'):
         conf['loglevel'] = _config.get('options', 'loglevel')
+
+    for log in WAPTLOGGERS:
+        if _config.has_option('options', 'loglevel_%s' % log):
+            conf['loglevel_%s' % log] = _config.get('options', 'loglevel_%s' % log)
 
     if _config.has_option('options', 'secret_key'):
         secret_key = _config.get('options', 'secret_key')

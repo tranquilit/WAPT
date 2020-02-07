@@ -99,8 +99,10 @@ def load_db_config(server_config=None):
 
 def wapt_db_connect():
     if wapt_db and wapt_db.is_closed():
-        logger.info('connecting to waptdb explicitely')
+        logger.info('Connecting to waptdb explicitely. Count: %s' % len(wapt_db._in_use))
         wapt_db.connect()
+        return True
+    return False
 
 def wapt_db_close():
     if wapt_db and not wapt_db.is_closed():
@@ -111,15 +113,17 @@ def wapt_db_close():
             except Exception as e:
                 logger.critical(u'Unable to rollback:\n%s' % repr(e))
                 logger.critical(traceback.format_exc())
+        logger.debug('Disconnecting from waptdb explicitely. Count: %s' % len(wapt_db._in_use))
         wapt_db.close()
+        return True
+    return False
 
 class WaptDB:
     def __init__(self):
         self.must_close = True
 
     def __enter__(self):
-        self.must_close = wapt_db and wapt_db.is_closed()
-        wapt_db_connect()
+        self.must_close = wapt_db_connect()
 
     def __exit__(self, type, value, tb):
         if self.must_close:

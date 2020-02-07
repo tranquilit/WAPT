@@ -73,7 +73,7 @@ from waptserver.model import WaptUsers,WaptUserAcls
 from waptserver.model import get_db_version, init_db, wapt_db, model_to_dict, update_host_data
 from waptserver.model import upgrade_db_structure
 from waptserver.model import load_db_config,wapt_db_connect,wapt_db_close,WaptDB
-from waptserver.config import get_http_proxies
+from waptserver.config import get_http_proxies,WAPTLOGGERS
 
 from waptpackage import PackageEntry,WaptLocalRepo,EWaptBadSignature,EWaptMissingCertificate
 from waptcrypto import SSLCertificate,SSLVerifyException,SSLCertificateSigningRequest,InvalidSignature,SSLPrivateKey,EWaptCryptoException
@@ -1327,25 +1327,6 @@ def get_host_package(input_package_name):
     return r
 
 
-@app.route('/wapt-group/<string:input_package_name>')
-def get_group_package(input_package_name):
-    """Returns a group package (in case there is no apache static files server)"""
-    # TODO straighten this -group stuff
-    group_folder = app.conf['wapt_folder'] + '-group'
-    package_name = secure_filename(input_package_name)
-    r = send_from_directory(group_folder, package_name)
-    # on line content-length is not added to the header.
-    if 'content-length' not in r.headers:
-        r.headers.add_header(
-            'content-length',
-            os.path.getsize(
-                os.path.join(
-                    group_folder +
-                    '-group',
-                    package_name)))
-    return r
-
-
 @app.route('/ping')
 def ping():
     return make_response(
@@ -2435,7 +2416,7 @@ def trigger_host_action():
 
 def setup_logging(config=None):
     loglevel = config['loglevel']
-    for log in ('waptcore','waptserver','waptws','waptdb'):
+    for log in WAPTLOGGERS:
         sublogger = logging.getLogger(log)
         if sublogger:
             if 'loglevel_%s' % log in config:
@@ -2451,10 +2432,17 @@ def setup_logging(config=None):
                 #    os.mkdir(log_directory)
             #    hdlr = logging.FileHandler(os.path.join(log_directory, 'waptserver.log'))
 
-            hdlr = logging.StreamHandler()
-            hdlr.setFormatter(
-                logging.Formatter('%(asctime)s [%(name)-15s] %(levelname)s %(message)s'))
-            sublogger.addHandler(hdlr)
+            #hdlr = logging.StreamHandler()
+            #hdlr.setFormatter(
+            #    logging.Formatter('%(asctime)s [%(name)-15s] %(levelname)s %(message)s'))
+            #sublogger.addHandler(hdlr)
+
+    hdlr = logging.StreamHandler()
+    hdlr.setFormatter(
+        logging.Formatter('%(asctime)s [%(name)-15s] %(levelname)s %(message)s'))
+    rootlogger = logging.getLogger()
+    rootlogger.addHandler(hdlr)
+    setloglevel(rootlogger,loglevel)
 
 def get_revision_hash():
     fn = os.path.join(wapt_root_dir,'revision.txt')
@@ -2494,7 +2482,7 @@ if __name__ == '__main__':
     parser.add_option('-d','--devel',dest='devel',default=False,action='store_true',
             help='Enable debug mode (for development only)')
 
-    for log in ('waptcore','waptserver','waptws','waptdb'):
+    for log in WAPTLOGGERS:
         parser.add_option('--loglevel_%s' % log,dest='loglevel_%s' % log,default=None,type='choice',
                 choices=['debug','warning','info','error','critical'],
                 metavar='LOGLEVEL',help='Loglevel %s (default: warning)' % log)
