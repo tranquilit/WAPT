@@ -102,6 +102,8 @@ def check_auth( username=None, password = None, request = None,
     auth_user = None
     auth_date = None
 
+    assert(isinstance(methods,list))
+
     for method in methods:
         if method == 'session' and session:
             session_user = session.get('user',None)

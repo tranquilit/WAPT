@@ -1093,7 +1093,7 @@ def change_password():
         try:
             post_data = request.get_json()
             if 'user' in post_data and 'password' in post_data:
-                if check_auth(username = post_data['user'], password = post_data['password'], session=session, methods='admin'):
+                if check_auth(username = post_data['user'], password = post_data['password'], session=session, methods=['admin']):
                     # change master password
                     if 'new_password' in post_data and post_data['user'] == 'admin':
                         if len(post_data['new_password']) < app.conf.get('min_password_length',10):
