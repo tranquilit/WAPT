@@ -456,7 +456,8 @@ def register_host():
                 if host_certificate_csr.cn.lower() == computer_fqdn.lower() or host_certificate_csr.cn.lower() == uuid.lower():
                     logger.info(u'Authenticated user: %s , Registration auth user: %s Issuing a signed certificate for %s' % (authenticated_user,registration_auth_user,host_certificate_csr.cn))
                     signed_host_cert = sign_host_csr(host_certificate_csr)
-                    data['host_certificate'] = signed_host_cert.as_pem()
+                    if signed_host_cert:
+                        data['host_certificate'] = signed_host_cert.as_pem()
                 else:
                     logger.warning(u'Authenticated user: %s , Registration auth user %s asking a signed certificate for %s but registering as %s or %s. Refused.' % (authenticated_user,registration_auth_user,host_certificate_csr.cn,computer_fqdn,uuid))
 
