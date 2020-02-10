@@ -608,7 +608,7 @@ def main():
     if not os.path.isdir(ssl_dir):
         # move existing ssl dir in wapt repo to parent dir (default location)
         if os.path.isdir(os.path.join(server_config['wapt_folder'],'ssl')):
-            os.rename(os.path.join(server_config['wapt_folder'],'ssl'),ssl_dir)
+            shutil.move(os.path.join(server_config['wapt_folder'],'ssl'),ssl_dir)
         else:
             os.makedirs(ssl_dir)
 
@@ -623,7 +623,7 @@ def main():
             if os.path.isfile(newpath):
                 continue
             print('Move %s --> %s' % (oldpath,newpath))
-            os.rename(oldpath,newpath)
+            shutil.move(oldpath,newpath)
         for d in dirs:
             if d == '.stfolder':
                 continue
