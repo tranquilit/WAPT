@@ -653,21 +653,33 @@ def main():
 
     # Create empty sync.json and rules.json file for all installations
 
-    def set_good_rights_nginx(files=[]):
-        for afile in files:
-            if not os.path.isfile(afile):
-                with open(afile,'w'): pass
-            os.chown(afile,WAPT_UID,NGINX_GID)
+    sync_json = os.path.join(os.path.abspath(os.path.join(wapt_folder, os.pardir)),u'sync.json')
+    rules_json = os.path.join(os.path.abspath(os.path.join(wapt_folder, os.pardir)),u'rules.json')
 
-    sync_json = os.path.join(os.path.abspath(os.path.join(wapt_folder, os.pardir)),'sync.json')
-    rules_json = os.path.join(os.path.abspath(os.path.join(wapt_folder, os.pardir)),'rules.json')
+    diff_rules_dir = wapt_folder+u'-diff-repos/'
 
-    diff_rules_dir = wapt_folder+u'-diff-repos'
-    if not(os.path.isdir(diff_rules_dir)):
-        os.mkdir(diff_rules_dir)
-        os.chown(diff_rules_dir,WAPT_UID,NGINX_GID)
+    paths_to_modify = [sync_json,rules_json,wapt_folder,wuafolder,diff_rules_dir,ssl_dir]
 
-    set_good_rights_nginx([sync_json,rules_json])
+    for apath in paths_to_modify:
+        if os.path.isdir(apath):
+            for root,dirs,files in os.walk(path):
+                for d in dirs:
+                    full_path=os.path.join(d,root)
+                    os.chown(full_path,WAPT_UID,NGINX_GID)
+                    os.chmod(full_path, 0o750)
+                for f in files:
+                    full_path=os.path.join(d,root)
+                    os.chown(full_path,WAPT_UID,NGINX_GID)
+                    os.chmod(full_path, 0o640)
+        else:
+            if apath.endswith('/'):
+                os.mkdir(apath)
+                os.chmod(apath,0o750)
+            else:
+                if not(os.path.isfile(apath)):
+                    with open(apath,'w'): pass
+                os.chmod(apath, 0o640)
+            os.chown(apath,WAPT_UID,NGINX_GID)
 
     # Final message
     if not quiet:
