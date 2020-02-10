@@ -850,10 +850,8 @@ def upload_packages():
             if os.path.isfile(target):
                 os.unlink(target)
             logger.debug(u'Renaming package %s into %s' % (tmp_target,target))
-            try:
-                os.rename(tmp_target, target)
-            except OSError:
-                shutil.move(tmp_target, target)
+
+            shutil.move(tmp_target, target)
 
             # for caller to get completed PackageEntry.
             entry.localpath = target
@@ -1020,7 +1018,7 @@ def upload_host():
 
                             if os.path.isfile(target):
                                 os.unlink(target)
-                            os.rename(tmp_target, target)
+                            shutil.move(tmp_target, target)
                             # fix context on target file (otherwith tmp context is carried over)
                             #logger.debug(subprocess.check_output('chcon -R -t httpd_sys_content_t %s' % target,shell=True))
 
@@ -1067,7 +1065,7 @@ def upload_waptsetup():
                 if not os.path.isfile(tmp_target):
                     result = dict(status='ERROR', message=_('Problem during upload'))
                 else:
-                    os.rename(tmp_target, target)
+                    shutil.move(tmp_target, target)
                     result = dict(status='OK', message=_('{} uploaded').format((filename,)))
 
                     if repositories and app.conf.get('remote_repo_support'):

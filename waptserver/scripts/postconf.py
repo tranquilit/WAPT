@@ -163,7 +163,7 @@ def make_httpd_config(waptserver_root_dir, fqdn, force_https, server_config):
             if os.path.isfile(wapt_ssl_cert_file):
                 crt = SSLCertificate(wapt_ssl_cert_file)
                 if crt.cn != fqdn:
-                    os.rename(wapt_ssl_cert_file,"%s-%s.old" % (wapt_ssl_cert_file,'{:%Y%m%d-%Hh%Mm%Ss}'.format(datetime.datetime.now())))
+                    shutil.move(wapt_ssl_cert_file,"%s-%s.old" % (wapt_ssl_cert_file,'{:%Y%m%d-%Hh%Mm%Ss}'.format(datetime.datetime.now())))
                     crt = key.build_sign_certificate(cn=fqdn,dnsname=fqdn,is_code_signing=False)
                     print('Create X509 cert %s' % wapt_ssl_cert_file)
                     crt.save_as_pem(wapt_ssl_cert_file)
@@ -658,7 +658,7 @@ def main():
 
     diff_rules_dir = wapt_folder+u'-diff-repos/'
 
-    paths_to_modify = [sync_json,rules_json,wapt_folder,wuafolder,diff_rules_dir,ssl_dir]
+    paths_to_modify = [sync_json,rules_json,wapt_folder+'/',wuafolder+'/',diff_rules_dir,ssl_dir+'/']
 
     for apath in paths_to_modify:
         if os.path.isdir(apath):

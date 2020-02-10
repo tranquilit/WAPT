@@ -120,7 +120,7 @@ def comment_mongodb_lines(conf_filename=DEFAULT_CONFIG_FILE):
         new_conf_file_data = new_conf_file_data + line + '\n'
     print(new_conf_file_data)
     if modified == True:
-        os.rename(conf_filename, '%s.%s' % (conf_filename, datetime.datetime.today().strftime('%Y%m%d-%H:%M:%S')))
+        shutil.move(conf_filename, '%s.%s' % (conf_filename, datetime.datetime.today().strftime('%Y%m%d-%H:%M:%S')))
         with open(conf_filename, 'w') as text_file:
             text_file.write(new_conf_file_data)
 

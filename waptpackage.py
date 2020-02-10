@@ -3136,7 +3136,7 @@ class WaptLocalRepo(WaptBaseRepo):
 
             if os.path.isfile(packages_fname):
                 os.unlink(packages_fname)
-            os.rename(tmp_packages_fname,packages_fname)
+            shutil.move(tmp_packages_fname,packages_fname)
             logger.info(u"Finished")
             return entry.localpath
 
@@ -3155,7 +3155,7 @@ class WaptLocalRepo(WaptBaseRepo):
         if package_filename != theoritical_package_filename:
             logger.warning(u'Package filename %s should be %s to comply with control metadata. Renaming...'%(package_filename,theoritical_package_filename))
             new_fn = os.path.join(os.path.dirname(entry.localpath),theoritical_package_filename)
-            os.rename(entry.localpath,new_fn)
+            shutil.move(entry.localpath,new_fn)
             entry.filename = theoritical_package_filename
             return new_fn
         else:
@@ -3283,7 +3283,7 @@ class WaptLocalRepo(WaptBaseRepo):
 
             if os.path.isfile(packages_fname):
                 os.unlink(packages_fname)
-            os.rename(tmp_packages_fname,packages_fname)
+            shutil.move(tmp_packages_fname,packages_fname)
             logger.info(u"Finished")
         except Exception as e:
             if os.path.isfile(tmp_packages_fname):

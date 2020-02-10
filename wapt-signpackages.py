@@ -24,6 +24,7 @@ from __future__ import absolute_import
 import os
 import sys
 import glob
+import shutil
 
 try:
     wapt_root_dir = os.path.abspath(os.path.dirname(os.path.realpath(__file__)))
@@ -147,7 +148,7 @@ def main():
                     newfn_path = os.path.join(package_dir,newfn)
                     if not os.path.isfile(newfn_path):
                         print(u"Renaming file from %s to %s to match new package's properties" % (pe.filename,newfn))
-                        os.rename(os.path.join(package_dir,pe.filename),newfn_path)
+                        shutil.move(os.path.join(package_dir,pe.filename),newfn_path)
                     else:
                         print('WARNING: unable to rename file from %s to %s because target already exists' % (pe.filename,newfn))
 
