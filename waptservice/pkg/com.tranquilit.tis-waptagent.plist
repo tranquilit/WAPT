@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
         <key>Label</key>
-        <string>com.wapt</string>
+        <string>com.tranquilit.tis-waptagent</string>
         <key>ProgramArguments</key>
         <array>
         <string>/opt/wapt/bin/python</string>
