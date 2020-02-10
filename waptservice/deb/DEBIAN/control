@@ -4,5 +4,6 @@ Section: base
 Priority: optional
 Architecture: amd64
 Depends: python
+Conflicts: tis-waptserver
 Maintainer: Tranquil IT <technique@tranquil.it>
 Description: WAPT Agent for Linux

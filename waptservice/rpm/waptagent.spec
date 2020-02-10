@@ -6,6 +6,7 @@ Version:        %{_version}
 Release:        %{waptedition}%{?dist}
 Summary:        WAPT Agent
 BuildArch:      x86_64
+Conflicts:      tis-waptserver
 
 Group:          Development/Tools
 License:        %{licence}
