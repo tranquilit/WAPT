@@ -91,7 +91,7 @@ from waptserver.common import get_secured_token_generator,get_server_uuid
 from waptserver.common import make_response,make_response_from_exception
 
 from waptserver.app import app
-from waptserver.auth import check_auth,change_admin_password
+from waptserver.auth import check_auth,change_admin_password,get_user_acls
 from waptserver.decorators import requires_auth,authenticate,gzipped,require_wapt_db,wapt_db_readonly
 
 import waptserver.config
@@ -680,7 +680,7 @@ def allowed_file(filename):
 
 
 @app.route('/api/v3/packages')
-@requires_auth()
+@requires_auth(['admin','view'])
 def localrepo_packages():
     try:
         start_time = time.time()
@@ -696,7 +696,7 @@ def localrepo_packages():
         return make_response_from_exception(e)
 
 @app.route('/api/v3/known_packages')
-@requires_auth()
+@requires_auth(['admin','view'])
 @require_wapt_db
 def known_packages():
     """Returns list of known packages metadata from database
@@ -786,7 +786,8 @@ def check_valid_signer(package,cabundle):
         return trusted_chain
 
 @app.route('/api/v3/upload_packages',methods=['HEAD','POST'])
-@requires_auth()
+@requires_auth(['admin','edit_host_package','edit_base_package','edit_group_package',
+    'edit_unit_package','edit_wua_package','edit_profile_package','edit_self_service_package'])
 @require_wapt_db
 def upload_packages():
     """Handle the streamed upload of multiple packages
@@ -948,7 +949,7 @@ def upload_packages():
 
 @app.route('/upload_host',methods=['HEAD','POST'])
 @app.route('/api/v3/upload_hosts',methods=['HEAD','POST'])
-@requires_auth()
+@requires_auth(['admin','edit_host_package'])
 @require_wapt_db
 def upload_host():
     """Handle the upload of multiple host packages
@@ -1047,7 +1048,7 @@ def upload_host():
 
 
 @app.route('/upload_waptsetup',methods=['HEAD','POST'])
-@requires_auth()
+@requires_auth(['admin'])
 def upload_waptsetup():
     """Handle the upload of customized waptagent.exe into wapt repository
     """
@@ -1085,7 +1086,7 @@ def upload_waptsetup():
 
 
 @app.route('/api/v3/change_password',methods=['HEAD','POST'])
-@requires_auth()
+@requires_auth(['admin'])
 def change_password():
     """Handle change of admin master password"""
     if request.method == 'POST':
@@ -1147,23 +1148,30 @@ def login():
             token_gen = get_secured_token_generator()
 
             with WaptDB():
-                if auth_result['auth_method'] == 'ldap':
+                if auth_result['auth_method'] in ('ldap') and app.conf['auto_create_ldap_users']:
                     # add ACL
                     (user_data,_created) = WaptUsers.get_or_create(name=user)
                     if _created:
+                        user_data.user_fingerprint_sha1 = user
                         user_data.save()
+                        (user_acls_rec,_created) = WaptUserAcls.get_or_create(user_fingerprint_sha1=user,perimeter_fingerprint='*',acls=['view'])
+                        if _created:
+                            user_acls_rec.save()
                 else:
                     user_data = WaptUsers.get(name=user)
 
-                if auth_result['auth_method'] == 'passwd':
-                    acls = ['register_host','unregister_host']
-                else:
-                    acls = ['admin']
+                user_acls = get_user_acls(user_data.user_fingerprint_sha1)
+                auth_result['user_acls'] = user_acls
+                session.update(** auth_result)
 
-                auth_result.update({
-                    'server_uuid':get_server_uuid(),
-                    'acls': acls,
-                    })
+                token_content = dict(
+                    user = auth_result['user'],
+                    auth_method = auth_result['auth_method'],
+                    auth_date = auth_result['auth_date'],
+                    server_uuid = get_server_uuid(),
+                    user_acls = user_acls,
+                    user_fingerprint_sha1 = user_data.user_fingerprint_sha1,
+                    )
 
                 try:
                     hosts_count = Hosts.select(fn.COUNT(Hosts.uuid)).tuples().first()[0] # pylint: disable=no-value-for-parameter
@@ -1172,7 +1180,8 @@ def login():
 
             result = dict(
                 auth_result = auth_result,
-                token = token_gen.dumps(auth_result),
+                user_acls = user_acls,
+                token = token_gen.dumps(token_content),
                 server_uuid = get_server_uuid(),
                 version=__version__,
                 hosts_count = hosts_count,
@@ -1200,7 +1209,7 @@ def logout():
 
 
 @app.route('/api/v3/packages_delete',methods=['HEAD','POST'])
-@requires_auth()
+@requires_auth(['admin','edit_host_package','edit_base_package','edit_group_package',
 @require_wapt_db
 def packages_delete():
     """Removes a list of packages by filenames
@@ -1326,6 +1335,25 @@ def get_host_package(input_package_name):
     return r
 
 
+@app.route('/wapt-group/<string:input_package_name>')
+def get_group_package(input_package_name):
+    """Returns a group package (in case there is no apache static files server)"""
+    # TODO straighten this -group stuff
+    group_folder = app.conf['wapt_folder'] + '-group'
+    package_name = secure_filename(input_package_name)
+    r = send_from_directory(group_folder, package_name)
+    # on line content-length is not added to the header.
+    if 'content-length' not in r.headers:
+        r.headers.add_header(
+            'content-length',
+            os.path.getsize(
+                os.path.join(
+                    group_folder +
+                    '-group',
+                    package_name)))
+    return r
+
+
 @app.route('/ping')
 def ping():
     return make_response(
@@ -1344,7 +1372,7 @@ def ping():
     )
 
 @app.route('/api/v3/reset_hosts_sid', methods=['GET','HEAD','POST'])
-@requires_auth()
+@requires_auth(['admin','view'])
 def reset_hosts_sid():
     """Launch a separate thread to check all reachable IP and update database with results.
     """
@@ -1385,7 +1413,7 @@ def reset_hosts_sid():
     return make_response(msg=message)
 
 @app.route('/api/v3/trigger_wakeonlan', methods=['HEAD','POST'])
-@requires_auth()
+@requires_auth(['admin','trigger_host_action'])
 @require_wapt_db
 def trigger_wakeonlan():
     try:
@@ -1429,7 +1457,7 @@ def trigger_wakeonlan():
 
 
 @app.route('/api/v2/waptagent_version')
-@requires_auth()
+@requires_auth(['admin','view'])
 def waptagent_version():
     try:
         start = time.time()
@@ -1478,7 +1506,7 @@ def waptagent_version():
 
 
 @app.route('/api/v3/trigger_cancel_task')
-@requires_auth()
+@requires_auth(['admin','trigger_host_action'])
 def host_cancel_task():
     if not socketio:
         raise Exception('socketio not available')
@@ -1486,7 +1514,7 @@ def host_cancel_task():
 
 
 @app.route('/api/v1/groups')
-@requires_auth()
+@requires_auth(['admin','view'])
 @require_wapt_db
 def get_groups():
     """List of packages having section == group
@@ -1502,7 +1530,7 @@ def get_groups():
 
 
 @app.route('/api/v3/get_ad_ou')
-@requires_auth()
+@requires_auth(['admin','view'])
 @require_wapt_db
 def get_ad_ou():
     """List all the OU registered by hosts
@@ -1527,7 +1555,7 @@ def get_ad_ou():
         return make_response_from_exception(e)
 
 @app.route('/api/v3/get_ad_sites')
-@requires_auth()
+@requires_auth(['admin','view'])
 @require_wapt_db
 def get_ad_sites():
     """List all the AD Sites registered by hosts
@@ -1600,7 +1628,7 @@ def build_hosts_filter(model, filter_expr):
 
 
 @app.route('/api/v3/hosts_delete',methods=['HEAD','POST'])
-@requires_auth()
+@requires_auth(['admin','unregister_host'])
 @require_wapt_db
 def hosts_delete():
     """Remove one or several hosts from Server DB and optionnally the host packages
@@ -1707,8 +1735,9 @@ def build_fields_list(model, columns):
     return result
 
 
+@app.route('/api/v3/hosts', methods=['HEAD','GET'])
 @app.route('/api/v1/hosts', methods=['HEAD','GET'])
-@requires_auth()
+@requires_auth(['admin','view'])
 @require_wapt_db
 @gzipped
 def get_hosts():
@@ -1905,7 +1934,7 @@ def get_hosts():
 
 
 @app.route('/api/v1/host_data')
-@requires_auth()
+@requires_auth(['admin','view'])
 @require_wapt_db
 def host_data():
     """
@@ -2006,7 +2035,7 @@ def host_data():
 
 
 @app.route('/api/v3/hosts_for_package',methods=['GET','POST'])
-@requires_auth()
+@requires_auth(['admin','view'])
 @require_wapt_db
 def hosts_for_package():
     """Returns list of hosts having the supplied package names
@@ -2131,7 +2160,7 @@ def packages_install_stats():
 
 
 @app.route('/api/v3/trusted_signers_certificates',methods=['GET','DELETE','POST'])
-@requires_auth(methods=['admin'])
+@requires_auth(['admin'])
 def trusted_signers_certificates():
     if request.method == 'GET':
         try:
@@ -2215,7 +2244,7 @@ def trusted_signers_certificates():
 
 
 @app.route('/api/v1/usage_statistics')
-@requires_auth()
+@requires_auth(['admin','view'])
 @require_wapt_db
 def usage_statistics():
     """returns some anonymous usage statistics to give an idea of depth of use"""
@@ -2261,7 +2290,7 @@ def usage_statistics():
 
 
 @app.route('/api/v3/host_tasks_status')
-@requires_auth()
+@requires_auth(['admin','view'])
 @require_wapt_db
 def host_tasks_status():
     """Proxy the get tasks status action to the client"""
@@ -2316,7 +2345,7 @@ def host_tasks_status():
 
 
 @app.route('/api/v3/trigger_host_action', methods=['HEAD','POST'])
-@requires_auth()
+@requires_auth(['admin','trigger_host_action','trigger_host_upgrade'])
 @require_wapt_db
 def trigger_host_action():
     """Proxy some single shot actions to the client using websockets"""
@@ -2442,6 +2471,19 @@ def setup_logging(config=None):
     rootlogger = logging.getLogger()
     rootlogger.addHandler(hdlr)
     setloglevel(rootlogger,loglevel)
+
+@app.route('/api/v3/user_infos')
+#@requires_auth(['admin','view'],methods=['session','admin','passwd','ldap','ssl','token','kerb'])
+def user_infos():
+    user_info = dict(
+        user=session.get('user'),
+        user_fingerprint_sha1=session.get('user_fingerprint_sha1'),
+        user_acls=session.get('user_acls'),
+        auth_method=session.get('auth_method'),
+        auth_date=session.get('auth_date'),
+        )
+    msg = 'Info on logged in user'
+    return make_response(result=user_info,msg=msg)
 
 def get_revision_hash():
     fn = os.path.join(wapt_root_dir,'revision.txt')

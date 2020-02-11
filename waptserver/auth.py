@@ -47,6 +47,7 @@ from waptserver.utils import EWaptAuthenticationFailure
 from waptserver.app import app
 
 from waptserver.config import DEFAULT_CONFIG_FILE,rewrite_config_item
+from waptserver.model import wapt_db,WaptUsers,WaptUserAcls
 
 from itsdangerous import TimedJSONWebSignatureSerializer
 
@@ -72,6 +73,24 @@ def get_token_secret_key(self):
         return open(kfn,'r').read()
 """
 
+ACLS = [
+    'admin',
+    'view',
+    'register_host',
+    'unregister_host',
+    'edit_host_package',
+    'edit_base_package',
+    'edit_group_package',
+    'edit_unit_package',
+    'edit_profile_package',
+    'edit_wua_package',
+    'edit_self_service_package',
+    'edit_repo_rules',
+    'trigger_host_upgrade',
+    'trigger_host_action',
+    'edit_report',
+    'run_report',
+    ]
 
 def valid_username(username):
     return username is not None and username != '' and len(username)<255
@@ -89,9 +108,19 @@ def check_auth( username=None, password = None, request = None,
         password (str):
         request (Flask.Request) : request where to lookup authrization basic header
         session (Flask.Session) where to lookup session user
+        methods (list of str) : list of auth method to try until one is successfull
+                               'session': use current session user if it matches username
+                               'admin':
+                               'ldap':
+                               'kerb':
+                               'ssl':
+                               'passwd':
+
+
 
     Returns:
         dict (auth_method = auth_method,user=auth_user,auth_date=auth_date)
+             None if auth is not successfull
 
     """
     if username is None and password is None and request is not None and request.authorization:
@@ -107,7 +136,7 @@ def check_auth( username=None, password = None, request = None,
     for method in methods:
         if method == 'session' and session:
             session_user = session.get('user',None)
-            if session_user:
+            if session_user and (username is None or username == session_user):
                 auth_user = session_user
                 auth_date = session.get('auth_date',None)
                 auth_method = method
@@ -124,7 +153,6 @@ def check_auth( username=None, password = None, request = None,
                         logger.debug(u'User %s authenticated using htpasswd %s' % (username,htpasswd_users))
                     else:
                         logger.debug(u'user %s htpasswd %s verification failed' % (username,htpasswd_users))
-
 
         elif method == 'admin' and valid_username(username) and app.conf['wapt_user'] == username and password is not None:
                 pbkdf2_sha256_ok = False
@@ -218,24 +246,81 @@ def check_auth( username=None, password = None, request = None,
         if auth_method and auth_user:
             break
 
-    if auth_method and auth_user:
+    #only session and admin methods are ok for the embedded wapt admin password based account.
+    if auth_method and auth_user and (auth_user != app.conf['wapt_user'] or auth_method in ('session','admin')):
         return dict(auth_method = auth_method,user=auth_user,auth_date=auth_date)
     else:
         return None
 
 def change_admin_password(newpassword):
+    """Computes and stores the hash of newpassword for the embedded wapt admin account
+    in waptserver.ini config file.
+
+    """
     new_hash = pbkdf2_sha256.hash(newpassword.encode('utf8'))
     rewrite_config_item(app.config['CONFIG_FILE'],'options', 'wapt_password', new_hash)
     app.conf['wapt_password'] = new_hash
+    return new_hash
 
-
-def get_authorized_actions(user):
-    """
+def get_user_acls(user_fingerprint_sha1):
+    """Returns a dict of not expired {perimeter -> list of acls} for a user
 
     Args:
-        user (str): username
+        username (str): username to check rights about
 
     Returns:
-        dict : 'action': ['scopes']
+        dict: {perimeter: list of acl (str)}
     """
-    return []
+    if user_fingerprint_sha1:
+        result = {}
+        perimeters = WaptUserAcls.select(WaptUserAcls.perimeter_fingerprint,WaptUserAcls.acls).where(
+            (WaptUserAcls.user_fingerprint_sha1 == user_fingerprint_sha1) &
+            ((WaptUserAcls.expiration_date.is_null()) | (WaptUserAcls.expiration_date <= datetime2isodate()))).dicts()
+        for perimeter in perimeters:
+            result[perimeter['perimeter_fingerprint']] = perimeter['acls']
+        return result
+    else:
+        return None
+
+def has_any_right(user_acls,acls=['admin'],perimeters=None):
+    """Return the list of perimeters for which the user
+    has any of the rights listed in acls.
+
+    Args:
+        user_acls (dict) : acls of the user. {'perimeter':['list of acl']}
+        acls (list of str) : any of the acls will match
+        perimeters (list of str): check the right in these perimters only.
+                                 If None, returns all matches
+
+    Returns:
+        list of str: list of perimeters fingerprint (list of CA fingerprint)
+                     if no right on any perimeter, return empty list.
+
+    >>> user_acls = {'perimeter1_hash':['admin','view'],'perimeter2_hash':['view','edit_hosts']}
+    >>> has_any_right(user_acls, acls = ['view'])
+    ['perimeter2_hash', 'perimeter1_hash']
+
+    >>> has_any_right(user_acls, acls = ['admin','edit_hosts'])
+    ['perimeter2_hash', 'perimeter1_hash']
+
+    >>> has_any_right(user_acls, acls = ['edit_hosts'])
+    ['perimeter2_hash']
+
+    >>> has_any_right(user_acls, acls = ['edit_hosts'],perimeters=['perimeter1_hash'])
+    ['perimeter2_hash']
+
+    >>> has_any_right(user_acls, acls = ['edit_hosts'],perimeters=['perimeter1_hash'])
+    []
+    >>> has_any_right(user_acls, acls = ['edit_hosts'],perimeters=['perimeter2_hash'])
+    ['perimeter2_hash']
+
+    """
+
+    result = []
+    if user_acls:
+        for perimeter,perimeter_acls in user_acls.iteritems():
+            if (perimeters is None or perimeter in perimeters) and [acl for acl in acls if acl in perimeter_acls]:
+                result.append(perimeter)
+    return result
+
+

@@ -31,8 +31,8 @@ from cStringIO import StringIO as IO
 import gzip
 
 from waptserver.app import app
-from waptserver.auth import check_auth
-from waptserver.model import wapt_db
+from waptserver.auth import check_auth,get_user_acls,has_any_right
+from waptserver.model import wapt_db,WaptUsers,WaptUserAcls
 
 try:
     # i18n
@@ -52,9 +52,18 @@ def authenticate(method='Basic'):
         _('You have to login with proper credentials'), 401,
         {'WWW-Authenticate': '%s realm="Login Required"' % method})
 
-def requires_auth(methods=['session','admin','ldap']):
+def requires_auth(require_any_of=None,methods=['session','admin','passwd','ldap']):
     """Flask route decorator which requires Basic Auth http header
     If not header, returns a 401 http status.
+
+    Args:
+        methods (list of str): list of authentication methods to check in turn
+        require_any_of (None or list of str): requires that user has at least of these
+                                                acls in any of its perimeters.
+
+    Returns:
+        decorator
+
     """
     def decorator(f):
         @functools.wraps(f)
@@ -62,7 +71,21 @@ def requires_auth(methods=['session','admin','ldap']):
             auth_result = check_auth(request = request, session=session, methods=methods)
             if not auth_result:
                 return authenticate()
-            logger.info(u'user %s authenticated' % auth_result )
+
+            user_fingerprint_sha1 = session.get('user_fingerprint_sha1',None)
+            if user_fingerprint_sha1 is None:
+                user = WaptUsers.get(name=auth_result['user'])
+                user_fingerprint_sha1 = user.user_fingerprint_sha1
+
+            user_acls = None
+            if auth_result['auth_method'] == 'session':
+                user_acls = session.get('user_acls',None)
+            if user_acls is None:
+                user_acls = get_user_acls(user_fingerprint_sha1)
+            if require_any_of and not has_any_right(user_acls,require_any_of):
+                return forbidden()
+            logger.info(u'user %s authenticated' % auth_result)
+            auth_result['user_acls'] = user_acls
             session.update(**auth_result)
             result = f(*args,**kwargs)
             return result

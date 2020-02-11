@@ -102,6 +102,7 @@ _defaults = {
     'nginx_https': 443,
     'remote_repo_support': False,
     'diff_repo': False,
+    'auto_create_ldap_users': True,
     'trusted_signers_certificates_folder':None, # path to trusted signers certificate directory
     'trusted_users_certificates_folder':None, # path to trusted users CA certificate directory
     'known_certificates_folder': os.path.join(os.path.dirname(DEFAULT_WAPT_FOLDER),'ssl'),
@@ -246,6 +247,9 @@ def load_config(cfgfile=DEFAULT_CONFIG_FILE):
 
     if _config.has_option('options', 'ldap_auth_ssl_enabled'):
         conf['ldap_auth_ssl_enabled'] = _config.getboolean('options', 'ldap_auth_ssl_enabled')
+
+    if _config.has_option('options', 'auto_create_ldap_users'):
+        conf['auto_create_ldap_users'] = _config.getboolean('options', 'auto_create_ldap_users')
 
     if _config.has_option('options', 'http_proxy'):
         conf['http_proxy'] = _config.get('options', 'http_proxy')

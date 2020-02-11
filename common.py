@@ -1547,6 +1547,7 @@ class WaptServer(BaseObjectClass):
             self.dnsdomain = dnsdomain
         else:
             self.dnsdomain = setuphelpers.get_domain()
+        self.clear_session()
 
     def get_computer_principal(self):
         try:
@@ -1580,19 +1581,33 @@ class WaptServer(BaseObjectClass):
         else:
             return None
 
-    def get_requests_session(self,url=None,use_ssl_auth=True):
-        if url is None:
+    def clear_session(self):
+        self._session = None
+        self._session_url = None
+        self._session_client_certificate = None
+        self._session_use_ssl_auth = None
+
+    def get_requests_session(self,use_ssl_auth=True):
+        # don't use cached session if parameters have changed
+        if use_ssl_auth != self._session_use_ssl_auth or \
+                (self._session_use_ssl_auth and self._session_client_certificate != self.client_certificate):
+            self.clear_session()
+
+        if self._session is None:
             url = self.server_url
-        if use_ssl_auth:
-            if self.client_private_key and is_pem_key_encrypted(self.client_private_key):
-                password = self.get_private_key_password(url,self.client_private_key)
+            if use_ssl_auth:
+                if self.client_private_key and is_pem_key_encrypted(self.client_private_key):
+                    password = self.get_private_key_password(url,self.client_private_key)
+                else:
+                    password = None
+                cert = (self.client_certificate,self.client_private_key,password)
             else:
-                password = None
-            cert = (self.client_certificate,self.client_private_key,password)
-        else:
-            cert = None
-        session = get_requests_client_cert_session(url=url,cert=cert,verify=self.verify_cert,proxies=self.proxies)
-        return session
+                cert = None
+            self._session = get_requests_client_cert_session(url=url,cert=cert,verify=self.verify_cert,proxies=self.proxies)
+            self._session_use_ssl_auth = use_ssl_auth
+            self._session_url = url
+            self._session_client_certificate = self.client_certificate
+        return self._session
 
     def save_server_certificate(self,server_ssl_dir=None,overwrite=False):
         """Retrieve certificate of https server for further checks
@@ -1638,6 +1653,7 @@ class WaptServer(BaseObjectClass):
     def reset_network(self):
         """called by wapt when network configuration has changed"""
         self._cached_dns_server_url = None
+        self.clear_session()
 
     @property
     def server_url(self):
@@ -1719,6 +1735,8 @@ class WaptServer(BaseObjectClass):
         # remove / at the end
         if value:
             value = value.rstrip('/')
+        if value != self._server_url:
+            self.clear_session()
         self._server_url = value
 
     def load_config(self,config,section='global'):
@@ -1771,7 +1789,7 @@ class WaptServer(BaseObjectClass):
 
             if config.has_option(section,'client_private_key'):
                 self.client_private_key = config.get(section,'client_private_key')
-
+            self.clear_session()
         return self
 
     def load_config_from_file(self,config_filename,section='global'):
@@ -1792,28 +1810,27 @@ class WaptServer(BaseObjectClass):
 
     def get(self,action,auth=None,timeout=None,use_ssl_auth=True):
         """ """
-        surl = self.server_url
-        if surl:
-            with self.get_requests_session(surl,use_ssl_auth=use_ssl_auth) as session:
-                req = session.get("%s/%s" % (surl,action),
+        if self.server_url:
+            with self.get_requests_session(use_ssl_auth=use_ssl_auth) as session:
+                req = session.get("%s/%s" % (self.server_url,action),
                     timeout=timeout or self.timeout,
                     auth=auth,
                     allow_redirects=True)
                 if req.status_code == 401:
-                    req = session.get("%s/%s" % (surl,action),
+                    req = session.get("%s/%s" % (self.server_url,action),
                         timeout=timeout or self.timeout,
                         auth=self.auth(action=action),
                         allow_redirects=True)
 
                 # if ssl auth has issue, retry without ssl_auth
                 if req.status_code == 400 and use_ssl_auth:
-                    with self.get_requests_session(surl,use_ssl_auth=False) as session2:
-                        req = session2.get("%s/%s" % (surl,action),
+                    with self.get_requests_session(use_ssl_auth=False) as session2:
+                        req = session2.get("%s/%s" % (self.server_url,action),
                             timeout=timeout or self.timeout,
                             auth=auth,
                             allow_redirects=True)
                         if req.status_code == 401:
-                            req = session2.get("%s/%s" % (surl,action),
+                            req = session2.get("%s/%s" % (self.server_url,action),
                                 timeout=timeout or self.timeout,
                                 auth=self.auth(action=action),
                                 allow_redirects=True)
@@ -1827,15 +1844,14 @@ class WaptServer(BaseObjectClass):
 
     def head(self,action,auth=None,timeout=None,use_ssl_auth=True):
         """ """
-        surl = self.server_url
-        if surl:
-            with self.get_requests_session(surl,use_ssl_auth=use_ssl_auth) as session:
-                req = session.head("%s/%s" % (surl,action),
+        if self.server_url:
+            with self.get_requests_session(use_ssl_auth=use_ssl_auth) as session:
+                req = session.head("%s/%s" % (self.server_url,action),
                     timeout=timeout or self.timeout,
                     auth=auth,
                     allow_redirects=True)
                 if req.status_code == 401:
-                    req = session.head("%s/%s" % (surl,action),
+                    req = session.head("%s/%s" % (self.server_url,action),
                         timeout=timeout or self.timeout,
                         auth=self.auth(action=action),
                         allow_redirects=True)
@@ -1860,9 +1876,8 @@ class WaptServer(BaseObjectClass):
             files (list or dict) : list of filenames
 
         """
-        surl = self.server_url
-        if surl:
-            with self.get_requests_session(surl,use_ssl_auth=use_ssl_auth) as session:
+        if self.server_url:
+            with self.get_requests_session(use_ssl_auth=use_ssl_auth) as session:
                 if data:
                     session.headers.update({
                         'Content-type': 'binary/octet-stream',
@@ -1898,7 +1913,7 @@ class WaptServer(BaseObjectClass):
                 retry_count=0
                 if files_dict:
                     while True:
-                        req = session.head("%s/%s" % (surl,action),
+                        req = session.head("%s/%s" % (self.server_url,action),
                                 timeout=timeout or self.timeout,
                                 auth=auth,
                                 allow_redirects=True)
@@ -1911,7 +1926,7 @@ class WaptServer(BaseObjectClass):
                             break
 
                 while True:
-                    req = session.post("%s/%s" % (surl,action),
+                    req = session.post("%s/%s" % (self.server_url,action),
                         data=data,
                         files=files_dict,
                         timeout=timeout or self.timeout,
