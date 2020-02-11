@@ -662,7 +662,7 @@ def main():
 
     for apath in paths_to_modify:
         if os.path.isdir(apath):
-            for root,dirs,files in os.walk(path):
+            for root,dirs,files in os.walk(apath):
                 for d in dirs:
                     full_path=os.path.join(d,root)
                     os.chown(full_path,WAPT_UID,NGINX_GID)
