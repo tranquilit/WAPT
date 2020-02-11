@@ -363,7 +363,9 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       Width = 112
       BorderSpacing.Top = 1
       Caption = 'Include non CA too'
+      Checked = True
       OnClick = CBIncludeNonCAClick
+      State = cbChecked
       TabOrder = 14
     end
   end
