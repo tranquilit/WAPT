@@ -1508,11 +1508,12 @@ class TableProvider(object):
 
 
 def get_db_version():
-    try:
-        return Version(ServerAttribs.get(key='db_version').value, 4)
-    except:
-        wapt_db.rollback()
-        return None
+    with WaptDB():
+        try:
+            return Version(ServerAttribs.get(key='db_version').value, 4)
+        except:
+            wapt_db.rollback()
+            return None
 
 def init_db(drop=False):
     with WaptDB():
