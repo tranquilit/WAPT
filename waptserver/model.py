@@ -306,6 +306,7 @@ class HostPackagesStatus(WaptBaseModel):
     id = PrimaryKeyField(primary_key=True)
     host = ForeignKeyField(Hosts, on_delete='CASCADE', on_update='CASCADE')
     package_uuid = CharField(null=True)
+    name = CharField(null=True)
     package = CharField(null=True, index=True)
     version = CharField(null=True)
     architecture = CharField(null=True)
@@ -317,6 +318,7 @@ class HostPackagesStatus(WaptBaseModel):
     signer_fingerprint = CharField(null=True)
     signature_date = CharField(null=True)
     description = TextField(null=True)
+    impacted_process = ArrayField(CharField,null=True)
     install_status = CharField(null=True)
     install_date = CharField(null=True)
     install_output = TextField(null=True)
@@ -752,6 +754,26 @@ class SyncStatus(WaptBaseModel):
     version = IntegerField(null=True)
     changelog = JSONField(null=True)
 
+class HostSyncStatus(WaptBaseModel):
+    id = PrimaryKeyField(primary_key=True)
+    uuid = CharField(null=False)
+    status = CharField(null=True)
+    current_download = TextField(null=True)
+    start_sync = DateTimeField(null=True)
+    last_sync = DateTimeField(null=True)
+    last_sync_duration = CharField(null=True)
+    start_audit = DateTimeField(null=True)
+    last_audit = DateTimeField(null=True)
+    last_audit_duration = CharField(null=True)
+    current_speed = CharField(null=True)
+    speed_average = CharField(null=True)
+    errors = JSONField(null=True)
+    progress = FloatField(null=True)
+    sync_id = IntegerField(null=True)
+    version = IntegerField(null=True)
+
+def get_member_variables(aclass,default_exclude=['created_on','updated_by','created_by','updated_on'],add_exclude=[]):
+    return [attr for attr in vars(aclass) if not(attr.startswith('_')) and (attr not in ['DoesNotExist']+default_exclude+add_exclude)]
 
 def dictgetpath(adict, pathstr):
     """Iterates a list of path pathstr of the form 'key.subkey.sskey' and returns
@@ -1524,7 +1546,7 @@ def init_db(drop=False):
 
         list_tables = [ServerAttribs, Hosts, HostPackagesStatus, HostSoftwares, HostGroups,WsusUpdates,
                 HostWsus,WsusDownloadTasks,Packages, ReportingQueries, Normalization, StoreDownload,ReportingQueries,
-                ReportingSnapshots,WaptUsers,WaptUserAcls,SyncStatus,SiteRules]
+                ReportingSnapshots,WaptUsers,WaptUserAcls,SyncStatus,SiteRules,HostSyncStatus]
         if drop:
             for table in reversed(list_tables):
                 table.drop_table(fail_silently=True)
@@ -1986,7 +2008,7 @@ def upgrade_db_structure():
                 v.save()
 
         next_version = '1.7.4'
-        if get_db_version() <= next_version:
+        if get_db_version() < next_version:
             with wapt_db.atomic():
                 logger.info("Migrating from %s to %s" % (get_db_version(), next_version))
                 opes = []
@@ -2011,12 +2033,12 @@ def upgrade_db_structure():
                 v.save()
 
         next_version = '1.7.5'
-        if get_db_version() <= next_version:
+        if get_db_version() < next_version:
             with wapt_db.atomic():
                 logger.info("Migrating from %s to %s" % (get_db_version(), next_version))
                 opes = []
 
-                ReportingSnapshots.create_table(fail_silently=True);
+                ReportingSnapshots.create_table(fail_silently=True)
 
                 columns = [c.name for c in wapt_db.get_columns('reportingqueries')]
                 if not 'snapshot_period' in columns:
@@ -2034,12 +2056,12 @@ def upgrade_db_structure():
                 v.save()
 
         next_version = '1.7.6'
-        if get_db_version() <= next_version:
+        if get_db_version() < next_version:
             with wapt_db.atomic():
                 logger.info("Migrating from %s to %s" % (get_db_version(), next_version))
                 opes = []
 
-                SyncStatus.create_table(fail_silently=True);
+                SyncStatus.create_table(fail_silently=True)
 
                 columns = [c.name for c in wapt_db.get_columns('syncstatus')]
                 if not 'version' in columns:
@@ -2047,7 +2069,7 @@ def upgrade_db_structure():
                 if not 'changelog' in columns:
                     opes.append(migrator.add_column(SyncStatus._meta.name, 'changelog',SyncStatus.changelog))
 
-                SiteRules.create_table(fail_silently=True);
+                SiteRules.create_table(fail_silently=True)
 
                 columns = [c.name for c in wapt_db.get_columns('siterules')]
                 if not 'sequence' in columns:
@@ -2074,7 +2096,7 @@ def upgrade_db_structure():
                 v.save()
 
         next_version = '1.7.6.5'
-        if get_db_version() <= next_version:
+        if get_db_version() < next_version:
             with wapt_db.atomic():
                 logger.info("Migrating from %s to %s" % (get_db_version(), next_version))
                 opes = []
@@ -2089,7 +2111,7 @@ def upgrade_db_structure():
                 v.save()
 
         next_version = '1.7.6.6'
-        if get_db_version() <= next_version:
+        if get_db_version() < next_version:
             with wapt_db.atomic():
                 logger.info("Migrating from %s to %s" % (get_db_version(), next_version))
                 opes = []
@@ -2097,6 +2119,77 @@ def upgrade_db_structure():
                 WaptUserAcls.create_table()
 
                 migrate(*opes)
+                (v, created) = ServerAttribs.get_or_create(key='db_version')
+                v.value = next_version
+                v.save()
+
+        next_version = '1.8.1.0'
+        if get_db_version() <= next_version:
+            with wapt_db.atomic():
+                logger.info("Migrating from %s to %s" % (get_db_version(), next_version))
+                opes = []
+
+                columns = [c.name for c in wapt_db.get_columns('hostpackagesstatus')]
+                if not 'name' in columns:
+                    opes.append(migrator.add_column(HostPackagesStatus._meta.name, 'name',HostPackagesStatus.name))
+                if not 'impacted_process' in columns:
+                    opes.append(migrator.add_column(HostPackagesStatus._meta.name, 'impacted_process',HostPackagesStatus.impacted_process))
+
+                HostSyncStatus.create_table(fail_silently=True)
+
+                (user_acls,_) = WaptUserAcls.get_or_create(user_fingerprint_sha1='admin',acls=['admin'],perimeter_fingerprint='*')
+                user_acls.save()
+
+                migrate(*opes)
+
+                function_update_host_sync_status = """
+                CREATE OR REPLACE FUNCTION update_host_sync_status()
+                    RETURNS trigger
+                    LANGUAGE 'plpgsql'
+                    VOLATILE
+                    COST 100
+                AS $BODY$
+                BEGIN
+                	IF (TG_OP = 'INSERT') THEN
+                		IF ((NEW.wapt_status->>'is_remote_repo')::boolean=True) THEN
+                			INSERT INTO hostsyncstatus (uuid) VALUES (NEW.uuid);
+                		END IF;
+                		RETURN NEW;
+                	ELSEIF (TG_OP = 'UPDATE') THEN
+                		IF ((NEW.wapt_status->>'is_remote_repo')::boolean=True) THEN
+                			IF NOT EXISTS (SELECT 1 FROM hostsyncstatus WHERE uuid = NEW.uuid) THEN
+                				INSERT INTO hostsyncstatus (uuid) VALUES (NEW.uuid);
+                			END IF;
+                		ELSE
+                			DELETE FROM hostsyncstatus WHERE hostsyncstatus.uuid = OLD.uuid;
+                		END IF;
+                		RETURN NEW;
+                	ELSE
+                		DELETE FROM hostsyncstatus WHERE hostsyncstatus.uuid = OLD.uuid;
+                		RETURN OLD;
+                	END IF;
+                END
+                $BODY$;
+                """
+
+                wapt_db.execute_sql(function_update_host_sync_status)
+
+                drop_trigger_update_host_sync_status = """
+                DROP TRIGGER IF EXISTS "UPDATE_HOST_SYNC_STATUS" ON hosts;
+                """
+
+                wapt_db.execute_sql(drop_trigger_update_host_sync_status)
+
+                trigger_update_host_sync_status = """
+                CREATE TRIGGER "UPDATE_HOST_SYNC_STATUS"
+                BEFORE INSERT OR DELETE OR UPDATE
+                ON hosts
+                FOR EACH ROW
+                EXECUTE PROCEDURE update_host_sync_status();
+                """
+
+                wapt_db.execute_sql(trigger_update_host_sync_status)
+
                 (v, created) = ServerAttribs.get_or_create(key='db_version')
                 v.value = next_version
                 v.save()
