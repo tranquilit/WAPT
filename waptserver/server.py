@@ -1209,7 +1209,7 @@ def logout():
 
 
 @app.route('/api/v3/packages_delete',methods=['HEAD','POST'])
-@requires_auth(['admin','edit_host_package','edit_base_package','edit_group_package',
+@requires_auth(['admin','edit_host_package','edit_base_package','edit_group_package'])
 @require_wapt_db
 def packages_delete():
     """Removes a list of packages by filenames
