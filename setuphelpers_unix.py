@@ -298,7 +298,7 @@ def dmi_info():
     if platform.system() != 'Darwin':
         dmiout = ensure_unicode(run('dmidecode -q'))
     else:
-        dmiout = ensure_unicode(run('dmidecode -q 2> /dev/null'))
+        dmiout = ensure_unicode(run('dmidecode -q 2>/dev/null'))
 
     new_section = True
     for l in dmiout.splitlines():
