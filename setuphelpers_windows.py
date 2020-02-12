@@ -2382,7 +2382,7 @@ def get_file_properties(fname,ignore_warning=True):
     # any other must be of the form \StringfileInfo\%04X%04X\parm_name, middle
     # two are language/codepage pair returned from above
 
-    if not (lang,codepage)=(None,None):
+    if not (lang,codepage)==(None,None):
         for propName in propNames:
             try:
                 strInfoPath = u'\\StringFileInfo\\%04X%04X\\%s' % (lang, codepage, propName)
