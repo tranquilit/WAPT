@@ -662,8 +662,8 @@ def main():
 
     for apath in paths_to_modify:
         if os.path.isdir(apath):
-            os.chown(full_path,WAPT_UID,NGINX_GID)
-            os.chmod(full_path,0o750)
+            os.chown(apath,WAPT_UID,NGINX_GID)
+            os.chmod(apath,0o750)
             for root,dirs,files in os.walk(apath):
                 for d in dirs:
                     full_path=os.path.join(root,d)
