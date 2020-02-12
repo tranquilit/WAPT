@@ -2375,20 +2375,23 @@ def get_file_properties(fname,ignore_warning=True):
 
     # \VarFileInfo\Translation returns list of available (language, codepage)
     # pairs that can be used to retreive string info. We are using only the first pair.
-    lang, codepage = win32api.GetFileVersionInfo(fname, '\\VarFileInfo\\Translation')[0]
-
+    try:
+        lang, codepage = win32api.GetFileVersionInfo(fname, '\\VarFileInfo\\Translation')[0]
+    except:
+        lang, codepage = (None,None)
     # any other must be of the form \StringfileInfo\%04X%04X\parm_name, middle
     # two are language/codepage pair returned from above
 
-    for propName in propNames:
-        try:
-            strInfoPath = u'\\StringFileInfo\\%04X%04X\\%s' % (lang, codepage, propName)
-            ## print str_info
-            props[propName] = (win32api.GetFileVersionInfo(fname, strInfoPath) or '').strip()
-        except Exception as e:
-            if not ignore_warning:
-                logger.warning(u"%s" % ensure_unicode(e))
-                # backslash as parm returns dictionary of numeric info corresponding to VS_FIXEDFILEINFO struc
+    if not (lang,codepage)=(None,None):
+        for propName in propNames:
+            try:
+                strInfoPath = u'\\StringFileInfo\\%04X%04X\\%s' % (lang, codepage, propName)
+                ## print str_info
+                props[propName] = (win32api.GetFileVersionInfo(fname, strInfoPath) or '').strip()
+            except Exception as e:
+                if not ignore_warning:
+                    logger.warning(u"%s" % ensure_unicode(e))
+                    # backslash as parm returns dictionary of numeric info corresponding to VS_FIXEDFILEINFO struc
 
     if not props['FileVersion']:
         try:
