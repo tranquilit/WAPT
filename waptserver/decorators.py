@@ -32,7 +32,7 @@ import gzip
 
 from waptserver.app import app
 from waptserver.auth import check_auth,get_user_acls,has_any_right
-from waptserver.model import wapt_db,WaptUsers,WaptUserAcls
+from waptserver.model import wapt_db,WaptUsers,WaptUserAcls, WaptDB
 
 try:
     # i18n
@@ -74,7 +74,8 @@ def requires_auth(require_any_of=None,methods=['session','admin','passwd','ldap'
 
             user_fingerprint_sha1 = session.get('user_fingerprint_sha1',None)
             if user_fingerprint_sha1 is None:
-                user = WaptUsers.get(name=auth_result['user'])
+                with WaptDB():
+                    user = WaptUsers.get(name=auth_result['user'])
                 user_fingerprint_sha1 = user.user_fingerprint_sha1
 
             user_acls = None

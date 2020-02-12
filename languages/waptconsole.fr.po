@@ -4432,7 +4432,7 @@ msgstr "Utilisateurs connectés"
 #: tviswaptgui.gridhostsforpackage.header.columns[4].text
 msgctxt "tviswaptgui.gridhostsforpackage.header.columns[4].text"
 msgid "Audit status"
-msgstr "Statut d'uadit"
+msgstr "Statut d'audit"
 
 #: tviswaptgui.gridhostsforpackage.header.columns[5].text
 msgctxt "tviswaptgui.gridhostsforpackage.header.columns[5].text"

@@ -47,7 +47,7 @@ from waptserver.utils import EWaptAuthenticationFailure
 from waptserver.app import app
 
 from waptserver.config import DEFAULT_CONFIG_FILE,rewrite_config_item
-from waptserver.model import wapt_db,WaptUsers,WaptUserAcls
+from waptserver.model import wapt_db,WaptUsers,WaptUserAcls,WaptDB
 
 from itsdangerous import TimedJSONWebSignatureSerializer
 
@@ -273,11 +273,12 @@ def get_user_acls(user_fingerprint_sha1):
     """
     if user_fingerprint_sha1:
         result = {}
-        perimeters = WaptUserAcls.select(WaptUserAcls.perimeter_fingerprint,WaptUserAcls.acls).where(
-            (WaptUserAcls.user_fingerprint_sha1 == user_fingerprint_sha1) &
-            ((WaptUserAcls.expiration_date.is_null()) | (WaptUserAcls.expiration_date <= datetime2isodate()))).dicts()
-        for perimeter in perimeters:
-            result[perimeter['perimeter_fingerprint']] = perimeter['acls']
+        with WaptDB():
+            perimeters = WaptUserAcls.select(WaptUserAcls.perimeter_fingerprint,WaptUserAcls.acls).where(
+                (WaptUserAcls.user_fingerprint_sha1 == user_fingerprint_sha1) &
+                ((WaptUserAcls.expiration_date.is_null()) | (WaptUserAcls.expiration_date <= datetime2isodate()))).dicts()
+            for perimeter in perimeters:
+                result[perimeter['perimeter_fingerprint']] = perimeter['acls']
         return result
     else:
         return None
