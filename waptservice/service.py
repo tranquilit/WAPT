@@ -35,8 +35,10 @@ except NameError:
     wapt_root_dir = 'c:/tranquilit/wapt'
 
 if sys.platform.startswith('linux') or sys.platform.startswith('darwin'):
-    del os.environ['PYTHONPATH']
-    del os.environ['PYTHONHOME']
+    if 'PYTHONPATH' in os.environ:
+        del os.environ['PYTHONPATH']
+    if 'PYTHONHOME' in os.environ:
+        del os.environ['PYTHONHOME']
 
 from waptutils import __version__
 
