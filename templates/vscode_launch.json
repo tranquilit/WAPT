@@ -10,7 +10,10 @@
                 "install",
                 "${workspaceFolder}"
             ],
-            "console": "integratedTerminal"
+            "console": "integratedTerminal",
+			"linux": {
+				"sudo":true
+			}
         },
         {
             "name": "WAPT: remove",
@@ -21,7 +24,10 @@
                 "remove",
                 "${workspaceFolder}"
             ],
-            "console": "integratedTerminal"
+            "console": "integratedTerminal",
+			"linux": {
+				"sudo":true
+			}
         },
         {
             "name": "WAPT: session-setup",
@@ -32,7 +38,10 @@
                 "session-setup",
                 "${workspaceFolder}"
             ],
-            "console": "integratedTerminal"
+            "console": "integratedTerminal",
+			"linux": {
+				"sudo":true
+			}
         },
         {
             "name": "WAPT: -i build upload",
@@ -44,7 +53,10 @@
                 "build-upload",
                 "${workspaceFolder}"
             ],
-            "console": "integratedTerminal"
+            "console": "integratedTerminal",
+			"linux": {
+				"sudo":true
+			}
         },
         {
             "name": "WAPT: uninstall",
@@ -55,7 +67,10 @@
                 "uninstall",
                 "${workspaceFolder}"
             ],
-            "console": "integratedTerminal"
+            "console": "integratedTerminal",
+			"linux": {
+				"sudo":true
+			}
         },
         {
             "name": "WAPT: audit",
@@ -66,7 +81,10 @@
                 "audit",
                 "${workspaceFolder}"
             ],
-            "console": "integratedTerminal"
+            "console": "integratedTerminal",
+			"linux": {
+				"sudo":true
+			}
         }
     ]
 }
