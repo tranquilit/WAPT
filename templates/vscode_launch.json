@@ -14,6 +14,9 @@
 			"linux": {
 				"sudo":true
 			}
+			"osx": {
+				"sudo":true
+			}
         },
         {
             "name": "WAPT: remove",
@@ -28,6 +31,9 @@
 			"linux": {
 				"sudo":true
 			}
+			"osx": {
+				"sudo":true
+			}
         },
         {
             "name": "WAPT: session-setup",
@@ -40,6 +46,9 @@
             ],
             "console": "integratedTerminal",
 			"linux": {
+				"sudo":true
+			}
+			"osx": {
 				"sudo":true
 			}
         },
@@ -57,6 +66,9 @@
 			"linux": {
 				"sudo":true
 			}
+			"osx": {
+				"sudo":true
+			}
         },
         {
             "name": "WAPT: uninstall",
@@ -71,6 +83,9 @@
 			"linux": {
 				"sudo":true
 			}
+			"osx": {
+				"sudo":true
+			}
         },
         {
             "name": "WAPT: audit",
@@ -83,6 +98,9 @@
             ],
             "console": "integratedTerminal",
 			"linux": {
+				"sudo":true
+			}
+			"osx": {
 				"sudo":true
 			}
         }
