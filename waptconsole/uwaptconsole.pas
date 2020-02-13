@@ -4259,6 +4259,7 @@ begin
     begin
       if cbSearchHost.Checked = True then
       begin
+        fields.AsArray.Add('uuid');
         fields.AsArray.Add('computer_fqdn');
         fields.AsArray.Add('description');
         fields.AsArray.Add('manufacturer');
@@ -4269,7 +4270,7 @@ begin
         fields.AsArray.Add('connected_users');
         fields.AsArray.Add('serialnr');
         fields.AsArray.Add('platform');
-		fields.AsArray.Add('os_name');
+        fields.AsArray.Add('os_name');
       end;
 
       if cbSearchDMI.Checked = True then
