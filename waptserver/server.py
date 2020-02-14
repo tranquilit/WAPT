@@ -154,8 +154,9 @@ except Exception as e:
 def _db_close(error):
     """Closes the database again at the end of the request."""
     if wapt_db and not wapt_db.is_closed():
-        logger.warning('waptdb was not closed')
-        wapt_db_close()
+        logger.warning('waptdb was not closed after request. Used DB connections Count: %s' % len(wapt_db._in_use))
+        # perhaps we should not cloe DB as request are runnong in background with same db connection ?
+        #wapt_db_close()
 
 @app.route('/lang/<language>')
 def lang(language=None):
