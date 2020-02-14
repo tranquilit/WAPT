@@ -60,7 +60,7 @@ object VisWaptGUI: TVisWaptGUI
             OnGetText = GridHostPackagesGetText
             OnNodesDelete = GridHostPackagesNodesDelete
             ShowAdvancedColumnsCustomize = False
-            KeyFieldsNames = 'package;version;architecture;maturity;locale'
+            KeyFieldsNames = 'id'
             Align = alClient
             BorderSpacing.Top = 2
             Color = clWhite
@@ -3390,6 +3390,7 @@ object VisWaptGUI: TVisWaptGUI
               PropertyName = 'registration_auth_user'
             end          
             item
+              Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
               Position = 28
               Text = 'Repositories'
               PropertyName = 'repositories'
@@ -4936,7 +4937,7 @@ object VisWaptGUI: TVisWaptGUI
         Width = 1374
         OnGetText = GridGroupsGetText
         ShowAdvancedColumnsCustomize = False
-        KeyFieldsNames = 'package;version;architecture;locale;maturity'
+        KeyFieldsNames = 'package_uuid'
         OnSOCompareNodes = GridGroupsSOCompareNodes
         Align = alClient
         Color = clWhite
@@ -6409,13 +6410,13 @@ object VisWaptGUI: TVisWaptGUI
         end
         object pgWindowsUpdates: TTabSheet
           Caption = 'Windows Updates list'
-          ClientHeight = 798
-          ClientWidth = 1904
+          ClientHeight = 659
+          ClientWidth = 1372
           object GridWSUSScan: TSOGrid
             Left = 736
             Height = 280
             Top = 40
-            Width = 1156
+            Width = 624
             ShowAdvancedColumnsCustomize = False
             Align = alCustom
             Anchors = [akTop, akLeft, akRight]
@@ -6583,28 +6584,28 @@ object VisWaptGUI: TVisWaptGUI
           end
           object PanWUAMain: TPanel
             Left = 0
-            Height = 756
+            Height = 617
             Top = 42
-            Width = 1904
+            Width = 1372
             Align = alClient
             BevelOuter = bvNone
-            ClientHeight = 756
-            ClientWidth = 1904
+            ClientHeight = 617
+            ClientWidth = 1372
             TabOrder = 1
             object PanWUALeft: TPanel
               Left = 0
-              Height = 756
+              Height = 617
               Top = 0
               Width = 173
               Align = alLeft
               BevelOuter = bvNone
-              ClientHeight = 756
+              ClientHeight = 617
               ClientWidth = 173
               TabOrder = 0
               object PanWUASearchProducts: TPanel
                 Left = 0
                 Height = 286
-                Top = 19
+                Top = 17
                 Width = 173
                 Align = alTop
                 BevelOuter = bvNone
@@ -6617,7 +6618,7 @@ object VisWaptGUI: TVisWaptGUI
                 TabOrder = 0
                 object cbAllproducts: TCheckBox
                   Left = 3
-                  Height = 19
+                  Height = 17
                   Top = 3
                   Width = 167
                   Align = alTop
@@ -6629,8 +6630,8 @@ object VisWaptGUI: TVisWaptGUI
                 end
                 object CBWUProducts: TCheckListBox
                   Left = 3
-                  Height = 258
-                  Top = 25
+                  Height = 260
+                  Top = 23
                   Width = 167
                   Align = alClient
                   Constraints.MinHeight = 150
@@ -6642,7 +6643,7 @@ object VisWaptGUI: TVisWaptGUI
               end
               object cbWUCritical: TCheckBox
                 Left = 0
-                Height = 19
+                Height = 17
                 Top = 0
                 Width = 173
                 Align = alTop
@@ -6652,8 +6653,8 @@ object VisWaptGUI: TVisWaptGUI
               end
               object PanWUASearchClassifications: TPanel
                 Left = 0
-                Height = 446
-                Top = 310
+                Height = 309
+                Top = 308
                 Width = 173
                 Align = alClient
                 BevelOuter = bvNone
@@ -6661,12 +6662,12 @@ object VisWaptGUI: TVisWaptGUI
                 ChildSizing.TopBottomSpacing = 3
                 ChildSizing.HorizontalSpacing = 3
                 ChildSizing.VerticalSpacing = 3
-                ClientHeight = 446
+                ClientHeight = 309
                 ClientWidth = 173
                 TabOrder = 2
                 object cbAllClassifications: TCheckBox
                   Left = 3
-                  Height = 19
+                  Height = 17
                   Top = 3
                   Width = 167
                   Align = alTop
@@ -6678,8 +6679,8 @@ object VisWaptGUI: TVisWaptGUI
                 end
                 object CBWUClassifications: TCheckListBox
                   Left = 3
-                  Height = 418
-                  Top = 25
+                  Height = 283
+                  Top = 23
                   Width = 167
                   Align = alClient
                   Constraints.MinWidth = 150
@@ -6693,7 +6694,7 @@ object VisWaptGUI: TVisWaptGUI
                 Cursor = crVSplit
                 Left = 0
                 Height = 5
-                Top = 305
+                Top = 303
                 Width = 173
                 Align = alTop
                 ResizeAnchor = akTop
@@ -6701,15 +6702,15 @@ object VisWaptGUI: TVisWaptGUI
             end
             object Splitter12: TSplitter
               Left = 173
-              Height = 756
+              Height = 617
               Top = 0
               Width = 5
             end
             object GridWUUpdates: TSOGrid
               Left = 178
-              Height = 754
+              Height = 615
               Top = 2
-              Width = 1726
+              Width = 1194
               OnGetText = GridHostWinUpdatesGetText
               OnNodesDelete = GridWUUpdatesNodesDelete
               ShowAdvancedColumnsCustomize = False
@@ -6976,7 +6977,7 @@ object VisWaptGUI: TVisWaptGUI
             Left = 0
             Height = 42
             Top = 0
-            Width = 1904
+            Width = 1372
             Align = alTop
             AutoSize = True
             BevelOuter = bvNone
@@ -6987,7 +6988,7 @@ object VisWaptGUI: TVisWaptGUI
             ChildSizing.Layout = cclLeftToRightThenTopToBottom
             ChildSizing.ControlsPerLine = 5
             ClientHeight = 42
-            ClientWidth = 1904
+            ClientWidth = 1372
             TabOrder = 2
             object EdWUASearchWindowsUpdate: TSearchEdit
               AnchorSideLeft.Control = PanTopWindowsUpdates
@@ -7014,7 +7015,7 @@ object VisWaptGUI: TVisWaptGUI
               Left = 158
               Height = 34
               Top = 4
-              Width = 93
+              Width = 92
               Action = ActWSUSRefresh
               AutoSize = True
               TabOrder = 0
@@ -7022,10 +7023,10 @@ object VisWaptGUI: TVisWaptGUI
             object ButDownloadWsusscn2cab: TBitBtn
               AnchorSideLeft.Control = ButRefreshWindowsUpdates
               AnchorSideLeft.Side = asrBottom
-              Left = 255
+              Left = 254
               Height = 34
               Top = 4
-              Width = 365
+              Width = 330
               Action = ActWSUSDowloadWSUSScan
               AutoSize = True
               Caption = 'Download index and missing cabs from Microsoft Web site'
@@ -7034,10 +7035,10 @@ object VisWaptGUI: TVisWaptGUI
             object ButShowDownloadTasks: TBitBtn
               AnchorSideLeft.Control = ButDownloadWsusscn2cab
               AnchorSideLeft.Side = asrBottom
-              Left = 624
+              Left = 588
               Height = 34
               Top = 4
-              Width = 168
+              Width = 157
               Action = ActWUAShowDownloadTasks
               AutoSize = True
               TabOrder = 2
@@ -8994,14 +8995,14 @@ object VisWaptGUI: TVisWaptGUI
             end
             object ToolButtonSep2: TToolButton
               Left = 49
-              Height = 5
+              Height = 48
               Top = 0
               Caption = 'ToolButtonSep2'
               Style = tbsDivider
             end
             object ToolButton1: TToolButton
               Left = 158
-              Height = 5
+              Height = 48
               Top = 0
               Caption = 'ToolButton1'
               Style = tbsDivider
@@ -9300,14 +9301,14 @@ object VisWaptGUI: TVisWaptGUI
             end
             object ToolButton4: TToolButton
               Left = 49
-              Height = 5
+              Height = 48
               Top = 0
               Caption = 'ToolButton4'
               Style = tbsDivider
             end
             object ToolButton14: TToolButton
               Left = 176
-              Height = 5
+              Height = 48
               Top = 0
               Caption = 'ToolButton14'
               Style = tbsDivider

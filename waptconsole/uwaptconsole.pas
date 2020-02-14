@@ -1579,12 +1579,12 @@ begin
     TimerSearchHosts.Enabled:=False;
     ActSearchHost.execute
   end
-  else
+  {else
     if CharIsAlphaNum(Key) or  (key = #8) then
     begin
       TimerSearchHosts.Enabled:=False;
       TimerSearchHosts.Enabled:=True;
-    end;
+    end;}
 end;
 
 procedure TVisWaptGUI.EdSearchStatusPackagesExecute(Sender: TObject);
