@@ -3347,7 +3347,7 @@ procedure TVisWaptGUI.ActTriggerBurstUpgradesExecute(Sender: TObject);
 begin
   if (GridHosts.SelectedCount>=1) and
     (MessageDlg(Format(rsConfirmBurstUpgrades,[GridHosts.SelectedCount]),mtConfirmation,mbYesNoCancel, 0) = mrYes) then
-      TriggerActionOnHosts(ExtractField(GridHosts.SelectedRows,'uuid'),'trigger_host_upgrade',Nil,rsUpgradingHost,'Error applying upgrades %s',True)
+      TriggerActionOnHosts(ExtractField(GridHosts.SelectedRows,'uuid'),'trigger_host_upgrade',Nil,rsUpgradingHost,'Error applying upgrades %s',False)
 
 end;
 
@@ -3369,7 +3369,7 @@ procedure TVisWaptGUI.ActTriggerWaptServiceRestartExecute(Sender: TObject);
 begin
   if (GridHosts.SelectedCount>=1) and
     (MessageDlg(Format(rsConfirmWaptServiceRestart,[GridHosts.SelectedCount]),mtConfirmation,mbYesNoCancel, 0) = mrYes) then
-      TriggerActionOnHosts(ExtractField(GridHosts.SelectedRows,'uuid'),'trigger_waptservicerestart',Nil,rsRestartingWaptservice,'Error restarting waptservice %s',True)
+      TriggerActionOnHosts(ExtractField(GridHosts.SelectedRows,'uuid'),'trigger_waptservicerestart',Nil,rsRestartingWaptservice,'Error restarting waptservice %s',False)
 end;
 
 procedure TVisWaptGUI.ActEditGroupExecute(Sender: TObject);
@@ -4137,7 +4137,7 @@ end;
 procedure TVisWaptGUI.ActTriggerHostUpdateExecute(Sender: TObject);
 begin
   if (GridHosts.SelectedCount>=1) and (GridHosts.SelectedCount<=5) then
-    TriggerActionOnHosts(ExtractField(GridHosts.SelectedRows,'uuid'),'trigger_host_update',Nil,rsTriggerHostsUpdate,'Error checking for updates',True)
+    TriggerActionOnHosts(ExtractField(GridHosts.SelectedRows,'uuid'),'trigger_host_update',Nil,rsTriggerHostsUpdate,'Error checking for updates',False)
   else
     with TVisTriggerHostsAction.Create(Self) do
       try
