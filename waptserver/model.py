@@ -1278,7 +1278,7 @@ def wapthosts_json(model_class, instance, created):
 
     if (created or Hosts.dmi in instance.dirty_fields) and instance.dmi:
         extractmap = [
-            ['serialnr', 'Chassis_Information.Serial_Number'],
+            ['serialnr', 'System_Information.Serial_Number'],
             ['computer_type', 'Chassis_Information.Type'],
         ]
         for field, attribute in extractmap:
