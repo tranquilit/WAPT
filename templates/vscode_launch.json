@@ -11,12 +11,12 @@
                 "${workspaceFolder}"
             ],
             "console": "integratedTerminal",
-			"linux": {
-				"sudo":true
-			},
-			"osx": {
-				"sudo":true
-			}
+            "linux": {
+                "sudo":true
+            },
+            "osx": {
+                "sudo":true
+            }
         },
         {
             "name": "WAPT: remove",
@@ -28,12 +28,12 @@
                 "${workspaceFolder}"
             ],
             "console": "integratedTerminal",
-			"linux": {
-				"sudo":true
-			},
-			"osx": {
-				"sudo":true
-			}
+            "linux": {
+                "sudo":true
+            },
+            "osx": {
+                "sudo":true
+            }
         },
         {
             "name": "WAPT: session-setup",
@@ -45,12 +45,12 @@
                 "${workspaceFolder}"
             ],
             "console": "integratedTerminal",
-			"linux": {
-				"sudo":true
-			},
-			"osx": {
-				"sudo":true
-			}
+            "linux": {
+                "sudo":true
+            },
+            "osx": {
+                "sudo":true
+            }
         },
         {
             "name": "WAPT: -i build upload",
@@ -63,12 +63,12 @@
                 "${workspaceFolder}"
             ],
             "console": "integratedTerminal",
-			"linux": {
-				"sudo":true
-			},
-			"osx": {
-				"sudo":true
-			}
+            "linux": {
+                "sudo":true
+            },
+            "osx": {
+                "sudo":true
+            }
         },
         {
             "name": "WAPT: uninstall",
@@ -80,12 +80,12 @@
                 "${workspaceFolder}"
             ],
             "console": "integratedTerminal",
-			"linux": {
-				"sudo":true
-			},
-			"osx": {
-				"sudo":true
-			}
+            "linux": {
+                "sudo":true
+            },
+            "osx": {
+                "sudo":true
+            }
         },
         {
             "name": "WAPT: audit",
@@ -97,12 +97,12 @@
                 "${workspaceFolder}"
             ],
             "console": "integratedTerminal",
-			"linux": {
-				"sudo":true
-			},
-			"osx": {
-				"sudo":true
-			}
+            "linux": {
+                "sudo":true
+            },
+            "osx": {
+                "sudo":true
+            }
         }
     ]
 }
