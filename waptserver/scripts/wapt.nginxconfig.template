@@ -51,8 +51,6 @@ server {
 
 
     location / {
-        add_header Cache-Control "store, no-cache, must-revalidate, post-check=0, pre-check=0";
-        add_header Pragma "no-cache";
         proxy_set_header X-Real-IP  $remote_addr;
         proxy_set_header Host $host;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -75,10 +73,14 @@ server {
         {% endif %}
 
         location ~ ^/(wapt/waptsetup-tis.exe|wapt/waptagent.exe|wapt/waptdeploy.exe|sync.json)$ {
+            add_header Cache-Control "store, no-cache, must-revalidate, post-check=0, pre-check=0";
+            add_header Pragma "no-cache";
             root "{{ wapt_repository_path }}";
         }
 
         location ~ ^/(wapt/.*|wapt-host/.*|waptwua/.*|wapt-diff-repos/.*)$ {
+            add_header Cache-Control "store, no-cache, must-revalidate, post-check=0, pre-check=0";
+            add_header Pragma "no-cache";
     {% if use_ssl_client_auth %}
             proxy_set_header X-Ssl-Authenticated $ssl_client_verify;
             proxy_set_header X-Ssl-Client-DN $ssl_client_s_dn;
@@ -90,6 +92,8 @@ server {
         }
 
         location / {
+            add_header Cache-Control "store, no-cache, must-revalidate, post-check=0, pre-check=0";
+            add_header Pragma "no-cache";
             proxy_set_header X-Real-IP  $remote_addr;
             proxy_set_header Host $host;
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
