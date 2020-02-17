@@ -522,14 +522,14 @@ def main():
             if action == 'install':
                 result = {u'install':[]}
                 if len(args)>=2:
-                    if os.path.isdir(args[1]) or os.path.isfile(args[1]) or '*' in args[1]:
+                    if os.path.isdir(os.path.abspath(args[1])) or os.path.isfile(os.path.abspath(args[1])) or '*' in args[1]:
                         all_args = expand_args(args[1:])
                         print(u"Installing WAPT files %s" % ", ".join(all_args))
                         # abort if there is already a running install in progress
                         if running_install:
                             raise Exception(u'Running wapt progresses (%s), please wait...' % (running_install,))
                         for fn in all_args:
-                            fn = guess_package_root_dir(fn)
+                            fn = guess_package_root_dir(os.path.abspath(fn))
                             res = mywapt.install_wapt(fn,params_dict = params_dict,force=options.force)
                             result['install'].append((fn,res))
                     else:
