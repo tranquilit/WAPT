@@ -96,7 +96,7 @@ def valid_username(username):
     return username is not None and username != '' and len(username)<255
 
 def check_auth( username=None, password = None, request = None,
-                session=None, methods=['admin','ldap','session']):
+                session=None, methods=['session','admin','ldap']):
     """This function is called to check if a username /
     password combination is valid or to get already authenticated username
     from session argument.
