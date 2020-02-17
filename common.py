@@ -3074,7 +3074,7 @@ class Wapt(BaseObjectClass):
     def _set_fake_hostname(self,fqdn):
         setuphelpers._fake_hostname = fqdn
         logger.warning('Using test fake hostname and uuid: %s'%fqdn)
-        self.use_fqdn_as_uuid = fqdn
+        self.use_fqdn_as_uuid = True
         logger.debug('Host uuid is now: %s'%self.host_uuid)
         logger.debug('Host computer_name is now: %s'%setuphelpers.get_computername())
 
@@ -3340,7 +3340,7 @@ class Wapt(BaseObjectClass):
         # force auth before trying to upload to avoid uncessary upload buffering server side before it send a 401.
         auth = None
         if wapt_server_user:
-            auth = (wapt_server_user, wapt_server_passwd)
+            auth = (ensure_unicode(wapt_server_user).encode('utf8'), ensure_unicode(wapt_server_passwd).encode('utf8'))
         else:
             auth = self.waptserver.ask_user_password('%s/%s' % (self.waptserver.server_url,'api/v3/upload_xxx'))
 
