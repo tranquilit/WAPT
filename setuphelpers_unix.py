@@ -264,7 +264,11 @@ def host_info_common_unix():
     info['connected_ips'] = [get_main_ip()]
     info['mac'] = [ c['mac'] for c in networking() if 'mac' in c and 'addr' in c and c['addr'] in info['connected_ips']]
     info['kernel_version'] = get_kernel_version()
-    info['cpu_name'] = cpuinfo.get_cpu_info()['brand']
+    #Fix for vscode don't know why it doesn't work : KeyError: 'brand'
+    try:
+        info['cpu_name'] = cpuinfo.get_cpu_info()['brand']
+    except:
+        pass
     info['environ'] = {k:ensure_unicode(v) for k,v in os.environ.items()}
     info['main_ip'] = get_main_ip()
 
