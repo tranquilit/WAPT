@@ -47,6 +47,7 @@ import random
 import string
 import base64
 import uuid
+import socket
 
 from setuphelpers import run
 from waptutils import setloglevel,ensure_unicode
@@ -60,18 +61,18 @@ from waptpackage import WaptLocalRepo
 from waptserver.model import load_db_config,Packages
 
 def fqdn():
-    result = None
+    """ Guess FQDN from hostname - return default value if nothing found"""
     try:
-        import socket
-        result = socket.getfqdn()
+        fqdn = socket.getfqdn()
+        if not fqdn:
+            fqdn = 'wapt'
+        if '.' not in fqdn:
+            fqdn += '.lan'
     except:
-        pass
-    if not result:
-        result = 'wapt'
-    if '.' not in result:
-        result += '.local'
+        fqdn = 'srvwapt'
+    return fqdn
 
-    return result
+dhparam_key_size=2048
 
 def create_dhparam(key_size=2048):
     from cryptography.hazmat.primitives import serialization
@@ -114,7 +115,6 @@ def install_windows_nssm_service(
         raise Exception('Windows 32bit install not supported')
 
     nssm = os.path.join(wapt_root_dir, 'waptservice', 'win64', 'nssm.exe')
-
 
     logger.info('Register service "%s" with nssm' % service_name)
     cmd = '"{nssm}" install "{service_name}" "{service_binary}" {service_parameters}'.format(
@@ -192,6 +192,8 @@ def make_nginx_config(wapt_root_dir, conf, force = False):
     ap_conf_file = os.path.join(ap_conf_dir, ap_file_name)
     ap_ssl_dir = os.path.join(wapt_root_dir,'waptserver','nginx','ssl')
 
+    ap_ssl_dhparam_file = os.path.join(ap_ssl_dir,'dhparam.pem')
+
     if os.path.isfile(ap_conf_file) and not force:
         if 'waptserver' in open(ap_conf_file,'r').read():
             return ap_conf_file
@@ -218,6 +220,10 @@ def make_nginx_config(wapt_root_dir, conf, force = False):
         print('Create X509 cert %s' % cert_fn)
         crt.save_as_pem(cert_fn)
 
+    if not(os.path.isfile(ap_ssl_dhparam_file)):
+        with open(ap_ssl_dhparam_file,'w') as f:
+            f.write(create_dhparam(dhparam_key_size))
+
     # write config file
     jinja_env = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.join(wapt_root_dir,'waptserver','scripts')))
     template = jinja_env.get_template('waptwindows.nginxconfig.j2')
@@ -240,6 +246,7 @@ def make_nginx_config(wapt_root_dir, conf, force = False):
         'known_certificates_folder': conf.get('known_certificates_folder',None) and conf.get('known_certificates_folder',None).replace('\\','/'),
         'clients_signing_crl': conf.get('clients_signing_crl',None) and  conf.get('clients_signing_crl',None).replace('\\','/'),
         'htpasswd_path': conf.get('htpasswd_path',None) and  conf.get('htpasswd_path',None).replace('\\','/'),
+        'wapt_dhparam_file': ap_ssl_dhparam_file,
     }
 
     config_string = template.render(template_variables)
@@ -531,7 +538,7 @@ def install_wapttasks_service(options,conf=None):
 
 if __name__ == '__main__':
     usage = """\
-    %prog [-c configfile] [install_nginx install_postgresql install_waptserver]
+    %prog [-c configfile] [install_nginx install_postgresql install_waptserver] [--dhparam-key-size=SIZE]
 
     WAPT Server services setup.
 
@@ -557,9 +564,19 @@ if __name__ == '__main__':
             help='Force rewrite nginx config')
     parser.add_option('-p','--setpassword',dest='setpassword',default=None,
            help='Set wapt server admin password. Value must be encoded in base64 (default: %default)')
+    parser.add_option(
+        '--dhparam-key-size',
+        dest='dhparam_key_size',
+        default=2048,
+        metavar='NUMBER',
+        type='int',
+        help='Size for dhparam key')
 
     (options, args) = parser.parse_args()
     logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s')
+
+    global dhparam_key_size
+    dhparam_key_size=options.dhparam_key_size
 
     if options.loglevel is not None:
         setloglevel(logger, options.loglevel)

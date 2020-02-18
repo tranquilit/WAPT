@@ -136,11 +136,11 @@ def start_waptserver():
 
 #### NGINX ####
 
-def generate_dhparam():
+def generate_dhparam(key_size=2048):
     dh_filename = '/etc/ssl/certs/dhparam.pem'
     out = ''
     if not os.path.exists(dh_filename):
-        out += run('openssl dhparam -out %s  2048' % dh_filename)
+        out += run('openssl dhparam -out %s  %s' % (dh_filename,key_size))
     os.chown(dh_filename, 0, NGINX_GID) #pylint: disable=no-member
     os.chmod(dh_filename, 0o640)        #pylint: disable=no-member
     return out
@@ -298,7 +298,7 @@ def ensure_postgresql_db(db_name='wapt',db_owner='wapt',db_password=''):
 
 def main():
 
-    usage = """%prog [--config filename] [--force-https] [--quiet]"""
+    usage = """%prog [--config filename] [--force-https] [--quiet] [--dhparam-key-size=SIZE]"""
 
     parser = OptionParser(usage=usage, version=__version__)
     parser.add_option(
@@ -321,11 +321,21 @@ def main():
         default=False,
         action="store_true",
         help='Run quiet postconfiguration - default password and simple behavior')
+    parser.add_option(
+        '--dhparam-key-size',
+        dest='dhparam_key_size',
+        default=2048,
+        metavar='NUMBER',
+        type='int',
+        help='Size for dhparam key')
 
     (options, args) = parser.parse_args()
 
     global quiet
     quiet = options.quiet
+
+    global dhparam_key_size
+    dhparam_key_size = options.dhparam_key_size
 
     def message_or_print(message):
         if quiet:
@@ -488,7 +498,7 @@ def main():
     # Nginx configuration
     if quiet:
         try:
-            generate_dhparam()
+            generate_dhparam(options.dhparam_key_size)
             nginx_cleanup()
             make_nginx_config('/opt/wapt/waptserver', fqdn, options.force_https,server_config)
             enable_nginx()
@@ -516,7 +526,7 @@ def main():
                 else:
                     fqdn = reply
 
-                generate_dhparam()
+                generate_dhparam(options.dhparam_key_size)
                 nginx_cleanup()
 
                 if server_config['use_kerberos']:
