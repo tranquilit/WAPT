@@ -33,6 +33,7 @@ import socket
 import uuid
 import platform
 import re
+import string
 import psutil
 import datetime
 import random
@@ -131,6 +132,7 @@ def enable_waptserver():
 def start_waptserver():
     out = run("systemctl restart waptserver")
     out += run("systemctl restart wapttasks")
+    return out
 
 #### NGINX ####
 
@@ -488,7 +490,7 @@ def main():
         try:
             generate_dhparam()
             nginx_cleanup()
-            make_httpd_config('/opt/wapt/waptserver', fqdn, options.force_https,server_config)
+            make_nginx_config('/opt/wapt/waptserver', fqdn, options.force_https,server_config)
             enable_nginx()
             restart_nginx()
             setup_firewall()
@@ -523,8 +525,7 @@ def main():
                             print('[*] Nginx - Missing dependency libnginx-mod-http-auth-spnego, please install first before configuring kerberos')
                             sys.exit(1)
 
-                make_httpd_config('/opt/wapt/waptserver', fqdn, options.force_https, server_config)
-                final_msg.append('Please connect to https://' + fqdn + '/ to access the server.')
+                make_nginx_config('/opt/wapt/waptserver', fqdn, options.force_https, server_config)
                 postconf.msgbox("The Nginx config is done. We need to restart Nginx?")
                 print(enable_nginx())
                 print(restart_nginx())
