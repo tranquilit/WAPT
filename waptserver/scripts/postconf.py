@@ -296,6 +296,8 @@ def ensure_postgresql_db(db_name='wapt',db_owner='wapt',db_password=''):
 
 def main():
 
+    usage = """%prog [--config filename] [--force-https] [--quiet]"""
+
     parser = OptionParser(usage=usage, version=__version__)
     parser.add_option(
         '-c',
