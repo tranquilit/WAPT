@@ -140,8 +140,8 @@ Filename: {app}\wapt-get.ini; Section: Global; Key: personal_certificate_path; S
 [RUN]
 Filename: "{app}\waptserver\pgsql-9.6\vcredist_x64.exe"; Parameters: "/passive /quiet"; StatusMsg: {cm:InstallMSVC2013}; Description: "{cm:InstallMSVC2013}";
 Filename: "{app}\wapt-get.exe"; Parameters: " update-packages {app}\waptserver\repository\wapt --config={app}\wapt-get.ini"; Flags: runhidden; StatusMsg: {cm:ScanPackages}; Description: "{cm:ScanPackages}"; BeforeInstall: SetMarqueeProgress(True); AfterInstall: SetMarqueeProgress(False)
+Filename: "{app}\waptpython.exe"; Parameters: "{app}\waptserver\winsetup.py create-check-dhparam -c {app}\conf\waptserver.ini "; StatusMsg: {cm:CreateDHparam}; Description: "{cm:CreateDHparam}"; BeforeInstall: SetMarqueeProgress(True); AfterInstall: SetMarqueeProgress(False)
 Filename: "{app}\waptpython.exe"; Parameters: "{app}\waptserver\winsetup.py all -c {app}\conf\waptserver.ini -f --setpassword={code:GetWaptServerPassword64}"; StatusMsg: {cm:InstallingServerServices}; Description: "{cm:InstallingServerServices}"; BeforeInstall: SetMarqueeProgress(True); AfterInstall: SetMarqueeProgress(False)
-
 Filename: "{sys}\netsh.exe"; Parameters: "advfirewall firewall del rule name=""WaptServer"""; StatusMsg: {cm:OpenFirewallPort443}; Description: "{cm:OpenFirewallPort443}"; Flags: runhidden;
 Filename: "{sys}\netsh.exe"; Parameters: "advfirewall firewall add rule name=""WaptServer"" protocol=tcp localport=443,80 dir=in action=allow"; StatusMsg: {cm:OpenFirewallPort443}; Description: "{cm:OpenFirewallPort443}"; Flags: runhidden;
 
@@ -242,6 +242,7 @@ fr.MustSpecifyPackagePrefix=Vous devez spécifier un préfixe de paquet
 fr.MustSpecifyPrivateKeyPassword=Vous devez fournir le mot de passe de la clé privée pour signer le paquet waptupgrade
 fr.OpenFirewallPort443=Autorise les connections TCP sur les port 80 et 443
 fr.AllowUnauthenticatedRegistration=Autoriser les machines à s'enregistrer sur le serveur sans authentification
+fr.CreateDHparam=Creation d'une clé DH param si elle n'existe pas
 
 en.RegisteringService=Setup WaptServer Service
 en.InstallMSVC2013=Installing MSVC++ 2013 Redistribuable
@@ -296,6 +297,7 @@ en.MustSpecifyPackagePrefix=You must specify a packages prefix
 en.MustSpecifyPrivateKeyPassword=You must specify the private key's password to sign the waptupgrade package
 en.OpenFirewallPort443=Enable TCP inbound on port 443 and 80 for https connections
 en.AllowUnauthenticatedRegistration=Allow computers to register themselves on wapt server without authentication
+en.CreateDHparam=Creating a DH param key if not exist
 
 de.RegisteringService=Setup WaptServer Service
 de.InstallMSVC2013=MSVC++ 2013 Redistribuable installieren

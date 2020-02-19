@@ -72,8 +72,6 @@ def fqdn():
         fqdn = 'srvwapt'
     return fqdn
 
-dhparam_key_size=2048
-
 def create_dhparam(key_size=2048):
     from cryptography.hazmat.primitives import serialization
     from cryptography.hazmat.backends import default_backend
@@ -219,10 +217,6 @@ def make_nginx_config(wapt_root_dir, conf, force = False):
         crt = key.build_sign_certificate(cn=fqdn(),dnsname=fqdn(),is_code_signing=False)
         print('Create X509 cert %s' % cert_fn)
         crt.save_as_pem(cert_fn)
-
-    if not(os.path.isfile(ap_ssl_dhparam_file)):
-        with open(ap_ssl_dhparam_file,'w') as f:
-            f.write(create_dhparam(dhparam_key_size))
 
     # write config file
     jinja_env = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.join(wapt_root_dir,'waptserver','scripts')))
@@ -575,7 +569,6 @@ if __name__ == '__main__':
     (options, args) = parser.parse_args()
     logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s')
 
-    global dhparam_key_size
     dhparam_key_size=options.dhparam_key_size
 
     if options.loglevel is not None:
@@ -605,4 +598,13 @@ if __name__ == '__main__':
             print('Installing WAPT Server as a service managed by nssm')
             install_waptserver_service(options,conf)
             install_wapttasks_service(options,conf)
+        elif action == 'create-check-dhparam':
+            print('Create or check dhparam file')
+            ap_ssl_dir = os.path.join(wapt_root_dir,'waptserver','nginx','ssl')
+            ap_dhparam = os.path.join(ap_ssl_dir,'dhparam.pem')
+            if not (os.path.isdir(ap_ssl_dir)):
+                os.makedirs(ap_ssl_dir)
+            if not(os.path.isfile(ap_dhparam)):
+                with open(ap_dhparam,'w') as f:
+                    f.write(create_dhparam(dhparam_key_size))
 
