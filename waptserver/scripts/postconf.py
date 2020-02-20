@@ -242,6 +242,16 @@ def nginx_set_worker_limit(nginx_conf):
         nginx_conf.insert(3,['worker_rlimit_nofile', '32768'])
     return nginx_conf
 
+def nginx_set_worker_connections(nginx_conf):
+    for entry in nginx_conf:
+        if entry[0]==['events']:
+            for subentry in entry[1]:
+                if subentry[0]=='worker_connections':
+                    if subentry[1]!='4096':
+                        subentry[1]='4096'
+                        return nginx_conf
+    return nginx_conf
+
 def nginx_clean_default_vhost(nginx_conf):
     for entry in nginx_conf:
         if entry[0]==['http']:
@@ -255,6 +265,7 @@ def nginx_cleanup():
     with open('/etc/nginx/nginx.conf','r') as read_conf:
         nginx_conf = nginxparser.load(read_conf)
         nginx_conf = nginx_set_worker_limit(nginx_conf)
+        nginx_conf = nginx_set_worker_connections(nginx_conf)
         nginx_conf = nginx_clean_default_vhost(nginx_conf)
     with open("/etc/nginx/nginx.conf", "w") as nginx_conf_file:
         nginx_conf_file.write(nginxparser.dumps(nginx_conf))
@@ -295,6 +306,23 @@ def ensure_postgresql_db(db_name='wapt',db_owner='wapt',db_password=''):
         print("[*] postgresql - hstore extension already loading into database, skipping create extension")
     else:
         run(""" sudo -u postgres psql wapt -c "CREATE EXTENSION hstore;" """, cwd='/opt/wapt/')
+
+def configure_max_connections():
+    config_file_path = run(""" sudo -u postgres psql -c 'SHOW config_file;' """).splitlines()[2].lstrip()
+    with open(config_file_path,"r+") as config_file:
+        new_lines = []
+        found = False
+        for line in config_file.readlines():
+            if 'max_connections' in line:
+                new_lines.append('max_connections = 1000\n')
+                found = True
+            else:
+                new_lines.append(line)
+        if not(found):
+            new_lines.append('max_connections = 1000\n')
+        config_file.seek(0)
+        config_file.truncate()
+        config_file.writelines(new_lines)
 
 def main():
 
@@ -375,6 +403,7 @@ def main():
     # add user db and password in ini file
     if server_config['db_host'] in (None,'','localhost','127.0.0.1','::1'):
         ensure_postgresql_db(db_name=server_config['db_name'],db_owner=server_config['db_name'],db_password=server_config['db_password'])
+    configure_max_connections()
 
     # Password setup/reset screen
     if not quiet:

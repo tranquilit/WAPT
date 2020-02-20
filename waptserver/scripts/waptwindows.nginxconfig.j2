@@ -6,8 +6,10 @@ error_log  "{{ wapt_root_dir}}/log/nginx-errors.log";
 pid        "{{ wapt_root_dir}}/log/nginx.pid";
 
 events {
-    worker_connections  1024;
+    worker_connections  4096;
 }
+
+worker_rlimit_nofile 32768;
 
 http {
     include       mime.types;

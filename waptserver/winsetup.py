@@ -306,6 +306,23 @@ def migrate_pg_db(old_pgsql_root_dir,old_pgsql_data_dir,pgsql_root_dir,pgsql_dat
     finally:
         os.chdir(cwd)
 
+def configure_max_connections(pg_sql_data_dir):
+    config_file_path = os.path.join(pg_sql_data_dir,'postgresql.conf')
+    with open(config_file_path,"r+") as config_file:
+        new_lines = []
+        found = False
+        for line in config_file.readlines():
+            if 'max_connections' in line:
+                new_lines.append('max_connections = 1000\n')
+                found = True
+            else:
+                new_lines.append(line)
+        if not(found):
+            new_lines.append('max_connections = 1000\n')
+        config_file.seek(0)
+        config_file.truncate()
+        config_file.writelines(new_lines)
+
 def install_postgresql_service(options,conf=None):
     if conf is None:
         conf = waptserver.config.load_config(options.configfile)
@@ -354,6 +371,8 @@ def install_postgresql_service(options,conf=None):
     if os.path.isdir(old_pgsql_data_dir) and os.path.isdir(old_pgsql_root_dir):
         print('migrating database from previous postgresql DB')
         migrate_pg_db(old_pgsql_root_dir,old_pgsql_data_dir,pgsql_root_dir,pgsql_data_dir)
+
+    configure_max_connections(pgsql_data_dir)
 
     print('starting postgresql')
     if not setuphelpers.service_is_running('waptpostgresql'):
