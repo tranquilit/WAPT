@@ -26,6 +26,7 @@ import os
 import datetime
 import logging
 import threading
+import platform
 
 try:
     wapt_root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__),'..'))
@@ -312,7 +313,12 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
 
                 elif name == 'trigger_waptservicerestart':
                     try:
-                        msg = setuphelpers.create_onetime_task('waptservicerestart','cmd.exe','/C net stop waptservice & net start waptservice')
+                        if platform.system() == 'Windows':
+                            msg = setuphelpers.create_onetime_task('waptservicerestart','cmd.exe','/C net stop waptservice & net start waptservice')
+                        elif platform.system() == 'Darwin':
+                            msg = setuphelpers.run('launchctl unload /Library/LaunchDaemons/com.tranquilit.tis-waptagent.plist;launchctl trigload /Library/LaunchDaemons/com.tranquilit.tis-waptagent.plist;')
+                        else:
+                            msg = setuphelpers.run('systemctl restart waptservice')
                         result.append(dict(success=True,msg = msg,result = msg))
                     except:
                         # restart by nssm
