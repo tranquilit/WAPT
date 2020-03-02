@@ -1212,7 +1212,7 @@ def update_host_data(data,server_conf=None):
             if server_conf['diff_repo']:
                 try:
                     from waptenterprise.waptserver.repositories import update_file_tree_of_files
-                    update_file_tree_of_files()
+                    update_file_tree_of_files(username = 'TASK_UPDATE_HOST_DATA')
                 except:
                     logger.critical(u"Something went wrong with diff repo : can't launch")
 
