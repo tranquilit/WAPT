@@ -7547,7 +7547,7 @@ def wapt_sources_edit(wapt_sources_dir,editor_for_packages = None):
     # in edit_for_packages you can specify {key_params} to replace for launch the editor
 
     if os.name == 'nt':
-        if editor_for_packages is None:
+        if not(editor_for_packages):
             params["psproj_filename"]=os.path.join(wapt_sources_dir,u'WAPT',u'wapt.psproj')
             pyscripter_filename = os.path.join(setuphelpers.programfiles32,
                                                'PyScripter', 'PyScripter.exe')
