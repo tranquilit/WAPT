@@ -625,6 +625,9 @@ def main():
 
     paths_to_modify = [(sync_json,True),(rules_json,True),(wapt_folder,False),(wuafolder,False),(diff_rules_dir,False),(ssl_dir,False)]
 
+    if server_config['clients_signing_crl'] is not None:
+        paths_to_modify.append((server_config['clients_signing_crl'],False))
+
     for apath,isfile in paths_to_modify:
         if os.path.isdir(apath):
             os.chown(apath,WAPT_UID,NGINX_GID)

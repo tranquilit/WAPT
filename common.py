@@ -4991,8 +4991,18 @@ class Wapt(BaseObjectClass):
             if not printhook:
                 printhook = report
             """
+            if platform.system()=='Windows':
+                target_dir=self.package_cache_dir
+            else:
+                if os.geteuid()==0:
+                    target_dir=self.package_cache_dir
+                else:
+                    target_dir=os.path.join(os.path.expanduser("~"),"waptdev")
+                    if not os.path.isdir(target_dir):
+                        os.mkdir(target_dir)
+
             res = self.get_repo(entry.repo).download_packages(entry,
-                target_dir=self.package_cache_dir,
+                target_dir=target_dir,
                 usecache=usecache,
                 printhook=printhook)
 
