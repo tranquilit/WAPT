@@ -345,7 +345,7 @@ def check_auth(logon_name, password,check_token_in_password=True,for_group='wapt
             except:
                 pass
 
-            if app.waptconfig.waptservice_admin_auth_allow:
+            if not(app.waptconfig.waptservice_admin_filter):
                 local_admins_group_name = common.get_local_admins_group_name()
                 if common.check_is_member_of(huser,local_admins_group_name):
                     return huser

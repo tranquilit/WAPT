@@ -229,7 +229,7 @@ class WaptServiceConfig(object):
          'MAX_HISTORY','waptservice_port',
          'dbpath','loglevel','log_directory','waptserver',
          'hiberboot_enabled','max_gpo_script_wait','pre_shutdown_timeout','log_to_windows_events',
-         'allow_user_service_restart','signature_clockskew','waptwua_enabled','notify_user','waptservice_admin_auth_allow',
+         'allow_user_service_restart','signature_clockskew','waptwua_enabled','notify_user','waptservice_admin_filter',
          'enable_remote_repo','local_repo_path','local_repo_sync_task_period','local_repo_time_for_sync_start',
          'local_repo_time_for_sync_end','local_repo_limit_bandwidth','wol_port']
 
@@ -241,7 +241,7 @@ class WaptServiceConfig(object):
         self.waptservice_user = None
         self.waptservice_password = None
 
-        self.waptservice_admin_auth_allow = True
+        self.waptservice_admin_filter = False
 
         # maximum nb of tasks to keep in history wapt task manager
         self.MAX_HISTORY = 30
@@ -333,8 +333,8 @@ class WaptServiceConfig(object):
                 logger.info(u"No password set for local waptservice, using local computer security")
                 self.waptservice_password=None  # = password
 
-            if config.has_option('global','waptservice_admin_auth_allow'):
-                self.waptservice_admin_auth_allow = config.getboolean('global','waptservice_admin_auth_allow')
+            if config.has_option('global','waptservice_admin_filter'):
+                self.waptservice_admin_filter = config.getboolean('global','waptservice_admin_filter')
 
             if config.has_option('global','waptservice_port'):
                 port = config.get('global','waptservice_port')
