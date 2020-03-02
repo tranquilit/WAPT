@@ -135,7 +135,7 @@ begin
 
     if Sender = ActMakeAndEdit then
     begin
-      DMPython.common.wapt_sources_edit(wapt_sources_dir := packageSources);
+      DMPython.common.wapt_sources_edit(wapt_sources_dir := packageSources, editor_for_packages := wapt.editor_for_packages);
       ShowMessageFmt(rsPackageSourcesAvailable,[packageSources]);
       ModalResult := mrOk;
     end
