@@ -4,8 +4,8 @@ from setuphelpers import *
 uninstallkey = []
 
 def install():
-    install_msi_if_needed('%(installer)s')
-
+    dpkg_install("%(installer)s")
+    
 def uninstall():
     pass
     # put here what to do when package is removed from host

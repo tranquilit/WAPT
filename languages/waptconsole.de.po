@@ -1732,7 +1732,7 @@ msgstr "Bereich"
 
 #: tvispackagewizard.labsetupfilename.caption
 msgctxt "tvispackagewizard.labsetupfilename.caption"
-msgid "Installer / Setup"
+msgid "Installer / Package"
 msgstr ""
 
 #: tvisprivatekeyauth.caption

@@ -1669,8 +1669,8 @@ msgstr "Section"
 
 #: tvispackagewizard.labsetupfilename.caption
 msgctxt "tvispackagewizard.labsetupfilename.caption"
-msgid "Installer / Setup"
-msgstr "Installeur"
+msgid "Installer / Package"
+msgstr "Installeur / Paquet"
 
 #: tvisprivatekeyauth.caption
 msgid "Private key authentication"

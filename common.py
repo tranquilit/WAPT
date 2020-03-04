@@ -6584,12 +6584,18 @@ class Wapt(BaseObjectClass):
         if installer_path:
             (installer_name,installer_ext) = os.path.splitext(installer)
             installer_ext = installer_ext.lower()
-            if installer_ext == '.msi':
+            if installer_ext in ['.msi','.msix']:
                 setup_template = os.path.join(self.wapt_base_dir,'templates','setup_package_template_msi.py')
             elif installer_ext == '.msu':
                 setup_template = os.path.join(self.wapt_base_dir,'templates','setup_package_template_msu.py')
             elif installer_ext == '.exe':
                 setup_template = os.path.join(self.wapt_base_dir,'templates','setup_package_template_exe.py')
+            elif installer_ext == '.deb':
+                setup_template = os.path.join(self.wapt_base_dir,'templates','setup_package_template_deb.py')
+            elif installer_ext == '.pkg':
+                setup_template = os.path.join(self.wapt_base_dir,'templates','setup_package_template_pkg.py')
+            elif installer_ext == '.rpm':
+                setup_template = os.path.join(self.wapt_base_dir,'templates','setup_package_template_rpm.py')
             elif os.path.isdir(installer_path):
                 setup_template = os.path.join(self.wapt_base_dir,'templates','setup_package_template_dir.py')
             else:
