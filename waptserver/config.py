@@ -101,7 +101,8 @@ _defaults = {
     'nginx_http' : 80,
     'nginx_https': 443,
     'remote_repo_support': False,
-    'diff_repo': False,
+    'remote_repo_websockets': True,
+    'remote_repo_diff': False,
     'auto_create_ldap_users': True,
     'trusted_signers_certificates_folder':None, # path to trusted signers certificate directory
     'trusted_users_certificates_folder':None, # path to trusted users CA certificate directory
@@ -261,8 +262,11 @@ def load_config(cfgfile=DEFAULT_CONFIG_FILE):
     if _config.has_option('options','remote_repo_support'):
         conf['remote_repo_support'] = _config.getboolean('options','remote_repo_support')
 
-    if _config.has_option('options','diff_repo'):
-        conf['diff_repo'] = _config.getboolean('options','diff_repo')
+    if _config.has_option('options','remote_repo_diff'):
+        conf['remote_repo_diff'] = _config.getboolean('options','remote_repo_diff')
+
+    if _config.has_option('options','remote_repo_websockets'):
+        conf['remote_repo_websockets'] = _config.getboolean('options','remote_repo_websockets')
 
     # path to X509 certificates file of trusted signers to restrict access to upload packages / actions proxying
     if _config.has_option('options', 'trusted_signers_certificates_folder'):

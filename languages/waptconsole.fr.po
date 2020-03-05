@@ -1669,8 +1669,8 @@ msgstr "Section"
 
 #: tvispackagewizard.labsetupfilename.caption
 msgctxt "tvispackagewizard.labsetupfilename.caption"
-msgid "Installer / Setup"
-msgstr "Installeur"
+msgid "Installer / Package"
+msgstr "Installeur / Paquet"
 
 #: tvisprivatekeyauth.caption
 msgid "Private key authentication"
@@ -2460,6 +2460,22 @@ msgid ""
 "E.g. : c:\\waptdev\n"
 "Local directory for saving package development projects\n"
 msgstr "Par exemple : c:\\waptdev"
+
+#: tviswaptconfig.ededitorforpackages.editlabel.caption
+msgid "Editor for packages"
+msgstr "Editeur pour les paquets"
+
+#: tviswaptconfig.ededitorforpackages.hint
+msgid ""
+"None for PyScripter\n"
+"vscode or code for Visual Studio Code\n"
+"vscodium or codium for Visual Studio Comium\n"
+"path_to_editor with flags ( {setup_filename} ; {control_filename} ; {wapt_sources_dir} ; {wapt_base_dir} )\n"
+msgstr ""
+"Ne rien mettre pour PyScripter\n"
+"vscode ou code pour Visual Studio Code\n"
+"vscodium ou codium pour Visual Studio Comium\n"
+"chemin_vers_l'éditeur avec les paramètres suivants ( {setup_filename} ; {control_filename} ; {wapt_sources_dir} ; {wapt_base_dir} )\n"
 
 #: tviswaptconfig.edhttp_proxy.editlabel.caption
 msgctxt "tviswaptconfig.edhttp_proxy.editlabel.caption"

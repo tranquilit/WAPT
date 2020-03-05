@@ -146,3 +146,6 @@ def yum_update():
 
 def yum_upgrade():
     return run('LANG=C yum upgrade -y')
+
+def rpm_install(package):
+    return run('yes | LANG=C rpm -i %s' % package)

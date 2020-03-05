@@ -41,6 +41,7 @@ type
     DlgSelectClientCertificate: TOpenDialog;
     DlgSelectClientPrivateKey: TOpenDialog;
     EdClientPrivateKeyPath: TFileNameEdit;
+    EdEditorForPackages: TLabeledEdit;
     EdLicencesDirectory: TDirectoryEdit;
     EdMaturity: TComboBox;
     EdClientCertificatePath: TFileNameEdit;
@@ -363,6 +364,9 @@ begin
   inifile.WriteString('global','client_certificate',EdClientCertificatePath.FileName);
   inifile.WriteString('global','client_private_key',EdClientPrivateKeyPath.FileName);
 
+  if EdEditorForPackages.Text<>'' then
+     inifile.WriteString('global','editor_for_packages',EdEditorForPackages.Text);
+
   if EdLicencesDirectory.Directory<>'' then
     inifile.WriteString('global', 'licences_directory', EdLicencesDirectory.Directory);
 
@@ -605,6 +609,8 @@ begin
 
   EdClientCertificatePath.FileName := inifile.ReadString('global','client_certificate','');
   EdClientPrivateKeyPath.FileName := inifile.ReadString('global','client_private_key','');
+
+  EdEditorForPackages.Text:= inifile.ReadString('global','editor_for_packages','');
 
   GridPlugins.Data := GetGridHostsPluginsFromIni;
 end;
