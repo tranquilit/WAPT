@@ -50,7 +50,9 @@ http {
         ssl_certificate             "{{ wapt_ssl_cert_file }}";
         ssl_certificate_key         "{{ wapt_ssl_key_file }}";
         ssl_protocols               TLSv1.2;
+	{% if has_dhparam %}
         ssl_dhparam                 "{{ wapt_dhparam_file }}";
+	{%endif %}
         ssl_prefer_server_ciphers   on;
         ssl_ciphers                 'EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH';
         ssl_stapling_verify         on;

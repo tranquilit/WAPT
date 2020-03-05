@@ -241,6 +241,7 @@ def make_nginx_config(wapt_root_dir, conf, force = False):
         'clients_signing_crl': conf.get('clients_signing_crl',None) and  conf.get('clients_signing_crl',None).replace('\\','/'),
         'htpasswd_path': conf.get('htpasswd_path',None) and  conf.get('htpasswd_path',None).replace('\\','/'),
         'wapt_dhparam_file': ap_ssl_dhparam_file,
+        'has_dhparam': os.path.isfile(ap_ssl_dhparam_file),
     }
 
     config_string = template.render(template_variables)
