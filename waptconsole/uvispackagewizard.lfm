@@ -47,7 +47,7 @@ object VisPackageWizard: TVisPackageWizard
       AnchorSideTop.Control = EdArchitecture
       AnchorSideTop.Side = asrCenter
       AnchorSideRight.Control = EdArchitecture
-      Left = 256
+      Left = 236
       Height = 15
       Top = 6
       Width = 65
@@ -58,7 +58,7 @@ object VisPackageWizard: TVisPackageWizard
       ParentColor = False
     end
     object EdArchitecture: TComboBox
-      Left = 324
+      Left = 304
       Height = 23
       Top = 2
       Width = 70
@@ -134,7 +134,7 @@ object VisPackageWizard: TVisPackageWizard
       AnchorSideTop.Control = EdSection
       AnchorSideTop.Side = asrCenter
       AnchorSideRight.Control = EdSection
-      Left = 447
+      Left = 457
       Height = 15
       Top = 6
       Width = 39
@@ -145,7 +145,7 @@ object VisPackageWizard: TVisPackageWizard
       ParentColor = False
     end
     object EdSection: TComboBox
-      Left = 489
+      Left = 499
       Height = 23
       Top = 2
       Width = 63
@@ -243,7 +243,7 @@ object VisPackageWizard: TVisPackageWizard
       Left = 136
       Height = 23
       Top = 8
-      Width = 368
+      Width = 432
       OnAcceptFileName = EdInstallerPathAcceptFileName
       DialogTitle = 'Select installer file'
       Filter = 'Installer files (*.exe, *.msi, *.msu, *.msix)|*.exe;*.msi; *.msu; *.msix|All files (*.*)|*.*'
@@ -286,7 +286,7 @@ object VisPackageWizard: TVisPackageWizard
       Left = 136
       Height = 23
       Top = 67
-      Width = 100
+      Width = 72
       ItemHeight = 15
       ItemIndex = 0
       Items.Strings = (

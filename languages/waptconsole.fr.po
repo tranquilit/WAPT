@@ -505,8 +505,8 @@ msgid "Create WAPT agent"
 msgstr "Créer un agent WAPT"
 
 #: tviscreatewaptsetup.cbdualsign.caption
-msgid "Sign waptupgrade with both sha256 and sha1"
-msgstr "Signer waptupgrade avec sha256 ET sha1"
+msgid "Sign waptupgrade with both SHA256 and SHA1"
+msgstr "Signer waptupgrade avec SHA256 et SHA1"
 
 #: tviscreatewaptsetup.cbdualsign.hint
 msgctxt "tviscreatewaptsetup.cbdualsign.hint"
@@ -535,10 +535,10 @@ msgstr "Force la valeur de l'URL lors de l'installation même si il y a déjà u
 
 #: tviscreatewaptsetup.cbincludenonca.caption
 msgid "Include non CA too"
-msgstr "Inclure les certificats qui ne sont pas Autorité"
+msgstr "Inclure les certificats qui ne sont pas des autorités"
 
 #: tviscreatewaptsetup.cbinstallwuaupdatesatshutdown.caption
-msgid "Install Pending Windows at Shutdown"
+msgid "Install pending Windows updates at shutdown"
 msgstr "Installer les mises à jour Windows à l'arrêt"
 
 #: tviscreatewaptsetup.cbinstallwuaupdatesatshutdown.hint
@@ -546,7 +546,7 @@ msgid "If some Windows updates are pending, waptexit will append a task to insta
 msgstr "Si des mises à jour Windows sont en attente, waptexit ajoureta une tâche pour les installer."
 
 #: tviscreatewaptsetup.cbuseadgroups.caption
-msgid "Enable AD Groups"
+msgid "Enable AD groups"
 msgstr "Activer les groupes AD"
 
 #: tviscreatewaptsetup.cbuseadgroups.hint
@@ -559,7 +559,7 @@ msgstr ""
 "ATTENTION, cela introduit de la charge sur les serveurs AD et de la lenteur dans le process Wapt\n"
 
 #: tviscreatewaptsetup.cbusefqdnasuuid.caption
-msgid "Use Computer FQDN for UUID"
+msgid "Use computer FQDN for UUID"
 msgstr "Utiliser le nom FQDN comme UUID pour les clients"
 
 #: tviscreatewaptsetup.cbusefqdnasuuid.hint
@@ -604,20 +604,20 @@ msgid "Verify https server certificate"
 msgstr "Vérifier le certificat https serveur"
 
 #: tviscreatewaptsetup.cbwuadefaultallow.caption
-msgid "Allow all Updates by default unless explicitely forbidden by rules"
-msgstr "Autoriser toutes les MAJ par défaut."
+msgid "Allow all updates by default unless explicitely forbidden by rules"
+msgstr "Autoriser toutes les MàJ par défaut excepté si elles sont spécifiquement interdites par les règles."
 
 #: tviscreatewaptsetup.cbwuadisable.caption
 msgid "Disable WAPT WUA"
 msgstr "Désactiver WAPT WUA"
 
 #: tviscreatewaptsetup.cbwuadontchange.caption
-msgid "Dont' set anything"
+msgid "Don't set anything"
 msgstr "Ne rien changer"
 
 #: tviscreatewaptsetup.cbwuaenabled.caption
-msgid "Manage Windows Updates with WAPT"
-msgstr "Gérer les MAJ Windows avec WAPT"
+msgid "Manage Windows updates with WAPT"
+msgstr "Gérer les MàJ Windows avec WAPT"
 
 #: tviscreatewaptsetup.edappendhostprofiles.hint
 msgctxt "tviscreatewaptsetup.edappendhostprofiles.hint"
@@ -658,8 +658,8 @@ msgid "eg 2h or 120m or 1d"
 msgstr "Par exemple 2h ou 120m ou 1d"
 
 #: tviscreatewaptsetup.gbwua.caption
-msgid "WAPTWUA Windows Updates "
-msgstr "Mises à jour Windows par WAPTWUA"
+msgid "WAPT WUA Windows updates "
+msgstr "Mises à jour Windows par WAPT WUA"
 
 #: tviscreatewaptsetup.gridcertificates.header.columns[0].text
 msgctxt "tviscreatewaptsetup.gridcertificates.header.columns[0].text"
@@ -718,17 +718,17 @@ msgstr "DN Sujet"
 
 #: tviscreatewaptsetup.labauthcertsbundle.caption
 msgctxt "tviscreatewaptsetup.labauthcertsbundle.caption"
-msgid "Authorized Packages Certificates Bundle"
-msgstr "Certificats / CA autorisés pour les paquets"
+msgid "Authorized packages certificates bundle :"
+msgstr "Certificats / CA autorisés pour les paquets :"
 
 #: tviscreatewaptsetup.labauthor.caption
 msgctxt "tviscreatewaptsetup.labauthor.caption"
-msgid "Authorized packages Certificates which will be bundled with the Wapt Agent  installer"
-msgstr "Certificats de paquets qui vont être déployés avec l'agent Wapt"
+msgid "Authorized packages certificates which will be bundled with the WAPT agent installer"
+msgstr "Certificats de paquets qui vont être déployés avec l'agent WAPT :"
 
 #: tviscreatewaptsetup.label2.caption
 msgid "Main WAPT repository address :"
-msgstr "Adresse du dépôt WAPT principal"
+msgstr "Adresse du dépôt WAPT principal :"
 
 #: tviscreatewaptsetup.label2.hint
 msgid "Your WAPT repository address (http://wapt/wapt)."
@@ -751,15 +751,14 @@ msgid "Your WAPT server address (http://wapt:8080)."
 msgstr "L'adresse de votre serveur WAPT (par exemple http://wapt:8080)."
 
 #: tviscreatewaptsetup.label6.caption
-#| msgid "Path to Servers CA certificates bundle"
 msgctxt "tviscreatewaptsetup.label6.caption"
-msgid "Path to https Servers CA certificates bundle"
-msgstr "Chemin vers le bundle de CA serveurs https"
+msgid "Path to https servers CA certificates bundle :"
+msgstr "Chemin vers le bundle de CA serveurs https :"
 
 #: tviscreatewaptsetup.label8.caption
 msgctxt "tviscreatewaptsetup.label8.caption"
-msgid "Append host's profiles"
-msgstr "Ajouter les profils de poste"
+msgid "Append host's profiles :"
+msgstr "Ajouter les profils de poste :"
 
 #: tviscreatewaptsetup.label8.hint
 msgctxt "tviscreatewaptsetup.label8.hint"
@@ -768,8 +767,8 @@ msgstr "Liste (séparée par des virgules) de paquets profils à ajouter aux mac
 
 #: tviscreatewaptsetup.label9.caption
 msgctxt "tviscreatewaptsetup.label9.caption"
-msgid "Automatic periodic packages audit scheduling"
-msgstr "Planification des audits périodiques de paquets"
+msgid "Automatic periodic packages audit scheduling :"
+msgstr "Planification des audits périodiques de paquets :"
 
 #: tviscreatewaptsetup.label9.hint
 msgctxt "tviscreatewaptsetup.label9.hint"
@@ -778,12 +777,12 @@ msgstr "Liste (séparée par des virgules) de paquets profils à ajouter aux mac
 
 #: tviscreatewaptsetup.labwuainstalldelay.caption
 msgctxt "tviscreatewaptsetup.labwuainstalldelay.caption"
-msgid "Minimum delay before installation (days after publish date)"
-msgstr "Délai minimum avant l'installation (en jours après la date de publication)"
+msgid "Minimum delay before installation (days after publish date) :"
+msgstr "Délai minimum avant l'installation (en jours après la date de publication) :"
 
 #: tviscreatewaptsetup.labwuascandownloadperiod.caption
-msgid "Scan / download scheduling"
-msgstr "Planification du scan/téléchargement"
+msgid "Scan / download scheduling :"
+msgstr "Planification du scan/téléchargement :"
 
 #: tvisdisplaypreferences.caption
 msgctxt "tvisdisplaypreferences.caption"
