@@ -437,7 +437,7 @@ begin
             CBWUADisable.Checked := True;
 
         if not ini.ValueExists('waptwua','default_allow') then
-          CBWUADefaultAllow.State:=cbGrayed
+          CBWUADefaultAllow.State:=cbUnchecked
         else
           CBWUADefaultAllow.Checked:=ini.ReadBool('waptwua','default_allow',False);
 
@@ -461,7 +461,7 @@ begin
       end
       else
       begin
-        CBWUADefaultAllow.State:=cbGrayed;
+        CBWUADefaultAllow.State:=cbUnchecked;
         EdWUAInstallDelay.Text := '';
       end;
     end;
