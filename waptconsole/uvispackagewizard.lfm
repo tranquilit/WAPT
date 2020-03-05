@@ -26,7 +26,7 @@ object VisPackageWizard: TVisPackageWizard
     TabOrder = 1
     object EdUninstallKey: TLabeledEdit
       Left = 130
-      Height = 21
+      Height = 23
       Top = 97
       Width = 432
       EditLabel.AnchorSideTop.Control = EdUninstallKey
@@ -34,10 +34,10 @@ object VisPackageWizard: TVisPackageWizard
       EditLabel.AnchorSideRight.Control = EdUninstallKey
       EditLabel.AnchorSideBottom.Control = EdUninstallKey
       EditLabel.AnchorSideBottom.Side = asrBottom
-      EditLabel.Left = 67
-      EditLabel.Height = 13
+      EditLabel.Left = 60
+      EditLabel.Height = 15
       EditLabel.Top = 101
-      EditLabel.Width = 60
+      EditLabel.Width = 67
       EditLabel.Caption = 'Uninstall key'
       EditLabel.ParentColor = False
       LabelPosition = lpLeft
@@ -47,10 +47,10 @@ object VisPackageWizard: TVisPackageWizard
       AnchorSideTop.Control = EdArchitecture
       AnchorSideTop.Side = asrCenter
       AnchorSideRight.Control = EdArchitecture
-      Left = 262
-      Height = 13
+      Left = 236
+      Height = 15
       Top = 6
-      Width = 59
+      Width = 65
       Alignment = taRightJustify
       Anchors = [akTop, akRight]
       BorderSpacing.Right = 3
@@ -58,11 +58,11 @@ object VisPackageWizard: TVisPackageWizard
       ParentColor = False
     end
     object EdArchitecture: TComboBox
-      Left = 324
-      Height = 21
+      Left = 304
+      Height = 23
       Top = 2
       Width = 70
-      ItemHeight = 13
+      ItemHeight = 15
       ItemIndex = 0
       Items.Strings = (
         'all'
@@ -74,7 +74,7 @@ object VisPackageWizard: TVisPackageWizard
     end
     object EdDescription: TLabeledEdit
       Left = 130
-      Height = 21
+      Height = 23
       Top = 34
       Width = 432
       EditLabel.AnchorSideTop.Control = EdDescription
@@ -82,10 +82,10 @@ object VisPackageWizard: TVisPackageWizard
       EditLabel.AnchorSideRight.Control = EdDescription
       EditLabel.AnchorSideBottom.Control = EdDescription
       EditLabel.AnchorSideBottom.Side = asrBottom
-      EditLabel.Left = 74
-      EditLabel.Height = 13
+      EditLabel.Left = 67
+      EditLabel.Height = 15
       EditLabel.Top = 38
-      EditLabel.Width = 53
+      EditLabel.Width = 60
       EditLabel.Caption = 'Description'
       EditLabel.ParentColor = False
       LabelPosition = lpLeft
@@ -93,7 +93,7 @@ object VisPackageWizard: TVisPackageWizard
     end
     object EdSilentFlags: TLabeledEdit
       Left = 130
-      Height = 21
+      Height = 23
       Top = 66
       Width = 432
       EditLabel.AnchorSideTop.Control = EdSilentFlags
@@ -101,10 +101,10 @@ object VisPackageWizard: TVisPackageWizard
       EditLabel.AnchorSideRight.Control = EdSilentFlags
       EditLabel.AnchorSideBottom.Control = EdSilentFlags
       EditLabel.AnchorSideBottom.Side = asrBottom
-      EditLabel.Left = 75
-      EditLabel.Height = 13
+      EditLabel.Left = 70
+      EditLabel.Height = 15
       EditLabel.Top = 70
-      EditLabel.Width = 52
+      EditLabel.Width = 57
       EditLabel.Caption = 'Silent flags'
       EditLabel.ParentColor = False
       LabelPosition = lpLeft
@@ -112,7 +112,7 @@ object VisPackageWizard: TVisPackageWizard
     end
     object EdVersion: TLabeledEdit
       Left = 130
-      Height = 21
+      Height = 23
       Top = 2
       Width = 72
       EditLabel.AnchorSideTop.Control = EdVersion
@@ -120,10 +120,10 @@ object VisPackageWizard: TVisPackageWizard
       EditLabel.AnchorSideRight.Control = EdVersion
       EditLabel.AnchorSideBottom.Control = EdVersion
       EditLabel.AnchorSideBottom.Side = asrBottom
-      EditLabel.Left = 45
-      EditLabel.Height = 13
+      EditLabel.Left = 40
+      EditLabel.Height = 15
       EditLabel.Top = 6
-      EditLabel.Width = 82
+      EditLabel.Width = 87
       EditLabel.Caption = 'Software Version'
       EditLabel.ParentColor = False
       LabelPosition = lpLeft
@@ -134,10 +134,10 @@ object VisPackageWizard: TVisPackageWizard
       AnchorSideTop.Control = EdSection
       AnchorSideTop.Side = asrCenter
       AnchorSideRight.Control = EdSection
-      Left = 451
-      Height = 13
+      Left = 457
+      Height = 15
       Top = 6
-      Width = 35
+      Width = 39
       Alignment = taRightJustify
       Anchors = [akTop, akRight]
       BorderSpacing.Right = 3
@@ -145,11 +145,11 @@ object VisPackageWizard: TVisPackageWizard
       ParentColor = False
     end
     object EdSection: TComboBox
-      Left = 489
-      Height = 21
+      Left = 499
+      Height = 23
       Top = 2
       Width = 63
-      ItemHeight = 13
+      ItemHeight = 15
       ItemIndex = 0
       Items.Strings = (
         'base'
@@ -175,10 +175,10 @@ object VisPackageWizard: TVisPackageWizard
     ClientWidth = 599
     TabOrder = 2
     object ButCancel: TBitBtn
-      Left = 515
+      Left = 511
       Height = 34
       Top = 2
-      Width = 78
+      Width = 82
       Align = alRight
       AutoSize = True
       Cancel = True
@@ -191,17 +191,17 @@ object VisPackageWizard: TVisPackageWizard
       Left = 6
       Height = 34
       Top = 2
-      Width = 135
+      Width = 146
       Action = ActMakeUpload
       Align = alLeft
       AutoSize = True
       TabOrder = 0
     end
     object ButOK: TBitBtn
-      Left = 376
+      Left = 367
       Height = 34
       Top = 2
-      Width = 133
+      Width = 138
       Action = ActMakeAndEdit
       Align = alRight
       AutoSize = True
@@ -222,7 +222,7 @@ object VisPackageWizard: TVisPackageWizard
     TabOrder = 0
     object EdPackageName: TLabeledEdit
       Left = 136
-      Height = 21
+      Height = 23
       Top = 40
       Width = 192
       EditLabel.AnchorSideTop.Control = EdPackageName
@@ -230,10 +230,10 @@ object VisPackageWizard: TVisPackageWizard
       EditLabel.AnchorSideRight.Control = EdPackageName
       EditLabel.AnchorSideBottom.Control = EdPackageName
       EditLabel.AnchorSideBottom.Side = asrBottom
-      EditLabel.Left = 64
-      EditLabel.Height = 13
+      EditLabel.Left = 56
+      EditLabel.Height = 15
       EditLabel.Top = 44
-      EditLabel.Width = 69
+      EditLabel.Width = 77
       EditLabel.Caption = 'Package name'
       EditLabel.ParentColor = False
       LabelPosition = lpLeft
@@ -241,12 +241,12 @@ object VisPackageWizard: TVisPackageWizard
     end
     object EdInstallerPath: TFileNameEdit
       Left = 136
-      Height = 21
+      Height = 23
       Top = 8
-      Width = 368
+      Width = 432
       OnAcceptFileName = EdInstallerPathAcceptFileName
       DialogTitle = 'Select installer file'
-      Filter = 'Installer files (*.exe, *.msi, *.msu,*.msix)|*.exe;*.msi, *.msu,*.msix|All files (*.*)|*.*'
+      Filter = 'Installer files (*.exe, *.msi, *.msu, *.msix)|*.exe;*.msi; *.msu; *.msix|All files (*.*)|*.*'
       FilterIndex = 0
       HideDirectories = False
       ButtonWidth = 23
@@ -258,24 +258,24 @@ object VisPackageWizard: TVisPackageWizard
       AnchorSideTop.Control = EdInstallerPath
       AnchorSideTop.Side = asrCenter
       AnchorSideRight.Control = EdInstallerPath
-      Left = 56
-      Height = 13
+      Left = 37
+      Height = 15
       Top = 12
-      Width = 77
+      Width = 96
       Alignment = taRightJustify
       Anchors = [akTop, akRight]
       BorderSpacing.Right = 3
-      Caption = 'Installer / Setup'
+      Caption = 'Installer / Package'
       ParentColor = False
     end
     object LabMaturity: TLabel
       AnchorSideTop.Control = EdMaturity
       AnchorSideTop.Side = asrCenter
       AnchorSideRight.Control = EdMaturity
-      Left = 51
-      Height = 13
+      Left = 42
+      Height = 15
       Top = 71
-      Width = 83
+      Width = 92
       Alignment = taRightJustify
       Anchors = [akTop, akRight]
       BorderSpacing.Right = 2
@@ -284,10 +284,10 @@ object VisPackageWizard: TVisPackageWizard
     end
     object EdMaturity: TComboBox
       Left = 136
-      Height = 21
+      Height = 23
       Top = 67
-      Width = 100
-      ItemHeight = 13
+      Width = 72
+      ItemHeight = 15
       ItemIndex = 0
       Items.Strings = (
         ''

@@ -47,6 +47,7 @@ import random
 import string
 import base64
 import uuid
+import socket
 
 from setuphelpers import run
 from waptutils import setloglevel,ensure_unicode
@@ -60,18 +61,16 @@ from waptpackage import WaptLocalRepo
 from waptserver.model import load_db_config,Packages
 
 def fqdn():
-    result = None
+    """ Guess FQDN from hostname - return default value if nothing found"""
     try:
-        import socket
-        result = socket.getfqdn()
+        fqdn = socket.getfqdn()
+        if not fqdn:
+            fqdn = 'wapt'
+        if '.' not in fqdn:
+            fqdn += '.lan'
     except:
-        pass
-    if not result:
-        result = 'wapt'
-    if '.' not in result:
-        result += '.local'
-
-    return result
+        fqdn = 'srvwapt'
+    return fqdn
 
 def create_dhparam(key_size=2048):
     from cryptography.hazmat.primitives import serialization
@@ -114,7 +113,6 @@ def install_windows_nssm_service(
         raise Exception('Windows 32bit install not supported')
 
     nssm = os.path.join(wapt_root_dir, 'waptservice', 'win64', 'nssm.exe')
-
 
     logger.info('Register service "%s" with nssm' % service_name)
     cmd = '"{nssm}" install "{service_name}" "{service_binary}" {service_parameters}'.format(
@@ -192,6 +190,8 @@ def make_nginx_config(wapt_root_dir, conf, force = False):
     ap_conf_file = os.path.join(ap_conf_dir, ap_file_name)
     ap_ssl_dir = os.path.join(wapt_root_dir,'waptserver','nginx','ssl')
 
+    ap_ssl_dhparam_file = os.path.join(ap_ssl_dir,'dhparam.pem')
+
     if os.path.isfile(ap_conf_file) and not force:
         if 'waptserver' in open(ap_conf_file,'r').read():
             return ap_conf_file
@@ -240,6 +240,8 @@ def make_nginx_config(wapt_root_dir, conf, force = False):
         'known_certificates_folder': conf.get('known_certificates_folder',None) and conf.get('known_certificates_folder',None).replace('\\','/'),
         'clients_signing_crl': conf.get('clients_signing_crl',None) and  conf.get('clients_signing_crl',None).replace('\\','/'),
         'htpasswd_path': conf.get('htpasswd_path',None) and  conf.get('htpasswd_path',None).replace('\\','/'),
+        'wapt_dhparam_file': ap_ssl_dhparam_file,
+        'has_dhparam': os.path.isfile(ap_ssl_dhparam_file),
     }
 
     config_string = template.render(template_variables)
@@ -305,6 +307,23 @@ def migrate_pg_db(old_pgsql_root_dir,old_pgsql_data_dir,pgsql_root_dir,pgsql_dat
     finally:
         os.chdir(cwd)
 
+def configure_max_connections(pg_sql_data_dir):
+    config_file_path = os.path.join(pg_sql_data_dir,'postgresql.conf')
+    with open(config_file_path,"r+") as config_file:
+        new_lines = []
+        found = False
+        for line in config_file.readlines():
+            if 'max_connections' in line:
+                new_lines.append('max_connections = 1000\n')
+                found = True
+            else:
+                new_lines.append(line)
+        if not(found):
+            new_lines.append('max_connections = 1000\n')
+        config_file.seek(0)
+        config_file.truncate()
+        config_file.writelines(new_lines)
+
 def install_postgresql_service(options,conf=None):
     if conf is None:
         conf = waptserver.config.load_config(options.configfile)
@@ -353,6 +372,8 @@ def install_postgresql_service(options,conf=None):
     if os.path.isdir(old_pgsql_data_dir) and os.path.isdir(old_pgsql_root_dir):
         print('migrating database from previous postgresql DB')
         migrate_pg_db(old_pgsql_root_dir,old_pgsql_data_dir,pgsql_root_dir,pgsql_data_dir)
+
+    configure_max_connections(pgsql_data_dir)
 
     print('starting postgresql')
     if not setuphelpers.service_is_running('waptpostgresql'):
@@ -531,7 +552,7 @@ def install_wapttasks_service(options,conf=None):
 
 if __name__ == '__main__':
     usage = """\
-    %prog [-c configfile] [install_nginx install_postgresql install_waptserver]
+    %prog [-c configfile] [install_nginx install_postgresql install_waptserver] [--dhparam-key-size=SIZE]
 
     WAPT Server services setup.
 
@@ -557,9 +578,18 @@ if __name__ == '__main__':
             help='Force rewrite nginx config')
     parser.add_option('-p','--setpassword',dest='setpassword',default=None,
            help='Set wapt server admin password. Value must be encoded in base64 (default: %default)')
+    parser.add_option(
+        '--dhparam-key-size',
+        dest='dhparam_key_size',
+        default=2048,
+        metavar='NUMBER',
+        type='int',
+        help='Size for dhparam key')
 
     (options, args) = parser.parse_args()
     logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s')
+
+    dhparam_key_size=options.dhparam_key_size
 
     if options.loglevel is not None:
         setloglevel(logger, options.loglevel)
@@ -588,4 +618,13 @@ if __name__ == '__main__':
             print('Installing WAPT Server as a service managed by nssm')
             install_waptserver_service(options,conf)
             install_wapttasks_service(options,conf)
+        elif action == 'create-check-dhparam':
+            print('Create or check dhparam file')
+            ap_ssl_dir = os.path.join(wapt_root_dir,'waptserver','nginx','ssl')
+            ap_dhparam = os.path.join(ap_ssl_dir,'dhparam.pem')
+            if not (os.path.isdir(ap_ssl_dir)):
+                os.makedirs(ap_ssl_dir)
+            if not(os.path.isfile(ap_dhparam)):
+                with open(ap_dhparam,'w') as f:
+                    f.write(create_dhparam(dhparam_key_size))
 

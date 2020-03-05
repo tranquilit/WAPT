@@ -345,7 +345,7 @@ def check_auth(logon_name, password,check_token_in_password=True,for_group='wapt
             except:
                 pass
 
-            if app.waptconfig.waptservice_admin_auth_allow:
+            if not(app.waptconfig.waptservice_admin_filter):
                 local_admins_group_name = common.get_local_admins_group_name()
                 if common.check_is_member_of(huser,local_admins_group_name):
                     return huser
@@ -1654,22 +1654,12 @@ class WaptTaskManager(threading.Thread):
                     self.logger.debug(u'Error checking audit: %s' % e)
 
         if waptrepositories_api and waptconfig.enable_remote_repo:
-            if waptconfig.local_repo_sync_task_period:
-                if self.last_sync is None or (datetime.datetime.now() - self.last_sync > get_time_delta(waptconfig.local_repo_sync_task_period,'m')):
-                    try:
-                        self.logger.debug(u'Add_task for sync with local_repo_sync_task_period')
-                        self.add_task(WaptSyncRepo(notifyuser=False,created_by='SCHEDULER'))
-                    except Exception as e:
-                        self.logger.debug(u'Error syncing local repo with server repo : %s' % e)
-            elif waptconfig.local_repo_time_for_sync_start:
-                time_now = datetime.datetime.now()
-                if common.is_between_two_times(waptconfig.local_repo_time_for_sync_start,waptconfig.local_repo_time_for_sync_end) and (self.last_sync is None or (datetime.datetime.now() - self.last_sync > get_time_delta('10m','m'))):
-                    try:
-                        self.logger.debug(u'Add_task for sync with local_repo_time_for_sync')
-                        self.add_task(WaptSyncRepo(notifyuser=False,created_by='SCHEDULER'))
-                    except Exception as e:
-                        self.logger.debug(u'Error syncing local repo with server repo : %s' % e)
-
+            if (self.last_sync is None or (datetime.datetime.now() - self.last_sync > get_time_delta(waptconfig.local_repo_sync_task_period,'m'))) and ((waptconfig.local_repo_time_for_sync_start is None) or common.is_between_two_times(waptconfig.local_repo_time_for_sync_start,waptconfig.local_repo_time_for_sync_end)):
+                try:
+                    self.logger.debug(u'Add_task for sync with local_repo_sync_task_period')
+                    self.add_task(WaptSyncRepo(notifyuser=False,created_by='SCHEDULER'))
+                except Exception as e:
+                    self.logger.debug(u'Error syncing local repo with server repo : %s' % e)
 
         if WaptWUAParams is not None and self.wapt.waptwua_enabled:
             params = WaptWUAParams()

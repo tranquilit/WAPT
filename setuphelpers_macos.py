@@ -47,25 +47,6 @@ import xml.etree.ElementTree as etree
 
 from setuphelpers_unix import *
 
-"""
-- install_dmg_if_needed :
-hdiutil mount abc.dmg
-sudo cp -R "/Volumes/abc/abc.app" /Applications
-OU
-sudo installer -package /Volumes/abc/abc.pkg -target "/Volumes/Macintosh HD"
-hdutil unmount "/Volumes/abc"
-
-- lister les dmg/pkg install�s :
-cat /Applications AND pkgutil --pkgs
-Note : /Library/Receipts/InstallHistory.plist
-
-- desinstallation d'un dmg:
-sudo rm -rf /Applications/abc.app
-OU
-desinstallation d'un pkg
-
-"""
-
 
 def host_info():
     """ Read main workstation informations, returned as a dict """
@@ -301,7 +282,10 @@ def uninstall_app(app_dir):
 
     DELETES EVERY FILE. Should not save the user's configuration.
     """
-    run('rm -rf {0}'.format(app_dir))
+    if app_dir[-4:] != '.app':
+        app_dir += '.app'
+
+    run('rm -rf /Applications/{0}'.format(app_dir))
 
 
 def install_dmg(dmg_path, check_version=False):
@@ -316,7 +300,7 @@ def install_dmg(dmg_path, check_version=False):
     ret_val = True
 
     dmg_name = os.path.basename(dmg_path)
-    if is_dmg_installed(dmg_path):
+    if is_dmg_installed(dmg_path, check_version):
         print('The dmg file {0} is already installed on this machine.'.format(dmg_name))
         return False
 
@@ -329,7 +313,7 @@ def install_dmg(dmg_path, check_version=False):
         for file in files:
             fname, fextension = os.path.splitext(file)
             if fextension in dmg_file_assoc:
-                dmg_file_assoc[fextension](file, check_version)
+                dmg_file_assoc[fextension](file)
                 nb_files_handled += 1
 
         if nb_files_handled == 0:

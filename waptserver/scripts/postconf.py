@@ -23,20 +23,9 @@
 from __future__ import absolute_import
 from waptserver.config import __version__
 
-
-usage = """\
-%prog [--config filename] [--force-https] [--quiet]"""
-
-import os,sys
-try:
-    wapt_root_dir = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)),'../..'))
-except:
-    wapt_root_dir = 'c:/tranquilit/wapt'
-
+import os
+import sys
 import shutil
-import fileinput
-import glob
-import hashlib
 import dialog
 import subprocess
 import jinja2
@@ -44,56 +33,119 @@ import socket
 import uuid
 import platform
 import re
+import string
 import psutil
 import datetime
-import string
 import random
 import pwd as good_pwd
 import grp
 import ConfigParser
-from optparse import OptionParser
 import nginxparser
+
+from optparse import OptionParser
 from passlib.hash import pbkdf2_sha256
 from passlib import pwd
-
 from waptpackage import WaptLocalRepo
 import waptserver.config
-from waptserver.config import type_debian,type_redhat
-from waptserver.model import init_db,upgrade_db_structure,load_db_config
-from waptcrypto import SSLCertificate,SSLPrivateKey,SSLCRL
+from waptserver.config import type_debian, type_redhat
+from waptserver.model import init_db, upgrade_db_structure, load_db_config
+from waptcrypto import SSLCertificate, SSLPrivateKey, SSLCRL
+
+try:
+    wapt_root_dir = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)),'../..'))
+except:
+    wapt_root_dir = 'c:/tranquilit/wapt'
+
+postconf = dialog.Dialog(dialog="dialog")
+
+quiet = False
+
+if type_debian():
+    PGSQL_SVC='postgresql'
+    wapt_folder = '/var/www/wapt'
+    NGINX_GID= grp.getgrnam('www-data').gr_gid
+elif type_redhat():
+    PGSQL_SVC='postgresql-9.6'
+    wapt_folder = '/var/www/html/wapt'
+    NGINX_GID= grp.getgrnam('nginx').gr_gid
+
+############ FUNCTIONS ############
 
 def run(*args, **kwargs):
     return subprocess.check_output(*args, shell=True, **kwargs)
 
 def run_verbose(*args, **kwargs):
-    output = subprocess.check_output(*args, shell=True, **kwargs)
+    output=run(*args, **kwargs)
     print(output)
     return output
-
-if type_debian():
-    MONGO_SVC='mongodb'
-    APACHE_SVC='apache2'
-    PGSQL_SVC='postgresql'
-    wapt_folder = '/var/www/wapt'
-    NGINX_GID= grp.getgrnam('www-data').gr_gid
-elif type_redhat():
-    MONGO_SVC='mongod'
-    APACHE_SVC='httpd'
-    PGSQL_SVC='postgresql-9.6'
-    wapt_folder = '/var/www/html/wapt'
-    NGINX_GID= grp.getgrnam('nginx').gr_gid
-else:
-    print("distrib type unknown")
-    sys.exit(1)
-
-quiet = False
-postconf = dialog.Dialog(dialog="dialog")
 
 def mkdir(path):
     if not os.path.isdir(path):
         os.makedirs(path)
 
-def make_httpd_config(waptserver_root_dir, fqdn, force_https, server_config):
+def check_if_deb_installed(package_name):
+    child = subprocess.Popen('/usr/bin/dpkg -l "%s"' % package_name, stdout=subprocess.PIPE,shell=True)
+    child.communicate()
+    return child.returncode == 0
+
+def guess_fqdn():
+    """ Guess FQDN from hostname - return default value if nothing found"""
+    try:
+        fqdn = socket.getfqdn()
+        if not fqdn:
+            fqdn = 'wapt'
+        if '.' not in fqdn:
+            fqdn += '.lan'
+    except:
+        fqdn = 'srvwapt'
+    return fqdn
+
+def selinux_rules():
+    """ SELinux httpd security rules """
+    run('setsebool -P httpd_can_network_connect 1')
+    run('setsebool -P httpd_setrlimit on')
+    for sepath in ('wapt','wapt-host','waptwua'):
+        run('semanage fcontext -a -t httpd_sys_content_t "/var/www/html/%s(/.*)?"' % sepath)
+        run('restorecon -R -v /var/www/html/%s' % sepath)
+
+def setup_firewall():
+    """ Add permanent rules for firewalld """
+    if type_redhat():
+        output = run('firewall-cmd --list-ports')
+        if '443/tcp' in output and '80/tcp' in output:
+            print("[*] Firewall already configured, skipping firewalld configuration")
+        elif subprocess.call(['firewall-cmd', '--state'], stdout=open(os.devnull, 'w')) == 0:
+            run('firewall-cmd --permanent --add-port=443/tcp')
+            run('firewall-cmd --permanent --add-port=80/tcp')
+            run('firewall-cmd --reload')
+        else:
+            run('firewall-offline-cmd --add-port=443/tcp')
+            run('firewall-offline-cmd --add-port=80/tcp')
+
+#### WAPTSERVER ####
+
+def enable_waptserver():
+    out = run('systemctl enable waptserver')
+    out += run('systemctl enable wapttasks')
+    return out
+
+def start_waptserver():
+    out = run("systemctl restart waptserver")
+    out += run("systemctl restart wapttasks")
+    return out
+
+#### NGINX ####
+
+def generate_dhparam(key_size=2048):
+    dh_filename = '/etc/ssl/certs/dhparam.pem'
+    out = ''
+    if not os.path.exists(dh_filename):
+        out += run('openssl dhparam -out %s  %s' % (dh_filename,key_size))
+    os.chown(dh_filename, 0, NGINX_GID) #pylint: disable=no-member
+    os.chmod(dh_filename, 0o640)        #pylint: disable=no-member
+    return out
+
+def make_nginx_config(waptserver_root_dir, fqdn, force_https, server_config,quiet=False):
     ssl_dir = os.path.join(waptserver_root_dir, 'ssl')
     scripts_dir = os.path.join(waptserver_root_dir, 'scripts')
     wapt_ssl_key_file = os.path.join(ssl_dir,'key.pem')
@@ -132,7 +184,7 @@ def make_httpd_config(waptserver_root_dir, fqdn, force_https, server_config):
     if type_debian():
         dst_file = file('/etc/nginx/sites-available/wapt.conf', 'wt')
         if not os.path.exists('/etc/nginx/sites-enabled/wapt.conf'):
-            print(subprocess.check_output('ln -s /etc/nginx/sites-available/wapt.conf /etc/nginx/sites-enabled/wapt.conf',shell=True))
+            os.symlink('/etc/nginx/sites-available/wapt.conf','/etc/nginx/sites-enabled/wapt.conf')
         if os.path.exists('/etc/nginx/sites-enabled/default'):
             os.unlink('/etc/nginx/sites-enabled/default')
 
@@ -152,7 +204,6 @@ def make_httpd_config(waptserver_root_dir, fqdn, force_https, server_config):
         if os.path.isfile(old_apache_cert) and os.path.isfile(old_apache_key):
             shutil.copyfile(old_apache_cert,wapt_ssl_cert_file)
             shutil.copyfile(old_apache_key,wapt_ssl_key_file)
-
         else:
             key = SSLPrivateKey(wapt_ssl_key_file)
             if not os.path.isfile(wapt_ssl_key_file):
@@ -171,12 +222,55 @@ def make_httpd_config(waptserver_root_dir, fqdn, force_https, server_config):
                 crt = key.build_sign_certificate(cn=fqdn,dnsname=fqdn,is_code_signing=False)
                 print('Create X509 cert %s' % wapt_ssl_cert_file)
                 crt.save_as_pem(wapt_ssl_cert_file)
-
-
     else:
         if quiet:
-	        print('[*] Nginx - self-signed certs already exists, skipping...')
+            print('[*] Nginx - self-signed certs already exists, skipping...')
 
+def enable_nginx():
+    return run('systemctl enable nginx')
+
+def restart_nginx():
+    return run('systemctl restart nginx')
+
+def nginx_set_worker_limit(nginx_conf):
+    already_set=False
+    for entries in nginx_conf:
+        if entries[0]=='worker_rlimit_nofile':
+            print("[*] Nginx - worker_rlimit_nofile already set")
+            already_set=True
+    if not already_set:
+        nginx_conf.insert(3,['worker_rlimit_nofile', '32768'])
+    return nginx_conf
+
+def nginx_set_worker_connections(nginx_conf):
+    for entry in nginx_conf:
+        if entry[0]==['events']:
+            for subentry in entry[1]:
+                if subentry[0]=='worker_connections':
+                    if subentry[1]!='4096':
+                        subentry[1]='4096'
+                        return nginx_conf
+    return nginx_conf
+
+def nginx_clean_default_vhost(nginx_conf):
+    for entry in nginx_conf:
+        if entry[0]==['http']:
+            for subentry in entry[1]:
+                if subentry[0]==['server']:
+                    print('[*] Nginx - removing default vhost')
+                    entry[1].remove(subentry)
+    return nginx_conf
+
+def nginx_cleanup():
+    with open('/etc/nginx/nginx.conf','r') as read_conf:
+        nginx_conf = nginxparser.load(read_conf)
+        nginx_conf = nginx_set_worker_limit(nginx_conf)
+        nginx_conf = nginx_set_worker_connections(nginx_conf)
+        nginx_conf = nginx_clean_default_vhost(nginx_conf)
+    with open("/etc/nginx/nginx.conf", "w") as nginx_conf_file:
+        nginx_conf_file.write(nginxparser.dumps(nginx_conf))
+
+#### POSTGRESQL ####
 
 def ensure_postgresql_db(db_name='wapt',db_owner='wapt',db_password=''):
     """ create postgresql wapt db and user if it does not exists """
@@ -198,8 +292,6 @@ def ensure_postgresql_db(db_name='wapt',db_owner='wapt',db_password=''):
         else:
             run(""" sudo -u postgres psql template1 -c "create user %s with password '%s'; " """ % (db_owner,db_password), cwd='/opt/wapt/')
 
-    val = ''
-    #val = subprocess.check_output(""" sudo -u postgres psql template1 -c "select schema_name from information_schema.schemata where schema_name='wapt'; "  """, shell= True)
     val = run(""" sudo -u postgres psql template1 -c " SELECT datname FROM pg_database WHERE datname='wapt';   " """, cwd='/opt/wapt/')
 
     if 'wapt' in val:
@@ -215,149 +307,26 @@ def ensure_postgresql_db(db_name='wapt',db_owner='wapt',db_password=''):
     else:
         run(""" sudo -u postgres psql wapt -c "CREATE EXTENSION hstore;" """, cwd='/opt/wapt/')
 
-def enable_nginx():
-    if quiet:
-        run('systemctl enable nginx')
-    else:
-        run_verbose('systemctl enable nginx')
-
-def restart_nginx():
-    if quiet:
-        run('systemctl restart nginx')
-    else:
-        run_verbose('systemctl restart nginx')
-
-def enable_waptserver():
-    if quiet:
-        run('systemctl enable waptserver')
-        run('systemctl enable wapttasks')
-    else:
-        run_verbose('systemctl enable waptserver')
-        run_verbose('systemctl enable wapttasks')
-
-def start_waptserver():
-    if quiet:
-        run("systemctl restart waptserver")
-        run("systemctl restart wapttasks")
-    else:
-        run_verbose("systemctl restart waptserver")
-        run_verbose("systemctl restart wapttasks")
-
-def guess_fqdn():
-    """ Guess FQDN from hostname - return default value if nothing found"""
-    try:
-        fqdn = socket.getfqdn()
-        if not fqdn:
-            fqdn = 'wapt'
-        if '.' not in fqdn:
-            fqdn += '.lan'
-    except:
-        fqdn = 'srvwapt'
-    return fqdn
-
-def stop_disable_httpd():
-    def httpd_running():
-        return [p for p in psutil.process_iter() if p.name().lower() in (APACHE_SVC,'httpd.exe')]
-    if httpd_running():
-        if not quiet:
-            try:
-                run_verbose('systemctl stop %s' % APACHE_SVC)
-                run_verbose('systemctl disable %s' % APACHE_SVC)
-            except:
-                pass
-        else:
-            try:
-                run('systemctl stop %s' % APACHE_SVC)
-                run('systemctl disable %s' % APACHE_SVC)
-            except:
-                pass
-
-def generate_dhparam():
-    dh_filename = '/etc/ssl/certs/dhparam.pem'
-    if not os.path.exists(dh_filename):
-        if not quiet:
-            run_verbose('openssl dhparam -out %s  2048' % dh_filename)
-        else:
-            run('openssl dhparam -out %s  2048' % dh_filename)
-    os.chown(dh_filename, 0, NGINX_GID) #pylint: disable=no-member
-    os.chmod(dh_filename, 0o640)        #pylint: disable=no-member
-
-def selinux_rules():
-    """ SELinux httpd security rules """
-    run('setsebool -P httpd_can_network_connect 1')
-    run('setsebool -P httpd_setrlimit on')
-    for sepath in ('wapt','wapt-host','waptwua'):
-        run('semanage fcontext -a -t httpd_sys_content_t "/var/www/html/%s(/.*)?"' %sepath)
-        run('restorecon -R -v /var/www/html/%s' %sepath)
-
-def setup_firewall():
-    """ Add permanent rules for firewalld """
-    if type_redhat():
-        output = run('firewall-cmd --list-ports')
-        if '443/tcp' in output and '80/tcp' in output:
-            print("[*] Firewall already configured, skipping firewalld configuration")
-        elif subprocess.call(['firewall-cmd', '--state'], stdout=open(os.devnull, 'w')) == 0:
-            run('firewall-cmd --permanent --add-port=443/tcp')
-            run('firewall-cmd --permanent --add-port=80/tcp')
-            run('firewall-cmd --reload')
-        else:
-            run('firewall-offline-cmd --add-port=443/tcp')
-            run('firewall-offline-cmd --add-port=80/tcp')
-
-def check_mongo2pgsql_upgrade_needed(waptserver_ini):
-    """ return True if upgrade2postgres has been processed.
-    """
-    def mongod_running():
-        return [p for p in psutil.process_iter() if p.name().lower() in ('mongod','mongod.exe')]
-
-    ini = ConfigParser.RawConfigParser()
-    ini.read(waptserver_ini)
-
-    return ini.has_option('options', 'mongodb_port') and len(mongod_running())>0
-
-def upgrade2postgres(configfilename):
-    print ("[*] DB Upgrade - mongodb process running, need to migrate")
-    run('sudo -u wapt PYTHONPATH=/opt/wapt PYTHONHOME=/opt/wapt /opt/wapt/bin/python /opt/wapt/waptserver/upgrade.py upgrade2postgres -c "%s"' % configfilename)
-    run("systemctl stop mongod")
-    run("systemctl disable mongod")
-
-def nginx_set_worker_limit(nginx_conf):
-    already_set=False
-    for entries in nginx_conf:
-        if entries[0]=='worker_rlimit_nofile':
-            print( "[*] Nginx - worker_rlimit_nofile already set")
-            already_set=True
-    if not already_set:
-        nginx_conf.insert(3,['worker_rlimit_nofile', '32768'])
-    return nginx_conf
-
-def nginx_clean_default_vhost(nginx_conf):
-    for entry in nginx_conf:
-        if entry[0]==['http']:
-            for subentry in entry[1]:
-                if subentry[0]==['server']:
-                    print('[*] Nginx - removing default vhost')
-                    entry[1].remove(subentry)
-    return nginx_conf
-
-def nginx_cleanup():
-    with open('/etc/nginx/nginx.conf','r') as read_conf:
-        nginx_conf = nginxparser.load(read_conf)
-        nginx_conf = nginx_set_worker_limit(nginx_conf)
-        nginx_conf = nginx_clean_default_vhost(nginx_conf)
-    with open("/etc/nginx/nginx.conf", "w") as nginx_conf_file:
-        nginx_conf_file.write(nginxparser.dumps(nginx_conf))
-
-def check_if_deb_installed(package_name):
-   child = subprocess.Popen('/usr/bin/dpkg -l "%s"' % package_name, stdout=subprocess.PIPE,shell=True)
-   streamdata = child.communicate()[0]
-   rc = child.returncode
-   if rc==0:
-       return True
-   return False
+def configure_max_connections():
+    config_file_path = run(""" sudo -u postgres psql -c 'SHOW config_file;' """).splitlines()[2].lstrip()
+    with open(config_file_path,"r+") as config_file:
+        new_lines = []
+        found = False
+        for line in config_file.readlines():
+            if 'max_connections' in line:
+                new_lines.append('max_connections = 1000\n')
+                found = True
+            else:
+                new_lines.append(line)
+        if not(found):
+            new_lines.append('max_connections = 1000\n')
+        config_file.seek(0)
+        config_file.truncate()
+        config_file.writelines(new_lines)
 
 def main():
-    global wapt_folder,NGINX_GID
+
+    usage = """%prog [--config filename] [--force-https] [--quiet] [--dhparam-key-size=SIZE]"""
 
     parser = OptionParser(usage=usage, version=__version__)
     parser.add_option(
@@ -380,14 +349,31 @@ def main():
         default=False,
         action="store_true",
         help='Run quiet postconfiguration - default password and simple behavior')
+    parser.add_option(
+        '--dhparam-key-size',
+        dest='dhparam_key_size',
+        default=2048,
+        metavar='NUMBER',
+        type='int',
+        help='Size for dhparam key')
 
     (options, args) = parser.parse_args()
 
+    global quiet
     quiet = options.quiet
+
+    global dhparam_key_size
+    dhparam_key_size = options.dhparam_key_size
+
+    def message_or_print(message):
+        if quiet:
+            print('[*] '+message)
+        else:
+            postconf.msgbox(message)
 
     if not quiet:
         if postconf.yesno("Do you want to launch post configuration tool ?") != postconf.DIALOG_OK:
-            print("canceling wapt postconfiguration")
+            print("Canceling wapt postconfiguration")
             sys.exit(1)
     else:
         print('WAPT silent post-configuration')
@@ -395,14 +381,9 @@ def main():
     # SELinux rules for CentOS/RedHat
     if type_redhat():
         if re.match('^SELinux status:.*enabled', run('sestatus')):
-            if not quiet:
-                postconf.msgbox('SELinux detected, tweaking httpd permissions.')
-                selinux_rules()
-                postconf.msgbox('SELinux correctly configured for Nginx reverse proxy')
-            else:
-                print('[*] Redhat/Centos detected, tweaking SELinux rules')
-                selinux_rules()
-                print('[*] Nginx - SELinux correctly configured for Nginx reverse proxy')
+            message_or_print('SELinux detected, tweaking httpd permissions.')
+            selinux_rules()
+            message_or_print('SELinux correctly configured for Nginx reverse proxy')
 
     # Load existing config file
     server_config = waptserver.config.load_config(options.configfile)
@@ -412,6 +393,7 @@ def main():
         datetime_now = datetime.datetime.now()
         shutil.copyfile(options.configfile,'%s.bck_%s'%  (options.configfile,datetime_now.isoformat()) )
 
+    global wapt_folder
     wapt_folder = server_config['wapt_folder']
 
     # add secret key initialisation string (for session token)
@@ -421,6 +403,7 @@ def main():
     # add user db and password in ini file
     if server_config['db_host'] in (None,'','localhost','127.0.0.1','::1'):
         ensure_postgresql_db(db_name=server_config['db_name'],db_owner=server_config['db_name'],db_password=server_config['db_password'])
+    configure_max_connections()
 
     # Password setup/reset screen
     if not quiet:
@@ -488,7 +471,6 @@ def main():
         server_config['allow_unauthenticated_registration'] = True
         server_config['use_kerberos'] = False
 
-
     # Guess fqdn using socket
     fqdn = guess_fqdn()
 
@@ -516,7 +498,6 @@ def main():
         print('Create X509 cert %s' % clients_signing_certificate)
         crt.save_as_pem(clients_signing_certificate)
 
-
     if clients_signing_certificate is not None and clients_signing_key is not None and clients_signing_crl is not None and not os.path.isfile(clients_signing_crl):
         print('Create a CRL for clients certificate signing')
         key = SSLPrivateKey(clients_signing_key)
@@ -538,18 +519,17 @@ def main():
     final_msg = ['[*] Postconfiguration completed.',]
     if not quiet:
         postconf.msgbox("Press ok to start waptserver and wapttasks daemons")
-    enable_waptserver()
-    start_waptserver()
-
-    # In this new version Apache is replaced with Nginx? Proceed to disable Apache. After migration one can remove Apache install altogether
-    stop_disable_httpd()
+    out=enable_waptserver()
+    out+=start_waptserver()
+    if not quiet:
+        print(out)
 
     # Nginx configuration
     if quiet:
         try:
-            generate_dhparam()
+            generate_dhparam(options.dhparam_key_size)
             nginx_cleanup()
-            make_httpd_config('/opt/wapt/waptserver', fqdn, options.force_https,server_config)
+            make_nginx_config('/opt/wapt/waptserver', fqdn, options.force_https,server_config)
             enable_nginx()
             restart_nginx()
             setup_firewall()
@@ -575,7 +555,7 @@ def main():
                 else:
                     fqdn = reply
 
-                generate_dhparam()
+                generate_dhparam(options.dhparam_key_size)
                 nginx_cleanup()
 
                 if server_config['use_kerberos']:
@@ -584,11 +564,10 @@ def main():
                             print('[*] Nginx - Missing dependency libnginx-mod-http-auth-spnego, please install first before configuring kerberos')
                             sys.exit(1)
 
-                make_httpd_config('/opt/wapt/waptserver', fqdn, options.force_https, server_config)
-                final_msg.append('Please connect to https://' + fqdn + '/ to access the server.')
+                make_nginx_config('/opt/wapt/waptserver', fqdn, options.force_https, server_config)
                 postconf.msgbox("The Nginx config is done. We need to restart Nginx?")
-                run_verbose('systemctl enable nginx')
-                run_verbose('systemctl restart nginx')
+                print(enable_nginx())
+                print(restart_nginx())
                 setup_firewall()
 
             except subprocess.CalledProcessError as cpe:
@@ -630,37 +609,26 @@ def main():
             print('Delete folder %s' % os.path.join(root,d))
             shutil.rmtree(os.path.join(root,d))
 
-
     final_msg.append('Please connect to https://' + fqdn + '/ to access the server.')
-
-    # Check if Mongodb > PostgreSQL migration is necessary
-    if not quiet:
-        if check_mongo2pgsql_upgrade_needed(options.configfile) and\
-                postconf.yesno("It is necessary to migrate current database backend from mongodb to postgres. Press yes to start migration",no_label='cancel') == postconf.DIALOG_OK:
-            upgrade2postgres(options.configfile)
-    else:
-        if check_mongo2pgsql_upgrade_needed(options.configfile):
-            upgrade2postgres(options.configfile)
 
     WAPT_UID = good_pwd.getpwnam('wapt').pw_uid
 
     # CHOWN of waptservertasks.sqlite it seems to be created before
-
     location_waptservertasks = os.path.join(wapt_root_dir,'db','waptservertasks.sqlite')
-
     if os.path.isfile(location_waptservertasks):
         os.chown(location_waptservertasks,WAPT_UID,os.stat(location_waptservertasks).st_gid)
 
     # Create empty sync.json and rules.json file for all installations
-
     sync_json = os.path.join(os.path.abspath(os.path.join(wapt_folder, os.pardir)),u'sync.json')
     rules_json = os.path.join(os.path.abspath(os.path.join(wapt_folder, os.pardir)),u'rules.json')
+    diff_rules_dir = wapt_folder+u'-diff-repos'
 
-    diff_rules_dir = wapt_folder+u'-diff-repos/'
+    paths_to_modify = [(sync_json,True),(rules_json,True),(wapt_folder,False),(wuafolder,False),(diff_rules_dir,False),(ssl_dir,False)]
 
-    paths_to_modify = [sync_json,rules_json,wapt_folder+'/',wuafolder+'/',diff_rules_dir,ssl_dir+'/']
+    if server_config['clients_signing_crl'] is not None:
+        paths_to_modify.append((server_config['clients_signing_crl'],False))
 
-    for apath in paths_to_modify:
+    for apath,isfile in paths_to_modify:
         if os.path.isdir(apath):
             os.chown(apath,WAPT_UID,NGINX_GID)
             os.chmod(apath,0o750)
@@ -673,13 +641,12 @@ def main():
                     full_path=os.path.join(root,f)
                     os.chown(full_path,WAPT_UID,NGINX_GID)
                     os.chmod(full_path, 0o640)
+        elif not(isfile):
+            os.mkdir(apath)
+            os.chmod(apath,0o750)
         else:
-            if apath.endswith('/'):
-                os.mkdir(apath)
-                os.chmod(apath,0o750)
-            else:
-                if not(os.path.isfile(apath)):
-                    with open(apath,'w'): pass
+            if not(os.path.isfile(apath)):
+                with open(apath,'w'): pass
                 os.chmod(apath, 0o640)
             os.chown(apath,WAPT_UID,NGINX_GID)
 
@@ -694,9 +661,8 @@ def main():
         for line in final_msg:
             print(line)
 
-
 if __name__ == "__main__":
     if not type_debian() and not type_redhat():
-        print("unsupported distrib")
+        print("Unsupported distribution")
         sys.exit(1)
     main()

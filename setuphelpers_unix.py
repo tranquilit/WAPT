@@ -38,6 +38,8 @@ import logging
 import glob
 import datetime
 import platform
+import grp
+import pwd
 from waptutils import (ensure_unicode, makepath, ensure_dir,currentdate,currentdatetime,_lower,ini2winstr,error,get_main_ip)
 
 def get_kernel_version():
@@ -249,6 +251,17 @@ def host_info_common_unix():
     info['computer_fqdn'] = socket.getfqdn()
     info['dnsdomain'] = get_domain_batch()
 
+    info['local_groups'] = {g.gr_name:g.gr_mem for g in grp.getgrall()}
+    info['local_users'] = []
+    for u in pwd.getpwall():
+        info['local_users'].append(u.pw_name)
+        gr_struct=grp.getgrgid(u.pw_gid)
+        if info['local_groups'].has_key(gr_struct.gr_name):
+            if u.pw_name not in info['local_groups'][gr_struct.gr_name]:
+                info['local_groups'][gr_struct.gr_name].append(u.pw_name)
+        else:
+            info['local_groups'][gr_struct.gr_name]=[u.pw_name]
+
     try:
         if os.path.isfile('/etc/samba/smb.conf'):
             config = configparser.RawConfigParser(strict=False)
@@ -264,7 +277,11 @@ def host_info_common_unix():
     info['connected_ips'] = [get_main_ip()]
     info['mac'] = [ c['mac'] for c in networking() if 'mac' in c and 'addr' in c and c['addr'] in info['connected_ips']]
     info['kernel_version'] = get_kernel_version()
-    info['cpu_name'] = cpuinfo.get_cpu_info()['brand']
+    #Fix for vscode don't know why it doesn't work : KeyError: 'brand'
+    try:
+        info['cpu_name'] = cpuinfo.get_cpu_info()['brand']
+    except:
+        pass
     info['environ'] = {k:ensure_unicode(v) for k,v in os.environ.items()}
     info['main_ip'] = get_main_ip()
 

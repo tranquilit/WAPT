@@ -4976,8 +4976,18 @@ class Wapt(BaseObjectClass):
             if not printhook:
                 printhook = report
             """
+            if platform.system()=='Windows':
+                target_dir=self.package_cache_dir
+            else:
+                if os.geteuid()==0:
+                    target_dir=self.package_cache_dir
+                else:
+                    target_dir=os.path.join(os.path.expanduser("~"),"waptdev")
+                    if not os.path.isdir(target_dir):
+                        os.mkdir(target_dir)
+
             res = self.get_repo(entry.repo).download_packages(entry,
-                target_dir=self.package_cache_dir,
+                target_dir=target_dir,
                 usecache=usecache,
                 printhook=printhook)
 
@@ -6559,12 +6569,18 @@ class Wapt(BaseObjectClass):
         if installer_path:
             (installer_name,installer_ext) = os.path.splitext(installer)
             installer_ext = installer_ext.lower()
-            if installer_ext == '.msi':
+            if installer_ext in ['.msi','.msix']:
                 setup_template = os.path.join(self.wapt_base_dir,'templates','setup_package_template_msi.py')
             elif installer_ext == '.msu':
                 setup_template = os.path.join(self.wapt_base_dir,'templates','setup_package_template_msu.py')
             elif installer_ext == '.exe':
                 setup_template = os.path.join(self.wapt_base_dir,'templates','setup_package_template_exe.py')
+            elif installer_ext == '.deb':
+                setup_template = os.path.join(self.wapt_base_dir,'templates','setup_package_template_deb.py')
+            elif installer_ext == '.pkg':
+                setup_template = os.path.join(self.wapt_base_dir,'templates','setup_package_template_pkg.py')
+            elif installer_ext == '.rpm':
+                setup_template = os.path.join(self.wapt_base_dir,'templates','setup_package_template_rpm.py')
             elif os.path.isdir(installer_path):
                 setup_template = os.path.join(self.wapt_base_dir,'templates','setup_package_template_dir.py')
             else:
@@ -6864,7 +6880,7 @@ class Wapt(BaseObjectClass):
         with open(os.path.join(self.wapt_base_dir,'templates','vscode_settings.json'),'r') as settings_json_file:
             settings_json=json.load(settings_json_file)
             if (PackageEntry(waptfile=target_directory).target_os.lower() in ['linux','macos','unix']) or not(os.path.isfile(os.path.join(self.wapt_base_dir,'waptpython.exe'))):
-                settings_json['python.pythonPath']='/opt/wapt/bin/python'
+                settings_json['python.pythonPath']='/opt/wapt/bin'
             else:
                 settings_json['python.pythonPath']=os.path.join(self.wapt_base_dir,'waptpython.exe')
             with open(os.path.join(vscode_dir,'settings.json'),'w+') as settings_json_outfile:
@@ -7522,7 +7538,7 @@ def wapt_sources_edit(wapt_sources_dir,editor_for_packages = None):
     # in edit_for_packages you can specify {key_params} to replace for launch the editor
 
     if os.name == 'nt':
-        if editor_for_packages is None:
+        if not(editor_for_packages):
             params["psproj_filename"]=os.path.join(wapt_sources_dir,u'WAPT',u'wapt.psproj')
             pyscripter_filename = os.path.join(setuphelpers.programfiles32,
                                                'PyScripter', 'PyScripter.exe')

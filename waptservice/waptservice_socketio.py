@@ -26,6 +26,7 @@ import os
 import datetime
 import logging
 import threading
+import platform
 
 try:
     wapt_root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__),'..'))
@@ -312,7 +313,12 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
 
                 elif name == 'trigger_waptservicerestart':
                     try:
-                        msg = setuphelpers.create_onetime_task('waptservicerestart','cmd.exe','/C net stop waptservice & net start waptservice')
+                        if platform.system() == 'Windows':
+                            msg = setuphelpers.create_onetime_task('waptservicerestart','cmd.exe','/C net stop waptservice & net start waptservice')
+                        elif platform.system() == 'Darwin':
+                            msg = setuphelpers.run('launchctl unload /Library/LaunchDaemons/com.tranquilit.tis-waptagent.plist;launchctl trigload /Library/LaunchDaemons/com.tranquilit.tis-waptagent.plist;')
+                        else:
+                            msg = setuphelpers.run('systemctl restart waptservice')
                         result.append(dict(success=True,msg = msg,result = msg))
                     except:
                         # restart by nssm
@@ -389,16 +395,6 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
                 self.task_manager.add_task(WaptSyncRepo(notifyuser=False,created_by='SERVER'))
             except Exception as e:
                 logger.debug(u'Error syncing local repo with server repo : %s' % e)
-        else:
-            self.emit("synchronization_not_a_local_remote_repo")
-
-    def on_resync_remote_repo(self,args):
-        logger.debug('Delete sync files and resync remote repo %s' % (args,))
-        if waptconfig.enable_remote_repo and WaptSyncRepo is not None:
-            try:
-                self.task_manager.add_task(WaptSyncRepo(notifyuser=False,created_by='SERVER',resync=True))
-            except Exception as e:
-                logger.debug(u'Error removing and syncing local repo with server repo : %s' % e)
         else:
             self.emit("synchronization_not_a_local_remote_repo")
 

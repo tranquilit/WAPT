@@ -6,8 +6,10 @@ error_log  "{{ wapt_root_dir}}/log/nginx-errors.log";
 pid        "{{ wapt_root_dir}}/log/nginx.pid";
 
 events {
-    worker_connections  1024;
+    worker_connections  4096;
 }
+
+worker_rlimit_nofile 32768;
 
 http {
     include       mime.types;
@@ -48,6 +50,9 @@ http {
         ssl_certificate             "{{ wapt_ssl_cert_file }}";
         ssl_certificate_key         "{{ wapt_ssl_key_file }}";
         ssl_protocols               TLSv1.2;
+	{% if has_dhparam %}
+        ssl_dhparam                 "{{ wapt_dhparam_file }}";
+	{%endif %}
         ssl_prefer_server_ciphers   on;
         ssl_ciphers                 'EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH';
         ssl_stapling_verify         on;
@@ -76,8 +81,6 @@ http {
         index index.html;
 
         location / {
-            add_header Cache-Control "store, no-cache, must-revalidate, post-check=0, pre-check=0";
-            add_header Pragma "no-cache";
             proxy_set_header X-Real-IP  $remote_addr;
             proxy_set_header Host $host;
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -100,10 +103,14 @@ http {
             {% endif %}
 
             location ~ ^/(wapt/waptsetup-tis.exe|wapt/waptagent.exe|wapt/waptdeploy.exe)$ {
+                add_header Cache-Control "store, no-cache, must-revalidate, post-check=0, pre-check=0";
+                add_header Pragma "no-cache";
                 root "{{ wapt_repository_path }}";
             }
 
             location ~ ^/(wapt/.*|wapt-host/.*|waptwua/.*|wapt-diff-repos/.*)$ {
+                add_header Cache-Control "store, no-cache, must-revalidate, post-check=0, pre-check=0";
+                add_header Pragma "no-cache";
     {% if use_ssl_client_auth %}
                 proxy_set_header X-Ssl-Authenticated $ssl_client_verify;
                 proxy_set_header X-Ssl-Client-DN $ssl_client_s_dn;
@@ -135,6 +142,8 @@ http {
             }
 
             location / {
+                add_header Cache-Control "store, no-cache, must-revalidate, post-check=0, pre-check=0";
+                add_header Pragma "no-cache";
     {% if use_ssl_client_auth %}
                 proxy_set_header X-Ssl-Authenticated $ssl_client_verify;
                 proxy_set_header X-Ssl-Client-DN $ssl_client_s_dn;

@@ -229,7 +229,7 @@ class WaptServiceConfig(object):
          'MAX_HISTORY','waptservice_port',
          'dbpath','loglevel','log_directory','waptserver',
          'hiberboot_enabled','max_gpo_script_wait','pre_shutdown_timeout','log_to_windows_events',
-         'allow_user_service_restart','signature_clockskew','waptwua_enabled','notify_user','waptservice_admin_auth_allow',
+         'allow_user_service_restart','signature_clockskew','waptwua_enabled','notify_user','waptservice_admin_filter',
          'enable_remote_repo','local_repo_path','local_repo_sync_task_period','local_repo_time_for_sync_start',
          'local_repo_time_for_sync_end','local_repo_limit_bandwidth','wol_port']
 
@@ -241,7 +241,7 @@ class WaptServiceConfig(object):
         self.waptservice_user = None
         self.waptservice_password = None
 
-        self.waptservice_admin_auth_allow = True
+        self.waptservice_admin_filter = False
 
         # maximum nb of tasks to keep in history wapt task manager
         self.MAX_HISTORY = 30
@@ -305,7 +305,7 @@ class WaptServiceConfig(object):
         self.enable_remote_repo = False
         self.enable_diff_repo = False
         self.local_repo_path = os.path.join(wapt_root_dir,'repository')
-        self.local_repo_sync_task_period = None
+        self.local_repo_sync_task_period = '2h'
         self.remote_repo_dirs = ['wapt','waptwua']
         self.local_repo_time_for_sync_start = None
         self.local_repo_time_for_sync_end = None
@@ -333,8 +333,8 @@ class WaptServiceConfig(object):
                 logger.info(u"No password set for local waptservice, using local computer security")
                 self.waptservice_password=None  # = password
 
-            if config.has_option('global','waptservice_admin_auth_allow'):
-                self.waptservice_admin_auth_allow = config.getboolean('global','waptservice_admin_auth_allow')
+            if config.has_option('global','waptservice_admin_filter'):
+                self.waptservice_admin_filter = config.getboolean('global','waptservice_admin_filter')
 
             if config.has_option('global','waptservice_port'):
                 port = config.get('global','waptservice_port')
@@ -469,19 +469,17 @@ class WaptServiceConfig(object):
                         self.local_repo_path = config.get('repo-sync','local_repo_path').decode('utf-8')
                     if config.has_option('repo-sync','local_repo_time_for_sync_start'):
                         regex = re.compile('([0-1][0-9]|2[0-3]):[0-5][0-9]')
-                        timeforsync_start = config.get('repo-sync','local_repo_time_for_sync_start') or None
+                        timeforsync_start = config.get('repo-sync','local_repo_time_for_sync_start')
                         if regex.match(timeforsync_start):
                             self.local_repo_time_for_sync_start = timeforsync_start
                             if config.has_option('repo-sync','local_repo_time_for_sync_end') and regex.match(config.get('repo-sync','local_repo_time_for_sync_end')):
-                                self.local_repo_time_for_sync_end=config.get('repo-sync','local_repo_time_for_sync_end') or None
+                                self.local_repo_time_for_sync_end=config.get('repo-sync','local_repo_time_for_sync_end')
                             else:
                                 self.local_repo_time_for_sync_end='%d:%s' % (int(timeforsync_start.split(':')[0])+1, timeforsync_start.split(':')[1])
                     elif config.has_option('repo-sync','local_repo_sync_task_period'):
-                        self.local_repo_sync_task_period = config.get('repo-sync','local_repo_sync_task_period') or None
-                    else:
-                        self.local_repo_sync_task_period = '10m'
+                        self.local_repo_sync_task_period = config.get('repo-sync','local_repo_sync_task_period')
                     if config.has_option('repo-sync','local_repo_limit_bandwidth'):
-                        self.local_repo_limit_bandwidth = config.getfloat('repo-sync','local_repo_limit_bandwidth') or None
+                        self.local_repo_limit_bandwidth = config.getfloat('repo-sync','local_repo_limit_bandwidth')
 
             # settings for waptexit / shutdown policy
             #   recommended settings :

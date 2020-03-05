@@ -25,6 +25,8 @@ flask-paginate==0.5.1
 Flask-SocketIO==4.2.1
 future==0.17.1
 gitpython==2.1.14
+gitdb==0.6.4
+gitdb2==2.0.6
 greenlet==0.4.15
 huey==1.10.2
 idna==2.7
