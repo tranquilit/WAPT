@@ -349,6 +349,7 @@ package_info_file = 'tmpbuild/build-info.plist'
 plist_obj = plistlib.readPlist(package_info_file)
 plist_obj['name'] = package_filename
 plist_obj['version'] = full_version
+plist_obj['identifier'] = 'com.tranquilit.wapt' + ('enterprise' if WAPTEDITION=='enterprise' else '')
 plistlib.writePlist(plist_obj, package_info_file)
 
 run("cp dmidecode tmpbuild/payload/usr/local/bin/")
