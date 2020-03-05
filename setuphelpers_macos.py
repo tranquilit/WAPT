@@ -47,25 +47,6 @@ import xml.etree.ElementTree as etree
 
 from setuphelpers_unix import *
 
-"""
-- install_dmg_if_needed :
-hdiutil mount abc.dmg
-sudo cp -R "/Volumes/abc/abc.app" /Applications
-OU
-sudo installer -package /Volumes/abc/abc.pkg -target "/Volumes/Macintosh HD"
-hdutil unmount "/Volumes/abc"
-
-- lister les dmg/pkg install�s :
-cat /Applications AND pkgutil --pkgs
-Note : /Library/Receipts/InstallHistory.plist
-
-- desinstallation d'un dmg:
-sudo rm -rf /Applications/abc.app
-OU
-desinstallation d'un pkg
-
-"""
-
 
 def host_info():
     """ Read main workstation informations, returned as a dict """
