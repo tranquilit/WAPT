@@ -306,7 +306,7 @@ class HostPackagesStatus(WaptBaseModel):
     id = PrimaryKeyField(primary_key=True)
     host = ForeignKeyField(Hosts, on_delete='CASCADE', on_update='CASCADE')
     package_uuid = CharField(null=True)
-    #name = CharField(null=True)
+    name = CharField(null=True)
     package = CharField(null=True, index=True)
     version = CharField(null=True)
     architecture = CharField(null=True)
@@ -318,7 +318,7 @@ class HostPackagesStatus(WaptBaseModel):
     signer_fingerprint = CharField(null=True)
     signature_date = CharField(null=True)
     description = TextField(null=True)
-    #impacted_process = ArrayField(CharField,null=True)
+    impacted_process = ArrayField(CharField,null=True)
     install_status = CharField(null=True)
     install_date = CharField(null=True)
     install_output = TextField(null=True)
@@ -2099,6 +2099,22 @@ def upgrade_db_structure():
                 WaptUserAcls.create_table()
 
                 migrate(*opes)
+                (v, created) = ServerAttribs.get_or_create(key='db_version')
+                v.value = next_version
+                v.save()
+
+        next_version = '1.8.1.0'
+        if get_db_version() <= next_version:
+            with wapt_db.atomic():
+                logger.info("Migrating from %s to %s" % (get_db_version(), next_version))
+                opes = []
+
+                columns = [c.name for c in wapt_db.get_columns('hostpackagesstatus')]
+                if not 'name' in columns:
+                    opes.append(migrator.add_column(HostPackagesStatus._meta.name, 'name',HostPackagesStatus.name))
+                if not 'impacted_process' in columns:
+                    opes.append(migrator.add_column(HostPackagesStatus._meta.name, 'impacted_process',HostPackagesStatus.impacted_process))
+
                 (v, created) = ServerAttribs.get_or_create(key='db_version')
                 v.value = next_version
                 v.save()
