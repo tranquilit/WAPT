@@ -1209,7 +1209,7 @@ def update_host_data(data,server_conf=None):
                 if 'authorized_certificates' in supplied_hashes:
                     updhost.status_hashes['authorized_certificates'] = supplied_hashes['authorized_certificates']
 
-            if server_conf['diff_repo']:
+            if server_conf['remote_repo_diff']:
                 try:
                     from waptenterprise.waptserver.repositories import update_file_tree_of_files
                     update_file_tree_of_files(username = 'TASK_UPDATE_HOST_DATA')
