@@ -306,7 +306,7 @@ class HostPackagesStatus(WaptBaseModel):
     id = PrimaryKeyField(primary_key=True)
     host = ForeignKeyField(Hosts, on_delete='CASCADE', on_update='CASCADE')
     package_uuid = CharField(null=True)
-    name = CharField(null=True)
+    #name = CharField(null=True)
     package = CharField(null=True, index=True)
     version = CharField(null=True)
     architecture = CharField(null=True)
@@ -318,7 +318,7 @@ class HostPackagesStatus(WaptBaseModel):
     signer_fingerprint = CharField(null=True)
     signature_date = CharField(null=True)
     description = TextField(null=True)
-    impacted_process = ArrayField(CharField,null=True)
+    #impacted_process = ArrayField(CharField,null=True)
     install_status = CharField(null=True)
     install_date = CharField(null=True)
     install_output = TextField(null=True)
@@ -1189,7 +1189,7 @@ def update_host_data(data,server_conf=None):
                 if 'authorized_certificates' in supplied_hashes:
                     updhost.status_hashes['authorized_certificates'] = supplied_hashes['authorized_certificates']
 
-            if server_conf['diff_repo']:
+            if server_conf['remote_repo_diff']:
                 try:
                     from waptenterprise.waptserver.repositories import update_file_tree_of_files
                     update_file_tree_of_files()
