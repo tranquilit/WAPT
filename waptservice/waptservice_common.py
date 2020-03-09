@@ -875,18 +875,19 @@ class WaptUpdateServerStatus(WaptTask):
             setattr(self,k,args[k])
 
     def _run(self):
-        if self.wapt.waptserver_available():
-            print('Sending host status to server')
-            try:
-                self.result = self.wapt.update_server_status(force=self.force)
-                self.summary = _(u'WAPT Server has been notified')
-                print('Done.')
-            except Exception as e:
+        print('Sending host status to server')
+        try:
+            self.result = self.wapt.update_server_status(force=self.force)
+            if self.result is None:
                 self.result = {}
-                self.summary = _(u"Error while sending to the server : {}").format(ensure_unicode(e))
-        else:
+                self.summary = _(u'WAPT Server is not available')
+            else:
+                self.summary = _(u'WAPT Server has been notified')
+            print('Done.')
+        except Exception as e:
             self.result = {}
-            self.summary = _(u'WAPT Server is not available')
+            self.summary = _(u"Error while sending to the server : {}").format(ensure_unicode(e))
+
 
     def __unicode__(self):
         return _(u"Update server with this host's status")

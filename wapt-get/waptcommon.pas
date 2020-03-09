@@ -911,7 +911,7 @@ begin
 
   http := TIdHTTP.Create;
   try
-    http.Compressor :=  TIdCompressorZLib.Create(Nil);
+    http.Compressor :=  TIdCompressorZLib.Create(http);
     http.CookieManager := CookieManager;
     http.HandleRedirects:=True;
     http.Request.AcceptLanguage := Language;
@@ -998,7 +998,7 @@ begin
       tmpDataStream := False;
 
     http.HandleRedirects:=True;
-    http.Compressor := TIdCompressorZLib.Create;
+    http.Compressor := TIdCompressorZLib.Create(http);
     http.CookieManager := CookieManager;
     http.Request.AcceptLanguage := Language;
     if userAgent='' then
@@ -1692,7 +1692,7 @@ begin
   else
     http.Request.UserAgent := userAgent;
 
-  http.compressor :=  TIdCompressorZLib.Create(Nil);
+  http.compressor :=  TIdCompressorZLib.Create(http);
 
   if CookieManager<>Nil then
     http.CookieManager := CookieManager;
@@ -1781,7 +1781,7 @@ begin
 
   http := TIdHTTP.Create;
   http.HandleRedirects:=True;
-  http.Compressor := TIdCompressorZLib.Create;
+  http.Compressor := TIdCompressorZLib.Create(http);
 
   if CookieManager<>Nil then
     http.CookieManager := CookieManager;
@@ -2734,7 +2734,7 @@ begin
   http.Request.UserAgent := DefaultUserAgent;
   http.HandleRedirects:=True;
 
-  http.Compressor := TIdCompressorZLib.Create;
+  http.Compressor := TIdCompressorZLib.Create(http);
 
   if UseProxyForServer then
     IdConfigureProxy(http,HttpProxy);

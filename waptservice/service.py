@@ -1509,17 +1509,16 @@ class WaptTaskManager(threading.Thread):
             self.events.post_event("STATUS",self.wapt.get_last_update_status())
 
     def update_server_status(self):
-        if self.wapt.waptserver_available():
-            try:
-                result = self.wapt.update_server_status()
-                if result and result['success'] and result['result']['uuid']:
-                    self.last_update_server_date = datetime.datetime.now()
-                elif result and not result['success']:
-                    self.logger.critical('Unable to update server status: %s' % result['msg'])
-                else:
-                    raise Exception('No answer')
-            except Exception as e:
-                self.logger.debug('Unable to update server status: %s' % repr(e))
+        try:
+            result = self.wapt.update_server_status()
+            if result and result['success'] and result['result']['uuid']:
+                self.last_update_server_date = datetime.datetime.now()
+            elif result and not result['success']:
+                self.logger.critical('Unable to update server status: %s' % result['msg'])
+            else:
+                raise Exception('No answer')
+        except Exception as e:
+            self.logger.debug('Unable to update server status: %s' % repr(e))
 
     def broadcast_tasks_status(self,event_type,task):
         """event_type : TASK_ADD TASK_START TASK_STATUS TASK_FINISH TASK_CANCEL TASK_ERROR

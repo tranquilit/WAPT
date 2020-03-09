@@ -7417,7 +7417,7 @@ class Wapt(BaseObjectClass):
         try:
             for repo in self.repositories:
                 repo.reset_network()
-            if not self.disable_update_server_status and self.waptserver_available():
+            if not self.disable_update_server_status:
                 self.update_server_status()
         except Exception as e:
             logger.warning(u'WAPT was unable to reconfigure properly after network changes : %s'%ensure_unicode(e))
