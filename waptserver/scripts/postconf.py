@@ -255,10 +255,19 @@ def nginx_set_worker_connections(nginx_conf):
 def nginx_clean_default_vhost(nginx_conf):
     for entry in nginx_conf:
         if entry[0]==['http']:
+            found_gzip=False
             for subentry in entry[1]:
                 if subentry[0]==['server']:
                     print('[*] Nginx - removing default vhost')
                     entry[1].remove(subentry)
+                if subentry[0]=='gzip':
+                    if subentry[1]=='on':
+                        found_gzip=True
+                    else:
+                        found_gzip=True
+                        subentry[1]='on'
+            if not(found_gzip):
+                entry[1].insert(1,['gzip','on'])
     return nginx_conf
 
 def nginx_cleanup():
