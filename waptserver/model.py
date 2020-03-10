@@ -144,6 +144,7 @@ class WaptBaseModel(SignaledModel):
     """A base model that will use our Postgresql database"""
     class Meta(object):
         database = wapt_db
+        only_save_dirty = True
 
     # audit data
     created_on = DateTimeField(null=True)
@@ -158,7 +159,7 @@ class WaptBaseModel(SignaledModel):
         return self.__unicode__().encode('utf8')
 
 
-@pre_save(sender=WaptBaseModel)
+#@pre_save(sender=WaptBaseModel)
 def waptbasemodel_pre_save(model_class, instance, created):
     if created:
         instance.created_on = datetime.datetime.utcnow()
@@ -902,7 +903,6 @@ def update_installed_packages(uuid, data, applied_status_hashes):
     errors = [ package_version_from_prequest(pr) for pr in last_update_status.get('errors',[])]  or []
 
     if installed_packages is not None:
-        HostPackagesStatus.delete().where(HostPackagesStatus.host == uuid).execute()
         packages = []
         for package in installed_packages:
             package['host'] = uuid
@@ -935,12 +935,18 @@ def update_installed_packages(uuid, data, applied_status_hashes):
             # filter out all unknown fields from json data for the SQL insert
             packages.append(dict([(k, encode_value(v)) for k, v in package.iteritems() if k in HostPackagesStatus._meta.fields]))
 
+        package_uuids = [p['package_uuid'] for p in packages]
+
+        # removes packages which are no longer on client
+        HostPackagesStatus.delete().where( (HostPackagesStatus.host == uuid) & (HostPackagesStatus.package_uuid.not_in(package_uuids)) ).execute()
 
         if packages:
             HostPackagesStatus.insert_many(packages).execute() # pylint: disable=no-value-for-parameter
 
         applied_status_hashes['installed_packages'] = data.get('status_hashes',{}).get('installed_packages')
 
+    # all this should be made in waptconsole ... we don't need it here
+    """
     else:
         # merge last_update_status in current records
         # errors
@@ -955,7 +961,7 @@ def update_installed_packages(uuid, data, applied_status_hashes):
         for pv in upgrades:
             HostPackagesStatus.update(install_status='NEED-UPGRADE').where(
                 (HostPackagesStatus.host==uuid) & (HostPackagesStatus.package==pv[0].encode('utf8')) & (HostPackagesStatus.version != pv[1].encode('utf8'))).execute()
-
+    """
 
     # add missing
     for pv in missing+upgrades:

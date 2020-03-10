@@ -1196,7 +1196,7 @@ class WaptDB(WaptBaseDB):
             list: of installed PackageEntry
         """
         sql = ["""\
-              select l.package,l.version,l.architecture,l.install_date,l.install_status,l.install_output,l.install_params,%s
+              select l.id,l.package,l.version,l.architecture,l.install_date,l.install_status,l.install_output,l.install_params,%s
                 l.uninstall_key,l.explicit_by,
                 coalesce(l.depends,r.depends) as depends,coalesce(l.conflicts,r.conflicts) as conflicts,coalesce(l.section,r.section) as section,coalesce(l.priority,r.priority) as priority,
                 r.maintainer,r.description,r.sources,r.filename,r.size,
