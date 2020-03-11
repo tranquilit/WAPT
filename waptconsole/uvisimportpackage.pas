@@ -739,7 +739,8 @@ begin
           ));
         { TODO : Remove use of WAPT instance, use waptpackage.PackageEntry instead }
         dmpython.WAPT.add_pyscripter_project(sourceDir);
-        DMPython.common.wapt_sources_edit(sourceDir);
+        dmpython.WAPT.add_vscode_projectt(sourceDir);
+        DMPython.common.wapt_sources_edit(wapt_sources_dir:=sourceDir,editor_for_packages:=dmpython.WAPT.editor_for_packages);
       end;
     finally
       Free;
