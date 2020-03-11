@@ -51,6 +51,10 @@
 
 #define use_repo_rules ""
 
+#define waptservice_admin_filter ""
+
+#define maturities ""
+
 #define use_random_uuid ""
 
 #ifdef waptenterprise

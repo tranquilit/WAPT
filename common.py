@@ -7533,7 +7533,8 @@ def wapt_sources_edit(wapt_sources_dir,editor_for_packages = None):
         "wapt_base_dir":os.path.dirname(__file__),
         "wapt_sources_dir":wapt_sources_dir,
         "setup_filename":os.path.join(wapt_sources_dir,u'setup.py'),
-        "control_filename":os.path.join(wapt_sources_dir,u'WAPT',u'control')}
+        "control_filename":os.path.join(wapt_sources_dir,u'WAPT',u'control'),
+        "changelog_filename":os.path.join(wapt_sources_dir,u'WAPT',u'changelog.txt')}
 
     # in edit_for_packages you can specify {key_params} to replace for launch the editor
 
