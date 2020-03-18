@@ -1988,7 +1988,7 @@ def upgrade_db_structure():
                 v.save()
 
         next_version = '1.7.4'
-        if get_db_version() <= next_version:
+        if get_db_version() < next_version:
             with wapt_db.atomic():
                 logger.info("Migrating from %s to %s" % (get_db_version(), next_version))
                 opes = []
@@ -2013,12 +2013,12 @@ def upgrade_db_structure():
                 v.save()
 
         next_version = '1.7.5'
-        if get_db_version() <= next_version:
+        if get_db_version() < next_version:
             with wapt_db.atomic():
                 logger.info("Migrating from %s to %s" % (get_db_version(), next_version))
                 opes = []
 
-                ReportingSnapshots.create_table(fail_silently=True);
+                ReportingSnapshots.create_table(fail_silently=True)
 
                 columns = [c.name for c in wapt_db.get_columns('reportingqueries')]
                 if not 'snapshot_period' in columns:
@@ -2036,12 +2036,12 @@ def upgrade_db_structure():
                 v.save()
 
         next_version = '1.7.6'
-        if get_db_version() <= next_version:
+        if get_db_version() < next_version:
             with wapt_db.atomic():
                 logger.info("Migrating from %s to %s" % (get_db_version(), next_version))
                 opes = []
 
-                SyncStatus.create_table(fail_silently=True);
+                SyncStatus.create_table(fail_silently=True)
 
                 columns = [c.name for c in wapt_db.get_columns('syncstatus')]
                 if not 'version' in columns:
@@ -2049,7 +2049,7 @@ def upgrade_db_structure():
                 if not 'changelog' in columns:
                     opes.append(migrator.add_column(SyncStatus._meta.name, 'changelog',SyncStatus.changelog))
 
-                SiteRules.create_table(fail_silently=True);
+                SiteRules.create_table(fail_silently=True)
 
                 columns = [c.name for c in wapt_db.get_columns('siterules')]
                 if not 'sequence' in columns:
@@ -2076,7 +2076,7 @@ def upgrade_db_structure():
                 v.save()
 
         next_version = '1.7.6.5'
-        if get_db_version() <= next_version:
+        if get_db_version() < next_version:
             with wapt_db.atomic():
                 logger.info("Migrating from %s to %s" % (get_db_version(), next_version))
                 opes = []
@@ -2091,7 +2091,7 @@ def upgrade_db_structure():
                 v.save()
 
         next_version = '1.7.6.6'
-        if get_db_version() <= next_version:
+        if get_db_version() < next_version:
             with wapt_db.atomic():
                 logger.info("Migrating from %s to %s" % (get_db_version(), next_version))
                 opes = []
@@ -2104,7 +2104,7 @@ def upgrade_db_structure():
                 v.save()
 
         next_version = '1.8.1.0'
-        if get_db_version() <= next_version:
+        if get_db_version() < next_version:
             with wapt_db.atomic():
                 logger.info("Migrating from %s to %s" % (get_db_version(), next_version))
                 opes = []

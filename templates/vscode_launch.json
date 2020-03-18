@@ -94,7 +94,7 @@
             "program": "${config:python.wapt-get}",
             "args": [
                 "audit",
-				"-f",
+                "-f",
                 "${workspaceFolder}"
             ],
             "console": "integratedTerminal",
@@ -129,7 +129,7 @@
             "program": "${config:python.wapt-get}",
             "args": [
                 "upgrade",
-				"-f",
+                "-f",
                 "${workspaceFolder}"
             ],
             "console": "integratedTerminal",
