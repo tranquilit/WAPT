@@ -144,6 +144,14 @@ Filename: {app}\wapt-get.ini; Section: global; Key: use_ad_groups; String: {#use
 Filename: {app}\wapt-get.ini; Section: global; Key: use_repo_rules; String: {#use_repo_rules};
 #endif
 
+#if waptservice_admin_filter != ""
+Filename: {app}\wapt-get.ini; Section: global; Key: waptservice_admin_filter; String: {#waptservice_admin_filter};
+#endif
+
+#if maturities != ""
+Filename: {app}\wapt-get.ini; Section: global; Key: maturities; String: {#maturities};
+#endif
+
 Filename: {app}\wapt-get.ini; Section: global; Key: uuid; String: {code:GenerateHostUUID}; Check: MustChangeHostUUID;
 
 #if edition != "waptserversetup"

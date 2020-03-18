@@ -147,7 +147,9 @@ interface
             AppendHostProfiles:String='';
             WUAParams:ISuperObject=Nil;
             WaptauditTaskPeriod:String='';
-            PrivateKeyPassword:String=''
+            PrivateKeyPassword:String='';
+            Maturities:String='';
+            WaptServiceAdminFilter:String=''
             ):Utf8String;
 
   function pyformat(template:String;params:ISuperobject):String;
@@ -911,7 +913,7 @@ begin
 
   http := TIdHTTP.Create;
   try
-    http.Compressor :=  TIdCompressorZLib.Create(Nil);
+    http.Compressor :=  TIdCompressorZLib.Create(http);
     http.CookieManager := CookieManager;
     http.HandleRedirects:=True;
     http.Request.AcceptLanguage := Language;
@@ -998,7 +1000,7 @@ begin
       tmpDataStream := False;
 
     http.HandleRedirects:=True;
-    http.Compressor := TIdCompressorZLib.Create;
+    http.Compressor := TIdCompressorZLib.Create(http);
     http.CookieManager := CookieManager;
     http.Request.AcceptLanguage := Language;
     if userAgent='' then
@@ -1692,7 +1694,7 @@ begin
   else
     http.Request.UserAgent := userAgent;
 
-  http.compressor :=  TIdCompressorZLib.Create(Nil);
+  http.compressor :=  TIdCompressorZLib.Create(http);
 
   if CookieManager<>Nil then
     http.CookieManager := CookieManager;
@@ -1781,7 +1783,7 @@ begin
 
   http := TIdHTTP.Create;
   http.HandleRedirects:=True;
-  http.Compressor := TIdCompressorZLib.Create;
+  http.Compressor := TIdCompressorZLib.Create(http);
 
   if CookieManager<>Nil then
     http.CookieManager := CookieManager;
@@ -2734,7 +2736,7 @@ begin
   http.Request.UserAgent := DefaultUserAgent;
   http.HandleRedirects:=True;
 
-  http.Compressor := TIdCompressorZLib.Create;
+  http.Compressor := TIdCompressorZLib.Create(http);
 
   if UseProxyForServer then
     IdConfigureProxy(http,HttpProxy);
@@ -2808,7 +2810,9 @@ function CreateWaptSetup(default_public_cert: Utf8String;
   UseRepoRules:Boolean=False; AppendHostProfiles:String='';
   WUAParams:ISuperObject=Nil;
   WaptauditTaskPeriod:String='';
-  PrivateKeyPassword:String=''): Utf8String;
+  PrivateKeyPassword:String='';
+  Maturities:String='';
+  WaptServiceAdminFilter:String=''):Utf8String;
 var
   iss_template,custom_iss,FN,SSLDir,SSLServerDir,
   DestVerifyCert,Destination,SignArg: String;
@@ -2936,6 +2940,20 @@ begin
             if WUAParams[akey.AsString]<>Nil then
               new_iss.AsArray.Add(Format('  #define set_waptwua_%s "%s"',[akey.AsString,WUAParams.S[akey.AsString]]));
           end;
+        end
+        else if startswith(line,'#define maturities') then
+        begin
+             if Maturities<>'' then
+               new_iss.AsArray.Add(Format('#define maturities "%s"',[Maturities]))
+             else
+               new_iss.AsArray.Add(format('#define maturities ""',[]));
+        end
+        else if startswith(line,'#define waptservice_admin_filter') then
+        begin
+             if WaptServiceAdminFilter='True' then
+               new_iss.AsArray.Add(Format('#define waptservice_admin_filter "True"',[]))
+             else
+               new_iss.AsArray.Add(Format('#define waptservice_admin_filter ""',[]));
         end
         else if startswith(line,'#define edition') and (waptedition <> '') then
           new_iss.AsArray.Add(format('#define edition "%s"' ,[waptedition]))

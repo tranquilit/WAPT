@@ -266,7 +266,8 @@ run_verbose(r'virtualenv ./builddir/opt/wapt --always-copy')
 
 eprint('Install additional libraries in build environment virtualenv')
 
-run_verbose('./builddir/opt/wapt/bin/pip install pip setuptools --upgrade')
+run_verbose('./builddir/opt/wapt/bin/pip install pip --upgrade')
+run_verbose('./builddir/opt/wapt/bin/pip install setuptools --upgrade')
 
 run('./builddir/opt/wapt/bin/pip install -r ../../requirements-server.txt -t ./builddir/opt/wapt/lib/python2.7/site-packages')
 

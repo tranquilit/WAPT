@@ -2322,7 +2322,8 @@ begin
     cabundle := None();
     PackageEdited.unzip_package(cabundle := cabundle, target_dir := vDevPath);
     DMPython.WAPT.add_pyscripter_project(vDevPath);
-    DMPython.common.wapt_sources_edit( wapt_sources_dir := vDevPath);
+    DMPython.WAPT.add_vscode_project(vDevPath);
+    DMPython.common.wapt_sources_edit( wapt_sources_dir := vDevPath,editor_for_packages:=DMPython.WAPT.editor_for_packages);
   end;
 end;
 
@@ -2351,7 +2352,8 @@ begin
         cabundle := None();
         PackageEdited.unzip_package(cabundle := cabundle, target_dir := vDevPath);
         DMPython.WAPT.add_pyscripter_project(vDevPath);
-        DMPython.common.wapt_sources_edit( wapt_sources_dir := vDevPath);
+        DMPython.WAPT.add_vscode_project(vDevPath);
+        DMPython.common.wapt_sources_edit( wapt_sources_dir := vDevPath,editor_for_packages:=DMPython.WAPT.editor_for_packages);
         Result := PackageEdited;
       end;
     end;

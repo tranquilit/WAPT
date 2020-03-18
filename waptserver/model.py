@@ -2150,24 +2150,24 @@ def upgrade_db_structure():
                     COST 100
                 AS $BODY$
                 BEGIN
-                	IF (TG_OP = 'INSERT') THEN
-                		IF ((NEW.wapt_status->>'is_remote_repo')::boolean=True) THEN
-                			INSERT INTO hostsyncstatus (uuid) VALUES (NEW.uuid);
-                		END IF;
-                		RETURN NEW;
-                	ELSEIF (TG_OP = 'UPDATE') THEN
-                		IF ((NEW.wapt_status->>'is_remote_repo')::boolean=True) THEN
-                			IF NOT EXISTS (SELECT 1 FROM hostsyncstatus WHERE uuid = NEW.uuid) THEN
-                				INSERT INTO hostsyncstatus (uuid) VALUES (NEW.uuid);
-                			END IF;
-                		ELSE
-                			DELETE FROM hostsyncstatus WHERE hostsyncstatus.uuid = OLD.uuid;
-                		END IF;
-                		RETURN NEW;
-                	ELSE
-                		DELETE FROM hostsyncstatus WHERE hostsyncstatus.uuid = OLD.uuid;
-                		RETURN OLD;
-                	END IF;
+                    IF (TG_OP = 'INSERT') THEN
+                        IF ((NEW.wapt_status->>'is_remote_repo')::boolean=True) THEN
+                            INSERT INTO hostsyncstatus (uuid) VALUES (NEW.uuid);
+                        END IF;
+                        RETURN NEW;
+                    ELSEIF (TG_OP = 'UPDATE') THEN
+                        IF ((NEW.wapt_status->>'is_remote_repo')::boolean=True) THEN
+                            IF NOT EXISTS (SELECT 1 FROM hostsyncstatus WHERE uuid = NEW.uuid) THEN
+                                INSERT INTO hostsyncstatus (uuid) VALUES (NEW.uuid);
+                            END IF;
+                        ELSE
+                            DELETE FROM hostsyncstatus WHERE hostsyncstatus.uuid = OLD.uuid;
+                        END IF;
+                        RETURN NEW;
+                    ELSE
+                        DELETE FROM hostsyncstatus WHERE hostsyncstatus.uuid = OLD.uuid;
+                        RETURN OLD;
+                    END IF;
                 END
                 $BODY$;
                 """

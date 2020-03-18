@@ -1023,7 +1023,9 @@ begin
       GetCmdParams('AppendHostProfiles',ini.ReadString('global', 'append_host_profiles','')),
       Nil,
       '',
-      GetCmdParams('PrivateKeyPassword','')
+      GetCmdParams('PrivateKeyPassword',''),
+      GetCmdParams('Maturities',ini.ReadString('global', 'maturities', '')),
+      GetCmdParams('WaptServiceAdminFilter',ini.ReadString('global','waptservice_admin_filter','False'))
       );
     Writeln('');
     Writeln('Built '+Result);

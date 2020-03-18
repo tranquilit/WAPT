@@ -94,6 +94,7 @@
             "program": "${config:python.wapt-get}",
             "args": [
                 "audit",
+                "-f",
                 "${workspaceFolder}"
             ],
             "console": "integratedTerminal",
@@ -111,6 +112,24 @@
             "program": "${config:python.wapt-get}",
             "args": [
                 "update-package-sources",
+                "${workspaceFolder}"
+            ],
+            "console": "integratedTerminal",
+            "linux": {
+                "sudo":true
+            },
+            "osx": {
+                "sudo":true
+            }
+        },
+        {
+            "name": "WAPT: upgrade",
+            "type": "python",
+            "request": "launch",
+            "program": "${config:python.wapt-get}",
+            "args": [
+                "upgrade",
+                "-f",
                 "${workspaceFolder}"
             ],
             "console": "integratedTerminal",

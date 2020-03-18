@@ -7432,7 +7432,7 @@ class Wapt(BaseObjectClass):
         try:
             for repo in self.repositories:
                 repo.reset_network()
-            if not self.disable_update_server_status and self.waptserver_available():
+            if not self.disable_update_server_status:
                 self.update_server_status()
         except Exception as e:
             logger.warning(u'WAPT was unable to reconfigure properly after network changes : %s'%ensure_unicode(e))
@@ -7548,7 +7548,8 @@ def wapt_sources_edit(wapt_sources_dir,editor_for_packages = None):
         "wapt_base_dir":os.path.dirname(__file__),
         "wapt_sources_dir":wapt_sources_dir,
         "setup_filename":os.path.join(wapt_sources_dir,u'setup.py'),
-        "control_filename":os.path.join(wapt_sources_dir,u'WAPT',u'control')}
+        "control_filename":os.path.join(wapt_sources_dir,u'WAPT',u'control'),
+        "changelog_filename":os.path.join(wapt_sources_dir,u'WAPT',u'changelog.txt')}
 
     # in edit_for_packages you can specify {key_params} to replace for launch the editor
 

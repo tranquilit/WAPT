@@ -99,6 +99,7 @@ import waptserver.config
 # socketio is loaded conditionally if iwe are running in app mode, not uwsgi mode
 socketio = None
 git_hash = ''
+wapt_edition = ''
 
 try:
     from waptenterprise.waptserver import auth_module_ad
@@ -1365,11 +1366,10 @@ def ping():
             uuid=get_server_uuid(),
             date=datetime2isodate(),
             application_root=app.conf['application_root'],
-            edition=get_wapt_edition(),
+            edition=wapt_edition,
             git_hash=git_hash,
             platform=platform.system(),
-            architecture=platform.architecture(),
-        )
+            architecture=platform.architecture()),
     )
 
 @app.route('/api/v3/reset_hosts_sid', methods=['GET','HEAD','POST'])
@@ -2603,6 +2603,8 @@ if __name__ == '__main__':
 else:
     # initialize WSGI app only
     # config filename is defined in  uwsgi config file (so refer to himself...)
+    git_hash = get_revision_hash()
+    wapt_edition = get_wapt_edition()
     app.config['CONFIG_FILE'] = os.environ['CONFIG_FILE']
     app.conf.update(**waptserver.config.load_config(app.config['CONFIG_FILE']))
     setup_logging(app.conf)

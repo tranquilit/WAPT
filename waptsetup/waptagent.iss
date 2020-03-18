@@ -35,6 +35,10 @@
 
 #define use_repo_rules ""
 
+#define waptservice_admin_filter ""
+
+#define maturities ""
+
 #define use_random_uuid ""
 
 ; if not empty, the host will inherit these (comma separated) list of profile packages.
