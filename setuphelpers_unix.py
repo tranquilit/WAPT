@@ -348,3 +348,29 @@ def dmi_info():
         new_section = False
     return result
 
+def killalltasks(process_names,include_children=True):
+    """Kill the task by their process_names
+
+    >>> killalltasks('firefox')
+    """
+    logger.debug('Kill tasks %s' % (process_names,))
+    if not process_names:
+        return []
+    if not isinstance(process_names,list):
+        process_names = [process_names]
+
+    result = []
+    process_names = [process.lower() for process in process_names]
+    for p in psutil.process_iter():
+        try:
+            if p.name().lower() in process_names:
+                logger.debug('Kill process %i' % (p.pid,))
+                result.append((p.pid,p.name()))
+                if include_children:
+                    killtree(p.pid)
+                else:
+                    p.kill()
+        except (psutil.AccessDenied,psutil.NoSuchProcess):
+            pass
+    return result
+
