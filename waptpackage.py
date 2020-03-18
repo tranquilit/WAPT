@@ -833,7 +833,7 @@ class PackageEntry(BaseObjectClass):
         'locale','target_os','min_os_version','max_os_version','min_wapt_version',
         'sources','installed_size','impacted_process','description_fr','description_pl','description_de','description_es','description_pt',
         'description_it','description_nl','description_ru','audit_schedule',
-        'editor','keywords','licence','homepage','package_uuid','valid_from','valid_until','forced_install_on']
+        'editor','keywords','licence','homepage','package_uuid','valid_from','valid_until','forced_install_on','changelog']
     # attributes which are added by _sign_control
     signature_attributes = ['signer','signer_fingerprint','signature','signature_date','signed_attributes']
 
