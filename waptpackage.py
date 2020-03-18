@@ -3379,6 +3379,8 @@ class WaptRemoteRepo(WaptBaseRepo):
 
         self.timeout = None
 
+        self.limit_bandwidth = None
+
         # this load and empty config
         WaptBaseRepo.__init__(self,name=name,cabundle=cabundle,config=config,section=section)
 
@@ -3504,6 +3506,9 @@ class WaptRemoteRepo(WaptBaseRepo):
 
         if config.has_option(section,'client_private_key'):
             self.client_private_key = config.get(section,'client_private_key')
+
+        if config.has_option(section,'limit_bandwidth'):
+            self.limit_bandwidth = config.getfloat(section,'limit_bandwidth')
 
         return self
 
@@ -3754,6 +3759,7 @@ class WaptRemoteRepo(WaptBaseRepo):
                             resume= usecache,
                             md5 = entry.md5sum,
                             requests_session=session,
+                            limit_bandwidth=self.limit_bandwidth,
                             )
                         entry.localpath = fullpackagepath
                         downloaded.append(fullpackagepath)

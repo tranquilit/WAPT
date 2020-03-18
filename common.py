@@ -2667,6 +2667,7 @@ class Wapt(BaseObjectClass):
         self.disable_update_server_status = disable_update_server_status
 
         self.config = config
+
         self.config_filename = config_filename
         if not self.config_filename:
             self.config_filename = os.path.join(self.wapt_base_dir,'wapt-get.ini')
@@ -3016,6 +3017,10 @@ class Wapt(BaseObjectClass):
         self.editor_for_packages = None
         if self.config.has_option('global','editor_for_packages'):
             self.editor_for_packages = self.config.get('global','editor_for_packages')
+
+        self.limit_bandwidth = None
+        if self.config.has_option('global','limit_bandwidth'):
+            self.limit_bandwidth = self.config.getfloat('global','limit_bandwidth')
 
         # clear host key cache
         self._host_key = None
@@ -4456,7 +4461,7 @@ class Wapt(BaseObjectClass):
                         if not os.path.isdir(crl_dir):
                             os.makedirs(crl_dir)
                         logger.debug('Download CRL %s' % (url,))
-                        wget(url,target=crl_filename)
+                        wget(url,target=crl_filename,limit_bandwidth=self.limit_bandwidth)
                         ssl_crl = SSLCRL(crl_filename)
                         result.append(ssl_crl)
                     except Exception as e:
