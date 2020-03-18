@@ -493,6 +493,7 @@ def update_host():
         host_info.computer_fqdn
 
     """
+
     try:
         starttime = time.time()
 
@@ -2510,6 +2511,7 @@ if __name__ == '__main__':
 
     """
     git_hash = get_revision_hash()
+    wapt_edition = get_wapt_edition()
 
     parser = OptionParser(usage=usage, version='waptserver.py ' + __version__)
     parser.add_option(
