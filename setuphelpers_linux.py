@@ -127,7 +127,11 @@ def apt_autoremove():
     return run('LANG=C DEBIAN_FRONTEND=noninteractive apt-get -y autoremove')
 
 def yum_install(package):
-    return run('LANG=C yum install -y %s' % package)
+    if package.endswith('.rpm'):
+        rpm_control_name = run('rpm -qp --queryformat "%{NAME}" %s 2>/dev/null' % package)
+        return run('LANG=C rpm -qa | grep -qw %s || yum install -y %s',rpm_control_name,package)
+    else:
+        return run('LANG=C rpm -qa | grep -qw %s || yum install -y %s' % (package,package))
 
 def yum_remove(package):
     return run('LANG=C yum remove -y %s' % package)
