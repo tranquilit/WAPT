@@ -365,6 +365,13 @@ def main():
         metavar='NUMBER',
         type='int',
         help='Size for dhparam key')
+    parser.add_option(
+        '-p',
+        '--admin-password',
+        dest='password',
+        default=None,
+        action='store_true',
+        help='Password for waptserver')
 
     (options, args) = parser.parse_args()
 
@@ -446,7 +453,7 @@ def main():
         wapt_password = ''
         if not server_config['wapt_password']:
             print('[*] Generating random password for WAPT server')
-            wapt_password = pwd.genword(entropy=56, charset="ascii_62")
+            wapt_password = options.password if options.password else pwd.genword(entropy=56, charset="ascii_62")
             print('[*] WAPT admin password : %s' % wapt_password)
             password = pbkdf2_sha256.hash(wapt_password.encode('utf8'))
             server_config['wapt_password'] = password
