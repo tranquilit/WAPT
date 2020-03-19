@@ -2860,15 +2860,15 @@ class WaptBaseRepo(BaseObjectClass):
                 result.append(package)
 
         def sort_no_version(package1,package2):
-            return cmp((package1.package,package1.architecture,package1.locale,package1.maturity,PackageVersion(package1.version)),(package2.package,package2.architecture,package2.locale,package2.maturity,PackageVersion(package2.version)))
+            return cmp((package1.package,package1.architecture,package1.target_os,package1.locale,package1.maturity,PackageVersion(package1.version)),(package2.package,package2.architecture,package2.target_os,package2.locale,package2.maturity,PackageVersion(package2.version)))
 
         if newest_only:
             filtered = []
-            last_package = ('','','','')
+            last_package = ('','','','','')
             for package in sorted(result,reverse=True,cmp=sort_no_version):
-                if (package.package,package.architecture,package.locale,package.maturity) != last_package:
+                if (package.package,package.architecture,package.locale,package.maturity,package.target_os) != last_package:
                     filtered.append(package)
-                last_package = (package.package,package.architecture,package.locale,package.maturity)
+                last_package = (package.package,package.architecture,package.locale,package.maturity,package.target_os)
             return list(reversed(filtered))
         else:
             return sorted(result)
