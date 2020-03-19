@@ -128,7 +128,7 @@ def apt_autoremove():
 
 def yum_install(package):
     if package.endswith('.rpm'):
-        rpm_control_name = run('rpm -qp --queryformat "%{NAME}" %s 2>/dev/null' % package)
+        rpm_control_name = run('rpm -qp --queryformat "\%{NAME}" %s 2>/dev/null' % package)
         return run('LANG=C rpm -qa | grep -qw %s || yum install -y %s',rpm_control_name,package)
     else:
         return run('LANG=C rpm -qa | grep -qw %s || yum install -y %s' % (package,package))
