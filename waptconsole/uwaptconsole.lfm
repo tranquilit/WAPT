@@ -367,7 +367,7 @@ object VisWaptGUI: TVisWaptGUI
             TreeOptions.PaintOptions = [toHideFocusRect, toPopupMode, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages, toAlwaysHideSelection]
             TreeOptions.SelectionOptions = [toDisableDrawSelection, toExtendedFocus, toMultiSelect, toRightClickSelect]
             WantTabs = True
-            OnChange = GridHostPackagesChange
+            OnClick = GridHostPackagesClick
             OnGetImageIndexEx = GridHostPackagesGetImageIndexEx
             ZebraPaint = True
           end
