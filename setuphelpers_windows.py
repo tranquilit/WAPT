@@ -364,6 +364,11 @@ programfiles = programfiles()
 programfiles32 = programfiles32()
 programfiles64 = programfiles64()
 
+def systemdrive():
+    return os.environ['SYSTEMDRIVE']
+
+systemdrive = systemdrive()
+
 def remove_from_system_path(path):
     """Remove a path from the global search PATH environment variable if it is set
 
@@ -3074,6 +3079,7 @@ def _environ_params(dict_or_module={}):
     params_dict['programfiles'] = programfiles()
     params_dict['domainname'] = get_domain_fromregistry()
     params_dict['computername'] = os.environ['COMPUTERNAME']
+    params_dict['systemdrive'] = systemdrive()
     if type(dict_or_module) is types.ModuleType:
         for k,v in params_dict.items():
             setattr(dict_or_module,k,v)
