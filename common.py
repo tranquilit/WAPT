@@ -656,6 +656,7 @@ class WaptDB(WaptBaseDB):
           keywords varchar(255),
           licence varchar(255),
           homepage varchar(255),
+          changelog varchar(255),
           valid_from varchar(255),
           valid_until varchar(255),
           forced_install_on varchar(255)
@@ -854,6 +855,7 @@ class WaptDB(WaptBaseDB):
                     max_os_version,
                     min_os_version,
                     target_os,
+                    changelog,
                     impacted_process,
                     audit_schedule,
                     editor,
@@ -901,6 +903,7 @@ class WaptDB(WaptBaseDB):
                     package_entry.keywords,
                     package_entry.licence,
                     package_entry.homepage,
+                    package_entry.changelog,
                     package_entry.valid_from,
                     package_entry.valid_until,
                     package_entry.forced_install_on,

@@ -932,6 +932,7 @@ class PackageEntry(BaseObjectClass):
         self.forced_install_on=''
 
         self.homepage = ''
+        self.changelog = ''
         self.package_uuid = ''
 
         self.md5sum=''
