@@ -364,6 +364,11 @@ programfiles = programfiles()
 programfiles32 = programfiles32()
 programfiles64 = programfiles64()
 
+def systemdrive():
+    return os.environ['SYSTEMDRIVE']
+
+systemdrive = systemdrive()
+
 def remove_from_system_path(path):
     """Remove a path from the global search PATH environment variable if it is set
 
@@ -2921,14 +2926,17 @@ def installed_softwares(keywords='',uninstallkey=None,name=None):
                     appkey = reg_openkey_noredir(_winreg.HKEY_LOCAL_MACHINE,"%s\\%s" % (uninstall,subkey.encode(os_encoding)),noredir=noredir)
                     display_name = reg_getvalue(appkey,'DisplayName','')
                     display_version = reg_getvalue(appkey,'DisplayVersion','')
-                    date = str(reg_getvalue(appkey,'InstallDate','')).replace('\x00','')
                     try:
-                        install_date=datetime.datetime.strptime(date,'%Y%m%d').strftime('%Y-%m-%d %H:%M:%S')
-                    except:
+                        date = str(reg_getvalue(appkey,'InstallDate','')).replace('\x00','')
                         try:
-                            install_date=datetime.datetime.strptime(date,'%d/%m/%Y').strftime('%Y-%m-%d %H:%M:%S')
+                            install_date=datetime.datetime.strptime(date,'%Y%m%d').strftime('%Y-%m-%d %H:%M:%S')
                         except:
-                            install_date=date
+                            try:
+                                install_date=datetime.datetime.strptime(date,'%d/%m/%Y').strftime('%Y-%m-%d %H:%M:%S')
+                            except:
+                                install_date=date
+                    except:
+                        date = reg_getvalue(appkey,'InstallDate','')
                     install_location = reg_getvalue(appkey,'InstallLocation','')
                     uninstallstring = reg_getvalue(appkey,'UninstallString','')
                     publisher = reg_getvalue(appkey,'Publisher','')
@@ -3071,6 +3079,7 @@ def _environ_params(dict_or_module={}):
     params_dict['programfiles'] = programfiles()
     params_dict['domainname'] = get_domain_fromregistry()
     params_dict['computername'] = os.environ['COMPUTERNAME']
+    params_dict['systemdrive'] = systemdrive()
     if type(dict_or_module) is types.ModuleType:
         for k,v in params_dict.items():
             setattr(dict_or_module,k,v)

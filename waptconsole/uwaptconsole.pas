@@ -891,7 +891,7 @@ type
       TargetCanvas: TCanvas; Node: PVirtualNode; var NodeHeight: integer);
     procedure GridGroupsSOCompareNodes(Sender: TSOGrid; Node1,
       Node2: ISuperObject; const Columns: array of String; var Result: Integer);
-    procedure GridHostPackagesChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
+    procedure GridHostPackagesClick(Sender: TObject);
     procedure GridHostPackagesGetImageIndexEx(Sender: TBaseVirtualTree;
       Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
       var Ghosted: boolean; var ImageIndex: integer;
@@ -5262,8 +5262,7 @@ begin
     Result := -1;
 end;
 
-procedure TVisWaptGUI.GridHostPackagesChange(Sender: TBaseVirtualTree;
-  Node: PVirtualNode);
+procedure TVisWaptGUI.GridHostPackagesClick(Sender: TObject);
 begin
   if GridHostPackages.SelectedCount=1 then
   begin

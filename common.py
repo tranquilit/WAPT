@@ -656,6 +656,7 @@ class WaptDB(WaptBaseDB):
           keywords varchar(255),
           licence varchar(255),
           homepage varchar(255),
+          changelog varchar(255),
           valid_from varchar(255),
           valid_until varchar(255),
           forced_install_on varchar(255)
@@ -854,6 +855,7 @@ class WaptDB(WaptBaseDB):
                     max_os_version,
                     min_os_version,
                     target_os,
+                    changelog,
                     impacted_process,
                     audit_schedule,
                     editor,
@@ -863,7 +865,7 @@ class WaptDB(WaptBaseDB):
                     valid_from,
                     valid_until,
                     forced_install_on
-                    ) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+                    ) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
                 """,(
                     package_entry.package_uuid,
                     package_entry.package,
@@ -901,6 +903,7 @@ class WaptDB(WaptBaseDB):
                     package_entry.keywords,
                     package_entry.licence,
                     package_entry.homepage,
+                    package_entry.changelog,
                     package_entry.valid_from,
                     package_entry.valid_until,
                     package_entry.forced_install_on,
@@ -2652,6 +2655,7 @@ class Wapt(BaseObjectClass):
         self.disable_update_server_status = disable_update_server_status
 
         self.config = config
+
         self.config_filename = config_filename
         if not self.config_filename:
             self.config_filename = os.path.join(self.wapt_base_dir,'wapt-get.ini')
@@ -3001,6 +3005,10 @@ class Wapt(BaseObjectClass):
         self.editor_for_packages = None
         if self.config.has_option('global','editor_for_packages'):
             self.editor_for_packages = self.config.get('global','editor_for_packages')
+
+        self.limit_bandwidth = None
+        if self.config.has_option('global','limit_bandwidth'):
+            self.limit_bandwidth = self.config.getfloat('global','limit_bandwidth')
 
         # clear host key cache
         self._host_key = None
@@ -4195,7 +4203,7 @@ class Wapt(BaseObjectClass):
         if self.host_ad_site:
             return self.host_ad_site
         if sys.platform == 'win32':
-            return setuphelpers.registry_readstring(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows\CurrentVersion\Group Policy\State\Machine','Site-Name')
+            return setuphelpers.registry_readstring(setuphelpers.HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows\CurrentVersion\Group Policy\State\Machine','Site-Name')
         return None
 
     def get_host_certificate_fingerprint(self):
@@ -4441,7 +4449,7 @@ class Wapt(BaseObjectClass):
                         if not os.path.isdir(crl_dir):
                             os.makedirs(crl_dir)
                         logger.debug('Download CRL %s' % (url,))
-                        wget(url,target=crl_filename)
+                        wget(url,target=crl_filename,limit_bandwidth=self.limit_bandwidth)
                         ssl_crl = SSLCRL(crl_filename)
                         result.append(ssl_crl)
                     except Exception as e:

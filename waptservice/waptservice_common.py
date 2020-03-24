@@ -45,7 +45,7 @@ import ConfigParser
 from optparse import OptionParser
 
 # wapt specific stuff
-from waptutils import ensure_unicode,ensure_list,LogOutput,jsondump,get_time_delta,wget
+from waptutils import ensure_unicode,ensure_list,LogOutput,jsondump,get_time_delta
 
 import common
 from common import Wapt

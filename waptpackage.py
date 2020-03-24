@@ -833,7 +833,7 @@ class PackageEntry(BaseObjectClass):
         'locale','target_os','min_os_version','max_os_version','min_wapt_version',
         'sources','installed_size','impacted_process','description_fr','description_pl','description_de','description_es','description_pt',
         'description_it','description_nl','description_ru','audit_schedule',
-        'editor','keywords','licence','homepage','package_uuid','valid_from','valid_until','forced_install_on']
+        'editor','keywords','licence','homepage','package_uuid','valid_from','valid_until','forced_install_on','changelog']
     # attributes which are added by _sign_control
     signature_attributes = ['signer','signer_fingerprint','signature','signature_date','signed_attributes']
 
@@ -932,6 +932,7 @@ class PackageEntry(BaseObjectClass):
         self.forced_install_on=''
 
         self.homepage = ''
+        self.changelog = ''
         self.package_uuid = ''
 
         self.md5sum=''
@@ -2860,15 +2861,15 @@ class WaptBaseRepo(BaseObjectClass):
                 result.append(package)
 
         def sort_no_version(package1,package2):
-            return cmp((package1.package,package1.architecture,package1.locale,package1.maturity,PackageVersion(package1.version)),(package2.package,package2.architecture,package2.locale,package2.maturity,PackageVersion(package2.version)))
+            return cmp((package1.package,package1.architecture,package1.target_os,package1.locale,package1.maturity,PackageVersion(package1.version)),(package2.package,package2.architecture,package2.target_os,package2.locale,package2.maturity,PackageVersion(package2.version)))
 
         if newest_only:
             filtered = []
-            last_package = ('','','','')
+            last_package = ('','','','','')
             for package in sorted(result,reverse=True,cmp=sort_no_version):
-                if (package.package,package.architecture,package.locale,package.maturity) != last_package:
+                if (package.package,package.architecture,package.locale,package.maturity,package.target_os) != last_package:
                     filtered.append(package)
-                last_package = (package.package,package.architecture,package.locale,package.maturity)
+                last_package = (package.package,package.architecture,package.locale,package.maturity,package.target_os)
             return list(reversed(filtered))
         else:
             return sorted(result)
@@ -3379,6 +3380,8 @@ class WaptRemoteRepo(WaptBaseRepo):
 
         self.timeout = None
 
+        self.limit_bandwidth = None
+
         # this load and empty config
         WaptBaseRepo.__init__(self,name=name,cabundle=cabundle,config=config,section=section)
 
@@ -3504,6 +3507,9 @@ class WaptRemoteRepo(WaptBaseRepo):
 
         if config.has_option(section,'client_private_key'):
             self.client_private_key = config.get(section,'client_private_key')
+
+        if config.has_option(section,'limit_bandwidth'):
+            self.limit_bandwidth = config.getfloat(section,'limit_bandwidth')
 
         return self
 
@@ -3754,6 +3760,7 @@ class WaptRemoteRepo(WaptBaseRepo):
                             resume= usecache,
                             md5 = entry.md5sum,
                             requests_session=session,
+                            limit_bandwidth=self.limit_bandwidth,
                             )
                         entry.localpath = fullpackagepath
                         downloaded.append(fullpackagepath)
