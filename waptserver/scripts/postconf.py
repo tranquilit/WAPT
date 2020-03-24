@@ -182,11 +182,20 @@ def make_nginx_config(waptserver_root_dir, fqdn, force_https, server_config,quie
 
     config_string = template.render(template_vars)
     if type_debian():
-        dst_file = file('/etc/nginx/sites-available/wapt.conf', 'wt')
-        if not os.path.exists('/etc/nginx/sites-enabled/wapt.conf'):
-            os.symlink('/etc/nginx/sites-available/wapt.conf','/etc/nginx/sites-enabled/wapt.conf')
-        if os.path.exists('/etc/nginx/sites-enabled/default'):
-            os.unlink('/etc/nginx/sites-enabled/default')
+        sites_available_path = '/etc/nginx/sites-available'
+        sites_enabled_path = '/etc/nginx/sites-enabled'
+        if not(os.path.isdir(sites_available_path)):
+            os.mkdir(sites_available_path)
+        if not(os.path.isdir(sites_enabled_path)):
+            os.mkdir(sites_enabled_path)
+        sites_available_path_wapt_conf = os.path.join(sites_available_path,'wapt.conf')
+        sites_enabled_path_wapt_conf = os.path.join(sites_enabled_path,'wapt.conf')
+        dst_file = file(sites_available_path_wapt_conf, 'wt')
+        if not os.path.exists(sites_enabled_path_wapt_conf):
+            os.symlink(sites_available_path_wapt_conf,sites_enabled_path_wapt_conf)
+        sites_enabled_path_default = os.path.join(sites_enabled_path,'default')
+        if os.path.exists(sites_enabled_path_default):
+            os.unlink(sites_enabled_path_default)
 
     elif type_redhat():
         dst_file = file('/etc/nginx/conf.d/wapt.conf', 'wt')
