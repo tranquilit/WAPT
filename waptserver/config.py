@@ -107,7 +107,8 @@ _defaults = {
     'trusted_signers_certificates_folder':None, # path to trusted signers certificate directory
     'trusted_users_certificates_folder':None, # path to trusted users CA certificate directory
     'known_certificates_folder': os.path.join(os.path.dirname(DEFAULT_WAPT_FOLDER),'ssl'),
-    'wol_port':'9'
+    'wol_port':'9',
+    'enable_store': False
 }
 
 for log in WAPTLOGGERS:
@@ -280,6 +281,9 @@ def load_config(cfgfile=DEFAULT_CONFIG_FILE):
 
     if _config.has_option('options', 'wol_port'):
         conf['wol_port'] = _config.get('options', 'wol_port')
+
+    if _config.has_option('options','enable_store'):
+        conf['enable_store'] = _config.getboolean('options','enable_store')
 
     return conf
 
