@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2018-03-09 16:45+0100\n"
+"POT-Creation-Date: 2020-03-26 16:22+0100\n"
 "PO-Revision-Date: 2017-01-12 17:27+0100\n"
 "Last-Translator: \n"
 "Language: fr\n"
@@ -16,114 +16,120 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.5.3\n"
+"Generated-By: Babel 2.8.0\n"
 
-#: waptserver.py:277
+#: decorators.py:52
 msgid "You have to login with proper credentials"
 msgstr "Vous devez vous connecter avec les bons identifiants"
 
-#: waptserver.py:622 waptserver.py:860
+#: server.py:945
+msgid "{} Packages uploaded, {} errors.{}"
+msgstr "{} Paquets uploadés, {} erreurs.{}"
+
+#: server.py:1045
+msgid "{} Host packages uploaded, {} errors"
+msgstr "{} Paquets machines uploadés, {} erreurs"
+
+#: server.py:1071
 msgid "Problem during upload"
 msgstr "Problème au moment de l'upload"
 
-#: waptserver.py:632
-msgid "Not a valid wapt package"
-msgstr "Ce n'est pas un paquet WAPT valide"
-
-#: waptserver.py:635
-msgid "Wrong file type"
-msgstr "Mauvais type de fichier"
-
-#: waptserver.py:637 waptserver.py:868
-msgid "Unsupported method"
-msgstr "Méthode non supportée"
-
-#: waptserver.py:644 waptserver.py:873
-msgid "unexpected: {}"
-msgstr "inattendu : {}"
-
-#: waptserver.py:757
-msgid "{} Packages uploaded, {} errors.{}"
-msgstr ""
-
-#: waptserver.py:838
-msgid "{} Host packages uploaded, {} errors"
-msgstr ""
-
-#: waptserver.py:863
+#: server.py:1074
 msgid "{} uploaded"
 msgstr "{} uploadé"
 
-#: waptserver.py:866
+#: server.py:1079
 msgid "Wrong file name (version conflict?)"
 msgstr "Mauvais nom de fichier (conflit de version ?)"
 
-#: waptserver.py:1104
+#: server.py:1081
+msgid "Unsupported method"
+msgstr "Méthode non supportée"
+
+#: server.py:1086
+msgid "unexpected: {}"
+msgstr "inattendu : {}"
+
+#: server.py:1364
 msgid "WAPT Server running"
 msgstr "Serveur WAPT lancé"
 
-#: waptserver.py:1128
+#: server.py:1393
 #, python-format
 msgid "Hosts connection reset launched for %s host(s)"
-msgstr ""
+msgstr "Réinitialisation de la connexion lancée pour la/les machine(s) : %s"
 
-#: waptserver.py:1130
+#: server.py:1395
 msgid "Hosts connection reset launched for all hosts"
-msgstr ""
+msgstr "Réinitialisation de la connexion lancée pour toutes les machines"
 
-#: waptserver.py:1285
-msgid "Sending magic wakeonlan packets to {} for machine {}"
-msgstr "Envoi du WakeOnlan vers {} pour la machine {}"
+#: server.py:1435
+msgid "Sending magic wakeonlan packets to {} for machine {} on port {} "
+msgstr "Envoi de paquets wakeonlan à {} pour la machine {} sur le port {} "
 
-#: waptserver.py:1299
+#: server.py:1451
 msgid "Wakeonlan packets sent to {} machines."
-msgstr ""
+msgstr "Paquets Wakeonlan envoyé aux machines suivantes {}"
 
-#: waptserver.py:1863
+#: server.py:2084
+#, python-format
+msgid "Hosts for packages %s, limit %s"
+msgstr "Machines ayant ces paquets %s, limite %s"
+
+#: server.py:2153
+#, python-format
+msgid "Packages status for %s hosts, limit %s"
+msgstr "Statut des paquets pour les machines %s, limite %s"
+
+#: server.py:2292
 msgid "Anomnymous usage statistics"
 msgstr "Statistiques anonymes"
 
-#: templates/index.html:10
+#: templates/base.html:10
 msgid "WAPT - Apt-get for Windows"
 msgstr "WAPT - Apt-get pour Windows"
 
-#: templates/index.html:32
+#: templates/base.html:32
 msgid "WAPT Server"
-msgstr ""
+msgstr "Serveur WAPT"
 
-#: templates/index.html:35 templates/index.html:141
+#: templates/base.html:35
 msgid "Contact Us"
 msgstr "Contactez-nous"
 
-#: templates/index.html:52
+#: templates/base.html:52
 msgid "TIS repository"
 msgstr "Dépôt TIS"
 
-#: templates/index.html:57
+#: templates/base.html:53
+msgid "Local repository"
+msgstr "Dépôt local"
+
+#: templates/base.html:59
 msgid "WAPT Agent (for deploying onto user desktop)"
 msgstr "Agent WAPT (pour le déploiement sur les postes utilisateurs)"
 
-#: templates/index.html:58
+#: templates/base.html:60
 msgid "WAPTSetup (for installing on management machine)"
 msgstr "WAPTsetup (pour installer sur une machine d'administration)"
 
-#: templates/index.html:59
+#: templates/base.html:61
 msgid "WAPTDeploy (for setting up deployment GPO)"
 msgstr "WAPTDeploy (pour mettre en place le déploiement GPO)"
 
-#: templates/index.html:65
+#: templates/base.html:68
 msgid "Subscribe"
 msgstr "S'inscrire"
 
-#: templates/index.html:69
+#: templates/base.html:72
 msgid "Help"
 msgstr "Aide"
 
-#: templates/index.html:85
+#: templates/index.html:7
 msgid "WAPT server"
 msgstr "Serveur WAPT"
 
-#: templates/index.html:86
+#: templates/index.html:8
 msgid ""
 " WAPT server is managed through a WAPT console installed on a Windows "
 "system. When installing the WAPT server on Windows, the console is "
@@ -131,10 +137,10 @@ msgid ""
 msgstr ""
 "L'administration du serveur WAPT se fait à travers la console WAPT qui "
 "s'installe sur un poste Windows.Lors de l'installation du serveur WAPT "
-"sous Windows, la console est installée par défaut et peut être trouvé dans"
-" le menu 'Démarrer'."
+"sous Windows, la console est installée par défaut et peut être trouvé "
+"dans le menu 'Démarrer'."
 
-#: templates/index.html:87
+#: templates/index.html:9
 msgid ""
 " When installing the server on Linux, the <a href=\"/wapt/waptsetup-"
 "tis.exe\">WAPT client</a> should be installed on an administration "
@@ -144,7 +150,7 @@ msgstr ""
 "/waptsetup-tis.exe\">client WAPT</a> doit être une machine "
 "d'administration, lancer waptconsole depuis 'Démarrer/Programmes'. "
 
-#: templates/index.html:88
+#: templates/index.html:10
 msgid ""
 " To manually add a new host to the WAPT server, download the <a "
 "href=\"/wapt/waptagent.exe\">WAPT agent</a> from the menu to the right. "
@@ -158,78 +164,49 @@ msgstr ""
 " paramètres par défaut sont les bons. Une fois le client WAPT installé, "
 "vous le retrouverez dans votre console."
 
-#: templates/index.html:95
+#: templates/index.html:17
 msgid ""
 " For further information, be sure to check the documentation at <a "
 "href=\"https://www.wapt.fr/\">wapt.fr</a> or on mailing-list. "
 msgstr ""
+" Pour plus d'informations, vérifiez la documentation à cette adresse <a "
+"href=\"https://www.wapt.fr/\">wapt.fr</a> ou dans la mailing-list. "
 
-#: templates/index.html:100
+#: templates/index.html:22
 msgid "WAPT Server version:"
 msgstr "Version WAPT Server&nbsp;:"
 
-#: templates/index.html:101
+#: templates/index.html:23
 msgid "WAPT Agent version:"
 msgstr "Version WAPT Agent :"
 
-#: templates/index.html:102
+#: templates/index.html:24
 msgid "WAPT Setup version:"
 msgstr "version WAPT Setup :"
 
-#: templates/index.html:103
+#: templates/index.html:25
 msgid "WAPT Deploy version:"
 msgstr "Version WAPT Deploy&nbsp;:"
 
-#: templates/index.html:104
+#: templates/index.html:26
 msgid "DB status:"
 msgstr "Statut de la base&nbsp;:"
 
-#: templates/index.html:105
+#: templates/index.html:27
 msgid "Disk space:"
 msgstr "Espace disque&nbsp;:"
 
-#: templates/index.html:110
+#: templates/index.html:33
 msgid "For creation of the Wapt agent"
-msgstr ""
+msgstr "Pour la création de l'agent WAPT"
 
-#: templates/index.html:115
+#: templates/index.html:38
 msgid "For setting up deployment GPO"
 msgstr "Pour mettre en place le déploiement GPO"
 
-#: templates/index.html:127
+#: templates/index.html:50
 msgid "For deploying onto user desktop"
 msgstr "Pour le déploiement sur les postes utilisateurs"
-
-#: templates/index.html:142
-msgid "References"
-msgstr "Réferences"
-
-#: templates/index.html:143
-msgid "Actuality"
-msgstr "Actualité"
-
-#: templates/index.html:144
-msgid "Team"
-msgstr "Nos équipes"
-
-#: templates/index.html:147
-msgid "Tranquil IT"
-msgstr "Tranquil IT"
-
-#: templates/index.html:148
-msgid ""
-"We are a team of passionate people whose life purpose is to be useful to "
-"others. We make our products with the aim to resolving your IT problems "
-"and optimizing your daily work."
-msgstr ""
-"Nous sommes une équipe de personnes passionnées dont le but est "
-"d'améliorer la vie de chacun. Nous élaborons des produits très "
-"performants pour résoudre vos problèmes. Nos produits sont créés pour "
-"optimiser les performances des PME."
-
-#: templates/index.html:152
-msgid "Tranquil IT Systems"
-msgstr "Tranquil IT Systems"
 
 #~ msgid "Could not connect to database: {}."
 #~ msgstr "Impossible de se connecter à la base de données : {}."
@@ -348,4 +325,474 @@ msgstr "Tranquil IT Systems"
 
 #~ msgid "For installing on management machine"
 #~ msgstr "Pour installer sur une machine d'administration"
+
+#~ msgid "Not a valid wapt package"
+#~ msgstr "Ce n'est pas un paquet WAPT valide"
+
+#~ msgid "Wrong file type"
+#~ msgstr "Mauvais type de fichier"
+
+#~ msgid "Sending magic wakeonlan packets to {} for machine {}"
+#~ msgstr "Envoi du WakeOnlan vers {} pour la machine {}"
+
+#~ msgid "References"
+#~ msgstr "Réferences"
+
+#~ msgid "Actuality"
+#~ msgstr "Actualité"
+
+#~ msgid "Team"
+#~ msgstr "Nos équipes"
+
+#~ msgid "Tranquil IT"
+#~ msgstr "Tranquil IT"
+
+#~ msgid ""
+#~ "We are a team of passionate people"
+#~ " whose life purpose is to be "
+#~ "useful to others. We make our "
+#~ "products with the aim to resolving "
+#~ "your IT problems and optimizing your "
+#~ "daily work."
+#~ msgstr ""
+#~ "Nous sommes une équipe de personnes "
+#~ "passionnées dont le but est d'améliorer"
+#~ " la vie de chacun. Nous élaborons "
+#~ "des produits très performants pour "
+#~ "résoudre vos problèmes. Nos produits "
+#~ "sont créés pour optimiser les "
+#~ "performances des PME."
+
+#~ msgid "Tranquil IT Systems"
+#~ msgstr "Tranquil IT Systems"
+
+#~ msgid "Update status"
+#~ msgstr "Statut de mise à jour"
+
+#~ msgid "Reload configuration"
+#~ msgstr "Rechargement de la configuration"
+
+#~ msgid "Download upgrades"
+#~ msgstr "Téléchargement des mises à jour"
+
+#~ msgid "Installed software update"
+#~ msgstr "Mises à jour des logiciels installées"
+
+#~ msgid "Triggered packages audits"
+#~ msgstr "Déclencheur de l'audit des paquets"
+
+#~ msgid "LongTask"
+#~ msgstr ""
+
+#~ msgid "Cleanup"
+#~ msgstr "Nettoyage"
+
+#~ msgid "Trace of the installation of {}"
+#~ msgstr ""
+
+#~ msgid "Saving host to the WAPT server"
+#~ msgstr ""
+
+#~ msgid "Inventory of the host"
+#~ msgstr ""
+
+#~ msgid "Running: {description}"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Done: {description}\n"
+#~ "{summary}"
+#~ msgstr ""
+
+#~ msgid "Canceled"
+#~ msgstr "Annulé"
+
+#~ msgid "FATAL. Couldn't open config file : {}"
+#~ msgstr "ERREUR FATALE. Impossible d'ouvrir le fichier de configuration : {}"
+
+#~ msgid ""
+#~ "FATAL, configuration file {} has no "
+#~ "section [global]. Please check Waptserver "
+#~ "documentation"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "{classname} {id} created {create_date} "
+#~ "started:{start_date} finished:{finish_date} "
+#~ msgstr ""
+
+#~ msgid "Reloading config file"
+#~ msgstr ""
+
+#~ msgid "Config file reloaded"
+#~ msgstr ""
+
+#~ msgid "Reconfiguring network access"
+#~ msgstr ""
+
+#~ msgid "Upgrading WAPT client"
+#~ msgstr ""
+
+#~ msgid "WaptService restart planned: %s"
+#~ msgstr ""
+
+#~ msgid "Restarting local WAPT service"
+#~ msgstr ""
+
+#~ msgid "Get packages index"
+#~ msgstr ""
+
+#~ msgid "{} new package(s)"
+#~ msgstr ""
+
+#~ msgid "{} removed package(s)"
+#~ msgstr ""
+
+#~ msgid "{} package(s) in the repository"
+#~ msgstr ""
+
+#~ msgid "Packages to be updated : {}"
+#~ msgstr ""
+
+#~ msgid "Packages to be removed : {}"
+#~ msgstr ""
+
+#~ msgid "Packages with errors : {}"
+#~ msgstr ""
+
+#~ msgid "System up-to-date"
+#~ msgstr ""
+
+#~ msgid "Updating available packages"
+#~ msgstr ""
+
+#~ msgid "Installed : {}"
+#~ msgstr ""
+
+#~ msgid "Updated : {}"
+#~ msgstr ""
+
+#~ msgid "Unavailable : {}"
+#~ msgstr ""
+
+#~ msgid "Upgrade packages installed on host"
+#~ msgstr ""
+
+#~ msgid "WAPT Server is not available"
+#~ msgstr ""
+
+#~ msgid "WAPT Server has been notified"
+#~ msgstr ""
+
+#~ msgid "Error while sending to the server : {}"
+#~ msgstr ""
+
+#~ msgid "Update server with this host's status"
+#~ msgstr ""
+
+#~ msgid "Sending computer status to waptserver"
+#~ msgstr ""
+
+#~ msgid "Inventory has been sent to the WAPT server"
+#~ msgstr ""
+
+#~ msgid "Error while sending inventory to the server : {}"
+#~ msgstr ""
+
+#~ msgid "Update server with this host's inventory"
+#~ msgstr ""
+
+#~ msgid "Packages erased : {}"
+#~ msgstr ""
+
+#~ msgid "Error while clearing local cache : {}"
+#~ msgstr ""
+
+#~ msgid "Clear local package cache"
+#~ msgstr ""
+
+#~ msgid "raising an error for Test WaptLongTask"
+#~ msgstr ""
+
+#~ msgid "Test long running task of {}s"
+#~ msgstr ""
+
+#~ msgid "Downloading %s : %s"
+#~ msgstr ""
+
+#~ msgid "Downloading %s"
+#~ msgstr ""
+
+#~ msgid "Error while downloading {packagenames}: {error}"
+#~ msgstr ""
+
+#~ msgid "Done downloading {packagenames}. {speed} kB/s"
+#~ msgstr ""
+
+#~ msgid "Done downloading {packagenames}."
+#~ msgstr ""
+
+#~ msgid "Download of {packagenames} (tâche #{id})"
+#~ msgstr ""
+
+#~ msgid "Installing %s"
+#~ msgstr ""
+
+#~ msgid "Errors : {}"
+#~ msgstr ""
+
+#~ msgid "Error during install of {}: errors in packages {}"
+#~ msgstr ""
+
+#~ msgid "Installation of {packagenames} (task #{id})"
+#~ msgstr ""
+
+#~ msgid "Removed : {}"
+#~ msgstr ""
+
+#~ msgid "Uninstall of {packagenames} (task #{id})"
+#~ msgstr ""
+
+#~ msgid "Forgetting %s"
+#~ msgstr ""
+
+#~ msgid "Packages removed from database : %s"
+#~ msgstr ""
+
+#~ msgid "No package removed from database."
+#~ msgstr ""
+
+#~ msgid "Forget {packagenames} (task #{id})"
+#~ msgstr ""
+
+#~ msgid "Auditing %s"
+#~ msgstr ""
+
+#~ msgid "Audit finished"
+#~ msgstr ""
+
+#~ msgid "Audit result : %s"
+#~ msgstr ""
+
+#~ msgid "No audit result for %s"
+#~ msgstr ""
+
+#~ msgid "Audit of {packagenames} (task #{id})"
+#~ msgstr ""
+
+#~ msgid "Downloads"
+#~ msgstr ""
+
+#~ msgid "{0} downloaded"
+#~ msgstr ""
+
+#~ msgid "{0} already available"
+#~ msgstr ""
+
+#~ msgid "Error: {0}"
+#~ msgstr ""
+
+#~ msgid "Back"
+#~ msgstr ""
+
+#~ msgid "WAPT Status"
+#~ msgstr ""
+
+#~ msgid "wapt-get.exe version: {0}"
+#~ msgstr ""
+
+#~ msgid "wapt-get.py version: {0}"
+#~ msgstr ""
+
+#~ msgid "Host UUID: {0}"
+#~ msgstr ""
+
+#~ msgid "Main WAPT Repository: <a href={0}>{0}</a>"
+#~ msgstr ""
+
+#~ msgid "WAPT server: {0}"
+#~ msgstr ""
+
+#~ msgid "Proxies: {0}"
+#~ msgstr ""
+
+#~ msgid "Configuration file: {0}"
+#~ msgstr ""
+
+#~ msgid "Current status: {0}"
+#~ msgstr ""
+
+#~ msgid "Last update status:"
+#~ msgstr ""
+
+#~ msgid "Date: {0}"
+#~ msgstr ""
+
+#~ msgid "Upgradeable packages: {0}"
+#~ msgstr ""
+
+#~ msgid "Errors: {0}"
+#~ msgstr ""
+
+#~ msgid "Authorized Packages's Signer certificates:"
+#~ msgstr ""
+
+#~ msgid "Repositories:"
+#~ msgstr ""
+
+#~ msgid "Computer information"
+#~ msgstr ""
+
+#~ msgid "Machine: {0}"
+#~ msgstr ""
+
+#~ msgid "Current users: {0}"
+#~ msgstr ""
+
+#~ msgid "Workgroup: {0}"
+#~ msgstr ""
+
+#~ msgid "DNS Domain: {0}"
+#~ msgstr ""
+
+#~ msgid "IP Addresses: {0}"
+#~ msgstr ""
+
+#~ msgid "System manufacturer : {0}"
+#~ msgstr ""
+
+#~ msgid "System product name : {0}"
+#~ msgstr ""
+
+#~ msgid "Installing {0} <a href=\"task?id={1}\">task {1}"
+#~ msgstr ""
+
+#~ msgid "WAPT Service status"
+#~ msgstr ""
+
+#~ msgid "WAPT"
+#~ msgstr ""
+
+#~ msgid "Installed packages"
+#~ msgstr ""
+
+#~ msgid "List of packages"
+#~ msgstr ""
+
+#~ msgid "Tasks"
+#~ msgstr ""
+
+#~ msgid "Available packages"
+#~ msgstr ""
+
+#~ msgid "Update available packages"
+#~ msgstr ""
+
+#~ msgid "Clear package cache"
+#~ msgstr ""
+
+#~ msgid "Upgrade system"
+#~ msgstr ""
+
+#~ msgid "Show all versions?"
+#~ msgstr ""
+
+#~ msgid "package"
+#~ msgstr ""
+
+#~ msgid "install_version"
+#~ msgstr ""
+
+#~ msgid "install_status"
+#~ msgstr ""
+
+#~ msgid "install_date"
+#~ msgstr ""
+
+#~ msgid "Action"
+#~ msgstr ""
+
+#~ msgid "Remove"
+#~ msgstr ""
+
+#~ msgid "Downgrade"
+#~ msgstr ""
+
+#~ msgid "Upgrade"
+#~ msgstr ""
+
+#~ msgid "Install"
+#~ msgstr ""
+
+#~ msgid "Dependencies"
+#~ msgstr ""
+
+#~ msgid "Install status"
+#~ msgstr ""
+
+#~ msgid "Audit status"
+#~ msgstr ""
+
+#~ msgid "Download"
+#~ msgstr ""
+
+#~ msgid "Uninstall"
+#~ msgstr ""
+
+#~ msgid "Launched uninstall of {0} <a href=\"task?id={1}\"> task {1}</a>"
+#~ msgstr ""
+
+#~ msgid "Status"
+#~ msgstr ""
+
+#~ msgid "Package"
+#~ msgstr ""
+
+#~ msgid "Installed by"
+#~ msgstr ""
+
+#~ msgid "Installed on"
+#~ msgstr ""
+
+#~ msgid "Version repo"
+#~ msgstr ""
+
+#~ msgid "Traces"
+#~ msgstr ""
+
+#~ msgid "Task n.{0} : {1}"
+#~ msgstr ""
+
+#~ msgid "Running: {0}"
+#~ msgstr ""
+
+#~ msgid "Installed Windows updates"
+#~ msgstr ""
+
+#~ msgid "Pending Windows updates"
+#~ msgstr ""
+
+#~ msgid "Discarded Windows updates"
+#~ msgstr ""
+
+#~ msgid "KB"
+#~ msgstr ""
+
+#~ msgid "Title"
+#~ msgstr ""
+
+#~ msgid "Classification"
+#~ msgstr ""
+
+#~ msgid "Severity"
+#~ msgstr ""
+
+#~ msgid "UUID"
+#~ msgstr ""
+
+#~ msgid "Date"
+#~ msgstr ""
+
+#~ msgid "Downloaded"
+#~ msgstr ""
 
