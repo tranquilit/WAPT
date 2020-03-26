@@ -822,8 +822,8 @@ def wget(url,target=None,printhook=None,proxies=None,connect_timeout=10,download
         else:
             total = received
         if received>1:
-            # print only every second or at end
-            if (time.time()-start_time>1) and ((time.time()-last_time_display>=1) or (received>=total)):
+            # print only every 0.5 seconds or at end
+            if (time.time()-last_time_display>=0.5) or (received>=total):
                 speed = received /(1024.0 * (time.time()-start_time))
                 if printhook:
                     printhook(received,total,speed,url)
@@ -1670,6 +1670,14 @@ def get_main_ip():
     finally:
         s.close()
     return IP
+
+def is_between_two_times(time1,time2):
+    time_now = datetime.datetime.now()
+    time_nowHHMM = '%s:%s' % (time_now.hour,time_now.minute)
+    if time2<time1:
+        return time_nowHHMM>=time1 or time_nowHHMM<=time2
+    else:
+        return time1<=time_nowHHMM<=time2
 
 class EWaptSetupException(Exception):
     pass

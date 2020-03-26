@@ -76,7 +76,7 @@ if sys.platform == 'win32':
 import ctypes
 
 # wapt specific stuff
-from waptutils import setloglevel, ensure_list, ensure_unicode, jsondump, LogOutput, get_time_delta
+from waptutils import setloglevel, ensure_list, ensure_unicode, jsondump, LogOutput, get_time_delta, is_between_two_times
 
 import common
 from common import Wapt
@@ -106,9 +106,9 @@ else:
 
 
 if os.path.isdir(os.path.join(wapt_root_dir,'waptenterprise')):
-    from waptenterprise.waptservice.repositories import WaptSyncRepo,waptrepositories_api
+    from waptenterprise.waptservice.repositories import WaptSyncRepo,waptrepositories_sio,waptrepositories_task_manager
 else:
-    waptrepositories_api = None
+    WaptSyncRepo = None
 
 from waptservice.plugins import *
 
@@ -200,8 +200,6 @@ if sys.platform == 'win32':
     if waptwua_api is not None:
         app.register_blueprint(waptwua_api)
 
-if waptrepositories_api is not None:
-    app.register_blueprint(waptrepositories_api)
 
 app.jinja_env.filters['beautify'] = beautify # pylint: disable=no-member
 app.waptconfig = waptconfig
@@ -1548,7 +1546,7 @@ class WaptTaskManager(threading.Thread):
                 self.last_update = datetime.datetime.now()
             if isinstance(task,WaptUpgrade):
                 self.last_upgrade = datetime.datetime.now()
-            if waptrepositories_api and isinstance(task,WaptSyncRepo):
+            if isinstance(task,WaptSyncRepo):
                 self.last_sync = datetime.datetime.now()
 
             # not already in pending  actions...
@@ -1652,8 +1650,8 @@ class WaptTaskManager(threading.Thread):
                 except Exception as e:
                     self.logger.debug(u'Error checking audit: %s' % e)
 
-        if waptrepositories_api and waptconfig.enable_remote_repo:
-            if (self.last_sync is None or (datetime.datetime.now() - self.last_sync > get_time_delta(waptconfig.local_repo_sync_task_period,'m'))) and ((waptconfig.local_repo_time_for_sync_start is None) or common.is_between_two_times(waptconfig.local_repo_time_for_sync_start,waptconfig.local_repo_time_for_sync_end)):
+        if waptconfig.enable_remote_repo and WaptSyncRepo is not None:
+            if (self.last_sync is None or (datetime.datetime.now() - self.last_sync > get_time_delta(waptconfig.local_repo_sync_task_period,'m'))) and ((waptconfig.local_repo_time_for_sync_start is None) or is_between_two_times(waptconfig.local_repo_time_for_sync_start,waptconfig.local_repo_time_for_sync_end)):
                 try:
                     self.logger.debug(u'Add_task for sync with local_repo_sync_task_period')
                     self.add_task(WaptSyncRepo(notifyuser=False,created_by='SCHEDULER'))
@@ -2074,8 +2072,8 @@ if __name__ == "__main__":
     if sys.platform == 'win32':
         if waptwua_api is not None:
             waptwua_api.task_manager = task_manager
-    if waptrepositories_api is not None:
-        waptrepositories_api.task_manager = task_manager
+    if WaptSyncRepo is not None:
+        waptrepositories_task_manager = task_manager
 
     logger.info('Task queue running')
 
@@ -2092,8 +2090,8 @@ if __name__ == "__main__":
             setloglevel(sio_logger,options.loglevel)
         else:
             setloglevel(sio_logger,waptconfig.loglevel)
-        if waptrepositories_api is not None:
-            waptrepositories_api.sio = sio
+        if WaptSyncRepo is not None:
+            waptrepositories_sio = sio
 
     if options.devel:
         logger.info('Starting local dev waptservice...')

@@ -58,12 +58,12 @@ import tempfile
 import setuphelpers
 
 # wapt specific stuff
-from waptutils import ensure_unicode,ensure_list,jsondump
+from waptutils import ensure_unicode,ensure_list,jsondump, is_between_two_times
 
 from waptpackage import PackageEntry,WaptLocalRepo,WaptPackage,EWaptException
 from waptcrypto import SSLVerifyException,SSLCABundle,SSLCertificate,SSLPrivateKey
 
-from common import Wapt,is_between_two_times
+from common import Wapt
 
 from waptservice.waptservice_common import waptservice_remote_actions,waptconfig,WaptServiceConfig
 from waptservice.waptservice_common import WaptUpdate,WaptUpgrade,WaptUpdateServerStatus,WaptRegisterComputer

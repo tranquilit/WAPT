@@ -7721,14 +7721,6 @@ def check_user_membership(user_name,password,domain_name,group_name):
     huser = win32security.LogonUser(user_name,domain_name,password,win32security.LOGON32_LOGON_NETWORK,win32security.LOGON32_PROVIDER_DEFAULT)
     return win32security.CheckTokenMembership(huser, sid)
 
-def is_between_two_times(time1,time2):
-    time_now = datetime.datetime.now()
-    time_nowHHMM = '%s:%s' % (time_now.hour,time_now.minute)
-    if time2<time1:
-        return time_nowHHMM>=time1 or time_nowHHMM<=time2
-    else:
-        return time1<=time_nowHHMM<=time2
-
 # for backward compatibility
 Version = setuphelpers.Version  # obsolete
 
