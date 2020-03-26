@@ -1,0 +1,310 @@
+.text-md {
+  font-size: .9rem;
+}
+
+.version {
+  position:absolute;
+  bottom:0;
+  right: 0;
+  margin-bottom: 7%;
+}
+
+.version-os {
+  position:absolute;
+  bottom:0;
+  margin-bottom: 10%;
+}
+
+.flair {
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 16px;
+  display: inline-block;
+  margin-right: 5px;
+  text-overflow: ellipsis;
+  vertical-align: text-bottom;
+  white-space: nowrap;
+  border-radius: 2px;
+  overflow: hidden;
+  padding: 0px 4px;
+  background-color: #0dd3bb;
+}
+
+.flair-active {
+  font-size: 14px;
+  padding: 3px 10px;
+  color: #FFFFFF;
+  line-height: 24px;
+}
+
+.flair-active-language {
+  background-color: #0dd3bb
+}
+
+.flair-active-architecture {
+  background-color: #ff66ac
+}
+
+.flair-active-categorie {
+  background-color: #ffb000
+}
+
+.flair-internet {
+  background-color: rgb(0, 121, 211);
+  color: #ffffff;
+}
+
+.flair-utilities {
+  background-color: #FFB000;
+  color: #ffffff;
+}
+
+.flair-messaging {
+  background-color: #0079D3;
+  color: #ffffff;
+}
+
+.flair-security {
+  background-color: #46D160;
+  color: #ffffff;
+}
+
+.flair-systemandnetwork {
+  background-color: #BBBDBF;
+  color: #ffffff;
+}
+
+.flair-media {
+  background-color: #FF66AC;
+  color: #ffffff;
+}
+
+.flair-development {
+  background-color: #7193FF;
+  color: #ffffff;
+}
+
+.flair-office {
+  background-color: #0DD3BB;
+  color: #ffffff;
+}
+
+.flair-drivers {
+  background-color: #EDEFF1;
+  color: #ffffff;
+}
+
+.flair-windows {
+  background-color: #3964ab;
+  color: #ffffff;
+}
+
+.flair-linux {
+  background-color: #ab3995;
+  color: #ffffff;
+}
+
+.flair-apple {
+  background-color: #828282;
+  color: #ffffff;
+}
+
+.fa-trash {
+  color: #999;
+}
+
+
+
+
+.bg-register-check-image {
+  background: url("../img/happy-dog.jpg");
+  background-position: center;
+  background-size: cover;
+}
+
+.sidebar .nav-item .collapse .collapse-inner .collapse-item,
+.sidebar .nav-item .collapsing .collapse-inner .collapse-item {
+  padding: 0.5rem 1.5rem;
+  margin: 0 0.5rem;
+}
+
+.btn-clipboard {
+  padding: 1px 6px;
+}
+
+/* breadcrum */
+.breadcrumb {
+  padding: 0;
+  margin-bottom: 0;
+  list-style: none;
+  background-color: transparent;;
+}
+
+
+.suscribe-newsletter {
+  text-align: center;
+  padding: 10px;
+}
+
+/*login page*/
+.login-forms {
+  width: 70%;
+  margin-left: 15%;
+}
+
+.validation {
+  color: #008000;
+}
+
+.card-header {
+    padding: 0.75rem 1.25rem;
+    margin-bottom: 0;
+    background-color: transparent;;
+    border-bottom: none;
+}
+
+.card .card-header[data-toggle="collapse"]::after {
+    color: #5a5c69;
+}
+
+.suscription {
+  text-align: right;
+}
+
+.suscription-item {
+  margin-top: -20px;
+}
+
+.suscription img {
+  max-width: 48px;
+}
+
+.choose-file {
+  width: 100%;
+}
+
+.select-subscription {
+  text-align: center;
+}
+
+::-webkit-scrollbar {
+    width: 12px;
+}
+
+::-webkit-scrollbar-track {
+    background-color: #eaeaea;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
+    background-color: #2d3047;
+}
+
+.delete {
+  color:red;
+}
+
+.deletion-reasons {
+  text-align: left;
+}
+
+.version-list .btn {
+  margin-bottom: 0.5rem;
+}
+
+/*fix topbar*/
+
+/* The navigation bar */
+.topbar {
+  position: fixed; /* Set the navbar to fixed position */
+  top: 0; /* Position the navbar at the top of the page */
+  right: 0;
+  width: 100%;
+  z-index: 1;
+}
+
+
+/* Main content */
+.container-fluid {
+  margin-top: 6rem;
+}
+
+
+
+/*sidebar*/
+.sidebar {
+  margin-top: 4.4rem;
+}
+
+
+.img-fluid {
+  max-width: 70%;
+}
+
+@media (min-width: 768px) {
+  .navbar-search {
+      margin-left: 4rem !important;
+  }
+}
+
+.sidebar-filters {
+  padding: 0 1rem;
+  font-weight: 800;
+  font-size: 0.65rem;
+}
+
+/*sort by*/
+.sidebar-filters-sortby {
+  float: left;
+}
+
+
+div.settings {
+    display:grid;
+    grid-template-columns: max-content max-content;
+    grid-gap:5px;
+}
+
+div.settings label {
+  text-align:right;
+  margin-top: 0.5rem;
+}
+
+div.settings label:after {
+  content: ":";
+}
+/*fin sort-by*/
+
+.remove-filters {
+  display: inline-block;
+  font-size: 1rem;
+  vertical-align: text-bottom;
+}
+
+.card-tuile {
+  padding-bottom: 23%;
+}
+
+.card-tuile img {
+  max-width: 48px;
+}
+
+.card-tuile .align-items-center .col.mr-2 .text-md {
+  min-height: 126.86px;
+}
+
+@media (max-width:1476px) {
+  .card-tuile .text-gray-800 {
+    max-width: 174.5px;
+  }
+}
+
+.cart-tuile .align-items-center .col.mr-2 .text-gray-800 {
+  min-height: 48px;
+}
+
+.nb-packages {
+  float: right;
+}
