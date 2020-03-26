@@ -144,8 +144,8 @@ try:
     app.register_blueprint(wsus.wsus)
     app.register_blueprint(enterprise.enterprise)
     app.register_blueprint(store.store)
+    app.config['BABEL_TRANSLATION_DIRECTORIES'] = 'translations;../waptenterprise/waptserver/translations'
     app.register_blueprint(repositories.repositories)
-
 except Exception as e:
     logger.info(str(e))
     wsus = False
