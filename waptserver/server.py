@@ -140,16 +140,17 @@ _ = gettext
 
 
 try:
-    from waptenterprise.waptserver import wsus,enterprise,store,repositories
+    from waptenterprise.waptserver import wsus,enterprise,repositories
     app.register_blueprint(wsus.wsus)
     app.register_blueprint(enterprise.enterprise)
-    app.register_blueprint(store.store)
-    app.config['BABEL_TRANSLATION_DIRECTORIES'] = 'translations;../waptenterprise/waptserver/translations'
-    app.register_blueprint(repositories.repositories)
 except Exception as e:
     logger.info(str(e))
     wsus = False
     repositories = False
+if app.conf['enable_store']:
+    from waptenterprise.waptserver import store
+    app.register_blueprint(store.store)
+    app.config['BABEL_TRANSLATION_DIRECTORIES'] = 'translations;../waptenterprise/waptserver/translations'
 
 @app.teardown_request
 def _db_close(error):
