@@ -3636,62 +3636,86 @@ msgstr "Expressions régulières autorisées"
 
 #: tviswaptgui.gridagentrepo.header.columns[0].text
 msgctxt "tviswaptgui.gridagentrepo.header.columns[0].text"
-msgid "Status sync"
-msgstr "Statut synchro"
+msgid "Status"
+msgstr "Statut"
 
 #: tviswaptgui.gridagentrepo.header.columns[10].text
 msgctxt "tviswaptgui.gridagentrepo.header.columns[10].text"
-msgid "uuid"
-msgstr "uuid"
+msgid "Current download"
+msgstr "Téléchargement en cours"
 
 #: tviswaptgui.gridagentrepo.header.columns[11].text
 msgctxt "tviswaptgui.gridagentrepo.header.columns[11].text"
-msgid "status_sync_id"
-msgstr "ID de synchronisation"
+msgid "Current speed"
+msgstr "Vitesse de téléchargement actuelle"
 
 #: tviswaptgui.gridagentrepo.header.columns[12].text
-msgid "status_sync_errors"
-msgstr "Erreurs de synchro"
+msgid "Download speed average"
+msgstr "Vitesse de téléchargement moyenne"
+
+#: tviswaptgui.gridagentrepo.header.columns[13].text
+msgid "Last audit"
+msgstr "Dernier audit"
+
+#: tviswaptgui.gridagentrepo.header.columns[14].text
+msgid "Last sync"
+msgstr "Dernière synchro"
+
+#: tviswaptgui.gridagentrepo.header.columns[15].text
+msgctxt "tviswaptgui.gridagentrepo.header.columns[15].text"
+msgid "Version"
+msgstr "Version"
+
+#: tviswaptgui.gridagentrepo.header.columns[16].text
+msgctxt "tviswaptgui.gridagentrepo.header.columns[16].text"
+msgid "ID"
+msgstr "ID"
+
+#: tviswaptgui.gridagentrepo.header.columns[17].text
+msgctxt "tviswaptgui.gridagentrepo.header.columns[17].text"
+msgid "Errors"
+msgstr "Erreurs"
 
 #: tviswaptgui.gridagentrepo.header.columns[1].text
-msgid "Sync version"
-msgstr ""
+msgid "Progress"
+msgstr "Progression"
 
 #: tviswaptgui.gridagentrepo.header.columns[2].text
-msgid "Sync status"
-msgstr "Statut de synchro"
+msgid "Description"
+msgstr "Description"
 
 #: tviswaptgui.gridagentrepo.header.columns[3].text
 msgid "Connection status"
 msgstr "Statut de connexion"
 
 #: tviswaptgui.gridagentrepo.header.columns[4].text
-msgid "Current download"
-msgstr "Téléchargement en cours"
-
-#: tviswaptgui.gridagentrepo.header.columns[5].text
-msgid "status_sync_progress"
-msgstr "Progression de la synchronisation"
-
-#: tviswaptgui.gridagentrepo.header.columns[6].text
-msgctxt "tviswaptgui.gridagentrepo.header.columns[6].text"
-msgid "Description"
-msgstr "Description"
-
-#: tviswaptgui.gridagentrepo.header.columns[7].text
-msgctxt "tviswaptgui.gridagentrepo.header.columns[7].text"
+msgctxt "tviswaptgui.gridagentrepo.header.columns[4].text"
 msgid "Computer FQDN"
 msgstr "FQDN de l'ordinateur"
 
+#: tviswaptgui.gridagentrepo.header.columns[5].text
+msgid "Computer name"
+msgstr "Nom de la machine"
+
+#: tviswaptgui.gridagentrepo.header.columns[6].text
+msgctxt "tviswaptgui.gridagentrepo.header.columns[6].text"
+msgid "IP"
+msgstr "IP"
+
+#: tviswaptgui.gridagentrepo.header.columns[7].text
+msgctxt "tviswaptgui.gridagentrepo.header.columns[7].text"
+msgid "UUID"
+msgstr "UUID"
+
 #: tviswaptgui.gridagentrepo.header.columns[8].text
 msgctxt "tviswaptgui.gridagentrepo.header.columns[8].text"
-msgid "Computer name"
-msgstr "Nom de l'ordinateur"
+msgid "Sync status"
+msgstr "Statut de synchro"
 
 #: tviswaptgui.gridagentrepo.header.columns[9].text
 msgctxt "tviswaptgui.gridagentrepo.header.columns[9].text"
-msgid "IP"
-msgstr "IP"
+msgid "Sync ID"
+msgstr "ID Sync"
 
 #: tviswaptgui.gridgroups.header.columns[0].text
 msgctxt "tviswaptgui.gridgroups.header.columns[0].text"

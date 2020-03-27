@@ -9150,101 +9150,142 @@ object VisWaptGUI: TVisWaptGUI
             Header.AutoSizeIndex = -1
             Header.Columns = <            
               item
-                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
                 Position = 0
-                Text = 'Status sync'
-                Width = 71
-                PropertyName = 'status_remote_repo'
-              end            
-              item
-                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-                Position = 1
-                Tag = 1
-                Text = 'Sync version'
-                Width = 83
-                PropertyName = 'status_sync_version'
-              end            
-              item
-                Position = 2
-                Tag = 2
-                Text = 'Sync status'
-                Width = 109
+                Text = 'Status'
+                Width = 164
                 PropertyName = 'sync_status'
               end            
               item
-                Position = 3
-                Tag = 3
-                Text = 'Connection status'
-                Width = 138
-                PropertyName = 'reachable'
-              end            
-              item
-                Position = 4
-                Tag = 4
-                Text = 'Current download'
-                Width = 118
-                PropertyName = 'status_sync_current_download'
+                Alignment = taRightJustify
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                Position = 1
+                Tag = 1
+                Text = 'Progress'
+                Width = 100
+                PropertyName = 'progress'
               end            
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-                Position = 5
-                Tag = 6
-                Text = 'status_sync_progress'
-                Width = 142
-                PropertyName = 'status_sync_progress'
-              end            
-              item
-                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-                Position = 6
-                Tag = 7
+                Position = 2
+                Tag = 2
                 Text = 'Description'
                 Width = 107
                 PropertyName = 'description'
               end            
               item
-                Position = 7
-                Tag = 8
+                Position = 3
+                Tag = 3
+                Text = 'Connection status'
+                Width = 113
+                PropertyName = 'reachable'
+              end            
+              item
+                Position = 4
+                Tag = 4
                 Text = 'Computer FQDN'
                 Width = 139
                 PropertyName = 'computer_fqdn'
               end            
               item
-                Position = 8
-                Tag = 9
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                Position = 5
+                Tag = 5
                 Text = 'Computer name'
                 Width = 132
                 PropertyName = 'computer_name'
               end            
               item
-                Position = 9
-                Tag = 10
+                Position = 6
+                Tag = 6
                 Text = 'IP'
-                Width = 120
+                Width = 101
                 PropertyName = 'main_ip'
               end            
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-                Position = 10
-                Tag = 11
-                Text = 'uuid'
+                Position = 7
+                Tag = 7
+                Text = 'UUID'
                 Width = 72
                 PropertyName = 'uuid'
               end            
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                Position = 8
+                Tag = 8
+                Text = 'Sync status'
+                Width = 100
+                PropertyName = 'status'
+              end            
+              item
+                Alignment = taRightJustify
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                Position = 9
+                Tag = 9
+                Text = 'Sync ID'
+                Width = 100
+                PropertyName = 'sync_id'
+              end            
+              item
+                Position = 10
+                Tag = 10
+                Text = 'Current download'
+                Width = 121
+                PropertyName = 'current_download'
+              end            
+              item
                 Position = 11
+                Tag = 11
+                Text = 'Current speed'
+                Width = 100
+                PropertyName = 'current_speed'
+              end            
+              item
+                Position = 12
                 Tag = 12
-                Text = 'status_sync_id'
-                Width = 10
-                PropertyName = 'status_sync_id'
+                Text = 'Download speed average'
+                Width = 100
+                PropertyName = 'speed_average'
+              end            
+              item
+                Position = 13
+                Tag = 13
+                Text = 'Last audit'
+                Width = 100
+                PropertyName = 'last_audit'
+              end            
+              item
+                Position = 14
+                Tag = 14
+                Text = 'Last sync'
+                Width = 100
+                PropertyName = 'last_sync'
+              end            
+              item
+                Alignment = taRightJustify
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                Position = 15
+                Tag = 15
+                Text = 'Version'
+                Width = 100
+                PropertyName = 'version'
+              end            
+              item
+                Alignment = taRightJustify
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                Position = 16
+                Tag = 16
+                Text = 'ID'
+                Width = 100
+                PropertyName = 'id'
               end            
               item
                 Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-                Position = 12
-                Tag = 13
-                Text = 'status_sync_errors'
+                Position = 17
+                Tag = 17
+                Text = 'Errors'
                 Width = 10
-                PropertyName = 'status_sync_errors'
+                PropertyName = 'errors'
               end>
             Header.DefaultHeight = 18
             Header.Height = 18
