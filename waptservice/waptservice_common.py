@@ -475,7 +475,7 @@ class WaptServiceConfig(object):
                             if config.has_option('repo-sync','local_repo_time_for_sync_end') and regex.match(config.get('repo-sync','local_repo_time_for_sync_end')):
                                 self.local_repo_time_for_sync_end=config.get('repo-sync','local_repo_time_for_sync_end')
                             else:
-                                self.local_repo_time_for_sync_end='%d:%s' % (int(timeforsync_start.split(':')[0])+1, timeforsync_start.split(':')[1])
+                                self.local_repo_time_for_sync_end='%s:%s' % (str((int(timeforsync_start.split(':')[0])+1)) if (int(timeforsync_start.split(':')[0])+1)>9 else '0'+str((int(timeforsync_start.split(':')[0])+1))  , timeforsync_start.split(':')[1])
                     elif config.has_option('repo-sync','local_repo_sync_task_period'):
                         self.local_repo_sync_task_period = config.get('repo-sync','local_repo_sync_task_period')
                     if config.has_option('repo-sync','local_repo_limit_bandwidth'):

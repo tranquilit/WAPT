@@ -106,7 +106,7 @@ else:
 
 
 if os.path.isdir(os.path.join(wapt_root_dir,'waptenterprise')):
-    from waptenterprise.waptservice.repositories import WaptSyncRepo,waptrepositories_sio,waptrepositories_task_manager
+    from waptenterprise.waptservice.repositories import WaptSyncRepo
 else:
     WaptSyncRepo = None
 
@@ -1654,7 +1654,7 @@ class WaptTaskManager(threading.Thread):
             if (self.last_sync is None or (datetime.datetime.now() - self.last_sync > get_time_delta(waptconfig.local_repo_sync_task_period,'m'))) and ((waptconfig.local_repo_time_for_sync_start is None) or is_between_two_times(waptconfig.local_repo_time_for_sync_start,waptconfig.local_repo_time_for_sync_end)):
                 try:
                     self.logger.debug(u'Add_task for sync with local_repo_sync_task_period')
-                    self.add_task(WaptSyncRepo(notifyuser=False,created_by='SCHEDULER'))
+                    self.add_task(WaptSyncRepo(notifyuser=False,created_by='SCHEDULER',socketio_client=sio.socketio_client))
                 except Exception as e:
                     self.logger.debug(u'Error syncing local repo with server repo : %s' % e)
 
@@ -2072,8 +2072,6 @@ if __name__ == "__main__":
     if sys.platform == 'win32':
         if waptwua_api is not None:
             waptwua_api.task_manager = task_manager
-    if WaptSyncRepo is not None:
-        waptrepositories_task_manager = task_manager
 
     logger.info('Task queue running')
 
@@ -2090,8 +2088,6 @@ if __name__ == "__main__":
             setloglevel(sio_logger,options.loglevel)
         else:
             setloglevel(sio_logger,waptconfig.loglevel)
-        if WaptSyncRepo is not None:
-            waptrepositories_sio = sio
 
     if options.devel:
         logger.info('Starting local dev waptservice...')

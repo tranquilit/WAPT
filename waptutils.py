@@ -1673,7 +1673,7 @@ def get_main_ip():
 
 def is_between_two_times(time1,time2):
     time_now = datetime.datetime.now()
-    time_nowHHMM = '%s:%s' % (time_now.hour,time_now.minute)
+    time_nowHHMM = '%s:%s' % (str(time_now.hour) if time_now.hour > 9 else '0'+str(time_now.hour),str(time_now.minute) if time_now.minute > 9 else '0'+str(time_now.hour))
     if time2<time1:
         return time_nowHHMM>=time1 or time_nowHHMM<=time2
     else:

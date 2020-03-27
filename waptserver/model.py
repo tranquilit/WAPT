@@ -753,18 +753,15 @@ class SyncStatus(WaptBaseModel):
     id = PrimaryKeyField(primary_key=True)
     version = IntegerField(null=True)
     changelog = JSONField(null=True)
+    progress = IntegerField(null=True)
 
 class HostSyncStatus(WaptBaseModel):
     id = PrimaryKeyField(primary_key=True)
     uuid = CharField(null=False)
     status = CharField(null=True)
     current_download = TextField(null=True)
-    start_sync = DateTimeField(null=True)
     last_sync = DateTimeField(null=True)
-    last_sync_duration = CharField(null=True)
-    start_audit = DateTimeField(null=True)
     last_audit = DateTimeField(null=True)
-    last_audit_duration = CharField(null=True)
     current_speed = CharField(null=True)
     speed_average = CharField(null=True)
     errors = JSONField(null=True)
@@ -2124,7 +2121,7 @@ def upgrade_db_structure():
                 v.save()
 
         next_version = '1.8.1.0'
-        if get_db_version() < next_version:
+        if get_db_version() <= next_version:
             with wapt_db.atomic():
                 logger.info("Migrating from %s to %s" % (get_db_version(), next_version))
                 opes = []
@@ -2139,6 +2136,10 @@ def upgrade_db_structure():
 
                 (user_acls,_) = WaptUserAcls.get_or_create(user_fingerprint_sha1='admin',acls=['admin'],perimeter_fingerprint='*')
                 user_acls.save()
+
+                columns = [c.name for c in wapt_db.get_columns('syncstatus')]
+                if not 'progress' in columns:
+                    opes.append(migrator.add_column(SyncStatus._meta.name, 'progress',SyncStatus.progress))
 
                 migrate(*opes)
 

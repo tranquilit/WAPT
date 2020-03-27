@@ -143,6 +143,7 @@ try:
     from waptenterprise.waptserver import wsus,enterprise,repositories
     app.register_blueprint(wsus.wsus)
     app.register_blueprint(enterprise.enterprise)
+    app.register_blueprint(repositories.repositories)
     app.config['BABEL_TRANSLATION_DIRECTORIES'] = 'translations;../waptenterprise/waptserver/translations'
 except Exception as e:
     logger.info(str(e))

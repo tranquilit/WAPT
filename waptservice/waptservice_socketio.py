@@ -380,7 +380,7 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
         if waptconfig.enable_remote_repo and WaptSyncRepo is not None:
             if not(waptconfig.local_repo_time_for_sync_start) or is_between_two_times(waptconfig.local_repo_time_for_sync_start,waptconfig.local_repo_time_for_sync_end):
                 try:
-                    self.task_manager.add_task(WaptSyncRepo(notifyuser=False,created_by='SERVER'))
+                    self.task_manager.add_task(WaptSyncRepo(notifyuser=False,created_by='SERVER',socketio_client=self))
                 except Exception as e:
                     logger.debug(u'Error syncing local repo with server repo : %s' % e)
             else:
@@ -392,7 +392,7 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
         logger.debug('Synchronize local remote repo %s' % (args,))
         if waptconfig.enable_remote_repo and WaptSyncRepo is not None:
             try:
-                self.task_manager.add_task(WaptSyncRepo(notifyuser=False,created_by='SERVER'))
+                self.task_manager.add_task(WaptSyncRepo(notifyuser=False,created_by='SERVER',socketio_client=self))
             except Exception as e:
                 logger.debug(u'Error syncing local repo with server repo : %s' % e)
         else:
@@ -402,7 +402,7 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
         logger.debug('Auditing files of remote repo %s' % (args,))
         if waptconfig.enable_remote_repo and WaptSyncRepo is not None:
             try:
-                self.task_manager.add_task(WaptSyncRepo(notifyuser=False,created_by='SERVER',audit=True))
+                self.task_manager.add_task(WaptSyncRepo(notifyuser=False,created_by='SERVER',audit=True,socketio_client=self))
             except Exception as e:
                 logger.debug(u'Error auditing local repo with server repo : %s' % e)
         else:
