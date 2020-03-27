@@ -6170,9 +6170,11 @@ msgid "WUA Status"
 msgstr ""
 
 #: tviswaptgui.label11.caption
+#, fuzzy
+#| msgid "Computer name"
 msgctxt "tviswaptgui.label11.caption"
 msgid "UUID"
-msgstr ""
+msgstr "Beschreibung"
 
 #: tviswaptgui.label12.caption
 #, fuzzy
@@ -6266,6 +6268,12 @@ msgctxt "tviswaptgui.label9.caption"
 msgid "Last seen"
 msgstr "Aktualisiert"
 
+#: tviswaptgui.labelagentreponumbers.caption
+#, fuzzy
+msgctxt "tviswaptgui.labelagentreponumbers.caption"
+msgid "Selected / Total : %d / %d"
+msgstr "0"
+
 #: tviswaptgui.labelcomputersnumber.caption
 #| msgid "0"
 msgctxt "TVISWAPTGUI.LABELCOMPUTERSNUMBER.CAPTION"
@@ -6274,6 +6282,12 @@ msgstr "0"
 
 #: tviswaptgui.labelreportingnumber.caption
 msgctxt "tviswaptgui.labelreportingnumber.caption"
+msgid "Selected / Total : %d / %d"
+msgstr "0"
+
+#: tviswaptgui.labelrulesnumber.caption
+#, fuzzy
+msgctxt "tviswaptgui.labelrulesnumber.caption"
 msgid "Selected / Total : %d / %d"
 msgstr "0"
 

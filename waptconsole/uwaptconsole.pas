@@ -85,6 +85,8 @@ type
     Label13: TLabel;
     Label14: TLabel;
     Label16: TLabel;
+    LabelAgentRepoNumbers: TLabel;
+    LabelRulesNumber: TLabel;
     LabInstallLogTitle: TLabel;
     LabTaskLog: TLabel;
     LabLogsKB: TLabel;
@@ -100,6 +102,8 @@ type
     MenuItemSyncForce: TMenuItem;
     Panel1: TPanel;
     Panel12: TPanel;
+    Panel16: TPanel;
+    Panel19: TPanel;
     panOverviewHostPackages1: TPanel;
     panOverviewHostPackages2: TPanel;
     panFilterPackagesStatus: TPanel;

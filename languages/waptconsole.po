@@ -5936,6 +5936,11 @@ msgctxt "tviswaptgui.label9.caption"
 msgid "Last seen"
 msgstr ""
 
+#: tviswaptgui.labelagentreponumbers.caption
+msgctxt "tviswaptgui.labelagentreponumbers.caption"
+msgid "Selected / Total : %d / %d"
+msgstr ""
+
 #: tviswaptgui.labelcomputersnumber.caption
 msgctxt "TVISWAPTGUI.LABELCOMPUTERSNUMBER.CAPTION"
 msgid "Selected / Total : %d / %d"
@@ -5943,6 +5948,11 @@ msgstr ""
 
 #: tviswaptgui.labelreportingnumber.caption
 msgctxt "tviswaptgui.labelreportingnumber.caption"
+msgid "Selected / Total : %d / %d"
+msgstr ""
+
+#: tviswaptgui.labelrulesnumber.caption
+msgctxt "tviswaptgui.labelrulesnumber.caption"
 msgid "Selected / Total : %d / %d"
 msgstr ""
 

@@ -3681,6 +3681,7 @@ msgid "Progress"
 msgstr "Progression"
 
 #: tviswaptgui.gridagentrepo.header.columns[2].text
+msgctxt "tviswaptgui.gridagentrepo.header.columns[2].text"
 msgid "Description"
 msgstr "Description"
 
@@ -3694,6 +3695,7 @@ msgid "Computer FQDN"
 msgstr "FQDN de l'ordinateur"
 
 #: tviswaptgui.gridagentrepo.header.columns[5].text
+msgctxt "tviswaptgui.gridagentrepo.header.columns[5].text"
 msgid "Computer name"
 msgstr "Nom de la machine"
 
@@ -5983,6 +5985,12 @@ msgctxt "tviswaptgui.label9.caption"
 msgid "Last seen"
 msgstr "Dernière connexion"
 
+#: tviswaptgui.labelagentreponumbers.caption
+#, object-pascal-format,fuzzy
+msgctxt "tviswaptgui.labelagentreponumbers.caption"
+msgid "Selected / Total : %d / %d"
+msgstr "Sélectionné / Total : %d / %d"
+
 #: tviswaptgui.labelcomputersnumber.caption
 #, object-pascal-format
 msgctxt "TVISWAPTGUI.LABELCOMPUTERSNUMBER.CAPTION"
@@ -5992,6 +6000,12 @@ msgstr "Sélectionnés / Total : %d / %d"
 #: tviswaptgui.labelreportingnumber.caption
 #, object-pascal-format
 msgctxt "tviswaptgui.labelreportingnumber.caption"
+msgid "Selected / Total : %d / %d"
+msgstr "Sélectionné / Total : %d / %d"
+
+#: tviswaptgui.labelrulesnumber.caption
+#, object-pascal-format,fuzzy
+msgctxt "tviswaptgui.labelrulesnumber.caption"
 msgid "Selected / Total : %d / %d"
 msgstr "Sélectionné / Total : %d / %d"
 
