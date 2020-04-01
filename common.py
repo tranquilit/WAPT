@@ -611,7 +611,7 @@ class WaptSessionDB(WaptBaseDB):
 class WaptDB(WaptBaseDB):
     """Class to manage SQLite database with local installation status"""
 
-    curr_db_version = '20190606'
+    curr_db_version = '20200401'
 
     def initdb(self):
         """Initialize current sqlite db with empty table and return structure version"""
@@ -2394,6 +2394,9 @@ class WaptHostRepo(WaptRepo):
                 if host_package.status_code == 404:
                     # host package not found
                     logger.info('No host package found for %s' % host_id)
+                    package._packages_date = '1900-01-01T00:00:00'
+                    package._package_content = None
+                    self._packages_date = package._packages_date
                 else:
                     # for other than not found error, add to the discarded list.
                     # this can be consulted for mass changes to not recreate host packages because of temporary failures
