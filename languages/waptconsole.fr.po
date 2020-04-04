@@ -152,7 +152,7 @@ msgstr "Nom de fichier"
 #: tfrmhostpackages.gridhostpackages.header.columns[15].text
 msgctxt "tfrmhostpackages.gridhostpackages.header.columns[15].text"
 msgid "Parameters"
-msgstr "Parmètres"
+msgstr "Paramètres"
 
 #: tfrmhostpackages.gridhostpackages.header.columns[16].text
 msgctxt "tfrmhostpackages.gridhostpackages.header.columns[16].text"
@@ -197,7 +197,7 @@ msgstr "Nom du dépôt"
 #: tfrmhostpackages.gridhostpackages.header.columns[23].text
 msgctxt "tfrmhostpackages.gridhostpackages.header.columns[23].text"
 msgid "localpath"
-msgstr "Fichier local"
+msgstr "Chemin local"
 
 #: tfrmhostpackages.gridhostpackages.header.columns[24].text
 msgctxt "tfrmhostpackages.gridhostpackages.header.columns[24].text"
@@ -337,7 +337,7 @@ msgstr "Générer une clé privée et un certificat auto-signé"
 
 #: tviscreatekey.cbcodesigning.caption
 msgid "Tag as code signing"
-msgstr "Certificat de développeur"
+msgstr "Certificat de signature de code"
 
 #: tviscreatekey.cbexportpkcs12.caption
 msgid "Export PKCS12 too"
@@ -359,7 +359,7 @@ msgstr "Cette information sera utilisée comme identification du signataire de p
 #: tviscreatekey.edcommonname.hint
 msgctxt "tviscreatekey.edcommonname.hint"
 msgid "This information will be used as Signer identification in packages"
-msgstr "Cette information sera utilisée comme identification du signataire pour les paquets"
+msgstr "Cette information sera utilisée comme identification du signataire de paquets"
 
 #: tviscreatekey.edcountry.text
 msgid "FR"
@@ -371,8 +371,8 @@ msgstr "Exemple : technique@tranquil-it-systems.fr"
 
 #: tviscreatekey.edkeypassword.hint
 msgctxt "tviscreatekey.edkeypassword.hint"
-msgid "Used to decrypt or encrypt private jkey"
-msgstr "Utilisé pour déchiffer et chiffrer la clef privée"
+msgid "Used to decrypt or encrypt private key"
+msgstr "Utilisé pour déchiffer et chiffrer la clé privée"
 
 #: tviscreatekey.edlocality.hint
 msgid "E.g. : Nantes"
@@ -384,7 +384,7 @@ msgstr "Exemple : Tranquil IT Systems"
 
 #: tviscreatekey.edunit.hint
 msgid "E.g. : IT"
-msgstr "Exemple : numérique"
+msgstr "Exemple : Informatique"
 
 #: tviscreatekey.labcacert.caption
 msgctxt "tviscreatekey.labcacert.caption"
@@ -408,7 +408,7 @@ msgstr "Base du nom de fichier du certificat"
 #: tviscreatekey.labcn.caption
 msgctxt "tviscreatekey.labcn.caption"
 msgid "Common Name(CN) :"
-msgstr "Common Name (CN) :"
+msgstr "Nom commun (CN) :"
 
 #: tviscreatekey.labconfirmpwd.caption
 msgctxt "tviscreatekey.labconfirmpwd.caption"
@@ -442,7 +442,7 @@ msgstr "Par exemple : 'tranquilit' (sans caractères spéciaux !)"
 #: tviscreatekey.labkeypassword.caption
 msgctxt "tviscreatekey.labkeypassword.caption"
 msgid "Private key password"
-msgstr "Mot de passe de la clef privée"
+msgstr "Mot de passe de la clé privée"
 
 #: tviscreatekey.lablocality.caption
 msgctxt "tviscreatekey.lablocality.caption"
@@ -477,7 +477,7 @@ msgstr "Nom de votre entreprise :"
 #: tviscreatekey.labtargetdir.caption
 msgctxt "tviscreatekey.labtargetdir.caption"
 msgid "Target keys directory:"
-msgstr "Répertoire de destination des clefs :"
+msgstr "Répertoire de destination des clés :"
 
 #: tviscreatekey.labtargetdir.hint
 msgctxt "tviscreatekey.labtargetdir.hint"
@@ -506,12 +506,12 @@ msgstr "Créer un agent WAPT"
 
 #: tviscreatewaptsetup.cbdualsign.caption
 msgid "Sign waptupgrade with both sha256 and sha1"
-msgstr "Signer waptupgrade avec sha256 ET sha1"
+msgstr "Signer waptupgrade avec sha256 et sha1"
 
 #: tviscreatewaptsetup.cbdualsign.hint
 msgctxt "tviscreatewaptsetup.cbdualsign.hint"
-msgid "Check that certificate dates are valid and  issuer is a know one."
-msgstr "Vérifier que les dates des certificats sont correctes et que l'émetteur est bien connu"
+msgid "Check that certificate dates are valid and issuer is a know one."
+msgstr "Vérifier que les dates des certificats sont correctes et que l'émetteur est bien connu."
 
 #: tviscreatewaptsetup.cbforcerepourl.caption
 msgctxt "tviscreatewaptsetup.cbforcerepourl.caption"
@@ -543,7 +543,7 @@ msgstr "Installer les mises à jour Windows à l'arrêt"
 
 #: tviscreatewaptsetup.cbinstallwuaupdatesatshutdown.hint
 msgid "If some Windows updates are pending, waptexit will append a task to install all pending Windows updates"
-msgstr "Si des mises à jour Windows sont en attente, waptexit ajoureta une tâche pour les installer."
+msgstr "Si des mises à jour Windows sont en attente, waptexit ajoutera une tâche pour les installer."
 
 #: tviscreatewaptsetup.cbuseadgroups.caption
 msgid "Enable AD Groups"
@@ -552,7 +552,7 @@ msgstr "Activer les groupes AD"
 #: tviscreatewaptsetup.cbuseadgroups.hint
 msgctxt "tviscreatewaptsetup.cbuseadgroups.hint"
 msgid ""
-"Enable automatic AD groups based packages on Hots.\n"
+"Enable automatic AD groups based packages on Hosts.\n"
 "Be careful, this introduce load on the AD servers and slow down the whole Wapt process\n"
 msgstr ""
 "Active la gestion des paquets Groupes par l'AD.\n"
@@ -568,8 +568,8 @@ msgid ""
 "Ask Wapt agent to use the computer Fully Qualified Domain Name (name.domaine.lan) instead of BIOD unique ID.\n"
 "This can be useful if Wapt is not used as asset management, but only as a deployment solutioN.\n"
 msgstr ""
-"Demande à Wapt agent d'utiliser le nom FQDN de la machine (name.domaine.lan) comme identifiant à la place de l'UUID BIOS\n"
-"Utile si Wapt is n'st pas utilisé en gestion de parc, mais uniquement en gestionnaire de déploiements.\n"
+"Demande à l'agent Wapt d'utiliser le nom FQDN de la machine (name.domaine.lan) comme identifiant à la place de l'UUID BIOS\n"
+"Utile si Wapt n'est pas utilisé en gestion de parc, mais uniquement en gestionnaire de déploiements.\n"
 
 #: tviscreatewaptsetup.cbusekerberos.caption
 msgid "Use Kerberos for initial registration"
@@ -577,7 +577,7 @@ msgstr "Utiliser Kerberos pour l'enregistrement initial"
 
 #: tviscreatewaptsetup.cbusekerberos.hint
 msgid "When first registering to waptserver, host will try to authenticate using their kerberos account"
-msgstr "Quand le poste s'enregistrera initialement sur le serveur, il essaiera de s'authentifier avce son compte Kerberos"
+msgstr "Quand la machine s'enregistrera initialement sur le serveur, il essaiera de s'authentifier avce son compte Kerberos"
 
 #: tviscreatewaptsetup.cbuserandomuuid.caption
 msgid "Use random host UUID (for buggy BIOS)"
@@ -588,6 +588,8 @@ msgid ""
 "Ask Wapt agent to generate a random UUID instead of BIOS unique ID.\n"
 "This can be useful if BIOS returns non unique UUID\n"
 msgstr ""
+"Demande à l'aget Wapt de générer un UUID aléatoire comme identifiant à la place d'utiliser le l'UUID BIOS.\n"
+"Cela peut être utile si le BIOS ne retourne pas un UUID unique.\n"
 
 #: tviscreatewaptsetup.cbusereporules.caption
 msgid "Use repository access rules"
@@ -627,25 +629,25 @@ msgstr "Par exemple : socle,compta"
 #: tviscreatewaptsetup.edauditscheduling.hint
 msgctxt "tviscreatewaptsetup.edauditscheduling.hint"
 msgid "eg 2h or 120m or 1d"
-msgstr "Par exemple 2h ou 120m ou 1d"
+msgstr "Par exemple : 2h ou 120m ou 1d"
 
 #: tviscreatewaptsetup.edorgname.hint
-msgid "E.g. : Tranquil IT Systems."
+msgid "E.g. : Tranquil IT Systems"
 msgstr "Par exemple : Tranquil IT Systems"
 
 #: tviscreatewaptsetup.edpubliccertdir.hint
 msgid "Directory of X509 PEM trusted CA certificates"
-msgstr ""
+msgstr "Répertoire des certificats (X.509 PEM) des CA de confiance"
 
 #: tviscreatewaptsetup.edrepourl.hint
 #| msgid "E.g. : https://wapt.mydomain.lan/wapt"
 msgid "E.g. : https://wapt.mydomain.lan/wapt If empty, use dnsdomain setting"
-msgstr "Par exemple : https://wapt.mondomaine.lan/wapt."
+msgstr "Par exemple : https://wapt.mondomaine.lan/wapt Si vide, utiliser le paramètre DNS"
 
 #: tviscreatewaptsetup.edservercertificate.hint
 msgctxt "tviscreatewaptsetup.edservercertificate.hint"
 msgid "E.g. : c:\\wapt\\ssl\\server\\tranquilit.crt  Path to trusted certificates bundle for https connections"
-msgstr "Par ex. c:\\private\\tranquilit.crt"
+msgstr "Par exemple : c:\\wapt\\ssl\\server\\tranquilit.crt"
 
 #: tviscreatewaptsetup.edwaptserverurl.hint
 #| msgid "E.g. : http://wapt:8080."
@@ -655,7 +657,7 @@ msgstr "Par exemple : https://wapt.mondomaine.lan"
 #: tviscreatewaptsetup.edwuadownloadscheduling.hint
 msgctxt "tviscreatewaptsetup.edwuadownloadscheduling.hint"
 msgid "eg 2h or 120m or 1d"
-msgstr "Par exemple 2h ou 120m ou 1d"
+msgstr "Par exemple : 2h ou 120m ou 1d"
 
 #: tviscreatewaptsetup.gbwua.caption
 msgid "WAPTWUA Windows Updates "
@@ -684,7 +686,7 @@ msgstr "Emetteur"
 #: tviscreatewaptsetup.gridcertificates.header.columns[3].text
 msgctxt "tviscreatewaptsetup.gridcertificates.header.columns[3].text"
 msgid "Valid until"
-msgstr "Valide jusqu'à"
+msgstr "Valide jusqu'au"
 
 #: tviscreatewaptsetup.gridcertificates.header.columns[4].text
 msgctxt "tviscreatewaptsetup.gridcertificates.header.columns[4].text"
@@ -723,12 +725,12 @@ msgstr "Certificats / CA autorisés pour les paquets"
 
 #: tviscreatewaptsetup.labauthor.caption
 msgctxt "tviscreatewaptsetup.labauthor.caption"
-msgid "Authorized packages Certificates which will be bundled with the Wapt Agent  installer"
-msgstr "Certificats de paquets qui vont être déployés avec l'agent Wapt"
+msgid "Authorized packages Certificates which will be bundled with the WAPT Agent installer"
+msgstr "Paquet de certificats qui vont être déployés avec l'agent WAPT"
 
 #: tviscreatewaptsetup.label2.caption
 msgid "Main WAPT repository address :"
-msgstr "Adresse du dépôt WAPT principal"
+msgstr "Adresse du dépôt WAPT principal :"
 
 #: tviscreatewaptsetup.label2.hint
 msgid "Your WAPT repository address (http://wapt/wapt)."
@@ -759,7 +761,7 @@ msgstr "Chemin vers le bundle de CA serveurs https"
 #: tviscreatewaptsetup.label8.caption
 msgctxt "tviscreatewaptsetup.label8.caption"
 msgid "Append host's profiles"
-msgstr "Ajouter les profils de poste"
+msgstr "Ajouter les profils de machine"
 
 #: tviscreatewaptsetup.label8.hint
 msgctxt "tviscreatewaptsetup.label8.hint"
@@ -818,7 +820,7 @@ msgid ""
 "- Create custom waptagent.exe\n"
 "- Modify key password\n"
 "- Create / Modify / delete reporting queries\n"
-msgstr "Faire apparaître les fonctions de changement de mot de passe, création de certificats et de waptagent, modification des requêtes de reporting."
+msgstr "Faire apparaître les fonctions de changement de mot de passe, création de certificats, de waptagent et modification des requêtes de reporting."
 
 #: tvisdisplaypreferences.cbenablewaptwuafeatures.hint
 msgctxt "tvisdisplaypreferences.cbenablewaptwuafeatures.hint"
@@ -862,7 +864,7 @@ msgid ""
 "- Create custom waptagent.exe\n"
 "- Modify key password\n"
 "- Create / Modify / delete reporting queries\n"
-msgstr "Faire apparaître les fonctions de changement de mot de passe, création de certificats et de waptagent."
+msgstr "Faire apparaître les fonctions de changement de mot de passe, création de certificats, de waptagent et modification des requêtes de reporting."
 
 #: tvisdisplaypreferences.label12.caption
 msgid "Hide unavailable actions"
@@ -884,7 +886,7 @@ msgstr "Langue"
 #: tvisdisplaypreferences.label7.caption
 msgctxt "tvisdisplaypreferences.label7.caption"
 msgid "Show debug informations"
-msgstr "Voir les informations de debug"
+msgstr "Voir les informations de débogage"
 
 #: tviseditpackage.actaddconflicts.caption
 msgid "Add to blocked packages"
@@ -953,7 +955,7 @@ msgstr "Afficher les informations de débogage"
 #: tviseditpackage.edsearch.hint
 msgctxt "tviseditpackage.edsearch.hint"
 msgid "Use keywords to narrow search."
-msgstr "Affinez la recherche à l'aide de mots-clés."
+msgstr "Affiner la recherche à l'aide de mots-clés."
 
 #: tviseditpackage.edsection.text
 msgctxt "tviseditpackage.edsection.text"
@@ -1018,7 +1020,7 @@ msgstr "Paquet"
 #: tviseditpackage.gridpackages.header.columns[10].text
 msgctxt "tviseditpackage.gridpackages.header.columns[10].text"
 msgid "min_wapt_version"
-msgstr "Version Wapt min"
+msgstr "Version WAPT min"
 
 #: tviseditpackage.gridpackages.header.columns[11].text
 msgctxt "tviseditpackage.gridpackages.header.columns[11].text"
@@ -1033,22 +1035,22 @@ msgstr "Somme MD5"
 #: tviseditpackage.gridpackages.header.columns[13].text
 msgctxt "tviseditpackage.gridpackages.header.columns[13].text"
 msgid "description_pl"
-msgstr ""
+msgstr "Description polonaise"
 
 #: tviseditpackage.gridpackages.header.columns[14].text
 msgctxt "tviseditpackage.gridpackages.header.columns[14].text"
 msgid "description_fr"
-msgstr ""
+msgstr "Description française"
 
 #: tviseditpackage.gridpackages.header.columns[15].text
 msgctxt "tviseditpackage.gridpackages.header.columns[15].text"
 msgid "description_es"
-msgstr ""
+msgstr "Description espagnole"
 
 #: tviseditpackage.gridpackages.header.columns[16].text
 msgctxt "tviseditpackage.gridpackages.header.columns[16].text"
 msgid "description_de"
-msgstr ""
+msgstr "Description allemande"
 
 #: tviseditpackage.gridpackages.header.columns[17].text
 msgctxt "tviseditpackage.gridpackages.header.columns[17].text"
@@ -1083,7 +1085,7 @@ msgstr "UUID du paquet"
 #: tviseditpackage.gridpackages.header.columns[22].text
 msgctxt "tviseditpackage.gridpackages.header.columns[22].text"
 msgid "impacted_process"
-msgstr "Process impactés"
+msgstr "Processus impactés"
 
 #: tviseditpackage.gridpackages.header.columns[23].text
 msgctxt "tviseditpackage.gridpackages.header.columns[23].text"
@@ -1222,7 +1224,7 @@ msgstr "Description"
 
 #: tviseditpackage.label2.caption
 msgctxt "tviseditpackage.label2.caption"
-msgid "Available packages : "
+msgid "Available packages :"
 msgstr "Paquets disponibles :"
 
 #: tviseditpackage.labpackage.caption
@@ -1277,7 +1279,7 @@ msgstr "Installation restreinte"
 #: tvisgroupchoice.edsearch.hint
 msgctxt "tvisgroupchoice.edsearch.hint"
 msgid "Use keywords to narrow your search."
-msgstr "Affinez la recherche à l'aide de mots-clés."
+msgstr "Affiner la recherche à l'aide de mots-clés."
 
 #: tvisgroupchoice.gridpackages.header.columns[0].text
 msgctxt "tvisgroupchoice.gridpackages.header.columns[0].text"
@@ -1382,7 +1384,7 @@ msgstr "Importer..."
 
 #: tvisimportpackage.actpackageduplicate.hint
 msgid "Download, rename, sign and upload to private repository"
-msgstr "Télécharge, renomme, signe et upload vers le dépôt privé"
+msgstr "Télécharge, renomme, signe et télécharge vers le dépôt privé"
 
 #: tvisimportpackage.actpackageedit.caption
 msgid "Download and Edit"
@@ -1395,7 +1397,7 @@ msgstr "Actualiser"
 
 #: tvisimportpackage.actrepositoriessettings.caption
 msgid "Repository settings"
-msgstr "Paramètres des dépôts"
+msgstr "Paramètres du dépôt"
 
 #: tvisimportpackage.actsearchexternalpackage.caption
 msgctxt "TVISIMPORTPACKAGE.ACTSEARCHEXTERNALPACKAGE.CAPTION"
@@ -1404,7 +1406,7 @@ msgstr "Rechercher"
 
 #: tvisimportpackage.actwaptsettings.caption
 msgid "Waptconsole settings"
-msgstr "Paramètre de la Waptconsole"
+msgstr "Paramètre de la console WAPT"
 
 #: tvisimportpackage.bitbtn2.caption
 msgctxt "tvisimportpackage.bitbtn2.caption"
@@ -1446,7 +1448,7 @@ msgstr "Section"
 #: tvisimportpackage.gridexternalpackages.header.columns[10].text
 msgctxt "tvisimportpackage.gridexternalpackages.header.columns[10].text"
 msgid "Installed Size"
-msgstr "Taille finale"
+msgstr "Taille installé"
 
 #: tvisimportpackage.gridexternalpackages.header.columns[11].text
 msgctxt "tvisimportpackage.gridexternalpackages.header.columns[11].text"
@@ -1651,7 +1653,7 @@ msgstr "Version du logiciel"
 #: tvispackagewizard.edversion.text
 msgctxt "tvispackagewizard.edversion.text"
 msgid "0"
-msgstr ""
+msgstr "0"
 
 #: tvispackagewizard.labarcgitecture.caption
 msgctxt "tvispackagewizard.labarcgitecture.caption"
@@ -1678,8 +1680,8 @@ msgstr "Authentification de la clé privée"
 
 #: tvisprivatekeyauth.labkey.caption
 msgctxt "tvisprivatekeyauth.labkey.caption"
-msgid "For key matching the certificate: "
-msgstr "Pour la clé associée au certificat:"
+msgid "For key matching the certificate :"
+msgstr "Pour la clé associée au certificat :"
 
 #: tvisprivatekeyauth.labpassword.caption
 msgctxt "tvisprivatekeyauth.labpassword.caption"
@@ -1702,7 +1704,7 @@ msgstr "Parcourir les certificats"
 #: tvisrepositories.actgetservercertificate.caption
 msgctxt "tvisrepositories.actgetservercertificate.caption"
 msgid "Get Server certificates chain"
-msgstr "Récupération certificat serveur"
+msgstr "Récupération du certificat serveur"
 
 #: tvisrepositories.actopencertdir.caption
 msgctxt "tvisrepositories.actopencertdir.caption"
@@ -1742,7 +1744,7 @@ msgstr "Supprimer ce dépôt"
 #: tvisrepositories.caption
 msgctxt "tvisrepositories.caption"
 msgid "Repositories settings"
-msgstr "Paramètre du dépôt"
+msgstr "Paramètres des dépôt"
 
 #: tvisrepositories.cbadvanced2.caption
 msgid "Advanced parameters"
@@ -1791,7 +1793,8 @@ msgctxt "tvisrepositories.edhttpproxy.hint"
 msgid ""
 "E.g. : http://proxy.tranquilit.local:3128\n"
 "Only required if a proxy is needed for templates access\n"
-msgstr "Par exemple : http://proxy.tranquilit.local:3128"
+msgstr "Par exemple : http://proxy.tranquilit.local:3128\n"
+"Seulement nécessaire si un proxy est requis pour accéder au dépôt\n"
 
 #: tvisrepositories.edname.hint
 msgctxt "tvisrepositories.edname.hint"
@@ -1816,7 +1819,11 @@ msgid ""
 "\n"
 "If 0: no check on https server certificates issuers\n"
 "If 1 : use default wapt cacert.pem bundle\n"
-msgstr "Par ex. : c:\\wapt\\ssl\\server\\cacert.pem"
+msgstr ""
+"Par ex. : c:\\wapt\\ssl\\server\\cacert.pem\n"
+"Chemin de la chaine de certificats du serveur HTTPS"
+"Si 0 : pas de vérification des certificats\n"
+"Si 1 : utiliser le cacert.pem par défaut\n"
 
 #: tvisrepositories.edsignerscabundle.hint
 msgctxt "tvisrepositories.edsignerscabundle.hint"
@@ -1850,7 +1857,7 @@ msgstr "Nom du dépôt"
 #: tvisrepositories.labproxy.caption
 msgctxt "tvisrepositories.labproxy.caption"
 msgid "http proxy to use (if needed)"
-msgstr "Proxy http à utiliser"
+msgstr "Proxy http à utiliser (si nécessaire)"
 
 #: tvisrepositories.labrepourl.caption
 msgctxt "tvisrepositories.labrepourl.caption"
@@ -1873,7 +1880,7 @@ msgstr "Enregistrer"
 
 #: tvisselfservicegroup.actdisablepackage.caption
 msgid "Disable"
-msgstr "Enlever"
+msgstr "Désactiver"
 
 #: tvisselfservicegroup.actenablepackage.caption
 msgid "Enable"
@@ -1901,7 +1908,7 @@ msgstr "Modifier le paquet de règles Self-Service"
 #: tvisselfservicegroup.edpackageversion.text
 msgctxt "tvisselfservicegroup.edpackageversion.text"
 msgid "0"
-msgstr ""
+msgstr "0"
 
 #: tvisselfservicegroup.gridenabledpackages.header.columns[0].text
 msgctxt "tvisselfservicegroup.gridenabledpackages.header.columns[0].text"
@@ -1955,22 +1962,22 @@ msgstr "Somme MD5"
 #: tvisselfservicegroup.gridpackages.header.columns[13].text
 msgctxt "tvisselfservicegroup.gridpackages.header.columns[13].text"
 msgid "description_pl"
-msgstr ""
+msgstr "Description polonaise"
 
 #: tvisselfservicegroup.gridpackages.header.columns[14].text
 msgctxt "tvisselfservicegroup.gridpackages.header.columns[14].text"
 msgid "description_fr"
-msgstr ""
+msgstr "Description française"
 
 #: tvisselfservicegroup.gridpackages.header.columns[15].text
 msgctxt "tvisselfservicegroup.gridpackages.header.columns[15].text"
 msgid "description_es"
-msgstr ""
+msgstr "Description espagnole"
 
 #: tvisselfservicegroup.gridpackages.header.columns[16].text
 msgctxt "tvisselfservicegroup.gridpackages.header.columns[16].text"
 msgid "description_de"
-msgstr ""
+msgstr "Description allemande"
 
 #: tvisselfservicegroup.gridpackages.header.columns[17].text
 msgctxt "tvisselfservicegroup.gridpackages.header.columns[17].text"
@@ -2005,7 +2012,7 @@ msgstr "UUID du paquet"
 #: tvisselfservicegroup.gridpackages.header.columns[22].text
 msgctxt "tvisselfservicegroup.gridpackages.header.columns[22].text"
 msgid "impacted_process"
-msgstr "Process impactés"
+msgstr "Processus impactés"
 
 #: tvisselfservicegroup.gridpackages.header.columns[23].text
 msgctxt "tvisselfservicegroup.gridpackages.header.columns[23].text"
@@ -2144,7 +2151,7 @@ msgstr "Description"
 
 #: tvisselfservicegroup.label5.caption
 msgctxt "tvisselfservicegroup.label5.caption"
-msgid "Available packages : "
+msgid "Available packages :"
 msgstr "Paquets disponibles :"
 
 #: tvisselfservicegroup.label6.caption
@@ -2186,7 +2193,7 @@ msgstr "Importer"
 
 #: tvissoftwaresnormalization.actnormalizationimportsoftwares.hint
 msgid "Append all the software descriptions gathered from hosts inventory"
-msgstr "Ajoute tous les logiciels collectés lors de l'inventaire des postes"
+msgstr "Ajoute tous les logiciels collectés lors de l'inventaire des machines"
 
 #: tvissoftwaresnormalization.actnormalizationwritetable.caption
 msgctxt "tvissoftwaresnormalization.actnormalizationwritetable.caption"
@@ -2312,7 +2319,7 @@ msgstr "Vérifier"
 #: tviswaptconfig.actcheckandsetwaptserver.hint
 msgctxt "tviswaptconfig.actcheckandsetwaptserver.hint"
 msgid "Try to connect to waptserver and wapt_repo"
-msgstr "Tente de se connecter au serveur Wapt et au dépôt"
+msgstr "Tente de se connecter au serveur WAPT et au dépôt"
 
 #: tviswaptconfig.actcheckpersonalkey.caption
 msgctxt "tviswaptconfig.actcheckpersonalkey.caption"
@@ -2321,10 +2328,10 @@ msgstr "Vérifier la clé associée"
 
 #: tviswaptconfig.actcheckpersonalkey.hint
 msgid "Check that we can find a matching private key in the same directory as the certificate file"
-msgstr "Vérifier qu'une clé privée qui correspind au certificat peut être trouvée dans le même répertoire"
+msgstr "Vérifier qu'une clé privée qui correspond au certificat peut être trouvée dans le même répertoire"
 
 #: tviswaptconfig.actcreatekeycert.caption
-msgid "New  private key and certificate"
+msgid "New private key and certificate"
 msgstr "Nouvelle clé et certificat"
 
 #: tviswaptconfig.actcreatekeycert.hint
@@ -2334,7 +2341,7 @@ msgid ""
 "When upgrading, you must not recreate a private key and certificate.\n"
 msgstr ""
 "Génère une nouvelle clé privée et un certificat personnel.\n"
-"Cela doit être effectué seulement une fois par l'administrateur Wapt.\n"
+"Cela doit être effectué seulement une fois par l'administrateur WAPT.\n"
 "Lors d'un upgrade, vous ne devez pas recréer les clé privée et certificat\n"
 
 #: tviswaptconfig.actdeleteplugin.caption
@@ -2350,11 +2357,11 @@ msgstr "Parcourir les certificats"
 #: tviswaptconfig.actgetservercertificate.caption
 msgctxt "tviswaptconfig.actgetservercertificate.caption"
 msgid "Get Server https Certificate"
-msgstr "Récupération certificat serveur https"
+msgstr "Récupération du certificat serveur https"
 
 #: tviswaptconfig.actgetservercertificate.hint
 msgid ""
-"Connect to the server and get the https certificate blundle from it.\n"
+"Connect to the server and get the https certificate bundle from it.\n"
 "You must check that the certificate fingerprint is the expected one.\n"
 msgstr ""
 "Se connecte au serveur et récupère la chaîne de certificats https.\n"
@@ -2419,7 +2426,7 @@ msgstr "Vérifier le certificat https serveur"
 msgid ""
 "Check to enable the check of https server certificates\n"
 "(Main repository access and wapt server)\n"
-msgstr "Cocher pour active rla vérification des certificats https"
+msgstr "Cocher pour active la vérification des certificats https"
 
 #: tviswaptconfig.dlgselectclientcertificate.title
 msgctxt "tviswaptconfig.dlgselectclientcertificate.title"
@@ -2459,12 +2466,14 @@ msgstr ""
 msgid ""
 "E.g. : c:\\waptdev\n"
 "Local directory for saving package development projects\n"
-msgstr "Par exemple : c:\\waptdev"
+msgstr ""
+"Par exemple : c:\\waptdev\n"
+"Répertoire de travail local pour le développement de paquets\n"
 
 #: tviswaptconfig.edhttp_proxy.editlabel.caption
 msgctxt "tviswaptconfig.edhttp_proxy.editlabel.caption"
 msgid "http proxy to use (if needed)"
-msgstr "Proxy http à utiliser"
+msgstr "Proxy http à utiliser (si nécessaire)"
 
 #: tviswaptconfig.edhttp_proxy.hint
 msgctxt "tviswaptconfig.edhttp_proxy.hint"
@@ -2533,7 +2542,8 @@ msgctxt "tviswaptconfig.edwaptserver.hint"
 msgid ""
 "E.g. : https://wapt.tranquilit.local\n"
 "Leave empty if you don't want a central management server.\n"
-msgstr "Par exemple : https://wapt.tranquilit.localLaisser vide si vous ne voulez pas de serveur central de gestion."
+msgstr "Par exemple : https://wapt.tranquilit.local\n"
+"Laisser vide si vous ne voulez pas de serveur central de gestion.\n"
 
 #: tviswaptconfig.gridplugins.header.columns[0].text
 msgctxt "tviswaptconfig.gridplugins.header.columns[0].text"
@@ -2654,7 +2664,7 @@ msgstr "Ajouter un réseau"
 
 #: tviswaptgui.actaddprofile.caption
 msgid "New host AD profile"
-msgstr "Nouveau profil poste AD"
+msgstr "Nouveau profil machine AD"
 
 #: tviswaptgui.actcancelrunningtask.caption
 msgctxt "tviswaptgui.actcancelrunningtask.caption"
@@ -2668,7 +2678,7 @@ msgstr "Changer le mot de passe admin du serveur"
 
 #: tviswaptgui.actchangeprivatekeypassword.caption
 msgid "Change password of private key..."
-msgstr "Changer le mot de passe de la clef privée..."
+msgstr "Changer le mot de passe de la clé privée..."
 
 #: tviswaptgui.actcleancache.caption
 msgctxt "tviswaptgui.actcleancache.caption"
@@ -2711,7 +2721,7 @@ msgstr "Supprimer le groupe"
 #: tviswaptgui.actdeletehostspackageandinventory.caption
 msgctxt "tviswaptgui.actdeletehostspackageandinventory.caption"
 msgid "Remove host"
-msgstr "Supprimer le poste"
+msgstr "Supprimer la machine"
 
 #: tviswaptgui.actdeletehostspackageandinventory.hint
 msgctxt "tviswaptgui.actdeletehostspackageandinventory.hint"
@@ -2913,7 +2923,7 @@ msgstr "Actualiser"
 #: tviswaptgui.actrefreshhostinventory.caption
 msgctxt "tviswaptgui.actrefreshhostinventory.caption"
 msgid "Refresh host inventory"
-msgstr "Actualiser l'inventaire des postes"
+msgstr "Actualiser l'inventaire des machines"
 
 #: tviswaptgui.actrefreshhostpackagesoverview.caption
 msgctxt "tviswaptgui.actrefreshhostpackagesoverview.caption"
@@ -3151,7 +3161,7 @@ msgstr "Monter la règle"
 
 #: tviswaptgui.actveyon.caption
 msgid "Connect via Veyon"
-msgstr "Se connecter au poste avec Veyon"
+msgstr "Se connecter à la machine avec Veyon"
 
 #: tviswaptgui.actvnc.caption
 msgctxt "tviswaptgui.actvnc.caption"
@@ -3175,11 +3185,11 @@ msgstr "Actualiser"
 
 #: tviswaptgui.actwsussavebuildrules.caption
 msgid "Save and build rules package"
-msgstr "Ernegistrer et Créer le paquet de règles"
+msgstr "Ernegistrer et créer le paquet de règles"
 
 #: tviswaptgui.actwuaaddallowedclassification.caption
 msgid "Add Allowed classifications"
-msgstr "Autoriser des Classifications supplémentaires"
+msgstr "Autoriser des classifications supplémentaires"
 
 #: tviswaptgui.actwuaaddallowedupdate.caption
 msgid "Add Allowed Updates"
@@ -3386,7 +3396,7 @@ msgstr "Connectés"
 
 #: tviswaptgui.cbincludesubou.caption
 msgid "Include computers from  subfolders"
-msgstr "Inclure les postes des sous-dossiers"
+msgstr "Inclure les machines des sous-dossiers"
 
 #: tviswaptgui.cbinverseselect.caption
 msgid "Not"
@@ -3691,17 +3701,17 @@ msgstr "Maturité"
 #: tviswaptgui.gridgroups.header.columns[11].text
 msgctxt "tviswaptgui.gridgroups.header.columns[11].text"
 msgid "Min OS version"
-msgstr "Version min de l''OS"
+msgstr "Version min de l'OS"
 
 #: tviswaptgui.gridgroups.header.columns[12].text
 msgctxt "tviswaptgui.gridgroups.header.columns[12].text"
 msgid "Max OS version"
-msgstr "Version max de l''OS"
+msgstr "Version max de l'OS"
 
 #: tviswaptgui.gridgroups.header.columns[13].text
 msgctxt "tviswaptgui.gridgroups.header.columns[13].text"
 msgid "Min Wapt version"
-msgstr "Version min de Wapt"
+msgstr "Version min de WAPT"
 
 #: tviswaptgui.gridgroups.header.columns[14].text
 msgctxt "tviswaptgui.gridgroups.header.columns[14].text"
@@ -3751,22 +3761,22 @@ msgstr "Somme MD5"
 #: tviswaptgui.gridgroups.header.columns[22].text
 msgctxt "tviswaptgui.gridgroups.header.columns[22].text"
 msgid "description_pl"
-msgstr ""
+msgstr "Description polonaise"
 
 #: tviswaptgui.gridgroups.header.columns[23].text
 msgctxt "tviswaptgui.gridgroups.header.columns[23].text"
 msgid "description_fr"
-msgstr ""
+msgstr "Description française"
 
 #: tviswaptgui.gridgroups.header.columns[24].text
 msgctxt "tviswaptgui.gridgroups.header.columns[24].text"
 msgid "description_es"
-msgstr ""
+msgstr "Description espagnole"
 
 #: tviswaptgui.gridgroups.header.columns[25].text
 msgctxt "tviswaptgui.gridgroups.header.columns[25].text"
 msgid "description_de"
-msgstr ""
+msgstr "Description allemande"
 
 #: tviswaptgui.gridgroups.header.columns[26].text
 msgctxt "tviswaptgui.gridgroups.header.columns[26].text"
@@ -3776,7 +3786,7 @@ msgstr "Mainteneur"
 #: tviswaptgui.gridgroups.header.columns[27].text
 msgctxt "tviswaptgui.gridgroups.header.columns[27].text"
 msgid "package_uuid"
-msgstr "UUID paquet"
+msgstr "UUID du paquet"
 
 #: tviswaptgui.gridgroups.header.columns[28].text
 msgctxt "tviswaptgui.gridgroups.header.columns[28].text"
@@ -3786,7 +3796,7 @@ msgstr "Description"
 #: tviswaptgui.gridgroups.header.columns[29].text
 msgctxt "tviswaptgui.gridgroups.header.columns[29].text"
 msgid "impacted_process"
-msgstr "Process impactés"
+msgstr "Processus impactés"
 
 #: tviswaptgui.gridgroups.header.columns[2].text
 msgctxt "tviswaptgui.gridgroups.header.columns[2].text"
@@ -3836,7 +3846,7 @@ msgstr "OS cible"
 #: tviswaptgui.gridgroups.header.columns[38].text
 msgctxt "tviswaptgui.gridgroups.header.columns[38].text"
 msgid "localpath"
-msgstr "Fichier local"
+msgstr "Chemin local"
 
 #: tviswaptgui.gridgroups.header.columns[39].text
 msgctxt "tviswaptgui.gridgroups.header.columns[39].text"
@@ -3851,7 +3861,7 @@ msgstr "Description"
 #: tviswaptgui.gridgroups.header.columns[40].text
 msgctxt "tviswaptgui.gridgroups.header.columns[40].text"
 msgid "sourcespath"
-msgstr "Chemin vers les sources"
+msgstr "Chemin des sources"
 
 #: tviswaptgui.gridgroups.header.columns[4].text
 msgctxt "tviswaptgui.gridgroups.header.columns[4].text"
@@ -4422,7 +4432,7 @@ msgstr "Statut"
 #: tviswaptgui.gridhostsforpackage.header.columns[40].text
 msgctxt "tviswaptgui.gridhostsforpackage.header.columns[40].text"
 msgid "signer_fingerprint"
-msgstr "Fingerprint signataire"
+msgstr "Empreinte du signataire"
 
 #: tviswaptgui.gridhostsforpackage.header.columns[41].text
 msgctxt "tviswaptgui.gridhostsforpackage.header.columns[41].text"
@@ -4512,7 +4522,7 @@ msgstr ""
 #: tviswaptgui.gridhosttasksdone.header.columns[11].text
 msgctxt "tviswaptgui.gridhosttasksdone.header.columns[11].text"
 msgid "logs"
-msgstr "Traces"
+msgstr "Logs"
 
 #: tviswaptgui.gridhosttasksdone.header.columns[12].text
 msgctxt "tviswaptgui.gridhosttasksdone.header.columns[12].text"
@@ -4547,7 +4557,7 @@ msgstr "Heure de début"
 #: tviswaptgui.gridhosttasksdone.header.columns[5].text
 msgctxt "tviswaptgui.gridhosttasksdone.header.columns[5].text"
 msgid "create_date"
-msgstr "date de création"
+msgstr "Date de création"
 
 #: tviswaptgui.gridhosttasksdone.header.columns[6].text
 msgctxt "tviswaptgui.gridhosttasksdone.header.columns[6].text"
@@ -4652,7 +4662,7 @@ msgstr ""
 #: tviswaptgui.gridhosttaskspending.header.columns[11].text
 msgctxt "tviswaptgui.gridhosttaskspending.header.columns[11].text"
 msgid "logs"
-msgstr "Traces"
+msgstr "Logs"
 
 #: tviswaptgui.gridhosttaskspending.header.columns[12].text
 msgctxt "tviswaptgui.gridhosttaskspending.header.columns[12].text"
@@ -4923,12 +4933,12 @@ msgstr "Section"
 #| msgid "Installed size"
 msgctxt "tviswaptgui.gridpackages.header.columns[10].text"
 msgid "Size"
-msgstr "Taille installé"
+msgstr "Taille"
 
 #: tviswaptgui.gridpackages.header.columns[11].text
 msgctxt "tviswaptgui.gridpackages.header.columns[11].text"
 msgid "Installed size"
-msgstr "Taille finale"
+msgstr "Taille installé"
 
 #: tviswaptgui.gridpackages.header.columns[12].text
 msgctxt "tviswaptgui.gridpackages.header.columns[12].text"
@@ -4958,17 +4968,17 @@ msgstr "OS cible"
 #: tviswaptgui.gridpackages.header.columns[17].text
 msgctxt "tviswaptgui.gridpackages.header.columns[17].text"
 msgid "Min OS version"
-msgstr "Version minimale de l'OS"
+msgstr "Version min de l'OS"
 
 #: tviswaptgui.gridpackages.header.columns[18].text
 msgctxt "tviswaptgui.gridpackages.header.columns[18].text"
 msgid "Max OS version"
-msgstr "Version maximale de l'OS"
+msgstr "Version max de l'OS"
 
 #: tviswaptgui.gridpackages.header.columns[19].text
 msgctxt "tviswaptgui.gridpackages.header.columns[19].text"
 msgid "Min Wapt version"
-msgstr "Version minimale de WAPT"
+msgstr "Version min de WAPT"
 
 #: tviswaptgui.gridpackages.header.columns[1].text
 msgctxt "tviswaptgui.gridpackages.header.columns[1].text"
@@ -5093,7 +5103,7 @@ msgstr "Page d'accueil"
 #: tviswaptgui.gridpackages.header.columns[41].text
 msgctxt "tviswaptgui.gridpackages.header.columns[41].text"
 msgid "sourcespath"
-msgstr "Chemin sources"
+msgstr "Chemin des sources"
 
 #: tviswaptgui.gridpackages.header.columns[42].text
 msgctxt "tviswaptgui.gridpackages.header.columns[42].text"
@@ -5272,7 +5282,7 @@ msgstr "Somme MD5"
 #: tviswaptgui.gridselfservicepackages.header.columns[22].text
 msgctxt "tviswaptgui.gridselfservicepackages.header.columns[22].text"
 msgid "description_pl"
-msgstr ""
+msgstr "Description polonaise"
 
 #: tviswaptgui.gridselfservicepackages.header.columns[23].text
 msgctxt "tviswaptgui.gridselfservicepackages.header.columns[23].text"
@@ -5297,7 +5307,7 @@ msgstr "Mainteneur"
 #: tviswaptgui.gridselfservicepackages.header.columns[27].text
 msgctxt "tviswaptgui.gridselfservicepackages.header.columns[27].text"
 msgid "package_uuid"
-msgstr "UUID de paquet"
+msgstr "UUID du paquet"
 
 #: tviswaptgui.gridselfservicepackages.header.columns[28].text
 msgctxt "tviswaptgui.gridselfservicepackages.header.columns[28].text"
@@ -6089,7 +6099,7 @@ msgstr "Cocher tout"
 
 #: tviswaptgui.menuitemshowerrors.caption
 msgid "Show errors"
-msgstr ""
+msgstr "Montrer les erreurs"
 
 #: tviswaptgui.menuitemsync.caption
 msgctxt "tviswaptgui.menuitemsync.caption"
@@ -6387,7 +6397,7 @@ msgstr "Numéro de série"
 #: tviswaptusers.gridtrustedcerts.header.columns[6].text
 msgctxt "tviswaptusers.gridtrustedcerts.header.columns[6].text"
 msgid "Certificate expire"
-msgstr ""
+msgstr "Expiration du certificat"
 
 #: tviswaptusers.gridtrustedcerts.header.columns[7].text
 msgctxt "tviswaptusers.gridtrustedcerts.header.columns[7].text"
@@ -6448,7 +6458,7 @@ msgstr "Signé par"
 #: tviswaptusers.griduseracls.header.columns[17].text
 msgctxt "tviswaptusers.griduseracls.header.columns[17].text"
 msgid "Signer fingerprint"
-msgstr ""
+msgstr "Empreinte du signataire"
 
 #: tviswaptusers.griduseracls.header.columns[18].text
 msgctxt "tviswaptusers.griduseracls.header.columns[18].text"
@@ -6543,7 +6553,7 @@ msgstr ""
 #| msgid "Valid until"
 msgctxt "tviswaptusers.gridusers.header.columns[17].text"
 msgid "auth_method"
-msgstr "Valide jusqu'à"
+msgstr "Valide jusqu'au"
 
 #: tviswaptusers.gridusers.header.columns[18].text
 #| msgid "Serial number"
@@ -7615,7 +7625,7 @@ msgstr "Si le paquet est signé avec une clé inconnue, vous pourriez peut-être
 
 #: uwaptconsoleres.rsedithostprofile
 msgid "Edit Host profile bundle."
-msgstr "Editer un profil de poste"
+msgstr "Editer un profil de machine"
 
 #: uwaptconsoleres.rseditunitbundle
 msgid "Edit Organizational Unit bundle."

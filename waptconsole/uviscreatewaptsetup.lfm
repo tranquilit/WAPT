@@ -64,7 +64,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       AnchorSideRight.Side = asrBottom
       Left = 233
       Height = 21
-      Hint = 'E.g. : Tranquil IT Systems.'
+      Hint = 'E.g. : Tranquil IT Systems'
       Top = 328
       Width = 278
       Anchors = [akTop, akLeft, akRight]
@@ -149,7 +149,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
     object CBDualSign: TCheckBox
       Left = 233
       Height = 17
-      Hint = 'Check that certificate dates are valid and  issuer is a know one.'
+      Hint = 'Check that certificate dates are valid and issuer is a know one.'
       Top = 357
       Width = 240
       Caption = 'Sign waptupgrade with both sha256 and sha1'
@@ -269,7 +269,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       Top = 32
       Width = 407
       BorderSpacing.Top = 1
-      Caption = 'Authorized packages Certificates which will be bundled with the Wapt Agent  installer'
+      Caption = 'Authorized packages Certificates which will be bundled with the WAPT Agent installer'
       ParentColor = False
     end
     object CBForceRepoURL: TCheckBox
@@ -546,7 +546,7 @@ object VisCreateWaptSetup: TVisCreateWaptSetup
       AnchorSideTop.Control = edAppendHostProfiles
       Left = 442
       Height = 17
-      Hint = 'Enable automatic AD groups based packages on Hots.'#13#10'Be careful, this introduce load on the AD servers and slow down the whole Wapt process'
+      Hint = 'Enable automatic AD groups based packages on Hosts.'#13#10'Be careful, this introduce load on the AD servers and slow down the whole Wapt process'
       Top = 3
       Width = 106
       BorderSpacing.Left = 7

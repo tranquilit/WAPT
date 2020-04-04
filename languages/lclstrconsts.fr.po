@@ -25,7 +25,7 @@ msgstr "Erreur pendant l'exécution de \"%s\":%s%s"
 
 #: lclstrconsts.hhshelpnohtmlbrowserfound
 msgid "Unable to find a HTML browser."
-msgstr "Impossible de trouver un navigateur HTML. "
+msgstr "Impossible de trouver un navigateur HTML."
 
 #: lclstrconsts.hhshelpnohtmlbrowserfoundpleasedefineone
 msgid "No HTML Browser found.%sPlease define one in Tools -> Options -> Help -> Help Options"
@@ -122,7 +122,7 @@ msgstr "Aide"
 #: lclstrconsts.ifsvk_home
 msgctxt "lclstrconsts.ifsvk_home"
 msgid "Home"
-msgstr "Maison"
+msgstr "Accueil"
 
 #: lclstrconsts.ifsvk_insert
 msgctxt "lclstrconsts.ifsvk_insert"
@@ -364,7 +364,7 @@ msgstr "Le contrôle de la classe \"%s\" ne peut pas contenir un contrôle de la
 
 #: lclstrconsts.rscontrolhasnoparentformorframe
 msgid "Control '%s' has no parent form or frame"
-msgstr "Le contrôle \"%s\" n'a pas de fenêtre  ou de cadre parent"
+msgstr "Le contrôle \"%s\" n'a pas de fenêtre ou de cadre parent"
 
 #: lclstrconsts.rscontrolhasnoparentwindow
 msgid "Control '%s' has no parent window"
@@ -927,11 +927,11 @@ msgstr "&Réessayer"
 
 #: lclstrconsts.rsmbsave
 msgid "&Save"
-msgstr "&Sauver"
+msgstr "&Enregistrer"
 
 #: lclstrconsts.rsmbunlock
 msgid "&Unlock"
-msgstr "&Libérer"
+msgstr "&Déverrouiller"
 
 #: lclstrconsts.rsmbyes
 msgid "&Yes"

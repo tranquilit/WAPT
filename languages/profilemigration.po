@@ -6,7 +6,7 @@ msgid "Create WAPT agent"
 msgstr ""
 
 #: tviscreatewaptsetup.edorgname.hint
-msgid "E.g. : Tranquil IT Systems."
+msgid "E.g. : Tranquil IT Systems"
 msgstr ""
 
 #: tviscreatewaptsetup.edrepourl.hint
@@ -173,7 +173,7 @@ msgstr ""
 
 #: tviseditpackage.label2.caption
 msgctxt "tviseditpackage.label2.caption"
-msgid "Available packages : "
+msgid "Available packages :"
 msgstr ""
 
 #: tviseditpackage.label4.caption
@@ -233,7 +233,7 @@ msgstr ""
 
 #: tvisgroupchoice.label2.caption
 msgctxt "TVISGROUPCHOICE.LABEL2.CAPTION"
-msgid "Available packages : "
+msgid "Available packages :"
 msgstr ""
 
 #: tvishostsupgrade.actstop.caption

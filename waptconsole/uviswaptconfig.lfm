@@ -900,7 +900,7 @@ object VisWAPTConfig: TVisWAPTConfig
     end
     object ActGetServerCertificate: TAction
       Caption = 'Get Server https Certificate'
-      Hint = 'Connect to the server and get the https certificate blundle from it.'#13#10'You must check that the certificate fingerprint is the expected one.'
+      Hint = 'Connect to the server and get the https certificate bundle from it.'#13#10'You must check that the certificate fingerprint is the expected one.'
       OnExecute = ActGetServerCertificateExecute
       OnUpdate = ActGetServerCertificateUpdate
     end
@@ -911,7 +911,7 @@ object VisWAPTConfig: TVisWAPTConfig
       OnUpdate = ActCheckPersonalKeyUpdate
     end
     object ActCreateKeyCert: TAction
-      Caption = 'New  private key and certificate'
+      Caption = 'New private key and certificate'
       Hint = 'Generate a new private key and personal certificate.'#13#10'This must be done only once per Wapt amdin user.'#13#10'When upgrading, you must not recreate a private key and certificate.'
       OnExecute = ActCreateKeyCertExecute
     end
