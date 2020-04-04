@@ -1009,7 +1009,7 @@ object VisEditPackage: TVisEditPackage
         Height = 13
         Top = 0
         Width = 101
-        Caption = 'Available packages : '
+        Caption = 'Available packages :'
         ParentColor = False
       end
     end

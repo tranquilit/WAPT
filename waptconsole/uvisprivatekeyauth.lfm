@@ -68,7 +68,7 @@ object VisPrivateKeyAuth: TVisPrivateKeyAuth
       Width = 173
       Alignment = taRightJustify
       AutoSize = False
-      Caption = 'For key matching the certificate: '
+      Caption = 'For key matching the certificate :'
       ParentColor = False
     end
     object laKeyPath: TLabel

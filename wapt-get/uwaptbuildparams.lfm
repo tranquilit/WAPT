@@ -164,7 +164,7 @@ object VisWaptBuildParams: TVisWaptBuildParams
       Width = 159
       Alignment = taRightJustify
       AutoSize = False
-      Caption = 'For key matching the certificate: '
+      Caption = 'For key matching the certificate :'
       ParentColor = False
       Visible = False
     end

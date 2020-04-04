@@ -43,7 +43,7 @@ msgstr "Serveur DNS : %s"
 
 #: uwaptres.rserrorcanceling
 msgid "Error cancelling: %s"
-msgstr "Erreur de l'annulation : %s"
+msgstr "Erreur lors de l'annulation : %s"
 
 #: uwaptres.rserrorlaunchingupdate
 msgid "Error launching update: %s"
@@ -51,7 +51,7 @@ msgstr "Erreur lors du lancement de la mise à jour : %s"
 
 #: uwaptres.rserrorlaunchingupgrade
 msgid "Error launching upgrade: %s"
-msgstr "Erreur lors du lancement de l'upgrade : %s"
+msgstr "Erreur lors du lancement de la mise à niveau : %s"
 
 #: uwaptres.rserrorwithmessage
 msgctxt "uwaptres.rserrorwithmessage"
@@ -112,11 +112,11 @@ msgstr "Usage : %s -h"
 
 #: uwaptres.rswaptgetupgrade
 msgid "WAPT-GET Upgrade using repository at %s"
-msgstr "Upgrade de WAPT-get depuis le dépôt : %s"
+msgstr "Mise à niveau de WAPT-get depuis le dépôt : %s"
 
 #: uwaptres.rswaptupgrade
 msgid " waptupgrade : upgrade wapt-get.exe and database"
-msgstr "WAPTupgrade : upgrade de wapt-get.exe et de la base de données"
+msgstr "WAPTupgrade : mise à niveau de wapt-get.exe et de la base de données"
 
 #: uwaptres.rswin32exewrapper
 msgid "Win32 Exe wrapper: %s %s"

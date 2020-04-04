@@ -320,7 +320,7 @@ object VisCreateKey: TVisCreateKey
       object EdKeyPassword: TEdit
         Left = 151
         Height = 21
-        Hint = 'Used to decrypt or encrypt private jkey'
+        Hint = 'Used to decrypt or encrypt private key'
         Top = 55
         Width = 231
         Constraints.MinWidth = 200

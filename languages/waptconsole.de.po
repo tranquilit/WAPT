@@ -392,7 +392,7 @@ msgstr "z. B. :technique@tranquil-it-systems.fr"
 
 #: tviscreatekey.edkeypassword.hint
 msgctxt "tviscreatekey.edkeypassword.hint"
-msgid "Used to decrypt or encrypt private jkey"
+msgid "Used to decrypt or encrypt private key"
 msgstr ""
 
 #: tviscreatekey.edlocality.hint
@@ -537,7 +537,7 @@ msgstr ""
 
 #: tviscreatewaptsetup.cbdualsign.hint
 msgctxt "tviscreatewaptsetup.cbdualsign.hint"
-msgid "Check that certificate dates are valid and  issuer is a know one."
+msgid "Check that certificate dates are valid and issuer is a know one."
 msgstr ""
 
 #: tviscreatewaptsetup.cbforcerepourl.caption
@@ -579,7 +579,7 @@ msgstr ""
 #: tviscreatewaptsetup.cbuseadgroups.hint
 msgctxt "tviscreatewaptsetup.cbuseadgroups.hint"
 msgid ""
-"Enable automatic AD groups based packages on Hots.\n"
+"Enable automatic AD groups based packages on Hosts.\n"
 "Be careful, this introduce load on the AD servers and slow down the whole Wapt process\n"
 msgstr ""
 
@@ -654,7 +654,7 @@ msgid "eg 2h or 120m or 1d"
 msgstr ""
 
 #: tviscreatewaptsetup.edorgname.hint
-msgid "E.g. : Tranquil IT Systems."
+msgid "E.g. : Tranquil IT Systems"
 msgstr "z. B. : Tranquil IT Systems"
 
 #: tviscreatewaptsetup.edpubliccertdir.hint
@@ -751,7 +751,7 @@ msgstr "Öffentlicher Key:"
 
 #: tviscreatewaptsetup.labauthor.caption
 msgctxt "tviscreatewaptsetup.labauthor.caption"
-msgid "Authorized packages Certificates which will be bundled with the Wapt Agent  installer"
+msgid "Authorized packages Certificates which will be bundled with the WAPT Agent installer"
 msgstr ""
 
 #: tviscreatewaptsetup.label2.caption
@@ -1262,7 +1262,7 @@ msgstr "Beschreibung"
 
 #: tviseditpackage.label2.caption
 msgctxt "tviseditpackage.label2.caption"
-msgid "Available packages : "
+msgid "Available packages :"
 msgstr "Verfügbare Pakete :"
 
 #: tviseditpackage.labpackage.caption
@@ -1742,7 +1742,7 @@ msgstr "Privater-Key-Authentifizierung"
 #: tvisprivatekeyauth.labkey.caption
 #, fuzzy
 msgctxt "tvisprivatekeyauth.labkey.caption"
-msgid "For key matching the certificate: "
+msgid "For key matching the certificate :"
 msgstr "Key:"
 
 #: tvisprivatekeyauth.labpassword.caption
@@ -2232,7 +2232,7 @@ msgstr "Beschreibung"
 #: tvisselfservicegroup.label5.caption
 #, fuzzy
 msgctxt "tvisselfservicegroup.label5.caption"
-msgid "Available packages : "
+msgid "Available packages :"
 msgstr "Verfügbare Pakete :"
 
 #: tvisselfservicegroup.label6.caption
@@ -2419,7 +2419,7 @@ msgid "Check that we can find a matching private key in the same directory as th
 msgstr ""
 
 #: tviswaptconfig.actcreatekeycert.caption
-msgid "New  private key and certificate"
+msgid "New private key and certificate"
 msgstr ""
 
 #: tviswaptconfig.actcreatekeycert.hint
@@ -2446,7 +2446,7 @@ msgstr ""
 
 #: tviswaptconfig.actgetservercertificate.hint
 msgid ""
-"Connect to the server and get the https certificate blundle from it.\n"
+"Connect to the server and get the https certificate bundle from it.\n"
 "You must check that the certificate fingerprint is the expected one.\n"
 msgstr ""
 
