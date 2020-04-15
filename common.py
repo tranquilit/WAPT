@@ -611,7 +611,7 @@ class WaptSessionDB(WaptBaseDB):
 class WaptDB(WaptBaseDB):
     """Class to manage SQLite database with local installation status"""
 
-    curr_db_version = '20190606'
+    curr_db_version = '20200415'
 
     def initdb(self):
         """Initialize current sqlite db with empty table and return structure version"""

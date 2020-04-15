@@ -368,6 +368,13 @@ def main():
         action="store_true",
         help='Run quiet postconfiguration - default password and simple behavior')
     parser.add_option(
+        '-n',
+        '--nginx',
+        dest='nginx',
+        default=False,
+        action="store_true",
+        help='Run nginx configuration if in quiet mode')
+    parser.add_option(
         '--dhparam-key-size',
         dest='dhparam_key_size',
         default=2048,
@@ -386,6 +393,8 @@ def main():
 
     global quiet
     quiet = options.quiet
+
+    nginx = options.nginx
 
     global dhparam_key_size
     dhparam_key_size = options.dhparam_key_size
@@ -551,24 +560,25 @@ def main():
 
     # Nginx configuration
     if quiet:
-        try:
-            generate_dhparam(options.dhparam_key_size)
-            nginx_cleanup()
-            make_nginx_config('/opt/wapt/waptserver', fqdn, options.force_https,server_config)
-            enable_nginx()
-            restart_nginx()
-            setup_firewall()
-        except subprocess.CalledProcessError as cpe:
-            final_msg += [
-                'Error while trying to configure Nginx!',
-                'errno = ' + str(cpe.returncode) + ', output: ' + cpe.output
-                ]
-        except Exception as e:
-                import traceback
+        if nginx:
+            try:
+                generate_dhparam(options.dhparam_key_size)
+                nginx_cleanup()
+                make_nginx_config('/opt/wapt/waptserver', fqdn, options.force_https,server_config)
+                enable_nginx()
+                restart_nginx()
+                setup_firewall()
+            except subprocess.CalledProcessError as cpe:
                 final_msg += [
-                'Error while trying to configure Nginx!',
-                traceback.format_exc()
-                ]
+                    'Error while trying to configure Nginx!',
+                    'errno = ' + str(cpe.returncode) + ', output: ' + cpe.output
+                    ]
+            except Exception as e:
+                    import traceback
+                    final_msg += [
+                    'Error while trying to configure Nginx!',
+                    traceback.format_exc()
+                    ]
     else:
         reply = postconf.yesno("Do you want to configure nginx?")
         if reply == postconf.DIALOG_OK:

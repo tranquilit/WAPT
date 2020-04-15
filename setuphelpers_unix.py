@@ -255,12 +255,15 @@ def host_info_common_unix():
     info['local_users'] = []
     for u in pwd.getpwall():
         info['local_users'].append(u.pw_name)
-        gr_struct=grp.getgrgid(u.pw_gid)
-        if info['local_groups'].has_key(gr_struct.gr_name):
-            if u.pw_name not in info['local_groups'][gr_struct.gr_name]:
-                info['local_groups'][gr_struct.gr_name].append(u.pw_name)
-        else:
-            info['local_groups'][gr_struct.gr_name]=[u.pw_name]
+        try:
+            gr_struct=grp.getgrgid(u.pw_gid)
+            if info['local_groups'].has_key(gr_struct.gr_name):
+                if u.pw_name not in info['local_groups'][gr_struct.gr_name]:
+                    info['local_groups'][gr_struct.gr_name].append(u.pw_name)
+            else:
+                info['local_groups'][gr_struct.gr_name]=[u.pw_name]
+        except:
+            pass
 
     try:
         if os.path.isfile('/etc/samba/smb.conf'):
