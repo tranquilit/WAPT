@@ -43,6 +43,7 @@ mkdir -p %{buildroot}/usr/lib/systemd/
 %defattr(644,root,root,755)
 /usr/lib/systemd/system/waptservice.service
 /etc/profile.d/wapt_session_setup.sh
+/opt/wapt/.env
 /opt/wapt/waptservice
 /opt/wapt/lib
 /opt/wapt/lib64

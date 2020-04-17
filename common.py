@@ -6904,6 +6904,7 @@ class Wapt(BaseObjectClass):
             settings_json=json.load(settings_json_file)
             if (PackageEntry(waptfile=target_directory).target_os.lower() in ['linux','macos','unix']) or not(os.path.isfile(os.path.join(self.wapt_base_dir,'waptpython.exe'))):
                 settings_json['python.pythonPath']='/opt/wapt/bin'
+                settings_json['python.envFile']='/opt/wapt/.env'
             else:
                 settings_json['python.pythonPath']=os.path.join(self.wapt_base_dir,'waptpython.exe')
             with open(os.path.join(vscode_dir,'settings.json'),'w+') as settings_json_outfile:
