@@ -3296,7 +3296,7 @@ class Wapt(BaseObjectClass):
         if host_organizational_unit_dn:
             return host_organizational_unit_dn
 
-        gpo_host_dn = setuphelpers.registry_readstring(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows\CurrentVersion\Group Policy\State\Machine','Distinguished-Name')
+        gpo_host_dn = setuphelpers.registry_readstring(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows\CurrentVersion\Group Policy\State\Machine','Distinguished-Name').replace('\\','')
         if gpo_host_dn:
             try:
                 default_organizational_unit_dn = ','.join(gpo_host_dn.split(',')[1:])
