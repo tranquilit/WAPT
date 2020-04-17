@@ -45,11 +45,6 @@
                 "${workspaceFolder}"
             ],
             "console": "integratedTerminal",
-            "linux": {
-                "sudo":true
-            },
-            "osx": {
-                "sudo":true
             }
         },
         {

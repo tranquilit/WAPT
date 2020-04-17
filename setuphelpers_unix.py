@@ -158,6 +158,8 @@ def get_current_user():
     """
     return ensure_unicode(getpass.getuser())
 
+def application_data():
+    return os.path.join(os.environ['HOME'],'.config')
 
 def is_valid_ipv4_address(address):
     try:

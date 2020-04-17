@@ -1,4 +1,5 @@
 {
     "python.pythonPath": "C:/tranquilit/wapt/waptpython.exe",
-    "python.wapt-get": "${config:python.pythonPath}/../wapt-get.py"
+    "python.wapt-get": "${config:python.pythonPath}/../wapt-get.py",
+    "python.linting.pylintEnabled": false
 }
