@@ -338,8 +338,11 @@ eprint(run(r'find ./builddir/opt/wapt/ -type d -exec chmod 755 {} \;'))
 
 eprint('copying systemd startup script')
 systemd_build_dest_dir = './builddir/usr/lib/systemd/system/'
+etc_profile_d = './builddir/etc/profile.d/'
 try:
     mkdir_p(systemd_build_dest_dir)
+    mkdir_p(etc_profile_d)
+    copyfile('../scripts/wapt_session_setup.sh',os.path.join(etc_profile_d,'wapt_session_setup.sh'))
     copyfile('../scripts/waptservice.service', os.path.join(systemd_build_dest_dir, 'waptservice.service'))
 except Exception as e:
     eprint('error: \n%s' % e)
