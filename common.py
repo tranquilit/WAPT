@@ -7561,18 +7561,18 @@ def wapt_sources_edit(wapt_sources_dir,editor_for_packages = None):
 
     # in edit_for_packages you can specify {key_params} to replace for launch the editor
 
+    env = os.environ
+    env.update(dict(
+            PYTHONHOME=params['wapt_base_dir'],
+            PYTHONPATH=params['wapt_base_dir'],
+            VIRTUAL_ENV=params['wapt_base_dir']
+            ))
+
     if os.name == 'nt':
         if not(editor_for_packages):
             params["psproj_filename"]=os.path.join(wapt_sources_dir,u'WAPT',u'wapt.psproj')
             pyscripter_filename = os.path.join(setuphelpers.programfiles32,
                                                'PyScripter', 'PyScripter.exe')
-            env = os.environ
-            env.update(dict(
-                PYTHONHOME=params['wapt_base_dir'],
-                PYTHONPATH=params['wapt_base_dir'],
-                VIRTUAL_ENV=params['wapt_base_dir']
-                ))
-
             if sys.platform=='win32' and os.path.isfile(pyscripter_filename) and os.path.isfile(params["psproj_filename"]):
                 run_as_administrator(pyscripter_filename,
                     '--PYTHONDLLPATH "{wapt_base_dir}" --python27 -N --project "{psproj_filename}" "{setup_filename}" "{control_filename}"'.format(**params))
