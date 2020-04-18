@@ -6899,19 +6899,21 @@ class Wapt(BaseObjectClass):
         vscode_dir = os.path.join(target_directory,'.vscode')
         if not(os.path.isdir(vscode_dir)):
             os.mkdir(vscode_dir)
-        shutil.copyfile(os.path.join(self.wapt_base_dir,'templates','vscode_launch.json'),os.path.join(vscode_dir,'launch.json'))
+        launch_json=os.path.join(vscode_dir,'launch.json')
+        if os.path.isfile(launch_json):
+            os.remove(launch_json)
+        shutil.copyfile(os.path.join(self.wapt_base_dir,'templates','vscode_launch.json'),launch_json)
         with open(os.path.join(self.wapt_base_dir,'templates','vscode_settings.json'),'r') as settings_json_file:
             settings_json=json.load(settings_json_file)
-            settings_json['python.envFile']=os.path.join(vscode_dir,".env")
-            with open(settings_json['python.envFile'],"w") as fenv:
-                list_of_env = ['PYTHONHOME='+self.wapt_base_dir,'PYTHONPATH='+self.wapt_base_dir]
-                fenv.write('\n'.join(list_of_env)+'\n')
-            if (PackageEntry(waptfile=target_directory).target_os.lower() in ['linux','macos','unix']) or not(os.path.isfile(os.path.join(self.wapt_base_dir,'waptpython.exe'))):
-                settings_json['python.pythonPath']='/opt/wapt/bin'
+            if not(os.path.isfile(os.path.join(self.wapt_base_dir,'waptpython.exe'))):
+                settings_json['python.pythonPath']=os.path.join(self.wapt_base_dir,'bin')
             else:
                 settings_json['python.pythonPath']=os.path.join(self.wapt_base_dir,'waptpython.exe')
-            with open(os.path.join(vscode_dir,'settings.json'),'w+') as settings_json_outfile:
+            with open(os.path.join(vscode_dir,'settings.json'),'w') as settings_json_outfile:
                 json.dump(settings_json,settings_json_outfile,indent=4)
+        with open(os.path.join(target_directory,'.env'),'w') as fenv:
+            list_of_env = ['PYTHONHOME='+self.wapt_base_dir,'PYTHONPATH='+self.wapt_base_dir]
+            fenv.write('\n'.join(list_of_env)+'\n')
 
     def edit_package(self,packagerequest,
             target_directory='',
