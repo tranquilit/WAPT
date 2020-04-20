@@ -263,7 +263,7 @@ if platform.linux_distribution()[0].startswith('CentOS'):
     run_verbose(r'virtualenv ./builddir/opt/wapt/ --always-copy')
     eprint('Install additional libraries in build environment virtualenv')
     run_verbose(r'source ./builddir/opt/wapt/bin/activate; pip install -r ../../requirements.txt -r ../../requirements-linux.txt')
-    
+
     run('cp -ruf /usr/lib/python2.7/site-packages/yum* ./builddir/opt/wapt/lib/python2.7/site-packages/')
     run('cp -ruf /usr/lib64/python2.7/site-packages/yum* ./builddir/opt/wapt/lib64/python2.7/site-packages/')
     run('cp -ruf /usr/lib/python2.7/site-packages/rpm* ./builddir/opt/wapt/lib/python2.7/site-packages/')
@@ -272,7 +272,7 @@ if platform.linux_distribution()[0].startswith('CentOS'):
     run('cp -ruf /usr/lib64/python2.7/site-packages/pycurl* ./builddir/opt/wapt/lib64/python2.7/site-packages/')
     run('cp -ruf /usr/lib64/python2.7/site-packages/sqlitecachec* ./builddir/opt/wapt/lib64/python2.7/site-packages/')
     run('cp -ruf /usr/lib64/python2.7/site-packages/_sqlitecache* ./builddir/opt/wapt/lib/python2.7/site-packages/')
-    
+
 
     # python dialog
     copyfile(makepath(wapt_source_dir, 'lib', 'site-packages', 'dialog.py'),'builddir/opt/wapt/lib/python2.7/site-packages/dialog.py')
@@ -285,7 +285,7 @@ else:
     sys.exit(1)
 
 eprint('copying the waptservice files')
-files_to_copy = ['version-full','waptcrypto.py','waptutils.py','common.py','custom_zip.py','waptpackage.py','setuphelpers.py','setuphelpers_linux.py','setuphelpers_windows.py','setuphelpers_unix.py','setuphelpers_macos.py','wapt-get.py']
+files_to_copy = ['version-full','waptcrypto.py','waptutils.py','common.py','custom_zip.py','waptpackage.py','setuphelpers.py','setuphelpers_linux.py','setuphelpers_unix.py','wapt-get.py']
 for afile in files_to_copy:
     copyfile(makepath(wapt_source_dir, afile),os.path.join('./builddir/opt/wapt/',afile))
 
@@ -305,7 +305,7 @@ if os.path.exists(makepath('builddir','opt','wapt', 'share/')):
 eprint('copying the waptservice files')
 rsync(source_dir, './builddir/opt/wapt/',
       excludes=['postconf', 'repository', 'rpm', 'deb','pkg', 'spnego-http-auth-nginx-module', '*.bat'])
-      
+
 eprint('copying the templates files')
 rsync(makepath(wapt_source_dir,'templates/'),'./builddir/opt/wapt/templates/', excludes=[])
 
@@ -323,7 +323,7 @@ copyfile(makepath(wapt_source_dir, 'waptpython'),'./builddir/usr/bin/waptpython'
 for lib in ('dialog.py', ):
     rsync(makepath(wapt_source_dir, 'lib', 'site-packages', lib),
           './builddir/opt/wapt/lib/python2.7/site-packages/')
-          
+
 eprint(run(r'python -m compileall %(pth)s/waptenterprise/ %(pth)s/waptservice/ %(pth)s/lib/python2.7/site-packages/cryptography/x509/verification.py' % {'pth':'./builddir/opt/wapt'}))
 eprint(run(r'python -m compileall -l ./builddir/opt/wapt/'))
 

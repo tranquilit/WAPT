@@ -105,51 +105,60 @@ def installed_softwares(keywords='',uninstallkey=None,name=None):
     else:
         return [{'key':'Distribution not supported yet', 'name':'Distribution not supported yet', 'version':'Distribution not supported yet', 'install_date':'Distribution not supported yet', 'install_location':'Distribution not supported yet', 'uninstall_string':'Distribution not supported yet', 'publisher':'Distribution not supported yet','system_component':'Distribution not supported yet'}]
 
-def apt_install(package,allow_unauthenticated=False):
+def install_apt(package,allow_unauthenticated=False):
+    """
+    Install .deb package from apt repositories
+    """
+    update_apt()
     if allow_unauthenticated:
         return run('LANG=C DEBIAN_FRONTEND=noninteractive apt-get install -y --allow-unauthenticated %s' %package)
     else:
         return run('LANG=C DEBIAN_FRONTEND=noninteractive apt-get install -y %s' %package)
 
-def apt_remove(package):
+def uninstall_apt(package):
+    """
+    Remove a .deb package
+    """
     return run('LANG=C DEBIAN_FRONTEND=noninteractive apt-get remove -y %s' %package)
 
-def dpkg_install(path_to_deb):
-    return run('LANG=C DEBIAN_FRONTEND=noninteractive dpkg -i %s' % path_to_deb)
+def install_deb(path_to_deb):
+    """
+    Install .deb package from file
+    """
+    try:
+        return run('LANG=C DEBIAN_FRONTEND=noninteractive dpkg -i %s' % path_to_deb)
+    except:
+        return install_required_dependencies_apt()
 
-def dpkg_purge(deb_name):
+def purge_deb(deb_name):
     return run('LANG=C DEBIAN_FRONTEND=noninteractive dpkg --purge %s' % deb_name)
 
-def apt_install_required_dependencies():
+def install_required_dependencies_apt():
     return run('LANG=C DEBIAN_FRONTEND=noninteractive apt-get -f -y install')
 
-def apt_autoremove():
+def autoremove_apt():
     return run('LANG=C DEBIAN_FRONTEND=noninteractive apt-get -y autoremove')
 
-def yum_install(package):
-    if package.endswith('.rpm'):
-        rpm_control_name = run('rpm -qp --queryformat "\%{NAME}" %s 2>/dev/null' % package)
-        return run('LANG=C rpm -qa | grep -qw %s || yum install -y %s',rpm_control_name,package)
-    else:
-        return run('LANG=C rpm -qa | grep -qw %s || yum install -y %s' % (package,package))
+def install_yum(package):
+    return run('LANG=C yum install -y %s' % (package))
 
-def yum_remove(package):
+def uninstall_yum(package):
     return run('LANG=C yum remove -y %s' % package)
 
-def yum_autoremove():
+def autoremove_yum():
     return run('LANG=C yum autoremove -y')
 
-def apt_update():
+def update_apt():
     return run('LANG=C DEBIAN_FRONTEND=noninteractive apt-get -y update')
 
-def apt_upgrade():
+def upgrade_apt():
     return run('LANG=C DEBIAN_FRONTEND=noninteractive apt-get -y upgrade')
 
-def yum_update():
+def update_yum():
     return run('LANG=C yum update -y')
 
-def yum_upgrade():
+def upgrade_yum():
     return run('LANG=C yum upgrade -y')
 
-def rpm_install(package):
-    return run('yes | LANG=C rpm -i %s' % package)
+def install_rpm(package):
+    return run('LANG=C yum localinstall -y %s' % (package))

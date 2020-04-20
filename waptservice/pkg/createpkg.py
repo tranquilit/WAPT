@@ -279,7 +279,7 @@ run('tmpbuild/payload/opt/wapt/bin/pip{} install -r ../../requirements.txt -r ..
 run_verbose(r'virtualenv tmpbuild/payload/opt/wapt --relocatable')
 
 eprint('copying the waptservice files')
-files_to_copy = ['version-full','waptcrypto.py','waptutils.py','common.py','custom_zip.py','waptpackage.py','setuphelpers.py','setuphelpers_linux.py','setuphelpers_windows.py','setuphelpers_unix.py','setuphelpers_macos.py','wapt-get.py']
+files_to_copy = ['version-full','waptcrypto.py','waptutils.py','common.py','custom_zip.py','waptpackage.py','setuphelpers.py','setuphelpers_unix.py','setuphelpers_macos.py','wapt-get.py']
 for afile in files_to_copy:
     copyfile(makepath(wapt_source_dir, afile),os.path.join('tmpbuild/payload/opt/wapt/',afile))
 

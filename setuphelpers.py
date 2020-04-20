@@ -52,6 +52,7 @@ __all__ = []
 
 __all__.extend([
      '__version__',
+     'application_data',
      'all_files',
      'CalledProcessError',
      'control',
@@ -136,7 +137,6 @@ if platform.system() == 'Windows':
      'add_to_system_path',
      'add_user_to_group',
      'adjust_current_privileges',
-     'application_data',
      'battery_lifetime',
      'battery_percent',
      'bookmarks',

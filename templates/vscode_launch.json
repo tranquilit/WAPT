@@ -45,7 +45,6 @@
                 "${workspaceFolder}"
             ],
             "console": "integratedTerminal",
-            }
         },
         {
             "name": "WAPT: -i build upload",

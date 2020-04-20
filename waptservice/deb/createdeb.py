@@ -285,7 +285,7 @@ run('cp -ruf /usr/lib/python2.7/dist-packages/apt* ./builddir/opt/wapt/lib/pytho
 eprint('Time after virtualenv : %f\n' % (time.time()-start_time))
 
 eprint('copying the waptservice files')
-files_to_copy = ['version-full','waptcrypto.py','waptutils.py','common.py','custom_zip.py','waptpackage.py','setuphelpers.py','setuphelpers_linux.py','setuphelpers_windows.py','setuphelpers_unix.py','setuphelpers_macos.py','wapt-get.py']
+files_to_copy = ['version-full','waptcrypto.py','waptutils.py','common.py','custom_zip.py','waptpackage.py','setuphelpers.py','setuphelpers_linux.py','setuphelpers_unix.py','wapt-get.py']
 for afile in files_to_copy:
     copyfile(makepath(wapt_source_dir, afile),os.path.join('./builddir/opt/wapt/',afile))
 
@@ -336,7 +336,7 @@ copyfile('./DEBIAN/prerm','./builddir/DEBIAN/prerm')
 eprint(run(r'find ./builddir/opt/wapt/ -type f -exec chmod 644 {} \;'))
 eprint(run(r'find ./builddir/opt/wapt/ -type d -exec chmod 755 {} \;'))
 
-eprint('copying systemd startup script + env file')
+eprint('copying systemd startup script + session_setup script')
 systemd_build_dest_dir = './builddir/usr/lib/systemd/system/'
 etc_profile_d = './builddir/etc/profile.d/'
 try:
