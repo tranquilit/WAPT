@@ -317,6 +317,9 @@ os.symlink('/opt/wapt/wapt-get.sh','tmpbuild/payload/usr/local/bin/wapt-get')
 copyfile(makepath(wapt_source_dir, 'waptpython'),'tmpbuild/payload/usr/local/bin/waptpython')
 os.chmod('tmpbuild/payload/opt/wapt/wapt-get.sh', 0o755)
 
+# script for session-setup
+copyfile(makepath(wapt_source_dir,waptservice,scripts,"wapt_session_setup.sh"),'tmpbuild/payload/opt/wapt/session-setup.sh')
+
 for lib in ('dialog.py', ):
     rsync(makepath(wapt_source_dir, 'lib', 'site-packages', lib),
           'tmpbuild/payload/opt/wapt/lib/{}/site-packages/'.format(lib_python))
