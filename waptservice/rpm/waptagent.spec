@@ -66,9 +66,7 @@ mkdir -p %{buildroot}/usr/lib/systemd/
 %attr(755,root,root)/opt/wapt/wapt-get.sh
 %attr(755,root,root)/opt/wapt/setuphelpers.py*
 %attr(755,root,root)/opt/wapt/setuphelpers_linux.py*
-%attr(755,root,root)/opt/wapt/setuphelpers_windows.py*
 %attr(755,root,root)/opt/wapt/setuphelpers_unix.py*
-%attr(755,root,root)/opt/wapt/setuphelpers_macos.py*
 %attr(755,wapt,root)/opt/wapt/conf
 %attr(755,wapt,root)/opt/wapt/db
 %attr(755,wapt,root)/opt/wapt/log
