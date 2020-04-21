@@ -281,6 +281,7 @@ if platform.system() == 'Windows':
      'start_menu',
      'startup',
      'system32',
+     'systemdrive',
      'task_exists',
      'taskscheduler',
      'TimeoutExpired',
@@ -309,7 +310,9 @@ else:
 
     __all__.extend([
      'get_kernel_version',
+     'user_home_directory',
      'get_default_gateways',
+     'application_data',
      'user_local_appdata',
      'local_drives',
      'host_metrics',
@@ -325,6 +328,8 @@ else:
      'host_info_common_unix',
      'get_computername',
      'dmi_info',
+     'run',
+     'killalltasks',
     ])
 
     if platform.system() == 'Darwin':
@@ -358,24 +363,27 @@ else:
 
         __all__.extend([
          'isLinux64',
-         'apt_install',
-         'apt_remove',
-         'dpkg_install',
-         'dpkg_purge',
+         'install_apt',
+         'uninstall_apt',
+         'install_deb',
+         'purge_deb',
          'get_distrib_version',
          'get_distrib_linux',
-         'get_kernel_version',
-         'apt_install_required_dependencies',
-         'apt_autoremove',
-         'yum_install',
-         'yum_remove',
-         'yum_autoremove',
-         'apt_update',
-         'apt_upgrade',
-         'yum_update',
-         'yum_upgrade',
+         'install_required_dependencies_apt',
+         'autoremove_apt',
+         'install_yum',
+         'uninstall_yum',
+         'autoremove_yum',
+         'update_apt',
+         'upgrade_apt',
+         'update_yum',
+         'upgrade_yum',
          'type_debian',
-         'type_redhat'])
+         'type_redhat',
+         'host_info',
+         'installed_softwares',
+         'install_rpm',
+         ])
 
 logger = logging.getLogger('waptcore')
 

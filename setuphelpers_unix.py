@@ -45,6 +45,8 @@ from waptutils import (ensure_unicode, makepath, ensure_dir,currentdate,currentd
 def get_kernel_version():
     return os.uname()[2]
 
+def user_home_directory():
+    return os.path.expanduser('~')
 
 def get_default_gateways():
     if platform.system() == 'Linux':
