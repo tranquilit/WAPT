@@ -98,14 +98,12 @@ if sys.platform=='win32':
     EnableReflectionKey,DisableReflectionKey,QueryReflectionKey,\
     QueryInfoKey,DeleteValue,DeleteKey,\
     KEY_READ,KEY_WOW64_32KEY,KEY_WOW64_64KEY,KEY_ALL_ACCESS
-    try:
-        import requests_kerberos
-        has_kerberos = True
-    except:
-        has_kerberos = False
-elif sys.platform.startswith('linux') or sys.platform.startswith('darwin'):
-    has_kerberos=False
-    pass
+
+try:
+    import requests_kerberos
+    has_kerberos = True
+except:
+    has_kerberos = False
 
 logger = logging.getLogger('waptcore')
 
@@ -1566,6 +1564,12 @@ class WaptServer(BaseObjectClass):
     def auth(self,action=None):
         if self._server_url:
             if action in ('add_host_kerberos','add_host'):
+                if not (sys.platform == 'win32'):
+                    try:
+                        #TODO found other method for TGS
+                        subprocess.check_output('kinit -k %s\$' % setuphelpers.get_hostname().split('.')[0].upper(),shell=True)
+                    except:
+                        pass
                 scheme = urlparse.urlparse(self._server_url).scheme
                 if scheme == 'https' and has_kerberos and self.use_kerberos:
                     return requests_kerberos.HTTPKerberosAuth(mutual_authentication=requests_kerberos.DISABLED)

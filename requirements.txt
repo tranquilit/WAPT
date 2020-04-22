@@ -66,3 +66,4 @@ Werkzeug==0.16
 whichcraft==0.6.1
 wrapt==1.11.2 
 WTForms==2.1
+requests-kerberos==0.12.0

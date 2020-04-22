@@ -1206,7 +1206,8 @@ def main():
 
                 if mywapt.waptserver:
                     if mywapt.waptserver.use_kerberos and not setuphelpers.running_as_system():
-                        raise Exception('Kerberos is enabled, "register" must be launched under system account. Use --service switch or "psexec -s wapt-get register"')
+                        if sys.platform == 'win32':
+                            raise Exception('Kerberos is enabled, "register" must be launched under system account. Use --service switch or "psexec -s wapt-get register"')
 
                     print(u"Registering host against server: %s" % mywapt.waptserver.server_url)
                     result['register'] = mywapt.register_computer(
