@@ -1,0 +1,5 @@
+#!/bin/sh
+{% for item in list_agents %}
+chown wapt:root {{ item }}
+chmod 644 {{ item }}
+{% endfor %}

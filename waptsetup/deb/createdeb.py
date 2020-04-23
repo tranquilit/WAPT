@@ -33,6 +33,7 @@ import argparse
 import stat
 import glob
 import pefile
+import jinja2
 
 from git import Repo
 
@@ -110,16 +111,12 @@ if platform.system() != 'Linux':
     logger.error("this script should be used on debian linux")
     sys.exit(1)
 
-SETUP_ALL=os.environ.get('SETUP_ALL','FALSE')
+SETUP_UNIX=os.environ.get('SETUP_UNIX','FALSE')
 
 #########################################
 BDIR = './builddir/'
-dict_agent = {
-'WAPTSETUP':'waptsetup-tis.exe',
-'WAPTDEPLOY':'waptdeploy.exe',
-}
-if SETUP_ALL=='TRUE':
-    dict_agent.update({
+if SETUP_UNIX=='TRUE':
+    dict_agent = {
     'WAPTAGENT_RPM':'waptagent.rpm',
     'WAPTAGENT_PKG':'waptagent.pkg',
     'WAPTAGENT_DEB8':'waptagent_debian8.deb',
@@ -128,7 +125,11 @@ if SETUP_ALL=='TRUE':
     'WAPTAGENT_UB18':'waptagent_ubuntu18.deb',
     'WAPTAGENT_UB19':'waptagent_ubuntu19.deb',
     }
-    )
+else:
+    dict_agent = {
+    'WAPTSETUP':'waptsetup-tis.exe',
+    'WAPTDEPLOY':'waptdeploy.exe',
+    }
 
 WAPTEDITION=os.environ.get('WAPTEDITION','community')
 
@@ -148,16 +149,30 @@ if options.revision:
 else:
     full_version = version
 
-#########################################
-logger.info('Creating .deb')
-shutil.copytree('./debian/', BDIR + 'DEBIAN/')
-os.chmod(BDIR + 'DEBIAN/', 0755)
-os.chmod(BDIR + 'DEBIAN/postinst', 0755)
+logger.info('Create templates for control and postinst')
 
-#########################################
-# update Control version
-control = open(BDIR + 'DEBIAN/control','r').read()
-open(BDIR + 'DEBIAN/control','w').write(re.sub('Version: .*','Version: %s' % full_version,control))
+jinja_env = jinja2.Environment(loader=jinj2.FileSystemLoader('./debian/'))
+template_control = jinja_env.get_template('control.tmpl')
+template_postinst = jinja_env.get_template('postinst.tmpl')
+template_vars = {
+    'UNIX': SETUP_UNIX,
+    'version': full_version,
+    'list_agents': [os.path.join('/var/www/wapt/',dict_agent[akey]) for akey in dict_agent.keys()],
+    'description': 'WAPT setup executable for Windows' if SETUP_UNIX=='TRUE' else 'WAPT agent packages for Linux/MacOS',
+}
+render_control = template_control.render(template_vars)
+render_postinst = template_postinst.render(template_vars)
+
+os.mkdir(os.path.join(BDIR,'DEBIAN')
+
+with open(os.path.join(BDIR,'DEBIAN','control'),'w') as f_control:
+    f_control.write(render_control)
+    
+with open(os.path.join(BDIR,'DEBIAN','postinst'),'w') as f_postinst:
+    f_postinst.write(render_postinst)
+    
+os.chmod(os.path.join(BDIR,'DEBIAN/'), 0755)
+os.chmod(os.path.join(BDIR,'DEBIAN','postinst', 0755)
 
 # creates package file structure
 mkdir(BDIR + 'var/www/wapt/')
@@ -168,8 +183,8 @@ for afile in dict_agent.keys():
 
 # build
 if WAPTEDITION=='enterprise':
-    package_filename = 'tis-waptsetup-%senterprise-%s.deb' % ('all-' if SETUP_ALL=='TRUE' else '',full_version)
+    package_filename = 'tis-waptsetup-%senterprise-%s.deb' % ('linux_mac-' if SETUP_UNIX=='TRUE' else 'windows-',full_version)
 else:
-    package_filename = 'tis-waptsetup-%s%s.deb' % ('all-' if SETUP_ALL=='TRUE' else '',full_version)
+    package_filename = 'tis-waptsetup-%s%s.deb' % ('linux_mac-' if SETUP_UNIX=='TRUE' else 'windows-',full_version)
 eprint(subprocess.check_output(['dpkg-deb', '--build', BDIR, package_filename]))
 print(package_filename)
