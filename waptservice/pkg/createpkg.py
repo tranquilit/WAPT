@@ -274,7 +274,7 @@ eprint('Install additional libraries in build environment virtualenv')
 run_verbose('tmpbuild/payload/opt/wapt/bin/pip install pip setuptools --upgrade')
 # qq libs a rajouter
 lib_python=next(os.walk('tmpbuild/payload/opt/wapt/lib/'))[1][0]
-run('tmpbuild/payload/opt/wapt/bin/pip{} install -r ../../requirements.txt -r ../../requirements-linux.txt -t tmpbuild/payload/opt/wapt/lib/{}/site-packages'.format(python_version, lib_python))
+run('tmpbuild/payload/opt/wapt/bin/pip{} install -r ../../requirements.txt -r ../../requirements-agent-unix.txt -t tmpbuild/payload/opt/wapt/lib/{}/site-packages'.format(python_version, lib_python))
 
 run_verbose(r'virtualenv tmpbuild/payload/opt/wapt --relocatable')
 

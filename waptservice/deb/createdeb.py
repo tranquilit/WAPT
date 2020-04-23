@@ -36,6 +36,10 @@ import glob
 import types
 import time
 
+sys.path.insert(0, "../..")
+
+from waptutils import Version
+
 makepath = os.path.join
 from shutil import copyfile
 
@@ -262,7 +266,7 @@ if WAPTEDITION=='enterprise':
 
 ##check linux distrib
 if platform.linux_distribution()[0].startswith('debian') or platform.linux_distribution()[0].startswith('Ubuntu'):
-	eprint(run('sudo apt-get install -y python-virtualenv python-setuptools python-pip python-dev libpq-dev libffi-dev libldap2-dev libsasl2-dev python-apt'))
+	eprint(run('sudo apt-get install -y python-virtualenv python-setuptools python-pip python-dev libpq-dev libffi-dev libldap2-dev libsasl2-dev python-apt libkrb5-dev'))
 else:
     eprint('Wrong linux distribution script only for debian or ubuntu, yours : \n')
     eprint(platform.linux_distribution())
@@ -277,7 +281,7 @@ run_verbose(r'virtualenv ./builddir/opt/wapt --always-copy')
 eprint('Install additional libraries in build environment virtualenv')
 run_verbose('./builddir/opt/wapt/bin/pip install pip setuptools --upgrade')
 # qq libs a rajouter
-run('./builddir/opt/wapt/bin/pip install -r ../../requirements.txt -r ../../requirements-linux.txt -t ./builddir/opt/wapt/lib/python2.7/site-packages')
+run('./builddir/opt/wapt/bin/pip install -r ../../requirements.txt -r ../../requirements-agent-unix.txt -t ./builddir/opt/wapt/lib/python2.7/site-packages')
 run_verbose(r'virtualenv ./builddir/opt/wapt --relocatable')
 
 run('cp -ruf /usr/lib/python2.7/dist-packages/apt* ./builddir/opt/wapt/lib/python2.7/site-packages')
