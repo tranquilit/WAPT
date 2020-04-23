@@ -1,3 +1,4 @@
 {
     "python.pythonPath": "${workspaceFolder}/waptpython.exe",
+    "files.eol": "\n",
 }
