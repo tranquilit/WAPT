@@ -109,7 +109,7 @@ if options.loglevel is not None:
 if platform.system() != 'Linux':
     logger.error("this script should be used on debian linux")
     sys.exit(1)
-    
+
 SETUP_ALL=os.environ.get('SETUP_ALL','FALSE')
 
 #########################################
@@ -119,16 +119,16 @@ dict_agent = {
 'WAPTDEPLOY':'waptdeploy.exe',
 }
 if SETUP_ALL=='TRUE':
-dict_agent.update({
-'WAPTAGENT_RPM':'waptagent.rpm',
-'WAPTAGENT_PKG':'waptagent.pkg',
-'WAPTAGENT_DEB8':'waptagent_debian8.deb',
-'WAPTAGENT_DEB9':'waptagent_debian9.deb',
-'WAPTAGENT_DEB10':'waptagent_debian10.deb',
-'WAPTAGENT_UB18':'waptagent_ubuntu18.deb',
-'WAPTAGENT_UB19':'waptagent_ubuntu19.deb',
-}
-)
+    dict_agent.update({
+    'WAPTAGENT_RPM':'waptagent.rpm',
+    'WAPTAGENT_PKG':'waptagent.pkg',
+    'WAPTAGENT_DEB8':'waptagent_debian8.deb',
+    'WAPTAGENT_DEB9':'waptagent_debian9.deb',
+    'WAPTAGENT_DEB10':'waptagent_debian10.deb',
+    'WAPTAGENT_UB18':'waptagent_ubuntu18.deb',
+    'WAPTAGENT_UB19':'waptagent_ubuntu19.deb',
+    }
+    )
 
 WAPTEDITION=os.environ.get('WAPTEDITION','community')
 
@@ -165,7 +165,7 @@ www_path = os.path.join(BDIR,'var/www/wapt/')
 for afile in dict_agent.keys():
     os.chmod(dict_agent[afile],0644)
     shutil.copy(dict_agent[afile],www_path)
-    
+
 # build
 if WAPTEDITION=='enterprise':
     package_filename = 'tis-waptsetup-%senterprise-%s.deb' % ('all-' if SETUP_ALL=='TRUE' else '',full_version)
