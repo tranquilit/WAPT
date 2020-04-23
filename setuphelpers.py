@@ -352,7 +352,6 @@ else:
          'install_app',
          'uninstall_app',
          'install_dmg',
-         'installed_softwares',
          'brew_install',
          'brew_uninstall',
         ])
@@ -380,8 +379,6 @@ else:
          'upgrade_yum',
          'type_debian',
          'type_redhat',
-         'host_info',
-         'installed_softwares',
          'install_rpm',
          ])
 

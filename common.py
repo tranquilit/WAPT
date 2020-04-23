@@ -3711,11 +3711,11 @@ class Wapt(BaseObjectClass):
                     if entry.target_os and entry.target_os != 'windows':
                         raise EWaptBadTargetOS('This package is designed for OS %s' % entry.target_os)
 
-                    os_version = setuphelpers.get_os_version()
-                    if entry.min_os_version and os_version < Version(entry.min_os_version):
-                        raise EWaptBadTargetOS('This package requires that OS be at least %s' % entry.min_os_version)
-                    if entry.max_os_version and os_version > Version(entry.max_os_version):
-                        raise EWaptBadTargetOS('This package requires that OS be at most %s' % entry.min_os_version)
+                os_version = setuphelpers.get_os_version()
+                if entry.min_os_version and os_version < Version(entry.min_os_version):
+                    raise EWaptBadTargetOS('This package requires that OS be at least %s' % entry.min_os_version)
+                if entry.max_os_version and os_version > Version(entry.max_os_version):
+                    raise EWaptBadTargetOS('This package requires that OS be at most %s' % entry.min_os_version)
                 ###################################################################
 
                 # don't check in developper mode
@@ -6597,23 +6597,23 @@ class Wapt(BaseObjectClass):
             (installer_name,installer_ext) = os.path.splitext(installer)
             installer_ext = installer_ext.lower()
             if installer_ext in ['.msi','.msix']:
-                setup_template = os.path.join(self.wapt_base_dir,'templates','setup_package_template_msi.py')
+                setup_template = os.path.join(self.wapt_base_dir,'templates','setup_package_template_msi.py.tmpl')
             elif installer_ext == '.msu':
-                setup_template = os.path.join(self.wapt_base_dir,'templates','setup_package_template_msu.py')
+                setup_template = os.path.join(self.wapt_base_dir,'templates','setup_package_template_msu.py.tmpl')
             elif installer_ext == '.exe':
-                setup_template = os.path.join(self.wapt_base_dir,'templates','setup_package_template_exe.py')
+                setup_template = os.path.join(self.wapt_base_dir,'templates','setup_package_template_exe.py.tmpl')
             elif installer_ext == '.deb':
-                setup_template = os.path.join(self.wapt_base_dir,'templates','setup_package_template_deb.py')
+                setup_template = os.path.join(self.wapt_base_dir,'templates','setup_package_template_deb.py.tmpl')
             elif installer_ext == '.pkg':
-                setup_template = os.path.join(self.wapt_base_dir,'templates','setup_package_template_pkg.py')
+                setup_template = os.path.join(self.wapt_base_dir,'templates','setup_package_template_pkg.py.tmpl')
             elif installer_ext == '.rpm':
-                setup_template = os.path.join(self.wapt_base_dir,'templates','setup_package_template_rpm.py')
+                setup_template = os.path.join(self.wapt_base_dir,'templates','setup_package_template_rpm.py.tmpl')
             elif os.path.isdir(installer_path):
-                setup_template = os.path.join(self.wapt_base_dir,'templates','setup_package_template_dir.py')
+                setup_template = os.path.join(self.wapt_base_dir,'templates','setup_package_template_dir.py.tmpl')
             else:
-                setup_template = os.path.join(self.wapt_base_dir,'templates','setup_package_template.py')
+                setup_template = os.path.join(self.wapt_base_dir,'templates','setup_package_template.py.tmpl')
         else:
-            setup_template = os.path.join(self.wapt_base_dir,'templates','setup_package_skel.py')
+            setup_template = os.path.join(self.wapt_base_dir,'templates','setup_package_skel.py.tmpl')
 
         template = codecs.open(setup_template,encoding='utf8').read()%dict(
             packagename=packagename,

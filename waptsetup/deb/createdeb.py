@@ -109,11 +109,26 @@ if options.loglevel is not None:
 if platform.system() != 'Linux':
     logger.error("this script should be used on debian linux")
     sys.exit(1)
+    
+SETUP_ALL=os.environ.get('SETUP_ALL','FALSE')
 
 #########################################
 BDIR = './builddir/'
-WAPTSETUP = 'waptsetup-tis.exe'
-WAPTDEPLOY = 'waptdeploy.exe'
+dict_agent = {
+'WAPTSETUP':'waptsetup-tis.exe',
+'WAPTDEPLOY':'waptdeploy.exe',
+}
+if SETUP_ALL=='TRUE':
+dict_agent.update({
+'WAPTAGENT_RPM':'waptagent.rpm',
+'WAPTAGENT_PKG':'waptagent.pkg',
+'WAPTAGENT_DEB8':'waptagent_debian8.deb',
+'WAPTAGENT_DEB9':'waptagent_debian9.deb',
+'WAPTAGENT_DEB10':'waptagent_debian10.deb',
+'WAPTAGENT_UB18':'waptagent_ubuntu18.deb',
+'WAPTAGENT_UB19':'waptagent_ubuntu19.deb',
+}
+)
 
 WAPTEDITION=os.environ.get('WAPTEDITION','community')
 
@@ -146,16 +161,15 @@ open(BDIR + 'DEBIAN/control','w').write(re.sub('Version: .*','Version: %s' % ful
 
 # creates package file structure
 mkdir(BDIR + 'var/www/wapt/')
-shutil.copy(WAPTSETUP, BDIR + 'var/www/wapt/')
-os.chmod(BDIR + 'var/www/wapt/' + WAPTSETUP, 0644)
-shutil.copy(WAPTDEPLOY, BDIR + 'var/www/wapt/')
-os.chmod(BDIR + 'var/www/wapt/' + WAPTDEPLOY, 0644)
-
-# build
+www_path = os.path.join(BDIR,'var/www/wapt/')
+for afile in dict_agent.keys():
+    os.chmod(dict_agent[afile],0644)
+    shutil.copy(dict_agent[afile],www_path)
+    
 # build
 if WAPTEDITION=='enterprise':
-    package_filename = 'tis-waptsetup-enterprise-%s.deb' % (full_version)
+    package_filename = 'tis-waptsetup-%senterprise-%s.deb' % ('all-' if SETUP_ALL=='TRUE' else '',full_version)
 else:
-    package_filename = 'tis-waptsetup-%s.deb' % (full_version)
+    package_filename = 'tis-waptsetup-%s%s.deb' % ('all-' if SETUP_ALL=='TRUE' else '',full_version)
 eprint(subprocess.check_output(['dpkg-deb', '--build', BDIR, package_filename]))
 print(package_filename)
