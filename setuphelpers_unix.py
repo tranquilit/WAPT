@@ -40,7 +40,13 @@ import datetime
 import platform
 import grp
 import pwd
-from waptutils import (ensure_unicode, makepath, ensure_dir,currentdate,currentdatetime,_lower,ini2winstr,error,get_main_ip)
+from waptutils import (ensure_unicode, makepath, ensure_dir,currentdate,currentdatetime,_lower,ini2winstr,error,get_main_ip,TimeoutExpired,RunReader,RunOutput,killtree,run_notfatal)
+import threading
+import psutil
+from subprocess import PIPE
+import logging
+
+logger = logging.getLogger()
 
 def get_kernel_version():
     return os.uname()[2]
@@ -299,8 +305,135 @@ def get_computername():
     return socket.gethostname()
 
 
-def run(*args, **kwargs):
-    return subprocess.check_output(shell=True,*args, **kwargs)
+def run(cmd,shell=True,timeout=600,accept_returncodes=[0,3010],on_write=None,pidlist=None,return_stderr=True,**kwargs):
+    r"""Run the command cmd in a shell and return the output and error text as string
+
+    Args:
+        cmd : command and arguments, either as a string or as a list of arguments
+        shell (boolean) : True is assumed
+        timeout (int) : maximum time to wait for cmd completion is second (default = 600)
+                        a TimeoutExpired exception is raised if tiemout is reached.
+        on_write : callback when a new line is printed on stdout or stderr by the subprocess
+                        func(unicode_line). arg is enforced to unicode
+        accept_returncodes (list) : list of return code which are considered OK default = (0,1601)
+        pidlist (list): external list where to append the pid of the launched process.
+        return_stderr (bool or list) : if True, the error lines are returned to caller in result.
+                                       if a list is provided, the error lines are appended to this list
+
+        all other parameters from the psutil.Popen constructor are accepted
+
+    Returns:
+        RunOutput : bytes like output of stdout and optionnaly stderr streams.
+                    returncode attribute
+
+    Raises:
+        CalledProcessError: if return code of cmd is not in accept_returncodes list
+        TimeoutExpired:  if process is running for more than timeout time.
+
+    .. versionchanged:: 1.3.9
+            return_stderr parameters to disable stderr or get it in a separate list
+            return value has a returncode attribute to
+
+    .. versionchanged:: 1.4.0
+            output is not forced to unicode
+
+    .. versionchanged:: 1.4.1
+          error code 1603 is no longer accepted by default.
+
+    .. versionchanged:: 1.5.1
+          If cmd is unicode, encode it to default filesystem encoding before
+            running it.
+
+    >>> run(r'dir /B c:\windows\explorer.exe')
+    'explorer.exe\r\n'
+
+    >>> out = []
+    >>> pids = []
+    >>> def getlines(line):
+    ...    out.append(line)
+    >>> run(r'dir /B c:\windows\explorer.exe',pidlist=pids,on_write=getlines)
+    u'explorer.exe\r\n'
+
+    >>> print out
+    ['explorer.exe\r\n']
+    >>> try:
+    ...     run(r'ping /t 127.0.0.1',timeout=3)
+    ... except TimeoutExpired:
+    ...     print('timeout')
+    timeout
+    """
+    logger.info(u'Run "%s"' % (ensure_unicode(cmd),))
+    output = []
+
+    if return_stderr is None or return_stderr == False:
+        return_stderr = []
+    elif not isinstance(return_stderr,list):
+        return_stderr = output
+
+    if pidlist is None:
+        pidlist = []
+
+    # unicode cmd is not understood by shell system anyway...
+    if isinstance(cmd,unicode):
+        cmd = cmd.encode(sys.getfilesystemencoding())
+
+    try:
+        proc = psutil.Popen(cmd, shell = shell, bufsize=1, stdin=PIPE, stdout=PIPE, stderr=PIPE,**kwargs)
+    except RuntimeError as e:
+        # be sure to not trigger encoding errors.
+        raise RuntimeError(e[0],repr(e[1]))
+    # keep track of launched pid if required by providing a pidlist argument to run
+    if not proc.pid in pidlist:
+        pidlist.append(proc.pid)
+
+    def worker(pipe,on_write=None):
+        while True:
+            line = pipe.readline()
+            if not line:
+                break
+            else:
+                if on_write:
+                    on_write(ensure_unicode(line))
+                if pipe == proc.stderr:
+                    return_stderr.append(line)
+                else:
+                    output.append(line)
+
+    stdout_worker = RunReader(worker, proc.stdout,on_write)
+    stderr_worker = RunReader(worker, proc.stderr,on_write)
+    stdout_worker.start()
+    stderr_worker.start()
+    stdout_worker.join(timeout)
+    if stdout_worker.is_alive():
+        # kill the task and all subtasks
+        if proc.pid in pidlist:
+            pidlist.remove(proc.pid)
+            killtree(proc.pid)
+        raise TimeoutExpired(cmd,''.join(output),timeout)
+    stderr_worker.join(timeout)
+    if stderr_worker.is_alive():
+        if proc.pid in pidlist:
+            pidlist.remove(proc.pid)
+            killtree(proc.pid)
+        raise TimeoutExpired(cmd,''.join(output),timeout)
+    proc.returncode = proc.wait()
+    if proc.pid in pidlist:
+        pidlist.remove(proc.pid)
+        killtree(proc.pid)
+    if accept_returncodes is not None and not proc.returncode in accept_returncodes:
+        if return_stderr != output:
+            raise CalledProcessErrorOutput(proc.returncode,cmd,''.join(output+return_stderr))
+        else:
+            raise CalledProcessErrorOutput(proc.returncode,cmd,''.join(output))
+    else:
+        if proc.returncode == 0:
+            logger.info(u'%s command returns code %s' % (ensure_unicode(cmd),proc.returncode))
+        else:
+            logger.warning(u'%s command returns code %s' % (ensure_unicode(cmd),proc.returncode))
+    result = RunOutput(output)
+    result.returncode = proc.returncode
+    return result
+
 
 
 def dmi_info():

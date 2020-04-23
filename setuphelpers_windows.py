@@ -54,7 +54,7 @@ from win32com.taskscheduler import taskscheduler
 
 from waptutils import (Version,makepath,isfile,isdir,killtree,CalledProcessErrorOutput,
     mkdirs,remove_file,currentdate,currentdatetime,ensure_dir,_lower,ini2winstr,
-    error,find_all_files,get_main_ip,ensure_list)
+    error,find_all_files,get_main_ip,ensure_list,TimeoutExpired,RunReader,RunOutput,run_notfatal)
 
 ## import only for windows
 import _subprocess
@@ -3884,77 +3884,3 @@ def run(cmd,shell=True,timeout=600,accept_returncodes=[0,3010],on_write=None,pid
     return result
 
 
-def run_notfatal(*cmd,**args):
-    """Runs the command and wait for it termination, returns output
-    Ignore exit status code of command, return '' instead
-
-    .. versionchanged:: 1.4.0
-          output is not enforced to unicode
-    """
-    try:
-        return run(*cmd,accept_returncodes=None,**args)
-    except Exception as e:
-        return ensure_unicode(e)
-
-class RunReader(threading.Thread):
-    # helper thread to read output of run command
-    def __init__(self, callable, *args, **kwargs):
-        super(RunReader, self).__init__()
-        self.callable = callable
-        self.args = args
-        self.kwargs = kwargs
-        self.setDaemon(True)
-
-    def run(self):
-        try:
-            self.callable(*self.args, **self.kwargs)
-        except Exception as e:
-            print(ensure_unicode(e))
-
-
-class TimeoutExpired(Exception):
-    """This exception is raised when the timeout expires while waiting for a
-    child process.
-
-    >>> try:
-    ...     run('ping -t 10.10.1.67',timeout=5)
-    ... except TimeoutExpired as e:
-    ...     print e.output
-    ...     raise
-    ...
-
-    """
-    def __init__(self, cmd, output=None, timeout=None):
-        self.cmd = cmd
-        self.output = output
-        self.timeout = timeout
-
-    def __str__(self):
-        return "Command '%s' timed out after %s seconds with output '%s'" % (self.cmd, self.timeout, repr(self.output))
-
-
-class RunOutput(str):
-    u"""Subclass of str (bytes) to return returncode from runned command in addition to output
-
-    >>> run(r'cmd /C dir c:\toto ',accept_returncodes=[0,1])
-    No handlers could be found for logger "root"
-    <RunOuput returncode :[0, 1]>
-     Le volume dans le lecteur C n'a pas de nom.
-     Le numéro de série du volume est 74EF-5918
-
-    Fichier introuvable
-     Répertoire de c:\
-
-    .. versionchanged:: 1.4.0
-          subclass str(bytes string) and not unicode
-    """
-
-    def __new__(cls, value):
-        if isinstance(value,list):
-            value = ''.join(value)
-        self = super(RunOutput, cls).__new__(cls, value)
-        self.returncode = None
-        return self
-
-    def __repr__(self):
-        return "<RunOuput returncode :%s>\n%s"%(self.returncode,str.__repr__(self))
