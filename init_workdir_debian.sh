@@ -5,7 +5,8 @@ set -e
 #sudo easy_install pip virtualenv setuptools 
 
 
-virtualenv --no-site-packages .
+python2 -m virtualenv --no-site-packages .
+./bin/pip install virtualenv
 ./bin/pip install -r requirements.txt 
 #ln -s ./bin/python2.7 waptpython
 #chmod 755 runwapt-get.sh

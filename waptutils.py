@@ -1767,3 +1767,17 @@ def run_notfatal(*cmd,**args):
     except Exception as e:
         return ensure_unicode(e)
 
+def rsync_packaging(src, dst, excludes=[]):
+    excludes_list = ['*.pyc','*~','.svn','deb','rpm','.git','.gitignore']
+    excludes_list.extend(excludes)
+
+    rsync_source = src
+    rsync_destination = dst
+    rsync_options = ['-a','--stats']
+    for x in excludes_list:
+        rsync_options.extend(['--exclude',x])
+
+    rsync_command = ['/usr/bin/rsync'] + rsync_options + [rsync_source,rsync_destination]
+    print(rsync_command)
+    return subprocess.check_output(rsync_command)
+
