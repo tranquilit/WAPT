@@ -1,23 +1,27 @@
+repos:
 -   repo: https://github.com/pre-commit/pre-commit-hooks
-    sha: v0.7.1
+    rev: v2.5.0
     hooks:
     -   id: trailing-whitespace
     -   id: end-of-file-fixer
-    -   id: autopep8-wrapper
+    -   id: mixed-line-ending
         args:
-        - -i
-        - --ignore=E501
-        - --max-line-length=160
-    -   id: check-docstring-first
-    -   id: check-json
-    -   id: check-added-large-files
-    -   id: check-yaml
-    -   id: debug-statements
-    -   id: fix-encoding-pragma
-    -   id: pretty-format-json
-        args:
-        - --autofix
-    -   id: requirements-txt-fixer
-    -   id: double-quote-string-fixer
-    -   id: check-merge-conflict
-    -   id: check-ast
+        - --fix=lf
+#    -   id: autopep8-wrapper
+#        args:
+#        - -i
+#        - --ignore=E501
+#        - --max-line-length=160
+#    -   id: check-docstring-first
+#    -   id: check-json
+#    -   id: check-added-large-files
+#    -   id: check-yaml
+#    -   id: debug-statements
+#    -   id: fix-encoding-pragma
+#    -   id: pretty-format-json
+#        args:
+#        - --autofix
+#    -   id: requirements-txt-fixer
+#    -   id: double-quote-string-fixer
+#    -   id: check-merge-conflict
+#    -   id: check-ast
