@@ -7528,9 +7528,9 @@ class Wapt(BaseObjectClass):
         try:
             data = {"user": login, "password": password, "groups": groups}
             result = self.waptserver.post('login_self_service', data = jsondump(data))
-            return {'result'{'success':False}}
+            return result
         except :
-            return {'result':{'success':False,'Error':True,'msg':'unknown error'}}
+            return {'result':{'success':False,'error':True,'msg':'unknown error'}}
 
 
 def run_as_administrator(afile,params=None):

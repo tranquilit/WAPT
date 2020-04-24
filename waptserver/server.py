@@ -1233,7 +1233,7 @@ def login_self_service():
         groups = post_data.get('groups')
 
         if user and password and groups :
-            result = auth_module_ad.check_credentials_ad(conf, username, password, [], groups)
+            result = auth_module_ad.check_credentials_ad(app.conf, user, password, [], groups)
             msg = 'Self service authentication'
             spenttime = time.time() - starttime
             return make_response(result=result, msg=msg, status=200,request_time=spenttime)
