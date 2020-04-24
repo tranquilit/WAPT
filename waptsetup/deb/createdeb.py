@@ -163,7 +163,7 @@ template_vars = {
 render_control = template_control.render(template_vars)
 render_postinst = template_postinst.render(template_vars)
 
-os.mkdir(os.path.join(BDIR,'DEBIAN')
+os.mkdir(os.path.join(BDIR,'DEBIAN'))
 
 with open(os.path.join(BDIR,'DEBIAN','control'),'w') as f_control:
     f_control.write(render_control)
@@ -172,7 +172,7 @@ with open(os.path.join(BDIR,'DEBIAN','postinst'),'w') as f_postinst:
     f_postinst.write(render_postinst)
     
 os.chmod(os.path.join(BDIR,'DEBIAN/'), 0755)
-os.chmod(os.path.join(BDIR,'DEBIAN','postinst', 0755)
+os.chmod(os.path.join(BDIR,'DEBIAN','postinst', 0755))
 
 # creates package file structure
 mkdir(BDIR + 'var/www/wapt/')
