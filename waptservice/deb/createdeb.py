@@ -1,4 +1,4 @@
-#!/usr/bin/python2
+#!/usr/bin/python
 # -*- coding: utf-8 -*-
 # -----------------------------------------------------------------------
 #    This file is part of WAPT
@@ -57,7 +57,7 @@ def run(*args, **kwargs):
 def eprint(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)
 
-eprint(run('sudo pip2 install gitpython'))
+eprint(run('sudo pip install gitpython'))
 from git import Repo
 
 def run_verbose(*args, **kwargs):
@@ -183,14 +183,14 @@ else:
 
 eprint('Time before virtualenv : %f\n' % (time.time()-start_time))
 
-#run_verbose('pip install distribute')
+run_verbose('pip install distribute')
 eprint('Create a build environment virtualenv. May need to download a few libraries, it may take some time')
-run_verbose(r'/home/dcardon/wapt/bin/python2 -m virtualenv ./builddir/opt/wapt --always-copy')
+run_verbose('virtualenv ./builddir/opt/wapt --always-copy')
 eprint('Install additional libraries in build environment virtualenv')
 run_verbose('./builddir/opt/wapt/bin/pip install pip setuptools --upgrade')
 # qq libs a rajouter
-run('./builddir/opt/wapt/bin/pip install -r "%s/requirements.txt" -r "%s/requirements-agent-unix.txt" -t ./builddir/opt/wapt/lib/python2.7/site-packages' %(wapt_source_dir,wapt_source_dir))
-#run_verbose(r'/home/dcardon/wapt/bin/virtualenv ./builddir/opt/wapt --relocatable')
+run('./builddir/opt/wapt/bin/pip install -r "%s/requirements-agent.txt" -r "%s/requirements-agent-unix.txt" -t ./builddir/opt/wapt/lib/python2.7/site-packages' %(wapt_source_dir,wapt_source_dir))
+run_verbose('virtualenv ./builddir/opt/wapt --relocatable')
 
 run('cp -ruf /usr/lib/python2.7/dist-packages/apt* ./builddir/opt/wapt/lib/python2.7/site-packages')
 

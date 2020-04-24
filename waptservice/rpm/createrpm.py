@@ -262,7 +262,7 @@ if platform.linux_distribution()[0].startswith('CentOS'):
     run_verbose(r'virtualenv ./builddir/opt/wapt/')
     run_verbose(r'virtualenv ./builddir/opt/wapt/ --always-copy')
     eprint('Install additional libraries in build environment virtualenv')
-    run_verbose(r'source ./builddir/opt/wapt/bin/activate; pip install -r ../../requirements.txt -r ../../requirements-agent-unix.txt')
+    run_verbose(r'source ./builddir/opt/wapt/bin/activate; pip install -r ../../requirements-agent.txt -r ../../requirements-agent-unix.txt')
 
     run('cp -ruf /usr/lib/python2.7/site-packages/yum* ./builddir/opt/wapt/lib/python2.7/site-packages/')
     run('cp -ruf /usr/lib64/python2.7/site-packages/yum* ./builddir/opt/wapt/lib64/python2.7/site-packages/')

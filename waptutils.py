@@ -1682,16 +1682,6 @@ def is_between_two_times(time1,time2):
 class EWaptSetupException(Exception):
     pass
 
-if __name__ == '__main__':
-    import doctest
-    import sys
-    reload(sys)
-    sys.setdefaultencoding("UTF-8")
-    import doctest
-    doctest.ELLIPSIS_MARKER = '???'
-    doctest.testmod(optionflags=doctest.ELLIPSIS)
-    sys.exit(0)
-
 class RunReader(threading.Thread):
     # helper thread to read output of run command
     def __init__(self, callable, *args, **kwargs):
@@ -1781,3 +1771,12 @@ def rsync_packaging(src, dst, excludes=[]):
     print(rsync_command)
     return subprocess.check_output(rsync_command)
 
+if __name__ == '__main__':
+    import doctest
+    import sys
+    reload(sys)
+    sys.setdefaultencoding("UTF-8")
+    import doctest
+    doctest.ELLIPSIS_MARKER = '???'
+    doctest.testmod(optionflags=doctest.ELLIPSIS)
+    sys.exit(0)

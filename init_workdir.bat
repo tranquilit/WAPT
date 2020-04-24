@@ -18,7 +18,7 @@ xcopy /I /E /F /Y %PYTHON_PATH%\DLLs %~dp0\DLLs
 xcopy /I /E /F /Y /EXCLUDE:%~dp0\libexcludes.txt %PYTHON_PATH%\lib %~dp0\lib
 
 %~dp0\Scripts\python -m pip install -U pip setuptools wheel
-%~dp0\Scripts\pip.exe install -r %~dp0\requirements.txt -r %~dp0\requirements-windows.txt
+%~dp0\Scripts\pip.exe install -r %~dp0\requirements-agent.txt -r %~dp0\requirements-agent-windows.txt
 
 %PYTHON_PATH%\python.exe %~dp0\pywininstall.py
 %~dp0\Scripts\easy_install.exe %~dp0\..\binaries_cache\pywin_install.exe
