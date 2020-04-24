@@ -46,7 +46,7 @@ import psutil
 from subprocess import PIPE
 import logging
 
-logger = logging.getLogger()
+logger = logging.getLogger('waptcore')
 
 def get_kernel_version():
     return os.uname()[2]
@@ -249,12 +249,10 @@ def host_info_common_unix():
     info = {}
     try:
         dmi = dmi_info()
-
-    ##    info['description'] = 'LINUX' ## inexistant in Linux
         info['system_manufacturer'] = dmi['System_Information']['Manufacturer']
         info['system_productname'] = dmi['System_Information']['Product_Name']
     except:
-        logger.info('error while running dmidecode, dmidecode needs root privileges')
+        logger.warning('Error while running dmidecode, dmidecode needs root privileges')
         pass
 
     info['computer_name'] = socket.gethostname()
@@ -471,7 +469,7 @@ def dmi_info():
             else:
                 result[key]  = currobject
             if l.startswith('\t'):
-                print(l)
+                logger.info(l)
         else:
             if not l.startswith('\t\t'):
                 currarray = []

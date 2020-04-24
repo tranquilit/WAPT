@@ -21,7 +21,6 @@
 #
 # -----------------------------------------------------------------------
 from __future__ import absolute_import
-from __future__ import print_function
 import os
 import socket
 import struct
@@ -47,6 +46,7 @@ import xml.etree.ElementTree as etree
 
 from setuphelpers_unix import *
 
+logger = logging.getLogger('waptcore')
 
 def host_info():
     """ Read main workstation informations, returned as a dict """
@@ -97,7 +97,7 @@ def mount_dmg(dmg_path):
     try:
         output = run('hdiutil mount ' + dmg_path)
     except subprocess.CalledProcessError, e:
-        print('Error in mount_dmg : {0}'.format(e.output))
+        logger.warning('Error in mount_dmg : {0}'.format(e.output))
         return e.output
 
     return output.split('\t')[-1].rstrip()
@@ -220,7 +220,7 @@ def is_dmg_installed(dmg_path, check_version=False):
             if fextension in dmg_file_assoc:
                 result_map.append(dmg_file_assoc[fextension](file, check_version))
     except:
-        print('Couldn\'t check contents of dmg file at {0}'.format(dmg_path))
+        logger.warning('Couldn\'t check contents of dmg file at {0}'.format(dmg_path))
         unmount_dmg(dmg_mount_path)
         return True
 
@@ -231,9 +231,9 @@ def is_dmg_installed(dmg_path, check_version=False):
 def install_pkg(pkg_path):
     """ Installs a pkg file, given its name or a path to it. """
     pkg_name = os.path.basename(pkg_path)
-    print('Requiring root access to install the package {0}:'.format(pkg_name))
+    logger.info('Requiring root access to install the package {0}:'.format(pkg_name))
     run("sudo installer -package {0} -target /".format(pkg_path))
-    print('Package {0} has been installed.'.format(pkg_name))
+    logger.info('Package {0} has been installed.'.format(pkg_name))
 
 
 def uninstall_pkg(pkg_name):
@@ -245,10 +245,10 @@ def uninstall_pkg(pkg_name):
     """
     pkg_list = get_installed_pkgs()
     if pkg_name not in pkg_list:
-        print('Couldn\'t uninstall the package {0} : package not installed.'.format(pkg_name))
+        logger.warning('Couldn\'t uninstall the package {0} : package not installed.'.format(pkg_name))
         return False
 
-    print('Requiring root access to uninstall the package {0}:'.format(pkg_name))
+    logger.info('Requiring root access to uninstall the package {0}:'.format(pkg_name))
     run('sudo -v')
 
     # TODO check them before deleting them : moving them to a tmp location?
@@ -258,7 +258,7 @@ def uninstall_pkg(pkg_name):
         os.remove(f)
 
     run('sudo pkgutil --forget {0}'.format(pkg_name))
-    print('Package {0} has been successfully uninstalled.'.format(pkg_name))
+    logger.info('Package {0} has been successfully uninstalled.'.format(pkg_name))
     return True
 
 
@@ -269,12 +269,12 @@ def install_app(app_dir):
     app_name = os.path.basename(app_dir)
     applications_dir = '/Applications'
 
-    print('Installing the contents of {0} in {1}...'.format(app_name, applications_dir))
+    logger.info('Installing the contents of {0} in {1}...'.format(app_name, applications_dir))
     try:
         subprocess.check_call('cp -r \'{0}\' {1}'.format(app_dir, applications_dir), shell=True)
     except subprocess.CalledProcessError, e:
-        print('Couldn\'t install {0} to {1}. Error code : {2}'.format(app_name, applications_dir, e.returncode))
-    print('{0} succesfully installed in {1}'.format(app_name, applications_dir))
+        logger.warning('Couldn\'t install {0} to {1}. Error code : {2}'.format(app_name, applications_dir, e.returncode))
+    logger.info('{0} succesfully installed in {1}'.format(app_name, applications_dir))
 
 
 def uninstall_app(app_dir):
@@ -301,7 +301,7 @@ def install_dmg(dmg_path, check_version=False):
 
     dmg_name = os.path.basename(dmg_path)
     if is_dmg_installed(dmg_path, check_version):
-        print('The dmg file {0} is already installed on this machine.'.format(dmg_name))
+        logger.info('The dmg file {0} is already installed on this machine.'.format(dmg_name))
         return False
 
     dmg_mount_path = mount_dmg(dmg_path)
@@ -317,7 +317,7 @@ def install_dmg(dmg_path, check_version=False):
                 nb_files_handled += 1
 
         if nb_files_handled == 0:
-            print('Error : the dmg provided did not contain a package or an application, or none could be found.', file=sys.stderr)
+            logger.warning('Error : the dmg provided did not contain a package or an application, or none could be found.', file=sys.stderr)
     except:
         ret_val = False
     finally:
@@ -353,7 +353,7 @@ def installed_softwares(keywords='', uninstallkey=None, name=None):
 
             list_installed_softwares.append(infodict)
         except:
-            print("Application data acquisition failed for {} :".format(plist_file), file=sys.stderr)
+            logger.warning("Application data acquisition failed for {} :".format(plist_file), file=sys.stderr)
 
     return list_installed_softwares
 
