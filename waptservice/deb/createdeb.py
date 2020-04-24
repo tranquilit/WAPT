@@ -36,15 +36,9 @@ import glob
 import types
 import time
 
-
 current_path = os.path.realpath(__file__)
 wapt_source_dir = os.path.abspath(os.path.join(os.path.dirname(current_path),'../..'))
 source_dir = os.path.abspath(os.path.join(os.path.dirname(current_path),'..'))
-
-sys.path.insert(0, wapt_source_dir)
-
-from waptutils import (Version, rsync_packaging)
-
 makepath = os.path.join
 from shutil import copyfile
 
@@ -90,6 +84,20 @@ def setloglevel(alogger,loglevel):
             raise ValueError('Invalid log level: %s' % loglevel)
         alogger.setLevel(numeric_level)
 
+def rsync(src, dst, excludes=[]):
+    excludes_list = ['*.pyc','*~','.svn','deb','.git','.gitignore']
+    excludes_list.extend(excludes)
+
+    rsync_source = src
+    rsync_destination = dst
+    rsync_options = ['-a','--stats']
+    for x in excludes_list:
+        rsync_options.extend(['--exclude',x])
+
+    rsync_command = ['/usr/bin/rsync'] + rsync_options + [rsync_source,rsync_destination]
+    eprint(rsync_command)
+    return subprocess.check_output(rsync_command)
+
 
 def add_symlink(link_target,link_name):
     if link_target.startswith('/'):
@@ -103,6 +111,85 @@ def add_symlink(link_target,link_name):
         eprint(cmd)
         eprint(subprocess.check_output(cmd))
 
+
+class Version(object):
+    """Version object of form 0.0.0
+    can compare with respect to natural numbering and not alphabetical
+
+    Args:
+        version (str) : version string
+        member_count (int) : number of version memebers to take in account.
+                             If actual members in version is less, add missing memeber with 0 value
+                             If actual members count is higher, removes last ones.
+
+    >>> Version('0.10.2') > Version('0.2.5')
+    True
+    >>> Version('0.1.2') < Version('0.2.5')
+    True
+    >>> Version('0.1.2') == Version('0.1.2')
+    True
+    >>> Version('7') < Version('7.1')
+    True
+
+    .. versionchanged:: 1.6.2.5
+        truncate version members list to members_count if provided.
+    """
+
+    def __init__(self,version,members_count=None):
+        if version is None:
+            version = ''
+        assert isinstance(version,types.ModuleType) or isinstance(version,bytes) or isinstance(version,bytes) or isinstance(version,Version)
+        if isinstance(version,types.ModuleType):
+            self.versionstring =  getattr(version,'__version__',None)
+        elif isinstance(version,Version):
+            self.versionstring = getattr(version,'versionstring',None)
+        else:
+            self.versionstring = version
+        self.members = [ v.strip() for v in self.versionstring.split('.')]
+        self.members_count = members_count
+        if members_count is not None:
+            if len(self.members)<members_count:
+                self.members.extend(['0'] * (members_count-len(self.members)))
+            else:
+                self.members = self.members[0:members_count]
+
+    def __cmp__(self,aversion):
+        def nat_cmp(a, b):
+            a = a or ''
+            b = b or ''
+
+            def convert(text):
+                if text.isdigit():
+                    return int(text)
+                else:
+                    return text.lower()
+
+            def alphanum_key(key):
+                return [convert(c) for c in re.split('([0-9]+)', key)]
+
+            return cmp(alphanum_key(a), alphanum_key(b))
+
+        if not isinstance(aversion,Version):
+            aversion = Version(aversion,self.members_count)
+        for i in range(0,max([len(self.members),len(aversion.members)])):
+            if i<len(self.members):
+                i1 = self.members[i]
+            else:
+                i1 = ''
+            if i<len(aversion.members):
+                i2 = aversion.members[i]
+            else:
+                i2=''
+            v = nat_cmp(i1,i2)
+            if v:
+                return v
+        return 0
+
+    def __str__(self):
+        return '.'.join(self.members)
+
+    def __repr__(self):
+        return "Version('{}')".format('.'.join(self.members))
 
 parser = argparse.ArgumentParser(u'Build a WaptAgent Debian package.')
 parser.add_argument('-l', '--loglevel', help='Change log level (error, warning, info, debug...)')
@@ -120,8 +207,6 @@ if platform.system() != 'Linux':
 
 revision = options.revision
 
-####################""
-# wapt
 new_umask = 0o22
 old_umask = os.umask(new_umask)
 if new_umask != old_umask:
@@ -174,7 +259,7 @@ if WAPTEDITION=='enterprise':
 
 ##check linux distrib
 if platform.linux_distribution()[0].startswith('debian') or platform.linux_distribution()[0].startswith('Ubuntu'):
-	eprint(run('sudo apt-get install -y python-psutil python-netifaces python-virtualenv python-setuptools python-pip python-dev libpq-dev libffi-dev libldap2-dev libsasl2-dev python-apt libkrb5-dev'))
+	eprint(run('sudo apt-get install -y python-virtualenv python-setuptools python-pip python-dev libpq-dev libffi-dev libldap2-dev libsasl2-dev python-apt libkrb5-dev'))
 else:
     eprint('Wrong linux distribution script only for debian or ubuntu, yours : \n')
     eprint(platform.linux_distribution())
@@ -185,12 +270,12 @@ eprint('Time before virtualenv : %f\n' % (time.time()-start_time))
 
 run_verbose('pip install distribute')
 eprint('Create a build environment virtualenv. May need to download a few libraries, it may take some time')
-run_verbose('virtualenv ./builddir/opt/wapt --always-copy')
+run_verbose(r'virtualenv ./builddir/opt/wapt --always-copy')
 eprint('Install additional libraries in build environment virtualenv')
 run_verbose('./builddir/opt/wapt/bin/pip install pip setuptools --upgrade')
 # qq libs a rajouter
 run('./builddir/opt/wapt/bin/pip install -r "%s/requirements-agent.txt" -r "%s/requirements-agent-unix.txt" -t ./builddir/opt/wapt/lib/python2.7/site-packages' %(wapt_source_dir,wapt_source_dir))
-run_verbose('virtualenv ./builddir/opt/wapt --relocatable')
+run_verbose(r'virtualenv ./builddir/opt/wapt --relocatable')
 
 run('cp -ruf /usr/lib/python2.7/dist-packages/apt* ./builddir/opt/wapt/lib/python2.7/site-packages')
 
@@ -215,15 +300,15 @@ copyfile(makepath(wapt_source_dir,'utils','patch-socketio-client-2','__init__.py
 copyfile(makepath(wapt_source_dir,'utils','patch-socketio-client-2','transports.py'),'./builddir/opt/wapt/lib/python2.7/site-packages/socketIO_client/transports.py')
 
 eprint('copying the waptservice files')
-rsync_packaging(source_dir, './builddir/opt/wapt/',
+rsync(source_dir, './builddir/opt/wapt/',
       excludes=['postconf', 'repository', 'rpm', 'deb','pkg', 'spnego-http-auth-nginx-module', '*.bat'])
 
 eprint('copying the templates files')
-rsync_packaging(makepath(wapt_source_dir,'templates/'),'./builddir/opt/wapt/templates/', excludes=[])
+rsync(makepath(wapt_source_dir,'templates/'),'./builddir/opt/wapt/templates/', excludes=[])
 
 if WAPTEDITION=='enterprise':
     eprint('copying the waptserver enterprise files')
-    rsync_packaging(makepath(wapt_source_dir,'waptenterprise/'), './builddir/opt/wapt/waptenterprise/',
+    rsync(makepath(wapt_source_dir,'waptenterprise/'), './builddir/opt/wapt/waptenterprise/',
           excludes=[' ','waptwua','waptconsole', 'includes', 'waptserver'])
 
 
@@ -233,7 +318,7 @@ copyfile(makepath(wapt_source_dir, 'wapt-get.sh'),'./builddir/opt/wapt/wapt-get.
 copyfile(makepath(wapt_source_dir, 'waptpython'),'./builddir/usr/bin/waptpython')
 
 for lib in ('dialog.py', ):
-    rsync_packaging(makepath(wapt_source_dir, 'lib', 'site-packages', lib),
+    rsync(makepath(wapt_source_dir, 'lib', 'site-packages', lib),
           './builddir/opt/wapt/lib/python2.7/site-packages/')
 
 
