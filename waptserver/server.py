@@ -1213,6 +1213,42 @@ def logout():
     return make_response(result=None, msg='logout', status=200)
 
 
+@app.route('/api/v3/login_self_service', methods=['POST'])
+@app.route('/login_self_service', methods=['POST'])
+def login_self_service():
+    """ Logs user in and returns the groups they belong to. For the option use_server_auth. """
+
+    try:
+        starttime = time.time()
+        post_data = request.get_json()
+        if request.headers.get('Content-Encoding') == 'gzip':
+            raw_data = zlib.decompress(request.data)
+        else:
+            raw_data = request.data
+
+        post_data = ujson.loads(raw_data)
+
+        user = post_data.get('user')
+        password = post_data.get('password')
+        groups = post_data.get('groups')
+
+        if user and password and groups :
+            result = auth_module_ad.check_credentials_ad(conf, username, password, [], groups)
+            msg = 'Self service authentication'
+            spenttime = time.time() - starttime
+            return make_response(result=result, msg=msg, status=200,request_time=spenttime)
+        else:
+            msg = 'Missing arguments'
+            spenttime = time.time() - starttime
+            return make_response(result={"success":False,groups=[], msg=msg, status=200,request_time=spenttime)
+
+
+    except Exception as e:
+        logger.debug(traceback.format_exc())
+        logger.critical('login self-service failed %s' % (repr(e)))
+        return make_response_from_exception(e)
+
+
 @app.route('/api/v3/packages_delete',methods=['HEAD','POST'])
 @requires_auth(['admin','edit_host_package','edit_base_package','edit_group_package'])
 @require_wapt_db
