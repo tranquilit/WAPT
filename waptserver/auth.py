@@ -224,7 +224,7 @@ def check_auth( username=None, password = None, request = None,
 
         elif method == 'ldap' and valid_username(username) and password is not None:
             if auth_module_ad is not None and (app.conf['wapt_user'] != username and
-                    auth_module_ad.check_credentials_ad(app.conf, username, password,list_dn=app.conf.get('wapt_admin_group_dn'),group_name=app.conf.get('wapt_admin_group'))['groups']):
+                    auth_module_ad.check_credentials_ad(app.conf, username, password,list_dn=[app.conf.get('wapt_admin_group_dn')],list_group=[app.conf.get('wapt_admin_group')])['groups']):
                 auth_method = method
                 auth_user = username
                 auth_date = datetime.datetime.utcnow().isoformat()
