@@ -1240,7 +1240,7 @@ def login_self_service():
         else:
             msg = 'Missing arguments'
             spenttime = time.time() - starttime
-            return make_response(result={"success":False,groups=[], msg=msg, status=200,request_time=spenttime)
+            return make_response(result={"success":False,'groups':[],'error':True,'msg':msg},msg=msg, status=200,request_time=spenttime)
 
 
     except Exception as e:

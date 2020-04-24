@@ -231,7 +231,7 @@ class WaptServiceConfig(object):
          'hiberboot_enabled','max_gpo_script_wait','pre_shutdown_timeout','log_to_windows_events',
          'allow_user_service_restart','signature_clockskew','waptwua_enabled','notify_user','waptservice_admin_filter',
          'enable_remote_repo','local_repo_path','local_repo_sync_task_period','local_repo_time_for_sync_start',
-         'local_repo_time_for_sync_end','local_repo_limit_bandwidth','wol_port']
+         'local_repo_time_for_sync_end','local_repo_limit_bandwidth','wol_port','use_server_auth']
 
     def __init__(self,config_filename=None):
         if not config_filename:
@@ -311,6 +311,8 @@ class WaptServiceConfig(object):
         self.local_repo_time_for_sync_end = None
         self.local_repo_limit_bandwidth = None
         self.wol_port = '7,9'
+
+        self.use_server_auth = False
 
     def load(self):
         """Load waptservice parameters from global wapt-get.ini file"""
@@ -491,6 +493,10 @@ class WaptServiceConfig(object):
                     setattr(self,param,config.getint('global',param))
                 else:
                     setattr(self,param,None)
+
+            if config.has_option('global','use_server_auth'):
+                self.use_server_auth = config.getboolean('global','use_server_auth')
+
 
         else:
             raise Exception (_("FATAL, configuration file {} has no section [global]. Please check Waptserver documentation").format(self.config_filename))

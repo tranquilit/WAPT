@@ -7520,26 +7520,18 @@ class Wapt(BaseObjectClass):
         return list(set([k.get('keywords').capitalize().split(',')[0] for k in self.waptdb.query('select distinct keywords from wapt_package where keywords is not null')]))
 
 
-def check_user_authorisation_for_self_service(rules,packagename,user_groups):
-    """Returns True if the user is allowed to install software based on their group and selfservice rules
+    def self_service_auth(self, login, password, groups):
+        """ Sends login and password to server, who then checks if it's a valid user
 
-    Args:
-        rules (dict): dict rules with allowed groups for a package name
-        packagename(str): name of the package the user wants to install
-        listgroupuser(list): selfservice group list of the user
+        Returns the groups the user belongs to.
+        """
+        try:
+            data = {"user": login, "password": password, "groups": groups}
+            result = self.waptserver.post('login_self_service', data = jsondump(data))
+            return {'result'{'success':False}}
+        except :
+            return {'result':{'success':False,'Error':True,'msg':'unknown error'}}
 
-    Returns:
-        boolean: True
-    """
-    if 'waptselfservice' in user_groups :
-        return True
-    if not packagename in rules:
-        return False
-    else:
-        for group in user_groups :
-            if group in rules[packagename]:
-                return True
-    return False
 
 def run_as_administrator(afile,params=None):
     """Launch with a runas verb to trigger a privileges elevation.

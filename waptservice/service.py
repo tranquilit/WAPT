@@ -322,6 +322,20 @@ def check_auth(logon_name, password,check_token_in_password=True,for_group='wapt
                 # password is not a token or token is invalid
                 pass
 
+        if app.waptconfig.use_server_auth:
+            auth_res = wapt().self_service_auth(username, password, for_group)
+
+            if auth_res['result']['error'] :
+                raise Exception(auth_res['result']['msg'])
+
+            if not auth_res['result']['success'] :
+                raise Exception('WRONG_PASSWORD_USERNAME')
+
+            if for_group in auth_res['result']['groups']:
+                return True
+            else :
+                raise Exception('BAD_AUTHENTICATION')
+
         try:
             try:
                 huser = win32security.LogonUser (
@@ -391,6 +405,15 @@ def get_user_self_service_groups(self_service_groups,logon_name,password):
         groups=groups['groups']
         return groups
     except:
+
+        if app.waptconfig.use_server_auth:
+            result = w.self_service_auth(logon_name, password, self_service_groups)
+            if auth_res['result']['error'] :
+                raise Exception(auth_res['result']['msg'])
+            if not result['result']['success']:
+                raise Exception('WRONG_PASSWORD_USERNAME')
+            return result['result']['groups']
+
         if '\\' in logon_name:
             domain = logon_name.split('\\')[0]
             username = logon_name.split('\\')[1]
