@@ -108,7 +108,7 @@ if options.loglevel is not None:
     setloglevel(logger,options.loglevel)
 
 if platform.system() != 'Linux':
-    logger.error("this script should be used on debian linux")
+    logger.error("This script should be used on Debian Linux")
     sys.exit(1)
 
 SETUP_UNIX=os.environ.get('SETUP_UNIX','FALSE')
@@ -123,7 +123,7 @@ if SETUP_UNIX=='TRUE':
     'WAPTAGENT_DEB9':'waptagent_debian9.deb',
     'WAPTAGENT_DEB10':'waptagent_debian10.deb',
     'WAPTAGENT_UB18':'waptagent_ubuntu18.deb',
-    'WAPTAGENT_UB19':'waptagent_ubuntu19.deb',
+    'WAPTAGENT_UB20':'waptagent_ubuntu20.deb',
     }
 else:
     dict_agent = {

@@ -469,7 +469,7 @@ def dmi_info():
             else:
                 result[key]  = currobject
             if l.startswith('\t'):
-                logger.info(l)
+                logger.debug(l)
         else:
             if not l.startswith('\t\t'):
                 currarray = []
@@ -477,7 +477,7 @@ def dmi_info():
                     (name,value)=l.split(':',1)
                     currobject[name.strip().replace(' ','_')]=value.strip()
                 else:
-                    print("Error in line : %s" % l)
+                    logger.warning("Error in line : %s" % l)
             else:
                 # first line of array
                 if not currarray:
