@@ -40,6 +40,17 @@ from git import Repo
 makepath = os.path.join
 from shutil import copyfile
 
+
+"""
+required pip instal 
+
+apt-get install python-virtualenv python-setuptools python-pip python-dev libpq-dev libffi-dev libldap2-dev libsasl2-dev
+python2 -m pip install gitpython python-apt virtualenv setuptools 
+
+
+"""
+
+
 start_time = time.time()
 def run(*args, **kwargs):
     return subprocess.check_output(*args, shell=True, **kwargs)
@@ -259,19 +270,12 @@ open(os.path.join('./builddir/opt/wapt/waptserver','VERSION'),'w').write(full_ve
 
 eprint('Time before virtualenv : %f\n' % (time.time()-start_time))
 
-eprint(run('sudo apt-get install -y python-virtualenv python-setuptools python-pip python-dev libpq-dev libffi-dev libldap2-dev libsasl2-dev'))
-
 eprint('Create a build environment virtualenv. May need to download a few libraries, it may take some time')
-run_verbose(r'virtualenv ./builddir/opt/wapt --always-copy')
+run_verbose(r'python2 -m virtualenv ./builddir/opt/wapt --always-copy')
 
 eprint('Install additional libraries in build environment virtualenv')
 
-run_verbose('./builddir/opt/wapt/bin/pip install pip --upgrade')
-run_verbose('./builddir/opt/wapt/bin/pip install setuptools --upgrade')
-
 run('./builddir/opt/wapt/bin/pip install -r ../../requirements-server.txt -t ./builddir/opt/wapt/lib/python2.7/site-packages')
-
-run_verbose(r'virtualenv ./builddir/opt/wapt --relocatable')
 
 eprint('Time after virtualenv : %f\n' % (time.time()-start_time))
 

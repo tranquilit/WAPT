@@ -43,7 +43,23 @@ makepath = os.path.join
 from shutil import copyfile
 
 
+"""
+required pip instal 
+
+apt-get install python2-dev libpq-dev libffi-dev libldap2-dev libsasl2-dev libkrb5-dev
+python2 -m pip install gitpython python-apt virtualenv setuptools 
+
+
+"""
+
 start_time = time.time()
+
+##check linux distrib
+# should check for prerequisite
+if not platform.linux_distribution()[0].startswith('debian') and not platform.linux_distribution()[0].startswith('Ubuntu'):
+    eprint('Wrong linux distribution script only for debian or ubuntu, yours : \n')
+    eprint(platform.linux_distribution())
+    sys.exit(1)
 
 def run(*args, **kwargs):
     return subprocess.check_output(*args, shell=True, **kwargs)
@@ -51,7 +67,8 @@ def run(*args, **kwargs):
 def eprint(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)
 
-eprint(run('sudo pip install gitpython'))
+#eprint(run('sudo pip install gitpython'))
+
 from git import Repo
 
 def run_verbose(*args, **kwargs):
@@ -257,25 +274,15 @@ if WAPTEDITION=='enterprise':
 # for some reason the virtualenv does not build itself right if we don't
 # have pip systemwide...
 
-##check linux distrib
-if platform.linux_distribution()[0].startswith('debian') or platform.linux_distribution()[0].startswith('Ubuntu'):
-	eprint(run('sudo apt-get install -y python-virtualenv python-setuptools python-pip python-dev libpq-dev libffi-dev libldap2-dev libsasl2-dev python-apt libkrb5-dev'))
-else:
-    eprint('Wrong linux distribution script only for debian or ubuntu, yours : \n')
-    eprint(platform.linux_distribution())
-    sys.exit(1)
-
-
 eprint('Time before virtualenv : %f\n' % (time.time()-start_time))
 
-run_verbose('pip install distribute')
+#run_verbose('pip install distribute')
 eprint('Create a build environment virtualenv. May need to download a few libraries, it may take some time')
-run_verbose(r'virtualenv ./builddir/opt/wapt --always-copy')
+run_verbose(r'python2 -m virtualenv ./builddir/opt/wapt --always-copy')
 eprint('Install additional libraries in build environment virtualenv')
 run_verbose('./builddir/opt/wapt/bin/pip install pip setuptools --upgrade')
 # qq libs a rajouter
 run('./builddir/opt/wapt/bin/pip install -r "%s/requirements-agent.txt" -r "%s/requirements-agent-unix.txt" -t ./builddir/opt/wapt/lib/python2.7/site-packages' %(wapt_source_dir,wapt_source_dir))
-run_verbose(r'virtualenv ./builddir/opt/wapt --relocatable')
 
 run('cp -ruf /usr/lib/python2.7/dist-packages/apt* ./builddir/opt/wapt/lib/python2.7/site-packages')
 
