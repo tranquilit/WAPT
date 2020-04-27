@@ -4226,7 +4226,7 @@ class Wapt(BaseObjectClass):
         if sys.platform == 'win32':
             return setuphelpers.registry_readstring(setuphelpers.HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows\CurrentVersion\Group Policy\State\Machine','Site-Name')
         else:
-            return setuphelpers.get_domain_info_unix['site']
+            return setuphelpers.get_domain_info_unix()['site']
         return None
 
     def get_host_certificate_fingerprint(self):
