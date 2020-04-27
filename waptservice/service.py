@@ -101,12 +101,13 @@ from waptservice.waptservice_common import WaptEvents
 
 from waptservice.waptservice_socketio import WaptSocketIOClient
 
-if sys.platform == 'win32' and os.path.isdir(os.path.join(wapt_root_dir,'waptenterprise')):
-    from waptenterprise.waptservice.enterprise import get_active_sessions,start_interactive_process  # pylint: disable=import-error
-    from waptenterprise.waptservice.enterprise import WaptGPUpdate,WaptWUAScanTask,WaptWUADowloadTask,WaptWUAInstallTask  # pylint: disable=import-error
-    from waptenterprise.waptservice.enterprise import run_cleanmgr,WaptRunCleanMgr # pylint: disable=import-error
-    from waptenterprise.waptservice.enterprise import run_scheduled_wua_scan,run_scheduled_wua_downloads,run_scheduled_wua_installs # pylint: disable=import-error
-    from waptenterprise.waptservice.enterprise import waptwua_api
+if os.path.isdir(os.path.join(wapt_root_dir,'waptenterprise')):
+    if sys.platform == 'win32'
+        from waptenterprise.waptservice.enterprise import get_active_sessions,start_interactive_process  # pylint: disable=import-error
+        from waptenterprise.waptservice.enterprise import WaptGPUpdate,WaptWUAScanTask,WaptWUADowloadTask,WaptWUAInstallTask  # pylint: disable=import-error
+        from waptenterprise.waptservice.enterprise import run_cleanmgr,WaptRunCleanMgr # pylint: disable=import-error
+        from waptenterprise.waptservice.enterprise import run_scheduled_wua_scan,run_scheduled_wua_downloads,run_scheduled_wua_installs # pylint: disable=import-error
+        from waptenterprise.waptservice.enterprise import waptwua_api
     from waptenterprise import enterprise_common
 else:
     enterprise_common = None
@@ -492,7 +493,7 @@ def get_user_self_service_groups_unix(logon_name,password,for_group=['waptselfse
         raise Exception('WRONG_PASSWORD_USERNAME')
     else:
         all_group = []
-        if logon_name in self_service_groups:
+        if logon_name in for_group:
             all_group.append(logon_name)
         groups_user = get_groups_unix(logon_name)
         for group in for_group:

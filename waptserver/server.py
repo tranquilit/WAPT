@@ -102,7 +102,7 @@ git_hash = ''
 wapt_edition = ''
 
 try:
-    from waptenterprise.waptserver import auth_module_ad
+    from waptenterprise import auth_module_ad
 except ImportError as e:
     logger.debug(u'LDAP Auth disabled: %s' % e)
     auth_module_ad = None
