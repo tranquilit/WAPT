@@ -72,7 +72,11 @@ def get_domain_info_unix():
 
     result = {'ou':'','site':''}
     try:
-        splitlist = subprocess.check_output('klist -k',shell=True).split('$@',1)
+        if platform.system() == 'Darwin':
+            cmd = 'ktutil -k /etc/krb5.keytab list'
+        else:
+            cmd = 'klist -k'
+        splitlist = subprocess.check_output(cmd,shell=True).split('$@',1)
         hostname = splitlist[0].rsplit(' ',1)[-1] + '$'
         domain = splitlist[1].split('\n')[0]
         try:

@@ -1567,7 +1567,7 @@ class WaptServer(BaseObjectClass):
                 if not (sys.platform == 'win32'):
                     try:
                         #TODO found other method for TGS
-                        subprocess.check_output('kinit -k %s\$' % setuphelpers.get_hostname().split('.')[0].upper(),shell=True)
+                        setuphelpers.get_domain_info_unix()
                     except:
                         pass
                 scheme = urlparse.urlparse(self._server_url).scheme
