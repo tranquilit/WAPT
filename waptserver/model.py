@@ -2121,7 +2121,7 @@ def upgrade_db_structure():
                 v.save()
 
         next_version = '1.8.1.0'
-        if get_db_version() <= next_version:
+        if get_db_version() < next_version:
             with wapt_db.atomic():
                 logger.info("Migrating from %s to %s" % (get_db_version(), next_version))
                 opes = []
@@ -2193,6 +2193,12 @@ def upgrade_db_structure():
 
                 (v, created) = ServerAttribs.get_or_create(key='db_version')
                 v.value = next_version
+                v.save()
+
+        if get_db_version() < __version__
+
+                (v, created) = ServerAttribs.get_or_create(key='db_version')
+                v.value = __version__
                 v.save()
 
         # be sure to have at least admin
