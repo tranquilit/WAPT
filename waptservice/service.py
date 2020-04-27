@@ -25,6 +25,11 @@ import os
 import sys
 import time
 
+try:
+    from waptenterprise import auth_module_ad
+except ImportError as e:
+    auth_module_ad = None
+
 python_version = (sys.version_info.major, sys.version_info.minor)
 if python_version != (2, 7):
     raise Exception('waptservice supports only Python 2.7, not %d.%d' % python_version)
@@ -72,6 +77,9 @@ import datetime
 if sys.platform == 'win32':
     import pythoncom
     import win32security
+else:
+    import pam
+    import pwd, grp
 
 import ctypes
 
@@ -322,8 +330,18 @@ def check_auth(logon_name, password,check_token_in_password=True,for_group='wapt
                 # password is not a token or token is invalid
                 pass
 
-        if app.waptconfig.use_server_auth:
-            auth_res = wapt().self_service_auth(username, password, for_group)
+        logger.debug('service_auth_type : %s' % app.waptconfig.service_auth_type)
+
+        if app.waptconfig.service_auth_type != 'system':
+
+            if app.waptconfig.service_auth_type == 'waptserver-ldap':
+                auth_res = wapt().self_service_auth(username, password, [for_group])
+
+            if app.waptconfig.service_auth_type == 'waptagent-ldap':
+                auth_res = {'result' : auth_module_ad.check_credentials_ad({'ldap_auth_server' : app.waptconfig.ldap_auth_server,
+                                                  'ldap_auth_base_dn' : app.waptconfig.ldap_auth_base_dn,
+                                                  'ldap_auth_ssl_enabled' : app.waptconfig.ldap_auth_ssl_enabled },
+                                                  username, password,list_group=[for_group])}
 
             if auth_res['result']['error'] :
                 raise Exception(auth_res['result']['msg'])
@@ -336,48 +354,56 @@ def check_auth(logon_name, password,check_token_in_password=True,for_group='wapt
             else :
                 return False
 
-        try:
+        if app.waptconfig.waptservice_password:
+            logger.debug('auth using wapt local account')
+            if app.waptconfig.waptservice_user == username and app.waptconfig.waptservice_password == hashlib.sha256(password).hexdigest():
+                return username
+            else:
+                raise Exception('BAD_AUTHENTICATION')
+
+        if app.waptconfig.service_auth_type != 'system':
+            return False
+
+        if sys.platform == 'win32':
             try:
-                huser = win32security.LogonUser (
-                    username.decode("utf-8"),
-                    domain.decode('utf-8'),
-                    password.decode("utf-8"),
-                    win32security.LOGON32_LOGON_NETWORK_CLEARTEXT,
-                    win32security.LOGON32_PROVIDER_DEFAULT
-                )
-            except Exception:
-                raise Exception('WRONG_PASSWORD_USERNAME')
-            #check if user is domain admins or member of waptselfservice admin
-            try:
-                domain_admins_group_name = common.get_domain_admins_group_name()
-                if common.check_is_member_of(huser,domain_admins_group_name):
-                    return huser
-                if common.check_is_member_of(huser,for_group):
-                    return huser
-            except:
-                pass
+                try:
+                    huser = win32security.LogonUser (
+                        username.decode("utf-8"),
+                        domain.decode('utf-8'),
+                        password.decode("utf-8"),
+                        win32security.LOGON32_LOGON_NETWORK_CLEARTEXT,
+                        win32security.LOGON32_PROVIDER_DEFAULT
+                    )
+                except Exception:
+                    raise Exception('WRONG_PASSWORD_USERNAME')
+                #check if user is domain admins or member of waptselfservice admin
+                try:
+                    domain_admins_group_name = common.get_domain_admins_group_name()
+                    if common.check_is_member_of(huser,domain_admins_group_name):
+                        return huser
+                    if common.check_is_member_of(huser,for_group):
+                        return huser
+                except:
+                    pass
 
-            if not(app.waptconfig.waptservice_admin_filter):
-                local_admins_group_name = common.get_local_admins_group_name()
-                if common.check_is_member_of(huser,local_admins_group_name):
-                    return huser
+                if not(app.waptconfig.waptservice_admin_filter):
+                    local_admins_group_name = common.get_local_admins_group_name()
+                    if common.check_is_member_of(huser,local_admins_group_name):
+                        return huser
 
-            if app.waptconfig.waptservice_password:
-                logger.debug('auth using wapt local account')
-                if app.waptconfig.waptservice_user == username and app.waptconfig.waptservice_password == hashlib.sha256(password).hexdigest():
-                    return username
+                return None
 
-            return None
-
-        except win32security.error:
-            if app.waptconfig.waptservice_password:
-                logger.debug('auth using wapt local account')
-                if app.waptconfig.waptservice_user == username and app.waptconfig.waptservice_password == hashlib.sha256(password).hexdigest():
-                    return username
-                else:
-                    raise Exception('BAD_AUTHENTICATION')
+            except win32security.error:
+                raise Exception('BAD_AUTHENTICATION')
         else:
-            raise Exception('BAD_AUTHENTICATION')
+            list_group = []
+            if not(app.waptconfig.waptservice_admin_filter):
+                #TODO found sudo ?
+                list_group = [for_group,'root']
+            if for_group in get_user_self_service_groups_unix(username,password,list_group):
+                return True
+            else:
+                return False
     else:
         return logon_name
 
@@ -406,13 +432,27 @@ def get_user_self_service_groups(self_service_groups,logon_name,password):
         return groups
     except:
 
-        if app.waptconfig.use_server_auth:
-            result = w.self_service_auth(logon_name, password, self_service_groups)
+        logger.debug('service_auth_type : %s' % app.waptconfig.service_auth_type)
+        if app.waptconfig.service_auth_type != 'system':
+
+            if app.waptconfig.service_auth_type == 'waptserver-ldap':
+                result = wapt().self_service_auth(logon_name, password, self_service_groups)
+
+            if app.waptconfig.service_auth_type == 'waptagent-ldap':
+                result = {'result' : auth_module_ad.check_credentials_ad({'ldap_auth_server' : app.waptconfig.ldap_auth_server,
+                                                  'ldap_auth_base_dn' : app.waptconfig.ldap_auth_base_dn,
+                                                  'ldap_auth_ssl_enabled' : app.waptconfig.ldap_auth_ssl_enabled },
+                                                  logon_name, password,list_group=self_service_groups)}
+
             if result['result']['error'] :
                 raise Exception(result['result']['msg'])
             if not result['result']['success']:
                 raise Exception('WRONG_PASSWORD_USERNAME')
             return result['result']['groups']
+
+        if app.waptconfig.service_auth_type != 'system':
+            return False
+
 
         if '\\' in logon_name:
             domain = logon_name.split('\\')[0]
@@ -423,15 +463,42 @@ def get_user_self_service_groups(self_service_groups,logon_name,password):
         else:
             username = logon_name
 
-        huser = win32security.LogonUser(username.decode('utf-8'),domain.decode('utf-8'),password.decode('utf-8'),win32security.LOGON32_LOGON_NETWORK_CLEARTEXT,win32security.LOGON32_PROVIDER_DEFAULT)
+        if sys.platform == 'win32':
+            huser = win32security.LogonUser(username.decode('utf-8'),domain.decode('utf-8'),password.decode('utf-8'),win32security.LOGON32_LOGON_NETWORK_CLEARTEXT,win32security.LOGON32_PROVIDER_DEFAULT)
+            listgroupuser = []
+            if username in self_service_groups:
+                listgroupuser.append(username)
+            for group in self_service_groups :
+                if group in listgroupuser:
+                    continue
+                if common.check_is_member_of(huser,group) :
+                    listgroupuser.append(group)
+            return listgroupuser
+        else:
+            return get_user_self_service_groups_unix(username,password,self_service_groups)
 
-        listgroupuser =  [username]
-        for group in self_service_groups :
-            if group in listgroupuser:
-                continue
-            if common.check_is_member_of(huser,group) :
-                listgroupuser.append(group)
-        return listgroupuser
+
+def get_groups_unix(user):
+    gids = [g.gr_gid for g in grp.getgrall() if user in g.gr_mem]
+    gid = pwd.getpwnam(user).pw_gid
+    gids.append(grp.getgrgid(gid).gr_gid)
+    return [grp.getgrgid(gid).gr_name for gid in gids]
+
+
+def get_user_self_service_groups_unix(logon_name,password,for_group=['waptselfservice']):
+    p = pam.pam()
+    success = p.authenticate(logon_name, password)
+    if not success :
+        raise Exception('WRONG_PASSWORD_USERNAME')
+    else:
+        all_group = []
+        if logon_name in self_service_groups:
+            all_group.append(logon_name)
+        groups_user = get_groups_unix(logon_name)
+        for group in for_group:
+            if group in groups_user:
+                all_group.append(group)
+        return all_group
 
 def allow_local_auth(f):
     """Restrict access to localhost authenticated"""

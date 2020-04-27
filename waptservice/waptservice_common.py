@@ -231,7 +231,7 @@ class WaptServiceConfig(object):
          'hiberboot_enabled','max_gpo_script_wait','pre_shutdown_timeout','log_to_windows_events',
          'allow_user_service_restart','signature_clockskew','waptwua_enabled','notify_user','waptservice_admin_filter',
          'enable_remote_repo','local_repo_path','local_repo_sync_task_period','local_repo_time_for_sync_start',
-         'local_repo_time_for_sync_end','local_repo_limit_bandwidth','wol_port','use_server_auth']
+         'local_repo_time_for_sync_end','local_repo_limit_bandwidth','wol_port','service_auth_type']
 
     def __init__(self,config_filename=None):
         if not config_filename:
@@ -312,7 +312,10 @@ class WaptServiceConfig(object):
         self.local_repo_limit_bandwidth = None
         self.wol_port = '7,9'
 
-        self.use_server_auth = False
+        self.service_auth_type = 'system'
+        self.ldap_auth_server = None
+        self.ldap_auth_base_dn = None
+        self.ldap_auth_ssl_enabled = False
 
     def load(self):
         """Load waptservice parameters from global wapt-get.ini file"""
@@ -494,9 +497,17 @@ class WaptServiceConfig(object):
                 else:
                     setattr(self,param,None)
 
-            if config.has_option('global','use_server_auth'):
-                self.use_server_auth = config.getboolean('global','use_server_auth')
+            if config.has_option('global','service_auth_type'):
+                self.service_auth_type = config.get('global','service_auth_type').lower()
 
+            if config.has_option('global','ldap_auth_server'):
+                self.ldap_auth_server = config.get('global','ldap_auth_server')
+
+            if config.has_option('global','ldap_auth_base_dn'):
+                self.ldap_auth_base_dn = config.get('global','ldap_auth_base_dn')
+
+            if config.has_option('global','ldap_auth_ssl_enabled'):
+                self.ldap_auth_ssl_enabled = config.getboolean('global','ldap_auth_ssl_enabled')
 
         else:
             raise Exception (_("FATAL, configuration file {} has no section [global]. Please check Waptserver documentation").format(self.config_filename))
