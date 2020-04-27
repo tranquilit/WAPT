@@ -309,6 +309,8 @@ if platform.system() == 'Windows':
 else:
 
     __all__.extend([
+     'get_groups_unix',
+     'get_domain_info_unix',
      'get_kernel_version',
      'user_home_directory',
      'get_default_gateways',

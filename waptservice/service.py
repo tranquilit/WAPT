@@ -79,7 +79,7 @@ if sys.platform == 'win32':
     import win32security
 else:
     import pam
-    import pwd, grp
+    from setuphelpers_linux import get_groups_unix
 
 import ctypes
 

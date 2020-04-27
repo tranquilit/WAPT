@@ -45,6 +45,8 @@ import threading
 import psutil
 from subprocess import PIPE
 import logging
+import ldap, ldap.sasl
+import ipaddress
 
 logger = logging.getLogger('waptcore')
 
@@ -53,6 +55,61 @@ def get_kernel_version():
 
 def user_home_directory():
     return os.path.expanduser('~')
+
+def get_computer_groups():
+    """Try to finc the computer in the Active Directory
+    and return the list of groups
+    """
+    return get_groups_unix(get_computername.split('.')[0] + '$')
+
+def get_groups_unix(user):
+    gids = [g.gr_gid for g in grp.getgrall() if user.lower() in g.gr_mem]
+    gid = pwd.getpwnam(user.lower()).pw_gid
+    gids.append(grp.getgrgid(gid).gr_gid)
+    return [grp.getgrgid(gid).gr_name for gid in gids]
+
+def get_domain_info_unix():
+
+    result = {'ou':'','site':''}
+    try:
+        splitlist = subprocess.check_output('klist -k',shell=True).split('$@',1)
+        hostname = splitlist[0].rsplit(' ',1)[-1] + '$'
+        domain = splitlist[1].split('\n')[0]
+        try:
+            subprocess.check_output(r'kinit -k %s\@%s' % (hostname,domain),shell=True)
+        except:
+            pass
+
+        controleur = domain.lower()
+
+        if not controleur :
+            return result
+
+        try:
+            ld = ldap.initialize('ldap://%s' % controleur)
+            ld.set_option(ldap.OPT_REFERRALS,0)
+            sasl = ldap.sasl.gssapi()
+            ld.sasl_interactive_bind_s('', sasl)
+
+            # get ou with ldap
+            r = ld.search_s('dc=' + domain.lower().replace('.',',dc='), ldap.SCOPE_SUBTREE, '(samaccountname=%s)' % hostname.lower(), ['dn'])
+            ou = r[0][0]
+            result['ou'] = ou
+
+            # get site with ldap
+            r = ld.search_s('CN=Subnets,CN=Sites,CN=Configuration,dc=' + controleur.lower().replace('.',',dc='), ldap.SCOPE_SUBTREE, '(siteObject=*)' , ['siteObject','cn'])
+            dict_ip_site = {}
+            for i in r:
+                dict_ip_site[i[1]['cn'][0]] = i[1]['siteObject'][0].split('=',1)[1].split(',',1)[0]
+            for value in dict_ip_site:
+                if ipaddress.ip_address(get_main_ip().decode('utf-8')) in ipaddress.ip_network(value.decode('utf-8')) :
+                    result['site'] = dict_ip_site[value]
+        except :
+            pass
+
+    except:
+        pass
+    return result
 
 def get_default_gateways():
     if platform.system() == 'Linux':
@@ -254,6 +311,10 @@ def host_info_common_unix():
     except:
         logger.warning('Error while running dmidecode, dmidecode needs root privileges')
         pass
+
+    domain_info = get_domain_info_unix()
+    info['computer_ad_dn'] =  domain_info['ou']
+    info['computer_ad_site'] =  domain_info['site']
 
     info['computer_name'] = socket.gethostname()
     info['computer_fqdn'] = socket.getfqdn()

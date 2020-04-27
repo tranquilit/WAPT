@@ -3293,14 +3293,16 @@ class Wapt(BaseObjectClass):
         """Get host org unit DN from wapt-get.ini [global] host_organizational_unit_dn if defined
         or from registry as supplied by AD / GPO process
         """
-        if sys.platform.startswith('linux') or sys.platform.startswith('darwin'):
-            return None
 
         host_organizational_unit_dn = self.read_param('host_organizational_unit_dn',None)
         if host_organizational_unit_dn:
             return host_organizational_unit_dn
 
-        gpo_host_dn = setuphelpers.registry_readstring(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows\CurrentVersion\Group Policy\State\Machine','Distinguished-Name').replace('\\','')
+        if sys.platform.startswith('linux') or sys.platform.startswith('darwin'):
+            gpo_host_dn = setuphelpers.get_domain_info_unix()['ou']
+        else:
+            gpo_host_dn = setuphelpers.registry_readstring(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows\CurrentVersion\Group Policy\State\Machine','Distinguished-Name').replace('\\','')
+
         if gpo_host_dn:
             try:
                 default_organizational_unit_dn = ','.join(gpo_host_dn.split(',')[1:])
@@ -4223,6 +4225,8 @@ class Wapt(BaseObjectClass):
             return self.host_ad_site
         if sys.platform == 'win32':
             return setuphelpers.registry_readstring(setuphelpers.HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows\CurrentVersion\Group Policy\State\Machine','Site-Name')
+        else:
+            return setuphelpers.get_domain_info_unix['site']
         return None
 
     def get_host_certificate_fingerprint(self):
