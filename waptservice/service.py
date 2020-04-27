@@ -102,7 +102,7 @@ from waptservice.waptservice_common import WaptEvents
 from waptservice.waptservice_socketio import WaptSocketIOClient
 
 if os.path.isdir(os.path.join(wapt_root_dir,'waptenterprise')):
-    if sys.platform == 'win32'
+    if sys.platform == 'win32':
         from waptenterprise.waptservice.enterprise import get_active_sessions,start_interactive_process  # pylint: disable=import-error
         from waptenterprise.waptservice.enterprise import WaptGPUpdate,WaptWUAScanTask,WaptWUADowloadTask,WaptWUAInstallTask  # pylint: disable=import-error
         from waptenterprise.waptservice.enterprise import run_cleanmgr,WaptRunCleanMgr # pylint: disable=import-error
