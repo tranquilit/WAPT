@@ -77,6 +77,7 @@ Source: "{#wapt_base_dir}waptenterprise\waptwua\*"; DestDir: "{app}\waptenterpri
 Source: "{#wapt_base_dir}waptenterprise\__init__.py"; DestDir: "{app}\waptenterprise\";
 Source: "{#wapt_base_dir}waptenterprise\licencing.py"; DestDir: "{app}\waptenterprise\";
 Source: "{#wapt_base_dir}waptenterprise\enterprise_common.py"; DestDir: "{app}\waptenterprise\";
+Source: "{#wapt_base_dir}waptenterprise\auth_module_ad.py"; DestDir: "{app}\waptenterprise\";
 #endif
 
 

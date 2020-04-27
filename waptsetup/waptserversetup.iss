@@ -99,7 +99,8 @@ Source: "{#wapt_base_dir}waptserver\mongodb\mongoexport.exe"; DestDir: "{app}\wa
 
 ; waptenterprise only
 #ifdef waptenterprise
-Source: "{#wapt_base_dir}waptenterprise\waptserver\*"; DestDir: "{app}\waptenterprise\waptserver\";  Flags: createallsubdirs recursesubdirs;Tasks: InstallWaptserver
+Source: "{#wapt_base_dir}waptenterprise\waptserver\*"; DestDir: "{app}\waptenterprise\waptserver\";  Flags: createallsubdirs recursesubdirs; Tasks: InstallWaptserver
+Source: "{#wapt_base_dir}waptenterprise\auth_module_ad.py"; DestDir: "{app}waptenterprise\"; Tasks: InstallWaptserver
 #endif
 
 #else
@@ -118,6 +119,7 @@ Source: "{#wapt_base_dir}waptserver\mongodb\mongoexport.exe"; DestDir: "{app}\wa
 ; waptenterprise only
 #ifdef waptenterprise
 Source: "{#wapt_base_dir}waptenterprise\waptserver\*"; DestDir: "{app}\waptenterprise\waptserver\";  Flags: createallsubdirs recursesubdirs;
+Source: "{#wapt_base_dir}waptenterprise\auth_module_ad.py"; DestDir: "{app}waptenterprise\";
 #endif
 
 #endif
