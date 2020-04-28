@@ -258,7 +258,7 @@ with open(os.path.join(BDIR,'DEBIAN','postinst'),'w') as f_postinst:
     f_postinst.write(render_postinst)
 
 os.chmod(os.path.join(BDIR,'DEBIAN/'), 0755)
-os.chmod(os.path.join(BDIR,'DEBIAN','postinst', 0755))
+os.chmod(os.path.join(BDIR,'DEBIAN','postinst') 0755)
 
 # creates package file structure
 mkdir(BDIR + 'var/www/wapt/')
