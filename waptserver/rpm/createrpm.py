@@ -202,11 +202,12 @@ def check_if_package_is_installed(package_name):
         return False
 
 
-if (not check_if_package_is_installed('python2-virtualenv')
+if (not (check_if_package_is_installed('python2-virtualenv') or (check_if_package_is_installed('python-virtualenv')))
     or not check_if_package_is_installed('gcc')
     or not check_if_package_is_installed('openssl-devel')
     or not check_if_package_is_installed('libffi-devel')
     or not check_if_package_is_installed('openldap-devel')
+    or not (check_if_package_is_installed('python2-psycopg2') or (check_if_package_is_installed('python-psycopg2')))
     ):
     eprint("""
 #########################################################################################################################
