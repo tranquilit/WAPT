@@ -92,7 +92,7 @@ def installed_softwares(keywords='',uninstallkey=None,name=None):
                     install_date=datetime.datetime.fromtimestamp(install_date).strftime('%Y-%m-%d %H:%M:%S')
                 except:
                     install_date=''
-                pkg_dict={'key':'','name':pkg.name,'version':str(pkg.installed).split('=',1)[1],'install_date':install_date,'install_location':'','uninstall_string':'','publisher':pkg.versions[0].homepage,'system_component':''}
+                pkg_dict={'key':'','name':pkg.name,'version':str(pkg.installed).rsplit('=',1)[-1],'install_date':install_date,'install_location':'','uninstall_string':'','publisher':pkg.versions[0].homepage,'system_component':''}
                 list_installed_softwares.append(pkg_dict)
         return list_installed_softwares
     elif rpm:
