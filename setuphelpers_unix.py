@@ -89,33 +89,48 @@ def get_domain_info_unix():
         except:
             pass
 
-        controleur = dns.resolver.query('_ldap._tcp.dc._msdcs.%s' % domain.lower(), 'SRV')[0].to_text().split(' ')[-1].strip('.')
+        #TODO Get ldap_auth_server in wapt-get.ini
+        ldap_auth_server = None
 
-        if not controleur :
+        list_controleur=[]
+        if not ldap_auth_server:
+            for entry in dns.resolver.query('_ldap._tcp.dc._msdcs.%s' % domain.lower(), 'SRV'):
+                list_controleur.append(entry.to_text().split(' ')[-1].strip('.'))
+        else:
+            list_controleur.append(ldap_auth_server)
+
+        for controleur in list_controleur:
+            try:
+                tls = Tls(validate=ssl.CERT_NONE, version=ssl.PROTOCOL_TLSv1_2)
+                server = Server(controleur, use_ssl=True, tls=tls)
+                c = Connection(server, authentication=SASL, sasl_mechanism=KERBEROS)
+                c.bind()
+
+                # get ou with ldap
+                c.search('dc=' + domain.lower().replace('.',',dc='),search_filter='(samaccountname=%s)' % hostname.lower(),attributes=['distinguishedName'])
+                result['ou'] = c.response[0]['dn']
+
+                # get site with ldap
+                c.search('CN=Subnets,CN=Sites,CN=Configuration,dc=' + domain.lower().replace('.',',dc='),search_filter='(siteObject=*)',attributes=['siteObject','cn'])
+                dict_ip_site = {}
+
+                for i in c.response:
+                    dict_ip_site[i['attributes']['cn']] = i['attributes']['siteObject'].split('=',1)[1].split(',',1)[0]
+
+                for value in dict_ip_site:
+                    if ipaddress.ip_address(get_main_ip().decode('utf-8')) in ipaddress.ip_network(value.decode('utf-8')) :
+                        result['site'] = dict_ip_site[value]
+            except :
+                try:
+                    c.unbind()
+                except:
+                    pass
+                continue
+            try:
+                c.unbind()
+            except:
+                pass
             return result
-
-        try:
-            tls = Tls(validate=ssl.CERT_NONE, version=ssl.PROTOCOL_TLSv1_2)
-            server = Server(controleur, use_ssl=True, tls=tls)
-            c = Connection(server, authentication=SASL, sasl_mechanism=KERBEROS)
-            c.bind()
-
-            # get ou with ldap
-            c.search('dc=' + domain.lower().replace('.',',dc='),search_filter='(samaccountname=%s)' % hostname.lower(),attributes=['distinguishedName'])
-            result['ou'] = c.response[0]['dn']
-
-            # get site with ldap
-            c.search('CN=Subnets,CN=Sites,CN=Configuration,dc=' + domain.lower().replace('.',',dc='),search_filter='(siteObject=*)',attributes=['siteObject','cn'])
-            dict_ip_site = {}
-
-            for i in c.response:
-                dict_ip_site[i['attributes']['cn']] = i['attributes']['siteObject'].split('=',1)[1].split(',',1)[0]
-
-            for value in dict_ip_site:
-                if ipaddress.ip_address(get_main_ip().decode('utf-8')) in ipaddress.ip_network(value.decode('utf-8')) :
-                    result['site'] = dict_ip_site[value]
-        except :
-            pass
 
     except:
         pass
