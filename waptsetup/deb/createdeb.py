@@ -237,7 +237,7 @@ else:
 
 logger.info('Create templates for control and postinst')
 
-jinja_env = jinja2.Environment(loader=jinj2.FileSystemLoader('./debian/'))
+jinja_env = jinja2.Environment(loader=jinja2.FileSystemLoader('./debian/'))
 template_control = jinja_env.get_template('control.tmpl')
 template_postinst = jinja_env.get_template('postinst.tmpl')
 template_vars = {
