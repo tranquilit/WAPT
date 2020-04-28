@@ -240,10 +240,10 @@ if WAPTEDITION=='enterprise':
 eprint(
     'Create a build environment virtualenv. May need to download a few libraries, it may take some time')
 
-run_verbose('pip install --upgrade pip')
+#run_verbose('pip install --upgrade pip')
 
-run_verbose(r'virtualenv ./builddir/opt/wapt/')
-run_verbose(r'virtualenv ./builddir/opt/wapt/ --always-copy')
+run_verbose(r'python2 -m virtualenv ./builddir/opt/wapt/')
+run_verbose(r'python2 -m virtualenv ./builddir/opt/wapt/ --always-copy')
 eprint('Install additional libraries in build environment virtualenv')
 
 #run_verbose(r'source ./builddir/opt/wapt/bin/activate ;curl https://bootstrap.pypa.io/ez_setup.py | python')
@@ -251,7 +251,7 @@ eprint('Install additional libraries in build environment virtualenv')
 
 # fix for psycopg install because of ImportError: libpq-9c51d239.so.5.9: ELF load command address/offset not properly aligned
 #run_verbose(r'source ./builddir/opt/wapt/bin/activate ;pip install --upgrade psycopg2')
-run_verbose(r'source ./builddir/opt/wapt/bin/activate; pip install -r ../../requirements-server.txt')
+run_verbose(r'./builddir/opt/wapt/bin/python -m pip install -r ../../requirements-server.txt')
 
 eprint('copying the waptserver files')
 

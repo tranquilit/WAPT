@@ -35,6 +35,9 @@ import stat
 import glob
 import types
 
+from git import Repo
+
+
 makepath = os.path.join
 from shutil import copyfile
 
@@ -256,34 +259,35 @@ if WAPTEDITION=='enterprise':
 # have pip systemwide...
 
 ##check linux distrib
-if platform.linux_distribution()[0].startswith('CentOS'):
-    eprint('Create a build environment virtualenv. May need to download a few libraries, it may take some time')
-    run_verbose('python2 -m pip install --upgrade pip')
-    run_verbose('python2 -m pip install distribute')
-    run_verbose(r'python2 -m virtualenv ./builddir/opt/wapt/')
-    run_verbose(r'python2 -m virtualenv ./builddir/opt/wapt/ --always-copy')
-    eprint('Install additional libraries in build environment virtualenv')
-    run_verbose(r'./builddir/opt/wapt/bin/python -m pip install -r ../../requirements-agent.txt -r ../../requirements-agent-unix.txt')
-
-    run('cp -ruf /usr/lib/python2.7/site-packages/yum* ./builddir/opt/wapt/lib/python2.7/site-packages/')
-    run('cp -ruf /usr/lib64/python2.7/site-packages/yum* ./builddir/opt/wapt/lib64/python2.7/site-packages/')
-    run('cp -ruf /usr/lib/python2.7/site-packages/rpm* ./builddir/opt/wapt/lib/python2.7/site-packages/')
-    run('cp -ruf /usr/lib64/python2.7/site-packages/rpm* ./builddir/opt/wapt/lib64/python2.7/site-packages/')
-    run('cp -ruf /usr/lib/python2.7/site-packages/urlgrabber* ./builddir/opt/wapt/lib/python2.7/site-packages/')
-    run('cp -ruf /usr/lib64/python2.7/site-packages/pycurl* ./builddir/opt/wapt/lib64/python2.7/site-packages/')
-    run('cp -ruf /usr/lib64/python2.7/site-packages/sqlitecachec* ./builddir/opt/wapt/lib64/python2.7/site-packages/')
-    run('cp -ruf /usr/lib64/python2.7/site-packages/_sqlitecache* ./builddir/opt/wapt/lib/python2.7/site-packages/')
-
-
-    # python dialog
-    copyfile(makepath(wapt_source_dir, 'lib', 'site-packages', 'dialog.py'),'builddir/opt/wapt/lib/python2.7/site-packages/dialog.py')
-
-    # psycopg2 from distribution RPM into virtualenv...
-    rsync('/usr/lib64/python2.7/site-packages/psycopg2','./builddir/opt/wapt/lib/python2.7/site-packages/')
-else:
+if not platform.linux_distribution()[0].startswith('CentOS'):
     eprint('Wrong linux distribution script only for CentOs, yours : \n')
     eprint(platform.linux_distribution())
     sys.exit(1)
+
+
+eprint('Create a build environment virtualenv. May need to download a few libraries, it may take some time')
+#run_verbose('python2 -m pip install --upgrade pip')
+run_verbose(r'python2 -m virtualenv ./builddir/opt/wapt/')
+run_verbose(r'python2 -m virtualenv ./builddir/opt/wapt/ --always-copy')
+eprint('Install additional libraries in build environment virtualenv')
+run_verbose(r'./builddir/opt/wapt/bin/python -m pip install -r ../../requirements-agent.txt -r ../../requirements-agent-unix.txt')
+
+run('cp -ruf /usr/lib/python2.7/site-packages/yum* ./builddir/opt/wapt/lib/python2.7/site-packages/')
+run('cp -ruf /usr/lib64/python2.7/site-packages/yum* ./builddir/opt/wapt/lib64/python2.7/site-packages/')
+run('cp -ruf /usr/lib/python2.7/site-packages/rpm* ./builddir/opt/wapt/lib/python2.7/site-packages/')
+run('cp -ruf /usr/lib64/python2.7/site-packages/rpm* ./builddir/opt/wapt/lib64/python2.7/site-packages/')
+run('cp -ruf /usr/lib/python2.7/site-packages/urlgrabber* ./builddir/opt/wapt/lib/python2.7/site-packages/')
+run('cp -ruf /usr/lib64/python2.7/site-packages/pycurl* ./builddir/opt/wapt/lib64/python2.7/site-packages/')
+run('cp -ruf /usr/lib64/python2.7/site-packages/sqlitecachec* ./builddir/opt/wapt/lib64/python2.7/site-packages/')
+run('cp -ruf /usr/lib64/python2.7/site-packages/_sqlitecache* ./builddir/opt/wapt/lib/python2.7/site-packages/')
+
+
+# python dialog
+copyfile(makepath(wapt_source_dir, 'lib', 'site-packages', 'dialog.py'),'builddir/opt/wapt/lib/python2.7/site-packages/dialog.py')
+
+# psycopg2 from distribution RPM into virtualenv...
+rsync('/usr/lib64/python2.7/site-packages/psycopg2','./builddir/opt/wapt/lib/python2.7/site-packages/')
+
 
 eprint('copying the waptservice files')
 files_to_copy = ['version-full','waptcrypto.py','waptutils.py','common.py','custom_zip.py','waptpackage.py','setuphelpers.py','setuphelpers_linux.py','setuphelpers_unix.py','wapt-get.py']
