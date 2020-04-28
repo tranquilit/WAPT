@@ -202,17 +202,17 @@ def check_if_package_is_installed(package_name):
         return False
 
 
-if (not check_if_package_is_installed('python-virtualenv')
+if (not check_if_package_is_installed('python2-virtualenv')
     or not check_if_package_is_installed('gcc')
     or not check_if_package_is_installed('openssl-devel')
     or not check_if_package_is_installed('libffi-devel')
     or not check_if_package_is_installed('openldap-devel')
-    or not check_if_package_is_installed('python-psycopg2')
+    or not check_if_package_is_installed('python2-psycopg2')
     ):
     eprint("""
 #########################################################################################################################
      Please install build time packages first:
-        yum install -y python-virtualenv gcc libffi-devel openssl-devel openldap-devel python-pip postgresql-devel.x86_64 python-psycopg2
+        yum install -y python2-virtualenv gcc libffi-devel openssl-devel openldap-devel python2-pip postgresql-devel python2-psycopg2
 #########################################################################################################################
 """)
     sys.exit(1)
