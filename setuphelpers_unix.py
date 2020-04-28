@@ -45,8 +45,10 @@ import threading
 import psutil
 from subprocess import PIPE
 import logging
-import ldap, ldap.sasl
 import ipaddress
+from ldap3 import Server, Connection, Tls, SASL, KERBEROS
+import ssl
+
 
 logger = logging.getLogger('waptcore')
 
@@ -92,21 +94,22 @@ def get_domain_info_unix():
             return result
 
         try:
-            ld = ldap.initialize('ldap://%s' % controleur)
-            ld.set_option(ldap.OPT_REFERRALS,0)
-            sasl = ldap.sasl.gssapi()
-            ld.sasl_interactive_bind_s('', sasl)
+            tls = Tls(validate=ssl.CERT_NONE, version=ssl.PROTOCOL_TLSv1_2)
+            server = Server(controleur, use_ssl=True, tls=tls)
+            c = Connection(server, authentication=SASL, sasl_mechanism=KERBEROS)
+            c.bind()
 
             # get ou with ldap
-            r = ld.search_s('dc=' + domain.lower().replace('.',',dc='), ldap.SCOPE_SUBTREE, '(samaccountname=%s)' % hostname.lower(), ['dn'])
-            ou = r[0][0]
-            result['ou'] = ou
+            c.search('dc=' + controleur.lower().replace('.',',dc='),search_filter='(samaccountname=%s$)' % namemachine.lower(),attributes=['distinguishedName'])
+            result['ou'] = c.response[0]['dn']
 
             # get site with ldap
-            r = ld.search_s('CN=Subnets,CN=Sites,CN=Configuration,dc=' + domain.lower().replace('.',',dc='), ldap.SCOPE_SUBTREE, '(siteObject=*)' , ['siteObject','cn'])
+            c.search('CN=Subnets,CN=Sites,CN=Configuration,dc=' + domain.lower().replace('.',',dc='),search_filter='(siteObject=*)',attributes=['siteObject','cn'])
             dict_ip_site = {}
-            for i in r:
-                dict_ip_site[i[1]['cn'][0]] = i[1]['siteObject'][0].split('=',1)[1].split(',',1)[0]
+
+            for i in c.response:
+                dict_ip_site[i['attributes']['cn']] = i['attributes']['siteObject'].split('=',1)[1].split(',',1)[0]
+
             for value in dict_ip_site:
                 if ipaddress.ip_address(get_main_ip().decode('utf-8')) in ipaddress.ip_network(value.decode('utf-8')) :
                     result['site'] = dict_ip_site[value]
@@ -116,6 +119,7 @@ def get_domain_info_unix():
     except:
         pass
     return result
+
 
 def get_default_gateways():
     if platform.system() == 'Linux':

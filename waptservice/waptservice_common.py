@@ -231,7 +231,7 @@ class WaptServiceConfig(object):
          'hiberboot_enabled','max_gpo_script_wait','pre_shutdown_timeout','log_to_windows_events',
          'allow_user_service_restart','signature_clockskew','waptwua_enabled','notify_user','waptservice_admin_filter',
          'enable_remote_repo','local_repo_path','local_repo_sync_task_period','local_repo_time_for_sync_start',
-         'local_repo_time_for_sync_end','local_repo_limit_bandwidth','wol_port','service_auth_type']
+         'local_repo_time_for_sync_end','local_repo_limit_bandwidth','wol_port','service_auth_type','verify_cert_ldap']
 
     def __init__(self,config_filename=None):
         if not config_filename:
@@ -316,6 +316,7 @@ class WaptServiceConfig(object):
         self.ldap_auth_server = None
         self.ldap_auth_base_dn = None
         self.ldap_auth_ssl_enabled = False
+        self.verify_cert_ldap = False
 
     def load(self):
         """Load waptservice parameters from global wapt-get.ini file"""
@@ -508,6 +509,9 @@ class WaptServiceConfig(object):
 
             if config.has_option('global','ldap_auth_ssl_enabled'):
                 self.ldap_auth_ssl_enabled = config.getboolean('global','ldap_auth_ssl_enabled')
+
+            if config.has_option('global','verify_cert_ldap'):
+                self.verify_cert_ldap = config.getboolean('global','verify_cert_ldap')
 
         else:
             raise Exception (_("FATAL, configuration file {} has no section [global]. Please check Waptserver documentation").format(self.config_filename))

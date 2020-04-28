@@ -97,6 +97,7 @@ _defaults = {
     'ldap_auth_server':None,
     'ldap_auth_base_dn':None,
     'ldap_auth_ssl_enabled':True,
+    'verify_cert_ldap':True,
     'htpasswd_path':None,
     'http_proxy':None,
     'nginx_http' : 80,
@@ -250,6 +251,9 @@ def load_config(cfgfile=DEFAULT_CONFIG_FILE):
 
     if _config.has_option('options', 'ldap_auth_ssl_enabled'):
         conf['ldap_auth_ssl_enabled'] = _config.getboolean('options', 'ldap_auth_ssl_enabled')
+
+    if _config.has_option('options', 'verify_cert_ldap'):
+        conf['verify_cert_ldap'] = _config.getboolean('options', 'verify_cert_ldap')
 
     if _config.has_option('options', 'auto_create_ldap_users'):
         conf['auto_create_ldap_users'] = _config.getboolean('options', 'auto_create_ldap_users')
