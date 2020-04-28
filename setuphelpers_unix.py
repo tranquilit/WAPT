@@ -48,6 +48,7 @@ import logging
 import ipaddress
 from ldap3 import Server, Connection, Tls, SASL, KERBEROS
 import ssl
+import dns.resolver
 
 
 logger = logging.getLogger('waptcore')
@@ -88,7 +89,7 @@ def get_domain_info_unix():
         except:
             pass
 
-        controleur = domain.lower()
+        controleur = dns.resolver.query('_ldap._tcp.dc._msdcs.%s' % domain.lower(), 'SRV')[0].to_text().split(' ')[-1].strip('.')
 
         if not controleur :
             return result
@@ -100,7 +101,7 @@ def get_domain_info_unix():
             c.bind()
 
             # get ou with ldap
-            c.search('dc=' + controleur.lower().replace('.',',dc='),search_filter='(samaccountname=%s)' % hostname.lower(),attributes=['distinguishedName'])
+            c.search('dc=' + domain.lower().replace('.',',dc='),search_filter='(samaccountname=%s)' % hostname.lower(),attributes=['distinguishedName'])
             result['ou'] = c.response[0]['dn']
 
             # get site with ldap
