@@ -272,15 +272,17 @@ run_verbose(r'python2 -m virtualenv ./builddir/opt/wapt/ --always-copy')
 eprint('Install additional libraries in build environment virtualenv')
 run_verbose(r'./builddir/opt/wapt/bin/python -m pip install -r ../../requirements-agent.txt -r ../../requirements-agent-unix.txt')
 
-run('cp -ruf /usr/lib/python2.7/site-packages/yum* ./builddir/opt/wapt/lib/python2.7/site-packages/')
-run('cp -ruf /usr/lib64/python2.7/site-packages/yum* ./builddir/opt/wapt/lib64/python2.7/site-packages/')
-run('cp -ruf /usr/lib/python2.7/site-packages/rpm* ./builddir/opt/wapt/lib/python2.7/site-packages/')
-run('cp -ruf /usr/lib64/python2.7/site-packages/rpm* ./builddir/opt/wapt/lib64/python2.7/site-packages/')
-run('cp -ruf /usr/lib/python2.7/site-packages/urlgrabber* ./builddir/opt/wapt/lib/python2.7/site-packages/')
-run('cp -ruf /usr/lib64/python2.7/site-packages/pycurl* ./builddir/opt/wapt/lib64/python2.7/site-packages/')
-run('cp -ruf /usr/lib64/python2.7/site-packages/sqlitecachec* ./builddir/opt/wapt/lib64/python2.7/site-packages/')
-run('cp -ruf /usr/lib64/python2.7/site-packages/_sqlitecache* ./builddir/opt/wapt/lib/python2.7/site-packages/')
-
+try:
+    run('cp -ruf /usr/lib/python2.7/site-packages/yum* ./builddir/opt/wapt/lib/python2.7/site-packages/')
+    run('cp -ruf /usr/lib64/python2.7/site-packages/yum* ./builddir/opt/wapt/lib64/python2.7/site-packages/')
+    run('cp -ruf /usr/lib/python2.7/site-packages/rpm* ./builddir/opt/wapt/lib/python2.7/site-packages/')
+    run('cp -ruf /usr/lib64/python2.7/site-packages/rpm* ./builddir/opt/wapt/lib64/python2.7/site-packages/')
+    run('cp -ruf /usr/lib/python2.7/site-packages/urlgrabber* ./builddir/opt/wapt/lib/python2.7/site-packages/')
+    run('cp -ruf /usr/lib64/python2.7/site-packages/pycurl* ./builddir/opt/wapt/lib64/python2.7/site-packages/')
+    run('cp -ruf /usr/lib64/python2.7/site-packages/sqlitecachec* ./builddir/opt/wapt/lib64/python2.7/site-packages/')
+    run('cp -ruf /usr/lib64/python2.7/site-packages/_sqlitecache* ./builddir/opt/wapt/lib/python2.7/site-packages/')
+except:
+    eprint("Cannot import rpm library")
 
 # python dialog
 copyfile(makepath(wapt_source_dir, 'lib', 'site-packages', 'dialog.py'),'builddir/opt/wapt/lib/python2.7/site-packages/dialog.py')
