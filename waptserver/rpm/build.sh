@@ -23,7 +23,7 @@ else
     LICENCE="GPL"
 fi
 
-VERSION=$(python get_version.py ../config.py)
+VERSION=$(python2 get_version.py ../config.py)
 QA_SKIP_BUILD_ROOT=1 rpmbuild -bb --define "_version $VERSION"  --define "waptedition $WAPTEDITION"  --define "licence $LICENCE" --buildroot $PWD/builddir -v waptserver.spec 1>&2
 #rm -rf $PWD/builddir
 rm -f tis-waptserver*.rpm

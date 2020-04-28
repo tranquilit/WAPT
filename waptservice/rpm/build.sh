@@ -16,7 +16,7 @@ else
     LICENCE="GPL"
 fi
 
-VERSION=$(python get_version.py ../../waptutils.py)
+VERSION=$(python2 get_version.py ../../waptutils.py)
 
 QA_SKIP_BUILD_ROOT=1 rpmbuild -bb --define "_version $VERSION"  --define "waptedition $WAPTEDITION"  --define "licence $LICENCE" --buildroot $PWD/builddir -v waptagent.spec 1>&2
 rm -f tis-waptagent*.rpm

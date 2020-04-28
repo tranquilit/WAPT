@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -ex
-VERSION=$(python get_version.py)
+VERSION=$(python2 get_version.py)
 
 mkdir -p BUILD RPMS SPECS
 mkdir -p builddir
