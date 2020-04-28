@@ -37,7 +37,7 @@ mkdir -p %{buildroot}/opt/wapt
 
 mkdir -p %{buildroot}/usr/lib/systemd/
 
-(cd .. && python ./createrpm.py)
+(cd .. && python2 ./createrpm.py)
 
 %files
 %defattr(644,root,root,755)
