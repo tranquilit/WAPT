@@ -258,12 +258,12 @@ if WAPTEDITION=='enterprise':
 ##check linux distrib
 if platform.linux_distribution()[0].startswith('CentOS'):
     eprint('Create a build environment virtualenv. May need to download a few libraries, it may take some time')
-    run_verbose('pip install --upgrade pip')
-    run_verbose('pip install distribute')
-    run_verbose(r'virtualenv ./builddir/opt/wapt/')
-    run_verbose(r'virtualenv ./builddir/opt/wapt/ --always-copy')
+    run_verbose('python2 -m pip install --upgrade pip')
+    run_verbose('python2 -m pip install distribute')
+    run_verbose(r'python2 -m virtualenv ./builddir/opt/wapt/')
+    run_verbose(r'python2 -m virtualenv ./builddir/opt/wapt/ --always-copy')
     eprint('Install additional libraries in build environment virtualenv')
-    run_verbose(r'source ./builddir/opt/wapt/bin/activate; pip install -r ../../requirements-agent.txt -r ../../requirements-agent-unix.txt')
+    run_verbose(r'./builddir/opt/wapt/bin/python -m pip install -r ../../requirements-agent.txt -r ../../requirements-agent-unix.txt')
 
     run('cp -ruf /usr/lib/python2.7/site-packages/yum* ./builddir/opt/wapt/lib/python2.7/site-packages/')
     run('cp -ruf /usr/lib64/python2.7/site-packages/yum* ./builddir/opt/wapt/lib64/python2.7/site-packages/')
