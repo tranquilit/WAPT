@@ -32,7 +32,6 @@ import subprocess
 import argparse
 import stat
 import glob
-import pefile
 import jinja2
 
 from git import Repo
@@ -61,7 +60,7 @@ def git_hash():
     return '%s' % (r.active_branch.object.name_rev[:8],)
 
 def dev_revision():
-    return '%s-%s-%s' % (get_distrib(), debian_major(), git_hash())
+    return '%s' % (git_hash())
 
 def setloglevel(alogger,loglevel):
     """set loglevel as string"""
@@ -96,6 +95,9 @@ def add_symlink(link_target,link_name):
         cmd = 'ln -s %s %s ' % (relative_link_target_path,link_name)
         eprint(cmd)
         eprint(subprocess.check_output(cmd))
+
+current_path = os.path.realpath(__file__)
+wapt_source_dir = os.path.abspath(os.path.join(os.path.dirname(current_path),'../..'))
 
 parser = argparse.ArgumentParser(u'Build a Debian package with already compiled executables in root directory.')
 parser.add_argument('-l', '--loglevel', help='Change log level (error, warning, info, debug...)')
@@ -134,15 +136,19 @@ else:
 WAPTEDITION=os.environ.get('WAPTEDITION','community')
 
 #########################################
-logger.debug('Getting version from executable')
-pe = pefile.PE(WAPTSETUP)
-try:
-    version = pe.FileInfo[0].StringTable[0].entries['ProductVersion'].strip()
-except:
-    # why ??
-    version = pe.FileInfo[0][0].StringTable[0].entries['ProductVersion'].strip()
+logger.debug('Getting version from waptutils')
+for line in open(os.path.join(wapt_source_dir,"waptutils.py")):
+    if line.strip().startswith('__version__'):
+        wapt_version = str(Version(line.split('=')[1].strip().replace('"', '').replace("'", ''),3))
 
-logger.debug('%s version: %s', WAPTSETUP, version)
+if not wapt_version:
+    eprint(u'version not found in %s/config.py' % os.path.abspath('..'))
+    sys.exit(1)
+
+r = Repo('.',search_parent_directories=True)
+rev_count = '%04d' % (r.active_branch.commit.count(),)
+
+wapt_version = wapt_version +'.'+rev_count
 
 if options.revision:
     full_version = version + '-' + options.revision
@@ -156,7 +162,7 @@ template_control = jinja_env.get_template('control.tmpl')
 template_postinst = jinja_env.get_template('postinst.tmpl')
 template_vars = {
     'UNIX': SETUP_UNIX,
-    'version': full_version,
+    'version': wapt_version,
     'list_agents': [os.path.join('/var/www/wapt/',dict_agent[akey]) for akey in dict_agent.keys()],
     'description': 'WAPT setup executable for Windows' if SETUP_UNIX=='TRUE' else 'WAPT agent packages for Linux/MacOS',
 }
@@ -167,10 +173,10 @@ os.mkdir(os.path.join(BDIR,'DEBIAN'))
 
 with open(os.path.join(BDIR,'DEBIAN','control'),'w') as f_control:
     f_control.write(render_control)
-    
+
 with open(os.path.join(BDIR,'DEBIAN','postinst'),'w') as f_postinst:
     f_postinst.write(render_postinst)
-    
+
 os.chmod(os.path.join(BDIR,'DEBIAN/'), 0755)
 os.chmod(os.path.join(BDIR,'DEBIAN','postinst', 0755))
 
