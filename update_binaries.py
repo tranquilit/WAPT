@@ -156,11 +156,6 @@ print('Get OpenSSL binaries from Fulgan')
 ssl_zip = wget('https://indy.fulgan.com/SSL/openssl-1.0.2r-i386-win32.zip',resume=True,md5='397c5e70b17cf6ab7bc9be8d15c457b9',cache_dir=binaries_cache,proxies=proxies)
 ssl_file = unzip(ssl_zip,target=makepath(wapt_base_dir),filenames=['ssleay32.dll','openssl.exe','libeay32.dll'])
 
-print('Python ldap wheel windows')
-python_ldap = makepath(base,'waptserver','scripts','python_ldap-3.2.0-cp27-cp27m-win32.whl')
-print('Install ldap wheel')
-print(run([makepath(wapt_base_dir,'Scripts','pip.exe'),'install',python_ldap,'--target',site_packages,'--upgrade']))
-
 print('Get Cryptography 2.4.2 for Windows XP')
 fn = wget('https://files.pythonhosted.org/packages/f2/fe/0877f63affd2ad8c3390d21f76342ef5229fd932f9f9e7388feaf705b040/cryptography-2.4.2-cp27-cp27m-win32.whl',sha256='5ecaf9e7db3ca582c6de6229525d35db8a4e59dc3e8a40a331674ed90e658cbf',resume=False,cache_dir=binaries_cache,proxies=proxies)
 tmpdir = tempfile.mktemp('cryptographytmp')
