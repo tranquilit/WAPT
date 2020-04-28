@@ -26,6 +26,7 @@ import os
 import platform
 import logging
 import re
+import types
 
 import shutil
 import subprocess

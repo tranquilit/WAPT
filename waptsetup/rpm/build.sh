@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -ex
-VERSION=$(python2 get_version.py ../../waptutils)
+VERSION=$(python2 get_version.py ../../waptutils.py)
 
 mkdir -p BUILD RPMS SPECS
 mkdir -p builddir
