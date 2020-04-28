@@ -207,7 +207,6 @@ if (not check_if_package_is_installed('python2-virtualenv')
     or not check_if_package_is_installed('openssl-devel')
     or not check_if_package_is_installed('libffi-devel')
     or not check_if_package_is_installed('openldap-devel')
-    or not check_if_package_is_installed('python2-psycopg2')
     ):
     eprint("""
 #########################################################################################################################
