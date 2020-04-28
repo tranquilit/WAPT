@@ -231,9 +231,9 @@ rev_count = '%04d' % (r.active_branch.commit.count(),)
 wapt_version = wapt_version +'.'+rev_count
 
 if options.revision:
-    full_version = version + '-' + options.revision
+    full_version = wapt_version + '-' + options.revision
 else:
-    full_version = version
+    full_version = wapt_version
 
 logger.info('Create templates for control and postinst')
 
