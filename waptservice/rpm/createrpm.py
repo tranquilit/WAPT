@@ -44,8 +44,10 @@ def run(*args, **kwargs):
 def eprint(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)
 
-eprint(run('sudo pip install gitpython'))
-from git import Repo
+"""
+yum install -y python-virtualenv python-setuptools gcc python-pip python-devel postgresql-devel libffi-devel openldap-devel openssl-devel python-psycopg2 yum-utils krb5-devel
+pip install gitpython
+"""
 
 def run_verbose(*args, **kwargs):
     output =  subprocess.check_output(*args, shell=True, **kwargs)
@@ -255,7 +257,6 @@ if WAPTEDITION=='enterprise':
 
 ##check linux distrib
 if platform.linux_distribution()[0].startswith('CentOS'):
-    eprint(run('sudo yum install -y python-virtualenv python-setuptools gcc python-pip python-devel postgresql-devel libffi-devel openldap-devel openssl-devel python-psycopg2 yum-utils krb5-devel'))
     eprint('Create a build environment virtualenv. May need to download a few libraries, it may take some time')
     run_verbose('pip install --upgrade pip')
     run_verbose('pip install distribute')
