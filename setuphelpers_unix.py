@@ -69,7 +69,9 @@ def get_groups_unix(user):
     return [grp.getgrgid(gid).gr_name for gid in gids]
 
 def get_domain_info_unix():
-
+    """Return ad site and ou
+    Warning : Please note that the search for gssapi does not work if the reverse dns recording is not available for ad
+    """
     result = {'ou':'','site':''}
     try:
         if platform.system() == 'Darwin':
@@ -101,7 +103,7 @@ def get_domain_info_unix():
             result['ou'] = ou
 
             # get site with ldap
-            r = ld.search_s('CN=Subnets,CN=Sites,CN=Configuration,dc=' + controleur.lower().replace('.',',dc='), ldap.SCOPE_SUBTREE, '(siteObject=*)' , ['siteObject','cn'])
+            r = ld.search_s('CN=Subnets,CN=Sites,CN=Configuration,dc=' + domain.lower().replace('.',',dc='), ldap.SCOPE_SUBTREE, '(siteObject=*)' , ['siteObject','cn'])
             dict_ip_site = {}
             for i in r:
                 dict_ip_site[i[1]['cn'][0]] = i[1]['siteObject'][0].split('=',1)[1].split(',',1)[0]

@@ -1,2 +1,3 @@
 py-cpuinfo==5.0.0
+kerberos==1.3.0
 python-pam

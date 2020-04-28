@@ -105,6 +105,12 @@ try:
 except:
     has_kerberos = False
 
+if not sys.platform=='win32':
+    try:
+        import kerberos
+    except:
+        kerberos = True
+
 logger = logging.getLogger('waptcore')
 
 from waptutils import BaseObjectClass,ensure_list,ensure_unicode,default_http_headers,get_time_delta
@@ -1886,6 +1892,16 @@ class WaptServer(BaseObjectClass):
         if self.server_url:
             with self.get_requests_session(use_ssl_auth=use_ssl_auth) as session:
                 if data:
+                    if action == 'add_host_kerberos':
+                        if not sys.platform=='win32':
+                            try:
+                                __, krb_context = kerberos.authGSSClientInit("HTTP/%s" % str(self.server_url).split('//',1)[1])
+                                kerberos.authGSSClientStep(krb_context, "")
+                                negotiate_details = kerberos.authGSSClientResponse(krb_context)
+                                session.headers.update({"Authorization": "Negotiate " + negotiate_details})
+                            except:
+                                pass
+
                     session.headers.update({
                         'Content-type': 'binary/octet-stream',
                         'Content-transfer-encoding': 'binary',
