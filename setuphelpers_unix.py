@@ -84,8 +84,14 @@ def get_domain_info_unix():
         splitlist = subprocess.check_output(cmd,shell=True,stderr=subprocess.STDOUT).split('$@',1)
         hostname = str(splitlist[0].rsplit(' ',1)[-1] + '$').split('/')[-1]
         domain = splitlist[1].split('\n')[0].strip()
+
         try:
-            subprocess.check_output(r'kinit -k %s\@%s' % (hostname,domain),shell=True, stderr=subprocess.STDOUT)
+            try:
+                subprocess.check_output(r'klist',shell=True, stderr=subprocess.STDOUT)
+            except:
+                subprocess.check_output(r'kinit -k %s\@%s' % (hostname,domain),shell=True, stderr=subprocess.STDOUT)
+            if not ' %s@%s' % (hostname,domain) in subprocess.check_output(r'klist',shell=True, stderr=subprocess.STDOUT):
+                subprocess.check_output(r'kinit -k %s\@%s' % (hostname,domain),shell=True, stderr=subprocess.STDOUT)
         except:
             pass
 
