@@ -199,7 +199,8 @@ SETUP_UNIX=os.environ.get('SETUP_UNIX','FALSE')
 BDIR = './builddir/'
 if SETUP_UNIX=='TRUE':
     dict_agent = {
-    'WAPTAGENT_RPM':'waptagent.rpm',
+    'WAPTAGENT_RPM7':'waptagent7.rpm',
+    'WAPTAGENT_RPM8':'waptagent8.rpm',
     'WAPTAGENT_PKG':'waptagent.pkg',
     'WAPTAGENT_DEB8':'waptagent_debian8.deb',
     'WAPTAGENT_DEB9':'waptagent_debian9.deb',
