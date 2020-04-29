@@ -1895,7 +1895,7 @@ class WaptServer(BaseObjectClass):
                     if action == 'add_host_kerberos':
                         if not sys.platform=='win32':
                             try:
-                                __, krb_context = kerberos.authGSSClientInit("HTTP/%s" % str(self.server_url).split('//',1)[1])
+                                __, krb_context = kerberos.authGSSClientInit("HTTP@%s" % str(self.server_url).split('//',1)[1])
                                 kerberos.authGSSClientStep(krb_context, "")
                                 negotiate_details = kerberos.authGSSClientResponse(krb_context)
                                 session.headers.update({"Authorization": "Negotiate " + negotiate_details})
