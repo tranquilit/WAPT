@@ -5,6 +5,8 @@ VERSION=$(python2 get_version.py ../../waptutils.py)
 mkdir -p BUILD RPMS SPECS
 mkdir -p builddir
 
+rm tis-waptsetup*.rpm
+
 if [ "$SETUP_UNIX" = "TRUE" ] 
 then
     cp waptagent_debian9.deb ./builddir
