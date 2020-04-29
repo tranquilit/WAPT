@@ -244,7 +244,7 @@ template_vars = {
     'UNIX': SETUP_UNIX,
     'version': wapt_version,
     'list_agents': [os.path.join('/var/www/wapt/',dict_agent[akey]) for akey in dict_agent.keys()],
-    'description': 'WAPT setup executable for Windows' if SETUP_UNIX=='TRUE' else 'WAPT agent packages for Linux/MacOS',
+    'description': 'WAPT setup executable for Windows\n' if SETUP_UNIX=='TRUE' else 'WAPT agent packages for Linux/MacOS\n',
 }
 render_control = template_control.render(template_vars)
 render_postinst = template_postinst.render(template_vars)
