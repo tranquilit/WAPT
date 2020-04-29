@@ -249,6 +249,8 @@ template_vars = {
 render_control = template_control.render(template_vars)
 render_postinst = template_postinst.render(template_vars)
 
+if os.path.exists(BDIR):
+    shutil.rmtree(BDIR)
 os.makedirs(os.path.join(BDIR,'DEBIAN'))
 
 with open(os.path.join(BDIR,'DEBIAN','control'),'w') as f_control:
