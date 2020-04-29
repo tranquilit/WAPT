@@ -110,7 +110,8 @@ _defaults = {
     'trusted_users_certificates_folder':None, # path to trusted users CA certificate directory
     'known_certificates_folder': os.path.join(os.path.dirname(DEFAULT_WAPT_FOLDER),'ssl'),
     'wol_port':'9',
-    'enable_store': False
+    'enable_store': False,
+    'wapt_bind_interface':'127.0.0.1',
 }
 
 for log in WAPTLOGGERS:
@@ -168,6 +169,9 @@ def load_config(cfgfile=DEFAULT_CONFIG_FILE):
 
     if _config.has_option('options', 'wapt_password'):
         conf['wapt_password'] = _config.get('options', 'wapt_password')
+
+    if _config.has_option('options', 'wapt_bind_interface'):
+        conf['wapt_bind_interface'] = _config.get('options', 'wapt_bind_interface')
 
     if _config.has_option('options', 'wapt_user'):
         conf['wapt_user'] = _config.get('options', 'wapt_user')
