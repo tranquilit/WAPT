@@ -260,7 +260,6 @@ def on_waptclient_connect():
         if 'uuid' in session:
             session.pop('uuid')
         logger.warning(u'SocketIO connection refused for uuid %s, sid %s: %s, instance %s' % (uuid,request.sid,e,app.conf.get('application_root')))
-        disconnect()
         return False
 
 
