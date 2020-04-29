@@ -3,6 +3,7 @@ set -ex
 VERSION=$(python2 get_version.py ../../waptutils.py)
 
 if [[ -d RPMS ]]
+then
 	rm -rf RPMS
 fi
 
