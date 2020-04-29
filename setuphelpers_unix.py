@@ -173,6 +173,19 @@ def user_local_appdata():
     else:
         return ''
 
+def remove_tree(*args, **kwargs):
+    r"""Convenience function to delete a directory tree, with any error
+    not ignored by default.  Pass ignore_errors=False to access possible
+    errors.
+
+    Args:
+        path (str): path to directory to remove
+        ignore_errors (boolean) : default to False. Set it to True to ignore exceptions on children deletion
+        onerror (func) : hook called with (func, path, exc)
+                         on each delete exception. Should raise if stop is required.
+    """
+    return shutil.rmtree(*args, **kwargs)
+
 
 def local_drives():
     partitions = psutil.disk_partitions()
