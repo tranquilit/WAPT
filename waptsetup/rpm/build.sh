@@ -5,7 +5,7 @@ VERSION=$(python2 get_version.py ../../waptutils.py)
 mkdir -p BUILD RPMS SPECS
 mkdir -p builddir
 
-rm tis-waptsetup*.rpm
+rm -f tis-waptsetup*.rpm
 
 if [ "$SETUP_UNIX" = "TRUE" ] 
 then
