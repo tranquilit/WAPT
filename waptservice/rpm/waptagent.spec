@@ -104,6 +104,10 @@ chmod 755 /opt/wapt/runwaptagent.sh
 chmod 755 /usr/bin/waptpython
 chmod 755 /opt/wapt/wapt-get.sh
 mkdir -p /opt/wapt/ssl
+mkdir -p /opt/wapt/private
+chown root -R /opt/wapt/private
+chmod 700 -R /opt/wapt/private
+
 
 if [ ! -f /usr/bin/waptservice ]; then
 	ln -s /opt/wapt/runwaptagent.sh /usr/bin/waptservice

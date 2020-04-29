@@ -38,6 +38,10 @@ run('chmod 750 /opt/wapt/conf')
 run('chown -R wapt:admin /opt/wapt/log')
 run('chmod 755 /opt/wapt/log')
 run('chmod 755 /opt/wapt/bin/*')
+if not(os.path.isdir('/opt/wapt/private')):
+    os.mkdir('/opt/wapt/private')
+run('chown -R root /opt/wapt/private')
+run('chmod -R 700 /opt/wapt/private')
 
 print("Add script for session-setup")
 run("defaults write com.apple.loginwindow LoginHook /opt/wapt/session-setup.sh")
