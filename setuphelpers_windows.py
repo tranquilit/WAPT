@@ -2318,6 +2318,10 @@ def host_metrics():
     result['logged_in_users'] = get_loggedinusers()
     result['last_logged_on_user'] = get_last_logged_on_user()
     result['boot_count'] = registry_readstring(HKEY_LOCAL_MACHINE,r'SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management\PrefetchParameters','BootId',0)
+    try:
+        result['LastBootUpTime'] = wmi.WMI().query("select LastBootUpTime from Win32_OperatingSystem")[0].LastBootUpTime
+    except:
+        pass
 
     # memory usage
     current_process = psutil.Process()
