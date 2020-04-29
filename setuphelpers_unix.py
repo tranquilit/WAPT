@@ -81,8 +81,8 @@ def get_domain_info_unix():
             cmd = 'ktutil -k /etc/krb5.keytab list'
         else:
             cmd = 'klist -k'
-        splitlist = subprocess.check_output(cmd,shell=True).split('$@',1).split('/')[-1]
-        hostname = splitlist[0].rsplit(' ',1)[-1] + '$'
+        splitlist = subprocess.check_output(cmd,shell=True).split('$@',1)
+        hostname = str(splitlist[0].rsplit(' ',1)[-1] + '$').split('/')[-1]
         domain = splitlist[1].split('\n')[0].strip()
         try:
             subprocess.check_output(r'kinit -k %s\@%s' % (hostname,domain),shell=True)
