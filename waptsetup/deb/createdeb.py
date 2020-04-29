@@ -272,8 +272,8 @@ for afile in dict_agent.keys():
 
 # build
 if WAPTEDITION=='enterprise':
-    package_filename = 'tis-waptsetup-%senterprise-%s.deb' % ('linux_mac-' if SETUP_UNIX=='TRUE' else 'windows-',full_version)
+    package_filename = 'tis-waptsetup-%senterprise-%s.deb' % ('linux-mac-' if SETUP_UNIX=='TRUE' else 'windows-',full_version)
 else:
-    package_filename = 'tis-waptsetup-%s%s.deb' % ('linux_mac-' if SETUP_UNIX=='TRUE' else 'windows-',full_version)
+    package_filename = 'tis-waptsetup-%s%s.deb' % ('linux-mac-' if SETUP_UNIX=='TRUE' else 'windows-',full_version)
 eprint(subprocess.check_output(['dpkg-deb', '--build', BDIR, package_filename]))
 print(package_filename)
