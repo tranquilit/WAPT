@@ -2319,7 +2319,7 @@ def host_metrics():
     result['last_logged_on_user'] = get_last_logged_on_user()
     result['boot_count'] = registry_readstring(HKEY_LOCAL_MACHINE,r'SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management\PrefetchParameters','BootId',0)
     try:
-        result['LastBootUpTime'] = wmi.WMI().query("select LastBootUpTime from Win32_OperatingSystem")[0].LastBootUpTime
+        result['LastBootUpTimeWindows'] = wmi.WMI().query("select LastBootUpTime from Win32_OperatingSystem")[0].LastBootUpTime
     except:
         pass
 
