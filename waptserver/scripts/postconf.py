@@ -300,7 +300,7 @@ def ensure_postgresql_db(db_name='wapt',db_owner='wapt',db_password=''):
         run('systemctl start %s' % PGSQL_SVC)
         run('systemctl enable %s' % PGSQL_SVC)
 
-    val = run(""" sudo -u postgres psql template1 -c " select usename from pg_catalog.pg_user where usename='%s';"  """ % db_user, cwd='/opt/wapt')
+    val = run(""" sudo -u postgres psql template1 -c " select usename from pg_catalog.pg_user where usename='%s';"  """ % db_owner, cwd='/opt/wapt')
     if 'wapt' in val:
         print("[*] postgresql - user wapt already exists, skipping creating user  ")
     else:
