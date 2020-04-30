@@ -2849,6 +2849,12 @@ class Wapt(BaseObjectClass):
     def save_external_ip(self,ip):
         self.waptdb.set_param('last_external_ip',ip)
 
+    def unix_save_last_domain_info_date(self,lastdate):
+        self.waptdb.set_param('unix_last_domain_info_date',lastdate)
+
+    def unix_save_domain_info(self,info):
+        self.waptdb.set_param('unix_domain_info',info)
+
     def load_config(self,config_filename=None):
         """Load configuration parameters from supplied inifilename
         """
@@ -3318,7 +3324,7 @@ class Wapt(BaseObjectClass):
             return host_organizational_unit_dn
 
         if sys.platform.startswith('linux') or sys.platform.startswith('darwin'):
-            gpo_host_dn = setuphelpers.get_domain_info_unix()['ou']
+            gpo_host_dn = self.unix_get_cache_domain_info()['ou']
         else:
             gpo_host_dn = setuphelpers.registry_readstring(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows\CurrentVersion\Group Policy\State\Machine','Distinguished-Name').replace('\\','')
 
@@ -3362,6 +3368,10 @@ class Wapt(BaseObjectClass):
         if org_unit:
             result = result + ',' + org_unit
         return result
+
+    @property
+    def host_site(self):
+        return self.get_host_site()
 
     def http_upload_package(self,packages,wapt_server_user=None,wapt_server_passwd=None,progress_hook=None):
         r"""Upload a package or host package to the waptserver.
@@ -4245,7 +4255,7 @@ class Wapt(BaseObjectClass):
         if sys.platform == 'win32':
             return setuphelpers.registry_readstring(setuphelpers.HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows\CurrentVersion\Group Policy\State\Machine','Site-Name')
         else:
-            return setuphelpers.get_domain_info_unix()['site']
+            return self.unix_get_cache_domain_info()['site']
         return None
 
     def get_host_certificate_fingerprint(self):
@@ -5796,6 +5806,27 @@ class Wapt(BaseObjectClass):
 
         return self.waptdb.update_install_status(**kwargs)
 
+    def unix_get_cache_domain_info(self,force=False):
+        last_result = self.waptdb.get_param('unix_domain_info')
+        if not last_result:
+            last_result = {'ou':'','site':''}
+        last_date = self.waptdb.get_param('unix_last_domain_info_date')
+        now = datetime.datetime.utcnow()
+        if last_date :
+            delta = now - datetime.datetime.strptime(last_date,'%Y%m%d%H%M%S')
+        else:
+            force = True
+        maxdelta = 60 * 60 * 2
+        if force or (delta.seconds > maxdelta) :
+            try:
+                last_result = setuphelpers.get_domain_info_unix()
+            except:
+                last_result = last_result
+            self.unix_save_last_domain_info_date(now.strftime('%Y%m%d%H%M%S'))
+            self.unix_save_domain_info(last_result)
+        return last_result
+
+
 
     def _get_host_status_data(self,old_hashes,new_hashes,force=False,include_wmi=False,include_dmi=False):
         """Build the data to send to server where update_server_status required
@@ -5820,6 +5851,7 @@ class Wapt(BaseObjectClass):
 
         # optionally forced dn
         host_info['computer_ad_dn'] = self.host_dn
+        host_info['computer_ad_site'] = self.host_site
 
         self.write_param('host_ad_groups_ttl',0.0)
         _add_data_if_updated(inv,'wapt_status',self.wapt_status(),old_hashes,new_hashes)

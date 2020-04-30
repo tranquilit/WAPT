@@ -75,72 +75,74 @@ def get_domain_info_unix():
     """Return ad site and ou
     Warning : Please note that the search for gssapi does not work if the reverse dns recording is not available for ad
     """
-    result = {'ou':'','site':''}
+    result = {}
+    if platform.system() == 'Darwin':
+        cmd = 'ktutil -k /etc/krb5.keytab list'
+    else:
+        cmd = 'klist -k'
+    splitlist = subprocess.check_output(cmd,shell=True,stderr=subprocess.STDOUT).split('$@',1)
+    hostname = str(splitlist[0].rsplit(' ',1)[-1] + '$').split('/')[-1]
+    domain = splitlist[1].split('\n')[0].strip()
+
     try:
-        if platform.system() == 'Darwin':
-            cmd = 'ktutil -k /etc/krb5.keytab list'
-        else:
-            cmd = 'klist -k'
-        splitlist = subprocess.check_output(cmd,shell=True,stderr=subprocess.STDOUT).split('$@',1)
-        hostname = str(splitlist[0].rsplit(' ',1)[-1] + '$').split('/')[-1]
-        domain = splitlist[1].split('\n')[0].strip()
-
         try:
-            try:
-                subprocess.check_output(r'klist',shell=True, stderr=subprocess.STDOUT)
-            except:
-                subprocess.check_output(r'kinit -k %s\@%s' % (hostname,domain),shell=True, stderr=subprocess.STDOUT)
-            if not ' %s@%s' % (hostname,domain) in subprocess.check_output(r'klist',shell=True, stderr=subprocess.STDOUT):
-                subprocess.check_output(r'kinit -k %s\@%s' % (hostname,domain),shell=True, stderr=subprocess.STDOUT)
+            subprocess.check_output(r'klist',shell=True, stderr=subprocess.STDOUT)
         except:
-            pass
+            subprocess.check_output(r'kinit -k %s\@%s' % (hostname,domain),shell=True, stderr=subprocess.STDOUT)
+        if not ' %s@%s' % (hostname,domain) in subprocess.check_output(r'klist',shell=True, stderr=subprocess.STDOUT):
+            subprocess.check_output(r'kinit -k %s\@%s' % (hostname,domain),shell=True, stderr=subprocess.STDOUT)
+    except:
+        pass
 
-        #TODO Get ldap_auth_server in wapt-get.ini
-        ldap_auth_server = None
+    #TODO Get ldap_auth_server in wapt-get.ini
+    ldap_auth_server = None
 
-        list_controleur=[]
-        if not ldap_auth_server:
-            for entry in dns.resolver.query('_ldap._tcp.dc._msdcs.%s' % domain.lower(), 'SRV'):
-                list_controleur.append(entry.to_text().split(' ')[-1].strip('.'))
-        else:
-            list_controleur.append(ldap_auth_server)
+    list_controleur=[]
+    if not ldap_auth_server:
+        for entry in dns.resolver.query('_ldap._tcp.dc._msdcs.%s' % domain.lower(), 'SRV'):
+            list_controleur.append(entry.to_text().split(' ')[-1].strip('.'))
+    else:
+        list_controleur.append(ldap_auth_server)
 
-        for controleur in list_controleur:
-            try:
-                tls = Tls(validate=ssl.CERT_NONE, version=ssl.PROTOCOL_TLSv1_2)
-                server = Server(controleur, use_ssl=True, tls=tls)
-                c = Connection(server, authentication=SASL, sasl_mechanism=KERBEROS)
-                c.bind()
+    for controleur in list_controleur:
+        try:
+            tls = Tls(validate=ssl.CERT_NONE, version=ssl.PROTOCOL_TLSv1_2)
+            server = Server(controleur, use_ssl=True, tls=tls)
+            c = Connection(server, authentication=SASL, sasl_mechanism=KERBEROS)
+            c.bind()
 
-                # get ou with ldap
-                c.search('dc=' + domain.lower().replace('.',',dc='),search_filter='(samaccountname=%s)' % hostname.lower(),attributes=['distinguishedName'])
-                result['ou'] = c.response[0]['dn']
+            # get ou with ldap
+            c.search('dc=' + domain.lower().replace('.',',dc='),search_filter='(samaccountname=%s)' % hostname.lower(),attributes=['distinguishedName'])
+            result['ou'] = c.response[0]['dn']
 
-                # get site with ldap
-                c.search('CN=Subnets,CN=Sites,CN=Configuration,dc=' + domain.lower().replace('.',',dc='),search_filter='(siteObject=*)',attributes=['siteObject','cn'])
-                dict_ip_site = {}
+            # get site with ldap
+            c.search('CN=Subnets,CN=Sites,CN=Configuration,dc=' + domain.lower().replace('.',',dc='),search_filter='(siteObject=*)',attributes=['siteObject','cn'])
+            dict_ip_site = {}
 
-                for i in c.response:
-                    dict_ip_site[i['attributes']['cn']] = i['attributes']['siteObject'].split('=',1)[1].split(',',1)[0]
+            for i in c.response:
+                dict_ip_site[i['attributes']['cn']] = i['attributes']['siteObject'].split('=',1)[1].split(',',1)[0]
 
-                for value in dict_ip_site:
-                    if ipaddress.ip_address(get_main_ip().decode('utf-8')) in ipaddress.ip_network(value.decode('utf-8')) :
-                        result['site'] = dict_ip_site[value]
-            except :
-                try:
-                    c.unbind()
-                except:
-                    pass
-                continue
+            result['site'] = ''
+            for value in dict_ip_site:
+                if ipaddress.ip_address(get_main_ip().decode('utf-8')) in ipaddress.ip_network(value.decode('utf-8')) :
+                    result['site'] = dict_ip_site[value]
+        except :
             try:
                 c.unbind()
             except:
                 pass
-            return result
+            continue
+        try:
+            c.unbind()
+        except:
+            pass
+        return result
 
-    except:
-        pass
-    return result
+    if not 'ou' in result :
+        error('OU not found')
+    else:
+        return result
+
 
 
 def get_default_gateways():
@@ -356,10 +358,6 @@ def host_info_common_unix():
     except:
         logger.warning('Error while running dmidecode, dmidecode needs root privileges')
         pass
-
-    domain_info = get_domain_info_unix()
-    info['computer_ad_dn'] =  domain_info['ou']
-    info['computer_ad_site'] =  domain_info['site']
 
     info['computer_name'] = socket.gethostname()
     info['computer_fqdn'] = socket.getfqdn()
