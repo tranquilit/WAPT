@@ -2201,7 +2201,7 @@ def upgrade_db_structure():
                 v.value = next_version
                 v.save()
 
-        if get_db_version() < __version__
+        if get_db_version() < __version__:
 
                 (v, created) = ServerAttribs.get_or_create(key='db_version')
                 v.value = __version__
