@@ -38,6 +38,8 @@ if __name__ == '__main__':
 
 import platform
 import os
+import setproctitle
+setproctitle.setproctitle('waptserver')
 
 from waptserver.config import __version__
 

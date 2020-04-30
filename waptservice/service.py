@@ -25,6 +25,9 @@ import os
 import sys
 import time
 
+import setproctitle
+setproctitle.setproctitle('waptservice')
+
 try:
     from waptenterprise import auth_module_ad
 except ImportError as e:
@@ -80,8 +83,6 @@ if sys.platform == 'win32':
 else:
     import pam
     from setuphelpers_unix import get_groups_unix
-    import setproctitle
-    setproctitle.setproctitle('waptservice')
 
 import ctypes
 
