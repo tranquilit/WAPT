@@ -240,7 +240,7 @@ def make_nginx_config(wapt_root_dir, conf, force = False):
         'known_certificates_folder': conf.get('known_certificates_folder',None) and conf.get('known_certificates_folder',None).replace('\\','/'),
         'clients_signing_crl': conf.get('clients_signing_crl',None) and  conf.get('clients_signing_crl',None).replace('\\','/'),
         'htpasswd_path': conf.get('htpasswd_path',None) and  conf.get('htpasswd_path',None).replace('\\','/'),
-        'wapt_dhparam_file': ap_ssl_dhparam_file,
+        'wapt_dhparam_file': ap_ssl_dhparam_file.replace('\\','/'),
         'has_dhparam': os.path.isfile(ap_ssl_dhparam_file),
     }
 

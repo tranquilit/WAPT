@@ -330,6 +330,9 @@ def register_host():
     if session.get('auth_method') == 'kerb' and not request.path in ('/add_host_kerberos'):
         return authenticate()
 
+    if request.method == 'HEAD':
+        return ''
+
     try:
         starttime = time.time()
 
@@ -495,6 +498,8 @@ def update_host():
         host_info.computer_fqdn
 
     """
+    if request.method == 'HEAD':
+        return ''
 
     try:
         starttime = time.time()
@@ -596,6 +601,8 @@ def get_websocket_auth_token():
             "authorization_token": str
         "error": str
     """
+    if request.method == 'HEAD':
+        return ''
     try:
         starttime = time.time()
         # unzip if post data is gzipped
@@ -882,6 +889,9 @@ def upload_packages():
                 os.unlink(tmp_target)
             raise
 
+    if request.method == 'HEAD':
+        return ''
+
     try:
         starttime = time.time()
         done = []
@@ -969,6 +979,8 @@ def upload_host():
                     'result' (data)
                     'request_time' (float)
     """
+    if request.method == 'HEAD':
+        return ''
     try:
         starttime = time.time()
         done = []
@@ -1057,6 +1069,8 @@ def upload_host():
 def upload_waptsetup():
     """Handle the upload of customized waptagent.exe into wapt repository
     """
+    if request.method == 'HEAD':
+        return ''
     waptagent = os.path.join(app.conf['wapt_folder'], 'waptagent.exe')
     logger.debug(u'Entering upload_waptsetup')
     tmp_target = None
@@ -1121,6 +1135,8 @@ def change_password():
 
 @app.route('/api/v3/login',methods=['HEAD','POST','GET'])
 def login():
+    if request.method == 'HEAD':
+        return ''
     error = ''
     result = None
     starttime = time.time()
@@ -1209,6 +1225,8 @@ def login():
 
 @app.route('/api/v3/logout',methods=['HEAD','POST','GET'])
 def logout():
+    if request.method == 'HEAD':
+        return ''
     session.clear()
     return make_response(result=None, msg='logout', status=200)
 
@@ -1260,6 +1278,8 @@ def packages_delete():
         POST body is a json list of packages filenames
 
     """
+    if request.method == 'HEAD':
+        return ''
     errors = []
     deleted = []
 
@@ -1397,6 +1417,8 @@ def get_group_package(input_package_name):
 
 @app.route('/ping')
 def ping():
+    if request.method == 'HEAD':
+        return ''
     return make_response(
         msg=_('WAPT Server running'), result=dict(
             version=__version__,
@@ -1416,6 +1438,8 @@ def ping():
 def reset_hosts_sid():
     """Launch a separate thread to check all reachable IP and update database with results.
     """
+    if request.method == 'HEAD':
+        return ''
     try:
         if not socketio:
             raise Exception('socketio unavailable')
@@ -1456,6 +1480,8 @@ def reset_hosts_sid():
 @requires_auth(['admin','trigger_host_action'])
 @require_wapt_db
 def trigger_wakeonlan():
+    if request.method == 'HEAD':
+        return ''
     try:
         uuids = request.get_json()['uuids']
         hosts_data = Hosts\
@@ -1686,6 +1712,9 @@ def hosts_delete():
     msg = []
     result = dict(files=[], records=[])
 
+    if request.method == 'HEAD':
+        return ''
+
     if request.method == 'POST':
         with wapt_db.atomic() as trans:
             try:
@@ -1802,6 +1831,8 @@ def get_hosts():
         or
           filter=<csvlist of fields>:regular expression
     """
+    if request.method == 'HEAD':
+        return ''
     try:
         result = []
         msg = ''

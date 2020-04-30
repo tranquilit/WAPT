@@ -1276,9 +1276,7 @@ class PackageEntry(BaseObjectClass):
         self._load_control(control)
 
         if os.path.isfile(fname):
-            self.md5sum = self._md5sum_from_filename(fname)
-            if calc_md5 and not self.md5sum:
-                self.md5sum = md5_for_file(fname)
+            self.md5sum = md5_for_file(fname) if calc_md5 else self._md5sum_from_filename(fname)
             self.size = os.path.getsize(fname)
             self.filename = os.path.basename(fname)
             self.localpath = os.path.abspath(fname)
