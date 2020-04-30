@@ -76,6 +76,7 @@ def get_domain_info_unix():
     Warning : Please note that the search for gssapi does not work if the reverse dns recording is not available for ad
     """
     result = {}
+    result['groups'] = get_computer_groups()
     if platform.system() == 'Darwin':
         cmd = 'ktutil -k /etc/krb5.keytab list'
     else:
