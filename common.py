@@ -5827,7 +5827,7 @@ class Wapt(BaseObjectClass):
         _add_data_if_updated(inv,'host_info',host_info,old_hashes,new_hashes)
         _add_data_if_updated(inv,'host_metrics',setuphelpers.host_metrics(),old_hashes,new_hashes)
         _add_data_if_updated(inv,'audit_status',self.get_audit_status(),old_hashes,new_hashes)
-        _add_data_if_updated(inv,'installed_softwares',setuphelpers.installed_softwares(''),old_hashes,new_hashes)
+        _add_data_if_updated(inv,'installed_softwares',setuphelpers.installed_softwares(),old_hashes,new_hashes)
         _add_data_if_updated(inv,'installed_packages',[p.as_dict() for p in self.waptdb.installed(include_errors=True,include_setup=False)],old_hashes,new_hashes)
         _add_data_if_updated(inv,'last_update_status', self.get_last_update_status(),old_hashes,new_hashes)
 
@@ -6157,7 +6157,7 @@ class Wapt(BaseObjectClass):
 
         inv['wapt_status'] = self.wapt_status()
 
-        inv['installed_softwares'] = setuphelpers.installed_softwares('')
+        inv['installed_softwares'] = setuphelpers.installed_softwares()
         inv['installed_packages'] = [p.as_dict() for p in self.waptdb.installed(include_errors=True,include_setup=False)]
         return inv
 

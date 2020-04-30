@@ -40,6 +40,7 @@ import plistlib
 import datetime
 import platform
 import shutil
+import re
 from packaging import version
 
 import xml.etree.ElementTree as etree
@@ -326,14 +327,30 @@ def install_dmg(dmg_path, check_version=False):
     return ret_val
 
 
-def installed_softwares(keywords='', uninstallkey=None, name=None):
-    """ Lists every application in the /Applications folder.
+def installed_softwares(keywords='', name=None):
+    """ Return list of every application in the /Applications folder.
 
-    Returns:
-        A list of dictionaries for the installed applications,
-        containing various types of data for each
+        Args:
+            keywords (str or list): string to lookup in key, display_name or publisher fields
+
+        Returns:
+            list of dicts: [{'key', 'name', 'version', 'install_date', 'install_location'
+                         'uninstall_string', 'publisher','system_component'}]
     """
+    name_re = re.compile(name) if name is not None else None
     list_installed_softwares=[]
+
+    if isinstance(keywords,str) or isinstance(keywords,unicode):
+        keywords = keywords.lower().split()
+    else:
+        keywords = [ k.lower() for k in keywords ]
+
+    def check_words(target,words):
+        mywords = target.lower()
+        result = not words or mywords
+        for w in words:
+            result = result and w in mywords
+        return result
 
     app_dirs = [file for file in glob.glob('/Applications/*.app')]
     plist_files = [get_info_plist_path(app_dir) for app_dir in app_dirs]
@@ -341,17 +358,15 @@ def installed_softwares(keywords='', uninstallkey=None, name=None):
     for plist_file in plist_files:
         try:
             plist_obj = get_plist_obj(plist_file)
-            date_last_modif = datetime.datetime.fromtimestamp(os.path.getmtime(plist_file)).strftime('%Y-%m-%d %H:%M:%S')
-            infodict = {'key': '',
-                        'name': plist_obj['CFBundleName'],
-                        'version': plist_obj['CFBundleShortVersionString'],
-                        'install_date': date_last_modif,
-                        'install_location': plist_file[:plist_file.index('.app') + 4],
-                        'uninstall_string': '',
-                        'publisher': plist_obj['CFBundleIdentifier'].split('.')[1], # "com.publisher.name" => "publisher"
-                        'system_component': ''}
-
-            list_installed_softwares.append(infodict)
+            if (name_re is None or name_re.match(plist_obj['CFBundleName'])) or check_words(' '.join[plist_obj['CFBundleName'],plist_obj['CFBundleIdentifier'].split('.')[1]],keywords):
+                list_installed_softwares.append({'key': '',
+                            'name': plist_obj['CFBundleName'],
+                            'version': plist_obj['CFBundleShortVersionString'],
+                            'install_date': datetime.datetime.fromtimestamp(os.path.getmtime(plist_file)).strftime('%Y-%m-%d %H:%M:%S'),
+                            'install_location': plist_file[:plist_file.index('.app') + 4],
+                            'uninstall_string': '',
+                            'publisher': plist_obj['CFBundleIdentifier'].split('.')[1], # "com.publisher.name" => "publisher"
+                            'system_component': ''})
         except:
             logger.warning("Application data acquisition failed for {} :".format(plist_file), file=sys.stderr)
 

@@ -642,7 +642,7 @@ def main():
                     params = mywapt.waptdb.params(packagename)
                     print(u"%s : %s" % (packagename,params))
 
-            elif action == 'list-registry':
+            elif action == 'list-registry' and sys.platform=='win32':
                 result = setuphelpers.installed_softwares(' '.join(args[1:]))
                 if options.json_output:
                     jsonresult['result'] = result

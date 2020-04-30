@@ -2892,8 +2892,8 @@ def installed_softwares(keywords='',uninstallkey=None,name=None):
         name (str regexp) : filter on a regular expression on software name
 
     Returns:
-        dict: {'key', 'name', 'version', 'install_date', 'install_location'
-                     'uninstall_string', 'publisher','system_component'}
+        list of dicts: [{'key', 'name', 'version', 'install_date', 'install_location'
+                     'uninstall_string', 'publisher','system_component'}]
 
     >>> softs = installed_softwares('libre office')
     >>> if softs:
@@ -2902,10 +2902,7 @@ def installed_softwares(keywords='',uninstallkey=None,name=None):
     ???
     """
 
-    if name is not None:
-        name_re = re.compile(name)
-    else:
-        name_re = None
+    name_re = re.compile(name) if name is not None else None
 
     def check_words(target,words):
         mywords = target.lower()

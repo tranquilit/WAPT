@@ -38,6 +38,7 @@ import logging
 import glob
 import datetime
 import platform
+import re
 
 from setuphelpers_unix import *
 
@@ -78,12 +79,35 @@ def host_info():
     info['distrib_version'] = get_distrib_version()
     return info
 
-def installed_softwares(keywords='',uninstallkey=None,name=None):
+def installed_softwares(keywords='',name=None):
+    """ Return list of installed software from apt or rpm
+
+        Args:
+            keywords (str or list): string to lookup in key, display_name or publisher fields
+
+        Returns:
+            list of dicts: [{'key', 'name', 'version', 'install_date', 'install_location'
+                         'uninstall_string', 'publisher','system_component'}]
+    """
+    name_re = re.compile(name) if name is not None else None
+    list_installed_softwares=[]
+
+    if isinstance(keywords,str) or isinstance(keywords,unicode):
+        keywords = keywords.lower().split()
+    else:
+        keywords = [ k.lower() for k in keywords ]
+
+    def check_words(target,words):
+        mywords = target.lower()
+        result = not words or mywords
+        for w in words:
+            result = result and w in mywords
+        return result
+
     if apt:
-        list_installed_softwares=[]
         for pkg in apt.Cache():
             path_dpkg_info ="/var/lib/dpkg/info/"
-            if pkg.is_installed:
+            if pkg.is_installed and ((name_re is None or name_re.match(pkg.name) or name_re.match(pkg.fullname)) or check_words(' '.join[pkg.name,pkg.fullname,pkg.versions[0].homepage],keywords)):
                 try:
                     if os.path.isfile(os.path.join(path_dpkg_info,(pkg.name+'.list'))):
                         install_date=os.path.getctime(os.path.join(path_dpkg_info,(pkg.name+'.list')))
@@ -92,18 +116,15 @@ def installed_softwares(keywords='',uninstallkey=None,name=None):
                     install_date=datetime.datetime.fromtimestamp(install_date).strftime('%Y-%m-%d %H:%M:%S')
                 except:
                     install_date=''
-                pkg_dict={'key':'','name':pkg.name,'version':str(pkg.installed).rsplit('=',1)[-1],'install_date':install_date,'install_location':'','uninstall_string':'','publisher':pkg.versions[0].homepage,'system_component':''}
-                list_installed_softwares.append(pkg_dict)
-        return list_installed_softwares
+                list_installed_softwares.append({'key':'','name':pkg.name,'version':str(pkg.installed).rsplit('=',1)[-1],'install_date':install_date,'install_location':'','uninstall_string':'','publisher':pkg.versions[0].homepage,'system_component':''})
     elif rpm:
-        list_installed_softwares=[]
         trans = rpm.TransactionSet()
         for header in trans.dbMatch():
-            pkg_dict={'key':'','name':header['name'],'version':header['version'],'install_date':datetime.datetime.strptime(header.sprintf("%{INSTALLTID:date}"),'%a %b %d %H:%M:%S %Y').strftime('%Y-%m-%d %H:%M:%S'),'install_location':'','uninstall_string':'','publisher':header['url'],'system_component':''}
-            list_installed_softwares.append(pkg_dict)
-        return list_installed_softwares
+            if (name_re is None or name_re.match(header['name'])) or check_words(' '.join[header['name'],header['url']],keywords):
+                list_installed_softwares.append({'key':'','name':header['name'],'version':header['version'],'install_date':datetime.datetime.strptime(header.sprintf("%{INSTALLTID:date}"),'%a %b %d %H:%M:%S %Y').strftime('%Y-%m-%d %H:%M:%S'),'install_location':'','uninstall_string':'','publisher':header['url'],'system_component':''})
     else:
-        return [{'key':'Distribution not supported yet', 'name':'Distribution not supported yet', 'version':'Distribution not supported yet', 'install_date':'Distribution not supported yet', 'install_location':'Distribution not supported yet', 'uninstall_string':'Distribution not supported yet', 'publisher':'Distribution not supported yet','system_component':'Distribution not supported yet'}]
+        list_installed_softwares.append({'key':'Distribution not supported yet', 'name':'Distribution not supported yet', 'version':'Distribution not supported yet', 'install_date':'Distribution not supported yet', 'install_location':'Distribution not supported yet', 'uninstall_string':'Distribution not supported yet', 'publisher':'Distribution not supported yet','system_component':'Distribution not supported yet'})
+    return list_installed_softwares
 
 def install_apt(package,allow_unauthenticated=False):
     """
