@@ -107,11 +107,12 @@ from waptservice.waptservice_socketio import WaptSocketIOClient
 if os.path.isdir(os.path.join(wapt_root_dir,'waptenterprise')):
     if sys.platform == 'win32':
         from waptenterprise.waptservice.enterprise import get_active_sessions,start_interactive_process  # pylint: disable=import-error
-        from waptenterprise.waptservice.enterprise import WaptGPUpdate,WaptWUAScanTask,WaptWUADowloadTask,WaptWUAInstallTask  # pylint: disable=import-error
+        from waptenterprise.waptservice.enterprise import WaptWUAScanTask,WaptWUADowloadTask,WaptWUAInstallTask  # pylint: disable=import-error
         from waptenterprise.waptservice.enterprise import run_cleanmgr,WaptRunCleanMgr # pylint: disable=import-error
         from waptenterprise.waptservice.enterprise import run_scheduled_wua_scan,run_scheduled_wua_downloads,run_scheduled_wua_installs # pylint: disable=import-error
         from waptenterprise.waptservice.enterprise import waptwua_api
     from waptenterprise import enterprise_common
+    from waptenterprise.waptservice.enterprise import WaptGPUpdate
 else:
     enterprise_common = None
     waptwua_api = None
