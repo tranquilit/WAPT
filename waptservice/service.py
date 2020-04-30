@@ -79,7 +79,7 @@ if sys.platform == 'win32':
     import win32security
 else:
     import pam
-    from setuphelpers_linux import get_groups_unix
+    from setuphelpers_unix import get_groups_unix
     import setproctitle
     setproctitle.setproctitle('waptservice')
 
@@ -480,12 +480,6 @@ def get_user_self_service_groups(self_service_groups,logon_name,password):
         else:
             return get_user_self_service_groups_unix(username,password,self_service_groups)
 
-
-def get_groups_unix(user):
-    gids = [g.gr_gid for g in grp.getgrall() if user in g.gr_mem]
-    gid = pwd.getpwnam(user).pw_gid
-    gids.append(grp.getgrgid(gid).gr_gid)
-    return [grp.getgrgid(gid).gr_name for gid in gids]
 
 
 def get_user_self_service_groups_unix(logon_name,password,for_group=['waptselfservice']):
