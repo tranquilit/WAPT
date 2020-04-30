@@ -56,6 +56,9 @@ if sys.platform.startswith('linux') or sys.platform.startswith('darwin'):
     if 'PYTHONHOME' in os.environ:
         del os.environ['PYTHONHOME']
 
+    import setproctitle
+    setproctitle.setproctitle('wapt-get')
+
 import setuphelpers
 
 try:

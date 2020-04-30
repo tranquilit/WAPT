@@ -80,6 +80,8 @@ if sys.platform == 'win32':
 else:
     import pam
     from setuphelpers_linux import get_groups_unix
+    import setproctitle
+    setproctitle.setproctitle('waptservice')
 
 import ctypes
 
