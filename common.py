@@ -6046,6 +6046,7 @@ class Wapt(BaseObjectClass):
         trusted_certs_sha256 = []
         trusted_certs_cn = []
         invalid_certs_sha256 = []
+        result['last_external_ip']= self.waptdb.get_param('last_external_ip')
 
         for c in self.authorized_certificates():
             try:
