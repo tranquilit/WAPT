@@ -63,7 +63,7 @@ def get_computer_groups():
     """Try to finc the computer in the Active Directory
     and return the list of groups
     """
-    return get_groups_unix(get_computername.split('.')[0] + '$')
+    return get_groups_unix(get_computername().split('.')[0] + '$')
 
 def get_groups_unix(user):
     gids = [g.gr_gid for g in grp.getgrall() if user.lower() in g.gr_mem]

@@ -123,6 +123,7 @@ __all__.extend([
      'Version',
      'wget',
      'wgets',
+     'get_computer_groups',
      ])
 
 
@@ -169,7 +170,6 @@ if platform.system() == 'Windows':
      'get_appath',
      'get_computer_description',
      'get_computer_domain',
-     'get_computer_groups',
      'get_domain_fromregistry',
      'get_file_properties',
      'get_installer_defaults',
