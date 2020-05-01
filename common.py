@@ -5796,10 +5796,10 @@ class Wapt(BaseObjectClass):
         last_result = self.waptdb.get_param('domain_info')
         if not last_result:
             last_result = {'ou':'','site':'','groups':[]}
-        last_date = self.waptdb.get_param('last_domain_info_date')
+        last_date = self.waptdb.get_param('last_domain_info_date',ptype='datetime')
         now = datetime.datetime.utcnow()
         if last_date :
-            delta = now - datetime.datetime.strptime(last_date,'%Y%m%d%H%M%S')
+            delta = now - last_date
         else:
             force = True
         maxdelta = 60 * 60 * 2
@@ -5812,7 +5812,7 @@ class Wapt(BaseObjectClass):
                         last_result = setuphelpers.get_domain_info_unix()
             except:
                 last_result = last_result
-            self.save_last_domain_info_date(now.strftime('%Y%m%d%H%M%S'))
+            self.save_last_domain_info_date(now)
             self.save_domain_info(last_result)
         return last_result
 
