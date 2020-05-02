@@ -5844,7 +5844,7 @@ class Wapt(BaseObjectClass):
         host_info['computer_ad_site'] = self.host_site
 
         if self.use_ad_groups:
-            host_info['groups_ad'] = self.get_cache_domain_info()['groups']
+            host_info['computer_ad_groups'] = self.get_cache_domain_info()['groups']
 
         self.write_param('host_ad_groups_ttl',0.0)
         _add_data_if_updated(inv,'wapt_status',self.wapt_status(),old_hashes,new_hashes)
@@ -5852,7 +5852,7 @@ class Wapt(BaseObjectClass):
         _add_data_if_updated(inv,'host_info',host_info,old_hashes,new_hashes)
         _add_data_if_updated(inv,'host_metrics',setuphelpers.host_metrics(),old_hashes,new_hashes)
         _add_data_if_updated(inv,'audit_status',self.get_audit_status(),old_hashes,new_hashes)
-        _add_data_if_updated(inv,'installed_softwares',setuphelpers.installed_softwares(),old_hashes,new_hashes)
+        _add_data_if_updated(inv,'installed_softwares',self.merge_installed_softwares_and_wua_list(),old_hashes,new_hashes)
         _add_data_if_updated(inv,'installed_packages',[p.as_dict() for p in self.waptdb.installed(include_errors=True,include_setup=False)],old_hashes,new_hashes)
         _add_data_if_updated(inv,'last_update_status', self.get_last_update_status(),old_hashes,new_hashes)
 
@@ -6014,6 +6014,24 @@ class Wapt(BaseObjectClass):
         rev = self.read_param('status_revision',0,ptype='int')+inc
         self.write_param('status_revision',rev)
         return rev
+
+
+    def merge_installed_softwares_and_wua_list(self):
+        soft_inventory = setuphelpers.installed_softwares()
+        if self.config.getboolean('waptwua','enabled') and (self.get_wapt_edition() == 'enterprise'):
+            dict_kb_name = self.waptdb.get_param('waptwua.simple.list')
+            if dict_kb_name:
+                for u in dict_kb_name:
+                    soft_inventory.append({'key':u,
+                                    'name':'%s (%s)' % (u,dict_kb_name[u]),
+                                    'version': u.replace('KB',''),
+                                    'install_date':'',
+                                    'install_location':'',
+                                    'uninstall_string':'',
+                                    'publisher':'Microsoft',
+                                    'system_component':1,
+                                    'win64':False})
+        return soft_inventory
 
 
     def wapt_status(self):
@@ -6183,7 +6201,7 @@ class Wapt(BaseObjectClass):
 
         inv['wapt_status'] = self.wapt_status()
 
-        inv['installed_softwares'] = setuphelpers.installed_softwares()
+        inv['installed_softwares'] = self.merge_installed_softwares_and_wua_list()
         inv['installed_packages'] = [p.as_dict() for p in self.waptdb.installed(include_errors=True,include_setup=False)]
         return inv
 

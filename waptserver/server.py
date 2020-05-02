@@ -1596,6 +1596,20 @@ def get_groups():
 
     return make_response(result=groups, msg=msg, status=200)
 
+@app.route('/api/v3/get_ad_groups')
+@requires_auth()
+@require_wapt_db
+def get_ad_groups():
+    """list of active directory computers groups
+    """
+    try:
+        groups = list(Hosts.select(fn.DISTINCT(Hosts.computer_ad_groups)).order_by(1).dicts())
+        msg = '{} active directory computers groups'.format(len(groups))
+
+    except Exception as e:
+        return make_response_from_exception(e)
+
+    return make_response(result=groups, msg=msg, status=200)
 
 @app.route('/api/v3/get_ad_ou')
 @requires_auth(['admin','view'])
