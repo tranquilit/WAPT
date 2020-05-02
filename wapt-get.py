@@ -62,6 +62,7 @@ if sys.platform.startswith('linux') or sys.platform.startswith('darwin'):
 import setuphelpers
 
 try:
+    from waptenterprise.waptservice.enterprise import start_waptexit
     from waptenterprise.waptwua.client import WaptWUA
 except ImportError as e:
     WaptWUA = None
@@ -146,6 +147,9 @@ action is either :
    waptwua-scan : scan status of windows against current rules and send result to server
    waptwua-download : scan status of windows against current rules, download missing kb and send result to
    waptwua-install : install pending updates
+
+ For (Enterprise only)
+   propose-upgrade : Launch an upgrade proposal by launching waptexit in open sessions
 
  For initial setup
    create-keycert  : create a RSA key pair and X509 certificate with /CommonName, /CodeSigning and /CA params. Use /PrivateKeyPassword for key encrypt. Store crt and pem into /BaseDir
@@ -1363,6 +1367,9 @@ def main():
                 wc = WaptWUA(mywapt)
                 result = wc.stored_waptwua_status()
                 print(pprint.pprint(result))
+
+            elif action == 'propose-upgrade':
+                print(start_waptexit(None,{},''))
 
             elif action == 'list':
                 def cb(fieldname,value):
