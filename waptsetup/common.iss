@@ -244,13 +244,12 @@ en.DisableHiberBoot=Disable hiberboot, and increase shudown GPO timeout (recomme
 en.RemoveAllFiles=Do you want to delete all remaining files in WAPT directory {app} ?
 en.UseWizard=Use Wizard to complete initial configuration steps
 en.DontChangeServerSetup=Don't change current setup
-en.DNSDetect=Detect WAPT Info with DNS records
-en.DNSDomainLookup=DNS Domain to lookup
 en.StaticURLS=Static WAPT Informations
 en.RunConfigTool=Run congifuration tool
 en.WAPTConsole=WAPT Management console
 en.WAPTSelf=WAPT Softwares self service
 en.UseRandomUUID=Use a random UUID to identify the computer instead of BIOS
+en.InstallationOptions=Installation options
 
 ;French translations here
 fr.StartAfterSetup=Lancer WAPT session setup à l'ouverture de session
@@ -267,13 +266,12 @@ fr.DisableHiberBoot=Désactiver l'hiberboot, et augmenter le temps pour les GPO (
 fr.RemoveAllFiles=Des fichiers restent présents dans votre répertoire {app} Souhaitez-vous le supprimer ainsi que tous les fichiers qu'il contient ?
 fr.UseWizard=Utiliser l'assistant pour achever la phase de configuration initiale.
 fr.DontChangeServerSetup=Ne pas modifier la configuration actuelle
-fr.DNSDetect=Détecter les URLS WAPT avec des requêtes DNS
-fr.DNSDomainLookup=Domaine DNS à  interroger
 fr.StaticURLS=URLS WAPT statiques
 fr.RunConfigTool=Exécuter l'assistant de configuration
 fr.WAPTConsole=Console WAPT
 fr.WAPTSelf=Self service logiciels WAPT
 fr.UseRandomUUID=Utiliser un UUID aléatoire pour identifier l'ordinateur au lieu du BIOS
+fr.InstallationOptions=Options d'installation
 
 ;German translation here
 de.StartAfterSetup=WAPT Setup-Sitzung bei Sitzungseröffnung starten
@@ -284,10 +282,10 @@ de.RunConfigTool=Führen Sie das Konfigurationstool aus
 
 [Code]
 var
-  cbUseWizard, cbDontChangeServer, cbStaticUrl,cbDnsServer: TNewRadioButton;
+  cbUseWizard, cbDontChangeServer, cbStaticUrl: TNewRadioButton;
   CustomPage: TWizardPage;
-  edWaptServerUrl,edDNSDomain:TEdit;
-  labRepo,labServer,labDNSDomain: TLabel;
+  edWaptServerUrl:TEdit;
+  labRepo,labServer: TLabel;
 
 procedure OnServerClicked(Sender:TObject);
 begin
@@ -295,13 +293,12 @@ begin
    edWaptServerUrl.Enabled:= cbStaticUrl.Checked;
    #endif
    edWaptRepoUrl.Enabled:= cbStaticUrl.Checked;
-   edDNSDomain.Enabled := cbDnsServer.Checked;
 end;
 
 #if edition != "waptserversetup"
 function GetRepoURL(Param:String):String;
 begin
-  if cbDnsServer.Checked and not cbStaticUrl.Checked then
+  if cbStaticUrl.Checked then
     result := ''
   else
   if edWaptRepoUrl.Text <> 'unknown' then
@@ -320,7 +317,7 @@ end;
 
 function GetWaptServerURL(Param: String):String;
 begin
-  if cbDnsServer.Checked and not cbStaticUrl.Checked then
+  if not cbStaticUrl.Checked then
     result := ''
   else
   if edWaptServerUrl.Text <> 'unknown' then
@@ -339,10 +336,6 @@ end;
 
 function GetDNSDomain(Param: String):String;
 begin
-  if edDNSDomain.Text <> 'unknown' then
-    result := edDNSDomain.Text
-  else
-  begin
     result := ExpandConstant('{param:dnsdomain|unknown}');
     if result='unknown' then
     begin
@@ -350,7 +343,6 @@ begin
       if result = '' then
         result := GetIniString('Global', 'dnsdomain','{#default_dnsdomain}', ExpandConstant('{app}\wapt-get.ini'))
     end;
-  end;
 end;
 #endif
 
@@ -382,7 +374,7 @@ end;
 #if edition != "waptserversetup"
 procedure InitializeWizard;
 begin
-  CustomPage := CreateCustomPage(wpSelectTasks, 'Installation options', '');
+  CustomPage := CreateCustomPage(wpSelectTasks, ExpandConstant('{cm:InstallationOptions}'), '');
   
   cbUseWizard := TNewRadioButton.Create(WizardForm);
   cbUseWizard.Parent := CustomPage.Surface;
@@ -402,52 +394,32 @@ begin
   cbDontChangeServer.Caption := ExpandConstant('{cm:DontChangeServerSetup}');
   cbDontChangeServer.Onclick := @OnServerClicked;
   cbDontChangeServer.Top := cbUseWizard.Top + cbUseWizard.Height + 5;
- 
-  cbDnsServer := TNewRadioButton.Create(WizardForm);
-  cbDnsServer.Parent := CustomPage.Surface;
-  cbDnsServer.Width := CustomPage.SurfaceWidth;
-  cbDnsServer.Caption := ExpandConstant('{cm:DNSDetect}');
-  cbDnsServer.Onclick := @OnServerClicked;
-  cbDnsServer.Top := cbDontChangeServer.Top + cbDontChangeServer.Height + 5;
-  
-  labDNSDomain := TLabel.Create(WizardForm);
-  labDNSDomain.Parent := CustomPage.Surface; 
-  labDNSDomain.Left := cbDnsServer.Left + 14;
-  labDNSDomain.Caption := ExpandConstant('{cm:DNSDomainLookup}');
-  labDNSDomain.Top := cbDnsServer.Top + cbDnsServer.Height + 5;
 
-  edDNSDomain := TEdit.Create(WizardForm);
-  edDNSDomain.Parent := CustomPage.Surface; 
-  edDNSDomain.Left := labDNSDomain.Left + labDNSDomain.Width + 5;
-  edDNSDomain.Width := CustomPage.SurfaceWidth - labDNSDomain.Width;
-  edDNSDomain.Top := labDNSDomain.Top;
-  edDNSDomain.text := 'unknown';
-  
   cbStaticUrl := TNewRadioButton.Create(WizardForm);
   cbStaticUrl.Parent := CustomPage.Surface; 
   cbStaticUrl.Caption := ExpandConstant('{cm:StaticURLS}');
-  cbStaticUrl.Top := cbStaticUrl.Top + cbDnsServer.Height + 5 * ScaleY(15);
+  cbStaticUrl.Top := cbStaticUrl.Top + cbDontChangeServer.Top + cbDontChangeServer.Height + 5 * ScaleY(15);
   cbStaticUrl.Onclick := @OnServerClicked;
 
   labRepo := TLabel.Create(WizardForm);
   labRepo.Parent := CustomPage.Surface; 
   labRepo.Left := cbStaticUrl.Left + 14;
   labRepo.Caption := 'Repos URL:';
-  labRepo.Top := labRepo.Top + cbDnsServer.Height + 7 * ScaleY(15);
+  labRepo.Top := labRepo.Top + cbStaticUrl.Top+ cbStaticUrl.Height + 7 * ScaleY(15);
   
   #if edition != "waptstarter"
   labServer := TLabel.Create(WizardForm);
   labServer.Parent := CustomPage.Surface; 
   labServer.Left := cbStaticUrl.Left + 14; 
   labServer.Caption := 'Server URL:';
-  labServer.Top := labServer.Top + cbDnsServer.Height + 10 * ScaleY(15);
+  labServer.Top := labServer.Top + cbStaticUrl.Top+ cbStaticUrl.Height + 10 * ScaleY(15);
   #endif
 
   edWaptRepoUrl := TEdit.Create(WizardForm);
   edWaptRepoUrl.Parent := CustomPage.Surface; 
   edWaptRepoUrl.Left :=labRepo.Left + labRepo.Width + 5;
   edWaptRepoUrl.Width :=CustomPage.SurfaceWidth - cbStaticUrl.Width;
-  edWaptRepoUrl.Top := edWaptRepoUrl.Top + cbDnsServer.Height + 7 * ScaleY(15);
+  edWaptRepoUrl.Top := edWaptRepoUrl.Top + cbStaticUrl.Top+ cbStaticUrl.Height + 7 * ScaleY(15);
   edWaptRepoUrl.text := 'unknown';
 
   labRepo := TLabel.Create(WizardForm);
@@ -738,9 +710,7 @@ begin
         #endif
         cbUseWizard.Checked := cbUseWizard.Visible and (GetRepoURL('') = '') and (GetIniString('Global', 'dnsdomain','', ExpandConstant('{app}\wapt-get.ini')) = '');
         cbDontChangeServer.Checked := not cbUseWizard.Checked and not (GetRepoURL('') = '') and (GetIniString('Global', 'dnsdomain','', ExpandConstant('{app}\wapt-get.ini')) = '');
-        cbDnsServer.Checked := not cbDontChangeServer.Checked and not cbUseWizard.Checked and (edWaptRepoUrl.Text='');
         cbStaticUrl.Checked := (edWaptRepoUrl.Text<>'') and (edWaptRepoUrl.Text<>'unknown');
-        edDNSDomain.Text := GetDNSDomain('');  
         //edWaptServerUrl.Visible := IsTaskSelected('use_waptserver');
         //labServer.Visible := edWaptServerUrl.Visible;
       end;
