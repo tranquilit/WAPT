@@ -118,6 +118,7 @@ from waptutils import httpdatetime2isodate,datetime2isodate,FileChunks,jsondump,
 from waptutils import import_code,import_setup,force_utf8_no_bom,format_bytes,wget,merge_dict,remove_encoding_declaration,list_intersection
 from waptutils import _disable_file_system_redirection
 from waptutils import get_requests_client_cert_session,get_main_ip
+from waptutils import isrunning,killalltasks,killtree
 
 from waptcrypto import SSLCABundle,SSLCertificate,SSLPrivateKey,SSLCRL,SSLVerifyException,SSLCertificateSigningRequest
 from waptcrypto import get_peer_cert_chain_from_server,default_pwd_callback,hexdigest_for_data,get_cert_chain_as_pem
@@ -3478,7 +3479,7 @@ class Wapt(BaseObjectClass):
             try:
                 if p.pid != os.getpid() and (p.create_time() < mindate) and p.name() in ('wapt-get','wapt-get.exe'):
                     logger.debug(u'Killing process tree of pid %i' % p.pid)
-                    setuphelpers.killtree(p.pid)
+                    killtree(p.pid)
                     logger.debug(u'Killing pid %i' % p.pid)
                     killed.append(p.pid)
             except (psutil.NoSuchProcess,psutil.AccessDenied):
@@ -4876,7 +4877,7 @@ class Wapt(BaseObjectClass):
         def is_process_running(processes):
             processes = ensure_list(processes)
             for p in processes:
-                if setuphelpers.isrunning(p):
+                if isrunning(p):
                     return True
             return False
 
@@ -5112,7 +5113,7 @@ class Wapt(BaseObjectClass):
         def is_process_running(processes):
             processes = ensure_list(processes)
             for p in processes:
-                if setuphelpers.isrunning(p):
+                if isrunning(p):
                     return True
             return False
 
@@ -5170,7 +5171,7 @@ class Wapt(BaseObjectClass):
                         continue
 
                     if mydict.get('impacted_process',None):
-                        setuphelpers.killalltasks(ensure_list(mydict['impacted_process']))
+                        killalltasks(ensure_list(mydict['impacted_process']))
 
                     if mydict['uninstall_key']:
                         # cook the uninstall_key because could be either repr of python list or string

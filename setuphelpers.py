@@ -46,7 +46,8 @@ from waptutils import (Version, __version__, all_files, dateof,
                        fileisodate, find_all_files, get_disk_free_space,
                        hours_minutes, httpdatetime2isodate, isodate2datetime,
                        time2display, wget, wgets, makepath,killtree,isfile,isdir,
-                       CalledProcessErrorOutput,remove_file,mkdirs,get_main_ip)
+                       CalledProcessErrorOutput,remove_file,mkdirs,get_main_ip,
+                       killalltasks,isrunning)
 
 __all__ = []
 
@@ -106,6 +107,7 @@ __all__.extend([
      'isodate2datetime',
      'killalltasks',
      'killtree',
+     'isrunning',
      'logger',
      'makepath',
      'mkdirs',
@@ -192,8 +194,6 @@ if platform.system() == 'Windows':
      'install_location',
      'install_msi_if_needed',
      'installed_windows_updates',
-     'isrunning',
-     'is_any_process_running',
      'iswin64',
      'KEY_ALL_ACCESS',
      'KEY_READ',
@@ -331,7 +331,6 @@ else:
      'get_computername',
      'dmi_info',
      'run',
-     'killalltasks',
     ])
 
     if platform.system() == 'Darwin':
@@ -385,7 +384,6 @@ else:
          ])
 
 logger = logging.getLogger('waptcore')
-
 
 
 def add_double_quotes_around(string):

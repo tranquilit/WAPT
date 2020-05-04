@@ -52,7 +52,7 @@ import win32com.client
 from win32com.shell import shellcon
 from win32com.taskscheduler import taskscheduler
 
-from waptutils import (Version,makepath,isfile,isdir,killtree,CalledProcessErrorOutput,
+from waptutils import (Version,makepath,isfile,isdir,killtree,killalltasks,isrunning,CalledProcessErrorOutput,
     mkdirs,remove_file,currentdate,currentdatetime,ensure_dir,_lower,ini2winstr,
     error,find_all_files,get_main_ip,ensure_list,TimeoutExpired,RunReader,RunOutput,run_notfatal)
 
@@ -3373,68 +3373,6 @@ def messagebox(title,msg):
 def showmessage(msg):
     win32api.MessageBox(0, msg, 'Information', win32con.MB_ICONINFORMATION)
 
-def isrunning(processname):
-    """Check if a process is running,
-
-    >>> isrunning('explorer')
-    True
-    """
-    processname = processname.lower()
-    for p in psutil.process_iter():
-        try:
-            if p.name().lower() == processname or p.name().lower() == processname+'.exe':
-                return True
-        except (psutil.AccessDenied,psutil.NoSuchProcess):
-            pass
-    return False
-
-
-
-def is_any_process_running(processes):
-    """Check if any process in processes list is running,
-
-    >>> is_any_running(['firefox','thunderbird'])
-    True
-    """
-    exenames = [exe.lower() for exe in processes]+[exe.lower()+'.exe' for exe in processes]
-    for p in psutil.process_iter():
-        try:
-            if p.name().lower() in exenames:
-                return True
-        except (psutil.AccessDenied,psutil.NoSuchProcess):
-            pass
-    return False
-
-def killalltasks(exenames,include_children=True):
-    """Kill the task by their exename
-
-    >>> killalltasks('firefox.exe')
-    """
-    logger.debug('Kill tasks %s' % (exenames,))
-    if not exenames:
-        return []
-    if not isinstance(exenames,list):
-        exenames = [exenames]
-
-    result = []
-    exenames = [exe.lower() for exe in exenames]+[exe.lower()+'.exe' for exe in exenames]
-    for p in psutil.process_iter():
-        try:
-            if p.name().lower() in exenames:
-                logger.debug('Kill process %i' % (p.pid,))
-                result.append((p.pid,p.name()))
-                if include_children:
-                    killtree(p.pid)
-                else:
-                    p.kill()
-        except (psutil.AccessDenied,psutil.NoSuchProcess):
-            pass
-
-    return result
-    """
-    for c in exenames:
-      run(u'taskkill /t /im "%s" /f' % c)
-    """
 
 def register_ext(appname,fileext,shellopen,icon=None,otherverbs=[]):
     r"""Associates a file extension with an application, and command to open it
