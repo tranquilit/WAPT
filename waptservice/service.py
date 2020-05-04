@@ -1717,9 +1717,10 @@ class WaptTaskManager(threading.Thread):
                     (setuphelpers.datetime2isodate() > self.wapt.read_param('next_update_on','9999-12-31')):
                 try:
                     self.wapt.update()
-                    reqs = self.wapt.check_downloads()
-                    for req in reqs:
-                        self.add_task(WaptDownloadPackage(req.asrequirement(),notify_user=True,created_by='SCHEDULER'))
+                    if waptconfig.download_after_update_with_waptupdate_task_period :
+                        reqs = self.wapt.check_downloads()
+                        for req in reqs:
+                            self.add_task(WaptDownloadPackage(req.asrequirement(),notify_user=True,created_by='SCHEDULER'))
                     self.add_task(WaptUpdate(notify_user=False,notify_server_on_finish=True,created_by='SCHEDULER'))
                 except Exception as e:
                     self.logger.debug(u'Error for update in check_scheduled_tasks: %s'%e)
