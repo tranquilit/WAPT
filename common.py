@@ -4950,6 +4950,11 @@ class Wapt(BaseObjectClass):
                         for k in result.as_dict():
                             p[k] = result[k]
 
+                    if result['install_status'] == 'OK':
+                        if full_fname(p.filename).startswith(self.package_cache_dir):
+                            print('Delete %s' % full_fname(p.filename))
+                            os.remove(full_fname(p.filename))
+
                     if not result or result['install_status'] != 'OK':
                         actions['errors'].append([request,p])
                         logger.critical(u'Package %s not installed due to errors' %(request,))
