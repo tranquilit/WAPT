@@ -68,7 +68,8 @@ def get_computer_groups():
 def get_groups(user):
     gids = [g.gr_gid for g in grp.getgrall() if user.lower() in g.gr_mem]
     gid = pwd.getpwnam(user.lower()).pw_gid
-    gids.append(grp.getgrgid(gid).gr_gid)
+    if not gid in gids:
+        gids.append(grp.getgrgid(gid).gr_gid)
     return [grp.getgrgid(gid).gr_name for gid in gids]
 
 def get_domain_info():
