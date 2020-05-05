@@ -83,7 +83,7 @@ if sys.platform == 'win32':
     import win32security
 else:
     import pam
-    from setuphelpers_unix import get_groups_unix
+    from setuphelpers_unix import get_groups
 
 import ctypes
 
@@ -494,7 +494,7 @@ def get_user_self_service_groups_unix(logon_name,password,for_group=['waptselfse
         all_group = []
         if logon_name in for_group:
             all_group.append(logon_name)
-        groups_user = get_groups_unix(logon_name)
+        groups_user = get_groups(logon_name)
         for group in for_group:
             if group in groups_user:
                 all_group.append(group)
