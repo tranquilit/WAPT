@@ -88,8 +88,7 @@ def get_domain_info():
     domain = splitlist[1].split('\n')[0].strip()
 
     try:
-        if not ' %s@%s' % (hostname,domain) in subprocess.check_output(r'klist',shell=True, stderr=subprocess.STDOUT):
-            subprocess.check_output(r'kinit -k %s\@%s' % (hostname,domain),shell=True, stderr=subprocess.STDOUT)
+        subprocess.check_output(r'kinit -k %s\@%s' % (hostname,domain),shell=True, stderr=subprocess.STDOUT)
     except:
         pass
 
