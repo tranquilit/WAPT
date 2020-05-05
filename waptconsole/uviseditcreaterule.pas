@@ -111,29 +111,32 @@ end;
 
 function TFormEditRule.CanOK(): Boolean;
 var
-  RegexObj : TRegExpr;
+  RegexObj1,RegexObj2 : TRegExpr;
   ComboBoxValue : String;
 begin
   if (EditName.Caption='') or (ComboBoxCondition.ItemIndex=-1) or (ComboBoxUrl.Text='') then
     Exit(False)
   else
     begin
-      RegexObj:=TRegExpr.Create('^(http|https)://.+');
-      if RegexObj.Exec(ComboBoxUrl.Text) then
+      RegexObj1:=TRegExpr.Create('^(http|https)://.+');
+      if RegexObj1.Exec(ComboBoxUrl.Text) then
       begin
-        FreeAndNil(RegexObj);
+        FreeAndNil(RegexObj1);
         ComboBoxValue:=ComboBoxCondition.Items[ComboBoxCondition.ItemIndex];
         if (ComboBoxValue=rsAgentIP) or (ComboBoxValue=rsPublicIP) then
         begin
-          RegexObj:=TRegExpr.Create('^((\d){1,3}\.){3}(\d){1,3}\/(\d){1,2}$');
-          if RegexObj.Exec(EditValue.Text) and (EditValue.Text<>'') then
+          RegexObj1:=TRegExpr.Create('^((\d){1,3}\.){3}(\d){1,3}\/(\d){1,2}$');
+          RegexObj2:=TRegExpr.Create('^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))(\/((1(1[0-9]|2[0-8]))|([0-9][0-9])|([0-9])))?$');
+          if (RegexObj1.Exec(EditValue.Text) or RegexObj2.Exec(EditValue.Text)) and (EditValue.Text<>'') then
           begin
-            FreeAndNil(RegexObj);
+            FreeAndNil(RegexObj1);
+            FreeAndNil(RegexObj2);
             Exit(True);
           end
           else
           begin
-            FreeAndNil(RegexObj);
+            FreeAndNil(RegexObj1);
+            FreeAndNil(RegexObj2);
             Exit(False);
           end;
         end;
@@ -153,7 +156,7 @@ begin
       end
       else
       begin
-        FreeAndNil(RegexObj);
+        FreeAndNil(RegexObj1);
         Exit(False);
       end;
     end;

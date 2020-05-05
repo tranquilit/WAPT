@@ -117,7 +117,7 @@ from waptutils import BaseObjectClass,ensure_list,ensure_unicode,default_http_he
 from waptutils import httpdatetime2isodate,datetime2isodate,FileChunks,jsondump,ZipFile,LogOutput,isodate2datetime
 from waptutils import import_code,import_setup,force_utf8_no_bom,format_bytes,wget,merge_dict,remove_encoding_declaration,list_intersection
 from waptutils import _disable_file_system_redirection
-from waptutils import get_requests_client_cert_session,get_main_ip
+from waptutils import get_requests_client_cert_session,get_local_IPs,get_main_ip
 from waptutils import isrunning,killalltasks,killtree
 
 from waptcrypto import SSLCABundle,SSLCertificate,SSLPrivateKey,SSLCRL,SSLVerifyException,SSLCertificateSigningRequest
@@ -1559,7 +1559,7 @@ class WaptServer(BaseObjectClass):
 
     def get_computer_principal(self):
         try:
-            dnsdomain = setuphelpers.get_domain_fromregistry()
+            dnsdomain = setuphelpers.get_domain()
             if not dnsdomain:
                 dnsdomain = self.dnsdomain
 
@@ -1574,7 +1574,7 @@ class WaptServer(BaseObjectClass):
                 if not (sys.platform == 'win32'):
                     try:
                         #TODO found other method for TGS
-                        setuphelpers.get_domain_info_unix()
+                        setuphelpers.get_domain_info()
                     except:
                         pass
                 scheme = urlparse.urlparse(self._server_url).scheme
@@ -2231,7 +2231,11 @@ class WaptRepo(WaptRemoteRepo):
             str: URL to the repo.
         """
         def rule_agent_ip(value):
-            return ipaddress.ip_address(get_main_ip().decode('utf-8')) in ipaddress.ip_network(value.decode('utf-8'))
+            ip_network=ipaddress.ip_network(value.decode('utf-8'))
+            for ip in get_local_IPs():
+                if ipaddress.ip_address(ip.decode('utf-8')) in ip_network:
+                    return True
+            return False
 
         def rule_domain(value):
             return setuphelpers.get_domain() == value
@@ -5815,7 +5819,7 @@ class Wapt(BaseObjectClass):
                     if sys.platform == 'win32':
                         last_result = {'groups' : setuphelpers.get_computer_groups()}
                     else:
-                        last_result = setuphelpers.get_domain_info_unix()
+                        last_result = setuphelpers.get_domain_info()
             except:
                 last_result = last_result
             self.save_last_domain_info_date(now)

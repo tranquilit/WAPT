@@ -53,6 +53,8 @@ import threading
 import socket
 import psutil
 import urlparse
+import netifaces
+import ipaddress
 from requests.adapters import HTTPAdapter
 from urllib3.util.ssl_ import create_urllib3_context
 from urllib3.exceptions import InsecureRequestWarning
@@ -1704,17 +1706,37 @@ def get_sha256(afile = '',BLOCK_SIZE=2**20):
                 fb=f.read(BLOCK_SIZE)
             return file_hash.hexdigest()
 
-def get_main_ip():
+def get_main_ip(host=None,hostv6=None):
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     try:
         # doesn't even have to be reachable
-        s.connect(('10.255.255.255', 1))
-        IP = s.getsockname()[0]
+        s.connect(('10.0.0.0' if host is None else host, 1))
+        IPV4 = s.getsockname()[0]
     except:
-        IP = '127.0.0.1'
+        IPV4 = '127.0.0.1'
     finally:
         s.close()
-    return IP
+    s = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM)
+    try:
+        if hostv6 is None:
+            hostv6 = host
+        s.connect(('ff05::1' if hostv6 is None else hostv6,1))
+        IPV6 = s.getsockname()[0]
+    except:
+        IPV6 = '::1'
+    finally:
+        s.close()
+    return [IPV4.decode('utf-8'),IPV6.decode('utf-8').split('%')[0]]
+
+def get_local_IPs():
+    list_address=[]
+    for interface in netifaces.interfaces():
+        if_address=netifaces.ifaddresses(interface)
+        if if_address.get(netifaces.AF_INET):
+            list_address.extend([addr['addr'] for addr in if_address[netifaces.AF_INET] if addr['addr']!='127.0.0.1'])
+        if if_address.get(netifaces.AF_INET6):
+            list_address.extend([addr['addr'].split('%')[0] for addr in if_address[netifaces.AF_INET6] if addr['addr']!='::1'])
+    return list_address
 
 def is_between_two_times(time1,time2):
     time_now = datetime.datetime.now()

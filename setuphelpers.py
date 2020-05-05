@@ -46,7 +46,7 @@ from waptutils import (Version, __version__, all_files, dateof,
                        fileisodate, find_all_files, get_disk_free_space,
                        hours_minutes, httpdatetime2isodate, isodate2datetime,
                        time2display, wget, wgets, makepath,killtree,isfile,isdir,
-                       CalledProcessErrorOutput,remove_file,mkdirs,get_main_ip,
+                       CalledProcessErrorOutput,remove_file,mkdirs,get_main_ip,get_local_IPs,
                        killalltasks,isrunning)
 
 __all__ = []
@@ -84,6 +84,7 @@ __all__.extend([
      'get_disk_free_space',
      'get_dns_servers',
      'get_main_ip',
+     'get_local_IPs',
      'get_hostname',
      'get_fqdn',
      'get_language',
@@ -117,6 +118,7 @@ __all__.extend([
      'params',
      'processes_for_file',
      'remove_file',
+     'remove_tree',
      'run',
      'shell_launch',
      'shutil',
@@ -308,8 +310,9 @@ if platform.system() == 'Windows':
 else:
 
     __all__.extend([
-     'get_groups_unix',
-     'get_domain_info_unix',
+     'get_groups',
+     'get_domain_info',
+     'get_computername',
      'get_kernel_version',
      'user_home_directory',
      'get_default_gateways',
@@ -317,7 +320,6 @@ else:
      'user_local_appdata',
      'local_drives',
      'host_metrics',
-     'remove_tree',
      'default_gateway',
      'networking',
      'get_hostname',
@@ -326,7 +328,7 @@ else:
      'get_dns_servers',
      'get_loggedinusers',
      'get_last_logged_on_user',
-     'get_domain_batch',
+     'get_domain_from_socket',
      'host_info_common_unix',
      'get_computername',
      'dmi_info',
@@ -658,7 +660,7 @@ def get_domain():
     if sys.platform == 'win32':
         return get_domain_fromregistry()
     elif sys.platform.startswith('linux'):
-        return get_domain_batch()
+        return get_domain_from_socket()
 
 def inifile_hasoption(inifilename,section,key):
     """Check if an option is present in section of the inifile

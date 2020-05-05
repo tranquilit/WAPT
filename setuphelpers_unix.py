@@ -40,7 +40,7 @@ import datetime
 import platform
 import grp
 import pwd
-from waptutils import (ensure_unicode, makepath, ensure_dir,currentdate,currentdatetime,_lower,ini2winstr,error,get_main_ip,TimeoutExpired,RunReader,RunOutput,killtree,run_notfatal)
+from waptutils import (ensure_unicode, makepath, ensure_dir,currentdate,currentdatetime,_lower,ini2winstr,error,get_main_ip,TimeoutExpired,RunReader,RunOutput,killtree,run_notfatal,get_local_IPs)
 import threading
 import psutil
 from subprocess import PIPE
@@ -60,36 +60,34 @@ def user_home_directory():
     return os.path.expanduser('~')
 
 def get_computer_groups():
-    """Try to finc the computer in the Active Directory
+    """Try to find the computer in the Active Directory
     and return the list of groups
     """
-    return get_groups_unix(get_computername().split('.')[0] + '$')
+    return get_groups(get_computername().split('.')[0] + '$')
 
-def get_groups_unix(user):
+def get_groups(user):
     gids = [g.gr_gid for g in grp.getgrall() if user.lower() in g.gr_mem]
     gid = pwd.getpwnam(user.lower()).pw_gid
     gids.append(grp.getgrgid(gid).gr_gid)
     return [grp.getgrgid(gid).gr_name for gid in gids]
 
-def get_domain_info_unix():
+def get_domain_info():
     """Return ad site and ou
     Warning : Please note that the search for gssapi does not work if the reverse dns recording is not available for ad
     """
     result = {}
     result['groups'] = get_computer_groups()
+
     if platform.system() == 'Darwin':
         cmd = 'ktutil -k /etc/krb5.keytab list'
     else:
         cmd = 'klist -k'
+
     splitlist = subprocess.check_output(cmd,shell=True,stderr=subprocess.STDOUT).split('$@',1)
     hostname = str(splitlist[0].rsplit(' ',1)[-1] + '$').split('/')[-1]
     domain = splitlist[1].split('\n')[0].strip()
 
     try:
-        try:
-            subprocess.check_output(r'klist',shell=True, stderr=subprocess.STDOUT)
-        except:
-            subprocess.check_output(r'kinit -k %s\@%s' % (hostname,domain),shell=True, stderr=subprocess.STDOUT)
         if not ' %s@%s' % (hostname,domain) in subprocess.check_output(r'klist',shell=True, stderr=subprocess.STDOUT):
             subprocess.check_output(r'kinit -k %s\@%s' % (hostname,domain),shell=True, stderr=subprocess.STDOUT)
     except:
@@ -98,17 +96,17 @@ def get_domain_info_unix():
     #TODO Get ldap_auth_server in wapt-get.ini
     ldap_auth_server = None
 
-    list_controleur=[]
+    list_controler=[]
     if not ldap_auth_server:
         for entry in dns.resolver.query('_ldap._tcp.dc._msdcs.%s' % domain.lower(), 'SRV'):
-            list_controleur.append(entry.to_text().split(' ')[-1].strip('.'))
+            list_controler.append(entry.to_text().split(' ')[-1].strip('.'))
     else:
-        list_controleur.append(ldap_auth_server)
+        list_controler.append(ldap_auth_server)
 
-    for controleur in list_controleur:
+    for controler in list_controler:
         try:
             tls = Tls(validate=ssl.CERT_NONE, version=ssl.PROTOCOL_TLSv1_2)
-            server = Server(controleur, use_ssl=True, tls=tls)
+            server = Server(controler, use_ssl=True, tls=tls)
             c = Connection(server, authentication=SASL, sasl_mechanism=KERBEROS)
             c.bind()
 
@@ -122,28 +120,27 @@ def get_domain_info_unix():
 
             for i in c.response:
                 dict_ip_site[i['attributes']['cn']] = i['attributes']['siteObject'].split('=',1)[1].split(',',1)[0]
-
-            result['site'] = ''
-            for value in dict_ip_site:
-                if ipaddress.ip_address(get_main_ip().decode('utf-8')) in ipaddress.ip_network(value.decode('utf-8')) :
-                    result['site'] = dict_ip_site[value]
-        except :
+        except:
+            pass
+        finally:
             try:
                 c.unbind()
             except:
                 pass
-            continue
-        try:
-            c.unbind()
-        except:
-            pass
-        return result
+
+        result['site'] = ''
+
+        for value in dict_ip_site:
+            ip_subnet = ipaddress.ip_network(value.decode('utf-8'))
+            if (isinstance(ip_subnet,ipaddress.IPv4Network) and (ipaddress.ip_address(get_main_ip(controler)[0]) in ip_subnet)) or (isinstance(ip_subnet,ipaddress.IPv6Network) and (ipaddress.ip_address(get_main_ip(controler)[0]) in ip_subnet)):
+                result['site'] = dict_ip_site[value]
+                return result
+
 
     if not 'ou' in result :
-        error('OU not found')
+        logger.warning('OU not found')
     else:
         return result
-
 
 
 def get_default_gateways():
@@ -321,13 +318,13 @@ def get_last_logged_on_user():
     return res
 
 
-def get_domain_batch():
+def get_domain_from_socket():
     """Return main DNS domain of the computer
 
     Returns:
         str: domain name
 
-    >>> get_domain_batch()
+    >>> get_domain_from_socket()
     u'tranquilit.local'
     """
 
@@ -362,7 +359,7 @@ def host_info_common_unix():
 
     info['computer_name'] = socket.gethostname()
     info['computer_fqdn'] = socket.getfqdn()
-    info['dnsdomain'] = get_domain_batch()
+    info['dnsdomain'] = get_domain_from_socket()
 
     info['local_groups'] = {g.gr_name:g.gr_mem for g in grp.getgrall()}
     info['local_users'] = []
@@ -390,7 +387,7 @@ def host_info_common_unix():
     info['networking'] = networking()
     info['gateways'] = [get_default_gateways()]
     info['dns_servers'] = get_dns_servers()
-    info['connected_ips'] = [get_main_ip()]
+    info['connected_ips'] = get_local_IPs()
     info['mac'] = [ c['mac'] for c in networking() if 'mac' in c and 'addr' in c and c['addr'] in info['connected_ips']]
     info['kernel_version'] = get_kernel_version()
     #Fix for vscode don't know why it doesn't work : KeyError: 'brand'

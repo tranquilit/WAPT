@@ -54,7 +54,7 @@ from win32com.taskscheduler import taskscheduler
 
 from waptutils import (Version,makepath,isfile,isdir,killtree,killalltasks,isrunning,CalledProcessErrorOutput,
     mkdirs,remove_file,currentdate,currentdatetime,ensure_dir,_lower,ini2winstr,
-    error,find_all_files,get_main_ip,ensure_list,TimeoutExpired,RunReader,RunOutput,run_notfatal)
+    error,find_all_files,get_main_ip,ensure_list,TimeoutExpired,RunReader,RunOutput,run_notfatal,get_local_IPs)
 
 ## import only for windows
 import _subprocess
@@ -622,97 +622,11 @@ def default_gateway():
     else:
         return None
 
-def get_ip_address(connected_only=False):
-    """Wrapper around win32 iphlp GetIpAddrTable()
-
-    Returns:
-        list of dict: keys
-            ip_raw:     IP address, in raw format (long integer)
-            ip_str:     IP address, represented as a dot-separated
-                        quartet string (e.g. "123.0.100.78")
-            mask:       Subnet mask
-            bcast_addr: Broadcast address
-            reasm_size: Maximum reassembly size
-            type:       Address type or state
-            flags:      [primary,dynamic,disconnected,deleted,transient]
-
-    Raises WindowsError if there's some a accessing the
-    system DLL.
-
-    Note: The is basically a
-    from the Platform SDK. Read the documentation of that
-    function for more information.
-    """
-    DWORD = ctypes.c_ulong
-    USHORT = ctypes.c_ushort
-    NULL = ""
-
-    dwSize = DWORD(0)
-
-    # First call to receive the correct dwSize back.
-    #
-    windll.iphlpapi.GetIpAddrTable(NULL, ctypes.byref(dwSize), 0)
-
-    class MIB_IPADDRROW(ctypes.Structure):
-        _fields_ = [('dwAddr', DWORD),
-                    ('dwIndex', DWORD),
-                    ('dwMask', DWORD),
-                    ('dwBCastAddr', DWORD),
-                    ('dwReasmSize', DWORD),
-                    ('unused1', USHORT),
-                    ('wType', USHORT)]
-
-    class MIB_IPADDRTABLE(ctypes.Structure):
-        _fields_ = [('dwNumEntries', DWORD),
-                    ('table', MIB_IPADDRROW * dwSize.value)]
-
-    ipTable = MIB_IPADDRTABLE()
-    error = windll.iphlpapi.GetIpAddrTable(  ctypes.byref(ipTable),
-                                        ctypes.byref(dwSize),
-                                        0)
-    if error != 0:
-        raise WindowsError(error,"GetIpAddrTable returned error")
-
-    MIB_IPADDR_PRIMARY = 0x0001
-    MIB_IPADDR_DYNAMIC = 0x0004
-    MIB_IPADDR_DISCONNECTED = 0x0008
-    MIB_IPADDR_DELETED = 0x0040
-    MIB_IPADDR_TRANSIENT = 0x0080
-    table = []
-
-    for i in range(ipTable.dwNumEntries):
-        flags = []
-        if connected_only and ipTable.table[i].wType & MIB_IPADDR_DISCONNECTED:
-            continue
-        if ipTable.table[i].wType & MIB_IPADDR_PRIMARY:
-            flags.append('primary')
-        if ipTable.table[i].wType & MIB_IPADDR_DYNAMIC:
-            flags.append('dynamic')
-        if ipTable.table[i].wType & MIB_IPADDR_DISCONNECTED:
-            flags.append('disconnected')
-        if ipTable.table[i].wType & MIB_IPADDR_DELETED:
-            flags.append('deleted')
-        if ipTable.table[i].wType & MIB_IPADDR_TRANSIENT:
-            flags.append('transient')
-
-        entry = dict(   ip_raw      = ipTable.table[i].dwAddr,
-                        ip_str      = socket.inet_ntoa(struct.pack('L', ipTable.table[i].dwAddr)),
-                        mask        = ipTable.table[i].dwMask,
-                        bcast_addr  = ipTable.table[i].dwBCastAddr,
-                        reasm_size  = ipTable.table[i].dwReasmSize,
-                        type        = ipTable.table[i].wType,
-                        flags       = flags,
-                    )
-
-        table.append(entry)
-
-    return table
-
 def networking():
     """return a list of (iface,mac,{addr,broadcast,netmask})
     """
     ifaces = netifaces.interfaces()
-    local_ips = [a['ip_str'] for a in get_ip_address(True) if a['ip_str'] != '127.0.0.1' ]
+    local_ips = get_local_IPs()
 
     res = []
     for i in ifaces:
@@ -777,8 +691,7 @@ def host_info():
     except:
         info['gateways'] = [default_gateway()]
 
-    #info['connected_ips'] = socket.gethostbyname_ex(socket.gethostname())[2]
-    info['connected_ips'] = [a['ip_str'] for a in get_ip_address(True) if a['ip_str'] != '127.0.0.1' ]
+    info['connected_ips'] = get_local_IPs()
     info['mac'] = [ c['mac'] for c in networking() if 'mac' in c and 'addr' in c and c['addr'] in info['connected_ips']]
 
     info['win64'] = iswin64()
