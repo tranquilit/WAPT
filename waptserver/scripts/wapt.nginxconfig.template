@@ -72,7 +72,7 @@ server {
         }
         {% endif %}
 
-        location ~ ^/(wapt/waptsetup-tis.exe|wapt/waptagent.exe|wapt/waptdeploy.exe|sync.json)$ {
+        location ~ ^/(wapt/waptsetup-tis.exe|wapt/waptagent.exe|wapt/waptdeploy.exe|sync.json|rules.json)$ {
             add_header Cache-Control "store, no-cache, must-revalidate, post-check=0, pre-check=0";
             add_header Pragma "no-cache";
             root "{{ wapt_repository_path }}";
