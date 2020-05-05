@@ -5818,6 +5818,8 @@ class Wapt(BaseObjectClass):
                 if sys.platform == 'win32':
                     if self.use_ad_groups:
                         last_result = {'groups' : setuphelpers.get_computer_groups()}
+                    else:
+                        last_result = {'groups' : []}
                 else:
                     last_result = setuphelpers.get_domain_info()
             except:
