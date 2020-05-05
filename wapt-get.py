@@ -23,9 +23,6 @@
 from __future__ import absolute_import,print_function
 from waptutils import __version__
 
-import setproctitle
-setproctitle.setproctitle('wapt-get')
-
 import sys
 import os
 import codecs
@@ -58,6 +55,11 @@ if sys.platform.startswith('linux') or sys.platform.startswith('darwin'):
         del os.environ['PYTHONPATH']
     if 'PYTHONHOME' in os.environ:
         del os.environ['PYTHONHOME']
+
+
+if not sys.platform=='win32':
+    import setproctitle
+    setproctitle.setproctitle('wapt-get')
 
 import setuphelpers
 

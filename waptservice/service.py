@@ -25,9 +25,6 @@ import os
 import sys
 import time
 
-import setproctitle
-setproctitle.setproctitle('waptservice')
-
 try:
     from waptenterprise import auth_module_ad
 except ImportError as e:
@@ -47,6 +44,10 @@ if sys.platform.startswith('linux') or sys.platform.startswith('darwin'):
         del os.environ['PYTHONPATH']
     if 'PYTHONHOME' in os.environ:
         del os.environ['PYTHONHOME']
+
+if not sys.platform=='win32':
+    import setproctitle
+    setproctitle.setproctitle('waptservice')
 
 from waptutils import __version__
 
