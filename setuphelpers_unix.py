@@ -305,6 +305,11 @@ def get_loggedinusers():
     for elem in suser:
         if not elem.name in result:
             result.append(elem.name)
+    for p in psutil.process_iter():
+        if p.name().lower() == "xorg":
+            pp = psutil.Process(p.pid)
+            if not pp.username in result:
+                result.append(pp.username())
     return result
 
 
