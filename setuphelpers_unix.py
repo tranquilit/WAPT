@@ -303,7 +303,8 @@ def get_loggedinusers():
     suser = psutil.users()
     result = []
     for elem in suser:
-        result.append(elem.name)
+        if not elem in result:
+            result.append(elem.name)
     return result
 
 
