@@ -5815,11 +5815,11 @@ class Wapt(BaseObjectClass):
         maxdelta = 60 * 60 * 2
         if force or (delta.seconds > maxdelta) :
             try:
-                if self.use_ad_groups:
-                    if sys.platform == 'win32':
+                if sys.platform == 'win32':
+                    if self.use_ad_groups:
                         last_result = {'groups' : setuphelpers.get_computer_groups()}
-                    else:
-                        last_result = setuphelpers.get_domain_info()
+                else:
+                    last_result = setuphelpers.get_domain_info()
             except:
                 last_result = last_result
             self.save_last_domain_info_date(now)
