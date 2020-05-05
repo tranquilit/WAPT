@@ -6028,7 +6028,7 @@ class Wapt(BaseObjectClass):
 
     def merge_installed_softwares_and_wua_list(self):
         soft_inventory = setuphelpers.installed_softwares()
-        if self.config.getboolean('waptwua','enabled') and (self.get_wapt_edition() == 'enterprise'):
+        if self.waptwua_enabled and (self.get_wapt_edition() == 'enterprise') :
             dict_kb_name = self.waptdb.get_param('waptwua.simple.list')
             if dict_kb_name:
                 for u in dict_kb_name:
