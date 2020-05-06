@@ -300,6 +300,11 @@ mkdir_p('./tmpbuild/payload/Library/LaunchDaemons/')
 
 # Wapt agent daemon
 copyfile('com.tranquilit.tis-waptagent.plist', './tmpbuild/payload/Library/LaunchDaemons/com.tranquilit.tis-waptagent.plist')
+
+# Waptexit daemon
+copyfile(makepath(wapt_source_dir, 'waptexit', 'macos', 'waptexit.sh'), './tmpbuild/payload/Library/LaunchDaemons/waptexit.sh')
+copyfile(makepath(wapt_source_dir, 'waptexit', 'macos', 'waptexit.plist'), './tmpbuild/payload/Library/LaunchDaemons/waptexit.plist')
+
 eprint('copying the waptserver files')
 rsync(source_dir, 'tmpbuild/payload/opt/wapt',
       excludes=['postconf', 'repository', 'rpm', 'deb', 'spnego-http-auth-nginx-module', '*.bat'])

@@ -82,7 +82,7 @@ end;
 
 procedure TVisLogin.FormCreate(Sender: TObject);
 begin
-  LabVersion.Caption := ApplicationName+' '+WaptEdition+' Edition '+GetApplicationVersion;
+  LabVersion.Caption := ApplicationName + ' ' + WaptEdition + ' Edition ' + GetApplicationVersion;
 end;
 
 procedure TVisLogin.FormShow(Sender: TObject);

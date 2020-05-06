@@ -7598,19 +7598,32 @@ class Wapt(BaseObjectClass):
     def available_categories(self):
         return list(set([k.get('keywords').capitalize().split(',')[0] for k in self.waptdb.query('select distinct keywords from wapt_package where keywords is not null')]))
 
-
     def self_service_auth(self, login, password, groups):
         """ Sends login and password to server, who then checks if it's a valid user
 
         Returns the groups the user belongs to.
+        TODO : ENCRYPT DATA SENT
         """
+        result = None
+        sys.stdout.flush()
+        if not self.waptserver_available():
+            return None
         try:
             data = {"user": login, "password": password, "groups": groups}
             result = self.waptserver.post('login_self_service', data = jsondump(data))
-            return result
-        except :
-            return {'result':{'success':False,'error':True,'msg':'unknown error'}}
 
+            if result and result['success']:
+                return result
+                logger.info(u'User successfully authenticated %s updated properly' % self.waptserver.server_url)
+            else:
+                logger.info(u'Error authenticating on server %s: %s' % (self.waptserver.server_url,result and result['msg'] or 'No message'))
+        except requests.HTTPError as e:
+            logger.warning(u'Unable to authenticate on server : %s' % ensure_unicode(e))
+            logger.debug(traceback.format_exc())
+            if e.response.status_code in (400,401):
+                try_register = True
+            else:
+                raise e
 
 def run_as_administrator(afile,params=None):
     """Launch with a runas verb to trigger a privileges elevation.

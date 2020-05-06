@@ -324,6 +324,7 @@ else:
      'networking',
      'get_hostname',
      'get_current_user',
+     'get_file_properties',
      'is_valid_ipv4_address',
      'get_dns_servers',
      'get_loggedinusers',
@@ -332,6 +333,7 @@ else:
      'host_info_common_unix',
      'get_computername',
      'dmi_info',
+     'message_box',
      'run',
     ])
 

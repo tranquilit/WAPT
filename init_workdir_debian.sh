@@ -7,7 +7,8 @@ set -e
 
 python2 -m virtualenv --no-site-packages .
 ./bin/pip install virtualenv
-./bin/pip install -r requirements.txt 
+./bin/pip install -r requirements-agent.txt
+./bin/pip install -r requirements-agent-unix.txt
 #ln -s ./bin/python2.7 waptpython
 #chmod 755 runwapt-get.sh
 

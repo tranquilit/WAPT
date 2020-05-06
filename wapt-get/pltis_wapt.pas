@@ -8,7 +8,7 @@ unit pltis_wapt;
 interface
 
 uses
-  waptwinutils, NetworkAdapterInfo, uWaptRes, waptcommon, waptdb, uwaptcrypto, 
+  waptutils, NetworkAdapterInfo, uWaptRes, waptcommon, waptdb, uwaptcrypto, 
   uWaptPythonUtils, uWAPTPollThreads, LazarusPackageIntf;
 
 implementation

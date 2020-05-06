@@ -128,10 +128,10 @@ var
   VisWAPTConfig: TVisWAPTConfig;
 
 implementation
-uses Windows, base64, tiscommon,waptcommon,LCLIntf,IDURI,uWaptConsoleRes,
+uses {$IFDEF WINDOWS}Windows,{$ENDIF} base64, tiscommon,waptcommon,LCLIntf,IDURI,uWaptConsoleRes,
     tisstrings,dmwaptpython,variants,VarPyth,uvisprivatekeyauth,tisinifiles,
     LazFileUtils,FileUtil, strutils,uWaptPythonUtils,uVisCreateKey,
-    waptwinutils,uvisloading;
+    waptutils,uvisloading;
 {$R *.lfm}
 
 { TVisWAPTConfig }
@@ -202,6 +202,7 @@ begin
       //TODO propose to copy to trusted certs if no certificate exists at the moment
     end;
 
+    {$IFDEF WINDOWS}
     // If this a CA cert, we should perhaps take it in account right now...
     if not IsWindowsAdminLoggedIn then
       ShowMessageFmt(rsNotRunningAsAdminCanNotSSL,[AppendPathDelim(WaptBaseDir)+'ssl']);
@@ -230,6 +231,7 @@ begin
         end;
       end
     end
+    {$ENDIF}
 
 
   finally

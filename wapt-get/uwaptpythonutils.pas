@@ -54,7 +54,7 @@ begin
   else if GetPythonEngine.PyObject_HasAttrString(pvalue,'as_dict') <> 0  then
   begin
     Result := TSuperObject.Create(stObject);
-    pyDict := GetPythonEngine.PyObject_CallMethodStr(pvalue,'as_dict',Nil,Nil);
+    pyDict := GetPythonEngine.PyObject_CallMethod(pvalue,'as_dict',Nil,Nil);
     j := 0;
     pyKey := Nil;
     pyValue := Nil;

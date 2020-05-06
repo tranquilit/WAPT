@@ -77,6 +77,19 @@ def host_info():
     info['linux64'] = isLinux64()
     info['distrib'] = get_distrib_linux()
     info['distrib_version'] = get_distrib_version()
+    
+    info['local_groups'] = {g.gr_name:g.gr_mem for g in grp.getgrall()}
+    info['local_users'] = []
+    for u in pwd.getpwall():
+        info['local_users'].append(u.pw_name)
+
+        gr_struct=grp.getgrgid(u.pw_gid)
+        if info['local_groups'].has_key(gr_struct.gr_name):
+            if u.pw_name not in info['local_groups'][gr_struct.gr_name]:
+                info['local_groups'][gr_struct.gr_name].append(u.pw_name)
+        else:
+            info['local_groups'][gr_struct.gr_name]=[u.pw_name]
+
     return info
 
 def installed_softwares(keywords='',name=None):

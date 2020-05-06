@@ -379,20 +379,6 @@ def host_info_common_unix():
     info['computer_fqdn'] = socket.getfqdn()
     info['dnsdomain'] = get_domain_from_socket()
 
-    info['local_groups'] = {g.gr_name:g.gr_mem for g in grp.getgrall()}
-    info['local_users'] = []
-    for u in pwd.getpwall():
-        info['local_users'].append(u.pw_name)
-        try:
-            gr_struct=grp.getgrgid(u.pw_gid)
-            if info['local_groups'].has_key(gr_struct.gr_name):
-                if u.pw_name not in info['local_groups'][gr_struct.gr_name]:
-                    info['local_groups'][gr_struct.gr_name].append(u.pw_name)
-            else:
-                info['local_groups'][gr_struct.gr_name]=[u.pw_name]
-        except:
-            pass
-
     try:
         if os.path.isfile('/etc/samba/smb.conf'):
             config = configparser.RawConfigParser(strict=False)
@@ -605,6 +591,31 @@ def dmi_info():
                 currarray.append(l.strip())
         new_section = False
     return result
+
+
+def get_file_properties(fname,ignore_warning=True):
+    r"""Read all properties of the given file return them as a dictionary.
+
+    Args:
+        fname : path to Windows executable or DLL
+
+    Returns:
+        dict: properties of executable
+
+    >>> xp = get_file_properties(r'c:\windows\explorer.exe')
+    >>> 'FileVersion' in xp and 'FileDescription' in xp
+    True
+    """
+    # TODO : POSIX version 
+    props = {}
+    
+    return props
+
+def messagebox(title,msg):
+    pass
+
+def uac_enabled():
+    return False
 
 def killalltasks(process_names,include_children=True):
     """Kill the task by their process_names

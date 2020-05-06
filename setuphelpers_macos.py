@@ -52,9 +52,27 @@ logger = logging.getLogger('waptcore')
 def host_info():
     """ Read main workstation informations, returned as a dict """
     info = host_info_common_unix()
-    info['os_name']=platform.system()
-    info['os_version']=platform.release()
+    info['os_name'] = platform.system()
+    info['os_version'] = platform.release()
     info['platform'] = 'macOS'
+
+    info['local_groups'] = {g.gr_name:g.gr_mem for g in grp.getgrall()}
+    info['local_users'] = []
+    for u in pwd.getpwall():
+        info['local_users'].append(u.pw_name)
+
+        # weird macOS quirk
+        try:
+            gr_struct = grp.getgrgid(u.pw_gid)
+        except KeyError:
+            continue
+
+        if info['local_groups'].has_key(gr_struct.gr_name):
+            if u.pw_name not in info['local_groups'][gr_struct.gr_name]:
+                info['local_groups'][gr_struct.gr_name].append(u.pw_name)
+        else:
+            info['local_groups'][gr_struct.gr_name] = [u.pw_name]
+
     return info
 
 def get_info_plist_path(app_dir):
@@ -96,7 +114,7 @@ def mount_dmg(dmg_path):
     Returns: The path to the mount point.
     """
     try:
-        output = run('hdiutil mount ' + dmg_path)
+        output = run('hdiutil mount \'' + dmg_path + '\'')
     except subprocess.CalledProcessError, e:
         logger.warning('Error in mount_dmg : {0}'.format(e.output))
         return e.output
@@ -109,8 +127,11 @@ def unmount_dmg(dmg_mount_path):
 
     Returns the value of the 'hdiutil unmount' command ran.
     """
-    return run('hdiutil unmount \'' + dmg_mount_path + '\'')
-
+    try: 
+        return run('hdiutil unmount \'' + dmg_mount_path + '\'')
+    except subprocess.CalledProcessError, e:
+        print('Error in unmount_dmg : {0}'.format(e.output))
+        return e.output
 
 def is_local_app_installed(appdir, check_version=None):
     """ Checks whether or not an application is already installed on the machine.
@@ -278,16 +299,24 @@ def install_app(app_dir):
     logger.info('{0} succesfully installed in {1}'.format(app_name, applications_dir))
 
 
-def uninstall_app(app_dir):
-    """ Uninstalls an app given a path to it.
+def uninstall_app(app_name):
+    """ Uninstalls an app given its name.
 
     DELETES EVERY FILE. Should not save the user's configuration.
     """
-    if app_dir[-4:] != '.app':
-        app_dir += '.app'
+    app_dir = '/Applications/'
+    app_path = app_dir + app_name
 
-    run('rm -rf /Applications/{0}'.format(app_dir))
+    if app_path[-4:] != '.app':
+        app_path += '.app'
 
+    if not os.path.isdir(app_path):
+        print("Application {0} not found in {1} : cannot uninstall".format(app_name, app_dir))
+        return False
+    
+    run('rm -rf \'{0}\''.format(app_path))
+    print("Application \"{0}\" deleted.".format(app_name))
+    return True
 
 def install_dmg(dmg_path, check_version=False):
     """ Installs a .dmg if it isn't already installed on the system.

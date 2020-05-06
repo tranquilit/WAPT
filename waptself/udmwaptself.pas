@@ -35,7 +35,7 @@ var
 
 implementation
 
-uses IniFiles, Dialogs, Forms,waptwinutils, uVisLogin, sysutils, FileUtil, uWaptSelfRes, tiscommon;
+uses IniFiles, Dialogs, Forms,waptutils, uVisLogin, sysutils, FileUtil, uWaptSelfRes, tiscommon;
 {$R *.lfm}
 
 { TDMWaptSelf }
@@ -43,7 +43,7 @@ uses IniFiles, Dialogs, Forms,waptwinutils, uVisLogin, sysutils, FileUtil, uWapt
 function TDMWaptSelf.GetLocalLogin: String;
 begin
   if (FLogin='') then
-    Result:=waptwinutils.AGetUserName;
+    Result:=waptutils.AGetUserName;
   Result:=FLogin;
 end;
 
@@ -57,7 +57,7 @@ begin
   begin
     LoginDlg:=TVisLogin.Create(Nil);
     if (FLogin='') then
-      LoginDlg.EdUsername.text:=waptwinutils.AGetUserName
+      LoginDlg.EdUsername.text:=waptutils.AGetUserName
     else
       LoginDlg.EdUsername.text:=FLogin;
     if (RetryCount>1) then

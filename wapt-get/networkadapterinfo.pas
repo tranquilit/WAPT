@@ -4,6 +4,7 @@ interface
 {$mode delphi}
 {$R-}
 
+{$ifdef windows}
 uses Classes, SysUtils;
 
 type
@@ -326,5 +327,9 @@ begin
 
   Result := bResult;
 end;
+
+{$else}
+implementation
+{$endif}
 
 end.

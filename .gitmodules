@@ -1,4 +1,3 @@
 [submodule "waptenterprise"]
 	path = waptenterprise
 	url = git://git.ad.tranquil.it/wapt/waptenterprise.git
-

@@ -8,7 +8,7 @@ unit uwaptconsole;
 interface
 
 uses
-  Classes, SysUtils, Windows, ActiveX, Types, Forms, Controls, Graphics,
+  Classes, SysUtils, {$IFDEF windows} Windows, ActiveX, {$ENDIF} Types, Forms, Controls, Graphics,
   Dialogs, Buttons, LazUTF8, SynEdit, SynHighlighterPython, SynHighlighterSQL,
   SynCompletion, vte_json, vte_dbtreeex, ExtCtrls, StdCtrls, ComCtrls, ActnList,
   Menus, jsonparser, superobject, VirtualTrees, VarPyth, ImgList, SOGrid,
@@ -907,9 +907,11 @@ type
     procedure GridHostsChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
     procedure GridHostsColumnDblClick(Sender: TBaseVirtualTree;
       Column: TColumnIndex; Shift: TShiftState);
+    {$IFDEF windows}
     procedure GridHostsDragDrop(Sender: TBaseVirtualTree; Source: TObject;
       DataObject: IDataObject; Formats: TFormatArray; Shift: TShiftState;
       const Pt: TPoint; var Effect: DWORD; Mode: TDropMode);
+    {$ENDIF}
     procedure GridHostsDragOver(Sender: TBaseVirtualTree; Source: TObject;
       Shift: TShiftState; State: TDragState; const Pt: TPoint;
       Mode: TDropMode; var Effect: DWORD; var Accept: boolean);
@@ -1194,12 +1196,14 @@ implementation
 uses LCLIntf, LCLType, IniFiles, variants, LazFileUtils,FileUtil, base64,
   strutils,
   uvisprivatekeyauth, soutils,
-  waptcommon, waptwinutils, tiscommon, uVisCreateKey, uVisCreateWaptSetup,
+  waptcommon, waptutils, tiscommon, uVisCreateKey, uVisCreateWaptSetup,
   dmwaptpython, uviseditpackage, uvislogin, uviswaptconfig, uvischangepassword,
   uvisgroupchoice, uvistriggerhostsaction, uVisAPropos,
   uVisImportPackage, PythonEngine, Clipbrd, RegExpr, tisinifiles, IdURI,
   uVisPackageWizard, uVisChangeKeyPassword, uVisDisplayPreferences,
-  uvisrepositories, uVisHostDelete, windirs,winutils,uWaptPythonUtils
+  uvisrepositories, uVisHostDelete,
+  {$IFDEF WINDOWS}windirs,winutils,{$ENDIF}
+  uWaptPythonUtils
   {$ifdef ENTERPRISE}
   ,uVisWUAGroup,uviswuadownloads,uvissoftwaresnormalization,uvisselfservicegroup,
   uviseditcreaterule,uvissyncchangelog, uVisErrorsRepos, uviswaptusers
@@ -2128,7 +2132,9 @@ begin
       HostTaskRunningProgress.Position := running.I['progress'];
       HostRunningTask.Text := UTF8Encode(running.S['description']);
       HostRunningTaskLog.Text := UTF8Encode(running.S['logs']);
+      {$IFDEF WINDOWS}
       Windows.SendMessage(HostRunningTaskLog.Handle, EM_LINESCROLL, 0, HostRunningTaskLog.Lines.Count)
+      {$ENDIF}
     end
     else
     begin
@@ -2390,6 +2396,7 @@ begin
         Free;
       end;
 
+      {$IFDEF WINDOWS}
       // If this a CA cert, we should perhaps take it in account right now...
       if not IsWindowsAdminLoggedIn then
         ShowMessageFmt(rsNotRunningAsAdminCanNotSSL,[AppendPathDelim(WaptBaseDir)+'ssl']);
@@ -2421,6 +2428,7 @@ begin
           end;
         end
       end
+    {$ENDIF}
     end
   finally
     Free;
@@ -2937,7 +2945,9 @@ begin
     if ip <> '' then
     begin
       Args := ' -a /computer=' + ip;
+      {$IFDEF WINDOWS}
       ShellExecuteW(0, '', PWideChar('compmgmt.msc'), PWideChar(Args), nil, SW_SHOW)
+      {$ENDIF}
     end
     else
       ShowMessage(rsNoreachableIP);
@@ -2965,7 +2975,9 @@ begin
     if ip <> '' then
     begin
       Args := ' -a /computer=' + ip;
+      {$IFDEF WINDOWS}
       ShellExecuteW(0, '', PWideChar('services.msc'), PWideChar(Args), nil, SW_SHOW);
+      {$ENDIF}
     end
     else
       ShowMessage(rsNoreachableIP);
@@ -2993,7 +3005,9 @@ begin
     if ip <> '' then
     begin
       Args := ' -a /computer=' + ip;
+      {$IFDEF WINDOWS}
       ShellExecuteW(0, '', PWideChar('Lusrmgr.msc'), PWideChar(Args), nil, SW_SHOW)
+      {$ENDIF}
     end
     else
       ShowMessage(rsNoreachableIP);
@@ -3284,7 +3298,9 @@ begin
   begin
     ip := GetReachableIP(Gridhosts.FocusedRow['connected_ips'],3389);
     if ip <> '' then
+    {$IFDEF WINDOWS}
       ShellExecute(0, '', PAnsiChar('msra'), PAnsichar('/offerRA ' + ip), nil, SW_SHOW)
+    {$ENDIF}
     else
       ShowMessage(rsNoreachableIP);
   end;
@@ -3937,7 +3953,9 @@ begin
   begin
     ip := GetReachableIP(Gridhosts.FocusedRow['connected_ips'],3389);
     if ip <> '' then
+    {$IFDEF WINDOWS}
       ShellExecute(0, '', PAnsiChar('mstsc'), PAnsichar('/v:' + ip), nil, SW_SHOW)
+    {$ENDIF}
     else
       ShowMessage(rsNoreachableIP);
   end;
@@ -4507,8 +4525,10 @@ begin
   begin
     ip := GetReachableIP(Gridhosts.FocusedRow['connected_ips'],5900);
     if ip<>'' then
+    {$IFDEF WINDOWS}
       ShellExecute(0, '', PAnsiChar(GetVNCViewerPath),
         PAnsichar(ip), nil, SW_SHOW)
+    {$ENDIF}
     else
       ShowMessage(rsNoReachableIP);
   end;
@@ -4951,7 +4971,7 @@ begin
             WaptServerUUID := UTF8Encode(sores['result'].S['server_uuid']);
             WaptServerEdition := UTF8Encode(sores['result'].S['edition']);
             HostsCount := sores['result'].I['hosts_count'];
-            {$ifdef ENTERPRISE}
+            {$ifdef ENTERPRISE}  // TODO : make it work with enterprise
             {$include ..\waptenterprise\includes\uwaptconsole.login.check_licence.inc}
             {$endif}
             Result := True;
@@ -5253,7 +5273,11 @@ begin
           Result:= CompareStr(Node1.S['maturity'],Node2.S['maturity']);
       end
       else if pos('size',Columns[0])>0 then
+      {$IFDEF WINDOWS}
         Result:=CompareInt(Node1.I[Columns[0]],Node2.I[Columns[0]])
+      {$ELSE}
+      Result := 0 // TODO change
+      {$ENDIF}
       else if pos('version',Columns[0])>0 then
         Result:= CompareVersion(Node1.S[Columns[0]],Node2.S[Columns[0]])
       else
@@ -5419,7 +5443,7 @@ begin
   ActEditHostPackage.Execute;
 end;
 
-
+{$IFDEF WINDOWS}
 procedure TVisWaptGUI.GridHostsDragDrop(Sender: TBaseVirtualTree;
   Source: TObject; DataObject: IDataObject; Formats: TFormatArray;
   Shift: TShiftState; const Pt: TPoint; var Effect: DWORD; Mode: TDropMode);
@@ -5442,6 +5466,7 @@ begin
     end;
   end;
 end;
+{$ENDIF}
 
 procedure TVisWaptGUI.GridHostsDragOver(Sender: TBaseVirtualTree;
   Source: TObject; Shift: TShiftState; State: TDragState; const Pt: TPoint;
@@ -6238,8 +6263,10 @@ begin
   begin
     ip := GetReachableIP(Gridhosts.FocusedRow['connected_ips'],11100,2000);
     if ip<>'' then
+    {$IFDEF WINDOWS}
       ShellExecuteA(0, '', PAnsiChar(GetVeyonPath),PAnsiChar('remoteaccess control ' + ip),
       nil, SW_SHOW)
+    {$ENDIF}
     else
       ShowMessage(rsNoReachableIP);
   end;
@@ -6306,8 +6333,10 @@ begin
       [UTF8Encode(host.A['connected_ips'].S[0]),UTF8Encode(host.S['uuid']),UTF8Encode(host.S['computer_fqdn'])]
       ,[rfReplaceAll]));
 
+    {$IFDEF WINDOWS}
     ShellExecuteW(0,'',PWideChar(ExpandedExecutable),PWideChar(ExpandedArguments),
       Nil, SW_SHOW);
+    {$ENDIF}
   end;
 
 

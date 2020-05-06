@@ -60,7 +60,9 @@ type
   end;
 
 implementation
-uses Graphics,BCTools,JwaTlHelp32,Windows,Dialogs, uWAPTPollThreads, uWaptSelfRes, uVisWaptSelf, LCLTranslator, uDMWaptSelf, strutils;
+uses Graphics,BCTools,
+  {$IFDEF WINDOWS}JwaTlHelp32,Windows,{$ENDIF}
+  Dialogs, uWAPTPollThreads, uWaptSelfRes, uVisWaptSelf, LCLTranslator, uDMWaptSelf, strutils;
 {$R *.lfm}
 
 { TFrmPackage }
@@ -218,6 +220,7 @@ begin
 end;
 
 function TFrmPackage.Impacted_process(): boolean;
+{$IFDEF WINDOWS}
 var
   ContinueLoop: boolean;
   FSnapshotHandle: THandle;
@@ -247,7 +250,10 @@ begin
   ListExe.Free;
   CloseHandle(FSnapshotHandle);
 end;
-
+{$ELSE}
+begin
+end;
+{$ENDIF}
 function TFrmPackage.Accept_Impacted_process(): boolean;
 begin
   if Impacted_process()=false then

@@ -97,4 +97,48 @@ def get_secured_token_generator(secret_key=None):
         secret_key = app.conf['secret_key']
     return TimedJSONWebSignatureSerializer(secret_key, expires_in = app.conf['token_lifetime'])
 
+def get_user_groups(conf,username, password):
+    return ["waptservice"] #TODO change
+
+    '''
+    wapt_admin_group_dn = conf.get('wapt_admin_group_dn','')
+    if not wapt_admin_group_dn:
+        return False
+
+    dns_suffix = conf.get('wapt_admin_group_dn','')
+    dns_suffix = '.'.join(socket.getfqdn().split('.')[1:])
+    dc_name = conf.get('ldap_auth_server')
+    if not dc_name:
+        dc_name = str(socket.gethostbyname(dns_suffix))
+    logger.debug('Using %s as authentication ldap server' % dc_name)
+
+    dc_base_dn =  conf.get('ldap_auth_base_dn')
+    if not dc_base_dn:
+        dc_base_dn = ','.join(['dc=%s' % x for x in dns_suffix.split('.')])
+    logger.debug('Using %s as base DN' % dc_base_dn)
+
+    default_user_kerberos_realm = dc_base_dn.lower().split('dc=',1)[-1].replace('dc=','.').replace(',','')
+    dc_ssl_enabled = conf['ldap_auth_ssl_enabled']
+
+    if ':' in dc_name:
+        logger.error("DC_NAME must be a DNS server name or ip, not a ldap url")
+        raise Exception("DC_NAME must be a DNS server name or ip, not a ldap url")
+
+    auth_ok = False
+
+    # append a REALM if not provided.
+    if not '@' in username:
+        bind_username = '%s@%s' % (username, default_user_kerberos_realm)
+    else:
+        (username,user_kerberos_readm) = username.split('@')
+        if user_kerberos_readm != default_user_kerberos_realm:
+            auth_ok = False
+            logger.error("AUTH FAILED : User kerberos realm %s not matching default one %s" % (user_kerberos_readm,default_user_kerberos_realm))
+            return auth_ok
+
+
+    logger.debug('using dc %s for authentication, with base DN %s and bind username %s ' % (dc_name, dc_base_dn, bind_username))
+
+    ldap_filter = '(&(sAMAccountName=%s)(memberof:1.2.840.113556.1.4.1941:=%s))' % (username,wapt_admin_group_dn)
+'''
 

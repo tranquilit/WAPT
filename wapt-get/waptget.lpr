@@ -25,9 +25,9 @@ program waptget;
 {$modeswitch typehelpers}
 
 uses
-  {$IFDEF UNIX}{$IFDEF UseCThreads}
+  {$IFDEF UNIX}
   cthreads,
-  {$ENDIF}{$ENDIF}
+ {$ENDIF}
   Classes, SysUtils, CustApp,
   { you can add units after this }
   Interfaces, Windows, PythonEngine, VarPyth, superobject, soutils, tislogging, uWaptRes,

@@ -55,6 +55,7 @@
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
+        <Display Value=":1"/>
       </local>
     </RunParams>
     <RequiredPackages Count="7">

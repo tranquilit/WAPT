@@ -27,11 +27,14 @@
       <MajorVersionNr Value="1"/>
       <MinorVersionNr Value="7"/>
       <RevisionNr Value="4"/>
-      <BuildNr Value="6142"/>
+      <BuildNr Value="6177"/>
       <StringTable LegalCopyright="Tranquil IT Systems 2012-2019" ProductName="WAPT Enterprise Edition" ProductVersion="1.7.4"/>
     </VersionInfo>
     <BuildModes Count="1">
       <Item1 Name="Default" Default="True"/>
+      <SharedMatrixOptions Count="1">
+        <Item1 ID="999082934760" Type="IDEMacro"/>
+      </SharedMatrixOptions>
     </BuildModes>
     <PublishOptions>
       <Version Value="2"/>
@@ -41,46 +44,52 @@
         <FormatVersion Value="1"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="13">
+    <RequiredPackages Count="15">
       <Item1>
-        <PackageName Value="bgracontrols"/>
+        <PackageName Value="BGRABitmapPack"/>
       </Item1>
       <Item2>
-        <PackageName Value="RunTimeTypeInfoControls"/>
+        <PackageName Value="laz_synapse"/>
       </Item2>
       <Item3>
-        <PackageName Value="pltis_sogrid"/>
+        <PackageName Value="P4DLaz"/>
       </Item3>
       <Item4>
-        <PackageName Value="pltis_virtualtreesextra"/>
+        <PackageName Value="bgracontrols"/>
       </Item4>
       <Item5>
-        <PackageName Value="python4lazarus_package"/>
+        <PackageName Value="RunTimeTypeInfoControls"/>
       </Item5>
       <Item6>
-        <PackageName Value="luicontrols"/>
+        <PackageName Value="pltis_sogrid"/>
       </Item6>
       <Item7>
-        <PackageName Value="MemDSLaz"/>
+        <PackageName Value="pltis_virtualtreesextra"/>
       </Item7>
       <Item8>
-        <PackageName Value="pltis_wapt"/>
+        <PackageName Value="luicontrols"/>
       </Item8>
       <Item9>
-        <PackageName Value="pltis_utils"/>
+        <PackageName Value="MemDSLaz"/>
       </Item9>
       <Item10>
-        <PackageName Value="pltis_superobject"/>
+        <PackageName Value="pltis_wapt"/>
       </Item10>
       <Item11>
-        <PackageName Value="FCL"/>
+        <PackageName Value="pltis_utils"/>
       </Item11>
       <Item12>
-        <PackageName Value="SynEdit"/>
+        <PackageName Value="pltis_superobject"/>
       </Item12>
       <Item13>
-        <PackageName Value="LCL"/>
+        <PackageName Value="FCL"/>
       </Item13>
+      <Item14>
+        <PackageName Value="SynEdit"/>
+      </Item14>
+      <Item15>
+        <PackageName Value="LCL"/>
+      </Item15>
     </RequiredPackages>
     <Units Count="32">
       <Unit0>
@@ -327,7 +336,6 @@
     </CodeGeneration>
     <Linking>
       <Debugging>
-        <DebugInfoType Value="dsDwarf2Set"/>
         <StripSymbols Value="True"/>
         <UseExternalDbgSyms Value="True"/>
       </Debugging>
@@ -341,13 +349,7 @@
       <Verbosity>
         <ShowHints Value="False"/>
       </Verbosity>
-      <CustomOptions Value="-dENTERPRISE
--dDEVMODE"/>
-      <OtherDefines Count="3">
-        <Define0 Value="UseCThreads"/>
-        <Define1 Value="ENTERPRISE"/>
-        <Define2 Value="DEVMODE"/>
-      </OtherDefines>
+      <CustomOptions Value="-dDEVMODE -dENTERPRISE"/>
     </Other>
   </CompilerOptions>
   <Debugging>

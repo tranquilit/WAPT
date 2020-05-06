@@ -12,7 +12,8 @@ uses
   process,
 
   Interfaces, // this includes the LCL widgetset
-  Forms, Dialogs, Controls, windows, luicontrols, memdslaz,
+  Forms, Dialogs, Controls, {$IFDEF WINDOWS} windows, {$ENDIF}
+  luicontrols, memdslaz,
   runtimetypeinfocontrols, uwaptconsole, uVisCreateKey, dmwaptpython,
   uVisEditPackage, uviscreatewaptsetup, uvislogin, uvisprivatekeyauth,
   uvisloading, uviswaptconfig, uvischangepassword, uvistriggerhostsaction,

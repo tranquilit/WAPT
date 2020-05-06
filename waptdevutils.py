@@ -45,7 +45,9 @@ import json
 import jinja2
 import requests
 
-import active_directory
+if os.name == "nt":
+    import active_directory
+
 import codecs
 from iniparse import RawConfigParser
 import getpass
@@ -167,6 +169,9 @@ def diff_computer_ad_wapt(wapt,wapt_server_user='admin',wapt_server_passwd=None)
     >>> diff_computer_ad_wapt(wapt)
     ???
     """
+    if os.name != "nt":
+        return
+
     computer_ad =  set([ c['dnshostname'].lower() for c in active_directory.search("objectClass='computer'") if c['dnshostname'] and c.operatingSystem and c.operatingSystem.startswith('Windows')])
     computer_wapt = set( [ c['host_info']['computer_fqdn'].lower() for c in  wapt.waptserver.get('api/v1/hosts?columns=host.computer_fqdn',auth=(wapt_server_user,wapt_server_passwd))['result']])
     diff = list(computer_ad-computer_wapt)
@@ -181,6 +186,9 @@ def diff_computer_wapt_ad(wapt,wapt_server_user='admin',wapt_server_passwd=None)
 
     ???
     """
+    if os.name != "nt":
+        return
+
     computer_ad =  set([ c['dnshostname'].lower() for c in active_directory.search("objectClass='computer'") if c['dnshostname']])
     computer_wapt = set( [ c['computer_fqdn'].lower() for c in  wapt.waptserver.get('api/v1/hosts?columns=computer_fqdn',auth=(wapt_server_user,wapt_server_passwd))['result']])
     result = list(computer_wapt - computer_ad)
@@ -629,6 +637,9 @@ def get_computer_groups(computername):
     """Try to finc the computer in the Active Directory
     and return the list of groups
     """
+    if os.name != "nt":
+        return
+
     groups = []
     computer = active_directory.find_computer(computername)
     if computer:

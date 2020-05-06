@@ -17,12 +17,14 @@
             <string>/opt/wapt</string>
             <key>LC_ALL</key>
             <string>en_US.UTF-8</string>
+            <key>PATH</key>
+            <string>/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
         </dict>
         <key>RunAtLoad</key>
         <true/>
-	    <key>StandardOutPath</key>
-	    <string>/tmp/wapt.out</string>
-	    <key>StandardErrorPath</key>
-	    <string>/tmp/wapt.err</string>
+        <key>StandardOutPath</key>
+        <string>/tmp/wapt.out</string>
+        <key>StandardErrorPath</key>
+        <string>/tmp/wapt.err</string>
 </dict>
 </plist>

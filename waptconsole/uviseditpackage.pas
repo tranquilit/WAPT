@@ -7,8 +7,9 @@ interface
 uses
   Classes, SysUtils, LazUTF8, SynHighlighterPython, SynEdit, Forms, Controls,
   Graphics, Dialogs, ExtCtrls, StdCtrls, ComCtrls, ActnList, Menus, Buttons,
-  superobject, VirtualTrees, VarPyth, PythonEngine, types, ActiveX, LCLIntf,
-  LCL, sogrid, vte_json, DefaultTranslator, SearchEdit;
+  superobject, VirtualTrees, VarPyth, PythonEngine, types,
+  {$IFDEF WINDOWS}ActiveX,{$ENDIF}
+  LCLIntf, LCL, sogrid, vte_json, DefaultTranslator, SearchEdit;
 
 type
 
@@ -101,15 +102,19 @@ type
     procedure FormShow(Sender: TObject);
     function GridConflictsBeforePaste(Sender: TSOGrid; Row: ISuperObject
       ): boolean;
+    {$IFDEF WINDOWS}
     procedure GridConflictsDragDrop(Sender: TBaseVirtualTree; Source: TObject;
       DataObject: IDataObject; Formats: TFormatArray; Shift: TShiftState;
       const Pt: TPoint; var Effect: DWORD; Mode: TDropMode);
+    {$ENDIF}
     procedure GridConflictsNodesDelete(Sender: TSOGrid; Rows: ISuperObject);
     function GridDependsBeforePaste(Sender: TSOGrid; Row: ISuperObject
       ): boolean;
+    {$IFDEF WINDOWS}
     procedure GridDependsDragDrop(Sender: TBaseVirtualTree; Source: TObject;
       DataObject: IDataObject; Formats: TFormatArray; Shift: TShiftState;
       const Pt: TPoint; var Effect: DWORD; Mode: TDropMode);
+    {$ENDIF}
     procedure GridDependsDragOver(Sender: TBaseVirtualTree; Source: TObject;
       Shift: TShiftState; State: TDragState; const Pt: TPoint;
       Mode: TDropMode; var Effect: DWORD; var Accept: boolean);
@@ -171,8 +176,9 @@ var
 
 implementation
 
-uses uWaptConsoleRes,soutils, LCLType, Variants, waptcommon, dmwaptpython, jwawinuser, uvisloading,
-  uvisprivatekeyauth, uwaptconsole, tiscommon, uWaptRes,tisinifiles,tisstrings,
+uses uWaptConsoleRes,soutils, LCLType, Variants, waptcommon, dmwaptpython,
+  {$IFDEF WINDOWS} jwawinuser, {$ENDIF}
+  uvisloading, uvisprivatekeyauth, uwaptconsole, tiscommon, uWaptRes,tisinifiles,tisstrings,
   LazFileUtils, FileUtil, uWaptPythonUtils;
 
 {$R *.lfm}
@@ -440,8 +446,12 @@ begin
   if not Result then
   begin
     msg := rsSaveMods;
+    {$IFDEF WINDOWS}
     Rep := Application.MessageBox(PChar(msg), PChar(rsConfirmCaption), MB_APPLMODAL +
       MB_ICONQUESTION + MB_YESNOCANCEL);
+    {$ELSE}
+    Rep := Application.MessageBox(PChar(msg), PChar(rsConfirmCaption)); // TODO change
+    {$ENDIF}
     if (Rep = idYes) then
       Result := ActBuildUpload.Execute
     else
@@ -517,12 +527,14 @@ begin
   end;
 end;
 
+{$IFDEF WINDOWS}
 procedure TVisEditPackage.GridDependsDragDrop(Sender: TBaseVirtualTree;
   Source: TObject; DataObject: IDataObject; Formats: TFormatArray;
   Shift: TShiftState; const Pt: TPoint; var Effect: DWORD; Mode: TDropMode);
 begin
   AddDepends(Sender);
 end;
+{$ENDIF}
 
 procedure RemoveString(List:ISuperObject;St:string);
 var
@@ -842,12 +854,14 @@ begin
   GridConflictsUpdated := True;
 end;
 
+{$IFDEF WINDOWS}
 procedure TVisEditPackage.GridConflictsDragDrop(Sender: TBaseVirtualTree;
   Source: TObject; DataObject: IDataObject; Formats: TFormatArray;
   Shift: TShiftState; const Pt: TPoint; var Effect: DWORD; Mode: TDropMode);
 begin
   AddConflicts(Sender);
 end;
+{$ENDIF}
 
 procedure TVisEditPackage.GridConflictsNodesDelete(Sender: TSOGrid;
   Rows: ISuperObject);

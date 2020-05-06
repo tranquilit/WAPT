@@ -49,3 +49,5 @@ run("defaults write com.apple.loginwindow LoginHook /opt/wapt/session-setup.sh")
 os.chmod('/opt/wapt/runwaptagent.sh',0o755)
 os.chmod('/usr/local/bin/waptpython',0o755)
 os.chmod('/opt/wapt/wapt-get.sh',0o755)
+# waptexit
+run('sudo launchctl load -w /Library/LaunchDaemons/waptexit.plist')

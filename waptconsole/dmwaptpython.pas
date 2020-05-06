@@ -206,10 +206,14 @@ begin
   if FLanguage=AValue then Exit;
   FLanguage:=AValue;
   SetDefaultLang(FLanguage);
+  {$IFDEF Windows}
   if FLanguage='fr' then
     GetLocaleFormatSettings($1252, DefaultFormatSettings)
   else
     GetLocaleFormatSettings($409, DefaultFormatSettings);
+  {$ELSE}
+  // TODO
+  {$ENDIF}
 end;
 
 function TDMPython.CertificateIsCodeSigning(crtfilename: String): Boolean;
@@ -232,6 +236,7 @@ procedure TDMPython.DataModuleCreate(Sender: TObject);
 var
   st:TStringList;
   RegWaptBaseDir:String;
+  PythonLibName: String;
 begin
   {$ifdef ENTERPRISE}
   {$ifndef DEVMODE}
@@ -239,18 +244,30 @@ begin
   {$endif}
   {$endif}
 
+  {$ifdef WINDOWS}
+  PythonLibName := 'python27.dll';
+  {$else}
+  PythonLibName := 'libpython2.7.so';
+  {$endif}
+
   RegWaptBaseDir:=WaptBaseDir();
-  if not FileExistsUTF8(AppendPathDelim(RegWaptBaseDir)+'python27.dll') then
+  if not FileExistsUTF8(AppendPathDelim(RegWaptBaseDir) + PythonLibName) then
     RegWaptBaseDir:=RegisteredAppInstallLocation('wapt_is1');
 
   if RegWaptBaseDir='' then
+  begin
+    {$ifdef WINDOWS}
     RegWaptBaseDir:=RegisteredExePath('wapt-get.exe');
+    {$else}
+    RegWaptBaseDir:=GetWaptBaseDir();
+    {$endif}
+  end;
 
   with PythonEng do
   begin
     AutoLoad := False;
     DllPath := RegWaptBaseDir;
-    DllName := 'python27.dll';
+    DllName := PythonLibName;
     UseLastKnownVersion := False;
     LoadDLL;
   end;
@@ -592,10 +609,13 @@ begin
 end;
 
 function TDMPython.GetPackagesAuthorizedCA: Variant;
+var
+  CertDir: String;
 begin
   if VarIsEmpty(FPackagesAuthorizedCA) then
   try
-      FPackagesAuthorizedCA := waptcrypto.SSLCABundle(cert_pattern_or_dir := PyUTF8Decode(AuthorizedCertsDir));
+     CertDir:=AuthorizedCertsDir;
+      FPackagesAuthorizedCA := waptcrypto.SSLCABundle(cert_pattern_or_dir := CertDir);
       FPackagesAuthorizedCA.add_pems(IncludeTrailingPathDelimiter(WaptBaseDir)+'ssl\*.crt');
   finally
   end;

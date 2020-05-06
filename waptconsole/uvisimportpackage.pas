@@ -344,7 +344,11 @@ begin
           Result:= CompareStr(UTF8Encode(Node1.S['maturity']),UTF8Encode(Node2.S['maturity']));
       end else
       if pos('size',Columns[0])>0 then
+      {$IFDEF WINDOWS}
         Result:=CompareInt(Node1.I[Columns[0]],Node2.I[Columns[0]])
+      {$ELSE}
+        Result := 0 // TODO change
+      {$ENDIF}
       else if pos('version',Columns[0])>0 then
         Result:= CompareVersion(Node1.S[Columns[0]],Node2.S[Columns[0]])
       else

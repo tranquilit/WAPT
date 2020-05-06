@@ -1487,7 +1487,12 @@ begin
       LstTasks:=Self.LstTasks;
       if (LstTasks.IndexOf(UTF8Encode(Package.S['package'])))<>-1 then
       begin
+        {$IFDEF WINDOWS}
         TaskID:=Integer(LstTasks.Objects[LstTasks.IndexOf(UTF8Encode(Package.S['package']))]);
+        {$ELSE}
+        TaskID:=Integer(PtrUint(LstTasks.Objects[LstTasks.IndexOf(UTF8Encode(Package.S['package']))]));
+        {$ENDIF}
+
         if (ActionPackage='install') then
           begin
             BtnInstallUpgrade.Enabled:=false;

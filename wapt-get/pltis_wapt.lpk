@@ -19,52 +19,76 @@
     </CompilerOptions>
     <Description Value="Common files for wapt fpc"/>
     <Version Major="1" Minor="7" Release="4"/>
-    <Files Count="8">
+    <Files Count="14">
       <Item1>
-        <Filename Value="waptwinutils.pas"/>
-        <UnitName Value="waptwinutils"/>
+        <Filename Value="waptutils.pas"/>
+        <UnitName Value="waptutils"/>
       </Item1>
       <Item2>
-        <Filename Value="networkadapterinfo.pas"/>
-        <UnitName Value="NetworkAdapterInfo"/>
+        <Filename Value="waptwinutils.inc"/>
+        <Type Value="Include"/>
       </Item2>
       <Item3>
-        <Filename Value="uwaptres.pas"/>
-        <UnitName Value="uWaptRes"/>
+        <Filename Value="waptunixutils.inc"/>
+        <Type Value="Include"/>
       </Item3>
       <Item4>
-        <Filename Value="waptcommon.pas"/>
-        <UnitName Value="waptcommon"/>
+        <Filename Value="networkadapterinfo.pas"/>
+        <UnitName Value="NetworkAdapterInfo"/>
       </Item4>
       <Item5>
-        <Filename Value="waptdb.pas"/>
-        <UnitName Value="waptdb"/>
+        <Filename Value="uwaptres.pas"/>
+        <UnitName Value="uWaptRes"/>
       </Item5>
       <Item6>
-        <Filename Value="uwaptcrypto.pas"/>
-        <UnitName Value="uwaptcrypto"/>
+        <Filename Value="waptcommon.pas"/>
+        <UnitName Value="waptcommon"/>
       </Item6>
       <Item7>
-        <Filename Value="uwaptpythonutils.pas"/>
-        <UnitName Value="uWaptPythonUtils"/>
+        <Filename Value="waptcommonwin.inc"/>
+        <Type Value="Include"/>
       </Item7>
       <Item8>
+        <Filename Value="waptcommonunix.inc"/>
+        <Type Value="Include"/>
+      </Item8>
+      <Item9>
+        <Filename Value="waptdb.pas"/>
+        <UnitName Value="waptdb"/>
+      </Item9>
+      <Item10>
+        <Filename Value="uwaptcrypto.pas"/>
+        <UnitName Value="uwaptcrypto"/>
+      </Item10>
+      <Item11>
+        <Filename Value="uwaptpythonutils.pas"/>
+        <UnitName Value="uWaptPythonUtils"/>
+      </Item11>
+      <Item12>
         <Filename Value="uwaptpollthreads.pas"/>
         <UnitName Value="uWAPTPollThreads"/>
-      </Item8>
+      </Item12>
+      <Item13>
+        <Filename Value="uwaptpollthreadswindows.inc"/>
+        <Type Value="Include"/>
+      </Item13>
+      <Item14>
+        <Filename Value="uwaptpollthreadsunix.inc"/>
+        <Type Value="Include"/>
+      </Item14>
     </Files>
     <RequiredPkgs Count="6">
       <Item1>
-        <PackageName Value="laz_synapse"/>
+        <PackageName Value="P4DLaz"/>
       </Item1>
       <Item2>
-        <PackageName Value="dcpcrypt"/>
+        <PackageName Value="laz_synapse"/>
       </Item2>
       <Item3>
-        <PackageName Value="indylaz"/>
+        <PackageName Value="dcpcrypt"/>
       </Item3>
       <Item4>
-        <PackageName Value="python4lazarus_package"/>
+        <PackageName Value="indylaz"/>
       </Item4>
       <Item5>
         <PackageName Value="pltis_superobject"/>
