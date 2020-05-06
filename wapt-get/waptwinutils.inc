@@ -1,4 +1,3 @@
-unit waptwinutils;
 { -----------------------------------------------------------------------
 #    This file is part of WAPT
 #    Copyright (C) 2013  Tranquil IT Systems http://www.tranquil.it

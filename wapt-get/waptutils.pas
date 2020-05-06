@@ -23,7 +23,7 @@ unit waptutils;
 {$mode objfpc}{$H+}
 
 {$ifdef windows}
-{$include waptwinutils}
+{$include waptwinutils.inc}
 {$else}
-{$include waptunixutils}
+{$include waptunixutils.inc}
 {$endif}
