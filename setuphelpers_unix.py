@@ -210,7 +210,7 @@ def host_metrics():
     result['physical_memory'] = psutil.virtual_memory().total
     result['virtual_memory'] = psutil.swap_memory().total
     result['local_drives'] = local_drives()
-    result['logged_in_users'] = get_loggedinusers()
+    result['logged_in_users'] = list(get_loggedinusers())
     result['last_logged_on_user'] = get_last_logged_on_user()
 
     # memory usage
@@ -301,16 +301,28 @@ def get_dns_servers():
 
 def get_loggedinusers():
     suser = psutil.users()
-    result = []
+    result = {}
     for elem in suser:
         if not elem.name in result:
-            result.append(elem.name)
-    for p in psutil.process_iter():
-        if p.name().lower() == "xorg":
-            pp = psutil.Process(p.pid)
-            if not pp.username in result:
-                result.append(pp.username())
+            result[elem.name] = None
+    if platform.system() != 'Darwin':
+        output = run('loginctl list-sessions')
+        for line in output.split('\n'):
+            if 'SESSION' in line:
+                continue
+            if not line.startswith(' '):
+                continue
+            col = []
+            for c in line.split(' '):
+                if c == '':
+                    continue
+                col.append(c)
+            result[col[2]] = col[0]
     return result
+
+
+
+
 
 
 def get_last_logged_on_user():
