@@ -133,7 +133,7 @@ var
 
 implementation
 uses LCLIntf,dialogs,windows,graphics,tiscommon,tisinifiles,
-    waptcommon,waptwinutils,soutils,tisstrings,IdException,uWAPTPollThreads,
+    waptcommon,waptutils,soutils,tisstrings,IdException,uWAPTPollThreads,
     Win32Int;
 
 //Function ShutdownBlockReasonCreate(Handle: hWnd;pwszReason: LPCWSTR): Bool; StdCall; External 'user32';
