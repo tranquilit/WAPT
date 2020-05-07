@@ -31,7 +31,7 @@ uses
   Classes, SysUtils, CustApp,
   { you can add units after this }
   Interfaces, Windows, PythonEngine, VarPyth, superobject, soutils, tislogging, uWaptRes,
-  waptcommon, waptwinutils, tiscommon, tisstrings, LazFileUtils, FileUtil,
+  waptcommon, waptutils, tiscommon, tisstrings, LazFileUtils, FileUtil,
   IdAuthentication, Variants, IniFiles,uwaptcrypto,uWaptPythonUtils,
   tisinifiles,base64,IdComponent,httpsend,uWAPTPollThreads;
 

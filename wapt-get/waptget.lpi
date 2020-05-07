@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
   <ProjectOptions>
-    <Version Value="11"/>
+    <Version Value="10"/>
     <PathDelim Value="\"/>
     <General>
       <Flags>
@@ -36,10 +36,9 @@
       <Version Value="2"/>
     </PublishOptions>
     <RunParams>
-      <FormatVersion Value="2"/>
-      <Modes Count="1">
-        <Mode0 Name="default"/>
-      </Modes>
+      <local>
+        <FormatVersion Value="1"/>
+      </local>
     </RunParams>
     <RequiredPackages Count="4">
       <Item1>
@@ -59,16 +58,16 @@
       <Unit0>
         <Filename Value="waptget.lpr"/>
         <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="16"/>
-        <CursorPos X="15" Y="33"/>
+        <TopLine Value="18"/>
+        <CursorPos X="27" Y="34"/>
         <UsageCount Value="222"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit0>
       <Unit1>
         <Filename Value="waptcommon.pas"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="3"/>
         <CursorPos X="28" Y="6"/>
         <UsageCount Value="16"/>
@@ -101,6 +100,8 @@
       <Unit5>
         <Filename Value="waptwinutils.pas"/>
         <EditorIndex Value="-1"/>
+        <TopLine Value="8"/>
+        <CursorPos Y="24"/>
         <UsageCount Value="10"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit5>
@@ -155,7 +156,7 @@
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit11>
     </Units>
-    <JumpHistory Count="10" HistoryIndex="9">
+    <JumpHistory Count="11" HistoryIndex="10">
       <Position1>
         <Filename Value="waptcommon.pas"/>
         <Caret Line="405" Column="42" TopLine="387"/>
@@ -196,6 +197,10 @@
         <Filename Value="waptget.lpr"/>
         <Caret Line="214" Column="53" TopLine="42"/>
       </Position10>
+      <Position11>
+        <Filename Value="waptcommon.pas"/>
+        <Caret Line="6" Column="28"/>
+      </Position11>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
