@@ -12,7 +12,7 @@ uses
   soutils,
   tisstrings,
   tiscommon,
-  waptwinutils,
+  waptutils,
   uwaptcrypto;
 
   procedure WaitPendingTasks(timeout:Integer);
