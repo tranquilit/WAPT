@@ -1210,6 +1210,54 @@ class WaptAuditPackage(WaptTask):
         return (self.__class__ == other.__class__) and (self.packagenames == other.packagenames)
 
 
+class WaptDownloadIcon(WaptTask):
+    def __init__(self, target_packages, usecache=True, **args):
+        super(WaptDownloadIcon, self).__init__()
+        if not isinstance(target_packages, list):
+            self.target_packages = [target_packages]
+        else:
+            self.target_packages = target_packages
+        self.usecache = usecache
+        self.size = 0
+        for k in args:
+            setattr(self, k, args[k])
+
+    def printhook(self,received,total,speed,url):
+        self.wapt.check_cancelled()
+        if total > 1.0:
+            self.progress = 100.0 * received / total
+            stat = u'%i / %i (%.0f%%) (%.0f KB/s)\r' % (received, total, self.progress, speed)
+            if not self.size:
+                self.size = total
+        else:
+            stat = u''
+        self.update_status(_(u'Downloading icons %s : %s' % (url,stat)))
+
+    def _run(self):
+        self.update_status(_(u'Downloading icons %s') % (','.join(self.target_packages)))
+        start = time.time()
+        self.result = self.wapt.download_icons(self.target_packages,usecache=self.usecache,printhook=self.printhook)
+        end = time.time()
+        if self.result['errors']:
+            self.summary = _(u"Error while downloading icons {target_packages}: {error}").format(target_packages=','.join(self.target_packages),error=self.result['errors'][0][1])
+        else:
+            if end-start> 0.01:
+                self.summary = _(u"Done downloading icons {target_packages}. {speed} kB/s").format(target_packages=','.join(self.target_packages),speed=self.size/1024/(end-start))
+            else:
+                self.summary = _(u"Done downloading icons {target_packages}.").format(target_packages=','.join(self.target_packages))
+
+    def __unicode__(self):
+        return _(u"Installation of icons for {target_packages} (task #{id})").format(classname=self.__class__.__name__, id=self.id, target_packages=',')#.join(self.target_packages))
+
+    def as_dict(self):
+        d = WaptTask.as_dict(self)
+        d = dict(
+            target_packages = self.target_packages,
+            usecache = self.usecache,
+            )
+        return d
+
+
 # init translations
 waptconfig = WaptServiceConfig()
 if babel:

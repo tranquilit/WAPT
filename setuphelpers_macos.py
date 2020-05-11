@@ -318,6 +318,7 @@ def uninstall_app(app_name):
     print("Application \"{0}\" deleted.".format(app_name))
     return True
 
+
 def install_dmg(dmg_path, check_version=False):
     """ Installs a .dmg if it isn't already installed on the system.
 
