@@ -13,7 +13,7 @@ uses
   Classes,
   superobject,
   windows,
-  waptwinutils,
+  waptutils,
   tisinifiles,
   IdUri;
 
