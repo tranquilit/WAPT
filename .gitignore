@@ -113,3 +113,4 @@ waptsetup/waptsetuputil/lib
 /waptserver/pgsql*
 /waptself/*.exe
 /waptself/lib
+.gitmodules
