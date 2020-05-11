@@ -1183,17 +1183,17 @@ def get_auth_token():
             )
         return token_content
 
-#TODO rename endpoint 
-@app.route('/api/v3/login_server', methods[='HEAD', 'POST', 'GET'])
-@app.route('/login_server', methods[='HEAD', 'POST', 'GET'])
+#TODO rename endpoint
+@app.route('/api/v3/login_server', methods=['HEAD', 'POST', 'GET'])
+@app.route('/login_server', methods=['HEAD', 'POST', 'GET'])
 def login_server():
     """ Logs user in and returns the groups they belong to. For the option use_server_auth. """
     try:
         auth_result = get_auth_result(request)
-        
+
         if not auth_result:
             return authenticate()
-        
+
         # if basic auth, user was in authorization header
         user = auth_result['user']
         token_gen = get_secured_token_generator()
@@ -1269,7 +1269,7 @@ def login():
         msg = 'Authentication OK'
         spenttime = time.time() - starttime
         return make_response(result=result, msg=msg, status=200,request_time=spenttime)
-        
+
     except Exception as e:
         if 'auth_token' in session:
             del session['auth_token']
