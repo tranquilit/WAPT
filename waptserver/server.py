@@ -89,7 +89,6 @@ from waptserver.utils import get_dns_domain,get_wapt_edition,get_wapt_exe_versio
 
 from waptserver.common import get_secured_token_generator,get_server_uuid
 from waptserver.common import make_response,make_response_from_exception
-from waptserver.common import get_user_groups
 
 from waptserver.app import app
 from waptserver.auth import check_auth,change_admin_password,get_user_acls
@@ -1132,41 +1131,6 @@ def change_password():
             logger.critical('change_password failed %s' % (repr(e)))
             return make_response_from_exception(e)
 
-
-@app.route('/api/v3/login_server', methods=['HEAD', 'POST', 'GET'])
-@app.route('/login_server', methods=['HEAD', 'POST', 'GET'])
-def login_server():
-    """ Logs user in and returns the groups they belong to. For the option use_server_auth. """
-    try:
-        token_gen = get_secured_token_generator()
-
-        with WaptDB():
-            token_content = get_auth_token(auth_result)
-            try:
-                hosts_count = Hosts.select(fn.COUNT(Hosts.uuid)).tuples().first()[0] # pylint: disable=no-value-for-parameter
-            except:
-                hosts_count = None
-
-        result = dict(
-            token = token_gen.dumps(token_content),
-            server_uuid = get_server_uuid(),
-            version=__version__,
-            hosts_count = hosts_count,
-            server_domain = get_dns_domain(),
-            edition = get_wapt_edition(),
-            groups = get_user_groups('conf', user, 'password')
-            #client_headers = request.headers,
-        )
-        session.update(**auth_result)
-        msg = 'Authentication OK'
-        spenttime = time.time() - starttime
-        return make_response(result=result, msg=msg, status=200,request_time=spenttime)
-    except Exception as e:
-        if 'auth_token' in session:
-            del session['auth_token']
-        logger.debug(traceback.format_exc())
-        logger.critical('login failed %s' % (repr(e)))
-        return make_response_from_exception(e)
 
 @app.route('/api/v3/login', methods=['HEAD', 'POST', 'GET'])
 @app.route('/login', methods=['HEAD', 'POST', 'GET'])
