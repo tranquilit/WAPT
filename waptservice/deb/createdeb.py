@@ -320,7 +320,7 @@ if WAPTEDITION=='enterprise':
 
 
 # script to run waptagent in foreground mode
-copyfile(makepath(wapt_source_dir, 'runwaptagent.sh'),'./builddir/opt/wapt/runwaptagent.sh')
+copyfile(makepath(wapt_source_dir, 'runwaptservice.sh'),'./builddir/opt/wapt/runwaptservice.sh')
 copyfile(makepath(wapt_source_dir, 'wapt-get.sh'),'./builddir/opt/wapt/wapt-get.sh')
 copyfile(makepath(wapt_source_dir, 'waptpython'),'./builddir/usr/bin/waptpython')
 

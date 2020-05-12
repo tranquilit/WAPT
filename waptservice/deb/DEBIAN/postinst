@@ -46,11 +46,11 @@ run('chmod -R 700 /opt/wapt/private')
 if not(os.path.isdir('/opt/wapt/ssl')):
     os.mkdir('/opt/wapt/ssl')
 
-os.chmod('/opt/wapt/runwaptagent.sh',0o755)
+os.chmod('/opt/wapt/runwaptservice.sh',0o755)
 os.chmod('/usr/bin/waptpython',0o755)
 os.chmod('/opt/wapt/wapt-get.sh',0o755)
 
-os.symlink('/opt/wapt/runwaptagent.sh','/usr/bin/waptservice')
+os.symlink('/opt/wapt/runwaptservice.sh','/usr/bin/waptservice')
 os.symlink('/opt/wapt/wapt-get.sh','/usr/bin/wapt-get')
 
 # restart server if conf file is there and if it was already running

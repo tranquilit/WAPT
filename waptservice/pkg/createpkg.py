@@ -315,8 +315,8 @@ if WAPTEDITION=='enterprise':
           excludes = [' ','waptwua', 'waptconsole', 'includes', 'waptserver'])
 
 # script to run waptagent in foreground mode
-copyfile(makepath(wapt_source_dir, 'runwaptagent.sh'),'tmpbuild/payload/opt/wapt/runwaptagent.sh')
-os.symlink('/opt/wapt/runwaptagent.sh','tmpbuild/payload/usr/local/bin/waptservice')
+copyfile(makepath(wapt_source_dir, 'runwaptservice.sh'),'tmpbuild/payload/opt/wapt/runwaptservice.sh')
+os.symlink('/opt/wapt/runwaptservice.sh','tmpbuild/payload/usr/local/bin/waptservice')
 copyfile(makepath(wapt_source_dir, 'wapt-get.sh'),'tmpbuild/payload/opt/wapt/wapt-get.sh')
 os.symlink('/opt/wapt/wapt-get.sh','tmpbuild/payload/usr/local/bin/wapt-get')
 copyfile(makepath(wapt_source_dir, 'waptpython'),'tmpbuild/payload/usr/local/bin/waptpython')

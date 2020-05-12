@@ -62,7 +62,7 @@ mkdir -p %{buildroot}/usr/lib/systemd/
 %endif
 
 %attr(755,root,root)/opt/wapt/bin/
-%attr(755,root,root)/opt/wapt/runwaptagent.sh
+%attr(755,root,root)/opt/wapt/runwaptservice.sh
 %attr(755,root,root)/opt/wapt/wapt-get.sh
 %attr(755,root,root)/opt/wapt/setuphelpers.py*
 %attr(755,root,root)/opt/wapt/setuphelpers_linux.py*
@@ -100,7 +100,7 @@ chmod 750 /opt/wapt/conf
 chown -R wapt:root /opt/wapt/log
 chmod 755 /opt/wapt/log
 chmod 755 /opt/wapt/bin/*
-chmod 755 /opt/wapt/runwaptagent.sh
+chmod 755 /opt/wapt/runwaptservice.sh
 chmod 755 /usr/bin/waptpython
 chmod 755 /opt/wapt/wapt-get.sh
 mkdir -p /opt/wapt/ssl
@@ -109,12 +109,8 @@ chown root -R /opt/wapt/private
 chmod 700 -R /opt/wapt/private
 
 
-if [ ! -f /usr/bin/waptservice ]; then
-	ln -s /opt/wapt/runwaptagent.sh /usr/bin/waptservice
-fi
-if [ ! -f /usr/bin/wapt-get ]; then
-	ln -s /opt/wapt/wapt-get.sh /usr/bin/wapt-get
-fi
+ln -sf /opt/wapt/runwaptservice.sh /usr/bin/waptservice
+ln -sf /opt/wapt/wapt-get.sh /usr/bin/wapt-get
 
 cat << EOF > /opt/wapt/.profile
 # for python virtualenv
