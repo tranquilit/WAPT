@@ -3279,12 +3279,13 @@ def get_computername():
         _computername_expire = time.time()+ _dns_cache_ttl
     return _computername
 
+
 def messagebox(title,msg):
     win32api.MessageBox(0, msg, title, win32con.MB_ICONINFORMATION)
 
 
 def showmessage(msg):
-    win32api.MessageBox(0, msg, 'Information', win32con.MB_ICONINFORMATION)
+    messagebox("Information",msg)
 
 
 def register_ext(appname,fileext,shellopen,icon=None,otherverbs=[]):
