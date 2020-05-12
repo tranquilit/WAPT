@@ -32,7 +32,7 @@ import gzip
 
 from waptserver.app import app
 from waptserver.auth import check_auth,get_user_acls,has_any_right
-from waptserver.model import wapt_db,WaptUsers,WaptUserAcls, WaptDB
+from waptserver.model import wapt_db,WaptUsers, WaptDB
 
 try:
     # i18n
