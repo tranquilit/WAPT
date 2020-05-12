@@ -12,7 +12,7 @@
       <ResourceType Value="res"/>
       <UseXPManifest Value="True"/>
       <XPManifest>
-        <DpiAware Value="True"/>
+        <DpiAware Value="True/PM"/>
         <TextName Value="WAPT Self Service"/>
         <TextDesc Value=""/>
       </XPManifest>
@@ -154,7 +154,7 @@
     <Version Value="11"/>
     <PathDelim Value="\"/>
     <Target>
-      <Filename Value="..\waptself"/>
+      <Filename Value="..\waptselfbin"/>
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>

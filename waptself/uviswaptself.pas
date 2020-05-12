@@ -1648,7 +1648,10 @@ begin
         if FileExists(IconsDir+UTF8Encode(Package.S['package'])+'.png') then
           DeleteFile(IconsDir+UTF8Encode(Package.S['package'])+'.png');
         try
-          TWaptRepo(LstRepo.Objects[LstRepo.IndexOf(UTF8Encode(Package.S['repo']))]).IdWgetFromRepo(UTF8Encode(Package.S['repo_url'])+'/icons/'+UTF8Encode(Package.S['package'])+'.png',IconsDir+UTF8Encode(Package.S['package'])+'.png',Nil,Nil,Nil);
+          // TODO remove and download them in /list instead
+          //TWaptRepo(LstRepo.Objects[LstRepo.IndexOf(UTF8Encode(Package.S['repo']))])
+          //.IdWgetFromRepo(UTF8Encode(Package.S['repo_url'])+'/icons/'+UTF8Encode(Package.S['package'])+'.png',
+          //IconsDir+UTF8Encode(Package.S['package'])+'.png',Nil,Nil,Nil);
           try
             tmpLstIcons.Add(IconsDir+UTF8Encode(Package.S['package'])+'.png');
             g:=TPicture.Create;

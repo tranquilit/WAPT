@@ -2545,6 +2545,55 @@ class WaptHostRepo(WaptRepo):
 
         return {"downloaded":downloaded,"skipped":[],"errors":[],"packages":self.packages()}
 
+    def download_icons(self, icon_requests, target_dir=None, usecache=True, printhook=None):
+        """Download a list of packages from repo
+
+        Args:
+            icon_requests (list,PackageEntry): a list of PackageEntry to download their icons
+            target_dir (str): where to store downloaded Wapt Package files
+            usecache (bool): wether to try to use cached Wapt files if checksum is ok
+            printhook (callable): to show progress of download
+
+        Returns:
+            dict: {"downloaded":[local filenames],"skipped":[filenames in cache],"errors":[],"packages":self.packages()}
+        """
+        if not isinstance(package_requests,(list,tuple)):
+            package_requests = [ package_requests ]
+        if not target_dir:
+            target_dir = tempfile.mkdtemp()
+        downloaded = []
+        errors = []
+
+        self._load_packages_index()
+
+        # if multithread... we don't have host package in memory cache from last self._load_packages_index
+        for pr in package_requests:
+            for pe in self.packages():
+                if ((isinstance(pr,PackageEntry) and (pe == pr)) or
+                   (isinstance(pr,(str,unicode)) and pe.match(pr))):
+                    if not pe.filename:
+                        # fallback
+                        pfn = os.path.join(target_dir,pe.make_package_filename())
+                    else:
+                        pfn = os.path.join(target_dir,pe.filename)
+
+                    if pe._package_content is not None:
+                        with open(pfn,'wb') as package_zip:
+                            package_zip.write(pe._package_content)
+                        pe.localpath = pfn
+                        # for further reference
+                        if isinstance(pr,PackageEntry):
+                            pr.localpath = pfn
+                        downloaded.append(pfn)
+                        if not os.path.isfile(pfn):
+                            logger.warning('Unable to write host package %s into %s' % (pr.asrequirement(),pfn))
+                            errors.append(pfn)
+                    else:
+                        logger.warning('No host package content for %s' % (pr.asrequirement(),))
+                    break
+
+        return {"downloaded":downloaded,"skipped":[],"errors":[],"packages":self.packages()}
+
     def __repr__(self):
         return '<WaptHostRepo %s for host_id %s >' % (self.repo_url,self.host_id)
 

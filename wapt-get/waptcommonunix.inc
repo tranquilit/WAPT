@@ -2261,12 +2261,14 @@ begin
     if FAppIniFilename = '' then
       FAppIniFilename := AApplicationName+'.ini';
 
+    {$IFDEF WINDOWS}
     if ExtractFileDir(FAppIniFilename)='' then
-      FAppIniFilename := IncludeTrailingPathDelimiter(IncludeTrailingPathDelimiter(GetAppConfigDir(False)+AApplicationName)+FAppIniFilename);
+      FAppIniFilename := IncludeTrailingPathDelimiter(IncludeTrailingPathDelimiter(GetWindowsSpecialDir(CSIDL_LOCAL_APPDATA))+AApplicationName)+FAppIniFilename;
+    {$ELSE IFDEF LINUX}
     if ExtractFileExt(FAppIniFilename)='' then
-      FAppIniFilename := FAppIniFilename+'.ini';
-  end;
-  Result := FAppIniFilename;
+      FAppIniFilename := IncludeTrailingPathDelimiter(IncludeTrailingPathDelimiter(GetEnvironmentVariable('HOME') + '/.config' + AApplicationName) + FAppIniFilename;
+    {$ENDIF}
+  end;  Result := FAppIniFilename;
 end;
 
 function WaptIniFilename: String;

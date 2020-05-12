@@ -99,8 +99,7 @@ from waptpackage import PackageEntry,WaptLocalRepo
 from waptservice.waptservice_common import waptconfig,WAPTLOGGERS
 from waptservice.waptservice_common import forbidden,authenticate,allow_local,render_wapt_template
 from waptservice.waptservice_common import WaptClientUpgrade,WaptServiceRestart,WaptNetworkReconfig,WaptPackageInstall
-from waptservice.waptservice_common import WaptUpgrade,WaptUpdate,WaptUpdateServerStatus,WaptCleanup,WaptDownloadPackage,WaptLongTask,WaptAuditPackage
-from waptservice.waptservice_common import WaptRegisterComputer,WaptPackageRemove,WaptPackageForget
+from waptservice.waptservice_common import WaptUpgrade,WaptUpdate,WaptUpdateServerStatus,WaptCleanup,WaptDownloadPackage,WaptLongTask,WaptAuditPackage, WaptDownloadIcon
 from waptservice.waptservice_common import WaptEvents
 
 from waptservice.waptservice_socketio import WaptSocketIOClient
@@ -762,6 +761,13 @@ def all_packages(page=1):
 
         except sqlite3.Error as e:
             logger.critical(u"*********** Error %s:" % e.args[0])
+    
+    
+    # TODO only if waptselfservice 
+    print(rows)
+    if rows and request.args.get('download_icons'):
+        data = app.task_manager.add_task(WaptDownloadIcon(rows)).as_dict()
+     
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         for pe in rows:
             # some basic search scoring
@@ -860,17 +866,6 @@ def local_package_details():
             logger.critical(u"*********** Error %s:" % e.args[0])
             return Response(common.jsondump([]), mimetype='application/json')
 
-@app.route('/package_icon')
-@allow_local
-def package_icon():
-    """Return png icon for the required 'package' parameter
-    get it from local cache
-    """
-    package = request.args.get('package')
-    icon_local_cache = os.path.join(wapt_root_dir,'cache','icons')
-    if not os.path.isfile(os.path.join(icon_local_cache,package)):
-        package = 'unknown'
-    return send_from_directory(icon_local_cache,package+'.png',mimetype='image/png',as_attachment=True,attachment_filename=u'{}.png'.format(package),cache_timeout=43200)
 
 @app.route('/package_details')
 @app.route('/package_details.json')
