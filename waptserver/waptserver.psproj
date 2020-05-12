@@ -1,5 +1,5 @@
 ﻿[PyScripter]
-Version=3.6.1.0
+Version=3.6.3.0
 
 [Project]
 ClassName=TProjectRootNode
@@ -68,46 +68,42 @@ Name=waptserver
 
 [Project\ChildNodes\Node0\ChildNodes\Node2\ChildNodes\Node1\ChildNodes\Node0]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]..\waptenterprise\waptserver\auth_module_ad.py
+FileName=C:\tranquilit\wapt\waptenterprise\waptserver\enterprise.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node2\ChildNodes\Node1\ChildNodes\Node1]
 ClassName=TProjectFileNode
-FileName=C:\tranquilit\wapt\waptenterprise\waptserver\enterprise.py
+FileName=C:\tranquilit\wapt\waptenterprise\waptserver\repositories.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node2\ChildNodes\Node1\ChildNodes\Node2]
 ClassName=TProjectFileNode
-FileName=C:\tranquilit\wapt\waptenterprise\waptserver\repositories.py
+FileName=C:\tranquilit\wapt\waptenterprise\waptserver\repositories_socketio.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node2\ChildNodes\Node1\ChildNodes\Node3]
 ClassName=TProjectFileNode
-FileName=C:\tranquilit\wapt\waptenterprise\waptserver\repositories_socketio.py
+FileName=C:\tranquilit\wapt\waptenterprise\waptserver\repositories_tasks.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node2\ChildNodes\Node1\ChildNodes\Node4]
 ClassName=TProjectFileNode
-FileName=C:\tranquilit\wapt\waptenterprise\waptserver\repositories_tasks.py
+FileName=C:\tranquilit\wapt\waptenterprise\waptserver\store.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node2\ChildNodes\Node1\ChildNodes\Node5]
 ClassName=TProjectFileNode
-FileName=C:\tranquilit\wapt\waptenterprise\waptserver\store.py
+FileName=$[Project-Path]..\waptenterprise\waptserver\wsus.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node2\ChildNodes\Node1\ChildNodes\Node6]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]..\waptenterprise\waptserver\wsus.py
+FileName=$[Project-Path]..\waptenterprise\waptserver\wsus_common.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node2\ChildNodes\Node1\ChildNodes\Node7]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]..\waptenterprise\waptserver\wsus_common.py
-
-[Project\ChildNodes\Node0\ChildNodes\Node2\ChildNodes\Node1\ChildNodes\Node8]
-ClassName=TProjectFileNode
 FileName=C:\tranquilit\wapt\waptenterprise\waptserver\wsus_socketio.py
 
-[Project\ChildNodes\Node0\ChildNodes\Node2\ChildNodes\Node1\ChildNodes\Node9]
+[Project\ChildNodes\Node0\ChildNodes\Node2\ChildNodes\Node1\ChildNodes\Node8]
 ClassName=TProjectFileNode
 FileName=$[Project-Path]..\waptenterprise\waptserver\wsus_tasks.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node2\ChildNodes\Node1\ChildNodes]
-Count=10
+Count=9
 
 [Project\ChildNodes\Node0\ChildNodes\Node2\ChildNodes\Node2]
 ClassName=TProjectFolderNode
@@ -149,10 +145,14 @@ Count=5
 
 [Project\ChildNodes\Node0\ChildNodes\Node2\ChildNodes\Node4]
 ClassName=TProjectFileNode
+FileName=C:\tranquilit\wapt\waptenterprise\auth_module_ad.py
+
+[Project\ChildNodes\Node0\ChildNodes\Node2\ChildNodes\Node5]
+ClassName=TProjectFileNode
 FileName=C:\tranquilit\wapt\waptenterprise\licencing.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node2\ChildNodes]
-Count=5
+Count=6
 
 [Project\ChildNodes\Node0\ChildNodes\Node3]
 ClassName=TProjectFileNode

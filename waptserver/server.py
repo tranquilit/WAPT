@@ -102,7 +102,7 @@ git_hash = ''
 wapt_edition = ''
 
 try:
-    from waptenterprise.waptserver import auth_module_ad
+    from waptenterprise import auth_module_ad
 except ImportError as e:
     logger.debug(u'LDAP Auth disabled: %s' % e)
     auth_module_ad = None
@@ -1174,11 +1174,13 @@ def login():
             if auth_result['auth_method'] in ('ldap') and app.conf['auto_create_ldap_users']:
                 # add ACL
                 (user_data,_created) = WaptUsers.get_or_create(name=user)
-                if _created:
+                if _created or user_data.user_fingerprint_sha1 is None:
                     user_data.user_fingerprint_sha1 = user
                     user_data.save()
-                    (user_acls_rec,_created) = WaptUserAcls.get_or_create(user_fingerprint_sha1=user,perimeter_fingerprint='*',acls=['admin'])
+                    (user_acls_rec,_created) = WaptUserAcls.get_or_create(user_fingerprint_sha1=user)
                     if _created:
+                        user_acls.perimeter_fingerprint='*'
+                        user_acls.acls=['admin']
                         user_acls_rec.save()
             else:
                 user_data = WaptUsers.get(name=user)

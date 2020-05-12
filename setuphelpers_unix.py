@@ -606,13 +606,10 @@ def get_file_properties(fname,ignore_warning=True):
     >>> 'FileVersion' in xp and 'FileDescription' in xp
     True
     """
-    # TODO : POSIX version 
+    # TODO : POSIX version
     props = {}
-    
-    return props
 
-def messagebox(title,msg):
-    pass
+    return props
 
 def uac_enabled():
     return False
