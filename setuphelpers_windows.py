@@ -54,7 +54,7 @@ from win32com.taskscheduler import taskscheduler
 
 from waptutils import (Version,makepath,isfile,isdir,killtree,killalltasks,isrunning,CalledProcessErrorOutput,
     mkdirs,remove_file,currentdate,currentdatetime,ensure_dir,_lower,ini2winstr,
-    error,find_all_files,get_main_ip,ensure_list,TimeoutExpired,RunReader,RunOutput,run_notfatal,get_local_IPs)
+    error,find_all_files,get_main_ip,ensure_list,TimeoutExpired,RunReader,RunOutput,run_notfatal,get_local_IPs,networking)
 
 ## import only for windows
 import _subprocess
@@ -622,24 +622,6 @@ def default_gateway():
     else:
         return None
 
-def networking():
-    """return a list of (iface,mac,{addr,broadcast,netmask})
-    """
-    ifaces = netifaces.interfaces()
-    local_ips = get_local_IPs()
-
-    res = []
-    for i in ifaces:
-        params = netifaces.ifaddresses(i)
-        if netifaces.AF_LINK in params and params[netifaces.AF_LINK][0]['addr'] and not params[netifaces.AF_LINK][0]['addr'].startswith('00:00:00'):
-            iface = {'iface':i,'mac':params
-            [netifaces.AF_LINK][0]['addr']}
-            if netifaces.AF_INET in params:
-                iface.update(params[netifaces.AF_INET][0])
-                iface['connected'] = 'addr' in iface and iface['addr'] in local_ips
-            res.append( iface )
-    return res
-
 def host_info():
     """Read main workstation informations, returned as a dict
 
@@ -692,7 +674,14 @@ def host_info():
         info['gateways'] = [default_gateway()]
 
     info['connected_ips'] = get_local_IPs()
-    info['mac'] = [ c['mac'] for c in networking() if 'mac' in c and 'addr' in c and c['addr'] in info['connected_ips']]
+    list_mac = {}
+    for c in networking():
+        if 'mac' in c and 'addr' in c:
+            for m in c['addr']:
+                if m['addr'] in info['connected_ips']:
+                    list_mac[c['mac']] = None
+
+    info['mac'] = list(list_mac)
 
     info['win64'] = iswin64()
     info['description'] = registry_readstring(HKEY_LOCAL_MACHINE,r'SYSTEM\CurrentControlSet\services\LanmanServer\Parameters','srvcomment')

@@ -40,7 +40,7 @@ import datetime
 import platform
 import grp
 import pwd
-from waptutils import (ensure_unicode, makepath, ensure_dir,currentdate,currentdatetime,_lower,ini2winstr,error,get_main_ip,TimeoutExpired,RunReader,RunOutput,killtree,run_notfatal,get_local_IPs)
+from waptutils import (ensure_unicode, makepath, ensure_dir,currentdate,currentdatetime,_lower,ini2winstr,error,get_main_ip,TimeoutExpired,RunReader,RunOutput,killtree,run_notfatal,get_local_IPs,networking)
 import threading
 import psutil
 from subprocess import PIPE
@@ -235,25 +235,6 @@ def default_gateway():
         return None
 
 
-def networking():
-    """return a list of (iface,mac,{addr,broadcast,netmask})
-    """
-    ifaces = netifaces.interfaces()
-    local_ips = socket.gethostbyname_ex(socket.gethostname())[2]
-
-    res = []
-    for i in ifaces:
-        params = netifaces.ifaddresses(i)
-        if netifaces.AF_LINK in params and params[netifaces.AF_LINK][0]['addr'] and not params[netifaces.AF_LINK][0]['addr'].startswith('00:00:00'):
-            iface = {'iface':i,'mac':params
-            [netifaces.AF_LINK][0]['addr']}
-            if netifaces.AF_INET in params:
-                iface.update(params[netifaces.AF_INET][0])
-                iface['connected'] = 'addr' in iface and iface['addr'] in local_ips
-            res.append( iface )
-    return res
-
-
 def get_hostname():
     try:
         return socket.getfqdn().lower()
@@ -388,11 +369,19 @@ def host_info_common_unix():
     except:
         info['workgroup_name'] = ''
 
+    info['connected_ips'] = get_local_IPs()
+
+    list_mac = {}
+    for c in networking():
+        if 'mac' in c and 'addr' in c:
+            for m in c['addr']:
+                if m['addr'] in info['connected_ips']:
+                    list_mac[c['mac']] = None
+
     info['networking'] = networking()
     info['gateways'] = [get_default_gateways()]
     info['dns_servers'] = get_dns_servers()
-    info['connected_ips'] = get_local_IPs()
-    info['mac'] = [ c['mac'] for c in networking() if 'mac' in c and 'addr' in c and c['addr'] in info['connected_ips']]
+    info['mac'] = list(list_mac)
     info['kernel_version'] = get_kernel_version()
     #Fix for vscode don't know why it doesn't work : KeyError: 'brand'
     try:

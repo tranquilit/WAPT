@@ -1824,6 +1824,32 @@ def run_notfatal(*cmd,**args):
     except Exception as e:
         return ensure_unicode(e)
 
+
+def networking():
+    """return a list of (iface,mac,{addr,broadcast,netmask})
+    """
+    ifaces = netifaces.interfaces()
+    local_ips = get_local_IPs()
+    res = []
+    for i in ifaces:
+        params = netifaces.ifaddresses(i)
+        if netifaces.AF_LINK in params and params[netifaces.AF_LINK][0]['addr'] and not params[netifaces.AF_LINK][0]['addr'].startswith('00:00:00'):
+            iface = {'iface':i,'mac':params
+                    [netifaces.AF_LINK][0]['addr'],'addr':[]}
+            if netifaces.AF_INET in params :
+                for a in params[netifaces.AF_INET]:
+                    a['connected'] = 'addr' in a and a['addr'] in local_ips
+                    iface['addr'].append(a)
+            if netifaces.AF_INET6 in params :
+                for a in params[netifaces.AF_INET6]:
+                    if 'addr' in a:
+                        a['addr'] = a['addr'].split('%')[0]
+                    a['connected'] = 'addr' in a and a['addr'] in local_ips
+                    iface['addr'].append(a)
+            res.append( iface )
+    return res
+
+
 if __name__ == '__main__':
     import doctest
     import sys
