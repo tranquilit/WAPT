@@ -2500,7 +2500,7 @@ class WaptHostRepo(WaptRepo):
         """Download a list of packages from repo
 
         Args:
-            package_request (list,PackateEntry): a list of PackageEntry to download
+            package_request (list,PackageEntry): a list of PackageEntry to download
             target_dir (str): where to store downloaded Wapt Package files
             usecache (bool): wether to try to use cached Wapt files if checksum is ok
             printhook (callable): to show progress of download
@@ -2545,11 +2545,12 @@ class WaptHostRepo(WaptRepo):
 
         return {"downloaded":downloaded,"skipped":[],"errors":[],"packages":self.packages()}
 
-    def download_icons(self, icon_requests, target_dir=None, usecache=True, printhook=None):
+
+    def download_icons(self,package_requests,target_dir=None,usecache=True,printhook=None):
         """Download a list of packages from repo
 
         Args:
-            icon_requests (list,PackageEntry): a list of PackageEntry to download their icons
+            package_request (list,PackageEntry): a list of PackageEntry to download
             target_dir (str): where to store downloaded Wapt Package files
             usecache (bool): wether to try to use cached Wapt files if checksum is ok
             printhook (callable): to show progress of download
@@ -2585,6 +2586,8 @@ class WaptHostRepo(WaptRepo):
                         if isinstance(pr,PackageEntry):
                             pr.localpath = pfn
                         downloaded.append(pfn)
+                        icon_png = extract_iconpng_from_wapt(pfn)
+                        print(icon_png)#TODO remove 
                         if not os.path.isfile(pfn):
                             logger.warning('Unable to write host package %s into %s' % (pr.asrequirement(),pfn))
                             errors.append(pfn)
@@ -5103,6 +5106,88 @@ class Wapt(BaseObjectClass):
             errors.extend(res['errors'])
 
         return {"downloaded":downloaded,"skipped":skipped,"errors":errors,"packages":packages}
+
+
+    def download_icons(self, package_requests, usecache=True, printhook=None):
+        r"""Download a list of package icons (requests are of the form packagename (>version) )
+        returns a dict of {"downloaded,"skipped","errors"}
+
+        Args:
+            package_requests (str or list): list of packages to prefetch
+            usecache (boolean) : if True, don't download package if already in cache
+            printhook (func) : callback with signature report(received,total,speed,url) to display progress
+
+        Returns:
+            dict: with keys {"downloaded,"skipped","errors","packages"} and list of PackageEntry.
+
+        >>> wapt = Wapt(config_filename='c:/wapt/wapt-get.ini')
+        >>> def nullhook(*args):
+        ...     pass
+        >>> wapt.download_packages(['tis-firefox','tis-waptdev'],usecache=False,printhook=nullhook)
+        {'downloaded': [u'c:/wapt\\cache\\tis-firefox_37.0.2-9_all.wapt', u'c:/wapt\\cache\\tis-waptdev.wapt'], 'skipped': [], 'errors': []}
+        """
+
+        package_requests = self._ensure_package_requests_list(package_requests,keep_package_entries=True)
+
+        downloaded = []
+        skipped = []
+        errors = []
+        packages = []
+
+        for p in package_requests:
+            if isinstance(p,PackageRequest):
+                mp = self.waptdb.packages_matching(p)
+                if mp:
+                    packages.append(mp[-1])
+                else:
+                    errors.append((p,u'Unavailable package %s' % (p,)))
+                    logger.critical(u'Unavailable package %s' % (p,))
+            elif isinstance(p,PackageEntry):
+                packages.append(p)
+            elif isinstance(p,list) or isinstance(p,tuple):
+                packages.append(self.waptdb.package_entry_from_db(p[0],version_min=p[1],version_max=p[1]))
+            else:
+                raise Exception('Invalid package request %s' % p)
+
+        for entry in packages:
+            self.check_cancelled()
+
+            def report(received,total,speed,url):
+                self.check_cancelled()
+                try:
+                    if total>1:
+                        stat = u'%s : %i / %i (%.0f%%) (%.0f KB/s)\r' % (url,received,total,100.0*received/total, speed)
+                        print(stat)
+                    else:
+                        stat = u''
+                    self.runstatus = u'Downloading %s : %s' % (entry.package,stat)
+                except:
+                    self.runstatus = u'Downloading %s' % (entry.package,)
+            """
+            if not printhook:
+                printhook = report
+            """
+            if platform.system()=='Windows':
+                target_dir=self.package_cache_dir
+            else:
+                if os.geteuid()==0:
+                    target_dir=self.package_cache_dir
+                else:
+                    target_dir=os.path.join(os.path.expanduser("~"),"waptdev")
+                    if not os.path.isdir(target_dir):
+                        os.mkdir(target_dir)
+
+            res = self.get_repo(entry.repo).download_icons(entry,
+                target_dir=target_dir,
+                usecache=usecache,
+                printhook=printhook)
+
+            downloaded.extend(res['downloaded'])
+            skipped.extend(res['skipped'])
+            errors.extend(res['errors'])
+
+        return {"downloaded":downloaded,"skipped":skipped,"errors":errors,"packages":packages}
+
 
     def get_repo(self,repo_name):
         for r in self.repositories:
