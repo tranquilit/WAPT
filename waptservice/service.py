@@ -1035,24 +1035,6 @@ def upgrade():
         return render_wapt_template('default.html',data=data,title='Upgrade')
 
 
-@app.route('/download_upgrades')
-@app.route('/download_upgrades.json')
-@allow_local
-def download_upgrades():
-    force = int(request.args.get('force','0')) != 0
-    notify_user = int(request.args.get('notify_user','0')) != 0
-    all_tasks = []
-    wapt().update()
-    reqs = wapt().check_downloads()
-    for req in reqs:
-        all_tasks.append(app.task_manager.add_task(WaptDownloadPackage(req.asrequirement(),usecache=not force,notify_user=notify_user)).as_dict())
-    data = {'result':'OK','content':all_tasks}
-    if request.args.get('format','html')=='json' or request.path.endswith('.json'):
-        return Response(common.jsondump(data), mimetype='application/json')
-    else:
-        return render_wapt_template('default.html',data=data,title=_(u'Download upgrades'))
-
-
 @app.route('/update')
 @app.route('/update.json')
 @allow_local
@@ -1265,22 +1247,6 @@ def install():
         return Response(common.jsondump(data), mimetype='application/json')
     else:
         return render_wapt_template('install.html',data=data)
-
-
-@app.route('/package_download')
-@app.route('/package_download.json')
-@allow_local_auth
-def package_download():
-    package = request.args.get('package')
-    logger.info(u"download package %s" % package)
-    notify_user = int(request.args.get('notify_user','0')) == 1
-    usecache = int(request.args.get('usecache','1')) == 1
-    data = app.task_manager.add_task(WaptDownloadPackage(package,usecache=usecache,notify_user=notify_user)).as_dict()
-
-    if request.args.get('format','html')=='json' or request.path.endswith('.json'):
-        return Response(common.jsondump(data), mimetype='application/json')
-    else:
-        return render_wapt_template('default.html',data=data)
 
 
 @app.route('/remove', methods=['GET'])
