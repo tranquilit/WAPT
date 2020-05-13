@@ -285,7 +285,7 @@ var
   cbUseWizard, cbDontChangeServer, cbStaticUrl: TNewRadioButton;
   CustomPage: TWizardPage;
   edWaptServerUrl:TEdit;
-  labRepo,labServer: TLabel;
+  labRepo,labRepoExample,labServer,labServerExample: TLabel;
 
 procedure OnServerClicked(Sender:TObject);
 begin
@@ -398,49 +398,48 @@ begin
   cbStaticUrl := TNewRadioButton.Create(WizardForm);
   cbStaticUrl.Parent := CustomPage.Surface; 
   cbStaticUrl.Caption := ExpandConstant('{cm:StaticURLS}');
-  cbStaticUrl.Top := cbStaticUrl.Top + cbDontChangeServer.Top + cbDontChangeServer.Height + 5 * ScaleY(15);
+  cbStaticUrl.Width := CustomPage.SurfaceWidth;
+  cbStaticUrl.Top := cbDontChangeServer.Top + cbDontChangeServer.Height + 5;
   cbStaticUrl.Onclick := @OnServerClicked;
 
   labRepo := TLabel.Create(WizardForm);
   labRepo.Parent := CustomPage.Surface; 
-  labRepo.Left := cbStaticUrl.Left + 14;
+  labRepo.Left := cbStaticUrl.Left + 15;
   labRepo.Caption := 'Repos URL:';
-  labRepo.Top := labRepo.Top + cbStaticUrl.Top+ cbStaticUrl.Height + 7 * ScaleY(15);
-  
-  #if edition != "waptstarter"
-  labServer := TLabel.Create(WizardForm);
-  labServer.Parent := CustomPage.Surface; 
-  labServer.Left := cbStaticUrl.Left + 14; 
-  labServer.Caption := 'Server URL:';
-  labServer.Top := labServer.Top + cbStaticUrl.Top+ cbStaticUrl.Height + 10 * ScaleY(15);
-  #endif
+  labRepo.Top := cbStaticUrl.Top + cbStaticUrl.Height + 5;
 
   edWaptRepoUrl := TEdit.Create(WizardForm);
   edWaptRepoUrl.Parent := CustomPage.Surface; 
-  edWaptRepoUrl.Left :=labRepo.Left + labRepo.Width + 5;
-  edWaptRepoUrl.Width :=CustomPage.SurfaceWidth - cbStaticUrl.Width;
-  edWaptRepoUrl.Top := edWaptRepoUrl.Top + cbStaticUrl.Top+ cbStaticUrl.Height + 7 * ScaleY(15);
+  edWaptRepoUrl.Left := labRepo.Left + labRepo.Width + 5;
+  edWaptRepoUrl.Width := CustomPage.SurfaceWidth - labRepo.Width - (labRepo.Left * 2);
+  edWaptRepoUrl.Top := labRepo.Top;
   edWaptRepoUrl.text := 'unknown';
 
-  labRepo := TLabel.Create(WizardForm);
-  labRepo.Parent := CustomPage.Surface; 
-  labRepo.Left := edWaptRepoUrl.Left + 5;
-  labRepo.Caption := 'example: https://srvwapt.domain.lan/wapt';
-  labRepo.Top := edWaptRepoUrl.Top + edWaptRepoUrl.Height + ScaleY(2);
+  labRepoExample := TLabel.Create(WizardForm);
+  labRepoExample.Parent := CustomPage.Surface; 
+  labRepoExample.Left := edWaptRepoUrl.Left;
+  labRepoExample.Caption := 'example: https://srvwapt.domain.lan/wapt';
+  labRepoExample.Top := edWaptRepoUrl.Top + edWaptRepoUrl.Height + 3;
 
   #if edition != "waptstarter"
+  labServer := TLabel.Create(WizardForm);
+  labServer.Parent := CustomPage.Surface; 
+  labServer.Left := cbStaticUrl.Left + 15; 
+  labServer.Caption := 'Server URL:';
+  labServer.Top := labRepoExample.Top + labRepoExample.Height + 5;
+  
   edWaptServerUrl := TEdit.Create(WizardForm);;
   edWaptServerUrl.Parent := CustomPage.Surface; 
   edWaptServerUrl.Left :=labServer.Left + labServer.Width+5;
-  edWaptServerUrl.Width :=CustomPage.SurfaceWidth - cbStaticUrl.Width;
-  edWaptServerUrl.Top := edWaptServerUrl.Top + edWaptRepoUrl.Height + 10 * ScaleY(15); 
+  edWaptServerUrl.Width := CustomPage.SurfaceWidth - labServer.Width - (labServer.Left * 2);
+  edWaptServerUrl.Top := labServer.Top; 
   edWaptServerUrl.Text := 'unknown';  
 
-  labServer := TLabel.Create(WizardForm);
-  labServer.Parent := CustomPage.Surface; 
-  labServer.Left := edWaptServerUrl.Left + 5; 
-  labServer.Caption := 'example: https://srvwapt.domain.lan';
-  labServer.Top := edWaptServerUrl.Top + edWaptServerUrl.Height + ScaleY(2);
+  labServerExample := TLabel.Create(WizardForm);
+  labServerExample.Parent := CustomPage.Surface; 
+  labServerExample.Left := edWaptServerUrl.Left; 
+  labServerExample.Caption := 'example: https://srvwapt.domain.lan';
+  labServerExample.Top := edWaptServerUrl.Top + edWaptServerUrl.Height + 3;
   #endif
 end;
 #endif
