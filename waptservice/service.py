@@ -405,8 +405,8 @@ def check_auth(logon_name, password,check_token_in_password=True,for_group='wapt
             list_group = []
             if not(app.waptconfig.waptservice_admin_filter):
                 #TODO found sudo ?
-                list_group = [for_group,'root']
-            if for_group in get_user_self_service_groups_unix(username,password,list_group):
+                list_group = [for_group, 'root', 'sudo']
+            if get_user_self_service_groups_unix(username, password, list_group):
                 return True
             else:
                 return False
