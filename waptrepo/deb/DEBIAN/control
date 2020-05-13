@@ -1,9 +1,0 @@
-Package: tis-waptrepo
-Version: 0.0.7
-Section: base
-Priority: optional
-Architecture: all
-Depends: python, nginx
-Maintainer: Tranquil-IT-Systems <admin@tranquil-it-systems.fr>
-Description: WAPT Packages repository server based on nginx and additional scan packages / sign packages tools.
-Homepage: http://www.tranquil-it-systems.fr
