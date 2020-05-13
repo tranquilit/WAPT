@@ -253,6 +253,9 @@ def load_config(cfgfile=DEFAULT_CONFIG_FILE):
         if _config.has_option('options',option):
             conf[option] = _config.get('options', option)
 
+    if _config.has_option('options','wapt_admin_group'):
+        conf['wapt_admin_group'] = [elem.strip() for elem in _config.get('options','wapt_admin_group').split(',')]
+
     if _config.has_option('options', 'ldap_auth_ssl_enabled'):
         conf['ldap_auth_ssl_enabled'] = _config.getboolean('options', 'ldap_auth_ssl_enabled')
 

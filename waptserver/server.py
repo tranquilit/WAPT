@@ -1177,9 +1177,8 @@ def login():
                 if _created or user_data.user_fingerprint_sha1 is None:
                     user_data.user_fingerprint_sha1 = user
                     user_data.save()
-                    (user_acls_rec,_created) = WaptUserAcls.get_or_create(user_fingerprint_sha1=user)
+                    (user_acls_rec,_created) = WaptUserAcls.get_or_create(user_fingerprint_sha1=user,perimeter_fingerprint='*')
                     if _created:
-                        user_acls.perimeter_fingerprint='*'
                         user_acls.acls=['admin']
                         user_acls_rec.save()
             else:
