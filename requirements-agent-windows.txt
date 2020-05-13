@@ -3,4 +3,5 @@ kerberos-sspi==0.2
 winkerberos==0.7.0 
 winshell==0.6 
 winsys-3.x==0.5.2
+ujson==1.35
 WMI==1.4.9
