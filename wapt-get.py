@@ -724,6 +724,23 @@ def main():
                     sys.exit(1)
                 result = []
 
+
+                if sys.platform != 'win32':
+                    maxuid = 1000
+
+                    if sys.platform.startswith('darwin'):
+                        maxuid = 500
+
+                    if os.path.isfile('/etc/login.defs'):
+                        with open('/etc/login.defs', 'r') as f :
+                            data = f.read()
+                            if '\nUID_MIN' in data:
+                                maxuid = int(data.split('\nUID_MIN')[1].split('\n')[0].strip())
+
+                    if os.getuid() < maxuid:
+                        print(u"Session-setup does not apply for a uid below %s" % maxuid)
+                        sys.exit(0)
+
                 if args[1] == 'ALL':
                     for package in mywapt.installed():
                         try:
