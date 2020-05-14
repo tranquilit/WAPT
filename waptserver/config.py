@@ -92,8 +92,8 @@ _defaults = {
     'signature_clockskew':5*60,
     'token_lifetime': 12*60*60,
     'application_root':'',
-    'wapt_admin_group_dn':None,
-    'wapt_admin_group':None,
+    'wapt_admin_group_dn':[],
+    'wapt_admin_group':[],
     'ldap_auth_server':None,
     'ldap_auth_base_dn':None,
     'ldap_auth_ssl_enabled':True,
@@ -249,7 +249,7 @@ def load_config(cfgfile=DEFAULT_CONFIG_FILE):
     if _config.has_option('options', 'application_root'):
         conf['application_root'] = _config.get('options', 'application_root')
 
-    for option in ('wapt_admin_group_dn','wapt_admin_group','ldap_auth_server','ldap_auth_base_dn'):
+    for option in ('wapt_admin_group_dn','ldap_auth_server','ldap_auth_base_dn'):
         if _config.has_option('options',option):
             conf[option] = _config.get('options', option)
 
