@@ -154,6 +154,7 @@ Filename: {app}\wapt-get.ini; Section: global; Key: maturities; String: {#maturi
 
 Filename: {app}\wapt-get.ini; Section: global; Key: uuid; String: {code:GenerateHostUUID}; Check: MustChangeHostUUID;
 
+#if edition != "waptserversetup"
 Filename: {app}\wapt-get.ini; Section: global; Key: max_gpo_script_wait; String: 180; Tasks: DisableHiberboot;
 Filename: {app}\wapt-get.ini; Section: global; Key: pre_shutdown_timeout; String: 180; Tasks: DisableHiberboot; 
 Filename: {app}\wapt-get.ini; Section: global; Key: hiberboot_enabled; String: {code:Gethiberboot_enabled};
