@@ -154,9 +154,6 @@ Filename: {app}\wapt-get.ini; Section: global; Key: maturities; String: {#maturi
 
 Filename: {app}\wapt-get.ini; Section: global; Key: uuid; String: {code:GenerateHostUUID}; Check: MustChangeHostUUID;
 
-#if edition != "waptserversetup"
-Filename: {app}\wapt-get.ini; Section: global; Key: dnsdomain; String: {code:GetDNSDomain}; Check: MustChangeServerConfig;
-
 Filename: {app}\wapt-get.ini; Section: global; Key: max_gpo_script_wait; String: 180; Tasks: DisableHiberboot;
 Filename: {app}\wapt-get.ini; Section: global; Key: pre_shutdown_timeout; String: 180; Tasks: DisableHiberboot; 
 Filename: {app}\wapt-get.ini; Section: global; Key: hiberboot_enabled; String: {code:Gethiberboot_enabled};
@@ -250,6 +247,9 @@ en.WAPTConsole=WAPT Management console
 en.WAPTSelf=WAPT Softwares self service
 en.UseRandomUUID=Use a random UUID to identify the computer instead of BIOS
 en.InstallationOptions=Installation options
+en.RepoURL=Repository URL:
+en.ServerURL=Server URL:
+en.Example=Example
 
 ;French translations here
 fr.StartAfterSetup=Lancer WAPT session setup à l'ouverture de session
@@ -272,6 +272,9 @@ fr.WAPTConsole=Console WAPT
 fr.WAPTSelf=Self service logiciels WAPT
 fr.UseRandomUUID=Utiliser un UUID aléatoire pour identifier l'ordinateur au lieu du BIOS
 fr.InstallationOptions=Options d'installation
+fr.RepoURL=URL du dépôt :
+fr.ServerURL=URL du serveur :
+fr.Example=Exemple
 
 ;German translation here
 de.StartAfterSetup=WAPT Setup-Sitzung bei Sitzungseröffnung starten
@@ -298,7 +301,7 @@ end;
 #if edition != "waptserversetup"
 function GetRepoURL(Param:String):String;
 begin
-  if cbStaticUrl.Checked then
+  if not cbStaticUrl.Checked then
     result := ''
   else
   if edWaptRepoUrl.Text <> 'unknown' then
@@ -332,17 +335,6 @@ begin
         result := GetIniString('Global', 'wapt_server','{#default_wapt_server}', ExpandConstant('{app}\wapt-get.ini'));
     end;
   end;
-end;
-
-function GetDNSDomain(Param: String):String;
-begin
-    result := ExpandConstant('{param:dnsdomain|unknown}');
-    if result='unknown' then
-    begin
-      result := '{#default_dnsdomain}';
-      if result = '' then
-        result := GetIniString('Global', 'dnsdomain','{#default_dnsdomain}', ExpandConstant('{app}\wapt-get.ini'))
-    end;
 end;
 #endif
 
@@ -405,7 +397,7 @@ begin
   labRepo := TLabel.Create(WizardForm);
   labRepo.Parent := CustomPage.Surface; 
   labRepo.Left := cbStaticUrl.Left + 15;
-  labRepo.Caption := 'Repos URL:';
+  labRepo.Caption := ExpandConstant('{cm:RepoURL}');
   labRepo.Top := cbStaticUrl.Top + cbStaticUrl.Height + 5;
 
   edWaptRepoUrl := TEdit.Create(WizardForm);
@@ -418,14 +410,14 @@ begin
   labRepoExample := TLabel.Create(WizardForm);
   labRepoExample.Parent := CustomPage.Surface; 
   labRepoExample.Left := edWaptRepoUrl.Left;
-  labRepoExample.Caption := 'example: https://srvwapt.domain.lan/wapt';
+  labRepoExample.Caption := ExpandConstant('{cm:Example}')+': https://srvwapt.domain.lan/wapt';
   labRepoExample.Top := edWaptRepoUrl.Top + edWaptRepoUrl.Height + 3;
 
   #if edition != "waptstarter"
   labServer := TLabel.Create(WizardForm);
   labServer.Parent := CustomPage.Surface; 
   labServer.Left := cbStaticUrl.Left + 15; 
-  labServer.Caption := 'Server URL:';
+  labServer.Caption := ExpandConstant('{cm:ServerURL}');
   labServer.Top := labRepoExample.Top + labRepoExample.Height + 5;
   
   edWaptServerUrl := TEdit.Create(WizardForm);;
@@ -438,7 +430,7 @@ begin
   labServerExample := TLabel.Create(WizardForm);
   labServerExample.Parent := CustomPage.Surface; 
   labServerExample.Left := edWaptServerUrl.Left; 
-  labServerExample.Caption := 'example: https://srvwapt.domain.lan';
+  labServerExample.Caption := ExpandConstant('{cm:Example}')+': https://srvwapt.domain.lan';
   labServerExample.Top := edWaptServerUrl.Top + edWaptServerUrl.Height + 3;
   #endif
 end;
@@ -707,8 +699,8 @@ begin
         #if edition != "waptstarter"
         edWaptServerUrl.Text := GetWaptServerURL('');  
         #endif
-        cbUseWizard.Checked := cbUseWizard.Visible and (GetRepoURL('') = '') and (GetIniString('Global', 'dnsdomain','', ExpandConstant('{app}\wapt-get.ini')) = '');
-        cbDontChangeServer.Checked := not cbUseWizard.Checked and not (GetRepoURL('') = '') and (GetIniString('Global', 'dnsdomain','', ExpandConstant('{app}\wapt-get.ini')) = '');
+        cbUseWizard.Checked := cbUseWizard.Visible and (GetRepoURL('') = '');
+        cbDontChangeServer.Checked := not cbUseWizard.Checked and not (GetRepoURL('') = '');
         cbStaticUrl.Checked := (edWaptRepoUrl.Text<>'') and (edWaptRepoUrl.Text<>'unknown');
         //edWaptServerUrl.Visible := IsTaskSelected('use_waptserver');
         //labServer.Visible := edWaptServerUrl.Visible;
