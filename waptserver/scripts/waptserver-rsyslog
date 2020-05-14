@@ -2,3 +2,8 @@ if $programname == 'waptserver' then {
             /var/log/waptserver.log
                         ~
 }
+
+if $programname == 'wapttasks' then {
+			/var/log/wapttasks.log
+						~
+}

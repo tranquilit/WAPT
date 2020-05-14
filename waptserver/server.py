@@ -39,6 +39,10 @@ if __name__ == '__main__':
 import platform
 import os
 
+if platform.system() != 'Windows':
+    import setproctitle
+    setproctitle.setproctitle('waptserver')
+
 from waptserver.config import __version__
 
 import time

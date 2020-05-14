@@ -24,7 +24,12 @@ from __future__ import absolute_import
 from waptserver.config import __version__
 
 import os
+import platform
 import sys
+
+if platform.system() != 'Windows':
+    import setproctitle
+    setproctitle.setproctitle('wapttasks')
 
 try:
     wapt_root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
