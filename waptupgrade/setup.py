@@ -67,15 +67,6 @@ TASK_TEMPLATE="""\
 """
 
 
-def update_registry_version(version):
-    # updatethe registry
-    with _winreg.CreateKeyEx(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\WAPT_is1',\
-            0, _winreg.KEY_READ| _winreg.KEY_WRITE ) as waptis:
-        reg_setvalue(waptis,"DisplayName","WAPT %s" % version)
-        reg_setvalue(waptis,"DisplayVersion","%s" % version)
-        reg_setvalue(waptis,"InstallDate",currentdate())
-
-
 def sha256_for_file(fname, block_size=2**20):
     f = open(fname,'rb')
     sha256 = hashlib.sha256()
@@ -149,7 +140,7 @@ def install():
     if os.path.isfile(waptexe):
         installed_wapt_version = get_file_properties(waptexe)['FileVersion']
     else:
-        installed_wapt_version = '0.0.0'
+        installed_wapt_version = '0.0.0.0'
 
     # get upgrade package informations
     (package_wapt_version,package_packaging) = control.version.split('-')
@@ -160,9 +151,20 @@ def install():
     if not force and Version(installed_wapt_version,4) >= Version(package_wapt_version,4):
         print('Your current WAPT (%s) is same or more recent than the upgrade package (%s). Skipping...'%(installed_wapt_version,control.version))
     else:
-        print('Setting up upgrade from WAPT version %s to %s. waptagent install planned for %s'%(installed_wapt_version,package_wapt_version,time.ctime(time.time() + 1*60)))
-        full_waptagent_install(str(Version(package_wapt_version,4)))
-        update_registry_version(package_wapt_version)
+        try:
+            run('SCHTASKS /Run /TN "fullwaptupgrade"')
+        except:
+            print('Setting up upgrade from WAPT version %s to %s. waptagent install planned for %s'%(installed_wapt_version,package_wapt_version,time.ctime(time.time() + 1*60)))
+            full_waptagent_install(str(Version(package_wapt_version,4)))
+
+
+def audit():
+    # Comparing installed WAPT agent version and packages version
+    if Version(installed_wapt_version,4) >= Version(package_wapt_version,4):
+        error('The installed WAPT version and this version of the WAPT agent packages is not corresponding.')
+    else:
+        print('The installed WAPT version and this version of the WAPT agent packages is corresponding, all good.')
+        return "OK"
 
 
 if __name__ == '__main__':
