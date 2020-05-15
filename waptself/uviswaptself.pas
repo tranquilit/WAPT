@@ -1296,7 +1296,7 @@ end;
 function TVisWaptSelf.GetAllPackages: ISuperObject;
 begin
   if FAllPackages = Nil then
-    FAllPackages := DMWaptSelf.JSONGet('packages.json?latest=1');
+    FAllPackages := DMWaptSelf.JSONGet('packages.json?latest=1&download_icons=1');
   Result:=GetAllPackagesSorted(FAllPackages);
 end;
 

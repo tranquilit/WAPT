@@ -3770,6 +3770,7 @@ class WaptRemoteRepo(WaptBaseRepo):
 
         return {"downloaded":downloaded,"skipped":skipped,"errors":errors,"packages":packages}
 
+
     def download_icons(self,package_requests,target_dir=None,usecache=True,printhook=None):
         r"""Download a list of icons from packages (requests are of the form packagename (>version) )
            returns a dict of {"downloaded,"skipped","errors"}
@@ -3811,6 +3812,13 @@ class WaptRemoteRepo(WaptBaseRepo):
 
         with self.get_requests_session() as session:
             for entry in packages:
+
+                icon_file = os.path.join(target_dir, 'icons', entry.package_uuid + '.png') #TODO don't use filename
+
+                if os.path.isfile(icon_file):
+                    logger.info(u"Skipping icon for " + entry.package + ", already downloaded")
+                    continue
+
                 download_url = entry.download_url
                 fullpackagepath = os.path.join(target_dir,entry.filename)
                 skip = False
@@ -3832,52 +3840,55 @@ class WaptRemoteRepo(WaptBaseRepo):
                         # error : reload
                         logger.debug(u'Cache file %s is corrupted, reloading it. Error : %s' % (fullpackagepath, e) )
 
-                if not skip:
-                    logger.info(u"  Downloading package from %s" % download_url)
-                    try:
-                        def report(received,total,speed,url):
-                            try:
-                                if total>1:
-                                    stat = u'%s : %i / %i (%.0f%%) (%.0f KB/s)\r' % (url,received,total,100.0*received/total, speed)
-                                    print(stat)
-                                else:
-                                    stat = ''
-                            except:
-                                pass
-                        """
-                        if not printhook:
-                            printhook = report
-                        """
-                        wget(download_url,
-                            target_dir,
-                            printhook = printhook,
-                            connect_timeout=self.timeout,
-                            resume= usecache,
-                            md5 = entry.md5sum,
-                            requests_session=session,
-                            limit_bandwidth=self.limit_bandwidth,
-                            )
+                if skip:
+                    continue
 
-                        pkg_name = download_url.rsplit('/', 1)[1]
-                        download_location = os.path.join(target_dir, pkg_name)
-
+                logger.info(u"  Downloading package for icon from %s" % download_url)
+                try:
+                    def report(received,total,speed,url):
                         try:
-                            icon_png = extract_iconpng_from_wapt(download_location)
-                            icon_file = os.path.join(target_dir, 'icons', pkg_name + '.png') #TODO don't use filename
-                            with open(icon_file, 'w'):
-                                write(icon_file, icon_png)
-                        except Exception as e:
+                            if total>1:
+                                stat = u'%s : %i / %i (%.0f%%) (%.0f KB/s)\r' % (url,received,total,100.0*received/total, speed)
+                                print(stat)
+                            else:
+                                stat = ''
+                        except:
                             pass
+                    """
+                    if not printhook:
+                        printhook = report
+                    """
+                    wget(download_url,
+                        target_dir,
+                        printhook = printhook,
+                        connect_timeout=self.timeout,
+                        resume= usecache,
+                        md5 = entry.md5sum,
+                        requests_session=session,
+                        limit_bandwidth=self.limit_bandwidth,
+                        )
 
-                        os.remove(download_location)
+                    downloaded_filename = download_url.rsplit('/', 1)[1]
+                    download_location = os.path.join(target_dir, downloaded_filename)
 
-                        entry.localpath = fullpackagepath
-                        downloaded.append(fullpackagepath)
+                    try:
+                        icon_png = extract_iconpng_from_wapt(download_location)
+                        with open(icon_file, 'wb') as f:
+                            f.write(icon_png)
+                            f.close()
+
                     except Exception as e:
-                        if os.path.isfile(fullpackagepath):
-                            os.remove(fullpackagepath)
-                        logger.critical(u"Error downloading package from http repository, please update... error : %s" % e)
-                        errors.append((download_url,"%s" % e))
+                        print("Couldn't find an icon for package " + entry.package + " : " + e)
+
+                    os.remove(download_location)
+
+                    entry.localpath = fullpackagepath
+                    downloaded.append(fullpackagepath)
+                except Exception as e:
+                    if os.path.isfile(fullpackagepath):
+                        os.remove(fullpackagepath)
+                    logger.critical(u"Error downloading package from http repository, please update... error : %s" % e)
+                    errors.append((download_url,"%s" % e))
 
         return {"downloaded":downloaded,"skipped":skipped,"errors":errors,"packages":packages}
 

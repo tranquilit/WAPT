@@ -764,7 +764,6 @@ def all_packages(page=1):
 
 
     if rows and request.args.get('download_icons'):
-        print('packages nbr : {}'.format(len(rows))) #TODO remove
         data = app.task_manager.add_task(WaptDownloadIcon(rows[0:100])) #should be rows, but weird bug
 
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
