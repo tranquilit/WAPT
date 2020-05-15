@@ -77,22 +77,25 @@
         <Type Value="Include"/>
       </Item14>
     </Files>
-    <RequiredPkgs Count="5">
+    <RequiredPkgs Count="6">
       <Item1>
-        <PackageName Value="laz_synapse"/>
+        <PackageName Value="P4DLaz"/>
       </Item1>
       <Item2>
-        <PackageName Value="dcpcrypt"/>
+        <PackageName Value="laz_synapse"/>
       </Item2>
       <Item3>
-        <PackageName Value="indylaz"/>
+        <PackageName Value="dcpcrypt"/>
       </Item3>
       <Item4>
-        <PackageName Value="pltis_superobject"/>
+        <PackageName Value="indylaz"/>
       </Item4>
       <Item5>
-        <PackageName Value="pltis_utils"/>
+        <PackageName Value="pltis_superobject"/>
       </Item5>
+      <Item6>
+        <PackageName Value="pltis_utils"/>
+      </Item6>
     </RequiredPkgs>
     <UsageOptions>
       <UnitPath Value="$(PkgOutDir)"/>
