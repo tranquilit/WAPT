@@ -3317,7 +3317,7 @@ class Wapt(BaseObjectClass):
         if sys.platform.startswith('linux') or sys.platform.startswith('darwin'):
             gpo_host_dn = self.get_cache_domain_info()['ou']
         else:
-            gpo_host_dn = setuphelpers.registry_readstring(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows\CurrentVersion\Group Policy\State\Machine','Distinguished-Name').replace('\\','')
+            gpo_host_dn = setuphelpers.registry_readstring(HKEY_LOCAL_MACHINE,r'SOFTWARE\Microsoft\Windows\CurrentVersion\Group Policy\State\Machine','Distinguished-Name')
 
         if gpo_host_dn:
             try:
