@@ -80,6 +80,7 @@ from types import ModuleType
 import shutil
 import urlparse
 import zipfile
+import ldap3
 
 # conditionnal imports for windows or linux
 if sys.platform=='win32':
@@ -5257,7 +5258,7 @@ class Wapt(BaseObjectClass):
         previous_dn_part_type = ''
         host_dn = self.host_dn
         if host_dn:
-            dn_parts = re.split(r',(?=[A-Z,a-z,0-1].=)',host_dn)
+            dn_parts = [elem[0]+'='+elem[1] for elem in ldap3.utils.dn.parse_dn(host_dn)]
             for i in range(1,len(dn_parts)):
                 dn_part = dn_parts[i]
                 dn_part_type,value = dn_part.split('=',1)
