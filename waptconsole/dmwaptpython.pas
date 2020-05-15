@@ -614,7 +614,7 @@ var
 begin
   if VarIsEmpty(FPackagesAuthorizedCA) then
   try
-     CertDir:=AuthorizedCertsDir;
+     CertDir:=PyUTF8Decode(AuthorizedCertsDir);
       FPackagesAuthorizedCA := waptcrypto.SSLCABundle(cert_pattern_or_dir := CertDir);
       FPackagesAuthorizedCA.add_pems(IncludeTrailingPathDelimiter(WaptBaseDir)+'ssl\*.crt');
   finally
