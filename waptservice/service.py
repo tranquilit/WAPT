@@ -761,12 +761,12 @@ def all_packages(page=1):
 
         except sqlite3.Error as e:
             logger.critical(u"*********** Error %s:" % e.args[0])
-    
-    
+
+
     if rows and request.args.get('download_icons'):
-        print('packages nbr : {}'.format(len(rows))) #TODO remove 
-        data = app.task_manager.add_task(WaptDownloadIcon(rows[0:2])) #should be rows, but weird bug 
-     
+        print('packages nbr : {}'.format(len(rows))) #TODO remove
+        data = app.task_manager.add_task(WaptDownloadIcon(rows[0:100])) #should be rows, but weird bug
+
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         for pe in rows:
             # some basic search scoring
@@ -1842,11 +1842,11 @@ class WaptTaskManager(threading.Thread):
                 if sys.platform == 'win32':
                     self.logger.critical(u'Unhandled error in task manager loop: %s. Sleeping 120s before restarting the service' % ensure_unicode(e))
                     time.sleep(120)
-    
+
                     # ask nssm to restart service
                     self.logger.critical(u'Forced restart waptservice by nssm')
                     os._exit(10)
-                else: #TODO linux/macos : restart service 
+                else: #TODO linux/macos : restart service
                     self.logger.critical(u'Unhandled error in task manager loop: %s. Exiting service' % ensure_unicode(e))
                     os._exit(1)
 

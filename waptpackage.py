@@ -3767,6 +3767,118 @@ class WaptRemoteRepo(WaptBaseRepo):
                             os.remove(fullpackagepath)
                         logger.critical(u"Error downloading package from http repository, please update... error : %s" % e)
                         errors.append((download_url,"%s" % e))
+
+        return {"downloaded":downloaded,"skipped":skipped,"errors":errors,"packages":packages}
+
+    def download_icons(self,package_requests,target_dir=None,usecache=True,printhook=None):
+        r"""Download a list of icons from packages (requests are of the form packagename (>version) )
+           returns a dict of {"downloaded,"skipped","errors"}
+
+        If package_requests is a list of PackageEntry, update localpath of entry to match downloaded file.
+
+        Args:
+            package_requests (list) : list of PackageEntry to download or list of package with optional version
+
+        Returns:
+            dict: 'packages', 'downloaded', 'skipped', 'errors'
+
+        >>> repo = WaptRemoteRepo(url='http://wapt.tranquil.it/wapt')
+        >>> wapt.download_packages(['tis-firefox','tis-waptdev'],printhook=nullhook)
+        {'downloaded': [u'c:/wapt\\cache\\tis-firefox_37.0.2-9_all.wapt', u'c:/wapt\\cache\\tis-waptdev.wapt'], 'skipped': [], 'errors': []}
+        """
+        if not isinstance(package_requests, (list, tuple)):
+            package_requests = [ package_requests ]
+        if not target_dir:
+            target_dir = tempfile.mkdtemp()
+
+        downloaded = []
+        skipped = []
+        errors = []
+        packages = []
+
+        for p in package_requests:
+            if isinstance(p, (str, unicode)):
+                mp = self.packages_matching(p)
+                if mp:
+                    packages.append(mp[-1])
+                else:
+                    errors.append((p,u'Unavailable package %s' % (p,)))
+                    logger.critical(u'Unavailable package %s' % (p,))
+            elif isinstance(p,PackageEntry):
+                packages.append(p)
+            else:
+                raise Exception('Invalid package request %s' % p)
+
+        with self.get_requests_session() as session:
+            for entry in packages:
+                download_url = entry.download_url
+                fullpackagepath = os.path.join(target_dir,entry.filename)
+                skip = False
+                if usecache and os.path.isfile(fullpackagepath) and os.path.getsize(fullpackagepath) == entry.size :
+                    # check version
+                    try:
+                        cached = PackageEntry()
+                        cached.load_control_from_wapt(fullpackagepath,calc_md5=True)
+                        if entry == cached:
+                            if entry.md5sum == cached.md5sum:
+                                entry.localpath = cached.localpath
+                                skipped.append(fullpackagepath)
+                                logger.info(u"  Use cached package file from " + fullpackagepath)
+                                skip = True
+                            else:
+                                logger.critical(u"Cached file MD5 doesn't match MD5 found in packages index. Discarding cached file")
+                                os.remove(fullpackagepath)
+                    except Exception as e:
+                        # error : reload
+                        logger.debug(u'Cache file %s is corrupted, reloading it. Error : %s' % (fullpackagepath, e) )
+
+                if not skip:
+                    logger.info(u"  Downloading package from %s" % download_url)
+                    try:
+                        def report(received,total,speed,url):
+                            try:
+                                if total>1:
+                                    stat = u'%s : %i / %i (%.0f%%) (%.0f KB/s)\r' % (url,received,total,100.0*received/total, speed)
+                                    print(stat)
+                                else:
+                                    stat = ''
+                            except:
+                                pass
+                        """
+                        if not printhook:
+                            printhook = report
+                        """
+                        wget(download_url,
+                            target_dir,
+                            printhook = printhook,
+                            connect_timeout=self.timeout,
+                            resume= usecache,
+                            md5 = entry.md5sum,
+                            requests_session=session,
+                            limit_bandwidth=self.limit_bandwidth,
+                            )
+
+                        pkg_name = download_url.rsplit('/', 1)[1]
+                        download_location = os.path.join(target_dir, pkg_name)
+
+                        try:
+                            icon_png = extract_iconpng_from_wapt(download_location)
+                            icon_file = os.path.join(target_dir, 'icons', pkg_name + '.png') #TODO don't use filename
+                            with open(icon_file, 'w'):
+                                write(icon_file, icon_png)
+                        except Exception as e:
+                            pass
+
+                        os.remove(download_location)
+
+                        entry.localpath = fullpackagepath
+                        downloaded.append(fullpackagepath)
+                    except Exception as e:
+                        if os.path.isfile(fullpackagepath):
+                            os.remove(fullpackagepath)
+                        logger.critical(u"Error downloading package from http repository, please update... error : %s" % e)
+                        errors.append((download_url,"%s" % e))
+
         return {"downloaded":downloaded,"skipped":skipped,"errors":errors,"packages":packages}
 
 def update_packages(adir,force=False,proxies=None,canonical_filenames=False):

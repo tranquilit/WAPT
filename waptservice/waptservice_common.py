@@ -1234,12 +1234,13 @@ class WaptDownloadIcon(WaptTask):
         self.update_status(_(u'Downloading icons %s : %s' % (url,stat)))
 
     def _run(self):
-        pkg_names = [pkg.package for pkg in self.target_packages] 
+        pkg_names = [pkg.package for pkg in self.target_packages]
 
         self.update_status(_(u'Downloading icons %s') % (','.join(pkg_names)))
         start = time.time()
         self.result = self.wapt.download_icons(pkg_names, usecache=self.usecache, printhook=self.printhook)
         end = time.time()
+
         if self.result['errors']:
             self.summary = _(u"Error while downloading icons {target_packages}: {error}").format(target_packages=','.join(pkg_names),error=self.result['errors'][0][1])
         else:
@@ -1247,24 +1248,6 @@ class WaptDownloadIcon(WaptTask):
                 self.summary = _(u"Done downloading icons {target_packages}. {speed} kB/s").format(target_packages=','.join(pkg_names),speed=self.size/1024/(end-start))
             else:
                 self.summary = _(u"Done downloading icons {target_packages}.").format(target_packages=','.join(pkg_names))
-
-        #  icon_repository = '/home/octavel/.cache/waptself/icons/' #TODO change
-        
-        # if not os.path.isdir(icon_repository):
-        #     os.makedirs(icon_repository) 
-
-        # pkg_names = [pkg.package for pkg in self.target_packages]
-        # self.update_status(_(u'Downloading icons %s') % (','.join(pkg_names)))
-        
-        # start = time.time()
-        # self.result = { 'downloaded': [] } 
-        # # wget(server_url + '/icons/' + pkg_uuid, icon_repository) 
-        # for pkg in self.target_packages:
-        #    self.result['downloaded'].append(pkg.package)
-        #    #wget(server_url + '/packages/' + pkg_name, icon_repository)
-        #    # extract_icon_from_zip(package)
-        #    # os.rm(pkg_path) 
-        # end = time.time()
 
     def __unicode__(self):
         return _(u"Installation of icons for {target_packages} (task #{id})").format(classname=self.__class__.__name__, id=self.id, target_packages=',')#.join(self.target_packages))
