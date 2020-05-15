@@ -159,9 +159,19 @@ def install():
 
 
 def audit():
-    # Comparing installed WAPT agent version and packages version
+    # Comparing installed WAPT agent version and package version
+    (package_wapt_version,package_packaging) = control.version.split('-')
+    package_packaging = int(package_packaging)
+
+    waptexe = os.path.join(WAPT.wapt_base_dir,'wapt-get.exe')
+    if os.path.isfile(waptexe):
+        installed_wapt_version = get_file_properties(waptexe)['FileVersion']
+    else:
+        installed_wapt_version = '0.0.0.0'
+
     if Version(installed_wapt_version,4) >= Version(package_wapt_version,4):
-        error('The installed WAPT version and this version of the WAPT agent packages is not corresponding.')
+        print('The installed WAPT version and this version of the WAPT agent packages is not corresponding. Maybe it is because of first install, if the warning remains one day after the date of installation, please consider it.')
+        return "WARNING"
     else:
         print('The installed WAPT version and this version of the WAPT agent packages is corresponding, all good.')
         return "OK"
@@ -169,3 +179,4 @@ def audit():
 
 if __name__ == '__main__':
     pass
+

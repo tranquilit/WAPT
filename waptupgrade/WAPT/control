@@ -1,12 +1,12 @@
 package           : tis-waptupgrade
-version           : 1.8.2.1-39
+version           : 1.8.2.1-44
 architecture      : all
 section           : base
 priority          : critical
 name              : WAPT Agent
 categories        : System and network
 maintainer        : WAPT Team,Jimmy PELÉ,Hubert TOUVET,Simon Fonteneau
-description       : Deployement of the WAPT Agent (Including the Console WAPT)
+description       : Deployement of the WAPT Agent (Including the WAPT Console)
 depends           : 
 conflicts         : 
 maturity          : 
@@ -31,13 +31,13 @@ editor            : Tranquil IT
 keywords          : 
 licence           : 
 homepage          : https://www.wapt.fr/
-package_uuid      : 424f8011-39f2-4268-9731-f49785069f86
+package_uuid      : 90803ec0-3b68-490b-9f3d-cc08971e1e70
 valid_from        : 
 valid_until       : 
 forced_install_on : 
 changelog         : 
 signer            : jptest-wapt-key
 signer_fingerprint: 082e1329bcfb4353b245e0b49af407bf190bf3530a6317fa563bb3d6b00fec32
-signature         : BJQCc9wW+LXDaPnjX0u55GjHjy4eHewfrSXEZcPADK5yuqHhWZm2boz+1gn1WkGL8/1BKE+eY47mUwxozplPEJIQrkD76Jrfof9XlWn6OH/gpwMvdh33KYv8Iu0IP2obVEy+S4OYtAh/csnOB4p/9pATY+ZnT+q1sRorhkuoQeqoJK2s8VDN3jSJTIX30+pGUcnihKysN9u3LHO6PNf8S65yGWIuwMEfK8ToNEqDox9HA/DW+UlayY3uhlc0OVnAaUnr/KJGlSx64/PeBF95lO76MImgxN5llX0qLD7sj2NDNc5Wt5HjTAELt1YChTZ5XObKrRuk8ebonevLvYj5qQ==
-signature_date    : 2020-05-13T15:22:41.346000
+signature         : gRLQriMPUcgkFKjwd/Ous32KXtSYytmNIeY1jDffhYT5LODj2cAnvpF91jAxlpWSE5GP70+q6EOGLOugvIfeEc673R/C2H+9BghIYVtuqDHqokrd80y1CaqRUEHnk9FbBLmIkQ3j8qu8vu+F/sm9K/4REulcAseMwhigCRkUL0zOIie/6whNgTd3NkPu12LDT8dP/P2WzpIsnrrkBKh5ZOOKd+F1uY1JyxKtRdFSgqpQ831hS/Edqk2gpRdditXO0cn+0Q+4PBgupuGD/aX4VLCAXN69V/vvvk25UL2evu7lXl8ADOyNZ2a+t93OkbRqKYgvN1sV/LoGZ7bcM2Qr3A==
+signature_date    : 2020-05-15T09:52:00.734000
 signed_attributes : package,version,architecture,section,priority,name,categories,maintainer,description,depends,conflicts,maturity,locale,target_os,min_os_version,max_os_version,min_wapt_version,sources,installed_size,impacted_process,description_fr,description_pl,description_de,description_es,description_pt,description_it,description_nl,description_ru,audit_schedule,editor,keywords,licence,homepage,package_uuid,valid_from,valid_until,forced_install_on,changelog,signer,signer_fingerprint,signature_date,signed_attributes
