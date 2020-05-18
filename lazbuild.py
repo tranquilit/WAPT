@@ -144,7 +144,7 @@ def main():
 
     if options.buildnr is None:
         r = Repo(wapt_root_dir,search_parent_directories = True)
-        options.buildnr = str(r.active_branch.commit.count())
+        options.buildnr = '%04d' % (r.active_branch.commit.count(),)
 
 
     for lpi_path in args:
