@@ -62,6 +62,7 @@ import datetime
 import re
 import glob
 import base64
+import ldap3.utils
 
 from optparse import OptionParser
 
@@ -1623,7 +1624,7 @@ def get_ad_ou():
     """
     try:
         starttime = time.time()
-        result = [r[0] for r in Hosts.select(
+        req = [r[0] for r in Hosts.select(
             Hosts.computer_ad_ou,
             fn.COUNT(Hosts.uuid))
             .where(
@@ -1631,6 +1632,7 @@ def get_ad_ou():
             .group_by(Hosts.computer_ad_ou)
             .tuples()
             ]
+        result = [ldap3.utils.dn.parse_dn(elem) for elem in req if elem]
 
         message = 'AD OU DN List'
         return make_response(result=result, msg=message, request_time=time.time() - starttime)
