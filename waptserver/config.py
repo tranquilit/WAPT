@@ -316,7 +316,10 @@ def write_config_file(cfgfile=DEFAULT_CONFIG_FILE,server_config=None,non_default
             if server_config[key] is None:
                 _config.remove_option('options',key)
             else:
-                _config.set('options',key,server_config[key])
+                if isinstance(server_config[key], list) :
+                    _config.set('options',key,','.join(server_config[key]))
+                else:
+                    _config.set('options',key,server_config[key])
 
     if not os.path.isdir(os.path.dirname(cfgfile)):
         os.makedirs(os.path.dirname(cfgfile))
