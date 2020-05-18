@@ -13,6 +13,7 @@ Environment=PYTHONPATH=/opt/wapt
 Environment=VIRTUAL_ENV=/opt/wapt
 LimitNOFILE=32768
 KillMode=control-group
+SyslogIdentifier=waptservice
 
 [Install]
 WantedBy=multi-user.target

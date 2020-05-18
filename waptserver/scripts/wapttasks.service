@@ -14,6 +14,7 @@ Environment=PYTHONHOME=/opt/wapt
 Environment=PYTHONPATH=/opt/wapt
 Environment=VIRTUAL_ENV=/opt/wapt
 LimitNOFILE=32768
+SyslogIdentifier=wapttasks
 
 [Install]
 WantedBy=multi-user.target
