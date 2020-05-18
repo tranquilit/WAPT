@@ -26,6 +26,7 @@ import socket
 import struct
 import getpass
 import platform
+import shutil
 import configparser
 import platform
 import psutil
