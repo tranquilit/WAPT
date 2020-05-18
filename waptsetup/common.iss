@@ -78,25 +78,25 @@ Name:"de";MessagesFile: "compiler:Languages\German.isl"
 
 [Tasks]
 #if edition != "waptserversetup"
-Name: DisableHiberboot; Description: "{cm:DisableHiberBoot}"; GroupDescription: "Advanced";
+Name: DisableHiberboot; Description: "{cm:DisableHiberBoot}"; GroupDescription: "{cm:Advanced}";
 #endif
 
 #if set_install_certs == ""
-Name: InstallCertificates; Description: "{cm:InstallSSLCertificates}";  GroupDescription: "Advanced"; Flags: unchecked;
+Name: InstallCertificates; Description: "{cm:InstallSSLCertificates}";  GroupDescription: "{cm:Advanced}"; Flags: unchecked;
 #endif
 
 #if use_random_uuid  == ""
-Name: UseRandomUUID; Description: "{cm:UseRandomUUID}";  GroupDescription: "Advanced"; Flags: unchecked;
+Name: UseRandomUUID; Description: "{cm:UseRandomUUID}";  GroupDescription: "{cm:Advanced}"; Flags: unchecked;
 #endif
 
-Name: InstallStartPackages; Description: "{cm:InstallStartPackages}";  GroupDescription: "Advanced";  Check: StartPackagesCheck();
+Name: InstallStartPackages; Description: "{cm:InstallStartPackages}";  GroupDescription: "{cm:Advanced}";  Check: StartPackagesCheck();
 
 #if set_verify_cert == ""
-Name: VerifyServerCertificates; Description: "{cm:VerifyServerCertificates}";  GroupDescription: "Advanced";
+Name: VerifyServerCertificates; Description: "{cm:VerifyServerCertificates}";  GroupDescription: "{cm:Advanced}";
 #endif
 
 #if set_use_kerberos == ""
-Name: UseKerberos; Description: "{cm:UseKerberosForRegister}";  GroupDescription: "Advanced";
+Name: UseKerberos; Description: "{cm:UseKerberosForRegister}";  GroupDescription: "{cm:Advanced}";
 #endif
 
 [INI]
@@ -251,6 +251,7 @@ en.InstallationOptions=Installation options
 en.RepoURL=Repository URL:
 en.ServerURL=Server URL:
 en.Example=Example
+en.Advanced=Advanced
 
 ;French translations here
 fr.StartAfterSetup=Lancer WAPT session setup à l'ouverture de session
@@ -276,6 +277,7 @@ fr.InstallationOptions=Options d'installation
 fr.RepoURL=URL du dépôt :
 fr.ServerURL=URL du serveur :
 fr.Example=Exemple
+fr.Advanced=Avancé
 
 ;German translation here
 de.StartAfterSetup=WAPT Setup-Sitzung bei Sitzungseröffnung starten
@@ -286,7 +288,7 @@ de.RunConfigTool=Führen Sie das Konfigurationstool aus
 
 [Code]
 var
-  cbUseWizard, cbDontChangeServer, cbStaticUrl: TNewRadioButton;
+  cbDontChangeConfig, cbStaticUrl: TNewRadioButton;
   CustomPage: TWizardPage;
   edWaptServerUrl:TEdit;
   labRepo,labRepoExample,labServer,labServerExample: TLabel;
@@ -302,9 +304,6 @@ end;
 #if edition != "waptserversetup"
 function GetRepoURL(Param:String):String;
 begin
-  if not cbStaticUrl.Checked then
-    result := ''
-  else
   if edWaptRepoUrl.Text <> 'unknown' then
     result := edWaptRepoUrl.Text
   else
@@ -321,9 +320,6 @@ end;
 
 function GetWaptServerURL(Param: String):String;
 begin
-  if not cbStaticUrl.Checked then
-    result := ''
-  else
   if edWaptServerUrl.Text <> 'unknown' then
     result := edWaptServerUrl.Text
   else
@@ -369,30 +365,17 @@ procedure InitializeWizard;
 begin
   CustomPage := CreateCustomPage(wpSelectTasks, ExpandConstant('{cm:InstallationOptions}'), '');
   
-  cbUseWizard := TNewRadioButton.Create(WizardForm);
-  cbUseWizard.Parent := CustomPage.Surface;
-  cbUseWizard.Width := CustomPage.SurfaceWidth;
-  cbUseWizard.Caption := ExpandConstant('{cm:UseWizard}');
-  cbUseWizard.Onclick := @OnServerClicked;
-  #if edition == "waptstarter" || edition == "waptagent"
-  cbUseWizard.Visible := False;
-  #endif
-  
-  cbUseWizard.Visible := False;
-  cbUseWizard.checked := False;
-  
-  cbDontChangeServer := TNewRadioButton.Create(WizardForm);
-  cbDontChangeServer.Parent := CustomPage.Surface;
-  cbDontChangeServer.Width := CustomPage.SurfaceWidth;
-  cbDontChangeServer.Caption := ExpandConstant('{cm:DontChangeServerSetup}');
-  cbDontChangeServer.Onclick := @OnServerClicked;
-  cbDontChangeServer.Top := cbUseWizard.Top + cbUseWizard.Height + 5;
+  cbDontChangeConfig := TNewRadioButton.Create(WizardForm);
+  cbDontChangeConfig.Parent := CustomPage.Surface;
+  cbDontChangeConfig.Width := CustomPage.SurfaceWidth;
+  cbDontChangeConfig.Caption := ExpandConstant('{cm:DontChangeServerSetup}');
+  cbDontChangeConfig.Onclick := @OnServerClicked;
 
   cbStaticUrl := TNewRadioButton.Create(WizardForm);
   cbStaticUrl.Parent := CustomPage.Surface; 
   cbStaticUrl.Caption := ExpandConstant('{cm:StaticURLS}');
   cbStaticUrl.Width := CustomPage.SurfaceWidth;
-  cbStaticUrl.Top := cbDontChangeServer.Top + cbDontChangeServer.Height + 5;
+  cbStaticUrl.Top := cbDontChangeConfig.Top + cbDontChangeConfig.Height + 5;
   cbStaticUrl.Onclick := @OnServerClicked;
 
   labRepo := TLabel.Create(WizardForm);
@@ -467,7 +450,7 @@ end;
 
 function MustChangeServerConfig:Boolean;
 begin
-  Result := runningSilently() or (not cbDontChangeServer.Checked and not cbUseWizard.Checked);
+  Result := runningSilently() or not cbDontChangeConfig.Checked;
 #if edition == "waptstarter"
   // remove wapt_server entry because waptstarter must be standalone.  
   If Result then
@@ -700,8 +683,7 @@ begin
         #if edition != "waptstarter"
         edWaptServerUrl.Text := GetWaptServerURL('');  
         #endif
-        cbUseWizard.Checked := cbUseWizard.Visible and (GetRepoURL('') = '');
-        cbDontChangeServer.Checked := not cbUseWizard.Checked and not (GetRepoURL('') = '');
+        cbDontChangeConfig.Checked := not (GetRepoURL('') = '');
         cbStaticUrl.Checked := (edWaptRepoUrl.Text<>'') and (edWaptRepoUrl.Text<>'unknown');
         //edWaptServerUrl.Visible := IsTaskSelected('use_waptserver');
         //labServer.Visible := edWaptServerUrl.Visible;
