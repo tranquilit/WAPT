@@ -47,7 +47,7 @@ from waptutils import (Version, __version__, all_files, dateof,
                        hours_minutes, httpdatetime2isodate, isodate2datetime,
                        time2display, wget, wgets, makepath,killtree,isfile,isdir,
                        CalledProcessErrorOutput,remove_file,mkdirs,get_main_ip,get_local_IPs,
-                       killalltasks,isrunning)
+                       killalltasks,isrunning,get_sha256)
 
 __all__ = []
 
@@ -94,6 +94,7 @@ __all__.extend([
      'get_loggedinusers',
      'get_main_ip',
      'get_os_version',
+     'get_sha256',
      'glob',
      'host_info',
      'host_metrics',

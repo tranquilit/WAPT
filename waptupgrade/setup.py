@@ -1,11 +1,7 @@
 # -*- coding: utf-8 -*-
 from setuphelpers import *
-import os
-import _winreg
+
 import tempfile
-import hashlib
-import time
-import re
 
 # registry key(s) where WAPT will find how to remove the application(s)
 uninstallkey = []
@@ -66,18 +62,6 @@ TASK_TEMPLATE="""\
 </Task>
 """
 
-
-def sha256_for_file(fname, block_size=2**20):
-    f = open(fname,'rb')
-    sha256 = hashlib.sha256()
-    while True:
-        data = f.read(block_size)
-        if not data:
-            break
-        sha256.update(data)
-    return sha256.hexdigest()
-
-
 def download_waptagent(waptagent_path,expected_sha256):
     if WAPT.repositories:
         for r in WAPT.repositories:
@@ -85,7 +69,7 @@ def download_waptagent(waptagent_path,expected_sha256):
                 waptagent_url = "%s/waptagent.exe" % r.repo_url
                 print('Trying %s'%waptagent_url)
                 print(wget(waptagent_url,waptagent_path))
-                wapt_agent_sha256 = sha256_for_file(waptagent_path)
+                wapt_agent_sha256 = get_sha256(waptagent_path)
                 # eefac39c40fdb2feb4aa920727a43d48817eb4df waptagent.exe
                 if expected_sha256 != wapt_agent_sha256:
                     print('Error : bad SHA256 for the downloaded waptagent.exe\n Expected : %s \n Found : %s '%(expected_sha256,wapt_agent_sha256))
@@ -145,7 +129,7 @@ def install():
     # get upgrade package informations
     (package_wapt_version,package_packaging) = control.version.split('-')
     package_packaging = int(package_packaging)
-    
+
     force = True
 
     if not force and Version(installed_wapt_version,4) >= Version(package_wapt_version,4):
@@ -162,11 +146,10 @@ def audit():
     # Comparing installed WAPT agent version and package version
     (package_wapt_version,package_packaging) = control.version.split('-')
     package_packaging = int(package_packaging)
-
-    waptexe = os.path.join(WAPT.wapt_base_dir,'wapt-get.exe')
-    if os.path.isfile(waptexe):
-        installed_wapt_version = get_file_properties(waptexe)['FileVersion']
-    else:
+    try:
+        with open(os.path.join(WAPT.wapt_base_dir,'version-full')) as fver:
+            installed_wapt_version = fver.read()
+    except:
         installed_wapt_version = '0.0.0.0'
 
     if Version(installed_wapt_version,4) >= Version(package_wapt_version,4):
@@ -175,8 +158,3 @@ def audit():
     else:
         print('The installed WAPT version and this version of the WAPT agent packages is corresponding, all good.')
         return "OK"
-
-
-if __name__ == '__main__':
-    pass
-
