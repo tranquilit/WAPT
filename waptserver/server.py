@@ -1624,6 +1624,31 @@ def get_ad_ou():
     """
     try:
         starttime = time.time()
+        result = [r[0] for r in Hosts.select(
+            Hosts.computer_ad_ou,
+            fn.COUNT(Hosts.uuid))
+            .where(
+            ~Hosts.computer_ad_ou.is_null())
+            .group_by(Hosts.computer_ad_ou)
+            .tuples()
+            ]
+
+        message = 'AD OU DN List'
+        return make_response(result=result, msg=message, request_time=time.time() - starttime)
+
+    except Exception as e:
+        logger.debug(traceback.format_exc())
+        logger.critical('get_ad_ou failed %s' % (repr(e)))
+        return make_response_from_exception(e)
+
+@app.route('/api/v3/get_ad_ou_split')
+@requires_auth(['admin','view'])
+@require_wapt_db
+def get_ad_ou():
+    """List all the OU registered by hosts
+    """
+    try:
+        starttime = time.time()
         req = [r[0] for r in Hosts.select(
             Hosts.computer_ad_ou,
             fn.COUNT(Hosts.uuid))

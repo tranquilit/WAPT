@@ -40,7 +40,7 @@ import datetime
 import platform
 import grp
 import pwd
-from waptutils import (ensure_unicode, makepath, ensure_dir,currentdate,currentdatetime,_lower,ini2winstr,error,get_main_ip,TimeoutExpired,RunReader,RunOutput,killtree,run_notfatal,get_local_IPs,networking)
+from waptutils import (ensure_unicode, makepath, ensure_dir,currentdate,currentdatetime,_lower,ini2winstr,error,get_main_ip,TimeoutExpired,RunReader,RunOutput,killtree,run_notfatal,get_local_IPs,networking,CalledProcessErrorOutput)
 import threading
 import psutil
 from subprocess import PIPE
