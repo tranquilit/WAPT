@@ -1644,7 +1644,7 @@ def get_ad_ou():
 @app.route('/api/v3/get_ad_ou_split')
 @requires_auth(['admin','view'])
 @require_wapt_db
-def get_ad_ou():
+def get_ad_ou_split():
     """List all the OU registered by hosts
     """
     try:
