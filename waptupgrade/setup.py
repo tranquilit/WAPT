@@ -62,6 +62,18 @@ TASK_TEMPLATE="""\
 </Task>
 """
 
+
+def sha256_for_file(fname, block_size=2**20):
+    f = open(fname,'rb')
+    sha256 = hashlib.sha256()
+    while True:
+        data = f.read(block_size)
+        if not data:
+            break
+        sha256.update(data)
+    return sha256.hexdigest()
+
+
 def download_waptagent(waptagent_path,expected_sha256):
     if WAPT.repositories:
         for r in WAPT.repositories:
@@ -69,7 +81,7 @@ def download_waptagent(waptagent_path,expected_sha256):
                 waptagent_url = "%s/waptagent.exe" % r.repo_url
                 print('Trying %s'%waptagent_url)
                 print(wget(waptagent_url,waptagent_path))
-                wapt_agent_sha256 = get_sha256(waptagent_path)
+                wapt_agent_sha256 = sha256_for_file(waptagent_path)
                 # eefac39c40fdb2feb4aa920727a43d48817eb4df waptagent.exe
                 if expected_sha256 != wapt_agent_sha256:
                     print('Error : bad SHA256 for the downloaded waptagent.exe\n Expected : %s \n Found : %s '%(expected_sha256,wapt_agent_sha256))
