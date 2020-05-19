@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 from setuphelpers import *
-
+import time
 import tempfile
+import hashlib
 
 # registry key(s) where WAPT will find how to remove the application(s)
 uninstallkey = []
@@ -125,6 +126,8 @@ def full_waptagent_install(min_version,at_startup=False):
     else:
         # use embedded waptagent.exe, wait 15 minutes for other tasks to complete.
         print(create_onetime_task('fullwaptupgrade',waptdeploy_path,'--hash=%s --waptsetupurl=%s --wait=15 --temporary --force --minversion=%s'%(expected_sha256,waptagent_path,min_version),delay_minutes=1))
+        time.sleep(2)
+        run_notfatal('SCHTASKS /Run /TN "fullwaptupgrade"')
 
 
 def install():
@@ -139,32 +142,22 @@ def install():
         installed_wapt_version = '0.0.0.0'
 
     # get upgrade package informations
-    (package_wapt_version,package_packaging) = control.version.split('-')
-    package_packaging = int(package_packaging)
+    package_wapt_version = control.version.split('-')
 
-    force = True
-
-    if not force and Version(installed_wapt_version,4) >= Version(package_wapt_version,4):
-        print('Your current WAPT (%s) is same or more recent than the upgrade package (%s). Skipping...'%(installed_wapt_version,control.version))
-    else:
-        try:
-            run('SCHTASKS /Run /TN "fullwaptupgrade"')
-        except:
-            print('Setting up upgrade from WAPT version %s to %s. waptagent install planned for %s'%(installed_wapt_version,package_wapt_version,time.ctime(time.time() + 1*60)))
-            full_waptagent_install(str(Version(package_wapt_version,4)))
+    full_waptagent_install(package_wapt_version)
+    print('Setting up upgrade from WAPT version %s to %s. waptagent install planned for %s'%(installed_wapt_version,package_wapt_version,time.ctime(time.time() + 1*60)))
 
 
 def audit():
     # Comparing installed WAPT agent version and package version
     (package_wapt_version,package_packaging) = control.version.split('-')
-    package_packaging = int(package_packaging)
     try:
         with open(os.path.join(WAPT.wapt_base_dir,'version-full')) as fver:
             installed_wapt_version = fver.read()
     except:
         installed_wapt_version = '0.0.0.0'
 
-    if Version(installed_wapt_version,4) >= Version(package_wapt_version,4):
+    if Version(installed_wapt_version) < Version(package_wapt_version):
         print('The installed WAPT version and this version of the WAPT agent packages is not corresponding. Maybe it is because of first install, if the warning remains one day after the date of installation, please consider it.')
         return "WARNING"
     else:
