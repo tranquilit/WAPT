@@ -289,6 +289,7 @@ object VisImportPackage: TVisImportPackage
     Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
     Header.SortColumn = 1
     Header.Style = hsFlatButtons
+    Images = VisWaptGUI.ImageList1
     PopupMenu = PopupMenuPackages
     TabOrder = 1
     TreeOptions.AutoOptions = [toAutoDropExpand, toAutoScrollOnExpand, toAutoSort, toAutoTristateTracking, toAutoDeleteMovedNodes, toAutoChangeScale]
@@ -297,6 +298,7 @@ object VisImportPackage: TVisImportPackage
     TreeOptions.SelectionOptions = [toExtendedFocus, toMultiSelect, toRightClickSelect]
     WantTabs = True
     OnDblClick = ActPackageDuplicateExecute
+    OnGetImageIndexEx = GridExternalPackagesGetImageIndexEx
     OnInitNode = GridExternalPackagesInitNode
     OnMeasureItem = GridExternalPackagesMeasureItem
     ZebraPaint = True

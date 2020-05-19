@@ -8,7 +8,7 @@ uses
   Classes, SysUtils, LazUTF8, RTTICtrls, RTTIGrids, Forms,
   Controls, Graphics, Dialogs, ExtCtrls, Buttons, ComCtrls, StdCtrls, ActnList,
   Menus, sogrid, DefaultTranslator, VirtualTrees, superobject, SearchEdit,
-  waptcommon,uvisloading,IdComponent;
+  waptcommon,uvisloading,IdComponent, ImgList;
 
 type
 
@@ -69,6 +69,10 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure GridExternalPackagesGetImageIndexEx(Sender: TBaseVirtualTree;
+      Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
+      var Ghosted: Boolean; var ImageIndex: Integer;
+      var ImageList: TCustomImageList);
     procedure GridExternalPackagesGetText(Sender: TBaseVirtualTree;
       Node: PVirtualNode; RowData, CellData: ISuperObject;
       Column: TColumnIndex; TextType: TVSTTextType; var CellText: string);
@@ -262,6 +266,32 @@ begin
   if EdRepoName.ItemIndex<0 then
     EdRepoName.ItemIndex := 0;
   EdRepoName.OnSelect(Sender);
+end;
+
+procedure TVisImportPackage.GridExternalPackagesGetImageIndexEx(
+  Sender: TBaseVirtualTree; Node: PVirtualNode; Kind: TVTImageKind;
+  Column: TColumnIndex; var Ghosted: Boolean; var ImageIndex: Integer;
+  var ImageList: TCustomImageList);
+var
+  targetOS: ISuperObject;
+begin
+  if TSOGridColumn(GridExternalPackages.Header.Columns[Column]).PropertyName = 'target_os' then
+  begin
+    targetOS := GridExternalPackages.GetCellData(Node, 'target_os', Nil);
+    if (targetOS<>Nil)then
+    begin
+      if Pos('linux',lowerCase(targetOS.AsString))>0 then
+        ImageIndex := 21
+      else if Pos('windows',lowerCase(targetOS.AsString))>0 then
+        ImageIndex := 20
+      else if (Pos('darwin',lowerCase(targetOS.AsString))>0) or (Pos('macos',lowerCase(targetOS.AsString))>0) then
+          ImageIndex := 19
+      else
+          ImageIndex := 22;
+    end
+    else
+      ImageIndex := -1;
+  end;
 end;
 
 procedure TVisImportPackage.GridExternalPackagesGetText(

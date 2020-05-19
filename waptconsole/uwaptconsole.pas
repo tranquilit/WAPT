@@ -956,6 +956,10 @@ type
     procedure GridPackagesChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
     procedure GridPackagesColumnDblClick(Sender: TBaseVirtualTree;
       Column: TColumnIndex; Shift: TShiftState);
+    procedure GridPackagesGetImageIndexEx(Sender: TBaseVirtualTree;
+      Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
+      var Ghosted: Boolean; var ImageIndex: Integer;
+      var ImageList: TCustomImageList);
     procedure GridPackagesPaintText(Sender: TBaseVirtualTree;
       const TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex;
       TextType: TVSTTextType);
@@ -5656,11 +5660,8 @@ begin
       else
         ImageIndex := 14;
       end
-
     end;
   end;
-
-
 end;
 
 procedure TVisWaptGUI.GridHostsGetText(Sender: TBaseVirtualTree;
@@ -5932,6 +5933,34 @@ begin
   if ActEditpackage.Enabled and (GridPackages.FocusedRow<>Nil) and (MessageDlg(rsConfirmCaption, Format(rsConfirmPackageEdit,[GridPackages.FocusedRow.S['package']]),mtConfirmation,mbYesNoCancel ,'') = mrYes) then
     ActEditpackage.Execute;
 end;
+
+procedure TVisWaptGUI.GridPackagesGetImageIndexEx(Sender: TBaseVirtualTree;
+  Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
+  var Ghosted: Boolean; var ImageIndex: Integer; var ImageList: TCustomImageList
+  );
+var
+  targetOS: ISuperObject;
+begin
+  if TSOGridColumn(GridPackages.Header.Columns[Column]).PropertyName = 'target_os' then
+  begin
+    targetOS := GridHostPackages.GetCellData(Node, 'target_os', Nil);
+    if (targetOS<>Nil)then
+    begin
+      if Pos('linux',lowerCase(targetOS.AsString))>0 then
+        ImageIndex := 21
+      else if Pos('windows',lowerCase(targetOS.AsString))>0 then
+        ImageIndex := 20
+      else if (Pos('darwin',lowerCase(targetOS.AsString))>0) or (Pos('macos',lowerCase(targetOS.AsString))>0) then
+          ImageIndex := 19
+      else
+          ImageIndex := 22;
+    end
+    else
+      ImageIndex := -1;
+  end;
+end;
+
+
 
 procedure TVisWaptGUI.PythonOutputSendData(Sender: TObject; const Data: ansistring);
 begin
