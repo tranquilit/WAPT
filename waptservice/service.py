@@ -763,10 +763,6 @@ def all_packages(page=1):
         except sqlite3.Error as e:
             logger.critical(u"*********** Error %s:" % e.args[0])
 
-
-    if rows and request.args.get('download_icons'):
-        data = app.task_manager.add_task(WaptDownloadIcon(copy.deepcopy(rows)))
-
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         for pe in rows:
             # some basic search scoring
@@ -802,6 +798,98 @@ def all_packages(page=1):
             Version=setuphelpers.Version,
             pagination=pagination,
         )
+
+
+@app.route('/download_icons')
+@allow_local
+def download_icons():
+    if not (request.args.get('format','html')=='json' or request.path.endswith('.json')):
+        if not request.authorization:
+            return authenticate()
+
+    username = None
+    grpuser = []
+
+    rules = None
+    if enterprise_common:
+        rules = enterprise_common.self_service_rules(wapt())
+
+    if request.authorization:
+        auth = request.authorization
+        try:
+            if check_auth(auth.username,auth.password):
+                grpuser.append('waptselfservice')
+                username = auth.username
+                logger.debug(u'User %s authenticated against local admins (waptselfservice)' % auth.username)
+            else:
+                grpuser = get_user_self_service_groups(rules.keys(),auth.username,auth.password)
+                username = auth.username
+                logger.debug(u'User %s authenticated against self-service groups %s' % (auth.username,grpuser))
+        except:
+            return authenticate()
+    else:
+        return authenticate()
+
+    with sqlite3.connect(app.waptconfig.dbpath) as con:
+        try:
+            con.row_factory=sqlite3.Row
+            query = '''\
+                select
+                    r.*,
+                    s.version as install_version,s.install_status,s.install_date,s.explicit_by
+                from wapt_package r
+                left join wapt_localstatus s on s.package=r.package
+                where not r.section in ("host","unit","profile","restricted","selfservice")
+                order by r.package,r.version'''
+            cur = con.cursor()
+            cur.execute(query)
+            rows = []
+
+            search = request.args.get('q','').encode('utf8').replace('\\', '')
+            keywords = ensure_list(request.args.get('keywords','').lower().encode('utf8'))
+
+            for row in cur.fetchall():
+                pe = PackageEntry().load_control_from_dict(
+                    dict((cur.description[idx][0], value) for idx, value in enumerate(row)))
+
+                if len(keywords)>0:
+                    match_kw = False
+                    package_keywords = ensure_list(pe.keywords.lower())
+                    for kw in package_keywords:
+                        if kw in keywords:
+                            match_kw = True
+                            break
+                    if not match_kw:
+                        continue
+
+                if not search or pe.match_search(search):
+                    if wapt().is_authorized_package_action('list',pe.package,grpuser,rules):
+                        rows.append(pe)
+
+            if request.args.get('latest','0') == '1':
+                filtered = []
+                last_package_name = None
+                for package in sorted(rows,reverse=True):
+                    if package.package != last_package_name:
+                        filtered.append(package)
+                    last_package_name = package.package
+                rows = list(reversed(filtered))
+
+            if not request.args.get('all_versions',''):
+                rows = sorted(latest_only(rows))
+
+        except sqlite3.Error as e:
+            logger.critical(u"*********** Error %s:" % e.args[0])
+
+
+    if rows:
+        data = app.task_manager.add_task(WaptDownloadIcon(copy.deepcopy(rows)))
+    else:
+        logger.critical(u"*********** Couldn't download icons")
+
+    #pkg_names = [(pkg.package, pkg.package_uuid) for pkg in rows]
+    return Response(common.jsondump(rows), mimetype='application/json')
+
 
 @app.route('/local_package_details.json')
 @app.route('/local_package_details')

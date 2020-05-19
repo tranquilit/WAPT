@@ -173,7 +173,8 @@ type
     FramePage : integer;
     NumberOfFrames: Integer;
 
-    function GetAllPackages: ISuperObject;
+    function GetAllPackages: ISuperObject;       
+    procedure DownloadAllPackageIcons;
     procedure LoadIcons;
     procedure OnUpgradeTriggeredAllPackages(Sender : TObject);
 
@@ -728,8 +729,8 @@ var
   g : TPicture;
   i : integer;
 begin
-  IconsDir:=AppLocalDir+'\icons\';
-  LstIcons:=FindAllFiles(IconsDir,'*.png',False);
+  IconsDir := GetIconsDir();
+  LstIcons := FindAllFiles(IconsDir, '*.png', False);
   LstIcons.OwnsObjects:=True;
 
   for i:=0 to LstIcons.Count-1 do
@@ -843,6 +844,7 @@ var
 begin
   try
     GetAllPackages();
+    DownloadAllPackageIcons();
 
     ComboBoxCategories.Sorted:=true;
     ComboBoxCategories.Clear;
@@ -1238,7 +1240,7 @@ begin
                 FThreadGetAllIcons.FreeOnTerminate:=true;
               end
               else
-                TTriggerWaptserviceAction.Create('packages.json?latest=1&download_icons=1',@OnUpgradeTriggeredAllPackages,DMWaptSelf.Login,DMWaptSelf.Token,Nil);
+                TTriggerWaptserviceAction.Create('packages.json?latest=1',@OnUpgradeTriggeredAllPackages,DMWaptSelf.Login,DMWaptSelf.Token,Nil);
               ProgressBarTaskRunning.Style:=pbstNormal;
             end;
           end;
@@ -1296,8 +1298,13 @@ end;
 function TVisWaptSelf.GetAllPackages: ISuperObject;
 begin
   if FAllPackages = Nil then
-    FAllPackages := DMWaptSelf.JSONGet('packages.json?latest=1&download_icons=1');
+    FAllPackages := DMWaptSelf.JSONGet('packages.json?latest=1');
   Result:=GetAllPackagesSorted(FAllPackages);
+end;
+
+procedure TVisWaptSelf.DownloadAllPackageIcons;
+begin
+  DMWaptSelf.JSONGet('download_icons?latest=1');
 end;
 
 procedure TVisWaptSelf.OnUpgradeTriggeredAllPackages(Sender: TObject);
@@ -1426,25 +1433,25 @@ begin
   with AFrmPackage do
   begin
       Parent := FlowPackages;
-      Name:='package'+IntToStr(LastNumberOfFrame);
-      LabPackageName.Caption:=UTF8Encode(package.S['name']);
+      Name := 'package' + IntToStr(LastNumberOfFrame);
+      LabPackageName.Caption := UTF8Encode(package.S['name']);
       AdjustFont(LabPackageName);
       AdjustFont(LabVersion);
-      strtmp:=UTF8Encode(package.S['description']);
+      strtmp := UTF8Encode(package.S['description']);
       if (strtmp.Length>125) then
       begin
-        strtmp:=copy(strtmp,1,125);
-        strtmp:=strtmp+'...';
+        strtmp := copy(strtmp,1,125);
+        strtmp := strtmp + '...';
       end;
-      LabDescription.Caption:=strtmp;
+      LabDescription.Caption := strtmp;
 
-      strtmp:=UTF8Encode(package.S['signature_date']);
-      LabDate.Caption:=Copy(strtmp,7,2)+'/'+Copy(strtmp,5,2)+'/'+Copy(strtmp,1,4);
+      strtmp := UTF8Encode(package.S['signature_date']);
+      LabDate.Caption := Copy(strtmp,7,2)+'/'+Copy(strtmp,5,2)+'/'+Copy(strtmp,1,4);
 
 
-      if (LstIcons<>Nil) then
+      if (LstIcons <> Nil) then
       begin
-        IconIdx := LstIcons.IndexOf(UTF8Encode(package.S['package']+'.png'));
+        IconIdx := LstIcons.IndexOf(UTF8Encode(package.S['package_uuid'] + '.png'));
         if IconIdx>=0 then
           try
             ImgPackage.Picture.Assign(LstIcons.Objects[IconIdx] as TPicture);
@@ -1615,21 +1622,21 @@ begin
         inc(i);
       end;
     end;
-    if (iniWaptGet.ReadString('global','repositories','') <> ini.ReadString('global','repositories',''))
-      or (iniWaptGet.ReadString('global','repo_url','') <> ini.ReadString('global','repo_url',''))
-      or (iniWaptGet.ReadString('global','wapt_server','') <> ini.ReadString('global','wapt_server',''))
-      or (ListPackages.AsArray.Length = 0) then
-    begin
-      ini.DeleteKey('global','NumberOfPackages');
-      ini.DeleteKey('global','repo_url');
-      ini.DeleteKey('global','wapt_server');
-      ini.DeleteKey('global','repositories');
-      ini.DeleteKey('global','LastPackageDate');
-      if DirectoryExists(IconsDir) then
-        if DeleteDirectory(IconsDir,True) then
-           RemoveDir(IconsDir);
-      ini.UpdateFile;
-    end;
+    //if (iniWaptGet.ReadString('global','repositories','') <> ini.ReadString('global','repositories',''))
+    //  or (iniWaptGet.ReadString('global','repo_url','') <> ini.ReadString('global','repo_url',''))
+    //  or (iniWaptGet.ReadString('global','wapt_server','') <> ini.ReadString('global','wapt_server',''))
+    //  or (ListPackages.AsArray.Length = 0) then
+    //begin
+    //  ini.DeleteKey('global','NumberOfPackages');
+    //  ini.DeleteKey('global','repo_url');
+    //  ini.DeleteKey('global','wapt_server');
+    //  ini.DeleteKey('global','repositories');
+    //  ini.DeleteKey('global','LastPackageDate');
+    //  if DirectoryExists(IconsDir) then
+    //    if DeleteDirectory(IconsDir,True) then
+    //       RemoveDir(IconsDir);
+    //  ini.UpdateFile;
+    //end;
 
     //if (ini.ReadString('global','LastPackageDate','') = '')
     //  or (ini.ReadString('global','NumberOfPackages','None')<>IntToStr(ListPackages.AsArray.Length))
@@ -1641,21 +1648,21 @@ begin
 
     for Package in ListPackages do
     begin
-      tmpLstIcons:=TStringList.Create;
-      tmpLstIcons.OwnsObjects:=True;
-      if Terminated then
-      begin
-        ini.WriteString('global','LastPackageDate',UTF8Encode(Package.S['signature_date']));
-        ini.WriteString('global','repositories',iniWaptGet.ReadString('global','repositories',''));
-        ini.WriteString('global','NumberOfPackages','NotTerminate');
-        ini.UpdateFile;
-        Exit();
-      end;
+      tmpLstIcons := TStringList.Create;
+      tmpLstIcons.OwnsObjects := True;
+      //if Terminated then
+      //begin
+      //  ini.WriteString('global','LastPackageDate',UTF8Encode(Package.S['signature_date']));
+      //  ini.WriteString('global','repositories',iniWaptGet.ReadString('global','repositories',''));
+      //  ini.WriteString('global','NumberOfPackages','NotTerminate');
+      //  ini.UpdateFile;
+      //  Exit();
+      //end;
  //     if (((UTF8Encode(Package.S['signature_date']))<=(ini.ReadString('global','LastPackageDate','None'))) and not((ini.ReadString('global','LastPackageDate','None') = 'None')) and not((ini.ReadString('global','repositories','')<>iniWaptGet.ReadString('global','repositories','')))) then
  //       break;
 
       try
-        tmpLstIcons.Add(IconsDir+UTF8Encode(Package.S['package_uuid'])+'.png');
+        tmpLstIcons.Add(IconsDir + UTF8Encode(Package.S['package_uuid'])+'.png');
         g := TPicture.Create;
         g.LoadFromFile(tmpLstIcons[tmpLstIcons.IndexOf(IconsDir + UTF8Encode(Package.S['package_uuid'])+'.png')]);
 
@@ -1694,13 +1701,13 @@ begin
       Synchronize(@NotifyListener);
     end;
 
-    if ListPackages.AsArray.Length>0 then
-      ini.WriteString('global','LastPackageDate',UTF8Encode(ListPackages.O['0'].S['signature_date']));
-    ini.WriteString('global','NumberOfPackages',IntToStr(ListPackages.AsArray.Length));
-    ini.WriteString('global','repositories',iniWaptGet.ReadString('global','repositories',''));
-    ini.WriteString('global','repo_url',iniWaptGet.ReadString('global','repo_url',''));
-    ini.WriteString('global','wapt_server',iniWaptGet.ReadString('global','wapt_server',''));
-    ini.UpdateFile;
+    //if ListPackages.AsArray.Length>0 then
+    //  ini.WriteString('global','LastPackageDate',UTF8Encode(ListPackages.O['0'].S['signature_date']));
+    //ini.WriteString('global','NumberOfPackages',IntToStr(ListPackages.AsArray.Length));
+    //ini.WriteString('global','repositories',iniWaptGet.ReadString('global','repositories',''));
+    //ini.WriteString('global','repo_url',iniWaptGet.ReadString('global','repo_url',''));
+    //ini.WriteString('global','wapt_server',iniWaptGet.ReadString('global','wapt_server',''));
+    //ini.UpdateFile;
 
   finally
     FreeAndNil(ini);

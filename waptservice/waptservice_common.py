@@ -1219,6 +1219,7 @@ class WaptDownloadIcon(WaptTask):
             self.target_packages = target_packages
         self.usecache = usecache
         self.size = 0
+        self.last_downloaded = ''
         for k in args:
             setattr(self, k, args[k])
 
@@ -1237,8 +1238,13 @@ class WaptDownloadIcon(WaptTask):
         pkg_names = [pkg.package for pkg in self.target_packages]
 
         self.update_status(_(u'Downloading icons %s') % (','.join(pkg_names)))
+
         start = time.time()
-        self.result = self.wapt.download_icons(pkg_names, usecache=self.usecache, printhook=self.printhook)
+
+        for pkg in self.target_packages:
+            self.result = self.wapt.download_icons(pkg, usecache=self.usecache, printhook=self.printhook)
+            self.last_downloaded = pkg.package
+
         end = time.time()
 
         if self.result['errors']:
@@ -1255,8 +1261,9 @@ class WaptDownloadIcon(WaptTask):
     def as_dict(self):
         d = WaptTask.as_dict(self)
         d = dict(
-            target_packages = self.target_packages,
+            nb_packages = len(self.target_packages),
             usecache = self.usecache,
+            last_downloaded = self.last_downloaded
             )
         return d
 
