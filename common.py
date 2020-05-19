@@ -3817,7 +3817,7 @@ class Wapt(BaseObjectClass):
                         def with_install_context(func,impacted_process=None,uninstallkeylist=None,force=None,pidlist=None):
                             def new_func(*args,**kwargs):
                                 if impacted_process and not 'killbefore' in kwargs:
-                                    kwargs['killbefore'] = impacted_process
+                                    kwargs['killbefore'] = ensure_list(impacted_process)
                                 if uninstallkeylist is not None and not 'uninstallkeylist' in kwargs:
                                     kwargs['uninstallkeylist'] = uninstallkeylist
                                 if force is not None and not 'force' in kwargs:
@@ -3828,8 +3828,8 @@ class Wapt(BaseObjectClass):
                             return new_func
 
                         if sys.platform == 'win32':
-                            setattr(setup,'install_msi_if_needed',with_install_context(setuphelpers.install_msi_if_needed,entry.impacted_process,setup.uninstallkey,force,self.pidlist))
-                            setattr(setup,'install_exe_if_needed',with_install_context(setuphelpers.install_exe_if_needed,entry.impacted_process,setup.uninstallkey,force,self.pidlist))
+                            setattr(setup,'install_msi_if_needed',with_install_context(setuphelpers.install_msi_if_needed,ensure_list(entry.impacted_process),setup.uninstallkey,force,self.pidlist))
+                            setattr(setup,'install_exe_if_needed',with_install_context(setuphelpers.install_exe_if_needed,ensure_list(entry.impacted_process),setup.uninstallkey,force,self.pidlist))
 
                         setattr(setup,'WAPT',self)
                         setattr(setup,'control',entry)
