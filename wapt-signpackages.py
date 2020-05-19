@@ -162,10 +162,10 @@ def main():
             if os.path.isfile(os.path.join(package_dir,'Packages')):
                 print(u'Launching the update of Packages index in %s ...'% ensure_unicode(package_dir))
                 repo = WaptLocalRepo(package_dir)
-                repo.update_packages_index()
+                repo.update_packages_index(canonical_filenames=True)
                 print('Done')
     else:
-        print("Don't forget to rescan your repository with wapt-scanpackages %s" % os.path.dirname(waptpackages[0]))
+        print("Don't forget to rescan your repository with wapt-scanpackages -r -f %s" % os.path.dirname(waptpackages[0]))
 
     if errors:
         print('Package not processed properly: ')
