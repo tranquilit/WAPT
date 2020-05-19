@@ -2121,7 +2121,7 @@ def upgrade_db_structure():
                 v.save()
 
         next_version = '1.8.1.0'
-        if get_db_version() < next_version:
+        if get_db_version() <= next_version:
             with wapt_db.atomic():
                 logger.info("Migrating from %s to %s" % (get_db_version(), next_version))
                 opes = []
@@ -2133,9 +2133,6 @@ def upgrade_db_structure():
                     opes.append(migrator.add_column(HostPackagesStatus._meta.name, 'impacted_process',HostPackagesStatus.impacted_process))
 
                 HostSyncStatus.create_table(fail_silently=True)
-
-                (user_acls,_) = WaptUserAcls.get_or_create(user_fingerprint_sha1='admin',acls=['admin'],perimeter_fingerprint='*')
-                user_acls.save()
 
                 columns = [c.name for c in wapt_db.get_columns('syncstatus')]
                 if not 'progress' in columns:
@@ -2204,7 +2201,15 @@ def upgrade_db_structure():
         # be sure to have at least admin
         with wapt_db.atomic():
             (admin,_) = WaptUsers.get_or_create(name='admin')
-            admin.save()
+            if _ or admin.user_fingerprint_sha1 is None:
+                    admin.user_fingerprint_sha1 = 'admin'
+                    admin.save()
+
+            (admin_acls,_) = WaptUserAcls.get_or_create(user_fingerprint_sha1='admin',perimeter_fingerprint='*')
+            if _ or admin_acls.acls!=['admin'] or admin_acls.perimeter_fingerprint!='*':
+                admin_acls.acls=['admin']
+                admin_acls.perimeter_fingerprint='*'
+                admin_acls.save()
 
 
     finally:
