@@ -75,6 +75,7 @@ import json
 import threading
 import Queue
 import traceback
+import copy
 
 import datetime
 
@@ -764,7 +765,7 @@ def all_packages(page=1):
 
 
     if rows and request.args.get('download_icons'):
-        data = app.task_manager.add_task(WaptDownloadIcon(rows[0:100])) #should be rows, but weird bug
+        data = app.task_manager.add_task(WaptDownloadIcon(copy.deepcopy(rows)))
 
     if request.args.get('format','html')=='json' or request.path.endswith('.json'):
         for pe in rows:

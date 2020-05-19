@@ -42,6 +42,7 @@ interface
   function GetHostFromURL(url:String):String;
 
   function AppLocalDir: String; // returns Users/<user>/local/appdata/<application_name>
+  function GetIconsDir: String; // returns package icon directory
   function AppIniFilename(AApplicationName:String=''): String; // returns ConfigFilename parameter or Users/<user>/local/appdata/<application_name>/<application_name>.ini
   function WaptIniFilename: String; // for local wapt install directory
 
@@ -2339,6 +2340,11 @@ function AppLocalDir: String;
 begin
   //Result :=  GetSpecialFolderPath(CSIDL_LOCAL_APPDATA))+ApplicationName;
   result := AnsiToUtf8(GetAppConfigDir(False));
+end;
+
+function GetIconsDir: String;
+begin
+  result := 'C:\tranquilit\wapt\cache\icons\'; // TODO change
 end;
 
 function AppIniFilename(AApplicationName:String=''): String;

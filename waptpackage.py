@@ -3812,8 +3812,7 @@ class WaptRemoteRepo(WaptBaseRepo):
 
         with self.get_requests_session() as session:
             for entry in packages:
-
-                icon_file = os.path.join(target_dir, 'icons', entry.package_uuid + '.png') #TODO don't use filename
+                icon_file = os.path.join(target_dir, 'icons', entry.package_uuid + '.png')
 
                 if os.path.isfile(icon_file):
                     logger.info(u"Skipping icon for " + entry.package + ", already downloaded")
@@ -3878,7 +3877,7 @@ class WaptRemoteRepo(WaptBaseRepo):
                             f.close()
 
                     except Exception as e:
-                        print("Couldn't find an icon for package " + entry.package + " : " + e)
+                        print("Couldn't find an icon for package " + entry.package)
 
                     os.remove(download_location)
 

@@ -1238,7 +1238,7 @@ begin
                 FThreadGetAllIcons.FreeOnTerminate:=true;
               end
               else
-                TTriggerWaptserviceAction.Create('packages.json?latest=1',@OnUpgradeTriggeredAllPackages,DMWaptSelf.Login,DMWaptSelf.Token,Nil);
+                TTriggerWaptserviceAction.Create('packages.json?latest=1&download_icons=1',@OnUpgradeTriggeredAllPackages,DMWaptSelf.Login,DMWaptSelf.Token,Nil);
               ProgressBarTaskRunning.Style:=pbstNormal;
             end;
           end;
@@ -1653,10 +1653,6 @@ begin
       end;
  //     if (((UTF8Encode(Package.S['signature_date']))<=(ini.ReadString('global','LastPackageDate','None'))) and not((ini.ReadString('global','LastPackageDate','None') = 'None')) and not((ini.ReadString('global','repositories','')<>iniWaptGet.ReadString('global','repositories','')))) then
  //       break;
-      //ShowMessage(UTF8Encode(Package.S['package'])+'.png');
-
-      //if not FileExists(IconsDir + UTF8Encode(Package.S['package_uuid'])+'.png') then
-      //   continue;
 
       try
         tmpLstIcons.Add(IconsDir+UTF8Encode(Package.S['package_uuid'])+'.png');
