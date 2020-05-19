@@ -4919,37 +4919,37 @@ msgstr ""
 
 #: tviswaptgui.gridpackages.header.columns[10].text
 msgctxt "tviswaptgui.gridpackages.header.columns[10].text"
-msgid "Size"
+msgid "Licence"
 msgstr ""
 
 #: tviswaptgui.gridpackages.header.columns[11].text
 msgctxt "tviswaptgui.gridpackages.header.columns[11].text"
-msgid "Installed size"
+msgid "Size"
 msgstr ""
 
 #: tviswaptgui.gridpackages.header.columns[12].text
 msgctxt "tviswaptgui.gridpackages.header.columns[12].text"
-msgid "Signer"
+msgid "Installed size"
 msgstr ""
 
 #: tviswaptgui.gridpackages.header.columns[13].text
 msgctxt "tviswaptgui.gridpackages.header.columns[13].text"
-msgid "Signed on"
+msgid "Signer"
 msgstr ""
 
 #: tviswaptgui.gridpackages.header.columns[14].text
 msgctxt "tviswaptgui.gridpackages.header.columns[14].text"
-msgid "Editor"
+msgid "Signed on"
 msgstr ""
 
 #: tviswaptgui.gridpackages.header.columns[15].text
 msgctxt "tviswaptgui.gridpackages.header.columns[15].text"
-msgid "Maturity"
+msgid "Editor"
 msgstr ""
 
 #: tviswaptgui.gridpackages.header.columns[16].text
 msgctxt "tviswaptgui.gridpackages.header.columns[16].text"
-msgid "Target OS"
+msgid "Maturity"
 msgstr ""
 
 #: tviswaptgui.gridpackages.header.columns[17].text
@@ -5099,32 +5099,32 @@ msgstr ""
 
 #: tviswaptgui.gridpackages.header.columns[4].text
 msgctxt "tviswaptgui.gridpackages.header.columns[4].text"
-msgid "Arch"
+msgid "Target OS"
 msgstr ""
 
 #: tviswaptgui.gridpackages.header.columns[5].text
 msgctxt "tviswaptgui.gridpackages.header.columns[5].text"
-msgid "Locale"
+msgid "Arch"
 msgstr ""
 
 #: tviswaptgui.gridpackages.header.columns[6].text
 msgctxt "tviswaptgui.gridpackages.header.columns[6].text"
-msgid "Description"
+msgid "Locale"
 msgstr ""
 
 #: tviswaptgui.gridpackages.header.columns[7].text
 msgctxt "tviswaptgui.gridpackages.header.columns[7].text"
-msgid "Dependencies"
+msgid "Description"
 msgstr ""
 
 #: tviswaptgui.gridpackages.header.columns[8].text
 msgctxt "tviswaptgui.gridpackages.header.columns[8].text"
-msgid "Conflicts"
+msgid "Dependencies"
 msgstr ""
 
 #: tviswaptgui.gridpackages.header.columns[9].text
 msgctxt "tviswaptgui.gridpackages.header.columns[9].text"
-msgid "Licence"
+msgid "Conflicts"
 msgstr ""
 
 #: tviswaptgui.gridreportingqueries.header.columns[0].text

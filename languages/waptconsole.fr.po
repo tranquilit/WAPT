@@ -4961,40 +4961,39 @@ msgid "Section"
 msgstr "Section"
 
 #: tviswaptgui.gridpackages.header.columns[10].text
-#| msgid "Installed size"
 msgctxt "tviswaptgui.gridpackages.header.columns[10].text"
-msgid "Size"
-msgstr "Taille installé"
+msgid "Licence"
+msgstr ""
 
 #: tviswaptgui.gridpackages.header.columns[11].text
 msgctxt "tviswaptgui.gridpackages.header.columns[11].text"
-msgid "Installed size"
-msgstr "Taille finale"
+msgid "Size"
+msgstr "Taille"
 
 #: tviswaptgui.gridpackages.header.columns[12].text
 msgctxt "tviswaptgui.gridpackages.header.columns[12].text"
-msgid "Signer"
-msgstr "Signataire"
+msgid "Installed size"
+msgstr "Taille installé"
 
 #: tviswaptgui.gridpackages.header.columns[13].text
 msgctxt "tviswaptgui.gridpackages.header.columns[13].text"
-msgid "Signed on"
-msgstr "Signé le"
+msgid "Signer"
+msgstr "Signataire"
 
 #: tviswaptgui.gridpackages.header.columns[14].text
 msgctxt "tviswaptgui.gridpackages.header.columns[14].text"
-msgid "Editor"
-msgstr "Editeur"
+msgid "Signed on"
+msgstr "Signé le"
 
 #: tviswaptgui.gridpackages.header.columns[15].text
 msgctxt "tviswaptgui.gridpackages.header.columns[15].text"
-msgid "Maturity"
-msgstr "Maturité"
+msgid "Editor"
+msgstr "Editeur"
 
 #: tviswaptgui.gridpackages.header.columns[16].text
 msgctxt "tviswaptgui.gridpackages.header.columns[16].text"
-msgid "Target OS"
-msgstr "OS cible"
+msgid "Maturity"
+msgstr "Maturité"
 
 #: tviswaptgui.gridpackages.header.columns[17].text
 msgctxt "tviswaptgui.gridpackages.header.columns[17].text"
@@ -5143,35 +5142,33 @@ msgstr "Catégories"
 
 #: tviswaptgui.gridpackages.header.columns[4].text
 msgctxt "tviswaptgui.gridpackages.header.columns[4].text"
-msgid "Arch"
-msgstr "Architecture"
+msgid "Target OS"
+msgstr "OS cible"
 
 #: tviswaptgui.gridpackages.header.columns[5].text
 msgctxt "tviswaptgui.gridpackages.header.columns[5].text"
-msgid "Locale"
-msgstr "Locale"
+msgid "Arch"
+msgstr ""
 
 #: tviswaptgui.gridpackages.header.columns[6].text
-#, fuzzy
-#| msgid "Dependencies"
 msgctxt "tviswaptgui.gridpackages.header.columns[6].text"
-msgid "Description"
-msgstr "Dépendances"
+msgid "Locale"
+msgstr ""
 
 #: tviswaptgui.gridpackages.header.columns[7].text
 msgctxt "tviswaptgui.gridpackages.header.columns[7].text"
-msgid "Dependencies"
-msgstr "Dépendances"
+msgid "Description"
+msgstr ""
 
 #: tviswaptgui.gridpackages.header.columns[8].text
 msgctxt "tviswaptgui.gridpackages.header.columns[8].text"
-msgid "Conflicts"
-msgstr "Conflits"
+msgid "Dependencies"
+msgstr "Dépendances"
 
 #: tviswaptgui.gridpackages.header.columns[9].text
 msgctxt "tviswaptgui.gridpackages.header.columns[9].text"
-msgid "Licence"
-msgstr "Licence"
+msgid "Conflicts"
+msgstr "Conflits"
 
 #: tviswaptgui.gridreportingqueries.header.columns[0].text
 msgctxt "tviswaptgui.gridreportingqueries.header.columns[0].text"
