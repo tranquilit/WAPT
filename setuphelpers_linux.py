@@ -51,11 +51,6 @@ try:
     import rpm
 except:
     rpm=None
-try:
-    import yum
-    # http://yum.baseurl.org/api/yum/yum/__init__.html
-except:
-    yum=None
 
 logger = logging.getLogger('waptcore')
 
@@ -179,18 +174,10 @@ def autoremove_apt():
     return run('LANG=C DEBIAN_FRONTEND=noninteractive apt-get -y autoremove')
 
 def install_yum(package):
-    yb = yum.YumBase()
-    if package.endswith('.rpm'):
-        yb.installLocal(package)
-    else:
-        yb.install(name=package)
-    yb.resolveDeps()
-    yb.processTransaction()
+    return run('LANG=C yum install -y %s' % (package))
 
 def uninstall_yum(package):
-    yb = yum.YumBase()
-    yb.remove(name=package)
-    yb.processTransaction()
+    return run('LANG=C yum remove -y %s' % package)
 
 def autoremove_yum():
     return run('LANG=C yum autoremove -y')
