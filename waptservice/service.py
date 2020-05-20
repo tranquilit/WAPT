@@ -887,8 +887,8 @@ def download_icons():
     else:
         logger.critical(u"*********** Couldn't download icons")
 
-    #pkg_names = [(pkg.package, pkg.package_uuid) for pkg in rows]
-    return Response(common.jsondump(rows), mimetype='application/json')
+    pkg_names = [pkg.package for pkg in rows]
+    return Response(common.jsondump({'downloading': pkg_names}), mimetype='application/json')
 
 
 @app.route('/local_package_details.json')
