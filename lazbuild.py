@@ -164,6 +164,9 @@ def set_lpi_options(lpi_fn,waptedition,waptversion,buildnr=None):
     else:
         print('WARNING: No compiler options')
     print("Compiler special options: %s" % (compiler_custom_options is not None and compiler_custom_options.items(),))
+    if os.name!='nt':
+        output_filename = lpi.find('CompilerOptions/Target/Filename')
+        output_filename.attrib['Value']=output_filename.attrib['Value']+'bin'
     lpi.write(lpi_fn)
 
 def get_lpi_output(lpi_fn):
@@ -226,8 +229,8 @@ def set_app_ico(lpi_path,edition):
 
 def main():
     parser=OptionParser(usage=__doc__)
-    parser.add_option("-l","--laz-build-path", dest="lazbuildpath", default=r'C:\lazarus\lazbuild.exe', help="Path to lazbuild or lazbuild.exe (default: %default)")
-    parser.add_option("-p","--primary-config-path", dest="primary_config_path", default='%LOCALAPPDATA%\\lazarus', help="Path to lazbuild primary config dir. (default: %default)")
+    parser.add_option("-l","--laz-build-path", dest="lazbuildpath", default=r'C:\lazarus\lazbuild.exe' if os.name=='nt' else "lazbuild", help="Path to lazbuild or lazbuild.exe (default: %default)")
+    parser.add_option("-p","--primary-config-path", dest="primary_config_path", default='%LOCALAPPDATA%\\lazarus' if os.name=='nt' else os.path.join(os.path.expanduser("~"),".lazarus"), help="Path to lazbuild primary config dir. (default: %default)")
     parser.add_option("-v","--wapt-version", dest="waptversion", default=get_version(), help="Wapt version to put in exe metadata. (default: %default)")
     parser.add_option("-b","--build-nr", dest="buildnr", default=None, help="Wapt compile build  to put in exe metadata. (default: %default)")
     parser.add_option("-e","--wapt-edition", dest="waptedition", default='community', help="Wapt edition to build (community, enterprise...).  (default: %default)")
@@ -261,7 +264,7 @@ def main():
         update_hash_file(os.path.abspath(options.update_hash_filepath.format(**locals())))
         cmd = '"%s" --primary-config-path="%s" -B "%s"'% (os.path.expandvars(options.lazbuildpath),os.path.expandvars(options.primary_config_path),os.path.expandvars(lpi_path))
         print(u'Running: %s' % cmd)
-        run(cmd,cwd = os.path.dirname(os.path.expandvars(options.lazbuildpath)))
+        run(cmd)
         (fn,ext) = os.path.splitext(get_lpi_output(lpi_path))
         if ext in ('','.'):
             ext = '.exe'
