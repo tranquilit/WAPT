@@ -71,7 +71,7 @@ def get_groups(user):
     gid = pwd.getpwnam(user.lower()).pw_gid
     if not gid in gids:
         gids.append(grp.getgrgid(gid).gr_gid)
-    return [grp.getgrgid(gid).gr_name for gid in gids]
+    return [grp.getgrgid(gid).gr_name.rsplit('\\')[-1].lower() for gid in gids]
 
 def get_domain_info():
     """Return ad site and ou
