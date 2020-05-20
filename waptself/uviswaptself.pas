@@ -19,11 +19,12 @@ type
     procedure NotifyListener; Virtual;
     procedure SetOnNotifyEvent(AValue: TNotifyEvent);
   public
-    tmpLstIcons : TStringList;
-    ListPackages : ISuperObject;
-    FlowPanel : TFlowPanel;
-    property OnNotifyEvent:TNotifyEvent read FOnNotifyEvent write SetOnNotifyEvent;
-    constructor Create(aNotifyEvent:TNotifyEvent;AllPackages:ISuperObject; aFlowPanel:TFlowPanel);
+    tmpLstIcons: TStringList;
+    lastIconDownloaded: AnsiString;
+    ListPackages: ISuperObject;
+    FlowPanel: TFlowPanel;
+    property OnNotifyEvent: TNotifyEvent read FOnNotifyEvent write SetOnNotifyEvent;
+    constructor Create(aNotifyEvent: TNotifyEvent; AllPackages: ISuperObject; aFlowPanel: TFlowPanel);
     procedure Execute; override;
   end;
 
@@ -1235,6 +1236,7 @@ begin
               if (LastEvent.S['data.classname']='WaptUpdate') then
               begin
                 ActUpdatePackagesList.Execute;
+                DownloadAllPackageIcons();
                 FThreadGetAllIcons.Terminate;
                 FThreadGetAllIcons:=TThreadGetAllIcons.Create(@OnUpgradeAllIcons,AllPackages,FlowPackages);
                 FThreadGetAllIcons.FreeOnTerminate:=true;
@@ -1650,8 +1652,25 @@ begin
 end;
 
 procedure TVisWaptSelf.OnUpgradeAllIcons(Sender: TObject);
+var
+  i: Integer;
+  events: ISuperObject;
 begin
   LstIcons.AddStrings((Sender as TThreadGetAllIcons).tmpLstIcons);
+
+  // Fetching the last icon that was downloaded   
+  events := CheckEventsThread.Events;
+  if (Events = Nil) or (Events.AsArray.Length <= 0) then
+     exit;
+  for i := Events.AsArray.Length - 1 to 0 do
+  begin
+    try
+      (Sender as TThreadGetAllIcons).lastIconDownloaded := CheckEventsThread.Events.AsArray[i]['data']['last_downloaded'].AsString();
+      Exit;
+    except
+     Continue;
+    end;
+  end;
 end;
 
 end.
