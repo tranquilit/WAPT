@@ -2253,7 +2253,7 @@ end;
 
 function AppIniFilename(AApplicationName:String=''): String;
 begin
-  {if FAppIniFilename = '' then
+  if FAppIniFilename = '' then
   begin
     if AApplicationName='' then
       AApplicationName:=ApplicationName;
@@ -2262,13 +2262,11 @@ begin
       FAppIniFilename := AApplicationName+'.ini';
 
     if ExtractFileDir(FAppIniFilename)='' then
-      FAppIniFilename := IncludeTrailingPathDelimiter(IncludeTrailingPathDelimiter(GetWindowsSpecialDir(CSIDL_LOCAL_APPDATA))+AApplicationName)+FAppIniFilename;
+      FAppIniFilename := IncludeTrailingPathDelimiter(IncludeTrailingPathDelimiter(GetAppConfigDir(False)+AApplicationName)+FAppIniFilename);
     if ExtractFileExt(FAppIniFilename)='' then
       FAppIniFilename := FAppIniFilename+'.ini';
-
   end;
-  Result := FAppIniFilename;}
-  Result := '/home/octavel/wapt-get.ini'; // TODO change
+  Result := FAppIniFilename;
 end;
 
 function WaptIniFilename: String;
