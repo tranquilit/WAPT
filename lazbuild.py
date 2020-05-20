@@ -22,10 +22,10 @@ except:
     wapt_root_dir = 'c:/tranquilit/wapt'
 
 from optparse import OptionParser
-import waptutils
-import waptcrypto
-import setuphelpers
 import subprocess
+import shutil
+import types
+import hashlib
 from git import Repo
 
 
@@ -34,6 +34,108 @@ __doc__ = """\
 
 Configure and Build a Lazarus app
 """
+
+def get_sha256(afile = '',BLOCK_SIZE=2**20):
+        file_hash=hashlib.sha256()
+        with open(afile,'rb') as f:
+            fb=f.read(BLOCK_SIZE)
+            while len(fb)>0:
+                file_hash.update(fb)
+                fb=f.read(BLOCK_SIZE)
+            return file_hash.hexdigest()
+
+class Version(object):
+    """Version object of form 0.0.0
+    can compare with respect to natural numbering and not alphabetical
+
+    Args:
+        version (str) : version string
+        member_count (int) : number of version memebers to take in account.
+                             If actual members in version is less, add missing memeber with 0 value
+                             If actual members count is higher, removes last ones.
+
+    >>> Version('0.10.2') > Version('0.2.5')
+    True
+    >>> Version('0.1.2') < Version('0.2.5')
+    True
+    >>> Version('0.1.2') == Version('0.1.2')
+    True
+    >>> Version('7') < Version('7.1')
+    True
+
+    .. versionchanged:: 1.6.2.5
+        truncate version members list to members_count if provided.
+    """
+
+    def __init__(self,version,members_count=None):
+        if version is None:
+            version = ''
+        assert isinstance(version,types.ModuleType) or isinstance(version,bytes) or isinstance(version,bytes) or isinstance(version,Version)
+        if isinstance(version,types.ModuleType):
+            self.versionstring =  getattr(version,'__version__',None)
+        elif isinstance(version,Version):
+            self.versionstring = getattr(version,'versionstring',None)
+        else:
+            self.versionstring = version
+        self.members = [ v.strip() for v in self.versionstring.split('.')]
+        self.members_count = members_count
+        if members_count is not None:
+            if len(self.members)<members_count:
+                self.members.extend(['0'] * (members_count-len(self.members)))
+            else:
+                self.members = self.members[0:members_count]
+
+    def __cmp__(self,aversion):
+        def nat_cmp(a, b):
+            a = a or ''
+            b = b or ''
+
+            def convert(text):
+                if text.isdigit():
+                    return int(text)
+                else:
+                    return text.lower()
+
+            def alphanum_key(key):
+                return [convert(c) for c in re.split('([0-9]+)', key)]
+
+            return cmp(alphanum_key(a), alphanum_key(b))
+
+        if not isinstance(aversion,Version):
+            aversion = Version(aversion,self.members_count)
+        for i in range(0,max([len(self.members),len(aversion.members)])):
+            if i<len(self.members):
+                i1 = self.members[i]
+            else:
+                i1 = ''
+            if i<len(aversion.members):
+                i2 = aversion.members[i]
+            else:
+                i2=''
+            v = nat_cmp(i1,i2)
+            if v:
+                return v
+        return 0
+
+    def __str__(self):
+        return '.'.join(self.members)
+
+    def __repr__(self):
+        return "Version('{}')".format('.'.join(self.members))
+
+def programfiles32():
+    if 'PROGRAMW6432' in os.environ and 'PROGRAMFILES(X86)' in os.environ:
+        return os.environ['PROGRAMFILES(X86)']
+    else:
+        return os.environ['PROGRAMFILES']
+
+def get_version():
+    for line in open('%s/waptutils.py' % wapt_root_dir):
+        if line.strip().startswith('__version__'):
+            wapt_version = str(Version(line.split('=')[1].strip().replace('"', '').replace("'", ''),3))
+
+def run(*args, **kwargs):
+    return subprocess.check_output(*args, shell=True, **kwargs)
 
 def set_lpi_options(lpi_fn,waptedition,waptversion,buildnr=None):
     """Change the product name and product version of lazarus lpi project"""
@@ -77,7 +179,7 @@ def update_hash_file(filepath):
                     (old_hash,fn) = hash_fn.split('  ')
                     fn_rel_path = os.path.relpath(fn,os.path.dirname(filepath))
                     if os.path.isfile(fn):
-                        filesha256 = waptcrypto.sha256_for_file(fn)
+                        filesha256 = get_sha256(fn)
                         new.write((u'%s  %s\n' % (filesha256,fn_rel_path)).encode('utf8'))
                 elif hash_fn.strip():
                     raise Exception('Bad line format for %s' % hash_fn)
@@ -89,17 +191,16 @@ def update_hash_file(filepath):
         print('No %s hash file to process' % filepath)
 
 def sign_exe(exe_path,p12path,p12password):
-    #SIGNTOOL = os.path.join(setuphelpers.programfiles64,'Microsoft SDKs','Windows','v7.1','Bin','signtool.exe')
     SIGNTOOL = os.path.join(wapt_root_dir,'utils','signtool.exe')
     if not os.path.exists(SIGNTOOL):
-      SIGNTOOL = os.path.join(setuphelpers.programfiles32,'wapt','utils','signtool.exe')
+      SIGNTOOL = os.path.join(programfiles32(),'wapt','utils','signtool.exe')
     if not os.path.exists(SIGNTOOL):
       SIGNTOOL = os.path.join(r'c:\wapt','utils','signtool.exe')
 
     for attempt in [1, 2, 3]:
         try:
             print("Signing attempt #" + str(attempt))
-            setuphelpers.run(r'"%s" sign /f "%s" /p "%s" /t http://timestamp.verisign.com/scripts/timstamp.dll "%s"' % (SIGNTOOL,p12path,p12password,exe_path),return_stderr=False)
+            run(r'"%s" sign /f "%s" /p "%s" /t http://timestamp.verisign.com/scripts/timstamp.dll "%s"' % (SIGNTOOL,p12path,p12password,exe_path),return_stderr=False)
             break
         except subprocess.CalledProcessError as cpe:
             cpe.cmd =  cpe.cmd.replace(p12password, '********')
@@ -113,21 +214,21 @@ def set_app_ico(lpi_path,edition):
     (lpi_rootname,lpi_ext) = os.path.splitext(lpi_path)
     appico_path = lpi_rootname+'.ico'
     if not lpi_rootname.endswith('waptself'):
-        source_ico = setuphelpers.makepath(wapt_root_dir,'wapt-%s.ico'%edition)
+        source_ico = os.path.join(wapt_root_dir,'wapt-%s.ico'%edition)
         if not os.path.isfile(source_ico):
-            source_ico = setuphelpers.makepath(wapt_root_dir,'wapt.ico')
+            source_ico = os.path.join(wapt_root_dir,'wapt.ico')
     else:
-        source_ico = setuphelpers.makepath(wapt_root_dir,'waptself','waptself-%s.ico' % edition.lower())
+        source_ico = os.path.join(wapt_root_dir,'waptself','waptself-%s.ico' % edition.lower())
         if not os.path.isfile(source_ico):
-            source_ico = setuphelpers.makepath(wapt_root_dir,'waptself','waptself-community.ico')
-    setuphelpers.filecopyto(source_ico,appico_path)
+            source_ico = os.path.join(wapt_root_dir,'waptself','waptself-community.ico')
+    shutil.copyfile(source_ico,appico_path)
 
 
 def main():
     parser=OptionParser(usage=__doc__)
     parser.add_option("-l","--laz-build-path", dest="lazbuildpath", default=r'C:\lazarus\lazbuild.exe', help="Path to lazbuild or lazbuild.exe (default: %default)")
     parser.add_option("-p","--primary-config-path", dest="primary_config_path", default='%LOCALAPPDATA%\\lazarus', help="Path to lazbuild primary config dir. (default: %default)")
-    parser.add_option("-v","--wapt-version", dest="waptversion", default=waptutils.__version__, help="Wapt version to put in exe metadata. (default: %default)")
+    parser.add_option("-v","--wapt-version", dest="waptversion", default=get_version(), help="Wapt version to put in exe metadata. (default: %default)")
     parser.add_option("-b","--build-nr", dest="buildnr", default=None, help="Wapt compile build  to put in exe metadata. (default: %default)")
     parser.add_option("-e","--wapt-edition", dest="waptedition", default='community', help="Wapt edition to build (community, enterprise...).  (default: %default)")
     parser.add_option("-u","--update-hash-file", dest="update_hash_filepath", default=r'{lpi_dirname}\\..\\{lpi_name}.sha256',help="Hash file to update vars (lpi_rootname,lpi_name,lpi_path,lpi_dirname,lpi_basename) (default: <lpi-base-name>.sha256")
@@ -154,13 +255,13 @@ def main():
         lpi_basename = os.path.basename(lpi_path)
         (lpi_name,lpi_ext) = os.path.splitext(os.path.basename(lpi_path))
         print('Configure %s' % lpi_path)
-        set_lpi_options(lpi_path,options.waptedition,waptutils.Version(options.waptversion,4),options.buildnr)
+        set_lpi_options(lpi_path,options.waptedition,Version(options.waptversion,4),options.buildnr)
         set_app_ico(lpi_path,options.waptedition)
 
         update_hash_file(os.path.abspath(options.update_hash_filepath.format(**locals())))
         cmd = '"%s" --primary-config-path="%s" -B "%s"'% (os.path.expandvars(options.lazbuildpath),os.path.expandvars(options.primary_config_path),os.path.expandvars(lpi_path))
         print(u'Running: %s' % cmd)
-        setuphelpers.run(cmd,cwd = os.path.dirname(os.path.expandvars(options.lazbuildpath)))
+        run(cmd,cwd = os.path.dirname(os.path.expandvars(options.lazbuildpath)))
         (fn,ext) = os.path.splitext(get_lpi_output(lpi_path))
         if ext in ('','.'):
             ext = '.exe'
@@ -168,7 +269,7 @@ def main():
 
         if options.compress:
             print(u'Compress %s  with UPX' % exe_fn)
-            setuphelpers.run('"%s" "%s"' % (os.path.join(setuphelpers.programfiles32,'upx','upx.exe'),exe_fn))
+            run('"%s" "%s"' % (os.path.join(programfiles32(),'upx','upx.exe'),exe_fn))
 
         if options.sign_key_path:
             sign_exe(exe_fn,options.sign_key_path,open(options.sign_key_pwd_path,'rb').read())
