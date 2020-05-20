@@ -78,7 +78,7 @@ def get_domain_info():
     Warning : Please note that the search for gssapi does not work if the reverse dns recording is not available for ad
     """
     result = {}
-    result['groups'] = get_computer_groups()
+    result['groups'] = []
 
     if platform.system() == 'Darwin':
         cmd = 'ktutil -k /etc/krb5.keytab list'
@@ -112,8 +112,12 @@ def get_domain_info():
             c.bind()
 
             # get ou with ldap
-            c.search('dc=' + domain.lower().replace('.',',dc='),search_filter='(samaccountname=%s)' % hostname.lower(),attributes=['distinguishedName'])
+            c.search('dc=' + domain.lower().replace('.',',dc='),search_filter='(samaccountname=%s)' % hostname.lower(),attributes=['distinguishedName','memberOf'])
             result['ou'] = c.response[0]['dn']
+
+            if 'memberOf' in c.response[0]['attributes'] :
+                for u in c.response[0]['attributes']['memberOf'] :
+                    result['groups'].append(u.split(',',1)[0].split('=')[1])
 
             # get site with ldap
             c.search('CN=Subnets,CN=Sites,CN=Configuration,dc=' + domain.lower().replace('.',',dc='),search_filter='(siteObject=*)',attributes=['siteObject','cn'])
