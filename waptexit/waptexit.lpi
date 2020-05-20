@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
   <ProjectOptions>
-    <Version Value="11"/>
+    <Version Value="10"/>
     <PathDelim Value="\"/>
     <General>
       <SessionStorage Value="InProjectDir"/>
@@ -29,7 +29,7 @@
       <MajorVersionNr Value="1"/>
       <MinorVersionNr Value="7"/>
       <RevisionNr Value="4"/>
-      <BuildNr Value="6143"/>
+      <BuildNr Value="6144"/>
       <Language Value="040C"/>
       <StringTable CompanyName="Tranquil IT Systems" FileDescription="check and launch packages upgrades at Windows Shutdown" InternalName="waptexit" LegalCopyright="Tranquil IT Systems 2012-2019" OriginalFilename="waptexit.exe" ProductName="WAPT Enterprise Edition" ProductVersion="1.7.4"/>
     </VersionInfo>
@@ -41,18 +41,11 @@
     </PublishOptions>
     <RunParams>
       <local>
+        <FormatVersion Value="1"/>
         <CommandLineParams Value="\debug"/>
       </local>
-      <FormatVersion Value="2"/>
-      <Modes Count="1">
-        <Mode0 Name="default">
-          <local>
-            <CommandLineParams Value="\debug"/>
-          </local>
-        </Mode0>
-      </Modes>
     </RunParams>
-    <RequiredPackages Count="9">
+    <RequiredPackages Count="8">
       <Item1>
         <PackageName Value="dcpcrypt"/>
       </Item1>
@@ -60,26 +53,23 @@
         <PackageName Value="laz_synapse"/>
       </Item2>
       <Item3>
-        <PackageName Value="BGRABitmapPack"/>
+        <PackageName Value="pltis_sogrid"/>
       </Item3>
       <Item4>
-        <PackageName Value="pltis_sogrid"/>
+        <PackageName Value="indylaz"/>
       </Item4>
       <Item5>
-        <PackageName Value="indylaz"/>
+        <PackageName Value="pltis_wapt"/>
       </Item5>
       <Item6>
-        <PackageName Value="pltis_wapt"/>
+        <PackageName Value="pltis_utils"/>
       </Item6>
       <Item7>
-        <PackageName Value="pltis_utils"/>
+        <PackageName Value="pltis_superobject"/>
       </Item7>
       <Item8>
-        <PackageName Value="pltis_superobject"/>
-      </Item8>
-      <Item9>
         <PackageName Value="LCL"/>
-      </Item9>
+      </Item8>
     </RequiredPackages>
     <Units Count="7">
       <Unit0>
