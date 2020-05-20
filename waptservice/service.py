@@ -112,6 +112,8 @@ if os.path.isdir(os.path.join(wapt_root_dir,'waptenterprise')):
         from waptenterprise.waptservice.enterprise import run_cleanmgr,WaptRunCleanMgr # pylint: disable=import-error
         from waptenterprise.waptservice.enterprise import run_scheduled_wua_scan,run_scheduled_wua_downloads,run_scheduled_wua_installs # pylint: disable=import-error
         from waptenterprise.waptservice.enterprise import waptwua_api
+    else:
+        waptwua_api = None
     from waptenterprise import enterprise_common
     from waptenterprise.waptservice.enterprise import WaptGPUpdate
 else:
