@@ -33,6 +33,8 @@ import netifaces
 import json
 import cpuinfo
 import sys
+import grp
+import pwd
 import subprocess
 import logging
 import glob
@@ -74,6 +76,16 @@ def host_info():
             info['local_groups'][gr_struct.gr_name] = [u.pw_name]
 
     return info
+
+def system_profiler_info():
+    """Returns data from the system_profiler command. Created because of an invalid UUID in dmidecode. """
+    sp_info = {}
+    sphdt_string = run('system_profiler SPHardwareDataType -xml')
+    sphdt_data = plistlib.readPlistFromString(sphdt_string)
+
+    sp_info['UUID'] = sphdt_data['_items']['platform_UUID']
+
+    return sp_info
 
 def get_info_plist_path(app_dir):
     """ Applications typically contain an Info.plist file that shows information

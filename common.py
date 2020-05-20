@@ -6295,6 +6295,13 @@ class Wapt(BaseObjectClass):
             inv['wmi'] = None
             logger.warning('WMI unavailable')
 
+        if os == 'darwin':
+            try:
+                inv['system_profiler'] = setuphelpers.system_profiler_info()
+            except:
+                inv['system_profiler'] = None
+                logger.warning('system_profiler data unavailable')
+
         inv['wapt_status'] = self.wapt_status()
 
         inv['installed_softwares'] = self.merge_installed_softwares_and_wua_list()

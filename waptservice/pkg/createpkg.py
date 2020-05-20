@@ -272,7 +272,7 @@ run_verbose('tmpbuild/payload/opt/wapt/bin/pip install pip setuptools --upgrade'
 lib_python=next(os.walk('tmpbuild/payload/opt/wapt/lib/'))[1][0]
 run('tmpbuild/payload/opt/wapt/bin/pip{} install -r ../../requirements-agent.txt -r ../../requirements-agent-unix.txt -t tmpbuild/payload/opt/wapt/lib/{}/site-packages'.format(python_version, lib_python))
 
-run_verbose(r'virtualenv tmpbuild/payload/opt/wapt --relocatable')
+run_verbose(r'virtualenv tmpbuild/payload/opt/wapt')
 
 eprint('copying the waptservice files')
 files_to_copy = ['version-full','waptcrypto.py','waptutils.py','common.py','custom_zip.py','waptpackage.py','setuphelpers.py','setuphelpers_unix.py','setuphelpers_macos.py','wapt-get.py']
