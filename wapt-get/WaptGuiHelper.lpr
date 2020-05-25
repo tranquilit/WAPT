@@ -163,6 +163,7 @@ initialization
     // when importing module in wapt-get.py...
     // removed : DllPath := RegWaptBaseDir;
     DllName := 'python27.dll';
+    SetPythonHome(RegWaptBaseDir);
 
     UseLastKnownVersion := False;
     FatalAbort:=True;

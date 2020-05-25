@@ -11,6 +11,8 @@ uses
 
 type
 
+  TVariantArray=Array of Variant;
+
   { TDMPython }
 
   TDMPython = class(TDataModule)
@@ -33,6 +35,7 @@ type
     FPersonalCertificate: Variant;
     FWaptHostRepo: Variant;
     FWAPT: Variant;
+    FWaptRepos: TVariantArray;
     Fwaptcrypto: Variant;
     Fsetuphelpers: Variant;
     Fwaptpackage: Variant;
@@ -59,6 +62,7 @@ type
     function Getwaptdevutils: Variant;
     function Getwaptpackage: Variant;
     function Getlicencing: Variant;
+    function GetWaptRepos: TVariantArray;
     procedure LoadJson(data: String);
     procedure Setcommon(AValue: Variant);
     procedure SetIsEnterpriseEdition(AValue: Boolean);
@@ -91,6 +95,7 @@ type
     property Language:String read FLanguage write SetLanguage;
     property MainWaptRepo:Variant read GetMainWaptRepo write SetMainWaptRepo;
     property WaptHostRepo:Variant read GetWaptHostRepo write SetWaptHostRepo;
+    property WaptRepos:TVariantArray read GetWaptRepos;
     property PackagesAuthorizedCA:Variant read GetPackagesAuthorizedCA write SetPackagesAuthorizedCA;
 
     property WAPT:Variant read GetWAPT write SetWAPT;
@@ -162,6 +167,7 @@ begin
   FPackagesAuthorizedCA := Unassigned;
   FMainWaptRepo := Unassigned;
   FWaptHostRepo := Unassigned;
+  FWaptRepos := Nil;
   FWapt := Unassigned;
 
   FPersonalCertificate := Unassigned;
@@ -269,6 +275,7 @@ begin
     DllPath := RegWaptBaseDir;
     DllName := PythonLibName;
     UseLastKnownVersion := False;
+    SetPythonHome(RegWaptBaseDir);
     LoadDLL;
   end;
 
@@ -606,6 +613,37 @@ begin
     HideLoadWait;
   end;
   Result := FMainWaptRepo;
+end;
+
+function TDMPython.GetWaptRepos: TVariantArray;
+var
+  Repositories,
+  Section:String;
+  VWaptConfigFileName,AdditionalRepo:Variant;
+begin
+  if not Assigned(FWaptRepos) then
+  begin
+    SetLength(FWaptRepos,1);
+    FWaptRepos[0]:= GetMainWaptRepo;
+    with TIniFile.Create(WaptConfigFileName) do
+    try
+      VWaptConfigFileName:=PyUTF8Decode(WaptConfigFileName);
+      Repositories := ReadString('global','repositories','');
+      if Repositories <> '' then
+        for Section in StrSplit(repositories,',',True) do
+          if Section <> 'wapt' then
+          begin
+            AdditionalRepo := dmpython.waptpackage.WaptRemoteRepo(name := section {, cabundle := cabundle});
+            AdditionalRepo.load_config_from_file(VWaptConfigFileName);
+            AdditionalRepo.private_key_password_callback := WaptconsoleFacade.GetPrivateKeyPassword;
+            SetLength(FWaptRepos,Length(FWaptRepos)+1);
+            FWaptRepos[Length(FWaptRepos)-1] := AdditionalRepo;
+          end;
+    finally
+      Free;
+    end;
+  end;
+  Result := FWaptRepos;
 end;
 
 function TDMPython.GetPackagesAuthorizedCA: Variant;
