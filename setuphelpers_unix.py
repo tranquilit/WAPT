@@ -50,6 +50,7 @@ import ipaddress
 from ldap3 import Server, Connection, Tls, SASL, KERBEROS
 import ssl
 import dns.resolver
+import uptime
 
 
 logger = logging.getLogger('waptcore')
@@ -73,8 +74,8 @@ def get_groups(user):
         gids.append(grp.getgrgid(gid).gr_gid)
     return [grp.getgrgid(gid).gr_name.rsplit('\\')[-1].lower() for gid in gids]
 
-def get_domain_info():
-    """Return ad site and ou
+def get_domain_info(ldap_auth_server=None,use_ssl=True,force_tgt=True,hostname=None,domain=None,verify_cert_ldap=False):
+    """Return dict ad_site , ou and groups
     Warning : Please note that the search for gssapi does not work if the reverse dns recording is not available for ad
     """
     result = {}
@@ -85,17 +86,23 @@ def get_domain_info():
     else:
         cmd = 'klist -k'
 
-    splitlist = subprocess.check_output(cmd,shell=True,stderr=subprocess.STDOUT).split('$@',1)
-    hostname = str(splitlist[0].rsplit(' ',1)[-1] + '$').split('/')[-1]
-    domain = splitlist[1].split('\n')[0].strip()
+    if (not hostname) or (not domain):
+        splitlist = subprocess.check_output(cmd,shell=True,stderr=subprocess.STDOUT).split('$@',1)
+        if not hostname:
+            hostname = str(splitlist[0].rsplit(' ',1)[-1] + '$').split('/')[-1]
+        if not domain:
+            domain = splitlist[1].split('\n')[0].strip()
 
-    try:
-        subprocess.check_output(r'kinit -k %s\@%s' % (hostname,domain),shell=True, stderr=subprocess.STDOUT)
-    except:
-        pass
+    if force_tgt:
+        try:
+            subprocess.check_output(r'kinit -k %s\@%s' % (hostname,domain),shell=True, stderr=subprocess.STDOUT)
+        except:
+            pass
 
-    #TODO Get ldap_auth_server in wapt-get.ini
-    ldap_auth_server = None
+    if verify_cert_ldap :
+        ldapssl = ssl.CERT_REQUIRED
+    else:
+        ldapssl = ssl.CERT_NONE
 
     list_controler=[]
     if not ldap_auth_server:
@@ -106,8 +113,8 @@ def get_domain_info():
 
     for controler in list_controler:
         try:
-            tls = Tls(validate=ssl.CERT_NONE, version=ssl.PROTOCOL_TLSv1_2)
-            server = Server(controler, use_ssl=True, tls=tls)
+            tls = Tls(validate=ldapssl, version=ssl.PROTOCOL_TLSv1_2)
+            server = Server(controler, use_ssl=use_ssl, tls=tls)
             c = Connection(server, authentication=SASL, sasl_mechanism=KERBEROS)
             c.bind()
 
@@ -125,13 +132,14 @@ def get_domain_info():
 
             for i in c.response:
                 dict_ip_site[i['attributes']['cn']] = i['attributes']['siteObject'].split('=',1)[1].split(',',1)[0]
+
+            c.unbind()
         except:
-            pass
-        finally:
             try:
                 c.unbind()
             except:
                 pass
+            continue
 
         result['site'] = ''
 
@@ -139,13 +147,9 @@ def get_domain_info():
             ip_subnet = ipaddress.ip_network(value.decode('utf-8'))
             if (isinstance(ip_subnet,ipaddress.IPv4Network) and (ipaddress.ip_address(get_main_ip(controler)[0]) in ip_subnet)) or (isinstance(ip_subnet,ipaddress.IPv6Network) and (ipaddress.ip_address(get_main_ip(controler)[0]) in ip_subnet)):
                 result['site'] = dict_ip_site[value]
-                return result
-
-
-    if not 'ou' in result :
-        logger.warning('OU not found')
-    else:
         return result
+
+    error('unable to retrieve information')
 
 
 def get_default_gateways():
@@ -221,6 +225,8 @@ def host_metrics():
     # memory usage
     current_process = psutil.Process()
     result['wapt-memory-usage'] = dir(current_process.memory_info())
+
+    result['last_bootup_time'] = uptime.boottime()
 
     return result
 

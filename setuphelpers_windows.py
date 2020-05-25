@@ -74,8 +74,8 @@ import win32security
 import win32service
 import win32serviceutil
 import winshell
+import uptime
 from iniparse import RawConfigParser
-
 from waptutils import __version__,ensure_unicode
 import setuphelpers
 try:
@@ -2220,10 +2220,8 @@ def host_metrics():
     result['logged_in_users'] = get_loggedinusers()
     result['last_logged_on_user'] = get_last_logged_on_user()
     result['boot_count'] = registry_readstring(HKEY_LOCAL_MACHINE,r'SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management\PrefetchParameters','BootId',0)
-    try:
-        result['LastBootUpTimeWindows'] = wmi.WMI().query("select LastBootUpTime from Win32_OperatingSystem")[0].LastBootUpTime
-    except:
-        pass
+    if uptime:
+        result['last_bootup_time'] = uptime.boottime()
 
     # memory usage
     current_process = psutil.Process()
