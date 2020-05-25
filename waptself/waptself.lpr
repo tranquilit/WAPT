@@ -15,12 +15,12 @@ var
 begin
   {$R waptself.res}
   //Create ini in AppData/Local/waptself and read language
-  ini:=TIniFile.Create(AppIniFilename);
-  if (ini.ReadString('global','language','')<>'') then
-    SetDefaultLang(ini.ReadString('global','language',''))
+  ini := TIniFile.Create(AppIniFilename);
+  if (ini.ReadString('global','language','') <> '') then
+    SetDefaultLang(ini.ReadString('global', 'language', ''))
   else
     begin
-      ini.WriteString('global','language','');
+      ini.WriteString('global', 'language', '');
       ini.UpdateFile;
     end;
 

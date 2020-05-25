@@ -869,7 +869,7 @@ def download_icons():
             if request.args.get('latest','0') == '1':
                 filtered = []
                 last_package_name = None
-                for package in sorted(rows,reverse=True):
+                for package in sorted(rows, reverse=True):
                     if package.package != last_package_name:
                         filtered.append(package)
                     last_package_name = package.package
@@ -881,14 +881,22 @@ def download_icons():
         except sqlite3.Error as e:
             logger.critical(u"*********** Error %s:" % e.args[0])
 
-
+    for pe in rows:
+        # some basic search scoring
+        score = 0
+        if search in pe.package:
+            score += 3
+        if search in pe.description:
+            score += 2
+        pe.score = score
+    rows = sorted(rows, key=lambda r:(r.score,r.signature_date,r.filename), reverse=True)
     if rows:
         data = app.task_manager.add_task(WaptDownloadIcon(copy.deepcopy(rows)))
     else:
         logger.critical(u"*********** Couldn't download icons")
 
     pkg_names = [pkg.package for pkg in rows]
-    return Response(common.jsondump({'downloading': pkg_names}), mimetype='application/json')
+    return Response(common.jsondump({'downloading ' + str(len(rows)) + ' icons'}), mimetype='application/json')
 
 
 @app.route('/local_package_details.json')

@@ -20,7 +20,7 @@ type
     procedure SetOnNotifyEvent(AValue: TNotifyEvent);
   public
     tmpLstIcons: TStringList;
-    lastIconDownloaded: AnsiString;
+    lastIconDownloaded: String;
     ListPackages: ISuperObject;
     FlowPanel: TFlowPanel;
     property OnNotifyEvent: TNotifyEvent read FOnNotifyEvent write SetOnNotifyEvent;
@@ -1591,7 +1591,8 @@ procedure TThreadGetAllIcons.Execute;
 var
   IconsDir: String;
   Package: ISuperObject;
-  i,IconIdx: integer;
+  i,j, k: integer;
+  IconIdx: integer;
   AFrmPackage: TFrmPackage;
   g:TPicture;
   iconPath: String;
@@ -1602,13 +1603,52 @@ begin
     if not(DirectoryExists(IconsDir)) then
       CreateDir(IconsDir);
 
-    for Package in ListPackages do
+    for i := 0 to ListPackages.AsArray.Length - 1 do
     begin
+      Package := ListPackages.AsArray[i];
       tmpLstIcons := TStringList.Create;
       tmpLstIcons.OwnsObjects := True;
 
       try
-        iconPath := IconsDir + UTF8Encode(Package.S['package_uuid'])+'.png';
+        Synchronize(@NotifyListener);
+
+        iconPath := IconsDir + UTF8Encode(Package.S['package_uuid']) + '.png';
+
+        if FileExists(iconPath) then
+           continue;
+
+         for k := 0 to ListPackages.AsArray.Length - 1 do
+         begin
+           if ListPackages.AsArray[k]['package'].AsString <> UTF8Decode(CP1252ToUTF8(lastIconDownloaded)) then
+           begin
+             continue;
+           end
+           else
+               break;
+         end;
+
+         if k = ListPackages.AsArray.Length - 1 then // Icon downloaded not in package list
+            continue;
+
+        if (k < i) then  // if last downloaded index inferior to current item, wait
+        begin
+           while k < i do
+           begin
+             Sleep(1000);
+             Synchronize(@NotifyListener);
+             WriteLn('waiting for icons...');
+             for k := 0 to ListPackages.AsArray.Length - 1 do
+             begin
+               if ListPackages.AsArray[k]['package'].AsString <> UTF8Decode(CP1252ToUTF8(lastIconDownloaded)) then
+               begin
+                 continue;
+               end
+               else
+                 break;
+             end;
+           end;
+         end;
+
         tmpLstIcons.Add(iconPath);
         g := TPicture.Create;
         g.LoadFromFile(tmpLstIcons[tmpLstIcons.IndexOf(iconPath)]);
@@ -1616,17 +1656,19 @@ begin
         tmpLstIcons.Objects[tmpLstIcons.IndexOf(iconPath)] := g;
         tmpLstIcons[tmpLstIcons.IndexOf(iconPath)] := ExtractFileName(tmpLstIcons[tmpLstIcons.IndexOf(iconPath)]);
       except
-        FreeAndNil(g);
-        tmpLstIcons.Delete(tmpLstIcons.IndexOf(iconPath));
+        begin
+          FreeAndNil(g);
+          tmpLstIcons.Delete(tmpLstIcons.IndexOf(iconPath));
+        end;
       end;
 
-      for i:=0 to FlowPanel.ControlCount - 1 do
+      for j := 0 to FlowPanel.ControlCount - 1 do
       begin
         try
-          if not (FlowPanel.Controls[i] is TFrmPackage) then
+          if not (FlowPanel.Controls[j] is TFrmPackage) then
              continue;
 
-          AFrmPackage := FlowPanel.Controls[i] as TFrmPackage;
+          AFrmPackage := FlowPanel.Controls[j] as TFrmPackage;
           if not (UTF8Encode(AFrmPackage.Package.S['package_uuid']) = UTF8Encode(Package.S['package_uuid'])) then
              continue;
 
@@ -1644,7 +1686,6 @@ begin
             break;
         end;
       end;
-      Synchronize(@NotifyListener);
     end;
 
   finally
@@ -1660,13 +1701,12 @@ begin
 
   // Fetching the last icon that was downloaded   
   events := CheckEventsThread.Events;
-  if (Events = Nil) or (Events.AsArray.Length <= 0) then
+  if (events = Nil) or (events.AsArray.Length <= 0) then
      exit;
-  for i := Events.AsArray.Length - 1 to 0 do
+  for i := events.AsArray.Length - 1 downto 0 do
   begin
     try
-      (Sender as TThreadGetAllIcons).lastIconDownloaded := CheckEventsThread.Events.AsArray[i]['data']['last_downloaded'].AsString();
-      Exit;
+      (Sender as TThreadGetAllIcons).lastIconDownloaded := events.AsArray[i]['data']['last_downloaded'].AsString();
     except
      Continue;
     end;

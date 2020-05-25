@@ -100,7 +100,7 @@ end;
 
 function TDMWaptSelf.JSONGet(action: String): ISuperObject;
 begin
-  Result:=WAPTLocalJsonGet(action,Login,Token,-1,Nil,0);
+  Result:=WAPTLocalJsonGet(action,Login,Token,10000,Nil,0);
 end;
 
 constructor TDMWaptSelf.Create(TheOwner: TComponent);
