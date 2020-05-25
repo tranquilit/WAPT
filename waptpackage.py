@@ -3089,7 +3089,7 @@ class WaptLocalRepo(WaptBaseRepo):
         icons_path = os.path.abspath(os.path.join(self.localpath,'icons'))
         if not os.path.isdir(icons_path):
             os.makedirs(icons_path)
-        icon_fn = os.path.join(icons_path,u"%s.png" % entry.uuid) #TODO check 
+        icon_fn = os.path.join(icons_path,u"%s.png" % entry.package_uuid)
         if entry.section not in ['group','host','unit','profile','wsus'] and not os.path.isfile(icon_fn):
             try:
                 icon = extract_iconpng_from_wapt(entry.localpath)

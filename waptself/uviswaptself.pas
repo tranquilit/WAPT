@@ -1617,18 +1617,18 @@ begin
         if FileExists(iconPath) then
            continue;
 
-         for k := 0 to ListPackages.AsArray.Length - 1 do
-         begin
-           if ListPackages.AsArray[k]['package'].AsString <> UTF8Decode(CP1252ToUTF8(lastIconDownloaded)) then
-           begin
-             continue;
-           end
-           else
-               break;
-         end;
-
-         if k = ListPackages.AsArray.Length - 1 then // Icon downloaded not in package list
+        for k := 0 to ListPackages.AsArray.Length - 1 do
+        begin
+          if ListPackages.AsArray[k]['package'].AsString <> UTF8Decode(CP1252ToUTF8(lastIconDownloaded)) then
+          begin
             continue;
+          end
+          else
+            break;
+        end;
+
+        if k = ListPackages.AsArray.Length - 1 then // Icon downloaded not in package list
+          continue;
 
         if (k < i) then  // if last downloaded index inferior to current item, wait
         begin
@@ -1687,7 +1687,6 @@ begin
         end;
       end;
     end;
-
   finally
   end;
 end;
