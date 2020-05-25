@@ -12,8 +12,8 @@ object visGroupChoice: TvisGroupChoice
   LCLVersion = '1.8.4.0'
   object GridPackages: TSOGrid
     Left = 0
-    Height = 486
-    Top = 37
+    Height = 488
+    Top = 35
     Width = 749
     ShowAdvancedColumnsCustomize = False
     Align = alClient
@@ -178,8 +178,8 @@ object visGroupChoice: TvisGroupChoice
         PropertyName = 'architecture'
       end>
     Header.DefaultHeight = 18
-    
     Header.Height = 18
+    Header.MaxHeight = 100
     Header.MinHeight = 18
     Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible]
     Header.SortColumn = 0
@@ -194,20 +194,20 @@ object visGroupChoice: TvisGroupChoice
   end
   object PanHaut: TPanel
     Left = 0
-    Height = 37
+    Height = 35
     Top = 0
     Width = 749
     Align = alTop
     AutoSize = True
     BevelOuter = bvNone
-    ClientHeight = 37
+    ClientHeight = 35
     ClientWidth = 749
     TabOrder = 0
     object panFilter1: TPanel
       Left = 0
-      Height = 37
+      Height = 35
       Top = 0
-      Width = 241
+      Width = 239
       Align = alLeft
       AutoSize = True
       BevelOuter = bvNone
@@ -219,12 +219,12 @@ object visGroupChoice: TvisGroupChoice
       ChildSizing.EnlargeVertical = crsHomogenousSpaceResize
       ChildSizing.Layout = cclLeftToRightThenTopToBottom
       ChildSizing.ControlsPerLine = 3
-      ClientHeight = 37
-      ClientWidth = 241
+      ClientHeight = 35
+      ClientWidth = 239
       TabOrder = 0
       object EdSearch: TEdit
         Left = 12
-        Height = 25
+        Height = 23
         Hint = 'Use keywords to narrow your search.'
         Top = 6
         Width = 150
@@ -236,19 +236,19 @@ object visGroupChoice: TvisGroupChoice
       end
       object butSearchGroups: TButton
         Left = 168
-        Height = 25
+        Height = 23
         Top = 6
-        Width = 61
+        Width = 59
         Action = ActSearch
         AutoSize = True
         TabOrder = 1
       end
     end
     object panFilter: TPanel
-      Left = 241
-      Height = 37
+      Left = 239
+      Height = 35
       Top = 0
-      Width = 317
+      Width = 299
       Align = alLeft
       AutoSize = True
       BevelOuter = bvNone
@@ -260,34 +260,32 @@ object visGroupChoice: TvisGroupChoice
       ChildSizing.EnlargeVertical = crsHomogenousSpaceResize
       ChildSizing.Layout = cclLeftToRightThenTopToBottom
       ChildSizing.ControlsPerLine = 3
-      ClientHeight = 37
-      ClientWidth = 317
+      ClientHeight = 35
+      ClientWidth = 299
       TabOrder = 1
       object cbGroup: TCheckBox
         Left = 12
-        Height = 19
+        Height = 17
         Top = 9
-        Width = 109
+        Width = 100
         Caption = 'Package bundles'
-        Checked = True
         OnClick = cbBaseClick
-        State = cbChecked
         TabOrder = 0
       end
       object cbrestricted: TCheckBox
-        Left = 127
-        Height = 19
+        Left = 118
+        Height = 17
         Top = 9
-        Width = 106
+        Width = 99
         Caption = 'Restricted install'
         OnClick = cbBaseClick
         TabOrder = 1
       end
       object cbBase: TCheckBox
-        Left = 239
-        Height = 19
+        Left = 223
+        Height = 17
         Top = 9
-        Width = 66
+        Width = 64
         Caption = 'Software'
         OnClick = cbBaseClick
         TabOrder = 2
@@ -307,10 +305,10 @@ object visGroupChoice: TvisGroupChoice
     ClientWidth = 749
     TabOrder = 2
     object ButOK: TBitBtn
-      Left = 593
+      Left = 600
       Height = 26
       Top = 0
-      Width = 62
+      Width = 60
       Align = alRight
       AutoSize = True
       Default = True
@@ -320,10 +318,10 @@ object visGroupChoice: TvisGroupChoice
       TabOrder = 0
     end
     object ButCancel: TBitBtn
-      Left = 661
+      Left = 666
       Height = 26
       Top = 0
-      Width = 88
+      Width = 83
       Align = alRight
       AutoSize = True
       Cancel = True

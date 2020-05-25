@@ -689,12 +689,19 @@ begin
 end;
 
 procedure TVisEditPackage.ActEditSearchExecute(Sender: TObject);
+var
+  Repo:Variant;
+  Package,Data: ISuperObject;
 begin
   EdSearch.Modified:=False;
-  GridPackages.Data := PyVarToSuperObject(DMPython.MainWaptRepo.search(
-    searchwords := EdSearch.Text, newest_only := True,description_locale := Language,
-    exclude_sections := 'host,unit,profile',
-    host_capabilities := HostCapabilities));
+  Data := TSuperObject.Create(stArray);
+  for Repo in dmwaptpython.DMPython.WaptRepos do
+    for Package in PyVarToSuperObject(Repo.search(
+      searchwords := EdSearch.Text, newest_only := True,description_locale := Language,
+      exclude_sections := 'host,unit,profile',
+      host_capabilities := HostCapabilities)) do
+    Data.AsArray.Add(Package);
+  GridPackages.Data := Data;
 end;
 
 procedure TVisEditPackage.ActBuildUploadExecute(Sender: TObject);

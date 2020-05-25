@@ -35,7 +35,6 @@ type
     procedure EdSearchKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState
       );
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
-    procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
   private
     { private declarations }
@@ -57,8 +56,9 @@ uses dmwaptpython,tisinifiles,tiscommon,VirtualTrees,waptcommon,uWaptPythonUtils
 
 procedure TvisGroupChoice.ActSearchExecute(Sender: TObject);
 var
-  expr, sections: UTF8String;
-  groups : ISuperObject;
+  sections: UTF8String;
+  Repo:Variant;
+  Package,Data: ISuperObject;
 begin
   sections := '';
   if cbGroup.Checked then
@@ -68,7 +68,17 @@ begin
   if cbrestricted.Checked then
     sections := sections+',restricted';
   sections := copy(sections,2,255);
-  GridPackages.Data := PyVarToSuperObject(DMPython.MainWaptRepo.search(searchwords := EdSearch.Text, sections := sections, newest_only := True,description_locale := Language));
+
+  //Merge packages from all allowed repositories (repositories config in waptconsole.ini)
+  Data := TSuperObject.Create(stArray);
+  for Repo in dmwaptpython.DMPython.WaptRepos do
+    for Package in PyVarToSuperObject(Repo.search(
+        searchwords := EdSearch.Text,
+        sections := sections,
+        newest_only := True,
+        description_locale := Language)) do
+    Data.AsArray.Add(Package);
+  GridPackages.Data := Data;
 end;
 
 procedure TvisGroupChoice.cbBaseClick(Sender: TObject);
@@ -112,10 +122,6 @@ begin
   IniWriteBool(Appuserinipath,Name,'cbBase.Checked',cbBase.Checked);
   IniWriteBool(Appuserinipath,Name,'cbrestricted.Checked',cbrestricted.Checked);
   GridPackages.SaveSettingsToIni(Appuserinipath);
-end;
-
-procedure TvisGroupChoice.FormCreate(Sender: TObject);
-begin
 end;
 
 procedure TvisGroupChoice.FormShow(Sender: TObject);
