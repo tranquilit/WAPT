@@ -305,9 +305,15 @@ copyfile('com.tranquilit.tis-waptagent.plist', './tmpbuild/payload/Library/Launc
 copyfile(makepath(wapt_source_dir, 'waptexit', 'macos', 'waptexit.sh'), './tmpbuild/payload/Library/LaunchDaemons/waptexit.sh')
 copyfile(makepath(wapt_source_dir, 'waptexit', 'macos', 'waptexit.plist'), './tmpbuild/payload/Library/LaunchDaemons/waptexit.plist')
 
-eprint('copying the waptserver files')
+eprint('copying the waptservice files')
 rsync(source_dir, 'tmpbuild/payload/opt/wapt',
       excludes=['postconf', 'repository', 'rpm', 'deb', 'spnego-http-auth-nginx-module', '*.bat'])
+      
+# copying waptexit + waptself binaries
+copyfile(makepath(wapt_source_dir,'waptexit.bin'),'./tmpbuild/payload/opt/wapt/waptexit.bin')
+copyfile(makepath(wapt_source_dir,'waptself.bin'),'./tmpbuild/payload/opt/wapt/waptself.bin')
+os.symlink('/opt/wapt/waptexit.bin','tmpbuild/payload/usr/local/bin/waptexit')
+os.symlink('/opt/wapt/waptself.bin','tmpbuild/payload/usr/local/bin/waptself')
 
 if WAPTEDITION=='enterprise':
     eprint('copying the waptserver enterprise files')
