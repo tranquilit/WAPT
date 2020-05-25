@@ -51,12 +51,9 @@ else:
 tasks_db_dir = os.path.join(wapt_root_dir,'db')
 if not os.path.isdir(tasks_db_dir):
     os.makedirs(tasks_db_dir)
-tasks_db = os.path.join(tasks_db_dir,'waptservertasks.sqlite')
 
-huey = SqliteHuey('wapt',filename=tasks_db)
+huey = SqliteHuey('wapt',filename=conf.get('wapt_huey_db'))
 huey.flush_locks()
-
-logger.info('tasks db : %s'% tasks_db)
 
 load_db_config(conf)
 

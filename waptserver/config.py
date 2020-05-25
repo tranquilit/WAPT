@@ -60,7 +60,7 @@ _defaults = {
     'secret_key': None,
     'server_uuid': None,
     'wapt_folder': DEFAULT_WAPT_FOLDER,
-    'wapt_huey_db': os.path.join(tempfile.gettempdir(), 'wapthuey.db'),
+    'wapt_huey_db': None,
     'wapt_password': None,
     'wapt_user': 'admin',
     'waptserver_port': 8080,
@@ -164,8 +164,6 @@ def load_config(cfgfile=DEFAULT_CONFIG_FILE):
     if _config.has_option('options', 'wapt_folder'):
         conf['wapt_folder'] = _config.get('options', 'wapt_folder').rstrip('/').rstrip('\\')
 
-    if _config.has_option('options', 'wapt_huey_db'):
-        conf['wapt_huey_db'] = _config.get('options', 'wapt_huey_db')
 
     if _config.has_option('options', 'wapt_password'):
         conf['wapt_password'] = _config.get('options', 'wapt_password')
@@ -248,6 +246,13 @@ def load_config(cfgfile=DEFAULT_CONFIG_FILE):
 
     if _config.has_option('options', 'application_root'):
         conf['application_root'] = _config.get('options', 'application_root')
+
+    if _config.has_option('options', 'wapt_huey_db'):
+        conf['wapt_huey_db'] = _config.get('options', 'wapt_huey_db')
+    elif conf['application_root']:
+        conf['wapt_huey_db'] = os.path.join(wapt_root_dir,'db','%s.sqlite' % conf['application_root'])
+    else:
+        conf['wapt_huey_db'] = os.path.join(wapt_root_dir,'db','waptservertasks.sqlite')
 
     for option in ('wapt_admin_group_dn','ldap_auth_server','ldap_auth_base_dn'):
         if _config.has_option('options',option):
