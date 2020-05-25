@@ -166,7 +166,7 @@ def set_lpi_options(lpi_fn,waptedition,waptversion,buildnr=None):
     print("Compiler special options: %s" % (compiler_custom_options is not None and compiler_custom_options.items(),))
     if os.name!='nt':
         output_filename = lpi.find('CompilerOptions/Target/Filename')
-        output_filename.attrib['Value']=output_filename.attrib['Value']+'bin'
+        output_filename.attrib['Value']=output_filename.attrib['Value']+'.bin'
     lpi.write(lpi_fn)
 
 def get_lpi_output(lpi_fn):
