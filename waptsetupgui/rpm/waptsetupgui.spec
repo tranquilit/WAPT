@@ -5,7 +5,7 @@ Name:		tis-waptagent-gui
 Version:	%{_version}
 Release:	1%{?dist}
 Summary:	WAPT Agent executables
-BuildArch:	noarch
+BuildArch:	x86_64
 Group:	    Development/Tools
 License:	GPL
 URL:		https://wapt.fr	
