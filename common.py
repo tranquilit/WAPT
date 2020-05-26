@@ -5116,10 +5116,10 @@ class Wapt(BaseObjectClass):
                 printhook = report
             """
             if platform.system() == 'Windows':
-                target_dir=self.package_cache_dir
+                target_dir = os.path.join(self.package_cache_dir, 'icons')
             else:
                 if os.geteuid() == 0:
-                    target_dir = self.package_cache_dir
+                    target_dir = os.path.join(self.package_cache_dir, 'icons')
                 else:
                     target_dir = os.path.join(os.path.expanduser("~"), "waptdev")
                     if not os.path.isdir(target_dir):

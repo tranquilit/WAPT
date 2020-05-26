@@ -3812,76 +3812,41 @@ class WaptRemoteRepo(WaptBaseRepo):
 
         with self.get_requests_session() as session:
             for entry in packages:
-                icon_file = os.path.join(target_dir, 'icons', entry.package_uuid + '.png')
+                icon_file = os.path.join(target_dir, entry.package_uuid + '.png')
 
                 if os.path.isfile(icon_file):
                     logger.info(u"Skipping icon for " + entry.package + ", already downloaded")
                     continue
 
-                download_url = entry.download_url
-                fullpackagepath = os.path.join(target_dir,entry.filename)
-                skip = False
-                if usecache and os.path.isfile(fullpackagepath) and os.path.getsize(fullpackagepath) == entry.size :
-                    # check version
-                    try:
-                        cached = PackageEntry()
-                        cached.load_control_from_wapt(fullpackagepath,calc_md5=True)
-                        if entry == cached:
-                            if entry.md5sum == cached.md5sum:
-                                entry.localpath = cached.localpath
-                                skipped.append(fullpackagepath)
-                                logger.info(u"  Use cached package file from " + fullpackagepath)
-                                skip = True
-                            else:
-                                logger.critical(u"Cached file MD5 doesn't match MD5 found in packages index. Discarding cached file")
-                                os.remove(fullpackagepath)
-                    except Exception as e:
-                        # error : reload
-                        logger.debug(u'Cache file %s is corrupted, reloading it. Error : %s' % (fullpackagepath, e) )
+                download_url = entry.repo_url + '/icons/' + entry.package_uuid + '.png'
+                fullpackagepath = os.path.join(target_dir, entry.filename)
 
-                if skip:
-                    continue
-
-                logger.info(u"  Downloading package for icon from %s" % download_url)
+                logger.info(u"  Downloading icon from %s" % download_url)
                 try:
-                    def report(received,total,speed,url):
-                        try:
-                            if total>1:
-                                stat = u'%s : %i / %i (%.0f%%) (%.0f KB/s)\r' % (url,received,total,100.0*received/total, speed)
-                                print(stat)
-                            else:
-                                stat = ''
-                        except:
-                            pass
-                    """
-                    if not printhook:
-                        printhook = report
-                    """
-                    wget(download_url,
-                        target_dir,
-                        printhook = printhook,
-                        connect_timeout=self.timeout,
-                        resume= usecache,
-                        md5 = entry.md5sum,
-                        requests_session=session,
-                        limit_bandwidth=self.limit_bandwidth,
-                        )
-
-                    downloaded_filename = download_url.rsplit('/', 1)[1]
-                    download_location = os.path.join(target_dir, downloaded_filename)
-
                     try:
-                        icon_png = extract_iconpng_from_wapt(download_location)
-                        with open(icon_file, 'wb') as f:
-                            f.write(icon_png)
-                            f.close()
-
+                        wget(download_url,
+                            target_dir,
+                            printhook = printhook,
+                            connect_timeout=self.timeout,
+                            resume= usecache,
+                            md5 = entry.md5sum,
+                            requests_session=session,
+                            limit_bandwidth=self.limit_bandwidth,
+                            )
                     except Exception as e:
-                        print("Couldn't find an icon for package " + entry.package)
+                        # For compatibility with old icon format
+                        old_download_url = entry.repo_url + '/icons/' + entry.package + '.png'
+                        wget(old_download_url,
+                            target_dir,
+                            printhook = printhook,
+                            connect_timeout=self.timeout,
+                            resume= usecache,
+                            #md5 = entry.md5sum,
+                            requests_session=session,
+                            limit_bandwidth=self.limit_bandwidth,
+                            )
+                        os.rename(os.path.join(target_dir, entry.package + '.png'), icon_file)
 
-                    os.remove(download_location)
-
-                    entry.localpath = fullpackagepath
                     downloaded.append(fullpackagepath)
                 except Exception as e:
                     if os.path.isfile(fullpackagepath):
@@ -3889,7 +3854,7 @@ class WaptRemoteRepo(WaptBaseRepo):
                     logger.critical(u"Error downloading package from http repository, please update... error : %s" % e)
                     errors.append((download_url,"%s" % e))
 
-        return {"downloaded":downloaded,"skipped":skipped,"errors":errors,"packages":packages}
+        return {"downloaded": downloaded, "skipped": skipped, "errors": errors, "packages": packages}
 
 def update_packages(adir,force=False,proxies=None,canonical_filenames=False):
     """Helper function to update a local packages index

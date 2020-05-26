@@ -893,10 +893,10 @@ def download_icons():
     if rows:
         data = app.task_manager.add_task(WaptDownloadIcon(copy.deepcopy(rows)))
     else:
-        logger.critical(u"*********** Couldn't download icons")
+        logger.critical(u"*********** Couldn't download icons : no packages")
 
     pkg_names = [pkg.package for pkg in rows]
-    return Response(common.jsondump({'downloading ' + str(len(rows)) + ' icons'}), mimetype='application/json')
+    return Response('downloading ' + str(len(rows)) + ' icons', mimetype='text')
 
 
 @app.route('/local_package_details.json')

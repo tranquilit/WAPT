@@ -898,8 +898,11 @@ begin
       end;
 
       LoadIcons;
-      FThreadGetAllIcons:=TThreadGetAllIcons.Create(@OnUpgradeAllIcons,AllPackages,FlowPackages);
-      FThreadGetAllIcons.FreeOnTerminate:=true;
+      if not Assigned(FThreadGetAllIcons) then // To only get one instance
+        begin
+          FThreadGetAllIcons := TThreadGetAllIcons.Create(@OnUpgradeAllIcons,AllPackages,FlowPackages);
+          FThreadGetAllIcons.FreeOnTerminate:=true;
+        end;
 
       // Check running / pending tasks
       CheckTasksThread := TCheckAllTasksThread.Create(@OnCheckTasksThreadNotify);
@@ -1585,6 +1588,7 @@ begin
   ListPackages:=AllPackages;
   FlowPanel:=aFlowPanel;
   FreeOnTerminate:=True;
+  lastIconDownloaded := '';
 end;
 
 procedure TThreadGetAllIcons.Execute;
@@ -1610,44 +1614,41 @@ begin
       tmpLstIcons.OwnsObjects := True;
 
       try
-        Synchronize(@NotifyListener);
-
         iconPath := IconsDir + UTF8Encode(Package.S['package_uuid']) + '.png';
 
-        if FileExists(iconPath) then
-           continue;
-
-        for k := 0 to ListPackages.AsArray.Length - 1 do
+        if not FileExists(iconPath) then
         begin
-          if ListPackages.AsArray[k]['package'].AsString <> UTF8Decode(CP1252ToUTF8(lastIconDownloaded)) then
+          while lastIconDownloaded.Length = 0 do
           begin
-            continue;
-          end
-          else
-            break;
-        end;
-
-        if k = ListPackages.AsArray.Length - 1 then // Icon downloaded not in package list
-          continue;
-
-        if (k < i) then  // if last downloaded index inferior to current item, wait
-        begin
-           while k < i do
-           begin
              Sleep(1000);
+            // WriteLn('no lastIconDownloaded : waiting for icons...');
              Synchronize(@NotifyListener);
-             WriteLn('waiting for icons...');
-             for k := 0 to ListPackages.AsArray.Length - 1 do
+          end;
+
+          for k := 0 to ListPackages.AsArray.Length - 1 do
+          begin
+            if ListPackages.AsArray[k]['package'].AsString = UTF8Decode(CP1252ToUTF8(lastIconDownloaded)) then
+              break;
+          end;
+
+          if k = ListPackages.AsArray.Length - 1 then // Icon downloaded not in package list : package has no icon
+            continue;
+
+          if (k < i) then  // if last downloaded index inferior to current item, wait
+          begin
+             while k < i do
              begin
-               if ListPackages.AsArray[k]['package'].AsString <> UTF8Decode(CP1252ToUTF8(lastIconDownloaded)) then
+               Sleep(1000);
+               Synchronize(@NotifyListener);
+               // WriteLn('waiting for icons...');
+               for k := 0 to ListPackages.AsArray.Length - 1 do
                begin
-                 continue;
-               end
-               else
-                 break;
+                 if ListPackages.AsArray[k]['package'].AsString = UTF8Decode(CP1252ToUTF8(lastIconDownloaded)) then
+                   break;
+               end;
              end;
-           end;
-         end;
+          end;
+        end;
 
         tmpLstIcons.Add(iconPath);
         g := TPicture.Create;
@@ -1696,15 +1697,21 @@ var
   i: Integer;
   events: ISuperObject;
 begin
-  LstIcons.AddStrings((Sender as TThreadGetAllIcons).tmpLstIcons);
+  if (Sender as TThreadGetAllIcons).tmpLstIcons.Count <> 0 then
+     LstIcons.AddStrings((Sender as TThreadGetAllIcons).tmpLstIcons);
 
   // Fetching the last icon that was downloaded   
   events := CheckEventsThread.Events;
   if (events = Nil) or (events.AsArray.Length <= 0) then
-     exit;
+  begin
+    exit;
+  end;
   for i := events.AsArray.Length - 1 downto 0 do
   begin
     try
+       if (not Assigned(events.AsArray[i]['data'])) or
+          (not Assigned(events.AsArray[i]['data']['last_downloaded'])) then
+         Continue;
       (Sender as TThreadGetAllIcons).lastIconDownloaded := events.AsArray[i]['data']['last_downloaded'].AsString();
     except
      Continue;
