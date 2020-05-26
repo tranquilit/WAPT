@@ -132,7 +132,7 @@ def programfiles32():
 def get_version():
     for line in open('%s/waptutils.py' % wapt_root_dir):
         if line.strip().startswith('__version__'):
-            wapt_version = str(Version(line.split('=')[1].strip().replace('"', '').replace("'", ''),3))
+            return str(Version(line.split('=')[1].strip().replace('"', '').replace("'", ''),3))
 
 def run(*args, **kwargs):
     return subprocess.check_output(*args, shell=True, **kwargs)
