@@ -1638,7 +1638,7 @@ class WaptTaskManager(threading.Thread):
                 self.last_update = datetime.datetime.now()
             if isinstance(task,WaptUpgrade):
                 self.last_upgrade = datetime.datetime.now()
-            if isinstance(task,WaptSyncRepo):
+            if WaptSyncRepo and isinstance(task,WaptSyncRepo):
                 self.last_sync = datetime.datetime.now()
 
             # not already in pending  actions...
