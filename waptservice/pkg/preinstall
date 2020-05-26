@@ -4,10 +4,6 @@ import subprocess
 from pwd import getpwnam
 import time
 
-while (int(subprocess.check_output("ifconfig -a inet 2>/dev/null | sed -n -e '/127.0.0.1/d' -e '/0.0.0.0/d' -e '/inet/p' | wc -l", shell=True)) <= 0):
-    print("No network currently available")
-    time.sleep(1)
-
 def check_user_exists(username):
     try:
         getpwnam(username)
