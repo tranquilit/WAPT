@@ -62,8 +62,10 @@ type
     procedure LabSignatureDateMouseLeave(Sender: TObject);
     procedure PanelDetailsPaint(Sender: TObject);
   private
-
   public
+    {$IFDEF UNIX}
+    constructor Create(TheOwner: TComponent); override;
+    {$ENDIF}
   end;
 
 implementation
@@ -115,6 +117,14 @@ procedure TFrmDetailsPackage.PanelDetailsPaint(Sender: TObject);
 begin
   LabName.AdjustFontForOptimalFill;
 end;
+
+{$IFDEF UNIX}
+constructor TFrmDetailsPackage.Create(TheOwner: TComponent);
+begin
+  inherited Create(TheOwner);
+  LabName.Font.Name:='default';
+end;
+{$ENDIF}
 
 end.
 

@@ -271,6 +271,9 @@ begin
   Autoremove:=false;
   TaskID:=0;
   DetailsClicked:=false;
+  {$IFDEF UNIX}
+  LabPackageName.FontEx.Name:='default';
+  {$ENDIF}
 end;
 
 procedure TFrmPackage.AdjustFont(ALabel: TBCLabel);
