@@ -33,6 +33,7 @@ type
     ActEditOrgUnitPackage: TAction;
     ActInstallLicence: TAction;
     ActAddProfile: TAction;
+    ActWaptSetupUpgrade: TAction;
     ActTriggerPendingActionsSafe: TAction;
     ActTriggerPendingActions: TAction;
     ActRefreshHostPackagesOverview: TAction;
@@ -755,6 +756,7 @@ type
     procedure ActTriggerWaptwua_uninstallExecute(Sender: TObject);
     procedure ActVeyonExecute(Sender: TObject);
     procedure ActVeyonUpdate(Sender: TObject);
+    procedure ActWaptSetupUpgradeExecute(Sender: TObject);
     procedure ActWSUSDowloadWSUSScanExecute(Sender: TObject);
     procedure ActWSUSRefreshExecute(Sender: TObject);
     procedure ActWSUSSaveBuildRulesExecute(Sender: TObject);
@@ -1158,6 +1160,7 @@ type
     procedure TriggerActionOnHostPackages(APackagesStatusGrid:TSOGrid;HostUUIDs:ISuperObject;AAction, title, errortitle: String;Force:Boolean=False);
     procedure TriggerPendingActions(APackagesStatusGrid:TSOGrid;title,errortitle:String;Force:Boolean=False;Args:ISuperObject=Nil);
     function DownloadPackage(RepoUrl, Filename: String): Variant;
+    function DownloadFileFromRepo(RepoUrl,Filename:String):String;
 
     property IsEnterpriseEdition:Boolean read GetIsEnterpriseEdition write SetIsEnterpriseEdition;
     property ReportingEditMode:Boolean read FReportingEditMode write SetReportingEditMode;
@@ -1198,7 +1201,7 @@ var
 implementation
 
 uses LCLIntf, LCLType, IniFiles, variants, LazFileUtils,FileUtil, base64,
-  strutils,
+  strutils,IdHTTP,
   uvisprivatekeyauth, soutils,
   waptcommon, waptutils, tiscommon, uVisCreateKey, uVisCreateWaptSetup,
   dmwaptpython, uviseditpackage, uvislogin, uviswaptconfig, uvischangepassword,
@@ -2311,6 +2314,47 @@ begin
     end;
   end;
 end;
+
+
+function TVisWaptGUI.DownloadFileFromRepo(RepoUrl,Filename:String):String;
+var
+  filePath, proxy: string;
+begin
+  try
+    with TVisLoading.Create(Self) do
+    try
+      ProgressTitle(rsDownloading);
+      Application.ProcessMessages;
+      try
+        filePath := AppLocalDir + 'cache\' + filename;
+        if not DirectoryExists(AppLocalDir + 'cache') then
+          mkdir(AppLocalDir + 'cache');
+
+        Proxy := DMPython.MainWaptRepo.http_proxy;
+        if not IdWget(UTF8Encode(RepoUrl+'/'+filename), filePath,
+            ProgressForm, @updateprogress, Proxy,
+              DefaultUserAgent,GetWaptServerCertificateFilename(),Nil,
+              WaptClientCertFilename,WaptClientKeyFilename) then
+            Raise Exception.CreateFmt('Unable to download %s',[UTF8Encode(RepoUrl+'/'+filename)]);
+        Result := filePath;
+      except
+        ShowMessage(rsDlCanceled);
+        if FileExistsUTF8(filePath) then
+          DeleteFileUTF8(filePath);
+        raise;
+      end;
+    finally
+      Free;
+    end;
+  except
+    on E:Exception do
+    begin
+      ShowMessageFmt(rsErrorWithMessage,[e.Message]);
+      exit;
+    end;
+  end;
+end;
+
 
 procedure TVisWaptGUI.ActEditPackageExecute(Sender: TObject);
 var
@@ -5009,7 +5053,8 @@ var
   sores: ISuperObject;
   CB:TComponent;
   ini:TIniFile;
-  WaptAgentCurrentVersion,WaptAgentExpectedVersion:String;
+  WaptAgentCurrentVersion,WaptAgentExpectedVersion,
+  WaptConsoleVersion:String;
 begin
   {$ifdef ENTERPRISE}
   IsEnterpriseEdition:=True;
@@ -5138,8 +5183,6 @@ begin
       if MessageDlg(rsWaptPackagePrefix,rsWaptPackagePrefixMissingQuestion,mtConfirmation,mbYesNoCancel,'') = mrYes then
         ActWAPTConsoleConfig.Execute;
 
-    ActSearchHost.Execute;
-
     // check waptagent version
     sores := WAPTServerJsonGet('api/v2/waptagent_version', []);
     try
@@ -5147,18 +5190,37 @@ begin
       begin
         WaptAgentCurrentVersion := UTF8Encode(sores['result'].S['waptagent_version']);
         WaptAgentExpectedVersion := UTF8Encode(sores['result'].S['waptsetup_version']);
+        WaptConsoleVersion := GetApplicationVersion(ParamStrUTF8(0));
+
         // for windows server without waptsetup-tis
         if WaptAgentExpectedVersion = '' then
           WaptAgentExpectedVersion := WAPTServerMinVersion;
 
-        if ((WaptAgentCurrentVersion='') and (MessageDlg('waptagent check',rsWaptAgentNotPresent,mtConfirmation,mbYesNoCancel,'') = mrYes)) // needs to be created
+        // need to upgrade current install with latest waptsetup.exe from wapt server
+        if CompareVersion(WaptConsoleVersion,WaptAgentExpectedVersion)<0 then
+            if MessageDlg(rsWaptAgentCheck,
+                        Format(rsWaptSetupUpgrade,[WaptConsoleVersion,WaptAgentExpectedVersion]),              // needs to be upgraded
+                        mtConfirmation,
+                        mbYesNoCancel,'') = mrYes then
+          ActWaptSetupUpgrade.Execute;
+
+        if (CompareVersion(WaptConsoleVersion,WaptAgentExpectedVersion)>=0) then
+        begin
+          if
+            ((WaptAgentCurrentVersion='') and
+             (MessageDlg('waptagent check',rsWaptAgentNotPresent,mtConfirmation,mbYesNoCancel,'') = mrYes)) // needs to be created
           or
-           ((WaptAgentCurrentVersion<>'') and (CompareVersion(WaptAgentCurrentVersion,WaptAgentExpectedVersion) < 0 ) and (MessageDlg(rsWaptAgentCheck,
+            ((WaptAgentCurrentVersion<>'') and (CompareVersion(WaptAgentCurrentVersion,WaptAgentExpectedVersion) < 0 ) and
+                (MessageDlg(rsWaptAgentCheck,
                 Format(rsWaptAgentOldVersion,[sores['result'].S['waptagent_version'],sores['result'].S['waptsetup_version']]),              // needs to be upgraded
                 mtConfirmation,
                 mbYesNoCancel,'') = mrYes)) then
           ActCreateWaptSetup.Execute;
+        end;
       end;
+
+      ActSearchHost.Execute;
+
     except
         on E:Exception do
           ShowMessageFmt(rsWaptAgentUnableToCheck,[E.Message]);
@@ -6310,6 +6372,16 @@ begin
   except
     ActVeyon.Visible := False;
   end;
+end;
+
+procedure TVisWaptGUI.ActWaptSetupUpgradeExecute(Sender: TObject);
+var
+  WaptsetupPath: String;
+
+begin
+  WaptsetupPath := DownloadFileFromRepo(GetMainWaptRepoURL,'waptsetup-tis.exe');
+  RunAsAdmin(0,WaptsetupPath,'');
+  Application.Terminate;
 end;
 
 function TVisWaptGUI.GetGridHostsPlugins: ISuperObject;

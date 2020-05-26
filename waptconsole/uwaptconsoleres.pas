@@ -90,6 +90,11 @@ resourcestring
           'Do you want to build waptagent.exe installer for the deployment of Wapt on client hosts ?';
   rsWaptAgentUnableToCheck = 'Warning, unable to check waptagent.exe installer on server'#13#10+
           'Error: %s';
+  rsWaptSetupUpgrade = 'Your current wapt installation needs to be upgraded'#13#10+
+          'Current wapt version: %s'#13#10+
+          'Available version on server: %s'#13#10+
+          #13#10+
+          'Do you want to run waptsetup installer now ?';
 
   rsWaptAgentUploadSuccess = 'Successfully uploaded WAPT agent !';
   rsWaptAgentUploadError = 'Error while uploading WAPT agent : %s';
