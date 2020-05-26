@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Exec=/usr/bin/waptself
+Icon=/opt/wapt/icon/waptself.ico
+Name=WAPT Exit
+GenericName=WAPT Exit
+Categories=Utility;

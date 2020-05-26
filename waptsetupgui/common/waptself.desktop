@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Exec=/usr/bin/waptself
+Icon=/opt/wapt/icon/waptself.ico
+Name=WAPT Self-service
+GenericName=WAPT Self-service
+Categories=Utility;

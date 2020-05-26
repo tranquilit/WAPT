@@ -15,18 +15,24 @@ Convenience package that ships with waptexit and waptself.
 
 %install
 %{__mkdir_p} %{buildroot}/opt/wapt
+%{__mkdir_p} %{buildroot}/usr/share/applications
 cp ../waptself.bin %{buildroot}/opt/wapt/
 cp ../waptexit.bin  %{buildroot}/opt/wapt/
+cp ../../common/waptself.desktop %{buildroot}/usr/share/applications
+cp ../../common/waptexit.desktop %{buildroot}/usr/share/applications
 
 %files
 %defattr(644,root,root,755)
 /opt/wapt/*
+/usr/share/applications/*
 
 %post
 ln -sf /opt/wapt/waptself.bin /usr/bin/waptself
 ln -sf /opt/wapt/waptexit.bin /usr/bin/waptexit
+update-desktop-database
 
 %postun
 if [ "$1" = 0 ] ; then
 	rm -f /usr/bin/waptself /usr/bin/waptexit
+	update-desktop-database
 fi

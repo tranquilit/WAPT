@@ -3,6 +3,10 @@ chown wapt:root /opt/wapt/waptself.bin
 chmod 644 /opt/wapt/waptself.bin
 chown wapt:root /opt/wapt/waptexit.bin
 chmod 644 /opt/wapt/waptexit.bin
+chmod 644 /usr/share/applications/waptexit.desktop
+chmod 644 /usr/share/applications/waptself.desktop
 
 ln -sf /opt/wapt/waptexit.bin /usr/bin/waptexit
 ln -sf /opt/wapt/waptself.bin /usr/bin/waptself
+
+update-desktop-database

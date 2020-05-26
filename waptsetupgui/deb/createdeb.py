@@ -242,6 +242,11 @@ with open(os.path.join(BDIR,'DEBIAN','control'),'w') as f_control:
 shutil.copy('./debian/postinst',os.path.join(BDIR,'DEBIAN','postinst'))
 shutil.copy('./debian/postrm',os.path.join(BDIR,'DEBIAN','postrm'))
 
+usr_share_applications = os.path.join(BDIR,'usr/share/applications')
+os.makedirs(usr_share_applications)
+shutil.copy('../common/waptexit.desktop',usr_share_applications)
+shutil.copy('../common/waptself.desktop',usr_share_applications)
+
 os.chmod(os.path.join(BDIR,'DEBIAN/'), 0755)
 os.chmod(os.path.join(BDIR,'DEBIAN','postinst'), 0755)
 os.chmod(os.path.join(BDIR,'DEBIAN','postrm'), 0755)
