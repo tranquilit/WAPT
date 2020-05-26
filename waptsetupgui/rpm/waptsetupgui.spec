@@ -20,6 +20,14 @@ cp ../waptself.bin %{buildroot}/opt/wapt/
 cp ../waptexit.bin  %{buildroot}/opt/wapt/
 cp ../../common/waptself.desktop %{buildroot}/usr/share/applications
 cp ../../common/waptexit.desktop %{buildroot}/usr/share/applications
+if [ `echo $WAPTEDITION | awk '{print tolower($0)}'` = "enterprise" ]
+then
+	cp ../../common/waptself-enterprise.ico %{buildroot}/opt/wapt/icons/waptself.ico
+	cp ../../common/wapt-enterprise.ico %{buildroot}/opt/wapt/icons/waptexit.ico
+else
+	cp ../../common/waptself-community.ico %{buildroot}/opt/wapt/icons/waptself.ico
+	cp ../../common/wapt-community.ico %{buildroot}/opt/wapt/icons/waptexit.ico
+fi
 
 %files
 %defattr(644,root,root,755)
