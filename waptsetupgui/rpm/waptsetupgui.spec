@@ -9,7 +9,6 @@ BuildArch:	noarch
 Group:	    Development/Tools
 License:	GPL
 URL:		https://wapt.fr	
-Requires:	
 
 %description
 Convenience package that ships with waptexit and waptself.
