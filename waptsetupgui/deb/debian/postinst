@@ -1,0 +1,8 @@
+#!/bin/sh
+chown wapt:root /opt/wapt/waptself.bin
+chmod 644 /opt/wapt/waptself.bin
+chown wapt:root /opt/wapt/waptexit.bin
+chmod 644 /opt/wapt/waptexit.bin
+
+ln -sf /opt/wapt/waptexit.bin /usr/bin/waptexit
+ln -sf /opt/wapt/waptself.bin /usr/bin/waptself

@@ -8,8 +8,7 @@ Summary:	WAPT Setup executables
 BuildArch:	noarch
 Group:	    Development/Tools
 License:	GPL
-URL:		https://wapt.fr
-Source0:    ./waptsetup/	
+URL:		https://wapt.fr	
 Requires:	nginx
 
 %description
