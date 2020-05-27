@@ -1613,7 +1613,7 @@ def get_ad_groups():
     starttime = time.time()
     try:
         adgroups = Hosts.select(fn.unnest(Hosts.computer_ad_groups).alias('groups')).where(~Hosts.computer_ad_groups.is_null()).distinct()
-        groups = (Select(columns=[fn.array_agg(adgroups.c.groups)]).from_(adgroups).bind(wapt_db)).scalar()
+        groups = [r[0] for r in list(Select(columns=[adgroups.c.groups]).from_(adgroups).distinct().tuples().bind(wapt_db))]
         msg = '{} active directory computers groups'.format(len(groups))
 
     except Exception as e:
