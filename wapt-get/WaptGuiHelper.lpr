@@ -6,7 +6,8 @@ library waptguihelper;
 
 uses
   Classes,SysUtils,Windows,
-  PythonEngine, Forms,uWaptBuildParams, Controls, Interfaces
+  PythonEngine, Forms,uWaptBuildParams, Controls, Interfaces,
+  LazFileUtils,LazUTF8,registry
   { you can add units after this };
 
 var
@@ -146,14 +147,96 @@ begin
   Pye.Py_InitModule('waptguihelper', @Methods[0]);
 end;
 
+function WaptBaseDir: String;
+begin
+  result := ExtractFileDir(ParamStrUTF8(0));
+  if lowercase(ExtractFileName(result)) = 'scripts' then
+    Result := ExtractFileDir(result);
+  Result := AppendPathDelim(Result);
+end;
+
+
+{$ifdef windows}
+// Get the registered install location for an application from registry given its executable name
+function RegisteredAppInstallLocation(UninstallKey:String): String;
+var
+  Reg: TRegistry;
+  KeyPath: String;
+begin
+  result := '';
+  Reg := TRegistry.Create(KEY_READ or KEY_WOW64_64KEY);
+  With Reg do
+  try
+    RootKey:=HKEY_LOCAL_MACHINE;
+    KeyPath := 'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\'+UninstallKey;
+    if KeyExists(KeyPath) and OpenKey(KeyPath,False) then
+    begin
+      Result := ReadString('InstallLocation');
+      CloseKey;
+    end
+    else
+    begin
+      KeyPath := 'SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\'+UninstallKey;
+      if KeyExists(KeyPath) and OpenKey(KeyPath,False) then
+      begin
+        Result := ReadString('InstallLocation');
+        CloseKey;
+      end;
+    end;
+  finally
+    Reg.Free;
+  end;
+end;
+
+// Get the registered application location from registry given its executable name
+function RegisteredExePath(ExeName:String): String;
+var
+  Reg: TRegistry;
+  KeyPath: String;
+begin
+  result := '';
+  Reg := TRegistry.Create(KEY_READ or KEY_WOW64_64KEY);
+  With Reg do
+  try
+    RootKey:=HKEY_LOCAL_MACHINE;
+    KeyPath := 'SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\'+ExeName;
+    if KeyExists(KeyPath) and OpenKey(KeyPath,False) then
+    begin
+      Result := ReadString('');
+      CloseKey;
+    end
+    else
+    begin
+      KeyPath := 'SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\App Paths\'+ExeName;
+      if KeyExists(KeyPath) and OpenKey(KeyPath,False) then
+      begin
+        Result := ReadString('');
+        CloseKey;
+      end;
+    end;
+  finally
+    Reg.Free;
+  end;
+end;
+
+{$endif}
 
 exports
   initwaptguihelper;
 
 initialization
-  RegWaptBaseDir:='c:\tranquilit\wapt\';
-
   PyE := TPythonEngine.Create(Nil);
+
+  RegWaptBaseDir:=WaptBaseDir();
+  {$ifdef windows}
+  if not FileExistsUTF8(AppendPathDelim(RegWaptBaseDir)+'python27.dll') then
+    RegWaptBaseDir:=RegisteredAppInstallLocation('wapt_is1');
+  if not FileExistsUTF8(AppendPathDelim(RegWaptBaseDir)+'python27.dll') then
+    RegWaptBaseDir:=RegisteredAppInstallLocation('WAPT Server_is1');
+  if RegWaptBaseDir='' then
+    RegWaptBaseDir:=ExtractFilePath(RegisteredExePath('wapt-get.exe'));
+  {$endif}
+
   With PyE do
   begin
     AutoLoad := False;
