@@ -2812,7 +2812,8 @@ class Wapt(BaseObjectClass):
             result.extend(self._host_profiles)
 
         if self.use_ad_groups:
-            self.get_cache_domain_info()['groups']
+            result.extend(self.get_cache_domain_info()['groups'])
+
         return result
 
     def set_client_cert_auth(self,connection):

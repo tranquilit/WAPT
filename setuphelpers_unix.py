@@ -124,7 +124,7 @@ def get_domain_info(ldap_auth_server=None,use_ssl=True,force_tgt=True,hostname=N
 
             if 'memberOf' in c.response[0]['attributes'] :
                 for u in c.response[0]['attributes']['memberOf'] :
-                    result['groups'].append(u.split(',',1)[0].split('=')[1])
+                    result['groups'].append(u.split(',',1)[0].split('=')[1].lower())
 
             # get site with ldap
             c.search('CN=Subnets,CN=Sites,CN=Configuration,dc=' + domain.lower().replace('.',',dc='),search_filter='(siteObject=*)',attributes=['siteObject','cn'])
