@@ -1593,9 +1593,10 @@ msgid "Name"
 msgstr "Beschreibung"
 
 #: tvisimportpackage.gridexternalpackages.header.columns[7].text
+#, fuzzy
 msgctxt "tvisimportpackage.gridexternalpackages.header.columns[7].text"
 msgid "Description"
-msgstr ""
+msgstr "Beschreibung"
 
 #: tvisimportpackage.gridexternalpackages.header.columns[8].text
 msgctxt "tvisimportpackage.gridexternalpackages.header.columns[8].text"
@@ -3323,6 +3324,10 @@ msgctxt "tviswaptgui.actwaptconsoleconfig.caption"
 msgid "Preferences"
 msgstr "Lokale WAPT Einstellung"
 
+#: tviswaptgui.actwaptsetupupgrade.caption
+msgid "Install installer waptsetup.exe from server"
+msgstr ""
+
 #: tviswaptgui.actwsusdowloadwsusscan.caption
 msgctxt "tviswaptgui.actwsusdowloadwsusscan.caption"
 msgid "Download WSUSScan cab from Microsoft Web site"
@@ -3489,6 +3494,10 @@ msgstr "Alles"
 #: tviswaptgui.caption
 msgid "WAPT console"
 msgstr "WAPT Gerät"
+
+#: tviswaptgui.cbadgroup.hint
+msgid "Filter hosts on AD Group membership"
+msgstr ""
 
 #: tviswaptgui.cbadsite.hint
 msgctxt "tviswaptgui.cbadsite.hint"
@@ -4106,9 +4115,11 @@ msgid "Arch"
 msgstr ""
 
 #: tviswaptgui.gridgroups.header.columns[9].text
+#, fuzzy
+#| msgid "Name"
 msgctxt "tviswaptgui.gridgroups.header.columns[9].text"
 msgid "Locale"
-msgstr ""
+msgstr "Beschreibung"
 
 #: tviswaptgui.gridhostpackages.header.columns[0].text
 #, fuzzy
@@ -4134,9 +4145,11 @@ msgid "Locale"
 msgstr ""
 
 #: tviswaptgui.gridhostpackages.header.columns[13].text
+#, fuzzy
+#| msgid "Categories"
 msgctxt "tviswaptgui.gridhostpackages.header.columns[13].text"
 msgid "md5sum"
-msgstr ""
+msgstr "Name"
 
 #: tviswaptgui.gridhostpackages.header.columns[14].text
 msgctxt "tviswaptgui.gridhostpackages.header.columns[14].text"
@@ -4528,9 +4541,11 @@ msgid "Arch"
 msgstr ""
 
 #: tviswaptgui.gridhostsforpackage.header.columns[16].text
+#, fuzzy
+#| msgid "Name"
 msgctxt "tviswaptgui.gridhostsforpackage.header.columns[16].text"
 msgid "Locale"
-msgstr ""
+msgstr "Beschreibung"
 
 #: tviswaptgui.gridhostsforpackage.header.columns[17].text
 msgctxt "tviswaptgui.gridhostsforpackage.header.columns[17].text"
@@ -6291,9 +6306,13 @@ msgctxt "tviswaptgui.labelrulesnumber.caption"
 msgid "Selected / Total : %d / %d"
 msgstr "0"
 
+#: tviswaptgui.labfilteradgroup.caption
+msgid "AD Group"
+msgstr ""
+
 #: tviswaptgui.labfiltersite.caption
 msgctxt "tviswaptgui.labfiltersite.caption"
-msgid "AD sites"
+msgid "AD Site"
 msgstr ""
 
 #: tviswaptgui.labinstalllogtitle.caption
@@ -12968,6 +12987,15 @@ msgstr "Fehler beim erstellen des agent : %s"
 
 #: uwaptconsoleres.rswaptsetupfilenotfound
 msgid "WAPTSetup file %s has not been found"
+msgstr ""
+
+#: uwaptconsoleres.rswaptsetupupgrade
+msgid ""
+"Your current wapt installation needs to be upgraded\n"
+"Current wapt version: %s\n"
+"Available version on server: %s\n"
+"\n"
+"Do you want to run waptsetup installer now ?\n"
 msgstr ""
 
 #: uwaptconsoleres.rswaptsetupuploadsuccess

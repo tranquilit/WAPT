@@ -3140,6 +3140,10 @@ msgctxt "TVISWAPTGUI.ACTWAPTCONSOLECONFIG.CAPTION"
 msgid "Preferences"
 msgstr ""
 
+#: tviswaptgui.actwaptsetupupgrade.caption
+msgid "Install installer waptsetup.exe from server"
+msgstr ""
+
 #: tviswaptgui.actwsusdowloadwsusscan.caption
 msgctxt "tviswaptgui.actwsusdowloadwsusscan.caption"
 msgid "Download WSUSScan cab from Microsoft Web site"
@@ -3293,6 +3297,10 @@ msgstr ""
 
 #: tviswaptgui.caption
 msgid "WAPT console"
+msgstr ""
+
+#: tviswaptgui.cbadgroup.hint
+msgid "Filter hosts on AD Group membership"
 msgstr ""
 
 #: tviswaptgui.cbadsite.hint
@@ -5956,9 +5964,13 @@ msgctxt "tviswaptgui.labelrulesnumber.caption"
 msgid "Selected / Total : %d / %d"
 msgstr ""
 
+#: tviswaptgui.labfilteradgroup.caption
+msgid "AD Group"
+msgstr ""
+
 #: tviswaptgui.labfiltersite.caption
 msgctxt "tviswaptgui.labfiltersite.caption"
-msgid "AD sites"
+msgid "AD Site"
 msgstr ""
 
 #: tviswaptgui.labinstalllogtitle.caption
@@ -8234,6 +8246,15 @@ msgstr ""
 
 #: uwaptconsoleres.rswaptsetupfilenotfound
 msgid "WAPTSetup file %s has not been found"
+msgstr ""
+
+#: uwaptconsoleres.rswaptsetupupgrade
+msgid ""
+"Your current wapt installation needs to be upgraded\n"
+"Current wapt version: %s\n"
+"Available version on server: %s\n"
+"\n"
+"Do you want to run waptsetup installer now ?\n"
 msgstr ""
 
 #: uwaptconsoleres.rswaptsetupuploadsuccess

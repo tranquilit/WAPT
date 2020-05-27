@@ -1868,6 +1868,8 @@ def get_hosts():
         has_errors (0/1): filter out hosts with packages errors
         need_upgrade (0/1): filter out hosts with outdated packages
         groups (csvlist of packages) : hosts with packages
+        ad_groups (csvlist of ad group names) : hosts which belong to these AD groups
+        ad_site (ad site name) : hosts which belong to these AD site
         columns (csvlist of columns) :
         uuid (csvlist of uuid): <uuid1[,uuid2,...]>): filter based on uuid
         filter (csvlist of field):regular expression: filter based on attributes
@@ -1997,6 +1999,13 @@ def get_hosts():
 
             if 'ad_site' in request.args:
                 query = and_query(Hosts.computer_ad_site  == request.args.get('ad_site'),not_filter)
+
+            if 'ad_groups' in request.args and request.args.get('ad_groups'):
+                groups = request.args.get('ad_groups').split('||')
+                or_list = Hosts.computer_ad_groups.contains(groups[0])
+                for group in groups[1:]:
+                   or_list = or_list | Hosts.computer_ad_groups.contains(group)
+                query = and_query(or_list,not_filter)
 
             if 'organizational_unit' in request.args:
                 ou_list = request.args.get('organizational_unit').split('||')

@@ -53,7 +53,9 @@ type
     ButOverviewStatusPackagesPending: TButton;
     ButOverviewStatusPackagesPending1: TButton;
     ButStatusPackagesAll: TButton;
+    cbADGroup: TComboBox;
     cbAdvancedMode: TCheckBox;
+    cbAuthorizedHosts: TCheckBox;
     cbMaskSystemComponents: TCheckBox;
     cbOverviewSectionProfile: TCheckBox;
     cbOverviewSectionWSUS: TCheckBox;
@@ -86,8 +88,10 @@ type
     Label13: TLabel;
     Label14: TLabel;
     Label16: TLabel;
+    Label22: TLabel;
     LabelAgentRepoNumbers: TLabel;
     LabelRulesNumber: TLabel;
+    LabFilterADGroup: TLabel;
     LabInstallLogTitle: TLabel;
     LabTaskLog: TLabel;
     LabLogsKB: TLabel;
@@ -310,7 +314,6 @@ type
     CBInverseSelect: TCheckBox;
     cbNeedUpgrade: TCheckBox;
     cbReachable: TCheckBox;
-    cbAuthorizedHosts: TCheckBox;
     cbSearchAll: TCheckBox;
     cbSearchDMI: TCheckBox;
     cbSearchHost: TCheckBox;
@@ -348,7 +351,6 @@ type
     Label17: TLabel;
     Label18: TLabel;
     Label21: TLabel;
-    Label22: TLabel;
     Label4: TLabel;
     LabUser1: TLabel;
     MenuItem100: TMenuItem;
@@ -820,6 +822,8 @@ type
     procedure ButOverviewStatusPackagesPending1Click(Sender: TObject);
     procedure ButOverviewStatusPackagesPendingClick(Sender: TObject);
     procedure ButStatusPackagesAllClick(Sender: TObject);
+    procedure cbADGroupDropDown(Sender: TObject);
+    procedure cbADGroupSelect(Sender: TObject);
     procedure cbADOUSelect(Sender: TObject);
     procedure cbADSiteSelect(Sender: TObject);
     procedure cbAdvancedModeClick(Sender: TObject);
@@ -1065,6 +1069,7 @@ type
     function EditHostPackageEntry(host: ISuperObject): Variant;
     procedure ExecuteHostsGruidPlugin(Sender: TObject);
     procedure FillcbADSiteDropDown;
+    procedure FillcbADGroupDropDown;
     procedure FillcbGroups;
     function FilterPackagesForHosts(Data: ISuperObject; Keywords: String
       ): ISuperObject;
@@ -4687,7 +4692,7 @@ begin
   PanSearchIn.Visible:=cbAdvancedSearch.Checked;
   PanFilterGroups.Visible:=cbAdvancedSearch.Checked;
   CBInverseSelect.Visible:=cbAdvancedSearch.Checked;
-  panFilterPackagesStatus.Visible:=cbAdvancedSearch.Checked;
+  //panFilterPackagesStatus.Visible:=cbAdvancedSearch.Checked;
 
   if not cbAdvancedSearch.Checked then
   begin
@@ -4706,6 +4711,7 @@ begin
 
     {$ifdef ENTERPRISE}
     cbADSite.ItemIndex:=-1;
+    cbADGroup.ItemIndex:=-1;
     {$endif}
 
     panFilterStatus.ChildSizing.ControlsPerLine:=6;
@@ -6035,12 +6041,14 @@ var
 begin
   {$ifdef ENTERPRISE}
   {$include ..\waptenterprise\includes\uwaptconsole.setenterprise.inc}
-
   {$else}
   dmpython.IsEnterpriseEdition:=False;
   LabFilterSite.Visible:=False;
   PanOrgUnits.Visible:=False;
   cbADSite.Visible:=False;
+  cbADGroup.Visible:=False;
+  cbADSite.ItemIndex:=-1;
+  cbADGroup.ItemIndex:=-1;
   cbAuthorizedHosts.Visible:=False;
   ActLaunchGPUpdate.Visible:=False;
   ActDisplayUserMessage.Visible:=False;
@@ -6605,6 +6613,11 @@ begin
   ;;
 end;
 
+procedure TVisWaptGUI.FillcbADGroupDropDown;
+begin
+  ;;
+end;
+
 procedure TVisWaptGUI.CBWUProductsShowAllClick(Sender: TObject);
 begin
   ;;
@@ -6646,6 +6659,11 @@ begin
 end;
 
 procedure TVisWaptGUI.cbADSiteSelect(Sender: TObject);
+begin
+  ;;
+end;
+
+procedure TVisWaptGUI.cbADGroupSelect(Sender: TObject);
 begin
   ;;
 end;

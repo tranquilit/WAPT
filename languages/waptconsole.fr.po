@@ -3178,6 +3178,10 @@ msgctxt "tviswaptgui.actwaptconsoleconfig.caption"
 msgid "Preferences"
 msgstr "Préférences"
 
+#: tviswaptgui.actwaptsetupupgrade.caption
+msgid "Install installer waptsetup.exe from server"
+msgstr "Lancer l'installeur waptsetup.exe présent sur le serveur"
+
 #: tviswaptgui.actwsusdowloadwsusscan.caption
 msgctxt "tviswaptgui.actwsusdowloadwsusscan.caption"
 msgid "Download WSUSScan cab from Microsoft Web site"
@@ -3332,6 +3336,10 @@ msgstr "Tout"
 #: tviswaptgui.caption
 msgid "WAPT console"
 msgstr "Console WAPT"
+
+#: tviswaptgui.cbadgroup.hint
+msgid "Filter hosts on AD Group membership"
+msgstr "Filtrer les machines sur l'appartenance au groupe AS"
 
 #: tviswaptgui.cbadsite.hint
 msgctxt "tviswaptgui.cbadsite.hint"
@@ -6006,10 +6014,14 @@ msgctxt "tviswaptgui.labelrulesnumber.caption"
 msgid "Selected / Total : %d / %d"
 msgstr "Sélectionné / Total : %d / %d"
 
+#: tviswaptgui.labfilteradgroup.caption
+msgid "AD Group"
+msgstr "Groupe AD"
+
 #: tviswaptgui.labfiltersite.caption
 msgctxt "tviswaptgui.labfiltersite.caption"
-msgid "AD sites"
-msgstr "Sites AD"
+msgid "AD Site"
+msgstr "Site AD"
 
 #: tviswaptgui.labinstalllogtitle.caption
 msgctxt "tviswaptgui.labinstalllogtitle.caption"
@@ -8416,6 +8428,20 @@ msgstr "Erreur lors de la création de l'agent : %s"
 #, object-pascal-format
 msgid "WAPTSetup file %s has not been found"
 msgstr "Le fichier WAPTSetup %s n'a pas été trouvé"
+
+#: uwaptconsoleres.rswaptsetupupgrade
+msgid ""
+"Your current wapt installation needs to be upgraded\n"
+"Current wapt version: %s\n"
+"Available version on server: %s\n"
+"\n"
+"Do you want to run waptsetup installer now ?\n"
+msgstr ""
+"Votre installation de Wapt sur cette machine doit être mise à jour\n"
+"Version de wapt installée: %s\n"
+"Version dsiponible sur le serveur: %s\n"
+"\n"
+"Souhaitez-vous lancer l'installeur waptsetup-tis.exe maintenant ?\n"
 
 #: uwaptconsoleres.rswaptsetupuploadsuccess
 msgctxt "uwaptconsoleres.rswaptsetupuploadsuccess"
