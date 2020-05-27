@@ -35,7 +35,7 @@ from waptutils import __version__
 
 from waptutils import setloglevel,ensure_list,ensure_unicode
 from waptcrypto import SSLCABundle,SSLPrivateKey,SSLCertificate
-from waptpackage import PackageEntry,WaptLocalRepo
+from waptpackage import PackageEntry,WaptLocalRepo,md5_for_file
 
 from optparse import OptionParser
 import logging
@@ -58,7 +58,8 @@ def main():
     parser.add_option("-s","--scan-packages", dest="doscan", default=False, action='store_true', help="Rescan packages and update local Packages index after signing.  (default: %default)")
     parser.add_option("-r","--remove-setup", dest="removesetup", default=False, action='store_true', help="Remove setup.py.  (default: %default)")
     parser.add_option("-i","--inc-release",    dest="increlease",    default=False, action='store_true', help="Increase release number when building package (default: %default)")
-    parser.add_option("--maturity", dest="set_maturity", default=None, help="Set/change package maturity when signing package.  (default: None)")
+    parser.add_option("--maturity", dest="set_maturity", default=None, help="Set/change package maturity when signing package. (default: None)")
+    parser.add_option("--target-os", dest="set_target_os", default=None, help="Set target_os attribute if empty when signing package. (default: None)")
     parser.add_option(     "--keep-signature-date", dest="keep_signature_date",default=False, action='store_true', help="Keep the current package signature date, and file changetime (default: %default)")
     parser.add_option(     "--if-needed", dest="if_needed", default=False, action='store_true',help="Re-sign package only if needed (default: warning)")
     (options,args) = parser.parse_args()
@@ -141,8 +142,13 @@ def main():
                 pe.maturity = options.set_maturity
                 sign_needed = True
 
+            if options.set_target_os is not None and not pe.target_os:
+                pe.target_os = options.set_target_os
+                sign_needed = True
+
             if not options.if_needed or sign_needed:
                 pe.sign_package(private_key=key,certificate = signers_bundle.certificates(),mds = ensure_list(options.md),keep_signature_date=options.keep_signature_date)
+                pe.md5sum = md5_for_file(os.path.join(package_dir,pe.filename))
                 newfn = pe.make_package_filename()
                 if newfn != pe.filename:
                     newfn_path = os.path.join(package_dir,newfn)
