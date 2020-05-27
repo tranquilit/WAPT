@@ -1628,7 +1628,7 @@ begin
             end
             else if lastIconDownloaded.Length = 0 then
             begin
-              Sleep(1000);
+              Sleep(100);
               Synchronize(@NotifyListener);
             end
             else
