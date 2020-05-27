@@ -247,7 +247,7 @@ os.makedirs(usr_share_applications)
 shutil.copy('../common/waptexit.desktop',usr_share_applications)
 shutil.copy('../common/waptself.desktop',usr_share_applications)
 
-if lower(WAPTEDITION)=='community':
+if WAPTEDITION.lower()=='community':
     waptself_png = '../common/waptself-community.png'
     waptexit_png = '../common/waptself-community.png'
 else:
