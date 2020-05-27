@@ -260,7 +260,7 @@ icons_to_convert=[(waptself_png,makepath(BDIR,'opt/wapt/waptself-%s.png')),(wapt
 
 for icon in icons_to_convert:
     for size in ["16","32","64","128"]:
-        run("magick convert %s -resize %sx%s %s" % (icon[0],size,size,icon[1] % size))
+        run("convert %s -resize %sx%s %s" % (icon[0],size,size,icon[1] % size))
 
 os.chmod(os.path.join(BDIR,'DEBIAN/'), 0755)
 os.chmod(os.path.join(BDIR,'DEBIAN','postinst'), 0755)
