@@ -23,23 +23,23 @@ cp ../../common/waptself.desktop %{buildroot}/usr/share/applications
 cp ../../common/waptexit.desktop %{buildroot}/usr/share/applications
 if [ `echo $WAPTEDITION | awk '{print tolower($0)}'` = "enterprise" ]
 then
-    convert ../common/waptself-community.png -resize 16x16 %{buildroot}/opt/wapt/icons/waptself-16.png
-    convert ../common/waptself-community.png -resize 32x32 %{buildroot}/opt/wapt/icons/waptself-32.png
-    convert ../common/waptself-community.png -resize 64x64 %{buildroot}/opt/wapt/icons/waptself-64.png
-    convert ../common/waptself-community.png -resize 128x128 %{buildroot}/opt/wapt/icons/waptself-128.png
-    convert ../common/waptself-community.png -resize 16x16 %{buildroot}/opt/wapt/icons/waptexit-16.png
-    convert ../common/waptself-community.png -resize 32x32 %{buildroot}/opt/wapt/icons/waptexit-32.png
-    convert ../common/waptself-community.png -resize 64x64 %{buildroot}/opt/wapt/icons/waptexit-64.png
-    convert ../common/waptself-community.png -resize 128x128 %{buildroot}/opt/wapt/icons/waptexit-128.png
+    convert ../../common/waptself-community.png -resize 16x16 %{buildroot}/opt/wapt/icons/waptself-16.png
+    convert ../../common/waptself-community.png -resize 32x32 %{buildroot}/opt/wapt/icons/waptself-32.png
+    convert ../../common/waptself-community.png -resize 64x64 %{buildroot}/opt/wapt/icons/waptself-64.png
+    convert ../../common/waptself-community.png -resize 128x128 %{buildroot}/opt/wapt/icons/waptself-128.png
+    convert ../../common/waptself-community.png -resize 16x16 %{buildroot}/opt/wapt/icons/waptexit-16.png
+    convert ../../common/waptself-community.png -resize 32x32 %{buildroot}/opt/wapt/icons/waptexit-32.png
+    convert ../../common/waptself-community.png -resize 64x64 %{buildroot}/opt/wapt/icons/waptexit-64.png
+    convert ../../common/waptself-community.png -resize 128x128 %{buildroot}/opt/wapt/icons/waptexit-128.png
 else
-    convert ../common/waptself-enterprise.png -resize 16x16 %{buildroot}/opt/wapt/icons/waptself-16.png
-    convert ../common/waptself-enterprise.png -resize 32x32 %{buildroot}/opt/wapt/icons/waptself-32.png
-    convert ../common/waptself-enterprise.png -resize 64x64 %{buildroot}/opt/wapt/icons/waptself-64.png
-    convert ../common/waptself-enterprise.png -resize 128x128 %{buildroot}/opt/wapt/icons/waptself-128.png
-    convert ../common/waptself-enterprise.png -resize 16x16 %{buildroot}/opt/wapt/icons/waptexit-16.png
-    convert ../common/waptself-enterprise.png -resize 32x32 %{buildroot}/opt/wapt/icons/waptexit-32.png
-    convert ../common/waptself-enterprise.png -resize 64x64 %{buildroot}/opt/wapt/icons/waptexit-64.png
-    convert ../common/waptself-enterprise.png -resize 128x128 %{buildroot}/opt/wapt/icons/waptexit-128.png
+    convert ../../common/waptself-enterprise.png -resize 16x16 %{buildroot}/opt/wapt/icons/waptself-16.png
+    convert ../../common/waptself-enterprise.png -resize 32x32 %{buildroot}/opt/wapt/icons/waptself-32.png
+    convert ../../common/waptself-enterprise.png -resize 64x64 %{buildroot}/opt/wapt/icons/waptself-64.png
+    convert ../../common/waptself-enterprise.png -resize 128x128 %{buildroot}/opt/wapt/icons/waptself-128.png
+    convert ../../common/waptself-enterprise.png -resize 16x16 %{buildroot}/opt/wapt/icons/waptexit-16.png
+    convert ../../common/waptself-enterprise.png -resize 32x32 %{buildroot}/opt/wapt/icons/waptexit-32.png
+    convert ../../common/waptself-enterprise.png -resize 64x64 %{buildroot}/opt/wapt/icons/waptexit-64.png
+    convert ../../common/waptself-enterprise.png -resize 128x128 %{buildroot}/opt/wapt/icons/waptexit-128.png
 fi
 
 %files

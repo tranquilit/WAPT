@@ -256,7 +256,7 @@ else:
     
 os.makedirs(os.path.join(BDIR,'opt/wapt/icons'))
     
-icons_to_convert=[(waptself_png,makepath(BDIR,'opt/wapt/waptself-%s.png')),(waptexit_png,makepath(BDIR,'opt/wapt/icons/waptexit-%s.png'))]
+icons_to_convert=[(waptself_png,makepath(BDIR,'opt/wapt/icons/waptself-%s.png')),(waptexit_png,makepath(BDIR,'opt/wapt/icons/waptexit-%s.png'))]
 
 for icon in icons_to_convert:
     for size in ["16","32","64","128"]:
