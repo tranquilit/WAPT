@@ -249,10 +249,10 @@ shutil.copy('../common/waptself.desktop',usr_share_applications)
 
 if WAPTEDITION.lower()=='community':
     waptself_png = '../common/waptself-community.png'
-    waptexit_png = '../common/waptself-community.png'
+    waptexit_png = '../common/waptexit-community.png'
 else:
     waptself_png = '../common/waptself-enterprise.png'
-    waptexit_png = '../common/waptself-enterprise.png'
+    waptexit_png = '../common/waptexit-enterprise.png'
     
 os.makedirs(os.path.join(BDIR,'opt/wapt/icons'))
     
