@@ -1618,42 +1618,56 @@ begin
 
         if not FileExists(iconPath) then
         begin
-          while lastIconDownloaded.Length = 0 do
+          // Ugly hack : after 5 tries, assume you've missed the events...
+          // ...and that the icons are downloaded already
+          for k := 0 to 5 do
           begin
-             Sleep(1000);
-            // WriteLn('no lastIconDownloaded : waiting for icons...');
-             Synchronize(@NotifyListener);
-          end;
-
-          for k := 0 to ListPackages.AsArray.Length - 1 do
-          begin
-            if ListPackages.AsArray[k]['package'].AsString = UTF8Decode(CP1252ToUTF8(lastIconDownloaded)) then
+            if FileExists(iconPath) then
+            begin
+              break;
+            end
+            else if lastIconDownloaded.Length = 0 then
+            begin
+              Sleep(1000);
+              Synchronize(@NotifyListener);
+            end
+            else
               break;
           end;
 
-          if k = ListPackages.AsArray.Length - 1 then // Icon downloaded not in package list : package has no icon
-            continue;
-
-          if (k < i) then  // if last downloaded index inferior to current item, wait
+          if not FileExists(iconPath) then
           begin
-             while k < i do
-             begin
-               Sleep(1000);
-               Synchronize(@NotifyListener);
-               // WriteLn('waiting for icons...');
-               for k := 0 to ListPackages.AsArray.Length - 1 do
+            for k := 0 to ListPackages.AsArray.Length do
+            begin
+              if k = ListPackages.AsArray.Length then
+                 break;
+              if ListPackages.AsArray[k]['package'].AsString = lastIconDownloaded then
+                 break;
+            end;
+
+            if k = ListPackages.AsArray.Length then // Icon downloaded not in package list : package has no icon
+              continue;
+
+            if (k < i) then  // if last downloaded index inferior to current item, wait
+            begin
+               while k < i do
                begin
-                 if ListPackages.AsArray[k]['package'].AsString = UTF8Decode(CP1252ToUTF8(lastIconDownloaded)) then
-                   break;
+                 Sleep(100);
+                 Synchronize(@NotifyListener);
+                 // WriteLn('waiting for icons...');
+                 for k := 0 to ListPackages.AsArray.Length - 1 do
+                 begin
+                   if ListPackages.AsArray[k]['package'].AsString = UTF8Decode(CP1252ToUTF8(lastIconDownloaded)) then
+                     break;
+                 end;
                end;
-             end;
+            end;
           end;
         end;
 
         tmpLstIcons.Add(iconPath);
         g := TPicture.Create;
         g.LoadFromFile(tmpLstIcons[tmpLstIcons.IndexOf(iconPath)]);
-
         tmpLstIcons.Objects[tmpLstIcons.IndexOf(iconPath)] := g;
         tmpLstIcons[tmpLstIcons.IndexOf(iconPath)] := ExtractFileName(tmpLstIcons[tmpLstIcons.IndexOf(iconPath)]);
       except

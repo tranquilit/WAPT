@@ -2344,7 +2344,7 @@ end;
 
 function GetIconsDir: String;
 begin
-  result := 'C:\tranquilit\wapt\cache\icons\'; // TODO change
+  result := WaptBaseDir() + '\cache\icons\';
 end;
 
 function AppIniFilename(AApplicationName:String=''): String;
