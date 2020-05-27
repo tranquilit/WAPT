@@ -9,4 +9,14 @@ chmod 644 /usr/share/applications/waptself.desktop
 ln -sf /opt/wapt/waptexit.bin /usr/bin/waptexit
 ln -sf /opt/wapt/waptself.bin /usr/bin/waptself
 
+xdg-icon-resource install --size 16  --mode system /opt/wapt/icons/waptself-16.png tis-waptself
+xdg-icon-resource install --size 32  --mode system /opt/wapt/icons/waptself-32.png tis-waptself
+xdg-icon-resource install --size 64  --mode system /opt/wapt/icons/waptself-64.png tis-waptself
+xdg-icon-resource install --size 128  --mode system /opt/wapt/icons/waptself-128.png tis-waptself
+
+xdg-icon-resource install --size 16  --mode system /opt/wapt/icons/waptexit-16.png tis-waptexit
+xdg-icon-resource install --size 32  --mode system /opt/wapt/icons/waptexit-32.png tis-waptexit
+xdg-icon-resource install --size 64  --mode system /opt/wapt/icons/waptexit-64.png tis-waptexit
+xdg-icon-resource install --size 128  --mode system /opt/wapt/icons/waptexit-128.png tis-waptexit
+
 update-desktop-database

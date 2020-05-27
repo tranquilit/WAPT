@@ -23,11 +23,23 @@ cp ../../common/waptself.desktop %{buildroot}/usr/share/applications
 cp ../../common/waptexit.desktop %{buildroot}/usr/share/applications
 if [ `echo $WAPTEDITION | awk '{print tolower($0)}'` = "enterprise" ]
 then
-	cp ../../common/waptself-enterprise.ico %{buildroot}/opt/wapt/icons/waptself.ico
-	cp ../../common/wapt-enterprise.ico %{buildroot}/opt/wapt/icons/waptexit.ico
+    magick convert ../common/waptself-community.png -resize 16x16 %{buildroot}/opt/wapt/icons/waptself-16.png
+    magick convert ../common/waptself-community.png -resize 32x32 %{buildroot}/opt/wapt/icons/waptself-32.png
+    magick convert ../common/waptself-community.png -resize 64x64 %{buildroot}/opt/wapt/icons/waptself-64.png
+    magick convert ../common/waptself-community.png -resize 128x128 %{buildroot}/opt/wapt/icons/waptself-128.png
+    magick convert ../common/waptself-community.png -resize 16x16 %{buildroot}/opt/wapt/icons/waptexit-16.png
+    magick convert ../common/waptself-community.png -resize 32x32 %{buildroot}/opt/wapt/icons/waptexit-32.png
+    magick convert ../common/waptself-community.png -resize 64x64 %{buildroot}/opt/wapt/icons/waptexit-64.png
+    magick convert ../common/waptself-community.png -resize 128x128 %{buildroot}/opt/wapt/icons/waptexit-128.png
 else
-	cp ../../common/waptself-community.ico %{buildroot}/opt/wapt/icons/waptself.ico
-	cp ../../common/wapt-community.ico %{buildroot}/opt/wapt/icons/waptexit.ico
+    magick convert ../common/waptself-enterprise.png -resize 16x16 %{buildroot}/opt/wapt/icons/waptself-16.png
+    magick convert ../common/waptself-enterprise.png -resize 32x32 %{buildroot}/opt/wapt/icons/waptself-32.png
+    magick convert ../common/waptself-enterprise.png -resize 64x64 %{buildroot}/opt/wapt/icons/waptself-64.png
+    magick convert ../common/waptself-enterprise.png -resize 128x128 %{buildroot}/opt/wapt/icons/waptself-128.png
+    magick convert ../common/waptself-enterprise.png -resize 16x16 %{buildroot}/opt/wapt/icons/waptexit-16.png
+    magick convert ../common/waptself-enterprise.png -resize 32x32 %{buildroot}/opt/wapt/icons/waptexit-32.png
+    magick convert ../common/waptself-enterprise.png -resize 64x64 %{buildroot}/opt/wapt/icons/waptexit-64.png
+    magick convert ../common/waptself-enterprise.png -resize 128x128 %{buildroot}/opt/wapt/icons/waptexit-128.png
 fi
 
 %files
@@ -38,10 +50,31 @@ fi
 %post
 ln -sf /opt/wapt/waptself.bin /usr/bin/waptself
 ln -sf /opt/wapt/waptexit.bin /usr/bin/waptexit
+
+xdg-icon-resource install --size 16  --mode system /opt/wapt/icons/waptself-16.png tis-waptself
+xdg-icon-resource install --size 32  --mode system /opt/wapt/icons/waptself-32.png tis-waptself
+xdg-icon-resource install --size 64  --mode system /opt/wapt/icons/waptself-64.png tis-waptself
+xdg-icon-resource install --size 128  --mode system /opt/wapt/icons/waptself-128.png tis-waptself
+
+xdg-icon-resource install --size 16  --mode system /opt/wapt/icons/waptexit-16.png tis-waptexit
+xdg-icon-resource install --size 32  --mode system /opt/wapt/icons/waptexit-32.png tis-waptexit
+xdg-icon-resource install --size 64  --mode system /opt/wapt/icons/waptexit-64.png tis-waptexit
+xdg-icon-resource install --size 128  --mode system /opt/wapt/icons/waptexit-128.png tis-waptexit
+
 update-desktop-database
 
 %postun
 if [ "$1" = 0 ] ; then
-	rm -f /usr/bin/waptself /usr/bin/waptexit
-	update-desktop-database
+    rm -f /usr/bin/waptself /usr/bin/waptexit
+    xdg-icon-resource uninstall --size 16  --mode system tis-waptself
+    xdg-icon-resource uninstall --size 32  --mode system tis-waptself
+    xdg-icon-resource uninstall --size 64  --mode system tis-waptself
+    xdg-icon-resource uninstall --size 128  --mode system tis-waptself
+
+    xdg-icon-resource uninstall --size 16  --mode system tis-waptexit
+    xdg-icon-resource uninstall --size 32  --mode system tis-waptexit
+    xdg-icon-resource uninstall --size 64  --mode system tis-waptexit
+    xdg-icon-resource uninstall --size 128  --mode system tis-waptexit
+
+    update-desktop-database
 fi

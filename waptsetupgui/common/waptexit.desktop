@@ -1,7 +1,6 @@
 [Desktop Entry]
 Type=Application
 Exec=/usr/bin/waptself
-Icon=/opt/wapt/icons/waptself.ico
+Icon=tis-waptexit
 Name=WAPT Exit
-GenericName=WAPT Exit
 Categories=Utility;

@@ -247,6 +247,21 @@ os.makedirs(usr_share_applications)
 shutil.copy('../common/waptexit.desktop',usr_share_applications)
 shutil.copy('../common/waptself.desktop',usr_share_applications)
 
+if lower(WAPTEDITION)=='community':
+    waptself_png = '../common/waptself-community.png'
+    waptexit_png = '../common/waptself-community.png'
+else:
+    waptself_png = '../common/waptself-enterprise.png'
+    waptexit_png = '../common/waptself-enterprise.png'
+    
+os.makedirs(os.path.join(BDIR,'opt/wapt/icons'))
+    
+icons_to_convert=[(waptself_png,makepath(BDIR,'opt/wapt/waptself-%s.png')),(waptexit_png,makepath(BDIR,'opt/wapt/icons/waptexit-%s.png'))]
+
+for icon in icons_to_convert:
+    for size in ["16","32","64","128"]:
+        run("magick convert %s -resize %sx%s %s" % (icon[0],size,size,icon[1] % size))
+
 os.chmod(os.path.join(BDIR,'DEBIAN/'), 0755)
 os.chmod(os.path.join(BDIR,'DEBIAN','postinst'), 0755)
 os.chmod(os.path.join(BDIR,'DEBIAN','postrm'), 0755)
