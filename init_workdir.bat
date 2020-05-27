@@ -10,9 +10,8 @@ REM set http_proxy=http://srvproxy:8080
 REM set https_proxy=http://srvproxy:8080
 
 git -C %~dp0 clean -xfd
-%PYTHON_PATH%\python.exe -m pip install -U pip setuptools
-%PYTHON_PATH%\Scripts\pip.exe install virtualenv
-%PYTHON_PATH%\Scripts\virtualenv.exe --no-site-packages --always-copy %~dp0
+%PYTHON_PATH%\python.exe -m pip install -U pip setuptools virtualenv
+%PYTHON_PATH%\python.exe -m virtualenv --always-copy %~dp0
 xcopy /I /E /F /Y %PYTHON_PATH%\libs %~dp0\libs
 xcopy /I /E /F /Y %PYTHON_PATH%\DLLs %~dp0\DLLs
 xcopy /I /E /F /Y /EXCLUDE:%~dp0\libexcludes.txt %PYTHON_PATH%\lib %~dp0\lib
