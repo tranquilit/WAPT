@@ -1606,15 +1606,20 @@ def get_groups():
 @require_wapt_db
 def get_ad_groups():
     """list of active directory computers groups
+
+    Result:
+        Response {"msg": "4 active directory computers groups", "result": ["xxx", "yyy", "ttt"], "success": true, "request_time": null}
     """
+    starttime = time.time()
     try:
-        groups = list(Hosts.select(fn.DISTINCT(Hosts.computer_ad_groups)).order_by(1).dicts())
+        adgroups = Hosts.select(fn.unnest(Hosts.computer_ad_groups).alias('groups')).where(~Hosts.computer_ad_groups.is_null()).distinct()
+        groups = (Select(columns=[fn.array_agg(adgroups.c.groups)]).from_(adgroups).bind(wapt_db)).scalar()
         msg = '{} active directory computers groups'.format(len(groups))
 
     except Exception as e:
         return make_response_from_exception(e)
 
-    return make_response(result=groups, msg=msg, status=200)
+    return make_response(result=groups, msg=msg, status=200,request_time=time.time() - starttime)
 
 @app.route('/api/v3/get_ad_ou')
 @requires_auth(['admin','view'])
