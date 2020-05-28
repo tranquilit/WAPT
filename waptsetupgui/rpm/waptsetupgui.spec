@@ -21,6 +21,8 @@ cp ../waptself.bin %{buildroot}/opt/wapt/
 cp ../waptexit.bin  %{buildroot}/opt/wapt/
 cp ../../common/waptself.desktop %{buildroot}/opt/wapt/tis-waptself.desktop
 cp ../../common/waptexit.desktop %{buildroot}/opt/wapt/tis-waptexit.desktop
+cp ../../../languages/waptself* %{buildroot}/opt/wapt/languages/
+cp ../../../languages/waptexit* %{buildroot}/opt/wapt/languages/
 if [ `echo $WAPTEDITION | awk '{print tolower($0)}'` = "enterprise" ]
 then
     convert ../../common/waptself-community.png -resize 16x16 %{buildroot}/opt/wapt/icons/waptself-16.png

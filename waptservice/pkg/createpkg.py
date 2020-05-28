@@ -26,7 +26,6 @@ import os
 import platform
 import logging
 import re
-
 import shutil
 import subprocess
 import argparse
@@ -266,10 +265,7 @@ mkdir_p('tmpbuild/payload/usr/local/bin/')
 
 run_verbose('pip{} install setuptools'.format(python_version))
 eprint('Create a build environment virtualenv. May need to download a few libraries, it may take some time')
-if python_version=='3':
-    run_verbose(r'virtualenv -p /usr/local/bin/python3 tmpbuild/payload/opt/wapt --always-copy')
-else:
-    run_verbose(r'virtualenv -p /usr/bin/python2.7 tmpbuild/payload/opt/wapt') #--always-copy')
+run_verbose(r'virtualenv -p /usr/bin/python2.7 tmpbuild/payload/opt/wapt') #--always-copy')
 eprint('Install additional libraries in build environment virtualenv')
 run_verbose('tmpbuild/payload/opt/wapt/bin/pip install pip setuptools --upgrade')
 # qq libs a rajouter
@@ -325,7 +321,7 @@ else:
     waptexit_png = makepath(wapt_source_dir,'waptsetupgui/common/waptexit-community.png')
     
 applications_dir = './tmpbuild/payload/Applications'
-shutil.copytree(makepath(wapt_source_dir,'waptservice','Applications'),applications_dir)
+shutil.copytree(makepath(wapt_source_dir,'waptservice','pkg','Applications'),applications_dir)
     
 icons_to_convert=[(waptself_png,'./tmp_iconset_waptself/',makepath(applications_dir,'WAPT','WAPT Self-service.app','Contents','Resources','icon.icns')),(waptexit_png,'./tmp_iconset_exit/',makepath(applications_dir,'WAPT','WAPT Exit.app','Resources','Contents','icon.icns'))]
 
@@ -337,6 +333,14 @@ for icon in icons_to_convert:
         run("sips -z %i %i %s --out %s" % (size,size,icon[0],icon[1]+'icon_%ix%i.png' % (size,size)))
         run("sips -z %i %i %s --out %s" % (size*2,size*2,icon[0],icon[1]+'icon_%ix%i@2x.png' % (size,size)))
     run("iconutil -c icns %s -o %s" % (icon[1],icon[2]))
+   
+translation_path = makepath(wapt_source_dir,'languages')
+translation_path_payload = makepath('./tmpbuild/opt/wapt/languages')
+files_translation =  glob.glob(makepath(translation_path,'waptself*')) + glob.glob(makepath(translation_path,'waptexit*'))
+os.makedirs(translation_path_payload)
+   
+for file in files_translation:
+    shutil.copy2(file,translation_path_payload)
 
 if WAPTEDITION=='enterprise':
     eprint('copying the waptserver enterprise files')

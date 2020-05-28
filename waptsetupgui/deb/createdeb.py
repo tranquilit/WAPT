@@ -247,6 +247,14 @@ os.makedirs(dir_desktop)
 shutil.copy('../common/waptexit.desktop',os.path.join(dir_desktop,'tis-waptexit.desktop'))
 shutil.copy('../common/waptself.desktop',os.path.join(dir_desktop,'tis-waptself.desktop'))
 
+translation_path = '../../languages'
+translation_path_deb = makepath(BDIR,'opt/wapt/languages')
+files_translation =  glob.glob(makepath(translation_path,'waptself*')) + glob.glob(makepath(translation_path,'waptexit*'))
+os.makedirs(translation_path_deb)
+   
+for file in files_translation:
+    shutil.copy2(file,translation_path_payload)
+
 if WAPTEDITION.lower()=='community':
     waptself_png = '../common/waptself-community.png'
     waptexit_png = '../common/waptexit-community.png'
