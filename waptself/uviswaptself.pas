@@ -1618,22 +1618,32 @@ begin
 
         if not FileExists(iconPath) then
         begin
-          // Ugly hack : after 5 tries, assume you've missed the events...
-          // ...and that the icons are downloaded already
-          for k := 0 to 5 do
+          // After 20 seconds, assume you've missed the events...
+          // ...and that the icons are downloaded already, but not this one
+          for k := 0 to 20 do
           begin
-            if FileExists(iconPath) then
+            if FileExists(iconPath) then // was the icon downloaded?
             begin
               break;
             end
             else if lastIconDownloaded.Length = 0 then
             begin
-              Sleep(100);
-              Synchronize(@NotifyListener);
+              for j := ListPackages.AsArray.Length - 1 downto i do // was a later icon downloaded?
+              begin
+                if FileExists(IconsDir + UTF8Encode(ListPackages.AsArray[j].S['package_uuid']) + '.png') then
+                   break;
+              end;
+              if j > i then // if it was, then our icon does not exist
+                 break;
             end
             else
               break;
+            Sleep(1000);
+            Synchronize(@NotifyListener);
           end;
+
+          if j >= i then
+             continue;
 
           if not FileExists(iconPath) then
           begin
