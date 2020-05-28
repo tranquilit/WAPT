@@ -51,6 +51,7 @@ Resign a list of packages
 def main():
     parser=OptionParser(usage=__doc__,prog = 'wapt-signpackage')
     parser.add_option("-c","--certificate", dest="public_key", default='', help="Path to the PEM RSA certificate to embed identitiy in control. (default: %default)")
+    parser.add_option("-t","--trusted", dest="trusted_certs", default='', help="Path to the trusted PEM RSA certificates directory to check control signature. (default: %default)")
     parser.add_option("-k","--private-key", dest="private_key", default='', help="Path to the PEM RSA private key to sign packages.  (default: %default)")
     #parser.add_option("-w","--private-key-passwd", dest="private_key_passwd", default='', help="Path to the password of the private key. (default: %default)")
     parser.add_option("-l","--loglevel", dest="loglevel", default=None, type='choice',  choices=['debug','warning','info','error','critical'], metavar='LOGLEVEL',help="Loglevel (default: warning)")
@@ -97,9 +98,13 @@ def main():
 
     args = ensure_list(args)
 
-    ca_bundle = SSLCABundle()
     signers_bundle = SSLCABundle()
     signers_bundle.add_certificates_from_pem(pem_filename=options.public_key)
+
+    trusted_bundle = SSLCABundle()
+    trusted_bundle.add_certificates_from_pem(pem_filename=options.public_key)
+    if options.trusted_certs:
+        trusted_bundle.add_pems(options.trusted_certs,trust_first=True)
 
     waptpackages = []
     for arg in args:
@@ -124,11 +129,11 @@ def main():
 
             if not sign_needed and options.if_needed:
                 try:
-                    pe.check_control_signature(trusted_bundle=signers_bundle,signers_bundle=signers_bundle)
+                    pe.check_control_signature(trusted_bundle=trusted_bundle,signers_bundle=signers_bundle)
                     for md in ensure_list(options.md):
                         if not pe.has_file(pe.get_signature_filename(md)):
                             raise Exception('Missing signature for md %s' % md)
-                    logger.info('Skipping %s, already signed properly' % pe.asrequirement())
+                    logger.info('%s metadata already signed properly' % pe.asrequirement())
                     sign_needed = False
                 except Exception as e:
                     logger.info('Sign is needed for %s because %s' % (pe.asrequirement(),e))
@@ -140,10 +145,12 @@ def main():
 
             if options.set_maturity is not None and pe.maturity != options.set_maturity:
                 pe.maturity = options.set_maturity
+                logger.info('Setting maturity to %s' % options.set_maturity)
                 sign_needed = True
 
             if options.set_target_os is not None and not pe.target_os:
                 pe.target_os = options.set_target_os
+                logger.info('Setting target_os to %s' % options.set_target_os)
                 sign_needed = True
 
             if not options.if_needed or sign_needed:
