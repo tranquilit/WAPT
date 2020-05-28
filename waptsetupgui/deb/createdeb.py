@@ -244,8 +244,8 @@ shutil.copy('./debian/postrm',os.path.join(BDIR,'DEBIAN','postrm'))
 
 dir_desktop = os.path.join(BDIR,'opt/wapt')
 os.makedirs(dir_desktop)
-shutil.copy('../common/waptexit.desktop',dir_desktop)
-shutil.copy('../common/waptself.desktop',dir_desktop)
+shutil.copy('../common/waptexit.desktop',os.path.join(dir_desktop,'tis-waptexit.desktop'))
+shutil.copy('../common/waptself.desktop',os.path.join(dir_desktop,'tis-waptself.desktop'))
 
 if WAPTEDITION.lower()=='community':
     waptself_png = '../common/waptself-community.png'

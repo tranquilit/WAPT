@@ -312,8 +312,31 @@ rsync(source_dir, 'tmpbuild/payload/opt/wapt',
 # copying waptexit + waptself binaries
 copyfile(makepath(wapt_source_dir,'waptexit.bin'),'./tmpbuild/payload/opt/wapt/waptexit.bin')
 copyfile(makepath(wapt_source_dir,'waptself.bin'),'./tmpbuild/payload/opt/wapt/waptself.bin')
+os.chmod('./tmpbuild/payload/opt/wapt/waptexit.bin', 0o755)
+os.chmod('./tmpbuild/payload/opt/wapt/waptself.bin', 0o755)
 os.symlink('/opt/wapt/waptexit.bin','tmpbuild/payload/usr/local/bin/waptexit')
 os.symlink('/opt/wapt/waptself.bin','tmpbuild/payload/usr/local/bin/waptself')
+
+if WAPTEDITION.lower()=='community':
+    waptself_png = makepath(wapt_source_dir,'waptsetupgui/common/waptself-community.png')
+    waptexit_png = makepath(wapt_source_dir,'waptsetupgui/common/waptexit-community.png')
+else:
+    waptself_png = makepath(wapt_source_dir,'waptsetupgui/common/waptself-community.png')
+    waptexit_png = makepath(wapt_source_dir,'waptsetupgui/common/waptexit-community.png')
+    
+applications_dir = './tmpbuild/payload/Applications'
+shutil.copytree(makepath(wapt_source_dir,'waptservice','Applications'),applications_dir)
+    
+icons_to_convert=[(waptself_png,'./tmp_iconset_waptself/',makepath(applications_dir,'WAPT','WAPT Self-service.app','Contents','Resources','icon.icns')),(waptexit_png,'./tmp_iconset_exit/',makepath(applications_dir,'WAPT','WAPT Exit.app','Resources','Contents','icon.icns'))]
+
+os.symlink('/opt/wapt/waptexit.bin',makepath(applications_dir,'WAPT','WAPT Exit.app','Contents','MacOS','waptexit')
+os.symlink('/opt/wapt/waptself.bin',makepath(applications_dir,'WAPT','WAPT Self-service.app','Contents','MacOS','waptself')
+
+for icon in icons_to_convert:
+    for size in [16,32,64,128,256,512]:
+        run("sips -z %i %i %s --out %s" % (size,size,icon[0],icon[1]+'icon_%ix%i.png' % (size,size)))
+        run("sips -z %i %i %s --out %s" % (size*2,size*2,icon[0],icon[1]+'icon_%ix%i@2x.png' % (size,size)))
+    run("iconutil -c icns %s -o %s" % (icon[1],icon[2]))
 
 if WAPTEDITION=='enterprise':
     eprint('copying the waptserver enterprise files')

@@ -50,6 +50,22 @@ os.chmod('/opt/wapt/runwaptservice.sh',0o755)
 os.chmod('/usr/local/bin/waptpython',0o755)
 os.chmod('/opt/wapt/wapt-get.sh',0o755)
 
+shutil.copy2('/Applications/WAPT/WAPT Exit.app/Resources/Contents/icon.icns','/tmp')
+with open('/tmp/WaptFolderIcon.rsrc','w') as wapt_folder_icon:
+    wapt_folder_icon.write("read 'icns' (-16455) \"icon.icns\"")
+
+run("Rez -a /tmp/WaptFolderIcon.rsrc -o /Applications/WAPT/Icon$'\r'")
+run("SetFile -a C /Applications/WAPT")
+run("SetFile -a V /Applications/WAPT/Icon$'\r'")
+
+os.unlink('/tmp/WaptFolderIcon.rsrc')
+os.unlink('/tmp/icons.icns')
+
+run('chown -R root:wheel /Applications/WAPT')
+run('find /Applications/WAPT/ -type f -exec chmod 644 {} +')
+run('find /Applications/WAPT/ -type d -exec chmod 755 {} +')
+run('find /Applications/WAPT/ -type d -exec chmod +a "everyone deny delete" {} +')
+
 # waptservice
 run('sudo launchctl load -w /Library/LaunchDaemons/com.tranquilit.tis-waptagent.plist')
 
