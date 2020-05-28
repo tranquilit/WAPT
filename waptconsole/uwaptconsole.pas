@@ -4,7 +4,6 @@ unit uwaptconsole;
 {$modeswitch ADVANCEDRECORDS}
 {$modeswitch typehelpers}
 
-
 interface
 
 uses
@@ -2328,6 +2327,7 @@ begin
   try
     with TVisLoading.Create(Self) do
     try
+      Result := '';
       ProgressTitle(rsDownloading);
       Application.ProcessMessages;
       try
@@ -6385,11 +6385,13 @@ end;
 procedure TVisWaptGUI.ActWaptSetupUpgradeExecute(Sender: TObject);
 var
   WaptsetupPath: String;
-
 begin
   WaptsetupPath := DownloadFileFromRepo(GetMainWaptRepoURL,'waptsetup-tis.exe');
-  RunAsAdmin(0,WaptsetupPath,'');
-  Application.Terminate;
+  if (WaptsetupPath<> '') and FileExistsUTF8(WaptsetupPath)  then
+  begin
+    RunAsAdmin(0,WaptsetupPath,'');
+    Application.Terminate;
+  end;
 end;
 
 function TVisWaptGUI.GetGridHostsPlugins: ISuperObject;
@@ -7313,6 +7315,11 @@ begin
 end;
 
 procedure TVisWaptGUI.ActTriggerPendingActionsUpdate(Sender: TObject);
+begin
+  ;;
+end;
+
+procedure TVisWaptGUI.cbADGroupDropDown(Sender: TObject);
 begin
   ;;
 end;

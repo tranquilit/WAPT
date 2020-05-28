@@ -2296,9 +2296,6 @@ begin
   else
     Proxy:='';
 
-  dnsdomain:=GetDNSDomain;
-  if dnsdomain<>'' then
-    Result := GetRepoURLFromDNS('wapt',dnsdomain,Proxy);
 end;
 
 
