@@ -298,18 +298,21 @@ def get_loggedinusers():
         if not elem.name in result:
             result[elem.name] = None
     if platform.system() != 'Darwin':
-        output = run('loginctl list-sessions')
-        for line in output.split('\n'):
-            if 'SESSION' in line:
-                continue
-            if not line.startswith(' '):
-                continue
-            col = []
-            for c in line.split(' '):
-                if c == '':
+        try:
+            output = run('loginctl list-sessions')
+            for line in output.split('\n'):
+                if 'SESSION' in line:
                     continue
-                col.append(c)
-            result[col[2]] = col[0]
+                if not line.startswith(' '):
+                    continue
+                col = []
+                for c in line.split(' '):
+                    if c == '':
+                        continue
+                    col.append(c)
+                result[col[2]] = col[0]
+        except:
+            pass
     return result
 
 
