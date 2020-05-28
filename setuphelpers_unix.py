@@ -540,7 +540,7 @@ def run(cmd,shell=True,timeout=600,accept_returncodes=[0,3010],on_write=None,pid
 
 
 
-def dmi_info():
+def dmi_info_common_unix():
     """Hardware System information from BIOS estracted with dmidecode
     Convert dmidecode -q output to python dict
 

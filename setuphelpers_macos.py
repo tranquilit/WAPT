@@ -54,6 +54,9 @@ logger = logging.getLogger('waptcore')
 def host_info():
     """ Read main workstation informations, returned as a dict """
     info = host_info_common_unix()
+
+    info['system_profiler'] = system_profiler_info()
+
     info['os_name'] = platform.system()
     info['os_version'] = platform.release()
     info['platform'] = 'macOS'
@@ -83,9 +86,18 @@ def system_profiler_info():
     sphdt_string = run('system_profiler SPHardwareDataType -xml')
     sphdt_data = plistlib.readPlistFromString(sphdt_string)
 
-    sp_info['UUID'] = sphdt_data['_items']['platform_UUID']
+    sp_info['UUID'] = sphdt_data[0]['_items'][0]['platform_UUID']
 
     return sp_info
+
+
+def dmi_info():
+    dmi = dmi_info_common_unix()
+    
+    spinfo = system_profiler_info()
+    dmi['System_Information']['UUID'] = spinfo['UUID'] # else DMI returns a "Non Settable" UUID on macOS
+    return dmi
+
 
 def get_info_plist_path(app_dir):
     """ Applications typically contain an Info.plist file that shows information

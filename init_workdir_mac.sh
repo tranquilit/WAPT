@@ -5,7 +5,7 @@
 sudo easy_install pip virtualenv setuptools 
 
 
-virtualenv --no-site-packages .
+virtualenv .
 ./bin/pip install -r requirements-agent.txt -r requirements-agent-unix.txt
 ln -s ./bin/python2.7 waptpython
 #chmod 755 runwapt-get.sh

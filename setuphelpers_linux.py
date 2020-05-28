@@ -92,6 +92,11 @@ def host_info():
 
     return info
 
+
+def dmi_info():
+    return dmi_info_common_unix()
+
+
 def installed_softwares(keywords='',name=None):
     """ Return list of installed software from apt or rpm
 
