@@ -329,8 +329,8 @@ shutil.copytree(makepath(wapt_source_dir,'waptservice','Applications'),applicati
     
 icons_to_convert=[(waptself_png,'./tmp_iconset_waptself/',makepath(applications_dir,'WAPT','WAPT Self-service.app','Contents','Resources','icon.icns')),(waptexit_png,'./tmp_iconset_exit/',makepath(applications_dir,'WAPT','WAPT Exit.app','Resources','Contents','icon.icns'))]
 
-os.symlink('/opt/wapt/waptexit.bin',makepath(applications_dir,'WAPT','WAPT Exit.app','Contents','MacOS','waptexit')
-os.symlink('/opt/wapt/waptself.bin',makepath(applications_dir,'WAPT','WAPT Self-service.app','Contents','MacOS','waptself')
+os.symlink('/opt/wapt/waptexit.bin',makepath(applications_dir,'WAPT','WAPT Exit.app','Contents','MacOS','waptexit'))
+os.symlink('/opt/wapt/waptself.bin',makepath(applications_dir,'WAPT','WAPT Self-service.app','Contents','MacOS','waptself'))
 
 for icon in icons_to_convert:
     for size in [16,32,64,128,256,512]:
