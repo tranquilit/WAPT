@@ -304,7 +304,7 @@ copyfile('com.tranquilit.tis-waptagent.plist', './tmpbuild/payload/Library/Launc
 eprint('copying the waptservice files')
 rsync(source_dir, 'tmpbuild/payload/opt/wapt',
       excludes=['postconf', 'repository', 'rpm', 'deb', 'spnego-http-auth-nginx-module', '*.bat'])
-      
+
 # copying waptexit + waptself binaries
 copyfile(makepath(wapt_source_dir,'waptexit.bin'),'./tmpbuild/payload/opt/wapt/waptexit.bin')
 copyfile(makepath(wapt_source_dir,'waptself.bin'),'./tmpbuild/payload/opt/wapt/waptself.bin')
@@ -319,11 +319,12 @@ if WAPTEDITION.lower()=='community':
 else:
     waptself_png = makepath(wapt_source_dir,'waptsetupgui/common/waptself-community.png')
     waptexit_png = makepath(wapt_source_dir,'waptsetupgui/common/waptexit-community.png')
-    
+
 applications_dir = './tmpbuild/payload/Applications'
-shutil.copytree(makepath(wapt_source_dir,'waptservice','pkg','Applications'),applications_dir)
-    
+shutil.copytree(makepath(wapt_source_dir,'waptservice','pkg','Applications'),"./tmpbuild/payload")
 icons_to_convert=[(waptself_png,'./tmp_iconset_waptself/',makepath(applications_dir,'WAPT','WAPT Self-service.app','Contents','Resources','icon.icns')),(waptexit_png,'./tmp_iconset_exit/',makepath(applications_dir,'WAPT','WAPT Exit.app','Resources','Contents','icon.icns'))]
+
+os.makedirs()
 
 os.symlink('/opt/wapt/waptexit.bin',makepath(applications_dir,'WAPT','WAPT Exit.app','Contents','MacOS','waptexit'))
 os.symlink('/opt/wapt/waptself.bin',makepath(applications_dir,'WAPT','WAPT Self-service.app','Contents','MacOS','waptself'))
@@ -333,12 +334,12 @@ for icon in icons_to_convert:
         run("sips -z %i %i %s --out %s" % (size,size,icon[0],icon[1]+'icon_%ix%i.png' % (size,size)))
         run("sips -z %i %i %s --out %s" % (size*2,size*2,icon[0],icon[1]+'icon_%ix%i@2x.png' % (size,size)))
     run("iconutil -c icns %s -o %s" % (icon[1],icon[2]))
-   
+
 translation_path = makepath(wapt_source_dir,'languages')
 translation_path_payload = makepath('./tmpbuild/opt/wapt/languages')
 files_translation =  glob.glob(makepath(translation_path,'waptself*')) + glob.glob(makepath(translation_path,'waptexit*'))
 os.makedirs(translation_path_payload)
-   
+
 for file in files_translation:
     shutil.copy2(file,translation_path_payload)
 
