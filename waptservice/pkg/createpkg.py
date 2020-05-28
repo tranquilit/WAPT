@@ -321,17 +321,25 @@ else:
     waptexit_png = makepath(wapt_source_dir,'waptsetupgui/common/waptexit-community.png')
 
 applications_dir = './tmpbuild/payload/Applications'
-shutil.copytree(makepath(wapt_source_dir,'waptservice','pkg','Applications'),"./tmpbuild/payload/")
-icons_to_convert=[(waptself_png,'./tmp_iconset_waptself/',makepath(applications_dir,'WAPT','WAPT Self-service.app','Contents','Resources','icon.icns')),(waptexit_png,'./tmp_iconset_exit/',makepath(applications_dir,'WAPT','WAPT Exit.app','Resources','Contents','icon.icns'))]
+shutil.copytree(makepath(wapt_source_dir,'waptservice','pkg','Applications'),applications_dir)
+icons_to_convert=[(waptself_png,'./MyIcon.iconset/',makepath(applications_dir,'WAPT','WAPT Self-service.app','Contents','Resources','icon.icns')),(waptexit_png,'./MyIcon.iconset/',makepath(applications_dir,'WAPT','WAPT Exit.app','Contents','Resources','icon.icns'))]
 
+os.mkdir(makepath(applications_dir,'WAPT','WAPT Exit.app','Contents','MacOS'))
+os.mkdir(makepath(applications_dir,'WAPT','WAPT Exit.app','Contents','Resources'))
+os.mkdir(makepath(applications_dir,'WAPT','WAPT Self-service.app','Contents','MacOS'))
+os.mkdir(makepath(applications_dir,'WAPT','WAPT Self-service.app','Contents','Resources'))
 os.symlink('/opt/wapt/waptexit.bin',makepath(applications_dir,'WAPT','WAPT Exit.app','Contents','MacOS','waptexit'))
 os.symlink('/opt/wapt/waptself.bin',makepath(applications_dir,'WAPT','WAPT Self-service.app','Contents','MacOS','waptself'))
 
 for icon in icons_to_convert:
+    os.mkdir(icon[1])
     for size in [16,32,64,128,256,512]:
         run("sips -z %i %i %s --out %s" % (size,size,icon[0],icon[1]+'icon_%ix%i.png' % (size,size)))
         run("sips -z %i %i %s --out %s" % (size*2,size*2,icon[0],icon[1]+'icon_%ix%i@2x.png' % (size,size)))
-    run("iconutil -c icns %s -o %s" % (icon[1],icon[2]))
+    run("iconutil -c icns %s" % (icon[1]))
+    shutil.copy("MyIcon.icns",icon[2])
+    shutil.rmtree(icon[1])
+    os.unlink("MyIcon.icns")
 
 translation_path = makepath(wapt_source_dir,'languages')
 translation_path_payload = makepath('./tmpbuild/opt/wapt/languages')
