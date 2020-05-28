@@ -420,6 +420,7 @@ begin
       DllPath := RegWaptBaseDir;
       DllName := 'python27.dll';
       UseLastKnownVersion := False;
+      SetPythonHome(RegWaptBaseDir);
       LoadDll;
     end;
   end;
