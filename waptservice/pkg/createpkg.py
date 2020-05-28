@@ -321,7 +321,7 @@ else:
     waptexit_png = makepath(wapt_source_dir,'waptsetupgui/common/waptexit-community.png')
 
 applications_dir = './tmpbuild/payload/Applications'
-shutil.copytree(makepath(wapt_source_dir,'waptservice','pkg','Applications'),"./tmpbuild/payload")
+shutil.copytree(makepath(wapt_source_dir,'waptservice','pkg','Applications'),"./tmpbuild/payload/")
 icons_to_convert=[(waptself_png,'./tmp_iconset_waptself/',makepath(applications_dir,'WAPT','WAPT Self-service.app','Contents','Resources','icon.icns')),(waptexit_png,'./tmp_iconset_exit/',makepath(applications_dir,'WAPT','WAPT Exit.app','Resources','Contents','icon.icns'))]
 
 os.symlink('/opt/wapt/waptexit.bin',makepath(applications_dir,'WAPT','WAPT Exit.app','Contents','MacOS','waptexit'))

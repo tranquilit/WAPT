@@ -2266,13 +2266,8 @@ begin
     if FAppIniFilename = '' then
       FAppIniFilename := AApplicationName+'.ini';
 
-    {$IFDEF WINDOWS}
-    if ExtractFileDir(FAppIniFilename)='' then
-      FAppIniFilename := IncludeTrailingPathDelimiter(IncludeTrailingPathDelimiter(GetWindowsSpecialDir(CSIDL_LOCAL_APPDATA))+AApplicationName)+FAppIniFilename;
-    {$ELSE IFDEF UNIX}
     if ExtractFileExt(FAppIniFilename)='' then
-      FAppIniFilename := IncludeTrailingPathDelimiter(IncludeTrailingPathDelimiter(GetEnvironmentVariable('HOME') + '/.config' + AApplicationName) + FAppIniFilename;
-    {$ENDIF}
+      FAppIniFilename := IncludeTrailingPathDelimiter(IncludeTrailingPathDelimiter(GetEnvironmentVariable('HOME') + '/.config' + AApplicationName)) + FAppIniFilename;
   end;  
   Result := FAppIniFilename;
 end;
