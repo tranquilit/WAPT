@@ -59,7 +59,7 @@ interface
 
   function GetWaptLicencesDirectory(inifilename:String=''):String;
 
-
+  function GetIconsDir: String; // returns package icon directory
   function ReadWaptConfig(inifilename:String = ''): Boolean; //read global parameters from wapt-get ini file
 
   function GetEthernetInfo(ConnectedOnly:Boolean):ISuperObject;
@@ -449,6 +449,11 @@ begin
     else
       Result := IniReadInteger(AppIniFilename,'global',item,default);
 	end;
+end;
+
+function GetIconsDir: String;
+begin
+  result := WaptBaseDir() + '\cache\icons\';
 end;
 
 function WaptIniReadString(const user, item: string; Default: String): string;
@@ -2264,11 +2269,12 @@ begin
     {$IFDEF WINDOWS}
     if ExtractFileDir(FAppIniFilename)='' then
       FAppIniFilename := IncludeTrailingPathDelimiter(IncludeTrailingPathDelimiter(GetWindowsSpecialDir(CSIDL_LOCAL_APPDATA))+AApplicationName)+FAppIniFilename;
-    {$ELSE IFDEF LINUX}
+    {$ELSE IFDEF UNIX}
     if ExtractFileExt(FAppIniFilename)='' then
       FAppIniFilename := IncludeTrailingPathDelimiter(IncludeTrailingPathDelimiter(GetEnvironmentVariable('HOME') + '/.config' + AApplicationName) + FAppIniFilename;
     {$ENDIF}
-  end;  Result := FAppIniFilename;
+  end;  
+  Result := FAppIniFilename;
 end;
 
 function WaptIniFilename: String;
