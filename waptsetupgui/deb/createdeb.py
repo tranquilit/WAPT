@@ -242,10 +242,10 @@ with open(os.path.join(BDIR,'DEBIAN','control'),'w') as f_control:
 shutil.copy('./debian/postinst',os.path.join(BDIR,'DEBIAN','postinst'))
 shutil.copy('./debian/postrm',os.path.join(BDIR,'DEBIAN','postrm'))
 
-usr_share_applications = os.path.join(BDIR,'usr/share/applications')
-os.makedirs(usr_share_applications)
-shutil.copy('../common/waptexit.desktop',usr_share_applications)
-shutil.copy('../common/waptself.desktop',usr_share_applications)
+dir_desktop = os.path.join(BDIR,'opt/wapt')
+os.makedirs(dir_desktop)
+shutil.copy('../common/waptexit.desktop',dir_desktop)
+shutil.copy('../common/waptself.desktop',dir_desktop)
 
 if WAPTEDITION.lower()=='community':
     waptself_png = '../common/waptself-community.png'
@@ -270,7 +270,7 @@ os.chmod(os.path.join(BDIR,'DEBIAN','postrm'), 0755)
 opt_wapt = os.path.join(BDIR,'opt/wapt')
 mkdir(opt_wapt)
 for afile in dict_exe.keys():
-    os.chmod(dict_exe[afile],0644)
+    os.chmod(dict_exe[afile],0755)
     shutil.copy(dict_exe[afile],opt_wapt)
 
 # build

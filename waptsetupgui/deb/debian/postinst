@@ -19,4 +19,7 @@ xdg-icon-resource install --size 32  --mode system /opt/wapt/icons/waptexit-32.p
 xdg-icon-resource install --size 64  --mode system /opt/wapt/icons/waptexit-64.png tis-waptexit
 xdg-icon-resource install --size 128  --mode system /opt/wapt/icons/waptexit-128.png tis-waptexit
 
+xdg-desktop-menu  install --mode system /opt/wapt/tis-waptself.desktop
+xdg-desktop-menu  install --mode system /opt/wapt/tis-waptdesktop.desktop
+
 update-desktop-database

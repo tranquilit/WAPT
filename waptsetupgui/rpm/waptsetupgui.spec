@@ -19,8 +19,8 @@ Convenience package that ships with waptexit and waptself.
 %{__mkdir_p} %{buildroot}/opt/wapt/icons
 cp ../waptself.bin %{buildroot}/opt/wapt/
 cp ../waptexit.bin  %{buildroot}/opt/wapt/
-cp ../../common/waptself.desktop %{buildroot}/usr/share/applications
-cp ../../common/waptexit.desktop %{buildroot}/usr/share/applications
+cp ../../common/waptself.desktop %{buildroot}/opt/wapt/tis-waptself.desktop
+cp ../../common/waptexit.desktop %{buildroot}/opt/wapt/tis-waptexit.desktop
 if [ `echo $WAPTEDITION | awk '{print tolower($0)}'` = "enterprise" ]
 then
     convert ../../common/waptself-community.png -resize 16x16 %{buildroot}/opt/wapt/icons/waptself-16.png
@@ -45,11 +45,12 @@ fi
 %files
 %defattr(644,root,root,755)
 /opt/wapt/*
-/usr/share/applications/*
 
 %post
 ln -sf /opt/wapt/waptself.bin /usr/bin/waptself
 ln -sf /opt/wapt/waptexit.bin /usr/bin/waptexit
+chmod 755 /opt/wapt/waptself.bin
+chmod 755 /opt/wapt/waptexit.bin
 
 xdg-icon-resource install --size 16  --mode system /opt/wapt/icons/waptself-16.png tis-waptself
 xdg-icon-resource install --size 32  --mode system /opt/wapt/icons/waptself-32.png tis-waptself
@@ -60,6 +61,9 @@ xdg-icon-resource install --size 16  --mode system /opt/wapt/icons/waptexit-16.p
 xdg-icon-resource install --size 32  --mode system /opt/wapt/icons/waptexit-32.png tis-waptexit
 xdg-icon-resource install --size 64  --mode system /opt/wapt/icons/waptexit-64.png tis-waptexit
 xdg-icon-resource install --size 128  --mode system /opt/wapt/icons/waptexit-128.png tis-waptexit
+
+xdg-desktop-menu  install --mode system /opt/wapt/tis-waptself.desktop
+xdg-desktop-menu  install --mode system /opt/wapt/tis-waptdesktop.desktop
 
 update-desktop-database
 
@@ -75,6 +79,9 @@ if [ "$1" = 0 ] ; then
     xdg-icon-resource uninstall --size 32  --mode system tis-waptexit
     xdg-icon-resource uninstall --size 64  --mode system tis-waptexit
     xdg-icon-resource uninstall --size 128  --mode system tis-waptexit
+
+    xdg-desktop-menu  uninstall --mode system tis-waptself.desktop
+    xdg-desktop-menu  uninstall --mode system tis-waptdesktop.desktop
 
     update-desktop-database
 fi
