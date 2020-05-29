@@ -14,7 +14,7 @@ object VisLogin: TVisLogin
   Constraints.MinWidth = 327
   OnCreate = FormCreate
   OnShow = FormShow
-  Position = poOwnerFormCenter
+  Position = poWorkAreaCenter
   LCLVersion = '1.8.4.0'
   object PanelLogin: TPanel
     AnchorSideLeft.Control = Owner
