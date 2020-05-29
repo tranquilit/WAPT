@@ -361,14 +361,6 @@ def host_info_common_unix():
     >>> 'computer_fqdn' in hi and 'connected_ips' in hi and 'computer_name' in hi and 'mac' in hi
     True
     """
-    info = {}
-    try:
-        dmi = dmi_info()
-        info['system_manufacturer'] = dmi['System_Information']['Manufacturer']
-        info['system_productname'] = dmi['System_Information']['Product_Name']
-    except:
-        logger.warning('Error while running dmidecode, dmidecode needs root privileges')
-        pass
 
     info['computer_name'] = socket.gethostname()
     info['computer_fqdn'] = socket.getfqdn()

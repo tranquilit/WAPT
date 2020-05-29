@@ -53,7 +53,15 @@ logger = logging.getLogger('waptcore')
 
 def host_info():
     """ Read main workstation informations, returned as a dict """
-    info = host_info_common_unix()
+
+    info = {}
+    try:
+        dmi = dmi_info()
+        info['system_manufacturer'] = dmi['System_Information']['Manufacturer']
+        info['system_productname'] = dmi['System_Information']['Product_Name']
+    except:
+        logger.warning('Error while running dmidecode, dmidecode needs root privileges')
+        pass
 
     info['system_profiler'] = system_profiler_info()
 
@@ -93,7 +101,7 @@ def system_profiler_info():
 
 def dmi_info():
     dmi = dmi_info_common_unix()
-    
+
     spinfo = system_profiler_info()
     dmi['System_Information']['UUID'] = spinfo['UUID'] # else DMI returns a "Non Settable" UUID on macOS
     return dmi
@@ -151,7 +159,7 @@ def unmount_dmg(dmg_mount_path):
 
     Returns the value of the 'hdiutil unmount' command ran.
     """
-    try: 
+    try:
         return run('hdiutil unmount \'' + dmg_mount_path + '\'')
     except subprocess.CalledProcessError, e:
         print('Error in unmount_dmg : {0}'.format(e.output))
@@ -337,7 +345,7 @@ def uninstall_app(app_name):
     if not os.path.isdir(app_path):
         print("Application {0} not found in {1} : cannot uninstall".format(app_name, app_dir))
         return False
-    
+
     run('rm -rf \'{0}\''.format(app_path))
     print("Application \"{0}\" deleted.".format(app_name))
     return True

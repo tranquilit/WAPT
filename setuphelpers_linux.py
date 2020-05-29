@@ -70,14 +70,22 @@ def type_redhat():
     return platform.dist()[0].lower() in ('redhat','centos','fedora')
 
 def host_info():
-    info = host_info_common_unix()
+    info = {}
+    try:
+        dmi = dmi_info()
+        info['system_manufacturer'] = dmi['System_Information']['Manufacturer']
+        info['system_productname'] = dmi['System_Information']['Product_Name']
+    except:
+        logger.warning('Error while running dmidecode, dmidecode needs root privileges')
+        pass
+
     info['platform'] = platform.system()
     info['os_name'] = platform.linux_distribution()[0]
     info['os_version'] = platform.linux_distribution()[1]
     info['linux64'] = isLinux64()
     info['distrib'] = get_distrib_linux()
     info['distrib_version'] = get_distrib_version()
-    
+
     info['local_groups'] = {g.gr_name:g.gr_mem for g in grp.getgrall()}
     info['local_users'] = []
     for u in pwd.getpwall():
