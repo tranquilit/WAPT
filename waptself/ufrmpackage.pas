@@ -251,9 +251,20 @@ begin
   CloseHandle(FSnapshotHandle);
 end;
 {$ELSE}
+var
+  ListExe:TStringList;
 begin
+  ListExe:=TStringList.Create;
+  ListExe.Delimiter:=',';
+  ListExe.DelimitedText:=UTF8Encode(Package.S['impacted_process']);
+
+  if UTF8Encode(Package.S['impacted_process']) = '' then
+     Exit(False);
+  Result := True;
 end;
 {$ENDIF}
+
+
 function TFrmPackage.Accept_Impacted_process(): boolean;
 begin
   if not Impacted_process() then
