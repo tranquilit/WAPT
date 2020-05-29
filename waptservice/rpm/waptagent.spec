@@ -80,8 +80,8 @@ exit 0
 %postun
 
 if [ "$1" = 0 ] ; then
-	rm -f /usr/bin/waptservice
-	rm -f /usr/bin/wapt-get
+    rm -f /usr/bin/waptservice
+    rm -f /usr/bin/wapt-get
 fi
 
 %post
@@ -121,8 +121,8 @@ EOF
 
 FILE=/opt/wapt/wapt-get.ini
 if [[ -f "$FILE" ]]; then
-	wapt-get register
-    systemctl restart waptservice.service
+    wapt-get register || true
+    systemctl restart waptservice.service || true
 fi
 
 ### end

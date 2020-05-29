@@ -62,4 +62,7 @@ if os.path.exists('/opt/wapt/wapt-get.ini'):
     except:
         print('Cannot register')
     print("Restarting Agent")
-    run('systemctl restart waptservice.service')
+    try:
+        run('systemctl restart waptservice.service')
+    except:
+        pass

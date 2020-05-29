@@ -20,7 +20,6 @@
 # -----------------------------------------------------------------------
 }
 
-{$ifdef windows}
 interface
   uses
      Classes, SysUtils, Windows, Interfaces,
@@ -2574,32 +2573,11 @@ const
 
 function GetLocalIP: Ansistring;
 var
-{$IFDEF UNIX}
-  VProcess: TProcess;
-{$ENDIF}
-{$IFDEF MSWINDOWS}
   VWSAData: TWSAData;
   VHostEnt: PHostEnt;
   VName: Ansistring;
-{$ENDIF}
 begin
   Result := '';
-{$IFDEF UNIX}
-      VStrTemp := TStringList.Create;
-      VProcess := TProcess.Create(nil);
-      try
-        VProcess.CommandLine :=
-          'sh -c "ifconfig eth0 | awk ''/inet end/ {print $3}''"';
-        VProcess.Options := [poWaitOnExit, poUsePipes];
-        VProcess.Execute;
-        VStrTemp.LoadFromStream(VProcess.Output);
-        Result := Trim(VStrTemp.Text);
-      finally
-        VStrTemp.Free;
-        VProcess.Free;
-      end;
-{$ENDIF}
-{$IFDEF MSWINDOWS}
 {$HINTS OFF}
       WSAStartup(2, VWSAData);
 {$HINTS ON}
@@ -2611,7 +2589,6 @@ begin
         Result := Format(CFormatIPMask, [Byte(h_addr^[0]), Byte(h_addr^[1]),
           Byte(h_addr^[2]), Byte(h_addr^[3])]);
       WSACleanup;
-{$ENDIF}
 end;
 
 procedure QuickSort(var A: Array of String);
@@ -3250,10 +3227,3 @@ initialization
 finalization
 //  CoUninitialize();
 end.
-{$else}
-interface
-
-implementation
-
-end.
-{$endif}

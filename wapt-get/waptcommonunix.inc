@@ -20,7 +20,6 @@
 # -----------------------------------------------------------------------
 }
 
-{$ifdef unix}
 interface
   uses
      Classes, SysUtils, SuperObject,IdComponent,IdCookieManager,IdSSLOpenSSL,
@@ -2480,18 +2479,10 @@ const
 
 function GetLocalIP: Ansistring;
 var
-{$IFDEF UNIX}
   VProcess: TProcess;
   VStrTemp: TStringList;
-{$ENDIF}
-{$IFDEF MSWINDOWS}
-  VWSAData: TWSAData;
-  VHostEnt: PHostEnt;
-  VName: Ansistring;
-{$ENDIF}
 begin
   Result := '';
-{$IFDEF UNIX}
       VStrTemp := TStringList.Create;
       VProcess := TProcess.Create(nil);
       try
@@ -2505,20 +2496,6 @@ begin
         VStrTemp.Free;
         VProcess.Free;
       end;
-{$ENDIF}
-{$IFDEF MSWINDOWS}
-{$HINTS OFF}
-      WSAStartup(2, VWSAData);
-{$HINTS ON}
-      SetLength(VName, 255);
-      GetHostName(PAnsiChar(VName), 255);
-      SetLength(VName, StrLen(PAnsiChar(VName)));
-      VHostEnt := GetHostByName(PAnsiChar(VName));
-      with VHostEnt^ do
-        Result := Format(CFormatIPMask, [Byte(h_addr^[0]), Byte(h_addr^[1]),
-          Byte(h_addr^[2]), Byte(h_addr^[3])]);
-      WSACleanup;
-{$ENDIF}
 end;
 
 procedure QuickSort(var A: Array of String);
@@ -3164,10 +3141,3 @@ initialization
 finalization
 //  CoUninitialize();
 end.
-{$else}
-interface
-
-implementation
-
-end.
-{$endif}
