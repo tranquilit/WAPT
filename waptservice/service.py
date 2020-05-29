@@ -100,7 +100,7 @@ from waptpackage import PackageEntry,WaptLocalRepo
 from waptservice.waptservice_common import waptconfig,WAPTLOGGERS
 from waptservice.waptservice_common import forbidden,authenticate,allow_local,render_wapt_template
 from waptservice.waptservice_common import WaptClientUpgrade,WaptServiceRestart,WaptNetworkReconfig,WaptPackageInstall
-from waptservice.waptservice_common import WaptUpgrade,WaptUpdate,WaptUpdateServerStatus,WaptCleanup,WaptDownloadPackage,WaptLongTask,WaptAuditPackage, WaptDownloadIcon
+from waptservice.waptservice_common import WaptUpgrade,WaptUpdate,WaptUpdateServerStatus,WaptCleanup,WaptDownloadPackage,WaptLongTask,WaptAuditPackage, WaptPackageRemove, WaptDownloadIcon
 from waptservice.waptservice_common import WaptEvents
 
 from waptservice.waptservice_socketio import WaptSocketIOClient
@@ -407,7 +407,7 @@ def check_auth(logon_name, password,check_token_in_password=True,for_group='wapt
             list_group = []
             if not(app.waptconfig.waptservice_admin_filter):
                 #TODO found sudo ?
-                list_group = [for_group, 'root', 'sudo','wheel']
+                list_group = [for_group, 'root', 'sudo']
             if get_user_self_service_groups_unix(username, password, list_group):
                 return True
             else:
@@ -889,6 +889,7 @@ def download_icons():
         if search in pe.description:
             score += 2
         pe.score = score
+
     rows = sorted(rows, key=lambda r:(r.score,r.signature_date,r.filename), reverse=True)
     if rows:
         data = app.task_manager.add_task(WaptDownloadIcon(copy.deepcopy(rows)))
@@ -1935,6 +1936,7 @@ class WaptTaskManager(threading.Thread):
                 self.logger.debug(u"{} i'm still alive... but nothing to do".format(datetime.datetime.now()))
 
             except Exception as e:
+
                 if sys.platform == 'win32':
                     self.logger.critical(u'Unhandled error in task manager loop: %s. Sleeping 120s before restarting the service' % ensure_unicode(e))
                     time.sleep(120)

@@ -256,11 +256,11 @@ end;
 {$ENDIF}
 function TFrmPackage.Accept_Impacted_process(): boolean;
 begin
-  if Impacted_process()=false then
+  if not Impacted_process() then
     Exit(True)
   else
   begin
-    Result:=(MessageDlg(Format(rsImpacted_processes,[Package.S['impacted_process']]),mtWarning,mbYesNo,0)= mrYes);
+    Result := (MessageDlg(Format(rsImpacted_processes,[Package.S['impacted_process']]),mtWarning,mbYesNo,0)= mrYes);
   end;
 end;
 
@@ -356,7 +356,9 @@ end;
 procedure TFrmPackage.OnUpgradeTriggeredTask(Sender: TObject);
 begin
   if (ActionPackage='remove') then
-    TaskID:=(Sender as TTriggerWaptserviceAction).Res.O['0'].I['id']
+  begin
+    TaskID := (Sender as TTriggerWaptserviceAction).Res.O['0'].I['id']
+  end
   else
     TaskID:=(Sender as TTriggerWaptserviceAction).Res.I['id'];
   LstTasks.AddObject(UTF8Encode(Package.S['package']),TObject(PtrUInt(TaskID)));
