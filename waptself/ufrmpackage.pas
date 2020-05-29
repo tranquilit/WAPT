@@ -367,9 +367,7 @@ end;
 procedure TFrmPackage.OnUpgradeTriggeredTask(Sender: TObject);
 begin
   if (ActionPackage='remove') then
-  begin
-    TaskID := (Sender as TTriggerWaptserviceAction).Res.O['0'].I['id']
-  end
+    TaskID:=(Sender as TTriggerWaptserviceAction).Res.O['0'].I['id']
   else
     TaskID:=(Sender as TTriggerWaptserviceAction).Res.I['id'];
   LstTasks.AddObject(UTF8Encode(Package.S['package']),TObject(PtrUInt(TaskID)));
