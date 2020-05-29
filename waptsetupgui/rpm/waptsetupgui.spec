@@ -17,6 +17,7 @@ Convenience package that ships with waptexit and waptself.
 %{__mkdir_p} %{buildroot}/opt/wapt
 %{__mkdir_p} %{buildroot}/usr/share/applications
 %{__mkdir_p} %{buildroot}/opt/wapt/icons
+%{__mkdir_p} %{buildroot}/opt/wapt/languages
 cp ../waptself.bin %{buildroot}/opt/wapt/
 cp ../waptexit.bin  %{buildroot}/opt/wapt/
 cp ../../common/waptself.desktop %{buildroot}/opt/wapt/tis-waptself.desktop

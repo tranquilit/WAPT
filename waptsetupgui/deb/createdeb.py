@@ -253,7 +253,7 @@ files_translation =  glob.glob(makepath(translation_path,'waptself*')) + glob.gl
 os.makedirs(translation_path_deb)
    
 for file in files_translation:
-    shutil.copy2(file,translation_path_payload)
+    shutil.copy2(file,translation_path_deb)
 
 if WAPTEDITION.lower()=='community':
     waptself_png = '../common/waptself-community.png'
