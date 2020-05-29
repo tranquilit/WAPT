@@ -13,28 +13,28 @@ object VisWaptSelf: TVisWaptSelf
   OnResize = FormResize
   OnShow = FormShow
   ParentBiDiMode = False
-  Position = poDefaultPosOnly
+  Position = poWorkAreaCenter
   LCLVersion = '1.8.4.0'
   object PanCategories: TPanel
     Left = 0
-    Height = 1017
+    Height = 0
     Top = 0
     Width = 264
     Align = alLeft
     BevelOuter = bvNone
-    ClientHeight = 1017
+    ClientHeight = 0
     ClientWidth = 264
     Color = clForm
     ParentColor = False
     TabOrder = 0
     object Panel2: TPanel
       Left = 0
-      Height = 1017
+      Height = 0
       Top = 0
       Width = 264
       Align = alClient
       BevelOuter = bvNone
-      ClientHeight = 1017
+      ClientHeight = 0
       ClientWidth = 264
       Color = clForm
       ParentColor = False
@@ -405,7 +405,7 @@ object VisWaptSelf: TVisWaptSelf
         AnchorSideBottom.Side = asrBottom
         Left = 12
         Height = 30
-        Top = 977
+        Top = -40
         Width = 30
         Anchors = [akLeft, akBottom]
         AutoSize = True
@@ -518,7 +518,7 @@ object VisWaptSelf: TVisWaptSelf
         AnchorSideBottom.Side = asrBottom
         Left = 77
         Height = 25
-        Top = 979
+        Top = -38
         Width = 150
         RoundBorders = 3
         ColorKind = mcDefault
@@ -640,21 +640,21 @@ object VisWaptSelf: TVisWaptSelf
     end
   end
   object ScrollBoxPackages: TScrollBox
-    Left = 264
-    Height = 1017
+    Left = 0
+    Height = 0
     Top = 0
-    Width = 904
+    Width = 0
     HorzScrollBar.Page = 1
     HorzScrollBar.Visible = False
-    VertScrollBar.Increment = 59
-    VertScrollBar.Page = 597
+    VertScrollBar.Increment = 1
+    VertScrollBar.Page = 1
     VertScrollBar.Smooth = True
     VertScrollBar.Tracking = True
     Align = alClient
     AutoSize = True
     BorderStyle = bsNone
-    ClientHeight = 1017
-    ClientWidth = 904
+    ClientHeight = 0
+    ClientWidth = 0
     Color = clWhite
     ParentColor = False
     TabOrder = 1
@@ -662,7 +662,7 @@ object VisWaptSelf: TVisWaptSelf
       Left = 0
       Height = 0
       Top = 0
-      Width = 904
+      Width = 0
       Align = alTop
       AutoSize = True
       BevelOuter = bvNone
@@ -680,13 +680,13 @@ object VisWaptSelf: TVisWaptSelf
     end
     object Panel6: TPanel
       Left = 0
-      Height = 1017
+      Height = 268
       Top = 0
-      Width = 904
+      Width = 0
       Align = alClient
       BevelOuter = bvNone
-      ClientHeight = 1017
-      ClientWidth = 904
+      ClientHeight = 268
+      ClientWidth = 0
       Color = clWhite
       ParentColor = False
       ParentFont = False
@@ -696,9 +696,9 @@ object VisWaptSelf: TVisWaptSelf
         AnchorSideLeft.Control = Panel6
         AnchorSideLeft.Side = asrCenter
         AnchorSideBottom.Control = PicLogo
-        Left = 209
+        Left = -243
         Height = 50
-        Top = 349
+        Top = -25
         Width = 486
         Alignment = taCenter
         Anchors = [akLeft, akBottom]
@@ -717,9 +717,9 @@ object VisWaptSelf: TVisWaptSelf
         AnchorSideTop.Control = Panel6
         AnchorSideTop.Side = asrCenter
         AnchorSideBottom.Side = asrBottom
-        Left = 252
+        Left = -200
         Height = 178
-        Top = 419
+        Top = 45
         Width = 400
         AutoSize = True
         Center = True
@@ -1329,15 +1329,15 @@ object VisWaptSelf: TVisWaptSelf
     end
   end
   object TaskBarPanel: TPanel
-    Left = 1544
-    Height = 1017
+    Left = -376
+    Height = 0
     Top = 0
     Width = 376
     Align = alRight
     BevelOuter = bvNone
     ChildSizing.LeftRightSpacing = 10
     ChildSizing.TopBottomSpacing = 10
-    ClientHeight = 1017
+    ClientHeight = 0
     ClientWidth = 376
     Color = clForm
     ParentColor = False
@@ -1346,8 +1346,8 @@ object VisWaptSelf: TVisWaptSelf
     OnPaint = TaskBarPanelPaint
     object SOGridTasks: TSOGrid
       Left = 10
-      Height = 728
-      Top = 49
+      Height = 0
+      Top = 0
       Width = 356
       ShowAdvancedColumnsCustomize = False
       KeyFieldsNames = 'id'
@@ -1529,7 +1529,7 @@ object VisWaptSelf: TVisWaptSelf
           Position = 21
           Tag = 21
           Text = 'force'
-          Width = 29
+          Width = 33
           PropertyName = 'force'
         end>
       Header.DefaultHeight = 18
@@ -1550,7 +1550,7 @@ object VisWaptSelf: TVisWaptSelf
     object Panel4: TPanel
       Left = 10
       Height = 121
-      Top = 815
+      Top = -121
       Width = 356
       Align = alBottom
       BevelOuter = bvNone
@@ -1605,7 +1605,7 @@ object VisWaptSelf: TVisWaptSelf
     object Panel8: TPanel
       Left = 10
       Height = 71
-      Top = 936
+      Top = -71
       Width = 356
       Align = alBottom
       AutoSize = True
@@ -1788,7 +1788,7 @@ object VisWaptSelf: TVisWaptSelf
     object Panel9: TPanel
       Left = 10
       Height = 38
-      Top = 777
+      Top = -38
       Width = 356
       Align = alBottom
       BevelOuter = bvNone
@@ -1821,7 +1821,7 @@ object VisWaptSelf: TVisWaptSelf
     object Panel1: TPanel
       Left = 10
       Height = 39
-      Top = 10
+      Top = 0
       Width = 356
       Align = alTop
       AutoSize = True
@@ -1854,15 +1854,15 @@ object VisWaptSelf: TVisWaptSelf
     end
   end
   object DetailsBarPanel: TPanel
-    Left = 1168
-    Height = 1017
+    Left = -376
+    Height = 0
     Top = 0
     Width = 376
     Align = alRight
     BevelOuter = bvNone
     ChildSizing.LeftRightSpacing = 10
     ChildSizing.TopBottomSpacing = 10
-    ClientHeight = 1017
+    ClientHeight = 0
     ClientWidth = 376
     Color = clForm
     ParentColor = False
@@ -1871,17 +1871,17 @@ object VisWaptSelf: TVisWaptSelf
     OnPaint = DetailsBarPanelPaint
     object ScrollBoxDetails: TScrollBox
       Left = 10
-      Height = 888
-      Top = 48
+      Height = 0
+      Top = 0
       Width = 356
       HorzScrollBar.Page = 1
       HorzScrollBar.Visible = False
       VertScrollBar.Increment = 74
-      VertScrollBar.Page = 848
+      VertScrollBar.Page = 1
       Align = alClient
       AutoSize = True
       BorderStyle = bsNone
-      ClientHeight = 888
+      ClientHeight = 0
       ClientWidth = 356
       Color = clForm
       ParentColor = False
@@ -2046,7 +2046,7 @@ object VisWaptSelf: TVisWaptSelf
     object Panel3: TPanel
       Left = 10
       Height = 71
-      Top = 936
+      Top = -71
       Width = 356
       Align = alBottom
       AutoSize = True
@@ -2229,7 +2229,7 @@ object VisWaptSelf: TVisWaptSelf
     object Panel5: TPanel
       Left = 10
       Height = 38
-      Top = 10
+      Top = 0
       Width = 356
       Align = alTop
       BevelOuter = bvNone

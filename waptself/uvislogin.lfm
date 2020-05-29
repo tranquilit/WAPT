@@ -3,12 +3,15 @@ object VisLogin: TVisLogin
   Height = 201
   Top = 252
   Width = 327
+  AutoSize = True
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'Sign in'
   ClientHeight = 201
   ClientWidth = 327
   Color = clForm
+  Constraints.MinHeight = 201
+  Constraints.MinWidth = 327
   OnCreate = FormCreate
   OnShow = FormShow
   Position = poOwnerFormCenter
