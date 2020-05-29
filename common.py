@@ -5116,15 +5116,7 @@ class Wapt(BaseObjectClass):
             if not printhook:
                 printhook = report
             """
-            if platform.system() == 'Windows':
-                target_dir = os.path.join(self.package_cache_dir, 'icons')
-            else:
-                if os.geteuid() == 0:
-                    target_dir = os.path.join(self.package_cache_dir, 'icons')
-                else:
-                    target_dir = os.path.join(os.path.expanduser("~"), "waptdev")
-                    if not os.path.isdir(target_dir):
-                        os.mkdir(target_dir)
+            target_dir = os.path.join(self.package_cache_dir, 'icons')
 
             res = self.get_repo(entry.repo).download_icons(entry,
                 target_dir=target_dir,

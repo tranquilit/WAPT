@@ -42,7 +42,7 @@ var
 
 implementation
 
-uses waptcommon, LCLIntf, uVisWaptSelf;
+uses tiscommon, waptcommon, LCLIntf, uVisWaptSelf;
 
 {$R *.lfm}
 
@@ -78,8 +78,8 @@ end;
 procedure TVisLogin.FormCreate(Sender: TObject);
 begin
   {$ifdef ENTERPRISE }
-  if FileExists(WaptBaseDir+'\templates\waptself-logo.png') then
-    LogoLogin.Picture.LoadFromFile(WaptBaseDir+'\templates\waptself-logo.png')
+  if FileExists(MakePath([WaptBaseDir,'templates','waptself-logo.png'])) then
+    LogoLogin.Picture.LoadFromFile(MakePath([WaptBaseDir,'templates','waptself-logo.png']))
   else
     LogoLogin.Picture.LoadFromResourceName(HINSTANCE,'SELF-SERVICE-ENTERPRISE-200PX');
   {$endif}

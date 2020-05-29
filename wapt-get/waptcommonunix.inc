@@ -452,7 +452,7 @@ end;
 
 function GetIconsDir: String;
 begin
-  result := WaptBaseDir() + '\cache\icons\';
+  result := MakePath([WaptBaseDir,'cache','icons']);
 end;
 
 function WaptIniReadString(const user, item: string; Default: String): string;
