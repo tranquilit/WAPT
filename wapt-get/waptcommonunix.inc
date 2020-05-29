@@ -2266,7 +2266,7 @@ begin
       FAppIniFilename := AApplicationName+'.ini';
 
     if ExtractFileExt(FAppIniFilename)='' then
-      FAppIniFilename := IncludeTrailingPathDelimiter(IncludeTrailingPathDelimiter(GetEnvironmentVariable('HOME') + '/.config' + AApplicationName)) + FAppIniFilename;
+      FAppIniFilename := IncludeTrailingPathDelimiter(IncludeTrailingPathDelimiter(GetEnvironmentVariable('HOME'))+'.config')+AApplicationName+'.ini';
   end;  
   Result := FAppIniFilename;
 end;
