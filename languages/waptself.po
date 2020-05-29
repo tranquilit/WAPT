@@ -312,6 +312,10 @@ msgstr ""
 msgid "Upgrade all"
 msgstr ""
 
+#: tviswaptself.btnclose.caption
+msgid "Close"
+msgstr ""
+
 #: tviswaptself.btnhidetaskbar.caption
 msgctxt "tviswaptself.btnhidetaskbar.caption"
 msgid "Hide"

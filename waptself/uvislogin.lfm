@@ -11,7 +11,6 @@ object VisLogin: TVisLogin
   ClientWidth = 327
   Color = clForm
   Constraints.MinHeight = 201
-  Constraints.MinWidth = 327
   OnCreate = FormCreate
   OnShow = FormShow
   Position = poOwnerFormCenter
@@ -77,6 +76,7 @@ object VisLogin: TVisLogin
       Width = 208
       Anchors = [akTop, akLeft, akRight]
       AutoSize = False
+      Constraints.MinWidth = 120
       EchoMode = emPassword
       PasswordChar = '*'
       TabOrder = 3
@@ -90,6 +90,7 @@ object VisLogin: TVisLogin
       Width = 209
       Anchors = [akTop, akLeft, akRight]
       AutoSize = False
+      Constraints.MinWidth = 120
       TabOrder = 1
     end
   end
@@ -179,8 +180,8 @@ object VisLogin: TVisLogin
       AnchorSideRight.Control = WarningPanel
       AnchorSideRight.Side = asrBottom
       Left = 26
-      Height = 16
-      Top = 0
+      Height = 14
+      Top = 1
       Width = 271
       Align = alCustom
       Anchors = [akTop, akLeft, akRight]

@@ -1,11 +1,11 @@
 object VisWaptSelf: TVisWaptSelf
-  Left = 0
-  Height = 1017
-  Top = 0
-  Width = 1920
+  Left = 431
+  Height = 761
+  Top = 171
+  Width = 1298
   Caption = 'WAPT Self-service'
-  ClientHeight = 0
-  ClientWidth = 0
+  ClientHeight = 761
+  ClientWidth = 1298
   Constraints.MinHeight = 602
   Constraints.MinWidth = 640
   OnClose = FormClose
@@ -17,24 +17,24 @@ object VisWaptSelf: TVisWaptSelf
   LCLVersion = '1.8.4.0'
   object PanCategories: TPanel
     Left = 0
-    Height = 0
+    Height = 761
     Top = 0
     Width = 264
     Align = alLeft
     BevelOuter = bvNone
-    ClientHeight = 0
+    ClientHeight = 761
     ClientWidth = 264
     Color = clForm
     ParentColor = False
     TabOrder = 0
     object Panel2: TPanel
       Left = 0
-      Height = 0
+      Height = 761
       Top = 0
       Width = 264
       Align = alClient
       BevelOuter = bvNone
-      ClientHeight = 0
+      ClientHeight = 761
       ClientWidth = 264
       Color = clForm
       ParentColor = False
@@ -58,7 +58,7 @@ object VisWaptSelf: TVisWaptSelf
         ChildSizing.ShrinkVertical = crsScaleChilds
         ChildSizing.Layout = cclLeftToRightThenTopToBottom
         ChildSizing.ControlsPerLine = 1
-        ClientHeight = 82
+        ClientHeight = 84
         ClientWidth = 197
         TabOrder = 0
         object RadioShowAll: TRadioButton
@@ -93,7 +93,7 @@ object VisWaptSelf: TVisWaptSelf
         end
         object RadioShowInstalled: TRadioButton
           Left = 6
-          Height = 19
+          Height = 21
           Top = 63
           Width = 185
           Caption = 'Installed'
@@ -120,7 +120,7 @@ object VisWaptSelf: TVisWaptSelf
         ChildSizing.ShrinkVertical = crsScaleChilds
         ChildSizing.Layout = cclLeftToRightThenTopToBottom
         ChildSizing.ControlsPerLine = 1
-        ClientHeight = 82
+        ClientHeight = 84
         ClientWidth = 197
         TabOrder = 1
         object RadioSortByDateDescending: TRadioButton
@@ -154,7 +154,7 @@ object VisWaptSelf: TVisWaptSelf
         end
         object RadioSortByNameZA: TRadioButton
           Left = 6
-          Height = 19
+          Height = 21
           Top = 63
           Width = 185
           Caption = 'Name : Z-A'
@@ -405,7 +405,7 @@ object VisWaptSelf: TVisWaptSelf
         AnchorSideBottom.Side = asrBottom
         Left = 12
         Height = 30
-        Top = -40
+        Top = 721
         Width = 30
         Anchors = [akLeft, akBottom]
         AutoSize = True
@@ -456,11 +456,11 @@ object VisWaptSelf: TVisWaptSelf
         AnchorSideTop.Control = LabCategories
         AnchorSideTop.Side = asrBottom
         Left = 31
-        Height = 23
-        Top = 441
+        Height = 21
+        Top = 440
         Width = 203
         BorderSpacing.Top = 5
-        ItemHeight = 15
+        ItemHeight = 13
         OnChange = ComboBoxCategoriesChange
         ParentFont = False
         Sorted = True
@@ -472,10 +472,10 @@ object VisWaptSelf: TVisWaptSelf
         AnchorSideLeft.Side = asrCenter
         AnchorSideTop.Control = SortBy
         AnchorSideTop.Side = asrBottom
-        Left = 101
-        Height = 17
+        Left = 102
+        Height = 16
         Top = 419
-        Width = 63
+        Width = 61
         BorderSpacing.Top = 25
         Caption = 'Categories'
         Font.Height = -13
@@ -518,7 +518,7 @@ object VisWaptSelf: TVisWaptSelf
         AnchorSideBottom.Side = asrBottom
         Left = 77
         Height = 25
-        Top = -38
+        Top = 723
         Width = 150
         RoundBorders = 3
         ColorKind = mcDefault
@@ -596,7 +596,7 @@ object VisWaptSelf: TVisWaptSelf
         AnchorSideBottom.Side = asrBottom
         Left = 35
         Height = 25
-        Top = 479
+        Top = 476
         Width = 195
         RoundBorders = 3
         ColorKind = mcDefault
@@ -620,7 +620,7 @@ object VisWaptSelf: TVisWaptSelf
         AnchorSideBottom.Side = asrBottom
         Left = 35
         Height = 25
-        Top = 514
+        Top = 511
         Width = 195
         RoundBorders = 3
         ColorKind = mcDefault
@@ -637,24 +637,49 @@ object VisWaptSelf: TVisWaptSelf
         ParentFont = False
         Visible = False
       end
+      object BtnClose: TFXMaterialButton
+        AnchorSideLeft.Control = Panel2
+        AnchorSideLeft.Side = asrCenter
+        AnchorSideTop.Control = BtnUpgradeAll
+        AnchorSideTop.Side = asrBottom
+        AnchorSideRight.Side = asrCenter
+        AnchorSideBottom.Side = asrBottom
+        Left = 35
+        Height = 25
+        Top = 551
+        Width = 195
+        RoundBorders = 3
+        ColorKind = mcDefault
+        FontColorAutomatic = True
+        NormalColor = 10048559
+        Shadow = False
+        TextSize = 15
+        TextShadow = False
+        TextFont = 'default'
+        TextQuality = fqSystemClearType
+        BorderSpacing.Top = 15
+        Caption = 'Close'
+        OnClick = BtnCloseClick
+        ParentFont = False
+      end
     end
   end
   object ScrollBoxPackages: TScrollBox
-    Left = 0
-    Height = 0
+    Left = 264
+    Height = 761
     Top = 0
-    Width = 0
+    Width = 282
     HorzScrollBar.Page = 1
     HorzScrollBar.Visible = False
-    VertScrollBar.Increment = 1
-    VertScrollBar.Page = 1
+    VertScrollBar.Increment = 46
+    VertScrollBar.Page = 469
     VertScrollBar.Smooth = True
     VertScrollBar.Tracking = True
     Align = alClient
     AutoSize = True
     BorderStyle = bsNone
-    ClientHeight = 0
-    ClientWidth = 0
+    ClientHeight = 761
+    ClientWidth = 282
     Color = clWhite
     ParentColor = False
     TabOrder = 1
@@ -662,7 +687,7 @@ object VisWaptSelf: TVisWaptSelf
       Left = 0
       Height = 0
       Top = 0
-      Width = 0
+      Width = 282
       Align = alTop
       AutoSize = True
       BevelOuter = bvNone
@@ -680,13 +705,13 @@ object VisWaptSelf: TVisWaptSelf
     end
     object Panel6: TPanel
       Left = 0
-      Height = 268
+      Height = 761
       Top = 0
-      Width = 0
+      Width = 282
       Align = alClient
       BevelOuter = bvNone
-      ClientHeight = 268
-      ClientWidth = 0
+      ClientHeight = 761
+      ClientWidth = 282
       Color = clWhite
       ParentColor = False
       ParentFont = False
@@ -696,10 +721,10 @@ object VisWaptSelf: TVisWaptSelf
         AnchorSideLeft.Control = Panel6
         AnchorSideLeft.Side = asrCenter
         AnchorSideBottom.Control = PicLogo
-        Left = -243
+        Left = -131
         Height = 50
-        Top = -25
-        Width = 486
+        Top = 221
+        Width = 545
         Alignment = taCenter
         Anchors = [akLeft, akBottom]
         BorderSpacing.Top = 20
@@ -717,9 +742,9 @@ object VisWaptSelf: TVisWaptSelf
         AnchorSideTop.Control = Panel6
         AnchorSideTop.Side = asrCenter
         AnchorSideBottom.Side = asrBottom
-        Left = -200
+        Left = -59
         Height = 178
-        Top = 45
+        Top = 291
         Width = 400
         AutoSize = True
         Center = True
@@ -1329,15 +1354,15 @@ object VisWaptSelf: TVisWaptSelf
     end
   end
   object TaskBarPanel: TPanel
-    Left = -376
-    Height = 0
+    Left = 546
+    Height = 761
     Top = 0
     Width = 376
     Align = alRight
     BevelOuter = bvNone
     ChildSizing.LeftRightSpacing = 10
     ChildSizing.TopBottomSpacing = 10
-    ClientHeight = 0
+    ClientHeight = 761
     ClientWidth = 376
     Color = clForm
     ParentColor = False
@@ -1346,8 +1371,8 @@ object VisWaptSelf: TVisWaptSelf
     OnPaint = TaskBarPanelPaint
     object SOGridTasks: TSOGrid
       Left = 10
-      Height = 0
-      Top = 0
+      Height = 472
+      Top = 49
       Width = 356
       ShowAdvancedColumnsCustomize = False
       KeyFieldsNames = 'id'
@@ -1529,7 +1554,7 @@ object VisWaptSelf: TVisWaptSelf
           Position = 21
           Tag = 21
           Text = 'force'
-          Width = 33
+          Width = 29
           PropertyName = 'force'
         end>
       Header.DefaultHeight = 18
@@ -1550,7 +1575,7 @@ object VisWaptSelf: TVisWaptSelf
     object Panel4: TPanel
       Left = 10
       Height = 121
-      Top = -121
+      Top = 521
       Width = 356
       Align = alBottom
       BevelOuter = bvNone
@@ -1605,7 +1630,7 @@ object VisWaptSelf: TVisWaptSelf
     object Panel8: TPanel
       Left = 10
       Height = 71
-      Top = -71
+      Top = 642
       Width = 356
       Align = alBottom
       AutoSize = True
@@ -1788,7 +1813,7 @@ object VisWaptSelf: TVisWaptSelf
     object Panel9: TPanel
       Left = 10
       Height = 38
-      Top = -38
+      Top = 713
       Width = 356
       Align = alBottom
       BevelOuter = bvNone
@@ -1821,7 +1846,7 @@ object VisWaptSelf: TVisWaptSelf
     object Panel1: TPanel
       Left = 10
       Height = 39
-      Top = 0
+      Top = 10
       Width = 356
       Align = alTop
       AutoSize = True
@@ -1854,15 +1879,15 @@ object VisWaptSelf: TVisWaptSelf
     end
   end
   object DetailsBarPanel: TPanel
-    Left = -376
-    Height = 0
+    Left = 922
+    Height = 761
     Top = 0
     Width = 376
     Align = alRight
     BevelOuter = bvNone
     ChildSizing.LeftRightSpacing = 10
     ChildSizing.TopBottomSpacing = 10
-    ClientHeight = 0
+    ClientHeight = 761
     ClientWidth = 376
     Color = clForm
     ParentColor = False
@@ -1871,26 +1896,26 @@ object VisWaptSelf: TVisWaptSelf
     OnPaint = DetailsBarPanelPaint
     object ScrollBoxDetails: TScrollBox
       Left = 10
-      Height = 0
-      Top = 0
+      Height = 632
+      Top = 48
       Width = 356
       HorzScrollBar.Page = 1
       HorzScrollBar.Visible = False
       VertScrollBar.Increment = 74
-      VertScrollBar.Page = 1
+      VertScrollBar.Page = 632
       Align = alClient
       AutoSize = True
       BorderStyle = bsNone
-      ClientHeight = 0
-      ClientWidth = 356
+      ClientHeight = 632
+      ClientWidth = 340
       Color = clForm
       ParentColor = False
       TabOrder = 0
       inline FrmDetailsPackageInPanel: TFrmDetailsPackage
-        Height = 848
+        Height = 830
         Width = 350
         Align = alCustom
-        ClientHeight = 848
+        ClientHeight = 830
         ClientWidth = 350
         Constraints.MaxWidth = 350
         Constraints.MinWidth = 350
@@ -1899,122 +1924,155 @@ object VisWaptSelf: TVisWaptSelf
           AnchorSideLeft.Control = FrmDetailsPackageInPanel
           AnchorSideTop.Control = FrmDetailsPackageInPanel
           AnchorSideRight.Control = FrmDetailsPackageInPanel
-          Height = 1721
+          Height = 1703
           Width = 350
           Anchors = [akTop, akLeft, akRight, akBottom]
           BorderStyle = bsNone
-          ClientHeight = 1721
+          ClientHeight = 1703
           ClientWidth = 350
           inherited LabName: TLabel
             Width = 285
           end
+          inherited Editor: TLabel
+            Width = 60
+          end
+          inherited LastVersion: TLabel
+            Width = 114
+          end
           inherited OfficialWebsite: TLabel
             Top = 188
+            Width = 142
           end
           inherited Description: TLabel
             Top = 602
             Width = 340
           end
           inherited LabEditor: TLabel
-            Width = 284
+            Left = 69
+            Width = 274
           end
           inherited LabLastVersion: TLabel
-            Width = 238
+            Left = 123
+            Width = 220
           end
           inherited LabOfficialWebsite: TLabel
             Top = 213
           end
           inherited LabDescription: TLabel
-            Height = 1062
+            Height = 1044
             Top = 649
             Width = 338
           end
           inherited Licence: TLabel
             Top = 238
+            Width = 76
           end
           inherited LabLicence: TLabel
+            Left = 85
             Top = 238
-            Width = 271
+            Width = 258
           end
           inherited ImpactedProcess: TLabel
             Top = 263
+            Width = 154
           end
           inherited Maintainer: TLabel
             Top = 288
+            Width = 104
           end
           inherited LabMaintainer: TLabel
+            Left = 113
             Top = 288
-            Width = 246
+            Width = 230
           end
           inherited Size: TLabel
             Top = 313
+            Width = 122
           end
           inherited LabSize: TLabel
+            Left = 131
             Top = 313
-            Width = 235
+            Width = 212
           end
           inherited SizeInstalled: TLabel
             Top = 338
+            Width = 125
           end
           inherited LabSizeInstalled: TLabel
+            Left = 134
             Top = 338
-            Width = 232
+            Width = 209
           end
           inherited Repository: TLabel
             Top = 363
+            Width = 99
           end
           inherited LabRepository: TLabel
+            Left = 108
             Top = 363
-            Width = 249
+            Width = 235
           end
           inherited Signer: TLabel
             Top = 388
+            Width = 63
           end
           inherited LabSigner: TLabel
+            Left = 72
             Top = 388
-            Width = 282
+            Width = 271
           end
           inherited PackageName: TLabel
             Top = 413
+            Width = 135
           end
           inherited LabPackageName: TLabel
+            Left = 144
             Top = 413
-            Width = 222
+            Width = 199
           end
           inherited Dependency: TLabel
             Top = 438
+            Width = 115
           end
           inherited Conflicts: TLabel
             Top = 488
+            Width = 81
           end
           inherited Section: TLabel
             Top = 513
+            Width = 76
           end
           inherited SignatureDate: TLabel
             Top = 538
+            Width = 132
           end
           inherited LabDependency: TLabel
             Top = 463
             Width = 338
           end
           inherited LabConflicts: TLabel
+            Left = 90
             Top = 488
-            Width = 265
+            Width = 253
           end
           inherited LabSection: TLabel
+            Left = 85
             Top = 513
-            Width = 271
+            Width = 258
           end
           inherited LabSignatureDate: TLabel
+            Left = 141
             Top = 538
-            Width = 224
+            Width = 202
           end
           inherited Categories: TLabel
             Top = 563
+            Width = 99
           end
           inherited LabCategories: TLabel
+            Left = 108
             Top = 563
-            Width = 252
+            Width = 235
           end
           inherited ShapeDescriptionBottom: TShape
             Top = 633
@@ -2025,8 +2083,12 @@ object VisWaptSelf: TVisWaptSelf
             Width = 340
           end
           inherited LabImpactedProcess: TLabel
+            Left = 163
             Top = 263
-            Width = 210
+            Width = 187
+          end
+          inherited UpgradeFromVersion: TLabel
+            Width = 187
           end
           inherited LabUpgradeFromVersion: TLabel
             AnchorSideLeft.Control = FrmDetailsPackageInPanel.PanelDetails
@@ -2046,7 +2108,7 @@ object VisWaptSelf: TVisWaptSelf
     object Panel3: TPanel
       Left = 10
       Height = 71
-      Top = -71
+      Top = 680
       Width = 356
       Align = alBottom
       AutoSize = True
@@ -2229,7 +2291,7 @@ object VisWaptSelf: TVisWaptSelf
     object Panel5: TPanel
       Left = 10
       Height = 38
-      Top = 0
+      Top = 10
       Width = 356
       Align = alTop
       BevelOuter = bvNone

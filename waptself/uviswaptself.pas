@@ -48,6 +48,7 @@ type
     BtnHideTaskBar: TFXMaterialButton;
     BtnShowTaskBar: TFXMaterialButton;
     BtnUpdateCatalogue: TFXMaterialButton;
+    BtnClose: TFXMaterialButton;
     BtnUpgradeAll: TFXMaterialButton;
     ComboBoxCategories: TComboBox;
     EdSearch: TEditButton;
@@ -109,6 +110,7 @@ type
     procedure ActUpdateCatalogueExecute(Sender: TObject);
     procedure ActUpdatePackagesListExecute(Sender: TObject);
     procedure ActUpgradeAllExecute(Sender: TObject);
+    procedure BtnCloseClick(Sender: TObject);
     procedure ComboBoxCategoriesChange(Sender: TObject);
     procedure DetailsBarPanelPaint(Sender: TObject);
     procedure EdSearchButtonClick(Sender: TObject);
@@ -655,6 +657,11 @@ begin
   for i:=0 to FlowPackages.ControlCount-1 do
     if (FlowPackages.Controls[i] is TFrmPackage) then
       (FlowPackages.Controls[i] as TFrmPackage).ActInstallUpgradePackage(Self);
+end;
+
+procedure TVisWaptSelf.BtnCloseClick(Sender: TObject);
+begin
+  Close;
 end;
 
 procedure TVisWaptSelf.ComboBoxCategoriesChange(Sender: TObject);
