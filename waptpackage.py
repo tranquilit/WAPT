@@ -3792,6 +3792,9 @@ class WaptRemoteRepo(WaptBaseRepo):
         if not target_dir:
             target_dir = tempfile.mkdtemp()
 
+        if not os.path.isdir(target_dir):
+           os.mkdir(target_dir)
+
         downloaded = []
         skipped = []
         errors = []
