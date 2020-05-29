@@ -1622,6 +1622,7 @@ class WaptServer(BaseObjectClass):
             self._session_use_ssl_auth = use_ssl_auth
             self._session_url = url
             self._session_client_certificate = self.client_certificate
+        self._session.headers = default_http_headers()
         return self._session
 
     def save_server_certificate(self,server_ssl_dir=None,overwrite=False):
@@ -3396,6 +3397,7 @@ class Wapt(BaseObjectClass):
             auth = self.waptserver.ask_user_password('%s/%s' % (self.waptserver.server_url,'api/v3/upload_xxx'))
 
         files = {}
+        is_hosts = None
 
         def upload_progress_hook(filename,amount_seen,file_size):
             if progress_hook:
@@ -3414,19 +3416,38 @@ class Wapt(BaseObjectClass):
             else:
                 pe = package
                 package_filename = pe.localpath
-            files[os.path.basename(package_filename)] = FileChunks(package_filename,progress_hook=upload_progress_hook)
+
+            if is_hosts is None and pe.section == 'host':
+                is_hosts = True
+
+            if is_hosts:
+                # small files
+                with open(package_filename,'rb') as f:
+                    files[os.path.basename(package_filename)] = f.read()
+            else:
+                # stream
+                #files[os.path.basename(package_filename)] = open(package_filename,'rb')
+                files[os.path.basename(package_filename)] = FileChunks(package_filename,progress_hook=upload_progress_hook)
+
 
         if files:
             try:
-                ok = []
-                errors = []
-                for (fn,f) in files.iteritems():
-                    res_partiel = self.waptserver.post('api/v3/upload_packages',data=f.get(),auth=auth,timeout=300)
-                    if not res_partiel['success']:
-                        errors.append(res_partiel)
-                    else:
-                        ok.append(res_partiel)
-                res = {'success':len(errors)==0,'result':{'ok':ok,'errors':errors},'msg':'%s Packages uploaded, %s errors' % (len(ok),len(errors))}
+                if is_hosts:
+                    logger.info('Uploading %s host packages' % len(files))
+                    # single shot
+                    res = self.waptserver.post('api/v3/upload_hosts',files=files,auth=auth,timeout=300)
+                    if not res['success']:
+                        raise Exception('Error when uploading host packages: %s'% (res['msg']))
+                else:
+                    ok = []
+                    errors = []
+                    for (fn,f) in files.iteritems():
+                        res_partiel = self.waptserver.post('api/v3/upload_packages',data=f.get(),auth=auth,timeout=300)
+                        if not res_partiel['success']:
+                            errors.append(res_partiel)
+                        else:
+                            ok.append(res_partiel)
+                    res = {'success':len(errors)==0,'result':{'ok':ok,'errors':errors},'msg':'%s Packages uploaded, %s errors' % (len(ok),len(errors))}
             finally:
                 for f in files.values():
                     if isinstance(f,file):
