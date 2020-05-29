@@ -66,7 +66,7 @@ xdg-icon-resource install --size 64  --mode system /opt/wapt/icons/waptexit-64.p
 xdg-icon-resource install --size 128  --mode system /opt/wapt/icons/waptexit-128.png tis-waptexit
 
 xdg-desktop-menu  install --mode system /opt/wapt/tis-waptself.desktop
-xdg-desktop-menu  install --mode system /opt/wapt/tis-waptdesktop.desktop
+xdg-desktop-menu  install --mode system /opt/wapt/tis-waptexit.desktop
 
 update-desktop-database
 
@@ -84,7 +84,7 @@ if [ "$1" = 0 ] ; then
     xdg-icon-resource uninstall --size 128  --mode system tis-waptexit
 
     xdg-desktop-menu  uninstall --mode system tis-waptself.desktop
-    xdg-desktop-menu  uninstall --mode system tis-waptdesktop.desktop
+    xdg-desktop-menu  uninstall --mode system tis-waptexit.desktop
 
     update-desktop-database
 fi

@@ -12,6 +12,6 @@ xdg-icon-resource uninstall --size 64  --mode system tis-waptexit
 xdg-icon-resource uninstall --size 128  --mode system tis-waptexit
 
 xdg-desktop-menu  uninstall --mode system tis-waptself.desktop
-xdg-desktop-menu  uninstall --mode system tis-waptdesktop.desktop
+xdg-desktop-menu  uninstall --mode system tis-waptexit.desktop
 
 update-desktop-database
