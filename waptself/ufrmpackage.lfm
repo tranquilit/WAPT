@@ -8,8 +8,8 @@ object FrmPackage: TFrmPackage
   Color = clWhite
   ParentColor = False
   TabOrder = 0
-  DesignLeft = 2507
-  DesignTop = 266
+  DesignLeft = -3
+  DesignTop = 5
   object BCPaperPanel1: TBCPaperPanel
     AnchorSideLeft.Control = Owner
     AnchorSideLeft.Side = asrCenter
@@ -36,7 +36,7 @@ object FrmPackage: TFrmPackage
       AnchorSideTop.Side = asrBottom
       Left = 30
       Height = 24
-      Top = 120
+      Top = 119
       Width = 120
       RoundBorders = 3
       NormalColor = 12895428
@@ -104,10 +104,9 @@ object FrmPackage: TFrmPackage
       AnchorSideTop.Control = LabPackageName
       AnchorSideTop.Side = asrBottom
       Left = 80
-      Height = 16
+      Height = 15
       Top = 42
-      Width = 154
-      AutoSize = False
+      Width = 35
       Background.Gradient1.StartColor = clWhite
       Background.Gradient1.EndColor = clBlack
       Background.Gradient1.GradientType = gtLinear
@@ -149,7 +148,7 @@ object FrmPackage: TFrmPackage
       AnchorSideRight.Side = asrBottom
       Left = 80
       Height = 47
-      Top = 63
+      Top = 62
       Width = 250
       Anchors = [akTop, akLeft, akRight]
       AutoSize = False
@@ -239,7 +238,7 @@ object FrmPackage: TFrmPackage
       AnchorSideRight.Side = asrBottom
       Left = 200
       Height = 24
-      Top = 120
+      Top = 119
       Width = 120
       RoundBorders = 3
       NormalColor = 12895428
@@ -384,12 +383,11 @@ object FrmPackage: TFrmPackage
       AnchorSideTop.Side = asrBottom
       AnchorSideRight.Control = BCPaperPanel1
       AnchorSideRight.Side = asrBottom
-      Left = 255
-      Height = 16
+      Left = 257
+      Height = 15
       Top = 42
-      Width = 60
+      Width = 58
       Anchors = [akTop, akRight]
-      AutoSize = False
       Background.Gradient1.StartColor = clWhite
       Background.Gradient1.EndColor = clBlack
       Background.Gradient1.GradientType = gtLinear

@@ -55,6 +55,7 @@ begin
     EdPassword.SetFocus
   else
     EdUsername.SetFocus;
+  Application.BringToFront;
 end;
 
 procedure TVisLogin.LogoLoginClick(Sender: TObject);

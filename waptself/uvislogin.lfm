@@ -11,6 +11,7 @@ object VisLogin: TVisLogin
   ClientWidth = 327
   Color = clForm
   Constraints.MinHeight = 201
+  Constraints.MinWidth = 327
   OnCreate = FormCreate
   OnShow = FormShow
   Position = poOwnerFormCenter
@@ -180,8 +181,8 @@ object VisLogin: TVisLogin
       AnchorSideRight.Control = WarningPanel
       AnchorSideRight.Side = asrBottom
       Left = 26
-      Height = 14
-      Top = 1
+      Height = 16
+      Top = 0
       Width = 271
       Align = alCustom
       Anchors = [akTop, akLeft, akRight]
