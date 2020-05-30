@@ -54,7 +54,7 @@ logger = logging.getLogger('waptcore')
 def host_info():
     """ Read main workstation informations, returned as a dict """
 
-    info = {}
+    info = host_info_common_unix()
     try:
         dmi = dmi_info()
         info['system_manufacturer'] = dmi['System_Information']['Manufacturer']

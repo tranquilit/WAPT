@@ -362,6 +362,7 @@ def host_info_common_unix():
     True
     """
 
+    info = {}
     info['computer_name'] = socket.gethostname()
     info['computer_fqdn'] = socket.getfqdn()
     info['dnsdomain'] = get_domain_from_socket()

@@ -70,7 +70,7 @@ def type_redhat():
     return platform.dist()[0].lower() in ('redhat','centos','fedora')
 
 def host_info():
-    info = {}
+    info = host_info_common_unix()
     try:
         dmi = dmi_info()
         info['system_manufacturer'] = dmi['System_Information']['Manufacturer']
