@@ -3231,6 +3231,15 @@ class WaptLocalRepo(WaptBaseRepo):
                         signer_certificates.add_certificates(certs)
 
                     self._extract_icon(entry)
+
+                    # delete icon if still has the old name (PKGNAME.png)
+                    icons_path = os.path.abspath(os.path.join(self.localpath,'icons'))
+                    if os.path.isdir(icons_path):
+                        icon_fn = os.path.join(icons_path, u"%s.png" % entry.package)
+                        if (os.path.exists(icon_fn)):
+                            os.remove(icon_fn)
+                            logger.info(u'Deleted icon %s'% (icon_fn))
+
                 else:
                     logger.debug(u"  Keeping %s" % package_filename)
                     kept.append(fname)
@@ -3821,40 +3830,26 @@ class WaptRemoteRepo(WaptBaseRepo):
                     logger.info(u"Skipping icon for " + entry.package + ", already downloaded")
                     continue
 
-                download_url = self.repo_url + '/icons/' + entry.package_uuid + '.png'
+                download_url = entry.repo_url + '/icons/' + entry.package_uuid + '.png'
                 fullpackagepath = os.path.join(target_dir, entry.filename)
 
                 logger.info(u"  Downloading icon from %s" % download_url)
                 try:
-                    try:
-                        wget(download_url,
-                            target_dir,
-                            printhook = printhook,
-                            connect_timeout=self.timeout,
-                            resume= usecache,
-                            md5 = entry.md5sum,
-                            requests_session=session,
-                            limit_bandwidth=self.limit_bandwidth,
-                            )
-                    except Exception as e:
-                        # For compatibility with old icon format
-                        old_download_url = self.repo_url + '/icons/' + entry.package + '.png'
-                        wget(old_download_url,
-                            target_dir,
-                            printhook = printhook,
-                            connect_timeout=self.timeout,
-                            resume= usecache,
-                            #md5 = entry.md5sum,
-                            requests_session=session,
-                            limit_bandwidth=self.limit_bandwidth,
-                            )
-                        os.rename(os.path.join(target_dir, entry.package + '.png'), icon_file)
+                    wget(download_url,
+                        target_dir,
+                        printhook = printhook,
+                        connect_timeout=self.timeout,
+                        resume= usecache,
+                        md5 = entry.md5sum,
+                        requests_session=session,
+                        limit_bandwidth=self.limit_bandwidth,
+                        )
 
                     downloaded.append(fullpackagepath)
                 except Exception as e:
                     if os.path.isfile(fullpackagepath):
                         os.remove(fullpackagepath)
-                    logger.warning(u"Error downloading icon from http repository, please update... error : %s" % e)
+                    logger.critical(u"Error downloading package from http repository, please update... error : %s" % e)
                     errors.append((download_url,"%s" % e))
 
         return {"downloaded": downloaded, "skipped": skipped, "errors": errors, "packages": packages}
