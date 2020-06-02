@@ -15,66 +15,62 @@ object VisLogin: TVisLogin
   OnCreate = FormCreate
   OnShow = FormShow
   Position = poWorkAreaCenter
+  ShowInTaskBar = stAlways
   LCLVersion = '1.8.4.0'
   object PanelLogin: TPanel
     AnchorSideLeft.Control = Owner
     AnchorSideLeft.Side = asrCenter
     AnchorSideTop.Control = WarningPanel
     AnchorSideTop.Side = asrBottom
-    AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
-    Left = 15
-    Height = 52
+    Left = 61
+    Height = 49
     Top = 102
-    Width = 297
+    Width = 205
     Align = alCustom
-    Anchors = [akTop, akLeft, akRight]
     AutoSize = True
     BorderSpacing.Top = 5
-    BorderSpacing.Right = 15
     BevelColor = clForm
     BevelOuter = bvNone
-    ClientHeight = 52
-    ClientWidth = 297
+    ClientHeight = 49
+    ClientWidth = 205
     Color = clForm
     ParentColor = False
     TabOrder = 0
     object StaticText2: TStaticText
       AnchorSideLeft.Control = PanelLogin
-      AnchorSideTop.Control = EdPassword
-      AnchorSideTop.Side = asrCenter
-      AnchorSideRight.Control = EdPassword
+      AnchorSideTop.Control = StaticText1
+      AnchorSideTop.Side = asrBottom
       Left = 3
       Height = 23
-      Top = 29
+      Top = 26
       Width = 83
-      Anchors = [akTop, akLeft, akRight]
       BorderSpacing.Left = 3
-      BorderSpacing.Right = 3
+      BorderSpacing.Top = 3
       Caption = 'Password :'
       TabOrder = 2
     end
     object StaticText1: TStaticText
       AnchorSideLeft.Control = PanelLogin
-      AnchorSideTop.Side = asrCenter
-      AnchorSideRight.Control = EdUsername
+      AnchorSideTop.Control = PanelLogin
       Left = 3
       Height = 23
       Top = 0
       Width = 82
-      Anchors = [akTop, akLeft, akRight]
       BorderSpacing.Left = 3
-      BorderSpacing.Right = 3
       Caption = 'Login : '
       TabOrder = 0
     end
     object EdPassword: TEdit
+      AnchorSideLeft.Control = StaticText1
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = StaticText2
       AnchorSideRight.Control = PanelLogin
       AnchorSideRight.Side = asrBottom
-      Left = 89
+      Left = 85
       Height = 23
-      Top = 29
-      Width = 208
+      Top = 26
+      Width = 120
       Anchors = [akTop, akLeft, akRight]
       AutoSize = False
       Constraints.MinWidth = 120
@@ -83,12 +79,15 @@ object VisLogin: TVisLogin
       TabOrder = 3
     end
     object EdUsername: TEdit
+      AnchorSideLeft.Control = StaticText1
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = StaticText1
       AnchorSideRight.Control = PanelLogin
       AnchorSideRight.Side = asrBottom
-      Left = 88
+      Left = 85
       Height = 23
       Top = 0
-      Width = 209
+      Width = 120
       Anchors = [akTop, akLeft, akRight]
       AutoSize = False
       Constraints.MinWidth = 120
@@ -104,8 +103,8 @@ object VisLogin: TVisLogin
     AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
     Left = 76
-    Height = 27
-    Top = 164
+    Height = 30
+    Top = 161
     Width = 174
     Align = alCustom
     Anchors = [akTop, akLeft, akBottom]
@@ -113,7 +112,7 @@ object VisLogin: TVisLogin
     BorderSpacing.Top = 10
     BorderSpacing.Bottom = 10
     BevelOuter = bvNone
-    ClientHeight = 27
+    ClientHeight = 30
     ClientWidth = 174
     TabOrder = 1
     object ButOk: TBitBtn
@@ -161,17 +160,17 @@ object VisLogin: TVisLogin
     AnchorSideTop.Side = asrBottom
     AnchorSideRight.Control = PanelLogin
     AnchorSideRight.Side = asrBottom
-    Left = 15
+    Left = 61
     Height = 16
     Top = 81
-    Width = 297
+    Width = 205
     Align = alCustom
     Anchors = [akTop, akLeft, akRight]
     AutoSize = True
     BorderSpacing.Top = 5
     BevelOuter = bvNone
     ClientHeight = 16
-    ClientWidth = 297
+    ClientWidth = 205
     TabOrder = 2
     object WarningText: TStaticText
       AnchorSideLeft.Control = ImageWarning
@@ -183,7 +182,7 @@ object VisLogin: TVisLogin
       Left = 26
       Height = 16
       Top = 0
-      Width = 271
+      Width = 179
       Align = alCustom
       Anchors = [akTop, akLeft, akRight]
       AutoSize = True
