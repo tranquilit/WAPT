@@ -1260,11 +1260,11 @@ class WaptDownloadIcon(WaptTask):
 
     def as_dict(self):
         d = WaptTask.as_dict(self)
-        d = dict(
+        d.update(
             nb_packages = len(self.target_packages),
             usecache = self.usecache,
             last_downloaded = self.last_downloaded
-            )
+        )
         return d
 
 
