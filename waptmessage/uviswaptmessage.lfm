@@ -1,11 +1,12 @@
-object Form1: TForm1
+object MsgForm: TMsgForm
   Left = 2591
   Height = 227
   Top = 269
   Width = 292
-  Caption = 'Form1'
+  Caption = 'TMsgForm'
   ClientHeight = 227
   ClientWidth = 292
+  OnShow = FormShow
   LCLVersion = '1.8.4.0'
   object Label1: TLabel
     Left = 120

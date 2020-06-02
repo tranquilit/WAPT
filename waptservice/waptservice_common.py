@@ -1232,7 +1232,7 @@ class WaptDownloadIcon(WaptTask):
                 self.size = total
         else:
             stat = u''
-        self.update_status(_(u'Downloading icons %s : %s' % (url,stat)))
+        self.update_status(_(u'Downloading icon %s : %s' % (url,stat)))
 
     def _run(self):
         pkg_names = [pkg.package for pkg in self.target_packages]

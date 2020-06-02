@@ -9,12 +9,15 @@ uses
 
 type
 
-  { TForm1 }
+  { TMsgForm }
 
-  TForm1 = class(TForm)
+  TMsgForm = class(TForm)
     Button1: TButton;
     Button2: TButton;
     Label1: TLabel;
+    procedure FormShow(Sender: TObject);
+
+
   private
 
   public
@@ -22,11 +25,20 @@ type
   end;
 
 var
-  Form1: TForm1;
+  MsgForm: TMsgForm;
 
 implementation
 
 {$R *.lfm}
+
+
+
+{ TMsgForm }
+
+procedure TMsgForm.FormShow(Sender: TObject);
+begin
+  WriteLn('saucisson');
+end;
 
 end.
 
