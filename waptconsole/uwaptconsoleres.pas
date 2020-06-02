@@ -272,7 +272,8 @@ resourcestring
   { Messages dans uVisApropos }
   rsUrl = 'Url : %s';
   rsPackageDuplicateConfirmCaption = 'Confirm duplication of package';
-  rsPackageDuplicateConfirm = 'Disclaimer:'#13#10'You are solely responable for the deployment of packages. We recommend that you validate and verify all packages before downloading and deploying them onto your workstations or network.'#13#10''#13#10'Are you sure you want to duplicate the package(s)'#13#10'%s'#13#10' into your repository ?';
+  rsPackageDuplicateConfirm = 'Disclaimer:'#13#10'You are solely responable for the deployment of packages. We recommend that you validate and verify all packages before downloading and deploying them onto your workstations or network.'#13#10''#13#10'Are you sure you want to duplicate the package(s) into your repository ?'#13#10'%s';
+  rsPackages = 'Package(s)';
   rsDownloadingPackage = 'Package(s) %s is being downloaded.';
   rsDuplicating = 'Package(s) %s is being duplicated.';
   rsDuplicateSuccess = 'Package(s) %s successfully duplicated.';

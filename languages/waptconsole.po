@@ -7877,9 +7877,8 @@ msgid ""
 "Disclaimer:\n"
 "You are solely responable for the deployment of packages. We recommend that you validate and verify all packages before downloading and deploying them onto your workstations or network.\n"
 "\n"
-" Are you sure you want to duplicate the package(s)\n"
+"Are you sure you want to duplicate the package(s) into your repository ?\n"
 "%s\n"
-" into your repository ?\n"
 msgstr ""
 
 #: uwaptconsoleres.rspackageduplicateconfirmcaption
@@ -7894,6 +7893,10 @@ msgstr ""
 #: uwaptconsoleres.rspackageremoveerror
 msgctxt "uwaptconsoleres.rspackageremoveerror"
 msgid "Error while removing package %s: %s"
+msgstr ""
+
+#: uwaptconsoleres.rspackages
+msgid "Package(s)"
 msgstr ""
 
 #: uwaptconsoleres.rspackagesneededcaption

@@ -5214,8 +5214,6 @@ msgid "Value"
 msgstr "Valeur"
 
 #: tviswaptgui.gridrules.header.columns[4].text
-#, fuzzy
-#| msgid "Repositories"
 msgctxt "tviswaptgui.gridrules.header.columns[4].text"
 msgid "Repository URL"
 msgstr "URL du dépôt"
@@ -5316,7 +5314,6 @@ msgid "md5sum"
 msgstr "Somme MD5"
 
 #: tviswaptgui.gridselfservicepackages.header.columns[22].text
-#, fuzzy
 msgctxt "tviswaptgui.gridselfservicepackages.header.columns[22].text"
 msgid "description_pl"
 msgstr "Description polonaise"
@@ -5992,7 +5989,6 @@ msgid "Last seen"
 msgstr "Dernière connexion"
 
 #: tviswaptgui.labelagentreponumbers.caption
-#, object-pascal-format,fuzzy
 msgctxt "tviswaptgui.labelagentreponumbers.caption"
 msgid "Selected / Total : %d / %d"
 msgstr "Sélectionné / Total : %d / %d"
@@ -6010,7 +6006,6 @@ msgid "Selected / Total : %d / %d"
 msgstr "Sélectionné / Total : %d / %d"
 
 #: tviswaptgui.labelrulesnumber.caption
-#, object-pascal-format,fuzzy
 msgctxt "tviswaptgui.labelrulesnumber.caption"
 msgid "Selected / Total : %d / %d"
 msgstr "Sélectionné / Total : %d / %d"
@@ -7301,13 +7296,6 @@ msgid "skipped"
 msgstr ""
 
 #: uwaptconsoleres.rsaddadsgroups
-#, fuzzy
-#| msgid ""
-#| "This will get the Active Directory groups of each selected host and \n"
-#| "add the matching Wapt packages to dependencies of the host\n"
-#| "if the package exists.\n"
-#| "\n"
-#| "Are you sure to continue ?\n"
 msgid ""
 "This will get the Active Directory groups of each selected host and \n"
 "add the matching Wapt packages to dependencies of the host\n"
@@ -8009,23 +7997,18 @@ msgid "Error while building package : %s"
 msgstr "Erreur lors de la compilation du paquet : %s"
 
 #: uwaptconsoleres.rspackageduplicateconfirm
-#, fuzzy
-#| msgid ""
-#| "Disclaimer:\\nThe deployment of a package is done under your sole responsability. Please validate the packages that you download before deploying them on your production network.\\n\\nAre you sure you want to duplicate the package(s)\n"
-#| "%s\n"
-#| " into your repository ?\n"
-msgctxt "uwaptconsoleres.rspackageduplicateconfirm"
 msgid ""
-"Remarques importantes ::\n"
-"Le déploiement d'un paquet se fait sous votre entière responsabilité. Merci de bien valider les paquets que vous téléchargez avant le déployer sur vos postes de production!\n"
+"Disclaimer:\n"
+"You are solely responable for the deployment of packages. We recommend that you validate and verify all packages before downloading and deploying them onto your workstations or network.\n"
 "\n"
-" Are you sure you want to duplicate the package(s)\n"
+"Are you sure you want to duplicate the package(s) into your repository ?\n"
 "%s\n"
-" into your repository ?\n"
 msgstr ""
-"Êtes-vous sûr de vouloir dupliquer le(s) paquet(s)\n"
+"Remarque importante :\n"
+"Le déploiement d'un paquet se fait sous votre entière responsabilité. Merci de bien valider les paquets que vous téléchargez avant le déployer sur vos postes de production.\n"
+"\n"
+"Êtes-vous sûr de vouloir dupliquer le(s) paquet(s) dans votre dépôt ?\n"
 "%s\n"
-" dans votre dépôt ?\n"
 
 #: uwaptconsoleres.rspackageduplicateconfirmcaption
 msgctxt "uwaptconsoleres.rspackageduplicateconfirmcaption"
@@ -8042,6 +8025,10 @@ msgstr "Erreur lors de l'appel de l'installation/mise à jour de paquet : %s: %s
 msgctxt "uwaptconsoleres.rspackageremoveerror"
 msgid "Error while removing package %s: %s"
 msgstr "Erreur lors de la suppression du paquet %s : %s"
+
+#: uwaptconsoleres.rspackages
+msgid "Package(s)"
+msgstr "Paquet(s)"
 
 #: uwaptconsoleres.rspackagesneededcaption
 msgctxt "uwaptconsoleres.rspackagesneededcaption"
