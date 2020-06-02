@@ -26,6 +26,8 @@ type
     property OnNotifyEvent: TNotifyEvent read FOnNotifyEvent write SetOnNotifyEvent;
     constructor Create(aNotifyEvent: TNotifyEvent; AllPackages: ISuperObject; aFlowPanel: TFlowPanel);
     procedure Execute; override;
+    function WaitForIcons(IconsDir: String) : TStringList;
+    procedure AssignIcons(tmpListIcons: TStringList);
   end;
 
   { TVisWaptSelf }
@@ -1598,128 +1600,138 @@ begin
   lastIconDownloaded := '';
 end;
 
+
+function TThreadGetAllIcons.WaitForIcon(IconsDir: String, Package: ISuperObject) : TStringList;
+var
+  Package: ISuperObject;
+  i,j, k: integer;
+  iconPath: String;
+  pic: TPicture;
+  iconPath: String;
+begin
+    iconPath := IconsDir + UTF8Encode(Package.S['package_uuid']) + '.png';
+
+    if not FileExists(iconPath) then
+    begin
+      // After 20 seconds, assume you've missed the events...
+      // ...and that the icons are downloaded already, but not this one
+      for k := 0 to 20 do
+      begin
+        if FileExists(iconPath) then // was the icon downloaded?
+        begin
+          break;
+        end
+        else if lastIconDownloaded.Length = 0 then
+        begin
+          for j := ListPackages.AsArray.Length - 1 downto i do // was a later icon downloaded?
+          begin
+            if FileExists(IconsDir + UTF8Encode(ListPackages.AsArray[j].S['package_uuid']) + '.png') then
+               return 'FOUND';
+          end;
+          if j > i then // if it was, then our icon does not exist
+             return 'ABSENT';
+        end
+        else
+          break;
+        Sleep(1000);
+        Synchronize(@NotifyListener);
+      end;
+
+      if j >= i then
+         continue;
+
+      if not FileExists(iconPath) then
+      begin
+        for k := 0 to ListPackages.AsArray.Length do
+        begin
+          if k = ListPackages.AsArray.Length then
+             break;
+          if ListPackages.AsArray[k]['package'].AsString = lastIconDownloaded then
+             break;
+        end;
+
+        if k = ListPackages.AsArray.Length then // Icon downloaded not in package list : package has no icon
+          return 'ABSENT';
+
+        if (k < i) then  // if last downloaded index inferior to current item, wait
+        begin
+           while k < i do
+           begin
+             Sleep(100);
+             Synchronize(@NotifyListener);
+             // WriteLn('waiting for icons...');
+             for k := 0 to ListPackages.AsArray.Length - 1 do
+             begin
+               if ListPackages.AsArray[k]['package'].AsString = UTF8Decode(CP1252ToUTF8(lastIconDownloaded)) then
+                 break;
+             end;
+           end;
+      end;
+    end;
+  end;
+  tmpLstIcons.Add(iconPath);
+  g := TPicture.Create;
+  g.LoadFromFile(tmpLstIcons[tmpLstIcons.IndexOf(iconPath)]);
+  tmpLstIcons.Objects[tmpLstIcons.IndexOf(iconPath)] := g;
+  tmpLstIcons[tmpLstIcons.IndexOf(iconPath)] := ExtractFileName(tmpLstIcons[tmpLstIcons.IndexOf(iconPath)]);
+  return 'FOUND';
+end;
+
+procedure TThreadGetAllIcons.AssignIcon(Package: ISuperObject);
+var
+  i: integer;
+  IconIdx: integer;
+  AFrmPackage: TFrmPackage;
+begin
+   for i := 0 to FlowPanel.ControlCount - 1 do
+   begin
+      try
+        if not (FlowPanel.Controls[i] is TFrmPackage) then
+           continue;
+
+        AFrmPackage := FlowPanel.Controls[i] as TFrmPackage;
+        if not (UTF8Encode(AFrmPackage.Package.S['package_uuid']) = UTF8Encode(Package.S['package_uuid'])) then
+           continue;
+
+        IconIdx := tmpLstIcons.IndexOf(UTF8Encode(AFrmPackage.Package.S['package_uuid']) + '.png');
+        if IconIdx >= 0 then
+        begin
+          try
+            AFrmPackage.ImgPackage.Picture.Assign(tmpLstIcons.Objects[IconIdx] as TPicture);
+          except
+          end;
+          break;
+        end;
+      except
+       On EListError do
+          break;
+      end;
+    end;
+end;
+
 procedure TThreadGetAllIcons.Execute;
 var
   IconsDir: String;
-  Package: ISuperObject;
-  i,j, k: integer;
-  IconIdx: integer;
-  AFrmPackage: TFrmPackage;
-  g:TPicture;
-  iconPath: String;
 begin
   IconsDir := GetIconsDir();
 
-  try
-    if not(DirectoryExists(IconsDir)) then
-      CreateDir(IconsDir);
+  if not(DirectoryExists(IconsDir)) then
+    CreateDir(IconsDir);
 
-    for i := 0 to ListPackages.AsArray.Length - 1 do
+  for i := 0 to ListPackages.AsArray.Length - 1 do
+  begin
+    Package := ListPackages.AsArray[i];
+    tmpLstIcons := TStringList.Create;
+    tmpLstIcons.OwnsObjects := True;
+
+    TThreadGetAllIcons.WaitForIcon(IconsDir);
+
+  except
     begin
-      Package := ListPackages.AsArray[i];
-      tmpLstIcons := TStringList.Create;
-      tmpLstIcons.OwnsObjects := True;
-
-      try
-        iconPath := IconsDir + UTF8Encode(Package.S['package_uuid']) + '.png';
-
-        if not FileExists(iconPath) then
-        begin
-          // After 20 seconds, assume you've missed the events...
-          // ...and that the icons are downloaded already, but not this one
-          for k := 0 to 20 do
-          begin
-            if FileExists(iconPath) then // was the icon downloaded?
-            begin
-              break;
-            end
-            else if lastIconDownloaded.Length = 0 then
-            begin
-              for j := ListPackages.AsArray.Length - 1 downto i do // was a later icon downloaded?
-              begin
-                if FileExists(IconsDir + UTF8Encode(ListPackages.AsArray[j].S['package_uuid']) + '.png') then
-                   break;
-              end;
-              if j > i then // if it was, then our icon does not exist
-                 break;
-            end
-            else
-              break;
-            Sleep(1000);
-            Synchronize(@NotifyListener);
-          end;
-
-          if j >= i then
-             continue;
-
-          if not FileExists(iconPath) then
-          begin
-            for k := 0 to ListPackages.AsArray.Length do
-            begin
-              if k = ListPackages.AsArray.Length then
-                 break;
-              if ListPackages.AsArray[k]['package'].AsString = lastIconDownloaded then
-                 break;
-            end;
-
-            if k = ListPackages.AsArray.Length then // Icon downloaded not in package list : package has no icon
-              continue;
-
-            if (k < i) then  // if last downloaded index inferior to current item, wait
-            begin
-               while k < i do
-               begin
-                 Sleep(100);
-                 Synchronize(@NotifyListener);
-                 // WriteLn('waiting for icons...');
-                 for k := 0 to ListPackages.AsArray.Length - 1 do
-                 begin
-                   if ListPackages.AsArray[k]['package'].AsString = UTF8Decode(CP1252ToUTF8(lastIconDownloaded)) then
-                     break;
-                 end;
-               end;
-            end;
-          end;
-        end;
-
-        tmpLstIcons.Add(iconPath);
-        g := TPicture.Create;
-        g.LoadFromFile(tmpLstIcons[tmpLstIcons.IndexOf(iconPath)]);
-        tmpLstIcons.Objects[tmpLstIcons.IndexOf(iconPath)] := g;
-        tmpLstIcons[tmpLstIcons.IndexOf(iconPath)] := ExtractFileName(tmpLstIcons[tmpLstIcons.IndexOf(iconPath)]);
-      except
-        begin
-          FreeAndNil(g);
-          tmpLstIcons.Delete(tmpLstIcons.IndexOf(iconPath));
-        end;
-      end;
-
-      for j := 0 to FlowPanel.ControlCount - 1 do
-      begin
-        try
-          if not (FlowPanel.Controls[j] is TFrmPackage) then
-             continue;
-
-          AFrmPackage := FlowPanel.Controls[j] as TFrmPackage;
-          if not (UTF8Encode(AFrmPackage.Package.S['package_uuid']) = UTF8Encode(Package.S['package_uuid'])) then
-             continue;
-
-          IconIdx := tmpLstIcons.IndexOf(UTF8Encode(AFrmPackage.Package.S['package_uuid'])+'.png');
-          if IconIdx >= 0 then
-          begin
-            try
-              AFrmPackage.ImgPackage.Picture.Assign(tmpLstIcons.Objects[IconIdx] as TPicture);
-            except
-            end;
-            break;
-          end;
-        except
-         On EListError do
-            break;
-        end;
-      end;
+      FreeAndNil(g);
+      tmpLstIcons.Delete(tmpLstIcons.IndexOf(iconPath));
     end;
-  finally
+  AssignIcons(TThreadGetAllIcons.tmpListIcons);
   end;
 end;
 
