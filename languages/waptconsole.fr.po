@@ -8312,7 +8312,7 @@ msgstr ""
 
 #: uwaptconsoleres.rswaptagentcheck
 msgid "WaptAgent version check"
-msgstr "Vérification de la version de WaptAgent"
+msgstr "Vérification de la version de WAPTAgent"
 
 #: uwaptconsoleres.rswaptagentnotpresent
 msgid ""
@@ -8433,9 +8433,9 @@ msgid ""
 "\n"
 "Do you want to run waptsetup installer now ?\n"
 msgstr ""
-"Votre installation de Wapt sur cette machine doit être mise à jour\n"
-"Version de wapt installée: %s\n"
-"Version dsiponible sur le serveur: %s\n"
+"Votre installation de WAPT sur cette machine doit être mise à jour\n"
+"Version de WAPT installée : %s\n"
+"Version disponible sur le serveur : %s\n"
 "\n"
 "Souhaitez-vous lancer l'installeur waptsetup-tis.exe maintenant ?\n"
 
