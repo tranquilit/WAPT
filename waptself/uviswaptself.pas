@@ -1603,7 +1603,7 @@ end;
 
 function TThreadGetAllIcons.WaitForIcon(IconsDir: String; Package: ISuperObject; idx: integer) : String;
 var
-  i,j, k: integer;
+  j, k: integer;
   iconPath: String;
   pic: TPicture;
 begin
@@ -1621,12 +1621,12 @@ begin
         end
         else if lastIconDownloaded.Length = 0 then
         begin
-          for j := ListPackages.AsArray.Length - 1 downto i do // was a later icon downloaded?
+          for j := ListPackages.AsArray.Length - 1 downto idx do // was a later icon downloaded?
           begin
             if FileExists(IconsDir + UTF8Encode(ListPackages.AsArray[j].S['package_uuid']) + '.png') then
                Exit('FOUND');
           end;
-          if j > i then // if it was, then our icon does not exist
+          if j > idx then // if it was, then our icon does not exist
              Exit('ABSENT');
         end
         else
@@ -1635,25 +1635,22 @@ begin
         Synchronize(@NotifyListener);
       end;
 
-     // if j >= i then
-     //    continue;
-
       if not FileExists(iconPath) then
       begin
         for k := 0 to ListPackages.AsArray.Length do
         begin
           if k = ListPackages.AsArray.Length then
              break;
-          if ListPackages.AsArray[k]['package'].AsString = lastIconDownloaded then
+          if UTF8Encode(ListPackages.AsArray[k]['package'].AsString) = lastIconDownloaded then
              break;
         end;
 
         if k = ListPackages.AsArray.Length then // Icon downloaded not in package list : package has no icon
           Exit('ABSENT');
 
-        if (k < i) then  // if last downloaded index inferior to current item, wait
+        if (k < idx) then  // if last downloaded index inferior to current item, wait
         begin
-           while k < i do
+           while k < idx do
            begin
              Sleep(100);
              Synchronize(@NotifyListener);
@@ -1748,8 +1745,9 @@ var
   i: Integer;
   events: ISuperObject;
 begin
-  if (Sender as TThreadGetAllIcons).tmpLstIcons.Count <> 0 then
-     LstIcons.AddStrings((Sender as TThreadGetAllIcons).tmpLstIcons);
+  if (Sender as TThreadGetAllIcons).tmpLstIcons <> nil then
+     if (Sender as TThreadGetAllIcons).tmpLstIcons.Count <> 0 then
+        LstIcons.AddStrings((Sender as TThreadGetAllIcons).tmpLstIcons);
 
   // Fetching the last icon that was downloaded   
   events := CheckEventsThread.Events;
@@ -1763,7 +1761,7 @@ begin
        if (not Assigned(events.AsArray[i]['data'])) or
           (not Assigned(events.AsArray[i]['data']['last_downloaded'])) then
          Continue;
-      (Sender as TThreadGetAllIcons).lastIconDownloaded := events.AsArray[i]['data']['last_downloaded'].AsString();
+      (Sender as TThreadGetAllIcons).lastIconDownloaded := UTF8Encode(events.AsArray[i]['data']['last_downloaded'].AsString());
     except
      Continue;
     end;
