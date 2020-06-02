@@ -26,8 +26,8 @@ type
     property OnNotifyEvent: TNotifyEvent read FOnNotifyEvent write SetOnNotifyEvent;
     constructor Create(aNotifyEvent: TNotifyEvent; AllPackages: ISuperObject; aFlowPanel: TFlowPanel);
     procedure Execute; override;
-    function WaitForIcons(IconsDir: String) : TStringList;
-    procedure AssignIcons(tmpListIcons: TStringList);
+    function WaitForIcon(IconsDir: String; Package: ISuperObject; idx: integer) : String;
+    procedure AssignIcon(Package: ISuperObject);
   end;
 
   { TVisWaptSelf }
@@ -1601,13 +1601,11 @@ begin
 end;
 
 
-function TThreadGetAllIcons.WaitForIcon(IconsDir: String, Package: ISuperObject) : TStringList;
+function TThreadGetAllIcons.WaitForIcon(IconsDir: String; Package: ISuperObject; idx: integer) : String;
 var
-  Package: ISuperObject;
   i,j, k: integer;
   iconPath: String;
   pic: TPicture;
-  iconPath: String;
 begin
     iconPath := IconsDir + UTF8Encode(Package.S['package_uuid']) + '.png';
 
@@ -1626,10 +1624,10 @@ begin
           for j := ListPackages.AsArray.Length - 1 downto i do // was a later icon downloaded?
           begin
             if FileExists(IconsDir + UTF8Encode(ListPackages.AsArray[j].S['package_uuid']) + '.png') then
-               return 'FOUND';
+               Exit('FOUND');
           end;
           if j > i then // if it was, then our icon does not exist
-             return 'ABSENT';
+             Exit('ABSENT');
         end
         else
           break;
@@ -1637,8 +1635,8 @@ begin
         Synchronize(@NotifyListener);
       end;
 
-      if j >= i then
-         continue;
+     // if j >= i then
+     //    continue;
 
       if not FileExists(iconPath) then
       begin
@@ -1651,7 +1649,7 @@ begin
         end;
 
         if k = ListPackages.AsArray.Length then // Icon downloaded not in package list : package has no icon
-          return 'ABSENT';
+          Exit('ABSENT');
 
         if (k < i) then  // if last downloaded index inferior to current item, wait
         begin
@@ -1669,12 +1667,21 @@ begin
       end;
     end;
   end;
-  tmpLstIcons.Add(iconPath);
-  g := TPicture.Create;
-  g.LoadFromFile(tmpLstIcons[tmpLstIcons.IndexOf(iconPath)]);
-  tmpLstIcons.Objects[tmpLstIcons.IndexOf(iconPath)] := g;
-  tmpLstIcons[tmpLstIcons.IndexOf(iconPath)] := ExtractFileName(tmpLstIcons[tmpLstIcons.IndexOf(iconPath)]);
-  return 'FOUND';
+
+  try
+    tmpLstIcons.Add(iconPath);
+    pic := TPicture.Create;
+    pic.LoadFromFile(tmpLstIcons[tmpLstIcons.IndexOf(iconPath)]);
+    tmpLstIcons.Objects[tmpLstIcons.IndexOf(iconPath)] := pic;
+    tmpLstIcons[tmpLstIcons.IndexOf(iconPath)] := ExtractFileName(tmpLstIcons[tmpLstIcons.IndexOf(iconPath)]);
+    Exit('FOUND');
+  except
+    begin
+        FreeAndNil(pic);
+        tmpLstIcons.Delete(tmpLstIcons.IndexOf(iconPath));
+        Exit('ERROR');
+    end;
+  end;
 end;
 
 procedure TThreadGetAllIcons.AssignIcon(Package: ISuperObject);
@@ -1712,6 +1719,8 @@ end;
 procedure TThreadGetAllIcons.Execute;
 var
   IconsDir: String;
+  Package: ISuperObject;
+  i: integer;
 begin
   IconsDir := GetIconsDir();
 
@@ -1720,19 +1729,18 @@ begin
 
   for i := 0 to ListPackages.AsArray.Length - 1 do
   begin
-    Package := ListPackages.AsArray[i];
-    tmpLstIcons := TStringList.Create;
-    tmpLstIcons.OwnsObjects := True;
+    try
+       Package := ListPackages.AsArray[i];
+       tmpLstIcons := TStringList.Create;
+       tmpLstIcons.OwnsObjects := True;
 
-    TThreadGetAllIcons.WaitForIcon(IconsDir);
-
-  except
-    begin
-      FreeAndNil(g);
-      tmpLstIcons.Delete(tmpLstIcons.IndexOf(iconPath));
+       WaitForIcon(IconsDir, Package, i);
+       AssignIcon(Package);
+    except
+     continue;
     end;
-  AssignIcons(TThreadGetAllIcons.tmpListIcons);
   end;
+  Synchronize(@NotifyListener);
 end;
 
 procedure TVisWaptSelf.OnUpgradeAllIcons(Sender: TObject);
