@@ -855,6 +855,9 @@ def upload_packages():
 
             # check if package signer is authorized
             trusted_chain = check_valid_signer(entry,trusted_signers)
+            if not trusted_chain:
+                raise EWaptForbiddden(u'Package %s is not signed properly' % entry.make_package_filename())
+
             logger.info(u'Package is trusted: %s' % trusted_chain)
 
             logger.debug(u'Saved package %s into %s' % (entry.asrequirement(),tmp_target))
