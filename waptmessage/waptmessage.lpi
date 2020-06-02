@@ -35,7 +35,7 @@
       <Unit1>
         <Filename Value="uviswaptmessage.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="TMsgForm"/>
+        <ComponentName Value="MsgForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
       </Unit1>
@@ -51,13 +51,6 @@
       <IncludeFiles Value="$(ProjOutDir)"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
-    <Linking>
-      <Options>
-        <Win32>
-          <GraphicApplication Value="True"/>
-        </Win32>
-      </Options>
-    </Linking>
   </CompilerOptions>
   <Debugging>
     <Exceptions Count="3">

@@ -12,12 +12,8 @@ type
   { TMsgForm }
 
   TMsgForm = class(TForm)
-    Button1: TButton;
-    Button2: TButton;
     Label1: TLabel;
     procedure FormShow(Sender: TObject);
-
-
   private
 
   public
@@ -31,13 +27,14 @@ implementation
 
 {$R *.lfm}
 
-
-
 { TMsgForm }
 
 procedure TMsgForm.FormShow(Sender: TObject);
 begin
-  WriteLn('saucisson');
+  // TODO : -h
+  // TODO -f file to read content
+  if ParamCount = 1 then
+     Label1.Caption := ParamStr(0);
 end;
 
 end.
