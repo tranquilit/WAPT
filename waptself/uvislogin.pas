@@ -51,6 +51,8 @@ uses tiscommon, waptcommon, LCLIntf, uVisWaptSelf;
 procedure TVisLogin.FormShow(Sender: TObject);
 begin
   MakeFullyVisible();
+  Application.BringToFront;
+
   if EdUsername.Text<>'' then
     EdPassword.SetFocus
   else
