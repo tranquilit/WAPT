@@ -4904,7 +4904,7 @@ begin
       Ext := ExtractFileExt(FileName);
       if lowercase(Ext) = '.wapt' then
         WaptFiles.Add(Filename)
-      else if lowercase(Ext) = '.msi' then
+      else if StrIsOneOf(lowercase(Ext),['.msi','.msi','.msu','.exe','.dmg','.pkg','.deb','.rpm']) then
         SetupFiles.Add(Filename);
     end;
     if WaptFiles.Count>0 then
