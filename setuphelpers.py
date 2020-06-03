@@ -737,6 +737,9 @@ def get_os_version():
         return windows_version()
     if sys.platform.startswith('linux'):
         return get_distrib_version()
+    if sys.platform == 'darwin':
+        return platform.mac_ver()[0]
+    return ('OS not supported')
 
 def is64():
     return platform.machine().endswith('64')
