@@ -12,8 +12,8 @@ object MsgForm: TMsgForm
     Left = 120
     Height = 15
     Top = 48
-    Width = 34
-    Caption = 'Label1'
+    Width = 46
+    Caption = 'Message'
     ParentColor = False
   end
 end
