@@ -15,7 +15,7 @@ run('systemctl enable waptservice')
 print("Setting up pid and log files")
 run('touch /var/log/waptservice.log')
 run('touch /var/run/waptservice.pid')
-run('chown wapt:root /var/log/waptservice.log')
+run('chown root:root /var/log/waptservice.log')
 run('chmod 640 /var/log/waptservice.log')
 
 # minimal .profile script to setup python path
@@ -31,19 +31,21 @@ print("Tightening up permissions")
 run('find /opt/wapt -type f -exec chmod 644 {} +')
 run('find /opt/wapt -type d ! -name conf ! -name log -exec chmod 755 {} +')
 run('find /opt/wapt -type d ! -name conf ! -name log -exec chown root:root {} +')
-run('chown -R wapt:root /opt/wapt/conf')
-run('chown -R wapt:root /opt/wapt/db')
+run('chown -R root:root /opt/wapt/conf')
+run('chown -R root:root /opt/wapt/db')
 run('chmod 750 /opt/wapt/conf')
-run('chown -R wapt:root /opt/wapt/log')
+run('chown -R root:root /opt/wapt/log')
 run('chmod 755 /opt/wapt/log')
 run('chmod 755 /opt/wapt/bin/*')
 if not(os.path.isdir('/opt/wapt/private')):
     os.mkdir('/opt/wapt/private')
-run('chown -R root /opt/wapt/private')
+run('chown -R root:root /opt/wapt/private')
 run('chmod -R 700 /opt/wapt/private')
 
-
 if not(os.path.isdir('/opt/wapt/ssl')):
+    os.mkdir('/opt/wapt/ssl')
+
+if not(os.path.isdir('/opt/wapt/ssl/server')):
     os.mkdir('/opt/wapt/ssl')
 
 os.chmod('/opt/wapt/runwaptservice.sh',0o755)
@@ -56,11 +58,6 @@ os.symlink('/opt/wapt/wapt-get.sh','/usr/bin/wapt-get')
 # restart server if conf file is there and if it was already running
 
 if os.path.exists('/opt/wapt/wapt-get.ini'):
-    print("Register")
-    try:
-        run('wapt-get register')
-    except:
-        print('Cannot register')
     print("Restarting Agent")
     try:
         run('systemctl restart waptservice.service')

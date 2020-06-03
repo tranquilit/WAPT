@@ -32,6 +32,7 @@ import argparse
 import stat
 import glob
 import types
+import Cocoa
 
 from git import Repo
 from xml.dom import minidom
@@ -340,6 +341,8 @@ for icon in icons_to_convert:
     shutil.copy("MyIcon.icns",icon[2])
     shutil.rmtree(icon[1])
     os.unlink("MyIcon.icns")
+
+Cocoa.NSWorkspace.sharedWorkspace().setIcon_forFile_options_(Cocoa.NSImage.alloc().initWithContentsOfFile_(waptexit_png, applications_dir, 0) or sys.exit("Unable to set file icon")
 
 translation_path = makepath(wapt_source_dir,'languages')
 translation_path_payload = makepath('./tmpbuild/opt/wapt/languages')

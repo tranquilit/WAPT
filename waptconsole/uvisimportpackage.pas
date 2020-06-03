@@ -568,7 +568,7 @@ begin
         privaterepo := PrivateRepo,
         local_prefix := DefaultPackagePrefix ));
 
-  if MessageDlg(rsPackageDuplicateConfirmCaption, format(rsPackageDuplicateConfirm, [Join(',',ExtractField(FileNames,'0')) + ' '+intToStr(Filenames.AsArray.Length)+ rsPackages]),
+  if MessageDlg(rsPackageDuplicateConfirmCaption, format(rsPackageDuplicateConfirm, [Join(','+#13#10,ExtractField(FileNames,'0')) + ' '+intToStr(Filenames.AsArray.Length)+ ' ' + rsPackages]),
         mtConfirmation, mbYesNoCancel, 0) <> mrYes then
     Exit;
 

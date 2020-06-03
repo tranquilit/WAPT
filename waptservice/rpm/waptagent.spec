@@ -72,10 +72,6 @@ mkdir -p %{buildroot}/usr/lib/systemd/
 %attr(755,wapt,root)/opt/wapt/log
 
 %pre
-getent passwd wapt >/dev/null || \
-    useradd -r -g nginx -d /opt/wapt -s /sbin/nologin \
-    -c "Non privileged account for waptserver" wapt
-exit 0
 
 %postun
 
@@ -88,16 +84,16 @@ fi
 systemctl enable  waptservice
 touch /var/log/waptservice.log
 touch /var/run/waptservice.pid
-chown wapt:root /var/log/waptservice.log
+chown root:root /var/log/waptservice.log
 chmod 640 /var/log/waptservice.log
 
 find /opt/wapt -type f -exec chmod 644 {} +
 find /opt/wapt -type d ! -name conf ! -name log -exec chmod 755 {} +
 find /opt/wapt -type d ! -name conf ! -name log -exec chown root:root {} +
-chown -R wapt:root /opt/wapt/conf
-chown -R wapt:root /opt/wapt/db
+chown -R root:root /opt/wapt/conf
+chown -R root:root /opt/wapt/db
 chmod 750 /opt/wapt/conf
-chown -R wapt:root /opt/wapt/log
+chown -R root:root /opt/wapt/log
 chmod 755 /opt/wapt/log
 chmod 755 /opt/wapt/bin/*
 chmod 755 /opt/wapt/runwaptservice.sh
@@ -121,7 +117,6 @@ EOF
 
 FILE=/opt/wapt/wapt-get.ini
 if [[ -f "$FILE" ]]; then
-    wapt-get register || true
     systemctl restart waptservice.service || true
 fi
 
