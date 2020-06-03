@@ -6,17 +6,22 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  uWaptMessageRes;
+  ExtCtrls, Buttons, uWaptMessageRes;
 
 type
 
   { TMsgForm }
 
   TMsgForm = class(TForm)
-    Label1: TLabel;
+    ButtonOK: TBitBtn;
+    LogoLogin: TImage;
+    MsgLabel: TLabel;
+    Panel1: TPanel;
+    procedure ButtonOKClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure DisplayFileContent(fileName: String);
   private
+    procedure WriteHelp;
 
   public
 
@@ -31,25 +36,34 @@ implementation
 
 { TMsgForm }
 
-procedure WriteHelp;
+procedure TMsgForm.WriteHelp;
 begin
-  WriteLn(rsHelp);
-  Halt();
+  ShowMessage(rsHelp);
 end;
 
 procedure TMsgForm.DisplayFileContent(fileName: String);
 var
   msgFile: TextFile;
-  fileContent: String;
+  fileStr: String;
 begin
+  if not FileExists(fileName) then
+  begin
+    ShowMessage(Format('File %s could not be found.', [fileName]));
+    Halt;
+  end;
+
   try
     AssignFile(msgFile, fileName);
     Reset(msgFile);
-    Read(msgFile, fileContent);
-    Label1.Caption := fileContent;
+    while not eof(msgFile) do
+    begin
+      ReadLn(msgFile, fileStr);
+      MsgLabel.Caption := MsgLabel.Caption + fileStr + #10#13;
+    end;
+    CloseFile(msgFile);
   except
-    writeln(stderr,'Could not find, open or read file');
-    Halt(1);
+    ShowMessage(Format('Could not open or read file %s.', [fileName]));
+    Close;
   end;
 end;
 
@@ -58,18 +72,23 @@ begin
   if Application.HasOption('h', 'help') then
   begin
     WriteHelp();
-    Halt();
+    Halt;
   end;
 
   // No flags : print message
   if ParamCount = 1 then
   begin
-     Label1.Caption := ParamStr(0);
+     MsgLabel.Caption := ParamStr(1);
   end;
 
-  // -f flag : message is file content
+  // -f flag : message is the file content
   if Application.HasOption('f') then
     DisplayFileContent(Application.GetOptionValue('f'));
+end;
+
+procedure TMsgForm.ButtonOKClick(Sender: TObject);
+begin
+  Close;
 end;
 
 end.
