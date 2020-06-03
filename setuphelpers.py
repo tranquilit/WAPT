@@ -805,7 +805,10 @@ def get_language():
     >>> get_language()
     'fr'
     """
-    return locale.getdefaultlocale()[0].split('_')[0]
+    try:
+        return locale.getdefaultlocale()[0].split('_')[0]
+    except:
+        return None
 
 def running_as_system():
     """Dirty way to check if current process is running as system user
