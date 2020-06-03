@@ -17,11 +17,11 @@ type
     LogoLogin: TImage;
     MsgLabel: TLabel;
     Panel1: TPanel;
-    procedure ButtonOKClick(Sender: TObject);
-    procedure FormShow(Sender: TObject);
+    procedure ButtonOKClick();
+    procedure FormShow();
     procedure DisplayFileContent(fileName: String);
-  private
     procedure ShowHelp;
+  private
 
   public
 
@@ -67,7 +67,7 @@ begin
   end;
 end;
 
-procedure TMsgForm.FormShow(Sender: TObject);
+procedure TMsgForm.FormShow;
 begin
   if Application.HasOption('h', 'help') then
   begin
@@ -91,7 +91,7 @@ begin
   end;
 end;
 
-procedure TMsgForm.ButtonOKClick(Sender: TObject);
+procedure TMsgForm.ButtonOKClick;
 begin
   Close;
 end;
