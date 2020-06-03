@@ -10217,6 +10217,18 @@ object VisWaptGUI: TVisWaptGUI
       Caption = 'Install installer waptsetup.exe from server'
       OnExecute = ActWaptSetupUpgradeExecute
     end
+    object ActTriggerHostsShutdown: TAction
+      Category = 'hosts'
+      Caption = 'Shutdown computers'
+      OnExecute = ActTriggerHostsShutdownExecute
+      OnUpdate = ActHostsActionsUpdate
+    end
+    object ActTriggerHostsReboot: TAction
+      Category = 'hosts'
+      Caption = 'Reboot computers'
+      OnExecute = ActTriggerHostsRebootExecute
+      OnUpdate = ActHostsActionsUpdate
+    end
   end
   object PopupMenuPackages: TPopupMenu
     Images = ActionsImages24
@@ -10522,6 +10534,12 @@ object VisWaptGUI: TVisWaptGUI
     end
     object MenuItem77: TMenuItem
       Action = ActTriggerWakeOnLan
+    end
+    object MenuItem120: TMenuItem
+      Action = ActTriggerHostsReboot
+    end
+    object MenuItem121: TMenuItem
+      Action = ActTriggerHostsShutdown
     end
     object MenuItem107: TMenuItem
       Action = ActTriggerTestLongTask

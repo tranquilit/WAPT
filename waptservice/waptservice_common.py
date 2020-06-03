@@ -319,6 +319,10 @@ class WaptServiceConfig(object):
         self.verify_cert_ldap = False
         self.download_after_update_with_waptupdate_task_period = True
 
+        self.allow_remote_shutdown = False
+        self.allow_remote_reboot = False
+
+
     def load(self):
         """Load waptservice parameters from global wapt-get.ini file"""
         config = ConfigParser.RawConfigParser()
@@ -516,6 +520,12 @@ class WaptServiceConfig(object):
 
             if config.has_option('global','verify_cert_ldap'):
                 self.verify_cert_ldap = config.getboolean('global','verify_cert_ldap')
+
+            if config.has_option('global','allow_remote_shutdown'):
+                self.allow_remote_shutdown = config.getboolean('global','allow_remote_shutdown')
+
+            if config.has_option('global','allow_remote_reboot'):
+                self.allow_remote_reboot = config.getboolean('global','allow_remote_reboot')
 
         else:
             raise Exception (_("FATAL, configuration file {} has no section [global]. Please check Waptserver documentation").format(self.config_filename))
@@ -757,16 +767,22 @@ class WaptServiceRestart(WaptTask):
 
     def _run(self):
         """Launch an external 'wapt-get waptupgrade' process to upgrade local copy of wapt client"""
-        try:
-            output = _(u'WaptService restart planned: %s' % setuphelpers.create_onetime_task('waptservicerestart','cmd.exe','/C net stop waptservice & net start waptservice'))
-            logger.warning(output)
-            self.result = {'result':'OK','message':output}
-        except:
-            output = u'Forced restart waptservice by %s on %s' % (self.created_by,self.create_date)
-            logger.warning(output)
-            self.result = {'result':'OK','message':output}
-            time.sleep(2)
-            os._exit(10)
+        if platform.system() == 'Windows':
+            try:
+                output = setuphelpers.create_onetime_task('waptservicerestart','cmd.exe','/C net stop waptservice & net start waptservice')
+            except:
+                output = u'Forced restart waptservice by %s on %s' % (self.created_by,self.create_date)
+                logger.warning(output)
+                self.result = {'result':'OK','message':output}
+                time.sleep(2)
+                # restart by nssm
+                os._exit(10)
+        elif platform.system() == 'Darwin':
+            output = setuphelpers.run('launchctl unload /Library/LaunchDaemons/com.tranquilit.tis-waptagent.plist;launchctl trigload /Library/LaunchDaemons/com.tranquilit.tis-waptagent.plist;')
+        else:
+            output = setuphelpers.run('systemctl restart waptservice')
+        logger.warning(output)
+        self.result = {'result':'OK','message':output}
 
     def __unicode__(self):
         return _(u"Restarting local WAPT service")
@@ -1266,6 +1282,33 @@ class WaptDownloadIcon(WaptTask):
             last_downloaded = self.last_downloaded
         )
         return d
+
+
+
+class WaptHostReboot(WaptTask):
+    """A task to restart the waptservice using a spawned cmd process"""
+    def __init__(self,**args):
+        super(WaptHostReboot,self).__init__()
+        self.priority = 10000
+        self.notify_server_on_start = False
+        self.notify_server_on_finish = False
+        self.notify_user = False
+        for k in args:
+            setattr(self,k,args[k])
+
+    def _run(self):
+        """"""
+        if platform.system() == 'Windows':
+            output = setuphelpers.run('shutdown -t 0 -r')
+        elif platform.system() == 'Darwin':
+            output = setuphelpers.run('shutdown -r now')
+        else:
+            output = setuphelpers.run('shutdown -r')
+        logger.warning(output)
+        self.result = {'result':'OK','message':output}
+
+    def __unicode__(self):
+        return _(u"Restarting local WAPT service")
 
 
 # init translations

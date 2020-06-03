@@ -32,6 +32,8 @@ type
     ActEditOrgUnitPackage: TAction;
     ActInstallLicence: TAction;
     ActAddProfile: TAction;
+    ActTriggerHostsReboot: TAction;
+    ActTriggerHostsShutdown: TAction;
     ActWaptSetupUpgrade: TAction;
     ActTriggerPendingActionsSafe: TAction;
     ActTriggerPendingActions: TAction;
@@ -99,6 +101,8 @@ type
     MenuItem117: TMenuItem;
     MenuItem118: TMenuItem;
     MenuItem119: TMenuItem;
+    MenuItem120: TMenuItem;
+    MenuItem121: TMenuItem;
     MenuItem24: TMenuItem;
     MenuItemCheckFiles: TMenuItem;
     MenuItemShowErrors: TMenuItem;
@@ -108,6 +112,7 @@ type
     Panel12: TPanel;
     Panel16: TPanel;
     Panel19: TPanel;
+    Panel2: TPanel;
     panOverviewHostPackages1: TPanel;
     panOverviewHostPackages2: TPanel;
     panFilterPackagesStatus: TPanel;
@@ -664,6 +669,8 @@ type
     procedure ActSupprExecute(Sender: TObject);
     procedure ActManageUsersExecute(Sender: TObject);
     procedure ActSaveRulesExecute(Sender: TObject);
+    procedure ActTriggerHostsRebootExecute(Sender: TObject);
+    procedure ActTriggerHostsShutdownExecute(Sender: TObject);
     procedure ActTriggerHostUpgradeSafeExecute(Sender: TObject);
     procedure ActTriggerPendingActionsSafeExecute(Sender: TObject);
     procedure ActTriggerPendingActionsUpdate(Sender: TObject);
@@ -6068,6 +6075,9 @@ begin
   ActTriggerHostUpgradeSafe.Visible := False;
   ActTriggerPendingActionsSafe.Visible := False;
 
+  ActTriggerHostsReboot.Visible := False;
+  ActTriggerHostsShutdown.Visible := False;
+
   SetSOGridVisible(GridHosts,'audit_status',False);
   SetSOGridVisible(GridHosts,'waptwua.status',False);
 
@@ -7320,6 +7330,16 @@ begin
 end;
 
 procedure TVisWaptGUI.cbADGroupDropDown(Sender: TObject);
+begin
+  ;;
+end;
+
+procedure TVisWaptGUI.ActTriggerHostsRebootExecute(Sender: TObject);
+begin
+  ;;
+end;
+
+procedure TVisWaptGUI.ActTriggerHostsShutdownExecute(Sender: TObject);
 begin
   ;;
 end;

@@ -241,6 +241,12 @@ resourcestring
 
   rsRestartingWaptservice = 'Waptservice restart triggered on the remote hosts.';
 
+  rsRebootingHosts = 'Triggered reboot of computers';
+  rsConfirmHostsReboot = 'Are you sure you want to reboot %d hosts ?';
+
+  rsShutdownHosts = 'Triggered shutdown of computers';
+  rsConfirmHostsShutdown = 'Are you sure you want to shutdown %d hosts ?';
+
   rsSaveMods = 'Save changes ?';
   rsUploading = 'Uploading';
   rsPackageCreationError = 'Error while building package : %s';
