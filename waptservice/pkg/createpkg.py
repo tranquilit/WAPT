@@ -374,7 +374,6 @@ for lib in ('dialog.py', ):
 
 eprint('copying preinst and postinst package metadata')
 copyfile('postinstall', 'tmpbuild/scripts/postinstall')
-copyfile('preinstall', 'tmpbuild/scripts/preinstall')
 
 
 eprint(run(r'find tmpbuild/payload/opt/wapt -type f -exec chmod 644 {} +'))
@@ -387,7 +386,6 @@ for fn in glob.glob('tmpbuild/payload/opt/wapt/bin/*'):
 shutil.copytree(makepath(wapt_source_dir, 'templates'), 'tmpbuild/payload/opt/wapt/templates/')
 
 os.chmod('tmpbuild/scripts/postinstall', 0o755)
-os.chmod('tmpbuild/scripts/preinstall', 0o755)
 
 # build
 if WAPTEDITION=='enterprise':

@@ -46,7 +46,7 @@ if not(os.path.isdir('/opt/wapt/ssl')):
     os.mkdir('/opt/wapt/ssl')
 
 if not(os.path.isdir('/opt/wapt/ssl/server')):
-    os.mkdir('/opt/wapt/ssl')
+    os.mkdir('/opt/wapt/ssl/server')
 
 os.chmod('/opt/wapt/runwaptservice.sh',0o755)
 os.chmod('/usr/bin/waptpython',0o755)

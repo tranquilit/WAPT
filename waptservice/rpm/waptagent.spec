@@ -72,6 +72,7 @@ mkdir -p %{buildroot}/usr/lib/systemd/
 %attr(755,wapt,root)/opt/wapt/log
 
 %pre
+echo "No preinst"
 
 %postun
 
@@ -99,7 +100,7 @@ chmod 755 /opt/wapt/bin/*
 chmod 755 /opt/wapt/runwaptservice.sh
 chmod 755 /usr/bin/waptpython
 chmod 755 /opt/wapt/wapt-get.sh
-mkdir -p /opt/wapt/ssl
+mkdir -p /opt/wapt/ssl/server
 mkdir -p /opt/wapt/private
 chown root -R /opt/wapt/private
 chmod 700 -R /opt/wapt/private
