@@ -21,7 +21,7 @@ type
     procedure FormShow(Sender: TObject);
     procedure DisplayFileContent(fileName: String);
   private
-    procedure WriteHelp;
+    procedure ShowHelp;
 
   public
 
@@ -36,7 +36,7 @@ implementation
 
 { TMsgForm }
 
-procedure TMsgForm.WriteHelp;
+procedure TMsgForm.ShowHelp;
 begin
   ShowMessage(rsHelp);
 end;
@@ -71,7 +71,7 @@ procedure TMsgForm.FormShow(Sender: TObject);
 begin
   if Application.HasOption('h', 'help') then
   begin
-    WriteHelp();
+    ShowHelp();
     Halt;
   end;
 
@@ -79,11 +79,16 @@ begin
   if ParamCount = 1 then
   begin
      MsgLabel.Caption := ParamStr(1);
+  end
+  else if Application.HasOption('f') then // -f flag : message is the file content
+  begin
+     DisplayFileContent(Application.GetOptionValue('f'));
+  end
+  else
+  begin
+    ShowHelp();
+    Close;
   end;
-
-  // -f flag : message is the file content
-  if Application.HasOption('f') then
-    DisplayFileContent(Application.GetOptionValue('f'));
 end;
 
 procedure TMsgForm.ButtonOKClick(Sender: TObject);
