@@ -2262,9 +2262,6 @@ begin
     if AApplicationName='' then
       AApplicationName:=ApplicationName;
     FAppIniFilename := GetCmdParams('ConfigFilename',GetCmdParams('config',GetCmdLineArg('c',['-'])));
-    if FAppIniFilename = '' then
-      FAppIniFilename := AApplicationName+'.ini';
-
     if ExtractFileExt(FAppIniFilename)='' then
       FAppIniFilename := IncludeTrailingPathDelimiter(IncludeTrailingPathDelimiter(GetEnvironmentVariable('HOME'))+'.config')+AApplicationName+'.ini';
   end;  
