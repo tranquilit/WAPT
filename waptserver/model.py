@@ -748,6 +748,8 @@ class SiteRules(WaptBaseModel):
     signer = CharField(null=True)
     signature = TextField(null=True)
     signer_certificate = TextField(null=True)
+    negation = BooleanField(null=True)
+    no_fallback = BooleanField(null=True)
 
 class SyncStatus(WaptBaseModel):
     id = PrimaryKeyField(primary_key=True)
@@ -2121,7 +2123,7 @@ def upgrade_db_structure():
                 v.save()
 
         next_version = '1.8.1.0'
-        if get_db_version() <= next_version:
+        if get_db_version() < next_version:
             with wapt_db.atomic():
                 logger.info("Migrating from %s to %s" % (get_db_version(), next_version))
                 opes = []
@@ -2188,6 +2190,22 @@ def upgrade_db_structure():
 
                 wapt_db.execute_sql(trigger_update_host_sync_status)
 
+                (v, created) = ServerAttribs.get_or_create(key='db_version')
+                v.value = next_version
+                v.save()
+
+        next_version = '1.8.2.0'
+        if get_db_version() <= next_version:
+            with wapt_db.atomic():
+                logger.info("Migrating from %s to %s" % (get_db_version(), next_version))
+                opes = []
+                columns = [c.name for c in wapt_db.get_columns('siterules')]
+                if not 'negation' in columns:
+                    opes.append(migrator.add_column(SiteRules._meta.name,'negation',SiteRules.negation))
+                if not 'no_fallback' in columns:
+                    opes.append(migrator.add_column(SiteRules._meta.name,'no_fallback',SiteRules.no_fallback))
+
+                migrate(*opes)
                 (v, created) = ServerAttribs.get_or_create(key='db_version')
                 v.value = next_version
                 v.save()

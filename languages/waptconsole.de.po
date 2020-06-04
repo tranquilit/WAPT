@@ -27,6 +27,15 @@ msgstr ""
 msgid "HOST"
 msgstr ""
 
+#: tformeditrule.checkboxnegation.caption
+msgid "NOT"
+msgstr ""
+
+#: tformeditrule.checkboxnofallback.caption
+msgctxt "tformeditrule.checkboxnofallback.caption"
+msgid "No fallback"
+msgstr ""
+
 #: tformeditrule.checkboxwapt.caption
 msgid "WAPT"
 msgstr ""
@@ -42,6 +51,10 @@ msgstr ""
 
 #: tformeditrule.labname.caption
 msgid "Name : "
+msgstr ""
+
+#: tformeditrule.labothersettings.caption
+msgid "Other :"
 msgstr ""
 
 #: tformeditrule.labpackagetype.caption
@@ -5410,9 +5423,11 @@ msgid "Arch"
 msgstr ""
 
 #: tviswaptgui.gridpackages.header.columns[6].text
+#, fuzzy
+#| msgid "Name"
 msgctxt "tviswaptgui.gridpackages.header.columns[6].text"
 msgid "Locale"
-msgstr ""
+msgstr "Beschreibung"
 
 #: tviswaptgui.gridpackages.header.columns[7].text
 #, fuzzy
@@ -5454,6 +5469,16 @@ msgctxt "tviswaptgui.gridrules.header.columns[0].text"
 msgid "Sequence"
 msgstr ""
 
+#: tviswaptgui.gridrules.header.columns[10].text
+msgctxt "tviswaptgui.gridrules.header.columns[10].text"
+msgid "Updated by"
+msgstr ""
+
+#: tviswaptgui.gridrules.header.columns[11].text
+msgctxt "tviswaptgui.gridrules.header.columns[11].text"
+msgid "Updated on"
+msgstr ""
+
 #: tviswaptgui.gridrules.header.columns[1].text
 #, fuzzy
 msgctxt "tviswaptgui.gridrules.header.columns[1].text"
@@ -5466,43 +5491,44 @@ msgid "Condition"
 msgstr ""
 
 #: tviswaptgui.gridrules.header.columns[3].text
-msgid "Value"
+msgid "Negation"
 msgstr ""
 
 #: tviswaptgui.gridrules.header.columns[4].text
 #, fuzzy
-#| msgid "Repositories"
+#| msgid "Repository URL"
 msgctxt "tviswaptgui.gridrules.header.columns[4].text"
-msgid "Repository URL"
+msgid "No fallback"
 msgstr "Repositories"
 
 #: tviswaptgui.gridrules.header.columns[5].text
 #, fuzzy
-#| msgid "Repository URL"
+#| msgid "Repositories"
 msgctxt "tviswaptgui.gridrules.header.columns[5].text"
-msgid "Repositories"
+msgid "Value"
 msgstr "Repositories"
 
 #: tviswaptgui.gridrules.header.columns[6].text
 msgctxt "tviswaptgui.gridrules.header.columns[6].text"
-msgid "Created by"
+msgid "Repository URL"
 msgstr ""
 
 #: tviswaptgui.gridrules.header.columns[7].text
+#, fuzzy
 msgctxt "tviswaptgui.gridrules.header.columns[7].text"
-msgid "Created on"
-msgstr ""
+msgid "Repositories"
+msgstr "Repositories"
 
 #: tviswaptgui.gridrules.header.columns[8].text
 msgctxt "tviswaptgui.gridrules.header.columns[8].text"
-msgid "Updated by"
+msgid "Created by"
 msgstr ""
 
 #: tviswaptgui.gridrules.header.columns[9].text
 #, fuzzy
-#| msgid "Repositories"
+#| msgid "Updated on"
 msgctxt "tviswaptgui.gridrules.header.columns[9].text"
-msgid "Updated on"
+msgid "Created on"
 msgstr "Repositories"
 
 #: tviswaptgui.gridselfservicepackages.header.columns[0].text

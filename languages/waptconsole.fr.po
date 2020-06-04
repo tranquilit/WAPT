@@ -25,6 +25,15 @@ msgstr "Editer la règle"
 msgid "HOST"
 msgstr "MACHINE"
 
+#: tformeditrule.checkboxnegation.caption
+msgid "NOT"
+msgstr "NON"
+
+#: tformeditrule.checkboxnofallback.caption
+msgctxt "tformeditrule.checkboxnofallback.caption"
+msgid "No fallback"
+msgstr "Pas de fallback"
+
 #: tformeditrule.checkboxwapt.caption
 msgid "WAPT"
 msgstr "WAPT"
@@ -41,6 +50,10 @@ msgstr "Condition :"
 #: tformeditrule.labname.caption
 msgid "Name : "
 msgstr "Nom : "
+
+#: tformeditrule.labothersettings.caption
+msgid "Other :"
+msgstr "Autre : "
 
 #: tformeditrule.labpackagetype.caption
 msgid "Package type :"
@@ -5200,6 +5213,16 @@ msgstr "Paramètres"
 msgid "Sequence"
 msgstr "Ordre"
 
+#: tviswaptgui.gridrules.header.columns[10].text
+msgctxt "tviswaptgui.gridrules.header.columns[10].text"
+msgid "Updated by"
+msgstr "Modifié par"
+
+#: tviswaptgui.gridrules.header.columns[11].text
+msgctxt "tviswaptgui.gridrules.header.columns[11].text"
+msgid "Updated on"
+msgstr "Modifié le"
+
 #: tviswaptgui.gridrules.header.columns[1].text
 msgctxt "tviswaptgui.gridrules.header.columns[1].text"
 msgid "Name"
@@ -5210,38 +5233,38 @@ msgid "Condition"
 msgstr "Condition"
 
 #: tviswaptgui.gridrules.header.columns[3].text
-msgid "Value"
-msgstr "Valeur"
+msgid "Negation"
+msgstr "Négation"
 
 #: tviswaptgui.gridrules.header.columns[4].text
 msgctxt "tviswaptgui.gridrules.header.columns[4].text"
-msgid "Repository URL"
-msgstr "URL du dépôt"
+msgid "No fallback"
+msgstr "Pas de fallback"
 
 #: tviswaptgui.gridrules.header.columns[5].text
 msgctxt "tviswaptgui.gridrules.header.columns[5].text"
-msgid "Repositories"
-msgstr "Dépôts"
+msgid "Value"
+msgstr "Valeur"
 
 #: tviswaptgui.gridrules.header.columns[6].text
 msgctxt "tviswaptgui.gridrules.header.columns[6].text"
-msgid "Created by"
-msgstr "Créé par"
+msgid "Repository URL"
+msgstr "URL du dépôt"
 
 #: tviswaptgui.gridrules.header.columns[7].text
 msgctxt "tviswaptgui.gridrules.header.columns[7].text"
-msgid "Created on"
-msgstr "Crée le"
+msgid "Repositories"
+msgstr "Dépôts"
 
 #: tviswaptgui.gridrules.header.columns[8].text
 msgctxt "tviswaptgui.gridrules.header.columns[8].text"
-msgid "Updated by"
-msgstr "Modifié par"
+msgid "Created by"
+msgstr "Créé par"
 
 #: tviswaptgui.gridrules.header.columns[9].text
 msgctxt "tviswaptgui.gridrules.header.columns[9].text"
-msgid "Updated on"
-msgstr "Modifié le"
+msgid "Created on"
+msgstr "Crée le"
 
 #: tviswaptgui.gridselfservicepackages.header.columns[0].text
 msgctxt "tviswaptgui.gridselfservicepackages.header.columns[0].text"

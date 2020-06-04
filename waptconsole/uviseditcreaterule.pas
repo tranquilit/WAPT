@@ -15,6 +15,8 @@ type
   TFormEditRule = class(TForm)
     BitBtnOk: TBitBtn;
     BitBtnCancel: TBitBtn;
+    CheckBoxNoFallback: TCheckBox;
+    CheckBoxNegation: TCheckBox;
     CheckBoxWAPT: TCheckBox;
     CheckBoxWUA: TCheckBox;
     CheckBoxHost: TCheckBox;
@@ -24,6 +26,7 @@ type
     EditName: TEdit;
     EditValue: TEdit;
     LabPackageType: TLabel;
+    LabOtherSettings: TLabel;
     LabValue: TLabel;
     LabName: TLabel;
     LabCondition: TLabel;

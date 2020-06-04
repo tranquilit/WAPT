@@ -1,11 +1,11 @@
 object FormEditRule: TFormEditRule
   Left = 663
-  Height = 190
+  Height = 209
   Top = 385
   Width = 425
   BorderStyle = bsDialog
   Caption = 'Edit rule'
-  ClientHeight = 190
+  ClientHeight = 209
   ClientWidth = 425
   KeyPreview = True
   OnCreate = FormCreate
@@ -16,7 +16,7 @@ object FormEditRule: TFormEditRule
   object BitBtnOk: TBitBtn
     Left = 24
     Height = 30
-    Top = 144
+    Top = 168
     Width = 96
     Caption = 'Save'
     Enabled = False
@@ -62,7 +62,7 @@ object FormEditRule: TFormEditRule
   object BitBtnCancel: TBitBtn
     Left = 296
     Height = 30
-    Top = 144
+    Top = 168
     Width = 104
     Caption = 'Cancel'
     Glyph.Data = {
@@ -134,7 +134,7 @@ object FormEditRule: TFormEditRule
     Left = 112
     Height = 23
     Top = 64
-    Width = 288
+    Width = 240
     OnChange = EditNameChange
     TabOrder = 2
   end
@@ -182,7 +182,7 @@ object FormEditRule: TFormEditRule
     Left = 112
     Height = 23
     Top = 64
-    Width = 288
+    Width = 240
     Enabled = False
     ItemHeight = 15
     OnChange = EditNameChange
@@ -202,7 +202,7 @@ object FormEditRule: TFormEditRule
     TabOrder = 4
   end
   object CheckBoxWAPT: TCheckBox
-    Left = 120
+    Left = 112
     Height = 19
     Top = 116
     Width = 52
@@ -212,7 +212,7 @@ object FormEditRule: TFormEditRule
     TabOrder = 5
   end
   object CheckBoxWUA: TCheckBox
-    Left = 312
+    Left = 353
     Height = 19
     Top = 116
     Width = 47
@@ -220,7 +220,7 @@ object FormEditRule: TFormEditRule
     TabOrder = 7
   end
   object CheckBoxHost: TCheckBox
-    Left = 216
+    Left = 232
     Height = 19
     Top = 116
     Width = 50
@@ -234,6 +234,32 @@ object FormEditRule: TFormEditRule
     Width = 86
     AutoSize = False
     Caption = 'Package type :'
+    Layout = tlCenter
+    ParentColor = False
+  end
+  object CheckBoxNegation: TCheckBox
+    Left = 356
+    Height = 19
+    Top = 65
+    Width = 44
+    Caption = 'NOT'
+    TabOrder = 10
+  end
+  object CheckBoxNoFallback: TCheckBox
+    Left = 112
+    Height = 19
+    Top = 138
+    Width = 80
+    Caption = 'No fallback'
+    TabOrder = 11
+  end
+  object LabOtherSettings: TLabel
+    Left = 24
+    Height = 23
+    Top = 136
+    Width = 86
+    AutoSize = False
+    Caption = 'Other :'
     Layout = tlCenter
     ParentColor = False
   end
