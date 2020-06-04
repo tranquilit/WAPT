@@ -208,6 +208,7 @@ object FormEditRule: TFormEditRule
     Width = 52
     Caption = 'WAPT'
     Checked = True
+    OnChange = EditNameChange
     State = cbChecked
     TabOrder = 5
   end
@@ -217,6 +218,7 @@ object FormEditRule: TFormEditRule
     Top = 116
     Width = 47
     Caption = 'WUA'
+    OnChange = EditNameChange
     TabOrder = 7
   end
   object CheckBoxHost: TCheckBox
@@ -225,6 +227,7 @@ object FormEditRule: TFormEditRule
     Top = 116
     Width = 50
     Caption = 'HOST'
+    OnChange = EditNameChange
     TabOrder = 6
   end
   object LabPackageType: TLabel
@@ -243,6 +246,7 @@ object FormEditRule: TFormEditRule
     Top = 65
     Width = 44
     Caption = 'NOT'
+    OnChange = EditNameChange
     TabOrder = 10
   end
   object CheckBoxNoFallback: TCheckBox
@@ -251,6 +255,7 @@ object FormEditRule: TFormEditRule
     Top = 138
     Width = 80
     Caption = 'No fallback'
+    OnChange = EditNameChange
     TabOrder = 11
   end
   object LabOtherSettings: TLabel
