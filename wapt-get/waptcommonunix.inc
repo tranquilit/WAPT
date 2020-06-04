@@ -2226,7 +2226,11 @@ end;
 
 function WaptBaseDir: String;
 begin
+  {$IFDEF DARWIN}
+  result := '/opt/wapt';
+  {$ELSE}
   result := GetCmdParams('waptbasedir',ExtractFileDir(ParamStrUTF8(0)));
+  {$ENDIF}
   if lowercase(ExtractFileName(result)) = 'scripts' then
     Result := ExtractFileDir(result);
   Result := AppendPathDelim(Result);
