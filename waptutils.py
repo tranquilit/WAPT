@@ -1707,17 +1707,20 @@ def get_sha256(afile = '',BLOCK_SIZE=2**20):
             return file_hash.hexdigest()
 
 def get_main_ip(host=None,hostv6=None):
-    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    s = None
     try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         # doesn't even have to be reachable
         s.connect(('10.0.0.0' if host is None else host, 1))
         IPV4 = s.getsockname()[0]
     except:
         IPV4 = '127.0.0.1'
     finally:
-        s.close()
-    s = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM)
+        if s:
+            s.close()
+    s = None
     try:
+        s = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM)
         if hostv6 is None:
             hostv6 = host
         s.connect(('ff05::1' if hostv6 is None else hostv6,1))
@@ -1725,7 +1728,8 @@ def get_main_ip(host=None,hostv6=None):
     except:
         IPV6 = '::1'
     finally:
-        s.close()
+        if s:
+            s.close()
     return (IPV4.decode('utf-8'),IPV6.decode('utf-8').split('%')[0])
 
 def get_local_IPs():
