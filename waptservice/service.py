@@ -101,7 +101,7 @@ from waptservice.waptservice_common import waptconfig,WAPTLOGGERS
 from waptservice.waptservice_common import forbidden,authenticate,allow_local,render_wapt_template
 from waptservice.waptservice_common import WaptClientUpgrade,WaptServiceRestart,WaptNetworkReconfig,WaptPackageInstall
 from waptservice.waptservice_common import WaptUpgrade,WaptUpdate,WaptUpdateServerStatus,WaptCleanup,WaptDownloadPackage,WaptLongTask,WaptAuditPackage, WaptPackageRemove, WaptDownloadIcon
-from waptservice.waptservice_common import WaptEvents
+from waptservice.waptservice_common import WaptEvents,WaptRegisterComputer,WaptPackageForget
 
 from waptservice.waptservice_socketio import WaptSocketIOClient
 

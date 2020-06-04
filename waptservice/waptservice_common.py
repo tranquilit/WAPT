@@ -27,6 +27,7 @@ import datetime
 import logging
 import threading
 from functools import wraps
+import platform
 
 try:
     wapt_root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__),'..'))
