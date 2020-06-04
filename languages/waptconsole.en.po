@@ -3064,6 +3064,14 @@ msgstr ""
 msgid "Run packages audit "
 msgstr ""
 
+#: tviswaptgui.acttriggerhostsreboot.caption
+msgid "Reboot computers"
+msgstr ""
+
+#: tviswaptgui.acttriggerhostsshutdown.caption
+msgid "Shutdown computers"
+msgstr ""
+
 #: tviswaptgui.acttriggerhostupdate.caption
 msgctxt "tviswaptgui.acttriggerhostupdate.caption"
 msgid "Check updates"
@@ -6144,6 +6152,11 @@ msgstr ""
 msgid "Select WAPT file"
 msgstr ""
 
+#: tviswaptgui.panel2.caption
+msgctxt "tviswaptgui.panel2.caption"
+msgid "Panel2"
+msgstr ""
+
 #: tviswaptgui.panel7.caption
 msgctxt "tviswaptgui.panel7.caption"
 msgid "Panel7"
@@ -6661,6 +6674,7 @@ msgid "Panel1"
 msgstr ""
 
 #: tviswaptusers.panel2.caption
+msgctxt "tviswaptusers.panel2.caption"
 msgid "Panel2"
 msgstr ""
 
@@ -7408,6 +7422,14 @@ msgstr ""
 msgid "Are you sure you want to run packages Audit on %d hosts ?"
 msgstr ""
 
+#: uwaptconsoleres.rsconfirmhostsreboot
+msgid "Are you sure you want to reboot %d hosts ?"
+msgstr ""
+
+#: uwaptconsoleres.rsconfirmhostsshutdown
+msgid "Are you sure you want to shutdown %d hosts ?"
+msgstr ""
+
 #: uwaptconsoleres.rsconfirmhostswaptwuadownload
 msgid "Are you sure you want to scan and download Windows updates on %d hosts ?"
 msgstr ""
@@ -7990,6 +8012,10 @@ msgstr ""
 msgid "Some of your changes are not yet saved. Do you want to save your changes ?"
 msgstr ""
 
+#: uwaptconsoleres.rsrebootinghosts
+msgid "Triggered reboot of computers"
+msgstr ""
+
 #: uwaptconsoleres.rsreloadwaptconsoleconfig
 msgid "Reloading WaptConsole configuration"
 msgstr ""
@@ -8046,6 +8072,10 @@ msgstr ""
 
 #: uwaptconsoleres.rsshowmessageforusers
 msgid "Send message to users"
+msgstr ""
+
+#: uwaptconsoleres.rsshutdownhosts
+msgid "Triggered shutdown of computers"
 msgstr ""
 
 #: uwaptconsoleres.rssigning

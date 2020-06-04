@@ -3100,6 +3100,14 @@ msgstr "Appliquer les mises à jour en masse"
 msgid "Run packages audit "
 msgstr "Lancer l'audit des paquets"
 
+#: tviswaptgui.acttriggerhostsreboot.caption
+msgid "Reboot computers"
+msgstr "Redémarrer les machines"
+
+#: tviswaptgui.acttriggerhostsshutdown.caption
+msgid "Shutdown computers"
+msgstr "Arrêter les machines"
+
 #: tviswaptgui.acttriggerhostupdate.caption
 msgctxt "tviswaptgui.acttriggerhostupdate.caption"
 msgid "Check updates"
@@ -6189,6 +6197,11 @@ msgstr "Sélectionner un fichier d'installation exe ou msi"
 msgid "Select WAPT file"
 msgstr "Sélectionner un fichier WAPT"
 
+#: tviswaptgui.panel2.caption
+msgctxt "tviswaptgui.panel2.caption"
+msgid "Panel2"
+msgstr ""
+
 #: tviswaptgui.panel7.caption
 msgctxt "tviswaptgui.panel7.caption"
 msgid "Panel7"
@@ -6706,6 +6719,7 @@ msgid "Panel1"
 msgstr ""
 
 #: tviswaptusers.panel2.caption
+msgctxt "tviswaptusers.panel2.caption"
 msgid "Panel2"
 msgstr ""
 
@@ -7477,6 +7491,14 @@ msgstr "Êtes-vous sûr(e) de vouloir oublier %s paquets de la machine %s ?"
 msgid "Are you sure you want to run packages Audit on %d hosts ?"
 msgstr "Êtes-vous sûr de vouloir lancer l'audit de paquets sur %d machines ?"
 
+#: uwaptconsoleres.rsconfirmhostsreboot
+msgid "Are you sure you want to reboot %d hosts ?"
+msgstr "Êtes-vous sûr de vouloir rebooter %s machines ?"
+
+#: uwaptconsoleres.rsconfirmhostsshutdown
+msgid "Are you sure you want to shutdown %d hosts ?"
+msgstr "Êtes-vous sûr de vouloir arrêter %s machines ?"
+
 #: uwaptconsoleres.rsconfirmhostswaptwuadownload
 #, object-pascal-format
 msgid "Are you sure you want to scan and download Windows updates on %d hosts ?"
@@ -8119,6 +8141,10 @@ msgstr "La clé %s a bien été créée."
 msgid "Some of your changes are not yet saved. Do you want to save your changes ?"
 msgstr "Vous avez effectué des changements qui ne sont pas encore enregistrés. Voulez-vous les sauvegarder ?"
 
+#: uwaptconsoleres.rsrebootinghosts
+msgid "Triggered reboot of computers"
+msgstr "Déclenchement du redémarrage des machines"
+
 #: uwaptconsoleres.rsreloadwaptconsoleconfig
 msgid "Reloading WaptConsole configuration"
 msgstr "Rechargement de la configuration de la console"
@@ -8178,6 +8204,10 @@ msgstr "Sélectionner les paquets à enlever des dépendances des machines"
 #: uwaptconsoleres.rsshowmessageforusers
 msgid "Send message to users"
 msgstr "Envoyer un message aux utilisateurs"
+
+#: uwaptconsoleres.rsshutdownhosts
+msgid "Triggered shutdown of computers"
+msgstr "Déclenchement de l'arrêt des machines"
 
 #: uwaptconsoleres.rssigning
 msgid "%s is being signed."
