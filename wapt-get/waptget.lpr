@@ -487,365 +487,373 @@ begin
     writeln(utf8decode(rsWaptgetHelp));
   end;
 
-  if HasOption('c','config') then
-    ReadWaptConfig(GetOptionValue('c','config'))
-  else
-    ReadWaptConfig();
+  try
+    {$ifdef windows}
+    if HasOption('y','hide') then
+      ShowWindow(GetConsoleWindow, SW_HIDE);
+    {$endif}
 
-  if HasOption('r','repo') then
-    RepoURL := GetOptionValue('r','repo');
+    if HasOption('c','config') then
+      ReadWaptConfig(GetOptionValue('c','config'))
+    else
+      ReadWaptConfig();
 
-  if HasOption('l','loglevel') then
-  begin
-    logleveloption := UpperCase(GetOptionValue('l','loglevel'));
-    if logleveloption = 'DEBUG' then
-      currentLogLevel := DEBUG
-    else if logleveloption = 'INFO' then
-      currentLogLevel := INFO
-    else if logleveloption = 'WARNING' then
-      currentLogLevel := WARNING
-    else if logleveloption = 'ERROR' then
-      currentLogLevel := ERROR
-    else if logleveloption = 'CRITICAL' then
-      currentLogLevel := CRITICAL;
-    Logger('Current loglevel : '+StrLogLevel[currentLogLevel],DEBUG);
-  end;
+    if HasOption('r','repo') then
+      RepoURL := GetOptionValue('r','repo');
 
-  if HasOption('v','version') then
-    writeln(format(rsWin32exeWrapper, [ApplicationName, GetApplicationVersion]));
-
-  if (action = 'create-keycert') then
-  begin
-    ReadWaptConfig(AppIniFilename('waptconsole'));
-    NewCertificateFilename := CreateKeycert(GetCommonNameFromCmdLine,'','',
-        GetCmdParams('CodeSigning','1')='1',
-        GetCmdParams('CA','1')='1',
-        GetCmdParams('ClientAuth','1')='1',
-        FindCmdLineSwitch('Force',['/','-'],True) or FindCmdLineSwitch('F',['/','-'],True));
-
-    if FindCmdLineSwitch('EnrollNewCert') then
+    if HasOption('l','loglevel') then
     begin
-      DestCertPath := AppendPathDelim(WaptBaseDir)+'ssl\'+ExtractFileName(NewCertificateFilename);
-      if CopyFileW(PWideChar(UTF8Decode(NewCertificateFilename)),PWideChar(UTF8Decode(DestCertPath)),False) then
-        WriteLn('Enrolled in: '+DestCertPath)
-      else
-      begin
-        writeln('ERROR: Unable to copy certificate to '+DestCertPath);
-        ExitProcess(3);
-      end;
-
+      logleveloption := UpperCase(GetOptionValue('l','loglevel'));
+      if logleveloption = 'DEBUG' then
+        currentLogLevel := DEBUG
+      else if logleveloption = 'INFO' then
+        currentLogLevel := INFO
+      else if logleveloption = 'WARNING' then
+        currentLogLevel := WARNING
+      else if logleveloption = 'ERROR' then
+        currentLogLevel := ERROR
+      else if logleveloption = 'CRITICAL' then
+        currentLogLevel := CRITICAL;
+      Logger('Current loglevel : '+StrLogLevel[currentLogLevel],DEBUG);
     end;
-    if FindCmdLineSwitch('SetAsDefaultPersonalCert') then
+
+    if HasOption('v','version') then
+      writeln(format(rsWin32exeWrapper, [ApplicationName, GetApplicationVersion]));
+
+    if (action = 'create-keycert') then
     begin
-      IniWriteString(AppIniFilename('waptconsole'),'global','personal_certificate_path',NewCertificateFilename);
-      WriteLn('Personal Certificate config filename: '+AppIniFilename);
-    end;
-  end
-  else
-  if (action = 'check-valid-codesigning-cert') then
-  begin
-    ReadWaptConfig(AppIniFilename('waptconsole'));
-    writeln(CheckPersonalCertificateIsCodeSigning(WaptPersonalCertificatePath,GetPrivateKeyPassword(WaptPersonalCertificatePath)));
-  end
-  else
-  if (action = 'build-waptagent') then
-  begin
-    ReadWaptConfig(AppIniFilename('waptconsole'));
-    Writeln(rsBuildWaptAgent);
-    TmpBuildDir := GetTempFileNameUTF8('','wapt'+FormatDateTime('yyyymmdd"T"hhnnss',Now));
-    try
-      WaptAgentFilename := CreateWaptagent(TmpBuildDir);
-      WaptUpgradeFilename := BuildWaptUpgrade(DefaultPackagePrefix+'-waptupgrade',
-            NextPackageVersion(GetLocalWaptserverRepositoryPath,DefaultPackagePrefix+'-waptupgrade',
-                  GetApplicationVersion(WaptAgentFilename)),
-            TmpBuildDir,WaptAgentFilename);
-      if FindCmdLineSwitch('DeployWaptAgentLocally') then
-      begin
-        if not DirectoryExistsUTF8(GetLocalWaptserverRepositoryPath) then
-          Raise Exception.CreateFmt('Local repository %s does not exist',[GetLocalWaptserverRepositoryPath]);
+      ReadWaptConfig(AppIniFilename('waptconsole'));
+      NewCertificateFilename := CreateKeycert(GetCommonNameFromCmdLine,'','',
+          GetCmdParams('CodeSigning','1')='1',
+          GetCmdParams('CA','1')='1',
+          GetCmdParams('ClientAuth','1')='1',
+          FindCmdLineSwitch('Force',['/','-'],True) or FindCmdLineSwitch('F',['/','-'],True));
 
-        if CopyFileW(
-            PWideChar(UTF8Decode(WaptAgentFilename)),
-            PWideChar(UTF8Decode(AppendPathDelim(GetLocalWaptserverRepositoryPath)+'waptagent.exe')),
-            False) then
-          Writeln('waptagent copied to: '+AppendPathDelim(GetLocalWaptserverRepositoryPath)+'waptagent.exe')
+      if FindCmdLineSwitch('EnrollNewCert') then
+      begin
+        DestCertPath := AppendPathDelim(WaptBaseDir)+'ssl\'+ExtractFileName(NewCertificateFilename);
+        if CopyFileW(PWideChar(UTF8Decode(NewCertificateFilename)),PWideChar(UTF8Decode(DestCertPath)),False) then
+          WriteLn('Enrolled in: '+DestCertPath)
         else
         begin
-          Writeln('Fails to copy waptagent to repository location');
+          writeln('ERROR: Unable to copy certificate to '+DestCertPath);
           ExitProcess(3);
         end;
-        if CopyFileW(
-            PWideChar(UTF8Decode(WaptUpgradeFilename)),
-            PWideChar(UTF8Decode(AppendPathDelim(GetLocalWaptserverRepositoryPath)+ExtractFileName(WaptUpgradeFilename))),
-            False) then
-        begin
-          Writeln('waptupgrade package copied to repository: '+WaptUpgradeFilename);
-          ScanLocalWaptrepo(GetLocalWaptserverRepositoryPath);
-          Writeln('local repository packages scan: OK');
-        end
-        else
-        begin
-          Writeln('Fails to copy waptagent to repository location');
-          ExitProcess(3);
-        end;
-        Terminate;
-        Exit;
-      end
-      else
-      begin
-        Writeln(rsBuildWaptUpgradePackage);
-        GetWaptServerUser;
-        GetWaptServerPassword;
-        Writeln(rsUploadWaptAgent);
-        UploadWaptAgentUpgrade(WaptAgentFilename,WaptUpgradeFilename);
-        Terminate;
-        Exit;
+
       end;
-    finally
-      If DirectoryExistsUTF8(TmpBuildDir) then
-        DeleteDirectory(TmpBuildDir,False);
+      if FindCmdLineSwitch('SetAsDefaultPersonalCert') then
+      begin
+        IniWriteString(AppIniFilename('waptconsole'),'global','personal_certificate_path',NewCertificateFilename);
+        WriteLn('Personal Certificate config filename: '+AppIniFilename);
+      end;
     end
-  end
-  else
-  if (action = 'waptupgrade') then
-  begin
-    Writeln(format(rsWaptGetUpgrade, [RepoURL]));
-    UpdateApplication(RepoURL+'/waptagent.exe','waptagent.exe','/VERYSILENT','wapt-get.exe','');
-    Terminate;
-    Exit;
-  end
-  else
-  if (action = 'dnsdebug') then
-  begin
-    WriteLn(format(rsDNSserver, [Join(',',GetDNSServers)]));
-    WriteLn(format(rsDNSdomain, [GetDNSDomain]));
-    Writeln(utf8decode(format(rsMainRepoURL, [RepoURL])));
-    Writeln(format(rsSRVwapt, [DNSSRVQuery('_wapt._tcp.'+GetDNSDomain).AsJSon(True)]));
-    Writeln(format(rsSRVwaptserver, [DNSSRVQuery('_waptserver._tcp.'+GetDNSDomain).AsJSon(True)]));
-    Writeln(format(rsCNAME, [DNSCNAMEQuery('wapt.'+GetDNSDomain).AsJSon(True)]));
-    Terminate;
-    Exit;
-  end
-  else
-  // use http service mode if --service or not --direct or not (--service) and isadmin
-  if  ((not IsAdminLoggedOn or HasOption('S','service')) and not HasOption('D','direct')) and
-      StrIsOneOf(action,['update','upgrade','register','install','remove','forget',
-                        'longtask','cancel','cancel-all','tasks',
-                        'wuascan','wuadownload','wuainstall','audit']) and
-      CheckOpenPort(waptservice_port,'127.0.0.1',waptservice_timeout*1000) then
-  begin
-    writeln('About to speak to waptservice...');
-    // launch task in waptservice, waits for its termination
-    CheckEventsThread :=TCheckEventsThread.Create(@Self.OnCheckEventsThreadNotify);
-    CheckEventsThread.Start;
-    lastMessageTime := Now;
-    tasks := TSuperObject.create(stArray);
-    try
+    else
+    if (action = 'check-valid-codesigning-cert') then
+    begin
+      ReadWaptConfig(AppIniFilename('waptconsole'));
+      writeln(CheckPersonalCertificateIsCodeSigning(WaptPersonalCertificatePath,GetPrivateKeyPassword(WaptPersonalCertificatePath)));
+    end
+    else
+    if (action = 'build-waptagent') then
+    begin
+      ReadWaptConfig(AppIniFilename('waptconsole'));
+      Writeln(rsBuildWaptAgent);
+      TmpBuildDir := GetTempFileNameUTF8('','wapt'+FormatDateTime('yyyymmdd"T"hhnnss',Now));
       try
-        res := Nil;
-        //test longtask
-        Args := TDynStringArray.Create(Format('notify_user=%s',[GetCmdParams('notify_user','1')]));
-        if HasOption('notify_server_on_start') then
-          Args.Add('notify_server_on_start='+GetCmdParams('notify_server_on_start','0'));
-        if HasOption('notify_server_on_finish') then
-          Args.Add('notify_server_on_finish='+GetCmdParams('notify_server_on_finish','0'));
-        if HasOption('f','force') then
-          Args.Add('force=1');
+        WaptAgentFilename := CreateWaptagent(TmpBuildDir);
+        WaptUpgradeFilename := BuildWaptUpgrade(DefaultPackagePrefix+'-waptupgrade',
+              NextPackageVersion(GetLocalWaptserverRepositoryPath,DefaultPackagePrefix+'-waptupgrade',
+                    GetApplicationVersion(WaptAgentFilename)),
+              TmpBuildDir,WaptAgentFilename);
+        if FindCmdLineSwitch('DeployWaptAgentLocally') then
+        begin
+          if not DirectoryExistsUTF8(GetLocalWaptserverRepositoryPath) then
+            Raise Exception.CreateFmt('Local repository %s does not exist',[GetLocalWaptserverRepositoryPath]);
 
-        if action='longtask' then
-        begin
-          Logger('Call longtask URL...',DEBUG);
-          res := WAPTLocalJsonGet(Format('longtask.json?%s',[StrJoin('&',Args)]),'admin','',-1,@HTTPLogin,3);
-          tasks.AsArray.Add(res);
-          Logger('Task '+res.S['id']+' added to queue',DEBUG);
-        end
-        else
-        if action='tasks' then
-        begin
-          res := WAPTLocalJsonGet(Format('tasks.json?%s',[StrJoin('&',Args)]));
-          if (res<>Nil) then
-          begin
-            if (res['running'].DataType<>stNull) then
-              writeln(utf8decode(format(rsRunningTask,[ res['running'].I['id'],res['running'].S['description'],res['running'].S['runstatus']])))
-            else
-              writeln(utf8decode(rsNoRunningTask));
-            if res['pending'].AsArray.length>0 then
-            begin
-              writeln(utf8decode(rsPending));
-              for task in res['pending'] do
-                writeln(utf8encode('  '+task.S['id']+' '+task.S['description']));
-            end;
-          end;
-        end
-        else
-        if action='cancel' then
-        begin
-          res := WAPTLocalJsonGet(Format('cancel_running_task.json?%s',[StrJoin('&',Args)]));
-          if res.DataType<>stNull then
-            writeln(utf8decode(format(rsCanceledTask, [res.S['description']])))
+          if CopyFileW(
+              PWideChar(UTF8Decode(WaptAgentFilename)),
+              PWideChar(UTF8Decode(AppendPathDelim(GetLocalWaptserverRepositoryPath)+'waptagent.exe')),
+              False) then
+            Writeln('waptagent copied to: '+AppendPathDelim(GetLocalWaptserverRepositoryPath)+'waptagent.exe')
           else
-            writeln(rsNoRunningTask);
-        end
-        else
-        if (action='cancel-all') or (action='cancelall') then
-        begin
-          res := WAPTLocalJsonGet(Format('cancel_all_tasks.json?%s',[StrJoin('&',Args)]));
-          if res.DataType<>stNull then
           begin
-            for task in res do
-              writeln(utf8decode(format(rsCanceledTask, [task.S['description']])))
+            Writeln('Fails to copy waptagent to repository location');
+            ExitProcess(3);
+          end;
+          if CopyFileW(
+              PWideChar(UTF8Decode(WaptUpgradeFilename)),
+              PWideChar(UTF8Decode(AppendPathDelim(GetLocalWaptserverRepositoryPath)+ExtractFileName(WaptUpgradeFilename))),
+              False) then
+          begin
+            Writeln('waptupgrade package copied to repository: '+WaptUpgradeFilename);
+            ScanLocalWaptrepo(GetLocalWaptserverRepositoryPath);
+            Writeln('local repository packages scan: OK');
           end
           else
-            writeln(utf8decode(rsNoRunningTask));
-        end
-        else
-        if action='update' then
-        begin
-          Logger('Call update URL...',DEBUG);
-          res := WAPTLocalJsonGet(Format('update.json?%s',[StrJoin('&',Args)]));
-          tasks.AsArray.Add(res);
-          Logger(UTF8Encode('Task '+res.S['id']+' added to queue'),DEBUG);
-        end
-        else
-        if action='audit' then
-        begin
-          Logger('Call audit URL...',DEBUG);
-          res := WAPTLocalJsonGet(Format('audit.json?%s',[StrJoin('&',Args)]));
-          WriteLn(utf8encode(res.S['message']));
-          for task in res['content'] do
           begin
-            tasks.AsArray.Add(task);
-            Logger('Task '+task.S['id']+' added to queue',DEBUG);
+            Writeln('Fails to copy waptagent to repository location');
+            ExitProcess(3);
           end;
+          Terminate;
+          Exit;
         end
         else
-        if action='register' then
         begin
-          Logger('Call register URL...',DEBUG);
-          res := WAPTLocalJsonGet(Format('register.json?%s',[StrJoin('&',Args)]),'admin','',-1,@HTTPLogin,3);
-          tasks.AsArray.Add(res);
-          Logger('Task '+res.S['id']+' added to queue',DEBUG);
-        end
-        else
-        if (action='install') or (action='remove') or (action='forget') then
-        begin
-          if HasOption('only_if_not_process_running') then
-            Args.Add('only_if_not_process_running='+GetOptionValue('only_if_not_process_running'));
-          for package in sopackages do
+          Writeln(rsBuildWaptUpgradePackage);
+          GetWaptServerUser;
+          GetWaptServerPassword;
+          Writeln(rsUploadWaptAgent);
+          UploadWaptAgentUpgrade(WaptAgentFilename,WaptUpgradeFilename);
+          Terminate;
+          Exit;
+        end;
+      finally
+        If DirectoryExistsUTF8(TmpBuildDir) then
+          DeleteDirectory(TmpBuildDir,False);
+      end
+    end
+    else
+    if (action = 'waptupgrade') then
+    begin
+      Writeln(format(rsWaptGetUpgrade, [RepoURL]));
+      UpdateApplication(RepoURL+'/waptagent.exe','waptagent.exe','/VERYSILENT','wapt-get.exe','');
+      Terminate;
+      Exit;
+    end
+    else
+    if (action = 'dnsdebug') then
+    begin
+      WriteLn(format(rsDNSserver, [Join(',',GetDNSServers)]));
+      WriteLn(format(rsDNSdomain, [GetDNSDomain]));
+      Writeln(utf8decode(format(rsMainRepoURL, [RepoURL])));
+      Writeln(format(rsSRVwapt, [DNSSRVQuery('_wapt._tcp.'+GetDNSDomain).AsJSon(True)]));
+      Writeln(format(rsSRVwaptserver, [DNSSRVQuery('_waptserver._tcp.'+GetDNSDomain).AsJSon(True)]));
+      Writeln(format(rsCNAME, [DNSCNAMEQuery('wapt.'+GetDNSDomain).AsJSon(True)]));
+      Terminate;
+      Exit;
+    end
+    else
+    // use http service mode if --service or not --direct or not (--service) and isadmin
+    if  ((not IsAdminLoggedOn or HasOption('S','service')) and not HasOption('D','direct')) and
+        StrIsOneOf(action,['update','upgrade','register','install','remove','forget',
+                          'longtask','cancel','cancel-all','tasks',
+                          'wuascan','wuadownload','wuainstall','audit']) and
+        CheckOpenPort(waptservice_port,'127.0.0.1',waptservice_timeout*1000) then
+    begin
+      writeln('About to speak to waptservice...');
+      // launch task in waptservice, waits for its termination
+      CheckEventsThread :=TCheckEventsThread.Create(@Self.OnCheckEventsThreadNotify);
+      CheckEventsThread.Start;
+      lastMessageTime := Now;
+      tasks := TSuperObject.create(stArray);
+      try
+        try
+          res := Nil;
+          //test longtask
+          Args := TDynStringArray.Create(Format('notify_user=%s',[GetCmdParams('notify_user','1')]));
+          if HasOption('notify_server_on_start') then
+            Args.Add('notify_server_on_start='+GetCmdParams('notify_server_on_start','0'));
+          if HasOption('notify_server_on_finish') then
+            Args.Add('notify_server_on_finish='+GetCmdParams('notify_server_on_finish','0'));
+          if HasOption('f','force') then
+            Args.Add('force=1');
+
+          if action='longtask' then
           begin
-            Logger('Call '+action+'?package='+package.AsString,DEBUG);
-            Args.Add(utf8encode('package='+package.AsString));
-            res := WAPTLocalJsonGet(Format(Action+'.json?%s',[StrJoin('&',Args)]),'admin','',-1,@HTTPLogin,3);
-            if (action='install') or (action='forget')  then
+            Logger('Call longtask URL...',DEBUG);
+            res := WAPTLocalJsonGet(Format('longtask.json?%s',[StrJoin('&',Args)]),'admin','',-1,@HTTPLogin,3);
+            tasks.AsArray.Add(res);
+            Logger('Task '+res.S['id']+' added to queue',DEBUG);
+          end
+          else
+          if action='tasks' then
+          begin
+            res := WAPTLocalJsonGet(Format('tasks.json?%s',[StrJoin('&',Args)]));
+            if (res<>Nil) then
             begin
-              // single action
-              if (res.AsObject=Nil) or not res.AsObject.Exists('id') then
-                WriteLn(utf8decode(format(rsErrorWithMessage, [res.AsString])))
+              if (res['running'].DataType<>stNull) then
+                writeln(utf8decode(format(rsRunningTask,[ res['running'].I['id'],res['running'].S['description'],res['running'].S['runstatus']])))
               else
-                tasks.AsArray.Add(res);
-            end
-            else
-            if (action='remove') then
-            begin
-              // list of actions..
-              if (res.AsArray=Nil) then
-                WriteLn(utf8decode(format(rsErrorWithMessage, [res.AsString])))
-              else
-              for task in res do
+                writeln(utf8decode(rsNoRunningTask));
+              if res['pending'].AsArray.length>0 then
               begin
-                tasks.AsArray.Add(task);
-                Logger('Task '+task.S['id']+' added to queue',DEBUG);
+                writeln(utf8decode(rsPending));
+                for task in res['pending'] do
+                  writeln(utf8encode('  '+task.S['id']+' '+task.S['description']));
               end;
             end;
-          end;
-        end
-        else if action='upgrade' then
-        begin
-          Logger('Call upgrade URL...',DEBUG);
-          if HasOption('only_priorities') then
-            Args.Add('only_priorities='+GetOptionValue('only_priorities'));
-          if HasOption('only_if_not_process_running') then
-            Args.Add('only_if_not_process_running='+GetOptionValue('only_if_not_process_running'));
-          res := WAPTLocalJsonGet(Format('upgrade.json?%s',[StrJoin('&',args)]));
-          Logger('Upgrade triggered...',DEBUG);
-          if res.S['result']<>'OK' then
-            WriteLn(utf8decode(format(rsErrorLaunchingUpgrade, [res.S['message']])))
+          end
           else
+          if action='cancel' then
+          begin
+            res := WAPTLocalJsonGet(Format('cancel_running_task.json?%s',[StrJoin('&',Args)]));
+            if res.DataType<>stNull then
+              writeln(utf8decode(format(rsCanceledTask, [res.S['description']])))
+            else
+              writeln(rsNoRunningTask);
+          end
+          else
+          if (action='cancel-all') or (action='cancelall') then
+          begin
+            res := WAPTLocalJsonGet(Format('cancel_all_tasks.json?%s',[StrJoin('&',Args)]));
+            if res.DataType<>stNull then
+            begin
+              for task in res do
+                writeln(utf8decode(format(rsCanceledTask, [task.S['description']])))
+            end
+            else
+              writeln(utf8decode(rsNoRunningTask));
+          end
+          else
+          if action='update' then
+          begin
+            Logger('Call update URL...',DEBUG);
+            res := WAPTLocalJsonGet(Format('update.json?%s',[StrJoin('&',Args)]));
+            tasks.AsArray.Add(res);
+            Logger(UTF8Encode('Task '+res.S['id']+' added to queue'),DEBUG);
+          end
+          else
+          if action='audit' then
+          begin
+            Logger('Call audit URL...',DEBUG);
+            res := WAPTLocalJsonGet(Format('audit.json?%s',[StrJoin('&',Args)]));
+            WriteLn(utf8encode(res.S['message']));
             for task in res['content'] do
             begin
               tasks.AsArray.Add(task);
               Logger('Task '+task.S['id']+' added to queue',DEBUG);
             end;
-        end
-        else
-        if action='wuascan' then
-        begin
-          res := WAPTLocalJsonGet(Format('waptwua_scan?%s',[StrJoin('&',Args)]));
-          tasks.AsArray.Add(res);
-          Logger('Task '+res.S['id']+' added to queue',DEBUG);
-        end
-        else
-        if action='wuadownload' then
-        begin
-          res := WAPTLocalJsonGet(Format('waptwua_download?%s',[StrJoin('&',Args)]));
-          tasks.AsArray.Add(res);
-          Logger('Task '+res.S['id']+' added to queue',DEBUG);
-        end
-        else
-        if action='wuainstall' then
-        begin
-          res := WAPTLocalJsonGet(Format('waptwua_install?%s',[StrJoin('&',Args)]));
-          tasks.AsArray.Add(res);
-          Logger('Task '+res.S['id']+' added to queue',DEBUG);
-        end;
-
-        if (tasks<>Nil) and (tasks.AsArray.Length>0) then
-        begin
-          while ((remainingtasks=Nil) or (remainingtasks.AsArray.Length>0)) and not CheckEventsThread.Finished do
-          try
-            //if no message from service since more that 1 min, check if remaining tasks in queue...
-            if (now-lastMessageTime>1*1/24/60) then
-              raise Exception.create('Timeout waiting for events')
-            else
+          end
+          else
+          if action='register' then
+          begin
+            Logger('Call register URL...',DEBUG);
+            res := WAPTLocalJsonGet(Format('register.json?%s',[StrJoin('&',Args)]),'admin','',-1,@HTTPLogin,3);
+            tasks.AsArray.Add(res);
+            Logger('Task '+res.S['id']+' added to queue',DEBUG);
+          end
+          else
+          if (action='install') or (action='remove') or (action='forget') then
+          begin
+            if HasOption('only_if_not_process_running') then
+              Args.Add('only_if_not_process_running='+GetOptionValue('only_if_not_process_running'));
+            for package in sopackages do
             begin
-              While CheckSynchronize(100) do;
-              sleep(1000)
-            end;
-          except
-            on E:Exception do
+              Logger('Call '+action+'?package='+package.AsString,DEBUG);
+              Args.Add(utf8encode('package='+package.AsString));
+              res := WAPTLocalJsonGet(Format(Action+'.json?%s',[StrJoin('&',Args)]),'admin','',-1,@HTTPLogin,3);
+              if (action='install') or (action='forget')  then
               begin
-                writeln(Format(rsCanceledTask,[E.Message]));
-                for task in tasks do
-                  WAPTLocalJsonGet('cancel_task.json?id='+task.S['id']);
+                // single action
+                if (res.AsObject=Nil) or not res.AsObject.Exists('id') then
+                  WriteLn(utf8decode(format(rsErrorWithMessage, [res.AsString])))
+                else
+                  tasks.AsArray.Add(res);
+              end
+              else
+              if (action='remove') then
+              begin
+                // list of actions..
+                if (res.AsArray=Nil) then
+                  WriteLn(utf8decode(format(rsErrorWithMessage, [res.AsString])))
+                else
+                for task in res do
+                begin
+                  tasks.AsArray.Add(task);
+                  Logger('Task '+task.S['id']+' added to queue',DEBUG);
+                end;
               end;
+            end;
+          end
+          else if action='upgrade' then
+          begin
+            Logger('Call upgrade URL...',DEBUG);
+            if HasOption('only_priorities') then
+              Args.Add('only_priorities='+GetOptionValue('only_priorities'));
+            if HasOption('only_if_not_process_running') then
+              Args.Add('only_if_not_process_running='+GetOptionValue('only_if_not_process_running'));
+            res := WAPTLocalJsonGet(Format('upgrade.json?%s',[StrJoin('&',args)]));
+            Logger('Upgrade triggered...',DEBUG);
+            if res.S['result']<>'OK' then
+              WriteLn(utf8decode(format(rsErrorLaunchingUpgrade, [res.S['message']])))
+            else
+              for task in res['content'] do
+              begin
+                tasks.AsArray.Add(task);
+                Logger('Task '+task.S['id']+' added to queue',DEBUG);
+              end;
+          end
+          else
+          if action='wuascan' then
+          begin
+            res := WAPTLocalJsonGet(Format('waptwua_scan?%s',[StrJoin('&',Args)]));
+            tasks.AsArray.Add(res);
+            Logger('Task '+res.S['id']+' added to queue',DEBUG);
+          end
+          else
+          if action='wuadownload' then
+          begin
+            res := WAPTLocalJsonGet(Format('waptwua_download?%s',[StrJoin('&',Args)]));
+            tasks.AsArray.Add(res);
+            Logger('Task '+res.S['id']+' added to queue',DEBUG);
+          end
+          else
+          if action='wuainstall' then
+          begin
+            res := WAPTLocalJsonGet(Format('waptwua_install?%s',[StrJoin('&',Args)]));
+            tasks.AsArray.Add(res);
+            Logger('Task '+res.S['id']+' added to queue',DEBUG);
           end;
+
+          if (tasks<>Nil) and (tasks.AsArray.Length>0) then
+          begin
+            while ((remainingtasks=Nil) or (remainingtasks.AsArray.Length>0)) and not CheckEventsThread.Finished do
+            try
+              //if no message from service since more that 1 min, check if remaining tasks in queue...
+              if (now-lastMessageTime>1*1/24/60) then
+                raise Exception.create('Timeout waiting for events')
+              else
+              begin
+                While CheckSynchronize(100) do;
+                sleep(1000)
+              end;
+            except
+              on E:Exception do
+                begin
+                  writeln(Format(rsCanceledTask,[E.Message]));
+                  for task in tasks do
+                    WAPTLocalJsonGet('cancel_task.json?id='+task.S['id']);
+                end;
+            end;
+          end;
+
+          while CheckSynchronize(1000) do;
+
+        except
+          localpassword := '';
+          ExitCode:=3;
+          raise;
         end;
-
-        while CheckSynchronize(1000) do;
-
-      except
-        localpassword := '';
-        ExitCode:=3;
-        raise;
+      finally
+        for task in tasks do
+          WAPTLocalJsonGet('cancel_task.json?id='+task.S['id']);
       end;
-    finally
-      for task in tasks do
-        WAPTLocalJsonGet('cancel_task.json?id='+task.S['id']);
+    end
+    else
+    begin
+      // Load main python application
+      try
+        MainModule:=TStringList.Create;
+        MainModule.LoadFromFile(ExtractFilePath(ParamStr(0))+'wapt-get.py');
+        PythonEngine.ExecStrings(MainModule);
+      finally
+        MainModule.Free;
+      end;
     end;
-  end
-  else
-  begin
-    // Load main python application
-    try
-      MainModule:=TStringList.Create;
-      MainModule.LoadFromFile(ExtractFilePath(ParamStr(0))+'wapt-get.py');
-      PythonEngine.ExecStrings(MainModule);
-    finally
-      MainModule.Free;
-    end;
+  finally
+    // stop program loop
+    Terminate;
   end;
-  // stop program loop
-  Terminate;
 end;
 
 constructor PWaptGet.Create(TheOwner: TComponent);
@@ -867,6 +875,11 @@ begin
   if Assigned(FPythonEngine) then
     FPythonEngine.Free;
   DeleteCriticalSection(lock);
+  {$ifdef windows}
+  if HasOption('y','hide') then
+    ShowWindow(GetConsoleWindow, SW_SHOWNORMAL or SW_RESTORE);
+  {$endif}
+
   inherited Destroy;
 end;
 
