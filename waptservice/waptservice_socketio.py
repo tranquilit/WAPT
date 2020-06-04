@@ -74,6 +74,11 @@ try:
 except:
     WaptSyncRepo = None
 
+try:
+    from waptenterprise.waptservice.enterprise import WaptRunSessionSetup
+except:
+    WaptRunSessionSetup = None
+
 from waptservice.plugins import *
 
 logger = logging.getLogger('waptws')
@@ -280,8 +285,10 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
                             force=force
                             )).as_dict())
 
-                    result.append(self.task_manager.add_task(WaptCleanup(notify_user=False,created_by=verified_by,priority=200)).as_dict())
 
+                    result.append(self.task_manager.add_task(WaptCleanup(notify_user=False,created_by=verified_by,priority=200)).as_dict())
+                    if WaptRunSessionSetup:
+                        result.append(self.task_manager.add_task(WaptRunSessionSetup()).as_dict())
                 elif name in  ['trigger_install_packages','trigger_remove_packages','trigger_forget_packages']:
                     packagenames = action['packages']
                     only_priorities = action.get('only_priorities',None)
@@ -310,6 +317,9 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
                                 notify_user=task.notify_user,
                                 notify_server_on_finish=task.notify_server_on_finish,
                                 priority=200)).as_dict()
+
+                    if WaptRunSessionSetup:
+                        self.task_manager.add_task(WaptRunSessionSetup())
 
                 elif name == 'trigger_waptservicerestart':
                     try:

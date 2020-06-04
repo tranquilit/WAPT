@@ -116,10 +116,11 @@ if os.path.isdir(os.path.join(wapt_root_dir,'waptenterprise')):
         waptwua_api = None
     from waptenterprise import enterprise_common
     from waptenterprise.waptservice.enterprise import WaptGPUpdate
+    from waptenterprise.waptservice.enterprise import WaptRunSessionSetup
 else:
     enterprise_common = None
     waptwua_api = None
-
+    WaptRunSessionSetup = None
 
 if os.path.isdir(os.path.join(wapt_root_dir,'waptenterprise')):
     from waptenterprise.waptservice.repositories import WaptSyncRepo
@@ -1119,6 +1120,8 @@ def upgrade():
     all_tasks.append(app.task_manager.add_task(WaptUpgrade(notify_user=notify_user,only_priorities=only_priorities,
             only_if_not_process_running=only_if_not_process_running,force=force)).as_dict())
     all_tasks.append(app.task_manager.add_task(WaptCleanup(notify_user=False)))
+    if WaptRunSessionSetup:
+        all_tasks.append(app.task_manager.add_task(WaptRunSessionSetup()))
 
     # append install wua tasks only if last scan reported to something to install
     if waptwua_api and install_wua_updates and wapt().waptwua_enabled and wapt().read_param('waptwua.status','UNKNONW') != 'OK':
@@ -1336,6 +1339,8 @@ def install():
         data = app.task_manager.add_task(WaptPackageInstall(authorized_packages,force=force,installed_by=username,
             only_priorities = only_priorities,only_if_not_process_running=only_if_not_process_running,notify_user=notify_user)).as_dict()
         app.task_manager.add_task(WaptAuditPackage(packagenames=authorized_packages,force=force,notify_user=notify_user,priority=100)).as_dict()
+        if WaptRunSessionSetup:
+            app.task_manager.add_task(WaptRunSessionSetup())
     else:
         data = []
 
@@ -1792,6 +1797,8 @@ class WaptTaskManager(threading.Thread):
                 except Exception as e:
                     self.logger.debug(u'Error for upgrade in check_scheduled_tasks: %s'%e)
                 self.add_task(WaptCleanup(notifyuser=False,created_by='SCHEDULER'))
+                if WaptRunSessionSetup:
+                    self.add_task(WaptRunSessionSetup())
 
         if waptconfig.waptaudit_task_period:
             if self.last_audit is None or (datetime.datetime.now() - self.last_audit > get_time_delta(waptconfig.waptaudit_task_period,'m')):
