@@ -68,7 +68,6 @@ from common import Wapt
 from waptservice.waptservice_common import waptservice_remote_actions,waptconfig,WaptServiceConfig
 from waptservice.waptservice_common import WaptUpdate,WaptUpgrade,WaptUpdateServerStatus,WaptRegisterComputer
 from waptservice.waptservice_common import WaptCleanup,WaptPackageInstall,WaptPackageRemove,WaptPackageForget,WaptLongTask,WaptAuditPackage
-from waptservice.waptservice_common import WaptHostReboot,WaptHostShutdown
 
 try:
     from waptenterprise.waptservice.repositories import WaptSyncRepo
@@ -291,26 +290,6 @@ class WaptSocketIORemoteCalls(SocketIONamespace):
                     result.append(self.task_manager.add_task(WaptCleanup(notify_user=False,created_by=verified_by,priority=200)).as_dict())
                     if WaptRunSessionSetup:
                         result.append(self.task_manager.add_task(WaptRunSessionSetup()).as_dict())
-                elif name in ('trigger_host_shutdown','trigger_host_reboot'):
-                    notify_user = action.get('notify_user',False)
-                    notify_server_on_finish = action.get('notify_server',False)
-                    force = action.get('force',False)
-                    only_if_no_user_session = action.get('only_if_no_user_session',False)
-
-                    if self.config:
-                        if name == 'trigger_host_shutdown' and self.config.allow_remote_shutdown:
-                            result.append(self.task_manager.add_task(WaptHostShutdown(notify_user=notify_user,
-                                    created_by=verified_by,
-                                    only_if_no_user_session=only_if_no_user_session,
-                                    force=force
-                                    )).as_dict())
-
-                        elif name == 'trigger_host_reboot' and self.config.allow_remote_reboot:
-                            result.append(self.task_manager.add_task(WaptHostReboot(notify_user=notify_user,
-                                    created_by=verified_by,
-                                    only_if_no_user_session=only_if_not_process_running,
-                                    force=force
-                                    )).as_dict())
 
                 elif name in  ['trigger_install_packages','trigger_remove_packages','trigger_forget_packages']:
                     packagenames = action['packages']

@@ -1284,64 +1284,6 @@ class WaptDownloadIcon(WaptTask):
         return d
 
 
-
-class WaptHostReboot(WaptTask):
-    """A task to restart the waptservice using a spawned cmd process"""
-    def __init__(self,**args):
-        super(WaptHostReboot,self).__init__()
-        self.priority = 10000
-        self.notify_server_on_start = False
-        self.notify_server_on_finish = False
-        self.notify_user = False
-        for k in args:
-            setattr(self,k,args[k])
-
-    def _run(self):
-        """"""
-        if platform.system() == 'Windows':
-            args = ['/t 5','/s','/d p4:1']
-            if self.force:
-                args.append('/f')
-            output = setuphelpers.run('shutdown %s' % ' '.join(args))
-        elif platform.system() == 'Darwin':
-            output = setuphelpers.run('shutdown -r now')
-        else:
-            output = setuphelpers.run('shutdown -r')
-        logger.warning(output)
-        self.result = {'result':'OK','message':output}
-
-    def __unicode__(self):
-        return _(u"Restarting local WAPT service")
-
-class WaptHostShutdown(WaptTask):
-    """A task to Shutdown the host"""
-    def __init__(self,**args):
-        super(WaptHostReboot,self).__init__()
-        self.priority = 10000
-        self.notify_server_on_start = False
-        self.notify_server_on_finish = False
-        self.notify_user = False
-        for k in args:
-            setattr(self,k,args[k])
-
-    def _run(self):
-        """"""
-        if platform.system() == 'Windows':
-            args = ['/t 5','/s','/d p4:1']
-            if self.force:
-                args.append('/f')
-            output = setuphelpers.run('shutdown %s' % ' '.join(args))
-        elif platform.system() == 'Darwin':
-            output = setuphelpers.run('shutdown -r now')
-        else:
-            output = setuphelpers.run('shutdown -r')
-        logger.warning(output)
-        self.result = {'result':'OK','message':output}
-
-    def __unicode__(self):
-        return _(u"Restarting local WAPT service")
-
-
 # init translations
 waptconfig = WaptServiceConfig()
 if babel:
