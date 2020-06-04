@@ -2232,38 +2232,38 @@ class WaptRepo(WaptRemoteRepo):
         Returns:
             str: URL to the repo.
         """
-        def rule_agent_ip(value):
-            ip_network=ipaddress.ip_network(value.decode('utf-8'))
-            for ip in get_local_IPs():
+        def rule_agent_ip(rule):
+            ip_network=ipaddress.ip_network(rule['value'].decode('utf-8'))
+            for ip in get_main_ip(urlparse(rule['repo_url']).netloc):
                 if ipaddress.ip_address(ip.decode('utf-8')) in ip_network:
                     return True
             return False
 
-        def rule_domain(value):
-            return setuphelpers.get_domain() == value
+        def rule_domain(rule):
+            return setuphelpers.get_domain() == rule['value']
 
-        def rule_hostname(value):
-            return fnmatch.fnmatch(setuphelpers.get_hostname(),value)
+        def rule_hostname(rule):
+            return fnmatch.fnmatch(setuphelpers.get_hostname(),rule['value'])
 
-        def rule_public_ip(value):
+        def rule_public_ip(rule):
             ip=self.WAPT.waptdb.get_param('last_external_ip')
-            return ip and (ipaddress.ip_address(ip.decode('utf-8')) in ipaddress.ip_network(value.decode('utf-8')))
+            return ip and (ipaddress.ip_address(ip.decode('utf-8')) in ipaddress.ip_network(rule['value'].decode('utf-8')))
 
-        def rule_site(value):
-            return self.WAPT.get_host_site() == value
+        def rule_site(rule):
+            return self.WAPT.get_host_site() == rule['value']
 
-        def check_rule(rule,value):
+        def check_rule(rule_condition,rule):
             return {
                     'AGENT IP':rule_agent_ip,
                     'DOMAIN':rule_domain,
                     'HOSTNAME':rule_hostname,
                     'PUBLIC IP':rule_public_ip,
                     'SITE':rule_site
-                    }[rule](value)
+                    }[rule_condition](rule)
 
         for rule in sorted(self.rules,key=itemgetter('sequence')):
             try:
-                if (not(rule.get('negation',False)) == check_rule(rule['condition'],rule['value'])) and (not(rule.get('no_fallback',False) == super(WaptRepo,self).is_available(url=rule['repo_url']) is not None)):
+                if (not(rule.get('negation',False)) == check_rule(rule['condition'],rule)) and (not(rule.get('no_fallback',False) == super(WaptRepo,self).is_available(url=rule['repo_url']) is not None)):
                     self.cached_wapt_repo_url=rule['repo_url'].rstrip('/')+'-host' if isinstance(self,WaptHostRepo) else rule['repo_url']
                     rule['active_rule']=True
                     return self.cached_wapt_repo_url

@@ -1726,7 +1726,7 @@ def get_main_ip(host=None,hostv6=None):
         IPV6 = '::1'
     finally:
         s.close()
-    return [IPV4.decode('utf-8'),IPV6.decode('utf-8').split('%')[0]]
+    return (IPV4.decode('utf-8'),IPV6.decode('utf-8').split('%')[0])
 
 def get_local_IPs():
     list_address=[]
