@@ -440,6 +440,7 @@ procedure TDMPython.SetMainWaptRepo(AValue: Variant);
 begin
   if VarCompareValue(FMainWaptRepo,AValue) = vrEqual  then Exit;
   FMainWaptRepo:=AValue;
+  FWaptRepos := Nil;
 end;
 
 procedure TDMPython.SetPackagesAuthorizedCA(AValue: Variant);
