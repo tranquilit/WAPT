@@ -3899,8 +3899,6 @@ msgid "repo"
 msgstr "Dépôt"
 
 #: tviswaptgui.gridgroups.header.columns[37].text
-#, fuzzy
-#| msgid "target_os"
 msgctxt "tviswaptgui.gridgroups.header.columns[37].text"
 msgid "Target OS"
 msgstr "OS cible"
