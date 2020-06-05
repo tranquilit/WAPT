@@ -305,6 +305,7 @@ class HostCapabilities(BaseObjectClass):
             architectures=ensure_list(self.architecture),
             locales=ensure_list(self.packages_locales),
             maturities=self.packages_maturities,
+            target_os=self.os,
             min_os_version=self.os_version,
             max_os_version=self.os_version,
             )
@@ -435,7 +436,7 @@ class PackageRequest(BaseObjectClass):
         locales (list) : list of 2 letters lki
 
     """
-    _attributes = ['package','version','architectures','locales','maturities','min_os_version','max_os_version']
+    _attributes = ['package','version','architectures','locales','maturities','target_os','min_os_version','max_os_version']
 
     def __init__(self,request=None,copy_from=None,**kwargs):
         self.package = None
@@ -444,6 +445,7 @@ class PackageRequest(BaseObjectClass):
         self.locales = None
         self.maturities = None
         # boundaries are included
+        self.target_os = None
         self.min_os_version = None
         self.max_os_version = None
 
@@ -453,6 +455,7 @@ class PackageRequest(BaseObjectClass):
         self._version = None
         self._architectures = None
         self._locales = None
+        self._target_os = None
         self._maturities = None
         self._min_os_version = None
         self._max_os_version = None
@@ -603,6 +606,19 @@ class PackageRequest(BaseObjectClass):
             self._maturities = ensure_list(value,allow_none=True)
 
     @property
+    def target_os(self):
+        """List of accepted os"""
+        return self._target_os
+
+    @target_os.setter
+    def target_os(self,value):
+        """List of accepted os"""
+        if value in ('all','',None):
+            self._target_os = None
+        else:
+            self._target_os = ensure_list(value,allow_none=True)
+
+    @property
     def locales(self):
         return self._locales
 
@@ -618,6 +634,7 @@ class PackageRequest(BaseObjectClass):
         return  (
                 (self.package is None or package_entry.package == self.package) and
                 self._is_matched_version(package_entry.version) and
+                (self.target_os is None or package_entry.target_os in ('','all') or package_entry.target_os in self.target_os) and
                 (self.min_os_version is None or not package_entry.max_os_version or Version(package_entry.max_os_version)>=self.min_os_version) and
                 (self.max_os_version is None or not package_entry.min_os_version or Version(package_entry.min_os_version)<=self.max_os_version) and
                 (self.architectures is None or package_entry.architecture in ('','all') or package_entry.architecture in self.architectures) and
