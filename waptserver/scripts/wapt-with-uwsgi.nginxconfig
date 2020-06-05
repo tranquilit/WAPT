@@ -65,7 +65,12 @@ server {
             root "/var/www";
         }
 
-        location ~ ^/(wapt/.*|wapt-host/.*|waptwua/.*|wapt-diff-repos/.*)$ {
+        location ~ ^/(wapt/.*|waptwua/.*|wapt-diff-repos/.*)$ {
+            root "/var/www";
+        }
+
+        location ~ ^/(wapt-host/.*)$ {
+            log_not_found off;
             root "/var/www";
         }
 

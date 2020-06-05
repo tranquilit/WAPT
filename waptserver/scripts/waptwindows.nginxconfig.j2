@@ -50,9 +50,9 @@ http {
         ssl_certificate             "{{ wapt_ssl_cert_file }}";
         ssl_certificate_key         "{{ wapt_ssl_key_file }}";
         ssl_protocols               TLSv1.2;
-	{% if has_dhparam %}
+    {% if has_dhparam %}
         ssl_dhparam                 "{{ wapt_dhparam_file }}";
-	{%endif %}
+    {%endif %}
         ssl_prefer_server_ciphers   on;
         ssl_ciphers                 'EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH';
         ssl_stapling_verify         on;
@@ -108,7 +108,21 @@ http {
                 root "{{ wapt_repository_path }}";
             }
 
-            location ~ ^/(wapt/.*|wapt-host/.*|waptwua/.*|wapt-diff-repos/.*)$ {
+            location ~ ^/(wapt/.*|waptwua/.*|wapt-diff-repos/.*)$ {
+                add_header Cache-Control "store, no-cache, must-revalidate, post-check=0, pre-check=0";
+                add_header Pragma "no-cache";
+    {% if use_ssl_client_auth %}
+                proxy_set_header X-Ssl-Authenticated $ssl_client_verify;
+                proxy_set_header X-Ssl-Client-DN $ssl_client_s_dn;
+                if ($ssl_client_verify != SUCCESS) {
+                   return 401;
+                }
+    {% endif %}
+                root "{{ wapt_repository_path }}";
+            }
+            
+            location ~ ^/(wapt-host/.*)$ {
+                log_not_found off;
                 add_header Cache-Control "store, no-cache, must-revalidate, post-check=0, pre-check=0";
                 add_header Pragma "no-cache";
     {% if use_ssl_client_auth %}
