@@ -1,7 +1,7 @@
 object MsgForm: TMsgForm
-  Left = 2554
+  Left = 749
   Height = 283
-  Top = 361
+  Top = 237
   Width = 349
   AutoSize = True
   BorderStyle = bsDialog
@@ -13,6 +13,7 @@ object MsgForm: TMsgForm
   Color = clWhite
   Constraints.MinWidth = 220
   OnShow = FormShow
+  Position = poScreenCenter
   LCLVersion = '1.8.4.0'
   object MsgLabel: TLabel
     Left = 10

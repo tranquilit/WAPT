@@ -6,7 +6,9 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  ExtCtrls, Buttons, uWaptMessageRes;
+  ExtCtrls, Buttons,
+  base64,
+  uWaptMessageRes;
 
 type
 
@@ -17,14 +19,14 @@ type
     LogoLogin: TImage;
     MsgLabel: TLabel;
     Panel1: TPanel;
-    procedure ButtonOKClick();
-    procedure FormShow();
+    procedure ButtonOKClick;
+    procedure FormShow(Sender: TObject);
     procedure DisplayFileContent(fileName: String);
-    procedure ShowHelp;
+
   private
 
   public
-
+    procedure ShowHelp;
   end;
 
 var
@@ -67,8 +69,11 @@ begin
   end;
 end;
 
-procedure TMsgForm.FormShow;
+procedure TMsgForm.FormShow(Sender: TObject);
 begin
+  MakeFullyVisible();
+  Application.BringToFront;
+
   if Application.HasOption('h', 'help') then
   begin
     ShowHelp();
@@ -79,6 +84,10 @@ begin
   if ParamCount = 1 then
   begin
      MsgLabel.Caption := ParamStr(1);
+  end
+  else if Application.HasOption('b') then // -b flag : message is in base64
+  begin
+     MsgLabel.Caption := DecodeStringBase64(Application.GetOptionValue('b'));
   end
   else if Application.HasOption('f') then // -f flag : message is the file content
   begin
