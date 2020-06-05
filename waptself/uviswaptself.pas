@@ -1604,34 +1604,24 @@ function TThreadGetAllIcons.WaitForIcon(IconsDir: String; iconPath: String; Pack
 var
   j, k: integer;
 begin
-    if FileExists(iconPath) then // was the icon downloaded?
-      Exit('FOUND');
+  if FileExists(iconPath) then // was the icon downloaded?
+    Exit('FOUND');
 
-    // After 10 seconds, assume the icon is missing and move on
-    for k := 0 to 10 do
+  // After 10 seconds, assume the icon is missing and move on
+  for k := 0 to 10 do
+  begin
+    for j := ListPackages.AsArray.Length - 1 downto idx + 1 do // was a later icon downloaded?
     begin
-      Sleep(1000);
-      Synchronize(@NotifyListener);
-
       if FileExists(iconPath) then // was the icon downloaded?
       begin
         Exit('FOUND');
-      end
-      else
-      begin
-        for j := ListPackages.AsArray.Length - 1 downto idx + 1 do // was a later icon downloaded?
-        begin
-          if FileExists(iconPath) then // was the icon downloaded?
-          begin
-            Exit('FOUND');
-          end;
-          if FileExists(IconsDir + UTF8Encode(ListPackages.AsArray[j].S['package_uuid']) + '.png') then
-            Exit('ABSENT'); // if a later icon was downloaded, then our icon does not exist
-        end;
       end;
+      if (not FileExists(iconPath)) and (FileExists(IconsDir + UTF8Encode(ListPackages.AsArray[j].S['package_uuid']) + '.png')) then
+        Exit('ABSENT'); // if a later icon was downloaded, then our icon does not exist
     end;
-    ShowMessage('mais what');
-    Exit('ABSENT');
+    Sleep(1000);
+  end;
+  Exit('ABSENT');
 end;
 
 procedure TThreadGetAllIcons.LoadIcon(iconPath: String);
@@ -1707,20 +1697,19 @@ begin
        tmpLstIcons := TStringList.Create;
        tmpLstIcons.OwnsObjects := True;
 
-
        iconStatus := WaitForIcon(IconsDir, iconPath, Package, i);
 
        if iconStatus = 'FOUND' then
        begin
          LoadIcon(iconPath);
          AssignIcon(Package);
+         Synchronize(@NotifyListener);
        end;
 
     except
      continue;
     end;
   end;
-  Synchronize(@NotifyListener);
 end;
 
 procedure TVisWaptSelf.OnUpgradeAllIcons(Sender: TObject);
