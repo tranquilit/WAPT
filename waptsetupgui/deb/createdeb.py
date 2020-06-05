@@ -198,6 +198,7 @@ BDIR = './builddir/'
 dict_exe = {
 'WAPTSELF':'waptself.bin',
 'WAPTEXIT':'waptexit.bin',
+'WAPTMESSAGE':'waptmessage.bin',
 }
 
 WAPTEDITION=os.environ.get('WAPTEDITION','community')

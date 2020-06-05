@@ -20,6 +20,8 @@ Convenience package that ships with waptexit and waptself.
 %{__mkdir_p} %{buildroot}/opt/wapt/languages
 cp ../waptself.bin %{buildroot}/opt/wapt/
 cp ../waptexit.bin  %{buildroot}/opt/wapt/
+cp ../waptmessage.bin  %{buildroot}/opt/wapt/
+
 cp ../../common/waptself.desktop %{buildroot}/opt/wapt/tis-waptself.desktop
 cp ../../common/waptexit.desktop %{buildroot}/opt/wapt/tis-waptexit.desktop
 cp ../../../languages/waptself* %{buildroot}/opt/wapt/languages/
@@ -54,6 +56,7 @@ ln -sf /opt/wapt/waptself.bin /usr/bin/waptself
 ln -sf /opt/wapt/waptexit.bin /usr/bin/waptexit
 chmod 755 /opt/wapt/waptself.bin
 chmod 755 /opt/wapt/waptexit.bin
+chmod 755 /opt/wapt/waptmessage.bin
 
 xdg-icon-resource install --size 16  --mode system /opt/wapt/icons/waptself-16.png tis-waptself
 xdg-icon-resource install --size 32  --mode system /opt/wapt/icons/waptself-32.png tis-waptself

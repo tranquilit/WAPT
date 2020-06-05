@@ -306,13 +306,16 @@ eprint('copying the waptservice files')
 rsync(source_dir, 'tmpbuild/payload/opt/wapt',
       excludes=['postconf', 'repository', 'rpm', 'deb', 'spnego-http-auth-nginx-module', '*.bat'])
 
-# copying waptexit + waptself binaries
+# copying waptexit + waptself + waptmessage binaries
 copyfile(makepath(wapt_source_dir,'waptexit.bin'),'./tmpbuild/payload/opt/wapt/waptexit.bin')
+copyfile(makepath(wapt_source_dir,'waptmessage.bin'),'./tmpbuild/payload/opt/wapt/waptexit.bin')
 copyfile(makepath(wapt_source_dir,'waptself.bin'),'./tmpbuild/payload/opt/wapt/waptself.bin')
 os.chmod('./tmpbuild/payload/opt/wapt/waptexit.bin', 0o755)
 os.chmod('./tmpbuild/payload/opt/wapt/waptself.bin', 0o755)
+os.chmod('./tmpbuild/payload/opt/wapt/waptmessage.bin', 0o755)
 os.symlink('/opt/wapt/waptexit.bin','tmpbuild/payload/usr/local/bin/waptexit')
 os.symlink('/opt/wapt/waptself.bin','tmpbuild/payload/usr/local/bin/waptself')
+os.symlink('/opt/wapt/waptmessage.bin','tmpbuild/payload/usr/local/bin/waptmessage')
 
 if WAPTEDITION.lower()=='community':
     waptself_png = makepath(wapt_source_dir,'waptsetupgui/common/waptself-community.png')
@@ -320,17 +323,21 @@ if WAPTEDITION.lower()=='community':
 else:
     waptself_png = makepath(wapt_source_dir,'waptsetupgui/common/waptself-community.png')
     waptexit_png = makepath(wapt_source_dir,'waptsetupgui/common/waptexit-community.png')
+waptmessage_png = waptexit_png
 
 applications_dir = './tmpbuild/payload/Applications'
 shutil.copytree(makepath(wapt_source_dir,'waptservice','pkg','Applications'),applications_dir)
-icons_to_convert=[(waptself_png,'./MyIcon.iconset/',makepath(applications_dir,'WAPT','WAPT Self-service.app','Contents','Resources','icon.icns')),(waptexit_png,'./MyIcon.iconset/',makepath(applications_dir,'WAPT','WAPT Exit.app','Contents','Resources','icon.icns'))]
+icons_to_convert=[(waptself_png,'./MyIcon.iconset/',makepath(applications_dir,'WAPT','WAPT Self-service.app','Contents','Resources','icon.icns')),(waptexit_png,'./MyIcon.iconset/',makepath(applications_dir,'WAPT','WAPT Exit.app','Contents','Resources','icon.icns')),(waptmessage_png,'./MyIcon.iconset/',makepath(applications_dir,'WAPT','WAPT Message.app','Contents','Resources','icon.icns'))]
 
 os.mkdir(makepath(applications_dir,'WAPT','WAPT Exit.app','Contents','MacOS'))
 os.mkdir(makepath(applications_dir,'WAPT','WAPT Exit.app','Contents','Resources'))
+os.mkdir(makepath(applications_dir,'WAPT','WAPT Message.app','Contents','MacOS'))
+os.mkdir(makepath(applications_dir,'WAPT','WAPT Message.app','Contents','Resources'))
 os.mkdir(makepath(applications_dir,'WAPT','WAPT Self-service.app','Contents','MacOS'))
 os.mkdir(makepath(applications_dir,'WAPT','WAPT Self-service.app','Contents','Resources'))
 os.symlink('/opt/wapt/waptexit.bin',makepath(applications_dir,'WAPT','WAPT Exit.app','Contents','MacOS','waptexit'))
 os.symlink('/opt/wapt/waptself.bin',makepath(applications_dir,'WAPT','WAPT Self-service.app','Contents','MacOS','waptself'))
+os.symlink('/opt/wapt/waptmessage.bin',makepath(applications_dir,'WAPT','WAPT Self-service.app','Contents','MacOS','waptmessage'))
 
 for icon in icons_to_convert:
     os.mkdir(icon[1])

@@ -1,6 +1,7 @@
 #!/bin/sh
-chown wapt:root /opt/wapt/waptself.bin
-chown wapt:root /opt/wapt/waptexit.bin
+chown root:root /opt/wapt/waptself.bin
+chown root:root /opt/wapt/waptexit.bin
+chown root:root /opt/wapt/waptmessage.bin
 
 ln -sf /opt/wapt/waptexit.bin /usr/bin/waptexit
 ln -sf /opt/wapt/waptself.bin /usr/bin/waptself
