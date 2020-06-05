@@ -305,7 +305,7 @@ class HostCapabilities(BaseObjectClass):
             architectures=ensure_list(self.architecture),
             locales=ensure_list(self.packages_locales),
             maturities=self.packages_maturities,
-            target_os=self.os,
+            target_os=self.os.lower(),
             min_os_version=self.os_version,
             max_os_version=self.os_version,
             )
@@ -339,7 +339,7 @@ class HostCapabilities(BaseObjectClass):
             return False
 
         if self.os is not None and package_entry.target_os:
-            if self.os in ['Darwin','Linux']:
+            if self.os.lower() in ['darwin','linux']:
                 if package_entry.target_os.lower() not in [self.os.lower(),'unix']:
                     return False
             elif package_entry.target_os.lower() != self.os.lower():
@@ -613,6 +613,7 @@ class PackageRequest(BaseObjectClass):
     @target_os.setter
     def target_os(self,value):
         """List of accepted os"""
+        value = value.lower()
         if value in ('all','',None):
             self._target_os = None
         else:
