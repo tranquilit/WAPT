@@ -308,7 +308,7 @@ rsync(source_dir, 'tmpbuild/payload/opt/wapt',
 
 # copying waptexit + waptself + waptmessage binaries
 copyfile(makepath(wapt_source_dir,'waptexit.bin'),'./tmpbuild/payload/opt/wapt/waptexit.bin')
-copyfile(makepath(wapt_source_dir,'waptmessage.bin'),'./tmpbuild/payload/opt/wapt/waptexit.bin')
+copyfile(makepath(wapt_source_dir,'waptmessage.bin'),'./tmpbuild/payload/opt/wapt/waptmessage.bin')
 copyfile(makepath(wapt_source_dir,'waptself.bin'),'./tmpbuild/payload/opt/wapt/waptself.bin')
 os.chmod('./tmpbuild/payload/opt/wapt/waptexit.bin', 0o755)
 os.chmod('./tmpbuild/payload/opt/wapt/waptself.bin', 0o755)
