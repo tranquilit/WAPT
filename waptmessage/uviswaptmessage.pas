@@ -26,7 +26,7 @@ type
   private
 
   public
-    procedure ShowHelp;
+    procedure ShowHelp; override;
   end;
 
 var
@@ -40,6 +40,7 @@ implementation
 
 procedure TMsgForm.ShowHelp;
 begin
+  inherited ShowHelp;
   ShowMessage(rsHelp);
 end;
 
