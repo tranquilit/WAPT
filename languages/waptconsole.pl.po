@@ -3865,7 +3865,7 @@ msgstr ""
 
 #: tviswaptgui.gridgroups.header.columns[37].text
 msgctxt "tviswaptgui.gridgroups.header.columns[37].text"
-msgid "target_os"
+msgid "Target OS"
 msgstr ""
 
 #: tviswaptgui.gridgroups.header.columns[38].text
@@ -5392,7 +5392,7 @@ msgstr ""
 
 #: tviswaptgui.gridselfservicepackages.header.columns[37].text
 msgctxt "tviswaptgui.gridselfservicepackages.header.columns[37].text"
-msgid "target_os"
+msgid "Target OS"
 msgstr ""
 
 #: tviswaptgui.gridselfservicepackages.header.columns[38].text
@@ -6158,11 +6158,6 @@ msgstr ""
 
 #: tviswaptgui.opendialogwapt.title
 msgid "Select WAPT file"
-msgstr ""
-
-#: tviswaptgui.panel2.caption
-msgctxt "tviswaptgui.panel2.caption"
-msgid "Panel2"
 msgstr ""
 
 #: tviswaptgui.panel7.caption

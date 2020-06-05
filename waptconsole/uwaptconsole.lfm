@@ -27,9 +27,9 @@ object VisWaptGUI: TVisWaptGUI
     Height = 711
     Top = 0
     Width = 1388
-    ActivePage = pgGroups
+    ActivePage = pgInventory
     Align = alClient
-    TabIndex = 1
+    TabIndex = 0
     TabOrder = 0
     OnChange = MainPagesChange
     object pgInventory: TTabSheet
@@ -4638,35 +4638,35 @@ object VisWaptGUI: TVisWaptGUI
             PropertyName = 'repo'
           end        
           item
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
             Position = 37
             Tag = 37
+            Text = 'Target OS'
+            Width = 100
+            PropertyName = 'target_os'
+          end        
+          item
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+            Position = 38
+            Tag = 38
             Text = 'localpath'
             Width = 100
             PropertyName = 'localpath'
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 38
-            Tag = 38
+            Position = 39
+            Tag = 39
             Text = 'homepage'
             Width = 100
             PropertyName = 'homepage'
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 39
-            Tag = 39
+            Position = 40
+            Tag = 40
             Text = 'sourcespath'
             Width = 319
             PropertyName = 'sourcespath'
-          end        
-          item
-            Position = 40
-            Tag = 40
-            Text = 'Target OS'
-            Width = 100
-            PropertyName = 'target_os'
           end>
         Header.DefaultHeight = 18
         Header.Height = 18
@@ -7360,214 +7360,207 @@ object VisWaptGUI: TVisWaptGUI
             PropertyName = 'signature_date'
           end        
           item
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
             Position = 9
             Tag = 9
-            Text = 'Target OS'
-            Width = 84
-            PropertyName = 'target_os'
-          end        
-          item
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 10
-            Tag = 10
             Text = 'Arch'
             Width = 64
             PropertyName = 'architecture'
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 11
-            Tag = 11
+            Position = 10
+            Tag = 10
             Text = 'Locale'
             Width = 53
             PropertyName = 'locale'
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 12
-            Tag = 12
+            Position = 11
+            Tag = 11
             Text = 'Min OS version'
             Width = 72
             PropertyName = 'min_os_version'
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 13
-            Tag = 13
+            Position = 12
+            Tag = 12
             Text = 'Max OS version'
             Width = 63
             PropertyName = 'max_os_version'
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 14
-            Tag = 14
+            Position = 13
+            Tag = 13
             Text = 'Min Wapt version'
             Width = 69
             PropertyName = 'min_wapt_version'
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 15
-            Tag = 15
+            Position = 14
+            Tag = 14
             Text = 'Repository'
             PropertyName = 'repo_url'
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
-            Position = 16
-            Tag = 16
+            Position = 15
+            Tag = 15
             Text = 'Filename'
             PropertyName = 'filename'
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 17
-            Tag = 17
+            Position = 16
+            Tag = 16
             Text = 'priority'
             Width = 100
             PropertyName = 'priority'
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 18
-            Tag = 18
+            Position = 17
+            Tag = 17
             Text = 'signature'
             Width = 100
             PropertyName = 'signature'
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 19
-            Tag = 19
+            Position = 18
+            Tag = 18
             Text = 'sources'
             Width = 100
             PropertyName = 'sources'
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 20
-            Tag = 20
+            Position = 19
+            Tag = 19
             Text = 'audit_schedule'
             Width = 100
             PropertyName = 'audit_schedule'
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 21
-            Tag = 21
+            Position = 20
+            Tag = 20
             Text = 'signed_attributes'
             Width = 100
             PropertyName = 'signed_attributes'
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 22
-            Tag = 22
+            Position = 21
+            Tag = 21
             Text = 'md5sum'
             Width = 100
             PropertyName = 'md5sum'
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 23
-            Tag = 23
+            Position = 22
+            Tag = 22
             Text = 'description_pl'
             Width = 100
             PropertyName = 'description_pl'
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 24
-            Tag = 24
+            Position = 23
+            Tag = 23
             Text = 'description_fr'
             Width = 100
             PropertyName = 'description_fr'
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 25
-            Tag = 25
+            Position = 24
+            Tag = 24
             Text = 'description_es'
             Width = 100
             PropertyName = 'description_es'
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 26
-            Tag = 26
+            Position = 25
+            Tag = 25
             Text = 'description_de'
             Width = 100
             PropertyName = 'description_de'
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 27
-            Tag = 27
+            Position = 26
+            Tag = 26
             Text = 'maintainer'
             Width = 100
             PropertyName = 'maintainer'
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 28
-            Tag = 28
+            Position = 27
+            Tag = 27
             Text = 'package_uuid'
             Width = 100
             PropertyName = 'package_uuid'
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 29
-            Tag = 29
+            Position = 28
+            Tag = 28
             Text = 'description'
             Width = 100
             PropertyName = 'description'
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 30
-            Tag = 30
+            Position = 29
+            Tag = 29
             Text = 'impacted_process'
             Width = 100
             PropertyName = 'impacted_process'
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 31
-            Tag = 31
+            Position = 30
+            Tag = 30
             Text = 'installed_size'
             Width = 100
             PropertyName = 'installed_size'
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 32
-            Tag = 32
+            Position = 31
+            Tag = 31
             Text = 'signer_fingerprint'
             Width = 100
             PropertyName = 'signer_fingerprint'
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 33
-            Tag = 33
+            Position = 32
+            Tag = 32
             Text = 'editor'
             Width = 100
             PropertyName = 'editor'
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 34
-            Tag = 34
+            Position = 33
+            Tag = 33
             Text = 'licence'
             Width = 100
             PropertyName = 'licence'
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 35
-            Tag = 35
+            Position = 34
+            Tag = 34
             Text = 'keywords'
             Width = 100
             PropertyName = 'keywords'
@@ -7575,19 +7568,26 @@ object VisWaptGUI: TVisWaptGUI
           item
             Alignment = taRightJustify
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 36
-            Tag = 36
+            Position = 35
+            Tag = 35
             Text = 'size'
             Width = 100
             PropertyName = 'size'
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
-            Position = 37
-            Tag = 37
+            Position = 36
+            Tag = 36
             Text = 'repo'
             Width = 100
             PropertyName = 'repo'
+          end        
+          item
+            Position = 37
+            Tag = 37
+            Text = 'Target OS'
+            Width = 84
+            PropertyName = 'target_os'
           end        
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]

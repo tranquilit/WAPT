@@ -3899,8 +3899,10 @@ msgid "repo"
 msgstr "Dépôt"
 
 #: tviswaptgui.gridgroups.header.columns[37].text
+#, fuzzy
+#| msgid "target_os"
 msgctxt "tviswaptgui.gridgroups.header.columns[37].text"
-msgid "target_os"
+msgid "Target OS"
 msgstr "OS cible"
 
 #: tviswaptgui.gridgroups.header.columns[38].text
@@ -5425,8 +5427,9 @@ msgid "repo"
 msgstr "Dépôt"
 
 #: tviswaptgui.gridselfservicepackages.header.columns[37].text
+#| msgid "target_os"
 msgctxt "tviswaptgui.gridselfservicepackages.header.columns[37].text"
-msgid "target_os"
+msgid "Target OS"
 msgstr "OS cible"
 
 #: tviswaptgui.gridselfservicepackages.header.columns[38].text
@@ -6196,11 +6199,6 @@ msgstr "Sélectionner un fichier d'installation exe ou msi"
 #: tviswaptgui.opendialogwapt.title
 msgid "Select WAPT file"
 msgstr "Sélectionner un fichier WAPT"
-
-#: tviswaptgui.panel2.caption
-msgctxt "tviswaptgui.panel2.caption"
-msgid "Panel2"
-msgstr ""
 
 #: tviswaptgui.panel7.caption
 msgctxt "tviswaptgui.panel7.caption"
