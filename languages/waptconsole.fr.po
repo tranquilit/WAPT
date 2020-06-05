@@ -7808,6 +7808,10 @@ msgstr "Editer la configuration de la machine"
 msgid "HOSTNAME"
 msgstr "Nom d'hôte"
 
+#: uwaptconsoleres.rshostnamehint
+msgid "Hostname of the host : you can use Unix shell-style wildcards"
+msgstr "Nom d'hôte de la machine : vous pouvez utiliser des caractères jokers Unix"
+
 #: uwaptconsoleres.rshostsselectedtotal
 #, object-pascal-format
 msgctxt "uwaptconsoleres.rshostsselectedtotal"
@@ -8118,6 +8122,10 @@ msgstr "La clé privée n'existe pas : %s"
 msgid "PUBLIC IP"
 msgstr "IP publique"
 
+#: uwaptconsoleres.rspubliciphint
+msgid "Subnet : IP with subnet mask"
+msgstr "Sous-réseau : IP avec son masque de sous-réseau"
+
 #: uwaptconsoleres.rspublickeygenerror
 #, object-pascal-format
 msgctxt "uwaptconsoleres.rspublickeygenerror"
@@ -8373,7 +8381,7 @@ msgid ""
 msgstr ""
 "Attention, l'installeur waptagent.exe n'est pas présent sur le serveur.\n"
 "\n"
-"Voulez-vous générer l'installeur waptagent pour le déploiement de Wapt sur les clients ?\n"
+"Voulez-vous générer l'installeur waptagent pour le déploiement de WAPT sur les clients ?\n"
 
 #: uwaptconsoleres.rswaptagentoldversion
 msgid ""

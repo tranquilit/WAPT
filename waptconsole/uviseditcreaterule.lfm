@@ -57,7 +57,7 @@ object FormEditRule: TFormEditRule
       FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00
     }
     ModalResult = 1
-    TabOrder = 8
+    TabOrder = 10
   end
   object BitBtnCancel: TBitBtn
     Left = 296
@@ -102,7 +102,7 @@ object FormEditRule: TFormEditRule
       FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00
     }
     ModalResult = 2
-    TabOrder = 9
+    TabOrder = 11
   end
   object ComboBoxCondition: TComboBox
     Left = 112
@@ -136,7 +136,9 @@ object FormEditRule: TFormEditRule
     Top = 64
     Width = 240
     OnChange = EditNameChange
-    TabOrder = 2
+    ParentShowHint = False
+    ShowHint = True
+    TabOrder = 3
   end
   object LabName: TLabel
     Left = 24
@@ -188,7 +190,7 @@ object FormEditRule: TFormEditRule
     OnChange = EditNameChange
     Sorted = True
     Style = csDropDownList
-    TabOrder = 3
+    TabOrder = 2
     Visible = False
   end
   object ComboBoxUrl: TComboBox
@@ -197,9 +199,9 @@ object FormEditRule: TFormEditRule
     Top = 88
     Width = 288
     ItemHeight = 15
-    OnChange = EditNameChange
+    OnChange = ComboBoxUrlChange
     Sorted = True
-    TabOrder = 4
+    TabOrder = 5
   end
   object CheckBoxWAPT: TCheckBox
     Left = 112
@@ -210,7 +212,7 @@ object FormEditRule: TFormEditRule
     Checked = True
     OnChange = EditNameChange
     State = cbChecked
-    TabOrder = 5
+    TabOrder = 6
   end
   object CheckBoxWUA: TCheckBox
     Left = 353
@@ -219,7 +221,7 @@ object FormEditRule: TFormEditRule
     Width = 47
     Caption = 'WUA'
     OnChange = EditNameChange
-    TabOrder = 7
+    TabOrder = 8
   end
   object CheckBoxHost: TCheckBox
     Left = 232
@@ -228,7 +230,7 @@ object FormEditRule: TFormEditRule
     Width = 50
     Caption = 'HOST'
     OnChange = EditNameChange
-    TabOrder = 6
+    TabOrder = 7
   end
   object LabPackageType: TLabel
     Left = 24
@@ -247,7 +249,7 @@ object FormEditRule: TFormEditRule
     Width = 44
     Caption = 'NOT'
     OnChange = EditNameChange
-    TabOrder = 10
+    TabOrder = 4
   end
   object CheckBoxNoFallback: TCheckBox
     Left = 112
@@ -256,7 +258,7 @@ object FormEditRule: TFormEditRule
     Width = 80
     Caption = 'No fallback'
     OnChange = EditNameChange
-    TabOrder = 11
+    TabOrder = 9
   end
   object LabOtherSettings: TLabel
     Left = 24

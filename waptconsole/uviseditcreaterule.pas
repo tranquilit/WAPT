@@ -32,6 +32,7 @@ type
     LabCondition: TLabel;
     LabRepoURL: TLabel;
     procedure ComboBoxConditionChange(Sender: TObject);
+    procedure ComboBoxUrlChange(Sender: TObject);
     procedure EditNameChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormKeyPress(Sender: TObject; var Key: char);
@@ -43,6 +44,9 @@ type
 
 var
   FormEditRule: TFormEditRule;
+
+const
+  MicrosoftWUADirectURL = 'http://download.windowsupdate.com/microsoftupdate/v6/wsusscan/';
 
 implementation
 
@@ -86,7 +90,25 @@ begin
       EditValue.Visible:=True;
       EditValue.Enabled:=True;
     end;
+    if (ComboBoxCondition.Items[ComboBoxCondition.ItemIndex]=rsHostname) then
+       EditValue.Hint:=rsHostnameHint
+    else if (ComboBoxCondition.Items[ComboBoxCondition.ItemIndex]=rsAgentIP) or (ComboBoxCondition.Items[ComboBoxCondition.ItemIndex]=rsPublicIP) then
+         EditValue.Hint:=rsPublicIPHint
+    else
+      EditValue.Hint:='';
   end;
+  BitBtnOk.Enabled:=CanOk();
+end;
+
+procedure TFormEditRule.ComboBoxUrlChange(Sender: TObject);
+begin
+   CheckBoxWAPT.Enabled:=not(ComboBoxUrl.Text=MicrosoftWUADirectURL);
+   CheckBoxHost.Enabled:=not(ComboBoxUrl.Text=MicrosoftWUADirectURL);
+   if ComboBoxUrl.Text=MicrosoftWUADirectURL then
+   begin
+        CheckBoxWAPT.Checked:=False;
+        CheckBoxHost.Checked:=False;
+   end;
   BitBtnOk.Enabled:=CanOk();
 end;
 
@@ -104,6 +126,7 @@ begin
   ComboBoxCondition.Items.Add(rsDomain);
   ComboBoxCondition.Items.Add(rsSite);
   ComboBoxCondition.Items.Add(rsPublicIP);
+  ComboBoxUrl.Items.Add(MicrosoftWUADirectURL);
 end;
 
 procedure TFormEditRule.FormKeyPress(Sender: TObject; var Key: char);

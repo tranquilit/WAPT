@@ -7709,6 +7709,10 @@ msgstr ""
 msgid "HOSTNAME"
 msgstr ""
 
+#: uwaptconsoleres.rshostnamehint
+msgid "Hostname of the host : you can use Unix shell-style wildcards"
+msgstr ""
+
 #: uwaptconsoleres.rshostsselectedtotal
 msgctxt "uwaptconsoleres.rshostsselectedtotal"
 msgid "Selected / Total : %d / %d"
@@ -7979,6 +7983,10 @@ msgstr ""
 
 #: uwaptconsoleres.rspublicip
 msgid "PUBLIC IP"
+msgstr ""
+
+#: uwaptconsoleres.rspubliciphint
+msgid "Subnet : IP with subnet mask"
 msgstr ""
 
 #: uwaptconsoleres.rspublickeygenerror

@@ -341,13 +341,15 @@ resourcestring
   { Messages Normalizarion }
   rsQueryApplyUpdates = 'Some of your changes are not yet saved. Do you want to save your changes ?';
 
-  { Messages dans repo-rules }
+  { Messages in repo-rules }
 
   rsAgentIP = 'AGENT IP';
   rsHostname = 'HOSTNAME';
   rsDomain = 'DOMAIN';
   rsSite = 'SITE';
   rsPublicIP = 'PUBLIC IP';
+  rsPublicIPHint = 'Subnet : IP with subnet mask';
+  rsHostnameHint = 'Hostname of the host : you can use Unix shell-style wildcards';
   rsSyncJson = 'You have to first create the index of files for the server';
   rsCreateSyncJson = 'Create index';
   rsUpdateSyncJson = 'Update index';
