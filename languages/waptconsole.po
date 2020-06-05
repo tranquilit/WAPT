@@ -3863,17 +3863,17 @@ msgstr ""
 
 #: tviswaptgui.gridgroups.header.columns[37].text
 msgctxt "tviswaptgui.gridgroups.header.columns[37].text"
-msgid "localpath"
+msgid "target_os"
 msgstr ""
 
 #: tviswaptgui.gridgroups.header.columns[38].text
 msgctxt "tviswaptgui.gridgroups.header.columns[38].text"
-msgid "homepage"
+msgid "localpath"
 msgstr ""
 
 #: tviswaptgui.gridgroups.header.columns[39].text
 msgctxt "tviswaptgui.gridgroups.header.columns[39].text"
-msgid "sourcespath"
+msgid "homepage"
 msgstr ""
 
 #: tviswaptgui.gridgroups.header.columns[3].text
@@ -3883,7 +3883,7 @@ msgstr ""
 
 #: tviswaptgui.gridgroups.header.columns[40].text
 msgctxt "tviswaptgui.gridgroups.header.columns[40].text"
-msgid "Target OS"
+msgid "sourcespath"
 msgstr ""
 
 #: tviswaptgui.gridgroups.header.columns[4].text
@@ -5237,52 +5237,52 @@ msgstr ""
 
 #: tviswaptgui.gridselfservicepackages.header.columns[10].text
 msgctxt "tviswaptgui.gridselfservicepackages.header.columns[10].text"
-msgid "Arch"
+msgid "Locale"
 msgstr ""
 
 #: tviswaptgui.gridselfservicepackages.header.columns[11].text
 msgctxt "tviswaptgui.gridselfservicepackages.header.columns[11].text"
-msgid "Locale"
+msgid "Min OS version"
 msgstr ""
 
 #: tviswaptgui.gridselfservicepackages.header.columns[12].text
 msgctxt "tviswaptgui.gridselfservicepackages.header.columns[12].text"
-msgid "Min OS version"
+msgid "Max OS version"
 msgstr ""
 
 #: tviswaptgui.gridselfservicepackages.header.columns[13].text
 msgctxt "tviswaptgui.gridselfservicepackages.header.columns[13].text"
-msgid "Max OS version"
+msgid "Min Wapt version"
 msgstr ""
 
 #: tviswaptgui.gridselfservicepackages.header.columns[14].text
 msgctxt "tviswaptgui.gridselfservicepackages.header.columns[14].text"
-msgid "Min Wapt version"
+msgid "Repository"
 msgstr ""
 
 #: tviswaptgui.gridselfservicepackages.header.columns[15].text
 msgctxt "tviswaptgui.gridselfservicepackages.header.columns[15].text"
-msgid "Repository"
+msgid "Filename"
 msgstr ""
 
 #: tviswaptgui.gridselfservicepackages.header.columns[16].text
 msgctxt "tviswaptgui.gridselfservicepackages.header.columns[16].text"
-msgid "Filename"
+msgid "priority"
 msgstr ""
 
 #: tviswaptgui.gridselfservicepackages.header.columns[17].text
 msgctxt "tviswaptgui.gridselfservicepackages.header.columns[17].text"
-msgid "priority"
+msgid "signature"
 msgstr ""
 
 #: tviswaptgui.gridselfservicepackages.header.columns[18].text
 msgctxt "tviswaptgui.gridselfservicepackages.header.columns[18].text"
-msgid "signature"
+msgid "sources"
 msgstr ""
 
 #: tviswaptgui.gridselfservicepackages.header.columns[19].text
 msgctxt "tviswaptgui.gridselfservicepackages.header.columns[19].text"
-msgid "sources"
+msgid "audit_schedule"
 msgstr ""
 
 #: tviswaptgui.gridselfservicepackages.header.columns[1].text
@@ -5292,52 +5292,52 @@ msgstr ""
 
 #: tviswaptgui.gridselfservicepackages.header.columns[20].text
 msgctxt "tviswaptgui.gridselfservicepackages.header.columns[20].text"
-msgid "audit_schedule"
+msgid "signed_attributes"
 msgstr ""
 
 #: tviswaptgui.gridselfservicepackages.header.columns[21].text
 msgctxt "tviswaptgui.gridselfservicepackages.header.columns[21].text"
-msgid "signed_attributes"
+msgid "md5sum"
 msgstr ""
 
 #: tviswaptgui.gridselfservicepackages.header.columns[22].text
 msgctxt "tviswaptgui.gridselfservicepackages.header.columns[22].text"
-msgid "md5sum"
+msgid "description_pl"
 msgstr ""
 
 #: tviswaptgui.gridselfservicepackages.header.columns[23].text
 msgctxt "tviswaptgui.gridselfservicepackages.header.columns[23].text"
-msgid "description_pl"
+msgid "description_fr"
 msgstr ""
 
 #: tviswaptgui.gridselfservicepackages.header.columns[24].text
 msgctxt "tviswaptgui.gridselfservicepackages.header.columns[24].text"
-msgid "description_fr"
+msgid "description_es"
 msgstr ""
 
 #: tviswaptgui.gridselfservicepackages.header.columns[25].text
 msgctxt "tviswaptgui.gridselfservicepackages.header.columns[25].text"
-msgid "description_es"
+msgid "description_de"
 msgstr ""
 
 #: tviswaptgui.gridselfservicepackages.header.columns[26].text
 msgctxt "tviswaptgui.gridselfservicepackages.header.columns[26].text"
-msgid "description_de"
+msgid "maintainer"
 msgstr ""
 
 #: tviswaptgui.gridselfservicepackages.header.columns[27].text
 msgctxt "tviswaptgui.gridselfservicepackages.header.columns[27].text"
-msgid "maintainer"
+msgid "package_uuid"
 msgstr ""
 
 #: tviswaptgui.gridselfservicepackages.header.columns[28].text
 msgctxt "tviswaptgui.gridselfservicepackages.header.columns[28].text"
-msgid "package_uuid"
+msgid "description"
 msgstr ""
 
 #: tviswaptgui.gridselfservicepackages.header.columns[29].text
 msgctxt "tviswaptgui.gridselfservicepackages.header.columns[29].text"
-msgid "description"
+msgid "impacted_process"
 msgstr ""
 
 #: tviswaptgui.gridselfservicepackages.header.columns[2].text
@@ -5347,42 +5347,42 @@ msgstr ""
 
 #: tviswaptgui.gridselfservicepackages.header.columns[30].text
 msgctxt "tviswaptgui.gridselfservicepackages.header.columns[30].text"
-msgid "impacted_process"
+msgid "installed_size"
 msgstr ""
 
 #: tviswaptgui.gridselfservicepackages.header.columns[31].text
 msgctxt "tviswaptgui.gridselfservicepackages.header.columns[31].text"
-msgid "installed_size"
+msgid "signer_fingerprint"
 msgstr ""
 
 #: tviswaptgui.gridselfservicepackages.header.columns[32].text
 msgctxt "tviswaptgui.gridselfservicepackages.header.columns[32].text"
-msgid "signer_fingerprint"
+msgid "editor"
 msgstr ""
 
 #: tviswaptgui.gridselfservicepackages.header.columns[33].text
 msgctxt "tviswaptgui.gridselfservicepackages.header.columns[33].text"
-msgid "editor"
+msgid "licence"
 msgstr ""
 
 #: tviswaptgui.gridselfservicepackages.header.columns[34].text
 msgctxt "tviswaptgui.gridselfservicepackages.header.columns[34].text"
-msgid "licence"
+msgid "keywords"
 msgstr ""
 
 #: tviswaptgui.gridselfservicepackages.header.columns[35].text
 msgctxt "tviswaptgui.gridselfservicepackages.header.columns[35].text"
-msgid "keywords"
+msgid "size"
 msgstr ""
 
 #: tviswaptgui.gridselfservicepackages.header.columns[36].text
 msgctxt "tviswaptgui.gridselfservicepackages.header.columns[36].text"
-msgid "size"
+msgid "repo"
 msgstr ""
 
 #: tviswaptgui.gridselfservicepackages.header.columns[37].text
 msgctxt "tviswaptgui.gridselfservicepackages.header.columns[37].text"
-msgid "repo"
+msgid "target_os"
 msgstr ""
 
 #: tviswaptgui.gridselfservicepackages.header.columns[38].text
@@ -5432,7 +5432,7 @@ msgstr ""
 
 #: tviswaptgui.gridselfservicepackages.header.columns[9].text
 msgctxt "tviswaptgui.gridselfservicepackages.header.columns[9].text"
-msgid "Target OS"
+msgid "Arch"
 msgstr ""
 
 #: tviswaptgui.gridwsusscan.header.columns[0].text
@@ -6148,6 +6148,11 @@ msgstr ""
 
 #: tviswaptgui.opendialogwapt.title
 msgid "Select WAPT file"
+msgstr ""
+
+#: tviswaptgui.panel2.caption
+msgctxt "tviswaptgui.panel2.caption"
+msgid "Panel2"
 msgstr ""
 
 #: tviswaptgui.panel7.caption
