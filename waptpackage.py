@@ -613,7 +613,6 @@ class PackageRequest(BaseObjectClass):
     @target_os.setter
     def target_os(self,value):
         """List of accepted os"""
-        value = value.lower()
         if value in ('all','',None):
             self._target_os = None
         else:
