@@ -2,14 +2,14 @@ object VisEditPackage: TVisEditPackage
   Left = 485
   Height = 523
   Top = 158
-  Width = 935
+  Width = 957
   Align = alRight
   BorderIcons = [biSystemMenu, biMaximize]
   Caption = 'Edit package'
   ClientHeight = 523
-  ClientWidth = 935
+  ClientWidth = 957
   Constraints.MinHeight = 400
-  Constraints.MinWidth = 800
+  Constraints.MinWidth = 900
   OnClose = FormClose
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
@@ -20,9 +20,9 @@ object VisEditPackage: TVisEditPackage
   LCLVersion = '1.8.4.0'
   object PageControl1: TPageControl
     Left = 0
-    Height = 334
-    Top = 34
-    Width = 630
+    Height = 308
+    Top = 60
+    Width = 652
     ActivePage = pgDepends
     Align = alClient
     TabIndex = 0
@@ -30,13 +30,13 @@ object VisEditPackage: TVisEditPackage
     OnChange = PageControl1Change
     object pgDepends: TTabSheet
       Caption = 'Edit dependencies'
-      ClientHeight = 308
-      ClientWidth = 622
+      ClientHeight = 282
+      ClientWidth = 644
       object GridDepends: TSOGrid
         Left = 0
-        Height = 308
+        Height = 282
         Top = 0
-        Width = 622
+        Width = 644
         OnBeforePaste = GridDependsBeforePaste
         OnNodesDelete = GridDependsNodesDelete
         ShowAdvancedColumnsCustomize = False
@@ -707,33 +707,33 @@ object VisEditPackage: TVisEditPackage
     Left = 0
     Height = 118
     Top = 373
-    Width = 935
+    Width = 957
     Align = alBottom
     ClientHeight = 118
-    ClientWidth = 935
+    ClientWidth = 957
     TabOrder = 4
     Visible = False
     object Panel7: TPanel
       Left = 1
       Height = 116
       Top = 1
-      Width = 933
+      Width = 955
       Align = alClient
       Caption = 'Panel7'
       ClientHeight = 116
-      ClientWidth = 933
+      ClientWidth = 955
       TabOrder = 0
       object MemoLog: TMemo
         Left = 1
         Height = 114
         Top = 1
-        Width = 320
+        Width = 342
         Align = alClient
         BorderStyle = bsNone
         TabOrder = 0
       end
       object jsonlog: TVirtualJSONInspector
-        Left = 326
+        Left = 348
         Height = 114
         Top = 1
         Width = 606
@@ -764,7 +764,7 @@ object VisEditPackage: TVisEditPackage
         TreeOptions.SelectionOptions = [toExtendedFocus]
       end
       object Splitter2: TSplitter
-        Left = 321
+        Left = 343
         Height = 114
         Top = 1
         Width = 5
@@ -778,15 +778,15 @@ object VisEditPackage: TVisEditPackage
     Left = 0
     Height = 5
     Top = 368
-    Width = 935
+    Width = 957
     Align = alBottom
     ResizeAnchor = akBottom
   end
-  object Panel2: TPanel
-    Left = -3
-    Height = 28
+  object PanTop: TPanel
+    Left = 3
+    Height = 54
     Top = 3
-    Width = 935
+    Width = 951
     Align = alTop
     AutoSize = True
     BorderSpacing.Around = 3
@@ -795,18 +795,19 @@ object VisEditPackage: TVisEditPackage
     ChildSizing.TopBottomSpacing = 3
     ChildSizing.HorizontalSpacing = 6
     ChildSizing.VerticalSpacing = 6
-    ClientHeight = 28
-    ClientWidth = 935
+    ClientHeight = 54
+    ClientWidth = 951
     Constraints.MinWidth = 935
     TabOrder = 0
     object labPackage: TLabel
-      AnchorSideLeft.Control = Panel2
-      AnchorSideTop.Control = Panel2
+      AnchorSideLeft.Control = PanTop
+      AnchorSideTop.Control = EdPackage
       AnchorSideTop.Side = asrCenter
       Left = 6
       Height = 13
-      Top = 8
+      Top = 7
       Width = 40
+      BorderSpacing.Top = 5
       Caption = 'Package'
       Layout = tlCenter
       ParentColor = False
@@ -814,6 +815,7 @@ object VisEditPackage: TVisEditPackage
     object EdPackage: TEdit
       AnchorSideLeft.Control = labPackage
       AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = PanTop
       Left = 52
       Height = 21
       Top = 3
@@ -825,13 +827,14 @@ object VisEditPackage: TVisEditPackage
     object LabDescription: TLabel
       AnchorSideLeft.Control = EdVersion
       AnchorSideLeft.Side = asrBottom
-      AnchorSideTop.Control = Panel2
+      AnchorSideTop.Control = EdPackage
       AnchorSideTop.Side = asrCenter
       Left = 298
       Height = 13
-      Top = 8
+      Top = 7
       Width = 53
       BorderSpacing.Left = 8
+      BorderSpacing.Top = 5
       Caption = 'Description'
       Layout = tlCenter
       ParentColor = False
@@ -839,15 +842,20 @@ object VisEditPackage: TVisEditPackage
     object EdDescription: TEdit
       AnchorSideLeft.Control = LabDescription
       AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = EdPackage
+      AnchorSideTop.Side = asrCenter
       Left = 357
       Height = 21
       Top = 3
-      Width = 381
+      Width = 397
+      Anchors = [akTop, akLeft, akRight]
       TabOrder = 1
     end
     object EdVersion: TLabeledEdit
       AnchorSideLeft.Control = EdPackage
       AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = EdPackage
+      AnchorSideTop.Side = asrCenter
       Left = 238
       Height = 21
       Top = 3
@@ -871,24 +879,28 @@ object VisEditPackage: TVisEditPackage
     object LabSection: TLabel
       AnchorSideLeft.Control = EdDescription
       AnchorSideLeft.Side = asrBottom
-      AnchorSideTop.Control = Panel2
+      AnchorSideTop.Control = EdPackage
       AnchorSideTop.Side = asrCenter
-      Left = 751
+      Left = 767
       Height = 13
-      Top = 8
+      Top = 7
       Width = 35
       Alignment = taRightJustify
       BorderSpacing.Left = 13
+      BorderSpacing.Top = 5
       Caption = 'Section'
       ParentColor = False
     end
     object EdSection: TComboBox
       AnchorSideLeft.Control = LabSection
       AnchorSideLeft.Side = asrBottom
-      Left = 792
+      AnchorSideTop.Control = EdPackage
+      AnchorSideTop.Side = asrCenter
+      Left = 808
       Height = 21
-      Top = 4
+      Top = 3
       Width = 140
+      Anchors = [akTop, akLeft, akRight]
       Enabled = False
       ItemHeight = 13
       ItemIndex = 1
@@ -902,22 +914,58 @@ object VisEditPackage: TVisEditPackage
       TabOrder = 3
       Text = 'group'
     end
+    object LabTargetOS: TLabel
+      AnchorSideLeft.Control = EdDescription
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = EdTargetOS
+      AnchorSideTop.Side = asrCenter
+      AnchorSideRight.Control = EdTargetOS
+      Left = 753
+      Height = 13
+      Top = 34
+      Width = 49
+      Alignment = taRightJustify
+      Anchors = [akTop, akRight]
+      BorderSpacing.Left = 13
+      BorderSpacing.Top = 5
+      Caption = 'Target OS'
+      ParentColor = False
+    end
+    object EdTargetOS: TComboBox
+      AnchorSideLeft.Control = EdSection
+      AnchorSideTop.Control = EdSection
+      AnchorSideTop.Side = asrBottom
+      Left = 808
+      Height = 21
+      Top = 30
+      Width = 140
+      Anchors = [akTop, akLeft, akRight]
+      ItemHeight = 13
+      Items.Strings = (
+        ''
+        'windows'
+        'linux'
+        'darwin'
+      )
+      OnChange = EdSectionChange
+      TabOrder = 4
+    end
   end
   object Panel4: TPanel
     Left = 0
     Height = 32
     Top = 491
-    Width = 935
+    Width = 957
     Align = alBottom
     BevelOuter = bvNone
     ChildSizing.LeftRightSpacing = 6
     ChildSizing.TopBottomSpacing = 3
     ChildSizing.HorizontalSpacing = 6
     ClientHeight = 32
-    ClientWidth = 935
+    ClientWidth = 957
     TabOrder = 5
     object ButCancel: TBitBtn
-      Left = 861
+      Left = 883
       Height = 26
       Top = 3
       Width = 68
@@ -929,7 +977,7 @@ object VisEditPackage: TVisEditPackage
       TabOrder = 0
     end
     object butBUApply: TBitBtn
-      Left = 659
+      Left = 681
       Height = 26
       Hint = 'Build the package, upload to the server and trigger Upgrade on the target host.'
       Top = 3
@@ -940,7 +988,7 @@ object VisEditPackage: TVisEditPackage
       TabOrder = 1
     end
     object butBUApply1: TBitBtn
-      Left = 785
+      Left = 807
       Height = 26
       Top = 3
       Width = 70
@@ -961,13 +1009,13 @@ object VisEditPackage: TVisEditPackage
     end
   end
   object PanRight: TPanel
-    Left = 635
-    Height = 334
-    Top = 34
+    Left = 657
+    Height = 308
+    Top = 60
     Width = 300
     Align = alRight
     BevelOuter = bvNone
-    ClientHeight = 334
+    ClientHeight = 308
     ClientWidth = 300
     TabOrder = 2
     object Panel9: TPanel
@@ -1015,7 +1063,7 @@ object VisEditPackage: TVisEditPackage
     end
     object GridPackages: TSOGrid
       Left = 0
-      Height = 261
+      Height = 235
       Top = 44
       Width = 300
       OnGetText = GridPackagesGetText
@@ -1343,7 +1391,7 @@ object VisEditPackage: TVisEditPackage
     object Panel3: TPanel
       Left = 0
       Height = 29
-      Top = 305
+      Top = 279
       Width = 300
       Align = alBottom
       BevelOuter = bvNone
@@ -1362,9 +1410,9 @@ object VisEditPackage: TVisEditPackage
     end
   end
   object Splitter3: TSplitter
-    Left = 630
-    Height = 334
-    Top = 34
+    Left = 652
+    Height = 308
+    Top = 60
     Width = 5
     Align = alRight
     ResizeAnchor = akRight

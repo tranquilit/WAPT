@@ -40,6 +40,7 @@ type
     EdPackage: TEdit;
     EdSearch: TSearchEdit;
     EdSection: TComboBox;
+    EdTargetOS: TComboBox;
     EdVersion: TLabeledEdit;
     GridConflicts: TSOGrid;
     GridPackages: TSOGrid;
@@ -48,6 +49,7 @@ type
     Label2: TLabel;
     GridDepends: TSOGrid;
     LabSection: TLabel;
+    LabTargetOS: TLabel;
     MemoLog: TMemo;
     MenuItem1: TMenuItem;
     MenuAddPackages: TMenuItem;
@@ -55,7 +57,7 @@ type
     MenuItem5: TMenuItem;
     PageControl1: TPageControl;
     Panel1: TPanel;
-    Panel2: TPanel;
+    PanTop: TPanel;
     Panel3: TPanel;
     PanRight: TPanel;
     Panel9: TPanel;
@@ -492,6 +494,15 @@ begin
   EdVersion.Text := UTF8Encode(StrReplaceChar(VarPythonAsString(PackageEdited.version),',','_'));
   EdDescription.Text := UTF8Encode(VarPythonAsString(PackageEdited.description));
   EdSection.Text := UTF8Encode(VarPythonAsString(PackageEdited.section));
+  If EdSection.Text='host' then
+  begin
+    EdTargetOS.Text := '';
+    LabTargetOS.Visible:=False;
+    EdTargetOS.Visible:=False;
+  end
+  else
+    EdTargetOS.Text := UTF8Encode(VarPythonAsString(PackageEdited.target_os));;
+
   IsUpdated := False;
   // get a list of package entries given a
   Depends := UTF8Encode(VarPythonAsString(PackageEdited.depends));
@@ -644,7 +655,8 @@ end;
 
 procedure TVisEditPackage.ActEditSavePackageExecute(Sender: TObject);
 var
-  vpackagename,vdescription,vsection,vversion,vdepends,vconflicts:Variant;
+  vpackagename,vdescription,vsection,vtarget_os,
+  vversion,vdepends,vconflicts:Variant;
 begin
   Screen.Cursor := crHourGlass;
   try
@@ -652,8 +664,9 @@ begin
     vversion:=PyUTF8Decode(Trim(EdVersion.Text));
     vdepends:=PyUTF8Decode(Depends);
     vconflicts:=PyUTF8Decode(Conflicts);
-    vsection := PyUTF8Decode(EdSection.Text);
+    vsection := PyUTF8Decode(trim(EdSection.Text));
     vdescription:=PyUTF8Decode(trim(Eddescription.Text));
+    vtarget_os := PyUTF8Decode(trim(EdTargetOS.Text));
 
     PackageEdited.package := vpackagename;
     PackageEdited.version := vversion;
@@ -661,6 +674,7 @@ begin
     PackageEdited.conflicts := vconflicts;
     PackageEdited.description := vdescription;
     PackageEdited.section := vsection;
+    PackageEdited.target_os := vtarget_os;
 
     if SourcePath<>'' then
     begin
