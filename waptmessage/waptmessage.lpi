@@ -87,7 +87,6 @@
       </Options>
     </Linking>
     <Other>
-      <CustomOptions Value="-dENTERPRISE"/>
       <OtherDefines Count="1">
         <Define0 Value="ENTERPRISE"/>
       </OtherDefines>

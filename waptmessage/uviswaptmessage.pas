@@ -35,7 +35,8 @@ implementation
 
 uses
   base64,
-  uWaptMessageRes, {$IFDEF ENTERPRISE}waptcommon{$ENDIF};
+  uWaptMessageRes
+  {$IFDEF ENTERPRISE},waptcommon{$ENDIF};
 
 {$R *.lfm}
 
