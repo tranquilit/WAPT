@@ -6,9 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  ExtCtrls, Buttons,
-  base64,
-  uWaptMessageRes;
+  ExtCtrls, Buttons;
 
 type
 
@@ -17,9 +15,10 @@ type
   TMsgForm = class(TForm)
     ButtonOK: TBitBtn;
     LogoLogin: TImage;
-    MsgLabel: TLabel;
+    MsgLabel: TMemo;
     Panel1: TPanel;
     procedure ButtonOKClick;
+    procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure DisplayFileContent(fileName: String);
 
@@ -33,6 +32,10 @@ var
   MsgForm: TMsgForm;
 
 implementation
+
+uses
+  base64,
+  uWaptMessageRes, {$IFDEF ENTERPRISE}waptcommon{$ENDIF};
 
 {$R *.lfm}
 
@@ -61,7 +64,7 @@ begin
     while not eof(msgFile) do
     begin
       ReadLn(msgFile, fileStr);
-      MsgLabel.Caption := MsgLabel.Caption + fileStr + #10#13;
+      MsgLabel.Text := MsgLabel.Text + fileStr + #10#13;
     end;
     CloseFile(msgFile);
   except
@@ -84,11 +87,11 @@ begin
   // No flags : print message
   if ParamCount = 1 then
   begin
-     MsgLabel.Caption := ParamStr(1);
+     MsgLabel.Text := ParamStr(1);
   end
   else if Application.HasOption('b') then // -b flag : message is in base64
   begin
-     MsgLabel.Caption := DecodeStringBase64(Application.GetOptionValue('b'));
+     MsgLabel.Text := DecodeStringBase64(Application.GetOptionValue('b'));
   end
   else if Application.HasOption('f') then // -f flag : message is the file content
   begin
@@ -104,6 +107,16 @@ end;
 procedure TMsgForm.ButtonOKClick;
 begin
   Close;
+end;
+
+procedure TMsgForm.FormCreate(Sender: TObject);
+begin
+  {$IFDEF ENTERPRISE}
+  if FileExists(WaptBaseDir+'\templates\waptself-logo.png') then
+     LogoLogin.Picture.LoadFromFile(WaptBaseDir+'\templates\waptself-logo.png')
+  else
+      LogoLogin.Picture.LoadFromResourceName(HINSTANCE,'LOGOENTERPRISE');
+  {$ENDIF}
 end;
 
 end.

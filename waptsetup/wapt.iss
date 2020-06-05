@@ -97,6 +97,7 @@ Source: "{#wapt_base_dir}waptguihelper.pyd"; DestDir: "{app}"; Flags: ignorevers
 Source: "{#wapt_base_dir}wapt-get.exe.manifest"; DestDir: "{app}";
 Source: "{#wapt_base_dir}dmidecode.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#wapt_base_dir}waptexit.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#wapt_base_dir}waptmessage.exe"; DestDir: "{app}"; Flags: ignoreversion
 
 ; for local debugging and pyscripter
 Source: "{#wapt_base_dir}wapt.psproj"; DestDir: "{app}"; 

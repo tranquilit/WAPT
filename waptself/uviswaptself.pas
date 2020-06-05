@@ -782,11 +782,8 @@ begin
 
   {$ifdef ENTERPRISE }
   if FileExists(WaptBaseDir+'\templates\waptself-logo.png') then
-    PicLogo.Picture.LoadFromFile(WaptBaseDir+'\templates\waptself-logo.png')
-  else
-    PicLogo.Picture.LoadFromResourceName(HINSTANCE,'SELF-SERVICE-ENTERPRISE-400PX');
-  if FileExists(WaptBaseDir+'\templates\waptself-logo.png') then
   begin
+    PicLogo.Picture.LoadFromFile(WaptBaseDir+'\templates\waptself-logo.png');
     ImageLogo.Picture.LoadFromFile(WaptBaseDir+'\templates\waptself-logo.png');
     PicLogoTmp:=TPicture.Create;
     PicLogoTmp.LoadFromResourceName(HINSTANCE,'SELF-SERVICE-ENTERPRISE-200PX');
@@ -794,7 +791,10 @@ begin
     FreeAndNil(PicLogoTmp);
   end
   else
+  begin
     ImageLogo.Picture.LoadFromResourceName(HINSTANCE,'SELF-SERVICE-ENTERPRISE-200PX');
+    PicLogo.Picture.LoadFromResourceName(HINSTANCE,'SELF-SERVICE-ENTERPRISE-400PX');
+  end;
   {$endif}
 
   if Screen.PixelsPerInch <> 96 then

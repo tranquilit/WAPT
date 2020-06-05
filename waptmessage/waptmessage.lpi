@@ -14,6 +14,9 @@
         <ExecutionLevel Value="requireAdministrator"/>
       </XPManifest>
       <Icon Value="0"/>
+      <Resources Count="1">
+        <Resource_0 FileName="..\arts\wapt-enterprise-200px.png" Type="RCDATA" ResourceName="LOGOENTERPRISE"/>
+      </Resources>
     </General>
     <VersionInfo>
       <UseVersionInfo Value="True"/>
@@ -32,12 +35,16 @@
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
+        <CommandLineParams Value="&quot;dfsgdfesdfefezfezfezfezfezfezfez dfsgdfesdfefezfezfezfezfezfezfez dfsgdfesdfefezfezfezfezfezfezfez dfsgdfesdfefezfezfezfezfezfezfez dfsgdfesdfefezfezfezfezfezfezfez dfsgdfesdfefezfezfezfezfezfezfez dfsgdfesdfefezfezfezfezfezfezfez dfsgdfesdfefezfezfezfezfezfezfez dfsgdfesdfefezfezfezfezfezfezfez v  dfsgdfesdfefezfezfezfezfezfezfez dfsgdfesdfefezfezfezfezfezfezfez dfsgdfesdfefezfezfezfezfezfezfez dfsgdfesdfefezfezfezfezfezfezfez dfsgdfesdfefezfezfezfezfezfezfez dfsgdfesdfefezfezfezfezfezfezfez dfsgdfesdfefezfezfezfezfezfezfez dfsgdfesdfefezfezfezfezfezfezfez dfsgdfesdfefezfezfezfezfezfezfez   dfsgdfesdfefezfezfezfezfezfezfez&quot;"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="1">
+    <RequiredPackages Count="2">
       <Item1>
-        <PackageName Value="LCL"/>
+        <PackageName Value="pltis_wapt"/>
       </Item1>
+      <Item2>
+        <PackageName Value="LCL"/>
+      </Item2>
     </RequiredPackages>
     <Units Count="3">
       <Unit0>
@@ -79,6 +86,12 @@
         </Win32>
       </Options>
     </Linking>
+    <Other>
+      <CustomOptions Value="-dENTERPRISE"/>
+      <OtherDefines Count="1">
+        <Define0 Value="ENTERPRISE"/>
+      </OtherDefines>
+    </Other>
   </CompilerOptions>
   <Debugging>
     <Exceptions Count="3">
