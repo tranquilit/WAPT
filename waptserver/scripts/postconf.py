@@ -551,12 +551,6 @@ def main():
     repo.update_packages_index(force_all=True)
 
     final_msg = ['[*] Postconfiguration completed.',]
-    if not quiet:
-        postconf.msgbox("Press ok to start waptserver and wapttasks daemons")
-    out=enable_waptserver()
-    out+=start_waptserver()
-    if not quiet:
-        print(out)
 
     # Nginx configuration
     if quiet:
@@ -684,6 +678,13 @@ def main():
                 with open(apath,'w'): pass
                 os.chmod(apath, 0o640)
             os.chown(apath,WAPT_UID,NGINX_GID)
+
+    if not quiet:
+        postconf.msgbox("Press ok to start waptserver and wapttasks daemons")
+    out=enable_waptserver()
+    out+=start_waptserver()
+    if not quiet:
+        print(out)
 
     # Final message
     if not quiet:
