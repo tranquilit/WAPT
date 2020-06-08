@@ -2915,8 +2915,8 @@ class WaptBaseRepo(BaseObjectClass):
 
     def packages_matching(self,package_cond):
         """Return an ordered list of available packages entries which match
-            the condition "packagename[([=<>]version)]?"
-            version ascending
+        the condition "packagename[([=<>]version)]?"
+        version ascending
 
         Args;
             package_cond (str or PackageRequest): package name with optional version specifier.

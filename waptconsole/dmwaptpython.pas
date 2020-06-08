@@ -121,6 +121,9 @@ type
     function UserCertAllowedOnHost(Host:ISuperObject):Boolean;
     function AllowedHostsForUser(Hosts:ISuperObject;Const Fields:Array of String):ISuperObject;
 
+    function GetPackageEntries(Repos: TVariantArray;PackageNames:String;
+        HostCapabilities:Variant;var missing:String): ISuperObject;
+
   end;
 
   function ExtractResourceString(Ident:String):RawByteString;
@@ -805,7 +808,8 @@ begin
   end;
 end;
 
-function TDMPython.AllowedHostsForUser(Hosts:ISuperObject;Const Fields:Array of String):ISuperObject;
+function TDMPython.AllowedHostsForUser(Hosts: ISuperObject;
+  const Fields: array of String): ISuperObject;
 var
   Fingerprint:String;
   UserPerimeters: TDynStringArray;
@@ -827,6 +831,43 @@ begin
         end;
     end;
   end;
+end;
+
+function TDMPython.GetPackageEntries(Repos: TVariantArray; PackageNames: String;
+  HostCapabilities: Variant; var missing:String): ISuperObject;
+var
+  PackageCond: String;
+  Repo,ARequest,Packages: Variant;
+begin
+  Result := TSuperObject.Create(stArray);
+  if not VarIsNone(HostCapabilities) then
+    ARequest := HostCapabilities.get_package_request_filter('--noarg--')
+  else
+    ARequest := waptpackage.PackageRequest('--noarg--');
+
+  missing := '';
+  for PackageCond  in StrSplit(PackageNames,',',True) do
+  begin
+    ARequest.request := PackageCond;
+    Packages := None;
+    // loop over all active repositiories
+    for Repo in Repos do
+    begin
+      //append all matching packages
+      if VarIsNone(Packages) then
+        Packages := Repo.packages_matching(ARequest)
+      else
+        Packages.extend(Repo.packages_matching(ARequest));
+    end;
+    // take most recent...
+    Packages.sort('--noarg--');
+    if len(Packages)>0 then
+      Result.AsArray.Add(PyVarToSuperObject(Packages.__getitem__(-1)))
+    else
+      missing := missing+','+PackageCond;
+  end;
+  if length(missing)>0 then
+    missing := copy(missing,2,length(missing)-1);
 end;
 
 function TDMPython.GetWaptconsoleFacade: Variant;

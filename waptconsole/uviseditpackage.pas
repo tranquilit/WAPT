@@ -1058,19 +1058,16 @@ end;
 
 procedure TVisEditPackage.SetDepends(AValue: string);
 var
-  dependencies: ISuperObject;
-  VDepends:Variant;
+  missing:String;
 begin
   FDepends := AValue;
   if FDepends<>'' then
   begin
-    vDepends := PyUTF8Decode(FDepends);
-    dependencies := PyVarToSuperObject(DMPython.MainWaptRepo.get_package_entries(vDepends));
-    GridDepends.Data := dependencies['packages'];
-    if dependencies['missing'].AsArray.Length > 0 then
+    GridDepends.Data := DMPython.GetPackageEntries(DMPython.WaptRepos,FDepends,None,missing);
+    if missing <> '' then
     begin
       ShowMessageFmt(rsIgnoredPackages,
-        [dependencies.S['missing']]);
+        [missing]);
       GridDependsUpdated := True;
     end;
   end
@@ -1080,19 +1077,16 @@ end;
 
 procedure TVisEditPackage.SetConflicts(AValue: string);
 var
-  aconflicts: ISuperObject;
-  VConflicts:Variant;
+  missing: String;
 begin
   FConflicts := AValue;
   if FConflicts<>'' then
   begin
-    vConflicts := PyUTF8Decode(FConflicts);
-    aconflicts := PyVarToSuperObject(DMPython.MainWaptRepo.get_package_entries(vconflicts));
-    GridConflicts.Data := aconflicts['packages'];
-    if aconflicts['missing'].AsArray.Length > 0 then
+    GridConflicts.Data := DMPython.GetPackageEntries(DMPython.WaptRepos,FConflicts,None,missing);
+    if missing <> '' then
     begin
       ShowMessageFmt(rsIgnoredConfictingPackages,
-        [aconflicts.S['missing']]);
+        [missing]);
       GridConflictsUpdated := True;
     end
   end
