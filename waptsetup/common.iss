@@ -300,7 +300,11 @@ procedure OnServerClicked(Sender:TObject);
 begin
    #if edition != "waptstarter"
    edWaptServerUrl.Enabled:= cbStaticUrl.Checked;
+   labServer.Enabled:=cbStaticUrl.Checked;
+   labServerExample.Enabled:=cbStaticUrl.Checked;
    #endif
+   labRepo.Enabled:=cbStaticUrl.Checked;
+   labRepoExample.Enabled:=cbStaticUrl.Checked;
    edWaptRepoUrl.Enabled:= cbStaticUrl.Checked;
 end;
 
@@ -686,8 +690,8 @@ begin
         #if edition != "waptstarter"
         edWaptServerUrl.Text := GetWaptServerURL('');  
         #endif
-        cbDontChangeConfig.Checked := not (GetRepoURL('') = '');
-        cbStaticUrl.Checked := (edWaptRepoUrl.Text<>'') and (edWaptRepoUrl.Text<>'unknown');
+        cbDontChangeConfig.Checked := not(GetRepoURL('') = '');
+        cbStaticUrl.Checked := not(cbDontChangeConfig.Checked) or ((edWaptRepoUrl.Text<>'') and (edWaptRepoUrl.Text<>'unknown'));
         //edWaptServerUrl.Visible := IsTaskSelected('use_waptserver');
         //labServer.Visible := edWaptServerUrl.Visible;
       end;
