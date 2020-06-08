@@ -40,6 +40,12 @@ uses
 
 {$R *.lfm}
 
+{$IFDEF ENTERPRISE}
+{$R res_enterprise.rc}
+{$ELSE}
+{$R res_community.rc}
+{$ENDIF}
+
 { TMsgForm }
 
 procedure TMsgForm.ShowHelp;
@@ -116,7 +122,9 @@ begin
   if FileExists(WaptBaseDir+'\templates\waptself-logo.png') then
      LogoLogin.Picture.LoadFromFile(WaptBaseDir+'\templates\waptself-logo.png')
   else
-      LogoLogin.Picture.LoadFromResourceName(HINSTANCE,'LOGOENTERPRISE');
+      LogoLogin.Picture.LoadFromResourceName(HINSTANCE,'LOGO');
+  {$ELSE}
+  LogoLogin.Picture.LoadFromResourceName(HINSTANCE,'LOGO');
   {$ENDIF}
 end;
 
