@@ -337,7 +337,7 @@ os.mkdir(makepath(applications_dir,'WAPT','WAPT Self-service.app','Contents','Ma
 os.mkdir(makepath(applications_dir,'WAPT','WAPT Self-service.app','Contents','Resources'))
 os.symlink('/opt/wapt/waptexit.bin',makepath(applications_dir,'WAPT','WAPT Exit.app','Contents','MacOS','waptexit'))
 os.symlink('/opt/wapt/waptself.bin',makepath(applications_dir,'WAPT','WAPT Self-service.app','Contents','MacOS','waptself'))
-os.symlink('/opt/wapt/waptmessage.bin',makepath(applications_dir,'WAPT','WAPT Self-service.app','Contents','MacOS','waptmessage'))
+os.symlink('/opt/wapt/waptmessage.bin',makepath(applications_dir,'WAPT','WAPT Message.app','Contents','MacOS','waptmessage'))
 
 for icon in icons_to_convert:
     os.mkdir(icon[1])
