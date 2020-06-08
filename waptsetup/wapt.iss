@@ -84,6 +84,9 @@ Source: "{#wapt_base_dir}waptenterprise\auth_module_ad.py"; DestDir: "{app}\wapt
 ; user feedback of waptservice activity
 Source: "{#wapt_base_dir}wapttray.exe"; DestDir: "{app}"; BeforeInstall: killtask('wapttray.exe'); Flags: ignoreversion 
 
+; killing waptmessage if open
+Source: "{#wapt_base_dir}waptmessage.exe"; DestDir: "{app}"; BeforeInstall: killtask('waptmessage.exe'); Flags: ignoreversion 
+
 ; command line tools
 Source: "{#wapt_base_dir}wapt-scanpackages.bat"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#wapt_base_dir}wapt-scanpackages.py"; DestDir: "{app}"; Flags: ignoreversion
