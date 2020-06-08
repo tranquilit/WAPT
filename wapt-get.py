@@ -173,7 +173,7 @@ parser.add_option("-u","--update-packages",    dest="update_packages",  default=
 parser.add_option("-f","--force",    dest="force",    default=False, action='store_true', help="Force (default: %default)")
 parser.add_option("-p","--params", dest="params", default='{}', help="Setup params as a JSon Object (example : {'licence':'AZE-567-34','company':'TIS'}} (default: %default)")
 parser.add_option("-r","--repository", dest="wapt_url", default='', help="URL of main wapt repository (override url from ini file, example http://wapt/wapt) (default: %default)")
-parser.add_option("-y","--hide", dest="hide_console", default='', help="Hide the console (default: %default)")
+parser.add_option("-y","--hide", dest="hide_console", default=False, action='store_true', help="Hide the console (default: %default)")
 parser.add_option("-i","--inc-release",    dest="increlease",    default=False, action='store_true', help="Increase release number when building package (default: %default)")
 parser.add_option(     "--keep-signature-date", dest="keep_signature_date",default=False, action='store_true', help="Keep the current package signature date, and file changetime (default: %default)")
 parser.add_option("-s","--sections",    dest="section_filter",    default=None,  help="Add a filter section to search query (default: ALL)")
