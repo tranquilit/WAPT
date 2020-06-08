@@ -84,9 +84,6 @@ Source: "{#wapt_base_dir}waptenterprise\auth_module_ad.py"; DestDir: "{app}\wapt
 ; user feedback of waptservice activity
 Source: "{#wapt_base_dir}wapttray.exe"; DestDir: "{app}"; BeforeInstall: killtask('wapttray.exe'); Flags: ignoreversion 
 
-; killing waptmessage if open
-Source: "{#wapt_base_dir}waptmessage.exe"; DestDir: "{app}"; BeforeInstall: killtask('waptmessage.exe'); Flags: ignoreversion 
-
 ; command line tools
 Source: "{#wapt_base_dir}wapt-scanpackages.bat"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#wapt_base_dir}wapt-scanpackages.py"; DestDir: "{app}"; Flags: ignoreversion
@@ -100,7 +97,6 @@ Source: "{#wapt_base_dir}waptguihelper.pyd"; DestDir: "{app}"; Flags: ignorevers
 Source: "{#wapt_base_dir}wapt-get.exe.manifest"; DestDir: "{app}";
 Source: "{#wapt_base_dir}dmidecode.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#wapt_base_dir}waptexit.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#wapt_base_dir}waptmessage.exe"; DestDir: "{app}"; Flags: ignoreversion
 
 ; for local debugging and pyscripter
 Source: "{#wapt_base_dir}wapt.psproj"; DestDir: "{app}"; 
@@ -244,6 +240,7 @@ Type: files; Name: "{app}\waptservice\waptservice.py*"
 
 [UninstallRun]
 Filename: "taskkill"; Parameters: "/t /im ""waptself.exe"" /f"; Flags: runhidden; StatusMsg: "Arrêt de waptself"
+Filename: "taskkill"; Parameters: "/t /im ""waptmessage.exe"" /f"; Flags: runhidden; StatusMsg: "Arrêt de waptmessage"
 Filename: "taskkill"; Parameters: "/t /im ""waptconsole.exe"" /f"; Flags: runhidden; StatusMsg: "Arrêt de waptconsole"
 Filename: "taskkill"; Parameters: "/t /im ""wapttray.exe"" /f"; Flags: runhidden; StatusMsg: "Arrêt de l'icône de notification"
 Filename: "net"; Parameters: "stop waptservice"; Flags: runhidden; StatusMsg: "Arrêt du service WAPT"
