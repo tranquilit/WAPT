@@ -85,6 +85,13 @@
         </Win32>
       </Options>
     </Linking>
+    <Other>
+      <CustomOptions Value="-dUseCThreads"/>
+      <OtherDefines Count="2">
+        <Define0 Value="ENTERPRISE"/>
+        <Define1 Value="UseCThreads"/>
+      </OtherDefines>
+    </Other>
   </CompilerOptions>
   <Debugging>
     <Exceptions Count="3">
