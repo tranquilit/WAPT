@@ -1230,6 +1230,11 @@ msgctxt "tviseditpackage.labsection.caption"
 msgid "Section"
 msgstr ""
 
+#: tviseditpackage.labtargetos.caption
+msgctxt "tviseditpackage.labtargetos.caption"
+msgid "Target OS"
+msgstr ""
+
 #: tviseditpackage.panel7.caption
 msgctxt "TVISEDITPACKAGE.PANEL7.CAPTION"
 msgid "Panel7"

@@ -601,6 +601,8 @@ msgid ""
 "Ask Wapt agent to generate a random UUID instead of BIOS unique ID.\n"
 "This can be useful if BIOS returns non unique UUID\n"
 msgstr ""
+"Demande à l'agent Wapt de générer un UUID aléatoire au lieu à la place de l'ID du BIOS.\n"
+"Peut être utile si le BIOS ne retourne pas des UUID uniques\n"
 
 #: tviscreatewaptsetup.cbusereporules.caption
 msgid "Use repository access rules"
@@ -648,7 +650,7 @@ msgstr "Par exemple : Tranquil IT Systems"
 
 #: tviscreatewaptsetup.edpubliccertdir.hint
 msgid "Directory of X509 PEM trusted CA certificates"
-msgstr ""
+msgstr "Répertoire des certificats d'autorité X509 de confiance (format PEM)"
 
 #: tviscreatewaptsetup.edrepourl.hint
 #| msgid "E.g. : https://wapt.mydomain.lan/wapt"
@@ -1246,6 +1248,11 @@ msgstr "Paquet"
 msgctxt "tviseditpackage.labsection.caption"
 msgid "Section"
 msgstr "Section"
+
+#: tviseditpackage.labtargetos.caption
+msgctxt "tviseditpackage.labtargetos.caption"
+msgid "Target OS"
+msgstr "OS cible"
 
 #: tviseditpackage.panel7.caption
 msgctxt "TVISEDITPACKAGE.PANEL7.CAPTION"
@@ -1937,7 +1944,7 @@ msgstr "Dépendances"
 
 #: tvisselfservicegroup.gridgroups.header.columns[0].text
 msgid "Users Group"
-msgstr ""
+msgstr "Groupe utilisateurs"
 
 #: tvisselfservicegroup.gridgroups.header.columns[1].text
 msgctxt "tvisselfservicegroup.gridgroups.header.columns[1].text"
@@ -2874,7 +2881,7 @@ msgstr "Générer un modèle de paquet"
 
 #: tviswaptgui.actmanageusers.caption
 msgid "Manage Wapt users and rights"
-msgstr ""
+msgstr "Gestion des utilisateurs Wapt et des droits "
 
 #: tviswaptgui.actnewrule.caption
 msgid "Add rule"
@@ -6179,7 +6186,7 @@ msgstr "Cocher tout"
 
 #: tviswaptgui.menuitemshowerrors.caption
 msgid "Show errors"
-msgstr ""
+msgstr "Montrer les erreurs"
 
 #: tviswaptgui.menuitemsync.caption
 msgctxt "tviswaptgui.menuitemsync.caption"
@@ -6412,15 +6419,15 @@ msgstr ""
 
 #: tviswaptusers.actapplyupdates.caption
 msgid "Apply updates"
-msgstr ""
+msgstr "Enregistrer"
 
 #: tviswaptusers.actdeleteaccount.caption
 msgid "Delete account"
-msgstr ""
+msgstr "Supprimer le compte"
 
 #: tviswaptusers.actnewaccount.caption
 msgid "New account"
-msgstr ""
+msgstr "Nouveau compte"
 
 #: tviswaptusers.actreloadaccounts.caption
 msgid "Reload accounts"
@@ -6432,7 +6439,7 @@ msgstr ""
 
 #: tviswaptusers.caption
 msgid "WAPT Users rights"
-msgstr ""
+msgstr "Droits utilisateur Wapt "
 
 #: tviswaptusers.edpkirootdirectory.hint
 msgctxt "tviswaptusers.edpkirootdirectory.hint"
