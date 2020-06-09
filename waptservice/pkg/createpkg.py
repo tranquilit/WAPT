@@ -320,9 +320,12 @@ os.symlink('/opt/wapt/waptmessage.bin','tmpbuild/payload/usr/local/bin/waptmessa
 if WAPTEDITION.lower()=='community':
     waptself_png = makepath(wapt_source_dir,'waptsetupgui/common/waptself-community.png')
     waptexit_png = makepath(wapt_source_dir,'waptsetupgui/common/waptexit-community.png')
+    dir_png = makepath(wapt_source_dir,'waptservice','pkg','dir_icon_community.png')
 else:
     waptself_png = makepath(wapt_source_dir,'waptsetupgui/common/waptself-community.png')
     waptexit_png = makepath(wapt_source_dir,'waptsetupgui/common/waptexit-community.png')
+    dir_png = makepath(wapt_source_dir,'waptservice','pkg','dir_icon_enterprise.png')
+
 waptmessage_png = waptexit_png
 
 applications_dir = './tmpbuild/payload/Applications'
@@ -349,7 +352,7 @@ for icon in icons_to_convert:
     shutil.rmtree(icon[1])
     os.unlink("MyIcon.icns")
 
-Cocoa.NSWorkspace.sharedWorkspace().setIcon_forFile_options_(Cocoa.NSImage.alloc().initWithContentsOfFile_(waptexit_png), applications_dir,0) or sys.exit("Unable to set file icon")
+Cocoa.NSWorkspace.sharedWorkspace().setIcon_forFile_options_(Cocoa.NSImage.alloc().initWithContentsOfFile_(dir_png), applications_dir,0) or sys.exit("Unable to set file icon")
 
 translation_path = makepath(wapt_source_dir,'languages')
 translation_path_payload = makepath('./tmpbuild/opt/wapt/languages')
