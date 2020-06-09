@@ -108,6 +108,7 @@ begin
    begin
         CheckBoxWAPT.Checked:=False;
         CheckBoxHost.Checked:=False;
+        CheckBoxWUA.Checked:=True;
    end;
   BitBtnOk.Enabled:=CanOk();
 end;

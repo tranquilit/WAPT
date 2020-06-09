@@ -2234,7 +2234,7 @@ class WaptRepo(WaptRemoteRepo):
         """
         def rule_agent_ip(rule):
             ip_network=ipaddress.ip_network(rule['value'].decode('utf-8'))
-            for ip in get_main_ip(urlparse(rule['repo_url']).netloc):
+            for ip in get_main_ip(urlparse.urlparse(rule['repo_url']).netloc):
                 if ipaddress.ip_address(ip.decode('utf-8')) in ip_network:
                     return True
             return False
@@ -2263,7 +2263,8 @@ class WaptRepo(WaptRemoteRepo):
 
         for rule in sorted(self.rules,key=itemgetter('sequence')):
             try:
-                if (not(rule.get('negation',False)) == check_rule(rule['condition'],rule)) and (not(rule.get('no_fallback',False)) == ((self.name=='waptwua' and ('download.windowsupdate.com' in rule['repo_url'])) or super(WaptRepo,self).is_available(url=rule['repo_url']) is not None)):
+                if (not(rule.get('negation',False)) == check_rule(rule['condition'],rule)) and \
+                (not(rule.get('no_fallback',False)) == ((self.name=='waptwua' and ('download.windowsupdate.com' in rule['repo_url'])) or super(WaptRepo,self).is_available(url=rule['repo_url']) is not None)):
                     self.cached_wapt_repo_url=rule['repo_url'].rstrip('/')+'-host' if isinstance(self,WaptHostRepo) else rule['repo_url']
                     rule['active_rule']=True
                     return self.cached_wapt_repo_url
