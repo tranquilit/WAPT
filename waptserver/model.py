@@ -2205,6 +2205,12 @@ def upgrade_db_structure():
                 if not 'no_fallback' in columns:
                     opes.append(migrator.add_column(SiteRules._meta.name,'no_fallback',SiteRules.no_fallback))
 
+                columns = [c.name for c in wapt_db.get_columns('hostpackagesstatus')]
+                if not 'name' in columns:
+                    opes.append(migrator.add_column(HostPackagesStatus._meta.name, 'name',HostPackagesStatus.name))
+                if not 'impacted_process' in columns:
+                    opes.append(migrator.add_column(HostPackagesStatus._meta.name, 'impacted_process',HostPackagesStatus.impacted_process))
+
                 migrate(*opes)
                 (v, created) = ServerAttribs.get_or_create(key='db_version')
                 v.value = next_version
