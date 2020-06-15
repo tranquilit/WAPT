@@ -2264,7 +2264,8 @@ class WaptRepo(WaptRemoteRepo):
         for rule in sorted(self.rules,key=itemgetter('sequence')):
             try:
                 if (not(rule.get('negation',False)) == check_rule(rule['condition'],rule)) and \
-                (not(rule.get('no_fallback',False)) == ((self.name=='waptwua' and ('download.windowsupdate.com' in rule['repo_url'])) or super(WaptRepo,self).is_available(url=rule['repo_url']) is not None)):
+                (rule.get('no_fallback',False) or \
+                ((self.name=='waptwua' and ('download.windowsupdate.com' in rule['repo_url'])) or super(WaptRepo,self).is_available(url=rule['repo_url']) is not None)):
                     self.cached_wapt_repo_url=rule['repo_url'].rstrip('/')+'-host' if isinstance(self,WaptHostRepo) else rule['repo_url']
                     rule['active_rule']=True
                     return self.cached_wapt_repo_url
