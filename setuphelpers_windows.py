@@ -1031,7 +1031,7 @@ def remove_previous_version(key,max_version=None):
                     run(uninstall_cmd(uninstall['key']))
 
 def install_msi_if_needed(msi,min_version=None,killbefore=None,accept_returncodes=[0,3010],timeout=300,properties=None,get_version=None,remove_old_version=False,
-                            force=False,uninstallkeylist=None,pidlist=None):
+                            force=False,uninstallkeylist=None,pidlist=None,key=None):
     """Install silently the supplied msi file, and add the uninstall key to
     uninstallkeylist list
 
@@ -1077,7 +1077,9 @@ def install_msi_if_needed(msi,min_version=None,killbefore=None,accept_returncode
     """
     if not isfile(msi):
         error('msi file %s not found in package' % msi)
-    key = get_msi_properties(msi)['ProductCode']
+
+    if key is None:
+        key = get_msi_properties(msi)['ProductCode']
 
     if min_version is None:
         min_version = getproductprops(msi)['version']
