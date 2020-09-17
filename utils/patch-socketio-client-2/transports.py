@@ -77,6 +77,9 @@ class XHR_PollingTransport(AbstractTransport):
             self._request_index = 0
             self._kw_get = {}
             self._kw_post = {}
+        self._kw_get['proxies'] = http_session.proxies
+        self._kw_post['proxies'] = http_session.proxies
+
         http_scheme = 'https' if is_secure else 'http'
         self._http_url = '%s://%s/' % (http_scheme, url)
         self._request_index_lock = threading.Lock()
