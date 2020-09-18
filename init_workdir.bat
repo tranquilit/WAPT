@@ -16,7 +16,12 @@ xcopy /I /E /F /Y %PYTHON_PATH%\libs %~dp0\libs
 xcopy /I /E /F /Y %PYTHON_PATH%\DLLs %~dp0\DLLs
 xcopy /I /E /F /Y /EXCLUDE:%~dp0\libexcludes.txt %PYTHON_PATH%\lib %~dp0\lib
 
+
 %~dp0\Scripts\python -m pip install -U pip setuptools wheel
+
+REM ujson does not always compile properly
+copy /Y %~dp0\..\binaries_cache\ujson-1.35.pyd  %~dp0\lib\site-packages\ujson.pyd
+
 %~dp0\Scripts\pip.exe install -r %~dp0\requirements-agent.txt -r %~dp0\requirements-agent-windows.txt
 
 %PYTHON_PATH%\python.exe %~dp0\pywininstall.py
@@ -37,6 +42,8 @@ copy /Y %~dp0\utils\patch-socketio-client-2\transports.py  %~dp0\lib\site-packag
 REM Patch x509 certificate signature checking
 copy /Y %~dp0\utils\patch-cryptography\__init__.py  %~dp0\lib\site-packages\cryptography\x509\
 copy /Y %~dp0\utils\patch-cryptography\verification.py  %~dp0\lib\site-packages\cryptography\x509\
+
+
 
 REM create full_version file
 %~dp0\waptpython.exe %~dp0\create_version_full.py
