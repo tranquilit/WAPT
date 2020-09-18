@@ -32,7 +32,7 @@ def sign_exe(exe_path,p12path,p12password):
         except subprocess.CalledProcessError as cpe:
             cpe.cmd =  cpe.cmd.replace(p12password, '********')
             cpe.output = cpe.output.replace(p12password, '********')
-            print("Got CalledProcessError from subprocess.check_output: %s" % str(cpe))
+            print(u"Got CalledProcessError from subprocess.check_output: %s" % setuphelpers.ensure_unicode(cpe))
         except Exception as e:
             print("Got an exception from subprocess.check_output")
             raise
