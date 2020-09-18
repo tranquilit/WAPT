@@ -18,7 +18,7 @@
       </Linking>
     </CompilerOptions>
     <Description Value="Common files for wapt fpc"/>
-    <Version Major="1" Minor="7" Release="4"/>
+    <Version Major="1" Minor="8" Release="2"/>
     <Files Count="14">
       <Item1>
         <Filename Value="waptutils.pas"/>

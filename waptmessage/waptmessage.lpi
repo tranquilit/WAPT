@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
   <ProjectOptions>
-    <Version Value="10"/>
+    <Version Value="11"/>
     <PathDelim Value="\"/>
     <General>
       <SessionStorage Value="InProjectDir"/>
@@ -33,9 +33,16 @@
     </PublishOptions>
     <RunParams>
       <local>
-        <FormatVersion Value="1"/>
         <CommandLineParams Value="test"/>
       </local>
+      <FormatVersion Value="2"/>
+      <Modes Count="1">
+        <Mode0 Name="default">
+          <local>
+            <CommandLineParams Value="test"/>
+          </local>
+        </Mode0>
+      </Modes>
     </RunParams>
     <RequiredPackages Count="2">
       <Item1>
@@ -87,10 +94,6 @@
     </Linking>
     <Other>
       <CustomOptions Value="-dUseCThreads"/>
-      <OtherDefines Count="2">
-        <Define0 Value="ENTERPRISE"/>
-        <Define1 Value="UseCThreads"/>
-      </OtherDefines>
     </Other>
   </CompilerOptions>
   <Debugging>

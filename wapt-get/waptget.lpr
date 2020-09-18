@@ -28,7 +28,7 @@ uses
   {$IFDEF UNIX}
   cthreads,
  {$ENDIF}
-  Classes, SysUtils, CustApp,
+  Classes, CustApp,SysUtils,
   { you can add units after this }
   Interfaces, Windows, PythonEngine, VarPyth, superobject, soutils, tislogging, uWaptRes,
   waptcommon, waptutils, tiscommon, tisstrings, LazFileUtils, FileUtil,
@@ -37,14 +37,6 @@ uses
 
 
 type
-
-  { TDynStringArrayHelper }
-
-  TDynStringArrayHelper = type helper for TDynStringArray
-      procedure Add(const a:String);
-    end;
-
-
 
   { PWaptGet }
 
@@ -458,7 +450,7 @@ var
   i:integer;
   NextIsParamValue:Boolean;
   NewCertificateFilename,DestCertPath:String;
-  Args: TDynStringArray;
+  Args: TStringArray;
 
 begin
   Action:='';
@@ -638,7 +630,7 @@ begin
         StrIsOneOf(action,['update','upgrade','register','install','remove','forget',
                           'longtask','cancel','cancel-all','tasks',
                           'wuascan','wuadownload','wuainstall','audit']) and
-        CheckOpenPort(waptservice_port,'127.0.0.1',waptservice_timeout*1000) then
+        CheckOpenPort('127.0.0.1',waptservice_port,waptservice_timeout*1000) then
     begin
       writeln('About to speak to waptservice...');
       // launch task in waptservice, waits for its termination
@@ -650,13 +642,13 @@ begin
         try
           res := Nil;
           //test longtask
-          Args := TDynStringArray.Create(Format('notify_user=%s',[GetCmdParams('notify_user','1')]));
+          Args := TStringArray.Create(Format('notify_user=%s',[GetCmdParams('notify_user','1')]));
           if HasOption('notify_server_on_start') then
-            Args.Add('notify_server_on_start='+GetCmdParams('notify_server_on_start','0'));
+            Args.Append('notify_server_on_start='+GetCmdParams('notify_server_on_start','0'));
           if HasOption('notify_server_on_finish') then
-            Args.Add('notify_server_on_finish='+GetCmdParams('notify_server_on_finish','0'));
+            Args.Append('notify_server_on_finish='+GetCmdParams('notify_server_on_finish','0'));
           if HasOption('f','force') then
-            Args.Add('force=1');
+            Args.Append('force=1');
 
           if action='longtask' then
           begin
@@ -736,11 +728,11 @@ begin
           if (action='install') or (action='remove') or (action='forget') then
           begin
             if HasOption('only_if_not_process_running') then
-              Args.Add('only_if_not_process_running='+GetOptionValue('only_if_not_process_running'));
+              Args.Append('only_if_not_process_running='+GetOptionValue('only_if_not_process_running'));
             for package in sopackages do
             begin
               Logger('Call '+action+'?package='+package.AsString,DEBUG);
-              Args.Add(utf8encode('package='+package.AsString));
+              Args.Append(utf8encode('package='+package.AsString));
               res := WAPTLocalJsonGet(Format(Action+'.json?%s',[StrJoin('&',Args)]),'admin','',-1,@HTTPLogin,3);
               if (action='install') or (action='forget')  then
               begin
@@ -769,9 +761,9 @@ begin
           begin
             Logger('Call upgrade URL...',DEBUG);
             if HasOption('only_priorities') then
-              Args.Add('only_priorities='+GetOptionValue('only_priorities'));
+              Args.Append('only_priorities='+GetOptionValue('only_priorities'));
             if HasOption('only_if_not_process_running') then
-              Args.Add('only_if_not_process_running='+GetOptionValue('only_if_not_process_running'));
+              Args.Append('only_if_not_process_running='+GetOptionValue('only_if_not_process_running'));
             res := WAPTLocalJsonGet(Format('upgrade.json?%s',[StrJoin('&',args)]));
             Logger('Upgrade triggered...',DEBUG);
             if res.S['result']<>'OK' then
@@ -1237,14 +1229,6 @@ begin
   if VarIsEmpty(Fwaptdevutils) or VarIsNull(Fwaptdevutils) then
     Fwaptdevutils:= VarPyth.Import('waptdevutils');
   Result := Fwaptdevutils;
-end;
-
-
-{ TDynStringArrayHelper }
-procedure TDynStringArrayHelper.Add(const a: String);
-begin
-  SetLength(self,Length(Self)+1);
-  Self[Length(Self)-1] := a;
 end;
 
 {$R *.res}

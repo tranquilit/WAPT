@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
   <ProjectOptions>
-    <Version Value="10"/>
+    <Version Value="11"/>
     <PathDelim Value="\"/>
     <General>
       <Flags>
@@ -38,9 +38,16 @@
     </PublishOptions>
     <RunParams>
       <local>
-        <FormatVersion Value="1"/>
         <CommandLineParams Value="--hash=13f9d0b1843514a50eebaf357a2fd719a66c939eccddf823bf407c6c363e4ea2 --waptsetupurl=https://wapt142.tranquilit.local/wapt/waptagent.exe"/>
       </local>
+      <FormatVersion Value="2"/>
+      <Modes Count="1">
+        <Mode0 Name="default">
+          <local>
+            <CommandLineParams Value="--hash=13f9d0b1843514a50eebaf357a2fd719a66c939eccddf823bf407c6c363e4ea2 --waptsetupurl=https://wapt142.tranquilit.local/wapt/waptagent.exe"/>
+          </local>
+        </Mode0>
+      </Modes>
     </RunParams>
     <RequiredPackages Count="5">
       <Item1>
@@ -92,7 +99,7 @@
         <ShowHintsForUnusedUnitsInMainSrc Value="True"/>
       </Verbosity>
       <WriteFPCLogo Value="False"/>
-      <CustomOptions Value="-dUseCThreads -dENTERPRISE"/>
+      <CustomOptions Value="-dUseCThreads"/>
       <ExecuteAfter>
         <Command Value="$(ProjPath)\..\utils\upx.exe $(TargetFile)"/>
         <CompileReasons Compile="False" Build="False" Run="False"/>

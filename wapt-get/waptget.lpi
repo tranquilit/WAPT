@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
   <ProjectOptions>
-    <Version Value="10"/>
+    <Version Value="11"/>
     <PathDelim Value="\"/>
     <General>
       <Flags>
@@ -36,9 +36,10 @@
       <Version Value="2"/>
     </PublishOptions>
     <RunParams>
-      <local>
-        <FormatVersion Value="1"/>
-      </local>
+      <FormatVersion Value="2"/>
+      <Modes Count="1">
+        <Mode0 Name="default"/>
+      </Modes>
     </RunParams>
     <RequiredPackages Count="4">
       <Item1>
@@ -54,21 +55,21 @@
         <PackageName Value="pltis_superobject"/>
       </Item4>
     </RequiredPackages>
-    <Units Count="12">
+    <Units Count="14">
       <Unit0>
         <Filename Value="waptget.lpr"/>
         <IsPartOfProject Value="True"/>
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="18"/>
-        <CursorPos X="27" Y="34"/>
+        <TopLine Value="26"/>
+        <CursorPos Y="41"/>
         <UsageCount Value="222"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit0>
       <Unit1>
         <Filename Value="waptcommon.pas"/>
-        <EditorIndex Value="3"/>
+        <EditorIndex Value="5"/>
         <CursorPos X="28" Y="6"/>
         <UsageCount Value="16"/>
         <Loaded Value="True"/>
@@ -124,7 +125,7 @@
       <Unit8>
         <Filename Value="uwaptpollthreads.pas"/>
         <UnitName Value="uWAPTPollThreads"/>
-        <EditorIndex Value="2"/>
+        <EditorIndex Value="4"/>
         <CursorPos X="24" Y="8"/>
         <UsageCount Value="13"/>
         <Loaded Value="True"/>
@@ -155,8 +156,25 @@
         <UsageCount Value="11"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit11>
+      <Unit12>
+        <Filename Value="waptcommonwin.inc"/>
+        <EditorIndex Value="2"/>
+        <TopLine Value="2968"/>
+        <CursorPos X="48" Y="2995"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit12>
+      <Unit13>
+        <Filename Value="D:\dev\pltis_utils\tiscommon.pas"/>
+        <EditorIndex Value="3"/>
+        <TopLine Value="141"/>
+        <CursorPos X="10" Y="158"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit13>
     </Units>
-    <JumpHistory Count="11" HistoryIndex="10">
+    <JumpHistory Count="20" HistoryIndex="19">
       <Position1>
         <Filename Value="waptcommon.pas"/>
         <Caret Line="405" Column="42" TopLine="387"/>
@@ -201,6 +219,41 @@
         <Filename Value="waptcommon.pas"/>
         <Caret Line="6" Column="28"/>
       </Position11>
+      <Position12>
+        <Filename Value="waptget.lpr"/>
+        <Caret Line="34" Column="27" TopLine="18"/>
+      </Position12>
+      <Position13>
+        <Filename Value="waptcommonwin.inc"/>
+        <Caret Line="2238" Column="16" TopLine="2221"/>
+      </Position13>
+      <Position14>
+        <Filename Value="waptcommonwin.inc"/>
+      </Position14>
+      <Position15>
+        <Filename Value="waptcommonwin.inc"/>
+        <Caret Line="2233" Column="68" TopLine="2211"/>
+      </Position15>
+      <Position16>
+        <Filename Value="waptcommonwin.inc"/>
+        <Caret Line="2985" Column="51" TopLine="2969"/>
+      </Position16>
+      <Position17>
+        <Filename Value="waptcommonwin.inc"/>
+        <Caret Line="3012" Column="48" TopLine="2995"/>
+      </Position17>
+      <Position18>
+        <Filename Value="waptcommonwin.inc"/>
+        <Caret Line="2995" Column="52" TopLine="2978"/>
+      </Position18>
+      <Position19>
+        <Filename Value="waptcommonwin.inc"/>
+        <Caret Line="2983" Column="35" TopLine="2968"/>
+      </Position19>
+      <Position20>
+        <Filename Value="waptcommonwin.inc"/>
+        <Caret Line="2995" Column="48" TopLine="2968"/>
+      </Position20>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>

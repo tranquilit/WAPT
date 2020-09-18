@@ -142,7 +142,7 @@ begin
             iniWaptGet:=TIniFile.Create(WaptIniFilename);
             waptservice_localuser := iniWaptGet.ReadString('global','waptservice_user','admin');
 
-            if not CheckOpenPort(waptservice_port,'127.0.0.1',waptservice_timeout*1000) then
+            if not CheckOpenPort('127.0.0.1',waptservice_port,waptservice_timeout*1000) then
               Raise Exception.Create(rsServiceNotRun);
 
             if (iniWaptGet.ReadString('global','waptservice_password','') = 'NOPASSWORD') then

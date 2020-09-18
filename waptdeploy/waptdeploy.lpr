@@ -195,7 +195,7 @@ Connection: Keep-Alive}
 
 
   // Returns only non options arguments of command line (those not starting with -- or -)
-  function CommandParams: TDynStringArray;
+  function CommandParams: TStringArray;
   var
     i, p: integer;
   begin
@@ -284,7 +284,7 @@ const
   isTemporary: Boolean = False;
 
 var
-  cmdparams: TDynStringArray;
+  cmdparams: TStringArray;
   cmdoptions: ISuperObject;
   mergetasks: Ansistring;
   setupargs: Ansistring;

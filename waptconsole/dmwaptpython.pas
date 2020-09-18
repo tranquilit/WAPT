@@ -117,7 +117,7 @@ type
     {$endif}
     function CheckLicence(domain: String; var LicencesLog: String): Integer;
     procedure CheckPySources;
-    function GetUserAllowedPerimetersSHA256: TDynStringArray;
+    function GetUserAllowedPerimetersSHA256: TStringArray;
     function UserCertAllowedOnHost(Host:ISuperObject):Boolean;
     function AllowedHostsForUser(Hosts:ISuperObject;Const Fields:Array of String):ISuperObject;
 
@@ -777,18 +777,18 @@ begin
   Result := FPersonalCertificate;
 end;
 
-function TDMPython.GetUserAllowedPerimetersSHA256:TDynStringArray;
+function TDMPython.GetUserAllowedPerimetersSHA256:TStringArray;
 begin
   if not VarIsEmpty(DMPython.PersonalCertificate) and not VarIsNull(DMPython.PersonalCertificate) then
     result := StrSplit(DMPython.PersonalCertificate.certificates_sha256_fingerprints('--noarg--'),',')
   else
-    result := TDynStringArray.Create;
+    result := TStringArray.Create;
 end;
 
 function TDMPython.UserCertAllowedOnHost(Host:ISuperObject):Boolean;
 var
   Fingerprint:String;
-  UserPerimeters: TDynStringArray;
+  UserPerimeters: TStringArray;
   HostPerimeters: ISuperobject;
 begin
   Result := False;
@@ -812,7 +812,7 @@ function TDMPython.AllowedHostsForUser(Hosts: ISuperObject;
   const Fields: array of String): ISuperObject;
 var
   Fingerprint:String;
-  UserPerimeters: TDynStringArray;
+  UserPerimeters: TStringArray;
   Host,HostPerimeters: ISuperobject;
 begin
   Result := TSuperObject.Create(stArray);

@@ -268,7 +268,7 @@ end;
 procedure TDMWaptTray.DataModuleCreate(Sender: TObject);
 var
   ActionName,SHiddenActions:String;
-  HiddenActions:TDynStringArray;
+  HiddenActions:TStringArray;
   Action:TAction;
   amenuitem,prevvisible: TMenuItem;
   i:Integer;

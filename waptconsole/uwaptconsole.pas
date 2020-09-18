@@ -1102,7 +1102,7 @@ type
     Function LoadHostInventory(host:ISuperObject): ISuperObject;
     function OneHostHasConnectedIP(GridHostsIPs:TSOGrid=Nil): Boolean;
     function OneHostIsConnected(GridHostsReachable:TSOGrid=Nil): Boolean;
-    function GetSelectedOrgUnits: TDynStringArray;
+    function GetSelectedOrgUnits: TStringArray;
     function ReportingQueryAppend(AName: String='New query'; sql: String='SELEC'
       +'T 1'): ISuperObject;
     function SelectedPackages(Grid: TSOGrid): ISuperObject;
@@ -1147,10 +1147,10 @@ type
 
     OrgUnitsHash:Integer;
     OrgUnitsSelectionHash:Integer;
-    FilteredOrgUnits:TDynStringArray;
+    FilteredOrgUnits:TStringArray;
 
     WUAPreferredProducts,
-    WUAPreferredClassifications : TDynStringArray;
+    WUAPreferredClassifications : TStringArray;
 
     PollTasksThread: TPollTasksThread;
 
@@ -1244,7 +1244,7 @@ type TComponentsArray=Array of TComponent;
 
 { TVisWaptGUI }
 
-function GetCheckListBoxItemsChecked(LB:TCheckListBox):TDynStringArray;
+function GetCheckListBoxItemsChecked(LB:TCheckListBox):TStringArray;
 var
   i:integer;
 begin
@@ -1254,7 +1254,7 @@ begin
       StrAppend(Result,LB.Items[i]);
 end;
 
-Procedure SetCheckListBoxItemsChecked(LB:TCheckListBox;checked:TDynStringArray);
+Procedure SetCheckListBoxItemsChecked(LB:TCheckListBox;checked:TStringArray);
 var
   i:integer;
 begin
@@ -2852,11 +2852,11 @@ var
   Allowed: Boolean;
   Row:ISuperObject;
   Keywords:String;
-  Sections,InstallStatus:TDynStringArray;
+  Sections,InstallStatus:TStringArray;
 begin
   Keywords := LowerCase(Trim(EdSearchStatusPackages.Text));
 
-  InstallStatus:=TDynStringArray.Create;
+  InstallStatus:=TStringArray.Create;
   if cbStatusErrors.Checked then
     StrAppend(InstallStatus,'ERROR');
   if cbStatusInstall.Checked then
@@ -2866,7 +2866,7 @@ begin
   if cbStatusRemove.Checked then
     StrAppend(InstallStatus,'NEED-REMOVE');
 
-  Sections := TDynStringArray.Create;
+  Sections := TStringArray.Create;
   {if cbSectionBase.Checked then
     StrAppend(Sections,'base');
   if cbOSectionGroup.Checked then
@@ -3609,7 +3609,7 @@ begin
   end;
 end;
 
-function StringArray2SO(A:TDynStringArray):ISuperObject;
+function StringArray2SO(A:TStringArray):ISuperObject;
 var
   s:String;
 begin
@@ -4743,7 +4743,7 @@ end;
 procedure TVisWaptGUI.cbGroupsKeyPress(Sender: TObject; var Key: char);
 var
   st:String;
-  select:TDynStringArray;
+  select:TStringArray;
 begin
   if key=#13 then
   begin
@@ -6594,7 +6594,7 @@ begin
   ;;
 end;
 
-function TVisWaptGUI.GetSelectedOrgUnits:TDynStringArray;
+function TVisWaptGUI.GetSelectedOrgUnits:TStringArray;
 begin
   ;;
 end;
