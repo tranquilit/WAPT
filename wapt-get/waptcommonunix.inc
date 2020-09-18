@@ -2147,7 +2147,7 @@ end;
 function GetRepoURLFromIni(RepoName:String='wapt'): String;
 var
   section:String;
-  repositories:TDynStringArray;
+  repositories:TStringArray;
 begin
   result := '';
 
@@ -2874,7 +2874,7 @@ begin
   else
   if (IPS.DataType=stString) then
   begin
-    if CheckOpenPort(port,UTF8Encode(IPS.AsString),timeout) then
+    if CheckOpenPort(UTF8Encode(IPS.AsString),port,timeout) then
       Result := UTF8Encode(IPS.AsString)
     else
       Result := '';
@@ -2884,7 +2884,7 @@ begin
   begin
     for IP in IPS do
     begin
-      if CheckOpenPort(port,UTF8Encode(IP.AsString),timeout) then
+      if CheckOpenPort(UTF8Encode(IP.AsString),port,timeout) then
       begin
         Result := UTF8Encode(IP.AsString);
         Break;

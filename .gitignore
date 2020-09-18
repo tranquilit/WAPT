@@ -102,7 +102,6 @@ openssl.exe
 /licences/*.lic
 /templates/waptexit-logo.png
 .gdb_history
-*.lrj
 waptwizard.exe
 waptwizard/lib
 waptconsolepostconf/lib
