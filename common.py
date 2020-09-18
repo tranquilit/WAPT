@@ -1778,11 +1778,11 @@ class WaptServer(BaseObjectClass):
 
             if config.has_option(section,'use_http_proxy_for_server') and config.getboolean(section,'use_http_proxy_for_server'):
                 if config.has_option(section,'http_proxy'):
-                    self.proxies = {'http':config.get(section,'http_proxy'),'https':config.get(section,'http_proxy')}
+                    self.proxies = {'http':config.get(section,'http_proxy',''),'https':config.get(section,'http_proxy','')}
                 else:
-                    self.proxies = None
+                    self.proxies = {'http':'','https':''}
             else:
-                self.proxies = {'http':None,'https':None}
+                self.proxies = {'http':'','https':''}
 
             if config.has_option(section,'wapt_server_timeout'):
                 self.timeout = config.getfloat(section,'wapt_server_timeout')
