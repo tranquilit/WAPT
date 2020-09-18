@@ -72,7 +72,11 @@ import codecs
 import re
 import time
 import json
-import ujson
+try:
+    import ujson
+except ImportError:
+    import json as ujson
+
 import sys
 import types
 import requests
