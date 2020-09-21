@@ -1536,6 +1536,14 @@ def get_db_version():
             wapt_db.rollback()
             return None
 
+def set_db_version(version):
+    with WaptDB():
+        (v, created) = ServerAttribs.get_or_create(key='db_version')
+        v.value = version
+        v.save()
+        return Version(ServerAttribs.get(key='db_version').value, 4)
+
+
 def init_db(drop=False):
     with WaptDB():
         try:
@@ -1543,9 +1551,9 @@ def init_db(drop=False):
         except:
             wapt_db.rollback()
 
-        list_tables = [ServerAttribs, Hosts, HostPackagesStatus, HostSoftwares, HostGroups,WsusUpdates,
-                HostWsus,WsusDownloadTasks,Packages, ReportingQueries, Normalization, StoreDownload,ReportingQueries,
-                ReportingSnapshots,WaptUsers,WaptUserAcls,SyncStatus,SiteRules,HostSyncStatus]
+        list_tables = [ServerAttribs, Hosts, HostPackagesStatus, HostSoftwares, HostGroups, WsusUpdates,
+                       HostWsus, WsusDownloadTasks, Packages, ReportingQueries, Normalization, StoreDownload, ReportingQueries,
+                       ReportingSnapshots, WaptUsers, WaptUserAcls, SyncStatus, SiteRules, HostSyncStatus]
         if drop:
             for table in reversed(list_tables):
                 table.drop_table(fail_silently=True)
@@ -1554,21 +1562,25 @@ def init_db(drop=False):
             wapt_db.create_tables(list_tables, safe=True)
         except Exception as e:
             wapt_db.rollback()
-            print(u'Unable to create tables, will try to upgrade step by step instead... : %s' % (repr(e),))
+            print('Unable to create tables, will try to upgrade step by step instead... : %s' % (repr(e),))
 
-        if get_db_version() == None:
+        if get_db_version() is None:
             # new database install, we setup the db_version key
-            (v, created) = ServerAttribs.get_or_create(key='db_version')
-            v.value = __version__
-            v.save()
+            set_db_version(__version__)
 
         if get_db_version() != __version__:
             with wapt_db.atomic():
                 upgrade_db_structure()
-                (v, created) = ServerAttribs.get_or_create(key='db_version')
-                v.value = __version__
-                v.save()
+                set_db_version(__version__)
+
         return get_db_version()
+
+def add_column_safe(opes,migrator,column):
+    """Add a column add operation to migrator if column does not exist yet in actual table"""
+    model = column.model
+    columns = [c.name for c in wapt_db.get_columns(model._meta.table_name)]
+    if not column.column_name in columns:
+        opes.append(migrator.add_column(Hosts._meta.table_name,column.column_name,column))
 
 
 def upgrade_db_structure():
@@ -1591,23 +1603,16 @@ def upgrade_db_structure():
                 )
                 HostGroups.create_table(fail_silently=True)
                 HostWsus.create_table(fail_silently=True)
-
-                (v, created) = ServerAttribs.get_or_create(key='db_version')
-                v.value = '1.4.2'
-                v.save()
+                set_db_version('1.4.2.0')
 
         next_version = '1.4.3'
         if get_db_version() < next_version:
             with wapt_db.atomic():
                 logger.info('Migrating from %s to %s' % (get_db_version(), next_version))
-                if not [c.name for c in wapt_db.get_columns('hosts') if c.name == 'host_certificate']:
-                    migrate(
-                        migrator.add_column(Hosts._meta.name, 'host_certificate', Hosts.host_certificate),
-                    )
-
-                (v, created) = ServerAttribs.get_or_create(key='db_version')
-                v.value = next_version
-                v.save()
+                opes = []
+                add_column_safe(opes,migrator,Hosts.host_certificate)
+                migrate(*opes)
+                set_db_version(next_version)
 
         next_version = '1.4.3.1'
         if get_db_version() < next_version:
@@ -1615,17 +1620,13 @@ def upgrade_db_structure():
                 logger.info('Migrating from %s to %s' % (get_db_version(), next_version))
                 columns = [c.name for c in wapt_db.get_columns('hosts')]
                 opes = []
-                if not 'last_logged_on_user' in columns:
-                    opes.append(migrator.add_column(Hosts._meta.name, 'last_logged_on_user', Hosts.last_logged_on_user))
+                add_column_safe(opes,migrator,Hosts.last_logged_on_user)
                 if 'installed_sofwares' in columns:
                     opes.append(migrator.drop_column(Hosts._meta.name, 'installed_sofwares'))
                 if 'installed_sofwares' in columns:
                     opes.append(migrator.drop_column(Hosts._meta.name, 'installed_packages'))
                 migrate(*opes)
-
-                (v, created) = ServerAttribs.get_or_create(key='db_version')
-                v.value = next_version
-                v.save()
+                set_db_version(next_version)
 
         next_version = '1.4.3.2'
         if get_db_version() < next_version:
@@ -1635,9 +1636,7 @@ def upgrade_db_structure():
                     ALTER TABLE hostsoftwares
                         ALTER COLUMN publisher TYPE character varying(2000),
                         ALTER COLUMN version TYPE character varying(1000);''')
-                (v, created) = ServerAttribs.get_or_create(key='db_version')
-                v.value = next_version
-                v.save()
+                set_db_version(next_version)
 
         next_version = '1.5.0.4'
         if get_db_version() < next_version:
@@ -1648,18 +1647,14 @@ def upgrade_db_structure():
                 if not 'server_uuid' in columns:
                     opes.append(migrator.add_column(Hosts._meta.name, 'server_uuid', Hosts.server_uuid))
                 migrate(*opes)
-                (v, created) = ServerAttribs.get_or_create(key='db_version')
-                v.value = next_version
-                v.save()
+                set_db_version(next_version)
 
         next_version = '1.5.0.11'
         if get_db_version() < next_version:
             with wapt_db.atomic():
                 logger.info('Migrating from %s to %s' % (get_db_version(), next_version))
                 HostGroups.create_table(fail_silently=True)
-                (v, created) = ServerAttribs.get_or_create(key='db_version')
-                v.value = next_version
-                v.save()
+                set_db_version(next_version)
 
         next_version = '1.5.1.1'
         if get_db_version() < next_version:
@@ -1674,10 +1669,7 @@ def upgrade_db_structure():
                 if not 'computer_ad_groups' in columns:
                     opes.append(migrator.add_column(Hosts._meta.name, 'computer_ad_groups', Hosts.computer_ad_groups))
                 migrate(*opes)
-
-                (v, created) = ServerAttribs.get_or_create(key='db_version')
-                v.value = next_version
-                v.save()
+                set_db_version(next_version)
 
         next_version = '1.5.1.3'
         if get_db_version() < next_version:
@@ -1688,10 +1680,7 @@ def upgrade_db_structure():
                 if not 'registration_auth_user' in columns:
                     opes.append(migrator.add_column(Hosts._meta.name, 'registration_auth_user', Hosts.registration_auth_user))
                 migrate(*opes)
-
-                (v, created) = ServerAttribs.get_or_create(key='db_version')
-                v.value = next_version
-                v.save()
+                set_db_version(next_version)
 
         next_version = '1.5.1.14'
         if get_db_version() < next_version:
@@ -1704,24 +1693,15 @@ def upgrade_db_structure():
                 if not 'conflicts' in columns:
                     opes.append(migrator.add_column(HostPackagesStatus._meta.name, 'conflicts', HostPackagesStatus.conflicts))
                 migrate(*opes)
-
-                (v, created) = ServerAttribs.get_or_create(key='db_version')
-                v.value = next_version
-                v.save()
+                set_db_version(next_version)
 
         next_version = '1.5.1.17'
         if get_db_version() < next_version:
             with wapt_db.atomic():
                 logger.info('Migrating from %s to %s' % (get_db_version(), next_version))
                 opes = []
-                ##
                 migrate(*opes)
-
-                #WsusScan2History.create_table(fail_silently=True)
-
-                (v, created) = ServerAttribs.get_or_create(key='db_version')
-                v.value = next_version
-                v.save()
+                set_db_version(next_version)
 
         next_version = '1.5.1.22'
         if get_db_version() < next_version:
@@ -1733,10 +1713,7 @@ def upgrade_db_structure():
                 opes.append(migrator.drop_column(HostPackagesStatus._meta.name, 'conflicts'))
                 opes.append(migrator.add_column(HostPackagesStatus._meta.name, 'conflicts', HostPackagesStatus.conflicts))
                 migrate(*opes)
-
-                (v, created) = ServerAttribs.get_or_create(key='db_version')
-                v.value = next_version
-                v.save()
+                set_db_version(next_version)
 
         next_version = '1.6.0.0'
         if get_db_version() < next_version:
@@ -1750,78 +1727,48 @@ def upgrade_db_structure():
                 opes.append(migrator.add_column(HostPackagesStatus._meta.name, 'last_audit_output', HostPackagesStatus.last_audit_output))
                 opes.append(migrator.add_column(HostPackagesStatus._meta.name, 'next_audit_on', HostPackagesStatus.next_audit_on))
                 migrate(*opes)
-
-                (v, created) = ServerAttribs.get_or_create(key='db_version')
-                v.value = next_version
-                v.save()
+                set_db_version(next_version)
 
         next_version = '1.6.0.1'
         if get_db_version() < next_version:
             with wapt_db.atomic():
                 logger.info('Migrating from %s to %s' % (get_db_version(), next_version))
                 opes = []
-                opes.append(migrator.add_column(HostPackagesStatus._meta.name, 'uninstall_key', HostPackagesStatus.uninstall_key))
+                add_column_safe(opes,migrator,HostPackagesStatus.uninstall_key)
                 migrate(*opes)
-
-                (v, created) = ServerAttribs.get_or_create(key='db_version')
-                v.value = next_version
-                v.save()
+                set_db_version(next_version)
 
         next_version = '1.6.2.0'
         if get_db_version() < next_version:
             with wapt_db.atomic():
                 logger.info('Migrating from %s to %s' % (get_db_version(), next_version))
                 opes = []
-                opes.append(migrator.add_column(Hosts._meta.name, 'authorized_certificates_sha256', Hosts.authorized_certificates_sha256))
+                add_column_safe(opes,migrator,Hosts.authorized_certificates_sha256)
                 migrate(*opes)
-
-                (v, created) = ServerAttribs.get_or_create(key='db_version')
-                v.value = next_version
-                v.save()
+                set_db_version(next_version)
 
         next_version = '1.6.2.1'
         if get_db_version() < next_version:
             with wapt_db.atomic():
                 logger.info('Migrating from %s to %s' % (get_db_version(), next_version))
-
                 HostWsus.drop_table()
                 WsusUpdates.drop_table()
-
-                wapt_db.create_tables([WsusUpdates,HostWsus],safe=True)
-
-                opes = []
-                #opes.append(migrator.add_column(Hosts._meta.name, 'waptwua', Hosts.waptwua))
-                migrate(*opes)
-
-                (v, created) = ServerAttribs.get_or_create(key='db_version')
-                v.value = next_version
-                v.save()
+                wapt_db.create_tables([WsusUpdates, HostWsus], safe=True)
+                set_db_version(next_version)
 
         next_version = '1.6.2.2'
         if get_db_version() <= next_version:
             with wapt_db.atomic():
                 logger.info('Migrating from %s to %s' % (get_db_version(), next_version))
-
                 WsusDownloadTasks.create_table(fail_silently=True)
                 Packages.create_table(fail_silently=True)
-
                 opes = []
-                columns = [c.name for c in wapt_db.get_columns('hosts')]
-                if not 'status_hashes' in columns:
-                    opes.append(migrator.add_column(Hosts._meta.name, 'status_hashes',Hosts.status_hashes))
-                if not 'waptwua_status' in columns:
-                    opes.append(migrator.add_column(Hosts._meta.name, 'waptwua_status',Hosts.waptwua_status))
-                if not 'wuauserv_status' in columns:
-                    opes.append(migrator.add_column(Hosts._meta.name, 'wuauserv_status',Hosts.wuauserv_status))
-
-                columns = [c.name for c in wapt_db.get_columns('wsusupdates')]
-                if not 'downloaded_on' in columns:
-                    opes.append(migrator.add_column(WsusUpdates._meta.name, 'downloaded_on',WsusUpdates.downloaded_on))
+                add_column_safe(opes,migrator,Hosts.status_hashes)
+                add_column_safe(opes,migrator,Hosts.waptwua_status)
+                add_column_safe(opes,migrator,Hosts.wuauserv_status)
+                add_column_safe(opes,migrator,WsusUpdates.downloaded_on)
                 migrate(*opes)
-
-                (v, created) = ServerAttribs.get_or_create(key='db_version')
-                v.value = next_version
-                v.save()
+                set_db_version(next_version)
 
         next_version = '1.6.2.3'
         if get_db_version() <= next_version:
@@ -1833,10 +1780,7 @@ def upgrade_db_structure():
                 if 'cve_ids' in columns:
                     opes.append(migrator.drop_column(WsusUpdates._meta.name, 'cve_ids'))
                 migrate(*opes)
-
-                (v, created) = ServerAttribs.get_or_create(key='db_version')
-                v.value = next_version
-                v.save()
+                set_db_version(next_version)
 
         next_version = '1.6.2.4'
         if get_db_version() < next_version:
@@ -1845,20 +1789,17 @@ def upgrade_db_structure():
 
                 opes = []
                 columns = [c.name for c in wapt_db.get_columns('packages')]
-                for c in ['impacted_process','editor','keywords','licence','homepage']:
+                for c in ['impacted_process', 'editor', 'keywords', 'licence', 'homepage']:
                     if not c in columns:
-                        opes.append(migrator.add_column(Packages._meta.name, c, getattr(Packages,c)))
+                        opes.append(migrator.add_column(Packages._meta.name, c, getattr(Packages, c)))
 
                 columns = [c.name for c in wapt_db.get_columns('hostwsus')]
                 for c in ['install_date']:
                     if not c in columns:
-                        opes.append(migrator.add_column(HostWsus._meta.name, c, getattr(HostWsus,c)))
+                        opes.append(migrator.add_column(HostWsus._meta.name, c, getattr(HostWsus, c)))
 
                 migrate(*opes)
-
-                (v, created) = ServerAttribs.get_or_create(key='db_version')
-                v.value = next_version
-                v.save()
+                set_db_version(next_version)
 
         next_version = '1.6.2.8'
         if get_db_version() < next_version:
@@ -1870,27 +1811,24 @@ def upgrade_db_structure():
                 columns = [c.name for c in wapt_db.get_columns('packages')]
                 for c in ['package_uuid']:
                     if not c in columns:
-                        opes.append(migrator.add_column(Packages._meta.name, c, getattr(Packages,c)))
+                        opes.append(migrator.add_column(Packages._meta.name, c, getattr(Packages, c)))
 
                 columns = [c.name for c in wapt_db.get_columns('hostpackagesstatus')]
                 for c in ['package_uuid']:
                     if not c in columns:
-                        opes.append(migrator.add_column(HostPackagesStatus._meta.name, c, getattr(HostPackagesStatus,c)))
+                        opes.append(migrator.add_column(HostPackagesStatus._meta.name, c, getattr(HostPackagesStatus, c)))
 
                 columns = [c.name for c in wapt_db.get_columns('hostwsus')]
                 for c in ['history']:
                     if not c in columns:
-                        opes.append(migrator.add_column(HostWsus._meta.name, c, getattr(HostWsus,c)))
+                        opes.append(migrator.add_column(HostWsus._meta.name, c, getattr(HostWsus, c)))
 
                 # change type to Array
                 opes.append(migrator.drop_column(HostPackagesStatus._meta.name, 'uninstall_key'))
                 opes.append(migrator.add_column(HostPackagesStatus._meta.name, 'uninstall_key', HostPackagesStatus.uninstall_key))
 
                 migrate(*opes)
-
-                (v, created) = ServerAttribs.get_or_create(key='db_version')
-                v.value = next_version
-                v.save()
+                set_db_version(next_version)
 
         next_version = '1.7.0.0'
         if get_db_version() < next_version:
@@ -1899,18 +1837,16 @@ def upgrade_db_structure():
 
                 opes = []
 
-                ReportingQueries.create_table(fail_silently=True);
-                Normalization.create_table(fail_silently=True);
+                ReportingQueries.create_table(fail_silently=True)
+                Normalization.create_table(fail_silently=True)
 
                 columns = [c.name for c in wapt_db.get_columns('packages')]
-                for c in ['audit_schedule','installed_size','target_os','min_os_version','max_os_version','min_wapt_version']:
+                for c in ['audit_schedule', 'installed_size', 'target_os', 'min_os_version', 'max_os_version', 'min_wapt_version']:
                     if not c in columns:
-                        opes.append(migrator.add_column(Packages._meta.name, c, getattr(Packages,c)))
+                        opes.append(migrator.add_column(Packages._meta.name, c, getattr(Packages, c)))
 
                 migrate(*opes)
-                (v, created) = ServerAttribs.get_or_create(key='db_version')
-                v.value = next_version
-                v.save()
+                set_db_version(next_version)
 
         next_version = '1.7.2.1'
         if get_db_version() < next_version:
@@ -1920,14 +1856,12 @@ def upgrade_db_structure():
                 opes = []
 
                 columns = [c.name for c in wapt_db.get_columns('hostwsus')]
-                for c in ['delayed',]:
+                for c in ['delayed', ]:
                     if not c in columns:
-                        opes.append(migrator.add_column(HostWsus._meta.name, c, getattr(HostWsus,c)))
+                        opes.append(migrator.add_column(HostWsus._meta.name, c, getattr(HostWsus, c)))
 
                 migrate(*opes)
-                (v, created) = ServerAttribs.get_or_create(key='db_version')
-                v.value = next_version
-                v.save()
+                set_db_version(next_version)
 
         next_version = '1.7.3.0'
         if get_db_version() < next_version:
@@ -1938,12 +1872,10 @@ def upgrade_db_structure():
 
                 columns = [c.name for c in wapt_db.get_columns('hosts')]
                 if not 'host_capabilities' in columns:
-                    opes.append(migrator.add_column(Hosts._meta.name, 'host_capabilities',Hosts.host_capabilities))
+                    opes.append(migrator.add_column(Hosts._meta.name, 'host_capabilities', Hosts.host_capabilities))
 
                 migrate(*opes)
-                (v, created) = ServerAttribs.get_or_create(key='db_version')
-                v.value = next_version
-                v.save()
+                set_db_version(next_version)
 
         next_version = '1.7.3.1'
         if get_db_version() < next_version:
@@ -1957,16 +1889,14 @@ def upgrade_db_structure():
 
                 columns = [c.name for c in wapt_db.get_columns('hosts')]
                 if not 'waptwua_rules' in columns:
-                    opes.append(migrator.add_column(Hosts._meta.name, 'waptwua_rules',Hosts.waptwua_rules))
+                    opes.append(migrator.add_column(Hosts._meta.name, 'waptwua_rules', Hosts.waptwua_rules))
                 if not 'host_metrics' in columns:
-                    opes.append(migrator.add_column(Hosts._meta.name, 'host_metrics',Hosts.host_metrics))
+                    opes.append(migrator.add_column(Hosts._meta.name, 'host_metrics', Hosts.host_metrics))
                 if not 'wapt_version' in columns:
-                    opes.append(migrator.add_column(Hosts._meta.name, 'wapt_version',Hosts.wapt_version))
+                    opes.append(migrator.add_column(Hosts._meta.name, 'wapt_version', Hosts.wapt_version))
 
                 migrate(*opes)
-                (v, created) = ServerAttribs.get_or_create(key='db_version')
-                v.value = next_version
-                v.save()
+                set_db_version(next_version)
 
         next_version = '1.7.3.2'
         if get_db_version() < next_version:
@@ -1976,15 +1906,13 @@ def upgrade_db_structure():
 
                 columns = [c.name for c in wapt_db.get_columns('hostpackagesstatus')]
                 if not 'signature_date' in columns:
-                    opes.append(migrator.add_column(HostPackagesStatus._meta.name, 'signature_date',HostPackagesStatus.signature_date))
+                    opes.append(migrator.add_column(HostPackagesStatus._meta.name, 'signature_date', HostPackagesStatus.signature_date))
                 columns = [c.name for c in wapt_db.get_columns('packages')]
                 if not 'signature_date' in columns:
-                    opes.append(migrator.add_column(Packages._meta.name, 'signature_date',Packages.signature_date))
+                    opes.append(migrator.add_column(Packages._meta.name, 'signature_date', Packages.signature_date))
 
                 migrate(*opes)
-                (v, created) = ServerAttribs.get_or_create(key='db_version')
-                v.value = next_version
-                v.save()
+                set_db_version(next_version)
 
         next_version = '1.7.3.6'
         if get_db_version() < next_version:
@@ -1994,17 +1922,15 @@ def upgrade_db_structure():
 
                 columns = [c.name for c in wapt_db.get_columns('packages')]
                 if not 'filename' in columns:
-                    opes.append(migrator.add_column(Packages._meta.name, 'filename',Packages.filename))
+                    opes.append(migrator.add_column(Packages._meta.name, 'filename', Packages.filename))
 
                 columns = [c.name for c in wapt_db.get_columns('wsusupdates')]
-                for col in ['is_beta','is_uninstallable','uninstallation_impact','installation_impact','support_url','release_notes','uninstallation_notes','languages']:
+                for col in ['is_beta', 'is_uninstallable', 'uninstallation_impact', 'installation_impact', 'support_url', 'release_notes', 'uninstallation_notes', 'languages']:
                     if not col in columns:
-                        opes.append(migrator.add_column(WsusUpdates._meta.name, col,getattr(WsusUpdates,col)))
+                        opes.append(migrator.add_column(WsusUpdates._meta.name, col, getattr(WsusUpdates, col)))
 
                 migrate(*opes)
-                (v, created) = ServerAttribs.get_or_create(key='db_version')
-                v.value = next_version
-                v.save()
+                set_db_version(next_version)
 
         next_version = '1.7.4'
         if get_db_version() < next_version:
@@ -2014,22 +1940,20 @@ def upgrade_db_structure():
 
                 columns = [c.name for c in wapt_db.get_columns('packages')]
                 if not 'name' in columns:
-                    opes.append(migrator.add_column(Packages._meta.name, 'name',Packages.name))
+                    opes.append(migrator.add_column(Packages._meta.name, 'name', Packages.name))
                 if not 'valid_from' in columns:
-                    opes.append(migrator.add_column(Packages._meta.name, 'valid_from',Packages.valid_from))
+                    opes.append(migrator.add_column(Packages._meta.name, 'valid_from', Packages.valid_from))
                 if not 'valid_until' in columns:
-                    opes.append(migrator.add_column(Packages._meta.name, 'valid_until',Packages.valid_until))
+                    opes.append(migrator.add_column(Packages._meta.name, 'valid_until', Packages.valid_until))
                 if not 'forced_install_on' in columns:
-                    opes.append(migrator.add_column(Packages._meta.name, 'forced_install_on',Packages.forced_install_on))
+                    opes.append(migrator.add_column(Packages._meta.name, 'forced_install_on', Packages.forced_install_on))
                 if not 'categories' in columns:
-                    opes.append(migrator.add_column(Packages._meta.name, 'categories',Packages.categories))
+                    opes.append(migrator.add_column(Packages._meta.name, 'categories', Packages.categories))
                 if not 'hosts_server_uuid_listening' in [i.name for i in wapt_db.get_indexes('hosts')]:
                     wapt_db.execute_sql('create index hosts_server_uuid_listening on hosts(server_uuid,listening_address)')
 
                 migrate(*opes)
-                (v, created) = ServerAttribs.get_or_create(key='db_version')
-                v.value = next_version
-                v.save()
+                set_db_version(next_version)
 
         next_version = '1.7.5'
         if get_db_version() < next_version:
@@ -2041,18 +1965,16 @@ def upgrade_db_structure():
 
                 columns = [c.name for c in wapt_db.get_columns('reportingqueries')]
                 if not 'snapshot_period' in columns:
-                    opes.append(migrator.add_column(ReportingQueries._meta.name, 'snapshot_period',ReportingQueries.snapshot_period))
+                    opes.append(migrator.add_column(ReportingQueries._meta.name, 'snapshot_period', ReportingQueries.snapshot_period))
                 if not 'snapshot_name' in columns:
-                    opes.append(migrator.add_column(ReportingQueries._meta.name, 'snapshot_name',ReportingQueries.snapshot_name))
+                    opes.append(migrator.add_column(ReportingQueries._meta.name, 'snapshot_name', ReportingQueries.snapshot_name))
                 if not 'last_snapshot_date' in columns:
-                    opes.append(migrator.add_column(ReportingQueries._meta.name, 'last_snapshot_date',ReportingQueries.last_snapshot_date))
+                    opes.append(migrator.add_column(ReportingQueries._meta.name, 'last_snapshot_date', ReportingQueries.last_snapshot_date))
                 if not 'snapshot_ttl' in columns:
-                    opes.append(migrator.add_column(ReportingQueries._meta.name, 'snapshot_ttl',ReportingQueries.snapshot_ttl))
+                    opes.append(migrator.add_column(ReportingQueries._meta.name, 'snapshot_ttl', ReportingQueries.snapshot_ttl))
 
                 migrate(*opes)
-                (v, created) = ServerAttribs.get_or_create(key='db_version')
-                v.value = next_version
-                v.save()
+                set_db_version(next_version)
 
         next_version = '1.7.6'
         if get_db_version() < next_version:
@@ -2064,35 +1986,33 @@ def upgrade_db_structure():
 
                 columns = [c.name for c in wapt_db.get_columns('syncstatus')]
                 if not 'version' in columns:
-                    opes.append(migrator.add_column(SyncStatus._meta.name, 'version',SyncStatus.version))
+                    opes.append(migrator.add_column(SyncStatus._meta.name, 'version', SyncStatus.version))
                 if not 'changelog' in columns:
-                    opes.append(migrator.add_column(SyncStatus._meta.name, 'changelog',SyncStatus.changelog))
+                    opes.append(migrator.add_column(SyncStatus._meta.name, 'changelog', SyncStatus.changelog))
 
                 SiteRules.create_table(fail_silently=True)
 
                 columns = [c.name for c in wapt_db.get_columns('siterules')]
                 if not 'sequence' in columns:
-                    opes.append(migrator.add_column(SiteRules._meta.name, 'sequence',SiteRules.sequence))
+                    opes.append(migrator.add_column(SiteRules._meta.name, 'sequence', SiteRules.sequence))
                 if not 'name' in columns:
-                    opes.append(migrator.add_column(SiteRules._meta.name, 'name',SiteRules.name))
+                    opes.append(migrator.add_column(SiteRules._meta.name, 'name', SiteRules.name))
                 if not 'condition' in columns:
-                    opes.append(migrator.add_column(SiteRules._meta.name, 'condition',SiteRules.condition))
+                    opes.append(migrator.add_column(SiteRules._meta.name, 'condition', SiteRules.condition))
                 if not 'value' in columns:
-                    opes.append(migrator.add_column(SiteRules._meta.name, 'value',SiteRules.value))
+                    opes.append(migrator.add_column(SiteRules._meta.name, 'value', SiteRules.value))
                 if not 'repo_url' in columns:
-                    opes.append(migrator.add_column(SiteRules._meta.name, 'repo_url',SiteRules.repo_url))
+                    opes.append(migrator.add_column(SiteRules._meta.name, 'repo_url', SiteRules.repo_url))
                 if not 'repositories' in columns:
-                    opes.append(migrator.add_column(SiteRules._meta.name, 'repositories',SiteRules.repositories))
+                    opes.append(migrator.add_column(SiteRules._meta.name, 'repositories', SiteRules.repositories))
                 columns = [c.name for c in wapt_db.get_columns('hosts')]
                 if not 'platform' in columns:
-                    opes.append(migrator.add_column(Hosts._meta.name, 'platform',Hosts.platform))
+                    opes.append(migrator.add_column(Hosts._meta.name, 'platform', Hosts.platform))
                 if not 'repositories' in columns:
-                    opes.append(migrator.add_column(Hosts._meta.name, 'repositories',Hosts.repositories))
+                    opes.append(migrator.add_column(Hosts._meta.name, 'repositories', Hosts.repositories))
 
                 migrate(*opes)
-                (v, created) = ServerAttribs.get_or_create(key='db_version')
-                v.value = next_version
-                v.save()
+                set_db_version(next_version)
 
         next_version = '1.7.6.5'
         if get_db_version() < next_version:
@@ -2102,12 +2022,10 @@ def upgrade_db_structure():
 
                 columns = [c.name for c in wapt_db.get_columns('siterules')]
                 if not 'repositories' in columns:
-                    opes.append(migrator.add_column(SiteRules._meta.name, 'repositories',SiteRules.repositories))
+                    opes.append(migrator.add_column(SiteRules._meta.name, 'repositories', SiteRules.repositories))
 
                 migrate(*opes)
-                (v, created) = ServerAttribs.get_or_create(key='db_version')
-                v.value = next_version
-                v.save()
+                set_db_version(next_version)
 
         next_version = '1.7.6.6'
         if get_db_version() < next_version:
@@ -2118,9 +2036,7 @@ def upgrade_db_structure():
                 WaptUserAcls.create_table()
 
                 migrate(*opes)
-                (v, created) = ServerAttribs.get_or_create(key='db_version')
-                v.value = next_version
-                v.save()
+                set_db_version(next_version)
 
         next_version = '1.8.1.0'
         if get_db_version() < next_version:
@@ -2130,97 +2046,42 @@ def upgrade_db_structure():
 
                 columns = [c.name for c in wapt_db.get_columns('hostpackagesstatus')]
                 if not 'name' in columns:
-                    opes.append(migrator.add_column(HostPackagesStatus._meta.name, 'name',HostPackagesStatus.name))
+                    opes.append(migrator.add_column(HostPackagesStatus._meta.name, 'name', HostPackagesStatus.name))
                 if not 'impacted_process' in columns:
-                    opes.append(migrator.add_column(HostPackagesStatus._meta.name, 'impacted_process',HostPackagesStatus.impacted_process))
+                    opes.append(migrator.add_column(HostPackagesStatus._meta.name, 'impacted_process', HostPackagesStatus.impacted_process))
 
                 HostSyncStatus.create_table(fail_silently=True)
 
                 columns = [c.name for c in wapt_db.get_columns('syncstatus')]
                 if not 'progress' in columns:
-                    opes.append(migrator.add_column(SyncStatus._meta.name, 'progress',SyncStatus.progress))
+                    opes.append(migrator.add_column(SyncStatus._meta.name, 'progress', SyncStatus.progress))
 
                 migrate(*opes)
 
-                function_update_host_sync_status = """
-                CREATE OR REPLACE FUNCTION update_host_sync_status()
-                    RETURNS trigger
-                    LANGUAGE 'plpgsql'
-                    VOLATILE
-                    COST 100
-                AS $BODY$
-                BEGIN
-                    IF (TG_OP = 'INSERT') THEN
-                        IF ((NEW.wapt_status->>'is_remote_repo')::boolean=True) THEN
-                            INSERT INTO hostsyncstatus (uuid) VALUES (NEW.uuid);
-                        END IF;
-                        RETURN NEW;
-                    ELSEIF (TG_OP = 'UPDATE') THEN
-                        IF ((NEW.wapt_status->>'is_remote_repo')::boolean=True) THEN
-                            IF NOT EXISTS (SELECT 1 FROM hostsyncstatus WHERE uuid = NEW.uuid) THEN
-                                INSERT INTO hostsyncstatus (uuid) VALUES (NEW.uuid);
-                            END IF;
-                        ELSE
-                            DELETE FROM hostsyncstatus WHERE hostsyncstatus.uuid = OLD.uuid;
-                        END IF;
-                        RETURN NEW;
-                    ELSE
-                        DELETE FROM hostsyncstatus WHERE hostsyncstatus.uuid = OLD.uuid;
-                        RETURN OLD;
-                    END IF;
-                END
-                $BODY$;
-                """
-
-                wapt_db.execute_sql(function_update_host_sync_status)
-
-                drop_trigger_update_host_sync_status = """
-                DROP TRIGGER IF EXISTS "UPDATE_HOST_SYNC_STATUS" ON hosts;
-                """
-
-                wapt_db.execute_sql(drop_trigger_update_host_sync_status)
-
-                trigger_update_host_sync_status = """
-                CREATE TRIGGER "UPDATE_HOST_SYNC_STATUS"
-                BEFORE INSERT OR DELETE OR UPDATE
-                ON hosts
-                FOR EACH ROW
-                EXECUTE PROCEDURE update_host_sync_status();
-                """
-
-                wapt_db.execute_sql(trigger_update_host_sync_status)
-
-                (v, created) = ServerAttribs.get_or_create(key='db_version')
-                v.value = next_version
-                v.save()
+                set_db_version(next_version)
 
         next_version = '1.8.2.0'
-        if get_db_version() <= next_version:
+        if get_db_version() < next_version:
             with wapt_db.atomic():
                 logger.info("Migrating from %s to %s" % (get_db_version(), next_version))
                 opes = []
                 columns = [c.name for c in wapt_db.get_columns('siterules')]
                 if not 'negation' in columns:
-                    opes.append(migrator.add_column(SiteRules._meta.name,'negation',SiteRules.negation))
+                    opes.append(migrator.add_column(SiteRules._meta.name, 'negation', SiteRules.negation))
                 if not 'no_fallback' in columns:
-                    opes.append(migrator.add_column(SiteRules._meta.name,'no_fallback',SiteRules.no_fallback))
+                    opes.append(migrator.add_column(SiteRules._meta.name, 'no_fallback', SiteRules.no_fallback))
 
                 columns = [c.name for c in wapt_db.get_columns('hostpackagesstatus')]
                 if not 'name' in columns:
-                    opes.append(migrator.add_column(HostPackagesStatus._meta.name, 'name',HostPackagesStatus.name))
+                    opes.append(migrator.add_column(HostPackagesStatus._meta.name, 'name', HostPackagesStatus.name))
                 if not 'impacted_process' in columns:
-                    opes.append(migrator.add_column(HostPackagesStatus._meta.name, 'impacted_process',HostPackagesStatus.impacted_process))
+                    opes.append(migrator.add_column(HostPackagesStatus._meta.name, 'impacted_process', HostPackagesStatus.impacted_process))
 
                 migrate(*opes)
-                (v, created) = ServerAttribs.get_or_create(key='db_version')
-                v.value = next_version
-                v.save()
+                set_db_version(next_version)
 
         if get_db_version() < __version__:
-
-                (v, created) = ServerAttribs.get_or_create(key='db_version')
-                v.value = __version__
-                v.save()
+            set_db_version(__version__)
 
         # be sure to have at least admin
         with wapt_db.atomic():
@@ -2235,6 +2096,53 @@ def upgrade_db_structure():
                 admin_acls.perimeter_fingerprint='*'
                 admin_acls.save()
 
+
+        # be sure to have triggers and functions
+        with wapt_db.atomic():
+            req = "SELECT EXISTS(SELECT * FROM pg_proc WHERE proname = 'update_host_sync_status')"
+            if not list(wapt_db.execute_sql(req))[0][0]:
+                function_update_host_sync_status = """
+                    CREATE OR REPLACE FUNCTION update_host_sync_status()
+                        RETURNS trigger
+                        LANGUAGE 'plpgsql'
+                        VOLATILE
+                        COST 100
+                    AS $BODY$
+                    BEGIN
+                        IF (TG_OP = 'INSERT') THEN
+                            IF ((NEW.wapt_status->>'is_remote_repo')::boolean=True) THEN
+                                INSERT INTO hostsyncstatus (uuid) VALUES (NEW.uuid);
+                            END IF;
+                            RETURN NEW;
+                        ELSEIF (TG_OP = 'UPDATE') THEN
+                            IF ((NEW.wapt_status->>'is_remote_repo')::boolean=True) THEN
+                                IF NOT EXISTS (SELECT 1 FROM hostsyncstatus WHERE uuid = NEW.uuid) THEN
+                                    INSERT INTO hostsyncstatus (uuid) VALUES (NEW.uuid);
+                                END IF;
+                            ELSE
+                                DELETE FROM hostsyncstatus WHERE hostsyncstatus.uuid = OLD.uuid;
+                            END IF;
+                            RETURN NEW;
+                        ELSE
+                            DELETE FROM hostsyncstatus WHERE hostsyncstatus.uuid = OLD.uuid;
+                            RETURN OLD;
+                        END IF;
+                    END
+                    $BODY$;
+                    """
+                wapt_db.execute_sql(function_update_host_sync_status)
+
+            req = "SELECT EXISTS(SELECT tgname FROM pg_trigger WHERE not tgisinternal AND tgname = 'UPDATE_HOST_SYNC_STATUS')"
+            if not list(wapt_db.execute_sql(req))[0][0]:
+                trigger_update_host_sync_status = """
+                    CREATE TRIGGER "UPDATE_HOST_SYNC_STATUS"
+                    BEFORE INSERT OR DELETE OR UPDATE
+                    ON hosts
+                    FOR EACH ROW
+                    EXECUTE PROCEDURE update_host_sync_status();
+                    """
+
+                wapt_db.execute_sql(trigger_update_host_sync_status)
 
     finally:
         pass
