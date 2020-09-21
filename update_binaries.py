@@ -121,7 +121,7 @@ if os.path.exists(makepath(wapt_base_dir, 'dmidecode.exe')):
 filecopyto(dmidecode, makepath(wapt_base_dir, 'dmidecode.exe'))
 
 print('Get OpenSSL binaries from Overbyte')
-ssl_zip = wget('http://wiki.overbyte.eu/arch/openssl-1.0.2u-win32.zip', resume=True, sha256='27EBBBB53DC4ADB05C9672FA8FECAEC983205150CF3E5F51867EF1DE781A9BC1', cache_dir=binaries_cache, proxies=proxies)
+ssl_zip = wget('http://wiki.overbyte.eu/arch/openssl-1.0.2u-win32.zip', resume=True, sha256='27EBBBB53DC4ADB05C9672FA8FECAEC983205150CF3E5F51867EF1DE781A9BC1'.lower(), cache_dir=binaries_cache, proxies=proxies)
 ssl_file = unzip(ssl_zip, target=makepath(wapt_base_dir), filenames=['ssleay32.dll', 'openssl.exe', 'libeay32.dll'])
 
 print('Get Cryptography 2.4.2 for Windows XP')
