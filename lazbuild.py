@@ -156,17 +156,18 @@ def set_lpi_options(lpi_fn,waptedition,waptversion,buildnr=None):
         build = et_build.attrib['Value'] = buildnr
     st = lpi.find('ProjectOptions/VersionInfo/StringTable')
     st.attrib['ProductName'] = 'WAPT %s Edition' % waptedition.capitalize()
-    st.attrib['ProductVersion'] = '%s.%s.%s' % (major,minor,revision)
-    st.attrib['LegalCopyright'] = 'Tranquil IT Systems 2012-%s' % (datetime.now().year )
+    st.attrib['ProductVersion'] = '%s.%s.%s' % (major, minor, revision)
+    st.attrib['LegalCopyright'] = 'Tranquil IT Systems 2012-%s' % (datetime.now().year)
     compiler_custom_options = lpi.find('CompilerOptions/Other/CustomOptions')
     if compiler_custom_options is not None:
         compiler_custom_options.attrib['Value'] = "-dUseCThreads -d%s" % waptedition.upper()
     else:
         print('WARNING: No compiler options')
     print("Compiler special options: %s" % (compiler_custom_options is not None and compiler_custom_options.items(),))
-    if os.name!='nt':
+    if os.name != 'nt':
         output_filename = lpi.find('CompilerOptions/Target/Filename')
-        output_filename.attrib['Value']=output_filename.attrib['Value']+'.bin'
+        if not output_filename.attrib['Value'].endswith('.bin'):
+            output_filename.attrib['Value'] = output_filename.attrib['Value']+'.bin'
     lpi.write(lpi_fn)
 
 def get_lpi_output(lpi_fn):
@@ -262,7 +263,7 @@ def main():
         set_app_ico(lpi_path,options.waptedition)
 
         update_hash_file(os.path.abspath(options.update_hash_filepath.format(**locals())))
-        cmd = '"%s" --primary-config-path="%s" -B "%s"'% (os.path.expandvars(options.lazbuildpath),os.path.expandvars(options.primary_config_path),os.path.expandvars(lpi_path))
+        cmd = '"%s" --primary-config-path="%s" -B "%s"%s' % (os.path.expandvars(options.lazbuildpath), os.path.expandvars(options.primary_config_path), os.path.expandvars(lpi_path), '' if sys.platform != 'darwin' else ' --ws=cocoa')
         print(u'Running: %s' % cmd)
         run(cmd)
         (fn,ext) = os.path.splitext(get_lpi_output(lpi_path))
