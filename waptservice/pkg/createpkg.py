@@ -266,14 +266,12 @@ mkdir_p('tmpbuild/payload/usr/local/bin/')
 
 run_verbose('pip{} install setuptools'.format(python_version))
 eprint('Create a build environment virtualenv. May need to download a few libraries, it may take some time')
-run_verbose(r'virtualenv -p /usr/bin/python2.7 tmpbuild/payload/opt/wapt') #--always-copy')
+run_verbose(r'python -m virtualenv -p /usr/bin/python2.7 tmpbuild/payload/opt/wapt')
 eprint('Install additional libraries in build environment virtualenv')
 run_verbose('tmpbuild/payload/opt/wapt/bin/pip install pip setuptools --upgrade')
 # qq libs a rajouter
 lib_python=next(os.walk('tmpbuild/payload/opt/wapt/lib/'))[1][0]
 run('tmpbuild/payload/opt/wapt/bin/pip{} install -r ../../requirements-agent.txt -r ../../requirements-agent-unix.txt -t tmpbuild/payload/opt/wapt/lib/{}/site-packages'.format(python_version, lib_python))
-
-run_verbose(r'virtualenv tmpbuild/payload/opt/wapt')
 
 eprint('copying the waptservice files')
 files_to_copy = ['version-full','waptcrypto.py','waptutils.py','common.py','custom_zip.py','waptpackage.py','setuphelpers.py','setuphelpers_unix.py','setuphelpers_macos.py','wapt-get.py']
