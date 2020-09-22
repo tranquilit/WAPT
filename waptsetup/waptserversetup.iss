@@ -95,7 +95,6 @@ Source: "{#wapt_base_dir}waptserver\translations\*"; DestDir: "{app}\waptserver\
 Source: "{#wapt_base_dir}waptserver\scripts\*"; DestDir: "{app}\waptserver\scripts"; Flags: createallsubdirs recursesubdirs; Tasks: InstallWaptserver
 Source: "{#wapt_base_dir}waptserver\pgsql-9.6\*"; DestDir: "{app}\waptserver\pgsql-9.6"; Flags: createallsubdirs recursesubdirs; Tasks: InstallPostgreSQL
 Source: "{#wapt_base_dir}waptserver\nginx\*"; DestDir: "{app}\waptserver\nginx"; Flags: createallsubdirs recursesubdirs; Tasks: InstallNGINX
-Source: "{#wapt_base_dir}waptserver\mongodb\mongoexport.exe"; DestDir: "{app}\waptserver\mongodb"; Check: DirExists(ExpandConstant('{app}\waptserver\mongodb'));  Tasks: InstallWaptserver
 
 ; waptenterprise only
 #ifdef waptenterprise
@@ -114,7 +113,6 @@ Source: "{#wapt_base_dir}waptserver\translations\*"; DestDir: "{app}\waptserver\
 Source: "{#wapt_base_dir}waptserver\scripts\*"; DestDir: "{app}\waptserver\scripts"; Flags: createallsubdirs recursesubdirs;
 Source: "{#wapt_base_dir}waptserver\pgsql-9.6\*"; DestDir: "{app}\waptserver\pgsql-9.6"; Flags: createallsubdirs recursesubdirs;
 Source: "{#wapt_base_dir}waptserver\nginx\*"; DestDir: "{app}\waptserver\nginx"; Flags: createallsubdirs recursesubdirs;
-Source: "{#wapt_base_dir}waptserver\mongodb\mongoexport.exe"; DestDir: "{app}\waptserver\mongodb"; Check: DirExists(ExpandConstant('{app}\waptserver\mongodb'))
 
 ; waptenterprise only
 #ifdef waptenterprise
