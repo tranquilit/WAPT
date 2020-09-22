@@ -197,6 +197,7 @@ SETUP_UNIX=os.environ.get('SETUP_UNIX','FALSE')
 
 #########################################
 BDIR = './builddir/'
+if SETUP_UNIX=='TRUE':
     dict_agent = {
         'WAPTAGENT_RPM7': 'waptagent_RHEL7.rpm',
         'WAPTAGENT_RPM8': 'waptagent_RHEL8.rpm',
