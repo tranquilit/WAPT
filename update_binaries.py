@@ -22,6 +22,8 @@ wapt_base_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)))
 print('WAPT base directory: %s' % wapt_base_dir)
 
 binaries_cache = os.path.abspath(os.path.join(wapt_base_dir, '..', 'binaries_cache'))
+base = wapt_base_dir
+site_packages = os.path.join(base, 'Lib', 'site-packages')
 
 proxies = None
 proxies = {'http': 'http://srvproxy:8080', 'https': 'http://srvproxy:8080'}
