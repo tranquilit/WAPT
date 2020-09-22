@@ -23,7 +23,7 @@ Build installer
 def sign_exe(exe_path,p12path,p12password):
     SIGNTOOL = os.path.join(wapt_root_dir, 'utils', 'signtool.exe')
     if not os.path.exists(SIGNTOOL):
-        SIGNTOOL = os.path.join(setuphelpers.programfiles32(), 'wapt', 'utils', 'signtool.exe')
+        SIGNTOOL = os.path.join(setuphelpers.programfiles32, 'wapt', 'utils', 'signtool.exe')
     if not os.path.exists(SIGNTOOL):
         SIGNTOOL = os.path.join(r'c:\wapt', 'utils', 'signtool.exe')
 
