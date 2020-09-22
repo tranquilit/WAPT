@@ -9,7 +9,7 @@ BuildArch:	noarch
 Group:	    Development/Tools
 License:	GPL
 URL:		https://wapt.fr	
-Requires:	nginx
+Requires:	tis-waptserver
 
 %description
 Convenience package that ships with waptdeploy.exe and waptsetup.exe

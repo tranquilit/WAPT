@@ -197,21 +197,22 @@ SETUP_UNIX=os.environ.get('SETUP_UNIX','FALSE')
 
 #########################################
 BDIR = './builddir/'
-if SETUP_UNIX=='TRUE':
     dict_agent = {
-    'WAPTAGENT_RPM7':'waptagent7.rpm',
-    'WAPTAGENT_RPM8':'waptagent8.rpm',
-    'WAPTAGENT_PKG':'waptagent.pkg',
-    'WAPTAGENT_DEB8':'waptagent_debian8.deb',
-    'WAPTAGENT_DEB9':'waptagent_debian9.deb',
-    'WAPTAGENT_DEB10':'waptagent_debian10.deb',
-    'WAPTAGENT_UB18':'waptagent_ubuntu18.deb',
-    'WAPTAGENT_UB20':'waptagent_ubuntu20.deb',
+        'WAPTAGENT_RPM7': 'waptagent_RHEL7.rpm',
+        'WAPTAGENT_RPM8': 'waptagent_RHEL8.rpm',
+        'WAPTAGENT_PKG': 'waptagent.pkg',
+        'WAPTAGENT_DEB8': 'waptagent_debian8.deb',
+        'WAPTAGENT_DEB9': 'waptagent_debian9.deb',
+        'WAPTAGENT_DEB10': 'waptagent_debian10.deb',
+        'WAPTAGENT_UB16': 'waptagent_ubuntu16.deb',
+        'WAPTAGENT_UB18': 'waptagent_ubuntu18.deb',
+        'WAPTAGENT_UB20': 'waptagent_ubuntu20.deb',
+        'WAPTAGENT_DEB10_ARM': 'waptagent_debian10_armhf.deb',
     }
 else:
     dict_agent = {
-    'WAPTSETUP':'waptsetup-tis.exe',
-    'WAPTDEPLOY':'waptdeploy.exe',
+        'WAPTSETUP':'waptsetup-tis.exe',
+        'WAPTDEPLOY':'waptdeploy.exe',
     }
 
 WAPTEDITION=os.environ.get('WAPTEDITION','community')

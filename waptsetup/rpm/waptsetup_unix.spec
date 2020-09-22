@@ -9,7 +9,7 @@ BuildArch:	noarch
 Group:	    Development/Tools
 License:	GPL
 URL:		https://wapt.fr	
-Requires:	nginx
+Requires:	tis-waptserver
 
 %description
 Convenience package that ships with linux/mac agents
@@ -20,10 +20,12 @@ programs with the appropriate version for your waptserver.
 cp ../waptagent_debian8.deb %{buildroot}/var/www/html/wapt/
 cp ../waptagent_debian9.deb %{buildroot}/var/www/html/wapt/
 cp ../waptagent_debian10.deb  %{buildroot}/var/www/html/wapt/
+cp ../waptagent_debian10_armhf.deb  %{buildroot}/var/www/html/wapt/
+cp ../waptagent_ubuntu16.deb  %{buildroot}/var/www/html/wapt/
 cp ../waptagent_ubuntu18.deb  %{buildroot}/var/www/html/wapt/
 cp ../waptagent_ubuntu20.deb %{buildroot}/var/www/html/wapt/
-cp ../waptagent7.rpm  %{buildroot}/var/www/html/wapt/
-cp ../waptagent8.rpm %{buildroot}/var/www/html/wapt/
+cp ../waptagent_RHEL7.rpm  %{buildroot}/var/www/html/wapt/
+cp ../waptagent_RHEL8.rpm %{buildroot}/var/www/html/wapt/
 cp ../waptagent.pkg  %{buildroot}/var/www/html/wapt/
 
 %files
