@@ -77,8 +77,17 @@ def git_hash():
     r = Repo('.',search_parent_directories=True)
     return '%s' % (r.active_branch.object.name_rev[:8],)
 
+def get_arch_debian():
+    if platform.machine().startswith('arm'):
+        return 'armhf' if platform.architecture()[0] == '32bit' else 'arm64'
+    elif platform.machine() == 'x86_64':
+        return'amd64'
+    else:
+        eprint('This script should be used for arch ARM 32/64 bits or AMD64')
+        sys.exit(1)
+
 def dev_revision():
-    return '%s-%s-%s' % (get_distrib(), debian_major(), git_hash())
+    return '%s-%s-%s' % (get_distrib(), git_hash(), debian_major(), get_arch_debian())
 
 def setloglevel(alogger,loglevel):
     """set loglevel as string"""
