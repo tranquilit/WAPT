@@ -581,7 +581,7 @@ if __name__ == '__main__':
     parser.add_option(
         '--dhparam-key-size',
         dest='dhparam_key_size',
-        default=2048,
+        default=1024,
         metavar='NUMBER',
         type='int',
         help='Size for dhparam key')
