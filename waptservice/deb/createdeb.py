@@ -100,7 +100,7 @@ def get_arch_debian():
         sys.exit(1)
 
 def dev_revision():
-    return '%s-%s-%s-%s' % (get_distrib(), git_hash(), debian_major(), get_arch_debian())
+    return '%s-%s-%s-%s' % (git_hash(), get_distrib(), debian_major(), get_arch_debian())
 
 def setloglevel(alogger,loglevel):
     """set loglevel as string"""
