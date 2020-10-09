@@ -451,7 +451,7 @@ class SSLCABundle(BaseObjectClass):
         # we include the certificate in the chain if it is itself in the cabundle evane if we have not found the issuer
         if issuer_cert or self.certificate(fingerprint = fingerprint):
             result.append(certificate)
-        while issuer_cert:
+        while issuer_cert and not issuer_cert in result:
             # TODO : verify  certificate.signature with issuercert public key
             if issuer_cert and not issuer_cert.is_ca:
                 logger.debug(u'Certificate %s issued by non CA certificate %s' % (certificate,issuer_cert))
