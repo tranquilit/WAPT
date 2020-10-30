@@ -349,7 +349,8 @@ def check_auth(logon_name, password,check_token_in_password=True,for_group='wapt
             if app.waptconfig.service_auth_type == 'waptagent-ldap':
                 auth_res = {'result' : auth_module_ad.check_credentials_ad({'ldap_auth_server' : app.waptconfig.ldap_auth_server,
                                                   'ldap_auth_base_dn' : app.waptconfig.ldap_auth_base_dn,
-                                                  'ldap_auth_ssl_enabled' : app.waptconfig.ldap_auth_ssl_enabled },
+                                                  'ldap_auth_ssl_enabled': app.waptconfig.ldap_auth_ssl_enabled,
+                                                  'verify_cert_ldap':app.waptconfig.verify_cert_ldap},
                                                   username, password,list_group=[for_group])}
 
             if auth_res['result']['error'] :
@@ -450,7 +451,8 @@ def get_user_self_service_groups(self_service_groups,logon_name,password):
             if app.waptconfig.service_auth_type == 'waptagent-ldap':
                 result = {'result' : auth_module_ad.check_credentials_ad({'ldap_auth_server' : app.waptconfig.ldap_auth_server,
                                                   'ldap_auth_base_dn' : app.waptconfig.ldap_auth_base_dn,
-                                                  'ldap_auth_ssl_enabled' : app.waptconfig.ldap_auth_ssl_enabled },
+                                                  'ldap_auth_ssl_enabled': app.waptconfig.ldap_auth_ssl_enabled,
+                                                  'verify_cert_ldap':app.waptconfig.verify_cert_ldap},
                                                   logon_name, password,list_group=self_service_groups)}
 
             if result['result']['error'] :
