@@ -2335,12 +2335,18 @@ class SSLCertificate(BaseObjectClass):
 
         extensions = []
 
+        issuer = self.crt.subject
+        extensions.append(
+            dict(extension=x509.AuthorityKeyIdentifier.from_issuer_subject_key_identifier(
+                self.crt.extensions.get_extension_for_oid(x509.OID_SUBJECT_KEY_IDENTIFIER)),
+            critical=False))
+
         serial_number = x509.random_serial_number()
 
         builder = x509.CertificateBuilder().serial_number(
             serial_number
         ).issuer_name(
-            self.crt.subject
+            issuer
         ).subject_name(
             csr.csr.subject
         ).public_key(
@@ -2349,17 +2355,22 @@ class SSLCertificate(BaseObjectClass):
             datetime.datetime.utcnow(),
         ).not_valid_after(
             datetime.datetime.utcnow()+datetime.timedelta(days=validity_duration)
-        ).add_extension(x509.AuthorityKeyIdentifier.from_issuer_subject_key_identifier(x509.SubjectKeyIdentifier(self.subject_key_identifier)),False)
+        )
 
         for ext in csr.csr.extensions:
             builder = builder.add_extension(ext.value, ext.critical)
+
+        for ext in extensions:
+            builder = builder.add_extension(
+                ext.get('extension'), ext.get('critical')
+            )
 
         if crl_urls is None:
             cdp = self.extensions.get('cRLDistributionPoints')
             if cdp:
                 builder = builder.add_extension(
-                    extension=x509.CRLDistributionPoints(cdp),
-                    critical=False)
+                        extension=x509.CRLDistributionPoints(cdp),
+                        critical=False)
 
         elif crl_urls:
             cdp = [ DistributionPoint(

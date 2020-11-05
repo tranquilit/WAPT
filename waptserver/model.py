@@ -26,9 +26,7 @@ import os
 import sys
 import uuid as _uuid
 
-import psutil
 import datetime
-import subprocess
 import getpass
 import traceback
 import platform
