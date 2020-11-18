@@ -383,7 +383,7 @@ control = open(control_file,'r').read()
 open(control_file,'w').write(re.sub('Version: .*','Version: %s' % full_version,control))
 # update Control arch
 control = open(control_file,'r').read()
-open(control_file,'w').write(re.sub('Architecture: .*','Architecture: %s' % get_arch_debian,control))
+open(control_file,'w').write(re.sub('Architecture: .*','Architecture: %s' % get_arch_debian(),control))
 
 os.chmod('./builddir/DEBIAN/postinst', stat.S_IRWXU |
          stat.S_IXGRP | stat.S_IRGRP | stat.S_IROTH | stat.S_IXOTH)
