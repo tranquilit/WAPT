@@ -753,7 +753,6 @@ class SyncStatus(WaptBaseModel):
     id = PrimaryKeyField(primary_key=True)
     version = IntegerField(null=True)
     changelog = JSONField(null=True)
-    progress = IntegerField(null=True)
 
 class HostSyncStatus(WaptBaseModel):
     id = PrimaryKeyField(primary_key=True)
@@ -2049,10 +2048,6 @@ def upgrade_db_structure():
                     opes.append(migrator.add_column(HostPackagesStatus._meta.name, 'impacted_process', HostPackagesStatus.impacted_process))
 
                 HostSyncStatus.create_table(fail_silently=True)
-
-                columns = [c.name for c in wapt_db.get_columns('syncstatus')]
-                if not 'progress' in columns:
-                    opes.append(migrator.add_column(SyncStatus._meta.name, 'progress', SyncStatus.progress))
 
                 migrate(*opes)
 
