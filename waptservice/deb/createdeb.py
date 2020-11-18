@@ -390,6 +390,9 @@ eprint(u'inscription de la version dans le fichier de control. new version: ' + 
 # update Control version
 control = open(control_file,'r').read()
 open(control_file,'w').write(re.sub('Version: .*','Version: %s' % full_version,control))
+# update Control arch
+control = open(control_file,'r').read()
+open(control_file,'w').write(re.sub('Architecture: .*','Architecture:: %s' % get_arch_debian,control))
 
 os.chmod('./builddir/DEBIAN/postinst', 0o755)
 os.chmod('./builddir/DEBIAN/preinst', 0o755)
