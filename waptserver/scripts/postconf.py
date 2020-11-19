@@ -441,8 +441,11 @@ def main():
 
     # Password setup/reset screen
     if not quiet:
-        if not server_config['wapt_password'] or \
-                postconf.yesno("Do you want to reset admin password ?",yes_label='skip',no_label='reset') != postconf.DIALOG_OK:
+        current_password_hash = server_config['wapt_password']
+        # check if old hash
+        if not current_password_hash or \
+           not '$pbkdf2' in current_password_hash or \
+                postconf.yesno("Do you want to reset admin password ?", yes_label='skip', no_label='reset') != postconf.DIALOG_OK:
             wapt_password_ok = False
             while not wapt_password_ok:
                 wapt_password = ''
