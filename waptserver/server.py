@@ -149,6 +149,7 @@ try:
     app.register_blueprint(wsus.wsus)
     app.register_blueprint(enterprise.enterprise)
     app.register_blueprint(repositories.repositories)
+    app.register_blueprint(repositories_socketio.repositories_socketio)
     app.config['BABEL_TRANSLATION_DIRECTORIES'] = 'translations;../waptenterprise/waptserver/translations'
 except Exception as e:
     logger.info(str(e))
@@ -2684,11 +2685,6 @@ if __name__ == '__main__':
         # add socketio targets to trigger wsus actions on hosts
         from waptenterprise.waptserver import wsus_socketio
         app.register_blueprint(wsus_socketio.wsus_socketio)
-
-    if repositories:
-        # add socketio targets to trigger repositories actions on hosts
-        from waptenterprise.waptserver import repositories_socketio
-        app.register_blueprint(repositories_socketio.repositories_socketio)
 
     logger.info(u'Load database configuration')
     load_db_config(app.conf)
