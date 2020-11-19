@@ -1570,6 +1570,20 @@ def init_db(drop=False):
                 upgrade_db_structure()
                 set_db_version(__version__)
 
+        # be sure to have at least admin
+        with wapt_db.atomic():
+            (admin,_) = WaptUsers.get_or_create(name='admin')
+            if _ or admin.user_fingerprint_sha1 is None:
+                    admin.user_fingerprint_sha1 = 'admin'
+                    admin.save()
+
+            (admin_acls,_) = WaptUserAcls.get_or_create(user_fingerprint_sha1='admin',perimeter_fingerprint='*')
+            if _ or admin_acls.acls!=['admin'] or admin_acls.perimeter_fingerprint!='*':
+                admin_acls.acls=['admin']
+                admin_acls.perimeter_fingerprint='*'
+                admin_acls.save()
+
+
         return get_db_version()
 
 def add_column_safe(opes,migrator,column):
