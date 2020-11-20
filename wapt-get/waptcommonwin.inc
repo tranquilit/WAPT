@@ -499,7 +499,8 @@ uses LazFileUtils, LazUTF8, FileUtil, soutils, Variants,uwaptres,waptutils,uwapt
   IdHttp,IdMultipartFormData,IdExceptionCore,IdException,IdURI,IdHeaderList,
   gettext,IdStack,IdCompressorZLib,
   IdSSLOpenSSLHeaders,IdCTypes,
-  shfolder,IniFiles,tiscommon,strutils,tisstrings,registry,ssl_openssl;
+  shfolder,IniFiles,tiscommon,strutils,tisstrings,registry,ssl_openssl,
+  base64;
 
 const
   CacheWaptServerUrl: String = 'None';
@@ -933,11 +934,7 @@ begin
       http.ConnectTimeout := round(Timeout*1000);
 
       if (User <>'') and (FUserToken<>'') then
-      begin
-        http.Request.BasicAuthentication:=True;
-        http.Request.Username:=User;
-        http.Request.Password:=UserToken;
-      end;
+        http.Request.CustomHeaders.Values['Authorization'] := 'Basic ' + base64.EncodeStringBase64(User + ':' + FUserToken); {do not localize}    ;
 
       if Assigned(OnHTTPWork) then
         http.OnWork:=OnHTTPWork;
@@ -1018,11 +1015,7 @@ begin
     // We should get the preferred order of auth methods from server 404 error result
     // At each step, we ask user with callback for password or key locatio or pwd location
     if user <> '' then
-    begin
-      http.Request.BasicAuthentication:=True;
-      http.Request.Username := user;
-      http.Request.Password := UserToken;
-    end;
+      http.Request.CustomHeaders.Values['Authorization'] := 'Basic ' + base64.EncodeStringBase64(User + ':' + UserToken); {do not localize}    ;
 
     progress := TIdProgressProxy.Create(Nil);
     progress.ProgressCallback := OnProgress;
@@ -1512,8 +1505,6 @@ begin
   else
     http.Request.UserAgent := userAgent;
 
-  http.Request.BasicAuthentication:=True;
-
   OutputFile :=TFileStream.Create(DestFileName,fmCreate);
   progress :=  TIdProgressProxy.Create(Nil);
   progress.progressCallback:=progressCallback;
@@ -1735,11 +1726,7 @@ begin
       http.ConnectTimeout:=ConnectTimeout;
 
       if user <>'' then
-      begin
-        http.Request.BasicAuthentication:=True;
-        http.Request.Username:=user;
-        http.Request.Password:=password;
-      end;
+        http.Request.CustomHeaders.Values['Authorization'] := 'Basic ' + base64.EncodeStringBase64(User + ':' + Password); {do not localize}    ;
 
       if HttpProxy<>'' then
         IdConfigureProxy(http,HttpProxy);
@@ -1799,11 +1786,7 @@ begin
   http.Request.Accept:=AcceptType;
 
   if user <>'' then
-  begin
-    http.Request.BasicAuthentication:=True;
-    http.Request.Username:=user;
-    http.Request.Password:=password;
-  end;
+    http.Request.CustomHeaders.Values['Authorization'] := 'Basic ' + base64.EncodeStringBase64(User + ':' + Password); {do not localize}    ;
 
   {progress :=  TIdProgressProxy.Create(Nil);
   progress.progressCallback:=progressCallback;
@@ -2756,9 +2739,9 @@ begin
 
   St := TIdMultiPartFormDataStream.Create;
   try
-    http.Request.BasicAuthentication:=True;
-    http.Request.Username:=user;
-    http.Request.Password:=password;
+    if user <>'' then
+      http.Request.CustomHeaders.Values['Authorization'] := 'Basic ' + base64.EncodeStringBase64(User + ':' + Password); {do not localize}    ;
+
     http.OnWork:=OnHTTPWork;
 
     St.AddFile(FileArg,FileName);
