@@ -56,7 +56,6 @@ if sys.platform.startswith('linux') or sys.platform.startswith('darwin'):
     if 'PYTHONHOME' in os.environ:
         del os.environ['PYTHONHOME']
 
-
 if not sys.platform=='win32':
     import setproctitle
     setproctitle.setproctitle('wapt-get')
