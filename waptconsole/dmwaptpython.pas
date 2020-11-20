@@ -651,14 +651,11 @@ begin
 end;
 
 function TDMPython.GetPackagesAuthorizedCA: Variant;
-var
-  CertDir: String;
 begin
   if VarIsEmpty(FPackagesAuthorizedCA) then
   try
-     CertDir:=PyUTF8Decode(AuthorizedCertsDir);
-      FPackagesAuthorizedCA := waptcrypto.SSLCABundle(cert_pattern_or_dir := CertDir);
-      FPackagesAuthorizedCA.add_pems(IncludeTrailingPathDelimiter(WaptBaseDir)+'ssl\*.crt');
+     FPackagesAuthorizedCA := waptcrypto.SSLCABundle(cert_pattern_or_dir := AuthorizedCertsDir);
+     FPackagesAuthorizedCA.add_pems(IncludeTrailingPathDelimiter(WaptBaseDir)+'ssl\*.crt');
   finally
   end;
   Result := FPackagesAuthorizedCA;

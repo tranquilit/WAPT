@@ -3483,6 +3483,18 @@ begin
     // Better use a dedicated API on server ?
     HostPackageVersion :='';
     HostPackages := host['installed_packages'];
+
+    if GridHosts.FocusedRow <> Nil then
+    begin
+       uuid := GridHosts.FocusedRow.S['uuid'];
+       hostname := GridHosts.FocusedRow.S['computer_fqdn'];
+    end
+    else
+    begin
+       uuid := '';
+       hostname := '';
+    end;
+
     if HostPackages <> Nil then
     begin
       for Package in HostPackages do
