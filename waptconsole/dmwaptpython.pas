@@ -780,7 +780,7 @@ end;
 function TDMPython.GetUserAllowedPerimetersSHA256:TStringArray;
 begin
   if not VarIsEmpty(DMPython.PersonalCertificate) and not VarIsNull(DMPython.PersonalCertificate) then
-    result := StrSplit(DMPython.PersonalCertificate.certificates_sha256_fingerprints('--noarg--'),',')
+    result := StrSplit(VarPythonAsString(DMPython.PersonalCertificate.certificates_sha256_fingerprints('--noarg--')),',')
   else
     result := TStringArray.Create;
 end;
