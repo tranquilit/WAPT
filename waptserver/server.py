@@ -145,7 +145,7 @@ _ = gettext
 
 
 try:
-    from waptenterprise.waptserver import wsus,enterprise,repositories
+    from waptenterprise.waptserver import wsus,enterprise,repositories,repositories_socketio
     app.register_blueprint(wsus.wsus)
     app.register_blueprint(enterprise.enterprise)
     app.register_blueprint(repositories.repositories)
