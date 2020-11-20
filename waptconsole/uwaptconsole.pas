@@ -2298,7 +2298,7 @@ begin
         if not DirectoryExists(AppLocalDir + 'cache') then
           mkdir(AppLocalDir + 'cache');
 
-        Proxy := DMPython.MainWaptRepo.http_proxy;
+        Proxy := VarPythonAsString(DMPython.MainWaptRepo.http_proxy);
         cabundle:= VarPyth.None;
         // if check package signature...
         //cabundle:=DMPython.PackagesAuthorizedCA;
@@ -2344,7 +2344,7 @@ begin
         if not DirectoryExists(AppLocalDir + 'cache') then
           mkdir(AppLocalDir + 'cache');
 
-        Proxy := DMPython.MainWaptRepo.http_proxy;
+        Proxy := VarPythonAsString(DMPython.MainWaptRepo.http_proxy);
         if not IdWget(UTF8Encode(RepoUrl+'/'+filename), filePath,
             ProgressForm, @updateprogress, Proxy,
               DefaultUserAgent,GetWaptServerCertificateFilename(),Nil,
