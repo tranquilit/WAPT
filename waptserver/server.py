@@ -1506,21 +1506,34 @@ def trigger_wakeonlan():
             if macs:
                 for port in app.conf['wol_port'].split(','):
                     logger.debug(
-                        _('Sending magic wakeonlan packets to {} for machine {} on port {} ').format(
+                        _('Sending magic wakeonlan packets to {} for machine {} on port {} 255.255.255.255').format(
                             macs,
                             host['computer_fqdn'],
                             str(port.strip())
                         ))
-                    wakeonlan.wol.send_magic_packet(*macs,port=int(port))
+                    wakeonlan.send_magic_packet(*macs, port=int(port))
                     for line in host['host_info']['networking']:
-                        if 'broadcast' in line:
-                            broadcast = line['broadcast']
-                            wakeonlan.wol.send_magic_packet(
-                                *
-                                macs,
-                                ip_address='%s' %
-                                broadcast,
-                                port=int(port.strip()))
+                        if 'addr' in line:
+                            for i in line['addr']:
+                                if not 'broadcast' in i:
+                                    continue
+                                broadcast = i['broadcast']
+                                if not '.' in broadcast:
+                                    continue
+                                logger.debug(
+                                    _('Sending magic wakeonlan packets to {} for machine {} on port {} {}').format(
+                                        macs,
+                                        host['computer_fqdn'],
+                                        str(port.strip()),
+                                        broadcast
+                                    ))
+
+                                wakeonlan.send_magic_packet(
+                                    *
+                                    macs,
+                                    ip_address='%s' %
+                                    broadcast,
+                                    port=int(port.strip()))
                 result.append(dict(uuid=host['uuid'], computer_fqdn=host['computer_fqdn'], mac_addresses=host['mac_addresses']))
         msg = _(u'Wakeonlan packets sent to {} machines.').format(len(result))
         result = result
