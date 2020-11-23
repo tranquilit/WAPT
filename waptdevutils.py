@@ -154,7 +154,7 @@ def upload_wapt_setup(wapt,waptsetup_path, wapt_server_user, wapt_server_passwd,
     >>> upload_wapt_setup(wapt,'c:/tranquilit/wapt/waptsetup/waptsetup.exe', 'admin', 'password')
     '{"status": "OK", "message": "waptsetup.exe uploaded"}'
     """
-    auth =  (wapt_server_user, wapt_server_passwd)
+    auth =  (wapt_server_user, ensure_unicode(wapt_server_passwd).encode('utf8'))
     with open(waptsetup_path,'rb') as afile:
         req = requests.post("%s/upload_waptsetup" % (wapt.waptserver.server_url,),files={'file':afile},proxies=wapt.waptserver.proxies,
             verify=verify_cert,auth=auth,headers=default_http_headers())
@@ -433,6 +433,8 @@ def build_waptupgrade_package(wapt,mainrepo,sources_directory=None, target_direc
         wapt_server_user = raw_input('WAPT Server user :')
     if not wapt_server_passwd:
         wapt_server_passwd = getpass.getpass('WAPT Server password :').encode('ascii')
+    else:
+        wapt_server_passwd = ensure_unicode(wapt_server_passwd).encode('utf8')
 
     if sign_digests is None:
         sign_digests = wapt.sign_digests
@@ -612,6 +614,7 @@ def edit_hosts_depends(waptconfigfile,hosts_list,
         progress_hook(True,3,3,'Upload %s host packages' % len(packages))
         server = WaptServer().load_config_from_file(waptconfigfile)
         server.private_key_password_callback = private_key_password_callback
+        wapt_server_passwd = ensure_unicode(wapt_server_passwd).encode('utf8')
         server.upload_packages(packages,auth=(wapt_server_user,wapt_server_passwd),progress_hook=progress_hook)
 
         return dict(updated = [p.package for p in packages],
@@ -744,6 +747,7 @@ def add_ads_groups(waptconfigfile,
         progress_hook(True,3,3,'Upload %s host packages' % len(packages))
         server = WaptServer().load_config_from_file(waptconfigfile)
         server.private_key_password_callback = private_key_password_callback
+        wapt_server_passwd = ensure_unicode(wapt_server_passwd).encode('utf8')
         server.upload_packages(packages,auth=(wapt_server_user,wapt_server_passwd),progress_hook=progress_hook)
         return dict(updated = packages,
                     discarded = discarded,
@@ -802,6 +806,7 @@ def create_waptwua_package(waptconfigfile,wuagroup='default',wapt_server_user=No
         res = wapt.edit_package(packagename,target_directory = mkdtemp('wapt'),use_local_sources = False)
     """
     group_entry = wapt.make_group_template(packagename,directoryname = mkdtemp('wapt'),section='waptwua')
+    wapt_server_passwd = ensure_unicode(wapt_server_passwd).encode('utf8')
     build_res = wapt.build_upload(group_entry.sourcespath,
         private_key_passwd = key_password,
         wapt_server_user=wapt_server_user,
