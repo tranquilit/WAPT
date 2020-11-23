@@ -634,7 +634,7 @@ begin
         VPackageFilePath := PyUTF8Decode(PackageFilename);
         PackageEdited := DMPython.waptpackage.PackageEntry(waptfile := VPackageFilePath);
         ProgressTitle(format(rsUnzipping, [Filename.AsArray[0].AsString]));
-        sourceDir := PackageEdited.unzip_package(cabundle := VCABundle);
+        sourceDir := VarPythonAsString(PackageEdited.unzip_package(cabundle := VCABundle));
         PackageEdited.invalidate_signature('--noarg--');
 
         sources.AsArray.Add(sourceDir);

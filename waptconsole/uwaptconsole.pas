@@ -666,6 +666,7 @@ type
     procedure ActAddHWPropertyToGridUpdate(Sender: TObject);
     procedure ActAddProfileExecute(Sender: TObject);
     procedure ActRefreshHostPackagesOverviewExecute(Sender: TObject);
+    procedure ActSaveRulesUpdate(Sender: TObject);
     procedure ActSupprExecute(Sender: TObject);
     procedure ActManageUsersExecute(Sender: TObject);
     procedure ActSaveRulesExecute(Sender: TObject);
@@ -2825,6 +2826,11 @@ begin
   end
 end;
 
+procedure TVisWaptGUI.ActSaveRulesUpdate(Sender: TObject);
+begin
+  ActSaveRules.Enabled:=GridRules.Data<>Nil;
+end;
+
 function TVisWaptGUI.FilterPackagesForHosts(Data:ISuperObject;Keywords:String):ISuperObject;
 var
   Allowed: Boolean;
@@ -3855,54 +3861,60 @@ end;
 procedure TVisWaptGUI.ImportPackageFromFiles(Filenames:TStrings);
 var
   i: integer;
-  sourceDir: string;
-  Sources, uploadResult: ISuperObject;
-  SourcesVar,VWaptServerPassword: Variant;
+  Filename,sourceDir,buildfilename: string;
+  PackageEdited, VPackageFilePath,VPrivateKeyPassword: Variant;
 
 begin
   if MessageDlg(rsConfirmImportCaption,
     format(rsConfirmImport,
     [Filenames.Text]), mtConfirmation, mbYesNoCancel, 0) <> mrYes then
     Exit;
-  with TVisLoading.Create(Self) do
+  VPrivateKeyPassword := PyUTF8Decode(DMPython.privateKeyPassword);
+  With CurrentVisLoading do
   try
-    Sources := TSuperObject.Create(stArray);
+    Start(Filenames.Count);
     for i := 0 to Filenames.Count - 1 do
     begin
-      ProgressTitle(format(rsImportingFile, [Filenames[i]]));
-      ProgressStep(i, Filenames.Count - 1);
-      Application.ProcessMessages;
-      sourceDir := VarPythonAsString(DMPython.waptdevutils.duplicate_from_file(
-        package_filename := Filenames[i],new_prefix:=DefaultPackagePrefix));
-      //sources.AsArray.Add('r"' + sourceDir + '"');
-      sources.AsArray.Add(sourceDir);
+      Filename:=Filenames[i];
+      try
+        ProgressTitle(format(rsImportingFile, [Filename]));
+        ProgressStep(i, Filenames.Count - 1);
+        Application.ProcessMessages;
+
+        sourceDir := '';
+        buildfilename := '';
+
+        ProgressTitle(format(rsDuplicating, [Filename]));
+        Application.ProcessMessages;
+        // bundle to check downloaded packages when unzipping
+        VPackageFilePath := PyUTF8Decode(Filename);
+        PackageEdited := DMPython.waptpackage.PackageEntry(waptfile := VPackageFilePath);
+        ProgressTitle(format(rsUnzipping, [Filename]));
+        sourceDir := VarPythonAsString(PackageEdited.unzip_package('--noarg--'));
+        PackageEdited.invalidate_signature('--noarg--');
+        PackageEdited.change_prefix(DefaultPackagePrefix);
+        PackageEdited.change_depends_conflicts_prefix(DefaultPackagePrefix);
+        PackageEdited.maturity := DefaultMaturity;
+        ProgressTitle(format(rsBuilding, [Filename]));
+        buildfilename := VarPyth.VarPythonAsString(PackageEdited.build_package('--noarg--'));
+        ProgressTitle(format(rsSigning, [sourceDir]));
+        PackageEdited.sign_package(
+          certificate := DMPython.WAPT.personal_certificate('--noarg--'),
+          private_key := DMPython.WAPT.private_key(private_key_password := VPrivateKeyPassword));
+        ProgressTitle(format(rsUploadingFile, [buildfilename]));
+        WAPTServerJsonMultipartFilePost(
+          GetWaptServerURL, 'api/v3/upload_packages', [], 'file',buildfilename ,
+          WaptServerUser, WaptServerPassword, @IdHTTPWork,GetWaptServerCertificateFilename);
+
+      finally
+        if DirectoryExistsUTF8(sourceDir) then
+          DeleteDirectory(sourceDir,False);
+        if FileExistsUTF8(buildfilename) then
+          DeleteFileUTF8(buildfilename);
+      end;
     end;
-
-    ProgressTitle(format(rsUploadingPackagesToWaptSrv, [IntToStr(Sources.AsArray.Length)]));
-    Application.ProcessMessages;
-
-    SourcesVar := SuperObjectToPyVar(sources);
-    VWaptServerPassword := PyUTF8Decode(WaptServerPassword);
-    { TODO : Remove use of WAPT instance, use waptpackage.PackageEntry instead }
-    uploadResult := PyVarToSuperObject(DMPython.WAPT.build_upload(
-      sources_directories := SourcesVar,
-      private_key_passwd := dmpython.privateKeyPassword,
-      wapt_server_user := waptServerUser,
-      wapt_server_passwd := VwaptServerPassword,
-      inc_package_release := False));
-
-    if (uploadResult <> nil) and
-      (uploadResult.AsArray.length = Sources.AsArray.Length) then
-    begin
-      ShowMessage(format(rsSuccessfullyImported,
-        [soutils.Join(',', Sources)]));
-      ModalResult := mrOk;
-      ActPackagesUpdate.Execute;
-    end
-    else
-      ShowMessage(rsFailedImport);
   finally
-    Free;
+    Finish;
   end;
 end;
 
@@ -3922,7 +3934,10 @@ begin
   end;
 
   if OpenDialogWapt.Execute then
+  begin
     ImportPackageFromFiles(OpenDialogWapt.Files);
+    ActPackagesUpdate.Execute;
+  end;
 end;
 
 procedure TVisWaptGUI.ActImportFromRepoExecute(Sender: TObject);
@@ -4929,7 +4944,10 @@ begin
         SetupFiles.Add(Filename);
     end;
     if WaptFiles.Count>0 then
+    begin
       ImportPackageFromFiles(WaptFiles);
+      ActPackagesUpdate.Execute;
+    end;
 
     if SetupFiles.Count>0 then
       MakePackageTemplate(SetupFiles[0]);

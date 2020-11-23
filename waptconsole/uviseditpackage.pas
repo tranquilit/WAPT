@@ -720,8 +720,9 @@ end;
 
 procedure TVisEditPackage.ActBuildUploadExecute(Sender: TObject);
 var
-  vprivatekeypassword, VWaptServerPassword, vbuildfilename,vsourcepath,packages: Variant;
+  vprivatekeypassword, VWaptServerPassword, vsourcepath,packages: Variant;
   res: ISuperObject;
+  buildfilename: String;
 
 begin
   Res := Nil;
@@ -740,9 +741,9 @@ begin
     try
       { TODO : Remove use of WAPT instance, use waptpackage.PackageEntry instead }
       if SourcePath<>'' then
-        vbuildfilename := PackageEdited.build_package('--noarg--')
+        buildfilename := VarPythonAsString(PackageEdited.build_package('--noarg--'))
       else
-        vbuildfilename := PackageEdited.build_management_package('--noarg--');
+        buildfilename := VarPythonAsString(PackageEdited.build_management_package('--noarg--'));
 
       vprivatekeypassword := PyUTF8Decode(dmpython.privateKeyPassword);
       PackageEdited.inc_build('--noarg--');
@@ -762,8 +763,8 @@ begin
 
       if FisTempSourcesDir then
         FileUtil.DeleteDirectory(SourcePath, False);
-      if FileExistsUTF8(vbuildfilename) then
-        DeleteFileUTF8(vbuildfilename);
+      if FileExistsUTF8(buildfilename) then
+        DeleteFileUTF8(buildfilename);
 
       IsUpdated := False;
     except
