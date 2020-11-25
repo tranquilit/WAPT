@@ -1,3 +1,48 @@
 [submodule "waptenterprise"]
 	path = waptenterprise
 	url = https://waptgit.ad.tranquil.it/waptdev/ARCHIVE_waptenterprise.git
+[submodule "submodules/pltis_bgracontrols"]
+	path = submodules/pltis_bgracontrols
+	url = https://waptgit.ad.tranquil.it/waptdev/pltis_bgracontrols.git
+[submodule "submodules/pltis_bgrabitmap"]
+	path = submodules/pltis_bgrabitmap
+	url = https://waptgit.ad.tranquil.it/waptdev/pltis_bgrabitmap.git
+[submodule "submodules/pltis_bgracontrolsfx"]
+	path = submodules/pltis_bgracontrolsfx
+	url = https://waptgit.ad.tranquil.it/waptdev/pltis_bgracontrolsfx.git
+[submodule "submodules/pltis_luipack"]
+	path = submodules/pltis_luipack
+	url = https://waptgit.ad.tranquil.it/waptdev/pltis_luipack.git
+[submodule "submodules/pltis_synapse"]
+	path = submodules/pltis_synapse
+	url = https://waptgit.ad.tranquil.it/waptdev/pltis_synapse.git
+[submodule "submodules/pltis_lclextensions"]
+	path = submodules/pltis_lclextensions
+	url = https://waptgit.ad.tranquil.it/waptdev/pltis_lclextensions.git
+[submodule "submodules/pltis_dcpcrypt"]
+	path = submodules/pltis_dcpcrypt
+	url = https://waptgit.ad.tranquil.it/waptdev/pltis_dcpcrypt.git
+[submodule "submodules/pltis_virtualtreesextra"]
+	path = submodules/pltis_virtualtreesextra
+	url = https://waptgit.ad.tranquil.it/waptdev/pltis_virtualtreesextra.git
+[submodule "submodules/pltis_indy"]
+	path = submodules/pltis_indy
+	url = https://waptgit.ad.tranquil.it/waptdev/pltis_indy.git
+[submodule "submodules/pltis_visualcontrols"]
+	path = submodules/pltis_visualcontrols
+	url = https://waptgit.ad.tranquil.it/waptdev/pltis_visualcontrols.git
+[submodule "submodules/pltis_utils"]
+	path = submodules/pltis_utils
+	url = https://waptgit.ad.tranquil.it/waptdev/pltis_utils.git
+[submodule "submodules/pltis_superobject"]
+	path = submodules/pltis_superobject
+	url = https://waptgit.ad.tranquil.it/waptdev/pltis_superobject.git
+[submodule "submodules/pltis_sogrid"]
+	path = submodules/pltis_sogrid
+	url = https://waptgit.ad.tranquil.it/waptdev/pltis_sogrid.git
+[submodule "submodules/pltis_virtualtrees"]
+	path = submodules/pltis_virtualtrees
+	url = https://waptgit.ad.tranquil.it/waptdev/pltis_virtualtrees.git
+[submodule "submodules/pltis_python4delphi"]
+	path = submodules/pltis_python4delphi
+	url = https://waptgit.ad.tranquil.it/waptdev/pltis_python4delphi.git
