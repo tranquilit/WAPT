@@ -237,7 +237,8 @@ def check_auth( username=None, password = None, request = None,
                 auth_method = method
                 # strip CN= if no other suffix.
                 if dn.upper().startswith('CN='):
-                    auth_user = dn.split('=',1)[1]
+                    auth_user = dn.split(',',1)[0]
+                    auth_user = auth_user.split('=',1)[1]
                 else:
                     auth_user = dn
                 auth_date = datetime.datetime.utcnow().isoformat()
