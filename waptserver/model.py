@@ -2087,6 +2087,15 @@ def upgrade_db_structure():
                 migrate(*opes)
                 set_db_version(next_version)
 
+        next_version = '1.8.2.1'
+        if get_db_version() < next_version:
+            with wapt_db.atomic():
+                logger.info("Migrating from %s to %s" % (get_db_version(), next_version))
+
+                HostSyncStatus.create_table(fail_silently=True)
+
+                set_db_version(next_version)
+
         if get_db_version() < __version__:
             set_db_version(__version__)
 
