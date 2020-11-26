@@ -101,20 +101,20 @@ from waptserver.decorators import requires_auth,authenticate,gzipped,require_wap
 
 import waptserver.config
 
+import wakeonlan.wol
+
 # socketio is loaded conditionally if iwe are running in app mode, not uwsgi mode
 socketio = None
 git_hash = ''
 wapt_edition = ''
+
+logger = logging.getLogger('waptserver')
 
 try:
     from waptenterprise import auth_module_ad
 except ImportError as e:
     logger.debug(u'LDAP Auth disabled: %s' % e)
     auth_module_ad = None
-
-import wakeonlan.wol
-
-logger = logging.getLogger('waptserver')
 
 # Ensure that any created files have sane permissions.
 # uWSGI implicitely sets umask(0).
@@ -1511,7 +1511,7 @@ def trigger_wakeonlan():
                             host['computer_fqdn'],
                             str(port.strip())
                         ))
-                    wakeonlan.send_magic_packet(*macs, port=int(port))
+                    wakeonlan.wol.send_magic_packet(*macs, port=int(port))
                     for line in host['host_info']['networking']:
                         if 'addr' in line:
                             for i in line['addr']:
@@ -1528,7 +1528,7 @@ def trigger_wakeonlan():
                                         broadcast
                                     ))
 
-                                wakeonlan.send_magic_packet(
+                                wakeonlan.wol.send_magic_packet(
                                     *
                                     macs,
                                     ip_address='%s' %
