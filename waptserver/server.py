@@ -1731,7 +1731,7 @@ def build_hosts_filter(model, filter_expr):
             # external collections...
             if rootfield == 'installed_softwares':
                 clause = Hosts.uuid.in_(HostSoftwares.select(HostSoftwares.host).where(
-                    HostSoftwares.key.regexp(ur'(?i)%s' % search_expr) | HostSoftwares.name.regexp(ur'(?i)%s' % search_expr)))
+                    HostSoftwares.key.regexp(ur'(?i)%s' % search_expr) | (HostSoftwares.name+' ('+HostSoftwares.version+')').regexp(ur'(?i)%s' % search_expr)))
             elif rootfield == 'installed_packages':
                 clause = Hosts.uuid.in_(HostPackagesStatus.select(HostPackagesStatus.host).where(HostPackagesStatus.package.regexp(ur'(?i)%s' % search_expr)))
             elif rootfield in model._meta.fields: #
