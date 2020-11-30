@@ -3852,25 +3852,21 @@ class WaptRemoteRepo(WaptBaseRepo):
                     continue
 
                 download_url = entry.repo_url + '/icons/' + entry.package_uuid + '.png'
-                fullpackagepath = os.path.join(target_dir, entry.filename)
 
                 logger.info(u"  Downloading icon from %s" % download_url)
                 try:
                     wget(download_url,
-                        target_dir,
+                        icon_file,
                         printhook = printhook,
                         connect_timeout=self.timeout,
                         resume= usecache,
-                        md5 = entry.md5sum,
-                        requests_session=session,
-                        limit_bandwidth=self.limit_bandwidth,
+                        requests_session=session
                         )
-
-                    downloaded.append(fullpackagepath)
+                    downloaded.append(icon_file)
                 except Exception as e:
-                    if os.path.isfile(fullpackagepath):
-                        os.remove(fullpackagepath)
-                    logger.critical(u"Error downloading package from http repository, please update... error : %s" % e)
+                    if os.path.isfile(icon_file):
+                        os.remove(icon_file)
+                    logger.critical(u"Error downloading icon from http repository. error : %s" % e)
                     errors.append((download_url,"%s" % e))
 
         return {"downloaded": downloaded, "skipped": skipped, "errors": errors, "packages": packages}
