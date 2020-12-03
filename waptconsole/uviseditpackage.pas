@@ -994,7 +994,7 @@ begin
           Caption := rsBundleConfigEditCaption;
 
         try
-          filename := PackageEdited.filename;
+          filename := VarPythonAsString(PackageEdited.filename);
           filePath := AppLocalDir + 'cache\' + filename;
           if not DirectoryExists(AppLocalDir + 'cache') then
             mkdir(AppLocalDir + 'cache');
