@@ -1061,7 +1061,7 @@ type
     procedure ActSoftwaresNormalizationExecute(Sender: TObject);
   private
     { private declarations }
-    CurrentVisLoading: TVisLoading;
+    FCurrentVisLoading: TVisLoading;
     FCurrentPackageForGridHostsForPackage: ISuperObject;
     SelectedHostsPackagesStatus: ISuperObject;
     FReportingEditMode: Boolean;
@@ -1136,6 +1136,9 @@ type
     procedure SetReportingDirty(Report:ISuperObject);
     function DesassociationTranslationCondRules(trans:String):String;
     function AssociationTranslationCondRules(origin:String):String;
+
+    function CurrentVisLoading: TVisLoading;
+
   public
     { public declarations }
     MainRepoUrl, WaptServer, TemplatesRepoUrl: string;
@@ -2469,7 +2472,6 @@ begin
         if CopyFile(CertificateFilename,
           WaptBaseDir() + '\ssl\' + ExtractFileName(CertificateFilename), True) then
         begin
-          CurrentVisLoading := TVisLoading.Create(Self);
           with CurrentVisLoading do
           try
             ProgressTitle(rsReloadWaptserviceConfig);
@@ -2487,7 +2489,7 @@ begin
 
           finally
             Finish;
-            FreeAndNil(CurrentVisLoading);
+            FreeAndNil(FCurrentVisLoading);
           end;
         end
       end
@@ -3915,6 +3917,7 @@ begin
     end;
   finally
     Finish;
+    FreeAndNil(FCurrentVisLoading);
   end;
 end;
 
@@ -4915,6 +4918,8 @@ procedure TVisWaptGUI.FormDestroy(Sender: TObject);
 begin
   If PollTasksThread <> Nil then
     PollTasksThread.Terminate;
+  if Assigned(FCurrentVisLoading) then
+    FreeAndNil(FCurrentVisLoading);
 end;
 
 procedure TVisWaptGUI.FormDragOver(Sender, Source: TObject; X, Y: Integer;
@@ -5112,7 +5117,6 @@ begin
   ActProprietary.Checked := False;
   {$endif}
 
-  CurrentVisLoading := TVisLoading.Create(Nil);
   with CurrentVisLoading do
   try
     AppLoading:=True;
@@ -5272,7 +5276,7 @@ begin
     end;
   finally
     AppLoading:=False;
-    Free;
+    FreeAndNil(FCurrentVisLoading);
   end;
     if Screen.PixelsPerInch<>96 then
     begin
@@ -6591,6 +6595,12 @@ begin
 end;
 
 
+function TVisWaptGUI.CurrentVisLoading: TVisLoading;
+begin
+  if not Assigned(FCurrentVisLoading)  then
+    FCurrentVisLoading := TVisLoading.Create(Self);
+  Result := FCurrentVisLoading;
+end;
 
 {$ifdef ENTERPRISE}
 {$include ..\waptenterprise\includes\uwaptconsole.inc}
