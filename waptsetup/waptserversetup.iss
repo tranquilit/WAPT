@@ -114,6 +114,12 @@ Source: "{#wapt_base_dir}waptserver\scripts\*"; DestDir: "{app}\waptserver\scrip
 Source: "{#wapt_base_dir}waptserver\pgsql-9.6\*"; DestDir: "{app}\waptserver\pgsql-9.6"; Flags: createallsubdirs recursesubdirs;
 Source: "{#wapt_base_dir}waptserver\nginx\*"; DestDir: "{app}\waptserver\nginx"; Flags: createallsubdirs recursesubdirs;
 
+; waptenterprise only
+#ifdef waptenterprise
+Source: "{#wapt_base_dir}waptenterprise\waptserver\*"; DestDir: "{app}\waptenterprise\waptserver\";  Flags: createallsubdirs recursesubdirs; 
+Source: "{#wapt_base_dir}waptenterprise\auth_module_ad.py"; DestDir: "{app}\waptenterprise";
+#endif
+
 #endif
 #endif
  ;fastdebug
