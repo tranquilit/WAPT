@@ -967,7 +967,7 @@ begin
     else
     begin
       repo := DMPython.MainWaptRepo;
-      Proxy := repo.http_proxy;
+      Proxy := VarPythonAsString(repo.http_proxy);
 
       packages := repo.packages_matching(FPackageRequest);
       PackagesCount := Varpyth.len(packages);
@@ -985,12 +985,14 @@ begin
     if not IsNewPackage
         and (VarPythonAsString(PackageEdited.section) <> 'host')
         and  (VarPythonAsString(PackageEdited.section) <> 'unit')
-        and  (VarPythonAsString(PackageEdited.section) <> 'group') then
+        and  (VarPythonAsString(PackageEdited.section) <> 'group')
+        and  (VarPythonAsString(PackageEdited.section) <> 'profile')
+        then
       with  TVisLoading.Create(Self) do
       try
         ProgressTitle('Téléchargement en cours');
         Application.ProcessMessages;
-        if StrIsOneOf(EdSection.Text,['group','profile','unit']) then
+        if StrIsOneOf(EdSection.Text,['group','profile','unit','profile']) then
           Caption := rsBundleConfigEditCaption;
 
         try
