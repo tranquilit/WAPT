@@ -319,7 +319,7 @@ begin
     with TFileStream.Create(vdestcrt,fmOpenReadWrite) do
     try
       Seek(0,soEnd);
-      ca_pem := VarToStr(cacert.as_pem('--noarg--'));
+      ca_pem := VarPythonAsString(cacert.as_pem('--noarg--'));
       WriteBuffer(ca_pem[1],length(ca_pem));
     finally
       Free;
