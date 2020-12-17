@@ -46,3 +46,6 @@
 [submodule "submodules/pltis_python4delphi"]
 	path = submodules/pltis_python4delphi
 	url = https://waptgit.ad.tranquil.it/waptdev/pltis_python4delphi.git
+[submodule "submodules/pltis_lazarus-exception-logger"]
+	path = submodules/pltis_lazarus-exception-logger
+	url = https://waptgit.ad.tranquil.it/waptdev/pltis_lazarus-exception-logger
