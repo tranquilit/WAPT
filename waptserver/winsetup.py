@@ -537,7 +537,7 @@ def install_wapttasks_service(options,conf=None):
         conf = waptserver.config.load_config(options.configfile)
     print("install wapttasks")
     service_binary = os.path.abspath(os.path.join(wapt_root_dir,'waptpython.exe'))
-    service_parameters = '"%s" %s' % (os.path.join(wapt_root_dir,'waptserver','wapthuey.py'),'tasks_common.huey -w 2')
+    service_parameters = '"%s" %s' % (os.path.join(wapt_root_dir,'waptserver','wapthuey.py'),'tasks_common.huey -f -w 2')
     service_logfile = os.path.join(log_directory, 'nssm_wapttasks.log')
     service_dependencies = 'WAPTPostgresql'
     install_windows_nssm_service('WAPTTasks',service_binary,service_parameters,service_logfile,service_dependencies)
