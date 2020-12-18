@@ -186,6 +186,7 @@ parser.add_option("-g","--usergroups", dest="usergroups", default='[]', help="Gr
 parser.add_option("-t","--maxttl", type='int',  dest="max_ttl", default=60, help="Max run time in minutes of wapt-get process before being killed by subsequent wapt-get (default: %default minutes)")
 parser.add_option("-L","--language",    dest="language",    default=setuphelpers.get_language(), help="Override language for install (example : fr) (default: %default)")
 parser.add_option("-m","--message-digest", dest="md", default=None, help="Message digest type for signatures.  (default: sha256)")
+parser.add_option("-n","--newest-only", dest="newest_only", default=False, action='store_true', help="Only the newest version of packages. (default: %default)")
 parser.add_option("--locales", dest="locales", default=None, help="Override packages locales filter. (default: None)")
 parser.add_option("--maturity", dest="maturity", default=None, help="Set/change package maturity when building package.  (default: None)")
 parser.add_option("--pin-server-cert", dest="set_verify_cert", default=None, action='store_true', help="When registering, pin the server certificate. (default: %default)")
@@ -1167,7 +1168,7 @@ def main():
                 if options.update_packages:
                     do_update(mywapt,options)
                 result = mywapt.search([ensure_unicode(w) for w in args[1:]],
-                                       section_filter=options.section_filter)
+                                       section_filter=options.section_filter,newest_only=options.newest_only)
                 if options.json_output:
                     jsonresult['result'] = result
                 else:
