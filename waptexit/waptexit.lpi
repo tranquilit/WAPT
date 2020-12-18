@@ -31,7 +31,7 @@
       <RevisionNr Value="4"/>
       <BuildNr Value="6144"/>
       <Language Value="040C"/>
-      <StringTable CompanyName="Tranquil IT Systems" FileDescription="check and launch packages upgrades at Windows Shutdown" InternalName="waptexit" LegalCopyright="Tranquil IT Systems 2012-2019" OriginalFilename="waptexit.exe" ProductName="WAPT Enterprise Edition" ProductVersion="1.7.4"/>
+      <StringTable CompanyName="Tranquil IT Systems" FileDescription="check and launch packages upgrades at Windows Shutdown" InternalName="waptexit" LegalCopyright="Tranquil IT Systems 2012-2020" OriginalFilename="waptexit.exe" ProductName="WAPT Enterprise Edition" ProductVersion="1.8.2"/>
     </VersionInfo>
     <BuildModes Count="1">
       <Item1 Name="Default" Default="True"/>
@@ -132,8 +132,7 @@
     </CodeGeneration>
     <Linking>
       <Debugging>
-        <UseLineInfoUnit Value="False"/>
-        <StripSymbols Value="True"/>
+        <DebugInfoType Value="dsStabs"/>
         <UseExternalDbgSyms Value="True"/>
       </Debugging>
       <LinkSmart Value="True"/>

@@ -33,6 +33,7 @@ type
   private
     CheckTimeout:Integer;
     FOnNotifyEvent: TNotifyEvent;
+
     procedure NotifyListener; Virtual;
     procedure SetOnNotifyEvent(AValue: TNotifyEvent);
   public
@@ -178,7 +179,7 @@ implementation
 
 uses Windows,LCLIntf,tiscommon,
     waptutils,soutils,tisstrings,IdException,IdTCPConnection, IdStack,
-    IdExceptionCore,uWaptRes;
+    IdExceptionCore,uWaptRes,UExceptionLogger;
 
 { TWatchdogThread }
 
@@ -232,23 +233,29 @@ var
   AHandle: THandle;
   ID: THANDLE;
 begin
-  Try
-     //trying to get access to process
-     AHandle := OpenProcess(PROCESS_ALL_ACCESS,False,GetCurrentProcessId); //uses windows
-     if AHandle = 0 then
-     begin
-       //cannot open process
-       exit;
+  try
+    Try
+       //trying to get access to process
+       AHandle := OpenProcess(PROCESS_ALL_ACCESS,False,GetCurrentProcessId); //uses windows
+       if AHandle = 0 then
+       begin
+         //cannot open process
+         exit;
+       end;
+       //try to kill th eprocess (in a nasty way)
+       if not TerminateProcess(AHandle,255) then
+       begin
+         //failure to kill
+         exit;
+       end;
+     Finally
+       CloseHandle(AHandle);
      end;
-     //try to kill th eprocess (in a nasty way)
-     if not TerminateProcess(AHandle,255) then
-     begin
-       //failure to kill
-       exit;
-     end;
-   Finally
-     CloseHandle(AHandle);
-   end;
+
+  except
+    on E: Exception do
+      UExceptionLogger.exceptionLogger.HandleException(Self, E);
+  end;
 end;
 
 { TRunWaptService }
@@ -294,14 +301,18 @@ begin
       State:=wssStopped;
       StatusMessage:=rsWssStopped;
     end;
+    Synchronize(@NotifyListener);
   except
     on E:Exception do
-    begin
+    try
       WAPTLocalJsonGet('waptservicerestart.json');
       StatusMessage:='ERROR: '+ e.Message;
+      Synchronize(@NotifyListener);
+    except
+      on E: Exception do
+        UExceptionLogger.exceptionLogger.HandleException(Self, E);
     end;
   end;
-  Synchronize(@NotifyListener);
 end;
 
 { TCheckWaptservice }
@@ -327,19 +338,24 @@ begin
 end;
 
 procedure TCheckWaptservice.Execute;
+var
+  n:pchar;
 begin
   try
     LastUpdateStatus := WAPTLocalJsonGet('checkupgrades.json','','',CheckTimeout);
     IsWaptServiceRunning:=True;
+    Synchronize(@NotifyListener);
   except
     on E:EIdException do
     begin
       Message := E.Message;
       IsWaptServiceRunning:=False;
       LastUpdateStatus := Nil;
+      Synchronize(@NotifyListener);
     end;
+    on E: Exception do
+      UExceptionLogger.exceptionLogger.HandleException(Self, E);
   end;
-  Synchronize(@NotifyListener);
 end;
 
 { TCheckTasksThread }
@@ -419,17 +435,7 @@ begin
       end;
 
     on E: Exception do
-      begin
-        if WaptServiceRunning then
-        begin
-          Message := E.ClassName+' '+E.Message;
-          WaptServiceRunning:=False;
-          Tasks := Nil;
-          Synchronize(@NotifyListener);
-        end;
-        // we stop
-        break;
-      end;
+       UExceptionLogger.exceptionLogger.HandleException(Self, E);
   end;
 end;
 
@@ -513,17 +519,7 @@ begin
       end;
 
     on E: Exception do
-      begin
-        if WaptServiceRunning then
-        begin
-          Message := E.ClassName+' '+E.Message;
-          WaptServiceRunning:=False;
-          Tasks := Nil;
-          Synchronize(@NotifyListener);
-        end;
-        // we stop
-        break;
-      end;
+       UExceptionLogger.exceptionLogger.HandleException(Self, E);
   end;
 end;
 
@@ -579,7 +575,6 @@ begin
     Synchronize(@NotifyListener);
     if not Terminated then
       Sleep(200);
-
   except
     on E: EIdSocketError do
       begin
@@ -591,7 +586,7 @@ begin
             WaptServiceRunning:=False;
             Events := Nil;
             Synchronize(@NotifyListener);
-            break;
+            break;  // terminate thread
           end;
         end
         else if e.LastError=10060 then // Timeout
@@ -599,7 +594,7 @@ begin
           if not Terminated then
             Sleep(200);
         end
-        else if not Terminated then
+        else if not Terminated then  // avoid to eat all cpu
           Sleep(200);
       end;
 
@@ -610,16 +605,7 @@ begin
       end;
 
     on E: Exception do
-      begin
-        if WaptServiceRunning then
-        begin
-          Message := E.ClassName+' '+E.Message;
-          WaptServiceRunning:=False;
-          Events := Nil;
-          Synchronize(@NotifyListener);
-        end;
-        break;
-      end;
+       UExceptionLogger.exceptionLogger.HandleException(Self, E);
   end;
 end;
 

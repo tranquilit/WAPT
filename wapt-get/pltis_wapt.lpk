@@ -12,13 +12,12 @@
       </SearchPaths>
       <Linking>
         <Debugging>
-          <DebugInfoType Value="dsDwarf2Set"/>
-          <UseExternalDbgSyms Value="True"/>
+          <DebugInfoType Value="dsStabs"/>
         </Debugging>
       </Linking>
     </CompilerOptions>
     <Description Value="Common files for wapt fpc"/>
-    <Version Major="1" Minor="8" Release="2"/>
+    <Version Major="1" Minor="8" Release="2" Build="2"/>
     <Files Count="14">
       <Item1>
         <Filename Value="waptutils.pas"/>
@@ -77,25 +76,28 @@
         <Type Value="Include"/>
       </Item14>
     </Files>
-    <RequiredPkgs Count="6">
+    <RequiredPkgs Count="7">
       <Item1>
-        <PackageName Value="P4DLaz"/>
+        <PackageName Value="ExceptionLogger"/>
       </Item1>
       <Item2>
-        <PackageName Value="laz_synapse"/>
+        <PackageName Value="P4DLaz"/>
       </Item2>
       <Item3>
-        <PackageName Value="dcpcrypt"/>
+        <PackageName Value="laz_synapse"/>
       </Item3>
       <Item4>
-        <PackageName Value="indylaz"/>
+        <PackageName Value="dcpcrypt"/>
       </Item4>
       <Item5>
-        <PackageName Value="pltis_superobject"/>
+        <PackageName Value="indylaz"/>
       </Item5>
       <Item6>
-        <PackageName Value="pltis_utils"/>
+        <PackageName Value="pltis_superobject"/>
       </Item6>
+      <Item7>
+        <PackageName Value="pltis_utils"/>
+      </Item7>
     </RequiredPkgs>
     <UsageOptions>
       <UnitPath Value="$(PkgOutDir)"/>

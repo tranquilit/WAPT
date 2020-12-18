@@ -777,7 +777,7 @@ begin
       RegCloseKey(Key);
     end
   else
-    raise Exception.Create('Wrong key HKLM\' + strSubKey);
+    raise ERegistryException.Create('Wrong key HKLM\' + strSubKey);
 end;
 
 function WaptGuessBaseDir: Utf8String;
