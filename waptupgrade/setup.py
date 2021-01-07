@@ -142,7 +142,7 @@ def install():
         installed_wapt_version = '0.0.0.0'
 
     # get upgrade package informations
-    package_wapt_version = control.version.split('-')
+    package_wapt_version = control.version.split('-')[0]
 
     full_waptagent_install(package_wapt_version)
     print('Setting up upgrade from WAPT version %s to %s. waptagent install planned for %s'%(installed_wapt_version,package_wapt_version,time.ctime(time.time() + 1*60)))
