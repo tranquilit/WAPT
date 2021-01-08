@@ -1854,6 +1854,18 @@ def networking():
     return res
 
 
+class Timeit:
+    def __init__(self,title='',store=None):
+        self.title = title
+        self.store = store
+    def __enter__(self):
+        self.t1 = time.time()
+    def __exit__(self,exc_type, exc_value, traceback):
+        timing = time.time()-self.t1
+        logger.debug('%s timing: %s s' % (self.title,timing))
+        if self.store is not None:
+            self.store[self.title] = timing
+
 if __name__ == '__main__':
     import doctest
     import sys
