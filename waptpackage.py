@@ -343,11 +343,13 @@ class HostCapabilities(BaseObjectClass):
             return False
 
         if self.os is not None and package_entry.target_os:
-            if self.os.lower() in ['darwin','linux']:
-                if package_entry.target_os.lower() not in [self.os.lower(),'unix']:
+            targets = set(package_entry.target_os.split(','))
+            if not 'all' in targets:
+                if self.os.lower() in ['darwin','linux']:
+                    if not set([self.os.lower(),'unix']) & targets:
+                        return False
+                elif not self.os.lower() in targets:
                     return False
-            elif package_entry.target_os.lower() != self.os.lower():
-                return False
 
         package_request = self.get_package_request_filter()
         return package_request.is_matched_by(package_entry)
@@ -638,7 +640,7 @@ class PackageRequest(BaseObjectClass):
         return  (
                 (self.package is None or package_entry.package == self.package) and
                 self._is_matched_version(package_entry.version) and
-                (self.target_os is None or package_entry.target_os in ('','all') or package_entry.target_os in self.target_os) and
+                (self.target_os is None or package_entry.target_os in ('','all') or (set(package_entry.target_os.split(',')) & set(self.target_os))) and
                 (self.min_os_version is None or not package_entry.max_os_version or Version(package_entry.max_os_version)>=self.min_os_version) and
                 (self.max_os_version is None or not package_entry.min_os_version or Version(package_entry.min_os_version)<=self.max_os_version) and
                 (self.architectures is None or package_entry.architecture in ('','all') or package_entry.architecture in self.architectures) and
