@@ -904,6 +904,10 @@ def update_installed_packages(uuid, data, applied_status_hashes):
         HostPackagesStatus.delete().where(HostPackagesStatus.host == uuid).execute()
         packages = []
         for package in installed_packages:
+            # 'id' is the global primary key for HostPackagesStatus table
+            package['install_id'] = package['id']
+            del package['id']
+
             package['host'] = uuid
             # csv str on the client, Array on the server
             package['depends'] = ensure_list(package.get('depends'))
