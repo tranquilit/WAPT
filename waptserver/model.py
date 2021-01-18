@@ -900,13 +900,19 @@ def update_installed_packages(uuid, data, applied_status_hashes):
     removes = [ package_version_from_prequest(pr)[0] for pr in pending.get('remove',[])]  or []
     errors = [ package_version_from_prequest(pr) for pr in last_update_status.get('errors',[])]  or []
 
+    tmp_id = 0
+
     if installed_packages is not None:
         HostPackagesStatus.delete().where(HostPackagesStatus.host == uuid).execute()
         packages = []
         for package in installed_packages:
             # 'id' is the global primary key for HostPackagesStatus table
-            package['install_id'] = package['id']
-            del package['id']
+            if 'id' in package:
+                package['install_id'] = package['id']
+                del package['id']
+            else:
+                tmp_id -= 1
+                package['install_id'] = tmp_id
 
             package['host'] = uuid
             # csv str on the client, Array on the server
