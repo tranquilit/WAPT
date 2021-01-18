@@ -351,6 +351,12 @@ object VisWaptGUI: TVisWaptGUI
                 Text = 'Package UUID'
                 Width = 10
                 PropertyName = 'package_uuid'
+              end            
+              item
+                Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus, coEditable]
+                Position = 38
+                Text = 'ID Install'
+                PropertyName = 'install_id'
               end>
             Header.DefaultHeight = 18
             Header.Height = 18
@@ -9615,13 +9621,13 @@ object VisWaptGUI: TVisWaptGUI
   object SynPythonSyn1: TSynPythonSyn
     DefaultFilter = 'Fichiers Python (*.py)|*.py'
     Enabled = False
-    left = 856
-    top = 80
+    Left = 856
+    Top = 80
   end
   object MainActionList: TActionList
     Images = ActionsImages24
-    left = 352
-    top = 240
+    Left = 352
+    Top = 240
     object ActSearchPackage: TAction
       Category = 'packages'
       Caption = 'Search'
@@ -10252,8 +10258,8 @@ object VisWaptGUI: TVisWaptGUI
   end
   object PopupMenuPackages: TPopupMenu
     Images = ActionsImages24
-    left = 256
-    top = 208
+    Left = 256
+    Top = 208
     object MenuItem22: TMenuItem
       Action = ActDeletePackage
       ShortCut = 16430
@@ -10264,8 +10270,8 @@ object VisWaptGUI: TVisWaptGUI
   end
   object MainMenu1: TMainMenu
     Images = ActionsImages24
-    left = 168
-    top = 208
+    Left = 168
+    Top = 208
     object MenuItem5: TMenuItem
       Caption = '&File'
       object MenuItem6: TMenuItem
@@ -10382,8 +10388,8 @@ object VisWaptGUI: TVisWaptGUI
   object PopupMenuHosts: TPopupMenu
     Images = ActionsImages24
     OnPopup = PopupMenuHostsPopup
-    left = 256
-    top = 144
+    Left = 256
+    Top = 144
     object MenuItem18: TMenuItem
       Action = ActEditHostPackage
     end
@@ -10514,8 +10520,8 @@ object VisWaptGUI: TVisWaptGUI
     end
   end
   object ImageList1: TImageList
-    left = 440
-    top = 344
+    Left = 440
+    Top = 344
     Bitmap = {
       4C69170000001000000010000000FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
       FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
@@ -11258,8 +11264,8 @@ object VisWaptGUI: TVisWaptGUI
   end
   object PopupMenuGroups: TPopupMenu
     Images = ActionsImages24
-    left = 256
-    top = 280
+    Left = 256
+    Top = 280
     object MenuItem36: TMenuItem
       Action = ActAddGroup
     end
@@ -11272,8 +11278,8 @@ object VisWaptGUI: TVisWaptGUI
   end
   object PopupHostPackages: TPopupMenu
     Images = ActionsImages24
-    left = 664
-    top = 344
+    Left = 664
+    Top = 344
     object MenuItem20: TMenuItem
       Action = ActPackagesInstall
     end
@@ -11298,12 +11304,12 @@ object VisWaptGUI: TVisWaptGUI
     DefaultExt = '.wapt'
     Filter = 'Paquets WAPT|*.wapt|Tous les fichiers|*.*'
     Options = [ofAllowMultiSelect, ofFileMustExist, ofEnableSizing, ofViewDetail]
-    left = 464
-    top = 200
+    Left = 464
+    Top = 200
   end
   object PopupWUAUpdates: TPopupMenu
-    left = 800
-    top = 512
+    Left = 800
+    Top = 512
     object MenuItem58: TMenuItem
       Action = ActWUAAllowSelectedUpdates
     end
@@ -11322,8 +11328,8 @@ object VisWaptGUI: TVisWaptGUI
     end
   end
   object PopupWUAProducts: TPopupMenu
-    left = 800
-    top = 432
+    Left = 800
+    Top = 432
     object MenuItem63: TMenuItem
       Action = ActWUAProductAllow
     end
@@ -11359,8 +11365,8 @@ object VisWaptGUI: TVisWaptGUI
   end
   object WSUSActions: TActionList
     Images = ActionsImages24
-    left = 352
-    top = 304
+    Left = 352
+    Top = 304
     object ActTriggerWaptwua_scan: TAction
       Category = 'hostswua'
       Caption = 'Trigger the scan of missing Windows Updates'
@@ -11514,8 +11520,8 @@ object VisWaptGUI: TVisWaptGUI
     end
   end
   object PopupGridWSUSScan: TPopupMenu
-    left = 256
-    top = 424
+    Left = 256
+    Top = 424
     object MenuItem74: TMenuItem
       Caption = 'Delete task'
       ShortCut = 16430
@@ -11524,28 +11530,28 @@ object VisWaptGUI: TVisWaptGUI
   end
   object ApplicationProperties1: TApplicationProperties
     OnException = ApplicationProperties1Exception
-    left = 584
-    top = 500
+    Left = 584
+    Top = 500
   end
   object TimerWUALoadWinUpdates: TTimer
     Enabled = False
     Interval = 400
     OnTimer = TimerWUALoadWinUpdatesTimer
-    left = 440
-    top = 248
+    Left = 440
+    Top = 248
   end
   object odSelectInstaller: TOpenDialog
     Title = 'Select an installer executable or msi'
     Filter = 'Installer Files (*.exe;*.msi;*.msu;*.appx)|*.exe;*.msi;*.msu;*.appx|All files|*.*'
     Options = [ofPathMustExist, ofEnableSizing, ofViewDetail]
-    left = 584
-    top = 448
+    Left = 584
+    Top = 448
   end
   object ActionsImages24: TImageList
     Height = 24
     Width = 24
-    left = 440
-    top = 408
+    Left = 440
+    Top = 408
     Bitmap = {
       4C69260000001800000018000000000000000000000000000000000000000000
       000000BFFF14000000000000000000AAFF120DD3FF7910CFFFBA0ECEFFDA0ECE
@@ -14288,8 +14294,8 @@ object VisWaptGUI: TVisWaptGUI
   end
   object SrcOrgUnits: TDataSource
     DataSet = DBOrgUnits
-    left = 32
-    top = 384
+    Left = 32
+    Top = 384
   end
   object DBOrgUnits: TBufDataset
     PacketRecords = -1
@@ -14297,8 +14303,8 @@ object VisWaptGUI: TVisWaptGUI
     FieldDefs = <>
     Filtered = True
     OnFilterRecord = DBOrgUnitsFilterRecord
-    left = 33
-    top = 448
+    Left = 33
+    Top = 448
     object DBOrgUnitsID: TLongintField
       DisplayWidth = 10
       FieldKind = fkData
@@ -14375,8 +14381,8 @@ object VisWaptGUI: TVisWaptGUI
   end
   object PopupMenuOrgUnits: TPopupMenu
     Images = ActionsImages24
-    left = 256
-    top = 488
+    Left = 256
+    Top = 488
     object MenuItem90: TMenuItem
       Action = ActEditOrgUnitPackage
     end
@@ -14388,8 +14394,8 @@ object VisWaptGUI: TVisWaptGUI
     end
   end
   object PopupHostWUAUpdates: TPopupMenu
-    left = 664
-    top = 280
+    Left = 664
+    Top = 280
     object MenuItem97: TMenuItem
       Action = ActWUAAllowSelectedUpdates
     end
@@ -14416,8 +14422,8 @@ object VisWaptGUI: TVisWaptGUI
     end
   end
   object PopupWUAClassifications: TPopupMenu
-    left = 800
-    top = 368
+    Left = 800
+    Top = 368
     object MenuItem103CheckAll: TMenuItem
       Caption = 'Check all'
       Hint = 'Add the WAPT group packages matching the ADS groups of the machines'
@@ -14431,8 +14437,8 @@ object VisWaptGUI: TVisWaptGUI
   end
   object ReportingActions: TActionList
     Images = ActionsImages24
-    left = 352
-    top = 376
+    Left = 352
+    Top = 376
     object ActReportingQueryNew: TAction
       Caption = 'New query'
       ImageIndex = 6
@@ -14537,8 +14543,8 @@ object VisWaptGUI: TVisWaptGUI
       'wsusupdates'
     )
     SQLDialect = sqlPostgres
-    left = 904
-    top = 80
+    Left = 904
+    Top = 80
   end
   object SynCompletion1: TSynCompletion
     ItemList.Strings = (
@@ -14568,20 +14574,20 @@ object VisWaptGUI: TVisWaptGUI
     ExecCommandID = ecSynCompletionExecute
     Editor = SynEditReportsSQL
     ToggleReplaceWhole = False
-    left = 952
-    top = 80
+    Left = 952
+    Top = 80
   end
   object TimerSearchPackages: TTimer
     Enabled = False
     Interval = 500
     OnTimer = TimerSearchPackagesTimer
-    left = 1240
-    top = 32
+    Left = 1240
+    Top = 32
   end
   object SelfServiceActions: TActionList
     Images = ActionsImages24
-    left = 352
-    top = 190
+    Left = 352
+    Top = 190
     object ActSelfServiceSearchPackage: TAction
       Caption = 'Refresh list'
       OnExecute = ActSelfServiceSearchPackageExecute
@@ -14593,8 +14599,8 @@ object VisWaptGUI: TVisWaptGUI
     end
   end
   object PopupMenuReportingQueries: TPopupMenu
-    left = 256
-    top = 352
+    Left = 256
+    Top = 352
     object MenuItem105: TMenuItem
       Action = ActReportingQueryExecute
     end
@@ -14622,8 +14628,8 @@ object VisWaptGUI: TVisWaptGUI
   end
   object PopupSecRepo: TPopupMenu
     Images = ActionsImages24
-    left = 800
-    top = 576
+    Left = 800
+    Top = 576
     object MenuItemSync: TMenuItem
       Caption = 'Sync selected'
       ImageIndex = 0
@@ -14648,13 +14654,13 @@ object VisWaptGUI: TVisWaptGUI
   object TimerSearchHosts: TTimer
     Enabled = False
     OnTimer = TimerSearchHostsTimer
-    left = 522
-    top = 620
+    Left = 522
+    Top = 620
   end
   object PopupHostPackagesOverview: TPopupMenu
     Images = ActionsImages24
-    left = 800
-    top = 640
+    Left = 800
+    Top = 640
     object MenuItem118: TMenuItem
       Action = ActTriggerPendingActions
       Caption = 'Apply selected install / remove'
@@ -14670,14 +14676,14 @@ object VisWaptGUI: TVisWaptGUI
     Enabled = False
     Interval = 200
     OnTimer = TimerPackagesSummaryUpdateTimer
-    left = 1032
-    top = 376
+    Left = 1032
+    Top = 376
   end
   object TimerPackagesStatusFilter: TTimer
     Enabled = False
     Interval = 200
     OnTimer = TimerPackagesStatusFilterTimer
-    left = 1032
-    top = 432
+    Left = 1032
+    Top = 432
   end
 end
