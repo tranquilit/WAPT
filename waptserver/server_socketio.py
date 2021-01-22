@@ -238,22 +238,27 @@ def on_waptclient_connect():
         else:
             logger.info(u'Unauthenticated Socket.IO connection from wapt client sid %s (uuid: %s)' % (request.sid,uuid))
 
+
         with WaptDB():
             # update the db
             with wapt_db.atomic() as trans:
                 # stores sid in database
-                hostcount = Hosts.update(
-                    server_uuid=get_server_uuid(),
-                    listening_protocol='websockets',
-                    listening_address=request.sid,
-                    listening_timestamp=datetime2isodate(),
-                    last_seen_on=datetime2isodate()
-                ).where(Hosts.uuid == uuid).execute()
-                # if not known, reject the connection
-                if hostcount == 0:
-                    raise EWaptForbiddden('Host is not registered')
+                sid = Hosts.select(Hosts.listening_address).where(Hosts.uuid == uuid).tuples().first()
+                if sid is None:
+                    # if not known, reject the connection
+                    return False
+ 
+                if sid[0] != request.sid:
+                    hostcount = Hosts.update(
+                        server_uuid=get_server_uuid(),
+                        reachable='OK',
+                        listening_protocol='websockets',
+                        listening_address=request.sid,
+                        listening_timestamp=datetime2isodate(),
+                        last_seen_on=datetime2isodate()
+                    ).where(Hosts.uuid == uuid).execute()
 
-            session['uuid'] = uuid
+        session['uuid'] = uuid
         return True
 
     except Exception as e:
@@ -275,21 +280,28 @@ def on_wapt_pong():
         else:
             logger.debug(u'Socket.IO pong from wapt client sid %s (uuid: %s)' % (request.sid, session.get('uuid',None)))
             # stores sid in database
-            with WaptDB():
-                with wapt_db.atomic() as trans:
+
+        with WaptDB():
+            # update the db
+            with wapt_db.atomic() as trans:
+                # stores sid in database
+                sid = Hosts.select(Hosts.listening_address).where(Hosts.uuid == uuid).tuples().first()
+                if sid is None:
+                    # if not known, reject the connection
+                    emit('wapt_force_reconnect')
+                    return False
+                if sid[0] != request.sid:
                     hostcount = Hosts.update(
                         server_uuid=get_server_uuid(),
-                        listening_timestamp=datetime2isodate(),
+                        reachable='OK',
                         listening_protocol='websockets',
                         listening_address=request.sid,
-                        reachable='OK',
+                        listening_timestamp=datetime2isodate(),
+                        last_seen_on=datetime2isodate()
                     ).where(Hosts.uuid == uuid).execute()
-                    # if not known, reject the connection
-                    if hostcount == 0:
-                        logger.warning(u'SocketIO sid %s connected but no match in database for uuid %s : asking to reconnect' % (request.sid,uuid))
-                        emit('wapt_force_reconnect')
-                        return False
-            return True
+
+            session['uuid'] = uuid
+        return True
     except Exception as e:
         logger.critical(u'SocketIO pong error for uuid %s and sid %s : %s, instance: %s' % (uuid,request.sid,traceback.format_exc(),app.conf.get('application_root')))
         return False
