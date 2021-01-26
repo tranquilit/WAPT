@@ -264,6 +264,8 @@ def ppdicttable(alist, columns = [], callback=None):
     callback is a function called for each field (fieldname,value) to format the output
     """
     def defaultcb(fieldname,value):
+        if value is None:
+            return ''
         return value
 
     if not callback:

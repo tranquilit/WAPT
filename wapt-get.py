@@ -1393,6 +1393,8 @@ def main():
 
             elif action == 'list':
                 def cb(fieldname,value):
+                    if value is None:
+                        return ''
                     if value and fieldname == 'install_date':
                         return value[0:16]
                     else:
