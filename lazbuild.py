@@ -204,7 +204,7 @@ def sign_exe(exe_path,p12path,p12password):
     for attempt in [1, 2, 3]:
         try:
             print("Signing attempt #" + str(attempt))
-            run(r'"%s" sign /f "%s" /p "%s" /t http://timestamp.globalsign.com/scripts/timestamp.dll "%s"' % (SIGNTOOL,p12path,p12password,exe_path))
+            run(r'"%s" sign /f "%s" /p "%s" /t http://timestamp.sectigo.com "%s"' % (SIGNTOOL,p12path,p12password,exe_path))
             break
         except subprocess.CalledProcessError as cpe:
             cpe.cmd =  cpe.cmd.replace(p12password, '********')
