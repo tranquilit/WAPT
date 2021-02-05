@@ -3532,7 +3532,7 @@ object VisWaptGUI: TVisWaptGUI
           Left = 434
           Height = 82
           Top = 0
-          Width = 246
+          Width = 346
           Align = alLeft
           AutoSize = True
           BevelOuter = bvNone
@@ -3542,7 +3542,7 @@ object VisWaptGUI: TVisWaptGUI
           ChildSizing.Layout = cclLeftToRightThenTopToBottom
           ChildSizing.ControlsPerLine = 2
           ClientHeight = 82
-          ClientWidth = 246
+          ClientWidth = 346
           TabOrder = 0
           object Label15: TLabel
             Left = 12
@@ -3559,8 +3559,8 @@ object VisWaptGUI: TVisWaptGUI
             Height = 21
             Hint = 'Filter hosts which have this direct package dependency'
             Top = 6
-            Width = 150
-            Constraints.MinWidth = 150
+            Width = 250
+            Constraints.MinWidth = 250
             ItemHeight = 13
             OnDropDown = cbGroupsDropDown
             OnKeyPress = cbGroupsKeyPress
@@ -3583,8 +3583,8 @@ object VisWaptGUI: TVisWaptGUI
             Height = 21
             Hint = 'Filter hosts which have this direct package dependency'
             Top = 27
-            Width = 150
-            Constraints.MinWidth = 150
+            Width = 250
+            Constraints.MinWidth = 250
             ItemHeight = 13
             OnDropDown = cbADSiteDropDown
             OnSelect = cbADSiteSelect
@@ -3609,8 +3609,8 @@ object VisWaptGUI: TVisWaptGUI
             Height = 21
             Hint = 'Filter hosts on AD Group membership'
             Top = 48
-            Width = 150
-            Constraints.MinWidth = 150
+            Width = 250
+            Constraints.MinWidth = 250
             ItemHeight = 13
             OnDropDown = cbADGroupDropDown
             OnSelect = cbADGroupSelect
@@ -3782,7 +3782,7 @@ object VisWaptGUI: TVisWaptGUI
           end
         end
         object panFilterStatus: TPanel
-          Left = 680
+          Left = 780
           Height = 82
           Top = 0
           Width = 195
