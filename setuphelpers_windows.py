@@ -2865,7 +2865,10 @@ def installed_softwares(keywords='',uninstallkey=None,name=None):
                     if e.winerror == 259:
                         break
                     else:
-                        raise
+                        # we ignore errors, as _winreg does not handle properly some ansi encoding
+                        logger.critical('Error trying to read uninstall registry entry: %s' % (repr(e)))
+                        break
+
         return result
     result = list_fromkey("Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall")
     if iswin64():
