@@ -3735,9 +3735,6 @@ class Wapt(BaseObjectClass):
                         raise EWaptDiskSpace('This package requires at least %s free space. The "Program File"s drive has only %s free space' %
                             (format_bytes(entry.installed_size),format_bytes(free_disk_space)))
 
-                    if entry.target_os and entry.target_os != 'windows':
-                        raise EWaptBadTargetOS('This package is designed for OS %s' % entry.target_os)
-
                 os_version = setuphelpers.get_os_version()
                 if entry.min_os_version and os_version < Version(entry.min_os_version):
                     raise EWaptBadTargetOS('This package requires that OS be at least %s' % entry.min_os_version)
