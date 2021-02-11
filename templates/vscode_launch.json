@@ -53,6 +53,7 @@
             "program": "${config:python.wapt-get}",
             "args": [
                 "-i",
+				"--use-gui",
                 "build-upload",
                 "${workspaceFolder}"
             ],
