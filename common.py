@@ -4202,9 +4202,9 @@ class Wapt(BaseObjectClass):
                         # if there are time related restriction, we should check again at that time in the future.
                         if package.valid_from and package.valid_from > current_datetime:
                             next_update_on = min(next_update_on,package.valid_from)
-                        if package.valid_until and package.valid_from > current_datetime:
+                        if package.valid_until and package.valid_until > current_datetime:
                             next_update_on = min(next_update_on,package.valid_until)
-                        if package.forced_install_on and package.valid_from > current_datetime:
+                        if package.forced_install_on and package.forced_install_on > current_datetime:
                             next_update_on = min(next_update_on,package.forced_install_on)
 
                         if self.filter_on_host_cap:
