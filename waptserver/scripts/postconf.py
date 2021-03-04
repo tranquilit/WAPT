@@ -386,7 +386,6 @@ def main():
         '--admin-password',
         dest='password',
         default=None,
-        action='store_true',
         help='Password for waptserver')
 
     (options, args) = parser.parse_args()
