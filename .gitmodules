@@ -49,3 +49,6 @@
 [submodule "submodules/pltis_lazarus-exception-logger"]
 	path = submodules/pltis_lazarus-exception-logger
 	url = https://waptgit.ad.tranquil.it/waptdev/pltis_lazarus-exception-logger
+[submodule "submodules/pltis_tsmbios"]
+	path = submodules/pltis_tsmbios
+	url = https://waptgit.ad.tranquil.it/waptdev/pltis_tsmbios.git
