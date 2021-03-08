@@ -1868,6 +1868,23 @@ class Timeit:
         if self.store is not None:
             self.store[self.title] = timing
 
+def split_arg_string(string):
+    """Given an argument string this attempts to split it into small parts."""
+    rv = []
+    for match in re.finditer(r"('([^'\\]*(?:\\.[^'\\]*)*)'"
+                             r'|"([^"\\]*(?:\\.[^"\\]*)*)"'
+                             r'|\S+)\s*', string, re.S):
+        arg = match.group().strip()
+        if arg[:1] == arg[-1:] and arg[:1] in '"\'':
+            arg = arg[1:-1].encode('ascii', 'backslashreplace') \
+                .decode('unicode-escape')
+        try:
+            arg = type(string)(arg)
+        except UnicodeError:
+            pass
+        rv.append(arg)
+    return rv
+
 if __name__ == '__main__':
     import doctest
     import sys
