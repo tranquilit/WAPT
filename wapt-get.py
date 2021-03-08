@@ -314,10 +314,12 @@ def ask_user_password(title=''):
 
 # import after parsing command line, as import when debugging seems to break command line
 # because if rpyc
-try:
-    import waptguihelper
-except (ImportError,SystemError):
-    waptguihelper = None
+if not setuphelpers.running_as_system():
+    if options.use_gui_helper:
+        try:
+            import waptguihelper
+        except (ImportError, SystemError):
+            waptguihelper = None
 
 def do_update(mywapt,options):
     # abort if there is already a running install in progress
