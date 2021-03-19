@@ -13,7 +13,7 @@ greenlet==0.4.15
 huey==1.10.2
 iniparse==0.4
 itsdangerous==1.1.0
-Jinja2==2.10.1
+Jinja2==2.11.3
 lxml==4.1.1
 MarkupSafe==1.0
 netifaces==0.10.6
