@@ -14,7 +14,7 @@ huey==1.10.2
 iniparse==0.4
 itsdangerous==1.1.0
 Jinja2==2.10.1
-lxml==4.1.1
+lxml==4.6.3
 MarkupSafe==1.0
 netifaces==0.10.6
 passlib==1.7.1
