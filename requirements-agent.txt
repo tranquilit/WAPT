@@ -57,7 +57,7 @@ rpyc==4.0.2
 singledispatch==3.4.0.3
 six==1.11.0
 socketIO-client-2==0.7.5
-urllib3==1.24.2
+urllib3==1.26.5
 wakeonlan==0.2.2
 websocket-client==0.56.0
 waitress==1.4.3
