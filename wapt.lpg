@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectGroup FileVersion="1">
+    <Targets Count="8">
+      <Target0 FileName="waptconsole\waptconsole.lpi">
+        <BuildModes Count="1"/>
+        <Mode1 Name="Default"/>
+      </Target0>
+      <Target1 FileName="waptdeploy\waptdeploy.lpi">
+        <BuildModes Count="1"/>
+        <Mode1 Name="Default"/>
+      </Target1>
+      <Target2 FileName="waptexit\waptexit.lpi">
+        <BuildModes Count="1"/>
+        <Mode1 Name="Default"/>
+      </Target2>
+      <Target3 FileName="wapt-get\waptget.lpi">
+        <BuildModes Count="1"/>
+        <Mode1 Name="Default"/>
+      </Target3>
+      <Target4 FileName="wapt-get\WaptGuiHelper.lpi">
+        <BuildModes Count="1"/>
+        <Mode1 Name="Default"/>
+      </Target4>
+      <Target5 FileName="waptmessage\waptmessage.lpi">
+        <BuildModes Count="1"/>
+        <Mode1 Name="Default"/>
+      </Target5>
+      <Target6 FileName="waptself\waptself.lpi">
+        <BuildModes Count="1"/>
+        <Mode1 Name="Default"/>
+      </Target6>
+      <Target7 FileName="wapttray\wapttray.lpi">
+        <BuildModes Count="1"/>
+        <Mode1 Name="Default"/>
+      </Target7>
+    </Targets>
+  </ProjectGroup>
+</CONFIG>
