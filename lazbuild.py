@@ -164,16 +164,6 @@ def set_lpi_options(lpi_fn,waptedition,waptversion,buildnr=None):
     else:
         print('WARNING: No compiler options')
     print("Compiler special options: %s" % (compiler_custom_options is not None and compiler_custom_options.items(),))
-
-    # set external debug
-    st = lpi.find('CompilerOptions/Linking/Debugging')
-    st.attrib['DebugInfoType'] = 'dsDwarf2Set'
-    st.attrib['UseExternalDbgSyms'] = 'True'
-    st.attrib['StripSymbols'] = 'True'
-
-    st = lpi.find('CompilerOptions/CodeGeneration/Optimizations')
-    st.attrib['OptimizationLevel'] = '3'
-
     if os.name != 'nt':
         output_filename = lpi.find('CompilerOptions/Target/Filename')
         if not output_filename.attrib['Value'].endswith('.bin'):
