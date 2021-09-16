@@ -120,6 +120,7 @@ from waptutils import import_code,import_setup,force_utf8_no_bom,format_bytes,wg
 from waptutils import _disable_file_system_redirection
 from waptutils import get_requests_client_cert_session,get_local_IPs,get_main_ip
 from waptutils import isrunning,killalltasks,killtree
+from waptutils import sanitize_filename
 
 from waptcrypto import SSLCABundle,SSLCertificate,SSLPrivateKey,SSLCRL,SSLVerifyException,SSLCertificateSigningRequest
 from waptcrypto import get_peer_cert_chain_from_server,default_pwd_callback,hexdigest_for_data,get_cert_chain_as_pem
@@ -2525,11 +2526,10 @@ class WaptHostRepo(WaptRepo):
             for pe in self.packages():
                 if ((isinstance(pr,PackageEntry) and (pe == pr)) or
                    (isinstance(pr,(str,unicode)) and pe.match(pr))):
-                    if not pe.filename:
-                        # fallback
-                        pfn = os.path.join(target_dir,pe.make_package_filename())
-                    else:
-                        pfn = os.path.join(target_dir,pe.filename)
+ 
+                    pfn = os.path.join(target_dir, pe.make_package_filename())
+                    if not pfn.endswith('.wapt'):
+                        raise EWaptNotAPackage(u'The file %s does not have a .wapt extension' % ensure_unicode(pfn))
 
                     if pe._package_content is not None:
                         with open(pfn,'wb') as package_zip:
@@ -4934,7 +4934,7 @@ class Wapt(BaseObjectClass):
         logger.debug(u'Downloaded : %s' % (downloaded,))
 
         def full_fname(packagefilename):
-            return os.path.join(self.package_cache_dir,packagefilename)
+            return os.path.join(self.package_cache_dir,sanitize_filename(packagefilename))
 
         if not download_only:
             # switch to manual mode
@@ -5559,7 +5559,7 @@ class Wapt(BaseObjectClass):
             if entries:
                 # download most recent
                 entry = entries[-1]
-                fullpackagepath = os.path.join(self.package_cache_dir,entry.filename)
+                fullpackagepath = os.path.join(self.package_cache_dir, sanitize_filename(entry.filename))
                 if usecache and (os.path.isfile(fullpackagepath) and os.path.getsize(fullpackagepath) == entry.size):
                     # check version
                     try:

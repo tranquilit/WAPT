@@ -1441,16 +1441,18 @@ class PackageEntry(BaseObjectClass):
             package_name = self.package
 
         if self.section == 'host':
-            return package_name+'.wapt'
+            result = package_name+'.wapt'
         else:
             if package_name.lower().endswith('-waptupgrade'):
-                return '_'.join([f for f in (self.package,self.version,self.architecture,self.maturity,self.locale,self.md5sum) if f]) + '.wapt'
+                result = '_'.join([f for f in (self.package,self.version,self.architecture,self.maturity,self.locale,self.md5sum) if f]) + '.wapt'
 
             # includes only non empty fields
             att= u'_'.join([f for f in (self.architecture,self.maturity,'-'.join(ensure_list(self.locale)),self.md5sum) if (f and f != 'all')])
             if att:
                 att = '_'+att
-            return package_name+'_'+self.version+att+'.wapt'
+            result = package_name+'_'+self.version+att+'.wapt'
+
+        return sanitize_filename(result)
 
     def make_package_edit_directory(self):
         """Return the standard package directory to edit the package based on current attributes
@@ -3208,7 +3210,7 @@ class WaptLocalRepo(WaptBaseRepo):
 
         for package in self.packages():
             # keep only entries which are older than index. Other should be recalculated.
-            localwaptfile = os.path.abspath(os.path.join(self.localpath,os.path.basename(package.filename)))
+            localwaptfile = os.path.abspath(os.path.join(self.localpath,os.path.basename(sanitize_filename(package.filename))))
             if os.path.isfile(localwaptfile):
                 if fileisoutcdate(localwaptfile) <= self._packages_date:
                     old_entries[os.path.basename(package.filename)] = package
@@ -3747,7 +3749,7 @@ class WaptRemoteRepo(WaptBaseRepo):
         with self.get_requests_session() as session:
             for entry in packages:
                 download_url = entry.download_url
-                fullpackagepath = os.path.join(target_dir,entry.filename)
+                fullpackagepath = os.path.join(target_dir,sanitize_filename(entry.filename))
                 skip = False
                 if usecache and os.path.isfile(fullpackagepath) and os.path.getsize(fullpackagepath) == entry.size :
                     # check version

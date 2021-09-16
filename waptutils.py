@@ -606,6 +606,11 @@ def force_utf8_no_bom(filename):
             content = codecs.open(filename, encoding='iso8859-15').read()
             codecs.open(filename, mode='wb', encoding='utf8').write(content)
 
+def sanitize_filename(filename):
+	forbidden = r"|():%/,\[]<>*? "
+	return ''.join([c for c in filename.replace('..','_') if c not in forbidden]).strip()
+
+
 def expand_args(args,expand_file_wildcards=None):
     """Return list of unicode file paths expanded from wildcard list args"""
     def from_system_encoding(t):
@@ -857,6 +862,8 @@ def wget(url,target=None,printhook=None,proxies=None,connect_timeout=10,download
         filename = url_parts.path.split('/')[-1]
     if not dir:
         dir = os.getcwd()
+
+    filename = sanitize_filename(filename)
 
     if not os.path.isdir(dir):
         os.makedirs(dir)
