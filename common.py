@@ -2526,7 +2526,7 @@ class WaptHostRepo(WaptRepo):
             for pe in self.packages():
                 if ((isinstance(pr,PackageEntry) and (pe == pr)) or
                    (isinstance(pr,(str,unicode)) and pe.match(pr))):
- 
+
                     pfn = os.path.join(target_dir, pe.make_package_filename())
                     if not pfn.endswith('.wapt'):
                         raise EWaptNotAPackage(u'The file %s does not have a .wapt extension' % ensure_unicode(pfn))
@@ -4933,9 +4933,6 @@ class Wapt(BaseObjectClass):
         actions['downloads'] = downloaded
         logger.debug(u'Downloaded : %s' % (downloaded,))
 
-        def full_fname(packagefilename):
-            return os.path.join(self.package_cache_dir,sanitize_filename(packagefilename))
-
         if not download_only:
             # switch to manual mode
             for (request,p) in skipped:
@@ -4945,22 +4942,24 @@ class Wapt(BaseObjectClass):
 
             for (request,p) in to_install:
                 try:
-                    if not os.path.isfile(full_fname(p.filename)):
-                        raise EWaptDownloadError('Package file %s not downloaded properly.' % p.filename)
+                    if not os.path.isfile(p.localpath):
+                        raise EWaptDownloadError('Package file %s not downloaded properly.' % p.localpath)
                     print(u"Installing %s" % (p.asrequirement(),))
-                    result = self.install_wapt(full_fname(p.filename),
+                    result = self.install_wapt(
+                        p.localpath,
                         params_dict = params_dict,
                         explicit_by=(installed_by or self.user) if request in apackages else None,
                         force=force
                         )
+
+                    if result['install_status'] == 'OK':
+                        if p.localpath.startswith(self.package_cache_dir):
+                            print('Delete %s' % p.localpath)
+                            os.remove(p.localpath)
+
                     if result:
                         for k in result.as_dict():
                             p[k] = result[k]
-
-                    if result['install_status'] == 'OK':
-                        if full_fname(p.filename).startswith(self.package_cache_dir):
-                            print('Delete %s' % full_fname(p.filename))
-                            os.remove(full_fname(p.filename))
 
                     if not result or result['install_status'] != 'OK':
                         actions['errors'].append([request,p])

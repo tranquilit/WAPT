@@ -636,7 +636,7 @@ def main():
                     else:
                         print(u"Display package control data for %s\n" % (','.join(all_args),))
                         for p in result:
-                            print(p.ascontrol(with_non_control_attributes=True))
+                            print(p.ascontrol(with_repo_attributes=True))
                             print('')
                             try:
                                 logger.info(u'Verifying package control signature against certificates %s' % ', '.join(['"%s"'%crt.cn for crt in  mywapt.authorized_certificates()]))

@@ -862,7 +862,10 @@ class PackageEntry(BaseObjectClass):
     signature_attributes = ['signer','signer_fingerprint','signature','signature_date','signed_attributes']
 
     # these attrbutes are not written to Package control file, but only in Packages repository index
-    non_control_attributes = ['localpath','sourcespath','filename','size','repo_url','md5sum','repo']
+    repo_attributes = ['filename','size','md5sum']
+
+    # attribute valid only for local copy of packages
+    local_attributes = ['sourcespath','repo','localpath','repo_url']
 
     # these attributes are not kept when duplicating / editing a package
     not_duplicated_attributes =  signature_attributes
@@ -874,7 +877,7 @@ class PackageEntry(BaseObjectClass):
 
     @property
     def all_attributes(self):
-        return self.required_attributes + self.optional_attributes + self.signature_attributes + self.non_control_attributes + self._calculated_attributes
+        return self.required_attributes + self.optional_attributes + self.signature_attributes + self.repo_attributes + self.local_attributes + self._calculated_attributes
 
     def get_default_signed_attributes(self):
          all = self.required_attributes+self.optional_attributes+self.signature_attributes
@@ -929,7 +932,6 @@ class PackageEntry(BaseObjectClass):
         self.conflicts=''
         self.sources=''
         self.filename=''
-        self.size=None
         self.maturity=''
 
         self.signer=None
@@ -959,9 +961,10 @@ class PackageEntry(BaseObjectClass):
         self.changelog = ''
         self.package_uuid = ''
 
-        self.md5sum=''
-        self.repo_url=''
         self.repo=repo
+        self.repo_url=''
+        self.md5sum=''
+        self.size=None
 
         # directory if unzipped package files
         self.sourcespath=None
@@ -986,7 +989,7 @@ class PackageEntry(BaseObjectClass):
 
         if kwargs:
             for key,value in kwargs.iteritems():
-                if key in self.required_attributes + self.optional_attributes + self.non_control_attributes:
+                if key in self.required_attributes + self.optional_attributes + self.repo_attributes + self.local_attributes:
                     setattr(self,key,value)
 
     def as_key(self):
@@ -1053,7 +1056,7 @@ class PackageEntry(BaseObjectClass):
 
     """
     def __unicode__(self):
-        return self.ascontrol(with_non_control_attributes=True)
+        return self.ascontrol(with_repo_attributes=True)
 
     def __str__(self):
         return self.__unicode__()
@@ -1307,10 +1310,13 @@ class PackageEntry(BaseObjectClass):
         elif os.path.isdir(fname):
             self.filename = None
             self.localpath = None
+            self.size = None
             self.sourcespath = os.path.abspath(fname)
         else:
-            self.filename = self.make_package_filename()
-            self.localpath = ''
+            self.filename = None
+            self.localpath = None
+            self.size = None
+            self.sourcespath = None
         return self
 
     def save_control_to_wapt(self,fname=None,force=True):
@@ -1382,16 +1388,14 @@ class PackageEntry(BaseObjectClass):
             self._control_updated = False
             return None
 
-    def ascontrol(self,with_non_control_attributes = False,with_empty_attributes=False):
+    def ascontrol(self,with_repo_attributes = False,with_empty_attributes=False):
         """Return control attributes and values as stored in control packages file
 
         Each attribute on a line with key : value
         If value is multiline, new line begin with a space.
 
         Args:
-            with_non_control_attributes (bool) : weither to include all attributes or only those
-                                                 relevant for final package content.
-
+            with_repo_attributes (bool) : if True, include md5sum and filename (for Packages index only)
             with_empty_attributes (bool) : weither to include attribute with empty value too or only
                                            non empty and/or signed attributes
         Returns:
@@ -1417,8 +1421,8 @@ class PackageEntry(BaseObjectClass):
             if att in self.get_default_signed_attributes() or with_empty_attributes or getattr(self,att):
                 val.append(u"%-18s: %s" % (att, escape_cr(getattr(self,att))))
 
-        if with_non_control_attributes:
-            for att in self.non_control_attributes:
+        if with_repo_attributes:
+            for att in self.repo_attributes :
                 if getattr(self,att):
                     val.append(u"%-18s: %s" % (att, escape_cr(getattr(self,att))))
         return u'\n'.join(val)
@@ -3149,7 +3153,7 @@ class WaptLocalRepo(WaptBaseRepo):
                 packages_lines = myzipfile.read('Packages').decode('utf8').splitlines()
                 if packages_lines and packages_lines[-1] != '':
                     packages_lines.append('')
-                packages_lines.append(entry.ascontrol(with_non_control_attributes=True))
+                packages_lines.append(entry.ascontrol(with_repo_attributes=True))
                 packages_lines.append('')
 
                 myzipfile.remove(u"Packages")
@@ -3283,7 +3287,7 @@ class WaptLocalRepo(WaptBaseRepo):
                     entry.md5sum = md5_for_file(entry.localpath)
 
                 if include_host_packages or entry.section != 'host':
-                    packages_lines.append(entry.ascontrol(with_non_control_attributes=True))
+                    packages_lines.append(entry.ascontrol(with_repo_attributes=True))
                     # add a blank line between each package control
                     packages_lines.append('')
 
@@ -3794,8 +3798,8 @@ class WaptRemoteRepo(WaptBaseRepo):
                         if not printhook:
                             printhook = report
                         """
-                        wget(download_url,
-                            target_dir,
+                        fullpackagepath = wget(download_url,
+                            fullpackagepath,
                             printhook = printhook,
                             connect_timeout=self.timeout,
                             resume= usecache,
