@@ -1531,7 +1531,7 @@ class WaptDB(WaptBaseDB):
 class WaptServer(BaseObjectClass):
     """Manage connection to waptserver"""
 
-    def __init__(self,url=None,proxies={'http':None,'https':None},timeout = 5.0,dnsdomain=None,name='waptserver'):
+    def __init__(self,url=None,proxies=None,timeout = 5.0,dnsdomain=None,name='waptserver'):
         if url and url[-1]=='/':
             url = url.rstrip('/')
         self._server_url = url

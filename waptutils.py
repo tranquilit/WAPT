@@ -756,7 +756,7 @@ class SSLAdapter(HTTPAdapter):
                                 password=str(self._password))
         kwargs['ssl_context'] = context
 
-def get_requests_client_cert_session(url=None,cert=None, verify=True, proxies = {'http':None,'https':None},**kwargs):
+def get_requests_client_cert_session(url=None,cert=None, verify=True, proxies=None,**kwargs):
     """Returns a requests Session which is aware of client cert auth with password protected key
     Disable use of environ.
 

@@ -3481,7 +3481,7 @@ class WaptRemoteRepo(WaptBaseRepo):
         if self.http_proxy:
             return {'http':self.http_proxy,'https':self.http_proxy}
         else:
-            return {'http':None,'https':None}
+            return None
 
     @repo_url.setter
     def repo_url(self,value):
