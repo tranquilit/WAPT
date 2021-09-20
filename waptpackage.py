@@ -99,6 +99,7 @@ from waptutils import datetime2isodate,httpdatetime2isodate,httpdatetime2datetim
 from waptutils import default_http_headers,wget,get_language,import_setup,import_code
 from waptutils import _disable_file_system_redirection
 from waptutils import get_requests_client_cert_session
+from waptutils import sanitize_filename
 
 from waptcrypto import EWaptMissingCertificate,EWaptBadCertificate
 from waptcrypto import SSLCABundle,SSLCertificate,SSLPrivateKey,SSLCRL
@@ -1422,7 +1423,7 @@ class PackageEntry(BaseObjectClass):
                     val.append(u"%-18s: %s" % (att, escape_cr(getattr(self,att))))
         return u'\n'.join(val)
 
-    def make_package_filename(self):
+    def make_package_filename(self,with_md5sum = False):
         """Return the standard package filename based on current attributes
         parts of control which are either 'all' or empty are not included in filename
 
@@ -1440,18 +1441,26 @@ class PackageEntry(BaseObjectClass):
         else:
             package_name = self.package
 
-        if self.section == 'host':
-            result = package_name+'.wapt'
+        if with_md5sum:
+            _md5sum = self.md5sum
         else:
+            _md5sum = None
+
+        if self.section == 'host':
+            att = [package_name]
+        else:
+            att = [package_name,self.version]
             if package_name.lower().endswith('-waptupgrade'):
-                result = '_'.join([f for f in (self.package,self.version,self.architecture,self.maturity,self.locale,self.md5sum) if f]) + '.wapt'
+                att.extend([f for f in (self.architecture, self.maturity, self.locale, _md5sum) if f])
+            else:
+                # includes only non empty fields
+                att.extend([f for f in (
+                    self.architecture,
+                    self.maturity,
+                    '-'.join(ensure_list(self.locale)),
+                    _md5sum) if (f and f != 'all')])
 
-            # includes only non empty fields
-            att= u'_'.join([f for f in (self.architecture,self.maturity,'-'.join(ensure_list(self.locale)),self.md5sum) if (f and f != 'all')])
-            if att:
-                att = '_'+att
-            result = package_name+'_'+self.version+att+'.wapt'
-
+        result = '_'.join(att)+'.wapt'
         return sanitize_filename(result)
 
     def make_package_edit_directory(self):
@@ -3170,11 +3179,11 @@ class WaptLocalRepo(WaptBaseRepo):
             logger.critical(u'Unable to create new Packages file : %s' % e)
             raise e
 
-    def _ensure_canonical_package_filename(self,entry):
+    def _ensure_canonical_package_filename(self,entry,with_md5sum=False):
         """Rename the local wapt package so that it complies with canonical package naming rules
 
         """
-        theoritical_package_filename =  entry.make_package_filename()
+        theoritical_package_filename = entry.make_package_filename(with_md5sum = with_md5sum)
         package_filename = entry.filename
         if package_filename != theoritical_package_filename:
             logger.warning(u'Package filename %s should be %s to comply with control metadata. Renaming...'%(package_filename,theoritical_package_filename))
@@ -3248,7 +3257,7 @@ class WaptLocalRepo(WaptBaseRepo):
 
                     processed.append(fname)
                     if canonical_filenames:
-                        self._ensure_canonical_package_filename(entry)
+                        self._ensure_canonical_package_filename(entry,True)
 
                     # looks for the signer certificate and add it to Packages if not already
                     certs = entry.package_certificates()
@@ -3749,7 +3758,7 @@ class WaptRemoteRepo(WaptBaseRepo):
         with self.get_requests_session() as session:
             for entry in packages:
                 download_url = entry.download_url
-                fullpackagepath = os.path.join(target_dir,sanitize_filename(entry.filename))
+                fullpackagepath = os.path.join(target_dir, entry.make_package_filename())
                 skip = False
                 if usecache and os.path.isfile(fullpackagepath) and os.path.getsize(fullpackagepath) == entry.size :
                     # check version

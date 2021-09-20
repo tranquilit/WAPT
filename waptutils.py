@@ -607,8 +607,8 @@ def force_utf8_no_bom(filename):
             codecs.open(filename, mode='wb', encoding='utf8').write(content)
 
 def sanitize_filename(filename):
-	forbidden = r"|():%/,\[]<>*? "
-	return ''.join([c for c in filename.replace('..','_') if c not in forbidden]).strip()
+    forbidden = "@|():%/,\\[]<>*?\n"
+    return ''.join([c for c in filename.replace('..','_') if c not in forbidden]).strip()
 
 
 def expand_args(args,expand_file_wildcards=None):
