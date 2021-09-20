@@ -9,7 +9,7 @@ beautifulsoup4==4.8.0
 blinker==1.4
 certifi==2019.3.9
 cffi==1.11.5
-chardet==3.0.4
+chardet==4.0.0
 click==6.7
 clint==0.5.1
 colorama==0.3.9
@@ -52,7 +52,7 @@ pyparsing==2.2.0
 python-engineio==3.10.0
 python-socketio==4.3.1
 pytz==2017.2
-requests==2.20.0
+requests==2.26.0
 rpyc==4.0.2
 singledispatch==3.4.0.3
 six==1.11.0

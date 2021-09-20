@@ -1,6 +1,7 @@
 argparse==1.2.1
 Babel==2.5.1
 cffi==1.11.5
+chardet==4.0.0
 click==6.7
 cryptography==2.5.0
 eventlet==0.25.1
@@ -27,7 +28,7 @@ pyparsing==2.2.0
 python-engineio==3.10.0
 python-socketio==4.3.1
 pytz==2017.2
-requests==2.20.0
+requests==2.26.0
 six==1.11.0
 ujson==2.0.3
 urllib3==1.26.5
