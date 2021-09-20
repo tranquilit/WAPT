@@ -851,23 +851,25 @@ def upload_packages():
             packagefile.save(tmp_target)
             # test if package is OK.
             entry = PackageEntry(waptfile=tmp_target)
-            if not allowed_file(entry.make_package_filename()):
-                raise EWaptForbiddden(u'Package filename / name is forbidden : %s' % entry.make_package_filename())
+            target_filename = entry.make_package_filename(with_md5sum=True)
+            if not allowed_file(target_filename):
+                raise EWaptForbiddden(u'Package filename / name is forbidden : %s' % target_filename)
 
             # check if package signer is authorized
             trusted_chain = check_valid_signer(entry,trusted_signers)
             if not trusted_chain:
-                raise EWaptForbiddden(u'Package %s is not signed properly' % entry.make_package_filename())
+                raise EWaptForbiddden(u'Package %s is not signed properly' % target_filename)
 
             logger.info(u'Package is trusted: %s' % trusted_chain)
 
             logger.debug(u'Saved package %s into %s' % (entry.asrequirement(),tmp_target))
 
+            entry.filename = target_filename
+
             if entry.section == 'host':
-                target = os.path.join(wapt_folder+'-host', entry.make_package_filename())
+                target = os.path.join(wapt_folder+'-host', target_filename)
             else:
-                entry.filename = entry.make_package_filename()
-                target = os.path.join(wapt_folder, entry.filename)
+                target = os.path.join(wapt_folder, target_filename)
 
             if os.path.isfile(target):
                 os.unlink(target)
