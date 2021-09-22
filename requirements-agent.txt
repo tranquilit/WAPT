@@ -7,7 +7,7 @@ backports.functools-lru-cache==1.4
 backports.ssl-match-hostname==3.5.0.1
 beautifulsoup4==4.8.0
 blinker==1.4
-certifi==2019.3.9
+certifi-2021.5.30
 cffi==1.11.5
 chardet==4.0.0
 click==6.7
