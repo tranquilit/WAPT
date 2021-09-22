@@ -304,7 +304,7 @@ end;
 
 procedure TVisCreateWaptSetup.ActGetServerCertificateExecute(Sender: TObject);
 var
-  certfn: String;
+  certfn,CN: String;
   url,certchain,pem_data,cert:Variant;
 begin
   url := edWaptServerUrl.Text;
@@ -316,7 +316,8 @@ begin
       if not VarIsNull(pem_data) then
       begin
         cert := certchain.__getitem__(0);
-        certfn:= AppendPathDelim(BuildDir)+'ssl\server\'+cert.cn+'.crt';
+        CN := StrReplace(cert.cn,'*.','',[rfReplaceAll]);
+        certfn:= AppendPathDelim(BuildDir)+'ssl\server\'+CN+'.crt';
         if not DirectoryExists(ExtractFileDir(certfn)) then
           ForceDirectory(ExtractFileDir(certfn));
         StringToFile(certfn,UTF8Encode(VarPythonAsString(pem_data)));

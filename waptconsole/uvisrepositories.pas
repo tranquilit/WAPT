@@ -208,7 +208,7 @@ end;
 
 procedure TVisRepositories.ActGetServerCertificateExecute(Sender: TObject);
 var
-  certfn: String;
+  certfn,CN: String;
   cert,certchain,pem_data:Variant;
   RepoURI:TURI;
 begin
@@ -219,10 +219,11 @@ begin
     if not VarIsNone(pem_data) then
     begin
       cert := certchain.__getitem__(0);
-      certfn:= AppendPathDelim(GetAppUserFolder)+'ssl\server\'+cert.cn+'.crt';
+      CN := StrReplace(cert.cn,'*.','',[rfReplaceAll]);
+      certfn:= AppendPathDelim(GetAppUserFolder)+'ssl\server\'+CN+'.crt';
       if not DirectoryExists(ExtractFileDir(certfn)) then
         ForceDirectory(ExtractFileDir(certfn));
-      StringToFile(certfn,String(pem_data));
+      StringToFile(certfn,UTF8Encode(VarPythonAsString(pem_data)));
       WaptRepo.ServerCABundle := certfn;
     end
     else

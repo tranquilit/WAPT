@@ -303,7 +303,7 @@ end;
 
 procedure TVisWAPTConfig.ActGetServerCertificateExecute(Sender: TObject);
 var
-  certfn: String;
+  certfn,CN: String;
   url,certchain,pem_data,cert:Variant;
   i: LongWord;
 begin
@@ -318,10 +318,11 @@ begin
       if not VarIsNull(pem_data) then
       begin
         cert := certchain.__getitem__(0);
-        certfn:= AppendPathDelim(WaptBaseDir)+'ssl\server\'+cert.cn+'.crt';
+        CN := StrReplace(cert.cn,'*.','',[rfReplaceAll]);
+        certfn:= AppendPathDelim(WaptBaseDir)+'ssl\server\'+CN+'.crt';
         if not DirectoryExists(ExtractFileDir(certfn)) then
           ForceDirectory(ExtractFileDir(certfn));
-        StringToFile(certfn,String(pem_data));
+        StringToFile(certfn,UTF8Encode(VarPythonAsString(pem_data)));
         EdServerCertificate.Text := certfn;
         CBVerifyCert.Checked:=True;
         ActCheckAndSetwaptserver.Execute;
