@@ -219,7 +219,7 @@ begin
     if not VarIsNone(pem_data) then
     begin
       cert := certchain.__getitem__(0);
-      CN := cert.cn;
+      CN := VarPythonAsString(cert.cn);
       StrReplace(CN,'*.','',[rfReplaceAll]);
       certfn:= AppendPathDelim(GetAppUserFolder)+'ssl\server\'+CN+'.crt';
       if not DirectoryExists(ExtractFileDir(certfn)) then

@@ -316,7 +316,7 @@ begin
       if not VarIsNull(pem_data) then
       begin
         cert := certchain.__getitem__(0);
-        CN := cert.cn;
+        CN := VarPythonAsString(cert.cn);
         StrReplace(CN,'*.','',[rfReplaceAll]);
         certfn:= AppendPathDelim(BuildDir)+'ssl\server\'+CN+'.crt';
         if not DirectoryExists(ExtractFileDir(certfn)) then
