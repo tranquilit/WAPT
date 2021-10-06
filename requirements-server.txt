@@ -1,7 +1,8 @@
 argparse==1.2.1
 Babel==2.5.1
 cffi==1.11.5
-chardet==4.0.0
+chardet==3.0.2; python_version <= '3.4'
+chardet==4.0.0; python_version > '3.4'
 click==6.7
 cryptography==2.5.0
 eventlet==0.25.1
@@ -31,7 +32,8 @@ pytz==2017.2
 requests==2.26.0
 six==1.11.0
 ujson==2.0.3
-urllib3==1.26.5
+urllib3==1.24.3; python_version <= '3.4'
+urllib3==1.26.6; python_version > '3.4'
 wakeonlan==0.2.2
 Werkzeug==0.16
 wsgiref==0.1.2
