@@ -1,3 +1,6 @@
+[submodule "waptenterprise"]
+	path = waptenterprise
+	url = https://waptgit.ad.tranquil.it/waptdev/ARCHIVE_waptenterprise.git
 [submodule "submodules/pltis_bgracontrols"]
 	path = submodules/pltis_bgracontrols
 	url = https://github.com/tranquilit/pltis_bgracontrols.git
