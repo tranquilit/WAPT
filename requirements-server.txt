@@ -1,5 +1,5 @@
 argparse==1.2.1
-Babel==2.5.1
+Babel==2.9.1
 cffi==1.11.5
 chardet==4.0.0
 click==6.7
