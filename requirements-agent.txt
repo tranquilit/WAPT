@@ -2,7 +2,7 @@ appdirs==1.4.3
 args==0.1.0
 asn1crypto==0.24.0
 astroid==1.5.3
-Babel==2.5.1
+Babel==2.9.1
 backports.functools-lru-cache==1.4
 backports.ssl-match-hostname==3.5.0.1
 beautifulsoup4==4.8.0
