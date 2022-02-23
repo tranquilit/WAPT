@@ -18,10 +18,11 @@ from optparse import OptionParser
 # import our lib
 import buildlib
 
+wapt_base_dir = 'c:/tranquilit/wapt'
+
 def install_lazarus_packages(lazbuild_path, lazarus_conf):
-    target_dir=os.path.join(buildlib.wapt_base_dir, 'submodules')
+    target_dir=os.path.join(wapt_base_dir, 'submodules')
     lazarus_dir = os.path.abspath(os.path.join(lazbuild_path, os.pardir))
-    wapt_base_dir = buildlib.wapt_base_dir
     packages = [
         r'--add-package %(target_dir)s/pltis_dcpcrypt/dcpcrypt_laz.lpk',
         r'--add-package %(target_dir)s/pltis_indy/Lib/indylaz.lpk',
@@ -49,7 +50,10 @@ def install_lazarus_packages(lazbuild_path, lazarus_conf):
 
     for lpk in packages:
         print('Install %s' % (lpk % locals()))
-        buildlib.run(r'%s %s --pcp=%s' % (lazbuild_path, lpk % locals(), os.path.expandvars(lazarus_conf)))
+        try:
+            buildlib.run(r'%s %s --pcp=%s' % (lazbuild_path, lpk % locals(), os.path.expandvars(lazarus_conf)))
+        except Exception as e:
+            print('Skipping %s : %s' % (lpk,e))
 
 def main():
     parser = OptionParser(usage=__doc__)
