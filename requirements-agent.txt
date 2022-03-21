@@ -61,7 +61,7 @@ socketIO-client-2==0.7.5
 urllib3==1.26.7
 wakeonlan==0.2.2
 websocket-client==0.56.0
-waitress==1.4.3
+waitress==2.1.1
 Werkzeug==0.16
 whichcraft==0.6.1
 wrapt==1.11.2 
