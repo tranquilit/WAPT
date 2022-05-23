@@ -1,3 +1,9 @@
+**Warning : WAPT 1.8.2 Community is not maintained anymore by Tranquil IT since April the 30th 2022. 
+This repo is kept here as an archive for historical reasons. The code is covered by the GPLv3 license,
+so if you want to take over the project and care for the maintenance, feel free to fork the repo and 
+work from there.**
+
+
 WAPT
 ====
 
